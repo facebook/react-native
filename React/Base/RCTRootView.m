@@ -411,7 +411,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
 {
   super.frame = frame;
   if (self.reactTag && _bridge.isValid) {
-    [_bridge.uiManager setFrame:frame forView:self];
+    [_bridge.uiManager setSize:frame.size forView:self];
   }
 }
 
