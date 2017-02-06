@@ -10,9 +10,9 @@
 
 const mockComponent = require.requireActual('./mockComponent');
 
-require.requireActual('../packager/react-packager/src/Resolver/polyfills/babelHelpers.js');
-require.requireActual('../packager/react-packager/src/Resolver/polyfills/Object.es7.js');
-require.requireActual('../packager/react-packager/src/Resolver/polyfills/error-guard');
+require.requireActual('../packager/src/Resolver/polyfills/babelHelpers.js');
+require.requireActual('../packager/src/Resolver/polyfills/Object.es7.js');
+require.requireActual('../packager/src/Resolver/polyfills/error-guard');
 
 global.__DEV__ = true;
 
@@ -130,6 +130,7 @@ const mockNativeModules = {
     scriptURL: null,
   },
   StatusBarManager: {
+    setColor: jest.fn(),
     setStyle: jest.fn(),
     setHidden: jest.fn(),
     setNetworkActivityIndicatorVisible: jest.fn(),
@@ -141,6 +142,12 @@ const mockNativeModules = {
     deleteTimer: jest.fn(),
   },
   UIManager: {
+    createView: jest.fn(),
+    setChildren: jest.fn(),
+    manageChildren: jest.fn(),
+    updateView: jest.fn(),
+    removeSubviewsFromContainerWithID: jest.fn(),
+    replaceExistingNonRootView: jest.fn(),
     customBubblingEventTypes: {},
     customDirectEventTypes: {},
     Dimensions: {

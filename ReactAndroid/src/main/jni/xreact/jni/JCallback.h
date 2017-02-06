@@ -4,8 +4,8 @@
 
 #include <memory>
 
-#include <folly/dynamic.h>
 #include <fb/fbjni.h>
+#include <folly/dynamic.h>
 
 #include "NativeArray.h"
 
@@ -34,7 +34,7 @@ private:
   JCallbackImpl(Callback callback) : callback_(std::move(callback)) {}
 
   void invoke(NativeArray* arguments) {
-    callback_(std::move(arguments->array));
+    callback_(arguments->consume());
   }
 
   Callback callback_;

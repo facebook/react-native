@@ -19,6 +19,7 @@
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
+#import "RCTConvert+Transform.h"
 
 #if TARGET_OS_TV
 #import "RCTTVView.h"

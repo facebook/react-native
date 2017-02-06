@@ -301,6 +301,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
       _borderMetaProps[ii] = YGValueUndefined;
     }
 
+    _intrinsicContentSize = CGSizeMake(UIViewNoIntrinsicMetric, UIViewNoIntrinsicMetric);
+
     _newView = YES;
     _propagationLifecycle = RCTUpdateLifecycleUninitialized;
     _textLifecycle = RCTUpdateLifecycleUninitialized;
@@ -436,6 +438,12 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   return description;
 }
 
+// Layout Direction
+
+- (UIUserInterfaceLayoutDirection)effectiveLayoutDirection {
+  return YGNodeLayoutGetDirection(self.cssNode) == YGDirectionRTL ? UIUserInterfaceLayoutDirectionRightToLeft : UIUserInterfaceLayoutDirectionLeftToRight;
+}
+
 // Margin
 
 #define RCT_MARGIN_PROPERTY(prop, metaProp)       \
@@ -545,53 +553,80 @@ RCT_POSITION_PROPERTY(Right, right, YGEdgeEnd)
 RCT_POSITION_PROPERTY(Bottom, bottom, YGEdgeBottom)
 RCT_POSITION_PROPERTY(Left, left, YGEdgeStart)
 
-- (void)setFrame:(CGRect)frame
-{
-  if (!CGRectEqualToRect(frame, _frame)) {
-    _frame = frame;
-    YGNodeStyleSetPosition(_cssNode, YGEdgeLeft, CGRectGetMinX(frame));
-    YGNodeStyleSetPosition(_cssNode, YGEdgeTop, CGRectGetMinY(frame));
-    YGNodeStyleSetWidth(_cssNode, CGRectGetWidth(frame));
-    YGNodeStyleSetHeight(_cssNode, CGRectGetHeight(frame));
-  }
-}
+// Size
 
-static inline void RCTAssignSuggestedDimension(YGNodeRef cssNode, YGDimension dimension, CGFloat amount)
+- (CGSize)size
 {
-  if (amount != UIViewNoIntrinsicMetric) {
-    switch (dimension) {
-      case YGDimensionWidth:
-        if (YGNodeStyleGetWidth(cssNode).unit == YGUnitUndefined) {
-          YGNodeStyleSetWidth(cssNode, amount);
-        }
-        break;
-      case YGDimensionHeight:
-        if (YGNodeStyleGetHeight(cssNode).unit == YGUnitUndefined) {
-          YGNodeStyleSetHeight(cssNode, amount);
-        }
-        break;
-    }
-  }
-}
+  YGValue width = YGNodeStyleGetWidth(_cssNode);
+  YGValue height = YGNodeStyleGetHeight(_cssNode);
 
-- (void)setIntrinsicContentSize:(CGSize)size
-{
-  if (YGNodeStyleGetFlexGrow(_cssNode) == 0 && YGNodeStyleGetFlexShrink(_cssNode) == 0) {
-    RCTAssignSuggestedDimension(_cssNode, YGDimensionHeight, size.height);
-    RCTAssignSuggestedDimension(_cssNode, YGDimensionWidth, size.width);
-  }
-}
-
-- (void)setTopLeft:(CGPoint)topLeft
-{
-  YGNodeStyleSetPosition(_cssNode, YGEdgeLeft, topLeft.x);
-  YGNodeStyleSetPosition(_cssNode, YGEdgeTop, topLeft.y);
+  return CGSizeMake(
+    width.unit == YGUnitPixel ? width.value : NAN,
+    height.unit == YGUnitPixel ? height.value : NAN
+  );
 }
 
 - (void)setSize:(CGSize)size
 {
   YGNodeStyleSetWidth(_cssNode, size.width);
   YGNodeStyleSetHeight(_cssNode, size.height);
+}
+
+// IntrinsicContentSize
+
+static inline YGSize RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
+{
+  RCTShadowView *shadowView = (__bridge RCTShadowView *)YGNodeGetContext(node);
+
+  CGSize intrinsicContentSize = shadowView->_intrinsicContentSize;
+  // Replace `UIViewNoIntrinsicMetric` (which equals `-1`) with zero.
+  intrinsicContentSize.width = MAX(0, intrinsicContentSize.width);
+  intrinsicContentSize.height = MAX(0, intrinsicContentSize.height);
+
+  YGSize result;
+
+  switch (widthMode) {
+    case YGMeasureModeUndefined:
+      result.width = intrinsicContentSize.width;
+      break;
+    case YGMeasureModeExactly:
+      result.width = width;
+      break;
+    case YGMeasureModeAtMost:
+      result.width = MIN(width, intrinsicContentSize.width);
+      break;
+  }
+
+  switch (heightMode) {
+    case YGMeasureModeUndefined:
+      result.height = intrinsicContentSize.height;
+      break;
+    case YGMeasureModeExactly:
+      result.height = height;
+      break;
+    case YGMeasureModeAtMost:
+      result.height = MIN(height, intrinsicContentSize.height);
+      break;
+  }
+
+  return result;
+}
+
+- (void)setIntrinsicContentSize:(CGSize)intrinsicContentSize
+{
+  if (CGSizeEqualToSize(_intrinsicContentSize, intrinsicContentSize)) {
+    return;
+  }
+
+  _intrinsicContentSize = intrinsicContentSize;
+
+  if (CGSizeEqualToSize(_intrinsicContentSize, CGSizeMake(UIViewNoIntrinsicMetric, UIViewNoIntrinsicMetric))) {
+    YGNodeSetMeasureFunc(_cssNode, NULL);
+  } else {
+    YGNodeSetMeasureFunc(_cssNode, RCTShadowViewMeasure);
+  }
+
+  YGNodeMarkDirty(_cssNode);
 }
 
 // Flex

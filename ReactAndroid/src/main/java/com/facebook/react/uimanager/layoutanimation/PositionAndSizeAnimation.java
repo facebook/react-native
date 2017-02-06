@@ -21,8 +21,8 @@ import android.view.animation.Transformation;
   public PositionAndSizeAnimation(View view, int x, int y, int width, int height) {
     mView = view;
 
-    mStartX = view.getX();
-    mStartY = view.getY();
+    mStartX = view.getX() - view.getTranslationX();
+    mStartY = view.getY() - view.getTranslationY();
     mStartWidth = view.getWidth();
     mStartHeight = view.getHeight();
 

@@ -100,7 +100,7 @@ type ButtonsArray = Array<{
  * );
  * ```
  *
- * We recommend using the [`Alert.alert`](alert.html) method for
+ * We recommend using the [`Alert.alert`](docs/alert.html) method for
  * cross-platform support if you don't need to create iOS-only prompts.
  *
  */

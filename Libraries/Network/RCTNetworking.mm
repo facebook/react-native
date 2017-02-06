@@ -303,6 +303,11 @@ RCT_EXPORT_MODULE()
   if (body) {
     return callback(nil, @{@"body": body});
   }
+  NSString *base64String = [RCTConvert NSString:query[@"base64"]];
+  if (base64String) {
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:base64String options:0];
+    return callback(nil, @{@"body": data});
+  }
   NSURLRequest *request = [RCTConvert NSURLRequest:query[@"uri"]];
   if (request) {
 
