@@ -1,8 +1,17 @@
 package = JSON.parse(File.read(File.expand_path('../../package.json', __dir__)))
+version = package['version']
+
+source = { :git => 'https://github.com/facebook/react-native.git' }
+if version == '1000.0.0'
+  # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
+  source[:commit] = `git rev-parse HEAD`.strip
+else
+  source[:tag] = "v#{version}"
+end
 
 Pod::Spec.new do |spec|
   spec.name = 'Yoga'
-  spec.version = "#{package["version"]}.React"
+  spec.version = "#{version}.React"
   spec.license =  { :type => 'BSD' }
   spec.homepage = 'https://facebook.github.io/yoga/'
   spec.documentation_url = 'https://facebook.github.io/yoga/docs/api/c/'
@@ -11,10 +20,7 @@ Pod::Spec.new do |spec|
   spec.description = 'Yoga is a cross-platform layout engine enabling maximum collaboration within your team by implementing an API many designers are familiar with, and opening it up to developers across different platforms.'
 
   spec.authors = 'Facebook'
-  spec.source = {
-    :git => 'https://github.com/facebook/react-native.git',
-    :tag => "v#{package["version"]}",
-  }
+  spec.source = source
 
   spec.module_name = 'yoga'
   spec.requires_arc = false
@@ -26,5 +32,13 @@ Pod::Spec.new do |spec|
       '-std=c11',
       '-fPIC'
   ]
-  spec.source_files = 'yoga/**/*.{c,h}'
+
+  # Pinning to the same version as React.podspec.
+  spec.platform = :ios, "8.0"
+
+  # Set this environment variable when not using the `:path` option to install the pod.
+  # E.g. when publishing this spec to a spec repo.
+  source_files = 'yoga/**/*.{c,h}'
+  source_files = File.join('ReactCommon/yoga', source_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
+  spec.source_files = source_files
 end
