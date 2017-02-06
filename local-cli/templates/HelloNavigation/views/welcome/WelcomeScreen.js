@@ -8,11 +8,12 @@ import {
 } from 'react-native';
 
 import ListItem from '../../components/ListItem';
+import WelcomeText from './WelcomeText';
 
-export default class FriendListScreen extends Component {
+export default class WelcomeScreen extends Component {
 
   static navigationOptions = {
-    title: 'Friends',
+    title: 'Welcome',
     header: {
       visible: Platform.OS === 'ios',
     },
@@ -20,7 +21,7 @@ export default class FriendListScreen extends Component {
       icon: ({ tintColor }) => (
         <Image
           // Using react-native-vector-icons works here too
-          source={require('./friend-icon.png')}
+          source={require('./welcome-icon.png')}
           style={[styles.icon, {tintColor: tintColor}]}
         />
       ),
@@ -29,9 +30,7 @@ export default class FriendListScreen extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Text>A list of friends here.</Text>
-      </View>
+      <WelcomeText />
     );
   }
 }
