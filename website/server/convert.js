@@ -91,7 +91,7 @@ function buildFile(layout, metadata, rawContent) {
   ].filter(e => e).join('\n');
 }
 
-function execute() {
+function execute(options) {
   var DOCS_MD_DIR = '../docs/';
   var BLOG_MD_DIR = '../blog/';
 
@@ -136,28 +136,33 @@ function execute() {
     );
   }
 
-  var extractedDocs = cache.get('extractedDocs');
-  if (!extractedDocs) {
-    extractedDocs = extractDocs();
-    cache.put('extractedDocs', extractedDocs);
+  if (options.extractDocs) {
+    // Rendering docs can take up to 8 seconds. We wait until /docs/ are
+    // requested before doing so, then we store the results in memory to
+    // speed up subsequent requests.
+    var extractedDocs = cache.get('extractedDocs');
+    if (!extractedDocs) {
+      extractedDocs = extractDocs();
+      cache.put('extractedDocs', extractedDocs);
+    }
+    extractedDocs.forEach(function(content) {
+      handleMarkdown(content, null);
+    });
+
+    var files = glob.sync(DOCS_MD_DIR + '**/*.*');
+    files.forEach(function(file) {
+      var extension = path.extname(file);
+      if (extension === '.md' || extension === '.markdown') {
+        var content = fs.readFileSync(file, {encoding: 'utf8'});
+        handleMarkdown(content, path.basename(file));
+      }
+
+      if (extension === '.json') {
+        var content = fs.readFileSync(file, {encoding: 'utf8'});
+        metadatas[path.basename(file, '.json')] = JSON.parse(content);
+      }
+    });
   }
-  extractedDocs.forEach(function(content) {
-    handleMarkdown(content, null);
-  });
-
-  var files = glob.sync(DOCS_MD_DIR + '**/*.*');
-  files.forEach(function(file) {
-    var extension = path.extname(file);
-    if (extension === '.md' || extension === '.markdown') {
-      var content = fs.readFileSync(file, {encoding: 'utf8'});
-      handleMarkdown(content, path.basename(file));
-    }
-
-    if (extension === '.json') {
-      var content = fs.readFileSync(file, {encoding: 'utf8'});
-      metadatas[path.basename(file, '.json')] = JSON.parse(content);
-    }
-  });
 
   // we need to pass globals for the components to be configurable
   // metadata is generated in this process which has access to process.env
