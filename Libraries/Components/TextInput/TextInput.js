@@ -739,6 +739,7 @@ const TextInput = React.createClass({
         children={children}
         disableFullscreenUI={this.props.disableFullscreenUI}
         textBreakStrategy={this.props.textBreakStrategy}
+        onScroll={this._onScroll}
       />;
 
     return (
