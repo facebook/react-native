@@ -389,11 +389,11 @@ public class ReactViewGroup extends ViewGroup implements
     mPointerEvents = pointerEvents;
   }
 
-  /*package*/ int getAllChildrenCount() {
+  public int getAllChildrenCount() {
     return mAllChildrenCount;
   }
 
-  /*package*/ View getChildAtWithSubviewClippingEnabled(int index) {
+  public View getChildAtWithSubviewClippingEnabled(int index) {
     return Assertions.assertNotNull(mAllChildren)[index];
   }
 
