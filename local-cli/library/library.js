@@ -44,7 +44,8 @@ function library(argv, config, args) {
       return;
     }
 
-    const dest = f.replace(/Sample/g, args.name).replace(/^_/, '.');
+    const relativePath = f.replace(source, '').replace(/^\//, './');
+    const dest = relativePath.replace(/Sample/g, args.name).replace(/^_/, '.');
     copyAndReplace(
       path.resolve(source, f),
       path.resolve(libraryDest, dest),
