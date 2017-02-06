@@ -222,6 +222,9 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
 
   // Keyed by viewName
   NSDictionary *_componentDataByName;
+  
+  // Only emit bridge events if true
+  bool hasListeners;
 
   NSMutableSet<id<RCTComponent>> *_bridgeTransactionListeners;
 #if !TARGET_OS_TV
@@ -233,9 +236,12 @@ RCT_EXPORT_MODULE()
 
 - (void)didReceiveNewContentSizeMultiplier
 {
-  // Report the event across the bridge.
-  [self sendEventWithName:@"didUpdateContentSizeMultiplier"
-                     body:@([self.bridge.accessibilityManager multiplier])];
+  // Report the event across the bridge only if there are listeners
+  if (hasListeners)
+  {
+    [self sendEventWithName:@"didUpdateContentSizeMultiplier"
+                       body:@([self.bridge.accessibilityManager multiplier])];
+  }
 
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
@@ -244,12 +250,22 @@ RCT_EXPORT_MODULE()
   });
 }
 
-#pragma mark -- Events
+#pragma mark -- RCTEventEmitter
 
 - (NSArray<NSString *> *)supportedEvents
 {
   return @[@"didUpdateContentSizeMultiplier",
            @"didUpdateDimensions"];
+}
+
+- (void)startObserving
+{
+  hasListeners = YES;
+}
+
+- (void)stopObserving
+{
+  hasListeners = NO;
 }
 
 - (void)interfaceOrientationDidChange
@@ -259,10 +275,11 @@ RCT_EXPORT_MODULE()
     [RCTSharedApplication() statusBarOrientation];
 
   // Update when we go from portrait to landscape, or landscape to portrait
-  if ((UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
+  if (hasListeners &&
+      ((UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
       !UIInterfaceOrientationIsPortrait(nextOrientation)) ||
       (UIInterfaceOrientationIsLandscape(_currentInterfaceOrientation) &&
-      !UIInterfaceOrientationIsLandscape(nextOrientation))) {
+      !UIInterfaceOrientationIsLandscape(nextOrientation)))) {
         [self sendEventWithName:@"didUpdateDimensions"
                            body:RCTExportedDimensions()];
   }
