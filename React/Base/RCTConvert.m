@@ -667,6 +667,12 @@ RCT_ENUM_CONVERTER(YGAlign, (@{
   @"baseline": @(YGAlignBaseline)
 }), YGAlignFlexStart, intValue)
 
+RCT_ENUM_CONVERTER(YGDirection, (@{
+  @"inherit": @(YGDirectionInherit),
+  @"ltr": @(YGDirectionLTR),
+  @"rtl": @(YGDirectionRTL),
+}), YGDirectionInherit, intValue)
+
 RCT_ENUM_CONVERTER(YGPositionType, (@{
   @"absolute": @(YGPositionTypeAbsolute),
   @"relative": @(YGPositionTypeRelative)

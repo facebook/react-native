@@ -118,6 +118,7 @@ typedef BOOL css_backface_visibility_t;
 + (YGAlign)YGAlign:(id)json;
 + (YGPositionType)YGPositionType:(id)json;
 + (YGWrap)YGWrap:(id)json;
++ (YGDirection)YGDirection:(id)json;
 
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;
