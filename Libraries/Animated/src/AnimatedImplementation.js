@@ -999,6 +999,11 @@ class AnimatedValueXY extends AnimatedWithChildren {
     this.y.flattenOffset();
   }
 
+  extractOffset(): void {
+    this.x.extractOffset();
+    this.y.extractOffset();
+  }
+
   __getValue(): {x: number, y: number} {
     return {
       x: this.x.__getValue(),
@@ -1676,7 +1681,6 @@ class AnimatedProps extends Animated {
         propsConfig[propKey] = value.__getNativeTag();
       }
     }
-    NativeAnimatedHelper.validateProps(propsConfig);
     return {
       type: 'props',
       props: propsConfig,

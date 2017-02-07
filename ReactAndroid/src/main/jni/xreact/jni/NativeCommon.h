@@ -5,6 +5,10 @@
 #include <fb/fbjni.h>
 #include <folly/dynamic.h>
 
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
+
 namespace facebook {
 namespace react {
 

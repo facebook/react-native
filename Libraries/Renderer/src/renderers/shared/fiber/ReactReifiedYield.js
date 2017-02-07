@@ -20,16 +20,11 @@ var { createFiberFromElementType } = require('ReactFiber');
 export type ReifiedYield = { continuation: Fiber, props: Object };
 
 exports.createReifiedYield = function(yieldNode : ReactYield) : ReifiedYield {
-  var fiber = createFiberFromElementType(
-    yieldNode.continuation,
-    yieldNode.key
-  );
-  /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-   * detected during the deployment of v0.38.0. To see the error, remove this
-   * comment and run flow
-   */
   return {
-    continuation: fiber,
+    continuation: createFiberFromElementType(
+      yieldNode.continuation,
+      yieldNode.key
+    ),
     props: yieldNode.props,
   };
 };

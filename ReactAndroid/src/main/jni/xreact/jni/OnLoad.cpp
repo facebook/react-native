@@ -11,7 +11,6 @@
 #include "JavaScriptExecutorHolder.h"
 #include "JSCPerfLogging.h"
 #include "JSLoader.h"
-#include "ModuleRegistryHolder.h"
 #include "ProxyExecutor.h"
 #include "WebWorkers.h"
 #include "JCallback.h"
@@ -87,7 +86,7 @@ class JSCJavaScriptExecutorHolder : public HybridClass<JSCJavaScriptExecutorHold
 
   static local_ref<jhybriddata> initHybrid(alias_ref<jclass>, ReadableNativeArray* jscConfigArray) {
     // See JSCJavaScriptExecutor.Factory() for the other side of this hack.
-    folly::dynamic jscConfigMap = jscConfigArray->array[0];
+    folly::dynamic jscConfigMap = jscConfigArray->consume()[0];
     jscConfigMap["PersistentDirectory"] = getApplicationPersistentDir();
     return makeCxxInstance(
       std::make_shared<JSCExecutorFactory>(getApplicationCacheDir(), std::move(jscConfigMap)));
@@ -160,13 +159,11 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     JSCJavaScriptExecutorHolder::registerNatives();
     ProxyJavaScriptExecutorHolder::registerNatives();
     CatalystInstanceImpl::registerNatives();
-    ModuleRegistryHolder::registerNatives();
     CxxModuleWrapper::registerNatives();
     JCallbackImpl::registerNatives();
     #ifdef WITH_INSPECTOR
     JInspector::registerNatives();
     #endif
-    registerJSLoaderNatives();
 
     NativeArray::registerNatives();
     ReadableNativeArray::registerNatives();

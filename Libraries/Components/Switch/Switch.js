@@ -20,6 +20,8 @@ var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
+var { PropTypes } = React;
+
 type DefaultProps = {
   value: boolean,
   disabled: boolean,
@@ -43,34 +45,31 @@ var Switch = React.createClass({
      * The value of the switch.  If true the switch will be turned on.
      * Default value is false.
      */
-    value: React.PropTypes.bool,
+    value: PropTypes.bool,
     /**
      * If true the user won't be able to toggle the switch.
      * Default value is false.
      */
-    disabled: React.PropTypes.bool,
+    disabled: PropTypes.bool,
     /**
      * Invoked with the new value when the value changes.
      */
-    onValueChange: React.PropTypes.func,
+    onValueChange: PropTypes.func,
     /**
      * Used to locate this view in end-to-end tests.
      */
-    testID: React.PropTypes.string,
+    testID: PropTypes.string,
 
     /**
-     * Border color when the switch is turned off.
-     * @platform ios
+     * Border color on iOS and background color on Android when the switch is turned off.
      */
     tintColor: ColorPropType,
     /**
      * Background color when the switch is turned on.
-     * @platform ios
      */
     onTintColor: ColorPropType,
     /**
      * Color of the foreground switch grip.
-     * @platform ios
      */
     thumbTintColor: ColorPropType,
   },
@@ -104,6 +103,7 @@ var Switch = React.createClass({
       props.enabled = !this.props.disabled;
       props.on = this.props.value;
       props.style = this.props.style;
+      props.trackTintColor = this.props.value ? this.props.onTintColor : this.props.tintColor;
     } else if (Platform.OS === 'ios') {
       props.style = [styles.rctSwitchIOS, this.props.style];
     }
@@ -126,11 +126,18 @@ var styles = StyleSheet.create({
 
 if (Platform.OS === 'android') {
   var RCTSwitch = requireNativeComponent('AndroidSwitch', Switch, {
-    nativeOnly: { onChange: true, on: true, enabled: true }
+    nativeOnly: {
+      onChange: true,
+      on: true,
+      enabled: true,
+      trackTintColor: true,
+    }
   });
 } else {
   var RCTSwitch = requireNativeComponent('RCTSwitch', Switch, {
-    nativeOnly: { onChange: true }
+    nativeOnly: {
+      onChange: true
+    }
   });
 }
 

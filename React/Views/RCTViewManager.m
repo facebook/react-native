@@ -19,6 +19,7 @@
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
+#import "RCTConvert+Transform.h"
 
 #if TARGET_OS_TV
 #import "RCTTVView.h"
@@ -316,5 +317,6 @@ RCT_EXPORT_SHADOW_PROPERTY(overflow, YGOverflow)
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
 
 RCT_EXPORT_SHADOW_PROPERTY(zIndex, NSInteger)
+RCT_EXPORT_SHADOW_PROPERTY(direction, YGDirection)
 
 @end

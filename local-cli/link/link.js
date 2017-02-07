@@ -141,7 +141,11 @@ function link(args, config) {
     return Promise.reject(err);
   }
 
-  const packageName = args[0];
+  let packageName = args[0];
+  // Check if install package by specific version (eg. package@latest)
+  if (packageName !== undefined) {
+    packageName = packageName.split('@')[0];
+  }
 
   const dependencies = getDependencyConfig(
     config,

@@ -48,6 +48,7 @@ var semver = require('semver');
  *   if you are in a RN app folder
  * init - to create a new project and npm install it
  *   --verbose - to print logs while init
+ *   --template - name of the template to use, e.g. --template navigation
  *   --version <alternative react-native package> - override default (https://registry.npmjs.org/react-native@latest),
  *      package to install, examples:
  *     - "0.22.0-rc1" - A new app will be created using a specific version of React Native from npm repo
@@ -129,7 +130,8 @@ if (cli) {
       '  Options:',
       '',
       '    -h, --help    output usage information',
-      '    -v, --version output the version number',
+      '    -v, --version use a specific version of React Native',
+      '    --template use an app template. Use --template to see available templates.',
       '',
     ].join('\n'));
     process.exit(0);
@@ -264,8 +266,7 @@ function getInstallPackage(rnPackage) {
 }
 
 function run(root, projectName, options) {
-  // E.g. '0.38' or '/path/to/archive.tgz'
-  const rnPackage = options.version;
+  const rnPackage = options.version; // e.g. '0.38' or '/path/to/archive.tgz'
   const forceNpmClient = options.npm;
   const yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
   var installCommand;

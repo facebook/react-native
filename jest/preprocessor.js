@@ -15,7 +15,7 @@ const path = require('path');
 
 const nodeFiles = RegExp([
   '/local-cli/',
-  '/packager/(?!react-packager/src/Resolver/polyfills/)',
+  '/packager/(?!src/Resolver/polyfills/)',
 ].join('|'));
 const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 

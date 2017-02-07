@@ -317,7 +317,7 @@ async function run(requestedVersion, cliArgs) {
     await exec('git commit -m "New version" --allow-empty', verbose);
 
     log.info('Generate the patch between the 2 versions');
-    const diffOutput = await exec('git diff HEAD~1 HEAD', verbose);
+    const diffOutput = await exec('git diff HEAD~1 HEAD --no-color', verbose);
 
     log.info('Save the patch in temp directory');
     const patchPath = path.resolve(tmpDir, `upgrade_${currentVersion}_${newVersion}.patch`);

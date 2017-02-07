@@ -315,13 +315,13 @@ var featured = [
     infoLink: 'https://www.techatbloomberg.com/blog/bloomberg-used-react-native-develop-new-consumer-app/',
     infoTitle: 'How Bloomberg Used React Native to Develop its new Consumer App',
   },
-	{
-		name: 'Blink',
-		icon: 'https://lh3.googleusercontent.com/QaId7rFtOjAT-2tHVkKB4lebX_w4ujWiO7ZIDe3Hd99TfBmPmiZySbLbVJV65qs0ViM=w300-rw',
-		linkPlayStore: 'https://play.google.com/store/apps/details?id=com.witapp',
-		infoLink: 'https://hashnode.com/post/what-we-learned-after-using-react-native-for-a-year-civdr8zv6058l3853wqud7hqp',
-		infoTitle: 'What we learned after using React Native for a year',
-	},
+  {
+    name: 'Blink',
+    icon: 'https://lh3.googleusercontent.com/QaId7rFtOjAT-2tHVkKB4lebX_w4ujWiO7ZIDe3Hd99TfBmPmiZySbLbVJV65qs0ViM=w300-rw',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.witapp',
+    infoLink: 'https://hashnode.com/post/what-we-learned-after-using-react-native-for-a-year-civdr8zv6058l3853wqud7hqp',
+    infoTitle: 'What we learned after using React Native for a year',
+  },
   {
     name: 'Delivery.com',
     icon: 'https://lh3.googleusercontent.com/ZwwQHQns9Ut2-LqbMqPcmQrsWBh3YbmbIzeDthfdavw99Ziq0unJ6EHUw8bstXUIpg=w300-rw',
@@ -331,12 +331,36 @@ var featured = [
     infoTitle: 'React Native in an Existing iOS App: Getting Started'
   },
   {
+    name: 'Remedy',
+    icon: 'https://www.remedymedical.com/static/images/AppIconPatient.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/remedy-on-demand-intelligent/id1125877350?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.remedy.android',
+    infoLink: 'https://techcrunch.com/2017/01/10/doctordoctorcantyouseeimburning/',
+    infoTitle: 'Talk to a world-class doctor: advice, prescriptions, and care',
+  },
+  {
     name: 'Yeti Smart Home',
     icon: 'https://res.cloudinary.com/netbeast/image/upload/v1484303676/Android_192_loykto.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/yeti-smart-home/id1190638808?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.netbeast.yeti',
     infoLink: 'https://medium.com/@jesusdario/developing-beyond-the-screen-9af812b96724#.ozx0xy4lv',
-    infoTitle: 'How react native is helping us to reinvent the wheel, smart homes and release Yeti.',
+    infoTitle: 'How React Native is helping us to reinvent the wheel',
   },
+  {
+    name: 'Jack',
+    icon: 'https://s3-eu-west-1.amazonaws.com/jack-public/react-native-showcase/jack-raw-icon.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/you-have-a-jack/id1019167559?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.jack45.jack',
+    infoLink: 'https://medium.com/@herdani/our-switch-to-react-native-f4ada19f0f3d#.ogwjzf2tw',
+    infoTitle: 'Our switch to React Native',
+  },
+  {
+    name: 'Causr',
+    icon: 'http://is2.mzstatic.com/image/thumb/Purple111/v4/9d/14/20/9d142015-3319-f613-2886-ad889609466a/source/175x175bb.jpg',
+    linkAppStore: 'https://itunes.apple.com/us/app/causr-business-networking/id1129819484',
+    infoLink: 'https://medium.com/causr/why-we-chose-react-native-abd7d58a18b5',
+    infoTitle: 'Why we chose React Native'
+  }
 ];
 
 /*
@@ -375,8 +399,8 @@ var pinned = [
     icon: 'http://a4.mzstatic.com/us/r30/Purple62/v4/1f/8d/f9/1f8df910-8ec7-3b8e-0104-d44e869f4d65/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/app/instagram/id389801252?pt=428156&ct=igweb.unifiedHome.badge&mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.instagram.android&referrer=utm_source%3Dinstagramweb%26utm_campaign%3DunifiedHome%26utm_medium%3Dbadge',
-    infoLink: '',
-    infoTitle: '',
+    infoLink: 'https://engineering.instagram.com/react-native-at-instagram-dd828a9a90c7#.3h4wir4zr',
+    infoTitle: 'React Native at Instagram',
     defaultLink: 'https://www.instagram.com/',
   },
   {
@@ -389,7 +413,7 @@ var pinned = [
     defaultLink: 'https://www.airbnb.com/mobile',
   },
   {
-    name: 'Baidu(手机百度)',
+    name: 'Baidu (手机百度)',
     icon: 'http://a3.mzstatic.com/us/r30/Purple62/v4/90/7c/9b/907c9b4e-556d-1a45-45d4-0ea801719abd/icon175x175.png',
     linkPlayStore: 'http://shouji.baidu.com/software/9896302.html',
     linkAppStore: 'https://itunes.apple.com/en/app/shou-ji-bai-du-hai-liang-xin/id382201985?l=en&mt=8',

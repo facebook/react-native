@@ -44,8 +44,9 @@ Run:
 git checkout -b <version_you_are_releasing>-stable
 # e.g. git checkout -b 0.22-stable
 
-node ./scripts/bump-oss-version.js <exact-version_you_are_releasing>
-# e.g. node ./scripts/bump-oss-version.js 0.22.0-rc
+./scripts/bump-oss-version.js <exact-version_you_are_releasing>
+# e.g. ./scripts/bump-oss-version.js 0.22.0-rc
+# You can use the --remote option to specify a Git remote other than the default "origin"
 ```
 
 Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.22.0-rc`) and tag `next` meaning that this version will not be installed for users by default.
@@ -112,8 +113,8 @@ git cherry-pick commitHash1
 If everything worked:
 
 ```bash
-node ./scripts/bump-oss-version.js <exact_version_you_are_releasing>
-# e.g. node ./scripts/bump-oss-version.js 0.28.0-rc.1
+./scripts/bump-oss-version.js <exact_version_you_are_releasing>
+# e.g. ./scripts/bump-oss-version.js 0.28.0-rc.1
 ````
 
 -------------------
@@ -141,8 +142,8 @@ git cherry-pick commitHash1
 If everything worked:
 
 ```bash
-node ./scripts/bump-oss-version.js <exact_version_you_are_releasing>
-# e.g. node ./scripts/bump-oss-version.js 0.22.0
+./scripts/bump-oss-version.js <exact_version_you_are_releasing>
+# e.g. ./scripts/bump-oss-version.js 0.22.0
 ```
 
 #### Update the release notes

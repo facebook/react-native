@@ -24,6 +24,7 @@
 #import "RCTPerformanceLogger.h"
 #import "RCTRootView.h"
 #import "RCTUIManager.h"
+#import "RCTBridge+Private.h"
 
 static NSString *const RCTPerfMonitorKey = @"RCTPerfMonitorKey";
 static NSString *const RCTPerfMonitorCellIdentifier = @"RCTPerfMonitorCellIdentifier";
@@ -141,7 +142,10 @@ RCT_EXPORT_MODULE()
 {
   _bridge = bridge;
 
-  [_bridge.devMenu addItem:self.devMenuItem];
+  // TODO: enable on cxx bridge
+  if ([_bridge isKindOfClass:[RCTBatchedBridge class]]) {
+    [_bridge.devMenu addItem:self.devMenuItem];
+  }
 }
 
 - (void)invalidate

@@ -48,7 +48,10 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
+import com.facebook.react.views.scroll.ScrollEvent;
+import com.facebook.react.views.scroll.ScrollEventType;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
+import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTextView;
 import com.facebook.react.views.text.TextInlineImageSpan;
@@ -190,7 +193,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (view.getTypeface() != null) {
       style = view.getTypeface().getStyle();
     }
-    Typeface newTypeface = Typeface.create(fontFamily, style);
+    Typeface newTypeface = ReactFontManager.getInstance().getTypeface(
+        fontFamily,
+        style,
+        view.getContext().getAssets());
     view.setTypeface(newTypeface);
   }
 
@@ -271,6 +277,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       view.setContentSizeWatcher(new ReactContentSizeWatcher(view));
     } else {
       view.setContentSizeWatcher(null);
+    }
+  }
+
+  @ReactProp(name = "onScroll", defaultBoolean = false)
+  public void setOnScroll(final ReactEditText view, boolean onScroll) {
+    if (onScroll) {
+      view.setScrollWatcher(new ReactScrollWatcher(view));
+    } else {
+      view.setScrollWatcher(null);
     }
   }
 
@@ -769,6 +784,41 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         mPreviousSelectionStart = start;
         mPreviousSelectionEnd = end;
+      }
+    }
+  }
+
+  private class ReactScrollWatcher implements ScrollWatcher {
+
+    private ReactEditText mReactEditText;
+    private EventDispatcher mEventDispatcher;
+    private int mPreviousHoriz;
+    private int mPreviousVert;
+
+    public ReactScrollWatcher(ReactEditText editText) {
+      mReactEditText = editText;
+      ReactContext reactContext = (ReactContext) editText.getContext();
+      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    }
+
+    @Override
+    public void onScrollChanged(int horiz, int vert, int oldHoriz, int oldVert) {
+      if (mPreviousHoriz != horiz || mPreviousVert != vert) {
+        ScrollEvent event = ScrollEvent.obtain(
+          mReactEditText.getId(),
+          ScrollEventType.SCROLL,
+          horiz,
+          vert,
+          0, // can't get content width
+          0, // can't get content height
+          mReactEditText.getWidth(),
+          mReactEditText.getHeight()
+        );
+
+        mEventDispatcher.dispatchEvent(event);
+
+        mPreviousHoriz = horiz;
+        mPreviousVert = vert;
       }
     }
   }
