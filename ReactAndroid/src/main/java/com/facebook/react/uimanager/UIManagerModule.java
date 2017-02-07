@@ -17,9 +17,12 @@ import java.util.Map;
 
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
+import android.util.DisplayMetrics;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.react.ReactApplication;
 import com.facebook.react.animation.Animation;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -32,8 +35,10 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -88,6 +93,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private final Map<String, Object> mModuleConstants;
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
+  private float mFontScale;
 
   private int mNextRootViewTag = 1;
   private int mBatchId = 0;
@@ -100,7 +106,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mEventDispatcher = new EventDispatcher(reactContext);
-    mModuleConstants = createConstants(viewManagerList, lazyViewManagersEnabled);
+    mFontScale = getReactApplicationContext().getResources().getConfiguration().fontScale;
+    mModuleConstants = createConstants(viewManagerList, lazyViewManagersEnabled, mFontScale);
     mUIImplementation = uiImplementationProvider
       .createUIImplementation(reactContext, viewManagerList, mEventDispatcher);
 
@@ -133,6 +140,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @Override
   public void onHostResume() {
     mUIImplementation.onHostResume();
+
+    if (mFontScale != getReactApplicationContext().getResources().getConfiguration().fontScale) {
+      emitUpdateDimensionsEvent();
+    }
   }
 
   @Override
@@ -156,13 +167,15 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   private static Map<String, Object> createConstants(
     List<ViewManager> viewManagerList,
-    boolean lazyViewManagersEnabled) {
+    boolean lazyViewManagersEnabled,
+    float fontScale) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
     try {
       return UIManagerModuleConstantsHelper.createConstants(
         viewManagerList,
-        lazyViewManagersEnabled);
+        lazyViewManagersEnabled,
+        fontScale);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
@@ -539,6 +552,37 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void sendAccessibilityEvent(int tag, int eventType) {
     mUIImplementation.sendAccessibilityEvent(tag, eventType);
+  }
+
+  public void emitUpdateDimensionsEvent() {
+    mFontScale = getReactApplicationContext().getResources().getConfiguration().fontScale;
+    DisplayMetrics windowDisplayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics();
+    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
+
+    WritableMap windowDisplayMetricsMap = Arguments.createMap();
+    windowDisplayMetricsMap.putInt("width", windowDisplayMetrics.widthPixels);
+    windowDisplayMetricsMap.putInt("height", windowDisplayMetrics.heightPixels);
+    windowDisplayMetricsMap.putDouble("scale", windowDisplayMetrics.density);
+    windowDisplayMetricsMap.putDouble("fontScale", mFontScale);
+    windowDisplayMetricsMap.putDouble("densityDpi", windowDisplayMetrics.densityDpi);
+
+    WritableMap screenDisplayMetricsMap = Arguments.createMap();
+    screenDisplayMetricsMap.putInt("width", screenDisplayMetrics.widthPixels);
+    screenDisplayMetricsMap.putInt("height", screenDisplayMetrics.heightPixels);
+    screenDisplayMetricsMap.putDouble("scale", screenDisplayMetrics.density);
+    screenDisplayMetricsMap.putDouble("fontScale", mFontScale);
+    screenDisplayMetricsMap.putDouble("densityDpi", screenDisplayMetrics.densityDpi);
+
+    WritableMap dimensionsMap = Arguments.createMap();
+    dimensionsMap.putMap("windowPhysicalPixels", windowDisplayMetricsMap);
+    dimensionsMap.putMap("screenPhysicalPixels", screenDisplayMetricsMap);
+    sendEvent("didUpdateDimensions", dimensionsMap);
+  }
+
+  private void sendEvent(String eventName, @Nullable WritableMap params) {
+    getReactApplicationContext()
+        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+        .emit(eventName, params);
   }
 
   /**

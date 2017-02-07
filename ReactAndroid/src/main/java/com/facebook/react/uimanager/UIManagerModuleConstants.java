@@ -16,6 +16,8 @@ import android.util.DisplayMetrics;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 
+import com.facebook.react.ReactApplication;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.events.TouchEventType;
 
@@ -81,7 +83,7 @@ import com.facebook.react.uimanager.events.TouchEventType;
         .build();
   }
 
-  public static Map<String, Object> getConstants() {
+  public static Map<String, Object> getConstants(float fontScale) {
     HashMap<String, Object> constants = new HashMap<String, Object>();
     constants.put(
         "UIView",
@@ -109,7 +111,7 @@ import com.facebook.react.uimanager.events.TouchEventType;
                 "scale",
                 displayMetrics.density,
                 "fontScale",
-                displayMetrics.scaledDensity,
+                fontScale,
                 "densityDpi",
                 displayMetrics.densityDpi),
         "screenPhysicalPixels",
@@ -121,7 +123,7 @@ import com.facebook.react.uimanager.events.TouchEventType;
             "scale",
             screenDisplayMetrics.density,
             "fontScale",
-            screenDisplayMetrics.scaledDensity,
+            fontScale,
             "densityDpi",
             screenDisplayMetrics.densityDpi)));
 
