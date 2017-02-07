@@ -1,3 +1,4 @@
+'use strict';
 
 // This file just a dummy example of a HTTP API to talk to the backend.
 // The state of the "database" that would normally live on the server
@@ -60,7 +61,7 @@ function _makeSimulatedNetworkRequest(getValue) {
  */
 async function fetchChatList() {
   return _makeSimulatedNetworkRequest((resolve, reject) => {
-    resolve(backendStateForLoggedInPerson.chats.map(chat => chat.name))
+    resolve(backendStateForLoggedInPerson.chats.map(chat => chat.name));
   });
 }
 
@@ -73,7 +74,7 @@ async function fetchChat(name) {
       backendStateForLoggedInPerson.chats.find(
         chat => chat.name === name
       )
-    )
+    );
   });
 }
 
@@ -82,11 +83,11 @@ async function fetchChat(name) {
  */
 async function sendMessage({name, message}) {
   return _makeSimulatedNetworkRequest((resolve, reject) => {
-    const chat = backendStateForLoggedInPerson.chats.find(
+    const chatForName = backendStateForLoggedInPerson.chats.find(
       chat => chat.name === name
     );
-    if (chat) {
-      chat.messages.push({
+    if (chatForName) {
+      chatForName.messages.push({
         name: 'Me',
         text: message,
       });

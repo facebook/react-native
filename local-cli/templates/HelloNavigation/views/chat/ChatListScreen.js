@@ -1,3 +1,5 @@
+'use strict';
+
 import React, { Component } from 'react';
 import {
   ActivityIndicator,
@@ -39,7 +41,6 @@ export default class ChatListScreen extends Component {
 
   async componentDidMount() {
     const chatList = await Backend.fetchChatList();
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.setState((prevState) => ({
       dataSource: prevState.dataSource.cloneWithRows(chatList),
       isLoading: false,
@@ -59,7 +60,7 @@ export default class ChatListScreen extends Component {
           });
         }}
       />
-    )
+    );
   }
 
   render() {

@@ -1,3 +1,5 @@
+'use strict';
+
 import React, { Component } from 'react';
 import {
   ActivityIndicator,
@@ -43,7 +45,6 @@ export default class ChatScreen extends Component {
       });
       return;
     }
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.setState((prevState) => ({
       messages: chat.messages,
       dataSource: prevState.dataSource.cloneWithRows(chat.messages),
@@ -85,7 +86,7 @@ export default class ChatScreen extends Component {
         myMessage: '',
       }
     });
-    this.refs.textInput.clear();
+    this.textInput.clear();
   }
 
   onMyMessageChange = (event) => {
@@ -110,7 +111,6 @@ export default class ChatScreen extends Component {
     return (
       <View style={styles.container}>
         <ListView
-          ref="listView"
           dataSource={this.state.dataSource}
           renderRow={this.renderRow}
           style={styles.listView}
@@ -118,9 +118,9 @@ export default class ChatScreen extends Component {
         />
         <View style={styles.composer}>
           <TextInput
-            ref='textInput'
+            ref={(textInput) => { this.textInput = textInput; }}
             style={styles.textInput}
-            placeholder='Type a message...'
+            placeholder="Type a message..."
             text={this.state.myMessage}
             onSubmitEditing={this.onAddMessage}
             onChange={this.onMyMessageChange}
