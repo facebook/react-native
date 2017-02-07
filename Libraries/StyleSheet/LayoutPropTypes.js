@@ -470,6 +470,18 @@ var LayoutPropTypes = {
    *  more details.
    */
   zIndex: ReactPropTypes.number,
+
+  /** `direction` specifies the directional flow of the user interface.
+   *  The default is `inherit`, except for root node which will have
+   *  value based on the current locale.
+   *  See https://facebook.github.io/yoga/docs/rtl/
+   *  for more details.
+   */
+  direction: ReactPropTypes.oneOf([
+    'inherit',
+    'ltr',
+    'rtl',
+  ]),
 };
 
 module.exports = LayoutPropTypes;
