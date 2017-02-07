@@ -21,6 +21,7 @@ script:
   - if [[ "$TEST_TYPE" = e2e-objc-tvos ]]; then node ./scripts/run-ci-e2e-tests.js --tvos --retries 3; fi
   - if [[ "$TEST_TYPE" = js ]]; then npm run flow check; fi
   - if [[ "$TEST_TYPE" = js ]]; then npm test -- --maxWorkers=1; fi
+  - if [[ ( "$TEST_TYPE" = podspecs ) && ( "$TRAVIS_PULL_REQUEST" = "false" ) ]]; then gem install cocoapods && ./scripts/process-podspecs.sh; fi
 
 env:
   matrix:
@@ -29,6 +30,7 @@ env:
     - TEST_TYPE=objc-ios
     - TEST_TYPE=objc-tvos
     - TEST_TYPE=js
+    - TEST_TYPE=podspecs
 
 branches:
   only:
