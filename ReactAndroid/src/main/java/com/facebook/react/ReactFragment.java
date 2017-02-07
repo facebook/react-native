@@ -1,47 +1,41 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ * <p>
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 package com.facebook.react;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.common.ReactConstants;
-import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
-public class ReactFragment extends Fragment implements PermissionAwareActivity, DefaultHardwareBackBtnHandler {
+import javax.annotation.Nullable;
 
-  public final static int REQUEST_OVERLAY_CODE = 1111;
-  private static final String REDBOX_PERMISSION_MESSAGE =
-    "Overlay permissions need to be granted in order for react native apps to run in dev mode.";
-  private static final String REDBOX_PERMISSION_GRANTED_MESSAGE =
-    "Overlay permissions have been granted.";
+/**
+ * Fragment for creating a React View. This allows the developer to "embed" a React Application
+ * inside native components such as a Drawer, ViewPager, etc.
+ */
+public class ReactFragment extends Fragment implements PermissionAwareActivity, DefaultHardwareBackBtnHandler {
 
   protected static final String ARG_COMPONENT_NAME = "arg_component_name";
   protected static final String ARG_LAUNCH_OPTIONS = "arg_launch_options";
 
-  private String mComponentName;
-  private Bundle mLaunchOptions;
-
-  private ReactRootView mReactRootView;
-
-  @Nullable
-  private DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
+  private ReactDelegate mReactDelegate;
 
   @Nullable
   private PermissionListener mPermissionListener;
@@ -55,7 +49,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity, 
    * @param componentName The name of the react native component
    * @return A new instance of fragment ReactFragment.
    */
-  private static ReactFragment newInstance(@NonNull String componentName, Bundle launchOptions) {
+  private static ReactFragment newInstance(String componentName, Bundle launchOptions) {
     ReactFragment fragment = new ReactFragment();
     Bundle args = new Bundle();
     args.putString(ARG_COMPONENT_NAME, componentName);
@@ -68,66 +62,45 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity, 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    String mainComponentName = null;
+    Bundle launchOptions = null;
     if (getArguments() != null) {
-      mComponentName = getArguments().getString(ARG_COMPONENT_NAME);
-      mLaunchOptions = getArguments().getBundle(ARG_LAUNCH_OPTIONS);
+      mainComponentName = getArguments().getString(ARG_COMPONENT_NAME);
+      launchOptions = getArguments().getBundle(ARG_LAUNCH_OPTIONS);
     }
-    if (mComponentName == null) {
+    if (mainComponentName == null) {
       throw new IllegalStateException("Cannot loadApp if component name is null");
     }
-    mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
+    mReactDelegate = new ReactDelegate(getActivity(), mainComponentName, launchOptions);
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
-    boolean needToEnableDevMenu = false;
-    if (getReactNativeHost().getUseDeveloperSupport() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      // Get permission to show redbox in dev builds.
-      if (!Settings.canDrawOverlays(getContext())) {
-        needToEnableDevMenu = true;
-        Intent serviceIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getContext().getPackageName()));
-        FLog.w(ReactConstants.TAG, REDBOX_PERMISSION_MESSAGE);
-        Toast.makeText(getContext(), REDBOX_PERMISSION_MESSAGE, Toast.LENGTH_LONG).show();
-        startActivityForResult(serviceIntent, REQUEST_OVERLAY_CODE);
-      }
+    boolean needToEnableRedboxPermission = mReactDelegate.askForRedboxPermission();
+
+    if (!needToEnableRedboxPermission) {
+      mReactDelegate.loadApp();
     }
-    mReactRootView = createRootView();
-    if (!needToEnableDevMenu) {
-      mReactRootView.startReactApplication(
-        getReactNativeHost().getReactInstanceManager(),
-        mComponentName,
-        mLaunchOptions);
-    }
-    return mReactRootView;
+    return mReactDelegate.getReactRootView();
   }
 
   @Override
   public void onResume() {
     super.onResume();
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onHostResume(getActivity(), this);
-    }
+    mReactDelegate.onHostResume();
   }
 
   @Override
   public void onPause() {
     super.onPause();
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onHostPause(getActivity());
-    }
+    mReactDelegate.onHostPause();
   }
 
   @Override
   public void onDestroy() {
     super.onDestroy();
-    if (mReactRootView != null) {
-      mReactRootView.unmountReactApplication();
-      mReactRootView = null;
-    }
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onHostDestroy(getActivity());
-    }
+    mReactDelegate.onHostDetroy();
   }
   // endregion
 
@@ -142,17 +115,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity, 
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == REQUEST_OVERLAY_CODE) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        if (Settings.canDrawOverlays(getContext())) {
-          mReactRootView.startReactApplication(
-            getReactNativeHost().getReactInstanceManager(),
-            mComponentName,
-            mLaunchOptions);
-          Toast.makeText(getContext(), REDBOX_PERMISSION_GRANTED_MESSAGE, Toast.LENGTH_LONG).show();
-        }
-      }
-    }
+    mReactDelegate.onActivityResult(requestCode, resultCode, data, false);
   }
 
   /**
@@ -161,10 +124,8 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity, 
    * This must be called via a forward from your host Activity
    *
    */
-  public void onBackPressed() {
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onBackPressed();
-    }
+  public boolean onBackPressed() {
+    return mReactDelegate.onBackPressed();
   }
 
   /**
@@ -178,23 +139,11 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity, 
    * @return true if we handled onKeyUp
    */
   public boolean onKeyUp(int keyCode, KeyEvent event) {
-    boolean handled = false;
-    if (getReactNativeHost().getUseDeveloperSupport() && getReactNativeHost().hasInstance()) {
-      if (keyCode == KeyEvent.KEYCODE_MENU) {
-        getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
-        handled = true;
-      }
-      boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer).didDoubleTapR(keyCode, getActivity().getCurrentFocus());
-      if (didDoubleTapR) {
-        getReactNativeHost().getReactInstanceManager().getDevSupportManager().handleReloadJS();
-        handled = true;
-      }
-    }
-    return handled;
+    return mReactDelegate.shouldShowDevMenuOrReload(keyCode, event);
   }
 
   @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+  public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     if (mPermissionListener != null &&
       mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
@@ -229,21 +178,6 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity, 
   @Override
   public void invokeDefaultOnBackPressed() {
     getActivity().onBackPressed();
-  }
-
-  private ReactRootView createRootView() {
-    return new ReactRootView(getContext());
-  }
-
-  /**
-   * Get the {@link ReactNativeHost} used by this app. By default, assumes
-   * {@link Activity#getApplication()} is an instance of {@link ReactApplication} and calls
-   * {@link ReactApplication#getReactNativeHost()}. Override this method if your application class
-   * does not implement {@code ReactApplication} or you simply have a different mechanism for
-   * storing a {@code ReactNativeHost}, e.g. as a static field somewhere.
-   */
-  protected ReactNativeHost getReactNativeHost() {
-    return ((ReactApplication) getActivity().getApplication()).getReactNativeHost();
   }
 
   /**
