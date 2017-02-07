@@ -9,7 +9,11 @@
 
 #include "RCTJSCErrorHandling.h"
 
+#if defined(__APPLE__)
 #import <React/JavaScriptCore.h>
+#else
+#import <jschelpers/JavaScriptCore.h>
+#endif
 
 #import "RCTAssert.h"
 #import "RCTJSStackFrame.h"

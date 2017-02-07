@@ -11,8 +11,13 @@
 
 #import <sys/stat.h>
 
+#if defined(__APPLE__)
 #import <React/JSBundleType.h>
 #import <React/JavaScriptCore.h>
+#else
+#import <cxxreact/JSBundleType.h>
+#import <jschelpers/JavaScriptCore.h>
+#endif
 
 #import "RCTBridge.h"
 #import "RCTConvert.h"
