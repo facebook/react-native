@@ -80,6 +80,15 @@ var featured = [
     infoTitle: 'Flipkart Buys Fashion E-tailer Myntra To Fight Amazon',
   },
   {
+    name: 'JadoPado',
+    icon: 'https://lh3.googleusercontent.com/VX8CXya2KmFc-n9aPChiUpzIg2IkuzudWy76OmFKNMu2eQDFq9xFdDMR-U1E7Sa88eUs=w300-rw',
+    linkAppStore: 'https://itunes.apple.com/ao/app/jadopado/id1149279535',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.jadopado.buyer',
+    infoLink: ' https://www.entrepreneur.com/article/287838',
+    infoTitle: `Infographic: JadoPado's Middle East E-Commerce Seller Insights`,
+    defaultLink: 'https://itunes.apple.com/ao/app/jadopado/id1149279535',
+  },
+  {
     name: 'SoundCloud Pulse',
     icon: 'https://i1.sndcdn.com/artworks-000149203716-k5je96-original.jpg',
     linkAppStore: 'https://itunes.apple.com/us/app/soundcloud-pulse-for-creators/id1074278256?mt=8',
