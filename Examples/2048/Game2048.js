@@ -23,6 +23,7 @@ var TVEventHandler = require('TVEventHandler');
 
 var {
   AppRegistry,
+  SnapshotViewIOS,
   StyleSheet,
   Text,
   View,
@@ -364,5 +365,18 @@ var styles = StyleSheet.create({
 });
 
 AppRegistry.registerComponent('Game2048', () => Game2048);
+
+if (Platform.OS === 'ios') {
+  class Game2048SnapshotTester extends React.Component {
+    render() {
+      return (
+        <SnapshotViewIOS>
+          <Game2048 />
+        </SnapshotViewIOS>
+      );
+    }
+  }
+  AppRegistry.registerComponent('Game2048SnapshotTest', () => Game2048SnapshotTester);
+}
 
 module.exports = Game2048;
