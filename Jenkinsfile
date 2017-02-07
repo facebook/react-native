@@ -107,10 +107,10 @@ def runStages() {
 
                 parallel(
                     'javascript build': {
-                        buildDockerfile('Dockerfile.javascript', jsImageName)
+                        buildDockerfile('ContainerShip/Dockerfile.javascript', jsImageName)
                     },
                     'android build': {
-                        buildDockerfile('Dockerfile.android', androidImageName)
+                        buildDockerfile('ContainerShip/Dockerfile.android', androidImageName)
                     }
                 )
 
