@@ -11,8 +11,8 @@
 
 #import <sys/stat.h>
 
-#import <cxxreact/JSBundleType.h>
-#import <jschelpers/JavaScriptCore.h>
+#import <React/JSBundleType.h>
+#import <React/JavaScriptCore.h>
 
 #import "RCTBridge.h"
 #import "RCTConvert.h"

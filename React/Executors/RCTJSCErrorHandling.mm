@@ -9,7 +9,7 @@
 
 #include "RCTJSCErrorHandling.h"
 
-#import <jschelpers/JavaScriptCore.h>
+#import <React/JavaScriptCore.h>
 
 #import "RCTAssert.h"
 #import "RCTJSStackFrame.h"

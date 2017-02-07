@@ -17,8 +17,8 @@
 
 #import <UIKit/UIDevice.h>
 
-#import <cxxreact/JSBundleType.h>
-#import <jschelpers/JavaScriptCore.h>
+#import <React/JSBundleType.h>
+#import <React/JavaScriptCore.h>
 
 #import "JSCSamplingProfiler.h"
 #import "RCTAssert.h"

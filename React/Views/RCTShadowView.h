@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <yoga/Yoga.h>
+#import <React/Yoga.h>
 #import <React/RCTComponent.h>
 #import <React/RCTRootView.h>
 

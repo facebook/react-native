@@ -11,7 +11,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import <yoga/Yoga.h>
+#import <React/Yoga.h>
 
 #import "RCTAccessibilityManager.h"
 #import "RCTAnimationType.h"

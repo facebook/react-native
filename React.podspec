@@ -46,12 +46,14 @@ Pod::Spec.new do |s|
 
   s.subspec 'jschelpers' do |ss|
     ss.source_files = 'ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper}.{cpp,h}'
+    ss.private_header_files = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper}.h"
     ss.header_dir   = 'jschelpers'
   end
 
   s.subspec 'cxxreact' do |ss|
     ss.dependency     'React/jschelpers'
     ss.source_files = 'ReactCommon/cxxreact/{JSBundleType,oss-compat-util}.{cpp,h}'
+    ss.private_header_files = "ReactCommon/cxxreact/{JSBundleType,oss-compat-util}.h"
     ss.header_dir   = 'cxxreact'
   end
 
