@@ -1,9 +1,10 @@
+'use strict';
+
 import React, { Component } from 'react';
 import {
   Image,
   Platform,
   StyleSheet,
-  Text,
 } from 'react-native';
 
 import ListItem from '../../components/ListItem';
@@ -35,11 +36,6 @@ export default class WelcomeScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'white',
-    flex: 1,
-    padding: 16,
-  },
   icon: {
     width: 30,
     height: 26,
