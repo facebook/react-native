@@ -367,8 +367,8 @@ var featured = [
     linkAppStore: 'http://x.co/Flare',
     linkPlayStore: 'http://x.co/FlareAndr',
     infoLink: 'http://x.co/FlareNews',
-    infoTitle: '"Flare is a social network that connects entrepreneurs to fellow entrepreneurs, potential consumers, investors and experts and creates community around new ideas. The app was featured both in the AppStore and GooglePlay in 2016"',
-  }
+    infoTitle: '"Social network that connects entrepreneurs to fellow entrepreneurs, consumers, investors and experts"',
+  },
 ];
 
 /*
