@@ -360,6 +360,14 @@ var featured = [
     linkAppStore: 'https://itunes.apple.com/us/app/causr-business-networking/id1129819484',
     infoLink: 'https://medium.com/causr/why-we-chose-react-native-abd7d58a18b5',
     infoTitle: 'Why we chose React Native'
+  },
+  {
+    name: 'Flare',
+    icon: 'http://x.co/FlareIcon',
+    linkAppStore: 'http://x.co/Flare',
+    linkPlayStore: 'http://x.co/FlareAndr',
+    infoLink: 'http://x.co/FlareNews',
+    infoTitle: '"Flare is a social network that connects entrepreneurs to fellow entrepreneurs, potential consumers, investors and experts and creates community around new ideas. The app was featured both in the AppStore and GooglePlay in 2016"',
   }
 ];
 
