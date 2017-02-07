@@ -20,6 +20,7 @@
     "glob": "6.0.4",
     "jsdoc-api": "^1.1.0",
     "jstransform": "11.0.3",
+    "memory-cache": "^0.1.6",
     "mkdirp": "^0.5.1",
     "optimist": "0.6.0",
     "react": "~0.13.0",

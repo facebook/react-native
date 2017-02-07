@@ -143,9 +143,8 @@ class Bundler {
       cacheKey: transformCacheKey,
     });
 
-    this._transformer = new Transformer({
-      transformModulePath: opts.transformModulePath,
-    });
+    /* $FlowFixMe: in practice it's always here. */
+    this._transformer = new Transformer(opts.transformModulePath);
 
     this._resolver = new Resolver({
       assetExts: opts.assetExts,

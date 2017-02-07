@@ -10,7 +10,7 @@ import ListItem from '../../components/ListItem';
 export default class ChatListScreen extends Component {
 
   static navigationOptions = {
-    title: 'Chats',
+    title: 'Friends',
     header: {
       visible: Platform.OS === 'ios',
     },

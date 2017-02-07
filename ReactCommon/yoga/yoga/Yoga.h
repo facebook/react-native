@@ -157,6 +157,7 @@ YG_NODE_STYLE_PROPERTY(YGAlign, AlignSelf, alignSelf);
 YG_NODE_STYLE_PROPERTY(YGPositionType, PositionType, positionType);
 YG_NODE_STYLE_PROPERTY(YGWrap, FlexWrap, flexWrap);
 YG_NODE_STYLE_PROPERTY(YGOverflow, Overflow, overflow);
+YG_NODE_STYLE_PROPERTY(YGDisplay, Display, display);
 
 WIN_EXPORT void YGNodeStyleSetFlex(const YGNodeRef node, const float flex);
 YG_NODE_STYLE_PROPERTY(float, FlexGrow, flexGrow);

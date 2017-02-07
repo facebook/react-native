@@ -202,11 +202,14 @@ void jni_YGNodeRemoveChild(alias_ref<jobject>, jlong nativePointer, jlong childP
   YGNodeRemoveChild(_jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer));
 }
 
-void jni_YGNodeCalculateLayout(alias_ref<jobject>, jlong nativePointer) {
+void jni_YGNodeCalculateLayout(alias_ref<jobject>,
+                               jlong nativePointer,
+                               jfloat width,
+                               jfloat height) {
   const YGNodeRef root = _jlong2YGNodeRef(nativePointer);
   YGNodeCalculateLayout(root,
-                        YGUndefined,
-                        YGUndefined,
+                        static_cast<float>(width),
+                        static_cast<float>(height),
                         YGNodeStyleGetDirection(_jlong2YGNodeRef(nativePointer)));
   YGTransferLayoutOutputsRecursive(root);
 }
@@ -319,6 +322,7 @@ YG_NODE_JNI_STYLE_PROP(jint, YGAlign, AlignContent);
 YG_NODE_JNI_STYLE_PROP(jint, YGPositionType, PositionType);
 YG_NODE_JNI_STYLE_PROP(jint, YGWrap, FlexWrap);
 YG_NODE_JNI_STYLE_PROP(jint, YGOverflow, Overflow);
+YG_NODE_JNI_STYLE_PROP(jint, YGDisplay, Display);
 
 void jni_YGNodeStyleSetFlex(alias_ref<jobject>, jlong nativePointer, jfloat value) {
   YGNodeStyleSetFlex(_jlong2YGNodeRef(nativePointer), static_cast<float>(value));
@@ -378,6 +382,8 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGNodeStyleSetFlexWrap),
                         YGMakeNativeMethod(jni_YGNodeStyleGetOverflow),
                         YGMakeNativeMethod(jni_YGNodeStyleSetOverflow),
+                        YGMakeNativeMethod(jni_YGNodeStyleGetDisplay),
+                        YGMakeNativeMethod(jni_YGNodeStyleSetDisplay),
                         YGMakeNativeMethod(jni_YGNodeStyleSetFlex),
                         YGMakeNativeMethod(jni_YGNodeStyleGetFlexGrow),
                         YGMakeNativeMethod(jni_YGNodeStyleSetFlexGrow),
