@@ -92,6 +92,10 @@ function buildFile(layout, metadata, rawContent) {
 }
 
 function execute(options) {
+  if (options === undefined) {
+      options = {};
+  }
+
   var DOCS_MD_DIR = '../docs/';
   var BLOG_MD_DIR = '../blog/';
 
