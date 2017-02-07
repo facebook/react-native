@@ -4,7 +4,6 @@ import {
   Platform,
   StyleSheet,
   Text,
-  View,
 } from 'react-native';
 
 import ListItem from '../../components/ListItem';

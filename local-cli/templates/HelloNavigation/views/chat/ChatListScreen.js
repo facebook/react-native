@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
 import {
+  ActivityIndicator,
   Image,
   ListView,
   Platform,
   StyleSheet,
+  View,
 } from 'react-native';
 import ListItem from '../../components/ListItem';
+import Backend from '../../lib/Backend';
 
 export default class ChatListScreen extends Component {
 
   static navigationOptions = {
-    title: 'Friends',
+    title: 'Chats',
     header: {
       visible: Platform.OS === 'ios',
     },
@@ -29,28 +32,48 @@ export default class ChatListScreen extends Component {
     super(props);
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
-      dataSource: ds.cloneWithRows([
-        'Claire', 'John'
-      ])
+      isLoading: true,
+      dataSource: ds,
     };
   }
 
+  async componentDidMount() {
+    const chatList = await Backend.fetchChatList();
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    this.setState((prevState) => ({
+      dataSource: prevState.dataSource.cloneWithRows(chatList),
+      isLoading: false,
+    }));
+  }
+
   // Binding the function so it can be passed to ListView below
-  // and 'this' works properly inside _renderRow
-  _renderRow = (name) => {
+  // and 'this' works properly inside renderRow
+  renderRow = (name) => {
     return (
       <ListItem
         label={name}
-        onPress={() => this.props.navigation.navigate('Chat', {name: name})}
+        onPress={() => {
+          // Start fetching in parallel with animating
+          this.props.navigation.navigate('Chat', {
+            name: name,
+          });
+        }}
       />
     )
   }
 
   render() {
+    if (this.state.isLoading) {
+      return (
+        <View style={styles.loadingScreen}>
+          <ActivityIndicator />
+        </View>
+      );
+    }
     return (
       <ListView
         dataSource={this.state.dataSource}
-        renderRow={this._renderRow}
+        renderRow={this.renderRow}
         style={styles.listView}
       />
     );
@@ -58,6 +81,11 @@ export default class ChatListScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+  loadingScreen: {
+    backgroundColor: 'white',
+    paddingTop: 8,
+    flex: 1,
+  },
   listView: {
     backgroundColor: 'white',
   },
