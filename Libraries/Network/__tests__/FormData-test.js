@@ -27,10 +27,14 @@ describe('FormData', function() {
   it('should return non blob null', function() {
     formData.append('null', null);
 
-    let parts = formData.getParts();
-    expect(parts[0].string).toBe('null');
-    expect(parts[0].headers['content-disposition']).toBe('form-data; name="null"');
-    expect(parts[0].fieldName).toBe('null');
+    const expectedPart = {
+      string: 'null',
+      headers: {
+        'content-disposition': 'form-data; name="null"'
+      },
+      fieldName: 'null'
+    };
+    expect(formData.getParts()[0]).toMatchObject(expectedPart);
   });
 
   it('should return blob', function() {
@@ -40,12 +44,16 @@ describe('FormData', function() {
       name: 'photo.jpg'
     });
 
-    let parts = formData.getParts();
-    expect(parts[0].uri).toBe('arbitrary/path');
-    expect(parts[0].type).toBe('image/jpeg');
-    expect(parts[0].name).toBe('photo.jpg');
-    expect(parts[0].headers['content-disposition']).toBe('form-data; name="photo"; filename="photo.jpg"');
-    expect(parts[0].headers['content-type']).toBe('image/jpeg');
-    expect(parts[0].fieldName).toBe('photo');
+    const expectedPart = {
+      uri: 'arbitrary/path',
+      type: 'image/jpeg',
+      name: 'photo.jpg',
+      headers: {
+        'content-disposition': 'form-data; name="photo"; filename="photo.jpg"',
+        'content-type': 'image/jpeg'
+      },
+      fieldName: 'photo'
+    };
+    expect(formData.getParts()[0]).toMatchObject(expectedPart);
   });
 });
