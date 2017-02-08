@@ -117,6 +117,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   status: number = 0;
   timeout: number = 0;
   responseURL: ?string;
+  withCredentials: boolean = false
 
   upload: XMLHttpRequestEventTarget = new XMLHttpRequestEventTarget();
 
@@ -499,6 +500,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       incrementalEvents,
       this.timeout,
       this.__didCreateRequest.bind(this),
+      this.withCredentials
     );
   }
 
