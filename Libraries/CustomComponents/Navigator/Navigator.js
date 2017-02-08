@@ -127,7 +127,6 @@ var styles = StyleSheet.create({
   },
   transitioner: {
     flex: 1,
-    backgroundColor: 'transparent',
     overflow: 'hidden',
   }
 });
@@ -386,6 +385,12 @@ var Navigator = React.createClass({
      * Styles to apply to the container of each scene.
      */
     sceneStyle: View.propTypes.style,
+
+    /**
+     * Background color for transitions
+     */
+    transitionBackgroundColor: View.propTypes.style.backgroundColor,
+
   },
 
   statics: {
@@ -400,6 +405,7 @@ var Navigator = React.createClass({
     return {
       configureScene: () => NavigatorSceneConfigs.PushFromRight,
       sceneStyle: styles.defaultSceneStyle,
+      transitionBackgroundColor: 'transparent',
     };
   },
 
@@ -1342,7 +1348,10 @@ var Navigator = React.createClass({
     return (
       <View style={[styles.container, this.props.style]}>
         <View
-          style={styles.transitioner}
+          style={[
+            styles.transitioner,
+            {backgroundColor: this.props.transitionBackgroundColor}
+          ]}
           {...this.panGesture.panHandlers}
           onTouchStart={this._handleTouchStart}
           onResponderTerminationRequest={
