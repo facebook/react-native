@@ -29,15 +29,15 @@ var _subscriptions = new Map();
  * Sometimes it's useful to know whether or not the device has a screen reader that is currently active. The
  * `AccessibilityInfo` API is designed for this purpose. You can use it to query the current state of the
  * screen reader as well as to register to be notified when the state of the screen reader changes.
- * 
+ *
  * Here's a small example illustrating how to use `AccessibilityInfo`:
- * 
+ *
  * ```javascript
  * class ScreenReaderStatusExample extends React.Component {
  *   state = {
  *     screenReaderEnabled: false,
  *   }
- * 
+ *
  *   componentDidMount() {
  *     AccessibilityInfo.addEventListener(
  *       'change',
@@ -49,20 +49,20 @@ var _subscriptions = new Map();
  *       });
  *     });
  *   }
- * 
+ *
  *   componentWillUnmount() {
  *     AccessibilityInfo.removeEventListener(
  *       'change',
  *       this._handleScreenReaderToggled
  *     );
  *   }
- * 
+ *
  *   _handleScreenReaderToggled = (isEnabled) => {
  *     this.setState({
  *       screenReaderEnabled: isEnabled,
  *     });
  *   }
- * 
+ *
  *   render() {
  *     return (
  *       <View>
@@ -93,7 +93,7 @@ var AccessibilityInfo = {
 
   /**
    * Add an event handler. Supported events:
-   * 
+   *
    * - `change`: Fires when the state of the screen reader changes. The argument
    *   to the event handler is a boolean. The boolean is `true` when a screen
    *   reader is enabled and `false` otherwise.

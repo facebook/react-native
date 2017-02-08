@@ -114,6 +114,6 @@ exports.examples = [
   },
   {
     title: 'Check if the screen reader is enabled',
-    render(): React.Element<any> { return <ScreenReaderStatusExample /> }
+    render(): React.Element<any> { return <ScreenReaderStatusExample />; }
   },
 ];
