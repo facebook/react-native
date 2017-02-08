@@ -22,25 +22,30 @@ type ResponseType = '' | 'arraybuffer' | 'blob' | 'document' | 'json' | 'text';
 type Response = ?Object | string;
 
 type XHRInterceptor = {
-  requestSent: (
+  requestSent(
     id: number,
     url: string,
     method: string,
-    headers: Object) => void,
-  responseReceived: (
+    headers: Object
+  ): void,
+  responseReceived(
     id: number,
     url: string,
     status: number,
-    headers: Object) => void,
-  dataReceived: (
+    headers: Object
+  ): void,
+  dataReceived(
     id: number,
-    data: string) => void,
-  loadingFinished: (
+    data: string
+  ): void,
+  loadingFinished(
     id: number,
-    encodedDataLength: number) => void,
-  loadingFailed: (
+    encodedDataLength: number
+  ): void,
+  loadingFailed(
     id: number,
-    error: string) => void,
+    error: string
+  ): void,
 };
 
 const UNSENT = 0;
@@ -116,7 +121,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   upload: XMLHttpRequestEventTarget = new XMLHttpRequestEventTarget();
 
   _requestId: ?number;
-  _subscriptions: [any];
+  _subscriptions: Array<*>;
 
   _aborted: boolean = false;
   _cachedResponse: Response;

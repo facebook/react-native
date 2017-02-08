@@ -117,8 +117,8 @@ class SimpleNavigationApp extends Component {
           <MyScene
             title={route.title}
 
-            // Function to call when a new scene should be displayed           
-            onForward={ () => {    
+            // Function to call when a new scene should be displayed
+            onForward={() => {    
               const nextIndex = route.index + 1;
               navigator.push({
                 title: 'Scene ' + nextIndex,
@@ -152,10 +152,12 @@ export default class MyScene extends Component {
   render() {
     return (
       <View>
-        <Text>Current Scene: { this.props.title }</Text>
+        <Text>Current Scene: {this.props.title}</Text>
+        
         <TouchableHighlight onPress={this.props.onForward}>
           <Text>Tap me to load the next scene</Text>
         </TouchableHighlight>
+        
         <TouchableHighlight onPress={this.props.onBack}>
           <Text>Tap me to go back</Text>
         </TouchableHighlight>
@@ -177,4 +179,4 @@ Check out the [Navigator API reference](docs/navigator.html) for more `Navigator
 
 ## High Five!
 
-If you've gotten here by reading linearly through the tutorial, then you are a pretty impressive human being. Congratulations. Next, you might want to check out [all the cool stuff the community does with React Native](/react-native/docs/more-resources.html).
+If you've gotten here by reading linearly through the tutorial, then you are a pretty impressive human being. Congratulations. Next, you might want to check out [all the cool stuff the community does with React Native](docs/more-resources.html).

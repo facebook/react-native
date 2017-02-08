@@ -8,53 +8,75 @@
  */
 
 #import "RCTPropsAnimatedNode.h"
+
+#import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
+
 #import "RCTAnimationUtils.h"
-#import "RCTNativeAnimatedModule.h"
 #import "RCTStyleAnimatedNode.h"
-#import "RCTViewPropertyMapper.h"
+#import "RCTValueAnimatedNode.h"
 
-@implementation RCTPropsAnimatedNode
-{
-  RCTStyleAnimatedNode *_parentNode;
+@implementation RCTPropsAnimatedNode {
+  NSNumber *_connectedViewTag;
+  NSString *_connectedViewName;
+  RCTUIManager *_uiManager;
 }
 
-- (void)onAttachedToNode:(RCTAnimatedNode *)parent
+- (void)connectToView:(NSNumber *)viewTag
+             viewName:(NSString *)viewName
+            uiManager:(RCTUIManager *)uiManager
 {
-  [super onAttachedToNode:parent];
-  if ([parent isKindOfClass:[RCTStyleAnimatedNode class]]) {
-    _parentNode = (RCTStyleAnimatedNode *)parent;
-  }
-}
-
-- (void)onDetachedFromNode:(RCTAnimatedNode *)parent
-{
-  [super onDetachedFromNode:parent];
-  if (_parentNode == parent) {
-    _parentNode = nil;
-  }
-}
-
-- (void)connectToView:(NSNumber *)viewTag animatedModule:(RCTNativeAnimatedModule *)animationModule
-{
-  _propertyMapper = [[RCTViewPropertyMapper alloc] initWithViewTag:viewTag animationModule:animationModule];
+  _connectedViewTag = viewTag;
+  _connectedViewName = viewName;
+  _uiManager = uiManager;
 }
 
 - (void)disconnectFromView:(NSNumber *)viewTag
 {
-  _propertyMapper = nil;
+  _connectedViewTag = nil;
+  _connectedViewName = nil;
+  _uiManager = nil;
+}
+
+- (NSString *)propertyNameForParentTag:(NSNumber *)parentTag
+{
+  __block NSString *propertyName;
+  [self.config[@"props"] enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull property, NSNumber * _Nonnull tag, BOOL * _Nonnull stop) {
+    if ([tag isEqualToNumber:parentTag]) {
+      propertyName = property;
+      *stop = YES;
+    }
+  }];
+  return propertyName;
 }
 
 - (void)performUpdate
 {
   [super performUpdate];
-  [self performViewUpdatesIfNecessary];
-}
 
-- (void)performViewUpdatesIfNecessary
-{
-  NSDictionary *updates = [_parentNode updatedPropsDictionary];
-  if (updates.count) {
-    [_propertyMapper updateViewWithDictionary:updates];
+  if (!_connectedViewTag) {
+    RCTLogError(@"Node has not been attached to a view");
+    return;
+  }
+
+  NSMutableDictionary *props = [NSMutableDictionary dictionary];
+  [self.parentNodes enumerateKeysAndObjectsUsingBlock:^(NSNumber * _Nonnull parentTag, RCTAnimatedNode * _Nonnull parentNode, BOOL * _Nonnull stop) {
+
+    if ([parentNode isKindOfClass:[RCTStyleAnimatedNode class]]) {
+      [props addEntriesFromDictionary:[(RCTStyleAnimatedNode *)parentNode propsDictionary]];
+
+    } else if ([parentNode isKindOfClass:[RCTValueAnimatedNode class]]) {
+      NSString *property = [self propertyNameForParentTag:parentTag];
+      CGFloat value = [(RCTValueAnimatedNode *)parentNode value];
+      [props setObject:@(value) forKey:property];
+    }
+
+  }];
+
+  if (props.count) {
+    [_uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
+                                         viewName:_connectedViewName
+                                            props:props];
   }
 }
 

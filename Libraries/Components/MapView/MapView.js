@@ -124,6 +124,13 @@ const MapView = React.createClass({
     showsCompass: React.PropTypes.bool,
 
     /**
+     * If `true` the map will show the callouts for all annotations without
+     * the user having to click on the annotation.
+     * Default value is `false`.
+     */
+    showsAnnotationCallouts: React.PropTypes.bool,
+
+    /**
      * If `false` the user won't be able to pinch/zoom the map.
      * Default value is `true`.
      */

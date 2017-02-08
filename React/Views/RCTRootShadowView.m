@@ -7,8 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTI18nUtil.h"
 #import "RCTRootShadowView.h"
+
+#import "RCTI18nUtil.h"
 
 @implementation RCTRootShadowView
 
@@ -20,9 +21,7 @@
 {
   self = [super init];
   if (self) {
-    if ([[RCTI18nUtil sharedInstance] isRTL]) {
-      CSSNodeStyleSetDirection(self.cssNode, CSSDirectionRTL);
-    }
+    self.direction = [[RCTI18nUtil sharedInstance] isRTL] ? YGDirectionRTL : YGDirectionLTR;
   }
   return self;
 }
@@ -33,14 +32,14 @@
     case RCTRootViewSizeFlexibilityNone:
       break;
     case RCTRootViewSizeFlexibilityWidth:
-      CSSNodeStyleSetWidth(self.cssNode, CSSUndefined);
+      YGNodeStyleSetWidth(self.cssNode, YGUndefined);
       break;
     case RCTRootViewSizeFlexibilityHeight:
-      CSSNodeStyleSetHeight(self.cssNode, CSSUndefined);
+      YGNodeStyleSetHeight(self.cssNode, YGUndefined);
       break;
     case RCTRootViewSizeFlexibilityWidthAndHeight:
-      CSSNodeStyleSetWidth(self.cssNode, CSSUndefined);
-      CSSNodeStyleSetHeight(self.cssNode, CSSUndefined);
+      YGNodeStyleSetWidth(self.cssNode, YGUndefined);
+      YGNodeStyleSetHeight(self.cssNode, YGUndefined);
       break;
   }
 }
@@ -49,7 +48,7 @@
 {
   [self applySizeConstraints];
 
-  CSSNodeCalculateLayout(self.cssNode, CSSUndefined, CSSUndefined, CSSDirectionInherit);
+  YGNodeCalculateLayout(self.cssNode, YGUndefined, YGUndefined, YGDirectionInherit);
 
   NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
   [self applyLayoutNode:self.cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];

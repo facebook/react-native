@@ -54,10 +54,12 @@ android {
     defaultConfig { ... }
     signingConfigs {
         release {
-            storeFile file(MYAPP_RELEASE_STORE_FILE)
-            storePassword MYAPP_RELEASE_STORE_PASSWORD
-            keyAlias MYAPP_RELEASE_KEY_ALIAS
-            keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
+                storeFile file(MYAPP_RELEASE_STORE_FILE)
+                storePassword MYAPP_RELEASE_STORE_PASSWORD
+                keyAlias MYAPP_RELEASE_KEY_ALIAS
+                keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            }
         }
     }
     buildTypes {
@@ -87,10 +89,10 @@ The generated APK can be found under `android/app/build/outputs/apk/app-release.
 Before uploading the release build to the Play Store, make sure you test it thoroughly. Install it on the device using:
 
 ```sh
-$ react-native run-android --variant=release
+$ react-native run-android --configuration=release
 ```
 
-Note that `--variant=release` is only available if you've set up signing as described above.
+Note that `--configuration=release` is only available if you've set up signing as described above.
 
 You can kill any running packager instances, all your and framework JavaScript code is bundled in the APK's assets.
 

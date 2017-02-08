@@ -13,8 +13,9 @@
  */
 
 #import <XCTest/XCTest.h>
-#import "RCTUtils.h"
-#import "RCTNetworking.h"
+
+#import <React/RCTNetworking.h>
+#import <React/RCTUtils.h>
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 { \

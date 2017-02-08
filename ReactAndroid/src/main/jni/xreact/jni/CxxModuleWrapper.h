@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include <cxxreact/CxxModule.h>
-#include <fb/fbjni.h>
 #include <memory>
 #include <string>
 #include <vector>
+
+#include <cxxreact/CxxModule.h>
+#include <fb/fbjni.h>
 
 namespace facebook {
 namespace react {
@@ -27,14 +28,11 @@ public:
 
   // JNI methods
   std::string getName();
-  std::string getConstantsJson();
-  jobject getMethods();
 
   // This steals ownership of the underlying module for use by the C++ bridge
   std::unique_ptr<xplat::module::CxxModule> getModule() {
     // TODO mhorowitz: remove this (and a lot of other code) once the java
     // bridge is dead.
-    methods_.clear();
     return std::move(module_);
   }
 
@@ -42,11 +40,9 @@ protected:
   friend HybridBase;
 
   explicit CxxModuleWrapper(std::unique_ptr<xplat::module::CxxModule> module)
-    : module_(std::move(module))
-    , methods_(module_->getMethods()) {}
+    : module_(std::move(module)) {}
 
   std::unique_ptr<xplat::module::CxxModule> module_;
-  std::vector<xplat::module::CxxModule::Method> methods_;
 };
 
 }

@@ -42,7 +42,8 @@ function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
         'Animated: `useNativeDriver` is not supported because the native ' +
         'animated module is missing. Falling back to JS-based animation. To ' +
         'resolve this, add `RCTAnimation` module to this app, or remove ' +
-        '`useNativeDriver`.'
+        '`useNativeDriver`. ' +
+        'More info: https://github.com/facebook/react-native/issues/11094#issuecomment-263240420'
       );
       warnedMissingNativeAnimated = true;
     }
@@ -302,7 +303,10 @@ class TimingAnimation extends Animation {
     this.__onEnd = onEnd;
 
     var start = () => {
-      if (this._duration === 0) {
+      // Animations that sometimes have 0 duration and sometimes do not
+      // still need to use the native driver when duration is 0 so as to
+      // not cause intermixed JS and native animations.
+      if (this._duration === 0 && !this._useNativeDriver) {
         this._onUpdate(this._toValue);
         this.__debouncedOnEnd({finished: true});
       } else {
@@ -995,6 +999,11 @@ class AnimatedValueXY extends AnimatedWithChildren {
     this.y.flattenOffset();
   }
 
+  extractOffset(): void {
+    this.x.extractOffset();
+    this.y.extractOffset();
+  }
+
   __getValue(): {x: number, y: number} {
     return {
       x: this.x.__getValue(),
@@ -1024,6 +1033,12 @@ class AnimatedValueXY extends AnimatedWithChildren {
     this.x.removeListener(this._listeners[id].x);
     this.y.removeListener(this._listeners[id].y);
     delete this._listeners[id];
+  }
+
+  removeAllListeners(): void {
+    this.x.removeAllListeners();
+    this.y.removeAllListeners();
+    this._listeners = {};
   }
 
   /**
@@ -1075,6 +1090,9 @@ class AnimatedInterpolation extends AnimatedWithChildren {
       typeof parentValue === 'number',
       'Cannot interpolate an input which is not a number.'
     );
+    /* $FlowFixMe(>=0.36.0 site=react_native_fb,react_native_oss) Flow error
+     * detected during the deploy of Flow v0.36.0. To see the error, remove
+     * this comment and run Flow */
     return this._interpolation(parentValue);
   }
 
@@ -1663,7 +1681,6 @@ class AnimatedProps extends Animated {
         propsConfig[propKey] = value.__getNativeTag();
       }
     }
-    NativeAnimatedHelper.validateProps(propsConfig);
     return {
       type: 'props',
       props: propsConfig,
@@ -1747,12 +1764,6 @@ function createAnimatedComponent(Component: any): any {
       var callback = () => {
         if (this._component.setNativeProps) {
           if (!this._propsAnimated.__isNative) {
-            if (this._component.viewConfig == null) {
-              var ctor = this._component.constructor;
-              var componentName = ctor.displayName || ctor.name || '<Unknown Component>';
-              throw new Error(componentName + ' "viewConfig" is not defined.');
-            }
-
             this._component.setNativeProps(
               this._propsAnimated.__getAnimatedValue()
             );

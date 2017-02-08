@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -41,6 +42,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
+import com.facebook.react.bridge.Inspector;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -56,6 +58,7 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.ws.WebSocket;
 
 /**
  * Interface for accessing and interacting with development features. Following features
@@ -83,7 +86,10 @@ import okhttp3.RequestBody;
  * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
-public class DevSupportManagerImpl implements DevSupportManager, PackagerCommandListener {
+public class DevSupportManagerImpl implements
+    DevSupportManager,
+    PackagerCommandListener,
+    DevInternalSettings.Listener {
 
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
@@ -334,7 +340,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
 
   @Override
   public void showDevOptionsDialog() {
-    if (mDevOptionsDialog != null || !mIsDevSupportEnabled) {
+    if (mDevOptionsDialog != null || !mIsDevSupportEnabled || ActivityManager.isUserAMonkey()) {
       return;
     }
     LinkedHashMap<String, DevOptionHandler> options = new LinkedHashMap<>();
@@ -357,6 +363,19 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
             handleReloadJS();
           }
         });
+    if (Inspector.isSupported()) {
+      options.put(
+        "Debug JS on-device (experimental)", new DevOptionHandler() {
+          @Override
+          public void onOptionSelected() {
+            List<Inspector.Page> pages = Inspector.getPages();
+            if (pages.size() > 0) {
+              // TODO: We should get the actual page id instead of the first one.
+              mDevServerHelper.openInspector(String.valueOf(pages.get(0).getId()));
+            }
+          }
+        });
+    }
     options.put(
       mDevSettings.isReloadOnJSChangeEnabled()
         ? mApplicationContext.getString(R.string.catalyst_live_reload_off)
@@ -402,9 +421,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            JSCHeapCapture.captureHeap(
-              mApplicationContext.getCacheDir().getPath(),
-              JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
+            handleCaptureHeap();
           }
         });
     options.put(
@@ -412,24 +429,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            try {
-              List<String> pokeResults = JSCSamplingProfiler.poke(60000);
-              for (String result : pokeResults) {
-                Toast.makeText(
-                  mCurrentContext,
-                  result == null
-                    ? "Started JSC Sampling Profiler"
-                    : "Stopped JSC Sampling Profiler",
-                  Toast.LENGTH_LONG).show();
-                if (result != null) {
-                  new JscProfileTask(getSourceUrl()).executeOnExecutor(
-                      AsyncTask.THREAD_POOL_EXECUTOR,
-                      result);
-                }
-              }
-            } catch (JSCSamplingProfiler.ProfilerException e) {
-              showNewJavaError(e.getMessage(), e);
-            }
+            handlePokeSamplingProfiler(null);
           }
         });
     options.put(
@@ -626,6 +626,8 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
     reload();
   }
 
+  public void onInternalSettingsChanged() { reloadSettings(); }
+
   @Override
   public void handleReloadJS() {
     UiThreadUtil.assertOnUiThread();
@@ -635,18 +637,12 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
       mRedBoxDialog.dismiss();
     }
 
-    AlertDialog dialog = new AlertDialog.Builder(mApplicationContext)
-      .setTitle(R.string.catalyst_jsload_title)
-      .setMessage(mApplicationContext.getString(
-          mDevSettings.isRemoteJSDebugEnabled() ? R.string.catalyst_remotedbg_message : R.string.catalyst_jsload_message))
-      .create();
-    dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-    dialog.show();
-
     if (mDevSettings.isRemoteJSDebugEnabled()) {
-      reloadJSInProxyMode(dialog);
+      reloadJSInProxyMode(showProgressDialog());
     } else {
-      reloadJSFromServer(dialog);
+      String bundleURL =
+        mDevServerHelper.getDevServerBundleURL(Assertions.assertNotNull(mJSAppBundleName));
+      reloadJSFromServer(bundleURL);
     }
   }
 
@@ -680,6 +676,60 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         handleReloadJS();
       }
     });
+  }
+
+  @Override
+  public void onCaptureHeapCommand() {
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        handleCaptureHeap();
+      }
+    });
+  }
+
+  @Override
+  public void onPokeSamplingProfilerCommand(@Nullable final WebSocket webSocket) {
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        handlePokeSamplingProfiler(webSocket);
+      }
+    });
+  }
+
+  private void handleCaptureHeap() {
+    JSCHeapCapture.captureHeap(
+      mApplicationContext.getCacheDir().getPath(),
+      JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
+  }
+
+  private void handlePokeSamplingProfiler(@Nullable WebSocket webSocket) {
+    try {
+      List<String> pokeResults = JSCSamplingProfiler.poke(60000);
+      for (String result : pokeResults) {
+        Toast.makeText(
+          mCurrentContext,
+          result == null
+            ? "Started JSC Sampling Profiler"
+            : "Stopped JSC Sampling Profiler",
+          Toast.LENGTH_LONG).show();
+        if (webSocket != null) {
+          // WebSocket is provided, so there is a client waiting our response
+          webSocket.sendMessage(RequestBody.create(WebSocket.TEXT, result == null ? "" : result));
+        } else if (result != null) {
+          // The profile was not initiated by external client, so process the
+          // profile if there is one in the result
+          new JscProfileTask(getSourceUrl()).executeOnExecutor(
+              AsyncTask.THREAD_POOL_EXECUTOR,
+              result);
+        }
+      }
+    } catch (JSCSamplingProfiler.ProfilerException e) {
+      showNewJavaError(e.getMessage(), e);
+    } catch (IOException e) {
+      showNewJavaError(e.getMessage(), e);
+    }
   }
 
   private void updateLastErrorInfo(
@@ -741,7 +791,22 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
     };
   }
 
-  private void reloadJSFromServer(final AlertDialog progressDialog) {
+  private AlertDialog showProgressDialog() {
+    AlertDialog dialog = new AlertDialog.Builder(mApplicationContext)
+      .setTitle(R.string.catalyst_jsload_title)
+      .setMessage(mApplicationContext.getString(
+          mDevSettings.isRemoteJSDebugEnabled() ?
+          R.string.catalyst_remotedbg_message :
+          R.string.catalyst_jsload_message))
+      .create();
+    dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+    dialog.show();
+    return dialog;
+  }
+
+  public void reloadJSFromServer(final String bundleURL) {
+    final AlertDialog progressDialog = showProgressDialog();
+
     mDevServerHelper.downloadBundleFromURL(
         new DevServerHelper.BundleDownloadCallback() {
           @Override
@@ -776,8 +841,8 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                 });
           }
         },
-        Assertions.assertNotNull(mJSAppBundleName),
-        mJSBundleTempFile);
+        mJSBundleTempFile,
+        bundleURL);
     progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
       @Override
       public void onCancel(DialogInterface dialog) {
@@ -811,6 +876,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
       }
 
       mDevServerHelper.openPackagerConnection(this);
+      mDevServerHelper.openInspectorConnection();
       if (mDevSettings.isReloadOnJSChangeEnabled()) {
         mDevServerHelper.startPollingOnChangeEndpoint(
             new DevServerHelper.OnServerContentChangeListener() {
@@ -851,6 +917,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
       }
 
       mDevServerHelper.closePackagerConnection();
+      mDevServerHelper.closeInspectorConnection();
       mDevServerHelper.stopPollingOnChangeEndpoint();
     }
   }

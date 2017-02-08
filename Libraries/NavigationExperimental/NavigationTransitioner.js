@@ -19,6 +19,8 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
+const invariant = require('fbjs/lib/invariant');
+
 import type {
   NavigationAnimatedValue,
   NavigationLayout,
@@ -60,6 +62,7 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
   _onTransitionEnd: () => void;
   _prevTransitionProps: ?NavigationTransitionProps;
   _transitionProps: NavigationTransitionProps;
+  _isMounted: boolean;
 
   props: Props;
   state: State;
@@ -94,11 +97,20 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
 
     this._prevTransitionProps = null;
     this._transitionProps = buildTransitionProps(props, this.state);
+    this._isMounted = false;
   }
 
   componentWillMount(): void {
     this._onLayout = this._onLayout.bind(this);
     this._onTransitionEnd = this._onTransitionEnd.bind(this);
+  }
+
+  componentDidMount(): void {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount(): void {
+    this._isMounted = false;
   }
 
   componentWillReceiveProps(nextProps: Props): void {
@@ -117,13 +129,15 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
       scenes: nextScenes,
     };
 
-    this._prevTransitionProps = this._transitionProps;
-    this._transitionProps = buildTransitionProps(nextProps, nextState);
-
     const {
       position,
       progress,
     } = nextState;
+
+    progress.setValue(0);
+
+    this._prevTransitionProps = this._transitionProps;
+    this._transitionProps = buildTransitionProps(nextProps, nextState);
 
     // get the transition spec.
     const transitionUserSpec = nextProps.configureTransition ?
@@ -140,8 +154,6 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
 
     const {timing} = transitionSpec;
     delete transitionSpec.timing;
-
-    progress.setValue(0);
 
     const animations = [
       timing(
@@ -211,6 +223,10 @@ class NavigationTransitioner extends React.Component<any, Props, State> {
   }
 
   _onTransitionEnd(): void {
+    if (!this._isMounted) {
+      return;
+    }
+
     const prevTransitionProps = this._prevTransitionProps;
     this._prevTransitionProps = null;
 
@@ -245,14 +261,17 @@ function buildTransitionProps(
     scenes,
   } = state;
 
+  const scene = scenes.find(isSceneActive);
+
+  invariant(scene, 'No active scene when building navigation transition props.');
+
   return {
     layout,
     navigationState,
     position,
     progress,
     scenes,
-    // $FlowFixMe(>=0.32.0) - find can return undefined
-    scene: scenes.find(isSceneActive),
+    scene
   };
 }
 

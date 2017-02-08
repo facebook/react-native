@@ -19,13 +19,12 @@ const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-// TODO (fkg): make rootTag required
 type Context = {
-  rootTag: ?number,
+  rootTag: number,
 };
 type Props = {
   children?: React.Children,
-  rootTag?: number,
+  rootTag: number,
 };
 type State = {
   inspector: ?React.Element<*>,
@@ -90,10 +89,11 @@ class AppContainer extends React.Component {
     }
 
     return (
-      <View style={styles.appContainer}>
+      <View style={styles.appContainer} pointerEvents="box-none">
         <View
           collapsable={!this.state.inspector}
           key={this.state.mainKey}
+          pointerEvents="box-none"
           style={styles.appContainer} ref={(ref) => {this._mainRef = ref;}}>
           {this.props.children}
         </View>

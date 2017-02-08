@@ -10,10 +10,11 @@
 #import <Foundation/Foundation.h>
 
 #import "RCTAssert.h"
-#import "RCTBridge.h"
 #import "RCTBridge+Private.h"
+#import "RCTBridge.h"
 #import "RCTBridgeMethod.h"
 #import "RCTConvert.h"
+#import "RCTDevLoadingView.h"
 #import "RCTDisplayLink.h"
 #import "RCTJSCExecutor.h"
 #import "RCTJavaScriptLoader.h"
@@ -21,10 +22,8 @@
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
-#import "RCTSourceCode.h"
-#import "RCTUtils.h"
 #import "RCTRedBox.h"
-#import "RCTDevLoadingView.h"
+#import "RCTUtils.h"
 
 #define RCTAssertJSThread() \
   RCTAssert(![NSStringFromClass([self->_javaScriptExecutor class]) isEqualToString:@"RCTJSCExecutor"] || \
@@ -193,9 +192,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
     [self.delegate loadSourceForBridge:_parentBridge onProgress:onProgress onComplete:onSourceLoad];
   } else if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
     [self.delegate loadSourceForBridge:_parentBridge withBlock:onSourceLoad];
+  } else if (!self.bundleURL) {
+    NSError *error = RCTErrorWithMessage(@"No bundle URL present.\n\nMake sure you're running a packager " \
+                                         "server or have included a .jsbundle file in your application bundle.");
+    onSourceLoad(error, nil, 0);
   } else {
-    RCTAssert(self.bundleURL, @"bundleURL must be non-nil when not implementing loadSourceForBridge");
-
     [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:^(NSError *error, NSData *source, int64_t sourceLength) {
       if (error && [self.delegate respondsToSelector:@selector(fallbackSourceURLForBridge:)]) {
         NSURL *fallbackURL = [self.delegate fallbackSourceURLForBridge:self->_parentBridge];
@@ -496,9 +497,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
   if (!_valid || !_javaScriptExecutor) {
     return;
   }
-
-  RCTSourceCode *sourceCodeModule = [self moduleForClass:[RCTSourceCode class]];
-  sourceCodeModule.scriptURL = self.bundleURL;
 
   [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:^(NSError *loadError) {
     if (!self->_valid) {

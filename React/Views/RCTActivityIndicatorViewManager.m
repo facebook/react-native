@@ -8,6 +8,7 @@
  */
 
 #import "RCTActivityIndicatorViewManager.h"
+
 #import "RCTActivityIndicatorView.h"
 #import "RCTConvert.h"
 

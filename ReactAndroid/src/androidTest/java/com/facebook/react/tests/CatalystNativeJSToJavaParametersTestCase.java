@@ -16,6 +16,7 @@ import java.util.Set;
 
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.InvalidIteratorException;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NoSuchKeyException;
@@ -40,11 +41,16 @@ import com.facebook.react.views.view.ReactViewManager;
 
 /**
  * Integration test to verify passing various types of parameters from JS to Java works
+ *
+ * TODO: we should run these tests with isBlockingSynchronousMethod = true as well,
+ * since they currrently use a completely different codepath
  */
 public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTestCase {
 
   private interface TestJSToJavaParametersModule extends JavaScriptModule {
     void returnBasicTypes();
+    void returnBoxedTypes();
+    void returnDynamicTypes();
 
     void returnArrayWithBasicTypes();
     void returnNestedArray();
@@ -79,7 +85,8 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     final UIManagerModule mUIManager = new UIManagerModule(
         getContext(),
         viewManagers,
-        new UIImplementationProvider());
+        new UIImplementationProvider(),
+        false);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -111,6 +118,30 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     assertEquals(3.14, args[1]);
     assertEquals(true, args[2]);
     assertNull(args[3]);
+  }
+
+  public void testBoxedTypes() {
+    mCatalystInstance.getJSModule(TestJSToJavaParametersModule.class).returnBoxedTypes();
+    waitForBridgeAndUIIdle();
+
+    List<Object[]> boxedTypesCalls = mRecordingTestModule.getBoxedTypesCalls();
+    assertEquals(1, boxedTypesCalls.size());
+
+    Object[] args = boxedTypesCalls.get(0);
+    assertEquals(Integer.valueOf(42), args[0]);
+    assertEquals(Double.valueOf(3.14), args[1]);
+    assertEquals(Boolean.valueOf(true), args[2]);
+  }
+
+  public void testDynamicType() {
+    mCatalystInstance.getJSModule(TestJSToJavaParametersModule.class).returnDynamicTypes();
+    waitForBridgeAndUIIdle();
+
+    List<Dynamic> dynamicCalls = mRecordingTestModule.getDynamicCalls();
+    assertEquals(2, dynamicCalls.size());
+
+    assertEquals("foo", dynamicCalls.get(0).asString());
+    assertEquals(3.14, dynamicCalls.get(1).asDouble());
   }
 
   public void testArrayWithBasicTypes() {
@@ -668,11 +699,13 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     }
   }
 
-  private class RecordingTestModule extends BaseJavaModule {
+  private static class RecordingTestModule extends BaseJavaModule {
 
     private final List<Object[]> mBasicTypesCalls = new ArrayList<Object[]>();
+    private final List<Object[]> mBoxedTypesCalls = new ArrayList<Object[]>();
     private final List<ReadableArray> mArrayCalls = new ArrayList<ReadableArray>();
     private final List<ReadableMap> mMapCalls = new ArrayList<ReadableMap>();
+    private final List<Dynamic> mDynamicCalls = new ArrayList<Dynamic>();
 
     @Override
     public String getName() {
@@ -685,6 +718,11 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     }
 
     @ReactMethod
+    public void receiveBoxedTypes(Integer i, Double d, Boolean b) {
+      mBoxedTypesCalls.add(new Object[]{i, d, b});
+    }
+
+    @ReactMethod
     public void receiveArray(ReadableArray array) {
       mArrayCalls.add(array);
     }
@@ -694,8 +732,17 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
       mMapCalls.add(map);
     }
 
+    @ReactMethod
+    public void receiveDynamic(Dynamic dynamic) {
+      mDynamicCalls.add(dynamic);
+    }
+
     public List<Object[]> getBasicTypesCalls() {
       return mBasicTypesCalls;
+    }
+
+    public List<Object[]> getBoxedTypesCalls() {
+      return mBoxedTypesCalls;
     }
 
     public List<ReadableArray> getArrayCalls() {
@@ -704,6 +751,10 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
 
     public List<ReadableMap> getMapCalls() {
       return mMapCalls;
+    }
+
+    public List<Dynamic> getDynamicCalls() {
+      return mDynamicCalls;
     }
   }
 }

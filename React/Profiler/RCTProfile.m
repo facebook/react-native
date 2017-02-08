@@ -10,7 +10,6 @@
 #import "RCTProfile.h"
 
 #import <dlfcn.h>
-
 #import <libkern/OSAtomic.h>
 #import <mach/mach.h>
 #import <objc/message.h>
@@ -19,15 +18,15 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTAssert.h"
-#import "RCTBridge.h"
 #import "RCTBridge+Private.h"
+#import "RCTBridge.h"
 #import "RCTComponentData.h"
 #import "RCTDefines.h"
+#import "RCTJSCExecutor.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
-#import "RCTUtils.h"
 #import "RCTUIManager.h"
-#import "RCTJSCExecutor.h"
+#import "RCTUtils.h"
 
 NSString *const RCTProfileDidStartProfiling = @"RCTProfileDidStartProfiling";
 NSString *const RCTProfileDidEndProfiling = @"RCTProfileDidEndProfiling";
@@ -363,7 +362,7 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 
 + (void)reload
 {
-  [RCTProfilingBridge() requestReload];
+  [RCTProfilingBridge() reload];
 }
 
 + (void)toggle:(UIButton *)target
@@ -384,7 +383,10 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 #if !TARGET_OS_TV
       UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[[NSURL fileURLWithPath:outFile]]
                                                                                            applicationActivities:nil];
-      activityViewController.completionHandler = ^(__unused NSString *activityType, __unused BOOL completed) {
+      activityViewController.completionWithItemsHandler = ^(__unused UIActivityType activityType,
+                                                            __unused BOOL completed,
+                                                            __unused NSArray *items,
+                                                            __unused NSError *error) {
         RCTProfileControlsWindow.hidden = NO;
       };
       RCTProfileControlsWindow.hidden = YES;

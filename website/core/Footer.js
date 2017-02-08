@@ -8,6 +8,7 @@
  *
  * @providesModule Footer
  */
+'use strict';
 
 var React = require('React');
 

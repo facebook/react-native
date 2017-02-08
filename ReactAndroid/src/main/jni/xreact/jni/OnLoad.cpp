@@ -11,10 +11,10 @@
 #include "JavaScriptExecutorHolder.h"
 #include "JSCPerfLogging.h"
 #include "JSLoader.h"
-#include "ModuleRegistryHolder.h"
 #include "ProxyExecutor.h"
 #include "WebWorkers.h"
 #include "JCallback.h"
+#include "JSLogging.h"
 
 #ifdef WITH_INSPECTOR
 #include "JInspector.h"
@@ -63,29 +63,6 @@ static std::string getApplicationPersistentDir() {
   return getApplicationDir("getFilesDir");
 }
 
-static JSValueRef nativeLoggingHook(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception) {
-  android_LogPriority logLevel = ANDROID_LOG_DEBUG;
-  if (argumentCount > 1) {
-    int level = (int) JSValueToNumber(ctx, arguments[1], NULL);
-    // The lowest log level we get from JS is 0. We shift and cap it to be
-    // in the range the Android logging method expects.
-    logLevel = std::min(
-        static_cast<android_LogPriority>(level + ANDROID_LOG_DEBUG),
-        ANDROID_LOG_FATAL);
-  }
-  if (argumentCount > 0) {
-    JSStringRef jsString = JSValueToStringCopy(ctx, arguments[0], NULL);
-    String message = String::adopt(jsString);
-    FBLOG_PRI(logLevel, "ReactNativeJS", "%s", message.str().c_str());
-  }
-  return JSValueMakeUndefined(ctx);
-}
-
 static JSValueRef nativePerformanceNow(
     JSContextRef ctx,
     JSObjectRef function,
@@ -99,7 +76,7 @@ static JSValueRef nativePerformanceNow(
   struct timespec now;
   clock_gettime(CLOCK_MONOTONIC_RAW, &now);
   int64_t nano = now.tv_sec * NANOSECONDS_IN_SECOND + now.tv_nsec;
-  return JSValueMakeNumber(ctx, (nano / (double)NANOSECONDS_IN_MILLISECOND));
+  return Value::makeNumber(ctx, (nano / (double)NANOSECONDS_IN_MILLISECOND));
 }
 
 class JSCJavaScriptExecutorHolder : public HybridClass<JSCJavaScriptExecutorHolder,
@@ -109,7 +86,7 @@ class JSCJavaScriptExecutorHolder : public HybridClass<JSCJavaScriptExecutorHold
 
   static local_ref<jhybriddata> initHybrid(alias_ref<jclass>, ReadableNativeArray* jscConfigArray) {
     // See JSCJavaScriptExecutor.Factory() for the other side of this hack.
-    folly::dynamic jscConfigMap = jscConfigArray->array[0];
+    folly::dynamic jscConfigMap = jscConfigArray->consume()[0];
     jscConfigMap["PersistentDirectory"] = getApplicationPersistentDir();
     return makeCxxInstance(
       std::make_shared<JSCExecutorFactory>(getApplicationCacheDir(), std::move(jscConfigMap)));
@@ -182,13 +159,11 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     JSCJavaScriptExecutorHolder::registerNatives();
     ProxyJavaScriptExecutorHolder::registerNatives();
     CatalystInstanceImpl::registerNatives();
-    ModuleRegistryHolder::registerNatives();
     CxxModuleWrapper::registerNatives();
     JCallbackImpl::registerNatives();
     #ifdef WITH_INSPECTOR
     JInspector::registerNatives();
     #endif
-    registerJSLoaderNatives();
 
     NativeArray::registerNatives();
     ReadableNativeArray::registerNatives();

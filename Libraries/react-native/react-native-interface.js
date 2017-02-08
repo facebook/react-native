@@ -8,6 +8,7 @@
  *
  * @flow
  */
+'use strict';
 
 // see also react-native.js
 

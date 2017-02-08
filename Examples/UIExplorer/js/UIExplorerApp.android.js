@@ -42,6 +42,8 @@ const UIManager = require('UIManager');
 const URIActionMap = require('./URIActionMap');
 const View = require('View');
 
+const nativeImageSource = require('nativeImageSource');
+
 import type {UIExplorerNavigationState} from './UIExplorerNavigationReducer';
 
 UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -149,27 +151,45 @@ class UIExplorerApp extends React.Component {
     if (stack && stack.routes[index]) {
       const {key} = stack.routes[index];
       const ExampleModule = UIExplorerList.Modules[key];
-      return (
-        <View style={styles.container}>
-          <ToolbarAndroid
-            logo={require('image!launcher_icon')}
-            navIcon={require('image!ic_menu_black_24dp')}
-            onIconClicked={() => this.drawer.openDrawer()}
-            style={styles.toolbar}
-            title={title}
-          />
-          <UIExplorerExampleContainer
-            module={ExampleModule}
-            ref={(example) => { this._exampleRef = example; }}
-          />
-        </View>
-      );
+      if (ExampleModule) {
+        return (
+          <View style={styles.container}>
+            <ToolbarAndroid
+              logo={nativeImageSource({
+                android: 'launcher_icon',
+                width: 132,
+                height: 144
+              })}
+              navIcon={nativeImageSource({
+                android: 'ic_menu_black_24dp',
+                width: 48,
+                height: 48
+              })}
+              onIconClicked={() => this.drawer.openDrawer()}
+              style={styles.toolbar}
+              title={title}
+            />
+            <UIExplorerExampleContainer
+              module={ExampleModule}
+              ref={(example) => { this._exampleRef = example; }}
+            />
+          </View>
+        );
+      }
     }
     return (
       <View style={styles.container}>
         <ToolbarAndroid
-          logo={require('image!launcher_icon')}
-          navIcon={require('image!ic_menu_black_24dp')}
+          logo={nativeImageSource({
+            android: 'launcher_icon',
+            width: 132,
+            height: 144
+          })}
+          navIcon={nativeImageSource({
+            android: 'ic_menu_black_24dp',
+            width: 48,
+            height: 48
+          })}
           onIconClicked={() => this.drawer.openDrawer()}
           style={styles.toolbar}
           title={title}

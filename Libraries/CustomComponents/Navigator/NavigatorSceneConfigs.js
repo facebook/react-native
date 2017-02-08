@@ -32,8 +32,8 @@
 'use strict';
 
 var Dimensions = require('Dimensions');
-var PixelRatio = require('PixelRatio');
 var I18nManager = require('I18nManager');
+var PixelRatio = require('PixelRatio');
 
 var buildStyleInterpolator = require('buildStyleInterpolator');
 
@@ -534,13 +534,13 @@ var BaseRightToLeftGesture = {
 var BaseDownUpGesture = {
   ...BaseLeftToRightGesture,
   fullDistance: SCREEN_HEIGHT,
-  direction: 'down-to-up',
+  direction: 'bottom-to-top',
 };
 
 var BaseUpDownGesture = {
   ...BaseLeftToRightGesture,
   fullDistance: SCREEN_HEIGHT,
-  direction: 'up-to-down',
+  direction: 'top-to-bottom',
 };
 
 // For RTL experiment, we need to swap all the Left and Right gesture and animation.
@@ -655,6 +655,27 @@ var NavigatorSceneConfigs = {
       out: buildStyleInterpolator(FadeOut),
     },
   },
+  SwipeFromLeft: {
+    ...BaseConfig,
+    gestures: {
+      jumpBack: {
+        ...directionMapping.BaseEndToStartGesture,
+        overswipe: BaseOverswipeConfig,
+        edgeHitWidth: null,
+        isDetachable: true,
+      },
+      jumpForward: {
+        ...directionMapping.BaseStartToEndGesture,
+        overswipe: BaseOverswipeConfig,
+        edgeHitWidth: null,
+        isDetachable: true,
+      },
+    },
+    animationInterpolators: {
+      into: buildStyleInterpolator(directionMapping.FromTheStart),
+      out: buildStyleInterpolator(directionMapping.ToTheEnd),
+    },
+  },
   HorizontalSwipeJump: {
     ...BaseConfig,
     gestures: {
@@ -724,7 +745,7 @@ var NavigatorSceneConfigs = {
     ...BaseConfig,
     gestures: {
       jumpBack: {
-        ...BaseDownUpGesture,
+        ...BaseUpDownGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
         isDetachable: true,
@@ -745,7 +766,7 @@ var NavigatorSceneConfigs = {
     ...BaseConfig,
     gestures: {
       jumpBack: {
-        ...BaseUpDownGesture,
+        ...BaseDownUpGesture,
         overswipe: BaseOverswipeConfig,
         edgeHitWidth: null,
         isDetachable: true,

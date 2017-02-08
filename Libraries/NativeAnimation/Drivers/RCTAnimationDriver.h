@@ -7,8 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
-#import "RCTBridgeModule.h"
+
+#import <React/RCTBridgeModule.h>
 
 @class RCTValueAnimatedNode;
 
@@ -30,8 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stopAnimation;
 - (void)stepAnimation;
 - (void)removeAnimation;
-- (void)cleanupAnimationUpdate;
-
-@end
 
 NS_ASSUME_NONNULL_END
+
+@end

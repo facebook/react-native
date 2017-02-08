@@ -163,20 +163,7 @@ MethodCallResult CxxNativeModule::callSerializableNativeHook(
                              " is asynchronous but invoked synchronously"));
   }
 
-  if (!args.isString()) {
-    throw std::invalid_argument(
-      folly::to<std::string>("method parameters should be string, but are ", args.typeName()));
-  }
-
-  folly::dynamic params = folly::parseJson(args.stringPiece());
-
-  if (!params.isArray()) {
-    throw std::invalid_argument(
-      folly::to<std::string>("parsed method parameters should be array, but are ",
-                             args.typeName()));
-  }
-
-  return { method.syncFunc(std::move(params)), false };
+  return method.syncFunc(std::move(args));
 }
 
 }

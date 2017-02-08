@@ -9,8 +9,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridge.h"
-#import "RCTBridgeModule.h"
+#import <React/RCTBridge.h>
+#import <React/RCTBridgeModule.h>
 
 @class RCTDevMenuItem;
 
@@ -31,6 +31,11 @@
 @property (nonatomic, assign) BOOL profilingEnabled;
 
 /**
+ * Enables starting of profiling sampler on launch
+ */
+@property (nonatomic, assign) BOOL startSamplingProfilerOnLaunch;
+
+/**
  * Enables automatic polling for JS code changes. Only applicable when
  * running the app from a server.
  */
@@ -45,6 +50,18 @@
  * Shows the FPS monitor for the JS and Main threads.
  */
 @property (nonatomic, assign) BOOL showFPS;
+
+/**
+ * Presented items in development menu
+ */
+@property (nonatomic, copy, readonly) NSArray<RCTDevMenuItem *> *presentedItems;
+
+
+/**
+ * Detect if actions sheet (development menu) is shown
+ */
+- (BOOL)isActionSheetShown;
+
 
 /**
  * Manually show the dev menu (can be called from JS).

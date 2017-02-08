@@ -10,8 +10,8 @@
 #import <MapKit/MapKit.h>
 #import <UIKit/UIKit.h>
 
-#import "RCTConvert+MapKit.h"
-#import "RCTComponent.h"
+#import <React/RCTComponent.h>
+#import <React/RCTConvert+MapKit.h>
 
 RCT_EXTERN const CLLocationDegrees RCTMapDefaultSpan;
 RCT_EXTERN const NSTimeInterval RCTMapRegionChangeObserveInterval;
@@ -21,6 +21,7 @@ RCT_EXTERN const CGFloat RCTMapZoomBoundBuffer;
 
 @property (nonatomic, assign) BOOL followUserLocation;
 @property (nonatomic, assign) BOOL hasStartedRendering;
+@property (nonatomic, assign) BOOL showsAnnotationCallouts;
 @property (nonatomic, assign) CGFloat minDelta;
 @property (nonatomic, assign) CGFloat maxDelta;
 @property (nonatomic, assign) UIEdgeInsets legalLabelInsets;

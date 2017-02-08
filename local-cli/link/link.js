@@ -16,8 +16,10 @@ const chalk = require('chalk');
 const isEmpty = require('lodash').isEmpty;
 const promiseWaterfall = require('./promiseWaterfall');
 const registerDependencyAndroid = require('./android/registerNativeModule');
+const registerDependencyWindows = require('./windows/registerNativeModule');
 const registerDependencyIOS = require('./ios/registerNativeModule');
 const isInstalledAndroid = require('./android/isInstalled');
+const isInstalledWindows = require('./windows/isInstalled');
 const isInstalledIOS = require('./ios/isInstalled');
 const copyAssetsAndroid = require('./android/copyAssets');
 const copyAssetsIOS = require('./ios/copyAssets');
@@ -55,6 +57,33 @@ const linkDependencyAndroid = (androidProject, dependency) => {
     );
 
     log.info(`Android module ${dependency.name} has been successfully linked`);
+  });
+};
+
+const linkDependencyWindows = (windowsProject, dependency) => {
+
+  if (!windowsProject || !dependency.config.windows) {
+    return null;
+  }
+
+  const isInstalled = isInstalledWindows(windowsProject, dependency.config.windows);
+
+  if (isInstalled) {
+    log.info(chalk.grey(`Windows module ${dependency.name} is already linked`));
+    return null;
+  }
+
+  return pollParams(dependency.config.params).then(params => {
+    log.info(`Linking ${dependency.name} windows dependency`);
+
+    registerDependencyWindows(
+      dependency.name,
+      dependency.config.windows,
+      params,
+      windowsProject
+    );
+
+    log.info(`Windows module ${dependency.name} has been successfully linked`);
   });
 };
 
@@ -96,7 +125,7 @@ const linkAssets = (project, assets) => {
 };
 
 /**
- * Updates project and linkes all dependencies to it
+ * Updates project and links all dependencies to it
  *
  * If optional argument [packageName] is provided, it's the only one that's checked
  */
@@ -112,7 +141,11 @@ function link(args, config) {
     return Promise.reject(err);
   }
 
-  const packageName = args[0];
+  let packageName = args[0];
+  // Check if install package by specific version (eg. package@latest)
+  if (packageName !== undefined) {
+    packageName = packageName.split('@')[0];
+  }
 
   const dependencies = getDependencyConfig(
     config,
@@ -128,6 +161,7 @@ function link(args, config) {
     () => promisify(dependency.config.commands.prelink || commandStub),
     () => linkDependencyAndroid(project.android, dependency),
     () => linkDependencyIOS(project.ios, dependency),
+    () => linkDependencyWindows(project.windows, dependency),
     () => promisify(dependency.config.commands.postlink || commandStub),
   ]));
 
