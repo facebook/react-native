@@ -5,8 +5,6 @@ package com.facebook.react.uimanager;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
-import android.view.ViewGroup;
-
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
@@ -34,6 +32,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_SCALE_Y = "scaleY";
   private static final String PROP_TRANSLATE_X = "translateX";
   private static final String PROP_TRANSLATE_Y = "translateY";
+
+  private static final int PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX = 2;
+  private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = 5;
 
   /**
    * Used to locate views in end-to-end (UI) tests.
@@ -165,6 +166,22 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setRotationY((float) sMatrixDecompositionContext.rotationDegrees[1]);
     view.setScaleX((float) sMatrixDecompositionContext.scale[0]);
     view.setScaleY((float) sMatrixDecompositionContext.scale[1]);
+
+    double[] perspectiveArray = sMatrixDecompositionContext.perspective;
+
+    if (perspectiveArray.length > PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX) {
+      float invertedCameraDistance = (float) perspectiveArray[PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX];
+      if (invertedCameraDistance < 0) {
+        float cameraDistance = -1 / invertedCameraDistance;
+        float scale = DisplayMetricsHolder.getScreenDisplayMetrics().density;
+
+        // The following converts the matrix's perspective to a camera distance
+        // such that the camera perspective looks the same on Android and iOS
+        float normalizedCameraDistance = scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
+
+        view.setCameraDistance(normalizedCameraDistance);
+      }
+    }
   }
 
   private static void resetTransformProperty(View view) {
@@ -175,5 +192,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setRotationY(0);
     view.setScaleX(1);
     view.setScaleY(1);
+    view.setCameraDistance(0);
   }
 }

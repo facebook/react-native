@@ -10,14 +10,15 @@
 // switchview because switch is a keyword
 package com.facebook.react.views.switchview;
 
+import android.graphics.PorterDuff;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
-import com.facebook.csslayout.YogaMeasureMode;
-import com.facebook.csslayout.YogaMeasureFunction;
-import com.facebook.csslayout.YogaNodeAPI;
-import com.facebook.csslayout.YogaMeasureOutput;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.SimpleViewManager;
@@ -115,6 +116,24 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     view.setOnCheckedChangeListener(null);
     view.setOn(on);
     view.setOnCheckedChangeListener(ON_CHECKED_CHANGE_LISTENER);
+  }
+
+  @ReactProp(name = "thumbTintColor", customType = "Color")
+  public void setThumbTintColor(ReactSwitch view, Integer color) {
+    if (color == null) {
+      view.getThumbDrawable().clearColorFilter();
+    } else {
+      view.getThumbDrawable().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+    }
+  }
+
+  @ReactProp(name = "trackTintColor", customType = "Color")
+  public void setTrackTintColor(ReactSwitch view, Integer color) {
+    if (color == null) {
+      view.getTrackDrawable().clearColorFilter();
+    } else {
+      view.getTrackDrawable().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+    }
   }
 
   @Override

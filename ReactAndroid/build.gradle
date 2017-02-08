@@ -35,19 +35,17 @@ task createNativeDepsDirectories {
 }
 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
-    // Use ZIP version as it's faster this way to selectively extract some parts of the archive
-    src 'https://unpkg.com/boost-mirror@1.57.0/boost.zip'
-    // alternative
-    // src 'http://mirror.nienbo.com/boost/boost_1_57_0.zip'
+    src 'https://github.com/react-native-community/boost-for-react-native/releases/download/v1.57.0-1/boost_1_57_0.tar.gz'
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'boost_1_57_0.zip')
+    dest new File(downloadsDir, 'boost_1_57_0.tar.gz')
 }
 
 task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
-    from boostPath ?: zipTree(downloadBoost.dest)
+    from boostPath ?: tarTree(resources.gzip(downloadBoost.dest))
     from 'src/main/jni/third-party/boost/Android.mk'
     include 'boost_1_57_0/boost/**/*.hpp', 'Android.mk'
+    includeEmptyDirs = false
     into "$thirdPartyNdkDir/boost"
 }
 
@@ -121,7 +119,8 @@ task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) 
 }
 
 task downloadJSCHeaders(type: Download) {
-    def jscAPIBaseURL = 'https://svn.webkit.org/repository/webkit/!svn/bc/174650/trunk/Source/JavaScriptCore/API/'
+    // in sync with webkit SVN revision 174650
+    def jscAPIBaseURL = 'https://raw.githubusercontent.com/WebKit/webkit/38b15a3ba3c1b0798f2036f7cea36ffdc096202e/Source/JavaScriptCore/API/'
     def jscHeaderFiles = ['JavaScript.h', 'JSBase.h', 'JSContextRef.h', 'JSObjectRef.h', 'JSRetainPtr.h', 'JSStringRef.h', 'JSValueRef.h', 'WebKitAvailability.h']
     def output = new File(downloadsDir, 'jsc')
     output.mkdirs()
@@ -276,7 +275,8 @@ dependencies {
     compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
     compile 'javax.inject:javax.inject:1'
     compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.android.support:recyclerview-v7:23.0.1'
+    compile 'com.android.support:recyclerview-v7:23.4.0'
+    compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
     compile 'com.facebook.fresco:fresco:0.11.0'
     compile 'com.facebook.fresco:imagepipeline-okhttp3:0.11.0'
     compile 'com.facebook.soloader:soloader:0.1.0'

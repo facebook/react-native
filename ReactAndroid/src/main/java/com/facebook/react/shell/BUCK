@@ -14,6 +14,7 @@ android_library(
     react_native_target('java/com/facebook/react/bridge:bridge'),
     react_native_target('java/com/facebook/react/common:common'),
     react_native_target('java/com/facebook/react/devsupport:devsupport'),
+    react_native_target('java/com/facebook/react/flat:flat'),
     react_native_target('java/com/facebook/react/module/model:model'),
     react_native_target('java/com/facebook/react/modules/appstate:appstate'),
     react_native_target('java/com/facebook/react/modules/camera:camera'),
@@ -44,7 +45,6 @@ android_library(
     react_native_target('java/com/facebook/react/views/modal:modal'),
     react_native_target('java/com/facebook/react/views/picker:picker'),
     react_native_target('java/com/facebook/react/views/progressbar:progressbar'),
-    react_native_target('java/com/facebook/react/views/recyclerview:recyclerview'),
     react_native_target('java/com/facebook/react/views/scroll:scroll'),
     react_native_target('java/com/facebook/react/views/slider:slider'),
     react_native_target('java/com/facebook/react/views/swiperefresh:swiperefresh'),
@@ -61,8 +61,4 @@ android_library(
   visibility = [
     'PUBLIC',
   ],
-)
-
-project_config(
-  src_target = ':shell',
 )

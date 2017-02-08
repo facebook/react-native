@@ -14,11 +14,24 @@
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
+const Platform = require('Platform');
 const React = require('React');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheetPropType = require('StyleSheetPropType');
 const ViewStylePropTypes = require('ViewStylePropTypes');
+
+const invariant = require('fbjs/lib/invariant');
+
+const {
+  AccessibilityComponentTypes,
+  AccessibilityTraits,
+} = require('ViewAccessibility');
+
+var TVViewPropTypes = {};
+if (Platform.isTVOS) {
+  TVViewPropTypes = require('TVViewPropTypes');
+}
 
 const requireNativeComponent = require('requireNativeComponent');
 
@@ -26,39 +39,12 @@ const PropTypes = React.PropTypes;
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
-const AccessibilityTraits = [
-  'none',
-  'button',
-  'link',
-  'header',
-  'search',
-  'image',
-  'selected',
-  'plays',
-  'key',
-  'text',
-  'summary',
-  'disabled',
-  'frequentUpdates',
-  'startsMedia',
-  'adjustable',
-  'allowsDirectInteraction',
-  'pageTurn',
-];
-
-const AccessibilityComponentType = [
-  'none',
-  'button',
-  'radiobutton_checked',
-  'radiobutton_unchecked',
-];
-
 const forceTouchAvailable = (NativeModules.IOSConstants &&
   NativeModules.IOSConstants.forceTouchAvailable) || false;
 
 const statics = {
   AccessibilityTraits,
-  AccessibilityComponentType,
+  AccessibilityComponentType: AccessibilityComponentTypes,
   /**
    * Is 3D Touch / Force Touch available (i.e. will touch events include `force`)
    * @platform ios
@@ -68,9 +54,9 @@ const statics = {
 
 /**
  * The most fundamental component for building a UI, `View` is a container that supports layout with
- * [flexbox](/react-native/docs/flexbox.html), [style](/react-native/docs/style.html),
- * [some touch handling](/react-native/docs/handling-touches.html), and
- * [accessibility](/react-native/docs/accessibility.html) controls. `View` maps directly to the
+ * [flexbox](docs/flexbox.html), [style](docs/style.html),
+ * [some touch handling](docs/handling-touches.html), and
+ * [accessibility](docs/accessibility.html) controls. `View` maps directly to the
  * native view equivalent on whatever platform React Native is running on, whether that is a
  * `UIView`, `<div>`, `android.view`, etc.
  *
@@ -93,7 +79,7 @@ const statics = {
  * }
  * ```
  *
- * > `View`s are designed to be used with [`StyleSheet`](/react-native/docs/style.html) for clarity
+ * > `View`s are designed to be used with [`StyleSheet`](docs/style.html) for clarity
  * > and performance, although inline styles are also supported.
  *
  * ### Synthetic Touch Events
@@ -133,6 +119,8 @@ const View = React.createClass({
   },
 
   propTypes: {
+    ...TVViewPropTypes,
+
     /**
      * When `true`, indicates that the view is an accessibility element. By default,
      * all the touchable elements are accessible.
@@ -159,7 +147,7 @@ const View = React.createClass({
      *
      * @platform android
      */
-    accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentType),
+    accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
 
     /**
      * Indicates to accessibility services whether the user should be notified
@@ -233,7 +221,7 @@ const View = React.createClass({
      * - `'allowsDirectInteraction'` - The element allows direct touch interaction for VoiceOver users.
      * - `'pageTurn'` - Informs VoiceOver that it should scroll to the next page when it finishes reading the contents of the element.
      *
-     * See the [Accessibility guide](/react-native/docs/accessibility.html#accessibilitytraits-ios)
+     * See the [Accessibility guide](docs/accessibility.html#accessibilitytraits-ios)
      * for more information.
      *
      * @platform ios
@@ -498,7 +486,15 @@ const View = React.createClass({
     needsOffscreenAlphaCompositing: PropTypes.bool,
   },
 
+  contextTypes: {
+    isInAParentText: React.PropTypes.bool,
+  },
+
   render: function() {
+    invariant(
+      !(this.context.isInAParentText && Platform.OS === 'android'),
+      'Nesting of <View> within <Text> is not supported on Android.');
+
     // WARNING: This method will not be used in production mode as in that mode we
     // replace wrapper component View with generated native wrapper RCTView. Avoid
     // adding functionality this component that you'd want to be available in both

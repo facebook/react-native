@@ -57,7 +57,7 @@ The keys to integrating React Native components into your iOS application are to
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
 7. [Debug](/react-native/releases/next/docs/debugging.html).
-8. Prepare for [deployment](/react-native/docs/running-on-device.html) (e.g., via the `react-native-xcode.sh` script).
+8. Prepare for [deployment](docs/running-on-device.html) (e.g., via the `react-native-xcode.sh` script).
 9. Deploy and Profit!
 
 <block class="android" />
@@ -72,7 +72,7 @@ The keys to integrating React Native components into your Android application ar
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
 7. [Debug](/react-native/releases/next/docs/debugging.html).
-8. [Prepare](/react-native/releases/next/docs/signed-apk-android.html) for [deployment](/react-native/docs/running-on-device.html).
+8. [Prepare](/react-native/releases/next/docs/signed-apk-android.html) for [deployment](docs/running-on-device.html).
 9. Deploy and Profit!
 
 <block class="objc swift android" />
@@ -81,7 +81,7 @@ The keys to integrating React Native components into your Android application ar
 
 <block class="android" />
 
-The [Android Getting Started guide](/react-native/docs/getting-started.html) will install the appropriate prerequisites (e.g., `npm`) for React Native on the Android target platform and your chosen development environment.
+The [Android Getting Started guide](docs/getting-started.html) will install the appropriate prerequisites (e.g., `npm`) for React Native on the Android target platform and your chosen development environment.
 
 > To ensure a smooth experience, make sure your `android` project is under `$root/android`.
 
@@ -89,7 +89,7 @@ The [Android Getting Started guide](/react-native/docs/getting-started.html) wil
 
 ### General
 
-First, follow the [Getting Started guide](/react-native/docs/getting-started.html) for your development environment and the iOS target platform to install the prerequisites for React Native.
+First, follow the [Getting Started guide](docs/getting-started.html) for your development environment and the iOS target platform to install the prerequisites for React Native.
 
 > To ensure a smooth experience, make sure your `iOS` project is under `$root/ios`.
 
@@ -726,9 +726,36 @@ public boolean onKeyUp(int keyCode, KeyEvent event) {
 }
 ```
 
-That's it, your activity is ready to run some JavaScript code.
+Now your activity is ready to run some JavaScript code.
 
-> If your app is targeting the Android `api level 23` or greater, make sure you have, for the development build, the `overlay permission` enabled. You can check it with `Settings.canDrawOverlays(this);`. This is required because, if your app produces an error in the react native component, the error view is displayed above all the other windows. Due to the new permissions system, introduced in the api level 23, the user needs to approve it.
+### Configure permissions for development error overlay
+
+If your app is targeting the Android `API level 23` or greater, make sure you have the `overlay` permission enabled for the development build. You can check it with `Settings.canDrawOverlays(this);`. This is required in dev builds because react native development errors must be displayed above all the other windows. Due to the new permissions system introduced in the API level 23, the user needs to approve it. This can be acheived by adding the following code to the Activity file in the onCreate() method. OVERLAY_PERMISSION_REQ_CODE is a field of the class which would be responsible for passing the result back to the Activity.
+
+```java
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    if (!Settings.canDrawOverlays(this)) {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                   Uri.parse("package:" + getPackageName()));
+        startActivityForResult(intent, OVERLAY_PERMISSION_REQ_CODE);
+    }
+}
+```
+
+Finally, the `onActivityResult()` method (as shown in the code below) has to be overridden to handle the permission Accepted or Denied cases for consistent UX.
+
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                // SYSTEM_ALERT_WINDOW permission not granted...
+            }
+        }
+    }
+}
+```
 
 ## Run your app
 

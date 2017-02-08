@@ -27,6 +27,11 @@
 #import "UIView+React.h"
 #import "RCTProfile.h"
 
+#if TARGET_OS_TV
+#import "RCTTVRemoteHandler.h"
+#import "RCTTVNavigationEventEmitter.h"
+#endif
+
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
 
 @interface RCTUIManager (RCTRootView)
@@ -53,6 +58,8 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   NSString *_moduleName;
   NSDictionary *_launchOptions;
   RCTRootContentView *_contentView;
+
+  BOOL _passThroughTouches;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -92,6 +99,13 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
                                                  name:RCTContentDidAppearNotification
                                                object:self];
 
+#if TARGET_OS_TV
+    self.tvRemoteHandler = [RCTTVRemoteHandler new];
+    for (UIGestureRecognizer *gr in self.tvRemoteHandler.tvRemoteGestureRecognizers) {
+      [self addGestureRecognizer:gr];
+    }
+#endif
+
     if (!_bridge.loading) {
       [self bundleFinishedLoading:[_bridge batchedBridge]];
     }
@@ -119,6 +133,16 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
+#if TARGET_OS_TV
+- (UIView *)preferredFocusedView
+{
+  if (self.reactPreferredFocusedView) {
+    return self.reactPreferredFocusedView;
+  }
+  return [super preferredFocusedView];
+}
+#endif
+
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
   super.backgroundColor = backgroundColor;
@@ -132,6 +156,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setPassThroughTouches:(BOOL)passThroughTouches
 {
+  _passThroughTouches = passThroughTouches;
   _contentView.passThroughTouches = passThroughTouches;
 }
 
@@ -231,6 +256,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self runApplication:bridge];
 
   _contentView.backgroundColor = self.backgroundColor;
+  _contentView.passThroughTouches = _passThroughTouches;
   [self insertSubview:_contentView atIndex:0];
 
   if (_sizeFlexibility == RCTRootViewSizeFlexibilityNone) {
@@ -358,7 +384,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _bridge = bridge;
     self.reactTag = reactTag;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
-    [self addGestureRecognizer:_touchHandler];
+    [_touchHandler attachToView:self];
     [_bridge.uiManager registerRootView:self withSizeFlexibility:sizeFlexibility];
     self.layer.backgroundColor = NULL;
   }
@@ -385,7 +411,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
 {
   super.frame = frame;
   if (self.reactTag && _bridge.isValid) {
-    [_bridge.uiManager setFrame:frame forView:self];
+    [_bridge.uiManager setSize:frame.size forView:self];
   }
 }
 

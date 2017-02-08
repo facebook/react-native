@@ -40,7 +40,23 @@ if THIS_IS_FBANDROID:
           '-DWITH_FB_MEMORY_PROFILING=1',
           '-DWITH_INSPECTOR=1',
         ],
-        deps = JSC_DEPS
+        deps = JSC_DEPS,
+        visibility = [
+          # TL;DR: If you depend on this target directly, you're gonna have a
+          # Bad Time(TM).
+          #
+          # `facebook::react::JSCExecutor::initOnJSVMThread` (in `:bridge`) does
+          # some platform-dependant setup. Exactly what setup to do is
+          # determined by some static functors, defined in `Platform.h`, which
+          # are initially `nullptr`. On Android, these functors are properly
+          # assigned as part of `xreact`'s `JNI_OnLoad`.  By depending directly
+          # on the bridge, we can mess up the SO initialisation order, causing
+          # `initOnJSVMThread` to be called before the platform-specific hooks
+          # have been properly initialised. Bad Times(TM).
+          #     -- @ashokmenon (2017/01/03)
+          react_native_target('jni/xreact/jni:jni'),
+          react_native_xplat_target('cxxreact/...'),
+        ],
       )
     )
 
@@ -61,7 +77,8 @@ elif THIS_IS_FBOBJC:
         preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS,
         deps = [
           '//xplat/folly:molly',
-        ]
+        ],
+        visibility = [ 'PUBLIC' ],
       )
     )
 
@@ -126,11 +143,11 @@ CXXREACT_PUBLIC_HEADERS = [
   'NativeModule.h',
   'NativeToJsBridge.h',
   'Platform.h',
+  'RecoverableError.h',
   'SystraceSection.h',
 ]
 
 react_library(
-  soname = 'libreactnativefb.$(ext)',
   header_namespace = 'cxxreact',
   force_static = True,
   srcs = glob(['*.cpp'], excludes=['SampleCxxModule.cpp']),
@@ -154,5 +171,4 @@ react_library(
     react_native_xplat_target('jschelpers:jschelpers'),
     react_native_xplat_target('microprofiler:microprofiler'),
   ],
-  visibility = [ 'PUBLIC' ],
 )

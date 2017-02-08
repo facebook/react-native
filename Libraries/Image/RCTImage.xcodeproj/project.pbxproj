@@ -27,13 +27,15 @@
 		2D3B5F241D9B0D1300451313 /* RCTImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 134B00A11B54232B00EC8DFB /* RCTImageUtils.m */; };
 		35123E6B1B59C99D00EBAD80 /* RCTImageStoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */; };
 		354631681B69857700AA0B86 /* RCTImageEditingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 354631671B69857700AA0B86 /* RCTImageEditingManager.m */; };
+		3D302E181DF8228100D6DDAE /* RCTImageUtils.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; };
+		3D302F211DF8269200D6DDAE /* RCTImageUtils.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; };
 		3DED3A8A1DE6F79800336DD7 /* RCTGIFImageDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304D5B01AA8C50D0002E2BE /* RCTGIFImageDecoder.h */; };
 		3DED3A8B1DE6F79800336DD7 /* RCTImageBlurUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = EEF314701C9B0DD30049118E /* RCTImageBlurUtils.h */; };
 		3DED3A8C1DE6F79800336DD7 /* RCTImageCache.h in Headers */ = {isa = PBXBuildFile; fileRef = CCD34C251D4B8FE900268922 /* RCTImageCache.h */; };
 		3DED3A8D1DE6F79800336DD7 /* RCTImageEditingManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 354631661B69857700AA0B86 /* RCTImageEditingManager.h */; };
 		3DED3A8E1DE6F79800336DD7 /* RCTImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63C1DE4B44A0058FD77 /* RCTImageLoader.h */; };
 		3DED3A8F1DE6F79800336DD7 /* RCTImageStoreManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63D1DE4B44A0058FD77 /* RCTImageStoreManager.h */; };
-		3DED3A901DE6F79800336DD7 /* RCTImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3DED3A901DE6F79800336DD7 /* RCTImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; };
 		3DED3A911DE6F79800336DD7 /* RCTImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304D5A71AA8C4A30002E2BE /* RCTImageView.h */; };
 		3DED3A921DE6F79800336DD7 /* RCTImageViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304D5A91AA8C4A30002E2BE /* RCTImageViewManager.h */; };
 		3DED3A931DE6F79800336DD7 /* RCTLocalAssetImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 13EF7F7D1BC825B1003F47DD /* RCTLocalAssetImageLoader.h */; };
@@ -44,7 +46,7 @@
 		3DED3A991DE6F7A400336DD7 /* RCTImageEditingManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 354631661B69857700AA0B86 /* RCTImageEditingManager.h */; };
 		3DED3A9A1DE6F7A400336DD7 /* RCTImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63C1DE4B44A0058FD77 /* RCTImageLoader.h */; };
 		3DED3A9B1DE6F7A400336DD7 /* RCTImageStoreManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63D1DE4B44A0058FD77 /* RCTImageStoreManager.h */; };
-		3DED3A9C1DE6F7A400336DD7 /* RCTImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3DED3A9C1DE6F7A400336DD7 /* RCTImageUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; };
 		3DED3A9D1DE6F7A400336DD7 /* RCTImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304D5A71AA8C4A30002E2BE /* RCTImageView.h */; };
 		3DED3A9E1DE6F7A400336DD7 /* RCTImageViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304D5A91AA8C4A30002E2BE /* RCTImageViewManager.h */; };
 		3DED3A9F1DE6F7A400336DD7 /* RCTLocalAssetImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 13EF7F7D1BC825B1003F47DD /* RCTLocalAssetImageLoader.h */; };
@@ -52,6 +54,31 @@
 		CCD34C271D4B8FE900268922 /* RCTImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CCD34C261D4B8FE900268922 /* RCTImageCache.m */; };
 		EEF314721C9B0DD30049118E /* RCTImageBlurUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = EEF314711C9B0DD30049118E /* RCTImageBlurUtils.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3D302E171DF8225500D6DDAE /* Copy Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/RCTImage;
+			dstSubfolderSpec = 16;
+			files = (
+				3D302E181DF8228100D6DDAE /* RCTImageUtils.h in Copy Headers */,
+			);
+			name = "Copy Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D302F201DF8268700D6DDAE /* Copy Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/RCTImage;
+			dstSubfolderSpec = 16;
+			files = (
+				3D302F211DF8269200D6DDAE /* RCTImageUtils.h in Copy Headers */,
+			);
+			name = "Copy Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1304D5A71AA8C4A30002E2BE /* RCTImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageView.h; sourceTree = "<group>"; };
@@ -139,12 +166,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				3DED3A8A1DE6F79800336DD7 /* RCTGIFImageDecoder.h in Headers */,
+				3DED3A901DE6F79800336DD7 /* RCTImageUtils.h in Headers */,
 				3DED3A8B1DE6F79800336DD7 /* RCTImageBlurUtils.h in Headers */,
 				3DED3A8C1DE6F79800336DD7 /* RCTImageCache.h in Headers */,
 				3DED3A8D1DE6F79800336DD7 /* RCTImageEditingManager.h in Headers */,
 				3DED3A8E1DE6F79800336DD7 /* RCTImageLoader.h in Headers */,
 				3DED3A8F1DE6F79800336DD7 /* RCTImageStoreManager.h in Headers */,
-				3DED3A901DE6F79800336DD7 /* RCTImageUtils.h in Headers */,
 				3DED3A911DE6F79800336DD7 /* RCTImageView.h in Headers */,
 				3DED3A921DE6F79800336DD7 /* RCTImageViewManager.h in Headers */,
 				3DED3A931DE6F79800336DD7 /* RCTLocalAssetImageLoader.h in Headers */,
@@ -178,6 +205,7 @@
 			buildConfigurationList = 2D2A28421D9B042B00D4039D /* Build configuration list for PBXNativeTarget "RCTImage-tvOS" */;
 			buildPhases = (
 				3DED3A951DE6F79D00336DD7 /* Headers */,
+				3D302F201DF8268700D6DDAE /* Copy Headers */,
 				2D2A28361D9B042B00D4039D /* Sources */,
 			);
 			buildRules = (
@@ -194,6 +222,7 @@
 			buildConfigurationList = 58B511711A9E6B3D00147676 /* Build configuration list for PBXNativeTarget "RCTImage" */;
 			buildPhases = (
 				3DED3A891DE6F78800336DD7 /* Headers */,
+				3D302E171DF8225500D6DDAE /* Copy Headers */,
 				58B511591A9E6B3D00147676 /* Sources */,
 			);
 			buildRules = (
@@ -295,7 +324,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTImage;
 				SDKROOT = appletvos;
-				SKIP_INSTALL = YES;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Debug;
@@ -314,7 +342,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTImage;
 				SDKROOT = appletvos;
-				SKIP_INSTALL = YES;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Release;
@@ -358,11 +385,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/usr/local/include";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Werror",
 					"-Wall",
@@ -402,10 +429,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/usr/local/include";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
 					"-Werror",
@@ -426,7 +453,6 @@
 				PRODUCT_NAME = RCTImage;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTImage;
 				RUN_CLANG_STATIC_ANALYZER = YES;
-				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
@@ -442,7 +468,6 @@
 				PRODUCT_NAME = RCTImage;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTImage;
 				RUN_CLANG_STATIC_ANALYZER = NO;
-				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};

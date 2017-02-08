@@ -32,7 +32,3 @@ android_library(
     'PUBLIC',
   ],
 )
-
-project_config(
-  src_target = ':bridge',
-)

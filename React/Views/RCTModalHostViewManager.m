@@ -12,7 +12,6 @@
 #import "RCTBridge.h"
 #import "RCTModalHostView.h"
 #import "RCTModalHostViewController.h"
-#import "RCTTouchHandler.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 
@@ -26,8 +25,7 @@
 {
   [super insertReactSubview:subview atIndex:atIndex];
   if ([subview isKindOfClass:[RCTShadowView class]]) {
-    CGRect frame = {.origin = CGPointZero, .size = RCTScreenSize()};
-    [(RCTShadowView *)subview setFrame:frame];
+    ((RCTShadowView *)subview).size = RCTScreenSize();
   }
 }
 

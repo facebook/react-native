@@ -178,7 +178,7 @@ class SwipeableListView extends React.Component {
   _renderRow = (rowData: Object, sectionID: string, rowID: string): React.Element<any> => {
     const slideoutView = this.props.renderQuickActions(rowData, sectionID, rowID);
 
-    // If renderRowSlideout is unspecified or returns falsey, don't allow swipe
+    // If renderQuickActions is unspecified or returns falsey, don't allow swipe
     if (!slideoutView) {
       return this.props.renderRow(rowData, sectionID, rowID);
     }
@@ -196,6 +196,7 @@ class SwipeableListView extends React.Component {
         maxSwipeDistance={this._getMaxSwipeDistance(rowData, sectionID, rowID)}
         key={rowID}
         onOpen={() => this._onOpen(rowData.id)}
+        onClose={() => this._onClose(rowData.id)}
         onSwipeEnd={() => this._setListViewScrollable(true)}
         onSwipeStart={() => this._setListViewScrollable(false)}
         shouldBounceOnMount={shouldBounceOnMount}>
@@ -207,6 +208,12 @@ class SwipeableListView extends React.Component {
   _onOpen(rowID: string): void {
     this.setState({
       dataSource: this.state.dataSource.setOpenRowID(rowID),
+    });
+  }
+
+  _onClose(rowID: string): void {
+    this.setState({
+      dataSource: this.state.dataSource.setOpenRowID(null),
     });
   }
 }

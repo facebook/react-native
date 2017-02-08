@@ -7,8 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTI18nUtil.h"
 #import "RCTRootShadowView.h"
+
+#import "RCTI18nUtil.h"
 
 @implementation RCTRootShadowView
 
@@ -20,9 +21,7 @@
 {
   self = [super init];
   if (self) {
-    if ([[RCTI18nUtil sharedInstance] isRTL]) {
-      YGNodeStyleSetDirection(self.cssNode, YGDirectionRTL);
-    }
+    self.direction = [[RCTI18nUtil sharedInstance] isRTL] ? YGDirectionRTL : YGDirectionLTR;
   }
   return self;
 }

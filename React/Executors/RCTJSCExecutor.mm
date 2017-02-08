@@ -338,10 +338,15 @@ static NSThread *newJavaScriptThread(void)
       contextRef = context.JSGlobalContextRef;
     } else {
       if (self->_useCustomJSCLibrary) {
-        JSC_configureJSCForIOS(true);
+        JSC_configureJSCForIOS(true, RCTJSONStringify(@{
+          @"StartSamplingProfilerOnInit": @(self->_bridge.devMenu.startSamplingProfilerOnLaunch)
+        }, NULL).UTF8String);
       }
       contextRef = JSC_JSGlobalContextCreateInGroup(self->_useCustomJSCLibrary, nullptr, nullptr);
       context = [JSC_JSContext(contextRef) contextWithJSGlobalContextRef:contextRef];
+      // We release the global context reference here to balance retainCount after JSGlobalContextCreateInGroup.
+      // The global context _is not_ going to be released since the JSContext keeps the strong reference to it.
+      JSC_JSGlobalContextRelease(contextRef);
       self->_context = [[RCTJavaScriptContext alloc] initWithJSContext:context onThread:self->_javaScriptThread];
       [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
                                                           object:context];
@@ -1025,7 +1030,7 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
 - (void)_createContext
 {
   if (_useCustomJSCLibrary) {
-    JSC_configureJSCForIOS(true);
+    JSC_configureJSCForIOS(true, "{}");
   }
   JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup(_useCustomJSCLibrary, nullptr, nullptr);
   _context = [JSC_JSContext(ctx) contextWithJSGlobalContextRef:ctx];

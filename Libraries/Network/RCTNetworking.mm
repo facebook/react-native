@@ -49,7 +49,7 @@ typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSD
 static NSString *RCTGenerateFormBoundary()
 {
   const size_t boundaryLength = 70;
-  const char *boundaryChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_./";
+  const char *boundaryChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.";
 
   char *bytes = (char*)malloc(boundaryLength);
   size_t charCount = strlen(boundaryChars);
@@ -302,6 +302,11 @@ RCT_EXPORT_MODULE()
   NSData *body = [RCTConvert NSData:query[@"string"]];
   if (body) {
     return callback(nil, @{@"body": body});
+  }
+  NSString *base64String = [RCTConvert NSString:query[@"base64"]];
+  if (base64String) {
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:base64String options:0];
+    return callback(nil, @{@"body": data});
   }
   NSURLRequest *request = [RCTConvert NSURLRequest:query[@"uri"]];
   if (request) {

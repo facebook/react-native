@@ -11,6 +11,8 @@
  */
 'use strict';
 
+const ColorPropType = require('ColorPropType');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
@@ -19,8 +21,11 @@ const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 const Touchable = require('Touchable');
 
+const processColor = require('processColor');
 const createReactNativeComponentClass = require('createReactNativeComponentClass');
 const mergeFast = require('mergeFast');
+
+const { PropTypes } = React;
 
 const stylePropType = StyleSheetPropType(TextStylePropTypes);
 
@@ -31,8 +36,10 @@ const viewConfig = {
     ellipsizeMode: true,
     allowFontScaling: true,
     selectable: true,
+    selectionColor: true,
     adjustsFontSizeToFit: true,
     minimumFontScale: true,
+    textBreakStrategy: true,
   }),
   uiViewClassName: 'RCTText',
 };
@@ -107,7 +114,7 @@ const Text = React.createClass({
      *
      * > `clip` is working only for iOS
      */
-    ellipsizeMode: React.PropTypes.oneOf(['head', 'middle', 'tail', 'clip']),
+    ellipsizeMode: PropTypes.oneOf(['head', 'middle', 'tail', 'clip']),
     /**
      * Used to truncate the text with an ellipsis after computing the text
      * layout, including line wrapping, such that the total number of lines
@@ -115,68 +122,84 @@ const Text = React.createClass({
      *
      * This prop is commonly used with `ellipsizeMode`.
      */
-    numberOfLines: React.PropTypes.number,
+    numberOfLines: PropTypes.number,
+    /**
+     * Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced`
+     * The default value is `highQuality`.
+     * @platform android
+     */
+    textBreakStrategy: PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
     /**
      * Invoked on mount and layout changes with
      *
      *   `{nativeEvent: {layout: {x, y, width, height}}}`
      */
-    onLayout: React.PropTypes.func,
+    onLayout: PropTypes.func,
     /**
      * This function is called on press.
      *
      * e.g., `onPress={() => console.log('1st')}``
      */
-    onPress: React.PropTypes.func,
+    onPress: PropTypes.func,
     /**
      * This function is called on long press.
      *
      * e.g., `onLongPress={this.increaseSize}>``
      */
-    onLongPress: React.PropTypes.func,
+    onLongPress: PropTypes.func,
+    /**
+     * When the scroll view is disabled, this defines how far your touch may
+     * move off of the button, before deactivating the button. Once deactivated,
+     * try moving it back and you'll see that the button is once again
+     * reactivated! Move it back and forth several times while the scroll view
+     * is disabled. Ensure you pass in a constant to reduce memory allocations.
+     */
+    pressRetentionOffset: EdgeInsetsPropType,
     /**
      * Lets the user select text, to use the native copy and paste functionality.
      */
-    selectable: React.PropTypes.bool,
+    selectable: PropTypes.bool,
+    /**
+     * The highlight color of the text.
+     * @platform android
+     */
+    selectionColor: ColorPropType,
     /**
      * When `true`, no visual change is made when text is pressed down. By
      * default, a gray oval highlights the text on press down.
-     *
      * @platform ios
      */
-    suppressHighlighting: React.PropTypes.bool,
+    suppressHighlighting: PropTypes.bool,
     style: stylePropType,
     /**
      * Used to locate this view in end-to-end tests.
      */
-    testID: React.PropTypes.string,
+    testID: PropTypes.string,
     /**
-     * Specifies whether fonts should scale to respect Text Size accessibility setting on iOS. The
+     * Specifies whether fonts should scale to respect Text Size accessibility settings. The
      * default is `true`.
-     *
-     * @platform ios
      */
-    allowFontScaling: React.PropTypes.bool,
+    allowFontScaling: PropTypes.bool,
     /**
      * When set to `true`, indicates that the view is an accessibility element. The default value
      * for a `Text` element is `true`.
      *
      * See the
-     * [Accessibility guide](/react-native/docs/accessibility.html#accessible-ios-android)
+     * [Accessibility guide](docs/accessibility.html#accessible-ios-android)
      * for more information.
      */
-    accessible: React.PropTypes.bool,
+    accessible: PropTypes.bool,
     /**
      * Specifies whether font should be scaled down automatically to fit given style constraints.
      * @platform ios
      */
-    adjustsFontSizeToFit: React.PropTypes.bool,
+    adjustsFontSizeToFit: PropTypes.bool,
 
     /**
      * Specifies smallest possible scale a font can reach when adjustsFontSizeToFit is enabled. (values 0.01-1.0).
      * @platform ios
      */
-    minimumFontScale: React.PropTypes.number,
+    minimumFontScale: PropTypes.number,
   },
   getDefaultProps(): Object {
     return {
@@ -196,10 +219,10 @@ const Text = React.createClass({
     return {isInAParentText: true};
   },
   childContextTypes: {
-    isInAParentText: React.PropTypes.bool
+    isInAParentText: PropTypes.bool
   },
   contextTypes: {
-    isInAParentText: React.PropTypes.bool
+    isInAParentText: PropTypes.bool
   },
   /**
    * Only assigned if touch is needed.
@@ -261,7 +284,7 @@ const Text = React.createClass({
               };
 
               this.touchableGetPressRectOffset = function(): RectOffset {
-                return PRESS_RECT_OFFSET;
+                return this.props.pressRetentionOffset || PRESS_RECT_OFFSET;
               };
             }
             return setResponder;
@@ -301,6 +324,12 @@ const Text = React.createClass({
         ...this.props,
         ...this._handlers,
         isHighlighted: this.state.isHighlighted,
+      };
+    }
+    if (newProps.selectionColor != null) {
+      newProps = {
+        ...newProps,
+        selectionColor: processColor(newProps.selectionColor)
       };
     }
     if (Touchable.TOUCH_TARGET_DEBUG && newProps.onPress) {

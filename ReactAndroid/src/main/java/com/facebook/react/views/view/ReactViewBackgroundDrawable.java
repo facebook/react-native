@@ -27,7 +27,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 
-import com.facebook.csslayout.YogaConstants;
+import com.facebook.yoga.YogaConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.Spacing;
@@ -102,7 +102,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
     boolean roundedBorders = mBorderCornerRadii != null ||
         (!YogaConstants.isUndefined(mBorderRadius) && mBorderRadius > 0);
 
-    if ((mBorderStyle == null || mBorderStyle == BorderStyle.SOLID) && !roundedBorders) {
+    if (!roundedBorders) {
       drawRectangularBackgroundWithBorders(canvas);
     } else {
       drawRoundedBackgroundWithBorders(canvas);

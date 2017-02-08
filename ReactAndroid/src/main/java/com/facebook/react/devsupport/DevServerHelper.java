@@ -35,6 +35,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.ws.WebSocket;
 import okio.Okio;
 import okio.Sink;
 
@@ -83,6 +84,8 @@ public class DevServerHelper {
 
   public interface PackagerCommandListener {
     void onPackagerReloadCommand();
+    void onCaptureHeapCommand();
+    void onPokeSamplingProfilerCommand(@Nullable final WebSocket webSocket);
   }
 
   public interface PackagerStatusCallback {
@@ -122,9 +125,15 @@ public class DevServerHelper {
         mPackagerConnection = new JSPackagerWebSocketClient(getPackagerConnectionURL(),
           new JSPackagerWebSocketClient.JSPackagerCallback() {
             @Override
-            public void onMessage(String target, String action) {
-              if (commandListener != null && "bridge".equals(target) && "reload".equals(action)) {
-                commandListener.onPackagerReloadCommand();
+            public void onMessage(@Nullable WebSocket webSocket, String target, String action) {
+              if (commandListener != null && "bridge".equals(target)) {
+                if ("reload".equals(action)) {
+                  commandListener.onPackagerReloadCommand();
+                } else if ("captureHeap".equals(action)) {
+                  commandListener.onCaptureHeapCommand();
+                } else if ("pokeSamplingProfiler".equals(action)) {
+                  commandListener.onPokeSamplingProfilerCommand(webSocket);
+                }
               }
             }
           });
