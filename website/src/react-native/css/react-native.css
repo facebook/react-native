@@ -728,7 +728,8 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   margin-top: 12px;
   margin-bottom: 5px;
   padding: 10px;
-  background-color: #0484A7; }
+  background-color: #0484A7;
+  text-transform: capitalize; }
 
 .nav-docs-section ul {
   display: block;
@@ -1350,7 +1351,7 @@ div[data-twttr-id] iframe {
 .methodTitle {
   font-weight: bold;
   font-size: 24px;
-  color: #2F9C0A; }
+  color: #025268; }
 
 .compactProps .methodTitle {
   font-size: 14px;

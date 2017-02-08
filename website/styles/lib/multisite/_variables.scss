@@ -5,11 +5,14 @@ $color-react-native-gray-dark: #3B3738 !default;
 $color-react-native-gray-darker: #2D2D2D !default;
 $color-react-native-blue-light: #F5FCFF !default;
 
-$color-nav-bg: $color-react-native-blue-dark; // blue or gray
+$color-nav-bg: $color-react-native-blue-dark;
 $color-hero-bg: $color-react-native-gray-darker;
 $color-body-bg: $color-react-native-blue-light;
+$color-nav-header-bg: $color-react-native-blue-dark;
 
 $color-h1: $color-react-native-blue-darker;
+
+$color-reference-title: $color-react-native-blue-darker;
 
 $font-proxima-nova: proxima-nova;
 $font-helvetica-neue: "Helvetica Neue";
