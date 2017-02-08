@@ -17,7 +17,6 @@ var TextStylePropTypes = require('TextStylePropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var keyMirror = require('fbjs/lib/keyMirror');
-var matricesDiffer = require('matricesDiffer');
 var processColor = require('processColor');
 var processTransform = require('processTransform');
 var sizesDiffer = require('sizesDiffer');
@@ -29,11 +28,7 @@ var ReactNativeStyleAttributes = {
 };
 
 ReactNativeStyleAttributes.transform = { process: processTransform };
-ReactNativeStyleAttributes.transformMatrix = { diff: matricesDiffer };
 ReactNativeStyleAttributes.shadowOffset = { diff: sizesDiffer };
-
-// Do not rely on this attribute.
-ReactNativeStyleAttributes.decomposedMatrix = 'decomposedMatrix';
 
 var colorAttributes = { process: processColor };
 ReactNativeStyleAttributes.backgroundColor = colorAttributes;
