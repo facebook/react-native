@@ -1,20 +1,19 @@
 FROM library/node:6.9.2
 
-# set default environment variables
-ENV YARN_VERSION=0.16.0
+ENV YARN_VERSION=0.19.1
 
 # install dependencies
 RUN apt-get update && apt-get install ocaml libelf-dev -y
+RUN npm install yarn@$YARN_VERSION -g
 
 # add code
 RUN mkdir /app
 ADD . /app
-WORKDIR /app
 
-RUN npm install yarn@$YARN_VERSION -g
-RUN yarn install --ignore-engines --pure-lockfile
+WORKDIR /app
+RUN yarn install --ignore-engines
 
 WORKDIR website
-RUN yarn install --ignore-engines --ignore-platform --pure-lockfile
+RUN yarn install --ignore-engines --ignore-platform
 
 WORKDIR /app

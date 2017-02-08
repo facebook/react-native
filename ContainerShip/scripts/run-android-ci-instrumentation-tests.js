@@ -40,6 +40,8 @@ const test_opts = {
     PATH: argv.path || './ReactAndroid/src/androidTest/java/com/facebook/react/tests',
     RETRIES: parseInt(argv.retries || 2, 10),
 
+    TEST_TIMEOUT: parseInt(argv['test-timeout'] || 1000 * 60 * 10),
+
     OFFSET: argv.offset,
     COUNT: argv.count
 }
@@ -78,9 +80,22 @@ return async.mapSeries(testClasses, (clazz, callback) => {
     }
 
     return async.retry(test_opts.RETRIES, (retryCb) => {
-        return child_process.spawn('./scripts/run-instrumentation-tests-via-adb-shell.sh', [test_opts.PACKAGE, clazz], {
+        const test_process = child_process.spawn('./ContainerShip/scripts/run-instrumentation-tests-via-adb-shell.sh', [test_opts.PACKAGE, clazz], {
             stdio: 'inherit'
-        }).on('error', retryCb).on('exit', (code) => {
+        })
+
+        const timeout = setTimeout(() => {
+            test_process.kill();
+        }, test_opts.TEST_TIMEOUT);
+
+        test_process.on('error', (err) => {
+            clearTimeout(timeout);
+            retryCb(err);
+        });
+
+        test_process.on('exit', (code) => {
+            clearTimeout(timeout);
+
             if(code !== 0) {
                 return retryCb(new Error(`Process exited with code: ${code}`));
             }

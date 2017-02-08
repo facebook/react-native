@@ -2,7 +2,9 @@ import groovy.json.JsonSlurperClassic
 
 def runPipeline() {
     try {
-        runStages();
+        ansiColor('xterm') {
+            runStages();
+        }
     } catch(err) {
         echo "Error: ${err}"
         currentBuild.result = "FAILED"
@@ -54,7 +56,7 @@ def getParallelInstrumentationTests(testDir, parallelCount, imageName) {
         def offset = x
         integrationTests["android integration tests: ${offset}"] = {
             run: {
-                runCmdOnDockerImage(imageName, "bash /app/ContainerShip/scripts/run-android-docker-instrumentation-tests.sh --offset=${offset} --count=${testPerParallel}", '--privileged')
+                runCmdOnDockerImage(imageName, "bash /app/ContainerShip/scripts/run-android-docker-instrumentation-tests.sh --offset=${offset} --count=${testPerParallel}", '--privileged --rm')
             }
         }
     }
@@ -77,6 +79,7 @@ def runStages() {
     ]
 
     node {
+        def jsDockerBuild, androidDockerBuild
         def jsTag, androidTag, jsImageName, androidImageName, parallelInstrumentationTests
 
         try {
@@ -96,80 +99,67 @@ def runStages() {
                 buildInfo.scm.sha = githubInfo.sha
                 buildInfo.scm.tag = githubInfo.tag
                 buildInfo.scm.isPR = githubInfo.isPR
-                buildInfo.image.tag = buildInfo.scm.sha
+                buildInfo.image.tag = "${buildInfo.scm.sha}-${env.BUILD_TAG.replace("/", "-").replace("%2F", "-")}"
 
-                jsTag = "${buildInfo.image.tag}-javascript"
-                androidTag = "${buildInfo.image.tag}-android"
-                jsImageName = "${buildInfo.image.name}:${jsTag}"
-                androidImageName = "${buildInfo.image.name}:${androidTag}"
+                jsTag = "${buildInfo.image.tag}"
+                androidTag = "${buildInfo.image.tag}"
+                jsImageName = "${buildInfo.image.name}-js:${jsTag}"
+                androidImageName = "${buildInfo.image.name}-android:${androidTag}"
 
                 parallelInstrumentationTests = getParallelInstrumentationTests('./ReactAndroid/src/androidTest/java/com/facebook/react/tests', 3, androidImageName)
 
                 parallel(
                     'javascript build': {
-                        buildDockerfile('ContainerShip/Dockerfile.javascript', jsImageName)
+                        jsDockerBuild = docker.build("${jsImageName}", "-f ContainerShip/Dockerfile.javascript .")
                     },
                     'android build': {
-                        buildDockerfile('ContainerShip/Dockerfile.android', androidImageName)
+                        androidDockerBuild = docker.build("${androidImageName}", "-f ContainerShip/Dockerfile.android .")
                     }
                 )
 
             }
 
-            stage('Tests') {
-                parallelInstrumentationTests["javascript flow"] = {
-                    run: {
-                        runCmdOnDockerImage(jsImageName, 'yarn run flow -- check')
+            stage('Tests JS') {
+                parallel(
+                    'javascript flow': {
+                        runCmdOnDockerImage(jsImageName, 'yarn run flow -- check', '--rm')
+                    },
+                    'javascript tests': {
+                        runCmdOnDockerImage(jsImageName, 'yarn test --maxWorkers=4', '--rm')
+                    },
+                    'documentation tests': {
+                        runCmdOnDockerImage(jsImageName, 'cd website && yarn test', '--rm')
+                    },
+                    'documentation generation': {
+                        runCmdOnDockerImage(jsImageName, 'cd website && node ./server/generate.js', '--rm')
                     }
-                }
+                )
+            }
 
-                parallelInstrumentationTests["javascript tests"] = {
-                    run: {
-                        runCmdOnDockerImage(jsImageName, 'yarn test --maxWorkers=4')
+            stage('Tests Android') {
+                parallel(
+                    'android unit tests': {
+                        runCmdOnDockerImage(androidImageName, 'bash /app/ContainerShip/scripts/run-android-docker-unit-tests.sh', '--privileged --rm')
+                    },
+                    'android e2e tests': {
+                        runCmdOnDockerImage(androidImageName, 'bash /app/ContainerShip/scripts/run-ci-e2e-tests.sh --android --js', '--rm')
                     }
-                }
+                )
+            }
 
-                parallelInstrumentationTests["documentation tests"] = {
-                    run: {
-                        runCmdOnDockerImage(jsImageName, 'cd website && yarn test')
-                    }
-                }
-
-                parallelInstrumentationTests["documentation generation"] = {
-                    run: {
-                        runCmdOnDockerImage(jsImageName, 'cd website && node ./server/generate.js')
-                    }
-                }
-
-                parallelInstrumentationTests["android unit tests"] = {
-                    run: {
-                        runCmdOnDockerImage(androidImageName, 'bash /app/ContainerShip/scripts/run-android-docker-unit-tests.sh', '--privileged')
-                    }
-                }
-
-                parallelInstrumentationTests["android e2e tests"] = {
-                    run: {
-                        runCmdOnDockerImage(androidImageName, 'bash /app/ContainerShip/scripts/run-ci-e2e-tests.sh --android --js')
-                    }
-                }
-
+            stage('Tests Android Instrumentation') {
                 // run all tests in parallel
                 parallel(parallelInstrumentationTests)
             }
 
             stage('Cleanup') {
-                parallel(
-                    'javascript': {
-                        cleanupImage(buildInfo.image.name, jsTag)
-                    },
-                    'android': {
-                        cleanupImage(buildInfo.image.name, androidTag)
-                    }
-                )
+                cleanupImage(jsDockerBuild)
+                cleanupImage(androidDockerBuild)
             }
         } catch(err) {
-            cleanupImage(buildInfo.image.name, jsTag)
-            cleanupImage(buildInfo.image.name, androidTag)
+            cleanupImage(jsDockerBuild)
+            cleanupImage(androidDockerBuild)
+
             throw err
         }
     }
@@ -184,12 +174,15 @@ def gitCommit() {
     return sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
 }
 
-def cleanupImage(imageName, tag) {
-    def imageId = sh(script: "docker images | awk '\$1==\"${imageName}\" && \$2==\"${tag}\" { print \$3 }'", returnStdout: true).trim()
-
-    if(imageId) {
-        sh "docker rm -f \$(docker ps -a | awk '\$2==\"${imageName}:${tag}\" { print \$1 }')"
-        sh "docker rmi -f ${imageId}"
+def cleanupImage(image) {
+    if (image) {
+        try {
+            sh "docker ps -a | awk '{ print \$1,\$2 }' | grep ${image.id} | awk '{print \$1 }' | xargs -I {} docker rm {}"
+            sh "docker rmi -f ${image.id}"
+        } catch(e) {
+            echo "Error cleaning up ${image.id}"
+            echo "${e}"
+        }
     }
 }
 
