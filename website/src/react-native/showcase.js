@@ -367,7 +367,7 @@ var featured = [
     linkAppStore: 'http://x.co/Flare',
     linkPlayStore: 'http://x.co/FlareAndr',
     infoLink: 'http://x.co/FlareNews',
-    infoTitle: '"Social network that connects entrepreneurs to fellow entrepreneurs, consumers, investors and experts"',
+    infoTitle: 'Social network that connects entrepreneurs to fellow entrepreneurs, consumers, investors and experts',
   },
 ];
 
