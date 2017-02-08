@@ -21,7 +21,6 @@ See the official [React Native website](https://facebook.github.io/react-native/
 ## Getting Started
 
 - Follow the [Getting Started guide](https://facebook.github.io/react-native/docs/getting-started.html) to install React Native and its dependencies.
-- Check out this [tutorial](https://facebook.github.io/react-native/docs/sample-application-movies.html) to walk through your first project that fetches real data and displays it in a list.
 - [Open the UIExplorer example project](#examples) to see a list of components that ship with React Native.
 - Install the React Developer Tools for [Chrome](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) or [Firefox](https://addons.mozilla.org/firefox/addon/react-devtools/) for better debugging [(read more)](https://facebook.github.io/react-native/docs/debugging.html).
 - Try out apps from the [Showcase](https://facebook.github.io/react-native/showcase.html) to see what React Native is capable of!
