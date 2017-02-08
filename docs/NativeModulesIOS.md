@@ -34,21 +34,14 @@ In addition to implementing the `RCTBridgeModule` protocol, your class must also
 // CalendarManager.m
 @implementation CalendarManager
 
+// To export a module named CalendarManager
 RCT_EXPORT_MODULE();
 
-@end
-```
-If you want to add a different name to your Module, make sure you don't use Obj-C String syntax as a parameter as the macro won't accept it. Do it like this:
-
-```objective-c
-// CalendarManager.m
-@implementation CalendarManager
-
-RCT_EXPORT_MODULE(MyAwsomeCalendarManager);
+// This would name the module AwesomeCalendarManager instead
+// RCT_EXPORT_MODULE(AwesomeCalendarManager);
 
 @end
 ```
-Notice the lack of '@' and double quotes.
 
 React Native will not expose any methods of `CalendarManager` to JavaScript unless explicitly told to. This is done using the `RCT_EXPORT_METHOD()` macro:
 
