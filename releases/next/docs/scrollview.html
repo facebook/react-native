@@ -124,7 +124,7 @@ If no options are passed, <code>animated</code> defaults to true.</p></div></div
   Image
 <span class="token punctuation">}</span> <span class="token operator">=</span> ReactNative<span class="token punctuation">;</span>
 
-exports<span class="token punctuation">.</span>displayName <span class="token operator">=</span> <span class="token punctuation">(</span>undefined<span class="token punctuation">:</span> <span class="token operator">?</span>string<span class="token punctuation">)</span><span class="token punctuation">;</span>
+exports<span class="token punctuation">.</span>displayName <span class="token operator">=</span> <span class="token string">&#x27;ScrollViewExample&#x27;</span><span class="token punctuation">;</span>
 exports<span class="token punctuation">.</span>title <span class="token operator">=</span> <span class="token string">&#x27;&lt;ScrollView&gt;&#x27;</span><span class="token punctuation">;</span>
 exports<span class="token punctuation">.</span>description <span class="token operator">=</span> <span class="token string">&#x27;Component that enables scrolling through child components&#x27;</span><span class="token punctuation">;</span>
 exports<span class="token punctuation">.</span>examples <span class="token operator">=</span> <span class="token punctuation">[</span>
@@ -141,7 +141,7 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
           onScroll<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span> console<span class="token punctuation">.</span><span class="token function">log<span class="token punctuation">(</span></span><span class="token string">&#x27;onScroll!&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">}</span>
           scrollEventThrottle<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">200</span><span class="token punctuation">}</span>
           style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>scrollView<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-          <span class="token punctuation">{</span>THUMBS<span class="token punctuation">.</span><span class="token function">map<span class="token punctuation">(</span></span>createThumbRow<span class="token punctuation">)</span><span class="token punctuation">}</span>
+          <span class="token punctuation">{</span>THUMB_URLS<span class="token punctuation">.</span><span class="token function">map<span class="token punctuation">(</span></span>createThumbRow<span class="token punctuation">)</span><span class="token punctuation">}</span>
         &lt;<span class="token operator">/</span>ScrollView<span class="token operator">&gt;</span>
         &lt;TouchableOpacity
           style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span>
@@ -160,26 +160,37 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
   title<span class="token punctuation">:</span> <span class="token string">&#x27;&lt;ScrollView&gt; (horizontal = true)&#x27;</span><span class="token punctuation">,</span>
   description<span class="token punctuation">:</span> <span class="token string">&#x27;You can display &lt;ScrollView&gt;\&#x27;s child components horizontally rather than vertically&#x27;</span><span class="token punctuation">,</span>
   render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">var</span> _scrollView<span class="token punctuation">:</span> ScrollView<span class="token punctuation">;</span>
+
+    <span class="token keyword">function</span> <span class="token function">renderScrollView<span class="token punctuation">(</span></span>title<span class="token punctuation">:</span> string<span class="token punctuation">,</span> addtionalStyles<span class="token punctuation">:</span> StyleSheet<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">var</span> _scrollView<span class="token punctuation">:</span> ScrollView<span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>addtionalStyles<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+          &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>text<span class="token punctuation">}</span><span class="token operator">&gt;</span><span class="token punctuation">{</span>title<span class="token punctuation">}</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+          &lt;ScrollView
+            ref<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span>scrollView<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span> _scrollView <span class="token operator">=</span> scrollView<span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">}</span>
+            automaticallyAdjustContentInsets<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">false</span><span class="token punctuation">}</span>
+            horizontal<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">true</span><span class="token punctuation">}</span>
+            style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>scrollView<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>horizontalScrollView<span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            <span class="token punctuation">{</span>THUMB_URLS<span class="token punctuation">.</span><span class="token function">map<span class="token punctuation">(</span></span>createThumbRow<span class="token punctuation">)</span><span class="token punctuation">}</span>
+          &lt;<span class="token operator">/</span>ScrollView<span class="token operator">&gt;</span>
+          &lt;TouchableOpacity
+            style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span>
+            onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span> _scrollView<span class="token punctuation">.</span><span class="token function">scrollTo<span class="token punctuation">(</span></span><span class="token punctuation">{</span>x<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            &lt;Text<span class="token operator">&gt;</span>Scroll to start&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>TouchableOpacity<span class="token operator">&gt;</span>
+          &lt;TouchableOpacity
+            style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span>
+            onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span> _scrollView<span class="token punctuation">.</span><span class="token function">scrollToEnd<span class="token punctuation">(</span></span><span class="token punctuation">{</span>animated<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            &lt;Text<span class="token operator">&gt;</span>Scroll to end&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>TouchableOpacity<span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;View<span class="token operator">&gt;</span>
-        &lt;ScrollView
-          ref<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span>scrollView<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span> _scrollView <span class="token operator">=</span> scrollView<span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">}</span>
-          automaticallyAdjustContentInsets<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">false</span><span class="token punctuation">}</span>
-          horizontal<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">true</span><span class="token punctuation">}</span>
-          style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>scrollView<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>horizontalScrollView<span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
-          <span class="token punctuation">{</span>THUMBS<span class="token punctuation">.</span><span class="token function">map<span class="token punctuation">(</span></span>createThumbRow<span class="token punctuation">)</span><span class="token punctuation">}</span>
-        &lt;<span class="token operator">/</span>ScrollView<span class="token operator">&gt;</span>
-        &lt;TouchableOpacity
-          style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span>
-          onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span> _scrollView<span class="token punctuation">.</span><span class="token function">scrollTo<span class="token punctuation">(</span></span><span class="token punctuation">{</span>x<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
-          &lt;Text<span class="token operator">&gt;</span>Scroll to start&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
-        &lt;<span class="token operator">/</span>TouchableOpacity<span class="token operator">&gt;</span>
-        &lt;TouchableOpacity
-          style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span>
-          onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span> _scrollView<span class="token punctuation">.</span><span class="token function">scrollToEnd<span class="token punctuation">(</span></span><span class="token punctuation">{</span>animated<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
-          &lt;Text<span class="token operator">&gt;</span>Scroll to end&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
-        &lt;<span class="token operator">/</span>TouchableOpacity<span class="token operator">&gt;</span>
+        <span class="token punctuation">{</span><span class="token function">renderScrollView<span class="token punctuation">(</span></span><span class="token string">&#x27;LTR layout&#x27;</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>direction<span class="token punctuation">:</span> <span class="token string">&#x27;ltr&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+        <span class="token punctuation">{</span><span class="token function">renderScrollView<span class="token punctuation">(</span></span><span class="token string">&#x27;RTL layout&#x27;</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>direction<span class="token punctuation">:</span> <span class="token string">&#x27;rtl&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
       &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
@@ -192,49 +203,59 @@ class <span class="token class-name">Thumb</span> extends <span class="token cla
 
   <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-        &lt;Image style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>img<span class="token punctuation">}</span> source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>uri<span class="token punctuation">:</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>uri<span class="token punctuation">}</span><span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
+      &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>thumb<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+        &lt;Image style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>img<span class="token punctuation">}</span> source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>source<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 
-<span class="token keyword">var</span> THUMBS <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">&#x27;https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-ash3/t39.1997/p128x128/851549_767334479959628_274486868_n.png&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851561_767334496626293_1958532586_n.png&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-ash3/t39.1997/p128x128/851579_767334503292959_179092627_n.png&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851589_767334513292958_1747022277_n.png&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851563_767334559959620_1193692107_n.png&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851593_767334566626286_1953955109_n.png&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851591_767334523292957_797560749_n.png&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851567_767334529959623_843148472_n.png&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851548_767334489959627_794462220_n.png&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851575_767334539959622_441598241_n.png&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-ash3/t39.1997/p128x128/851573_767334549959621_534583464_n.png&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851583_767334573292952_1519550680_n.png&#x27;</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-THUMBS <span class="token operator">=</span> THUMBS<span class="token punctuation">.</span><span class="token function">concat<span class="token punctuation">(</span></span>THUMBS<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true"> // double length of THUMBS
-</span><span class="token keyword">var</span> createThumbRow <span class="token operator">=</span> <span class="token punctuation">(</span>uri<span class="token punctuation">,</span> i<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> &lt;Thumb key<span class="token operator">=</span><span class="token punctuation">{</span>i<span class="token punctuation">}</span> uri<span class="token operator">=</span><span class="token punctuation">{</span>uri<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> THUMB_URLS <span class="token operator">=</span> <span class="token punctuation">[</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/like.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/dislike.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/call.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/fist.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/bandaged.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/flowers.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/heart.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/liking.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/party.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/poke.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/superlike.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/victory.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+THUMB_URLS <span class="token operator">=</span> THUMB_URLS<span class="token punctuation">.</span><span class="token function">concat<span class="token punctuation">(</span></span>THUMB_URLS<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true"> // double length of THUMB_URLS
+</span>
+<span class="token keyword">var</span> createThumbRow <span class="token operator">=</span> <span class="token punctuation">(</span>uri<span class="token punctuation">,</span> i<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> &lt;Thumb key<span class="token operator">=</span><span class="token punctuation">{</span>i<span class="token punctuation">}</span> source<span class="token operator">=</span><span class="token punctuation">{</span>uri<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
   scrollView<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;#6A85B1&#x27;</span><span class="token punctuation">,</span>
+    backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;#eeeeee&#x27;</span><span class="token punctuation">,</span>
     height<span class="token punctuation">:</span> <span class="token number">300</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   horizontalScrollView<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    height<span class="token punctuation">:</span> <span class="token number">120</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  containerPage<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    height<span class="token punctuation">:</span> <span class="token number">50</span><span class="token punctuation">,</span>
-    width<span class="token punctuation">:</span> <span class="token number">50</span><span class="token punctuation">,</span>
-    backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;#527FE4&#x27;</span><span class="token punctuation">,</span>
-    padding<span class="token punctuation">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
+    height<span class="token punctuation">:</span> <span class="token number">106</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   text<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    fontSize<span class="token punctuation">:</span> <span class="token number">20</span><span class="token punctuation">,</span>
-    color<span class="token punctuation">:</span> <span class="token string">&#x27;#888888&#x27;</span><span class="token punctuation">,</span>
-    left<span class="token punctuation">:</span> <span class="token number">80</span><span class="token punctuation">,</span>
-    top<span class="token punctuation">:</span> <span class="token number">20</span><span class="token punctuation">,</span>
-    height<span class="token punctuation">:</span> <span class="token number">40</span><span class="token punctuation">,</span>
+    fontSize<span class="token punctuation">:</span> <span class="token number">16</span><span class="token punctuation">,</span>
+    fontWeight<span class="token punctuation">:</span> <span class="token string">&#x27;bold&#x27;</span><span class="token punctuation">,</span>
+    margin<span class="token punctuation">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
+    textAlign<span class="token punctuation">:</span> <span class="token string">&#x27;left&#x27;</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   button<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    margin<span class="token punctuation">:</span> <span class="token number">7</span><span class="token punctuation">,</span>
+    margin<span class="token punctuation">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
     padding<span class="token punctuation">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
     alignItems<span class="token punctuation">:</span> <span class="token string">&#x27;center&#x27;</span><span class="token punctuation">,</span>
-    backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;#eaeaea&#x27;</span><span class="token punctuation">,</span>
+    backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;#cccccc&#x27;</span><span class="token punctuation">,</span>
     borderRadius<span class="token punctuation">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  buttonContents<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    flexDirection<span class="token punctuation">:</span> <span class="token string">&#x27;row&#x27;</span><span class="token punctuation">,</span>
-    width<span class="token punctuation">:</span> <span class="token number">64</span><span class="token punctuation">,</span>
-    height<span class="token punctuation">:</span> <span class="token number">64</span><span class="token punctuation">,</span>
+  thumb<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    margin<span class="token punctuation">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
+    padding<span class="token punctuation">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
+    backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;#cccccc&#x27;</span><span class="token punctuation">,</span>
+    borderRadius<span class="token punctuation">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+    minWidth<span class="token punctuation">:</span> <span class="token number">96</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   img<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     width<span class="token punctuation">:</span> <span class="token number">64</span><span class="token punctuation">,</span>

@@ -24,7 +24,11 @@ See <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/border-width">http
 for more details.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="bottom"></a>bottom <span class="propType">number, string</span> <a class="hash-link" href="docs/layout-props.html#bottom">#</a></h4><div><p><code>bottom</code> is the number of logical pixels to offset the bottom edge of
  this component.</p><p> It works similarly to <code>bottom</code> in CSS, but in React Native you
  must use points or percentages. Ems and other units are not supported.</p><p> See <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/bottom">https://developer.mozilla.org/en-US/docs/Web/CSS/bottom</a>
- for more details of how <code>bottom</code> affects layout.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="flex"></a>flex <span class="propType">number</span> <a class="hash-link" href="docs/layout-props.html#flex">#</a></h4><div><p>In React Native <code>flex</code> does not work the same way that it does in CSS.
+ for more details of how <code>bottom</code> affects layout.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="direction"></a>direction <span class="propType">enum(&#x27;inherit&#x27;, &#x27;ltr&#x27;, &#x27;rtl&#x27;)</span> <a class="hash-link" href="docs/layout-props.html#direction">#</a></h4><div><p><code>direction</code> specifies the directional flow of the user interface.
+ The default is <code>inherit</code>, except for root node which will have
+ value based on the current locale.
+ See <a href="https://facebook.github.io/yoga/docs/rtl/">https://facebook.github.io/yoga/docs/rtl/</a>
+ for more details.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="flex"></a>flex <span class="propType">number</span> <a class="hash-link" href="docs/layout-props.html#flex">#</a></h4><div><p>In React Native <code>flex</code> does not work the same way that it does in CSS.
  <code>flex</code> is a number rather than a string, and it works
  according to the <code>css-layout</code> library
  at <a href="https://github.com/facebook/css-layout">https://github.com/facebook/css-layout</a>.</p><p> When <code>flex</code> is a positive number, it makes the component flexible
