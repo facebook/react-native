@@ -409,7 +409,7 @@ const TextInput = React.createClass({
      */
     secureTextEntry: PropTypes.bool,
     /**
-    * The highlight (and cursor on iOS) color of the text input.
+    * The highlight and cursor color of the text input.
     */
     selectionColor: ColorPropType,
     /**
