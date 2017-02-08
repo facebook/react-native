@@ -20,7 +20,6 @@ import android.content.res.Configuration;
 import android.util.DisplayMetrics;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.react.ReactApplication;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;

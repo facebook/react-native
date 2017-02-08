@@ -16,8 +16,6 @@ import android.util.DisplayMetrics;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 
-import com.facebook.react.ReactApplication;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.events.TouchEventType;
 
