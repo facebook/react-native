@@ -11,9 +11,11 @@ package com.facebook.react.views.textinput;
 
 import javax.annotation.Nullable;
 
+import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Map;
 
+import android.graphics.drawable.Drawable;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.text.Editable;
@@ -309,6 +311,40 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       view.setHighlightColor(DefaultStyleValuesUtil.getDefaultTextColorHighlight(view.getContext()));
     } else {
       view.setHighlightColor(color);
+    }
+
+    setCursorColor(view, color);
+  }
+
+  private void setCursorColor(ReactEditText view, @Nullable Integer color) {
+    // Evil method that uses reflection because there is no public API to changes
+    // the cursor color programatically.
+    // Based on http://stackoverflow.com/questions/25996032/how-to-change-programatically-edittext-cursor-color-in-android.
+    try {
+      // Get the cursor resource id.
+      Field field = TextView.class.getDeclaredField("mCursorDrawableRes");
+      field.setAccessible(true);
+      int drawableResId = field.getInt(view);
+
+      // Get the editor.
+      field = TextView.class.getDeclaredField("mEditor");
+      field.setAccessible(true);
+      Object editor = field.get(view);
+
+      // Get the drawable and set a color filter.
+      Drawable drawable = view.getContext().getDrawable(drawableResId);
+      if (color != null) {
+        drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      }
+      Drawable[] drawables = {drawable, drawable};
+
+      // Set the drawables.
+      field = editor.getClass().getDeclaredField("mCursorDrawable");
+      field.setAccessible(true);
+      field.set(editor, drawables);
+    } catch (Exception ex) {
+      // Ignore errors to avoid crashing if these private fields don't exist on modified
+      // or future android versions.
     }
   }
 
