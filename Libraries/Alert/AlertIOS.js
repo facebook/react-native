@@ -139,15 +139,15 @@ class AlertIOS {
     title: ?string,
     message?: ?string,
     callbackOrButtons?: ?(() => void) | ButtonsArray,
-    tintColor?: ?string,
-    type?: AlertType
+    type?: AlertType,
+    tintColor?: ?string
   ): void {
     if (typeof type !== 'undefined') {
       console.warn('AlertIOS.alert() with a 4th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.');
-      this.prompt(title, message, callbackOrButtons, tintColor, type);
+      this.prompt(title, message, callbackOrButtons, type, null, null, tintColor);
       return;
     }
-    this.prompt(title, message, callbackOrButtons, tintColor);
+    this.prompt(title, message, callbackOrButtons, null, null, null, tintColor);
   }
 
   /**
@@ -199,10 +199,10 @@ class AlertIOS {
     title: ?string,
     message?: ?string,
     callbackOrButtons?: ?((text: string) => void) | ButtonsArray,
-    tintColor?: string,
     type?: ?AlertType,
     defaultValue?: string,
-    keyboardType?: string
+    keyboardType?: string,
+    tintColor?: string,
   ): void {
     if (typeof type === 'function') {
       console.warn(

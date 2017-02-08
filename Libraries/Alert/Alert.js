@@ -68,22 +68,36 @@ type Options = {
 class Alert {
 
   static alert(
-    title: ?string,
+    title: ?string | { title: ?string, message: ?string, buttons: Buttons, options: Options, type: AlertType, tintColor: ?string },
     message?: ?string,
     buttons?: Buttons,
     options?: Options,
-    tintColor?: ?string,
     type?: AlertType,
+    tintColor?: ?string
   ): void {
-    if (Platform.OS === 'ios') {
-      if (typeof type !== 'undefined') {
-        console.warn('Alert.alert() with a 5th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.');
-        AlertIOS.alert(title, message, buttons, tintColor, type);
-        return;
+    if (typeof title === 'string') {
+      if (Platform.OS === 'ios') {
+        if (typeof type !== 'undefined') {
+          console.warn('Alert.alert() with a 5th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.');
+          AlertIOS.alert(title, message, buttons, type, tintColor);
+          return;
+        }
+        AlertIOS.alert(title, message, buttons, null, tintColor);
+      } else if (Platform.OS === 'android') {
+        AlertAndroid.alert(title, message, buttons, options);
       }
-      AlertIOS.alert(title, message, buttons, tintColor);
-    } else if (Platform.OS === 'android') {
-      AlertAndroid.alert(title, message, buttons, options);
+    } else {
+      if (Platform.OS === 'ios') {
+        ({title, message, buttons, options, type, tintColor} = title || {});
+        if (typeof type !== 'undefined') {
+          console.warn('Alert.alert() with a 5th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.');
+          AlertIOS.alert(title, message, buttons, type, tintColor);
+          return;
+        }
+        AlertIOS.alert(title, message, buttons, null, tintColor);
+      } else if (Platform.OS === 'android') {
+        AlertAndroid.alert(title, message, buttons, options);
+      }
     }
   }
 }
