@@ -172,10 +172,10 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     return mChildren == null ? -1 : mChildren.indexOf(child);
   }
 
-  private native void jni_YGNodeCalculateLayout(long nativePointer);
+  private native void jni_YGNodeCalculateLayout(long nativePointer, float width, float height);
   @Override
-  public void calculateLayout() {
-    jni_YGNodeCalculateLayout(mNativePointer);
+  public void calculateLayout(float width, float height) {
+    jni_YGNodeCalculateLayout(mNativePointer, width, height);
   }
 
   private native boolean jni_YGNodeHasNewLayout(long nativePointer);
@@ -308,6 +308,18 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public void setOverflow(YogaOverflow overflow) {
     jni_YGNodeStyleSetOverflow(mNativePointer, overflow.intValue());
+  }
+
+  private native int jni_YGNodeStyleGetDisplay(long nativePointer);
+  @Override
+  public YogaDisplay getDisplay() {
+    return YogaDisplay.fromInt(jni_YGNodeStyleGetDisplay(mNativePointer));
+  }
+
+  private native void jni_YGNodeStyleSetDisplay(long nativePointer, int display);
+  @Override
+  public void setDisplay(YogaDisplay display) {
+    jni_YGNodeStyleSetDisplay(mNativePointer, display.intValue());
   }
 
   private native void jni_YGNodeStyleSetFlex(long nativePointer, float flex);

@@ -505,12 +505,15 @@ const styleDocs = docsList.stylesForEmbed.reduce(function(docs, filepath) {
 
 function extractDocs() {
   componentCount = 0;
+  var components = docsList.components.map(renderComponent);
+  var apis = docsList.apis.map((filepath) => {
+    return renderAPI(filepath, 'api');
+  });
+  var styles = docsList.stylesWithPermalink.map(renderStyle);
   return [].concat(
-    docsList.components.map(renderComponent),
-    docsList.apis.map((filepath) => {
-      return renderAPI(filepath, 'api');
-    }),
-    docsList.stylesWithPermalink.map(renderStyle)
+    components,
+    apis,
+    styles
   );
 }
 

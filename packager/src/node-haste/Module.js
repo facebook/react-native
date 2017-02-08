@@ -76,7 +76,8 @@ class Module {
   _reporter: Reporter;
   _globalCache: ?GlobalTransformCache;
 
-  _docBlock: Promise<{id?: string, moduleDocBlock: {[key: string]: mixed}}>;
+  _docBlock: Promise<{[key: string]: string}>;
+  _hasteName: Promise<string | void>;
   _readSourceCodePromise: Promise<string>;
   _readPromises: Map<string, Promise<ReadResult>>;
 
@@ -118,7 +119,7 @@ class Module {
     return this._cache.get(
       this.path,
       'isHaste',
-      () => this._readDocBlock().then(({id}) => !!id)
+      () => this._getHasteName().then(name => !!name),
     );
   }
 
@@ -134,9 +135,9 @@ class Module {
     return this._cache.get(
       this.path,
       'name',
-      () => this._readDocBlock().then(({id}) => {
-        if (id) {
-          return id;
+      () => this._getHasteName().then(name => {
+        if (name !== undefined) {
+          return name;
         }
 
         const p = this.getPackage();
@@ -147,12 +148,12 @@ class Module {
         }
 
         return p.getName()
-          .then(name => {
-            if (!name) {
+          .then(packageName => {
+            if (!packageName) {
               return this.path;
             }
 
-            return joinPath(name, relativePath(p.root, this.path)).replace(/\\/g, '/');
+            return joinPath(packageName, relativePath(p.root, this.path)).replace(/\\/g, '/');
           });
       })
     );
@@ -176,23 +177,6 @@ class Module {
     this._readPromises.clear();
   }
 
-  _parseDocBlock(docBlock) {
-    // Extract an id for the module if it's using @providesModule syntax
-    // and if it's NOT in node_modules (and not a whitelisted node_module).
-    // This handles the case where a project may have a dep that has @providesModule
-    // docblock comments, but doesn't want it to conflict with whitelisted @providesModule
-    // modules, such as react-haste, fbjs-haste, or react-native or with non-dependency,
-    // project-specific code that is using @providesModule.
-    const moduleDocBlock = docblock.parseAsObject(docBlock);
-    const providesModule = moduleDocBlock.providesModule;
-
-    const id =
-      providesModule && !this._depGraphHelpers.isNodeModulesDir(this.path)
-        ? /^\S+/.exec(providesModule)[0]
-        : undefined;
-    return {id, moduleDocBlock};
-  }
-
   _readSourceCode() {
     if (!this._readSourceCodePromise) {
       this._readSourceCodePromise = new Promise(
@@ -205,9 +189,28 @@ class Module {
   _readDocBlock() {
     if (!this._docBlock) {
       this._docBlock = this._readSourceCode()
-        .then(docBlock => this._parseDocBlock(docBlock));
+        .then(source => docblock.parseAsObject(source));
     }
     return this._docBlock;
+  }
+
+  _getHasteName() {
+    if (!this._hasteName) {
+      // Extract an id for the module if it's using @providesModule syntax
+      // and if it's NOT in node_modules (and not a whitelisted node_module).
+      // This handles the case where a project may have a dep that has @providesModule
+      // docblock comments, but doesn't want it to conflict with whitelisted @providesModule
+      // modules, such as react-haste, fbjs-haste, or react-native or with non-dependency,
+      // project-specific code that is using @providesModule.
+      this._hasteName = this._readDocBlock().then(moduleDocBlock => {
+        const {providesModule} = moduleDocBlock;
+        return providesModule
+          && !this._depGraphHelpers.isNodeModulesDir(this.path)
+            ? /^\S+/.exec(providesModule)[0]
+            : undefined;
+      });
+    }
+    return this._hasteName;
   }
 
   /**
@@ -313,7 +316,8 @@ class Module {
     const freshPromise = Promise.all([
       this._readSourceCode(),
       this._readDocBlock(),
-    ]).then(([sourceCode, {id, moduleDocBlock}]) => {
+      this._getHasteName(),
+    ]).then(([sourceCode, moduleDocBlock, id]) => {
       // Ignore requires in JSON files or generated code. An example of this
       // is prebuilt files like the SourceMap library.
       const extern = this.isJSON() || 'extern' in moduleDocBlock;

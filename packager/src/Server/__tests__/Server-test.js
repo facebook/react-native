@@ -67,6 +67,7 @@ describe('processRequest', () => {
   beforeEach(() => {
     Bundler.prototype.bundle = jest.fn(() =>
       Promise.resolve({
+        getModules: () => [],
         getSource: () => 'this is the source',
         getSourceMap: () => {},
         getSourceMapString: () => 'this is the source map',
@@ -227,6 +228,7 @@ describe('processRequest', () => {
       bundleFunc
         .mockReturnValueOnce(
           Promise.resolve({
+            getModules: () => [],
             getSource: () => 'this is the first source',
             getSourceMap: () => {},
             getSourceMapString: () => 'this is the source map',
@@ -235,6 +237,7 @@ describe('processRequest', () => {
         )
         .mockReturnValue(
           Promise.resolve({
+            getModules: () => [],
             getSource: () => 'this is the rebuilt source',
             getSourceMap: () => {},
             getSourceMapString: () => 'this is the source map',
@@ -277,6 +280,7 @@ describe('processRequest', () => {
         bundleFunc
           .mockReturnValueOnce(
             Promise.resolve({
+              getModules: () => [],
               getSource: () => 'this is the first source',
               getSourceMap: () => {},
               getSourceMapString: () => 'this is the source map',
@@ -285,6 +289,7 @@ describe('processRequest', () => {
           )
           .mockReturnValue(
             Promise.resolve({
+              getModules: () => [],
               getSource: () => 'this is the rebuilt source',
               getSourceMap: () => {},
               getSourceMapString: () => 'this is the source map',

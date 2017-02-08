@@ -160,10 +160,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if ((self = [super initWithFrame:frame])) {
     [self.panGestureRecognizer addTarget:self action:@selector(handleCustomPan:)];
 
-    // We intentionaly force `UIScrollView`s `semanticContentAttribute` to `LTR` here
-    // because this attribute affects a position of vertical scrollbar; we don't want this
-    // scrollbar flip because we also flip it with whole `UIScrollView` flip.
-    self.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
+    if ([self respondsToSelector:@selector(setSemanticContentAttribute:)]) {
+      // We intentionaly force `UIScrollView`s `semanticContentAttribute` to `LTR` here
+      // because this attribute affects a position of vertical scrollbar; we don't want this
+      // scrollbar flip because we also flip it with whole `UIScrollView` flip.
+      self.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
+    }
   }
   return self;
 }
