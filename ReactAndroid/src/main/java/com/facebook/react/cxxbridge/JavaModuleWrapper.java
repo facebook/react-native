@@ -67,7 +67,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
   @DoNotStrip
   public String getName() {
-    return mModuleHolder.getInfo().name();
+    return mModuleHolder.getName();
   }
 
   @DoNotStrip

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationRegistry;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.ReactContext;
@@ -803,9 +804,9 @@ public class UIViewOperationQueue {
     // sure any late-arriving UI commands are executed.
     if (!mIsDispatchUIFrameCallbackEnqueued) {
       UiThreadUtil.runOnUiThread(
-          new Runnable() {
+          new GuardedRunnable(mReactApplicationContext) {
             @Override
-            public void run() {
+            public void runGuarded() {
               flushPendingBatches();
             }
           });
