@@ -161,6 +161,7 @@ const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'TabBarIOSCustomBarStyle',
     module: require('./TabBarIOSCustomBarStyle'),
+    supportsTVOS: false,
   },
   {
     key: 'TextExample',
