@@ -503,7 +503,17 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         try {
           JSONObject eventInitDict = new JSONObject();
           eventInitDict.put("data", args.getString(0));
-          root.loadUrl("javascript:(document.dispatchEvent(new MessageEvent('message', " + eventInitDict.toString() + ")))");
+          root.loadUrl("javascript:(function () {" +
+            "var event;" +
+            "var data = " + eventInitDict.toString() + ";" +
+            "try {" +
+              "event = new MessageEvent('message', data);" +
+            "} catch (e) {" +
+              "event = document.createEvent('MessageEvent');" +
+              "event.initMessageEvent('message', true, true, data.data, data.origin, data.lastEventId, data.source);" +
+            "}" +
+            "document.dispatchEvent(event);" +
+          "})();");
         } catch (JSONException e) {
           throw new RuntimeException(e);
         }

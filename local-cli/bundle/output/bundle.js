@@ -11,11 +11,11 @@
 'use strict';
 
 const meta = require('./meta');
-const relativizeSourceMap = require('../../../packager/react-packager/src/lib/relativizeSourceMap');
+const relativizeSourceMap = require('../../../packager/src//lib/relativizeSourceMap');
 const writeFile = require('./writeFile');
 
-import type Bundle from '../../../packager/react-packager/src/Bundler/Bundle';
-import type Server from '../../../packager/react-packager/src/Server';
+import type Bundle from '../../../packager/src//Bundler/Bundle';
+import type Server from '../../../packager/src//Server';
 import type {OutputOptions, RequestOptions} from '../types.flow';
 
 function buildBundle(packagerClient: Server, requestOptions: RequestOptions) {

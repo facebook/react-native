@@ -11,6 +11,10 @@
  */
 'use strict';
 
+const invariant = require('invariant');
+
+export type Viewable = {item: any, key: string, index: ?number, isViewable: boolean, section?: any};
+
 /**
 * A row is said to be in a "viewable" state when either of the following
 * is true:
@@ -18,22 +22,31 @@
 * - Entirely visible on screen
 */
 const ViewabilityHelper = {
-  computeViewableRows(
+  computeViewableItems(
     viewablePercentThreshold: number,
-    rowFrames: {[key: string]: Object},
-    data: Array<{rowKey: string, rowData: any}>,
-    scrollOffsetY: number,
-    viewportHeight: number
+    itemCount: number,
+    scrollOffset: number,
+    viewportHeight: number,
+    getFrameMetrics: (index: number) => ?{length: number, offset: number},
+    renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
   ): Array<number> {
-    const viewableRows = [];
+    const viewableIndices = [];
+    if (itemCount === 0) {
+      return viewableIndices;
+    }
     let firstVisible = -1;
-    for (let idx = 0; idx < data.length; idx++) {
-      const frame = rowFrames[data[idx].rowKey];
-      if (!frame) {
+    const {first, last} = renderRange || {first: 0, last: itemCount - 1};
+    invariant(
+      last < itemCount,
+      'Invalid render range ' + JSON.stringify({renderRange, itemCount})
+    );
+    for (let idx = first; idx <= last; idx++) {
+      const metrics = getFrameMetrics(idx);
+      if (!metrics) {
         continue;
       }
-      const top = frame.y - scrollOffsetY;
-      const bottom = top + frame.height;
+      const top = metrics.offset - scrollOffset;
+      const bottom = top + metrics.length;
       if ((top < viewportHeight) && (bottom > 0)) {
         firstVisible = idx;
         if (_isViewable(
@@ -42,15 +55,16 @@ const ViewabilityHelper = {
           bottom,
           viewportHeight
         )) {
-          viewableRows.push(idx);
+          viewableIndices.push(idx);
         }
       } else if (firstVisible >= 0) {
         break;
       }
     }
-    return viewableRows;
+    return viewableIndices;
   },
 };
+
 
 function _isViewable(
   viewablePercentThreshold: number,

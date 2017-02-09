@@ -257,6 +257,10 @@ class WindowedListView extends React.Component {
   _onMomentumScrollEnd = (e: Object) => {
     this._onScroll(e);
   };
+  _getFrameMetrics = (index: number): ?{length: number, offset: number} => {
+    const frame = this._rowFrames[this.props.data[index].rowKey];
+    return frame && {length: frame.height, offset: frame.y};
+  }
   _onScroll = (e: Object) => {
     const newScrollY = e.nativeEvent.contentOffset.y;
     this._isScrolling = this._scrollOffsetY !== newScrollY;
@@ -268,12 +272,12 @@ class WindowedListView extends React.Component {
       this._computeRowsToRenderBatcher.schedule();
     }
     if (this.props.onViewableRowsChanged && Object.keys(this._rowFrames).length) {
-      const viewableRows = ViewabilityHelper.computeViewableRows(
+      const viewableRows = ViewabilityHelper.computeViewableItems(
         this.props.viewablePercentThreshold,
-        this._rowFrames,
-        this.props.data,
+        this.props.data.length,
         e.nativeEvent.contentOffset.y,
-        e.nativeEvent.layoutMeasurement.height
+        e.nativeEvent.layoutMeasurement.height,
+        this._getFrameMetrics,
       );
       if (deepDiffer(viewableRows, this._viewableRows)) {
         this._viewableRows = viewableRows;
