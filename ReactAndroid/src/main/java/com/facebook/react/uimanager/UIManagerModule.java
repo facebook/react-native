@@ -140,7 +140,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public void onHostResume() {
     mUIImplementation.onHostResume();
 
-    if (mFontScale != getReactApplicationContext().getResources().getConfiguration().fontScale) {
+    float fontScale = getReactApplicationContext().getResources().getConfiguration().fontScale;
+    if (mFontScale != fontScale) {
+      mFontScale = fontScale;
       emitUpdateDimensionsEvent();
     }
   }
@@ -554,7 +556,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   public void emitUpdateDimensionsEvent() {
-    mFontScale = getReactApplicationContext().getResources().getConfiguration().fontScale;
     DisplayMetrics windowDisplayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics();
     DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
 
