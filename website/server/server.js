@@ -14,7 +14,7 @@ const http = require('http');
 const optimist = require('optimist');
 const path = require('path');
 const reactMiddleware = require('react-page-middleware');
-const sassMiddleware = require('node-sass-middleware')
+const sassMiddleware = require('node-sass-middleware');
 
 const argv = optimist.argv;
 
@@ -27,7 +27,6 @@ if (argv.$0.indexOf('node ./server/generate.js') !== -1) {
   port = 8079;
 }
 
-// https://github.com/sass/node-sass-middleware
 const buildOptions = {
   projectRoot: PROJECT_ROOT,
   pageRouteRoot: FILE_SERVE_ROOT,
