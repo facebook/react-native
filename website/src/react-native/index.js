@@ -121,7 +121,8 @@ var index = React.createClass({
       <Site>
         <Hero title="React Native" subtitle="Learn once, write anywhere: Build mobile apps with React">
           <div className="buttons-unit">
-            <a href="docs/getting-started.html#content" className="button">Get started</a>
+            <a href="docs/getting-started.html" className="button">Get Started</a>
+            <a href="docs/tutorial.html" className="button">Take the Tutorial</a>
           </div>
         </Hero>
 
@@ -219,9 +220,9 @@ class SomethingFast extends Component {
             </Prism>
           </div>
 
-          <section className="home-bottom-section">
+          <section className="home-get-started-section">
             <div className="buttons-unit">
-              <a href="docs/getting-started.html#content" className="button">Get started</a>
+              <a href="docs/getting-started.html#content" className="button">Get Started with React Native</a>
             </div>
           </section>
 

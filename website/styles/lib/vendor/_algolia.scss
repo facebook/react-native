@@ -6,11 +6,6 @@ div.algolia-search-wrapper {
   margin-left: 15px;
 }
 
-.algolia-autocomplete .aa-dropdown-menu {
-  margin-left: -210px;
-  margin-top: -4px;
-}
-
 @media screen and (max-width: 960px) {
   div.algolia-search-wrapper {
     display: none;
@@ -20,16 +15,16 @@ div.algolia-search-wrapper {
 input#algolia-doc-search {
   background: transparent url('../img/search.png') no-repeat 10px center;
   background-size: 16px 16px;
-
+  font-family: inherit;
   padding: 0 10px;
   padding-left: 35px;
   margin-top: 10px;
   height: 30px;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 20px;
-  background-color: darken($color-nav-bg, 5%);
+  background-color: $color-algolia-search;
   border-radius: 4px;
-  color: white;
+  color: inherit;
   outline: none;
   border: none;
   width: 170px;
@@ -37,16 +32,16 @@ input#algolia-doc-search {
 }
 
 input#algolia-doc-search::placeholder {
-  color: rgba(255,255,255,0.8);
+  color: rgba(white, 0.8);
 }
 input#algolia-doc-search::-moz-placeholder {
-  color: rgba(255,255,255,0.8);
+  color: rgba(white, 0.8);
 }
 input#algolia-doc-search:-ms-input-placeholder {
-  color: rgba(255,255,255,0.8);
+  color: rgba(white, 0.8);
 }
 input#algolia-doc-search::-webkit-input-placeholder {
-  color: rgba(255,255,255,0.8);
+  color: rgba(white, 0.8);
 }
 
 input#algolia-doc-search:focus {
@@ -56,13 +51,11 @@ input#algolia-doc-search:focus {
 .algolia-autocomplete {
   vertical-align: top;
   height: 53px;
-}
 
-.algolia-docsearch-suggestion--category-header {
-  background-color: #3B3738;
-}
-.algolia-docsearch-suggestion--highlight {
-  color: $color-react-native-blue;
+  .aa-dropdown-menu {
+    margin-left: -210px;
+    margin-top: -4px;
+  }
 }
 .algolia-docsearch-suggestion--category-header .algolia-docsearch-suggestion--highlight  {
   background-color: $color-react-native-blue;
@@ -75,9 +68,19 @@ input#algolia-doc-search:focus {
 }
 .algolia-docsearch-suggestion {
   border-bottom-color: hsl(198, 100%, 94%);
-}
-.algolia-docsearch-suggestion--subcategory-column {
-  border-right-color: hsl(198, 100%, 94%);
-  background-color: hsl(198, 100%, 96%);
-  color: #3B3738;
+
+  &--category-header {
+    background-color: #3B3738;
+  }
+
+  &--highlight {
+    color: $color-react-native-blue;
+  }
+
+  &--subcategory-column {
+
+    border-right-color: hsl(198, 100%, 94%);
+    background-color: hsl(198, 100%, 96%);
+    color: #3B3738;
+  }
 }
