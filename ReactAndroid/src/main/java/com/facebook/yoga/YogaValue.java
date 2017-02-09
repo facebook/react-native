@@ -19,7 +19,7 @@ public class YogaValue {
   public final float value;
   public final YogaUnit unit;
 
-  YogaValue(float value, YogaUnit unit) {
+  public YogaValue(float value, YogaUnit unit) {
     this.value = value;
     this.unit = unit;
   }

@@ -17,6 +17,8 @@ import android.view.Surface;
 import android.view.WindowManager;
 
 import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.yoga.YogaValue;
+import com.facebook.yoga.YogaUnit;
 
 /**
  * FlatReactModalShadowNode
@@ -86,8 +88,19 @@ class FlatReactModalShadowNode extends FlatShadowNode implements AndroidView {
 
   @Override
   public void setPadding(int spacingType, float padding) {
-    if (getPadding(spacingType) != padding) {
+    YogaValue current = getStylePadding(spacingType);
+    if (current.unit != YogaUnit.PIXEL || current.value != padding) {
       super.setPadding(spacingType, padding);
+      mPaddingChanged = true;
+      markUpdated();
+    }
+  }
+
+  @Override
+  public void setPaddingPercent(int spacingType, float percent) {
+    YogaValue current = getStylePadding(spacingType);
+    if (current.unit != YogaUnit.PERCENT || current.value != percent) {
+      super.setPadding(spacingType, percent);
       mPaddingChanged = true;
       markUpdated();
     }

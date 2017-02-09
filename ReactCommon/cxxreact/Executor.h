@@ -6,14 +6,16 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <sys/mman.h>
 #include <vector>
 
-#include <sys/mman.h>
-
 #include <folly/Exception.h>
+#include <folly/Optional.h>
 #include <folly/dynamic.h>
 
 #include "JSModulesUnbundle.h"
+
+#define RN_EXPORT __attribute__((visibility("default")))
 
 namespace facebook {
 namespace react {
@@ -32,10 +34,7 @@ class JSModulesUnbundle;
 class MessageQueueThread;
 class ModuleRegistry;
 
-struct MethodCallResult {
-  folly::dynamic result;
-  bool isUndefined;
-};
+using MethodCallResult = folly::Optional<folly::dynamic>;
 
 // This interface describes the delegate interface required by
 // Executor implementations to call from JS into native code.
@@ -150,7 +149,7 @@ private:
 };
 
 // JSBigString interface implemented by a file-backed mmap region.
-class JSBigFileString : public JSBigString {
+class RN_EXPORT JSBigFileString : public JSBigString {
 public:
 
   JSBigFileString(int fd, size_t size, off_t offset = 0)
@@ -203,6 +202,8 @@ public:
   int fd() const {
     return m_fd;
   }
+
+  static std::unique_ptr<const JSBigFileString> fromPath(const std::string& sourceURL);
 
 private:
   int m_fd;                     // The file descriptor being mmaped
@@ -291,14 +292,6 @@ public:
    * Execute an application script optimized bundle in the JS context.
    */
   virtual void loadApplicationScript(std::string bundlePath, std::string source, int flags);
-
-  /**
-   * @experimental
-   *
-   * Read an app bundle from a file descriptor, determine how it should be
-   * loaded, load and execute it in the JS context.
-   */
-  virtual void loadApplicationScript(int fd, std::string source);
 
   /**
    * Add an application "unbundle" file

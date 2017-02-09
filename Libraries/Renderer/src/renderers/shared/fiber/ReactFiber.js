@@ -246,7 +246,7 @@ exports.createFiberFromElement = function(element : ReactElement<*>, priorityLev
 };
 
 // $FlowFixMe(>=0.34.0)
-function createFiberFromElementType(type : mixed, key : null | string) {
+function createFiberFromElementType(type : Function | string | Fiber, key : null | string) {
   let fiber;
   if (typeof type === 'function') {
     fiber = shouldConstruct(type) ?

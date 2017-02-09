@@ -16,11 +16,11 @@ var InteractionManager = require('InteractionManager');
 var Interpolation = require('Interpolation');
 var NativeAnimatedHelper = require('NativeAnimatedHelper');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var Set = require('Set');
 var SpringConfig = require('SpringConfig');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var findNodeHandle = require('findNodeHandle');
 var flattenStyle = require('flattenStyle');
 var invariant = require('fbjs/lib/invariant');
 var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
@@ -999,6 +999,11 @@ class AnimatedValueXY extends AnimatedWithChildren {
     this.y.flattenOffset();
   }
 
+  extractOffset(): void {
+    this.x.extractOffset();
+    this.y.extractOffset();
+  }
+
   __getValue(): {x: number, y: number} {
     return {
       x: this.x.__getValue(),
@@ -1028,6 +1033,12 @@ class AnimatedValueXY extends AnimatedWithChildren {
     this.x.removeListener(this._listeners[id].x);
     this.y.removeListener(this._listeners[id].y);
     delete this._listeners[id];
+  }
+
+  removeAllListeners(): void {
+    this.x.removeAllListeners();
+    this.y.removeAllListeners();
+    this._listeners = {};
   }
 
   /**
@@ -1079,9 +1090,9 @@ class AnimatedInterpolation extends AnimatedWithChildren {
       typeof parentValue === 'number',
       'Cannot interpolate an input which is not a number.'
     );
-    /* $FlowFixMe(>=0.36.0 site=react_native_fb) Flow error detected during the
-     * deploy of Flow v0.36.0. To see the error, remove this comment and run
-     * Flow */
+    /* $FlowFixMe(>=0.36.0 site=react_native_fb,react_native_oss) Flow error
+     * detected during the deploy of Flow v0.36.0. To see the error, remove
+     * this comment and run Flow */
     return this._interpolation(parentValue);
   }
 
@@ -1650,14 +1661,14 @@ class AnimatedProps extends Animated {
 
   __connectAnimatedView(): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    var nativeViewTag: ?number = findNodeHandle(this._animatedView);
+    var nativeViewTag: ?number = ReactNative.findNodeHandle(this._animatedView);
     invariant(nativeViewTag != null, 'Unable to locate attached view in the native tree');
     NativeAnimatedAPI.connectAnimatedNodeToView(this.__getNativeTag(), nativeViewTag);
   }
 
   __disconnectAnimatedView(): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    var nativeViewTag: ?number = findNodeHandle(this._animatedView);
+    var nativeViewTag: ?number = ReactNative.findNodeHandle(this._animatedView);
     invariant(nativeViewTag != null, 'Unable to locate attached view in the native tree');
     NativeAnimatedAPI.disconnectAnimatedNodeFromView(this.__getNativeTag(), nativeViewTag);
   }
@@ -1670,7 +1681,6 @@ class AnimatedProps extends Animated {
         propsConfig[propKey] = value.__getNativeTag();
       }
     }
-    NativeAnimatedHelper.validateProps(propsConfig);
     return {
       type: 'props',
       props: propsConfig,
@@ -2194,7 +2204,7 @@ class AnimatedEvent {
     // Assume that the event containing `nativeEvent` is always the first argument.
     traverse(this._argMapping[0].nativeEvent, []);
 
-    const viewTag = findNodeHandle(viewRef);
+    const viewTag = ReactNative.findNodeHandle(viewRef);
 
     eventMappings.forEach((mapping) => {
       NativeAnimatedAPI.addAnimatedEventToView(viewTag, eventName, mapping);

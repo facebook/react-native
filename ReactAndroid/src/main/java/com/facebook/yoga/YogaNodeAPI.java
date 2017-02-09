@@ -18,8 +18,9 @@ public interface YogaNodeAPI<YogaNodeType extends YogaNodeAPI> {
   YogaNodeType getParent();
   int indexOf(YogaNodeType child);
   void setMeasureFunction(YogaMeasureFunction measureFunction);
+  void setBaselineFunction(YogaBaselineFunction measureFunction);
   boolean isMeasureDefined();
-  void calculateLayout();
+  void calculateLayout(float width, float height);
   boolean isDirty();
   boolean hasNewLayout();
   void dirty();
@@ -81,10 +82,13 @@ public interface YogaNodeAPI<YogaNodeType extends YogaNodeAPI> {
   float getLayoutY();
   float getLayoutWidth();
   float getLayoutHeight();
+  float getLayoutMargin(YogaEdge edge);
   float getLayoutPadding(YogaEdge edge);
   YogaDirection getLayoutDirection();
   YogaOverflow getOverflow();
   void setOverflow(YogaOverflow overflow);
+  YogaDisplay getDisplay();
+  void setDisplay(YogaDisplay display);
   void setData(Object data);
   Object getData();
   void reset();

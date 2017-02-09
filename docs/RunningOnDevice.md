@@ -157,7 +157,7 @@ $ react-native run-android
 
 <block class="mac ios" />
 
-You can also iterate quickly on a device using the development server. You only have to be on the same Wi-Fi network as your computer. Shake the device to open the [Developer menu](/react-native/docs/debugging.html#accessing-the-in-app-developer-menu).
+You can also iterate quickly on a device using the development server. You only have to be on the same Wi-Fi network as your computer. Shake the device to open the [Developer menu](docs/debugging.html#accessing-the-in-app-developer-menu).
 
 <block class="mac windows linux android" />
 
@@ -200,8 +200,8 @@ Open a terminal and type `/sbin/ifconfig` to find your machine's IP address.
 
 1. Make sure your laptop and your phone are on the **same** Wi-Fi network.
 2. Open your React Native app on your device.
-3. You'll see a [red screen with an error](/react-native/docs/debugging.html#in-app-errors-and-warnings). This is OK. The following steps will fix that.
-4. Open the in-app [Developer menu](/react-native/docs/debugging.html#accessing-the-in-app-developer-menu).
+3. You'll see a [red screen with an error](docs/debugging.html#in-app-errors-and-warnings). This is OK. The following steps will fix that.
+4. Open the in-app [Developer menu](docs/debugging.html#accessing-the-in-app-developer-menu).
 5. Go to **Dev Settings** → **Debug server host for device**.
 6. Type in your machine's IP address and the port of the local dev server (e.g. 10.0.1.1:8081).
 7. Go back to the **Developer menu** and select **Reload JS**.

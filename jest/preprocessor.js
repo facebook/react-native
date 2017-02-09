@@ -12,13 +12,16 @@ const babel = require('babel-core');
 const babelRegisterOnly = require('../packager/babelRegisterOnly');
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
 const path = require('path');
-const transformer = require('../packager/transformer.js');
 
 const nodeFiles = RegExp([
   '/local-cli/',
-  '/packager/(?!react-packager/src/Resolver/polyfills/)',
+  '/packager/(?!src/Resolver/polyfills/)',
 ].join('|'));
 const nodeOptions = babelRegisterOnly.config([nodeFiles]);
+
+babelRegisterOnly([]);
+// has to be required after setting up babelRegisterOnly
+const transformer = require('../packager/transformer.js');
 
 module.exports = {
   process(src, file) {

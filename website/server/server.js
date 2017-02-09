@@ -46,7 +46,8 @@ var app = connect()
     // convert all the md files on every request. This is not optimal
     // but fast enough that we don't really need to care right now.
     if (!server.noconvert && req.url.match(/\.html|\/$/)) {
-      convert();
+      var extractDocs = req.url.match(/\/docs/); // Lazily extract docs.
+      convert({extractDocs});
     }
     next();
   })

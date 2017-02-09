@@ -95,6 +95,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public static final int COMMAND_RELOAD = 3;
   public static final int COMMAND_STOP_LOADING = 4;
   public static final int COMMAND_POST_MESSAGE = 5;
+  public static final int COMMAND_INJECT_JAVASCRIPT = 6;
 
   // Use `webView.loadUrl("about:blank")` to reliably reset the view
   // state and release page resources (including any running JavaScript).
@@ -339,6 +340,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     mWebViewConfig.configWebView(webView);
     webView.getSettings().setBuiltInZoomControls(true);
     webView.getSettings().setDisplayZoomControls(false);
+    webView.getSettings().setDomStorageEnabled(true);
 
     // Fixes broken full-screen modals/galleries due to body height being 0.
     webView.setLayoutParams(
@@ -477,7 +479,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         "goForward", COMMAND_GO_FORWARD,
         "reload", COMMAND_RELOAD,
         "stopLoading", COMMAND_STOP_LOADING,
-        "postMessage", COMMAND_POST_MESSAGE);
+        "postMessage", COMMAND_POST_MESSAGE,
+        "injectJavaScript", COMMAND_INJECT_JAVASCRIPT
+      );
   }
 
   @Override
@@ -499,10 +503,23 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         try {
           JSONObject eventInitDict = new JSONObject();
           eventInitDict.put("data", args.getString(0));
-          root.loadUrl("javascript:(document.dispatchEvent(new MessageEvent('message', " + eventInitDict.toString() + ")))");
+          root.loadUrl("javascript:(function () {" +
+            "var event;" +
+            "var data = " + eventInitDict.toString() + ";" +
+            "try {" +
+              "event = new MessageEvent('message', data);" +
+            "} catch (e) {" +
+              "event = document.createEvent('MessageEvent');" +
+              "event.initMessageEvent('message', true, true, data.data, data.origin, data.lastEventId, data.source);" +
+            "}" +
+            "document.dispatchEvent(event);" +
+          "})();");
         } catch (JSONException e) {
           throw new RuntimeException(e);
         }
+        break;
+      case COMMAND_INJECT_JAVASCRIPT:
+        root.loadUrl("javascript:" + args.getString(0));
         break;
     }
   }

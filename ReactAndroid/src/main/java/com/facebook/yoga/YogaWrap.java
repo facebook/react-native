@@ -30,7 +30,7 @@ public enum YogaWrap {
     switch (value) {
       case 0: return NO_WRAP;
       case 1: return WRAP;
-      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+      default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

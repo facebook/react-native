@@ -20,12 +20,11 @@ var { createFiberFromElementType } = require('ReactFiber');
 export type ReifiedYield = { continuation: Fiber, props: Object };
 
 exports.createReifiedYield = function(yieldNode : ReactYield) : ReifiedYield {
-  var fiber = createFiberFromElementType(
-    yieldNode.continuation,
-    yieldNode.key
-  );
   return {
-    continuation: fiber,
+    continuation: createFiberFromElementType(
+      yieldNode.continuation,
+      yieldNode.key
+    ),
     props: yieldNode.props,
   };
 };

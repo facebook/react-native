@@ -112,6 +112,8 @@ Builds a bundle according to the provided options.
   itself
 * `getTransformOptions` function: A function that acts as a middleware for
   generating options to pass to the transformer based on the bundle being built.
+* `reporter` object (required): An object with a single function `update` that
+  is called when events are happening: build updates, warnings, errors.
 
 #### `bundleOptions`
 

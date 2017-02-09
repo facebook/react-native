@@ -63,4 +63,4 @@ class FlexDimensionsBasics extends Component {
 AppRegistry.registerComponent('AwesomeProject', () => FlexDimensionsBasics);
 ```
 
-After you can control a component's size, the next step is to [learn how to lay it out on the screen](/react-native/docs/flexbox.html).
+After you can control a component's size, the next step is to [learn how to lay it out on the screen](docs/flexbox.html).
