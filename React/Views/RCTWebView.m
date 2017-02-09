@@ -279,7 +279,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
-  if (_messagingEnabled) {
+  if (_messagingEnabled && webView.loading) {
     #if RCT_DEV
     // See isNative in lodash
     NSString *testPostMessageNative = @"String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
@@ -299,7 +299,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     ];
     [webView stringByEvaluatingJavaScriptFromString:source];
   }
-  if (_injectedJavaScript != nil) {
+  if (_injectedJavaScript != nil && _onLoadingFinish && webView.loading) {
     NSString *jsEvaluationValue = [webView stringByEvaluatingJavaScriptFromString:_injectedJavaScript];
 
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
