@@ -17,11 +17,9 @@ import java.util.Map;
 
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
-import android.util.DisplayMetrics;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.animation.Animation;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -555,28 +553,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.sendAccessibilityEvent(tag, eventType);
   }
 
-  public void emitUpdateDimensionsEvent() {
-    DisplayMetrics windowDisplayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics();
-    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
-
-    WritableMap windowDisplayMetricsMap = Arguments.createMap();
-    windowDisplayMetricsMap.putInt("width", windowDisplayMetrics.widthPixels);
-    windowDisplayMetricsMap.putInt("height", windowDisplayMetrics.heightPixels);
-    windowDisplayMetricsMap.putDouble("scale", windowDisplayMetrics.density);
-    windowDisplayMetricsMap.putDouble("fontScale", mFontScale);
-    windowDisplayMetricsMap.putDouble("densityDpi", windowDisplayMetrics.densityDpi);
-
-    WritableMap screenDisplayMetricsMap = Arguments.createMap();
-    screenDisplayMetricsMap.putInt("width", screenDisplayMetrics.widthPixels);
-    screenDisplayMetricsMap.putInt("height", screenDisplayMetrics.heightPixels);
-    screenDisplayMetricsMap.putDouble("scale", screenDisplayMetrics.density);
-    screenDisplayMetricsMap.putDouble("fontScale", mFontScale);
-    screenDisplayMetricsMap.putDouble("densityDpi", screenDisplayMetrics.densityDpi);
-
-    WritableMap dimensionsMap = Arguments.createMap();
-    dimensionsMap.putMap("windowPhysicalPixels", windowDisplayMetricsMap);
-    dimensionsMap.putMap("screenPhysicalPixels", screenDisplayMetricsMap);
-    sendEvent("didUpdateDimensions", dimensionsMap);
+public void emitUpdateDimensionsEvent() {
+    sendEvent("didUpdateDimensions", UIManagerModuleConstants.getDimensionsConstants(mFontScale));
   }
 
   private void sendEvent(String eventName, @Nullable WritableMap params) {
