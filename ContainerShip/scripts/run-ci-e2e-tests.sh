@@ -12,6 +12,7 @@ RUN_IOS=0
 RUN_JS=0
 
 RETRY_COUNT=${RETRY_COUNT:-3}
+AVD_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 
 ANDROID_NPM_DEPS="appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3 pretty-data2@0.40.1"
 CLI_PACKAGE=$ROOT/react-native-cli/react-native-cli-*.tgz
@@ -71,6 +72,8 @@ while :; do
 done
 
 function e2e_suite() {
+    cd $ROOT
+
     if [ $RUN_ANDROID -eq 0 ] && [ $RUN_IOS -eq 0 ] && [ $RUN_JS -eq 0 ]; then
       echo "No e2e tests specified!"
       return 0
@@ -103,19 +106,30 @@ function e2e_suite() {
     if [ $RUN_ANDROID -ne 0 ]; then
         set +ex
 
-        AVD_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
-
         # create virtual device
-        echo no | android create avd -n $AVD_UUID -f -t android-19 --abi default/armeabi-v7a
+        if ! android list avd | grep "$AVD_UUID" > /dev/null; then
+            echo no | android create avd -n $AVD_UUID -f -t android-19 --abi default/armeabi-v7a
+        fi
+
+        # newline at end of adb devices call and first line is headers
+        DEVICE_COUNT=$(adb devices | wc -l)
+        ((DEVICE_COUNT -= 2))
+
+        # will always kill an existing emulator if one exists for fresh setup
+        if [[ $DEVICE_COUNT -ge 1 ]]; then
+            adb emu kill
+        fi
 
         # emulator setup
         emulator64-arm -avd $AVD_UUID -no-skin -no-audio -no-window -no-boot-anim &
+
         bootanim=""
         until [[ "$bootanim" =~ "stopped" ]]; do
             sleep 5
             bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
             echo "boot animation status=$bootanim"
         done
+
         set -ex
 
       ./gradlew :ReactAndroid:installArchives -Pjobs=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"
