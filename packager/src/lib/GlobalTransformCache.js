@@ -20,7 +20,7 @@ const path = require('path');
 const request = require('request');
 
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
-import type {CachedResult} from './TransformCache';
+import type {CachedResult, GetTransformCacheKey} from './TransformCache';
 import type {Reporter} from './reporting';
 
 type FetchResultURIs = (
@@ -36,7 +36,7 @@ type StoreResults = (
 type FetchProps = {
   filePath: string,
   sourceCode: string,
-  transformCacheKey: string,
+  getTransformCacheKey: GetTransformCacheKey,
   transformOptions: TransformOptions,
 };
 
@@ -235,7 +235,7 @@ class GlobalTransformCache {
     const stableOptions = globalizeTransformOptions(props.transformOptions);
     const digest = crypto.createHash('sha1').update([
       jsonStableStringify(stableOptions),
-      props.transformCacheKey,
+      props.getTransformCacheKey(props.sourceCode, props.filePath, props.transformOptions),
       imurmurhash(props.sourceCode).result().toString(),
     ].join('$')).digest('hex');
     return `${digest}-${path.basename(props.filePath)}`;
