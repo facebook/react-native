@@ -98,6 +98,9 @@ const viewConfig = {
 const Text = React.createClass({
   propTypes: {
     /**
+     * When `numberOfLines` is set, this prop defines how text will be truncated.
+     * `numberOfLines` must be set in conjunction with this prop.
+     *
      * This can be one of the following values:
      *
      * - `head` - The line is displayed so that the end fits in the container and the missing text
@@ -109,8 +112,6 @@ const Text = React.createClass({
      * - `clip` - Lines are not drawn past the edge of the text container.
      *
      * The default is `tail`.
-     *
-     * `numberOfLines` must be set in conjunction with this prop.
      *
      * > `clip` is working only for iOS
      */
