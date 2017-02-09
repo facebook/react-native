@@ -41,5 +41,6 @@ notifications:
   email:
     recipients:
       - mkonicek@fb.com
+      - eloy@artsy.net
     on_failure: change
     on_success: change
