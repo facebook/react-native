@@ -120,12 +120,6 @@ const ReactNative = {
 
   // See http://facebook.github.io/react/docs/addons.html
   addons: {
-    get LinkedStateMixin() {
-      if (__DEV__) {
-        addonWarn('LinkedStateMixin', 'react-addons-linked-state-mixin');
-      }
-      return require('react/lib/LinkedStateMixin');
-    },
     get PureRenderMixin() {
       if (__DEV__) {
         addonWarn('PureRenderMixin', 'react-addons-pure-render-mixin');
