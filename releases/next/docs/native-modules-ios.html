@@ -4,13 +4,9 @@
 @interface <span class="token class-name">CalendarManager</span> <span class="token punctuation">:</span> NSObject &lt;RCTBridgeModule<span class="token operator">&gt;</span>
 @end</div><p>In addition to implementing the <code>RCTBridgeModule</code> protocol, your class must also include the <code>RCT_EXPORT_MODULE()</code> macro. This takes an optional argument that specifies the name that the module will be accessible as in your JavaScript code (more on this later). If you do not specify a name, the JavaScript module name will match the Objective-C class name.</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// CalendarManager.m
 </span>@implementation CalendarManager
-<span class="token comment" spellcheck="true">
-// To export a module named CalendarManager
-</span><span class="token function">RCT_EXPORT_MODULE<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true">
-// This would name the module AwesomeCalendarManager instead
-</span><span class="token comment" spellcheck="true">// RCT_EXPORT_MODULE(AwesomeCalendarManager);
-</span>
+
+<span class="token function">RCT_EXPORT_MODULE<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
 @end</div><p>React Native will not expose any methods of <code>CalendarManager</code> to JavaScript unless explicitly told to. This is done using the <code>RCT_EXPORT_METHOD()</code> macro:</p><div class="prism language-javascript">#import <span class="token string">&quot;CalendarManager.h&quot;</span>
 #import &lt;React<span class="token operator">/</span>RCTLog<span class="token punctuation">.</span>h<span class="token operator">&gt;</span>
 
