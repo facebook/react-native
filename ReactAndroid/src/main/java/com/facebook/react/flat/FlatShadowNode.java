@@ -30,7 +30,6 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
   /* package */ static final FlatShadowNode[] EMPTY_ARRAY = new FlatShadowNode[0];
 
-  private static final String PROP_DECOMPOSED_MATRIX = "decomposedMatrix";
   private static final String PROP_OPACITY = "opacity";
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
@@ -88,8 +87,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
   /* package */ void handleUpdateProperties(ReactStylesDiffMap styles) {
     if (!mountsToView()) {
       // Make sure we mount this FlatShadowNode to a View if any of these properties are present.
-      if (styles.hasKey(PROP_DECOMPOSED_MATRIX) ||
-          styles.hasKey(PROP_OPACITY) ||
+      if (styles.hasKey(PROP_OPACITY) ||
           styles.hasKey(PROP_RENDER_TO_HARDWARE_TEXTURE) ||
           styles.hasKey(PROP_TEST_ID) ||
           styles.hasKey(PROP_ACCESSIBILITY_LABEL) ||
