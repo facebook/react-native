@@ -476,6 +476,7 @@ var LayoutPropTypes = {
    *  value based on the current locale.
    *  See https://facebook.github.io/yoga/docs/rtl/
    *  for more details.
+   *  @platform ios
    */
   direction: ReactPropTypes.oneOf([
     'inherit',
