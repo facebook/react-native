@@ -32,9 +32,3 @@ Anytime you change the contents, just refresh the page and it's going to be upda
 cd website
 npm run publish-website
 ```
-
-## Design Palette
-
-#05A5D1;
-#0484A7;
-#025268;
