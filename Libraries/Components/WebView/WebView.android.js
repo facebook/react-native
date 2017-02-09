@@ -160,6 +160,18 @@ class WebView extends React.Component {
      * @platform android
      */
     allowUniversalAccessFromFileURLs: PropTypes.bool,
+
+    /**
+     * Specifies the mixed content mode. i.e WebView will allow a secure origin to load content from any other origin.
+     * never (default) - WebView will not allow a secure origin to load content from an insecure origin.
+     * always - WebView will allow a secure origin to load content from any other origin, even if that origin is insecure.
+     * compatibility -  WebView will attempt to be compatible with the approach of a modern web browser with regard to mixed content.
+    **/
+    mixedContentMode: PropTypes.oneOf([
+      'never',
+      'always',
+      'compatibility'
+    ]),
   };
 
   static defaultProps = {
@@ -236,6 +248,7 @@ class WebView extends React.Component {
         testID={this.props.testID}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
         allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
+        mixedContentMode={this.props.mixedContentMode}
       />;
 
     return (
