@@ -1090,9 +1090,6 @@ class AnimatedInterpolation extends AnimatedWithChildren {
       typeof parentValue === 'number',
       'Cannot interpolate an input which is not a number.'
     );
-    /* $FlowFixMe(>=0.36.0 site=react_native_fb,react_native_oss) Flow error
-     * detected during the deploy of Flow v0.36.0. To see the error, remove
-     * this comment and run Flow */
     return this._interpolation(parentValue);
   }
 
@@ -1109,7 +1106,7 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     super.__detach();
   }
 
-  __transformDataType(range) {
+  __transformDataType(range: Array<any>) {
     // Change the string array type to number array
     // So we can reuse the same logic in iOS and Android platform
     return range.map(function (value) {
@@ -2377,6 +2374,10 @@ module.exports = {
    * 2D value class for driving 2D animations, such as pan gestures.
    */
   ValueXY: AnimatedValueXY,
+  /**
+   * exported to use the Interpolation type in flow
+   */
+  Interpolation: AnimatedInterpolation,
 
   /**
    * Animates a value from an initial velocity to zero based on a decay
