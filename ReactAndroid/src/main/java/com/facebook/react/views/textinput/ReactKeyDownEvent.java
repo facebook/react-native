@@ -1,10 +1,3 @@
-package com.facebook.react.views.textinput;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -13,15 +6,21 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
+package com.facebook.react.views.textinput;
+
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.events.Event;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
+
 public class ReactKeyDownEvent extends Event<ReactKeyDownEvent> {
 
     private static final String EVENT_NAME = "topKeyDown";
 
     private String mKey;
 
-    public ReactKeyDownEvent(
-            int viewId,
-            String key) {
+    public ReactKeyDownEvent(int viewId, String key) {
         super(viewId);
         mKey = key;
     }
@@ -39,10 +38,10 @@ public class ReactKeyDownEvent extends Event<ReactKeyDownEvent> {
     private WritableMap serializeEventData() {
         WritableMap eventData = Arguments.createMap();
 
-        //WritableMap selectionData = Arguments.createMap();
+        // WritableMap selectionData = Arguments.createMap();
         eventData.putString("key", mKey);
 
-        //eventData.putMap("selection", selectionData);
+        // eventData.putMap("selection", selectionData);
         return eventData;
     }
 }

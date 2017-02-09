@@ -625,9 +625,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // If the string is only 1 character longer, we interpret it as a key press. It also triggers
       // if only 1 character was pasted, but there is no way to monitor soft/virtual key presses
       int diff = count - before;
-      if(diff == 1) {
+      if (diff == 1) {
         // Mirrors behaviour of iOS
-        String key = ""+s.charAt(start+count-1);
+        String key = "" + s.charAt(start+count-1);
         key = key.equals("\n") ? "Enter" : key;
         mEventDispatcher.dispatchEvent(
                 new ReactKeyDownEvent(
@@ -636,7 +636,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       }
       // If the text is shorter we interpret as a backspace press (could also be a Cut from a
       // selection)
-      if(diff < 0) {
+      if (diff < 0) {
         mEventDispatcher.dispatchEvent(
                 new ReactKeyDownEvent(
                         mEditText.getId(),
