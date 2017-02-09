@@ -97,6 +97,7 @@ const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'NavigatorIOSBarStyleExample',
     module: require('./NavigatorIOSBarStyleExample'),
+    supportsTVOS: false,
   },
   {
     key: 'NavigatorIOSExample',
