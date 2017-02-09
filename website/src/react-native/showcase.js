@@ -368,7 +368,7 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.jadopado.buyer',
     infoLink: 'https://blog.jadopado.com/product-updates-and-building-incredible-experiences/',
     infoTitle: 'Product Updates And Building Incredible Experiences',
-  }
+  },
 ];
 
 /*
