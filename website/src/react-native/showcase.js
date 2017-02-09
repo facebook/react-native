@@ -399,8 +399,8 @@ var pinned = [
     icon: 'http://a4.mzstatic.com/us/r30/Purple62/v4/1f/8d/f9/1f8df910-8ec7-3b8e-0104-d44e869f4d65/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/app/instagram/id389801252?pt=428156&ct=igweb.unifiedHome.badge&mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.instagram.android&referrer=utm_source%3Dinstagramweb%26utm_campaign%3DunifiedHome%26utm_medium%3Dbadge',
-    infoLink: '',
-    infoTitle: '',
+    infoLink: 'https://engineering.instagram.com/react-native-at-instagram-dd828a9a90c7#.3h4wir4zr',
+    infoTitle: 'React Native at Instagram',
     defaultLink: 'https://www.instagram.com/',
   },
   {

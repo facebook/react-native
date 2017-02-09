@@ -310,6 +310,18 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     jni_YGNodeStyleSetOverflow(mNativePointer, overflow.intValue());
   }
 
+  private native int jni_YGNodeStyleGetDisplay(long nativePointer);
+  @Override
+  public YogaDisplay getDisplay() {
+    return YogaDisplay.fromInt(jni_YGNodeStyleGetDisplay(mNativePointer));
+  }
+
+  private native void jni_YGNodeStyleSetDisplay(long nativePointer, int display);
+  @Override
+  public void setDisplay(YogaDisplay display) {
+    jni_YGNodeStyleSetDisplay(mNativePointer, display.intValue());
+  }
+
   private native void jni_YGNodeStyleSetFlex(long nativePointer, float flex);
   @Override
   public void setFlex(float flex) {
