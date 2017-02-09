@@ -16,11 +16,11 @@ var InteractionManager = require('InteractionManager');
 var Interpolation = require('Interpolation');
 var NativeAnimatedHelper = require('NativeAnimatedHelper');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var Set = require('Set');
 var SpringConfig = require('SpringConfig');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var findNodeHandle = require('findNodeHandle');
 var flattenStyle = require('flattenStyle');
 var invariant = require('fbjs/lib/invariant');
 var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
@@ -1661,14 +1661,14 @@ class AnimatedProps extends Animated {
 
   __connectAnimatedView(): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    var nativeViewTag: ?number = findNodeHandle(this._animatedView);
+    var nativeViewTag: ?number = ReactNative.findNodeHandle(this._animatedView);
     invariant(nativeViewTag != null, 'Unable to locate attached view in the native tree');
     NativeAnimatedAPI.connectAnimatedNodeToView(this.__getNativeTag(), nativeViewTag);
   }
 
   __disconnectAnimatedView(): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    var nativeViewTag: ?number = findNodeHandle(this._animatedView);
+    var nativeViewTag: ?number = ReactNative.findNodeHandle(this._animatedView);
     invariant(nativeViewTag != null, 'Unable to locate attached view in the native tree');
     NativeAnimatedAPI.disconnectAnimatedNodeFromView(this.__getNativeTag(), nativeViewTag);
   }
@@ -2204,7 +2204,7 @@ class AnimatedEvent {
     // Assume that the event containing `nativeEvent` is always the first argument.
     traverse(this._argMapping[0].nativeEvent, []);
 
-    const viewTag = findNodeHandle(viewRef);
+    const viewTag = ReactNative.findNodeHandle(viewRef);
 
     eventMappings.forEach((mapping) => {
       NativeAnimatedAPI.addAnimatedEventToView(viewTag, eventName, mapping);

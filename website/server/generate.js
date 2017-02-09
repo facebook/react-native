@@ -16,7 +16,7 @@ var mkdirp = require('mkdirp');
 var server = require('./server.js');
 var Feed = require('feed');
 
-require('./convert.js')();
+require('./convert.js')({extractDocs: true});
 server.noconvert = true;
 
 // Sadly, our setup fatals when doing multiple concurrent requests
