@@ -43,21 +43,19 @@ function runAndroid(argv, config, args) {
   });
 }
 
-function getAdbPath() {
-  return process.env.ANDROID_HOME
-    ? process.env.ANDROID_HOME + '/platform-tools/adb'
-    : 'adb';
-}
-
 // Runs ADB reverse tcp:8081 tcp:8081 to allow loading the jsbundle from the packager
-function tryRunAdbReverse(device) {
+function tryRunAdbReverse(device, adbAddrArg) {
   try {
-    const adbPath = getAdbPath();
+    const adbPath = adb.getAdbPath();
     const adbArgs = ['reverse', 'tcp:8081', 'tcp:8081'];
 
     // If a device is specified then tell adb to use it
     if (device) {
       adbArgs.unshift('-s', device);
+    }
+
+    if (adbAddrArg) {
+      adbArgs.unshift(...adbAddrArg);
     }
 
     console.log(chalk.bold(
@@ -68,16 +66,21 @@ function tryRunAdbReverse(device) {
       stdio: [process.stdin, process.stdout, process.stderr],
     });
   } catch (e) {
+    const emsg = e ? e.message : e;
     console.log(chalk.yellow(
-      `Could not run adb reverse: ${e.message}`
+      `Could not run adb reverse: ${emsg}`
     ));
   }
 }
 
 // Builds the app and runs it on a connected emulator / device.
 function buildAndRun(args) {
+  const adbHost = args.adbhost || process.env.ADB_HOST || 'localhost';
+  const adbPort = args.adbport || process.env.ADB_PORT || '5037';
+  const adbAddrArg = ['-H', adbHost, '-P', adbPort];
+  const devices = adb.getDevices(adbAddrArg);
   try {
-    adb.getDevices().map((device) => tryRunAdbReverse(device));
+    devices.forEach((device) => tryRunAdbReverse(device, adbAddrArg));
 
     const gradleArgs = [];
     if (args.variant) {
@@ -156,15 +159,15 @@ function buildAndRun(args) {
       'utf8'
     ).match(/package="(.+?)"/)[1];
 
-    const adbPath = getAdbPath();
-
-    const devices = adb.getDevices();
+    const adbPath = adb.getAdbPath();
 
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
 
-        const adbArgs =
+        const  =
           ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+
+        adbArgs.unshift(...adbAddrArg)
 
         console.log(chalk.bold(
           `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
@@ -178,6 +181,7 @@ function buildAndRun(args) {
       const fallbackAdbArgs = [
         'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
       ];
+      fallbackAdbArgs.unshift(...adbAddrArg)
       console.log(chalk.bold(
         `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
       ));
@@ -251,5 +255,13 @@ module.exports = {
     default: 'Debug'
   }, {
     command: '--variant [string]',
+  }, {
+    command: '--adbhost [string]',
+    description: 'Name of adb server host (default: localhost)',
+    default: ''
+  }, {
+    command: '--adbport [string]',
+    description: 'Port of adb server (default: 5037)',
+    default: ''
   }],
 };

@@ -10,6 +10,13 @@
  */
 
 const child_process = require('child_process');
+const chalk = require('chalk');
+
+function getAdbPath() {
+  return process.env.ANDROID_HOME
+    ? process.env.ANDROID_HOME + '/platform-tools/adb'
+    : 'adb';
+}
 
 /**
  * Parses the output of the 'adb devices' command
@@ -35,10 +42,23 @@ function parseDevicesResult(result: string): Array<string> {
 /**
  * Executes the commands needed to get a list of devices from ADB
  */
-function getDevices(): Array<string> {
+function getDevices(extraParams: Array<string>): Array<string> {
+  extraParams = extraParams || [];
+  const cmd = [getAdbPath(), ...extraParams, 'devices'].join(' ');
+
+  console.log(chalk.bold(
+    `Getting devices (${cmd})...`
+  ));
+
   try {
-    const devicesResult = child_process.execSync('adb devices');
-    return parseDevicesResult(devicesResult.toString());
+    const devicesResult = child_process.execSync(cmd);
+    const result = parseDevicesResult(devicesResult.toString());
+
+    console.log(chalk.bold(
+      `Found devices (${result.join(', ')})...`
+    ));
+
+    return result;
   } catch (e) {
     return [];
   }
@@ -48,5 +68,6 @@ function getDevices(): Array<string> {
 
 module.exports = {
   parseDevicesResult: parseDevicesResult,
-  getDevices: getDevices
+  getDevices: getDevices,
+  getAdbPath: getAdbPath
 };
