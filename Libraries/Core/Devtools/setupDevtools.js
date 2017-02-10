@@ -11,100 +11,24 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModules');
-var Platform = require('Platform');
+if (__DEV__) {
+  var AppState = require('AppState');
+  var NativeModules = require('NativeModules');
+  var Platform = require('Platform');
+  var {connectToDevTools} = require('react-devtools-core');
 
-function setupDevtools() {
-  var messageListeners = [];
-  var closeListeners = [];
-  var hostname = 'localhost';
-  if (Platform.OS === 'android' && NativeModules.AndroidConstants) {
-    hostname = NativeModules.AndroidConstants.ServerHost.split(':')[0];
-  }
-  var port = window.__REACT_DEVTOOLS_PORT__ || 8097;
-  var ws = new window.WebSocket('ws://' + hostname + ':' +  port + '/devtools');
-  // this is accessed by the eval'd backend code
-  var FOR_BACKEND = { // eslint-disable-line no-unused-vars
-    resolveRNStyle: require('flattenStyle'),
-    wall: {
-      listen(fn) {
-        messageListeners.push(fn);
-      },
-      onClose(fn) {
-        closeListeners.push(fn);
-      },
-      send(data) {
-        ws.send(JSON.stringify(data));
-      },
+  connectToDevTools({
+    isAppActive() {
+      // Don't steal the DevTools from currently active app.
+      return AppState.currentState !== 'background';
     },
-  };
-  ws.onclose = handleClose;
-  ws.onerror = handleClose;
-  ws.onopen = function () {
-    tryToConnect();
-  };
-
-  var hasClosed = false;
-  function handleClose() {
-    if (!hasClosed) {
-      hasClosed = true;
-      setTimeout(setupDevtools, 2000);
-      closeListeners.forEach(fn => fn());
-    }
-  }
-
-  function tryToConnect() {
-    ws.send('attach:agent');
-    var _interval = setInterval(() => ws.send('attach:agent'), 500);
-    ws.onmessage = evt => {
-      if (evt.data.indexOf('eval:') === 0) {
-        clearInterval(_interval);
-        initialize(evt.data.slice('eval:'.length));
-      }
-    };
-  }
-
-  function initialize(text) {
-    try {
-      // FOR_BACKEND is used by the eval'd code
-      eval(text); // eslint-disable-line no-eval
-    } catch (e) {
-      console.error('Failed to eval: ' + e.message);
-      return;
-    }
-    ws.onmessage = handleMessage;
-  }
-
-  function handleMessage(evt) {
-    // It's hard to handle JSON in a safe manner without inspecting it at
-    // runtime, hence the any
-    var data: any;
-    try {
-      data = JSON.parse(evt.data);
-    } catch (e) {
-      return console.error('failed to parse json: ' + evt.data);
-    }
-    // the devtools closed
-    if (data.$close || data.$error) {
-      closeListeners.forEach(fn => fn());
-      tryToConnect();
-      return;
-    }
-    if (data.$open) {
-      return; // ignore
-    }
-    messageListeners.forEach(fn => {
-      try {
-        fn(data);
-      } catch (e) {
-        // jsc doesn't play so well with tracebacks that go into eval'd code,
-        // so the stack trace here will stop at the `eval()` call. Getting the
-        // message that caused the error is the best we can do for now.
-        console.log(data);
-        throw e;
-      }
-    });
-  }
+    // Special case: Genymotion is running on a different host.
+    host: (Platform.OS === 'android' && NativeModules.AndroidConstants) ?
+      NativeModules.AndroidConstants.ServerHost.split(':')[0] :
+      'localhost',
+    // Read the optional global variable for backward compatibility.
+    // It was added in https://github.com/facebook/react-native/commit/bf2b435322e89d0aeee8792b1c6e04656c2719a0.
+    port: window.__REACT_DEVTOOLS_PORT__,
+    resolveRNStyle: require('flattenStyle'),
+  });
 }
-
-module.exports = setupDevtools;
