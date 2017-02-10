@@ -273,7 +273,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       if (getSettings().getJavaScriptEnabled() &&
           injectedJS != null &&
           !TextUtils.isEmpty(injectedJS)) {
-        loadUrl("javascript:(function() {\n" + injectedJS + ";\n})();");
+            String code = "(function() {\n" + injectedJS + ";\n})();";
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+              evaluateJavascript(code, null);
+            } else {
+              loadUrl("javascript:(function() {\n" + injectedJS + ";\n})();");
+            }
       }
     }
 
