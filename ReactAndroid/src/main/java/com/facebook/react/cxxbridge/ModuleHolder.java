@@ -67,6 +67,10 @@ public class ModuleHolder {
     }
   }
 
+  public synchronized boolean isInitialized() {
+    return mModule != null;
+  }
+
   public synchronized void destroy() {
     if (mModule != null) {
       mModule.onCatalystInstanceDestroy();

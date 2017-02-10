@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.ReactMarker;
@@ -28,11 +27,11 @@ import com.facebook.systrace.Systrace;
 public class NativeModuleRegistry {
 
   private final Map<Class<? extends NativeModule>, ModuleHolder> mModules;
-  private final ArrayList<OnBatchCompleteListener> mBatchCompleteListenerModules;
+  private final ArrayList<ModuleHolder> mBatchCompleteListenerModules;
 
   public NativeModuleRegistry(
     Map<Class<? extends NativeModule>, ModuleHolder> modules,
-    ArrayList<OnBatchCompleteListener> batchCompleteListenerModules) {
+    ArrayList<ModuleHolder> batchCompleteListenerModules) {
     mModules = modules;
     mBatchCompleteListenerModules = batchCompleteListenerModules;
   }
@@ -92,8 +91,10 @@ public class NativeModuleRegistry {
   }
 
   public void onBatchComplete() {
-    for (int i = 0; i < mBatchCompleteListenerModules.size(); i++) {
-      mBatchCompleteListenerModules.get(i).onBatchComplete();
+    for (ModuleHolder moduleHolder : mBatchCompleteListenerModules) {
+      if (moduleHolder.isInitialized()) {
+        ((OnBatchCompleteListener) moduleHolder.getModule()).onBatchComplete();
+      }
     }
   }
 

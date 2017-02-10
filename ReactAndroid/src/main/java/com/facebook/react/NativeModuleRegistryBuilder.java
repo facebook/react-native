@@ -113,18 +113,10 @@ public class NativeModuleRegistryBuilder {
   }
 
   public NativeModuleRegistry build() {
-    ArrayList<OnBatchCompleteListener> batchCompleteListenerModules = new ArrayList<>();
+    ArrayList<ModuleHolder> batchCompleteListenerModules = new ArrayList<>();
     for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
-      Class<? extends NativeModule> type = entry.getKey();
-      if (OnBatchCompleteListener.class.isAssignableFrom(type)) {
-        final ModuleHolder moduleHolder = entry.getValue();
-        batchCompleteListenerModules.add(new OnBatchCompleteListener() {
-          @Override
-          public void onBatchComplete() {
-            OnBatchCompleteListener listener = (OnBatchCompleteListener) moduleHolder.getModule();
-            listener.onBatchComplete();
-          }
-        });
+      if (OnBatchCompleteListener.class.isAssignableFrom(entry.getKey())) {
+        batchCompleteListenerModules.add(entry.getValue());
       }
     }
 
