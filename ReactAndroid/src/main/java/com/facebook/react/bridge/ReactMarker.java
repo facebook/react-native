@@ -13,10 +13,10 @@ import com.facebook.proguard.annotations.DoNotStrip;
 public class ReactMarker {
 
   public interface MarkerListener {
-    void logMarker(String name);
+    void logMarker(String name, @Nullable String tag);
   };
 
-  @Nullable static private MarkerListener sMarkerListener = null;
+  private static @Nullable MarkerListener sMarkerListener = null;
 
   public static void setMarkerListener(MarkerListener listener) {
     SoftAssertions.assertCondition(
@@ -27,8 +27,13 @@ public class ReactMarker {
 
   @DoNotStrip
   public static void logMarker(String name) {
+    logMarker(name, null);
+  }
+
+  @DoNotStrip
+  public static void logMarker(String name, String tag) {
     if (sMarkerListener != null) {
-      sMarkerListener.logMarker(name);
+      sMarkerListener.logMarker(name, tag);
     }
   }
 }
