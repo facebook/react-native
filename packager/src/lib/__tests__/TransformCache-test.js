@@ -58,12 +58,11 @@ describe('TransformCache', () => {
   });
 
   it('is caching different files and options separately', () => {
-    const transformCacheKey = 'abcdef';
     const argsFor = ([filePath, transformOptions]) => {
       const key = filePath + JSON.stringify(transformOptions);
       return {
         sourceCode: `/* source for ${key} */`,
-        transformCacheKey,
+        getTransformCacheKey: () => 'abcdef',
         filePath,
         transformOptions,
         result: {
@@ -97,7 +96,7 @@ describe('TransformCache', () => {
       const key = sourceCode + transformCacheKey;
       return {
         sourceCode,
-        transformCacheKey,
+        getTransformCacheKey: () => transformCacheKey,
         filePath: 'test.js',
         transformOptions: {foo: 1},
         result: {

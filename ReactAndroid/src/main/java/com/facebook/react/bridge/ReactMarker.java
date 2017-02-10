@@ -3,6 +3,7 @@
 package com.facebook.react.bridge;
 
 import javax.annotation.Nullable;
+
 import com.facebook.proguard.annotations.DoNotStrip;
 /**
  * Static class that allows markers to be placed in React code and responded to in a
@@ -17,15 +18,17 @@ public class ReactMarker {
 
   @Nullable static private MarkerListener sMarkerListener = null;
 
-  static public void setMarkerListener(MarkerListener listener) {
+  public static void setMarkerListener(MarkerListener listener) {
+    SoftAssertions.assertCondition(
+      sMarkerListener == null,
+      "MarkerListener is being overwritten.");
     sMarkerListener = listener;
   }
 
   @DoNotStrip
-  static public void logMarker(String name) {
+  public static void logMarker(String name) {
     if (sMarkerListener != null) {
       sMarkerListener.logMarker(name);
     }
   }
-
 }

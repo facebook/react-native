@@ -124,11 +124,12 @@ class Bundler {
 
     this._getModuleId = createModuleIdFactory();
 
+    let getCacheKey = () => '';
     if (opts.transformModulePath) {
       /* $FlowFixMe: dynamic requires prevent static typing :'(  */
       const transformer = require(opts.transformModulePath);
-      if (typeof transformer.cacheKey !== 'undefined') {
-        cacheKeyParts.push(transformer.cacheKey);
+      if (typeof transformer.getCacheKey !== 'undefined') {
+        getCacheKey = transformer.getCacheKey;
       }
     }
 
@@ -146,11 +147,16 @@ class Bundler {
     /* $FlowFixMe: in practice it's always here. */
     this._transformer = new Transformer(opts.transformModulePath);
 
+    const getTransformCacheKey = (src, filename, options) => {
+      return transformCacheKey + getCacheKey(src, filename, options);
+    };
+
     this._resolver = new Resolver({
       assetExts: opts.assetExts,
       blacklistRE: opts.blacklistRE,
       cache: this._cache,
       extraNodeModules: opts.extraNodeModules,
+      getTransformCacheKey,
       globalTransformCache: opts.globalTransformCache,
       minifyCode: this._transformer.minify,
       moduleFormat: opts.moduleFormat,
@@ -160,7 +166,6 @@ class Bundler {
       providesModuleNodeModules: opts.providesModuleNodeModules,
       reporter: opts.reporter,
       resetCache: opts.resetCache,
-      transformCacheKey,
       transformCode:
         (module, code, transformCodeOptions) => this._transformer.transformFile(
           module.path,
