@@ -68,6 +68,16 @@ public class JSPackagerWebSocketClientTest {
   }
 
   @Test
+  public void test_onMessage_With_Null_Target_ShouldNotTriggerCallback() throws IOException {
+    final JSPackagerWebSocketClient.JSPackagerCallback callback =
+      mock(JSPackagerWebSocketClient.JSPackagerCallback.class);
+    final JSPackagerWebSocketClient client = new JSPackagerWebSocketClient("ws://not_needed", callback);
+    client.onMessage(ResponseBody.create(WebSocket.TEXT,
+      "{\"version\": 1, \"target\": null, \"action\": \"actionValue\"}"));
+    verify(callback, never()).onMessage(anyString(), anyString());
+  }
+
+  @Test
   public void test_onMessage_WithoutAction_ShouldNotTriggerCallback() throws IOException {
     final JSPackagerWebSocketClient.JSPackagerCallback callback =
       mock(JSPackagerWebSocketClient.JSPackagerCallback.class);
@@ -85,6 +95,16 @@ public class JSPackagerWebSocketClientTest {
     client.onMessage(ResponseBody.create(WebSocket.TEXT,
       "{\"version\": 1, \"target\": \"targetValue\", \"action\": null}"));
     verify(callback, never()).onMessage(any(WebSocket.class), anyString(), anyString());
+  }
+
+  @Test
+  public void test_onMessage_With_Null_Action_ShouldNotTriggerCallback() throws IOException {
+    final JSPackagerWebSocketClient.JSPackagerCallback callback =
+      mock(JSPackagerWebSocketClient.JSPackagerCallback.class);
+    final JSPackagerWebSocketClient client = new JSPackagerWebSocketClient("ws://not_needed", callback);
+    client.onMessage(ResponseBody.create(WebSocket.TEXT,
+      "{\"version\": 1, \"target\": \"targetValue\", \"action\": null}"));
+    verify(callback, never()).onMessage(anyString(), anyString());
   }
 
   @Test
