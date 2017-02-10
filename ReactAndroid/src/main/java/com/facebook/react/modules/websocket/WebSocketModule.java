@@ -36,9 +36,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okhttp3.ws.WebSocket;
-import okhttp3.ws.WebSocketCall;
-import okhttp3.ws.WebSocketListener;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
 
 import java.net.URISyntaxException;
 import java.net.URI;
@@ -132,7 +131,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       }
     }
 
-    WebSocketCall.create(client, builder.build()).enqueue(new WebSocketListener() {
+    WebSocketListener listener = new WebSocketListener() {
 
       @Override
       public void onOpen(WebSocket webSocket, Response response) {
@@ -143,52 +142,41 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       }
 
       @Override
-      public void onClose(int code, String reason) {
+      public void onClosing(WebSocket webSocket, int code, String reason) {
+          WritableMap params = Arguments.createMap();
+          params.putInt("id", id);
+          params.putInt("code", code);
+          params.putString("reason", reason);
+          sendEvent("websocketClosed", params);
+
+          webSocket.close(1000, "Closing: " + code + " " + reason);
+      }
+
+      @Override
+      public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+        notifyWebSocketFailed(id, t.getMessage());
+      }
+
+      @Override
+      public void onMessage(WebSocket webSocket, String text) {
         WritableMap params = Arguments.createMap();
         params.putInt("id", id);
-        params.putInt("code", code);
-        params.putString("reason", reason);
-        sendEvent("websocketClosed", params);
-      }
-
-      @Override
-      public void onFailure(IOException e, Response response) {
-        notifyWebSocketFailed(id, e.getMessage());
-      }
-
-      @Override
-      public void onPong(Buffer buffer) {
-      }
-
-      @Override
-      public void onMessage(ResponseBody response) throws IOException {
-        String message;
-        try {
-          if (response.contentType() == WebSocket.BINARY) {
-            message = Base64.encodeToString(response.source().readByteArray(), Base64.NO_WRAP);
-          } else {
-            message = response.source().readUtf8();
-          }
-        } catch (IOException e) {
-          notifyWebSocketFailed(id, e.getMessage());
-          return;
-        }
-        try {
-          response.source().close();
-        } catch (IOException e) {
-          FLog.e(
-            ReactConstants.TAG,
-            "Could not close BufferedSource for WebSocket id " + id,
-            e);
-        }
-
-        WritableMap params = Arguments.createMap();
-        params.putInt("id", id);
-        params.putString("data", message);
-        params.putString("type", response.contentType() == WebSocket.BINARY ? "binary" : "text");
+        params.putString("data", text);
+        params.putString("type", "text");
         sendEvent("websocketMessage", params);
       }
-    });
+
+      @Override public void onMessage(WebSocket webSocket, ByteString bytes) {
+        WritableMap params = Arguments.createMap();
+        byte[] byteStr = bytes.toByteArray();
+        params.putInt("id", id);
+        params.putString("data", Base64.encodeToString(byteStr,Base64.NO_WRAP));
+        params.putString("type", "binary");
+        sendEvent("websocketMessage", params);
+      }
+    };
+
+    WebSocket call = client.newWebSocket(builder.build(), listener);
 
     // Trigger shutdown of the dispatcher's executor so this process can exit cleanly
     client.dispatcher().executorService().shutdown();
@@ -221,8 +209,8 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id);
     }
     try {
-      client.sendMessage(RequestBody.create(WebSocket.TEXT, message));
-    } catch (IOException | IllegalStateException e) {
+      client.send(message);
+    } catch (Exception e) {
       notifyWebSocketFailed(id, e.getMessage());
     }
   }
@@ -235,9 +223,8 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id);
     }
     try {
-      client.sendMessage(
-        RequestBody.create(WebSocket.BINARY, ByteString.decodeBase64(base64String)));
-    } catch (IOException | IllegalStateException e) {
+      client.send(ByteString.decodeBase64(base64String));
+    } catch (Exception e) {
       notifyWebSocketFailed(id, e.getMessage());
     }
   }
@@ -251,8 +238,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     }
     try {
       Buffer buffer = new Buffer();
-      client.sendPing(buffer);
-    } catch (IOException | IllegalStateException e) {
+    } catch (Exception e) {
       notifyWebSocketFailed(id, e.getMessage());
     }
   }

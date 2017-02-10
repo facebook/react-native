@@ -17,6 +17,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.JavascriptException;
 
+import java.io.StringReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -31,15 +32,14 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okhttp3.ws.WebSocket;
-import okhttp3.ws.WebSocketCall;
-import okhttp3.ws.WebSocketListener;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
 import okio.Buffer;
 
 /**
  * A wrapper around WebSocketClient that recognizes RN debugging message format.
  */
-public class JSDebuggerWebSocketClient implements WebSocketListener {
+public class JSDebuggerWebSocketClient extends WebSocketListener {
 
   private static final String TAG = "JSDebuggerWebSocketClient";
 
@@ -67,8 +67,7 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
       .build();
 
     Request request = new Request.Builder().url(url).build();
-    WebSocketCall call = WebSocketCall.create(mHttpClient, request);
-    call.enqueue(this);
+    WebSocket call = mHttpClient.newWebSocket(request, this);
   }
 
   public void prepareJSRuntime(JSDebuggerCallback callback) {
@@ -142,7 +141,7 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
     if (mWebSocket != null) {
       try {
         mWebSocket.close(1000, "End of session");
-      } catch (IOException e) {
+      } catch (Exception e) {
         // swallow, no need to handle it here
       }
       mWebSocket = null;
@@ -157,8 +156,8 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
       return;
     }
     try {
-      mWebSocket.sendMessage(RequestBody.create(WebSocket.TEXT, message));
-    } catch (IOException e) {
+      mWebSocket.send(message);
+    } catch (Exception e) {
       triggerRequestFailure(requestID, e);
     }
   }
@@ -180,16 +179,12 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
   }
 
   @Override
-  public void onMessage(ResponseBody response) throws IOException {
-    if (response.contentType() != WebSocket.TEXT) {
-      FLog.w(TAG, "Websocket received unexpected message with payload of type " + response.contentType());
-      return;
-    }
+  public void onMessage(WebSocket webSocket, String text) {
 
     Integer replyID = null;
 
     try {
-      JsonReader reader = new JsonReader(response.charStream());
+      JsonReader reader = new JsonReader(new StringReader(text));
       String result = null;
       reader.beginObject();
       while (reader.hasNext()) {
@@ -218,14 +213,12 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
       } else {
         abort("Parsing response message from websocket failed", e);
       }
-    } finally {
-      response.close();
     }
   }
 
   @Override
-  public void onFailure(IOException e, Response response) {
-    abort("Websocket exception", e);
+  public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+      abort("Websocket exception", t);
   }
 
   @Override
@@ -236,13 +229,9 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
   }
 
   @Override
-  public void onClose(int code, String reason) {
+  public void onClosing(WebSocket webSocket, int code, String reason) {
+    webSocket.close(1000, null);
     mWebSocket = null;
-  }
-
-  @Override
-  public void onPong(Buffer payload) {
-    // ignore
   }
 
   private void abort(String message, Throwable cause) {

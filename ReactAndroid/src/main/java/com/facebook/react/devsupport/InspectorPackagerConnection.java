@@ -21,9 +21,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okhttp3.ws.WebSocket;
-import okhttp3.ws.WebSocketCall;
-import okhttp3.ws.WebSocketListener;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
 import okio.Buffer;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -174,7 +173,7 @@ public class InspectorPackagerConnection {
     return payload;
   }
 
-  private class Connection implements WebSocketListener {
+  private class Connection extends WebSocketListener {
     private static final int RECONNECT_DELAY_MS = 2000;
 
     private final String mUrl;
@@ -195,9 +194,9 @@ public class InspectorPackagerConnection {
     }
 
     @Override
-    public void onFailure(IOException e, Response response) {
-      if (mWebSocket != null) {
-        abort("Websocket exception", e);
+    public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+      if (webSocket != null) {
+        abort("Websocket exception", t);
       }
       if (!mClosed) {
         reconnect();
@@ -205,28 +204,24 @@ public class InspectorPackagerConnection {
     }
 
     @Override
-    public void onMessage(ResponseBody message) throws IOException {
+    public void onMessage(WebSocket webSocket, String text) {
       try {
-        handleProxyMessage(new JSONObject(message.string()));
-      } catch (JSONException e) {
-        throw new IOException(e);
-      } finally {
-        message.close();
-      }
+        handleProxyMessage(new JSONObject(text));
+      } catch (JSONException | IOException e) {
+        FLog.w(TAG, "Couldn't handle proxy message", e);
+      } 
     }
 
-    @Override
-    public void onPong(Buffer payload) {
-    }
 
     @Override
-    public void onClose(int code, String reason) {
+    public void onClosing(WebSocket webSocket, int code, String reason) {
+      webSocket.close(1000, null);
       mWebSocket = null;
-      closeAllConnections();
       if (!mClosed) {
         reconnect();
       }
     }
+
 
     public void connect() {
       if (mClosed) {
@@ -239,8 +234,7 @@ public class InspectorPackagerConnection {
           .build();
 
       Request request = new Request.Builder().url(mUrl).build();
-      WebSocketCall call = WebSocketCall.create(httpClient, request);
-      call.enqueue(this);
+      WebSocket call = httpClient.newWebSocket(request, this);
     }
 
     private void reconnect() {
@@ -267,11 +261,7 @@ public class InspectorPackagerConnection {
     public void close() {
       mClosed = true;
       if (mWebSocket != null) {
-        try {
-          mWebSocket.close(1000, "End of session");
-        } catch (IOException e) {
-          // swallow, no need to handle it here
-        }
+        mWebSocket.close(1000, "End of session");
         mWebSocket = null;
       }
     }
@@ -280,8 +270,7 @@ public class InspectorPackagerConnection {
       if (mWebSocket == null) {
         return;
       }
-
-      mWebSocket.sendMessage(RequestBody.create(WebSocket.TEXT, object.toString()));
+      mWebSocket.send(object.toString());
     }
 
     private void abort(String message, Throwable cause) {
@@ -294,7 +283,7 @@ public class InspectorPackagerConnection {
       if (mWebSocket != null) {
         try {
           mWebSocket.close(1000, "End of session");
-        } catch (IOException e) {
+        } catch (Exception e) {
           // swallow, no need to handle it here
         }
         mWebSocket = null;
