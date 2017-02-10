@@ -53,6 +53,7 @@ import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
 import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
 import com.facebook.react.modules.debug.DeveloperSettings;
+import com.facebook.react.packagerconnection.JSPackagerWebSocketClient;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;

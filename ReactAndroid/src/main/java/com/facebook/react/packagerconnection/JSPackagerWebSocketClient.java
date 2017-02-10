@@ -6,7 +6,7 @@
  * file in the same directory.
  */
 
-package com.facebook.react.devsupport;
+package com.facebook.react.packagerconnection;
 
 import javax.annotation.Nullable;
 
@@ -161,7 +161,9 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
           action = reader.nextString();
         }
       }
-      if (version != 1) {
+      reader.close();
+
+      if (version == null || version != 1) {
         return;
       }
       if (target == null || action == null) {
