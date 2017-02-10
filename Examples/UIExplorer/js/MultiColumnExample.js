@@ -26,6 +26,7 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {
   StyleSheet,
+  Text,
   View,
 } = ReactNative;
 
@@ -46,55 +47,65 @@ const {
   renderSmallSwitchOption,
 } = require('./ListExampleShared');
 
-class TwoColumnExample extends React.PureComponent {
-  static title = 'Two Columns with FlatList';
-  static description = 'Performant, scrollable list of data in two columns.';
+class MultiColumnExample extends React.PureComponent {
+  static title = '<FlatList> - MultiColumn';
+  static description = 'Performant, scrollable grid of data.';
 
   state = {
     data: genItemData(1000),
     filterText: '',
     fixedHeight: true,
     logViewable: false,
+    numColumns: 2,
     virtualized: true,
   };
   _onChangeFilterText = (filterText) => {
     this.setState(() => ({filterText}));
   };
+  _onChangeNumColumns = (numColumns) => {
+    this.setState(() => ({numColumns: Number(numColumns)}));
+  };
   render() {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
     const filter = (item) => (filterRegex.test(item.text) || filterRegex.test(item.title));
     const filteredData = this.state.data.filter(filter);
-    const grid = [];
-    for (let ii = 0; ii < filteredData.length; ii += 2) {
-      const i1 = filteredData[ii];
-      const i2 = filteredData[ii + 1];
-      grid.push({columns: i2 ? [i1, i2] : [i1], key: i1.key + (i2 && i2.key)});
-    }
     return (
       <UIExplorerPage
-        title={this.props.navigator ? null : '<FlatList> - 2 Columns'}
+        title={this.props.navigator ? null : '<FlatList> - MultiColumn'}
         noSpacer={true}
         noScroll={true}>
         <View style={styles.searchRow}>
-          <PlainInput
-            onChangeText={this._onChangeFilterText}
-            placeholder="Search..."
-            value={this.state.filterText}
-          />
+          <View style={styles.row}>
+            <PlainInput
+              onChangeText={this._onChangeFilterText}
+              placeholder="Search..."
+              value={this.state.filterText}
+            />
+            <Text>   numColumns: </Text>
+            <PlainInput
+              clearButtonMode="never"
+              onChangeText={this._onChangeNumColumns}
+              value={this.state.numColumns ? String(this.state.numColumns) : ''}
+            />
+          </View>
           <View style={styles.row}>
             {renderSmallSwitchOption(this, 'virtualized')}
             {renderSmallSwitchOption(this, 'fixedHeight')}
             {renderSmallSwitchOption(this, 'logViewable')}
           </View>
         </View>
+        <SeparatorComponent />
         <FlatList
           FooterComponent={FooterComponent}
           HeaderComponent={HeaderComponent}
           ItemComponent={this._renderItemComponent}
           SeparatorComponent={SeparatorComponent}
           getItemLayout={this.state.fixedHeight ? this._getItemLayout : undefined}
-          data={grid}
-          key={this.state.fixedHeight ? 'f' : 'v'}
+          data={filteredData}
+          key={this.state.numColumns + (this.state.fixedHeight ? 'f' : 'v')}
+          numColumns={this.state.numColumns || 1}
+          onRefresh={() => alert('onRefresh: nothing to refresh :P')}
+          refreshing={false}
           shouldItemUpdate={this._shouldItemUpdate}
           disableVirtualization={!this.state.virtualized}
           onViewableItemsChanged={this._onViewableItemsChanged}
@@ -108,24 +119,19 @@ class TwoColumnExample extends React.PureComponent {
   }
   _renderItemComponent = ({item}) => {
     return (
-      <View style={styles.row}>
-        {item.columns.map((it, ii) => (
-          <ItemComponent
-            key={ii}
-            item={it}
-            fixedHeight={this.state.fixedHeight}
-            onPress={this._pressItem}
-          />
-        ))}
-      </View>
+      <ItemComponent
+        item={item}
+        fixedHeight={this.state.fixedHeight}
+        onPress={this._pressItem}
+      />
     );
   };
-  _shouldItemUpdate(curr, next) {
+  _shouldItemUpdate(prev, next) {
     // Note that this does not check state.fixedHeight because we blow away the whole list by
     // changing the key anyway.
-    return curr.item.columns.some((cIt, idx) => cIt !== next.item.columns[idx]);
+    return prev.item !== next.item;
   }
-  // This is called when items change viewability by scrolling into our out of the viewable area.
+  // This is called when items change viewability by scrolling into or out of the viewable area.
   _onViewableItemsChanged = (info: {
     changed: Array<{
       key: string, isViewable: boolean, item: {columns: Array<*>}, index: ?number, section?: any
@@ -144,11 +150,11 @@ class TwoColumnExample extends React.PureComponent {
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   searchRow: {
-    backgroundColor: '#eeeeee',
     padding: 10,
   },
 });
 
-module.exports = TwoColumnExample;
+module.exports = MultiColumnExample;

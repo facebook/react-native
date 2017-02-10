@@ -182,17 +182,15 @@ function renderSmallSwitchOption(context: Object, key: string) {
   );
 }
 
-function PlainInput({placeholder, value, onChangeText}: Object) {
+function PlainInput(props: Object) {
   return (
     <TextInput
       autoCapitalize="none"
       autoCorrect={false}
       clearButtonMode="always"
-      onChangeText={onChangeText}
-      placeholder={placeholder}
       underlineColorAndroid="transparent"
       style={styles.searchTextInput}
-      value={value}
+      {...props}
     />
   );
 }
@@ -229,6 +227,7 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     height: 26,
     fontSize: 14,
+    flexGrow: 1,
   },
   separator: {
     height: SEPARATOR_HEIGHT,

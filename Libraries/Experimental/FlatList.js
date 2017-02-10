@@ -34,7 +34,10 @@
 
 const MetroListView = require('MetroListView'); // Used as a fallback legacy option
 const React = require('React');
+const View = require('View');
 const VirtualizedList = require('VirtualizedList');
+
+const invariant = require('invariant');
 
 import type {Viewable} from 'ViewabilityHelper';
 
@@ -85,7 +88,12 @@ type OptionalProps = {
    * and as the react key to track item re-ordering. The default extractor checks item.key, then
    * falls back to using the index, like react does.
    */
-  keyExtractor?: (item: Item, index: number) => string,
+  keyExtractor: (item: Item, index: number) => string,
+  /**
+   * Multiple columns can only be rendered with horizontal={false} and will zig-zag like a flexWrap
+   * layout. Items should all be the same height - masonry layouts are not supported.
+   */
+  numColumns?: number,
   /**
    * Called once when the scroll position gets within onEndReachedThreshold of the rendered content.
    */
@@ -108,7 +116,7 @@ type OptionalProps = {
   /**
    * Optional optimization to minimize re-rendering items.
    */
-  shouldItemUpdate?: ?(
+  shouldItemUpdate: (
     prevProps: {item: Item, index: number},
     nextProps: {item: Item, index: number}
   ) => boolean,
@@ -135,6 +143,10 @@ type Props = RequiredProps & OptionalProps; // plus props from the underlying im
  *   />
  */
 class FlatList extends React.PureComponent {
+  static defaultProps = {
+    keyExtractor: VirtualizedList.defaultProps.keyExtractor,
+    shouldItemUpdate: VirtualizedList.defaultProps.shouldItemUpdate,
+  };
   props: Props;
   /**
    * Scrolls to the end of the content. May be janky without getItemLayout prop.
@@ -168,11 +180,27 @@ class FlatList extends React.PureComponent {
     this._listRef.scrollToOffset(params);
   }
 
+  componentWillMount() {
+    this._checkProps(this.props);
+  }
+
+  componentWillReceiveProps(nextProps: Props) {
+    this._checkProps(nextProps);
+  }
+
   _hasWarnedLegacy = false;
   _listRef: VirtualizedList;
+
   _captureRef = (ref) => { this._listRef = ref; };
-  render() {
-    if (this.props.legacyImplementation) {
+
+  _checkProps(props: Props) {
+    const {getItem, getItemCount, horizontal, legacyImplementation, numColumns, } = props;
+    invariant(!getItem && !getItemCount, 'FlatList does not support custom data formats.');
+    if (numColumns > 1) {
+      invariant(!horizontal, 'numColumns does not support horizontal.');
+    }
+    if (legacyImplementation) {
+      invariant(!(numColumns > 1), 'Legacy list does not support multiple columns.');
       // Warning: may not have full feature parity and is meant more for debugging and performance
       // comparison.
       if (!this._hasWarnedLegacy) {
@@ -182,9 +210,104 @@ class FlatList extends React.PureComponent {
         );
         this._hasWarnedLegacy = true;
       }
+    }
+  }
+
+  _getItem = (data: Array<Item>, index: number): Item | Array<Item> => {
+    const {numColumns} = this.props;
+    if (numColumns > 1) {
+      const ret = [];
+      for (let kk = 0; kk < numColumns; kk++) {
+        const item = data[index * numColumns + kk];
+        item && ret.push(item);
+      }
+      return ret;
+    } else {
+      return data[index];
+    }
+  };
+
+  _getItemCount = (data: Array<Item>): number => {
+    return Math.floor(data.length / (this.props.numColumns || 1));
+  };
+
+  _keyExtractor = (items: Item | Array<Item>, index: number): string => {
+    const {keyExtractor, numColumns} = this.props;
+    if (numColumns > 1) {
+      return items.map((it, kk) => keyExtractor(it, index * numColumns + kk)).join(':');
+    } else {
+      return keyExtractor(items, index);
+    }
+  };
+
+  _pushMultiColumnViewable(arr: Array<Viewable>, v: Viewable): void {
+    const {numColumns, keyExtractor} = this.props;
+    v.item.forEach((item, ii) => {
+      invariant(v.index != null, 'Missing index!');
+      const index = v.index * numColumns + ii;
+      arr.push({...v, item, key: keyExtractor(item, index), index});
+    });
+  }
+  _onViewableItemsChanged = (info) => {
+    const {numColumns, onViewableItemsChanged} = this.props;
+    if (!onViewableItemsChanged) {
+      return;
+    }
+    if (numColumns > 1) {
+      const changed = [];
+      const viewableItems = [];
+      info.viewableItems.forEach((v) => this._pushMultiColumnViewable(viewableItems, v));
+      info.changed.forEach((v) => this._pushMultiColumnViewable(changed, v));
+      onViewableItemsChanged({viewableItems, changed});
+    } else {
+      onViewableItemsChanged(info);
+    }
+  };
+
+  _renderItem = ({item, index}) => {
+    const {ItemComponent, numColumns} = this.props;
+    if (numColumns > 1) {
+      return (
+        <View style={{flexDirection: 'row'}}>
+          {item.map((it, kk) =>
+            <ItemComponent key={kk} item={it} index={index * numColumns + kk} />)
+          }
+        </View>
+      );
+    } else {
+      return <ItemComponent item={item} index={index} />;
+    }
+  };
+
+  _shouldItemUpdate = (prev, next) => {
+    const {numColumns, shouldItemUpdate} = this.props;
+    if (numColumns > 1) {
+      return prev.item.length !== next.item.length ||
+        prev.item.some((prevItem, ii) => shouldItemUpdate(
+          {item: prevItem, index: prev.index + ii},
+          {item: next.item[ii], index: next.index + ii},
+        ));
+    } else {
+      return shouldItemUpdate(prev, next);
+    }
+  };
+
+  render() {
+    if (this.props.legacyImplementation) {
       return <MetroListView {...this.props} items={this.props.data} ref={this._captureRef} />;
     } else {
-      return <VirtualizedList {...this.props} ref={this._captureRef} />;
+      return (
+        <VirtualizedList
+          {...this.props}
+          ItemComponent={this._renderItem}
+          getItem={this._getItem}
+          getItemCount={this._getItemCount}
+          keyExtractor={this._keyExtractor}
+          ref={this._captureRef}
+          shouldItemUpdate={this._shouldItemUpdate}
+          onViewableItemsChanged={this.props.onViewableItemsChanged && this._onViewableItemsChanged}
+        />
+      );
     }
   }
 }
