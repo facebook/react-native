@@ -11,13 +11,13 @@
  */
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var BugReporting = require('BugReporting');
-var ReactNative = require('ReactNative');
+const BatchedBridge = require('BatchedBridge');
+const BugReporting = require('BugReporting');
+const ReactNative = require('ReactNative');
 
 const infoLog = require('infoLog');
-var invariant = require('fbjs/lib/invariant');
-var renderApplication = require('renderApplication');
+const invariant = require('fbjs/lib/invariant');
+const renderApplication = require('renderApplication');
 
 const { HeadlessJsTaskSupport } = require('NativeModules');
 
@@ -29,18 +29,25 @@ if (__DEV__) {
 
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
-
-var runnables = {};
-var runCount = 1;
-const tasks: Map<string, TaskProvider> = new Map();
-
 type ComponentProvider = () => ReactClass<any>;
-
 type AppConfig = {
   appKey: string,
   component?: ComponentProvider,
   run?: Function,
+  section?: boolean,
 };
+type Runnable = {
+  component?: ComponentProvider,
+  run: Function,
+};
+type Runnables = {
+  [appKey: string]: Runnable,
+};
+
+const runnables: Runnables = {};
+let runCount = 1;
+const sections: Runnables = {};
+const tasks: Map<string, TaskProvider> = new Map();
 
 /**
  * `AppRegistry` is the JS entry point to running all React Native apps.  App
@@ -57,37 +64,71 @@ type AppConfig = {
  * sure the JS execution environment is setup before other modules are
  * `require`d.
  */
-var AppRegistry = {
-  registerConfig: function(config: Array<AppConfig>) {
-    for (var i = 0; i < config.length; ++i) {
-      var appConfig = config[i];
+const AppRegistry = {
+  registerConfig(config: Array<AppConfig>): void {
+    config.forEach((appConfig) => {
       if (appConfig.run) {
         AppRegistry.registerRunnable(appConfig.appKey, appConfig.run);
       } else {
-        invariant(appConfig.component, 'No component provider passed in');
-        AppRegistry.registerComponent(appConfig.appKey, appConfig.component);
+        invariant(
+          appConfig.component != null,
+          'AppRegistry.registerConfig(...): Every config is expected to set ' +
+          'either `run` or `component`, but `%s` has neither.',
+          appConfig.appKey
+        );
+        AppRegistry.registerComponent(
+          appConfig.appKey,
+          appConfig.component,
+          appConfig.section,
+        );
       }
-    }
+    });
   },
 
-  registerComponent: function(appKey: string, getComponentFunc: ComponentProvider): string {
+  registerComponent(
+    appKey: string,
+    component: ComponentProvider,
+    section?: boolean,
+  ): string {
     runnables[appKey] = {
+      component,
       run: (appParameters) =>
-        renderApplication(getComponentFunc(), appParameters.initialProps, appParameters.rootTag)
+        renderApplication(component(), appParameters.initialProps, appParameters.rootTag)
     };
+    if (section) {
+      sections[appKey] = runnables[appKey];
+    }
     return appKey;
   },
 
-  registerRunnable: function(appKey: string, func: Function): string {
-    runnables[appKey] = {run: func};
+  registerRunnable(appKey: string, run: Function): string {
+    runnables[appKey] = {run};
     return appKey;
   },
 
-  getAppKeys: function(): Array<string> {
+  registerSection(appKey: string, component: ComponentProvider): void {
+    AppRegistry.registerComponent(appKey, component, true);
+  },
+
+  getAppKeys(): Array<string> {
     return Object.keys(runnables);
   },
 
-  runApplication: function(appKey: string, appParameters: any): void {
+  getSectionKeys(): Array<string> {
+    return Object.keys(sections);
+  },
+
+  getSections(): Runnables {
+    return {
+      ...sections
+    };
+  },
+
+  getRunnable(appKey: string): ?Runnable {
+    return runnables[appKey];
+  },
+
+  runApplication(appKey: string, appParameters: any): void {
     const msg =
       'Running application "' + appKey + '" with appParams: ' +
       JSON.stringify(appParameters) + '. ' +
@@ -105,7 +146,7 @@ var AppRegistry = {
     runnables[appKey].run(appParameters);
   },
 
-  unmountApplicationComponentAtRootTag: function(rootTag : number) {
+  unmountApplicationComponentAtRootTag(rootTag: number): void {
     ReactNative.unmountComponentAtNodeAndRemoveContainer(rootTag);
   },
 
@@ -116,7 +157,7 @@ var AppRegistry = {
    *                the only argument; when the promise is resolved or rejected the native side is
    *                notified of this event and it may decide to destroy the JS context.
    */
-  registerHeadlessTask: function(taskKey: string, task: TaskProvider): void {
+  registerHeadlessTask(taskKey: string, task: TaskProvider): void {
     if (tasks.has(taskKey)) {
       console.warn(`registerHeadlessTask called multiple times for same key '${taskKey}'`);
     }
@@ -130,7 +171,7 @@ var AppRegistry = {
    * @param taskKey the key for the task to start
    * @param data the data to pass to the task
    */
-  startHeadlessTask: function(taskId: number, taskKey: string, data: any): void {
+  startHeadlessTask(taskId: number, taskKey: string, data: any): void {
     const taskProvider = tasks.get(taskKey);
     if (!taskProvider) {
       throw new Error(`No task registered for key ${taskKey}`);
