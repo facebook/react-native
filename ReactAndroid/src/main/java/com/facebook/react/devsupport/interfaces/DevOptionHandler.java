@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.devsupport;
+package com.facebook.react.devsupport.interfaces;
 
 /**
  * Callback class for custom options that may appear in {@link DevSupportManager} developer

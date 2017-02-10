@@ -53,8 +53,8 @@ import com.facebook.react.cxxbridge.JavaScriptExecutor;
 import com.facebook.react.cxxbridge.NativeModuleRegistry;
 import com.facebook.react.cxxbridge.ProxyJavaScriptExecutor;
 import com.facebook.react.cxxbridge.UiThreadUtil;
-import com.facebook.react.devsupport.DevServerHelper;
-import com.facebook.react.devsupport.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.devsupport.RedBoxHandler;
@@ -409,7 +409,7 @@ public class ReactInstanceManager {
         mDevSupportManager.handleReloadJS();
       } else {
         mDevSupportManager.isPackagerRunning(
-            new DevServerHelper.PackagerStatusCallback() {
+            new PackagerStatusCallback() {
               @Override
               public void onPackagerStatusFetched(final boolean packagerIsRunning) {
                 UiThreadUtil.runOnUiThread(
