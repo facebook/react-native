@@ -22,6 +22,7 @@ import com.facebook.common.logging.FLog;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okhttp3.ws.WebSocket;
@@ -42,8 +43,20 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
   private boolean mClosed = false;
   private boolean mSuppressConnectionErrors;
 
+  final public class WebSocketSender {
+    private WebSocket mWebSocket;
+
+    public WebSocketSender(WebSocket webSocket) {
+      mWebSocket = webSocket;
+    }
+
+    public void sendMessage(RequestBody requestBody) throws IOException {
+      mWebSocket.sendMessage(requestBody);
+    }
+  }
+
   public interface JSPackagerCallback {
-    void onMessage(@Nullable WebSocket webSocket, String target, String action);
+    void onMessage(@Nullable WebSocketSender webSocket, String target, String action);
   }
 
   private @Nullable WebSocket mWebSocket;
@@ -110,7 +123,10 @@ public class JSPackagerWebSocketClient implements WebSocketListener {
 
   private void triggerMessageCallback(String target, String action) {
     if (mCallback != null) {
-      mCallback.onMessage(mWebSocket, target, action);
+      WebSocketSender webSocketSender = mWebSocket == null
+        ? null
+        : new WebSocketSender(mWebSocket);
+      mCallback.onMessage(webSocketSender, target, action);
     }
   }
 
