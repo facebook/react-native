@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.uimanager;
+package com.facebook.react.modules.core;
 
 import java.util.ArrayDeque;
 
