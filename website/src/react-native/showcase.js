@@ -478,6 +478,14 @@ var pinned = [
     defaultLink: 'https://itunes.apple.com/app/apple-store/id1087973225?pt=45076&ct=site-promo&mt=8',
   },
   {
+    name: 'Bizongo Seller App',
+    icon: 'https://lh3.googleusercontent.com/SLvK-kUfcf1ugrnl6svA8lwA24Hi8AquPfZWl_YmQyJIVxgoApsHa2VxyyWZSomtn4A=w300-rw',
+    linkAppStore: 'https://play.google.com/store/apps/details?id=com.seller_app&hl=en',
+    infoLink: 'https://hustle.bizongo.in/its-time-to-take-your-business-mobile-3ad487f6eabf#.acepqk6ct',
+    infoTitle: 'Bizongo seller powered by React Native',
+    defaultLink: 'https://itunes.apple.com/in/app/bizongo-seller/id1192626367?mt=8',
+  },
+  {
     name: 'Walmart',
     icon: 'http://is2.mzstatic.com/image/thumb/Purple111/v4/64/9f/20/649f2026-e968-0417-660c-e5ee6d7977ff/source/350x350bb.jpg',
     linkAppStore: 'https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8',
