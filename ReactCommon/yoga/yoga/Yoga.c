@@ -641,13 +641,11 @@ static inline bool YGValueEqual(const YGValue a, const YGValue b) {
 
 static inline void YGResolveDimensions(YGNodeRef node) {
   for (YGDimension dim = YGDimensionWidth; dim <= YGDimensionHeight; dim++) {
-    if (node->style.dimensions[dim].unit != YGUnitUndefined) {
-      node->resolvedDimensions[dim] = node->style.dimensions[dim];
+    if (node->style.maxDimensions[dim].unit != YGUnitUndefined &&
+        YGValueEqual(node->style.maxDimensions[dim], node->style.minDimensions[dim])) {
+      node->resolvedDimensions[dim] = node->style.maxDimensions[dim];
     } else {
-      if (node->style.maxDimensions[dim].unit != YGUnitUndefined &&
-          YGValueEqual(node->style.maxDimensions[dim], node->style.minDimensions[dim])) {
-        node->resolvedDimensions[dim] = node->style.maxDimensions[dim];
-      }
+      node->resolvedDimensions[dim] = node->style.dimensions[dim];
     }
   }
 }
@@ -1167,14 +1165,13 @@ static float YGNodeBoundAxisWithinMinAndMax(const YGNodeRef node,
                                             const float axisSize) {
   float min = YGUndefined;
   float max = YGUndefined;
-  if (!YGNodeIsStyleDimDefined(node, axis, axisSize)) {
-    if (YGFlexDirectionIsColumn(axis)) {
-      min = YGValueResolve(&node->style.minDimensions[YGDimensionHeight], axisSize);
-      max = YGValueResolve(&node->style.maxDimensions[YGDimensionHeight], axisSize);
-    } else if (YGFlexDirectionIsRow(axis)) {
-      min = YGValueResolve(&node->style.minDimensions[YGDimensionWidth], axisSize);
-      max = YGValueResolve(&node->style.maxDimensions[YGDimensionWidth], axisSize);
-    }
+
+  if (YGFlexDirectionIsColumn(axis)) {
+    min = YGValueResolve(&node->style.minDimensions[YGDimensionHeight], axisSize);
+    max = YGValueResolve(&node->style.maxDimensions[YGDimensionHeight], axisSize);
+  } else if (YGFlexDirectionIsRow(axis)) {
+    min = YGValueResolve(&node->style.minDimensions[YGDimensionWidth], axisSize);
+    max = YGValueResolve(&node->style.maxDimensions[YGDimensionWidth], axisSize);
   }
 
   float boundValue = value;
@@ -1545,7 +1542,9 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(const YGNodeRef node,
                                                        const float availableWidth,
                                                        const float availableHeight,
                                                        const YGMeasureMode widthMeasureMode,
-                                                       const YGMeasureMode heightMeasureMode) {
+                                                       const YGMeasureMode heightMeasureMode,
+                                                       const float parentWidth,
+                                                       const float parentHeight) {
   YG_ASSERT(node->measure, "Expected node to have custom measure function");
 
   const float paddingAndBorderAxisRow =
@@ -1561,13 +1560,9 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(const YGNodeRef node,
   if (widthMeasureMode == YGMeasureModeExactly && heightMeasureMode == YGMeasureModeExactly) {
     // Don't bother sizing the text if both dimensions are already defined.
     node->layout.measuredDimensions[YGDimensionWidth] = YGNodeBoundAxis(
-        node, YGFlexDirectionRow, availableWidth - marginAxisRow, availableWidth, availableWidth);
-    node->layout.measuredDimensions[YGDimensionHeight] =
-        YGNodeBoundAxis(node,
-                        YGFlexDirectionColumn,
-                        availableHeight - marginAxisColumn,
-                        availableHeight,
-                        availableWidth);
+        node, YGFlexDirectionRow, availableWidth - marginAxisRow, parentWidth, parentWidth);
+    node->layout.measuredDimensions[YGDimensionHeight] = YGNodeBoundAxis(
+        node, YGFlexDirectionColumn, availableHeight - marginAxisColumn, parentHeight, parentWidth);
   } else if (innerWidth <= 0.0f || innerHeight <= 0.0f) {
     // Don't bother sizing the text if there's no horizontal or vertical
     // space.
@@ -1841,8 +1836,13 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       YGNodeTrailingPadding(node, flexColumnDirection, parentWidth);
 
   if (node->measure) {
-    YGNodeWithMeasureFuncSetMeasuredDimensions(
-        node, availableWidth, availableHeight, widthMeasureMode, heightMeasureMode);
+    YGNodeWithMeasureFuncSetMeasuredDimensions(node,
+                                               availableWidth,
+                                               availableHeight,
+                                               widthMeasureMode,
+                                               heightMeasureMode,
+                                               parentWidth,
+                                               parentHeight);
     return;
   }
 

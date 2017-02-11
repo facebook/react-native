@@ -15,21 +15,26 @@ YG_EXTERN_C_BEGIN
 
 #define YGAlignCount 6
 typedef YG_ENUM_BEGIN(YGAlign) {
-  YGAlignAuto, YGAlignFlexStart, YGAlignCenter, YGAlignFlexEnd, YGAlignStretch, YGAlignBaseline,
-}
-YG_ENUM_END(YGAlign);
+  YGAlignAuto,
+  YGAlignFlexStart,
+  YGAlignCenter,
+  YGAlignFlexEnd,
+  YGAlignStretch,
+  YGAlignBaseline,
+} YG_ENUM_END(YGAlign);
 
 #define YGDimensionCount 2
 typedef YG_ENUM_BEGIN(YGDimension) {
-  YGDimensionWidth, YGDimensionHeight,
-}
-YG_ENUM_END(YGDimension);
+  YGDimensionWidth,
+  YGDimensionHeight,
+} YG_ENUM_END(YGDimension);
 
 #define YGDirectionCount 3
 typedef YG_ENUM_BEGIN(YGDirection) {
-  YGDirectionInherit, YGDirectionLTR, YGDirectionRTL,
-}
-YG_ENUM_END(YGDirection);
+  YGDirectionInherit,
+  YGDirectionLTR,
+  YGDirectionRTL,
+} YG_ENUM_END(YGDirection);
 
 #define YGDisplayCount 2
 typedef YG_ENUM_BEGIN(YGDisplay) {
@@ -39,71 +44,87 @@ typedef YG_ENUM_BEGIN(YGDisplay) {
 
 #define YGEdgeCount 9
 typedef YG_ENUM_BEGIN(YGEdge) {
-  YGEdgeLeft, YGEdgeTop, YGEdgeRight, YGEdgeBottom, YGEdgeStart, YGEdgeEnd, YGEdgeHorizontal,
-      YGEdgeVertical, YGEdgeAll,
-}
-YG_ENUM_END(YGEdge);
+  YGEdgeLeft,
+  YGEdgeTop,
+  YGEdgeRight,
+  YGEdgeBottom,
+  YGEdgeStart,
+  YGEdgeEnd,
+  YGEdgeHorizontal,
+  YGEdgeVertical,
+  YGEdgeAll,
+} YG_ENUM_END(YGEdge);
 
 #define YGExperimentalFeatureCount 2
 typedef YG_ENUM_BEGIN(YGExperimentalFeature) {
-  YGExperimentalFeatureRounding, YGExperimentalFeatureWebFlexBasis,
-}
-YG_ENUM_END(YGExperimentalFeature);
+  YGExperimentalFeatureRounding,
+  YGExperimentalFeatureWebFlexBasis,
+} YG_ENUM_END(YGExperimentalFeature);
 
 #define YGFlexDirectionCount 4
 typedef YG_ENUM_BEGIN(YGFlexDirection) {
-  YGFlexDirectionColumn, YGFlexDirectionColumnReverse, YGFlexDirectionRow,
-      YGFlexDirectionRowReverse,
-}
-YG_ENUM_END(YGFlexDirection);
+  YGFlexDirectionColumn,
+  YGFlexDirectionColumnReverse,
+  YGFlexDirectionRow,
+  YGFlexDirectionRowReverse,
+} YG_ENUM_END(YGFlexDirection);
 
 #define YGJustifyCount 5
 typedef YG_ENUM_BEGIN(YGJustify) {
-  YGJustifyFlexStart, YGJustifyCenter, YGJustifyFlexEnd, YGJustifySpaceBetween,
-      YGJustifySpaceAround,
-}
-YG_ENUM_END(YGJustify);
+  YGJustifyFlexStart,
+  YGJustifyCenter,
+  YGJustifyFlexEnd,
+  YGJustifySpaceBetween,
+  YGJustifySpaceAround,
+} YG_ENUM_END(YGJustify);
 
 #define YGLogLevelCount 5
 typedef YG_ENUM_BEGIN(YGLogLevel) {
-  YGLogLevelError, YGLogLevelWarn, YGLogLevelInfo, YGLogLevelDebug, YGLogLevelVerbose,
-}
-YG_ENUM_END(YGLogLevel);
+  YGLogLevelError,
+  YGLogLevelWarn,
+  YGLogLevelInfo,
+  YGLogLevelDebug,
+  YGLogLevelVerbose,
+} YG_ENUM_END(YGLogLevel);
 
 #define YGMeasureModeCount 3
 typedef YG_ENUM_BEGIN(YGMeasureMode) {
-  YGMeasureModeUndefined, YGMeasureModeExactly, YGMeasureModeAtMost,
-}
-YG_ENUM_END(YGMeasureMode);
+  YGMeasureModeUndefined,
+  YGMeasureModeExactly,
+  YGMeasureModeAtMost,
+} YG_ENUM_END(YGMeasureMode);
 
 #define YGOverflowCount 3
 typedef YG_ENUM_BEGIN(YGOverflow) {
-  YGOverflowVisible, YGOverflowHidden, YGOverflowScroll,
-}
-YG_ENUM_END(YGOverflow);
+  YGOverflowVisible,
+  YGOverflowHidden,
+  YGOverflowScroll,
+} YG_ENUM_END(YGOverflow);
 
 #define YGPositionTypeCount 2
 typedef YG_ENUM_BEGIN(YGPositionType) {
-  YGPositionTypeRelative, YGPositionTypeAbsolute,
-}
-YG_ENUM_END(YGPositionType);
+  YGPositionTypeRelative,
+  YGPositionTypeAbsolute,
+} YG_ENUM_END(YGPositionType);
 
 #define YGPrintOptionsCount 3
 typedef YG_ENUM_BEGIN(YGPrintOptions) {
-  YGPrintOptionsLayout = 1, YGPrintOptionsStyle = 2, YGPrintOptionsChildren = 4,
-}
-YG_ENUM_END(YGPrintOptions);
+  YGPrintOptionsLayout = 1,
+  YGPrintOptionsStyle = 2,
+  YGPrintOptionsChildren = 4,
+} YG_ENUM_END(YGPrintOptions);
 
 #define YGUnitCount 3
 typedef YG_ENUM_BEGIN(YGUnit) {
-  YGUnitUndefined, YGUnitPixel, YGUnitPercent,
-}
-YG_ENUM_END(YGUnit);
+  YGUnitUndefined,
+  YGUnitPixel,
+  YGUnitPercent,
+} YG_ENUM_END(YGUnit);
 
 #define YGWrapCount 2
 typedef YG_ENUM_BEGIN(YGWrap) {
-  YGWrapNoWrap, YGWrapWrap,
-}
-YG_ENUM_END(YGWrap);
+  YGWrapNoWrap,
+  YGWrapWrap,
+} YG_ENUM_END(YGWrap);
 
 YG_EXTERN_C_END
