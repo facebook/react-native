@@ -39,6 +39,7 @@ const VirtualizedList = require('VirtualizedList');
 
 const invariant = require('invariant');
 
+import type {StyleObj} from 'StyleSheetTypes';
 import type {Viewable} from 'ViewabilityHelper';
 
 type Item = any;
@@ -113,6 +114,10 @@ type OptionalProps = {
    * Set this true while waiting for new data from a refresh.
    */
   refreshing?: ?boolean,
+  /**
+   * Optional custom style for multi-item rows generated when numColumns > 1
+   */
+  columnWrapperStyle?: StyleObj,
   /**
    * Optional optimization to minimize re-rendering items.
    */
@@ -195,10 +200,19 @@ class FlatList extends React.PureComponent {
   _captureRef = (ref) => { this._listRef = ref; };
 
   _checkProps(props: Props) {
-    const {getItem, getItemCount, horizontal, legacyImplementation, numColumns} = props;
+    const {
+      getItem,
+      getItemCount,
+      horizontal,
+      legacyImplementation,
+      numColumns,
+      columnWrapperStyle,
+    } = props;
     invariant(!getItem && !getItemCount, 'FlatList does not support custom data formats.');
     if (numColumns > 1) {
       invariant(!horizontal, 'numColumns does not support horizontal.');
+    } else {
+      invariant(!columnWrapperStyle, 'columnWrapperStyle not supported for single column lists');
     }
     if (legacyImplementation) {
       invariant(numColumns === 1, 'Legacy list does not support multiple columns.');
@@ -266,10 +280,10 @@ class FlatList extends React.PureComponent {
   };
 
   _renderItem = ({item, index}) => {
-    const {ItemComponent, numColumns} = this.props;
+    const {ItemComponent, numColumns, columnWrapperStyle} = this.props;
     if (numColumns > 1) {
       return (
-        <View style={{flexDirection: 'row'}}>
+        <View style={[{flexDirection: 'row'}, columnWrapperStyle]}>
           {item.map((it, kk) =>
             <ItemComponent key={kk} item={it} index={index * numColumns + kk} />)
           }
