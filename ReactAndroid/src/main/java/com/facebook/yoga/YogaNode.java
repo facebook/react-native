@@ -382,7 +382,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public YogaValue getMargin(YogaEdge edge) {
     if (!mHasSetMargin) {
-      return edge.intValue() < YogaEdge.START.intValue() ? YogaValue.ZERO : YogaValue.UNDEFINED;
+      return YogaValue.UNDEFINED;
     }
     return (YogaValue) jni_YGNodeStyleGetMargin(mNativePointer, edge.intValue());
   }
@@ -405,7 +405,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public YogaValue getPadding(YogaEdge edge) {
     if (!mHasSetPadding) {
-      return edge.intValue() < YogaEdge.START.intValue() ? YogaValue.ZERO : YogaValue.UNDEFINED;
+      return YogaValue.UNDEFINED;
     }
     return (YogaValue) jni_YGNodeStyleGetPadding(mNativePointer, edge.intValue());
   }
@@ -428,7 +428,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public float getBorder(YogaEdge edge) {
     if (!mHasSetBorder) {
-      return edge.intValue() < YogaEdge.START.intValue() ? 0 : YogaConstants.UNDEFINED;
+      return YogaConstants.UNDEFINED;
     }
     return jni_YGNodeStyleGetBorder(mNativePointer, edge.intValue());
   }
