@@ -24,6 +24,7 @@
       "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
     },
     "testPathIgnorePatterns": [
+      "Libraries/Renderer",
       "/node_modules/",
       "/website/",
       "local-cli/templates/"
@@ -73,6 +74,8 @@
       "<rootDir>/website/"
     ],
     "unmockedModulePathPatterns": [
+      "node_modules/react/",
+      "Libraries/Renderer",
       "promise",
       "source-map",
       "fastpath",

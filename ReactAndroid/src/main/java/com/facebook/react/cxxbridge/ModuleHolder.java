@@ -105,7 +105,7 @@ public class ModuleHolder {
   private NativeModule create() {
     boolean isEagerModule = mModule != null;
     if (!isEagerModule) {
-      ReactMarker.logMarker(CREATE_MODULE_START);
+      ReactMarker.logMarker(CREATE_MODULE_START, mName);
     }
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createModule")
       .arg("name", mName)

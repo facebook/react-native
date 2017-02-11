@@ -86,6 +86,14 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @DoNotStrip
   private float mPaddingBottom = 0;
   @DoNotStrip
+  private float mBorderLeft = 0;
+  @DoNotStrip
+  private float mBorderTop = 0;
+  @DoNotStrip
+  private float mBorderRight = 0;
+  @DoNotStrip
+  private float mBorderBottom = 0;
+  @DoNotStrip
   private int mLayoutDirection = 0;
 
   private native long jni_YGNodeNew();
@@ -374,7 +382,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public YogaValue getMargin(YogaEdge edge) {
     if (!mHasSetMargin) {
-      return edge.intValue() < YogaEdge.START.intValue() ? YogaValue.ZERO : YogaValue.UNDEFINED;
+      return YogaValue.UNDEFINED;
     }
     return (YogaValue) jni_YGNodeStyleGetMargin(mNativePointer, edge.intValue());
   }
@@ -397,7 +405,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public YogaValue getPadding(YogaEdge edge) {
     if (!mHasSetPadding) {
-      return edge.intValue() < YogaEdge.START.intValue() ? YogaValue.ZERO : YogaValue.UNDEFINED;
+      return YogaValue.UNDEFINED;
     }
     return (YogaValue) jni_YGNodeStyleGetPadding(mNativePointer, edge.intValue());
   }
@@ -420,7 +428,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public float getBorder(YogaEdge edge) {
     if (!mHasSetBorder) {
-      return edge.intValue() < YogaEdge.START.intValue() ? 0 : YogaConstants.UNDEFINED;
+      return YogaConstants.UNDEFINED;
     }
     return jni_YGNodeStyleGetBorder(mNativePointer, edge.intValue());
   }
@@ -630,6 +638,26 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
         return getLayoutDirection() == YogaDirection.RTL ? mPaddingLeft : mPaddingRight;
       default:
         throw new IllegalArgumentException("Cannot get layout paddings of multi-edge shorthands");
+    }
+  }
+
+  @Override
+  public float getLayoutBorder(YogaEdge edge) {
+    switch (edge) {
+      case LEFT:
+        return mBorderLeft;
+      case TOP:
+        return mBorderTop;
+      case RIGHT:
+        return mBorderRight;
+      case BOTTOM:
+        return mBorderBottom;
+      case START:
+        return getLayoutDirection() == YogaDirection.RTL ? mBorderRight : mBorderLeft;
+      case END:
+        return getLayoutDirection() == YogaDirection.RTL ? mBorderLeft : mBorderRight;
+      default:
+        throw new IllegalArgumentException("Cannot get layout border of multi-edge shorthands");
     }
   }
 

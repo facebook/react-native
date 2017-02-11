@@ -84,6 +84,7 @@ public interface YogaNodeAPI<YogaNodeType extends YogaNodeAPI> {
   float getLayoutHeight();
   float getLayoutMargin(YogaEdge edge);
   float getLayoutPadding(YogaEdge edge);
+  float getLayoutBorder(YogaEdge edge);
   YogaDirection getLayoutDirection();
   YogaOverflow getOverflow();
   void setOverflow(YogaOverflow overflow);
