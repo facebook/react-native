@@ -86,6 +86,14 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @DoNotStrip
   private float mPaddingBottom = 0;
   @DoNotStrip
+  private float mBorderLeft = 0;
+  @DoNotStrip
+  private float mBorderTop = 0;
+  @DoNotStrip
+  private float mBorderRight = 0;
+  @DoNotStrip
+  private float mBorderBottom = 0;
+  @DoNotStrip
   private int mLayoutDirection = 0;
 
   private native long jni_YGNodeNew();
@@ -630,6 +638,26 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
         return getLayoutDirection() == YogaDirection.RTL ? mPaddingLeft : mPaddingRight;
       default:
         throw new IllegalArgumentException("Cannot get layout paddings of multi-edge shorthands");
+    }
+  }
+
+  @Override
+  public float getLayoutBorder(YogaEdge edge) {
+    switch (edge) {
+      case LEFT:
+        return mBorderLeft;
+      case TOP:
+        return mBorderTop;
+      case RIGHT:
+        return mBorderRight;
+      case BOTTOM:
+        return mBorderBottom;
+      case START:
+        return getLayoutDirection() == YogaDirection.RTL ? mBorderRight : mBorderLeft;
+      case END:
+        return getLayoutDirection() == YogaDirection.RTL ? mBorderLeft : mBorderRight;
+      default:
+        throw new IllegalArgumentException("Cannot get layout border of multi-edge shorthands");
     }
   }
 
