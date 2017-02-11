@@ -2667,7 +2667,22 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         break;
       case YGAlignStretch:
         if (availableInnerCrossDim > totalLineCrossDim) {
-          crossDimLead = (remainingAlignContentDim / lineCount);
+          crossDimLead = remainingAlignContentDim / lineCount;
+        }
+        break;
+      case YGAlignSpaceAround:
+        if (availableInnerCrossDim > totalLineCrossDim) {
+          currentLead += remainingAlignContentDim / (2 * lineCount);
+          if (lineCount > 1) {
+            crossDimLead = remainingAlignContentDim / lineCount;
+          }
+        } else {
+          currentLead += remainingAlignContentDim / 2;
+        }
+        break;
+      case YGAlignSpaceBetween:
+        if (availableInnerCrossDim > totalLineCrossDim && lineCount > 1) {
+          crossDimLead = remainingAlignContentDim / (lineCount - 1);
         }
         break;
       case YGAlignAuto:
@@ -2755,6 +2770,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                 break;
               }
               case YGAlignAuto:
+              case YGAlignSpaceBetween:
+              case YGAlignSpaceAround:
                 break;
             }
           }

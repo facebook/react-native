@@ -13,7 +13,7 @@
 
 YG_EXTERN_C_BEGIN
 
-#define YGAlignCount 6
+#define YGAlignCount 8
 typedef YG_ENUM_BEGIN(YGAlign) {
   YGAlignAuto,
   YGAlignFlexStart,
@@ -21,6 +21,8 @@ typedef YG_ENUM_BEGIN(YGAlign) {
   YGAlignFlexEnd,
   YGAlignStretch,
   YGAlignBaseline,
+  YGAlignSpaceBetween,
+  YGAlignSpaceAround,
 } YG_ENUM_END(YGAlign);
 
 #define YGDimensionCount 2
