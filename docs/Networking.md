@@ -75,6 +75,84 @@ You can also use the proposed ES2017 `async`/`await` syntax in a React Native ap
 
 Don't forget to catch any errors that may be thrown by `fetch`, otherwise they will be dropped silently.
 
+#### Fetch example component
+
+```js
+import React, { Component } from 'react';
+import { AppRegistry, ListView, Text, View } from 'react-native';
+
+class MoviesFromApiAsync extends Component {
+
+  // Initialize the hardcoded data
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: true
+    }
+  }
+
+  fetchDataAsync() {
+    return fetch('https://facebook.github.io/react-native/movies.json')
+      .then((response) => response.json())
+      .then((responseJson) => {
+        let movies = responseJson.movies
+
+        let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        this.setState({
+          isLoading: false,
+          dataSource: ds.cloneWithRows(movies)
+        }, function() {
+          // do something with new state
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  async fetchData() {
+    try {
+      let response = await fetch('https://facebook.github.io/react-native/movies.json')
+      let json = await response.json()
+      let movies = json.movies
+      
+      let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+      this.setState({
+        isLoading: false,
+        dataSource: ds.cloneWithRows(movies)
+      }, function() {
+        // do something with new state
+      });
+    } catch(error) {
+      console.error(error);
+    }
+  }
+
+  componentWillMount() {
+    this.fetchDataAsync()
+    // this.fetchData().done
+  }
+
+  render() {
+    if (this.state.isLoading) {
+      return <Text>Loading...</Text>;
+    }
+
+    return (
+      <View style={{flex: 1, paddingTop: 22}}>
+        <ListView
+          dataSource={this.state.dataSource}
+          renderRow={(rowData) => <Text>{rowData.title}, {rowData.releaseYear}</Text>}
+        />
+      </View>
+    );
+  }
+}
+
+// Module name
+AppRegistry.registerComponent('MoviesFromApiAsync', () => MoviesFromApiAsync);
+```
+
 > By default, iOS will block any request that's not encrypted using SSL. If you need to fetch from a cleartext URL (one that begins with `http`) you will first need to add an App Transport Security exception. If you know ahead of time what domains you will need access to, it is more secure to add exceptions just for those domains; if the domains are not known until runtime you can [disable ATS completely](docs/integration-with-existing-apps.html#app-transport-security). Note however that from January 2017, [Apple's App Store review will require reasonable justification for disabling ATS](https://forums.developer.apple.com/thread/48979). See [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW33) for more information.
 
 ### Using Other Networking Libraries
