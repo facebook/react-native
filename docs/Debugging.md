@@ -96,7 +96,6 @@ The debugger will receive a list of all project roots, separated by a space. For
 
 ### Debugging with [Stetho](http://facebook.github.io/stetho/) on Android
 
-(Adapted from https://medium.com/@andr3wjack/stetho-with-react-native-87642e5d7131#.352jqqavc)
 Following this guide to enable Stetho only for Debug mode:
 
 1. In ```android/app/build.gradle```, add these lines in the `dependencies` section:
@@ -128,7 +127,7 @@ For release:
             // NO_OP
         }
 
-        public static void addInterceptor(OkHttpClient okHttpClient) {
+        public static void addInterceptor() {
             // NO_OP
         }
     }
@@ -141,8 +140,13 @@ For debug:
           Stetho.initializeWithDefaults(context);
         }
 
-        public static void addInterceptor(OkHttpClient okHttpClient) {
-          OkHttpClientProvider.replaceOkHttpClient(okHttpClient);
+        public static void addInterceptor() {
+          OkHttpClient client = OkHttpClientProvider.getOkHttpClient()
+                 .newBuilder()
+                 .addNetworkInterceptor(new StethoInterceptor())
+                 .build();
+          
+          OkHttpClientProvider.replaceOkHttpClient(client);
         }
     }
     ```
@@ -157,15 +161,7 @@ For debug:
       
           StethoWrapper.initialize(this);
       
-          OkHttpClient client = new OkHttpClient.Builder()
-          .connectTimeout(0, TimeUnit.MILLISECONDS)
-          .readTimeout(0, TimeUnit.MILLISECONDS)
-          .writeTimeout(0, TimeUnit.MILLISECONDS)
-          .cookieJar(new ReactCookieJarContainer())
-          .addNetworkInterceptor(new StethoInterceptor())
-          .build();
-      
-          StethoWrapper.addInterceptor(client);
+          StethoWrapper.addInterceptor();
       }
 
       SoLoader.init(this, /* native exopackage */ false);
