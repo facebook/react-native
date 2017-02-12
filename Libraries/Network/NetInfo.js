@@ -53,7 +53,6 @@ type ConnectivityStateAndroid = $Enum<{
   PROXY: string,
   VPN: string,
   UNKNOWN: string,
-  '': string,
 }>;
 
 
