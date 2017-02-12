@@ -369,6 +369,13 @@ var featured = [
     infoLink: 'https://blog.jadopado.com/product-updates-and-building-incredible-experiences/',
     infoTitle: 'Product Updates And Building Incredible Experiences',
   },
+    name: 'Flare',
+    icon: 'http://x.co/FlareIcon',
+    linkAppStore: 'http://x.co/Flare',
+    linkPlayStore: 'http://x.co/FlareAndr',
+    infoLink: 'http://x.co/FlareNews',
+    infoTitle: 'Social network that connects entrepreneurs to fellow entrepreneurs, consumers, investors and experts',
+  },
 ];
 
 /*
