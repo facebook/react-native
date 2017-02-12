@@ -123,6 +123,12 @@ var featured = [
     infoTitle: 'Overstock invests in Bitt to launch digital currencies',
   },
   {
+    name: 'Caravans and Lodges for sale',
+    icon: 'http://a3.mzstatic.com/eu/r30/Purple60/v4/8e/87/a1/8e87a1fc-e4ba-c5b1-4ef1-96a8f6cc702f/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/gb/app/caravans-lodges-for-sale-park/id1090064152',
+    author: 'RNF Digital',
+  },
+  {
     name: 'CBS Sports Franchise Football',
     icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/7b/0c/a0/7b0ca007-885a-7cfc-9fa2-2ec4394c2ecc/icon175x175.png',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.cbssports.fantasy.franchisefootball2015',
