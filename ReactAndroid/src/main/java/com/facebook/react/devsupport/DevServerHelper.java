@@ -26,7 +26,9 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
+import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
+import com.facebook.react.packagerconnection.JSPackagerWebSocketClient;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -35,7 +37,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okhttp3.ws.WebSocket;
 import okio.Okio;
 import okio.Sink;
 
@@ -85,11 +86,7 @@ public class DevServerHelper {
   public interface PackagerCommandListener {
     void onPackagerReloadCommand();
     void onCaptureHeapCommand();
-    void onPokeSamplingProfilerCommand(@Nullable final WebSocket webSocket);
-  }
-
-  public interface PackagerStatusCallback {
-    void onPackagerStatusFetched(boolean packagerIsRunning);
+    void onPokeSamplingProfilerCommand(@Nullable final JSPackagerWebSocketClient.WebSocketSender webSocket);
   }
 
   private final DevInternalSettings mSettings;
@@ -125,7 +122,10 @@ public class DevServerHelper {
         mPackagerConnection = new JSPackagerWebSocketClient(getPackagerConnectionURL(),
           new JSPackagerWebSocketClient.JSPackagerCallback() {
             @Override
-            public void onMessage(@Nullable WebSocket webSocket, String target, String action) {
+            public void onMessage(
+                @Nullable JSPackagerWebSocketClient.WebSocketSender webSocket,
+                String target,
+                String action) {
               if (commandListener != null && "bridge".equals(target)) {
                 if ("reload".equals(action)) {
                   commandListener.onPackagerReloadCommand();

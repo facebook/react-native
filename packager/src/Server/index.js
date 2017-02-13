@@ -544,6 +544,35 @@ class Server {
     return JSON.stringify(Object.assign({}, options, { onProgress: null }));
   }
 
+  /**
+   * Ensure we properly report the promise of a build that's happening,
+   * including failed builds. We use that separately for when we update a bundle
+   * and for when we build for scratch.
+   */
+  _reportBundlePromise(
+    options: {entryFile: string},
+    bundlePromise: Promise<Bundle>,
+  ): Promise<Bundle> {
+    this._reporter.update({
+      entryFilePath: options.entryFile,
+      type: 'bundle_build_started',
+    });
+    return bundlePromise.then(bundle => {
+      this._reporter.update({
+        entryFilePath: options.entryFile,
+        type: 'bundle_build_done',
+      });
+      return bundle;
+    }, error => {
+      this._reporter.update({
+        entryFilePath: options.entryFile,
+        error,
+        type: 'bundle_build_failed',
+      });
+      return Promise.reject(error);
+    });
+  }
+
   _useCachedOrUpdateOrCreateBundle(options: {
     entryFile: string,
     platform?: string,
@@ -567,11 +596,6 @@ class Server {
               action_name: 'Updating existing bundle',
               outdated_modules: outdated.size,
             }));
-          this._reporter.update({
-            type: 'bundle_update_existing',
-            entryFilePath: options.entryFile,
-            outdatedModuleCount: outdated.size,
-          });
 
           debug('Attempt to update existing bundle');
 
@@ -644,7 +668,7 @@ class Server {
             debug('Failed to update existing bundle, rebuilding...', e.stack || e.message);
             return bundleFromScratch();
           });
-          return bundlePromise;
+          return this._reportBundlePromise(options, bundlePromise);
         } else {
           debug('Using cached bundle');
           return bundle;
@@ -652,7 +676,7 @@ class Server {
       });
     }
 
-    return bundleFromScratch();
+    return this._reportBundlePromise(options, bundleFromScratch());
   }
 
   processRequest(
@@ -691,10 +715,6 @@ class Server {
     }
 
     const options = this._getOptionsFromUrl(req.url);
-    this._reporter.update({
-      type: 'bundle_requested',
-      entryFilePath: options.entryFile,
-    });
     const requestingBundleLogEntry =
       log(createActionStartEntry({
         action_name: 'Requesting bundle',
@@ -724,10 +744,6 @@ class Server {
     const building = this._useCachedOrUpdateOrCreateBundle(options);
     building.then(
       p => {
-        this._reporter.update({
-          type: 'bundle_built',
-          entryFilePath: options.entryFile,
-        });
         if (requestType === 'bundle') {
           debug('Generating source code');
           const bundleSource = p.getSource({

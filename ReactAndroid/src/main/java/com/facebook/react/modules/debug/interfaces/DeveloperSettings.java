@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.modules.debug;
+package com.facebook.react.modules.debug.interfaces;
 
 /**
  * Provides access to React Native developers settings.

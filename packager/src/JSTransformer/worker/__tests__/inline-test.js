@@ -150,6 +150,15 @@ describe('inline constants', () => {
     expect(toString(ast)).toEqual(normalize(code.replace(/Platform\.select[^;]+/, '1')));
   });
 
+  it('inlines Platform.select in the code if Platform is a global and the argument doesn\'t have target platform in it\'s keys', () => {
+    const code = `function a() {
+      var a = Platform.select({ios: 1, default: 2});
+      var b = a.Platform.select({ios: 1, default: 2});
+    }`;
+    const {ast} = inline('arbitrary.js', {code}, {platform: 'android'});
+    expect(toString(ast)).toEqual(normalize(code.replace(/Platform\.select[^;]+/, '2')));
+  });
+
   it('replaces Platform.select in the code if Platform is a top level import', () => {
     const code = `
       var Platform = require('Platform');

@@ -147,6 +147,11 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) NSInteger zIndex;
 
 /**
+ * Interface direction (LTR or RTL)
+ */
+@property (nonatomic, assign) YGDirection direction;
+
+/**
  * Clipping properties
  */
 @property (nonatomic, assign) YGOverflow overflow;

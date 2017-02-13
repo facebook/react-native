@@ -27,7 +27,7 @@ jest
 jest.setMock('ErrorUtils', require('ErrorUtils'));
 
 jest
-  .mock('ReactNativeDefaultInjection')
+  .mock('InitializeCore')
   .mock('Image', () => mockComponent('Image'))
   .mock('Text', () => mockComponent('Text'))
   .mock('TextInput', () => mockComponent('TextInput'))
@@ -50,7 +50,7 @@ jest
           Object.keys(dataBlob).forEach(key => {
             this.items += dataBlob[key] && (
               dataBlob[key].length || dataBlob[key].size || 0
-            )
+            );
           });
         } catch (e) {
           this.items = 'unknown';

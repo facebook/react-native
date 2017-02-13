@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.devsupport;
+package com.facebook.react.devsupport.interfaces;
 
 import javax.annotation.Nullable;
 
@@ -16,8 +16,7 @@ import java.io.File;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
-import com.facebook.react.modules.debug.DeveloperSettings;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 
 /**
  * Interface for accessing and interacting with development features.
@@ -46,7 +45,7 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   void reloadSettings();
   void handleReloadJS();
   void reloadJSFromServer(final String bundleURL);
-  void isPackagerRunning(DevServerHelper.PackagerStatusCallback callback);
+  void isPackagerRunning(PackagerStatusCallback callback);
   @Nullable File downloadBundleResourceFromUrlSync(
       final String resourceURL,
       final File outputFile);

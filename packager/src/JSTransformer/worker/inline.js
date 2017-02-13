@@ -96,9 +96,9 @@ const isDev = (node, parent, scope) =>
   isGlobal(scope.getBinding(dev.name)) &&
   !(t.isMemberExpression(parent));
 
-function findProperty(objectExpression, key) {
+function findProperty(objectExpression, key, fallback) {
   const property = objectExpression.properties.find(p => p.key.name === key);
-  return property ? property.value : t.identifier('undefined');
+  return property ? property.value : fallback();
 }
 
 const inlinePlugin = {
@@ -133,8 +133,10 @@ const inlinePlugin = {
         isPlatformSelect(node, scope, opts.isWrapped) ||
         isReactPlatformSelect(node, scope, opts.isWrapped)
       ) {
+        const fallback = () =>
+          findProperty(arg, 'default', () => t.identifier('undefined'));
         const replacement = t.isObjectExpression(arg)
-          ? findProperty(arg, opts.platform)
+          ? findProperty(arg, opts.platform, fallback)
           : node;
 
         path.replaceWith(replacement);

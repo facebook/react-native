@@ -51,8 +51,12 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
-import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
-import com.facebook.react.modules.debug.DeveloperSettings;
+import com.facebook.react.devsupport.interfaces.DevOptionHandler;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.devsupport.interfaces.StackFrame;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
+import com.facebook.react.packagerconnection.JSPackagerWebSocketClient;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -647,7 +651,7 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void isPackagerRunning(DevServerHelper.PackagerStatusCallback callback) {
+  public void isPackagerRunning(PackagerStatusCallback callback) {
     mDevServerHelper.isPackagerRunning(callback);
   }
 
@@ -689,7 +693,8 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void onPokeSamplingProfilerCommand(@Nullable final WebSocket webSocket) {
+  public void onPokeSamplingProfilerCommand(
+      @Nullable final JSPackagerWebSocketClient.WebSocketSender webSocket) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -704,7 +709,8 @@ public class DevSupportManagerImpl implements
       JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
   }
 
-  private void handlePokeSamplingProfiler(@Nullable WebSocket webSocket) {
+  private void handlePokeSamplingProfiler(
+      @Nullable JSPackagerWebSocketClient.WebSocketSender webSocket) {
     try {
       List<String> pokeResults = JSCSamplingProfiler.poke(60000);
       for (String result : pokeResults) {
@@ -716,7 +722,12 @@ public class DevSupportManagerImpl implements
           Toast.LENGTH_LONG).show();
         if (webSocket != null) {
           // WebSocket is provided, so there is a client waiting our response
-          webSocket.sendMessage(RequestBody.create(WebSocket.TEXT, result == null ? "" : result));
+          webSocket.sendMessage(
+            RequestBody.create(
+              WebSocket.TEXT,
+              result == null
+                ? "{\"target\":\"profiler\", \"action\":\"started\"}"
+                : result));
         } else if (result != null) {
           // The profile was not initiated by external client, so process the
           // profile if there is one in the result

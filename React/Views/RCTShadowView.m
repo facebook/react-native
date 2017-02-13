@@ -441,6 +441,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 // Layout Direction
 
 - (UIUserInterfaceLayoutDirection)effectiveLayoutDirection {
+  // Even if `YGNodeLayoutGetDirection` can return `YGDirectionInherit` here, it actually means
+  // that Yoga will use LTR layout for the view (even if layout process is not finished yet).
   return YGNodeLayoutGetDirection(self.cssNode) == YGDirectionRTL ? UIUserInterfaceLayoutDirectionRightToLeft : UIUserInterfaceLayoutDirectionLeftToRight;
 }
 
@@ -665,6 +667,7 @@ RCT_STYLE_PROPERTY(AlignItems, alignItems, AlignItems, YGAlign)
 RCT_STYLE_PROPERTY(Position, position, PositionType, YGPositionType)
 RCT_STYLE_PROPERTY(FlexWrap, flexWrap, FlexWrap, YGWrap)
 RCT_STYLE_PROPERTY(Overflow, overflow, Overflow, YGOverflow)
+RCT_STYLE_PROPERTY(Direction, direction, Direction, YGDirection)
 RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
 
 - (void)setBackgroundColor:(UIColor *)color

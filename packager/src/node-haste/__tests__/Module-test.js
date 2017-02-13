@@ -71,7 +71,7 @@ describe('Module', () => {
       file: options && options.file || fileName,
       depGraphHelpers: new DependencyGraphHelpers(),
       moduleCache: new ModuleCache({cache}),
-      transformCacheKey,
+      getTransformCacheKey: () => transformCacheKey,
     });
 
   const createJSONModule =
@@ -188,7 +188,7 @@ describe('Module', () => {
             filePath: module.path,
             sourceCode,
             transformOptions: options,
-            transformCacheKey,
+            getTransformCacheKey: () => transformCacheKey,
             result: transformResult,
           });
           return Promise.resolve(transformResult);

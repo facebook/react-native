@@ -1,14 +1,17 @@
+'use strict';
+
 import React, { Component } from 'react';
 import {
+  ActivityIndicator,
   Button,
   ListView,
-  Platform,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
 import KeyboardSpacer from '../../components/KeyboardSpacer';
+import Backend from '../../lib/Backend';
 
 export default class ChatScreen extends Component {
 
@@ -19,23 +22,58 @@ export default class ChatScreen extends Component {
   constructor(props) {
     super(props);
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    const messages = [
-      {
-        name: props.navigation.state.params.name,
-        name: 'Claire',
-        text: 'I ❤️ React Native!',
-      },
-    ];
     this.state = {
-      messages: messages,
-      dataSource: ds.cloneWithRows(messages),
+      messages: [],
+      dataSource: ds,
       myMessage: '',
+      isLoading: true,
+    };
+  }
+
+  async componentDidMount() {
+    let chat;
+    try {
+      chat = await Backend.fetchChat(this.props.navigation.state.params.name);
+    } catch (err) {
+      // Here we would handle the fact the request failed, e.g.
+      // set state to display "Messages could not be loaded".
+      // We should also check network connection first before making any
+      // network requests - maybe we're offline? See React Native's NetInfo
+      // module.
+      this.setState({
+        isLoading: false,
+      });
+      return;
+    }
+    this.setState((prevState) => ({
+      messages: chat.messages,
+      dataSource: prevState.dataSource.cloneWithRows(chat.messages),
+      isLoading: false,
+    }));
+  }
+
+  onAddMessage = async () => {
+    // Optimistically update the UI
+    this.addMessageLocal();
+    // Send the request
+    try {
+      await Backend.sendMessage({
+        name: this.props.navigation.state.params.name,
+        // TODO Is reading state like this outside of setState OK?
+        // Can it contain a stale value?
+        message: this.state.myMessage,
+      });
+    } catch (err) {
+      // Here we would handle the request failure, e.g. call setState
+      // to display a visual hint showing the message could not be sent.
     }
   }
 
-  addMessage = () => {
+  addMessageLocal = () => {
     this.setState((prevState) => {
-      if (!prevState.myMessage) return prevState;
+      if (!prevState.myMessage) {
+        return prevState;
+      }
       const messages = [
         ...prevState.messages, {
           name: 'Me',
@@ -48,10 +86,10 @@ export default class ChatScreen extends Component {
         myMessage: '',
       }
     });
-    this.refs.textInput.clear();
+    this.textInput.clear();
   }
 
-  myMessageChange = (event) => {
+  onMyMessageChange = (event) => {
     this.setState({myMessage: event.nativeEvent.text});
   }
 
@@ -63,10 +101,16 @@ export default class ChatScreen extends Component {
   )
 
   render() {
+    if (this.state.isLoading) {
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator />
+        </View>
+      );
+    }
     return (
       <View style={styles.container}>
         <ListView
-          ref="listView"
           dataSource={this.state.dataSource}
           renderRow={this.renderRow}
           style={styles.listView}
@@ -74,17 +118,17 @@ export default class ChatScreen extends Component {
         />
         <View style={styles.composer}>
           <TextInput
-            ref='textInput'
+            ref={(textInput) => { this.textInput = textInput; }}
             style={styles.textInput}
-            placeholder='Type a message...'
+            placeholder="Type a message..."
             text={this.state.myMessage}
-            onSubmitEditing={this.addMessage}
-            onChange={this.myMessageChange}
+            onSubmitEditing={this.onAddMessage}
+            onChange={this.onMyMessageChange}
           />
           {this.state.myMessage !== '' && (
             <Button
               title="Send"
-              onPress={this.addMessage}
+              onPress={this.onAddMessage}
             />
           )}
         </View>
@@ -99,7 +143,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 8,
     backgroundColor: 'white',
-    alignItems: 'flex-end',
   },
   listView: {
     flex: 1,
