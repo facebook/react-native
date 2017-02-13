@@ -17,6 +17,7 @@ const Platform = require('Platform');
 const React = require('React');
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
+const StatusBar = require('StatusBar');
 
 const PropTypes = React.PropTypes;
 
