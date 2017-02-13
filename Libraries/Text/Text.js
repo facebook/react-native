@@ -139,13 +139,13 @@ const Text = React.createClass({
     /**
      * This function is called on press.
      *
-     * e.g., `onPress={() => console.log('1st')}``
+     * e.g., `onPress={() => console.log('1st')}`
      */
     onPress: PropTypes.func,
     /**
      * This function is called on long press.
      *
-     * e.g., `onLongPress={this.increaseSize}>``
+     * e.g., `onLongPress={this.increaseSize}>`
      */
     onLongPress: PropTypes.func,
     /**
