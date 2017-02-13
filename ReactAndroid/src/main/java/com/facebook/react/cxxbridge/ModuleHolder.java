@@ -67,6 +67,10 @@ public class ModuleHolder {
     }
   }
 
+  public synchronized boolean isInitialized() {
+    return mModule != null;
+  }
+
   public synchronized void destroy() {
     if (mModule != null) {
       mModule.onCatalystInstanceDestroy();
@@ -101,7 +105,7 @@ public class ModuleHolder {
   private NativeModule create() {
     boolean isEagerModule = mModule != null;
     if (!isEagerModule) {
-      ReactMarker.logMarker(CREATE_MODULE_START);
+      ReactMarker.logMarker(CREATE_MODULE_START, mName);
     }
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createModule")
       .arg("name", mName)

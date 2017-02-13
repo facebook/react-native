@@ -603,6 +603,10 @@ var TouchableMixin = {
   },
 
   _handleQueryLayout: function(l, t, w, h, globalX, globalY) {
+    //don't do anything UIManager failed to measure node
+    if (!l && !t && !w && !h && !globalX && !globalY) {
+      return;
+    }
     this.state.touchable.positionOnActivate &&
       Position.release(this.state.touchable.positionOnActivate);
     this.state.touchable.dimensionsOnActivate &&
