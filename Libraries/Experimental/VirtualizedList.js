@@ -51,9 +51,9 @@ type ItemComponentType = ReactClass<{item: Item, index: number}>;
 
 /**
  * Renders a virtual list of items given a data blob and accessor functions. Items that are outside
- * the render window are 'virtualized' e.g. unmounted or never rendered in the first place. This
- * improves performance and saves memory for large data sets, but will reset state on items that
- * scroll too far out of the render window.
+ * the render window (except for the initial items at the top) are 'virtualized' e.g. unmounted or
+ * never rendered in the first place. This improves performance and saves memory for large data
+ * sets, but will reset state on items that scroll too far out of the render window.
  *
  * TODO: Note that LayoutAnimation and sticky section headers both have bugs when used with this and
  * are therefor not supported, but new Animated impl might work?
@@ -104,6 +104,7 @@ type OptionalProps = {
    * Set this true while waiting for new data from a refresh.
    */
   refreshing?: boolean,
+  removeClippedSubviews?: boolean,
   renderScrollComponent: (props: Object) => React.Element<*>,
   shouldItemUpdate: (
     props: {item: Item, index: number},
@@ -191,6 +192,7 @@ class VirtualizedList extends React.PureComponent {
     maxToRenderPerBatch: 10,
     onEndReached: () => {},
     onEndReachedThreshold: 2, // multiples of length
+    removeClippedSubviews: true,
     renderScrollComponent: (props: Props) => {
       if (props.onRefresh) {
         invariant(
@@ -255,9 +257,32 @@ class VirtualizedList extends React.PureComponent {
     this._updateCellsToRenderBatcher.schedule();
   }
 
+  _pushCells(cells, first, last) {
+    const {SeparatorComponent, data, getItem, getItemCount, keyExtractor} = this.props;
+    const end = getItemCount(data) - 1;
+    last = Math.min(end, last);
+    for (let ii = first; ii <= last; ii++) {
+      const item = getItem(data, ii);
+      invariant(item, 'No item for index ' + ii);
+      const key = keyExtractor(item, ii);
+      cells.push(
+        <CellRenderer
+          cellKey={key}
+          index={ii}
+          item={item}
+          key={key}
+          onLayout={this._onCellLayout}
+          parentProps={this.props}
+        />
+      );
+      if (SeparatorComponent && ii < end) {
+        cells.push(<SeparatorComponent key={'sep' + ii}/>);
+      }
+    }
+  }
   render() {
-    const {FooterComponent, HeaderComponent, SeparatorComponent} = this.props;
-    const {data, disableVirtualization, getItem, horizontal, keyExtractor} = this.props;
+    const {FooterComponent, HeaderComponent} = this.props;
+    const {data, disableVirtualization, horizontal} = this.props;
     const cells = [];
     if (HeaderComponent) {
       cells.push(
@@ -269,31 +294,18 @@ class VirtualizedList extends React.PureComponent {
     const itemCount = this.props.getItemCount(data);
     if (itemCount > 0) {
       _usedIndexForKey = false;
+      const lastInitialIndex = this.props.initialNumToRender - 1;
       const {first, last} = this.state;
-      if (!disableVirtualization && first > 0) {
-        const firstOffset = this._getFrameMetricsApprox(first).offset - this._headerLength;
+      this._pushCells(cells, 0, lastInitialIndex);
+      if (!disableVirtualization && first > lastInitialIndex) {
+        const initBlock = this._getFrameMetricsApprox(lastInitialIndex);
+        const firstSpace = this._getFrameMetricsApprox(first).offset -
+          (initBlock.offset + initBlock.length);
         cells.push(
-          <View key="$lead_spacer" style={{[!horizontal ? 'height' : 'width']: firstOffset}} />
+          <View key="$lead_spacer" style={{[!horizontal ? 'height' : 'width']: firstSpace}} />
         );
       }
-      for (let ii = first; ii <= last; ii++) {
-        const item = getItem(data, ii);
-        invariant(item, 'No item for index ' + ii);
-        const key = keyExtractor(item, ii);
-        cells.push(
-          <CellRenderer
-            cellKey={key}
-            index={ii}
-            item={item}
-            key={key}
-            onLayout={this._onCellLayout}
-            parentProps={this.props}
-          />
-        );
-        if (SeparatorComponent && ii < last) {
-          cells.push(<SeparatorComponent key={'sep' + ii}/>);
-        }
-      }
+      this._pushCells(cells, Math.max(lastInitialIndex + 1, first), last);
       if (!this._hasWarned.keys && _usedIndexForKey) {
         console.warn(
           'VirtualizedList: missing keys for items, make sure to specify a key property on each ' +
