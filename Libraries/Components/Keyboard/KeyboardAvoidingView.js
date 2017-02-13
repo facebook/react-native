@@ -108,7 +108,7 @@ const KeyboardAvoidingView = React.createClass({
       this.setState({bottom: 0});
       return;
     }
-    StatusBar.setHidden(false);
+    StatusBar.setHidden(false);//https://code.google.com/p/android/issues/detail?id=5497
     const {duration, easing, endCoordinates} = event;
     const height = this.relativeKeyboardHeight(endCoordinates);
     if (duration && easing) {
