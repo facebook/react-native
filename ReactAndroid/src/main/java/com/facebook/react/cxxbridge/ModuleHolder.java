@@ -10,8 +10,6 @@ import java.util.concurrent.ExecutionException;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.common.futures.SimpleSettableFuture;
-import com.facebook.react.module.model.Info;
-import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
@@ -31,21 +29,34 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  */
 public class ModuleHolder {
 
-  private final Info mInfo;
+  private final String mName;
+  private final boolean mCanOverrideExistingModule;
+  private final boolean mSupportsWebWorkers;
+
   private @Nullable Provider<? extends NativeModule> mProvider;
   private @Nullable NativeModule mModule;
   private boolean mInitializeNeeded;
 
   public ModuleHolder(
-    Class<? extends NativeModule> clazz,
-    @Nullable ReactModuleInfo reactModuleInfo,
+    String name,
+    boolean canOverrideExistingModule,
+    boolean supportsWebWorkers,
+    boolean needsEagerInit,
     Provider<? extends NativeModule> provider) {
-    mInfo = reactModuleInfo == null ? new LegacyModuleInfo(clazz) : reactModuleInfo;
+    mName = name;
+    mCanOverrideExistingModule = canOverrideExistingModule;
+    mSupportsWebWorkers = supportsWebWorkers;
     mProvider = provider;
-
-    if (mInfo.needsEagerInit()) {
+    if (needsEagerInit) {
       mModule = doCreate();
     }
+  }
+
+  public ModuleHolder(NativeModule nativeModule) {
+    mName = nativeModule.getName();
+    mCanOverrideExistingModule = nativeModule.canOverrideExistingModule();
+    mSupportsWebWorkers = nativeModule.supportsWebWorkers();
+    mModule = nativeModule;
   }
 
   public synchronized void initialize() {
@@ -56,14 +67,26 @@ public class ModuleHolder {
     }
   }
 
+  public synchronized boolean isInitialized() {
+    return mModule != null;
+  }
+
   public synchronized void destroy() {
     if (mModule != null) {
       mModule.onCatalystInstanceDestroy();
     }
   }
 
-  public Info getInfo() {
-    return mInfo;
+  public String getName() {
+    return mName;
+  }
+
+  public boolean getCanOverrideExistingModule() {
+    return mCanOverrideExistingModule;
+  }
+
+  public boolean getSupportsWebWorkers() {
+    return mSupportsWebWorkers;
   }
 
   public synchronized NativeModule getModule() {
@@ -80,13 +103,12 @@ public class ModuleHolder {
   }
 
   private NativeModule create() {
-    boolean isEagerModule = mInfo instanceof LegacyModuleInfo;
-    String name = isEagerModule ? ((LegacyModuleInfo) mInfo).mType.getSimpleName() : mInfo.name();
+    boolean isEagerModule = mModule != null;
     if (!isEagerModule) {
-      ReactMarker.logMarker(CREATE_MODULE_START);
+      ReactMarker.logMarker(CREATE_MODULE_START, mName);
     }
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createModule")
-      .arg("name", name)
+      .arg("name", mName)
       .flush();
     NativeModule module = assertNotNull(mProvider).get();
     if (mInitializeNeeded) {
@@ -106,7 +128,7 @@ public class ModuleHolder {
     if (module instanceof CxxModuleWrapper) {
       section.arg("className", module.getClass().getSimpleName());
     } else {
-      section.arg("name", mInfo.name());
+      section.arg("name", mName);
     }
     section.flush();
     callInitializeOnUiThread(module);
@@ -137,31 +159,6 @@ public class ModuleHolder {
       future.get();
     } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
-    }
-  }
-
-  private class LegacyModuleInfo implements Info {
-
-    public final Class<?> mType;
-
-    public LegacyModuleInfo(Class<?> type) {
-      mType = type;
-    }
-
-    public String name() {
-      return getModule().getName();
-    }
-
-    public boolean canOverrideExistingModule() {
-      return getModule().canOverrideExistingModule();
-    }
-
-    public boolean supportsWebWorkers() {
-      return getModule().supportsWebWorkers();
-    }
-
-    public boolean needsEagerInit() {
-      return true;
     }
   }
 }

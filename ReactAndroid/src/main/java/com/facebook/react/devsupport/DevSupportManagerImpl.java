@@ -51,13 +51,18 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
-import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
-import com.facebook.react.modules.debug.DeveloperSettings;
+import com.facebook.react.devsupport.interfaces.DevOptionHandler;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.devsupport.interfaces.StackFrame;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
+import com.facebook.react.packagerconnection.JSPackagerWebSocketClient;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.ws.WebSocket;
 
 /**
  * Interface for accessing and interacting with development features. Following features
@@ -85,7 +90,10 @@ import okhttp3.RequestBody;
  * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
-public class DevSupportManagerImpl implements DevSupportManager, PackagerCommandListener {
+public class DevSupportManagerImpl implements
+    DevSupportManager,
+    PackagerCommandListener,
+    DevInternalSettings.Listener {
 
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
@@ -425,7 +433,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            handlePokeSamplingProfiler();
+            handlePokeSamplingProfiler(null);
           }
         });
     options.put(
@@ -622,6 +630,8 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
     reload();
   }
 
+  public void onInternalSettingsChanged() { reloadSettings(); }
+
   @Override
   public void handleReloadJS() {
     UiThreadUtil.assertOnUiThread();
@@ -641,7 +651,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
   }
 
   @Override
-  public void isPackagerRunning(DevServerHelper.PackagerStatusCallback callback) {
+  public void isPackagerRunning(PackagerStatusCallback callback) {
     mDevServerHelper.isPackagerRunning(callback);
   }
 
@@ -683,11 +693,12 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
   }
 
   @Override
-  public void onPokeSamplingProfilerCommand() {
+  public void onPokeSamplingProfilerCommand(
+      @Nullable final JSPackagerWebSocketClient.WebSocketSender webSocket) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        handlePokeSamplingProfiler();
+        handlePokeSamplingProfiler(webSocket);
       }
     });
   }
@@ -698,7 +709,8 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
       JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
   }
 
-  private void handlePokeSamplingProfiler() {
+  private void handlePokeSamplingProfiler(
+      @Nullable JSPackagerWebSocketClient.WebSocketSender webSocket) {
     try {
       List<String> pokeResults = JSCSamplingProfiler.poke(60000);
       for (String result : pokeResults) {
@@ -708,13 +720,25 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
             ? "Started JSC Sampling Profiler"
             : "Stopped JSC Sampling Profiler",
           Toast.LENGTH_LONG).show();
-        if (result != null) {
+        if (webSocket != null) {
+          // WebSocket is provided, so there is a client waiting our response
+          webSocket.sendMessage(
+            RequestBody.create(
+              WebSocket.TEXT,
+              result == null
+                ? "{\"target\":\"profiler\", \"action\":\"started\"}"
+                : result));
+        } else if (result != null) {
+          // The profile was not initiated by external client, so process the
+          // profile if there is one in the result
           new JscProfileTask(getSourceUrl()).executeOnExecutor(
               AsyncTask.THREAD_POOL_EXECUTOR,
               result);
         }
       }
     } catch (JSCSamplingProfiler.ProfilerException e) {
+      showNewJavaError(e.getMessage(), e);
+    } catch (IOException e) {
       showNewJavaError(e.getMessage(), e);
     }
   }

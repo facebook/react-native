@@ -16,11 +16,11 @@ var InteractionManager = require('InteractionManager');
 var Interpolation = require('Interpolation');
 var NativeAnimatedHelper = require('NativeAnimatedHelper');
 var React = require('React');
+var ReactNative = require('ReactNative');
 var Set = require('Set');
 var SpringConfig = require('SpringConfig');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var findNodeHandle = require('findNodeHandle');
 var flattenStyle = require('flattenStyle');
 var invariant = require('fbjs/lib/invariant');
 var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
@@ -999,6 +999,11 @@ class AnimatedValueXY extends AnimatedWithChildren {
     this.y.flattenOffset();
   }
 
+  extractOffset(): void {
+    this.x.extractOffset();
+    this.y.extractOffset();
+  }
+
   __getValue(): {x: number, y: number} {
     return {
       x: this.x.__getValue(),
@@ -1085,9 +1090,6 @@ class AnimatedInterpolation extends AnimatedWithChildren {
       typeof parentValue === 'number',
       'Cannot interpolate an input which is not a number.'
     );
-    /* $FlowFixMe(>=0.36.0 site=react_native_fb,react_native_oss) Flow error
-     * detected during the deploy of Flow v0.36.0. To see the error, remove
-     * this comment and run Flow */
     return this._interpolation(parentValue);
   }
 
@@ -1104,7 +1106,7 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     super.__detach();
   }
 
-  __transformDataType(range) {
+  __transformDataType(range: Array<any>) {
     // Change the string array type to number array
     // So we can reuse the same logic in iOS and Android platform
     return range.map(function (value) {
@@ -1656,14 +1658,14 @@ class AnimatedProps extends Animated {
 
   __connectAnimatedView(): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    var nativeViewTag: ?number = findNodeHandle(this._animatedView);
+    var nativeViewTag: ?number = ReactNative.findNodeHandle(this._animatedView);
     invariant(nativeViewTag != null, 'Unable to locate attached view in the native tree');
     NativeAnimatedAPI.connectAnimatedNodeToView(this.__getNativeTag(), nativeViewTag);
   }
 
   __disconnectAnimatedView(): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    var nativeViewTag: ?number = findNodeHandle(this._animatedView);
+    var nativeViewTag: ?number = ReactNative.findNodeHandle(this._animatedView);
     invariant(nativeViewTag != null, 'Unable to locate attached view in the native tree');
     NativeAnimatedAPI.disconnectAnimatedNodeFromView(this.__getNativeTag(), nativeViewTag);
   }
@@ -1676,7 +1678,6 @@ class AnimatedProps extends Animated {
         propsConfig[propKey] = value.__getNativeTag();
       }
     }
-    NativeAnimatedHelper.validateProps(propsConfig);
     return {
       type: 'props',
       props: propsConfig,
@@ -2200,7 +2201,7 @@ class AnimatedEvent {
     // Assume that the event containing `nativeEvent` is always the first argument.
     traverse(this._argMapping[0].nativeEvent, []);
 
-    const viewTag = findNodeHandle(viewRef);
+    const viewTag = ReactNative.findNodeHandle(viewRef);
 
     eventMappings.forEach((mapping) => {
       NativeAnimatedAPI.addAnimatedEventToView(viewTag, eventName, mapping);
@@ -2373,6 +2374,10 @@ module.exports = {
    * 2D value class for driving 2D animations, such as pan gestures.
    */
   ValueXY: AnimatedValueXY,
+  /**
+   * exported to use the Interpolation type in flow
+   */
+  Interpolation: AnimatedInterpolation,
 
   /**
    * Animates a value from an initial velocity to zero based on a decay

@@ -12,7 +12,7 @@ package com.facebook.react.flat;
 /**
  * ViewManager that creates instances of RCTVirtualText.
  */
-/* package */ final class RCTVirtualTextManager extends VirtualViewManager<RCTVirtualText> {
+public final class RCTVirtualTextManager extends VirtualViewManager<RCTVirtualText> {
 
   @Override
   public String getName() {
