@@ -2213,29 +2213,29 @@ class AnimatedEvent {
   __getHandler() {
     if (this.__isNative) {
       return this._listener;
-    } else {
-      return (...args) => {
-        const traverse = (recMapping, recEvt, key) => {
-          if (typeof recEvt === 'number' && recMapping instanceof AnimatedValue) {
-            recMapping.setValue(recEvt);
-          } else if (typeof recMapping === 'object') {
-            for (const mappingKey in recMapping) {
-              traverse(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
-            }
+    }
+
+    return (...args) => {
+      const traverse = (recMapping, recEvt, key) => {
+        if (typeof recEvt === 'number' && recMapping instanceof AnimatedValue) {
+          recMapping.setValue(recEvt);
+        } else if (typeof recMapping === 'object') {
+          for (const mappingKey in recMapping) {
+            traverse(recMapping[mappingKey], recEvt[mappingKey], mappingKey);
           }
-        };
-
-        if (!this.__isNative) {
-          this._argMapping.forEach((mapping, idx) => {
-            traverse(mapping, args[idx], 'arg' + idx);
-          });
-        }
-
-        if (this._listener) {
-          this._listener.apply(null, args);
         }
       };
-    }
+
+      if (!this.__isNative) {
+        this._argMapping.forEach((mapping, idx) => {
+          traverse(mapping, args[idx], 'arg' + idx);
+        });
+      }
+
+      if (this._listener) {
+        this._listener.apply(null, args);
+      }
+    };
   }
 
   _validateMapping() {
