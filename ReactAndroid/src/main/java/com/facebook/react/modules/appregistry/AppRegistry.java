@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.uimanager;
+package com.facebook.react.modules.appregistry;
 
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.WritableMap;
