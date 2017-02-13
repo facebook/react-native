@@ -21,6 +21,7 @@ import android.content.res.Configuration;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeModuleLogger;
 import com.facebook.react.bridge.OnBatchCompleteListener;
@@ -202,8 +203,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       height = rootView.getHeight();
     }
 
+    final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     final ThemedReactContext themedRootContext =
-        new ThemedReactContext(getReactApplicationContext(), rootView.getContext());
+        new ThemedReactContext(reactApplicationContext, rootView.getContext());
 
     mUIImplementation.registerRootView(rootView, tag, width, height, themedRootContext);
 
@@ -211,10 +213,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       new SizeMonitoringFrameLayout.OnSizeChangedListener() {
         @Override
         public void onSizeChanged(final int width, final int height, int oldW, int oldH) {
-          getReactApplicationContext().runOnNativeModulesQueueThread(
-            new Runnable() {
+          reactApplicationContext.runOnNativeModulesQueueThread(
+            new GuardedRunnable(reactApplicationContext) {
               @Override
-              public void run() {
+              public void runGuarded() {
                 updateNodeSize(tag, width, height);
               }
             });

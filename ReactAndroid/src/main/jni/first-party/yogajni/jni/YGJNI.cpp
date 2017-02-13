@@ -40,6 +40,11 @@ static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
     static auto paddingRightField = obj->getClass()->getField<jfloat>("mPaddingRight");
     static auto paddingBottomField = obj->getClass()->getField<jfloat>("mPaddingBottom");
 
+    static auto borderLeftField = obj->getClass()->getField<jfloat>("mBorderLeft");
+    static auto borderTopField = obj->getClass()->getField<jfloat>("mBorderTop");
+    static auto borderRightField = obj->getClass()->getField<jfloat>("mBorderRight");
+    static auto borderBottomField = obj->getClass()->getField<jfloat>("mBorderBottom");
+
     obj->setFieldValue(widthField, YGNodeLayoutGetWidth(root));
     obj->setFieldValue(heightField, YGNodeLayoutGetHeight(root));
     obj->setFieldValue(leftField, YGNodeLayoutGetLeft(root));
@@ -54,6 +59,11 @@ static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
     obj->setFieldValue(paddingTopField, YGNodeLayoutGetPadding(root, YGEdgeTop));
     obj->setFieldValue(paddingRightField, YGNodeLayoutGetPadding(root, YGEdgeRight));
     obj->setFieldValue(paddingBottomField, YGNodeLayoutGetPadding(root, YGEdgeBottom));
+
+    obj->setFieldValue(borderLeftField, YGNodeLayoutGetBorder(root, YGEdgeLeft));
+    obj->setFieldValue(borderTopField, YGNodeLayoutGetBorder(root, YGEdgeTop));
+    obj->setFieldValue(borderRightField, YGNodeLayoutGetBorder(root, YGEdgeRight));
+    obj->setFieldValue(borderBottomField, YGNodeLayoutGetBorder(root, YGEdgeBottom));
 
     YGTransferLayoutDirection(root, obj);
 

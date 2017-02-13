@@ -33,7 +33,9 @@ public class YogaValue {
   public boolean equals(Object other) {
     if (other instanceof YogaValue) {
       final YogaValue otherValue = (YogaValue) other;
-      return value == otherValue.value && unit == otherValue.unit;
+      if (unit == otherValue.unit) {
+        return unit == YogaUnit.UNDEFINED || Float.compare(value, otherValue.value) == 0;
+      }
     }
     return false;
   }
