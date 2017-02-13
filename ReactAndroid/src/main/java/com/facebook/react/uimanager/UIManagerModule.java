@@ -553,7 +553,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.sendAccessibilityEvent(tag, eventType);
   }
 
-public void emitUpdateDimensionsEvent() {
+  public void emitUpdateDimensionsEvent() {
     sendEvent("didUpdateDimensions", UIManagerModuleConstants.getDimensionsConstants(mFontScale));
   }
 

@@ -130,7 +130,7 @@ class Dimensions {
 
 Dimensions.set(UIManager.Dimensions);
 RCTDeviceEventEmitter.addListener('didUpdateDimensions', function(update) {
-  Dimensions.set(update);  
+  Dimensions.set(update);
 });
 
 module.exports = Dimensions;
