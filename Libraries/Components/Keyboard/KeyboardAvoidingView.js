@@ -91,9 +91,12 @@ const KeyboardAvoidingView = React.createClass({
     if (!frame || !keyboardFrame) {
       return 0;
     }
-
+    let addStatusBarHeight = 0;
+    if(Platform.OS !== 'ios' && Platform.Version < 19){//19以下都会包含状态条
+      addStatusBarHeight = StatusBar.currentHeight;
+    }
     const y1 = Math.max(frame.y, keyboardFrame.screenY - this.props.keyboardVerticalOffset);
-    const y2 = Math.min(frame.y + frame.height, keyboardFrame.screenY + keyboardFrame.height - this.props.keyboardVerticalOffset);
+    const y2 = Math.min(frame.y + frame.height + addStatusBarHeight, keyboardFrame.screenY + keyboardFrame.height - this.props.keyboardVerticalOffset);
     if (frame.y > keyboardFrame.screenY) {
       return frame.y + frame.height - keyboardFrame.screenY - this.props.keyboardVerticalOffset;
     }
@@ -105,10 +108,9 @@ const KeyboardAvoidingView = React.createClass({
       this.setState({bottom: 0});
       return;
     }
-
+    StatusBar.setHidden(false);
     const {duration, easing, endCoordinates} = event;
     const height = this.relativeKeyboardHeight(endCoordinates);
-
     if (duration && easing) {
       LayoutAnimation.configureNext({
         duration: duration,
@@ -152,7 +154,7 @@ const KeyboardAvoidingView = React.createClass({
     this.subscriptions.forEach((sub) => sub.remove());
   },
 
-  render(): React.Element<any> {
+  render(): ReactElement<any> {
     const {behavior, children, style, ...props} = this.props;
 
     switch (behavior) {
@@ -163,7 +165,9 @@ const KeyboardAvoidingView = React.createClass({
           // i.e. this.state.bottom is greater than 0. If we remove that condition,
           // this.frame.height will never go back to its original value.
           // When height changes, we need to disable flex.
-          heightStyle = {height: this.frame.height - this.state.bottom, flex: 0};
+          if(this.state.bottom != 0){
+            heightStyle = {height: this.frame.height - this.state.bottom, flex: 0};
+          }
         }
         return (
           <View ref={viewRef} style={[style, heightStyle]} onLayout={this.onLayout} {...props}>
@@ -184,7 +188,10 @@ const KeyboardAvoidingView = React.createClass({
         );
 
       case 'padding':
-        const paddingStyle = {paddingBottom: this.state.bottom};
+        let paddingStyle = {paddingBottom: this.state.bottom};
+        if (Platform.OS !== 'ios' && Platform.Version < 19) {
+            paddingStyle = null;
+        }
         return (
           <View ref={viewRef} style={[style, paddingStyle]} onLayout={this.onLayout} {...props}>
             {children}
