@@ -217,11 +217,7 @@ static NSThread *newJavaScriptThread(void)
                                                        selector:@selector(runRunLoopThread)
                                                          object:nil];
   javaScriptThread.name = RCTJSCThreadName;
-  if ([javaScriptThread respondsToSelector:@selector(setQualityOfService:)]) {
-    [javaScriptThread setQualityOfService:NSOperationQualityOfServiceUserInteractive];
-  } else {
-    javaScriptThread.threadPriority = [NSThread mainThread].threadPriority;
-  }
+  javaScriptThread.qualityOfService = NSOperationQualityOfServiceUserInteractive;
   [javaScriptThread start];
   return javaScriptThread;
 }
