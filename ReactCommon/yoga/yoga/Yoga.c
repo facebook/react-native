@@ -2485,23 +2485,10 @@ static void YGNodelayoutImpl(const YGNodeRef node,
             // the spacing.
             mainDim += betweenMainDim + YGNodeDimWithMargin(child, mainAxis, availableInnerWidth);
 
-            if (YGNodeIsStyleDimDefined(child, crossAxis, availableInnerCrossDim) ||
-                child->measure != NULL ||
-                !isNodeFlexWrap) {
-              // The cross dimension is the max of the elements dimension since
-              // there
-              // can only be one element in that cross dimension.
-              crossDim =
-                  fmaxf(crossDim, YGNodeDimWithMargin(child, crossAxis, availableInnerWidth));
-            } else {
-              // If we wrap the lines we only take the space we need at least.
-              crossDim = fmaxf(
-                  crossDim,
-                  YGNodeMarginForAxis(child, crossAxis, availableInnerWidth) +
-                      fmaxf(YGValueResolve(&child->style.minDimensions[dim[crossAxis]],
-                                           availableInnerWidth),
-                            YGNodePaddingAndBorderForAxis(child, crossAxis, availableInnerWidth)));
-            }
+            // The cross dimension is the max of the elements dimension since
+            // there
+            // can only be one element in that cross dimension.
+            crossDim = fmaxf(crossDim, YGNodeDimWithMargin(child, crossAxis, availableInnerWidth));
           }
         } else if (performLayout) {
           child->layout.position[pos[mainAxis]] +=
@@ -2665,8 +2652,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   }
 
   // STEP 8: MULTI-LINE CONTENT ALIGNMENT
-  if (performLayout &&
-      (lineCount > 1 || node->style.alignContent == YGAlignStretch || YGIsBaselineLayout(node)) &&
+  if (performLayout && (lineCount > 1 || YGIsBaselineLayout(node)) &&
       !YGFloatIsUndefined(availableInnerCrossDim)) {
     const float remainingAlignContentDim = availableInnerCrossDim - totalLineCrossDim;
 
@@ -2774,36 +2760,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
               case YGAlignStretch: {
                 child->layout.position[pos[crossAxis]] =
                     currentLead + YGNodeLeadingMargin(child, crossAxis, availableInnerWidth);
-
-                // Remeasure child with the line height as it as been only measured with the
-                // parents height yet.
-                if (!YGNodeIsStyleDimDefined(child, crossAxis, availableInnerCrossDim)) {
-                  const float childWidth =
-                      isMainAxisRow ? (child->layout.measuredDimensions[YGDimensionWidth] +
-                                       YGNodeMarginForAxis(child, crossAxis, availableInnerWidth))
-                                    : lineHeight;
-
-                  const float childHeight =
-                      !isMainAxisRow ? (child->layout.measuredDimensions[YGDimensionHeight] +
-                                        YGNodeMarginForAxis(child, crossAxis, availableInnerWidth))
-                                     : lineHeight;
-
-                  if (!(YGFloatsEqual(childWidth,
-                                      child->layout.measuredDimensions[YGDimensionWidth]) &&
-                        YGFloatsEqual(childHeight,
-                                      child->layout.measuredDimensions[YGDimensionHeight]))) {
-                    YGLayoutNodeInternal(child,
-                                         childWidth,
-                                         childHeight,
-                                         direction,
-                                         YGMeasureModeExactly,
-                                         YGMeasureModeExactly,
-                                         availableInnerWidth,
-                                         availableInnerHeight,
-                                         true,
-                                         "stretch");
-                  }
-                }
+                // TODO(prenaux): Correctly set the height of items with indefinite
+                //                (auto) crossAxis dimension.
                 break;
               }
               case YGAlignBaseline: {
