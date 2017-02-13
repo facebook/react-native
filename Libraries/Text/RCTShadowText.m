@@ -434,6 +434,14 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
     }
     paragraphStyle.minimumLineHeight = lineHeight;
     paragraphStyle.maximumLineHeight = lineHeight;
+
+    // vertically center text
+    CGFloat fontSize = _fontSize && !isnan(_fontSize) ? _fontSize : UIFont.systemFontSize;
+    fontSize *= fontSizeMultiplier;
+
+    [attributedString addAttribute:NSBaselineOffsetAttributeName
+                             value:@(lineHeight/2 - fontSize/2)
+                             range:(NSRange){0, attributedString.length}];
     [attributedString addAttribute:NSParagraphStyleAttributeName
                              value:paragraphStyle
                              range:(NSRange){0, attributedString.length}];
