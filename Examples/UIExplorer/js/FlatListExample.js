@@ -94,6 +94,7 @@ class FlatListExample extends React.PureComponent {
             {renderSmallSwitchOption(this, 'debug')}
           </View>
         </View>
+        <SeparatorComponent />
         <FlatList
           HeaderComponent={HeaderComponent}
           FooterComponent={FooterComponent}
@@ -164,8 +165,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   searchRow: {
-    backgroundColor: '#eeeeee',
-    padding: 10,
+    paddingHorizontal: 10,
   },
 });
 
