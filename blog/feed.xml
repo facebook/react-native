@@ -2,12 +2,24 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog/</id>
     <title>React Native Blog</title>
-    <updated>2017-01-07T00:00:00Z</updated>
+    <updated>2017-02-14T00:00:00Z</updated>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog/"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
     <rights>Copyright © 2017 Facebook Inc.</rights>
     <generator>Feed for Node.js</generator>
+    <entry>
+        <title type="html"><![CDATA[Using Native Driver for Animated]]></title>
+        <id>https://facebook.github.io/react-native/blog/2017/02/14/using-native-driver-for-animated.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/02/14/using-native-driver-for-animated.html">
+        </link>
+        <updated>2017-02-14T00:00:00Z</updated>
+        <summary type="html"><![CDATA[For the past year, we've been working on improving performance of animations that use the Animated library. Animations are very important to create a beautiful user experience but can also be hard to do right. We want to make it easy for developers to create performant animations without having to worry about some of their code causing it to lag.]]></summary>
+        <author>
+            <name>Janic Duplessis</name>
+            <uri>https://twitter.com/janicduplessis</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[A Monthly Release Cadence: Releasing December and January RC]]></title>
         <id>https://facebook.github.io/react-native/blog/2017/01/07/monthly-release-cadence.html</id>
