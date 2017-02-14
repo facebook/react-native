@@ -56,7 +56,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
-import com.facebook.react.packagerconnection.JSPackagerWebSocketClient;
+import com.facebook.react.packagerconnection.ReconnectingWebSocket;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -694,7 +694,7 @@ public class DevSupportManagerImpl implements
 
   @Override
   public void onPokeSamplingProfilerCommand(
-      @Nullable final JSPackagerWebSocketClient.WebSocketSender webSocket) {
+      @Nullable final ReconnectingWebSocket.WebSocketSender webSocket) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -710,7 +710,7 @@ public class DevSupportManagerImpl implements
   }
 
   private void handlePokeSamplingProfiler(
-      @Nullable JSPackagerWebSocketClient.WebSocketSender webSocket) {
+      @Nullable ReconnectingWebSocket.WebSocketSender webSocket) {
     try {
       List<String> pokeResults = JSCSamplingProfiler.poke(60000);
       for (String result : pokeResults) {
