@@ -1565,13 +1565,15 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
   // Don't use RCTScreenSize since it the interface orientation doesn't apply to it
   CGRect screenSize = [[UIScreen mainScreen] bounds];
+  NSDictionary *dims = @{
+    @"width": @(screenSize.size.width),
+    @"height": @(screenSize.size.height),
+    @"scale": @(RCTScreenScale()),
+    @"fontScale": @(bridge.accessibilityManager.multiplier)
+  };
   return @{
-    @"window": @{
-        @"width": @(screenSize.size.width),
-        @"height": @(screenSize.size.height),
-        @"scale": @(RCTScreenScale()),
-        @"fontScale": @(bridge.accessibilityManager.multiplier)
-    },
+    @"window": dims,
+    @"screen": dims
   };
 }
 
