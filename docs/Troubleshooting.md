@@ -26,13 +26,13 @@ On Windows you can find the process using port 8081 using [Resource Monitor](htt
 
 #### Using a port other than 8081
 
-You can configure the packager to use a port other than 8081 by using the `port` parameter:
+You can configure the packager to use a port other than 8081 by using the `port` parameter.  You should start this before performing the build:
 
 ```
 $ react-native start --port=8088
 ```
 
-You will also need to update your applications to load the JavaScript bundle from the new port. Open the in-app [Developer menu](docs/debugging.html#accessing-the-in-app-developer-menu), then go to **Dev Settings** → **Debug server host for device** and replace 8081 with your port of choice.
+You will also need to update your applications to load the JavaScript bundle from the new port. Perform a search and replace in the iOS or android code to change port 8081 to 8088 (or whichever port you decided to use).
 
 ### NPM locking error
 
