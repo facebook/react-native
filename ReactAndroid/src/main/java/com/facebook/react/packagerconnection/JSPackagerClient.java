@@ -34,9 +34,13 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
       mId = id;
     }
 
-    public void respond(String result) {
+    public void respond(Object result) {
       try {
-        mWebSocket.sendMessage(RequestBody.create(WebSocket.TEXT, result));
+        JSONObject message = new JSONObject();
+        message.put("version", PROTOCOL_VERSION);
+        message.put("target", "profiler");
+        message.put("action", result);
+        mWebSocket.sendMessage(RequestBody.create(WebSocket.TEXT, message.toString()));
       } catch (Exception e) {
         FLog.e(TAG, "Responding failed", e);
       }
@@ -45,6 +49,7 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
     public void error(Object error) {
       try {
         JSONObject message = new JSONObject();
+        message.put("version", PROTOCOL_VERSION);
         message.put("id", mId);
         message.put("error", error);
         mWebSocket.sendMessage(RequestBody.create(WebSocket.TEXT, message.toString()));

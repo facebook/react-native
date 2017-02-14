@@ -719,9 +719,7 @@ public class DevSupportManagerImpl implements
           Toast.LENGTH_LONG).show();
         if (responder != null) {
           // Responder is provided, so there is a client waiting our response
-          responder.respond(result == null
-            ? "{\"target\":\"profiler\", \"action\":\"started\"}"
-            : result);
+          responder.respond(result == null ? "started" : result);
         } else if (result != null) {
           // The profile was not initiated by external client, so process the
           // profile if there is one in the result
