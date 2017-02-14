@@ -43,6 +43,10 @@ type Runnable = {
 type Runnables = {
   [appKey: string]: Runnable,
 };
+type Registry = {
+  sections: Array<string>,
+  runnables: Runnables,
+};
 
 const runnables: Runnables = {};
 let runCount = 1;
@@ -126,6 +130,13 @@ const AppRegistry = {
 
   getRunnable(appKey: string): ?Runnable {
     return runnables[appKey];
+  },
+
+  getRegistry(): Registry {
+    return {
+      sections: AppRegistry.getSectionKeys(),
+      runnables: {...runnables},
+    };
   },
 
   runApplication(appKey: string, appParameters: any): void {
