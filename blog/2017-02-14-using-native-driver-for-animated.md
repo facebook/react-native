@@ -25,6 +25,7 @@ First, let's check out how animations currently work using Animated with the JS 
 ![](/react-native/blog/img/animated-diagram.png)
 
 Here's a breakdown of the steps for an animation and where it happens:
+
 - JS: The animation driver uses `requestAnimationFrame` to execute on every frame and update the value it drives using the new value it calculates based on the animation curve.
 - JS: Intermediate values are calculated and passed to a props node that is attached to a `View`.
 - JS: The `View` is updated using `setNativeProps`.
@@ -89,6 +90,7 @@ NativeAnimatedModule.startAnimation({
 ```
 
 And now here's the breakdown of what happens when the animation runs:
+
 - Native: The native animation driver uses `CADisplayLink` or `android.view.Choreographer` to execute on every frame and update the value it drives using the new value it calculates based on the animation curve.
 - Native: Intermediate values are calculated and passed to a props node that is attached to a native view.
 - Native: The `UIView` or `android.View` is updated.
