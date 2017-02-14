@@ -195,7 +195,7 @@ YGCalloc gYGCalloc = &calloc;
 YGRealloc gYGRealloc = &realloc;
 YGFree gYGFree = &free;
 
-static YGValue YGValueZero = {.value = 0, .unit = YGUnitPixel};
+static YGValue YGValueZero = {.value = 0, .unit = YGUnitPoint};
 
 #ifdef ANDROID
 #include <android/log.h>
@@ -273,7 +273,7 @@ static inline float YGValueResolve(const YGValue *const value, const float paren
     case YGUnitUndefined:
     case YGUnitAuto:
       return YGUndefined;
-    case YGUnitPixel:
+    case YGUnitPoint:
       return value->value;
     case YGUnitPercent:
       return value->value * parentSize / 100.0f;
@@ -474,10 +474,10 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
 #define YG_NODE_STYLE_PROPERTY_SETTER_UNIT_IMPL(type, name, paramName, instanceName) \
   void YGNodeStyleSet##name(const YGNodeRef node, const type paramName) {            \
     if (node->style.instanceName.value != paramName ||                               \
-        node->style.instanceName.unit != YGUnitPixel) {                              \
+        node->style.instanceName.unit != YGUnitPoint) {                              \
       node->style.instanceName.value = paramName;                                    \
       node->style.instanceName.unit =                                                \
-          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPixel;             \
+          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPoint;             \
       YGNodeMarkDirtyInternal(node);                                                 \
     }                                                                                \
   }                                                                                  \
@@ -495,9 +495,9 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
 #define YG_NODE_STYLE_PROPERTY_SETTER_UNIT_AUTO_IMPL(type, name, paramName, instanceName)         \
   void YGNodeStyleSet##name(const YGNodeRef node, const type paramName) {                         \
     if (node->style.instanceName.value != paramName ||                                            \
-        node->style.instanceName.unit != YGUnitPixel) {                                           \
+        node->style.instanceName.unit != YGUnitPoint) {                                           \
       node->style.instanceName.value = YGFloatIsUndefined(paramName) ? YGUndefined : paramName;   \
-      node->style.instanceName.unit = YGFloatIsUndefined(paramName) ? YGUnitAuto : YGUnitPixel;   \
+      node->style.instanceName.unit = YGFloatIsUndefined(paramName) ? YGUnitAuto : YGUnitPoint;   \
       YGNodeMarkDirtyInternal(node);                                                              \
     }                                                                                             \
   }                                                                                               \
@@ -552,10 +552,10 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
 #define YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(type, name, paramName, instanceName)            \
   void YGNodeStyleSet##name(const YGNodeRef node, const YGEdge edge, const float paramName) { \
     if (node->style.instanceName[edge].value != paramName ||                                  \
-        node->style.instanceName[edge].unit != YGUnitPixel) {                                 \
+        node->style.instanceName[edge].unit != YGUnitPoint) {                                 \
       node->style.instanceName[edge].value = paramName;                                       \
       node->style.instanceName[edge].unit =                                                   \
-          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPixel;                      \
+          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPoint;                      \
       YGNodeMarkDirtyInternal(node);                                                          \
     }                                                                                         \
   }                                                                                           \
@@ -579,10 +579,10 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
 #define YG_NODE_STYLE_EDGE_PROPERTY_IMPL(type, name, paramName, instanceName)                 \
   void YGNodeStyleSet##name(const YGNodeRef node, const YGEdge edge, const float paramName) { \
     if (node->style.instanceName[edge].value != paramName ||                                  \
-        node->style.instanceName[edge].unit != YGUnitPixel) {                                 \
+        node->style.instanceName[edge].unit != YGUnitPoint) {                                 \
       node->style.instanceName[edge].value = paramName;                                       \
       node->style.instanceName[edge].unit =                                                   \
-          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPixel;                      \
+          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPoint;                      \
       YGNodeMarkDirtyInternal(node);                                                          \
     }                                                                                         \
   }                                                                                           \
@@ -725,7 +725,7 @@ static void YGPrintNumberIfNotZero(const char *str, const YGValue *const number)
           "%s: %g%s, ",
           str,
           number->value,
-          number->unit == YGUnitPixel ? "px" : "%");
+          number->unit == YGUnitPoint ? "pt" : "%");
   }
 }
 
@@ -741,7 +741,7 @@ static void YGPrintNumberIfNotUndefined(const char *str, const YGValue *const nu
           "%s: %g%s, ",
           str,
           number->value,
-          number->unit == YGUnitPixel ? "px" : "%");
+          number->unit == YGUnitPoint ? "pt" : "%");
   }
 }
 
@@ -1153,7 +1153,7 @@ static inline bool YGNodeIsStyleDimDefined(const YGNodeRef node,
                                            const float parentSize) {
   return !(node->resolvedDimensions[dim[axis]]->unit == YGUnitAuto ||
            node->resolvedDimensions[dim[axis]]->unit == YGUnitUndefined ||
-           (node->resolvedDimensions[dim[axis]]->unit == YGUnitPixel &&
+           (node->resolvedDimensions[dim[axis]]->unit == YGUnitPoint &&
             node->resolvedDimensions[dim[axis]]->value < 0.0f) ||
            (node->resolvedDimensions[dim[axis]]->unit == YGUnitPercent &&
             (node->resolvedDimensions[dim[axis]]->value < 0.0f || YGFloatIsUndefined(parentSize))));
@@ -1775,11 +1775,11 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
 //          the width/height attributes.
 //      flex: -1 (or any negative value) is equivalent to flex: 0 1 auto
 //  * Margins cannot be specified as 'auto'. They must be specified in terms of
-//  pixel
+//  points
 //    values, and the default value is 0.
 //  * Values of width, maxWidth, minWidth, height, maxHeight and minHeight must
 //  be
-//    specified as pixel values, not as percentages.
+//    specified as point values, not as percentages.
 //  * There is no support for calculation of dimensions based on intrinsic
 //  aspect ratios
 //     (e.g. images).
@@ -2186,7 +2186,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       // based on its
       // content.
       // sizeConsumedOnCurrentLine is negative which means the node will
-      // allocate 0 pixels for
+      // allocate 0 points for
       // its content. Consequently, remainingFreeSpace is 0 -
       // sizeConsumedOnCurrentLine.
       remainingFreeSpace = -sizeConsumedOnCurrentLine;
@@ -3286,7 +3286,7 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
   return (needToVisitNode || cachedResults == NULL);
 }
 
-static void roundToPixelGrid(const YGNodeRef node) {
+static void YGRoundToPixelGrid(const YGNodeRef node) {
   const float fractialLeft =
       node->layout.position[YGEdgeLeft] - floorf(node->layout.position[YGEdgeLeft]);
   const float fractialTop =
@@ -3301,7 +3301,7 @@ static void roundToPixelGrid(const YGNodeRef node) {
 
   const uint32_t childCount = YGNodeListCount(node->children);
   for (uint32_t i = 0; i < childCount; i++) {
-    roundToPixelGrid(YGNodeGetChild(node, i));
+    YGRoundToPixelGrid(YGNodeGetChild(node, i));
   }
 }
 
@@ -3360,7 +3360,7 @@ void YGNodeCalculateLayout(const YGNodeRef node,
     YGNodeSetPosition(node, node->layout.direction, availableWidth, availableHeight, availableWidth);
 
     if (YGIsExperimentalFeatureEnabled(YGExperimentalFeatureRounding)) {
-      roundToPixelGrid(node);
+      YGRoundToPixelGrid(node);
     }
 
     if (gPrintTree) {

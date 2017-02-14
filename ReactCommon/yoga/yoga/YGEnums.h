@@ -119,7 +119,7 @@ typedef YG_ENUM_BEGIN(YGPrintOptions) {
 #define YGUnitCount 4
 typedef YG_ENUM_BEGIN(YGUnit) {
   YGUnitUndefined,
-  YGUnitPixel,
+  YGUnitPoint,
   YGUnitPercent,
   YGUnitAuto,
 } YG_ENUM_END(YGUnit);

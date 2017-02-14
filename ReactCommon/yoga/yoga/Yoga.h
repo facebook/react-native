@@ -209,7 +209,7 @@ YG_NODE_LAYOUT_PROPERTY(float, Height);
 YG_NODE_LAYOUT_PROPERTY(YGDirection, Direction);
 
 // Get the computed values for these nodes after performing layout. If they were set using
-// pixel values then the returned value will be the same as YGNodeStyleGetXXX. However if
+// point values then the returned value will be the same as YGNodeStyleGetXXX. However if
 // they were set using a percentage value then the returned value is the computed value used
 // during layout.
 YG_NODE_LAYOUT_EDGE_PROPERTY(float, Margin);

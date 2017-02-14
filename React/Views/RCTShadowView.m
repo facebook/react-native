@@ -61,7 +61,7 @@ switch (ygvalue.unit) {                          \
   case YGUnitUndefined:                          \
     setter(__VA_ARGS__, YGUndefined);            \
     break;                                       \
-  case YGUnitPixel:                              \
+  case YGUnitPoint:                              \
     setter(__VA_ARGS__, ygvalue.value);          \
     break;                                       \
   case YGUnitPercent:                            \
@@ -136,9 +136,9 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 #if RCT_DEBUG
   // This works around a breaking change in css-layout where setting flexBasis needs to be set explicitly, instead of relying on flex to propagate.
   // We check for it by seeing if a width/height is provided along with a flexBasis of 0 and the width/height is laid out as 0.
-  if (YGNodeStyleGetFlexBasis(node).unit == YGUnitPixel && YGNodeStyleGetFlexBasis(node).value == 0 &&
-      ((YGNodeStyleGetWidth(node).unit == YGUnitPixel && YGNodeStyleGetWidth(node).value > 0 && YGNodeLayoutGetWidth(node) == 0) ||
-      (YGNodeStyleGetHeight(node).unit == YGUnitPixel && YGNodeStyleGetHeight(node).value > 0 && YGNodeLayoutGetHeight(node) == 0))) {
+  if (YGNodeStyleGetFlexBasis(node).unit == YGUnitPoint && YGNodeStyleGetFlexBasis(node).value == 0 &&
+      ((YGNodeStyleGetWidth(node).unit == YGUnitPoint && YGNodeStyleGetWidth(node).value > 0 && YGNodeLayoutGetWidth(node) == 0) ||
+      (YGNodeStyleGetHeight(node).unit == YGUnitPoint && YGNodeStyleGetHeight(node).value > 0 && YGNodeLayoutGetHeight(node) == 0))) {
     RCTLogError(@"View was rendered with explicitly set width/height but with a 0 flexBasis. (This might be fixed by changing flex: to flexGrow:) View: %@", self);
   }
 #endif
@@ -565,8 +565,8 @@ RCT_POSITION_PROPERTY(Left, left, YGEdgeStart)
   YGValue height = YGNodeStyleGetHeight(_cssNode);
 
   return CGSizeMake(
-    width.unit == YGUnitPixel ? width.value : NAN,
-    height.unit == YGUnitPixel ? height.value : NAN
+    width.unit == YGUnitPoint ? width.value : NAN,
+    height.unit == YGUnitPoint ? height.value : NAN
   );
 }
 
