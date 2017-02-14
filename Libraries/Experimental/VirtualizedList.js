@@ -87,7 +87,8 @@ type OptionalProps = {
   disableVirtualization: boolean,
   getItem: (items: any, index: number) => ?Item,
   getItemCount: (items: any) => number,
-  getItemLayout?: (items: any, index: number) => {length: number, offset: number}, // e.g. height, y
+  getItemLayout?: (items: any, index: number) =>
+    {length: number, offset: number, index: number}, // e.g. height, y
   horizontal: boolean,
   initialNumToRender: number,
   keyExtractor: (item: Item, index: number) => string,
