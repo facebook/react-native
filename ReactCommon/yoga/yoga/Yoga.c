@@ -1956,6 +1956,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     }
   }
 
+  float totalFlexBasis = 0;
+
   // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
   for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeListGet(node->children, i);
@@ -2005,7 +2007,12 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                                        direction);
       }
     }
+
+    totalFlexBasis += child->layout.computedFlexBasis;
   }
+
+  const bool flexBasisOverflows =
+      measureModeMainDim == YGMeasureModeUndefined ? false : totalFlexBasis > availableInnerMainDim;
 
   // STEP 4: COLLECT FLEX ITEMS INTO FLEX LINES
 
@@ -2287,6 +2294,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                                        YGFlexDirectionColumn,
                                        availableInnerHeight) &&
               heightMeasureMode == YGMeasureModeExactly &&
+              !(isNodeFlexWrap && flexBasisOverflows) &&
               YGNodeAlignItem(node, currentRelativeChild) == YGAlignStretch) {
             childHeight = availableInnerCrossDim;
             childHeightMeasureMode = YGMeasureModeExactly;
@@ -2312,7 +2320,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
               !YGNodeIsStyleDimDefined(currentRelativeChild,
                                        YGFlexDirectionRow,
                                        availableInnerWidth) &&
-              widthMeasureMode == YGMeasureModeExactly &&
+              widthMeasureMode == YGMeasureModeExactly && !(isNodeFlexWrap && flexBasisOverflows) &&
               YGNodeAlignItem(node, currentRelativeChild) == YGAlignStretch) {
             childWidth = availableInnerCrossDim;
             childWidthMeasureMode = YGMeasureModeExactly;
@@ -2481,13 +2489,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                        child->layout.computedFlexBasis;
             crossDim = availableInnerCrossDim;
           } else {
-            // The main dimension is the sum of all the elements dimension plus
-            // the spacing.
+            // The main dimension is the sum of all the elements dimension plus the spacing.
             mainDim += betweenMainDim + YGNodeDimWithMargin(child, mainAxis, availableInnerWidth);
 
             // The cross dimension is the max of the elements dimension since
-            // there
-            // can only be one element in that cross dimension.
+            // there can only be one element in that cross dimension.
             crossDim = fmaxf(crossDim, YGNodeDimWithMargin(child, crossAxis, availableInnerWidth));
           }
         } else if (performLayout) {
@@ -2652,7 +2658,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   }
 
   // STEP 8: MULTI-LINE CONTENT ALIGNMENT
-  if (performLayout && (lineCount > 1 || YGIsBaselineLayout(node)) &&
+  if (performLayout &&
+      (lineCount > 1 || node->style.alignContent == YGAlignStretch || YGIsBaselineLayout(node)) &&
       !YGFloatIsUndefined(availableInnerCrossDim)) {
     const float remainingAlignContentDim = availableInnerCrossDim - totalLineCrossDim;
 
@@ -2760,8 +2767,36 @@ static void YGNodelayoutImpl(const YGNodeRef node,
               case YGAlignStretch: {
                 child->layout.position[pos[crossAxis]] =
                     currentLead + YGNodeLeadingMargin(child, crossAxis, availableInnerWidth);
-                // TODO(prenaux): Correctly set the height of items with indefinite
-                //                (auto) crossAxis dimension.
+
+                // Remeasure child with the line height as it as been only measured with the
+                // parents height yet.
+                if (!YGNodeIsStyleDimDefined(child, crossAxis, availableInnerCrossDim)) {
+                  const float childWidth =
+                      isMainAxisRow ? (child->layout.measuredDimensions[YGDimensionWidth] +
+                                       YGNodeMarginForAxis(child, crossAxis, availableInnerWidth))
+                                    : lineHeight;
+
+                  const float childHeight =
+                      !isMainAxisRow ? (child->layout.measuredDimensions[YGDimensionHeight] +
+                                        YGNodeMarginForAxis(child, crossAxis, availableInnerWidth))
+                                     : lineHeight;
+
+                  if (!(YGFloatsEqual(childWidth,
+                                      child->layout.measuredDimensions[YGDimensionWidth]) &&
+                        YGFloatsEqual(childHeight,
+                                      child->layout.measuredDimensions[YGDimensionHeight]))) {
+                    YGLayoutNodeInternal(child,
+                                         childWidth,
+                                         childHeight,
+                                         direction,
+                                         YGMeasureModeExactly,
+                                         YGMeasureModeExactly,
+                                         availableInnerWidth,
+                                         availableInnerHeight,
+                                         true,
+                                         "stretch");
+                  }
+                }
                 break;
               }
               case YGAlignBaseline: {
