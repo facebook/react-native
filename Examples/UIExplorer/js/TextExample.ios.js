@@ -23,27 +23,27 @@
 'use strict';
 
 const Platform = require('Platform');
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+import React, {Component} from 'react';
+import ReactNative,{
   Image,
   StyleSheet,
   Text,
   View,
-  LayoutAnimation,
-} = ReactNative;
+  LayoutAnimation   
+} from 'react-native';
 
-class Entity extends React.Component {
+
+class Entity extends Component {
   render() {
     return (
       <Text style={{fontWeight: '500', color: '#527fe4'}}>
         {this.props.children}
       </Text>
-    );
+    )
   }
 }
 
-class AttributeToggler extends React.Component {
+class AttributeToggler extends Component {
   state = {fontWeight: 'bold', fontSize: 15};
 
   toggleWeight = () => {
