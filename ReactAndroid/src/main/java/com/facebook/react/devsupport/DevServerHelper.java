@@ -31,7 +31,6 @@ import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.JSPackagerClient;
-import com.facebook.react.packagerconnection.ReconnectingWebSocket;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -89,7 +88,7 @@ public class DevServerHelper {
   public interface PackagerCommandListener {
     void onPackagerReloadCommand();
     void onCaptureHeapCommand();
-    void onPokeSamplingProfilerCommand(@Nullable final ReconnectingWebSocket.WebSocketSender webSocket);
+    void onPokeSamplingProfilerCommand(@Nullable final JSPackagerClient.Responder responder);
   }
 
   private final DevInternalSettings mSettings;
@@ -121,28 +120,25 @@ public class DevServerHelper {
     }
     new AsyncTask<Void, Void, Void>() {
       @Override
-      protected Void doInBackground(Void... params) {
+      protected Void doInBackground(Void... backgroundParams) {
         Map<String, JSPackagerClient.RequestHandler> handlers =
           new HashMap<String, JSPackagerClient.RequestHandler>();
-        handlers.put("reload", new JSPackagerClient.RequestHandler() {
+        handlers.put("reload", new JSPackagerClient.NotificationOnlyHandler() {
           @Override
-          public void onNotification(
-            @Nullable ReconnectingWebSocket.WebSocketSender webSocket) {
+          public void onNotification(@Nullable Object params) {
             commandListener.onPackagerReloadCommand();
           }
         });
-        handlers.put("captureHeap", new JSPackagerClient.RequestHandler() {
+        handlers.put("captureHeap", new JSPackagerClient.NotificationOnlyHandler() {
           @Override
-          public void onNotification(
-            @Nullable ReconnectingWebSocket.WebSocketSender webSocket) {
+          public void onNotification(@Nullable Object params) {
             commandListener.onCaptureHeapCommand();
           }
         });
-        handlers.put("pokeSamplingProfiler", new JSPackagerClient.RequestHandler() {
+        handlers.put("pokeSamplingProfiler", new JSPackagerClient.RequestOnlyHandler() {
           @Override
-          public void onNotification(
-            @Nullable ReconnectingWebSocket.WebSocketSender webSocket) {
-            commandListener.onPokeSamplingProfilerCommand(webSocket);
+          public void onRequest(@Nullable Object params, JSPackagerClient.Responder responder) {
+            commandListener.onPokeSamplingProfilerCommand(responder);
           }
         });
 

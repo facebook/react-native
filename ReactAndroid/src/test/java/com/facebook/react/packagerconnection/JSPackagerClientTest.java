@@ -37,14 +37,12 @@ public class JSPackagerClientTest {
     JSPackagerClient.RequestHandler handler = mock(JSPackagerClient.RequestHandler.class);
     final JSPackagerClient client = new JSPackagerClient("ws://not_needed", createRH("actionValue", handler));
     WebSocket webSocket = mock(WebSocket.class);
-    ReconnectingWebSocket.WebSocketSender wbs = new ReconnectingWebSocket.WebSocketSender(webSocket);
 
     client.onMessage(
-        wbs,
         ResponseBody.create(
           WebSocket.TEXT,
           "{\"version\": 1, \"target\": \"bridge\", \"action\": \"actionValue\"}"));
-    verify(handler).onNotification(wbs);
+    verify(handler).onNotification(any());
   }
 
   @Test
@@ -52,14 +50,12 @@ public class JSPackagerClientTest {
     JSPackagerClient.RequestHandler handler = mock(JSPackagerClient.RequestHandler.class);
     final JSPackagerClient client = new JSPackagerClient("ws://not_needed", createRH("actionValue", handler));
     WebSocket webSocket = mock(WebSocket.class);
-    ReconnectingWebSocket.WebSocketSender wbs = new ReconnectingWebSocket.WebSocketSender(webSocket);
 
     client.onMessage(
-        wbs,
         ResponseBody.create(
           WebSocket.BINARY,
           "{\"version\": 1, \"target\": \"bridge\", \"action\": \"actionValue\"}"));
-    verify(handler, never()).onNotification(wbs);
+    verify(handler, never()).onNotification(any());
   }
 
   @Test
@@ -67,14 +63,12 @@ public class JSPackagerClientTest {
     JSPackagerClient.RequestHandler handler = mock(JSPackagerClient.RequestHandler.class);
     final JSPackagerClient client = new JSPackagerClient("ws://not_needed", createRH("actionValue", handler));
     WebSocket webSocket = mock(WebSocket.class);
-    ReconnectingWebSocket.WebSocketSender wbs = new ReconnectingWebSocket.WebSocketSender(webSocket);
 
     client.onMessage(
-        wbs,
         ResponseBody.create(
           WebSocket.TEXT,
           "{\"version\": 1, \"action\": \"actionValue\"}"));
-    verify(handler, never()).onNotification(wbs);
+    verify(handler, never()).onNotification(any());
   }
 
   @Test
@@ -82,14 +76,12 @@ public class JSPackagerClientTest {
     JSPackagerClient.RequestHandler handler = mock(JSPackagerClient.RequestHandler.class);
     final JSPackagerClient client = new JSPackagerClient("ws://not_needed", createRH("actionValue", handler));
     WebSocket webSocket = mock(WebSocket.class);
-    ReconnectingWebSocket.WebSocketSender wbs = new ReconnectingWebSocket.WebSocketSender(webSocket);
 
     client.onMessage(
-        wbs,
         ResponseBody.create(
           WebSocket.TEXT,
           "{\"version\": 1, \"target\": null, \"action\": \"actionValue\"}"));
-    verify(handler, never()).onNotification(wbs);
+    verify(handler, never()).onNotification(any());
   }
 
   @Test
@@ -97,14 +89,12 @@ public class JSPackagerClientTest {
     JSPackagerClient.RequestHandler handler = mock(JSPackagerClient.RequestHandler.class);
     final JSPackagerClient client = new JSPackagerClient("ws://not_needed", createRH("actionValue", handler));
     WebSocket webSocket = mock(WebSocket.class);
-    ReconnectingWebSocket.WebSocketSender wbs = new ReconnectingWebSocket.WebSocketSender(webSocket);
 
     client.onMessage(
-        wbs,
         ResponseBody.create(
           WebSocket.TEXT,
           "{\"version\": 1, \"target\": \"bridge\"}"));
-    verify(handler, never()).onNotification(wbs);
+    verify(handler, never()).onNotification(any());
   }
 
   @Test
@@ -112,14 +102,12 @@ public class JSPackagerClientTest {
     JSPackagerClient.RequestHandler handler = mock(JSPackagerClient.RequestHandler.class);
     final JSPackagerClient client = new JSPackagerClient("ws://not_needed", createRH("actionValue", handler));
     WebSocket webSocket = mock(WebSocket.class);
-    ReconnectingWebSocket.WebSocketSender wbs = new ReconnectingWebSocket.WebSocketSender(webSocket);
 
     client.onMessage(
-        wbs,
         ResponseBody.create(
           WebSocket.TEXT,
           "{\"version\": 1, \"target\": \"bridge\", \"action\": null}"));
-    verify(handler, never()).onNotification(wbs);
+    verify(handler, never()).onNotification(any());
   }
 
   @Test
@@ -127,13 +115,11 @@ public class JSPackagerClientTest {
     JSPackagerClient.RequestHandler handler = mock(JSPackagerClient.RequestHandler.class);
     final JSPackagerClient client = new JSPackagerClient("ws://not_needed", createRH("actionValue", handler));
     WebSocket webSocket = mock(WebSocket.class);
-    ReconnectingWebSocket.WebSocketSender wbs = new ReconnectingWebSocket.WebSocketSender(webSocket);
 
     client.onMessage(
-        wbs,
         ResponseBody.create(
           WebSocket.TEXT,
           "{\"version\": 2, \"target\": \"bridge\", \"action\": \"actionValue\"}"));
-    verify(handler, never()).onNotification(wbs);
+    verify(handler, never()).onNotification(any());
   }
 }

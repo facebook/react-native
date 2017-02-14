@@ -11,6 +11,7 @@ package com.facebook.react.packagerconnection;
 import javax.annotation.Nullable;
 
 import java.io.IOException;
+import java.nio.channels.ClosedChannelException;
 import java.util.concurrent.TimeUnit;
 
 import android.os.Handler;
@@ -36,20 +37,8 @@ final public class ReconnectingWebSocket implements WebSocketListener {
 
   private static final int RECONNECT_DELAY_MS = 2000;
 
-  static public class WebSocketSender {
-    private WebSocket mWebSocket;
-
-    public WebSocketSender(WebSocket webSocket) {
-      mWebSocket = webSocket;
-    }
-
-    public void sendMessage(RequestBody requestBody) throws IOException {
-      mWebSocket.sendMessage(requestBody);
-    }
-  }
-
   public interface MessageCallback {
-    void onMessage(@Nullable WebSocketSender webSocket, ResponseBody message);
+    void onMessage(ResponseBody message);
   }
 
   private final String mUrl;
@@ -150,10 +139,7 @@ final public class ReconnectingWebSocket implements WebSocketListener {
   @Override
   public synchronized void onMessage(ResponseBody message) {
     if (mCallback != null) {
-      WebSocketSender webSocketSender = mWebSocket == null
-        ? null
-        : new WebSocketSender(mWebSocket);
-      mCallback.onMessage(webSocketSender, message);
+      mCallback.onMessage(message);
     }
   }
 
@@ -165,6 +151,14 @@ final public class ReconnectingWebSocket implements WebSocketListener {
     mWebSocket = null;
     if (!mClosed) {
       reconnect();
+    }
+  }
+
+  public synchronized void sendMessage(RequestBody message) throws IOException {
+    if (mWebSocket != null) {
+      mWebSocket.sendMessage(message);
+    } else {
+      throw new ClosedChannelException();
     }
   }
 }

@@ -56,13 +56,12 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
-import com.facebook.react.packagerconnection.ReconnectingWebSocket;
+import com.facebook.react.packagerconnection.JSPackagerClient;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.ws.WebSocket;
 
 /**
  * Interface for accessing and interacting with development features. Following features
@@ -693,12 +692,11 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void onPokeSamplingProfilerCommand(
-      @Nullable final ReconnectingWebSocket.WebSocketSender webSocket) {
+  public void onPokeSamplingProfilerCommand(@Nullable final JSPackagerClient.Responder responder) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        handlePokeSamplingProfiler(webSocket);
+        handlePokeSamplingProfiler(responder);
       }
     });
   }
@@ -709,8 +707,7 @@ public class DevSupportManagerImpl implements
       JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
   }
 
-  private void handlePokeSamplingProfiler(
-      @Nullable ReconnectingWebSocket.WebSocketSender webSocket) {
+  private void handlePokeSamplingProfiler(@Nullable final JSPackagerClient.Responder responder) {
     try {
       List<String> pokeResults = JSCSamplingProfiler.poke(60000);
       for (String result : pokeResults) {
@@ -720,14 +717,11 @@ public class DevSupportManagerImpl implements
             ? "Started JSC Sampling Profiler"
             : "Stopped JSC Sampling Profiler",
           Toast.LENGTH_LONG).show();
-        if (webSocket != null) {
-          // WebSocket is provided, so there is a client waiting our response
-          webSocket.sendMessage(
-            RequestBody.create(
-              WebSocket.TEXT,
-              result == null
-                ? "{\"target\":\"profiler\", \"action\":\"started\"}"
-                : result));
+        if (responder != null) {
+          // Responder is provided, so there is a client waiting our response
+          responder.respond(result == null
+            ? "{\"target\":\"profiler\", \"action\":\"started\"}"
+            : result);
         } else if (result != null) {
           // The profile was not initiated by external client, so process the
           // profile if there is one in the result
@@ -737,8 +731,6 @@ public class DevSupportManagerImpl implements
         }
       }
     } catch (JSCSamplingProfiler.ProfilerException e) {
-      showNewJavaError(e.getMessage(), e);
-    } catch (IOException e) {
       showNewJavaError(e.getMessage(), e);
     }
   }
