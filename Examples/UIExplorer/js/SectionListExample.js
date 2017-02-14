@@ -46,11 +46,20 @@ const {
   renderSmallSwitchOption,
 } = require('./ListExampleShared');
 
-const SectionHeaderComponent = ({section}) =>
+const SectionHeaderComponent = ({section}) => (
   <View>
     <Text style={styles.headerText}>SECTION HEADER: {section.key}</Text>
     <SeparatorComponent />
-  </View>;
+  </View>
+);
+
+const SectionSeparatorComponent = () => (
+  <View>
+    <SeparatorComponent />
+    <Text style={styles.sectionSeparatorText}>SECTION SEPARATOR</Text>
+    <SeparatorComponent />
+  </View>
+);
 
 class SectionListExample extends React.PureComponent {
   static title = '<SectionList>';
@@ -88,12 +97,12 @@ class SectionListExample extends React.PureComponent {
           FooterComponent={FooterComponent}
           ItemComponent={this._renderItemComponent}
           SectionHeaderComponent={SectionHeaderComponent}
+          SectionSeparatorComponent={SectionSeparatorComponent}
           SeparatorComponent={SeparatorComponent}
           enableVirtualization={this.state.virtualized}
           onRefresh={() => alert('onRefresh: nothing to refresh :P')}
           onViewableItemsChanged={this._onViewableItemsChanged}
           refreshing={false}
-          shouldItemUpdate={(prev, next) => prev.item !== next.item}
           sections={[
             {ItemComponent: StackedItemComponent, key: 's1', data: [
               {title: 'Item In Header Section', text: 's1', key: '0'}
@@ -133,6 +142,12 @@ const styles = StyleSheet.create({
   },
   searchRow: {
     paddingHorizontal: 10,
+  },
+  sectionSeparatorText: {
+    color: 'gray',
+    alignSelf: 'center',
+    padding: 4,
+    fontWeight: 'bold',
   },
 });
 

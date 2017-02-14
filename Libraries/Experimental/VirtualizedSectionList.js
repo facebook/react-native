@@ -46,12 +46,8 @@ type SectionItem = any;
 
 type Section = {
   // Must be provided directly on each section.
-  data: ?Array<SectionItem>,
+  data: Array<SectionItem>,
   key: string,
-  /**
-   * Stick whatever you want here, e.g. meta data for rendering section headers.
-   */
-  extra?: any,
 
   // Optional props will override list-wide props just for this section.
   ItemComponent?: ?ReactClass<{item: SectionItem, index: number}>,
@@ -74,6 +70,7 @@ type RequiredProps = {
 type OptionalProps = {
   ItemComponent?: ?ReactClass<{item: Item, index: number}>,
   SectionHeaderComponent?: ?ReactClass<{section: Section}>,
+  SectionSeparatorComponent?: ?ReactClass<*>,
   SeparatorComponent?: ?ReactClass<*>,
   /**
    * Warning: Virtualization can drastically improve memory consumption for long lists, but trashes
@@ -109,12 +106,11 @@ class VirtualizedSectionList extends React.PureComponent {
   };
 
   _keyExtractor = (item: Item, index: number) => {
-    const info = this._subExtractor(item, index);
+    const info = this._subExtractor(index);
     return info && info.key;
   };
 
   _subExtractor(
-    item,
     index: number,
   ): ?{
     section: Section,
@@ -144,7 +140,7 @@ class VirtualizedSectionList extends React.PureComponent {
 
   _convertViewable = (viewable: Viewable): ?Viewable => {
     invariant(viewable.index != null, 'Received a broken Viewable');
-    const info = this._subExtractor(viewable.item, viewable.index);
+    const info = this._subExtractor(viewable.index);
     if (!info) {
       return null;
     }
@@ -169,12 +165,12 @@ class VirtualizedSectionList extends React.PureComponent {
   }
 
   _isItemSticky = (item, index) => {
-    const info = this._subExtractor(item, index);
+    const info = this._subExtractor(index);
     return info && info.index == null;
   };
 
   _renderItem = ({item, index}: {item: Item, index: number}) => {
-    const info = this._subExtractor(item, index);
+    const info = this._subExtractor(index);
     if (!info) {
       return null;
     } else if (info.index == null) {
@@ -182,17 +178,50 @@ class VirtualizedSectionList extends React.PureComponent {
     } else {
       const ItemComponent = info.section.ItemComponent || this.props.ItemComponent;
       const SeparatorComponent = info.section.SeparatorComponent || this.props.SeparatorComponent;
+      const {SectionSeparatorComponent} = this.props;
+      const [shouldRenderSectionSeparator, shouldRenderItemSeparator] =
+        this._shouldRenderSeparators(index, info);
       return (
         <View>
           <ItemComponent item={item} index={info.index} />
-          {SeparatorComponent && index < this.state.childProps.getItemCount() - 1
-            ? <SeparatorComponent />
-            : null
-          }
+          {shouldRenderItemSeparator ? <SeparatorComponent /> : null}
+          {shouldRenderSectionSeparator ? <SectionSeparatorComponent /> : null}
         </View>
       );
     }
   };
+
+  _shouldRenderSeparators(index: number, info?: ?Object): [boolean, boolean] {
+    info = info || this._subExtractor(index);
+    if (!info) {
+      return [false, false];
+    }
+    const SeparatorComponent = info.section.SeparatorComponent || this.props.SeparatorComponent;
+    const {SectionSeparatorComponent} = this.props;
+    const lastItemIndex = this.state.childProps.getItemCount() - 1;
+    let shouldRenderSectionSeparator = false;
+    if (SectionSeparatorComponent) {
+      shouldRenderSectionSeparator =
+        info.index === info.section.data.length - 1 && index < lastItemIndex;
+    }
+    const shouldRenderItemSeparator = SeparatorComponent && !shouldRenderSectionSeparator &&
+      index < lastItemIndex;
+    return [shouldRenderSectionSeparator, shouldRenderItemSeparator];
+  }
+
+  _shouldItemUpdate = (prev, next) => {
+    const {shouldItemUpdate} = this.props;
+    if (!shouldItemUpdate || shouldItemUpdate(prev, next)) {
+      return true;
+    }
+    if (prev.index !== next.index) {
+      const [secSepPrev, itSepPrev] = this._shouldRenderSeparators(prev.index);
+      const [secSepNext, itSepNext] = this._shouldRenderSeparators(next.index);
+      if (secSepPrev !== secSepNext || itSepPrev !== itSepNext) {
+        return true;
+      }
+    }
+  }
 
   _computeState(props: Props) {
     const itemCount = props.sections.reduce((v, section) => v + section.data.length + 1, 0);
@@ -208,6 +237,7 @@ class VirtualizedSectionList extends React.PureComponent {
         keyExtractor: this._keyExtractor,
         onViewableItemsChanged:
           props.onViewableItemsChanged ? this._onViewableItemsChanged : undefined,
+        shouldItemUpdate: this._shouldItemUpdate,
       },
     };
   }
