@@ -7,19 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTRawTextManager.h"
+package com.facebook.react.devsupport.interfaces;
 
-#import "RCTShadowRawText.h"
-
-@implementation RCTRawTextManager
-
-RCT_EXPORT_MODULE()
-
-- (RCTShadowView *)shadowView
-{
-  return [RCTShadowRawText new];
+public interface PackagerStatusCallback {
+  void onPackagerStatusFetched(boolean packagerIsRunning);
 }
-
-RCT_EXPORT_SHADOW_PROPERTY(text, NSString)
-
-@end

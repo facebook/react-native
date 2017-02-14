@@ -30,40 +30,37 @@ const {
   View,
 } = ReactNative;
 
-const FlatList = require('FlatList');
+const SectionList = require('SectionList');
 const UIExplorerPage = require('./UIExplorerPage');
 
 const infoLog = require('infoLog');
 
 const {
   FooterComponent,
-  HeaderComponent,
   ItemComponent,
   PlainInput,
   SeparatorComponent,
+  StackedItemComponent,
   genItemData,
-  getItemLayout,
   pressItem,
   renderSmallSwitchOption,
 } = require('./ListExampleShared');
 
-class MultiColumnExample extends React.PureComponent {
-  static title = '<FlatList> - MultiColumn';
-  static description = 'Performant, scrollable grid of data.';
+const SectionHeaderComponent = ({section}) =>
+  <View>
+    <Text style={styles.headerText}>SECTION HEADER: {section.key}</Text>
+    <SeparatorComponent />
+  </View>;
+
+class SectionListExample extends React.PureComponent {
+  static title = '<SectionList>';
+  static description = 'Performant, scrollable list of data.';
 
   state = {
     data: genItemData(1000),
     filterText: '',
-    fixedHeight: true,
     logViewable: false,
-    numColumns: 2,
     virtualized: true,
-  };
-  _onChangeFilterText = (filterText) => {
-    this.setState(() => ({filterText}));
-  };
-  _onChangeNumColumns = (numColumns) => {
-    this.setState(() => ({numColumns: Number(numColumns)}));
   };
   render() {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
@@ -71,67 +68,45 @@ class MultiColumnExample extends React.PureComponent {
     const filteredData = this.state.data.filter(filter);
     return (
       <UIExplorerPage
-        title={this.props.navigator ? null : '<FlatList> - MultiColumn'}
         noSpacer={true}
         noScroll={true}>
         <View style={styles.searchRow}>
-          <View style={styles.row}>
-            <PlainInput
-              onChangeText={this._onChangeFilterText}
-              placeholder="Search..."
-              value={this.state.filterText}
-            />
-            <Text>   numColumns: </Text>
-            <PlainInput
-              clearButtonMode="never"
-              onChangeText={this._onChangeNumColumns}
-              value={this.state.numColumns ? String(this.state.numColumns) : ''}
-            />
-          </View>
-          <View style={styles.row}>
+          <PlainInput
+            onChangeText={filterText => {
+              this.setState(() => ({filterText}));
+            }}
+            placeholder="Search..."
+            value={this.state.filterText}
+          />
+          <View style={styles.optionSection}>
             {renderSmallSwitchOption(this, 'virtualized')}
-            {renderSmallSwitchOption(this, 'fixedHeight')}
             {renderSmallSwitchOption(this, 'logViewable')}
           </View>
         </View>
         <SeparatorComponent />
-        <FlatList
+        <SectionList
           FooterComponent={FooterComponent}
-          HeaderComponent={HeaderComponent}
           ItemComponent={this._renderItemComponent}
+          SectionHeaderComponent={SectionHeaderComponent}
           SeparatorComponent={SeparatorComponent}
-          getItemLayout={this.state.fixedHeight ? this._getItemLayout : undefined}
-          data={filteredData}
-          key={this.state.numColumns + (this.state.fixedHeight ? 'f' : 'v')}
-          numColumns={this.state.numColumns || 1}
+          enableVirtualization={this.state.virtualized}
           onRefresh={() => alert('onRefresh: nothing to refresh :P')}
-          refreshing={false}
-          shouldItemUpdate={this._shouldItemUpdate}
-          disableVirtualization={!this.state.virtualized}
           onViewableItemsChanged={this._onViewableItemsChanged}
-          legacyImplementation={false}
+          refreshing={false}
+          shouldItemUpdate={(prev, next) => prev.item !== next.item}
+          sections={[
+            {ItemComponent: StackedItemComponent, key: 's1', data: [
+              {title: 'Item In Header Section', text: 's1', key: '0'}
+            ]},
+            {key: 's2', data: filteredData},
+          ]}
+          viewablePercentThreshold={100}
         />
       </UIExplorerPage>
     );
   }
-  _getItemLayout(data: any, index: number): {length: number, offset: number, index: number} {
-    return getItemLayout(data, index);
-  }
-  _renderItemComponent = ({item}) => {
-    return (
-      <ItemComponent
-        item={item}
-        fixedHeight={this.state.fixedHeight}
-        onPress={this._pressItem}
-      />
-    );
-  };
-  _shouldItemUpdate(prev, next) {
-    // Note that this does not check state.fixedHeight because we blow away the whole list by
-    // changing the key anyway.
-    return prev.item !== next.item;
-  }
-  // This is called when items change viewability by scrolling into or out of the viewable area.
+  _renderItemComponent = ({item}) => <ItemComponent item={item} onPress={this._pressItem} />;
+  // This is called when items change viewability by scrolling into our out of the viewable area.
   _onViewableItemsChanged = (info: {
     changed: Array<{
       key: string, isViewable: boolean, item: {columns: Array<*>}, index: ?number, section?: any
@@ -139,22 +114,26 @@ class MultiColumnExample extends React.PureComponent {
   ) => {
     // Impressions can be logged here
     if (this.state.logViewable) {
-      infoLog('onViewableItemsChanged: ', info.changed.map((v) => ({...v, item: '...'})));
+      infoLog('onViewableItemsChanged: ', info.changed.map((v: Object) => (
+        {...v, item: '...', section: v.section.key}
+      )));
     }
   };
-  _pressItem = (key: number) => {
-    pressItem(this, key);
+  _pressItem = (index: number) => {
+    pressItem(this, index);
   };
 }
 
 const styles = StyleSheet.create({
-  row: {
+  headerText: {
+    padding: 4,
+  },
+  optionSection: {
     flexDirection: 'row',
-    alignItems: 'center',
   },
   searchRow: {
-    padding: 10,
+    paddingHorizontal: 10,
   },
 });
 
-module.exports = MultiColumnExample;
+module.exports = SectionListExample;

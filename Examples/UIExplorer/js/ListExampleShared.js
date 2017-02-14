@@ -85,6 +85,23 @@ class ItemComponent extends React.PureComponent {
   }
 }
 
+class StackedItemComponent extends React.PureComponent {
+  props: {
+    item: Item,
+  };
+  render() {
+    const {item} = this.props;
+    const itemHash = Math.abs(hashCode(item.title));
+    const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
+    return (
+      <View style={styles.stacked}>
+        <Text style={styles.stackedText}>{item.title} - {item.text}</Text>
+        <Image style={styles.thumb} source={imgSource} />
+      </View>
+    );
+  }
+}
+
 class FooterComponent extends React.PureComponent {
   render() {
     return (
@@ -245,9 +262,18 @@ const styles = StyleSheet.create({
       transform: [{scale: 0.5}],
     },
   }),
+  stacked: {
+    alignItems: 'center',
+    backgroundColor: '#F6F6F6',
+    padding: 10,
+  },
   thumb: {
     width: 64,
     height: 64,
+  },
+  stackedText: {
+    padding: 4,
+    fontSize: 18,
   },
   text: {
     flex: 1,
@@ -260,6 +286,7 @@ module.exports = {
   ItemComponent,
   PlainInput,
   SeparatorComponent,
+  StackedItemComponent,
   genItemData,
   getItemLayout,
   pressItem,

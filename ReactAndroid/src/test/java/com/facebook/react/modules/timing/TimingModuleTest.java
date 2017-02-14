@@ -16,10 +16,10 @@ import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaOnlyArray;
-import com.facebook.react.devsupport.DevSupportManager;
-import com.facebook.react.uimanager.ReactChoreographer;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.modules.core.JSTimersExecution;
+import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.core.Timing;
 
 import org.junit.Before;

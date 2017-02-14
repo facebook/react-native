@@ -74,12 +74,13 @@ type OptionalProps = {
    * you know the height of items a priori. getItemLayout is the most efficient, and is easy to use
    * if you have fixed height items, for example:
    *
-   *   getItemLayout={(data, index) => ({length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index})}
+   *   getItemLayout={(data, index) => ({length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index})}
    *
    * Remember to include separator length (height or width) in your offset calculation if you
    * specify `SeparatorComponent`.
    */
-  getItemLayout?: (data: ?Array<Item>, index: number) => {length: number, offset: number},
+  getItemLayout?: (data: ?Array<Item>, index: number) =>
+    {length: number, offset: number, index: number},
   /**
    * If true, renders items next to each other horizontally instead of stacked vertically.
    */
