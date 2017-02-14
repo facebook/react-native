@@ -285,6 +285,12 @@ struct JYogaValue : public JavaClass<JYogaValue> {
     YGNodeStyleSet##name##Percent(_jlong2YGNodeRef(nativePointer), static_cast<float>(value));    \
   }
 
+#define YG_NODE_JNI_STYLE_UNIT_PROP_AUTO(name)                                   \
+  YG_NODE_JNI_STYLE_UNIT_PROP(name)                                              \
+  void jni_YGNodeStyleSet##name##Auto(alias_ref<jobject>, jlong nativePointer) { \
+    YGNodeStyleSet##name##Auto(_jlong2YGNodeRef(nativePointer));                 \
+  }
+
 #define YG_NODE_JNI_STYLE_EDGE_PROP(javatype, type, name)                                 \
   javatype jni_YGNodeStyleGet##name(alias_ref<jobject>, jlong nativePointer, jint edge) { \
     return (javatype) YGNodeStyleGet##name(_jlong2YGNodeRef(nativePointer),               \
@@ -323,6 +329,12 @@ struct JYogaValue : public JavaClass<JYogaValue> {
                                   static_cast<float>(value));                                       \
   }
 
+#define YG_NODE_JNI_STYLE_EDGE_UNIT_PROP_AUTO(name)                                         \
+  YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(name)                                                    \
+  void jni_YGNodeStyleSet##name##Auto(alias_ref<jobject>, jlong nativePointer, jint edge) { \
+    YGNodeStyleSet##name##Auto(_jlong2YGNodeRef(nativePointer), static_cast<YGEdge>(edge)); \
+  }
+
 YG_NODE_JNI_STYLE_PROP(jint, YGDirection, Direction);
 YG_NODE_JNI_STYLE_PROP(jint, YGFlexDirection, FlexDirection);
 YG_NODE_JNI_STYLE_PROP(jint, YGJustify, JustifyContent);
@@ -339,17 +351,17 @@ void jni_YGNodeStyleSetFlex(alias_ref<jobject>, jlong nativePointer, jfloat valu
 }
 YG_NODE_JNI_STYLE_PROP(jfloat, float, FlexGrow);
 YG_NODE_JNI_STYLE_PROP(jfloat, float, FlexShrink);
-YG_NODE_JNI_STYLE_UNIT_PROP(FlexBasis);
+YG_NODE_JNI_STYLE_UNIT_PROP_AUTO(FlexBasis);
 
 YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(Position);
-YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(Margin);
+YG_NODE_JNI_STYLE_EDGE_UNIT_PROP_AUTO(Margin);
 YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(Padding);
 YG_NODE_JNI_STYLE_EDGE_PROP(jfloat, float, Border);
 
-YG_NODE_JNI_STYLE_UNIT_PROP(Width);
+YG_NODE_JNI_STYLE_UNIT_PROP_AUTO(Width);
 YG_NODE_JNI_STYLE_UNIT_PROP(MinWidth);
 YG_NODE_JNI_STYLE_UNIT_PROP(MaxWidth);
-YG_NODE_JNI_STYLE_UNIT_PROP(Height);
+YG_NODE_JNI_STYLE_UNIT_PROP_AUTO(Height);
 YG_NODE_JNI_STYLE_UNIT_PROP(MinHeight);
 YG_NODE_JNI_STYLE_UNIT_PROP(MaxHeight);
 
@@ -402,9 +414,11 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGNodeStyleGetFlexBasis),
                         YGMakeNativeMethod(jni_YGNodeStyleSetFlexBasis),
                         YGMakeNativeMethod(jni_YGNodeStyleSetFlexBasisPercent),
+                        YGMakeNativeMethod(jni_YGNodeStyleSetFlexBasisAuto),
                         YGMakeNativeMethod(jni_YGNodeStyleGetMargin),
                         YGMakeNativeMethod(jni_YGNodeStyleSetMargin),
                         YGMakeNativeMethod(jni_YGNodeStyleSetMarginPercent),
+                        YGMakeNativeMethod(jni_YGNodeStyleSetMarginAuto),
                         YGMakeNativeMethod(jni_YGNodeStyleGetPadding),
                         YGMakeNativeMethod(jni_YGNodeStyleSetPadding),
                         YGMakeNativeMethod(jni_YGNodeStyleSetPaddingPercent),
@@ -416,9 +430,11 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGNodeStyleGetWidth),
                         YGMakeNativeMethod(jni_YGNodeStyleSetWidth),
                         YGMakeNativeMethod(jni_YGNodeStyleSetWidthPercent),
+                        YGMakeNativeMethod(jni_YGNodeStyleSetWidthAuto),
                         YGMakeNativeMethod(jni_YGNodeStyleGetHeight),
                         YGMakeNativeMethod(jni_YGNodeStyleSetHeight),
                         YGMakeNativeMethod(jni_YGNodeStyleSetHeightPercent),
+                        YGMakeNativeMethod(jni_YGNodeStyleSetHeightAuto),
                         YGMakeNativeMethod(jni_YGNodeStyleGetMinWidth),
                         YGMakeNativeMethod(jni_YGNodeStyleSetMinWidth),
                         YGMakeNativeMethod(jni_YGNodeStyleSetMinWidthPercent),

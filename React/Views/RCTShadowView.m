@@ -67,6 +67,8 @@ switch (ygvalue.unit) {                          \
   case YGUnitPercent:                            \
     setter##Percent(__VA_ARGS__, ygvalue.value); \
     break;                                       \
+  case YGUnitAuto:                               \
+    break;                                       \
 }
 
 #define DEFINE_PROCESS_META_PROPS(type)                                                           \

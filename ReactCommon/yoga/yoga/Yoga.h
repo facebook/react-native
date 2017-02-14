@@ -44,6 +44,7 @@ typedef struct YGValue {
 } YGValue;
 
 static const YGValue YGValueUndefined = {YGUndefined, YGUnitUndefined};
+static const YGValue YGValueAuto = {0, YGUnitAuto};
 
 typedef struct YGNode *YGNodeRef;
 typedef YGSize (*YGMeasureFunc)(YGNodeRef node,
@@ -121,6 +122,10 @@ WIN_EXPORT void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode
   WIN_EXPORT void YGNodeStyleSet##name##Percent(const YGNodeRef node, const float paramName); \
   WIN_EXPORT type YGNodeStyleGet##name(const YGNodeRef node);
 
+#define YG_NODE_STYLE_PROPERTY_UNIT_AUTO(type, name, paramName) \
+  YG_NODE_STYLE_PROPERTY_UNIT(type, name, paramName)            \
+  WIN_EXPORT void YGNodeStyleSet##name##Auto(const YGNodeRef node);
+
 #define YG_NODE_STYLE_EDGE_PROPERTY(type, name, paramName)    \
   WIN_EXPORT void YGNodeStyleSet##name(const YGNodeRef node,  \
                                        const YGEdge edge,     \
@@ -135,6 +140,9 @@ WIN_EXPORT void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode
                                                 const YGEdge edge,      \
                                                 const float paramName); \
   WIN_EXPORT type YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge);
+
+#define YG_NODE_STYLE_EDGE_PROPERTY_UNIT_AUTO(type, name) \
+  WIN_EXPORT void YGNodeStyleSet##name##Auto(const YGNodeRef node, const YGEdge edge);
 
 #define YG_NODE_LAYOUT_PROPERTY(type, name) \
   WIN_EXPORT type YGNodeLayoutGet##name(const YGNodeRef node);
@@ -162,15 +170,16 @@ YG_NODE_STYLE_PROPERTY(YGDisplay, Display, display);
 WIN_EXPORT void YGNodeStyleSetFlex(const YGNodeRef node, const float flex);
 YG_NODE_STYLE_PROPERTY(float, FlexGrow, flexGrow);
 YG_NODE_STYLE_PROPERTY(float, FlexShrink, flexShrink);
-YG_NODE_STYLE_PROPERTY_UNIT(YGValue, FlexBasis, flexBasis);
+YG_NODE_STYLE_PROPERTY_UNIT_AUTO(YGValue, FlexBasis, flexBasis);
 
 YG_NODE_STYLE_EDGE_PROPERTY_UNIT(YGValue, Position, position);
 YG_NODE_STYLE_EDGE_PROPERTY_UNIT(YGValue, Margin, margin);
+YG_NODE_STYLE_EDGE_PROPERTY_UNIT_AUTO(YGValue, Margin);
 YG_NODE_STYLE_EDGE_PROPERTY_UNIT(YGValue, Padding, padding);
 YG_NODE_STYLE_EDGE_PROPERTY(float, Border, border);
 
-YG_NODE_STYLE_PROPERTY_UNIT(YGValue, Width, width);
-YG_NODE_STYLE_PROPERTY_UNIT(YGValue, Height, height);
+YG_NODE_STYLE_PROPERTY_UNIT_AUTO(YGValue, Width, width);
+YG_NODE_STYLE_PROPERTY_UNIT_AUTO(YGValue, Height, height);
 YG_NODE_STYLE_PROPERTY_UNIT(YGValue, MinWidth, minWidth);
 YG_NODE_STYLE_PROPERTY_UNIT(YGValue, MinHeight, minHeight);
 YG_NODE_STYLE_PROPERTY_UNIT(YGValue, MaxWidth, maxWidth);
