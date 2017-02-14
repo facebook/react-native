@@ -98,11 +98,11 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   // NativeMap out of OnLoad.
   @DoNotStrip
   public NativeArray getConstants() {
+    BaseJavaModule baseJavaModule = getModule();
     ReactMarker.logMarker(GET_CONSTANTS_START, getName());
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "Map constants")
       .arg("moduleName", getName())
       .flush();
-    BaseJavaModule baseJavaModule = getModule();
     Map<String, Object> map = baseJavaModule.getConstants();
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
