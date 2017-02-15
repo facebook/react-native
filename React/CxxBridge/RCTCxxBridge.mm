@@ -342,40 +342,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 }
 
-static NSError *tryAndReturnError(dispatch_block_t block) {
-  // TODO #10487027: This is mostly duplicated in RCTMessageThread.
-  try {
-    @try {
-      block();
-      return nil;
-    }
-    @catch (NSException *exception) {
-      NSString *message =
-        [NSString stringWithFormat:@"Exception '%@' was thrown from JS thread", exception];
-      return RCTErrorWithMessage(message);
-    }
-    @catch (id exception) {
-      // This will catch any other ObjC exception, but no C++ exceptions
-      return RCTErrorWithMessage(@"non-std ObjC Exception");
-    }
-  } catch (const JSException &ex) {
-    // This is a special case.  We want to extract the stack
-    // information and pass it to the redbox.  This will lose the C++
-    // stack, but it's of limited value.
-    NSDictionary *errorInfo = @{
-      RCTJSRawStackTraceKey: @(ex.getStack().c_str()),
-      NSLocalizedDescriptionKey: [@"Unhandled JS Exception: " stringByAppendingString:@(ex.what())]
-    };
-    return [NSError errorWithDomain:RCTErrorDomain code:1 userInfo:errorInfo];
-  } catch (const std::exception &ex) {
-    return RCTErrorWithMessage(@(ex.what()));
-  } catch (...) {
-    // On a 64-bit platform, this would catch ObjC exceptions, too, but not on
-    // 32-bit platforms, so we catch those with id exceptions above.
-    return RCTErrorWithMessage(@"non-std C++ exception");
-  }
-}
-
 - (void)_tryAndHandleError:(dispatch_block_t)block
 {
   NSError *error = tryAndReturnError(block);
@@ -1325,9 +1291,8 @@ struct ValueEncoder<NSArray *> {
     return nil;
   }
 
-  __block JSValue *ret = nil;
-
   RCT_PROFILE_BEGIN_EVENT(0, @"callFunctionOnModule", (@{ @"module": module, @"method": method }));
+  __block JSValue *ret = nil;
   NSError *errorObj = tryAndReturnError(^{
     Value result = self->_reactInstance->callFunctionSync(
       [module UTF8String], [method UTF8String], arguments);

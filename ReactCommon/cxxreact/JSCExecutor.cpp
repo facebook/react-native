@@ -525,7 +525,7 @@ void JSCExecutor::callFunction(const std::string& moduleId, const std::string& m
       });
     } catch (...) {
       std::throw_with_nested(
-        std::runtime_error("Error calling function: " + moduleId + ":" + methodId));
+        std::runtime_error("Error calling " + moduleId + "." + methodId));
     }
   }();
 
@@ -542,7 +542,7 @@ void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& 
       });
     } catch (...) {
       std::throw_with_nested(
-        std::runtime_error(folly::to<std::string>("Error invoking callback.", callbackId)));
+        std::runtime_error(folly::to<std::string>("Error invoking callback ", callbackId)));
     }
   }();
 
