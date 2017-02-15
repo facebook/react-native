@@ -23,6 +23,7 @@
 #include <inspector/Inspector.h>
 #endif
 
+#include "JSBundleType.h"
 #include "Platform.h"
 #include "SystraceSection.h"
 #include "JSCNativeModules.h"
@@ -408,6 +409,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
   ReactMarker::logMarker("RUN_JS_BUNDLE_START");
   String jsSourceURL(m_context, sourceURL.c_str());
 
+  // TODO t15069155: reduce the number of overrides here
 #ifdef WITH_FBJSCEXTENSIONS
   if (auto fileStr = dynamic_cast<const JSBigFileString *>(script.get())) {
     JSLoadSourceStatus jsStatus;
@@ -441,29 +443,47 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
       break;
     }
   }
+#elif defined(__APPLE__)
+  BundleHeader header{};
+  memcpy(&header, script->c_str(), std::min(script->size(), sizeof(BundleHeader)));
+  auto scriptTag = parseTypeFromHeader(header);
+
+  if (scriptTag == ScriptTag::BCBundle) {
+    using file_ptr = std::unique_ptr<FILE, decltype(&fclose)>;
+    file_ptr source(fopen(sourceURL.c_str(), "r"), fclose);
+    int sourceFD = fileno(source.get());
+
+    JSValueRef jsError;
+    JSValueRef result = JSC_JSEvaluateBytecodeBundle(m_context, NULL, sourceFD, jsSourceURL, &jsError);
+    if (result == nullptr) {
+      formatAndThrowJSException(m_context, jsError, jsSourceURL);
+    }
+  } else
 #endif
+  {
+    #ifdef WITH_FBSYSTRACE
+    fbsystrace_begin_section(
+      TRACE_TAG_REACT_CXX_BRIDGE,
+      "JSCExecutor::loadApplicationScript-createExpectingAscii");
+    #endif
 
-  #ifdef WITH_FBSYSTRACE
-  fbsystrace_begin_section(
-    TRACE_TAG_REACT_CXX_BRIDGE,
-    "JSCExecutor::loadApplicationScript-createExpectingAscii");
-  #endif
+    ReactMarker::logMarker("loadApplicationScript_startStringConvert");
+    String jsScript = jsStringFromBigString(m_context, *script);
+    ReactMarker::logMarker("loadApplicationScript_endStringConvert");
 
-  ReactMarker::logMarker("loadApplicationScript_startStringConvert");
-  String jsScript = jsStringFromBigString(m_context, *script);
-  ReactMarker::logMarker("loadApplicationScript_endStringConvert");
+    #ifdef WITH_FBSYSTRACE
+    fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
+    #endif
 
-  #ifdef WITH_FBSYSTRACE
-  fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
-  #endif
-
-  evaluateScript(m_context, jsScript, jsSourceURL);
+    evaluateScript(m_context, jsScript, jsSourceURL);
+  }
 
   // TODO(luk): t13903306 Remove this check once we make native modules working for java2js
   if (m_delegate) {
     bindBridge();
     flush();
   }
+
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
   ReactMarker::logMarker("RUN_JS_BUNDLE_END");
 }
