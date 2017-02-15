@@ -1762,27 +1762,6 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
 //  * The 'wrap' property supports only 'nowrap' (which is the default) or
 //  'wrap'. The
 //    rarely-used 'wrap-reverse' is not supported.
-//  * Rather than allowing arbitrary combinations of flexGrow, flexShrink and
-//    flexBasis, this algorithm supports only the three most common
-//    combinations:
-//      flex: 0 is equiavlent to flex: 0 0 auto
-//      flex: n (where n is a positive value) is equivalent to flex: n 1 auto
-//          If POSITIVE_FLEX_IS_AUTO is 0, then it is equivalent to flex: n 0 0
-//          This is faster because the content doesn't need to be measured, but
-//          it's
-//          less flexible because the basis is always 0 and can't be overriden
-//          with
-//          the width/height attributes.
-//      flex: -1 (or any negative value) is equivalent to flex: 0 1 auto
-//  * Margins cannot be specified as 'auto'. They must be specified in terms of
-//  points
-//    values, and the default value is 0.
-//  * Values of width, maxWidth, minWidth, height, maxHeight and minHeight must
-//  be
-//    specified as point values, not as percentages.
-//  * There is no support for calculation of dimensions based on intrinsic
-//  aspect ratios
-//     (e.g. images).
 //  * There is no support for forced breaks.
 //  * It does not support vertical inline directions (top-to-bottom or
 //  bottom-to-top text).
