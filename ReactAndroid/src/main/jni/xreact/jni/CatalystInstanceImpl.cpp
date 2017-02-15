@@ -107,8 +107,8 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
     makeNativeMethod("jniLoadScriptFromOptimizedBundle",
                      CatalystInstanceImpl::jniLoadScriptFromOptimizedBundle),
-    makeNativeMethod("callJSFunction", CatalystInstanceImpl::callJSFunction),
-    makeNativeMethod("callJSCallback", CatalystInstanceImpl::callJSCallback),
+    makeNativeMethod("jniCallJSFunction", CatalystInstanceImpl::jniCallJSFunction),
+    makeNativeMethod("jniCallJSCallback", CatalystInstanceImpl::jniCallJSCallback),
     makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
     makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
     makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
@@ -196,7 +196,7 @@ bool CatalystInstanceImpl::isIndexedRAMBundle(const char *sourcePath) {
   if (!bundle_stream) {
     return false;
   }
-  BundleHeader header;
+  BundleHeader header{};
   bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header));
   bundle_stream.close();
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
@@ -225,7 +225,7 @@ void CatalystInstanceImpl::jniLoadScriptFromOptimizedBundle(const std::string& b
                                                   flags);
 }
 
-void CatalystInstanceImpl::callJSFunction(
+void CatalystInstanceImpl::jniCallJSFunction(
     JExecutorToken* token, std::string module, std::string method, NativeArray* arguments) {
   // We want to share the C++ code, and on iOS, modules pass module/method
   // names as strings all the way through to JS, and there's no way to do
@@ -240,7 +240,7 @@ void CatalystInstanceImpl::callJSFunction(
                             arguments->consume());
 }
 
-void CatalystInstanceImpl::callJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments) {
+void CatalystInstanceImpl::jniCallJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments) {
   instance_->callJSCallback(token->getExecutorToken(nullptr), callbackId, arguments->consume());
 }
 

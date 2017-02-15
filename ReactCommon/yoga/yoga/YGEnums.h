@@ -116,17 +116,19 @@ typedef YG_ENUM_BEGIN(YGPrintOptions) {
   YGPrintOptionsChildren = 4,
 } YG_ENUM_END(YGPrintOptions);
 
-#define YGUnitCount 3
+#define YGUnitCount 4
 typedef YG_ENUM_BEGIN(YGUnit) {
   YGUnitUndefined,
-  YGUnitPixel,
+  YGUnitPoint,
   YGUnitPercent,
+  YGUnitAuto,
 } YG_ENUM_END(YGUnit);
 
-#define YGWrapCount 2
+#define YGWrapCount 3
 typedef YG_ENUM_BEGIN(YGWrap) {
   YGWrapNoWrap,
   YGWrapWrap,
+  YGWrapWrapReverse,
 } YG_ENUM_END(YGWrap);
 
 YG_EXTERN_C_END

@@ -29,19 +29,23 @@ if (__DEV__) {
 
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
-type ComponentProvider = () => ReactClass<any>;
-type AppConfig = {
+export type ComponentProvider = () => ReactClass<any>;
+export type AppConfig = {
   appKey: string,
   component?: ComponentProvider,
   run?: Function,
   section?: boolean,
 };
-type Runnable = {
+export type Runnable = {
   component?: ComponentProvider,
   run: Function,
 };
-type Runnables = {
+export type Runnables = {
   [appKey: string]: Runnable,
+};
+export type Registry = {
+  sections: Array<string>,
+  runnables: Runnables,
 };
 
 const runnables: Runnables = {};
@@ -126,6 +130,13 @@ const AppRegistry = {
 
   getRunnable(appKey: string): ?Runnable {
     return runnables[appKey];
+  },
+
+  getRegistry(): Registry {
+    return {
+      sections: AppRegistry.getSectionKeys(),
+      runnables: {...runnables},
+    };
   },
 
   runApplication(appKey: string, appParameters: any): void {

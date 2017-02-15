@@ -12,23 +12,37 @@
 
 'use strict';
 
-var ReactNativeBaseComponent = require('ReactNativeBaseComponent');
+const ReactNativeBaseComponent = require('ReactNativeBaseComponent');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+const ReactNativeFeatureFlags = require('ReactNativeFeatureFlags');
 
 // See also ReactNativeBaseComponent
 type ReactNativeBaseComponentViewConfig = {
-  validAttributes: Object;
-  uiViewClassName: string;
+  validAttributes: Object,
+  uiViewClassName: string,
   propTypes?: Object,
-}
+};
 
 /**
  * @param {string} config iOS View configuration.
  * @private
  */
-var createReactNativeComponentClass = function(
+const createReactNativeFiberComponentClass = function(
   viewConfig: ReactNativeBaseComponentViewConfig
 ): ReactClass<any> {
-  var Constructor = function(element) {
+  // TODO(sema): This actually returns a string. Need to fix this before
+  // we deploy Fiber.
+  return (ReactNativeViewConfigRegistry.register(viewConfig) : any);
+};
+
+/**
+ * @param {string} config iOS View configuration.
+ * @private
+ */
+const createReactNativeComponentClass = function(
+  viewConfig: ReactNativeBaseComponentViewConfig
+): ReactClass<any> {
+  const Constructor = function(element) {
     this._currentElement = element;
     this._topLevelWrapper = null;
     this._hostParent = null;
@@ -45,4 +59,6 @@ var createReactNativeComponentClass = function(
   return ((Constructor: any): ReactClass<any>);
 };
 
-module.exports = createReactNativeComponentClass;
+module.exports = (ReactNativeFeatureFlags.useFiber
+  ? createReactNativeFiberComponentClass
+  : createReactNativeComponentClass);

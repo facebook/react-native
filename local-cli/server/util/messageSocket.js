@@ -8,44 +8,95 @@
  */
 'use strict';
 
+const WebSocketServer = require('ws').Server;
+const PROTOCOL_VERSION = 1;
+
+function parseMessage(data, binary) {
+  if (binary) {
+    console.error('Expected text message, got binary!');
+    return undefined;
+  }
+  try {
+    const message = JSON.parse(data);
+    if (message.version === PROTOCOL_VERSION) {
+      return message;
+    }
+    console.error('Received message had wrong protocol version: '
+                  + message.version);
+  } catch (e) {
+    console.error('Failed to parse the message as JSON:\n' + data);
+  }
+  return undefined;
+}
 
 function attachToServer(server, path) {
-  var WebSocketServer = require('ws').Server;
-  var wss = new WebSocketServer({
+  const wss = new WebSocketServer({
     server: server,
     path: path
   });
-  var clients = [];
+  const clients = new Map();
+  let nextClientId = 0;
 
-  function sendFrom(source, data) {
-    clients.forEach((client) => {
-      if (client !== source) {
+  function handleSendBroadcast(broadcasterId, message) {
+    const forwarded = {
+      version: PROTOCOL_VERSION,
+      target: message.target,
+      action: message.action,
+    };
+    for (const [otherId, otherWs] of clients) {
+      if (otherId !== broadcasterId) {
         try {
-          client.send(data);
+          otherWs.send(JSON.stringify(forwarded));
         } catch (e) {
-          // Sometimes this call throws 'not opened'
+          console.error(`Failed to send broadcast to client: '${otherId}' ` +
+                        `due to:\n ${e.toString()}`);
         }
       }
-    });
+    }
   }
 
-  wss.on('connection', function(ws) {
-    clients.push(ws);
-    ws.onclose =
-    ws.onerror = () => {
-      ws.onmessage = null;
-      clients = clients.filter((client) => client !== ws);
+  wss.on('connection', function(clientWs) {
+    const clientId = `client#${nextClientId++}`;
+
+    function handleCatchedError(message, error) {
+      const errorMessage = {
+        target: message.target,
+        action: message.action === undefined ? 'undefined' : 'defined',
+      };
+      console.error(
+        `Handling message from ${clientId} failed with:\n${error}\n` +
+        `message:\n${JSON.stringify(errorMessage)}`);
+    }
+
+    clients.set(clientId, clientWs);
+    clientWs.onclose =
+    clientWs.onerror = () => {
+      clientWs.onmessage = null;
+      clients.delete(clientId);
     };
-    ws.onmessage = ({data}) => sendFrom(ws, data);
+    clientWs.onmessage = (event) => {
+      const message = parseMessage(event.data, event.binary);
+      if (message === undefined) {
+        console.error('Received message not matching protocol');
+        return;
+      }
+
+      try {
+        handleSendBroadcast(clientId, message);
+      } catch (e) {
+        handleCatchedError(message, e.toString());
+      }
+    };
   });
 
   return {
-    broadcast: (message) => {
-      sendFrom(null, JSON.stringify(message));
+    broadcast: (target, action) => {
+      handleSendBroadcast(null, {target: target, action: action});
     }
   };
 }
 
 module.exports = {
-  attachToServer: attachToServer
+  attachToServer: attachToServer,
+  parseMessage: parseMessage,
 };

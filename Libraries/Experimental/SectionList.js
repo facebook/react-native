@@ -43,7 +43,7 @@ type SectionItem = any;
 
 type SectionBase = {
   // Must be provided directly on each section.
-  data: ?Array<SectionItem>,
+  data: Array<SectionItem>,
   key: string,
 
   // Optional props will override list-wide props just for this section.
@@ -79,6 +79,11 @@ type OptionalProps<SectionT: SectionBase> = {
    */
   SectionHeaderComponent?: ?ReactClass<{section: SectionT}>,
   /**
+   * Rendered at the bottom of every Section, except the very last one, in place of the normal
+   * SeparatorComponent.
+   */
+  SectionSeparatorComponent?: ?ReactClass<*>,
+  /**
    * Rendered at the bottom of every Item except the very last one in the last section.
    */
   SeparatorComponent?: ?ReactClass<*>,
@@ -104,6 +109,13 @@ type OptionalProps<SectionT: SectionBase> = {
    * Set this true while waiting for new data from a refresh.
    */
   refreshing?: boolean,
+  /**
+   * This is an optional optimization to minimize re-rendering items.
+   */
+  shouldItemUpdate?: (
+    prevProps: {item: Item, index: number},
+    nextProps: {item: Item, index: number}
+  ) => boolean,
 };
 
 type Props<SectionT> = RequiredProps<SectionT> & OptionalProps<SectionT>;

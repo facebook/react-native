@@ -49,9 +49,11 @@ public interface YogaNodeAPI<YogaNodeType extends YogaNodeAPI> {
   YogaValue getFlexBasis();
   void setFlexBasis(float flexBasis);
   void setFlexBasisPercent(float percent);
+  void setFlexBasisAuto();
   YogaValue getMargin(YogaEdge edge);
   void setMargin(YogaEdge edge, float margin);
   void setMarginPercent(YogaEdge edge, float percent);
+  void setMarginAuto(YogaEdge edge);
   YogaValue getPadding(YogaEdge edge);
   void setPadding(YogaEdge edge, float padding);
   void setPaddingPercent(YogaEdge edge, float percent);
@@ -63,9 +65,11 @@ public interface YogaNodeAPI<YogaNodeType extends YogaNodeAPI> {
   YogaValue getWidth();
   void setWidth(float width);
   void setWidthPercent(float percent);
+  void setWidthAuto();
   YogaValue getHeight();
   void setHeight(float height);
   void setHeightPercent(float percent);
+  void setHeightAuto();
   YogaValue getMaxWidth();
   void setMaxWidth(float maxWidth);
   void setMaxWidthPercent(float percent);
