@@ -29,21 +29,21 @@ if (__DEV__) {
 
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
-type ComponentProvider = () => ReactClass<any>;
-type AppConfig = {
+export type ComponentProvider = () => ReactClass<any>;
+export type AppConfig = {
   appKey: string,
   component?: ComponentProvider,
   run?: Function,
   section?: boolean,
 };
-type Runnable = {
+export type Runnable = {
   component?: ComponentProvider,
   run: Function,
 };
-type Runnables = {
+export type Runnables = {
   [appKey: string]: Runnable,
 };
-type Registry = {
+export type Registry = {
   sections: Array<string>,
   runnables: Runnables,
 };
