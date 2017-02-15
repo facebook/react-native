@@ -328,7 +328,7 @@ public class NativeViewHierarchyManager {
     // tagsToDelete. The views with tags in tagsToDelete will be removed and dropped by the 'delete'
     // layout animation.
     int lastIndexToRemove = viewManager.getChildCount(viewToManage);
-    if (!(mLayoutAnimationEnabled && mLayoutAnimator.shouldAnimateLayoutChildrenInView(viewToManage))
+    if (!(mLayoutAnimationEnabled && mLayoutAnimator.shouldAnimateLayout(viewToManage))
             && indicesToRemove != null) {
       for (int i = indicesToRemove.length - 1; i >= 0; i--) {
         int indexToRemove = indicesToRemove[i];
