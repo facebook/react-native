@@ -1413,6 +1413,7 @@ div[data-twttr-id] iframe {
 
 .showcase img {
   width: 100px;
+	height: 100px;
   border-radius: 20px;
 }
 
