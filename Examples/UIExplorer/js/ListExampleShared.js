@@ -85,6 +85,23 @@ class ItemComponent extends React.PureComponent {
   }
 }
 
+class StackedItemComponent extends React.PureComponent {
+  props: {
+    item: Item,
+  };
+  render() {
+    const {item} = this.props;
+    const itemHash = Math.abs(hashCode(item.title));
+    const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
+    return (
+      <View style={styles.stacked}>
+        <Text style={styles.stackedText}>{item.title} - {item.text}</Text>
+        <Image style={styles.thumb} source={imgSource} />
+      </View>
+    );
+  }
+}
+
 class FooterComponent extends React.PureComponent {
   render() {
     return (
@@ -182,17 +199,15 @@ function renderSmallSwitchOption(context: Object, key: string) {
   );
 }
 
-function PlainInput({placeholder, value, onChangeText}: Object) {
+function PlainInput(props: Object) {
   return (
     <TextInput
       autoCapitalize="none"
       autoCorrect={false}
       clearButtonMode="always"
-      onChangeText={onChangeText}
-      placeholder={placeholder}
       underlineColorAndroid="transparent"
       style={styles.searchTextInput}
-      value={value}
+      {...props}
     />
   );
 }
@@ -229,6 +244,7 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     height: 26,
     fontSize: 14,
+    flexGrow: 1,
   },
   separator: {
     height: SEPARATOR_HEIGHT,
@@ -246,9 +262,18 @@ const styles = StyleSheet.create({
       transform: [{scale: 0.5}],
     },
   }),
+  stacked: {
+    alignItems: 'center',
+    backgroundColor: '#F6F6F6',
+    padding: 10,
+  },
   thumb: {
     width: 64,
     height: 64,
+  },
+  stackedText: {
+    padding: 4,
+    fontSize: 18,
   },
   text: {
     flex: 1,
@@ -261,6 +286,7 @@ module.exports = {
   ItemComponent,
   PlainInput,
   SeparatorComponent,
+  StackedItemComponent,
   genItemData,
   getItemLayout,
   pressItem,

@@ -60,7 +60,7 @@ if THIS_IS_FBANDROID:
       )
     )
 
-elif THIS_IS_FBOBJC:
+if THIS_IS_FBOBJC:
   def react_library(**kwargs):
     ios_library(
       name = 'bridge',

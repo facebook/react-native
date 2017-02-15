@@ -24,7 +24,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.GuardedChoreographerFrameCallback;
-import com.facebook.react.uimanager.ReactChoreographer;
+import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.UIManagerModule;
 
 import java.util.ArrayList;

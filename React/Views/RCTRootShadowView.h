@@ -8,6 +8,7 @@
  */
 
 #import <React/RCTShadowView.h>
+#import <yoga/YGEnums.h>
 
 @interface RCTRootShadowView : RCTShadowView
 
@@ -16,6 +17,13 @@
  * Default to RCTRootViewSizeFlexibilityNone
  */
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
+
+/**
+ * Layout direction (LTR or RTL) inherited from native environment and
+ * is using as a base direction value in layout engine.
+ * Defaults to value inferred from current locale.
+ */
+@property (nonatomic, assign) YGDirection baseDirection;
 
 /**
  * Calculate all views whose frame needs updating after layout has been calculated.

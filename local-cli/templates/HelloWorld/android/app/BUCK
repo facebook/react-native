@@ -1,5 +1,3 @@
-import re
-
 # To learn about Buck see [Docs](https://buckbuild.com/).
 # To run your application with Buck:
 # - install Buck
@@ -12,7 +10,7 @@ import re
 
 lib_deps = []
 for jarfile in glob(['libs/*.jar']):
-  name = 'jars__' + re.sub(r'^.*/([^/]+)\.jar$', r'\1', jarfile)
+  name = 'jars__' + jarfile[jarfile.rindex('/') + 1: jarfile.rindex('.jar')]
   lib_deps.append(':' + name)
   prebuilt_jar(
     name = name,
@@ -20,7 +18,7 @@ for jarfile in glob(['libs/*.jar']):
   )
 
 for aarfile in glob(['libs/*.aar']):
-  name = 'aars__' + re.sub(r'^.*/([^/]+)\.aar$', r'\1', aarfile)
+  name = 'aars__' + jarfile[jarfile.rindex('/') + 1: jarfile.rindex('.aar')]
   lib_deps.append(':' + name)
   android_prebuilt_aar(
     name = name,
