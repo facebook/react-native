@@ -37,6 +37,12 @@
         android:defaultValue=""
         />
     <CheckBoxPreference
+        android:key="debug_host_protocol"
+        android:title="Use Secure Connection to Host"
+        android:summary="If true the app will use HTTPS to contact the debug server."
+        android:defaultValue="false"
+        />
+    <CheckBoxPreference
         android:key="start_sampling_profiler_on_init"
         android:title="Start Sampling Profiler on init"
         android:summary="If true the Sampling Profiler will start on initialization of JS. Useful for profiling startup of the app. Reload JS after setting."
