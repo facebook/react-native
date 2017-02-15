@@ -1072,7 +1072,8 @@ static float YGBaseline(const YGNodeRef node) {
   }
 
   YGNodeRef baselineChild = NULL;
-  for (uint32_t i = 0; i < YGNodeGetChildCount(node); i++) {
+  const uint32_t childCount = YGNodeGetChildCount(node);
+  for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeGetChild(node, i);
     if (child->lineIndex > 0) {
       break;
@@ -1130,7 +1131,8 @@ static bool YGIsBaselineLayout(const YGNodeRef node) {
   if (node->style.alignItems == YGAlignBaseline) {
     return true;
   }
-  for (uint32_t i = 0; i < YGNodeGetChildCount(node); i++) {
+  const uint32_t childCount = YGNodeGetChildCount(node);
+  for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeGetChild(node, i);
     if (child->style.positionType == YGPositionTypeRelative &&
         child->style.alignSelf == YGAlignBaseline) {
@@ -1735,7 +1737,8 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
   node->layout.position[YGEdgeBottom] = 0;
   node->layout.position[YGEdgeLeft] = 0;
   node->layout.position[YGEdgeRight] = 0;
-  for (uint32_t i = 0; i < YGNodeGetChildCount(node); i++) {
+  const uint32_t childCount = YGNodeGetChildCount(node);
+  for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeListGet(node->children, i);
     YGZeroOutLayoutRecursivly(child);
   }
@@ -1759,9 +1762,6 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
 //  * The 'visibility' property is always assumed to be 'visible'. Values of
 //  'collapse'
 //    and 'hidden' are not supported.
-//  * The 'wrap' property supports only 'nowrap' (which is the default) or
-//  'wrap'. The
-//    rarely-used 'wrap-reverse' is not supported.
 //  * There is no support for forced breaks.
 //  * It does not support vertical inline directions (top-to-bottom or
 //  bottom-to-top text).
@@ -1911,7 +1911,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   const YGFlexDirection crossAxis = YGFlexDirectionCross(mainAxis, direction);
   const bool isMainAxisRow = YGFlexDirectionIsRow(mainAxis);
   const YGJustify justifyContent = node->style.justifyContent;
-  const bool isNodeFlexWrap = node->style.flexWrap == YGWrapWrap;
+  const bool isNodeFlexWrap = node->style.flexWrap != YGWrapNoWrap;
 
   const float mainAxisParentSize = isMainAxisRow ? parentWidth : parentHeight;
   const float crossAxisParentSize = isMainAxisRow ? parentHeight : parentWidth;
@@ -2927,6 +2927,18 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                                                    totalLineCrossDim + paddingAndBorderAxisCross,
                                                    crossAxisParentSize)),
               paddingAndBorderAxisCross);
+  }
+
+  // As we only wrapped in normal direction yet, we need to reverse the positions on wrap-reverse.
+  if (performLayout && node->style.flexWrap == YGWrapWrapReverse) {
+    for (uint32_t i = 0; i < childCount; i++) {
+      const YGNodeRef child = YGNodeGetChild(node, i);
+      if (child->style.positionType == YGPositionTypeRelative) {
+        child->layout.position[pos[crossAxis]] = node->layout.measuredDimensions[dim[crossAxis]] -
+                                                 child->layout.position[pos[crossAxis]] -
+                                                 child->layout.measuredDimensions[dim[crossAxis]];
+      }
+    }
   }
 
   if (performLayout) {
