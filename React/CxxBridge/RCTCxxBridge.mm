@@ -25,9 +25,6 @@
 #import <React/RCTDevLoadingView.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTDisplayLink.h>
-#ifdef WITH_FBSYSTRACE
-#import <React/RCTFBSystrace.h>
-#endif
 #import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
@@ -46,6 +43,10 @@
 #import "RCTMessageThread.h"
 #import "RCTNativeModule.h"
 #import "RCTObjcExecutor.h"
+
+#ifdef WITH_FBSYSTRACE
+#import <React/RCTFBSystrace.h>
+#endif
 
 #define RCTAssertJSThread() \
   RCTAssert(self.executorClass || self->_jsThread == [NSThread currentThread], \
@@ -578,16 +579,15 @@ static NSError *tryAndReturnError(dispatch_block_t block) {
   for (RCTModuleData *moduleData in _moduleDataByID) {
     // TODO mhorowitz #10487027: unwrap C++ modules and register them directly.
     if ([moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
-      RCTCxxModule *cxxInstance = moduleData.instance;
       // If a module does not support automatic instantiation, and
       // wasn't provided as an extra module, it may not have an
       // instance.  If so, skip it.
-      if (!cxxInstance) {
+      if (![moduleData hasInstance]) {
         continue;
       }
       modules.emplace_back(
         new QueueNativeModule(self, std::make_unique<CxxNativeModule>(
-          _reactInstance, [cxxInstance move])));
+          _reactInstance, [(RCTCxxModule *)(moduleData.instance) move])));
     } else {
       modules.emplace_back(new RCTNativeModule(self, moduleData));
     }
