@@ -237,6 +237,10 @@ class VirtualizedList extends React.PureComponent {
 
   constructor(props: Props) {
     super(props);
+    invariant(
+      !props.onScroll || !props.onScroll.__isNative,
+      'VirtualizedList does not support AnimatedEvent with onScroll and useNativeDriver',
+    );
     this._updateCellsToRenderBatcher = new Batchinator(
       this._updateCellsToRender,
       this.props.updateCellsBatchingPeriod,
@@ -484,6 +488,9 @@ class VirtualizedList extends React.PureComponent {
   };
 
   _onScroll = (e: Object) => {
+    if (this.props.onScroll) {
+      this.props.onScroll(e);
+    }
     const timestamp = e.timeStamp;
     const visibleLength = this._selectLength(e.nativeEvent.layoutMeasurement);
     const contentLength = this._selectLength(e.nativeEvent.contentSize);
