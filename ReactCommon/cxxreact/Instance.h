@@ -4,11 +4,10 @@
 
 #include <memory>
 
+#include <cxxreact/ModuleRegistry.h>
+#include <cxxreact/NativeModule.h>
+#include <cxxreact/NativeToJsBridge.h>
 #include <folly/dynamic.h>
-
-#include "NativeToJsBridge.h"
-#include "ModuleRegistry.h"
-#include "NativeModule.h"
 
 namespace facebook {
 namespace react {
