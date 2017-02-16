@@ -434,7 +434,7 @@ inline float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
 }
 
 static inline const YGValue *YGNodeStyleGetFlexBasisPtr(const YGNodeRef node) {
-  if (node->style.flexBasis.unit != YGUnitAuto) {
+  if (node->style.flexBasis.unit != YGUnitAuto && node->style.flexBasis.unit != YGUnitUndefined) {
     return &node->style.flexBasis;
   }
   if (!YGFloatIsUndefined(node->style.flex) && node->style.flex > 0.0f) {
@@ -477,7 +477,7 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
         node->style.instanceName.unit != YGUnitPoint) {                              \
       node->style.instanceName.value = paramName;                                    \
       node->style.instanceName.unit =                                                \
-          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPoint;             \
+          YGFloatIsUndefined(paramName) ? YGUnitAuto : YGUnitPoint;                  \
       YGNodeMarkDirtyInternal(node);                                                 \
     }                                                                                \
   }                                                                                  \
@@ -487,7 +487,7 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
         node->style.instanceName.unit != YGUnitPercent) {                            \
       node->style.instanceName.value = paramName;                                    \
       node->style.instanceName.unit =                                                \
-          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPercent;           \
+          YGFloatIsUndefined(paramName) ? YGUnitAuto : YGUnitPercent;                \
       YGNodeMarkDirtyInternal(node);                                                 \
     }                                                                                \
   }
@@ -496,7 +496,7 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
   void YGNodeStyleSet##name(const YGNodeRef node, const type paramName) {                         \
     if (node->style.instanceName.value != paramName ||                                            \
         node->style.instanceName.unit != YGUnitPoint) {                                           \
-      node->style.instanceName.value = YGFloatIsUndefined(paramName) ? YGUndefined : paramName;   \
+      node->style.instanceName.value = paramName;                                                 \
       node->style.instanceName.unit = YGFloatIsUndefined(paramName) ? YGUnitAuto : YGUnitPoint;   \
       YGNodeMarkDirtyInternal(node);                                                              \
     }                                                                                             \
@@ -505,7 +505,7 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
   void YGNodeStyleSet##name##Percent(const YGNodeRef node, const type paramName) {                \
     if (node->style.instanceName.value != paramName ||                                            \
         node->style.instanceName.unit != YGUnitPercent) {                                         \
-      node->style.instanceName.value = YGFloatIsUndefined(paramName) ? YGUndefined : paramName;   \
+      node->style.instanceName.value = paramName;                                                 \
       node->style.instanceName.unit = YGFloatIsUndefined(paramName) ? YGUnitAuto : YGUnitPercent; \
       YGNodeMarkDirtyInternal(node);                                                              \
     }                                                                                             \
