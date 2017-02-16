@@ -1221,44 +1221,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }];
 }
 
-static JSContext *contextForGlobalContextRef(JSGlobalContextRef contextRef)
-{
-  static std::mutex s_mutex;
-  static NSMapTable *s_contextCache;
 
-  if (!contextRef) {
-    return nil;
-  }
-
-  // Adding our own lock here, since JSC internal ones are insufficient
-  std::lock_guard<std::mutex> lock(s_mutex);
-  if (!s_contextCache) {
-    NSPointerFunctionsOptions keyOptions = NSPointerFunctionsOpaqueMemory | NSPointerFunctionsOpaquePersonality;
-    NSPointerFunctionsOptions valueOptions = NSPointerFunctionsWeakMemory | NSPointerFunctionsObjectPersonality;
-    s_contextCache = [[NSMapTable alloc] initWithKeyOptions:keyOptions valueOptions:valueOptions capacity:0];
-  }
-
-  JSContext *ctx = [s_contextCache objectForKey:(__bridge id)contextRef];
-  if (!ctx) {
-    ctx = [JSC_JSContext(contextRef) contextWithJSGlobalContextRef:contextRef];
-    [s_contextCache setObject:ctx forKey:(__bridge id)contextRef];
-  }
-  return ctx;
-}
-
-/*
- * The ValueEncoder<NSArray *>::toValue is used by callFunctionSync below.
- * Note: Because the NSArray * is really a NSArray * __strong the toValue is
- * accepting NSArray *const __strong instead of NSArray *&&.
- */
-template <>
-struct ValueEncoder<NSArray *> {
-  static Value toValue(JSGlobalContextRef ctx, NSArray *const __strong array)
-  {
-    JSValue *value = [JSValue valueWithObject:array inContext:contextForGlobalContextRef(ctx)];
-    return {ctx, [value JSValueRef]};
-  }
-};
 
 - (JSValue *)callFunctionOnModule:(NSString *)module
                            method:(NSString *)method

@@ -8,7 +8,10 @@
  */
 
 #import <React/RCTConvert.h>
+#include <JavaScriptCore/JavaScriptCore.h>
+#include <cxxreact/JSCExecutor.h>
 #include <folly/dynamic.h>
+#include <jschelpers/JavaScriptCore.h>
 
 @interface RCTConvert (folly)
 
@@ -18,6 +21,22 @@
 
 namespace facebook {
 namespace react {
+
+JSContext *contextForGlobalContextRef(JSGlobalContextRef contextRef);
+
+/*
+ * The ValueEncoder<NSArray *>::toValue is used by JSCExecutor callFunctionSync.
+ * Note: Because the NSArray * is really a NSArray * __strong the toValue is
+ * accepting NSArray *const __strong instead of NSArray *&&.
+ */
+template <>
+struct ValueEncoder<NSArray *> {
+  static Value toValue(JSGlobalContextRef ctx, NSArray *const __strong array)
+  {
+    JSValue *value = [JSValue valueWithObject:array inContext:contextForGlobalContextRef(ctx)];
+    return {ctx, [value JSValueRef]};
+  }
+};
 
 NSError *tryAndReturnError(const std::function<void()>& func);
 
