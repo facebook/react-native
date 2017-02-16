@@ -2278,11 +2278,6 @@ var event = function(
 };
 
 /**
- * Animations are very important to create a great user experience. Stationary
- * objects must overcome inertia as they start moving. Objects in motion have
- * momentum and rarely come to a stop immediately. Animations allow you to
- * convey physically believable motion in your interface.
- *
  * The `Animated` library is designed to make animations fluid, powerful, and
  * easy to build and maintain. `Animated` focuses on declarative relationships
  * between inputs and outputs, with configurable transforms in between, and
@@ -2340,6 +2335,19 @@ var event = function(
  * invoked with `{finished: true}`. If the animation is done because `stop()`
  * was called on it before it could finish (e.g. because it was interrupted by a
  * gesture or another animation), then it will receive `{finished: false}`.
+ *
+ * ### Using the native driver
+ *
+ * By using the native driver, we send everything about the animation to native
+ * before starting the animation, allowing native code to perform the animation
+ * on the UI thread without having to go through the bridge on every frame.
+ * Once the animation has started, the JS thread can be blocked without
+ * affecting the animation.
+ *
+ * You can use the native driver by specifying `useNativeDriver: true` in your
+ * animation configuration. See the
+ * [Animations](docs/animations.html#using-the-native-driver) guide to learn
+ * more.
  *
  * ### Animatable components
  *
@@ -2454,6 +2462,7 @@ module.exports = {
    *
    *   - `velocity`: Initial velocity.  Required.
    *   - `deceleration`: Rate of decay.  Default 0.997.
+   *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   decay,
   /**
@@ -2467,6 +2476,7 @@ module.exports = {
    *   - `easing`: Easing function to define curve.
    *     Default is `Easing.inOut(Easing.ease)`.
    *   - `delay`: Start the animation after delay (milliseconds).  Default 0.
+   *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   timing,
   /**
@@ -2476,8 +2486,9 @@ module.exports = {
    *
    * Config is an object that may have the following options:
    *
-   *    - `friction`: Controls "bounciness"/overshoot.  Default 7.
-   *    - `tension`: Controls speed.  Default 40.
+   *   - `friction`: Controls "bounciness"/overshoot.  Default 7.
+   *   - `tension`: Controls speed.  Default 40.
+   *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   spring,
 
@@ -2539,8 +2550,8 @@ module.exports = {
   stagger,
 
   /**
-   *  Takes an array of mappings and extracts values from each arg accordingly,
-   *  then calls `setValue` on the mapped outputs.  e.g.
+   * Takes an array of mappings and extracts values from each arg accordingly,
+   * then calls `setValue` on the mapped outputs.  e.g.
    *
    *```javascript
    *  onScroll={Animated.event(
@@ -2553,6 +2564,11 @@ module.exports = {
    *    {dx: this._panX},    // gestureState arg
    *  ]),
    *```
+   *
+   * Config is an object that may have the following options:
+   *
+   *   - `listener`: Optional async listener.
+   *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   event,
 

@@ -291,6 +291,50 @@ This does influence the API, so keep that in mind when it seems a little trickie
 Check out `Animated.Value.addListener` as a way to work around some of these limitations,
 but use it sparingly since it might have performance implications in the future.
 
+### Using the native driver
+
+The `Animated` API is designed to be serializable.
+By using the [native driver](http://facebook.github.io/react-native/blog/2017/02/14/using-native-driver-for-animated.html),
+we send everything about the animation to native before starting the animation,
+allowing native code to perform the animation on the UI thread without having to go through the bridge on every frame.
+Once the animation has started, the JS thread can be blocked without affecting the animation.
+
+Using the native driver for normal animations is quite simple.
+Just add `useNativeDriver: true` to the animation config when starting it.
+
+```javascript
+Animated.timing(this.state.animatedValue, {
+  toValue: 1,
+  duration: 500,
+  useNativeDriver: true, // <-- Add this
+}).start();
+```
+
+Animated values are only compatible with one driver so if you use native driver when starting an animation on a value,
+make sure every animation on that value also uses the native driver.
+
+The native driver also works with `Animated.event`. This is specially useful for animations that follow the scroll position as without the native driver, the animation will always run a frame behind the gesture due to the async nature of React Native.
+
+```javascript
+<Animated.ScrollView // <-- Use the Animated ScrollView wrapper
+  scrollEventThrottle={1} // <-- Use 1 here to make sure no events are ever missed
+  onScroll={Animated.event(
+    [{ nativeEvent: { contentOffset: { y: this.state.animatedValue } } }],
+    { useNativeDriver: true } // <-- Add this
+  )}
+>
+  {content}
+</Animated.ScrollView>
+```
+
+#### Caveats
+
+Not everything you can do with `Animated` is currently supported by the native driver.
+The main limitation is that you can only animate non-layout properties:
+things like `transform`, `opacity` and `backgroundColor` will work, but flexbox and position properties will not.
+When using `Animated.event`, it will only work with direct events and not bubbling events.
+This means it does not work with `PanResponder` but does work with things like `ScrollView#onScroll`.
+
 ### Additional examples
 
 The UIExplorer sample app has various examples of `Animated` in use:
