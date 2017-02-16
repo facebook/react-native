@@ -5,8 +5,8 @@
 #include <fstream>
 #include <memory>
 
-#include "Executor.h"
-#include "JSBundleType.h"
+#include <cxxreact/Executor.h>
+#include <cxxreact/JSBundleType.h>
 
 namespace facebook {
 namespace react {

@@ -233,7 +233,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       mAcceptCalls = true;
 
       for (PendingJSCall call : mJSCallsPendingInit) {
-        callJSFunction(call.mExecutorToken, call.mModule, call.mMethod, call.mArguments);
+        jniCallJSFunction(call.mExecutorToken, call.mModule, call.mMethod, call.mArguments);
       }
       mJSCallsPendingInit.clear();
     }
@@ -248,7 +248,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mSourceURL;
   }
 
-  private native void callJSFunction(
+  private native void jniCallJSFunction(
     ExecutorToken token,
     String module,
     String method,
@@ -274,10 +274,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
       }
     }
 
-    callJSFunction(executorToken, module, method, arguments);
+    jniCallJSFunction(executorToken, module, method, arguments);
   }
 
-  private native void callJSCallback(ExecutorToken executorToken, int callbackID, NativeArray arguments);
+  private native void jniCallJSCallback(ExecutorToken executorToken, int callbackID, NativeArray arguments);
 
   @Override
   public void invokeCallback(ExecutorToken executorToken, final int callbackID, final NativeArray arguments) {
@@ -286,7 +286,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return;
     }
 
-    callJSCallback(executorToken, callbackID, arguments);
+    jniCallJSCallback(executorToken, callbackID, arguments);
   }
 
   /**

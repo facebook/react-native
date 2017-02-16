@@ -9,11 +9,10 @@
 #include <sys/mman.h>
 #include <vector>
 
+#include <cxxreact/JSModulesUnbundle.h>
 #include <folly/Exception.h>
 #include <folly/Optional.h>
 #include <folly/dynamic.h>
-
-#include "JSModulesUnbundle.h"
 
 #define RN_EXPORT __attribute__((visibility("default")))
 
