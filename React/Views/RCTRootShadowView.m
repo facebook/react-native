@@ -21,7 +21,7 @@
 {
   self = [super init];
   if (self) {
-    self.direction = [[RCTI18nUtil sharedInstance] isRTL] ? YGDirectionRTL : YGDirectionLTR;
+    _baseDirection = [[RCTI18nUtil sharedInstance] isRTL] ? YGDirectionRTL : YGDirectionLTR;
   }
   return self;
 }
@@ -48,7 +48,7 @@
 {
   [self applySizeConstraints];
 
-  YGNodeCalculateLayout(self.cssNode, YGUndefined, YGUndefined, YGDirectionInherit);
+  YGNodeCalculateLayout(self.cssNode, YGUndefined, YGUndefined, _baseDirection);
 
   NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
   [self applyLayoutNode:self.cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];

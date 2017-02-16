@@ -17,3 +17,10 @@ id RCTConvertFollyDynamic(const folly::dynamic &dyn);
 + (folly::dynamic)folly_dynamic:(id)json;
 
 @end
+
+namespace facebook {
+namespace react {
+
+NSError *tryAndReturnError(const std::function<void()>& func);
+
+} }

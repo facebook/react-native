@@ -6,16 +6,14 @@
 #include <memory>
 #include <unordered_map>
 
-#include <folly/json.h>
+#include <cxxreact/Executor.h>
+#include <cxxreact/ExecutorToken.h>
+#include <cxxreact/JSCNativeModules.h>
 #include <folly/Optional.h>
-
-#include <jschelpers/JavaScriptCore.h>
+#include <folly/json.h>
 #include <jschelpers/JSCHelpers.h>
+#include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Value.h>
-
-#include "Executor.h"
-#include "ExecutorToken.h"
-#include "JSCNativeModules.h"
 
 namespace facebook {
 namespace react {

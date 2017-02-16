@@ -504,7 +504,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   if (!json) {
     return YGValueUndefined;
   } else if ([json isKindOfClass:[NSNumber class]]) {
-    return (YGValue) { [json floatValue], YGUnitPixel };
+    return (YGValue) { [json floatValue], YGUnitPoint };
   } else if ([json isKindOfClass:[NSString class]]) {
     NSString *s = (NSString *) json;
     if ([s hasSuffix:@"%"]) {
