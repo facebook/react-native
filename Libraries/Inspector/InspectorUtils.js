@@ -15,17 +15,14 @@ var ReactNativeComponentTree = require('ReactNativeComponentTree');
 function traverseOwnerTreeUp(hierarchy, instance) {
   if (instance) {
     hierarchy.unshift(instance);
-    traverseOwnerTreeUp(hierarchy, instance._currentElement._owner);
+    const owner = typeof instance.tag === 'number' ? instance._debugOwner : instance._currentElement._owner;
+    traverseOwnerTreeUp(hierarchy, owner);
   }
 }
 
 function findInstanceByNativeTag(nativeTag) {
-  var instance = ReactNativeComponentTree.getInstanceFromNode(nativeTag);
-  if (typeof instance.tag === 'number') {
-    // TODO(sema): We've disabled the inspector when using Fiber. Fix #15953531
-    return null;
-  }
-  return instance;
+  // TODO: this is breaking encapsulation
+  return ReactNativeComponentTree.getInstanceFromNode(nativeTag);
 }
 
 function getOwnerHierarchy(instance) {

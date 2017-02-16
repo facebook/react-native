@@ -20,15 +20,11 @@ const InspectorPanel = require('InspectorPanel');
 const InspectorUtils = require('InspectorUtils');
 const Platform = require('Platform');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 const View = require('View');
-
-if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  // required for devtools to be able to edit react native styles
-  window.__REACT_DEVTOOLS_GLOBAL_HOOK__.resolveRNStyle = require('flattenStyle');
-}
 
 class Inspector extends React.Component {
   props: {
@@ -67,13 +63,10 @@ class Inspector extends React.Component {
   }
 
   componentDidMount() {
-    if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
-      (this : any).attachToDevtools = this.attachToDevtools.bind(this);
-      window.__REACT_DEVTOOLS_GLOBAL_HOOK__.on('react-devtools', this.attachToDevtools);
-      // if devtools is already started
-      if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) {
-        this.attachToDevtools(window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent);
-      }
+    window.__REACT_DEVTOOLS_GLOBAL_HOOK__.on('react-devtools', this.attachToDevtools);
+    // if devtools is already started
+    if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) {
+      this.attachToDevtools(window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent);
     }
   }
 
@@ -81,9 +74,7 @@ class Inspector extends React.Component {
     if (this._subs) {
       this._subs.map(fn => fn());
     }
-    if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
-      window.__REACT_DEVTOOLS_GLOBAL_HOOK__.off('react-devtools', this.attachToDevtools);
-    }
+    window.__REACT_DEVTOOLS_GLOBAL_HOOK__.off('react-devtools', this.attachToDevtools);
   }
 
   componentWillReceiveProps(newProps: Object) {
@@ -94,6 +85,12 @@ class Inspector extends React.Component {
     let _hideWait = null;
     const hlSub = agent.sub('highlight', ({node, name, props}) => {
       clearTimeout(_hideWait);
+
+      if (typeof node !== 'number') {
+        // Fiber
+        node = ReactNative.findNodeHandle(node);
+      }
+
       UIManager.measure(node, (x, y, width, height, left, top) => {
         this.setState({
           hierarchy: [],
@@ -128,15 +125,51 @@ class Inspector extends React.Component {
 
   setSelection(i: number) {
     const instance = this.state.hierarchy[i];
-    // if we inspect a stateless component we can't use the getPublicInstance method
-    // therefore we use the internal _instance property directly.
-    const publicInstance = instance['_instance'] || {};
-    const source = instance['_currentElement'] && instance['_currentElement']['_source'];
-    UIManager.measure(instance.getHostNode(), (x, y, width, height, left, top) => {
+    const props = typeof instance.tag === 'number' ?
+      // Fiber
+      instance.memoizedProps || {} :
+      // Stack
+      (instance['_instance'] || {}).props || {};
+    const source = typeof instance.tag === 'number' ?
+      // Fiber
+      instance._debugSource :
+      // Stack
+      instance['_currentElement'] && instance['_currentElement']['_source'];
+
+    let hostNode;
+    if (typeof instance.tag === 'number') {
+      let fiber = instance;
+      // Stateless components make this complicated.
+      // Look for children first.
+      while (fiber) {
+        hostNode = ReactNative.findNodeHandle(fiber.stateNode);
+        if (hostNode) {
+          break;
+        }
+        fiber = fiber.child;
+      }
+      // Look for parents second.
+      fiber = instance.return;
+      while (fiber) {
+        hostNode = ReactNative.findNodeHandle(fiber.stateNode);
+        if (hostNode) {
+          break;
+        }
+        fiber = fiber.return;
+      }
+      if (!hostNode) {
+        // Not found--hard to imagine.
+        return;
+      }
+    } else {
+      hostNode = instance.getHostNode();
+    }
+
+    UIManager.measure(hostNode, (x, y, width, height, left, top) => {
       this.setState({
         inspected: {
           frame: {left, top, width, height},
-          style: publicInstance.props ? publicInstance.props.style : {},
+          style: props ? props.style : {},
           source,
         },
         selection: i,
@@ -155,11 +188,17 @@ class Inspector extends React.Component {
       this.state.devtoolsAgent.selectFromReactInstance(instance, true);
     }
 
-    // if we inspect a stateless component we can't use the getPublicInstance method
-    // therefore we use the internal _instance property directly.
-    const publicInstance = instance['_instance'] || {};
-    const props = publicInstance.props || {};
-    const source = instance['_currentElement'] && instance['_currentElement']['_source'];
+    const props = typeof instance.tag === 'number' ?
+      // Fiber
+      instance.memoizedProps || {} :
+      // Stack
+      (instance['_instance'] || {}).props || {};
+    const source = typeof instance.tag === 'number' ?
+      // Fiber
+      instance._debugSource :
+      // Stack
+      instance['_currentElement'] && instance['_currentElement']['_source'];
+
     this.setState({
       panelPos: pointerY > Dimensions.get('window').height / 2 ? 'top' : 'bottom',
       selection: hierarchy.indexOf(instance),
