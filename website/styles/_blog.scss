@@ -8,12 +8,14 @@
   margin: 0;
   font-size: 33px;
   line-height: 36px;
+  line-height: 1;
 }
 
 .entry-header h4 {
   margin: 0 0 10px;
   line-height: 16px;
   font-size: 14px;
+  line-height: 1;
 }
 
 .entry-header .author {
@@ -71,12 +73,11 @@
 
 article {
   margin: 0 0 40px 0;
-  line-height: 1.7;
 }
 
 article h2 {
   font-size: 26px;
-  line-height: 30px;
+  line-height: 1;
 }
 
 article li {

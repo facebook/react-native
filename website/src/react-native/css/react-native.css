@@ -421,7 +421,8 @@ body {
   padding: 0; }
 
 p {
-  margin: 0 0 10px; }
+  margin: 0 0 16px;
+  line-height: 1.4; }
 
 em {
   font-style: italic; }
@@ -1721,6 +1722,7 @@ input#algolia-doc-search:focus {
 
 .showcase img {
   width: 100px;
+  height: 100px;
   border-radius: 20px; }
 
 .pinned img {
@@ -1788,12 +1790,14 @@ input#algolia-doc-search:focus {
 .entry-header h1 {
   margin: 0;
   font-size: 33px;
-  line-height: 36px; }
+  line-height: 36px;
+  line-height: 1; }
 
 .entry-header h4 {
   margin: 0 0 10px;
   line-height: 16px;
-  font-size: 14px; }
+  font-size: 14px;
+  line-height: 1; }
 
 .entry-header .author {
   color: #5A6b77;
@@ -1840,12 +1844,11 @@ input#algolia-doc-search:focus {
   width: 50%; }
 
 article {
-  margin: 0 0 40px 0;
-  line-height: 1.7; }
+  margin: 0 0 40px 0; }
 
 article h2 {
   font-size: 26px;
-  line-height: 30px; }
+  line-height: 1; }
 
 article li {
   line-height: 28px; }
