@@ -2354,17 +2354,19 @@ var event = function(
  * Only animatable components can be animated. These special components do the
  * magic of binding the animated values to the properties, and do targeted
  * native updates to avoid the cost of the react render and reconciliation
- * process on every frame.
- * They also handle cleanup on unmount so they are safe by default.
+ * process on every frame. They also handle cleanup on unmount so they are safe
+ * by default.
  *
- * There are three component types provided by `Animated`:
+ * - [`createAnimatedComponent()`](docs/animated.html#createanimatedcomponent)
+ *   can be used to make a component animatable.
+ *
+ * `Animated` exports the following animatable components using the above
+ * wrapper:
  *
  * - `<Animated.Image />`
+ * - `<Animated.ScrollView />`
  * - `<Animated.Text />`
  * - `<Animated.View />`
- *
- * You can create custom animatable components with
- * [`createAnimatedComponent()`](docs/animated.html#createanimatedcomponent).
  *
  * ### Composing animations
  *
@@ -2381,8 +2383,8 @@ var event = function(
  *
  * Animations can also be chained together simply by setting the `toValue` of
  * one animation to be another `Animated.Value`. See
- * [Tracking dynamic values](docs/animation.html#tracking-dynamic-values) in the
- * Animations guide.
+ * [Tracking dynamic values](docs/animations.html#tracking-dynamic-values) in
+ * the Animations guide.
  *
  * By default, if one animation is stopped or interrupted, then all other
  * animations in the group are also stopped.
@@ -2399,22 +2401,25 @@ var event = function(
  *
  * ### Interpolation
  *
- * The [`interpolate()`](docs/animated.html#interpolate) function allows input
- * ranges to map to different output ranges. By default, it will extrapolate the
- * curve beyond the ranges given, but you can also have it clamp the output
- * value. It uses lineral interpolation by default but also supports easing
- * functions.
+ * The `interpolate()` function allows input ranges to map to different output
+ * ranges. By default, it will extrapolate the curve beyond the ranges given,
+ * but you can also have it clamp the output value. It uses lineal interpolation
+ * by default but also supports easing functions.
+ *
+ * - [`interpolate()`](docs/animated.html#interpolate)
  *
  * Read more about interpolation in the
- * [Animation](docs/animation.html#interpolation) guide.
+ * [Animation](docs/animations.html#interpolation) guide.
  *
  * ### Handling gestures and other events
  *
  * Gestures, like panning or scrolling, and other events can map directly to
- * animated values using [`Animated.event`](docs/animated.html#event). This is
- * done with a structured map syntax so that values can be extracted from
- * complex event objects. The first level is an array to allow mapping across
- * multiple args, and that array contains nested objects.
+ * animated values using `Animated.event()`. This is done with a structured map
+ * syntax so that values can be extracted from complex event objects. The first
+ * level is an array to allow mapping across multiple args, and that array
+ * contains nested objects.
+ *
+ * - [`Animated.event()`](docs/animated.html#event)
  *
  * For example, when working with horizontal scrolling gestures, you would do
  * the following in order to map `event.nativeEvent.contentOffset.x` to

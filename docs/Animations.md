@@ -22,7 +22,7 @@ React Native provides two complementary animation systems:
 The [`Animated`](docs/animated.html) API is designed to make it very easy to concisely express a wide variety of interesting animation and interaction patterns in a very performant way.
 `Animated` focuses on declarative relationships between inputs and outputs, with configurable transforms in between, and simple `start`/`stop` methods to control time-based animation execution.
 
-`Animated` provides three animatable component types: `View`, `Text`, and `Image`, but you can also create your own using `Animated.createAnimatedComponent()`.
+`Animated` exports four animatable component types: `View`, `Text`, `Image`, and `ScrollView`, but you can also create your own using `Animated.createAnimatedComponent()`.
 
 For example, a container view that fades in when it is mounted looks like this:
 
