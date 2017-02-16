@@ -10,8 +10,6 @@
 #import <React/RCTConvert.h>
 #include <folly/dynamic.h>
 
-id RCTConvertFollyDynamic(const folly::dynamic &dyn);
-
 @interface RCTConvert (folly)
 
 + (folly::dynamic)folly_dynamic:(id)json;
