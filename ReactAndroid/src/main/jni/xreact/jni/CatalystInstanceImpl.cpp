@@ -105,8 +105,6 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
     makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),
     makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
-    makeNativeMethod("jniLoadScriptFromOptimizedBundle",
-                     CatalystInstanceImpl::jniLoadScriptFromOptimizedBundle),
     makeNativeMethod("jniCallJSFunction", CatalystInstanceImpl::jniCallJSFunction),
     makeNativeMethod("jniCallJSCallback", CatalystInstanceImpl::jniCallJSCallback),
     makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
@@ -215,14 +213,6 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
   } else {
     instance_->loadScriptFromFile(fileName, sourceURL);
   }
-}
-
-void CatalystInstanceImpl::jniLoadScriptFromOptimizedBundle(const std::string& bundlePath,
-                                                            const std::string& sourceURL,
-                                                            jint flags) {
-  return instance_->loadScriptFromOptimizedBundle(std::move(bundlePath),
-                                                  std::move(sourceURL),
-                                                  flags);
 }
 
 void CatalystInstanceImpl::jniCallJSFunction(

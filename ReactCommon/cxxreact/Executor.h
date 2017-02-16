@@ -67,11 +67,6 @@ public:
                                      std::string sourceURL) = 0;
 
   /**
-   * Execute an application script optimized bundle in the JS context.
-   */
-  virtual void loadApplicationScript(std::string bundlePath, std::string source, int flags);
-
-  /**
    * Add an application "unbundle" file
    */
   virtual void setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> bundle) = 0;
