@@ -128,7 +128,6 @@
     "babel-generator": "^6.23.0",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-syntax-trailing-function-commas": "^6.22.0",
-    "babel-plugin-transform-async-to-generator": "^6.22.0",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-polyfill": "^6.23.0",
