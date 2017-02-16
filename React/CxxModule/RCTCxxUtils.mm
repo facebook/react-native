@@ -15,11 +15,6 @@
 #include <jschelpers/Value.h>
 
 using namespace facebook::react;
-using namespace react::CxxUtils;
-
-id RCTConvertFollyDynamic(const folly::dynamic &dyn) {
-  return convertFollyDynamicToId(dyn);
-}
 
 @implementation RCTConvert (folly)
 

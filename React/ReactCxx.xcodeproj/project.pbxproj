@@ -170,7 +170,6 @@
 		13EBC63B1E284D8700880AC5 /* JSCUtils.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C31E03699D0018521A /* JSCUtils.h */; };
 		13EBC63C1E284D8700880AC5 /* JSCWebWorker.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C51E03699D0018521A /* JSCWebWorker.h */; };
 		13EBC63D1E284D8700880AC5 /* JSIndexedRAMBundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C71E03699D0018521A /* JSIndexedRAMBundle.h */; };
-		13EBC63E1E284D8700880AC5 /* JSModulesUnbundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */; };
 		13EBC63F1E284D8700880AC5 /* MessageQueueThread.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C91E03699D0018521A /* MessageQueueThread.h */; };
 		13EBC6401E284D8700880AC5 /* MethodCall.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CB1E03699D0018521A /* MethodCall.h */; };
 		13EBC6411E284D8700880AC5 /* ModuleRegistry.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CD1E03699D0018521A /* ModuleRegistry.h */; };
@@ -486,6 +485,46 @@
 		3D3CD9441DE5FC6500167DC4 /* libjschelpers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3CD9181DE5FBD800167DC4 /* libjschelpers.a */; };
 		3D3CD9451DE5FC7100167DC4 /* JSBundleType.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */; };
 		3D3CD9471DE5FC7800167DC4 /* oss-compat-util.h in Headers */ = {isa = PBXBuildFile; fileRef = AC70D2EE1DE48AC5002E6351 /* oss-compat-util.h */; };
+		3D74547C1E54758900E74ADD /* JSBigString.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7454781E54757500E74ADD /* JSBigString.h */; };
+		3D74547D1E54758900E74ADD /* JSBigString.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7454781E54757500E74ADD /* JSBigString.h */; };
+		3D74547E1E54759A00E74ADD /* JSModulesUnbundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */; };
+		3D74547F1E54759E00E74ADD /* JSModulesUnbundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */; };
+		3D7454801E5475AF00E74ADD /* RecoverableError.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7454791E54757500E74ADD /* RecoverableError.h */; };
+		3D7454811E5475AF00E74ADD /* RecoverableError.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7454791E54757500E74ADD /* RecoverableError.h */; };
+		3D7454821E5475DA00E74ADD /* JSBigString.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7454781E54757500E74ADD /* JSBigString.h */; };
+		3D7454831E5475DA00E74ADD /* JSModulesUnbundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */; };
+		3D7454841E5475DA00E74ADD /* RecoverableError.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7454791E54757500E74ADD /* RecoverableError.h */; };
+		3D7454851E5475E800E74ADD /* CxxMessageQueue.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A61E03699D0018521A /* CxxMessageQueue.h */; };
+		3D7454861E5475E800E74ADD /* CxxModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A71E03699D0018521A /* CxxModule.h */; };
+		3D7454871E5475E800E74ADD /* CxxNativeModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A91E03699D0018521A /* CxxNativeModule.h */; };
+		3D7454881E5475E800E74ADD /* Executor.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0AB1E03699D0018521A /* Executor.h */; };
+		3D7454891E5475E800E74ADD /* ExecutorToken.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0AC1E03699D0018521A /* ExecutorToken.h */; };
+		3D74548A1E5475E800E74ADD /* ExecutorTokenFactory.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0AD1E03699D0018521A /* ExecutorTokenFactory.h */; };
+		3D74548B1E5475E800E74ADD /* Instance.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0AF1E03699D0018521A /* Instance.h */; };
+		3D74548C1E5475E800E74ADD /* JsArgumentHelpers-inl.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B01E03699D0018521A /* JsArgumentHelpers-inl.h */; };
+		3D74548D1E5475E800E74ADD /* JsArgumentHelpers.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */; };
+		3D74548E1E5475E800E74ADD /* JSBigString.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7454781E54757500E74ADD /* JSBigString.h */; };
+		3D74548F1E5475E800E74ADD /* JSCExecutor.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B31E03699D0018521A /* JSCExecutor.h */; };
+		3D7454901E5475E800E74ADD /* JSCLegacyProfiler.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B51E03699D0018521A /* JSCLegacyProfiler.h */; };
+		3D7454911E5475E800E74ADD /* JSCLegacyTracing.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B71E03699D0018521A /* JSCLegacyTracing.h */; };
+		3D7454921E5475E800E74ADD /* JSCMemory.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B91E03699D0018521A /* JSCMemory.h */; };
+		3D7454931E5475E800E74ADD /* JSCNativeModules.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0BB1E03699D0018521A /* JSCNativeModules.h */; };
+		3D7454941E5475E800E74ADD /* JSCPerfStats.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0BD1E03699D0018521A /* JSCPerfStats.h */; };
+		3D7454951E5475E800E74ADD /* JSCSamplingProfiler.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0BF1E03699D0018521A /* JSCSamplingProfiler.h */; };
+		3D7454961E5475E800E74ADD /* JSCUtils.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C31E03699D0018521A /* JSCUtils.h */; };
+		3D7454971E5475E800E74ADD /* JSCWebWorker.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C51E03699D0018521A /* JSCWebWorker.h */; };
+		3D7454981E5475E800E74ADD /* JSIndexedRAMBundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C71E03699D0018521A /* JSIndexedRAMBundle.h */; };
+		3D7454991E5475E800E74ADD /* JSModulesUnbundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */; };
+		3D74549A1E5475E800E74ADD /* MessageQueueThread.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C91E03699D0018521A /* MessageQueueThread.h */; };
+		3D74549B1E5475E800E74ADD /* MethodCall.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CB1E03699D0018521A /* MethodCall.h */; };
+		3D74549C1E5475E800E74ADD /* ModuleRegistry.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CD1E03699D0018521A /* ModuleRegistry.h */; };
+		3D74549D1E5475E800E74ADD /* NativeModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CE1E03699D0018521A /* NativeModule.h */; };
+		3D74549E1E5475E800E74ADD /* NativeToJsBridge.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0D01E03699D0018521A /* NativeToJsBridge.h */; };
+		3D74549F1E5475E800E74ADD /* oss-compat-util.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = AC70D2EE1DE48AC5002E6351 /* oss-compat-util.h */; };
+		3D7454A01E5475E800E74ADD /* Platform.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0D21E03699D0018521A /* Platform.h */; };
+		3D7454A11E5475E800E74ADD /* RecoverableError.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7454791E54757500E74ADD /* RecoverableError.h */; };
+		3D7454A21E5475E800E74ADD /* SampleCxxModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0D41E03699D0018521A /* SampleCxxModule.h */; };
+		3D7454A31E5475E800E74ADD /* SystraceSection.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0D51E03699D0018521A /* SystraceSection.h */; };
 		3D7749441DC1065C007EC8D8 /* RCTPlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7749431DC1065C007EC8D8 /* RCTPlatform.m */; };
 		3D7A27E21DE325B7002E3F95 /* RCTJSCErrorHandling.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3D7A27E11DE325B7002E3F95 /* RCTJSCErrorHandling.mm */; };
 		3D7A27E31DE325DA002E3F95 /* RCTJSCErrorHandling.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3D7A27E11DE325B7002E3F95 /* RCTJSCErrorHandling.mm */; };
@@ -756,7 +795,6 @@
 		3D92B0F41E03699D0018521A /* JSCUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C31E03699D0018521A /* JSCUtils.h */; };
 		3D92B0F61E03699D0018521A /* JSCWebWorker.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C51E03699D0018521A /* JSCWebWorker.h */; };
 		3D92B0F81E03699D0018521A /* JSIndexedRAMBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C71E03699D0018521A /* JSIndexedRAMBundle.h */; };
-		3D92B0F91E03699D0018521A /* JSModulesUnbundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */; };
 		3D92B0FA1E03699D0018521A /* MessageQueueThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C91E03699D0018521A /* MessageQueueThread.h */; };
 		3D92B0FC1E03699D0018521A /* MethodCall.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CB1E03699D0018521A /* MethodCall.h */; };
 		3D92B0FE1E03699D0018521A /* ModuleRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CD1E03699D0018521A /* ModuleRegistry.h */; };
@@ -920,6 +958,37 @@
 			dstPath = include/cxxreact;
 			dstSubfolderSpec = 16;
 			files = (
+				3D7454851E5475E800E74ADD /* CxxMessageQueue.h in Copy Headers */,
+				3D7454861E5475E800E74ADD /* CxxModule.h in Copy Headers */,
+				3D7454871E5475E800E74ADD /* CxxNativeModule.h in Copy Headers */,
+				3D7454881E5475E800E74ADD /* Executor.h in Copy Headers */,
+				3D7454891E5475E800E74ADD /* ExecutorToken.h in Copy Headers */,
+				3D74548A1E5475E800E74ADD /* ExecutorTokenFactory.h in Copy Headers */,
+				3D74548B1E5475E800E74ADD /* Instance.h in Copy Headers */,
+				3D74548C1E5475E800E74ADD /* JsArgumentHelpers-inl.h in Copy Headers */,
+				3D74548D1E5475E800E74ADD /* JsArgumentHelpers.h in Copy Headers */,
+				3D74548E1E5475E800E74ADD /* JSBigString.h in Copy Headers */,
+				3D74548F1E5475E800E74ADD /* JSCExecutor.h in Copy Headers */,
+				3D7454901E5475E800E74ADD /* JSCLegacyProfiler.h in Copy Headers */,
+				3D7454911E5475E800E74ADD /* JSCLegacyTracing.h in Copy Headers */,
+				3D7454921E5475E800E74ADD /* JSCMemory.h in Copy Headers */,
+				3D7454931E5475E800E74ADD /* JSCNativeModules.h in Copy Headers */,
+				3D7454941E5475E800E74ADD /* JSCPerfStats.h in Copy Headers */,
+				3D7454951E5475E800E74ADD /* JSCSamplingProfiler.h in Copy Headers */,
+				3D7454961E5475E800E74ADD /* JSCUtils.h in Copy Headers */,
+				3D7454971E5475E800E74ADD /* JSCWebWorker.h in Copy Headers */,
+				3D7454981E5475E800E74ADD /* JSIndexedRAMBundle.h in Copy Headers */,
+				3D7454991E5475E800E74ADD /* JSModulesUnbundle.h in Copy Headers */,
+				3D74549A1E5475E800E74ADD /* MessageQueueThread.h in Copy Headers */,
+				3D74549B1E5475E800E74ADD /* MethodCall.h in Copy Headers */,
+				3D74549C1E5475E800E74ADD /* ModuleRegistry.h in Copy Headers */,
+				3D74549D1E5475E800E74ADD /* NativeModule.h in Copy Headers */,
+				3D74549E1E5475E800E74ADD /* NativeToJsBridge.h in Copy Headers */,
+				3D74549F1E5475E800E74ADD /* oss-compat-util.h in Copy Headers */,
+				3D7454A01E5475E800E74ADD /* Platform.h in Copy Headers */,
+				3D7454A11E5475E800E74ADD /* RecoverableError.h in Copy Headers */,
+				3D7454A21E5475E800E74ADD /* SampleCxxModule.h in Copy Headers */,
+				3D7454A31E5475E800E74ADD /* SystraceSection.h in Copy Headers */,
 				3D302F1C1DF8264000D6DDAE /* JSBundleType.h in Copy Headers */,
 			);
 			name = "Copy Headers";
@@ -1089,6 +1158,9 @@
 			dstPath = include/cxxreact;
 			dstSubfolderSpec = 16;
 			files = (
+				3D7454821E5475DA00E74ADD /* JSBigString.h in Copy Headers */,
+				3D7454831E5475DA00E74ADD /* JSModulesUnbundle.h in Copy Headers */,
+				3D7454841E5475DA00E74ADD /* RecoverableError.h in Copy Headers */,
 				13EBC62A1E284D8700880AC5 /* CxxMessageQueue.h in Copy Headers */,
 				13EBC62B1E284D8700880AC5 /* CxxModule.h in Copy Headers */,
 				13EBC62C1E284D8700880AC5 /* CxxNativeModule.h in Copy Headers */,
@@ -1108,7 +1180,6 @@
 				13EBC63B1E284D8700880AC5 /* JSCUtils.h in Copy Headers */,
 				13EBC63C1E284D8700880AC5 /* JSCWebWorker.h in Copy Headers */,
 				13EBC63D1E284D8700880AC5 /* JSIndexedRAMBundle.h in Copy Headers */,
-				13EBC63E1E284D8700880AC5 /* JSModulesUnbundle.h in Copy Headers */,
 				13EBC63F1E284D8700880AC5 /* MessageQueueThread.h in Copy Headers */,
 				13EBC6401E284D8700880AC5 /* MethodCall.h in Copy Headers */,
 				13EBC6411E284D8700880AC5 /* ModuleRegistry.h in Copy Headers */,
@@ -1399,6 +1470,8 @@
 		3D3CD9181DE5FBD800167DC4 /* libjschelpers.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libjschelpers.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D3CD9251DE5FBEC00167DC4 /* libcxxreact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcxxreact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D3CD9321DE5FBEE00167DC4 /* libcxxreact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcxxreact.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D7454781E54757500E74ADD /* JSBigString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSBigString.h; sourceTree = "<group>"; };
+		3D7454791E54757500E74ADD /* RecoverableError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecoverableError.h; sourceTree = "<group>"; };
 		3D7749421DC1065C007EC8D8 /* RCTPlatform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPlatform.h; sourceTree = "<group>"; };
 		3D7749431DC1065C007EC8D8 /* RCTPlatform.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPlatform.m; sourceTree = "<group>"; };
 		3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JavaScriptCore.h; sourceTree = "<group>"; };
@@ -2122,6 +2195,7 @@
 				3D92B0AF1E03699D0018521A /* Instance.h */,
 				3D92B0B01E03699D0018521A /* JsArgumentHelpers-inl.h */,
 				3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */,
+				3D7454781E54757500E74ADD /* JSBigString.h */,
 				AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */,
 				3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */,
 				3D92B0B21E03699D0018521A /* JSCExecutor.cpp */,
@@ -2156,6 +2230,7 @@
 				AC70D2EE1DE48AC5002E6351 /* oss-compat-util.h */,
 				3D92B0D11E03699D0018521A /* Platform.cpp */,
 				3D92B0D21E03699D0018521A /* Platform.h */,
+				3D7454791E54757500E74ADD /* RecoverableError.h */,
 				3D92B0D31E03699D0018521A /* SampleCxxModule.cpp */,
 				3D92B0D41E03699D0018521A /* SampleCxxModule.h */,
 				3D92B0D51E03699D0018521A /* SystraceSection.h */,
@@ -2336,7 +2411,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D74547E1E54759A00E74ADD /* JSModulesUnbundle.h in Headers */,
+				3D7454811E5475AF00E74ADD /* RecoverableError.h in Headers */,
 				3D3030221DF8294C00D6DDAE /* JSBundleType.h in Headers */,
+				3D74547D1E54758900E74ADD /* JSBigString.h in Headers */,
 				3D3030231DF8294C00D6DDAE /* oss-compat-util.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2378,7 +2456,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D74547F1E54759E00E74ADD /* JSModulesUnbundle.h in Headers */,
+				3D7454801E5475AF00E74ADD /* RecoverableError.h in Headers */,
 				3D3CD9471DE5FC7800167DC4 /* oss-compat-util.h in Headers */,
+				3D74547C1E54758900E74ADD /* JSBigString.h in Headers */,
 				3D3CD9451DE5FC7100167DC4 /* JSBundleType.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2495,7 +2576,6 @@
 				3D80DA601DF820620028D040 /* RCTActivityIndicatorViewManager.h in Headers */,
 				3D80DA611DF820620028D040 /* RCTAnimationType.h in Headers */,
 				3D80DA621DF820620028D040 /* RCTAutoInsetsProtocol.h in Headers */,
-				3D92B0F91E03699D0018521A /* JSModulesUnbundle.h in Headers */,
 				3D80DA631DF820620028D040 /* RCTBorderDrawing.h in Headers */,
 				3D80DA641DF820620028D040 /* RCTBorderStyle.h in Headers */,
 				130443A11E3FEAA900D93A67 /* RCTFollyConvert.h in Headers */,

@@ -7,17 +7,15 @@
 #include <map>
 #include <vector>
 
+#include <cxxreact/Executor.h>
+#include <cxxreact/ExecutorToken.h>
+#include <cxxreact/JSCExecutor.h>
+#include <cxxreact/JSModulesUnbundle.h>
+#include <cxxreact/MessageQueueThread.h>
+#include <cxxreact/MethodCall.h>
+#include <cxxreact/NativeModule.h>
 #include <folly/dynamic.h>
-
 #include <jschelpers/Value.h>
-
-#include "Executor.h"
-#include "ExecutorToken.h"
-#include "JSCExecutor.h"
-#include "JSModulesUnbundle.h"
-#include "MessageQueueThread.h"
-#include "MethodCall.h"
-#include "NativeModule.h"
 
 namespace folly {
 

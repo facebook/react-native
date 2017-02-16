@@ -434,7 +434,7 @@ inline float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
 }
 
 static inline const YGValue *YGNodeStyleGetFlexBasisPtr(const YGNodeRef node) {
-  if (node->style.flexBasis.unit != YGUnitAuto) {
+  if (node->style.flexBasis.unit != YGUnitAuto && node->style.flexBasis.unit != YGUnitUndefined) {
     return &node->style.flexBasis;
   }
   if (!YGFloatIsUndefined(node->style.flex) && node->style.flex > 0.0f) {
@@ -477,7 +477,7 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
         node->style.instanceName.unit != YGUnitPoint) {                              \
       node->style.instanceName.value = paramName;                                    \
       node->style.instanceName.unit =                                                \
-          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPoint;             \
+          YGFloatIsUndefined(paramName) ? YGUnitAuto : YGUnitPoint;                  \
       YGNodeMarkDirtyInternal(node);                                                 \
     }                                                                                \
   }                                                                                  \
@@ -487,7 +487,7 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
         node->style.instanceName.unit != YGUnitPercent) {                            \
       node->style.instanceName.value = paramName;                                    \
       node->style.instanceName.unit =                                                \
-          YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPercent;           \
+          YGFloatIsUndefined(paramName) ? YGUnitAuto : YGUnitPercent;                \
       YGNodeMarkDirtyInternal(node);                                                 \
     }                                                                                \
   }
@@ -496,7 +496,7 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
   void YGNodeStyleSet##name(const YGNodeRef node, const type paramName) {                         \
     if (node->style.instanceName.value != paramName ||                                            \
         node->style.instanceName.unit != YGUnitPoint) {                                           \
-      node->style.instanceName.value = YGFloatIsUndefined(paramName) ? YGUndefined : paramName;   \
+      node->style.instanceName.value = paramName;                                                 \
       node->style.instanceName.unit = YGFloatIsUndefined(paramName) ? YGUnitAuto : YGUnitPoint;   \
       YGNodeMarkDirtyInternal(node);                                                              \
     }                                                                                             \
@@ -505,7 +505,7 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
   void YGNodeStyleSet##name##Percent(const YGNodeRef node, const type paramName) {                \
     if (node->style.instanceName.value != paramName ||                                            \
         node->style.instanceName.unit != YGUnitPercent) {                                         \
-      node->style.instanceName.value = YGFloatIsUndefined(paramName) ? YGUndefined : paramName;   \
+      node->style.instanceName.value = paramName;                                                 \
       node->style.instanceName.unit = YGFloatIsUndefined(paramName) ? YGUnitAuto : YGUnitPercent; \
       YGNodeMarkDirtyInternal(node);                                                              \
     }                                                                                             \
@@ -1072,7 +1072,8 @@ static float YGBaseline(const YGNodeRef node) {
   }
 
   YGNodeRef baselineChild = NULL;
-  for (uint32_t i = 0; i < YGNodeGetChildCount(node); i++) {
+  const uint32_t childCount = YGNodeGetChildCount(node);
+  for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeGetChild(node, i);
     if (child->lineIndex > 0) {
       break;
@@ -1130,7 +1131,8 @@ static bool YGIsBaselineLayout(const YGNodeRef node) {
   if (node->style.alignItems == YGAlignBaseline) {
     return true;
   }
-  for (uint32_t i = 0; i < YGNodeGetChildCount(node); i++) {
+  const uint32_t childCount = YGNodeGetChildCount(node);
+  for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeGetChild(node, i);
     if (child->style.positionType == YGPositionTypeRelative &&
         child->style.alignSelf == YGAlignBaseline) {
@@ -1735,7 +1737,8 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
   node->layout.position[YGEdgeBottom] = 0;
   node->layout.position[YGEdgeLeft] = 0;
   node->layout.position[YGEdgeRight] = 0;
-  for (uint32_t i = 0; i < YGNodeGetChildCount(node); i++) {
+  const uint32_t childCount = YGNodeGetChildCount(node);
+  for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeListGet(node->children, i);
     YGZeroOutLayoutRecursivly(child);
   }
@@ -1759,30 +1762,6 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
 //  * The 'visibility' property is always assumed to be 'visible'. Values of
 //  'collapse'
 //    and 'hidden' are not supported.
-//  * The 'wrap' property supports only 'nowrap' (which is the default) or
-//  'wrap'. The
-//    rarely-used 'wrap-reverse' is not supported.
-//  * Rather than allowing arbitrary combinations of flexGrow, flexShrink and
-//    flexBasis, this algorithm supports only the three most common
-//    combinations:
-//      flex: 0 is equiavlent to flex: 0 0 auto
-//      flex: n (where n is a positive value) is equivalent to flex: n 1 auto
-//          If POSITIVE_FLEX_IS_AUTO is 0, then it is equivalent to flex: n 0 0
-//          This is faster because the content doesn't need to be measured, but
-//          it's
-//          less flexible because the basis is always 0 and can't be overriden
-//          with
-//          the width/height attributes.
-//      flex: -1 (or any negative value) is equivalent to flex: 0 1 auto
-//  * Margins cannot be specified as 'auto'. They must be specified in terms of
-//  points
-//    values, and the default value is 0.
-//  * Values of width, maxWidth, minWidth, height, maxHeight and minHeight must
-//  be
-//    specified as point values, not as percentages.
-//  * There is no support for calculation of dimensions based on intrinsic
-//  aspect ratios
-//     (e.g. images).
 //  * There is no support for forced breaks.
 //  * It does not support vertical inline directions (top-to-bottom or
 //  bottom-to-top text).
@@ -1932,7 +1911,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   const YGFlexDirection crossAxis = YGFlexDirectionCross(mainAxis, direction);
   const bool isMainAxisRow = YGFlexDirectionIsRow(mainAxis);
   const YGJustify justifyContent = node->style.justifyContent;
-  const bool isNodeFlexWrap = node->style.flexWrap == YGWrapWrap;
+  const bool isNodeFlexWrap = node->style.flexWrap != YGWrapNoWrap;
 
   const float mainAxisParentSize = isMainAxisRow ? parentWidth : parentHeight;
   const float crossAxisParentSize = isMainAxisRow ? parentHeight : parentWidth;
@@ -2948,6 +2927,18 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                                                    totalLineCrossDim + paddingAndBorderAxisCross,
                                                    crossAxisParentSize)),
               paddingAndBorderAxisCross);
+  }
+
+  // As we only wrapped in normal direction yet, we need to reverse the positions on wrap-reverse.
+  if (performLayout && node->style.flexWrap == YGWrapWrapReverse) {
+    for (uint32_t i = 0; i < childCount; i++) {
+      const YGNodeRef child = YGNodeGetChild(node, i);
+      if (child->style.positionType == YGPositionTypeRelative) {
+        child->layout.position[pos[crossAxis]] = node->layout.measuredDimensions[dim[crossAxis]] -
+                                                 child->layout.position[pos[crossAxis]] -
+                                                 child->layout.measuredDimensions[dim[crossAxis]];
+      }
+    }
   }
 
   if (performLayout) {
