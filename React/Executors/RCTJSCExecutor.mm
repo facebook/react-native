@@ -84,7 +84,6 @@ struct TaggedScript {
 
 struct RCTJSContextData {
   BOOL useCustomJSCLibrary;
-  BOOL tryBytecode;
   NSThread *javaScriptThread;
   JSContext *context;
 };
@@ -150,7 +149,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   // Set at init time:
   BOOL _useCustomJSCLibrary;
-  BOOL _tryBytecode;
   NSThread *_javaScriptThread;
 
   // Set at setUp time:
@@ -230,18 +228,10 @@ static NSThread *newJavaScriptThread(void)
 
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
 {
-  return [self initWithUseCustomJSCLibrary:useCustomJSCLibrary
-                               tryBytecode:NO];
-}
-
-- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
-                                tryBytecode:(BOOL)tryBytecode
-{
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTJSCExecutor init]", nil);
 
   if (self = [super init]) {
     _useCustomJSCLibrary = useCustomJSCLibrary;
-    _tryBytecode = tryBytecode;
     _valid = YES;
     _javaScriptThread = newJavaScriptThread();
   }
@@ -254,7 +244,6 @@ static NSThread *newJavaScriptThread(void)
 {
   if (self = [super init]) {
     _useCustomJSCLibrary = data.useCustomJSCLibrary;
-    _tryBytecode = data.tryBytecode;
     _valid = YES;
     _javaScriptThread = data.javaScriptThread;
     _context = [[RCTJavaScriptContext alloc] initWithJSContext:data.context onThread:_javaScriptThread];
@@ -531,7 +520,7 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
 
 - (int32_t)bytecodeFileFormatVersion
 {
-  return (_useCustomJSCLibrary && _tryBytecode)
+  return _useCustomJSCLibrary
     ? facebook::react::customJSCWrapper()->JSBytecodeFileFormatVersion
     : JSNoBytecodeFileFormatVersion;
 }
@@ -998,12 +987,10 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
 }
 
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
-                                tryBytecode:(BOOL)tryBytecode
 {
   if (self = [super init]) {
     _semaphore = dispatch_semaphore_create(0);
     _useCustomJSCLibrary = useCustomJSCLibrary;
-    _tryBytecode = tryBytecode;
     _javaScriptThread = newJavaScriptThread();
     [self performSelector:@selector(_createContext) onThread:_javaScriptThread withObject:nil waitUntilDone:NO];
   }
@@ -1027,7 +1014,6 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
   dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
   return {
     .useCustomJSCLibrary = _useCustomJSCLibrary,
-    .tryBytecode = _tryBytecode,
     .javaScriptThread = _javaScriptThread,
     .context = _context,
   };
