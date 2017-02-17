@@ -12,9 +12,11 @@
 
 const BatchedBridge = require('BatchedBridge');
 const performanceNow = global.nativePerformanceNow || require('fbjs/lib/performanceNow');
+const Systrace = require('Systrace');
 
 var timespans = {};
 var extras = {};
+var cookies = {};
 
 /**
  * This is meant to collect and log performance data in production, which means
@@ -53,6 +55,7 @@ var PerformanceLogger = {
       description: description,
       startTime: performanceNow(),
     };
+    cookies[key] = Systrace.beginAsyncEvent(key);
   },
 
   stopTimespan(key) {
@@ -75,6 +78,8 @@ var PerformanceLogger = {
       return;
     }
 
+    Systrace.endAsyncEvent(key, cookies[key]);
+    delete cookies[key];
     timespans[key].endTime = performanceNow();
     timespans[key].totalTime =
       timespans[key].endTime - timespans[key].startTime;

@@ -61,6 +61,7 @@
     "SyntheticEvent": false,
     "$Either": false,
     "$All": false,
+    "$ArrayBufferView": false,
     "$Tuple": false,
     "$Supertype": false,
     "$Subtype": false,
@@ -78,6 +79,7 @@
     "comma-dangle": 0,               // disallow trailing commas in object literals
     "no-cond-assign": 1,             // disallow assignment in conditional expressions
     "no-console": 0,                 // disallow use of console (off by default in the node environment)
+    "no-const-assign": 2,            // disallow assignment to const-declared variables
     "no-constant-condition": 0,      // disallow use of constant expressions in conditions
     "no-control-regex": 1,           // disallow control characters in regular expressions
     "no-debugger": 1,                // disallow use of debugger

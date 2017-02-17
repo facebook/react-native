@@ -111,7 +111,7 @@ const TypeToDifferMap = {
   // (not yet implemented)
 };
 
-function processColorArray(colors: []): [] {
+function processColorArray(colors: ?Array<any>): ?Array<?number> {
   return colors && colors.map(processColor);
 }
 

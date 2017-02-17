@@ -142,10 +142,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
 
   case facebook::react::ScriptTag::BCBundle:
-    if (header.BCVersion != runtimeBCVersion) {
+    if (runtimeBCVersion == JSNoBytecodeFileFormatVersion || runtimeBCVersion < 0) {
+      if (error) {
+        *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
+                                     code:RCTJavaScriptLoaderErrorBCNotSupported
+                                 userInfo:@{NSLocalizedDescriptionKey:
+                                              @"Bytecode bundles are not supported by this runtime."}];
+      }
+      return nil;
+    }
+    else if ((uint32_t)runtimeBCVersion != header.BCVersion) {
       if (error) {
         NSString *errDesc =
-          [NSString stringWithFormat:@"BC Version Mismatch. Expect: %d, Actual: %d",
+          [NSString stringWithFormat:@"BC Version Mismatch. Expect: %d, Actual: %u",
                     runtimeBCVersion, header.BCVersion];
 
         *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
@@ -221,7 +230,7 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
 
     // For multipart responses packager sets X-Http-Status header in case HTTP status code
     // is different from 200 OK
-    NSString *statusCodeHeader = [headers valueForKey:@"X-Http-Status"];
+    NSString *statusCodeHeader = headers[@"X-Http-Status"];
     if (statusCodeHeader) {
       statusCode = [statusCodeHeader integerValue];
     }
@@ -254,9 +263,9 @@ static RCTLoadingProgress *progressEventFromData(NSData *rawData)
   }
 
   RCTLoadingProgress *progress = [RCTLoadingProgress new];
-  progress.status = [info valueForKey:@"status"];
-  progress.done = [info valueForKey:@"done"];
-  progress.total = [info valueForKey:@"total"];
+  progress.status = info[@"status"];
+  progress.done = info[@"done"];
+  progress.total = info[@"total"];
   return progress;
 }
 
@@ -272,12 +281,11 @@ static NSDictionary *userInfoForRawResponse(NSString *rawText)
   }
   NSMutableArray<NSDictionary *> *fakeStack = [NSMutableArray new];
   for (NSDictionary *err in errors) {
-    [fakeStack addObject:
-     @{
+    [fakeStack addObject: @{
        @"methodName": err[@"description"] ?: @"",
        @"file": err[@"filename"] ?: @"",
        @"lineNumber": err[@"lineNumber"] ?: @0
-       }];
+    }];
   }
   return @{NSLocalizedDescriptionKey: parsedResponse[@"message"] ?: @"No message provided", @"stack": [fakeStack copy]};
 }

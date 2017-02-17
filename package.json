@@ -24,6 +24,7 @@
       "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
     },
     "testPathIgnorePatterns": [
+      "Libraries/Renderer",
       "/node_modules/",
       "/website/",
       "local-cli/templates/"
@@ -73,6 +74,8 @@
       "<rootDir>/website/"
     ],
     "unmockedModulePathPatterns": [
+      "node_modules/react/",
+      "Libraries/Renderer",
       "promise",
       "source-map",
       "fastpath",
@@ -88,6 +91,7 @@
     "cli.js",
     "flow",
     "init.sh",
+    "ios-install-third-party.sh",
     "jest-preset.json",
     "jest",
     "lib",
@@ -114,7 +118,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "~15.4.0-rc.4"
+    "react": "16.0.0-alpha.2"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -144,7 +148,7 @@
     "debug": "^2.2.0",
     "denodeify": "^1.2.1",
     "event-target-shim": "^1.0.5",
-    "fbjs": "^0.8.5",
+    "fbjs": "^0.8.9",
     "fbjs-scripts": "^0.7.0",
     "fs-extra": "^0.26.2",
     "glob": "^5.0.15",
@@ -170,6 +174,7 @@
     "plist": "^1.2.0",
     "promise": "^7.1.1",
     "react-clone-referenced-element": "^1.0.1",
+    "react-devtools-core": "^2.0.8",
     "react-timer-mixin": "^0.13.2",
     "react-transform-hmr": "^1.0.4",
     "rebound": "^0.0.13",
@@ -199,14 +204,14 @@
     "eslint-plugin-babel": "^3.3.0",
     "eslint-plugin-flowtype": "^2.20.0",
     "eslint-plugin-react": "^6.4.1",
-    "flow-bin": "^0.37.0",
+    "flow-bin": "^0.39.0",
     "jest": "18.0.0",
     "jest-repl": "18.0.0",
     "jest-runtime": "18.0.0",
     "mock-fs": "^3.11.0",
-    "react": "~15.4.0-rc.4",
-    "react-dom": "~15.4.0-rc.4",
-    "react-test-renderer": "~15.4.0-rc.4",
+    "react": "16.0.0-alpha.2",
+    "react-dom": "16.0.0-alpha.2",
+    "react-test-renderer": "16.0.0-alpha.2",
     "shelljs": "0.6.0",
     "sinon": "^2.0.0-pre.2"
   }

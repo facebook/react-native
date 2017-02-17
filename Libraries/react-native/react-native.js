@@ -50,7 +50,6 @@ const ReactNative = {
   get Slider() { return require('Slider'); },
   get SnapshotViewIOS() { return require('SnapshotViewIOS'); },
   get Switch() { return require('Switch'); },
-  get RecyclerViewBackedScrollView() { return require('RecyclerViewBackedScrollView'); },
   get RefreshControl() { return require('RefreshControl'); },
   get StatusBar() { return require('StatusBar'); },
   get SwipeableListView() { return require('SwipeableListView'); },
@@ -121,12 +120,6 @@ const ReactNative = {
 
   // See http://facebook.github.io/react/docs/addons.html
   addons: {
-    get LinkedStateMixin() {
-      if (__DEV__) {
-        addonWarn('LinkedStateMixin', 'react-addons-linked-state-mixin');
-      }
-      return require('react/lib/LinkedStateMixin');
-    },
     get PureRenderMixin() {
       if (__DEV__) {
         addonWarn('PureRenderMixin', 'react-addons-pure-render-mixin');

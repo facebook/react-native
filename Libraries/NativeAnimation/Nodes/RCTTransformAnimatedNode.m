@@ -33,14 +33,12 @@
 {
   [super performUpdate];
 
-  CATransform3D transform = CATransform3DIdentity;
-
   NSArray<NSDictionary *> *transformConfigs = self.config[@"transforms"];
+  NSMutableArray<NSDictionary *> *transform = [NSMutableArray arrayWithCapacity:transformConfigs.count];
   for (NSDictionary *transformConfig in transformConfigs) {
     NSString *type = transformConfig[@"type"];
     NSString *property = transformConfig[@"property"];
-
-    CGFloat value;
+    NSNumber *value;
     if ([type isEqualToString: @"animated"]) {
       NSNumber *nodeTag = transformConfig[@"nodeTag"];
       RCTAnimatedNode *node = self.parentNodes[nodeTag];
@@ -48,41 +46,14 @@
         continue;
       }
       RCTValueAnimatedNode *parentNode = (RCTValueAnimatedNode *)node;
-      value = parentNode.value;
+      value = @(parentNode.value);
     } else {
-      value = [transformConfig[@"value"] floatValue];
+      value = transformConfig[@"value"];
     }
-
-    if ([property isEqualToString:@"scale"]) {
-      transform = CATransform3DScale(transform, value, value, 1);
-
-    } else if ([property isEqualToString:@"scaleX"]) {
-      transform = CATransform3DScale(transform, value, 1, 1);
-
-    } else if ([property isEqualToString:@"scaleY"]) {
-      transform = CATransform3DScale(transform, 1, value, 1);
-
-    } else if ([property isEqualToString:@"translateX"]) {
-      transform = CATransform3DTranslate(transform, value, 0, 0);
-
-    } else if ([property isEqualToString:@"translateY"]) {
-      transform = CATransform3DTranslate(transform, 0, value, 0);
-
-    } else if ([property isEqualToString:@"rotate"]) {
-      transform = CATransform3DRotate(transform, value, 0, 0, 1);
-
-    } else if ([property isEqualToString:@"rotateX"]) {
-      transform = CATransform3DRotate(transform, value, 1, 0, 0);
-
-    } else if ([property isEqualToString:@"rotateY"]) {
-      transform = CATransform3DRotate(transform, value, 0, 1, 0);
-
-    } else if ([property isEqualToString:@"perspective"]) {
-      transform.m34 = 1.0 / -value;
-    }
+    [transform addObject:@{property: value}];
   }
 
-  _propsDictionary[@"transform"] = [NSValue valueWithCATransform3D:transform];
+  _propsDictionary[@"transform"] = transform;
 }
 
 @end

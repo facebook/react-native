@@ -7,8 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTI18nUtil.h"
 #import "RCTRootShadowView.h"
+
+#import "RCTI18nUtil.h"
 
 @implementation RCTRootShadowView
 
@@ -20,9 +21,7 @@
 {
   self = [super init];
   if (self) {
-    if ([[RCTI18nUtil sharedInstance] isRTL]) {
-      YGNodeStyleSetDirection(self.cssNode, YGDirectionRTL);
-    }
+    _baseDirection = [[RCTI18nUtil sharedInstance] isRTL] ? YGDirectionRTL : YGDirectionLTR;
   }
   return self;
 }
@@ -49,7 +48,7 @@
 {
   [self applySizeConstraints];
 
-  YGNodeCalculateLayout(self.cssNode, YGUndefined, YGUndefined, YGDirectionInherit);
+  YGNodeCalculateLayout(self.cssNode, YGUndefined, YGUndefined, _baseDirection);
 
   NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
   [self applyLayoutNode:self.cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
