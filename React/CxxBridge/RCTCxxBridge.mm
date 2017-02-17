@@ -25,9 +25,6 @@
 #import <React/RCTDevLoadingView.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTDisplayLink.h>
-#ifdef WITH_FBSYSTRACE
-#import <React/RCTFBSystrace.h>
-#endif
 #import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
@@ -46,6 +43,10 @@
 #import "RCTMessageThread.h"
 #import "RCTNativeModule.h"
 #import "RCTObjcExecutor.h"
+
+#ifdef WITH_FBSYSTRACE
+#import <React/RCTFBSystrace.h>
+#endif
 
 #define RCTAssertJSThread() \
   RCTAssert(self.executorClass || self->_jsThread == [NSThread currentThread], \
@@ -341,40 +342,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 }
 
-static NSError *tryAndReturnError(dispatch_block_t block) {
-  // TODO #10487027: This is mostly duplicated in RCTMessageThread.
-  try {
-    @try {
-      block();
-      return nil;
-    }
-    @catch (NSException *exception) {
-      NSString *message =
-        [NSString stringWithFormat:@"Exception '%@' was thrown from JS thread", exception];
-      return RCTErrorWithMessage(message);
-    }
-    @catch (id exception) {
-      // This will catch any other ObjC exception, but no C++ exceptions
-      return RCTErrorWithMessage(@"non-std ObjC Exception");
-    }
-  } catch (const JSException &ex) {
-    // This is a special case.  We want to extract the stack
-    // information and pass it to the redbox.  This will lose the C++
-    // stack, but it's of limited value.
-    NSDictionary *errorInfo = @{
-      RCTJSRawStackTraceKey: @(ex.getStack().c_str()),
-      NSLocalizedDescriptionKey: [@"Unhandled JS Exception: " stringByAppendingString:@(ex.what())]
-    };
-    return [NSError errorWithDomain:RCTErrorDomain code:1 userInfo:errorInfo];
-  } catch (const std::exception &ex) {
-    return RCTErrorWithMessage(@(ex.what()));
-  } catch (...) {
-    // On a 64-bit platform, this would catch ObjC exceptions, too, but not on
-    // 32-bit platforms, so we catch those with id exceptions above.
-    return RCTErrorWithMessage(@"non-std C++ exception");
-  }
-}
-
 - (void)_tryAndHandleError:(dispatch_block_t)block
 {
   NSError *error = tryAndReturnError(block);
@@ -578,16 +545,15 @@ static NSError *tryAndReturnError(dispatch_block_t block) {
   for (RCTModuleData *moduleData in _moduleDataByID) {
     // TODO mhorowitz #10487027: unwrap C++ modules and register them directly.
     if ([moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
-      RCTCxxModule *cxxInstance = moduleData.instance;
       // If a module does not support automatic instantiation, and
       // wasn't provided as an extra module, it may not have an
       // instance.  If so, skip it.
-      if (!cxxInstance) {
+      if (![moduleData hasInstance]) {
         continue;
       }
       modules.emplace_back(
         new QueueNativeModule(self, std::make_unique<CxxNativeModule>(
-          _reactInstance, [cxxInstance move])));
+          _reactInstance, [(RCTCxxModule *)(moduleData.instance) move])));
     } else {
       modules.emplace_back(new RCTNativeModule(self, moduleData));
     }
@@ -1255,44 +1221,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }];
 }
 
-static JSContext *contextForGlobalContextRef(JSGlobalContextRef contextRef)
-{
-  static std::mutex s_mutex;
-  static NSMapTable *s_contextCache;
 
-  if (!contextRef) {
-    return nil;
-  }
-
-  // Adding our own lock here, since JSC internal ones are insufficient
-  std::lock_guard<std::mutex> lock(s_mutex);
-  if (!s_contextCache) {
-    NSPointerFunctionsOptions keyOptions = NSPointerFunctionsOpaqueMemory | NSPointerFunctionsOpaquePersonality;
-    NSPointerFunctionsOptions valueOptions = NSPointerFunctionsWeakMemory | NSPointerFunctionsObjectPersonality;
-    s_contextCache = [[NSMapTable alloc] initWithKeyOptions:keyOptions valueOptions:valueOptions capacity:0];
-  }
-
-  JSContext *ctx = [s_contextCache objectForKey:(__bridge id)contextRef];
-  if (!ctx) {
-    ctx = [JSC_JSContext(contextRef) contextWithJSGlobalContextRef:contextRef];
-    [s_contextCache setObject:ctx forKey:(__bridge id)contextRef];
-  }
-  return ctx;
-}
-
-/*
- * The ValueEncoder<NSArray *>::toValue is used by callFunctionSync below.
- * Note: Because the NSArray * is really a NSArray * __strong the toValue is
- * accepting NSArray *const __strong instead of NSArray *&&.
- */
-template <>
-struct ValueEncoder<NSArray *> {
-  static Value toValue(JSGlobalContextRef ctx, NSArray *const __strong array)
-  {
-    JSValue *value = [JSValue valueWithObject:array inContext:contextForGlobalContextRef(ctx)];
-    return {ctx, [value JSValueRef]};
-  }
-};
 
 - (JSValue *)callFunctionOnModule:(NSString *)module
                            method:(NSString *)method
@@ -1325,9 +1254,8 @@ struct ValueEncoder<NSArray *> {
     return nil;
   }
 
-  __block JSValue *ret = nil;
-
   RCT_PROFILE_BEGIN_EVENT(0, @"callFunctionOnModule", (@{ @"module": module, @"method": method }));
+  __block JSValue *ret = nil;
   NSError *errorObj = tryAndReturnError(^{
     Value result = self->_reactInstance->callFunctionSync(
       [module UTF8String], [method UTF8String], arguments);

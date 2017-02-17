@@ -27,9 +27,9 @@ const AsyncStorage = require('AsyncStorage');
 const Linking = require('Linking');
 const React = require('react');
 const ReactNative = require('react-native');
-const UIExplorerList = require('./UIExplorerList.ios');
 const UIExplorerExampleContainer = require('./UIExplorerExampleContainer');
 const UIExplorerExampleList = require('./UIExplorerExampleList');
+const UIExplorerList = require('./UIExplorerList.ios');
 const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
 const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
 const URIActionMap = require('./URIActionMap');
@@ -115,8 +115,10 @@ class UIExplorerApp extends React.Component {
     }
     const newState = UIExplorerNavigationReducer(this.state, action);
     if (this.state !== newState) {
-      this.setState(newState);
-      AsyncStorage.setItem(APP_STATE_KEY, JSON.stringify(this.state));
+      this.setState(
+        newState,
+        () => AsyncStorage.setItem(APP_STATE_KEY, JSON.stringify(this.state))
+      );
     }
   }
 

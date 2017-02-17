@@ -13,7 +13,7 @@
 
 YG_EXTERN_C_BEGIN
 
-#define YGAlignCount 6
+#define YGAlignCount 8
 typedef YG_ENUM_BEGIN(YGAlign) {
   YGAlignAuto,
   YGAlignFlexStart,
@@ -21,6 +21,8 @@ typedef YG_ENUM_BEGIN(YGAlign) {
   YGAlignFlexEnd,
   YGAlignStretch,
   YGAlignBaseline,
+  YGAlignSpaceBetween,
+  YGAlignSpaceAround,
 } YG_ENUM_END(YGAlign);
 
 #define YGDimensionCount 2
@@ -114,17 +116,19 @@ typedef YG_ENUM_BEGIN(YGPrintOptions) {
   YGPrintOptionsChildren = 4,
 } YG_ENUM_END(YGPrintOptions);
 
-#define YGUnitCount 3
+#define YGUnitCount 4
 typedef YG_ENUM_BEGIN(YGUnit) {
   YGUnitUndefined,
-  YGUnitPixel,
+  YGUnitPoint,
   YGUnitPercent,
+  YGUnitAuto,
 } YG_ENUM_END(YGUnit);
 
-#define YGWrapCount 2
+#define YGWrapCount 3
 typedef YG_ENUM_BEGIN(YGWrap) {
   YGWrapNoWrap,
   YGWrapWrap,
+  YGWrapWrapReverse,
 } YG_ENUM_END(YGWrap);
 
 YG_EXTERN_C_END

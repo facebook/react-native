@@ -12,12 +12,14 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
+#import <React/RCTFollyConvert.h>
 #import <cxxreact/JsArgumentHelpers.h>
 #import <folly/Memory.h>
 
 #import "RCTCxxUtils.h"
 
 using facebook::xplat::module::CxxModule;
+using namespace facebook::react;
 
 @implementation RCTCxxMethod
 {
@@ -77,14 +79,14 @@ using facebook::xplat::module::CxxModule;
       NSNumber *id2 = arguments[arguments.count - 1];
 
       second = ^(std::vector<folly::dynamic> args) {
-        [bridge enqueueCallback:id2 args:RCTConvertFollyDynamic(folly::dynamic(args.begin(), args.end()))];
+        [bridge enqueueCallback:id2 args:convertFollyDynamicToId(folly::dynamic(args.begin(), args.end()))];
       };
     } else {
       id1 = arguments[arguments.count - 1];
     }
 
     first = ^(std::vector<folly::dynamic> args) {
-      [bridge enqueueCallback:id1 args:RCTConvertFollyDynamic(folly::dynamic(args.begin(), args.end()))];
+      [bridge enqueueCallback:id1 args:convertFollyDynamicToId(folly::dynamic(args.begin(), args.end()))];
     };
   }
 
@@ -98,7 +100,7 @@ using facebook::xplat::module::CxxModule;
     } else {
       auto result = _method->syncFunc(std::move(args));
       // TODO: we should convert this to JSValue directly
-      return RCTConvertFollyDynamic(result);
+      return convertFollyDynamicToId(result);
     }
   } catch (const facebook::xplat::JsArgumentException &ex) {
     RCTLogError(@"Method %@.%s argument error: %s",

@@ -10,6 +10,7 @@
 #import "RCTObjcExecutor.h"
 
 #import <React/RCTCxxUtils.h>
+#import <React/RCTFollyConvert.h>
 #import <React/RCTJavaScriptExecutor.h>
 #import <React/RCTLog.h>
 #import <React/RCTProfile.h>
@@ -91,13 +92,13 @@ public:
                     const folly::dynamic &arguments) override {
     [m_jse callFunctionOnModule:@(module.c_str())
            method:@(method.c_str())
-           arguments:RCTConvertFollyDynamic(arguments)
+           arguments:convertFollyDynamicToId(arguments)
            callback:m_jsCallback];
   }
 
   void invokeCallback(double callbackId, const folly::dynamic &arguments) override {
     [m_jse invokeCallbackID:@(callbackId)
-           arguments:RCTConvertFollyDynamic(arguments)
+           arguments:convertFollyDynamicToId(arguments)
            callback:m_jsCallback];
   }
 

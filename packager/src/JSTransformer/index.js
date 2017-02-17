@@ -140,8 +140,6 @@ class Transformer {
   static TransformError;
 }
 
-module.exports = Transformer;
-
 Transformer.TransformError = TransformError;
 
 function TransformError() {
@@ -165,6 +163,8 @@ function formatGenericError(err, filename) {
   error.stack = stack.join('\n');
   error.message = msg;
   error.type = 'TransformError';
+  error.lineNumber = 0;
+  error.description = '';
   return error;
 }
 
@@ -180,3 +180,5 @@ function formatBabelError(err, filename) {
   error.description = err.message;
   return error;
 }
+
+module.exports = Transformer;
