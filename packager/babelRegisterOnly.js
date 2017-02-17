@@ -26,7 +26,6 @@ function config(onlyList) {
       'transform-flow-strip-types',
       'syntax-trailing-function-commas',
       'transform-object-rest-spread',
-      'transform-async-to-generator',
     ],
     only: _only,
     retainLines: true,

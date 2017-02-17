@@ -7,13 +7,12 @@
 
 #include <cxxreact/Executor.h>
 #include <cxxreact/JSBundleType.h>
+#include <cxxreact/JSModulesUnbundle.h>
 
 namespace facebook {
 namespace react {
 
 class JSBigString;
-
-#include <cxxreact/JSModulesUnbundle.h>
 
 class JSIndexedRAMBundle : public facebook::react::JSModulesUnbundle {
 public:

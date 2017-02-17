@@ -58,6 +58,7 @@ static void RCTPrint(YGNodeRef node)
 
 #define RCT_SET_YGVALUE(ygvalue, setter, ...)    \
 switch (ygvalue.unit) {                          \
+  case YGUnitAuto:                               \
   case YGUnitUndefined:                          \
     setter(__VA_ARGS__, YGUndefined);            \
     break;                                       \
@@ -66,8 +67,6 @@ switch (ygvalue.unit) {                          \
     break;                                       \
   case YGUnitPercent:                            \
     setter##Percent(__VA_ARGS__, ygvalue.value); \
-    break;                                       \
-  case YGUnitAuto:                               \
     break;                                       \
 }
 

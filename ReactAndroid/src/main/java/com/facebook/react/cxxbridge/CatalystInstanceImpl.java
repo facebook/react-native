@@ -208,15 +208,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniLoadScriptFromFile(fileName, sourceURL);
   }
 
-  /* package */ void loadScriptFromOptimizedBundle(String path, String sourceURL, int flags) {
-    mSourceURL = sourceURL;
-    jniLoadScriptFromOptimizedBundle(path, sourceURL, flags);
-  }
-
   private native void jniSetSourceURL(String sourceURL);
   private native void jniLoadScriptFromAssets(AssetManager assetManager, String assetURL);
   private native void jniLoadScriptFromFile(String fileName, String sourceURL);
-  private native void jniLoadScriptFromOptimizedBundle(String path, String sourceURL, int flags);
 
   @Override
   public void runJSBundle() {

@@ -2162,10 +2162,6 @@ class AnimatedEvent {
     this._listener = config.listener;
     this.__isNative = shouldUseNativeDriver(config);
 
-    if (this.__isNative) {
-      invariant(!this._listener, 'Listener is not supported for native driven events.');
-    }
-
     if (__DEV__) {
       this._validateMapping();
     }
@@ -2215,6 +2211,10 @@ class AnimatedEvent {
   }
 
   __getHandler() {
+    if (this.__isNative) {
+      return this._listener;
+    }
+
     return (...args) => {
       const traverse = (recMapping, recEvt, key) => {
         if (typeof recEvt === 'number' && recMapping instanceof AnimatedValue) {
