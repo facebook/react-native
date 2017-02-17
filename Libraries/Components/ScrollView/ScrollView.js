@@ -368,6 +368,11 @@ const ScrollView = React.createClass({
       'always',
       'never',
     ]),
+    
+    /**
+     * Force the scroll view to become the responder when tapped
+     */
+    forceSetResponder: PropTypes.bool,
   },
 
   mixins: [ScrollResponder.Mixin],
@@ -567,7 +572,10 @@ const ScrollView = React.createClass({
       onScrollEndDrag: this.scrollResponderHandleScrollEndDrag,
       onMomentumScrollBegin: this.scrollResponderHandleMomentumScrollBegin,
       onMomentumScrollEnd: this.scrollResponderHandleMomentumScrollEnd,
-      onStartShouldSetResponder: this.scrollResponderHandleStartShouldSetResponder,
+      onStartShouldSetResponder: () => {
+        if (this.props.forceSetResponder) return true;
+        return this.scrollResponderHandleStartShouldSetResponder();
+      },
       onStartShouldSetResponderCapture: this.scrollResponderHandleStartShouldSetResponderCapture,
       onScrollShouldSetResponder: this.scrollResponderHandleScrollShouldSetResponder,
       onScroll: this._handleScroll,
