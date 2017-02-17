@@ -37,19 +37,19 @@ const React = require('React');
 const VirtualizedSectionList = require('VirtualizedSectionList');
 
 import type {Viewable} from 'ViewabilityHelper';
+import type {Props as VirtualizedSectionListProps} from 'VirtualizedSectionList';
 
 type Item = any;
-type SectionItem = any;
 
-type SectionBase = {
+type SectionBase<SectionItemT> = {
   // Must be provided directly on each section.
-  data: Array<SectionItem>,
+  data: Array<SectionItemT>,
   key: string,
 
   // Optional props will override list-wide props just for this section.
-  ItemComponent?: ?ReactClass<{item: SectionItem, index: number}>,
+  ItemComponent?: ?ReactClass<{item: SectionItemT, index: number}>,
   SeparatorComponent?: ?ReactClass<*>,
-  keyExtractor?: (item: SectionItem) => string,
+  keyExtractor?: (item: SectionItemT) => string,
 
   // TODO: support more optional/override props
   // FooterComponent?: ?ReactClass<*>,
@@ -57,15 +57,15 @@ type SectionBase = {
   // onViewableItemsChanged?: ({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
 
   // TODO: support recursive sections
-  // SectionHeaderComponent?: ?ReactClass<{section: SectionBase}>,
+  // SectionHeaderComponent?: ?ReactClass<{section: SectionBase<*>}>,
   // sections?: ?Array<Section>;
 };
 
-type RequiredProps<SectionT: SectionBase> = {
+type RequiredProps<SectionT: SectionBase<*>> = {
   sections: Array<SectionT>,
 };
 
-type OptionalProps<SectionT: SectionBase> = {
+type OptionalProps<SectionT: SectionBase<*>> = {
   /**
    * Rendered after the last item in the last section.
    */
@@ -73,7 +73,7 @@ type OptionalProps<SectionT: SectionBase> = {
   /**
    * Default renderer for every item in every section.
    */
-  ItemComponent?: ?ReactClass<{item: Item, index: number}>,
+  ItemComponent: ReactClass<{item: Item, index: number}>,
   /**
    * Rendered at the top of each section. In the future, a sticky option will be added.
    */
@@ -93,8 +93,8 @@ type OptionalProps<SectionT: SectionBase> = {
    * stored outside of the recursive `ItemComponent` instance tree.
    */
   enableVirtualization?: ?boolean,
-  keyExtractor?: (item: Item) => string,
-  onEndReached?: ({distanceFromEnd: number}) => void,
+  keyExtractor: (item: Item, index: number) => string,
+  onEndReached?: ?({distanceFromEnd: number}) => void,
   /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
    * sure to also set the `refreshing` prop correctly.
@@ -104,21 +104,25 @@ type OptionalProps<SectionT: SectionBase> = {
    * Called when the viewability of rows changes, as defined by the
    * `viewablePercentThreshold` prop.
    */
-  onViewableItemsChanged?: ({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
+  onViewableItemsChanged?: ?({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
   /**
    * Set this true while waiting for new data from a refresh.
    */
-  refreshing?: boolean,
+  refreshing?: ?boolean,
   /**
    * This is an optional optimization to minimize re-rendering items.
    */
-  shouldItemUpdate?: (
+  shouldItemUpdate: (
     prevProps: {item: Item, index: number},
     nextProps: {item: Item, index: number}
   ) => boolean,
 };
 
-type Props<SectionT> = RequiredProps<SectionT> & OptionalProps<SectionT>;
+type Props<SectionT> = RequiredProps<SectionT>
+  & OptionalProps<SectionT>
+  & VirtualizedSectionListProps<SectionT>;
+
+type DefaultProps = typeof VirtualizedSectionList.defaultProps;
 
 /**
  * A performant interface for rendering sectioned lists, supporting the most handy features:
@@ -132,8 +136,11 @@ type Props<SectionT> = RequiredProps<SectionT> & OptionalProps<SectionT>;
  *
  * If you don't need section support and want a simpler interface, use FlatList.
  */
-class SectionList<SectionT: SectionBase> extends React.Component<void, Props<SectionT>, void> {
+class SectionList<SectionT: SectionBase<*>>
+  extends React.PureComponent<DefaultProps, Props<SectionT>, *>
+{
   props: Props<SectionT>;
+  static defaultProps: DefaultProps = VirtualizedSectionList.defaultProps;
 
   render() {
     if (this.props.legacyImplementation) {

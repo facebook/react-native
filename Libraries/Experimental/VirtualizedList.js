@@ -68,7 +68,7 @@ type RequiredProps = {
    * The default accessor functions assume this is an Array<{key: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
    */
-  data: any,
+  data?: any,
 };
 type OptionalProps = {
   FooterComponent?: ?ReactClass<*>,
@@ -89,12 +89,12 @@ type OptionalProps = {
   getItemCount: (items: any) => number,
   getItemLayout?: (items: any, index: number) =>
     {length: number, offset: number, index: number}, // e.g. height, y
-  horizontal: boolean,
+  horizontal?: ?boolean,
   initialNumToRender: number,
   keyExtractor: (item: Item, index: number) => string,
   maxToRenderPerBatch: number,
-  onEndReached: ({distanceFromEnd: number}) => void,
-  onEndReachedThreshold: number, // units of visible length
+  onEndReached?: ?({distanceFromEnd: number}) => void,
+  onEndReachedThreshold?: ?number, // units of visible length
   onLayout?: ?Function,
   /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
@@ -105,11 +105,11 @@ type OptionalProps = {
    * Called when the viewability of rows changes, as defined by the
    * `viewablePercentThreshold` prop.
    */
-  onViewableItemsChanged?: ({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
+  onViewableItemsChanged?: ?({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
   /**
    * Set this true while waiting for new data from a refresh.
    */
-  refreshing?: boolean,
+  refreshing?: ?boolean,
   removeClippedSubviews?: boolean,
   renderScrollComponent: (props: Object) => React.Element<*>,
   shouldItemUpdate: (
@@ -126,11 +126,11 @@ type OptionalProps = {
   viewablePercentThreshold: number,
   windowSize: number, // units of visible length
 };
-type Props = RequiredProps & OptionalProps;
+export type Props = RequiredProps & OptionalProps;
 
 let _usedIndexForKey = false;
 
-class VirtualizedList extends React.PureComponent {
+class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
   props: Props;
 
   // scrollToEnd may be janky without getItemLayout prop
@@ -182,7 +182,7 @@ class VirtualizedList extends React.PureComponent {
     );
   }
 
-  static defaultProps: OptionalProps = {
+  static defaultProps = {
     disableVirtualization: false,
     getItem: (data: any, index: number) => data[index],
     getItemCount: (data: any) => data ? data.length : 0,
@@ -390,7 +390,12 @@ class VirtualizedList extends React.PureComponent {
 
   _onCellLayout = (e, cellKey, index) => {
     const layout = e.nativeEvent.layout;
-    const next = {offset: this._selectOffset(layout), length: this._selectLength(layout), index, inLayout: true};
+    const next = {
+      offset: this._selectOffset(layout),
+      length: this._selectLength(layout),
+      index,
+      inLayout: true,
+    };
     const curr = this._frames[cellKey];
     if (!curr ||
       next.offset !== curr.offset ||
