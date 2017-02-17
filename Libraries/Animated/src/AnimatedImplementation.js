@@ -2363,10 +2363,10 @@ var event = function(
  * `Animated` exports the following animatable components using the above
  * wrapper:
  *
- * - `<Animated.Image />`
- * - `<Animated.ScrollView />`
- * - `<Animated.Text />`
- * - `<Animated.View />`
+ * - `Animated.Image`
+ * - `Animated.ScrollView`
+ * - `Animated.Text`
+ * - `Animated.View`
  *
  * ### Composing animations
  *
