@@ -67,26 +67,29 @@ type RequiredProps<SectionT: SectionBase<*>> = {
 
 type OptionalProps<SectionT: SectionBase<*>> = {
   /**
-   * Rendered after the last item in the last section.
-   */
-  FooterComponent?: ?ReactClass<*>,
-  /**
    * Default renderer for every item in every section.
    */
   ItemComponent: ReactClass<{item: Item, index: number}>,
   /**
-   * Rendered at the top of each section. In the future, a sticky option will be added.
+   * Rendered in between adjacent Items within each section.
+   */
+  ItemSeparatorComponent?: ?ReactClass<*>,
+  /**
+   * Rendered at the very beginning of the list.
+   */
+  ListHeaderComponent?: ?ReactClass<*>,
+  /**
+   * Rendered at the very end of the list.
+   */
+  ListFooterComponent?: ?ReactClass<*>,
+  /**
+   * Rendered at the top of each section. Sticky headers are not yet supported.
    */
   SectionHeaderComponent?: ?ReactClass<{section: SectionT}>,
   /**
-   * Rendered at the bottom of every Section, except the very last one, in place of the normal
-   * SeparatorComponent.
+   * Rendered in between each section.
    */
   SectionSeparatorComponent?: ?ReactClass<*>,
-  /**
-   * Rendered at the bottom of every Item except the very last one in the last section.
-   */
-  SeparatorComponent?: ?ReactClass<*>,
   /**
    * Warning: Virtualization can drastically improve memory consumption for long lists, but trashes
    * the state of items when they scroll out of the render window, so make sure all relavent data is
@@ -143,11 +146,16 @@ class SectionList<SectionT: SectionBase<*>>
   static defaultProps: DefaultProps = VirtualizedSectionList.defaultProps;
 
   render() {
-    if (this.props.legacyImplementation) {
-      return <MetroListView {...this.props} items={this.props.sections} />;
-    } else {
-      return <VirtualizedSectionList {...this.props} />;
-    }
+    const {ListFooterComponent, ListHeaderComponent, ItemSeparatorComponent} = this.props;
+    const List = this.props.legacyImplementation ? MetroListView : VirtualizedSectionList;
+    return (
+      <List
+        {...this.props}
+        FooterComponent={ListFooterComponent}
+        HeaderComponent={ListHeaderComponent}
+        SeparatorComponent={ItemSeparatorComponent}
+      />
+    );
   }
 }
 

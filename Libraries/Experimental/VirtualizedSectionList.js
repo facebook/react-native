@@ -163,14 +163,18 @@ class VirtualizedSectionList<SectionT: SectionBase>
     const defaultKeyExtractor = this.props.keyExtractor;
     for (let ii = 0; ii < this.props.sections.length; ii++) {
       const section = this.props.sections[ii];
-      const keyExtractor = section.keyExtractor || defaultKeyExtractor;
-      const key = keyExtractor(section, ii);
+      const key = section.key;
+      warning(
+        key != null,
+        'VirtualizedSectionList: A `section` you supplied is missing the `key` property.'
+      );
       itemIndex -= 1; // The section itself is an item
       if (itemIndex >= section.data.length) {
         itemIndex -= section.data.length;
       } else if (itemIndex === -1) {
         return {section, key, index: null};
       } else {
+        const keyExtractor = section.keyExtractor || defaultKeyExtractor;
         return {
           section,
           key: key + ':' + keyExtractor(section.data[itemIndex], itemIndex),
@@ -216,7 +220,8 @@ class VirtualizedSectionList<SectionT: SectionBase>
     if (!info) {
       return null;
     } else if (info.index == null) {
-      return <this.props.SectionHeaderComponent section={info.section} />;
+      const {SectionHeaderComponent} = this.props;
+      return SectionHeaderComponent ? <SectionHeaderComponent section={info.section} /> : null;
     } else {
       const ItemComponent = info.section.ItemComponent || this.props.ItemComponent;
       const SeparatorComponent = this._getSeparatorComponent(index, info);
@@ -236,13 +241,12 @@ class VirtualizedSectionList<SectionT: SectionBase>
     }
     const SeparatorComponent = info.section.SeparatorComponent || this.props.SeparatorComponent;
     const {SectionSeparatorComponent} = this.props;
-    const lastItemIndex = this.state.childProps.getItemCount() - 1;
-    if (SectionSeparatorComponent &&
-        info.index === info.section.data.length - 1 &&
-        index < lastItemIndex) {
+    const isLastItemInList = index === this.state.childProps.getItemCount() - 1;
+    const isLastItemInSection = info.index === info.section.data.length - 1;
+    if (SectionSeparatorComponent && isLastItemInSection && !isLastItemInList) {
       return SectionSeparatorComponent;
     }
-    if (SeparatorComponent && index < lastItemIndex) {
+    if (SeparatorComponent && !isLastItemInSection && !isLastItemInList) {
       return SeparatorComponent;
     }
     return null;
