@@ -103,7 +103,6 @@ describe('DependencyGraph', function() {
       });
     Cache.prototype.end = jest.genMockFn();
 
-    const transformCacheKey = 'abcdef';
     defaults = {
       assetExts: ['png', 'jpg'],
       cache: new Cache(),
@@ -126,7 +125,7 @@ describe('DependencyGraph', function() {
           resolve({...deps, code: sourceCode});
         });
       },
-      transformCacheKey,
+      getTransformCacheKey: () => 'abcdef',
       reporter: require('../../lib/reporting').nullReporter,
     };
   });

@@ -17,6 +17,7 @@ const Package = require('./Package');
 const Polyfill = require('./Polyfill');
 
 import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
 import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
@@ -30,13 +31,13 @@ class ModuleCache {
   _cache: Cache;
   _depGraphHelpers: DependencyGraphHelpers;
   _getClosestPackage: GetClosestPackageFn;
+  _getTransformCacheKey: GetTransformCacheKey;
   _globalTransformCache: ?GlobalTransformCache;
   _moduleCache: {[filePath: string]: Module};
   _moduleOptions: ModuleOptions;
   _packageCache: {[filePath: string]: Package};
   _packageModuleMap: WeakMap<Module, string>;
   _platforms: Set<string>;
-  _transformCacheKey: string;
   _transformCode: TransformCode;
   _reporter: Reporter;
 
@@ -46,24 +47,25 @@ class ModuleCache {
     depGraphHelpers,
     extractRequires,
     getClosestPackage,
+    getTransformCacheKey,
     globalTransformCache,
     moduleOptions,
     reporter,
-    transformCacheKey,
     transformCode,
   }: {
     assetDependencies: Array<string>,
     cache: Cache,
     depGraphHelpers: DependencyGraphHelpers,
     getClosestPackage: GetClosestPackageFn,
+    getTransformCacheKey: GetTransformCacheKey,
     globalTransformCache: ?GlobalTransformCache,
     moduleOptions: ModuleOptions,
     reporter: Reporter,
-    transformCacheKey: string,
     transformCode: TransformCode,
   }, platforms: Set<string>) {
     this._assetDependencies = assetDependencies;
     this._getClosestPackage = getClosestPackage;
+    this._getTransformCacheKey = getTransformCacheKey;
     this._globalTransformCache = globalTransformCache;
     this._cache = cache;
     this._depGraphHelpers = depGraphHelpers;
@@ -72,7 +74,6 @@ class ModuleCache {
     this._packageCache = Object.create(null);
     this._packageModuleMap = new WeakMap();
     this._platforms = platforms;
-    this._transformCacheKey = transformCacheKey;
     this._transformCode = transformCode;
     this._reporter = reporter;
   }
@@ -83,11 +84,11 @@ class ModuleCache {
         cache: this._cache,
         depGraphHelpers: this._depGraphHelpers,
         file: filePath,
+        getTransformCacheKey: this._getTransformCacheKey,
         globalTransformCache: this._globalTransformCache,
         moduleCache: this,
         options: this._moduleOptions,
         reporter: this._reporter,
-        transformCacheKey: this._transformCacheKey,
         transformCode: this._transformCode,
       });
     }
@@ -149,9 +150,9 @@ class ModuleCache {
       file,
       cache: this._cache,
       depGraphHelpers: this._depGraphHelpers,
+      getTransformCacheKey: this._getTransformCacheKey,
       moduleCache: this,
       transformCode: this._transformCode,
-      transformCacheKey: this._transformCacheKey,
     });
   }
 

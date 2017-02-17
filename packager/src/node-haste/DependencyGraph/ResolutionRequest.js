@@ -316,10 +316,10 @@ class ResolutionRequest {
 
           if (isRelativeImport(realModuleName) || isAbsolutePath(realModuleName)) {
             // derive absolute path /.../node_modules/fromModuleDir/realModuleName
-            const fromModuleParentIdx = fromModule.path.lastIndexOf('node_modules/') + 13;
+            const fromModuleParentIdx = fromModule.path.lastIndexOf('node_modules' + path.sep) + 13;
             const fromModuleDir = fromModule.path.slice(
               0,
-              fromModule.path.indexOf('/', fromModuleParentIdx),
+              fromModule.path.indexOf(path.sep, fromModuleParentIdx),
             );
             const absPath = path.join(fromModuleDir, realModuleName);
             return this._resolveFileOrDir(fromModule, absPath);
@@ -339,7 +339,7 @@ class ResolutionRequest {
 
           if (this._extraNodeModules) {
             const {_extraNodeModules} = this;
-            const bits = toModuleName.split('/');
+            const bits = toModuleName.split(path.sep);
             const packageName = bits[0];
             if (_extraNodeModules[packageName]) {
               bits[0] = _extraNodeModules[packageName];

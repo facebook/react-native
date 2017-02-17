@@ -20,20 +20,6 @@ const minify = require('./minify');
 import type {LogEntry} from '../../Logger/Types';
 import type {Ast, SourceMap, TransformOptions as BabelTransformOptions} from 'babel-core';
 
-function makeTransformParams(filename, sourceCode, options, willMinify) {
-  invariant(
-    !willMinify || options.generateSourceMaps,
-    'Minifying source code requires the `generateSourceMaps` option to be `true`',
-  );
-
-
-  if (filename.endsWith('.json')) {
-    sourceCode = 'module.exports=' + sourceCode;
-  }
-
-  return {filename, sourceCode, options};
-}
-
 export type TransformedCode = {
   code: string,
   dependencies: Array<string>,
@@ -41,17 +27,13 @@ export type TransformedCode = {
   map?: ?SourceMap,
 };
 
-type Transform = (
-  params: {
+type Transformer = {
+  transform: (
     filename: string,
     sourceCode: string,
     options: ?{},
-  },
-  callback: (
-    error?: Error,
-    tranformed?: {ast: ?Ast, code: string, map: ?SourceMap},
-  ) => mixed,
-) => void;
+  ) => {ast: ?Ast, code: string, map: ?SourceMap}
+};
 
 export type TransformOptions = {
   generateSourceMaps: boolean,
@@ -80,19 +62,21 @@ type Callback = (
 ) => mixed;
 
 function transformCode(
-  transform: Transform,
+  transformer: Transformer,
   filename: string,
   sourceCode: string,
   options: Options,
   callback: Callback,
 ) {
-  const params = makeTransformParams(
-    filename,
-    sourceCode,
-    options.transform,
-    options.minify,
+  invariant(
+    !options.minify || options.transform.generateSourceMaps,
+    'Minifying source code requires the `generateSourceMaps` option to be `true`',
   );
+
   const isJson = filename.endsWith('.json');
+  if (isJson) {
+    sourceCode = 'module.exports=' + sourceCode;
+  }
 
   const transformFileStartLogEntry = {
     action_name: 'Transforming file',
@@ -102,52 +86,53 @@ function transformCode(
     start_timestamp: process.hrtime(),
   };
 
-  transform(params, (error, transformed) => {
-    if (error) {
-      callback(error);
-      return;
-    }
+  let transformed;
+  try {
+    transformed = transformer.transform(sourceCode, filename, options.transform);
+  } catch (error) {
+    callback(error);
+    return;
+  }
 
-    invariant(
-      transformed != null,
-      'Missing transform results despite having no error.',
-    );
+  invariant(
+    transformed != null,
+    'Missing transform results despite having no error.',
+  );
 
-    var code, map;
-    if (options.minify) {
-      ({code, map} =
-        constantFolding(filename, inline(filename, transformed, options)));
-      invariant(code != null, 'Missing code from constant-folding transform.');
-    } else {
-      ({code, map} = transformed);
-    }
+  var code, map;
+  if (options.minify) {
+    ({code, map} =
+      constantFolding(filename, inline(filename, transformed, options)));
+    invariant(code != null, 'Missing code from constant-folding transform.');
+  } else {
+    ({code, map} = transformed);
+  }
 
-    if (isJson) {
-      code = code.replace(/^\w+\.exports=/, '');
-    } else {
-      // Remove shebang
-      code = code.replace(/^#!.*/, '');
-    }
+  if (isJson) {
+    code = code.replace(/^\w+\.exports=/, '');
+  } else {
+    // Remove shebang
+    code = code.replace(/^#!.*/, '');
+  }
 
-    const depsResult = isJson || options.extern
-      ? {dependencies: [], dependencyOffsets: []}
-      : extractDependencies(code);
+  const depsResult = isJson || options.extern
+    ? {dependencies: [], dependencyOffsets: []}
+    : extractDependencies(code);
 
-    const timeDelta = process.hrtime(transformFileStartLogEntry.start_timestamp);
-    const duration_ms = Math.round((timeDelta[0] * 1e9 + timeDelta[1]) / 1e6);
-    const transformFileEndLogEntry = {
-      action_name: 'Transforming file',
-      action_phase: 'end',
-      file_name: filename,
-      duration_ms: duration_ms,
-      log_entry_label: 'Transforming file',
-    };
+  const timeDelta = process.hrtime(transformFileStartLogEntry.start_timestamp);
+  const duration_ms = Math.round((timeDelta[0] * 1e9 + timeDelta[1]) / 1e6);
+  const transformFileEndLogEntry = {
+    action_name: 'Transforming file',
+    action_phase: 'end',
+    file_name: filename,
+    duration_ms: duration_ms,
+    log_entry_label: 'Transforming file',
+  };
 
-    return callback(null, {
-      result: {...depsResult, code, map},
-      transformFileStartLogEntry,
-      transformFileEndLogEntry,
-    });
+  callback(null, {
+    result: {...depsResult, code, map},
+    transformFileStartLogEntry,
+    transformFileEndLogEntry,
   });
 }
 

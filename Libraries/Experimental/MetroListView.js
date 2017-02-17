@@ -49,7 +49,7 @@ type NormalProps = {
 
   // Provide either `items` or `sections`
   items?: ?Array<Item>, // By default, an Item is assumed to be {key: string}
-  sections?: ?Array<{key: string, items: Array<Item>}>,
+  sections?: ?Array<{key: string, data: Array<Item>}>,
 
   /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
@@ -146,7 +146,7 @@ class MetroListView extends React.Component {
       const sections = {};
       props.sections.forEach((sectionIn, ii) => {
         const sectionID = 's' + ii;
-        sections[sectionID] = sectionIn.itemData;
+        sections[sectionID] = sectionIn.data;
         sectionHeaderData[sectionID] = sectionIn;
       });
       return {

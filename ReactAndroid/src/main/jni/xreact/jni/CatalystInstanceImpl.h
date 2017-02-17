@@ -57,9 +57,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
 
   void jniLoadScriptFromAssets(jni::alias_ref<JAssetManager::javaobject> assetManager, const std::string& assetURL);
   void jniLoadScriptFromFile(const std::string& fileName, const std::string& sourceURL);
-  void jniLoadScriptFromOptimizedBundle(const std::string& bundlePath, const std::string& sourceURL, jint flags);
-  void callJSFunction(JExecutorToken* token, std::string module, std::string method, NativeArray* arguments);
-  void callJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments);
+  void jniCallJSFunction(JExecutorToken* token, std::string module, std::string method, NativeArray* arguments);
+  void jniCallJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments);
   local_ref<JExecutorToken::JavaPart> getMainExecutorToken();
   void setGlobalVariable(std::string propName,
                          std::string&& jsonValue);

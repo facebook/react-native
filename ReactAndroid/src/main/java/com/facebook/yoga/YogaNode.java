@@ -86,6 +86,14 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @DoNotStrip
   private float mPaddingBottom = 0;
   @DoNotStrip
+  private float mBorderLeft = 0;
+  @DoNotStrip
+  private float mBorderTop = 0;
+  @DoNotStrip
+  private float mBorderRight = 0;
+  @DoNotStrip
+  private float mBorderBottom = 0;
+  @DoNotStrip
   private int mLayoutDirection = 0;
 
   private native long jni_YGNodeNew();
@@ -370,11 +378,17 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     jni_YGNodeStyleSetFlexBasisPercent(mNativePointer, percent);
   }
 
+  private native void jni_YGNodeStyleSetFlexBasisAuto(long nativePointer);
+  @Override
+  public void setFlexBasisAuto() {
+    jni_YGNodeStyleSetFlexBasisAuto(mNativePointer);
+  }
+
   private native Object jni_YGNodeStyleGetMargin(long nativePointer, int edge);
   @Override
   public YogaValue getMargin(YogaEdge edge) {
     if (!mHasSetMargin) {
-      return edge.intValue() < YogaEdge.START.intValue() ? YogaValue.ZERO : YogaValue.UNDEFINED;
+      return YogaValue.UNDEFINED;
     }
     return (YogaValue) jni_YGNodeStyleGetMargin(mNativePointer, edge.intValue());
   }
@@ -393,11 +407,18 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     jni_YGNodeStyleSetMarginPercent(mNativePointer, edge.intValue(), percent);
   }
 
+  private native void jni_YGNodeStyleSetMarginAuto(long nativePointer, int edge);
+  @Override
+  public void setMarginAuto(YogaEdge edge) {
+    mHasSetMargin = true;
+    jni_YGNodeStyleSetMarginAuto(mNativePointer, edge.intValue());
+  }
+
   private native Object jni_YGNodeStyleGetPadding(long nativePointer, int edge);
   @Override
   public YogaValue getPadding(YogaEdge edge) {
     if (!mHasSetPadding) {
-      return edge.intValue() < YogaEdge.START.intValue() ? YogaValue.ZERO : YogaValue.UNDEFINED;
+      return YogaValue.UNDEFINED;
     }
     return (YogaValue) jni_YGNodeStyleGetPadding(mNativePointer, edge.intValue());
   }
@@ -420,7 +441,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public float getBorder(YogaEdge edge) {
     if (!mHasSetBorder) {
-      return edge.intValue() < YogaEdge.START.intValue() ? 0 : YogaConstants.UNDEFINED;
+      return YogaConstants.UNDEFINED;
     }
     return jni_YGNodeStyleGetBorder(mNativePointer, edge.intValue());
   }
@@ -473,6 +494,12 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     jni_YGNodeStyleSetWidthPercent(mNativePointer, percent);
   }
 
+  private native void jni_YGNodeStyleSetWidthAuto(long nativePointer);
+  @Override
+  public void setWidthAuto() {
+    jni_YGNodeStyleSetWidthAuto(mNativePointer);
+  }
+
   private native Object jni_YGNodeStyleGetHeight(long nativePointer);
   @Override
   public YogaValue getHeight() {
@@ -489,6 +516,12 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public void setHeightPercent(float percent) {
     jni_YGNodeStyleSetHeightPercent(mNativePointer, percent);
+  }
+
+  private native void jni_YGNodeStyleSetHeightAuto(long nativePointer);
+  @Override
+  public void setHeightAuto() {
+    jni_YGNodeStyleSetHeightAuto(mNativePointer);
   }
 
   private native Object jni_YGNodeStyleGetMinWidth(long nativePointer);
@@ -630,6 +663,26 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
         return getLayoutDirection() == YogaDirection.RTL ? mPaddingLeft : mPaddingRight;
       default:
         throw new IllegalArgumentException("Cannot get layout paddings of multi-edge shorthands");
+    }
+  }
+
+  @Override
+  public float getLayoutBorder(YogaEdge edge) {
+    switch (edge) {
+      case LEFT:
+        return mBorderLeft;
+      case TOP:
+        return mBorderTop;
+      case RIGHT:
+        return mBorderRight;
+      case BOTTOM:
+        return mBorderBottom;
+      case START:
+        return getLayoutDirection() == YogaDirection.RTL ? mBorderRight : mBorderLeft;
+      case END:
+        return getLayoutDirection() == YogaDirection.RTL ? mBorderLeft : mBorderRight;
+      default:
+        throw new IllegalArgumentException("Cannot get layout border of multi-edge shorthands");
     }
   }
 
