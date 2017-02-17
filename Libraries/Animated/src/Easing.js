@@ -174,8 +174,8 @@ class Easing {
   }
 
   /**
-   * Provides a simple effect where the object moves back slightly before going
-   * forward.
+   * Use with `Animated.parallel()` to create a simple effect where the object
+   * animates back slightly as the animation starts.
    *
    * Wolfram Plot:
    *
