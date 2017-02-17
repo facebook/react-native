@@ -52,6 +52,9 @@ import javax.annotation.Nullable;
  */
 /*package*/ class NativeAnimatedNodesManager implements EventDispatcherListener {
 
+  // Used to avoid allocating a new array on every frame in runUpdates.
+  private final static List<AnimatedNode> sRunUpdateNodeList = new ArrayList<>();
+
   private final SparseArray<AnimatedNode> mAnimatedNodes = new SparseArray<>();
   private final SparseArray<AnimationDriver> mActiveAnimations = new SparseArray<>();
   private final SparseArray<AnimatedNode> mUpdatedNodes = new SparseArray<>();
@@ -357,26 +360,26 @@ import javax.annotation.Nullable;
     UiThreadUtil.assertOnUiThread();
     boolean hasFinishedAnimations = false;
 
-    List<AnimatedNode> nodes = new ArrayList<AnimatedNode>(mUpdatedNodes.size() + mActiveAnimations.size());
     for (int i = 0; i < mUpdatedNodes.size(); i++) {
       AnimatedNode node = mUpdatedNodes.valueAt(i);
-      nodes.add(node);
+      sRunUpdateNodeList.add(node);
     }
+
+    // Clean mUpdatedNodes queue
+    mUpdatedNodes.clear();
 
     for (int i = 0; i < mActiveAnimations.size(); i++) {
       AnimationDriver animation = mActiveAnimations.valueAt(i);
       animation.runAnimationStep(frameTimeNanos);
       AnimatedNode valueNode = animation.mAnimatedValue;
-      nodes.add(valueNode);
+      sRunUpdateNodeList.add(valueNode);
       if (animation.mHasFinished) {
         hasFinishedAnimations = true;
       }
     }
 
-    updateNodes(nodes);
-
-    // Clean mUpdatedNodes queue
-    mUpdatedNodes.clear();
+    updateNodes(sRunUpdateNodeList);
+    sRunUpdateNodeList.clear();
 
     // Cleanup finished animations. Iterate over the array of animations and override ones that has
     // finished, then resize `mActiveAnimations`.
@@ -398,10 +401,9 @@ import javax.annotation.Nullable;
     int updatedNodesCount = 0;
 
     // STEP 1.
-    // BFS over graph of nodes starting from ones from `mUpdatedNodes` and ones that are attached to
-    // active animations (from `mActiveAnimations)`. Update `mIncomingNodes` attribute for each node
-    // during that BFS. Store number of visited nodes in `activeNodesCount`. We "execute" active
-    // animations as a part of this step.
+    // BFS over graph of nodes. Update `mIncomingNodes` attribute for each node during that BFS.
+    // Store number of visited nodes in `activeNodesCount`. We "execute" active animations as a part
+    // of this step.
 
     mAnimatedGraphBFSColor++; /* use new color */
     if (mAnimatedGraphBFSColor == AnimatedNode.INITIAL_BFS_COLOR) {
