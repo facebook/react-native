@@ -219,36 +219,33 @@ class VirtualizedSectionList<SectionT: SectionBase>
       return <this.props.SectionHeaderComponent section={info.section} />;
     } else {
       const ItemComponent = info.section.ItemComponent || this.props.ItemComponent;
-      const SeparatorComponent = info.section.SeparatorComponent || this.props.SeparatorComponent;
-      const {SectionSeparatorComponent} = this.props;
-      const [shouldRenderSectionSeparator, shouldRenderItemSeparator] =
-        this._shouldRenderSeparators(index, info);
+      const SeparatorComponent = this._getSeparatorComponent(index, info);
       return (
         <View>
           <ItemComponent item={item} index={info.index} />
-          {shouldRenderItemSeparator ? <SeparatorComponent /> : null}
-          {shouldRenderSectionSeparator ? <SectionSeparatorComponent /> : null}
+          {SeparatorComponent && <SeparatorComponent />}
         </View>
       );
     }
   };
 
-  _shouldRenderSeparators(index: number, info?: ?Object): [boolean, boolean] {
+  _getSeparatorComponent(index: number, info?: ?Object): ?ReactClass<*> {
     info = info || this._subExtractor(index);
     if (!info) {
-      return [false, false];
+      return null;
     }
     const SeparatorComponent = info.section.SeparatorComponent || this.props.SeparatorComponent;
     const {SectionSeparatorComponent} = this.props;
     const lastItemIndex = this.state.childProps.getItemCount() - 1;
-    let shouldRenderSectionSeparator = false;
-    if (SectionSeparatorComponent) {
-      shouldRenderSectionSeparator =
-        info.index === info.section.data.length - 1 && index < lastItemIndex;
+    if (SectionSeparatorComponent &&
+        info.index === info.section.data.length - 1 &&
+        index < lastItemIndex) {
+      return SectionSeparatorComponent;
     }
-    const shouldRenderItemSeparator = SeparatorComponent && !shouldRenderSectionSeparator &&
-      index < lastItemIndex;
-    return [shouldRenderSectionSeparator, shouldRenderItemSeparator];
+    if (SeparatorComponent && index < lastItemIndex) {
+      return SeparatorComponent;
+    }
+    return null;
   }
 
   _shouldItemUpdate = (prev, next) => {
@@ -256,14 +253,7 @@ class VirtualizedSectionList<SectionT: SectionBase>
     if (!shouldItemUpdate || shouldItemUpdate(prev, next)) {
       return true;
     }
-    if (prev.index !== next.index) {
-      const [secSepPrev, itSepPrev] = this._shouldRenderSeparators(prev.index);
-      const [secSepNext, itSepNext] = this._shouldRenderSeparators(next.index);
-      if (secSepPrev !== secSepNext || itSepPrev !== itSepNext) {
-        return true;
-      }
-    }
-    return false;
+    return this._getSeparatorComponent(prev.index) !== this._getSeparatorComponent(next.index);
   }
 
   _computeState(props: Props<SectionT>): State {
