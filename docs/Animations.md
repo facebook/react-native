@@ -24,29 +24,36 @@ The [`Animated`](docs/animated.html) API is designed to make it very easy to con
 
 `Animated` exports four animatable component types: `View`, `Text`, `Image`, and `ScrollView`, but you can also create your own using `Animated.createAnimatedComponent()`.
 
-For example, a container view that fades in when it is mounted looks like this:
+For example, a container view that fades in when it is mounted may look like this:
 
 ```javascript
-class FadeInView extends React.Component {
+// FadeInView.js
+import React, { Component } from 'react';
+import {
+  Animated,
+} from 'react-native';
+
+class FadeInView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      fadeAnim: new Animated.Value(0),  // Initial value for opacity: 0
+      fadeAnim: new Animated.Value(0),          // Initial value for opacity: 0
     };
   }
   componentDidMount() {
-    Animated.timing(                    // Animate over time
-      this.state.fadeAnim,              // The animated value to drive
+    Animated.timing(                            // Animate over time
+      this.state.fadeAnim,                      // The animated value to drive
       {
-        toValue: 1,                     // Animate to opacity: 1 or fully opaque
-      }                              
-    ).start();                          // Starts the animation
+        toValue: 1,                             // Animate to opacity: 1, or fully opaque
+      }
+    ).start();                                  // Starts the animation
   }
   render() {
     return (
-      <Animated.View                    // Special animatable View
+      <Animated.View                            // Special animatable View
         style={{
-          opacity: this.state.fadeAnim  // Bind opacity to animated value
+          ...this.props.style,
+          opacity: this.state.fadeAnim,          // Bind opacity to animated value
         }}
       >
         {this.props.children}
@@ -54,10 +61,26 @@ class FadeInView extends React.Component {
     );
   }
 }
+
+module.exports = FadeInView;
 ```
 
+You can then use your `FadeInView` in place of a `View` in your components, like so:
+
+```javascript
+render() {
+  return (
+    <FadeInView style={{width: 250, height: 50, backgroundColor: 'powderblue'}}>
+      <Text style={{fontSize: 28, textAlign: 'center', margin: 10}}>Fading in</Text>
+    </FadeInView>
+  )
+}
+```
+
+![FadeInView](img/AnimatedFadeInView.gif)
+
 Let's break down what's happening here.
-In the constructor, a new `Animated.Value` called `fadeAnim` is initialized as part of `state`.
+In the `FadeInView` constructor, a new `Animated.Value` called `fadeAnim` is initialized as part of `state`.
 The opacity property on the `View` is mapped to this animated value.
 Behind the scenes, the numeric value is extracted and used to set opacity.
 
