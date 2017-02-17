@@ -347,6 +347,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
             new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT));
 
+    // Fixes broken full-screen modals/galleries due to body height being 0.
+    webView.setLayoutParams(
+            new LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT));
+
     if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
       WebView.setWebContentsDebuggingEnabled(true);
     }
