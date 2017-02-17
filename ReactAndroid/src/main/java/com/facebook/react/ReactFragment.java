@@ -10,7 +10,7 @@
 package com.facebook.react;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
  * Fragment for creating a React View. This allows the developer to "embed" a React Application
  * inside native components such as a Drawer, ViewPager, etc.
  */
-public class ReactFragment extends Fragment implements PermissionAwareActivity, DefaultHardwareBackBtnHandler {
+public class ReactFragment extends Fragment implements PermissionAwareActivity {
 
   protected static final String ARG_COMPONENT_NAME = "arg_component_name";
   protected static final String ARG_LAUNCH_OPTIONS = "arg_launch_options";
@@ -167,17 +167,6 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity, 
   public void requestPermissions(String[] permissions, int requestCode, PermissionListener listener) {
     mPermissionListener = listener;
     requestPermissions(permissions, requestCode);
-  }
-
-  /**
-   * {@link #invokeDefaultOnBackPressed()} will get called if our JS React app doesn't consume
-   * the event itself. Once this gets called we then call our Activity's method.
-   * {@link Activity#onBackPressed()}. If you want to do something else when this is called
-   * extend this class and override this method.
-   */
-  @Override
-  public void invokeDefaultOnBackPressed() {
-    getActivity().onBackPressed();
   }
 
   /**
