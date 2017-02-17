@@ -17,7 +17,6 @@
 const Dimensions = require('Dimensions');
 const InspectorOverlay = require('InspectorOverlay');
 const InspectorPanel = require('InspectorPanel');
-const InspectorUtils = require('InspectorUtils');
 const Platform = require('Platform');
 const React = require('React');
 const ReactNative = require('ReactNative');
@@ -25,6 +24,55 @@ const StyleSheet = require('StyleSheet');
 const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 const View = require('View');
+const invariant = require('invariant');
+
+export type ReactRenderer = {
+  // Fiber
+  findHostInstanceByFiber: (fiber: any) => ?number,
+  findFiberByHostInstance: (hostInstance: number) => any,
+
+  // Stack
+  ComponentTree: {
+    getNodeFromInstance: (instance: any) => ?number,
+    getClosestInstanceFromNode: (tag: number) => any,
+  },
+};
+
+function findRenderer(): ReactRenderer {
+  const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+  const renderers = hook._renderers;
+  const keys = Object.keys(renderers);
+  invariant(keys.length === 1, 'Expected to find exactly one React Native renderer on DevTools hook.');
+  return renderers[keys[0]];
+}
+
+function traverseOwnerTreeUp(hierarchy, instance) {
+  if (instance) {
+    hierarchy.unshift(instance);
+    const owner = typeof instance.tag === 'number' ?
+      // Fiber
+      instance._debugOwner :
+      // Stack
+      instance._currentElement._owner;
+    traverseOwnerTreeUp(hierarchy, owner);
+  }
+}
+
+function getOwnerHierarchy(instance) {
+  var hierarchy = [];
+  traverseOwnerTreeUp(hierarchy, instance);
+  return hierarchy;
+}
+
+function lastNotNativeInstance(hierarchy) {
+  for (let i = hierarchy.length - 1; i > 1; i--) {
+    const instance = hierarchy[i];
+    if (!instance.viewConfig) {
+      return instance;
+    }
+  }
+  return hierarchy[0];
+}
 
 class Inspector extends React.Component {
   props: {
@@ -45,6 +93,7 @@ class Inspector extends React.Component {
   };
 
   _subs: ?Array<() => void>;
+  renderer: ReactRenderer;
 
   constructor(props: Object) {
     super(props);
@@ -60,6 +109,8 @@ class Inspector extends React.Component {
       inspectedViewTag: this.props.inspectedViewTag,
       networking: false,
     };
+
+    this.renderer = findRenderer();
   }
 
   componentDidMount() {
@@ -177,12 +228,21 @@ class Inspector extends React.Component {
     });
   }
 
-  onTouchInstance(touched: Object, frame: Object, pointerY: number) {
+  onTouchViewTag(touchedViewTag: number, frame: Object, pointerY: number) {
+    const touched = typeof this.renderer.findFiberByHostInstance === 'function' ?
+      // Fiber
+      this.renderer.findFiberByHostInstance(touchedViewTag) :
+      // Stack
+      this.renderer.ComponentTree.getClosestInstanceFromNode(touchedViewTag);
+    if (!touched) {
+      return;
+    }
+
     // Most likely the touched instance is a native wrapper (like RCTView)
     // which is not very interesting. Most likely user wants a composite
     // instance that contains it (like View)
-    const hierarchy = InspectorUtils.getOwnerHierarchy(touched);
-    const instance = InspectorUtils.lastNotNativeInstance(hierarchy);
+    const hierarchy = getOwnerHierarchy(touched);
+    const instance = lastNotNativeInstance(hierarchy);
 
     if (this.state.devtoolsAgent) {
       this.state.devtoolsAgent.selectFromReactInstance(instance, true);
@@ -253,7 +313,7 @@ class Inspector extends React.Component {
           <InspectorOverlay
             inspected={this.state.inspected}
             inspectedViewTag={this.state.inspectedViewTag}
-            onTouchInstance={this.onTouchInstance.bind(this)}
+            onTouchViewTag={this.onTouchViewTag.bind(this)}
           />}
         <View style={[styles.panelContainer, panelContainerStyle]}>
           <InspectorPanel
