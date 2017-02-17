@@ -366,17 +366,22 @@ var styles = StyleSheet.create({
 
 AppRegistry.registerComponent('Game2048', () => Game2048);
 
-if (Platform.OS === 'ios') {
-  class Game2048SnapshotTester extends React.Component {
-    render() {
+class Game2048SnapshotTester extends React.Component {
+  render() {
+    if (Platform.OS === 'ios') {
       return (
         <SnapshotViewIOS>
           <Game2048 />
         </SnapshotViewIOS>
       );
+    } else {
+      return (
+        <View />
+      );
     }
   }
-  AppRegistry.registerComponent('Game2048SnapshotTest', () => Game2048SnapshotTester);
 }
+
+AppRegistry.registerComponent('Game2048SnapshotTest', () => Game2048SnapshotTester);
 
 module.exports = Game2048;
