@@ -285,6 +285,18 @@ class WebView extends React.Component {
     javaScriptEnabled: PropTypes.bool,
 
     /**
+     * Used on Android only, controls whether or not to allow cookies for file:/// urls
+     * @platform android
+     */
+    acceptFileSchemeCookies: PropTypes.bool,
+
+    /**
+     * Used on Android only, controls whether or not to allow third party cookies
+     * @platform android
+     */
+    acceptThirdPartyCookies: PropTypes.bool,
+
+    /**
      * Boolean value to control whether DOM Storage is enabled. Used only in
      * Android.
      * @platform android

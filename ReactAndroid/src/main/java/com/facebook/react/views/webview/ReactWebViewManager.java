@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.ViewGroup.LayoutParams;
+import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -357,6 +358,16 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "javaScriptEnabled")
   public void setJavaScriptEnabled(WebView view, boolean enabled) {
     view.getSettings().setJavaScriptEnabled(enabled);
+  }
+
+  @ReactProp(name = "acceptFileSchemeCookies")
+  public void setAcceptFileSchemeCookies(WebView view, boolean enabled) {
+    CookieManager.setAcceptFileSchemeCookies(enabled);
+  }
+
+  @ReactProp(name = "acceptThirdPartyCookies")
+  public void setAcceptThirdPartyCookies(WebView view, boolean enabled) {
+    CookieManager.getInstance().setAcceptThirdPartyCookies(view, enabled);
   }
 
   @ReactProp(name = "scalesPageToFit")
