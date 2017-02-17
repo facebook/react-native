@@ -114,7 +114,7 @@ class MultiColumnExample extends React.PureComponent {
       </UIExplorerPage>
     );
   }
-  _getItemLayout(data: any, index: number): {length: number, offset: number} {
+  _getItemLayout(data: any, index: number): {length: number, offset: number, index: number} {
     return getItemLayout(data, index);
   }
   _renderItemComponent = ({item}) => {

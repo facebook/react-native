@@ -19,6 +19,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.testing.AssertModule;
 import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
@@ -77,6 +78,7 @@ public class CatalystNativeJavaToJSArgumentsTestCase extends ReactIntegrationTes
 
     mInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(mAssertModule)
+        .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
         .addJSModule(TestJavaToJSArgumentsModule.class)
         .addNativeModule(mUIManager)

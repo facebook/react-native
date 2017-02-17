@@ -48,7 +48,7 @@ public class ModuleHolder {
     mSupportsWebWorkers = supportsWebWorkers;
     mProvider = provider;
     if (needsEagerInit) {
-      mModule = doCreate();
+      mModule = create();
     }
   }
 
@@ -91,34 +91,25 @@ public class ModuleHolder {
 
   public synchronized NativeModule getModule() {
     if (mModule == null) {
-      mModule = doCreate();
+      mModule = create();
     }
     return mModule;
   }
 
-  private NativeModule doCreate() {
-    NativeModule module = create();
-    mProvider = null;
-    return module;
-  }
-
   private NativeModule create() {
-    boolean isEagerModule = mModule != null;
-    if (!isEagerModule) {
-      ReactMarker.logMarker(CREATE_MODULE_START, mName);
-    }
+    SoftAssertions.assertCondition(mModule == null, "Creating an already created module.");
+    ReactMarker.logMarker(CREATE_MODULE_START, mName);
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createModule")
       .arg("name", mName)
       .flush();
     NativeModule module = assertNotNull(mProvider).get();
+    mProvider = null;
     if (mInitializeNeeded) {
       doInitialize(module);
       mInitializeNeeded = false;
     }
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-    if (!isEagerModule) {
-      ReactMarker.logMarker(CREATE_MODULE_END);
-    }
+    ReactMarker.logMarker(CREATE_MODULE_END);
     return module;
   }
 

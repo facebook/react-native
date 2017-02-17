@@ -32,7 +32,7 @@
 - (void)testNumberPoints
 {
   YGValue value = [RCTConvert YGValue:@100];
-  XCTAssertEqual(value.unit, YGUnitPixel);
+  XCTAssertEqual(value.unit, YGUnitPoint);
   XCTAssertEqual(value.value, 100);
 }
 

@@ -378,6 +378,12 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     jni_YGNodeStyleSetFlexBasisPercent(mNativePointer, percent);
   }
 
+  private native void jni_YGNodeStyleSetFlexBasisAuto(long nativePointer);
+  @Override
+  public void setFlexBasisAuto() {
+    jni_YGNodeStyleSetFlexBasisAuto(mNativePointer);
+  }
+
   private native Object jni_YGNodeStyleGetMargin(long nativePointer, int edge);
   @Override
   public YogaValue getMargin(YogaEdge edge) {
@@ -399,6 +405,13 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   public void setMarginPercent(YogaEdge edge, float percent) {
     mHasSetMargin = true;
     jni_YGNodeStyleSetMarginPercent(mNativePointer, edge.intValue(), percent);
+  }
+
+  private native void jni_YGNodeStyleSetMarginAuto(long nativePointer, int edge);
+  @Override
+  public void setMarginAuto(YogaEdge edge) {
+    mHasSetMargin = true;
+    jni_YGNodeStyleSetMarginAuto(mNativePointer, edge.intValue());
   }
 
   private native Object jni_YGNodeStyleGetPadding(long nativePointer, int edge);
@@ -481,6 +494,12 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     jni_YGNodeStyleSetWidthPercent(mNativePointer, percent);
   }
 
+  private native void jni_YGNodeStyleSetWidthAuto(long nativePointer);
+  @Override
+  public void setWidthAuto() {
+    jni_YGNodeStyleSetWidthAuto(mNativePointer);
+  }
+
   private native Object jni_YGNodeStyleGetHeight(long nativePointer);
   @Override
   public YogaValue getHeight() {
@@ -497,6 +516,12 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public void setHeightPercent(float percent) {
     jni_YGNodeStyleSetHeightPercent(mNativePointer, percent);
+  }
+
+  private native void jni_YGNodeStyleSetHeightAuto(long nativePointer);
+  @Override
+  public void setHeightAuto() {
+    jni_YGNodeStyleSetHeightAuto(mNativePointer);
   }
 
   private native Object jni_YGNodeStyleGetMinWidth(long nativePointer);

@@ -51,15 +51,17 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
-import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
-import com.facebook.react.modules.debug.DeveloperSettings;
-import com.facebook.react.packagerconnection.JSPackagerWebSocketClient;
+import com.facebook.react.devsupport.interfaces.DevOptionHandler;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.devsupport.interfaces.StackFrame;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
+import com.facebook.react.packagerconnection.JSPackagerClient;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.ws.WebSocket;
 
 /**
  * Interface for accessing and interacting with development features. Following features
@@ -648,7 +650,7 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void isPackagerRunning(DevServerHelper.PackagerStatusCallback callback) {
+  public void isPackagerRunning(PackagerStatusCallback callback) {
     mDevServerHelper.isPackagerRunning(callback);
   }
 
@@ -690,12 +692,11 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void onPokeSamplingProfilerCommand(
-      @Nullable final JSPackagerWebSocketClient.WebSocketSender webSocket) {
+  public void onPokeSamplingProfilerCommand(@Nullable final JSPackagerClient.Responder responder) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        handlePokeSamplingProfiler(webSocket);
+        handlePokeSamplingProfiler(responder);
       }
     });
   }
@@ -706,8 +707,7 @@ public class DevSupportManagerImpl implements
       JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
   }
 
-  private void handlePokeSamplingProfiler(
-      @Nullable JSPackagerWebSocketClient.WebSocketSender webSocket) {
+  private void handlePokeSamplingProfiler(@Nullable final JSPackagerClient.Responder responder) {
     try {
       List<String> pokeResults = JSCSamplingProfiler.poke(60000);
       for (String result : pokeResults) {
@@ -717,14 +717,9 @@ public class DevSupportManagerImpl implements
             ? "Started JSC Sampling Profiler"
             : "Stopped JSC Sampling Profiler",
           Toast.LENGTH_LONG).show();
-        if (webSocket != null) {
-          // WebSocket is provided, so there is a client waiting our response
-          webSocket.sendMessage(
-            RequestBody.create(
-              WebSocket.TEXT,
-              result == null
-                ? "{\"target\":\"profiler\", \"action\":\"started\"}"
-                : result));
+        if (responder != null) {
+          // Responder is provided, so there is a client waiting our response
+          responder.respond(result == null ? "started" : result);
         } else if (result != null) {
           // The profile was not initiated by external client, so process the
           // profile if there is one in the result
@@ -734,8 +729,6 @@ public class DevSupportManagerImpl implements
         }
       }
     } catch (JSCSamplingProfiler.ProfilerException e) {
-      showNewJavaError(e.getMessage(), e);
-    } catch (IOException e) {
       showNewJavaError(e.getMessage(), e);
     }
   }
