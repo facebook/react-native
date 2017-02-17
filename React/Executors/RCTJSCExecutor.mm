@@ -92,11 +92,6 @@ struct RCTJSContextData {
   JSContext *context;
 };
 
-@interface RCTJSContextProvider ()
-/** May only be called once, or deadlock will result. */
-- (RCTJSContextData)data;
-@end
-
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
 
 @property (nonatomic, strong, readonly) JSContext *context;
@@ -256,16 +251,6 @@ static NSThread *newJavaScriptThread(void)
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   return self;
-}
-
-+ (instancetype)initializedExecutorWithContextProvider:(RCTJSContextProvider *)JSContextProvider
-                                             JSContext:(JSContext **)JSContext
-{
-  const RCTJSContextData data = JSContextProvider.data;
-  if (JSContext) {
-    *JSContext = data.context;
-  }
-  return [[RCTJSCExecutor alloc] initWithJSContextData:data];
 }
 
 - (instancetype)initWithJSContextData:(const RCTJSContextData &)data
@@ -1049,6 +1034,16 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
     .javaScriptThread = _javaScriptThread,
     .context = _context,
   };
+}
+
+
+- (RCTJSCExecutor *)createExecutorWithContext:(JSContext **)JSContext
+{
+  const RCTJSContextData data = self.data;
+  if (JSContext) {
+    *JSContext = data.context;
+  }
+  return [[RCTJSCExecutor alloc] initWithJSContextData:data];
 }
 
 @end
