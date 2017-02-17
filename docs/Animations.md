@@ -336,7 +336,9 @@ Animated.timing(this.state.animatedValue, {
 Animated values are only compatible with one driver so if you use native driver when starting an animation on a value,
 make sure every animation on that value also uses the native driver.
 
-The native driver also works with `Animated.event`. This is specially useful for animations that follow the scroll position as without the native driver, the animation will always run a frame behind the gesture due to the async nature of React Native.
+The native driver also works with `Animated.event`.
+This is specially useful for animations that follow the scroll position as without the native driver,
+the animation will always run a frame behind the gesture due to the async nature of React Native.
 
 ```javascript
 <Animated.ScrollView // <-- Use the Animated ScrollView wrapper
@@ -349,6 +351,10 @@ The native driver also works with `Animated.event`. This is specially useful for
   {content}
 </Animated.ScrollView>
 ```
+
+You can see the native driver in action by running the [UIExplorer sample app](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/),
+then loading the Native Animated Example.
+You can also take a look at the [source code](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/js/NativeAnimationsExample.js) to learn how these examples were produced.
 
 #### Caveats
 
