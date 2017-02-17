@@ -40,9 +40,6 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey = @"_RCTFBJSValueClassKey";
 
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
 
-__attribute__((weak)) void RCTFBQuickPerformanceLoggerConfigureHooks(JSContext *context);
-void RCTFBQuickPerformanceLoggerConfigureHooks(JSContext *context) { }
-
 struct __attribute__((packed)) ModuleData {
   uint32_t offset;
   uint32_t size;
@@ -87,15 +84,9 @@ struct TaggedScript {
 
 struct RCTJSContextData {
   BOOL useCustomJSCLibrary;
-  BOOL tryBytecode;
   NSThread *javaScriptThread;
   JSContext *context;
 };
-
-@interface RCTJSContextProvider ()
-/** May only be called once, or deadlock will result. */
-- (RCTJSContextData)data;
-@end
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
 
@@ -158,7 +149,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   // Set at init time:
   BOOL _useCustomJSCLibrary;
-  BOOL _tryBytecode;
   NSThread *_javaScriptThread;
 
   // Set at setUp time:
@@ -238,18 +228,10 @@ static NSThread *newJavaScriptThread(void)
 
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
 {
-  return [self initWithUseCustomJSCLibrary:useCustomJSCLibrary
-                               tryBytecode:NO];
-}
-
-- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
-                                tryBytecode:(BOOL)tryBytecode
-{
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTJSCExecutor init]", nil);
 
   if (self = [super init]) {
     _useCustomJSCLibrary = useCustomJSCLibrary;
-    _tryBytecode = tryBytecode;
     _valid = YES;
     _javaScriptThread = newJavaScriptThread();
   }
@@ -258,21 +240,10 @@ static NSThread *newJavaScriptThread(void)
   return self;
 }
 
-+ (instancetype)initializedExecutorWithContextProvider:(RCTJSContextProvider *)JSContextProvider
-                                             JSContext:(JSContext **)JSContext
-{
-  const RCTJSContextData data = JSContextProvider.data;
-  if (JSContext) {
-    *JSContext = data.context;
-  }
-  return [[RCTJSCExecutor alloc] initWithJSContextData:data];
-}
-
 - (instancetype)initWithJSContextData:(const RCTJSContextData &)data
 {
   if (self = [super init]) {
     _useCustomJSCLibrary = data.useCustomJSCLibrary;
-    _tryBytecode = data.tryBytecode;
     _valid = YES;
     _javaScriptThread = data.javaScriptThread;
     _context = [[RCTJavaScriptContext alloc] initWithJSContext:data.context onThread:_javaScriptThread];
@@ -359,7 +330,7 @@ static NSThread *newJavaScriptThread(void)
       threadDictionary[RCTFBJSValueClassKey] = JSC_JSValue(contextRef);
     }
 
-    RCTFBQuickPerformanceLoggerConfigureHooks(context);
+    RCTFBQuickPerformanceLoggerConfigureHooks(context.JSGlobalContextRef);
 
     __weak RCTJSCExecutor *weakSelf = self;
     context[@"nativeRequireModuleConfig"] = ^NSArray *(NSString *moduleName) {
@@ -549,7 +520,7 @@ static void installBasicSynchronousHooksOnContext(JSContext *context)
 
 - (int32_t)bytecodeFileFormatVersion
 {
-  return (_useCustomJSCLibrary && _tryBytecode)
+  return _useCustomJSCLibrary
     ? facebook::react::customJSCWrapper()->JSBytecodeFileFormatVersion
     : JSNoBytecodeFileFormatVersion;
 }
@@ -1016,12 +987,10 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
 }
 
 - (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
-                                tryBytecode:(BOOL)tryBytecode
 {
   if (self = [super init]) {
     _semaphore = dispatch_semaphore_create(0);
     _useCustomJSCLibrary = useCustomJSCLibrary;
-    _tryBytecode = tryBytecode;
     _javaScriptThread = newJavaScriptThread();
     [self performSelector:@selector(_createContext) onThread:_javaScriptThread withObject:nil waitUntilDone:NO];
   }
@@ -1045,10 +1014,19 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
   dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
   return {
     .useCustomJSCLibrary = _useCustomJSCLibrary,
-    .tryBytecode = _tryBytecode,
     .javaScriptThread = _javaScriptThread,
     .context = _context,
   };
+}
+
+
+- (RCTJSCExecutor *)createExecutorWithContext:(JSContext **)JSContext
+{
+  const RCTJSContextData data = self.data;
+  if (JSContext) {
+    *JSContext = data.context;
+  }
+  return [[RCTJSCExecutor alloc] initWithJSContextData:data];
 }
 
 @end
