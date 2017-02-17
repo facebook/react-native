@@ -351,12 +351,12 @@ exports.examples = [
     },
   },
   {
-    title: 'Opacity without interpolation',
+    title: 'Opacity with delay',
     render: function() {
       return (
         <Tester
           type="timing"
-          config={{ duration: 1000 }}>
+          config={{ duration: 1000, delay: 1000 }}>
           {anim => (
             <Animated.View
               style={[

@@ -286,7 +286,6 @@ class TimingAnimation extends Animation {
       type: 'frames',
       frames,
       toValue: this._toValue,
-      delay: this._delay
     };
   }
 
