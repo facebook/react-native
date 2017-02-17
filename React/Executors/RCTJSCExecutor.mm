@@ -40,9 +40,6 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey = @"_RCTFBJSValueClassKey";
 
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
 
-__attribute__((weak)) void RCTFBQuickPerformanceLoggerConfigureHooks(JSContext *context);
-void RCTFBQuickPerformanceLoggerConfigureHooks(JSContext *context) { }
-
 struct __attribute__((packed)) ModuleData {
   uint32_t offset;
   uint32_t size;
@@ -344,7 +341,7 @@ static NSThread *newJavaScriptThread(void)
       threadDictionary[RCTFBJSValueClassKey] = JSC_JSValue(contextRef);
     }
 
-    RCTFBQuickPerformanceLoggerConfigureHooks(context);
+    RCTFBQuickPerformanceLoggerConfigureHooks(context.JSGlobalContextRef);
 
     __weak RCTJSCExecutor *weakSelf = self;
     context[@"nativeRequireModuleConfig"] = ^NSArray *(NSString *moduleName) {

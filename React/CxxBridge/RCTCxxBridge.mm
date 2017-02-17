@@ -244,7 +244,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 {
   if (self == [RCTCxxBridge class]) {
     ReactMarker::logMarker = [](const std::string&) {};
-    PerfLogging::installNativeHooks = [](JSGlobalContextRef){};
+    PerfLogging::installNativeHooks = RCTFBQuickPerformanceLoggerConfigureHooks;
     JSNativeHooks::loggingHook = nativeLoggingHook;
     JSNativeHooks::nowHook = nativePerformanceNow;
   }

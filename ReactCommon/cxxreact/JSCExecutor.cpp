@@ -279,8 +279,9 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   #ifdef WITH_JSC_EXTRA_TRACING
   addNativeProfilingHooks(m_context);
   addNativeTracingLegacyHooks(m_context);
-  PerfLogging::installNativeHooks(m_context);
   #endif
+
+  PerfLogging::installNativeHooks(m_context);
 
   #if defined(__APPLE__) || defined(WITH_JSC_EXTRA_TRACING)
   if (JSC_JSSamplingProfilerEnabled(m_context)) {
