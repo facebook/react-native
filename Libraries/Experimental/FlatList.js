@@ -41,23 +41,22 @@ const invariant = require('invariant');
 
 import type {StyleObj} from 'StyleSheetTypes';
 import type {Viewable} from 'ViewabilityHelper';
-import type {Props as VirtualizedListProps} from 'VirtualizedList';
 
 type Item = any;
 
-type RequiredProps<ItemT> = {
+type RequiredProps = {
   /**
    * Note this can be a normal class component, or a functional component, such as a render method
    * on your main component.
    */
-  ItemComponent: ReactClass<{item: ItemT, index: number}>,
+  ItemComponent: ReactClass<{item: Item, index: number}>,
   /**
    * For simplicity, data is just a plain array. If you want to use something else, like an
    * immutable list, use the underlying `VirtualizedList` directly.
    */
-  data: ?Array<ItemT>,
+  data: ?Array<Item>,
 };
-type OptionalProps<ItemT> = {
+type OptionalProps = {
   /**
    * Rendered at the bottom of all the items.
    */
@@ -80,7 +79,7 @@ type OptionalProps<ItemT> = {
    * Remember to include separator length (height or width) in your offset calculation if you
    * specify `SeparatorComponent`.
    */
-  getItemLayout?: (data: ?Array<ItemT>, index: number) =>
+  getItemLayout?: (data: ?Array<Item>, index: number) =>
     {length: number, offset: number, index: number},
   /**
    * If true, renders items next to each other horizontally instead of stacked vertically.
@@ -91,7 +90,7 @@ type OptionalProps<ItemT> = {
    * and as the react key to track item re-ordering. The default extractor checks item.key, then
    * falls back to using the index, like react does.
    */
-  keyExtractor: (item: ItemT, index: number) => string,
+  keyExtractor: (item: Item, index: number) => string,
   /**
    * Multiple columns can only be rendered with horizontal={false} and will zig-zag like a flexWrap
    * layout. Items should all be the same height - masonry layouts are not supported.
@@ -112,7 +111,6 @@ type OptionalProps<ItemT> = {
    * `viewablePercentThreshold` prop.
    */
   onViewableItemsChanged?: ?({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
-  legacyImplementation?: ?boolean,
   /**
    * Set this true while waiting for new data from a refresh.
    */
@@ -125,19 +123,11 @@ type OptionalProps<ItemT> = {
    * Optional optimization to minimize re-rendering items.
    */
   shouldItemUpdate: (
-    prevProps: {item: ItemT, index: number},
-    nextProps: {item: ItemT, index: number}
+    prevProps: {item: Item, index: number},
+    nextProps: {item: Item, index: number}
   ) => boolean,
 };
-type Props<ItemT> = RequiredProps<ItemT> & OptionalProps<ItemT> & VirtualizedListProps;
-
-const defaultProps = {
-  ...VirtualizedList.defaultProps,
-  getItem: undefined,
-  getItemCount: undefined,
-  numColumns: 1,
-};
-type DefaultProps = typeof defaultProps;
+type Props = RequiredProps & OptionalProps; // plus props from the underlying implementation
 
 /**
  * A performant interface for rendering simple, flat lists, supporting the most handy features:
@@ -158,9 +148,13 @@ type DefaultProps = typeof defaultProps;
  *     ItemComponent={({item}) => <Text>{item.key}</Text>}
  *   />
  */
-class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, void> {
-  static defaultProps: DefaultProps = defaultProps;
-  props: Props<ItemT>;
+class FlatList extends React.PureComponent {
+  static defaultProps = {
+    keyExtractor: VirtualizedList.defaultProps.keyExtractor,
+    numColumns: 1,
+    shouldItemUpdate: VirtualizedList.defaultProps.shouldItemUpdate,
+  };
+  props: Props;
   /**
    * Scrolls to the end of the content. May be janky without getItemLayout prop.
    */
@@ -197,7 +191,7 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     this._checkProps(this.props);
   }
 
-  componentWillReceiveProps(nextProps: Props<ItemT>) {
+  componentWillReceiveProps(nextProps: Props) {
     this._checkProps(nextProps);
   }
 
@@ -206,7 +200,7 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
 
   _captureRef = (ref) => { this._listRef = ref; };
 
-  _checkProps(props: Props<ItemT>) {
+  _checkProps(props: Props) {
     const {
       getItem,
       getItemCount,
@@ -235,7 +229,7 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     }
   }
 
-  _getItem = (data: Array<ItemT>, index: number): ItemT | Array<ItemT> => {
+  _getItem = (data: Array<Item>, index: number): Item | Array<Item> => {
     const {numColumns} = this.props;
     if (numColumns > 1) {
       const ret = [];
@@ -249,19 +243,13 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     }
   };
 
-  _getItemCount = (data: Array<ItemT>): number => {
+  _getItemCount = (data: Array<Item>): number => {
     return Math.floor(data.length / this.props.numColumns);
   };
 
-  _keyExtractor = (items: ItemT | Array<ItemT>, index: number): string => {
+  _keyExtractor = (items: Item | Array<Item>, index: number): string => {
     const {keyExtractor, numColumns} = this.props;
     if (numColumns > 1) {
-      invariant(
-        Array.isArray(items),
-        'FlatList: Encountered internal consistency error, expected each item to consist of an ' +
-        'array with 1-%s columns; instead, received a single item.',
-        numColumns,
-      );
       return items.map((it, kk) => keyExtractor(it, index * numColumns + kk)).join(':');
     } else {
       return keyExtractor(items, index);

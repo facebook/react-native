@@ -40,12 +40,11 @@ const invariant = require('invariant');
 const warning = require('warning');
 
 import type {Viewable} from 'ViewabilityHelper';
-import type {Props as VirtualizedListProps} from 'VirtualizedList';
 
 type Item = any;
 type SectionItem = any;
 
-type SectionBase = {
+type Section = {
   // Must be provided directly on each section.
   data: Array<SectionItem>,
   key: string,
@@ -61,35 +60,17 @@ type SectionBase = {
   // onViewableItemsChanged?: ({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
 
   // TODO: support recursive sections
-  // SectionHeaderComponent?: ?ReactClass<{section: SectionBase}>,
+  // SectionHeaderComponent?: ?ReactClass<{section: Section}>,
   // sections?: ?Array<Section>;
-};
+}
 
-type RequiredProps<SectionT: SectionBase> = {
-  sections: Array<SectionT>,
+type RequiredProps = {
+  sections: Array<Section>,
 };
-
-type OptionalProps<SectionT: SectionBase> = {
-  /**
-   * Rendered after the last item in the last section.
-   */
-  FooterComponent?: ?ReactClass<*>,
-  /**
-   * Default renderer for every item in every section.
-   */
-  ItemComponent: ReactClass<{item: Item, index: number}>,
-  /**
-   * Rendered at the top of each section. In the future, a sticky option will be added.
-   */
-  SectionHeaderComponent?: ?ReactClass<{section: SectionT}>,
-  /**
-   * Rendered at the bottom of every Section, except the very last one, in place of the normal
-   * SeparatorComponent.
-   */
+type OptionalProps = {
+  ItemComponent?: ?ReactClass<{item: Item, index: number}>,
+  SectionHeaderComponent?: ?ReactClass<{section: Section}>,
   SectionSeparatorComponent?: ?ReactClass<*>,
-  /**
-   * Rendered at the bottom of every Item except the very last one in the last section.
-   */
   SeparatorComponent?: ?ReactClass<*>,
   /**
    * Warning: Virtualization can drastically improve memory consumption for long lists, but trashes
@@ -97,65 +78,42 @@ type OptionalProps<SectionT: SectionBase> = {
    * stored outside of the recursive `ItemComponent` instance tree.
    */
   enableVirtualization?: ?boolean,
-  keyExtractor: (item: Item, index: number) => string,
-  onEndReached?: ?({distanceFromEnd: number}) => void,
-  /**
-   * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
-   * sure to also set the `refreshing` prop correctly.
-   */
-  onRefresh?: ?Function,
+  horizontal?: ?boolean,
+  keyExtractor?: (item: Item, index: number) => string,
+  onEndReached?: ({distanceFromEnd: number}) => void,
   /**
    * Called when the viewability of rows changes, as defined by the
-   * `viewablePercentThreshold` prop.
+   * `viewablePercentThreshold` prop. Called for all items from all sections.
    */
-  onViewableItemsChanged?: ?({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
-  /**
-   * Set this true while waiting for new data from a refresh.
-   */
-  refreshing?: ?boolean,
-  /**
-   * This is an optional optimization to minimize re-rendering items.
-   */
-  shouldItemUpdate: (
-    prevProps: {item: Item, index: number},
-    nextProps: {item: Item, index: number}
-  ) => boolean,
+  onViewableItemsChanged?: ({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
 };
-
-export type Props<SectionT> =
-  RequiredProps<SectionT> &
-  OptionalProps<SectionT> &
-  VirtualizedListProps;
-
-type DefaultProps = (typeof VirtualizedList.defaultProps) & {data: Array<Item>};
-type State = {childProps: VirtualizedListProps};
+type Props = RequiredProps & OptionalProps;
 
 /**
  * Right now this just flattens everything into one list and uses VirtualizedList under the
  * hood. The only operation that might not scale well is concatting the data arrays of all the
  * sections when new props are received, which should be plenty fast for up to ~10,000 items.
  */
-class VirtualizedSectionList<SectionT: SectionBase>
-  extends React.PureComponent<DefaultProps, Props<SectionT>, State>
-{
-  props: Props<SectionT>;
+class VirtualizedSectionList extends React.PureComponent {
+  props: Props;
 
-  state: State;
+  state: {
+    childProps: Object,
+  };
 
-  static defaultProps: DefaultProps = {
-    ...VirtualizedList.defaultProps,
-    data: [],
+  static defaultProps: OptionalProps = {
+    keyExtractor: (item: Item, index: number) => item.key || String(index),
   };
 
   _keyExtractor = (item: Item, index: number) => {
     const info = this._subExtractor(index);
-    return (info && info.key) || String(index);
+    return info && info.key;
   };
 
   _subExtractor(
     index: number,
   ): ?{
-    section: SectionT,
+    section: Section,
     key: string, // Key of the section or combined key for section + item
     index: ?number, // Relative index within the section
   } {
@@ -163,18 +121,14 @@ class VirtualizedSectionList<SectionT: SectionBase>
     const defaultKeyExtractor = this.props.keyExtractor;
     for (let ii = 0; ii < this.props.sections.length; ii++) {
       const section = this.props.sections[ii];
-      const key = section.key;
-      warning(
-        key != null,
-        'VirtualizedSectionList: A `section` you supplied is missing the `key` property.'
-      );
+      const keyExtractor = section.keyExtractor || defaultKeyExtractor;
+      const key = keyExtractor(section, ii);
       itemIndex -= 1; // The section itself is an item
       if (itemIndex >= section.data.length) {
         itemIndex -= section.data.length;
       } else if (itemIndex === -1) {
         return {section, key, index: null};
       } else {
-        const keyExtractor = section.keyExtractor || defaultKeyExtractor;
         return {
           section,
           key: key + ':' + keyExtractor(section.data[itemIndex], itemIndex),
@@ -220,36 +174,39 @@ class VirtualizedSectionList<SectionT: SectionBase>
     if (!info) {
       return null;
     } else if (info.index == null) {
-      const {SectionHeaderComponent} = this.props;
-      return SectionHeaderComponent ? <SectionHeaderComponent section={info.section} /> : null;
+      return <this.props.SectionHeaderComponent section={info.section} />;
     } else {
       const ItemComponent = info.section.ItemComponent || this.props.ItemComponent;
-      const SeparatorComponent = this._getSeparatorComponent(index, info);
+      const SeparatorComponent = info.section.SeparatorComponent || this.props.SeparatorComponent;
+      const {SectionSeparatorComponent} = this.props;
+      const [shouldRenderSectionSeparator, shouldRenderItemSeparator] =
+        this._shouldRenderSeparators(index, info);
       return (
         <View>
           <ItemComponent item={item} index={info.index} />
-          {SeparatorComponent && <SeparatorComponent />}
+          {shouldRenderItemSeparator ? <SeparatorComponent /> : null}
+          {shouldRenderSectionSeparator ? <SectionSeparatorComponent /> : null}
         </View>
       );
     }
   };
 
-  _getSeparatorComponent(index: number, info?: ?Object): ?ReactClass<*> {
+  _shouldRenderSeparators(index: number, info?: ?Object): [boolean, boolean] {
     info = info || this._subExtractor(index);
     if (!info) {
-      return null;
+      return [false, false];
     }
     const SeparatorComponent = info.section.SeparatorComponent || this.props.SeparatorComponent;
     const {SectionSeparatorComponent} = this.props;
-    const isLastItemInList = index === this.state.childProps.getItemCount() - 1;
-    const isLastItemInSection = info.index === info.section.data.length - 1;
-    if (SectionSeparatorComponent && isLastItemInSection && !isLastItemInList) {
-      return SectionSeparatorComponent;
+    const lastItemIndex = this.state.childProps.getItemCount() - 1;
+    let shouldRenderSectionSeparator = false;
+    if (SectionSeparatorComponent) {
+      shouldRenderSectionSeparator =
+        info.index === info.section.data.length - 1 && index < lastItemIndex;
     }
-    if (SeparatorComponent && !isLastItemInSection && !isLastItemInList) {
-      return SeparatorComponent;
-    }
-    return null;
+    const shouldRenderItemSeparator = SeparatorComponent && !shouldRenderSectionSeparator &&
+      index < lastItemIndex;
+    return [shouldRenderSectionSeparator, shouldRenderItemSeparator];
   }
 
   _shouldItemUpdate = (prev, next) => {
@@ -257,10 +214,16 @@ class VirtualizedSectionList<SectionT: SectionBase>
     if (!shouldItemUpdate || shouldItemUpdate(prev, next)) {
       return true;
     }
-    return this._getSeparatorComponent(prev.index) !== this._getSeparatorComponent(next.index);
+    if (prev.index !== next.index) {
+      const [secSepPrev, itSepPrev] = this._shouldRenderSeparators(prev.index);
+      const [secSepNext, itSepNext] = this._shouldRenderSeparators(next.index);
+      if (secSepPrev !== secSepNext || itSepPrev !== itSepNext) {
+        return true;
+      }
+    }
   }
 
-  _computeState(props: Props<SectionT>): State {
+  _computeState(props: Props) {
     const itemCount = props.sections.reduce((v, section) => v + section.data.length + 1, 0);
     return {
       childProps: {
@@ -279,7 +242,7 @@ class VirtualizedSectionList<SectionT: SectionBase>
     };
   }
 
-  constructor(props: Props<SectionT>, context: Object) {
+  constructor(props: Props, context: Object) {
     super(props, context);
     warning(
       !props.stickySectionHeadersEnabled,
@@ -288,7 +251,7 @@ class VirtualizedSectionList<SectionT: SectionBase>
     this.state = this._computeState(props);
   }
 
-  componentWillReceiveProps(nextProps: Props<SectionT>) {
+  componentWillReceiveProps(nextProps: Props) {
     this.setState(this._computeState(nextProps));
   }
 
