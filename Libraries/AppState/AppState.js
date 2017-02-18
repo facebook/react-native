@@ -11,7 +11,6 @@
  */
 'use strict';
 
-const EventEmitter = require('EventEmitter');
 const NativeEventEmitter = require('NativeEventEmitter');
 const NativeModules = require('NativeModules');
 const RCTAppState = NativeModules.AppState;
@@ -25,9 +24,6 @@ const invariant = require('fbjs/lib/invariant');
  *
  * AppState is frequently used to determine the intent and proper behavior when
  * handling push notifications.
- *
- * This module depends on the native RCTAppState module. If you don't include it,
- * `AppState.isAvailable` will return `false`, and any method calls will throw.
  *
  * ### App States
  *
@@ -90,7 +86,6 @@ class AppState extends NativeEventEmitter {
 
   _eventHandlers: Object;
   currentState: ?string;
-  isAvailable: boolean = true;
 
   constructor() {
     super(RCTAppState);
@@ -178,45 +173,6 @@ class AppState extends NativeEventEmitter {
   }
 }
 
-function throwMissingNativeModule() {
-  invariant(
-    false,
-    'Cannot use AppState module when native RCTAppState is not included in the build.\n' +
-    'Either include it, or check AppState.isAvailable before calling any methods.'
-  );
-}
+AppState = new AppState();
 
-class MissingNativeAppStateShim extends EventEmitter {
-  // AppState
-  isAvailable: boolean = false;
-  currentState: ?string = null;
-
-  addEventListener() {
-    throwMissingNativeModule();
-  }
-
-  removeEventListener() {
-    throwMissingNativeModule();
-  }
-
-  // EventEmitter
-  addListener() {
-    throwMissingNativeModule();
-  }
-
-  removeAllListeners() {
-    throwMissingNativeModule();
-  }
-
-  removeSubscription() {
-    throwMissingNativeModule();
-  }
-}
-
-// Guard against missing native module by throwing on first method call.
-// Keep the API the same so Flow doesn't complain.
-const appState = RCTAppState
-  ? new AppState()
-  : new MissingNativeAppStateShim();
-
-module.exports = appState;
+module.exports = AppState;
