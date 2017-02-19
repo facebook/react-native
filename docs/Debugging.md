@@ -105,12 +105,7 @@ Following this guide to enable Stetho only for Debug mode:
     debugCompile 'com.facebook.stetho:stetho-okhttp3:1.x.x'
    ```
 
-Go to http://facebook.github.io/stetho/ and replace 1.x.x with the latest version. For example:
-   
-   ```gradle
-    debugCompile 'com.facebook.stetho:stetho:1.4.2'
-    debugCompile 'com.facebook.stetho:stetho-okhttp3:1.4.2'
-   ```
+Go to http://facebook.github.io/stetho/ and replace 1.x.x with the latest version.
 
 2. From project root, create 2 Java class that will wrap the Stetho call, one for release and one for debug. With the terminal, these cmds should get it done:
    
