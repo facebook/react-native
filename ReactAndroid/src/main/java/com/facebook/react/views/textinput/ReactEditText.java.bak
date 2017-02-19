@@ -353,16 +353,9 @@ public class ReactEditText extends EditText {
         new SpannableStringBuilder(reactTextUpdate.getText());
     manageSpans(spannableStringBuilder);
     mContainsImages = reactTextUpdate.containsImages();
-    boolean sameText = sameTextForSpan(getText(), spannableStringBuilder, 0, length());
     mIsSettingTextFromJS = true;
     getText().replace(0, length(), spannableStringBuilder);
     mIsSettingTextFromJS = false;
-    if (!sameText) {
-      InputMethodManager imm = (InputMethodManager) getContext()
-          .getSystemService(Context.INPUT_METHOD_SERVICE);
-      if (imm != null)
-        imm.restartInput(this);
-    }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (getBreakStrategy() != reactTextUpdate.getTextBreakStrategy()) {
         setBreakStrategy(reactTextUpdate.getTextBreakStrategy());
