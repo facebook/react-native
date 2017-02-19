@@ -11,9 +11,9 @@
  */
 'use strict';
 
-var AlertIOS = require('AlertIOS');
-var Platform = require('Platform');
-var DialogModuleAndroid = require('NativeModules').DialogManagerAndroid;
+const AlertIOS = require('AlertIOS');
+const NativeModules = require('NativeModules');
+const Platform = require('Platform');
 
 import type { AlertType, AlertButtonStyle } from 'AlertIOS';
 
@@ -127,18 +127,18 @@ class AlertAndroid {
     if (buttonPositive) {
       config = {...config, buttonPositive: buttonPositive.text || '' };
     }
-    DialogModuleAndroid.showAlert(
+    NativeModules.DialogModuleAndroid.showAlert(
       config,
       (errorMessage) => console.warn(errorMessage),
       (action, buttonKey) => {
-        if (action !== DialogModuleAndroid.buttonClicked) {
+        if (action !== NativeModules.DialogModuleAndroid.buttonClicked) {
           return;
         }
-        if (buttonKey === DialogModuleAndroid.buttonNeutral) {
+        if (buttonKey === NativeModules.DialogModuleAndroid.buttonNeutral) {
           buttonNeutral.onPress && buttonNeutral.onPress();
-        } else if (buttonKey === DialogModuleAndroid.buttonNegative) {
+        } else if (buttonKey === NativeModules.DialogModuleAndroid.buttonNegative) {
           buttonNegative.onPress && buttonNegative.onPress();
-        } else if (buttonKey === DialogModuleAndroid.buttonPositive) {
+        } else if (buttonKey === NativeModules.DialogModuleAndroid.buttonPositive) {
           buttonPositive.onPress && buttonPositive.onPress();
         }
       }
