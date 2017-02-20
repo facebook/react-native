@@ -9,7 +9,9 @@
 
 'use strict';
 
-jest.dontMock('../BatchProcessor');
+jest
+  .useRealTimers()
+  .dontMock('../BatchProcessor');
 
 const BatchProcessor = require('../BatchProcessor');
 
@@ -21,29 +23,27 @@ describe('BatchProcessor', () => {
     concurrency: 2,
   };
 
-  it('aggregate items concurrently', () => {
+  it('aggregate items concurrently', async () => {
     const input = [...Array(9).keys()].slice(1);
     const transform = e => e * 10;
     const batches = [];
     let concurrency = 0;
     let maxConcurrency = 0;
-    const bp = new BatchProcessor(options, (items, callback) => {
+    const bp = new BatchProcessor(options, (items) => new Promise(resolve => {
       ++concurrency;
       expect(concurrency).toBeLessThanOrEqual(options.concurrency);
       maxConcurrency = Math.max(maxConcurrency, concurrency);
       batches.push(items);
       setTimeout(() => {
-        callback(null, items.map(transform));
+        resolve(items.map(transform));
         --concurrency;
       }, 0);
-    });
+    }));
     const results = [];
-    input.forEach(e => bp.queue(e).then(
+    await Promise.all(input.map(e => bp.queue(e).then(
       res => results.push(res),
       error => process.nextTick(() => { throw error; }),
-    ));
-    jest.runAllTimers();
-    jest.runAllTicks();
+    )));
     expect(batches).toEqual([
       [1, 2, 3],
       [4, 5, 6],
@@ -53,17 +53,15 @@ describe('BatchProcessor', () => {
     expect(results).toEqual(input.map(transform));
   });
 
-  it('report errors', () => {
+  it('report errors', async () => {
     const error = new Error('oh noes');
-    const bp = new BatchProcessor(options, (items, callback) => {
-      setTimeout(callback.bind(null, error), 0);
-    });
+    const bp = new BatchProcessor(options, (items) => new Promise((_, reject) => {
+      setTimeout(reject.bind(null, error), 0);
+    }));
     let receivedError;
-    bp.queue('foo').catch(
+    await bp.queue('foo').catch(
       err => { receivedError = err; },
     );
-    jest.runAllTimers();
-    jest.runAllTicks();
     expect(receivedError).toBe(error);
   });
 

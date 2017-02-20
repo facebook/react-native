@@ -13,10 +13,7 @@
 
 const invariant = require('fbjs/lib/invariant');
 
-type ProcessBatch<TItem, TResult> = (
-  batch: Array<TItem>,
-  callback: (error?: Error, orderedResults?: Array<TResult>) => mixed,
-) => mixed;
+type ProcessBatch<TItem, TResult> = (batch: Array<TItem>) => Promise<Array<TResult>>;
 
 type BatchProcessorOptions = {
   maximumDelayMs: number,
@@ -45,10 +42,7 @@ class BatchProcessor<TItem, TResult> {
   _queue: Array<QueueItem<TItem, TResult>>;
   _timeoutHandle: ?number;
 
-  constructor(
-    options: BatchProcessorOptions,
-    processBatch: ProcessBatch<TItem, TResult>,
-  ) {
+  constructor(options: BatchProcessorOptions, processBatch: ProcessBatch<TItem, TResult>) {
     this._options = options;
     this._processBatch = processBatch;
     this._queue = [];
@@ -57,30 +51,36 @@ class BatchProcessor<TItem, TResult> {
     (this: any)._processQueue = this._processQueue.bind(this);
   }
 
+  _onBatchFinished() {
+    this._currentProcessCount--;
+    this._processQueueOnceReady();
+  }
+
+  _onBatchResults(jobs: Array<QueueItem<TItem, TResult>>, results: Array<TResult>) {
+    invariant(results.length === jobs.length, 'Not enough results returned.');
+    for (let i = 0; i < jobs.length; ++i) {
+      jobs[i].resolve(results[i]);
+    }
+    this._onBatchFinished();
+  }
+
+  _onBatchError(jobs: Array<QueueItem<TItem, TResult>>, error: mixed) {
+    for (let i = 0; i < jobs.length; ++i) {
+      jobs[i].reject(error);
+    }
+    this._onBatchFinished();
+  }
+
   _processQueue() {
     this._timeoutHandle = null;
-    while (
-      this._queue.length > 0 &&
-      this._currentProcessCount < this._options.concurrency
-    ) {
+    const {concurrency} = this._options;
+    while (this._queue.length > 0 && this._currentProcessCount < concurrency) {
       this._currentProcessCount++;
       const jobs = this._queue.splice(0, this._options.maximumItems);
-      const items = jobs.map(job => job.item);
-      this._processBatch(items, (error, results) => {
-        if (error != null) {
-          for (let i = 0; i < jobs.length; ++i) {
-            jobs[i].reject(error);
-          }
-        } else {
-          invariant(results != null, 'Neither results or error were returned.');
-          invariant(results.length === items.length, 'Not enough results returned.');
-          for (let i = 0; i < jobs.length; ++i) {
-            jobs[i].resolve(results[i]);
-          }
-        }
-        this._currentProcessCount--;
-        this._processQueueOnceReady();
-      });
+      this._processBatch(jobs.map(job => job.item)).then(
+        this._onBatchResults.bind(this, jobs),
+        this._onBatchError.bind(this, jobs),
+      );
     }
   }
 

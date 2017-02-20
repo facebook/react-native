@@ -23,15 +23,8 @@ import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {CachedResult, GetTransformCacheKey} from './TransformCache';
 import type {Reporter} from './reporting';
 
-type FetchResultURIs = (
-  keys: Array<string>,
-  callback: (error?: Error, results?: Map<string, string>) => void,
-) => mixed;
-
-type StoreResults = (
-  resultsByKey: Map<string, CachedResult>,
-  callback: (error?: Error) => void,
-) => mixed;
+type FetchResultURIs = (keys: Array<string>) => Promise<Map<string, string>>;
+type StoreResults = (resultsByKey: Map<string, CachedResult>) => Promise<void>;
 
 type FetchProps = {
   filePath: string,
@@ -60,17 +53,15 @@ class KeyURIFetcher {
    * and we proceed as if there were no result for these keys instead. That way
    * a build will not fail just because of the cache.
    */
-  _processKeys(
-    keys: Array<string>,
-    callback: (error?: Error, keyURIs: Array<?URI>) => mixed,
-  ) {
-    this._fetchResultURIs(keys, (error, URIsByKey) => {
-      if (error != null) {
-        this._processError(error);
-      }
-      const URIs = keys.map(key => URIsByKey && URIsByKey.get(key));
-      callback(undefined, URIs);
-    });
+  async _processKeys(keys: Array<string>): Promise<Array<?URI>> {
+    let URIsByKey;
+    try {
+      URIsByKey = await this._fetchResultURIs(keys);
+    } catch (error) {
+      this._processError(error);
+      return new Array(keys.length);
+    }
+    return keys.map(key => URIsByKey.get(key));
   }
 
   fetch(key: string, callback: FetchURICallback) {
@@ -92,21 +83,17 @@ class KeyURIFetcher {
 
 }
 
+type KeyedResult = {key: string, result: CachedResult};
+
 class KeyResultStore {
 
   _storeResults: StoreResults;
-  _batchProcessor: BatchProcessor<{key: string, result: CachedResult}, void>;
+  _batchProcessor: BatchProcessor<KeyedResult, void>;
 
-  _processResults(
-    keyResults: Array<{key: string, result: CachedResult}>,
-    callback: (error?: Error) => mixed,
-  ) {
-    const resultsByKey = new Map(
-      keyResults.map(pair => [pair.key, pair.result]),
-    );
-    this._storeResults(resultsByKey, error => {
-      callback(error);
-    });
+  async _processResults(keyResults: Array<KeyedResult>): Promise<Array<void>> {
+    const resultsByKey = new Map(keyResults.map(pair => [pair.key, pair.result]));
+    await this._storeResults(resultsByKey);
+    return new Array(keyResults.length);
   }
 
   store(key: string, result: CachedResult) {
