@@ -43,6 +43,20 @@ class JObjectWrapper<jqpl> : public JObjectWrapper<jobject> {
     markerTagMethod(this_, markerId, instanceKey, tag);
   }
 
+  void markerAnnotate(
+      int markerId,
+      int instanceKey,
+      alias_ref<jstring> key,
+      alias_ref<jstring> value) {
+    static auto markerAnnotateMethod =
+      qplClass()->getMethod<void(
+      jint,
+      jint,
+      alias_ref<jstring>,
+      alias_ref<jstring>)>("markerAnnotate");
+    markerAnnotateMethod(this_, markerId, instanceKey, key, value);
+  }
+
   void markerNote(int markerId, int instanceKey, short actionId, long timestamp) {
     static auto markerNoteMethod =
       qplClass()->getMethod<void(jint, jint, jshort, jlong)>("markerNote");
@@ -213,6 +227,24 @@ static JSValueRef nativeQPLMarkerTag(
   return JSValueMakeUndefined(ctx);
 }
 
+static JSValueRef nativeQPLMarkerAnnotate(
+    JSContextRef ctx,
+    JSObjectRef function,
+    JSObjectRef thisObject,
+    size_t argumentCount,
+    const JSValueRef arguments[],
+    JSValueRef* exception) {
+  double targets[2];
+  if (isReady() && grabDoubles(2, targets, ctx, argumentCount, arguments, exception)) {
+    int32_t markerId = (int32_t) targets[0];
+    int32_t instanceKey = (int32_t) targets[1];
+    local_ref<jstring> key = getJStringFromJSValueRef(ctx, arguments[2]);
+    local_ref<jstring> value = getJStringFromJSValueRef(ctx, arguments[3]);
+    JQuickPerformanceLoggerProvider::get()->markerAnnotate(markerId, instanceKey, key, value);
+  }
+  return JSValueMakeUndefined(ctx);
+}
+
 static JSValueRef nativeQPLMarkerNote(
     JSContextRef ctx,
     JSObjectRef function,
@@ -269,6 +301,7 @@ void addNativePerfLoggingHooks(JSGlobalContextRef ctx) {
   installGlobalFunction(ctx, "nativeQPLMarkerStart", nativeQPLMarkerStart);
   installGlobalFunction(ctx, "nativeQPLMarkerEnd", nativeQPLMarkerEnd);
   installGlobalFunction(ctx, "nativeQPLMarkerTag", nativeQPLMarkerTag);
+  installGlobalFunction(ctx, "nativeQPLMarkerAnnotate", nativeQPLMarkerAnnotate);
   installGlobalFunction(ctx, "nativeQPLMarkerNote", nativeQPLMarkerNote);
   installGlobalFunction(ctx, "nativeQPLMarkerCancel", nativeQPLMarkerCancel);
   installGlobalFunction(ctx, "nativeQPLTimestamp", nativeQPLTimestamp);
