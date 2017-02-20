@@ -52,9 +52,6 @@ import javax.annotation.Nullable;
  */
 /*package*/ class NativeAnimatedNodesManager implements EventDispatcherListener {
 
-  // Used to avoid allocating a new array on every frame in runUpdates.
-  private final static List<AnimatedNode> sRunUpdateNodeList = new ArrayList<>();
-
   private final SparseArray<AnimatedNode> mAnimatedNodes = new SparseArray<>();
   private final SparseArray<AnimationDriver> mActiveAnimations = new SparseArray<>();
   private final SparseArray<AnimatedNode> mUpdatedNodes = new SparseArray<>();
@@ -62,6 +59,8 @@ import javax.annotation.Nullable;
   private final Map<String, Map<String, String>> mCustomEventTypes;
   private final UIImplementation mUIImplementation;
   private int mAnimatedGraphBFSColor = 0;
+  // Used to avoid allocating a new array on every frame in runUpdates.
+  private final List<AnimatedNode> mRunUpdateNodeList = new ArrayList<>();
 
   public NativeAnimatedNodesManager(UIManagerModule uiManager) {
     mUIImplementation = uiManager.getUIImplementation();
@@ -362,7 +361,7 @@ import javax.annotation.Nullable;
 
     for (int i = 0; i < mUpdatedNodes.size(); i++) {
       AnimatedNode node = mUpdatedNodes.valueAt(i);
-      sRunUpdateNodeList.add(node);
+      mRunUpdateNodeList.add(node);
     }
 
     // Clean mUpdatedNodes queue
@@ -372,14 +371,14 @@ import javax.annotation.Nullable;
       AnimationDriver animation = mActiveAnimations.valueAt(i);
       animation.runAnimationStep(frameTimeNanos);
       AnimatedNode valueNode = animation.mAnimatedValue;
-      sRunUpdateNodeList.add(valueNode);
+      mRunUpdateNodeList.add(valueNode);
       if (animation.mHasFinished) {
         hasFinishedAnimations = true;
       }
     }
 
-    updateNodes(sRunUpdateNodeList);
-    sRunUpdateNodeList.clear();
+    updateNodes(mRunUpdateNodeList);
+    mRunUpdateNodeList.clear();
 
     // Cleanup finished animations. Iterate over the array of animations and override ones that has
     // finished, then resize `mActiveAnimations`.
