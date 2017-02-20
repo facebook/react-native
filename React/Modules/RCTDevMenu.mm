@@ -269,7 +269,7 @@ RCT_EXPORT_MODULE()
   if (!port) {
     port = @8081; // Packager default port
   }
-  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/message?role=shell", scheme, host, port]];
+  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/message?role=ios-rn-rctdevmenu", scheme, host, port]];
 }
 
 // TODO: Move non-UI logic into separate RCTDevSettings module
@@ -310,26 +310,24 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)isSupportedVersion:(NSNumber *)version
 {
-  NSArray<NSNumber *> *const kSupportedVersions = @[ @1 ];
+  NSArray<NSNumber *> *const kSupportedVersions = @[ @2 ];
   return [kSupportedVersions containsObject:version];
 }
 
 - (void)didReceiveWebSocketMessage:(NSDictionary<NSString *, id> *)message
 {
   if ([self isSupportedVersion:message[@"version"]]) {
-    [self processTarget:message[@"target"] action:message[@"action"] options:message[@"options"]];
+    [self processMethod:message[@"method"] params:message[@"params"]];
   }
 }
 
-- (void)processTarget:(NSString *)target action:(NSString *)action options:(NSDictionary<NSString *, id> *)options
+- (void)processMethod:(NSString *)method params:(NSDictionary<NSString *, id> *)params
 {
-  if ([target isEqualToString:@"bridge"]) {
-    if ([action isEqualToString:@"reload"]) {
-      if ([options[@"debug"] boolValue]) {
-        _bridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
-      }
-      [_bridge reload];
+  if ([method isEqualToString:@"reload"]) {
+    if (![params isEqual:[NSNull null]] && [params[@"debug"] boolValue]) {
+      _bridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
     }
+    [_bridge reload];
   }
 }
 

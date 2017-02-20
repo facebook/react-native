@@ -11,6 +11,18 @@
  */
 'use strict';
 
-export type ImageSource = {
+// This is to sync with ImageSourcePropTypes.js.
+
+type ImageURISource = {
   uri?: string,
-} | number;
+  bundle?: string,
+  method?: string,
+  headers?: Object,
+  body?: string,
+  cache?: 'default' | 'reload' | 'force-cache' | 'only-if-cached',
+  width?: number,
+  height?: number,
+  scale?: number,
+};
+
+export type ImageSource = ImageURISource | number | Array<ImageURISource>;

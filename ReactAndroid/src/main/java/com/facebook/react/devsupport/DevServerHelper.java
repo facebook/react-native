@@ -65,7 +65,7 @@ public class DevServerHelper {
   private static final String ONCHANGE_ENDPOINT_URL_FORMAT =
       "http://%s/onchange";
   private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
-  private static final String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?role=shell";
+  private static final String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?role=android-rn-devserverhelper";
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
   private static final String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
   private static final String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s";

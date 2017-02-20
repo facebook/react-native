@@ -50,7 +50,9 @@ CxxNativeModule::CxxNativeModule(std::weak_ptr<Instance> instance,
                                  std::unique_ptr<CxxModule> module)
   : instance_(instance)
   , module_(std::move(module))
-  , methods_(module_->getMethods()) {}
+  , methods_(module_->getMethods()) {
+    module_->setInstance(instance);
+  }
 
 std::string CxxNativeModule::getName() {
   return module_->getName();
