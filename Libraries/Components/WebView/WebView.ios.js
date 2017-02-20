@@ -336,6 +336,10 @@ class WebView extends React.Component {
     mediaPlaybackRequiresUserAction: PropTypes.bool,
   };
 
+  static defaultProps = {
+    mediaPlaybackRequiresUserAction: true,
+  };
+
   state = {
     viewState: WebViewState.IDLE,
     lastErrorEvent: (null: ?ErrorEvent),

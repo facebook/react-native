@@ -149,7 +149,7 @@ class WebView extends React.Component {
 
     /**
      * Determines whether HTML5 audio & videos require the user to tap before they can
-     * start playing. The default value is `false`.
+     * start playing. The default value is `true`.
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
 
@@ -165,6 +165,7 @@ class WebView extends React.Component {
   static defaultProps = {
     javaScriptEnabled : true,
     scalesPageToFit: true,
+    mediaPlaybackRequiresUserAction: true,
   };
 
   state = {
