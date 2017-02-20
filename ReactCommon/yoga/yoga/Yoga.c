@@ -1928,8 +1928,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   const float paddingAndBorderAxisCross =
       YGNodePaddingAndBorderForAxis(node, crossAxis, parentWidth);
 
-  const YGMeasureMode measureModeMainDim = isMainAxisRow ? widthMeasureMode : heightMeasureMode;
-  const YGMeasureMode measureModeCrossDim = isMainAxisRow ? heightMeasureMode : widthMeasureMode;
+  YGMeasureMode measureModeMainDim = isMainAxisRow ? widthMeasureMode : heightMeasureMode;
+  YGMeasureMode measureModeCrossDim = isMainAxisRow ? heightMeasureMode : widthMeasureMode;
 
   const float paddingAndBorderAxisRow =
       isMainAxisRow ? paddingAndBorderAxisMain : paddingAndBorderAxisCross;
@@ -1974,8 +1974,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   // computedFlexBasis to 0 instead of measuring and shrinking / flexing the child to exactly
   // match the remaining space
   YGNodeRef singleFlexChild = NULL;
-  if ((isMainAxisRow && widthMeasureMode == YGMeasureModeExactly) ||
-      (!isMainAxisRow && heightMeasureMode == YGMeasureModeExactly)) {
+  if (measureModeMainDim == YGMeasureModeExactly) {
     for (uint32_t i = 0; i < childCount; i++) {
       const YGNodeRef child = YGNodeGetChild(node, i);
       if (singleFlexChild) {
@@ -2046,7 +2045,10 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   }
 
   const bool flexBasisOverflows =
-      measureModeMainDim == YGMeasureModeUndefined ? false : totalFlexBasis > availableInnerMainDim;
+    measureModeMainDim == YGMeasureModeUndefined ? false : totalFlexBasis > availableInnerMainDim;
+  if (isNodeFlexWrap && flexBasisOverflows && measureModeMainDim == YGMeasureModeAtMost) {
+    measureModeMainDim = YGMeasureModeExactly;
+  }
 
   // STEP 4: COLLECT FLEX ITEMS INTO FLEX LINES
 
@@ -2886,7 +2888,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       YGNodeAbsoluteLayoutChild(node,
                                 currentAbsoluteChild,
                                 availableInnerWidth,
-                                widthMeasureMode,
+                                isMainAxisRow ? measureModeMainDim : measureModeCrossDim,
                                 availableInnerHeight,
                                 direction);
     }
