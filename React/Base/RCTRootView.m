@@ -19,11 +19,11 @@
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
-#import "RCTPerformanceLogger.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
+#import "RCTRootContentView.h"
 #import "UIView+React.h"
 #import "RCTProfile.h"
 
@@ -38,19 +38,6 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 - (NSNumber *)allocateRootTag;
 
-@end
-
-@interface RCTRootContentView : RCTView <RCTInvalidating>
-
-@property (nonatomic, readonly) BOOL contentHasAppeared;
-@property (nonatomic, readonly, strong) RCTTouchHandler *touchHandler;
-@property (nonatomic, assign) BOOL passThroughTouches;
-@property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
-
-- (instancetype)initWithFrame:(CGRect)frame
-                       bridge:(RCTBridge *)bridge
-                     reactTag:(NSNumber *)reactTag
-               sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility NS_DESIGNATED_INITIALIZER;
 @end
 
 @implementation RCTRootView
@@ -371,114 +358,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   NSNumber *rootTag = objc_getAssociatedObject(self, _cmd) ?: @1;
   objc_setAssociatedObject(self, _cmd, @(rootTag.integerValue + 10), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   return rootTag;
-}
-
-@end
-
-@implementation RCTRootContentView
-{
-  __weak RCTBridge *_bridge;
-  UIColor *_backgroundColor;
-}
-
-- (instancetype)initWithFrame:(CGRect)frame
-                       bridge:(RCTBridge *)bridge
-                     reactTag:(NSNumber *)reactTag
-               sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility
-{
-  if ((self = [super initWithFrame:frame])) {
-    _bridge = bridge;
-    self.reactTag = reactTag;
-    _sizeFlexibility = sizeFlexibility;
-    _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
-    [_touchHandler attachToView:self];
-    [_bridge.uiManager registerRootView:self];
-    self.layer.backgroundColor = NULL;
-  }
-  return self;
-}
-
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
-
-- (void)layoutSubviews
-{
-  [super layoutSubviews];
-  [self updateAvailableSize];
-}
-
-- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
-{
-  [super insertReactSubview:subview atIndex:atIndex];
-  [_bridge.performanceLogger markStopForTag:RCTPLTTI];
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (!self->_contentHasAppeared) {
-      self->_contentHasAppeared = YES;
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTContentDidAppearNotification
-                                                          object:self.superview];
-    }
-  });
-}
-
-- (void)setSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
-{
-  if (_sizeFlexibility == sizeFlexibility) {
-    return;
-  }
-
-  _sizeFlexibility = sizeFlexibility;
-  [self setNeedsLayout];
-}
-
-- (void)updateAvailableSize
-{
-  if (!self.reactTag || !_bridge.isValid) {
-    return;
-  }
-
-  CGSize size = self.bounds.size;
-  CGSize availableSize =
-    CGSizeMake(
-      _sizeFlexibility & RCTRootViewSizeFlexibilityWidth ? INFINITY : size.width,
-      _sizeFlexibility & RCTRootViewSizeFlexibilityHeight ? INFINITY : size.height
-    );
-
-  [_bridge.uiManager setAvailableSize:availableSize forRootView:self];
-}
-
-- (void)setBackgroundColor:(UIColor *)backgroundColor
-{
-  _backgroundColor = backgroundColor;
-  if (self.reactTag && _bridge.isValid) {
-    [_bridge.uiManager setBackgroundColor:backgroundColor forView:self];
-  }
-}
-
-- (UIColor *)backgroundColor
-{
-  return _backgroundColor;
-}
-
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-  // The root content view itself should never receive touches
-  UIView *hitView = [super hitTest:point withEvent:event];
-  if (_passThroughTouches && hitView == self) {
-    return nil;
-  }
-  return hitView;
-}
-
-- (void)invalidate
-{
-  if (self.userInteractionEnabled) {
-    self.userInteractionEnabled = NO;
-    [(RCTRootView *)self.superview contentViewInvalidated];
-    [_bridge enqueueJSCall:@"AppRegistry"
-                    method:@"unmountApplicationComponentAtRootTag"
-                      args:@[self.reactTag]
-                completion:NULL];
-  }
 }
 
 @end

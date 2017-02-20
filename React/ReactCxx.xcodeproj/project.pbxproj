@@ -780,6 +780,8 @@
 		58114A171AAE854800E7D092 /* RCTPickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58114A151AAE854800E7D092 /* RCTPickerManager.m */; };
 		58114A501AAE93D500E7D092 /* RCTAsyncLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 58114A4E1AAE93D500E7D092 /* RCTAsyncLocalStorage.m */; };
 		58C571C11AA56C1900CDF9C8 /* RCTDatePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58C571BF1AA56C1900CDF9C8 /* RCTDatePickerManager.m */; };
+		59A7B9FD1E577DBF0068EDBF /* RCTRootContentView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59A7B9FB1E577DBF0068EDBF /* RCTRootContentView.h */; };
+		59A7B9FE1E577DBF0068EDBF /* RCTRootContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59A7B9FC1E577DBF0068EDBF /* RCTRootContentView.m */; };
 		59FBEFB01E46D91C0095D885 /* RCTScrollContentShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59FBEFAC1E46D91C0095D885 /* RCTScrollContentShadowView.h */; };
 		59FBEFB11E46D91C0095D885 /* RCTScrollContentShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59FBEFAC1E46D91C0095D885 /* RCTScrollContentShadowView.h */; };
 		59FBEFB21E46D91C0095D885 /* RCTScrollContentShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59FBEFAD1E46D91C0095D885 /* RCTScrollContentShadowView.m */; };
@@ -1437,6 +1439,8 @@
 		58114A4F1AAE93D500E7D092 /* RCTAsyncLocalStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAsyncLocalStorage.h; sourceTree = "<group>"; };
 		58C571BF1AA56C1900CDF9C8 /* RCTDatePickerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDatePickerManager.m; sourceTree = "<group>"; };
 		58C571C01AA56C1900CDF9C8 /* RCTDatePickerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTDatePickerManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		59A7B9FB1E577DBF0068EDBF /* RCTRootContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootContentView.h; sourceTree = "<group>"; };
+		59A7B9FC1E577DBF0068EDBF /* RCTRootContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRootContentView.m; sourceTree = "<group>"; };
 		59FBEFAC1E46D91C0095D885 /* RCTScrollContentShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollContentShadowView.h; sourceTree = "<group>"; };
 		59FBEFAD1E46D91C0095D885 /* RCTScrollContentShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTScrollContentShadowView.m; sourceTree = "<group>"; };
 		59FBEFAE1E46D91C0095D885 /* RCTScrollContentViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollContentViewManager.h; sourceTree = "<group>"; };
@@ -2052,6 +2056,8 @@
 				3D7749431DC1065C007EC8D8 /* RCTPlatform.m */,
 				A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */,
 				A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */,
+				59A7B9FB1E577DBF0068EDBF /* RCTRootContentView.h */,
+				59A7B9FC1E577DBF0068EDBF /* RCTRootContentView.m */,
 				830A229C1A66C68A008503DA /* RCTRootView.h */,
 				830A229D1A66C68A008503DA /* RCTRootView.m */,
 				13AFBCA21C07287B00BBAEAA /* RCTRootViewDelegate.h */,
@@ -2485,6 +2491,7 @@
 				3D80DA4F1DF820620028D040 /* RCTDevLoadingView.h in Headers */,
 				3D80DA501DF820620028D040 /* RCTDevMenu.h in Headers */,
 				3D80DA511DF820620028D040 /* RCTEventEmitter.h in Headers */,
+				59A7B9FD1E577DBF0068EDBF /* RCTRootContentView.h in Headers */,
 				3D80DA521DF820620028D040 /* RCTExceptionsManager.h in Headers */,
 				3D80DA531DF820620028D040 /* RCTI18nManager.h in Headers */,
 				3D80DA541DF820620028D040 /* RCTI18nUtil.h in Headers */,
@@ -3178,6 +3185,7 @@
 				13A0C2891B74F71200B29F6F /* RCTDevLoadingView.m in Sources */,
 				13B07FF21A69327A00A75B9A /* RCTTiming.m in Sources */,
 				1372B70A1AB030C200659ED6 /* RCTAppState.m in Sources */,
+				59A7B9FE1E577DBF0068EDBF /* RCTRootContentView.m in Sources */,
 				134FCB3D1A6E7F0800051CC8 /* RCTJSCExecutor.mm in Sources */,
 				14C2CA781B3ACB0400E6CBB2 /* RCTBatchedBridge.m in Sources */,
 				13E067591A70F44B002CDEE1 /* UIView+React.m in Sources */,
