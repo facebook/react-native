@@ -285,7 +285,14 @@ var featured = [
     infoTitle: 'Robin Rooms manages and mounts outside your conference rooms'
   },
   {
-    name: 'Sleeperbot',
+    name: '宠拜',
+    icon: 'https://is5-ssl.mzstatic.com/image/thumb/Purple22/v4/b9/5c/94/b95c9438-0b2d-fa7b-e7cf-1a747c759f29/mzl.cxfydihc.png/340x340bb-80.png',
+    linkAppStore: 'https://itunes.apple.com/cn/app/chong-bai-jing-cai-chong-wu/id1110265473?l=zh&ls=1&mt=8',
+    infoLink: 'http://petadore.cn/',
+    infoTitle: 'Chong Bai is an social app that around pet and pet life.',
+	},
+	{
+		name: 'Sleeperbot',
     icon: 'https://blitzchat.net/uploads/c8425332190a4f4b852d7770ad32e602/original.png',
     linkAppStore: 'https://itunes.apple.com/us/app/sleeperbot-fantasy-football/id987367543?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sleeperbot&hl=en',
