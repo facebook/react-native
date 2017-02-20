@@ -495,7 +495,16 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/us/app/tian-cai-duan-zi-shou-shen/id992312701?l=zh&ls=1&mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.geniusJokeWriter.app',
     author:'Ran Zhao&Ji Zhao'
-  }
+  },
+  {
+    name: '借贷宝',
+    icon: 'http://officalcms.b0.upaiyun.com/2017/0220/20170220030217759.png',
+    linkPlayStore: 'http://www.jiedaibao.com',
+    linkAppStore: 'https://itunes.apple.com/cn/app/id983151079',
+    infoLink: 'http://www.jiedaibao.com/about/index.html?from=002',
+    infoTitle: 'Jiedaibao is China’s largest Internet financial products',
+    defaultLink: 'http://www.jiedaibao.com',
+  },
 ];
 
 var AppList = React.createClass({
