@@ -322,6 +322,19 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 }
 
+- (void)mapView:(RCTMap *)mapView didAddAnnotationViews:(NSArray *)views
+
+{   
+  for (MKAnnotationView* view in views) {
+    if ([view.annotation isKindOfClass:[RCTMapAnnotation class]]) {
+      RCTMapAnnotation *annotation = (RCTMapAnnotation *)view.annotation;
+      if (annotation.selectAnnotation) {
+        [mapView selectAnnotation:view.annotation animated:YES];
+      }
+    }
+  }
+}
+
 - (void)mapView:(RCTMap *)mapView didUpdateUserLocation:(MKUserLocation *)location
 {
   if (mapView.followUserLocation) {

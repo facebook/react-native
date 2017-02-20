@@ -214,6 +214,11 @@ const MapView = React.createClass({
       animateDrop: React.PropTypes.bool,
 
       /**
+       * Whether the pin should automatically select or not
+       */
+      selectAnnotation: React.PropTypes.bool,
+
+      /**
        * Whether the pin should be draggable or not
        */
       draggable: React.PropTypes.bool,

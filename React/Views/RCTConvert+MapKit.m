@@ -50,6 +50,7 @@ RCT_ENUM_CONVERTER(MKMapType, (@{
   annotation.hasRightCallout = [self BOOL:json[@"hasRightCallout"]];
   annotation.animateDrop = [self BOOL:json[@"animateDrop"]];
   annotation.tintColor = [self UIColor:json[@"tintColor"]];
+  annotation.selectAnnotation = [self BOOL:json[@"selectAnnotation"]];
   annotation.image = [self UIImage:json[@"image"]];
   annotation.viewIndex =
     [self NSInteger:json[@"viewIndex"] ?: @(NSNotFound)];
