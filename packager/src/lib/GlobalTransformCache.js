@@ -74,7 +74,10 @@ class KeyURIFetcher {
   }
 
   fetch(key: string, callback: FetchURICallback) {
-    this._batchProcessor.queue(key, callback);
+    this._batchProcessor.queue(key).then(
+      res => process.nextTick(callback.bind(undefined, undefined, res)),
+      err => process.nextTick(callback.bind(undefined, err)),
+    );
   }
 
   constructor(fetchResultURIs: FetchResultURIs, processError: (error: Error) => mixed) {
@@ -107,7 +110,7 @@ class KeyResultStore {
   }
 
   store(key: string, result: CachedResult) {
-    this._batchProcessor.queue({key, result}, () => {});
+    this._batchProcessor.queue({key, result});
   }
 
   constructor(storeResults: StoreResults) {

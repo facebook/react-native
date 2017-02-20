@@ -38,12 +38,12 @@ describe('BatchProcessor', () => {
       }, 0);
     });
     const results = [];
-    const callback = (error, res) => {
-      expect(error).toBe(null);
-      results.push(res);
-    };
-    input.forEach(e => bp.queue(e, callback));
+    input.forEach(e => bp.queue(e).then(
+      res => results.push(res),
+      error => process.nextTick(() => { throw error; }),
+    ));
     jest.runAllTimers();
+    jest.runAllTicks();
     expect(batches).toEqual([
       [1, 2, 3],
       [4, 5, 6],
@@ -56,10 +56,12 @@ describe('BatchProcessor', () => {
   it('report errors', () => {
     const error = new Error('oh noes');
     const bp = new BatchProcessor(options, (items, callback) => {
-      process.nextTick(callback.bind(null, error));
+      setTimeout(callback.bind(null, error), 0);
     });
     let receivedError;
-    bp.queue('foo', err => { receivedError = err; });
+    bp.queue('foo').catch(
+      err => { receivedError = err; },
+    );
     jest.runAllTimers();
     jest.runAllTicks();
     expect(receivedError).toBe(error);

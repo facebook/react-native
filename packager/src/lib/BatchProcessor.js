@@ -24,6 +24,12 @@ type BatchProcessorOptions = {
   concurrency: number,
 };
 
+type QueueItem<TItem, TResult> = {
+  item: TItem,
+  reject: (error: mixed) => mixed,
+  resolve: (result: TResult) => mixed,
+};
+
 /**
  * We batch items together trying to minimize their processing, for example as
  * network queries. For that we wait a small moment before processing a batch.
@@ -33,14 +39,11 @@ type BatchProcessorOptions = {
  */
 class BatchProcessor<TItem, TResult> {
 
+  _currentProcessCount: number;
   _options: BatchProcessorOptions;
   _processBatch: ProcessBatch<TItem, TResult>;
-  _queue: Array<{
-    item: TItem,
-    callback: (error?: Error, result?: TResult) => mixed,
-  }>;
+  _queue: Array<QueueItem<TItem, TResult>>;
   _timeoutHandle: ?number;
-  _currentProcessCount: number;
 
   constructor(
     options: BatchProcessorOptions,
@@ -64,12 +67,16 @@ class BatchProcessor<TItem, TResult> {
       const jobs = this._queue.splice(0, this._options.maximumItems);
       const items = jobs.map(job => job.item);
       this._processBatch(items, (error, results) => {
-        invariant(
-          results == null || results.length === items.length,
-          'Not enough results returned.',
-        );
-        for (let i = 0; i < items.length; ++i) {
-          jobs[i].callback(error, results && results[i]);
+        if (error != null) {
+          for (let i = 0; i < jobs.length; ++i) {
+            jobs[i].reject(error);
+          }
+        } else {
+          invariant(results != null, 'Neither results or error were returned.');
+          invariant(results.length === items.length, 'Not enough results returned.');
+          for (let i = 0; i < jobs.length; ++i) {
+            jobs[i].resolve(results[i]);
+          }
         }
         this._currentProcessCount--;
         this._processQueueOnceReady();
@@ -91,12 +98,11 @@ class BatchProcessor<TItem, TResult> {
     }
   }
 
-  queue(
-    item: TItem,
-    callback: (error?: Error, result?: TResult) => mixed,
-  ) {
-    this._queue.push({item, callback});
-    this._processQueueOnceReady();
+  queue(item: TItem): Promise<TResult> {
+    return new Promise((resolve, reject) => {
+      this._queue.push({item, resolve, reject});
+      this._processQueueOnceReady();
+    });
   }
 
 }
