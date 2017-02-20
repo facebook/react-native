@@ -234,9 +234,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
             setterBlock = ^(id target, id json) { \
               if (json) { \
                 if (!setDefaultValue && target) { \
-                  if ([target respondsToSelector:getter]) { \
-                    defaultValue = get(target, getter); \
-                  } \
+                  RCTAssert([target respondsToSelector:getter], @"prop getter does not exist: %@", NSStringFromSelector(getter)); \
+                  defaultValue = get(target, getter); \
                   setDefaultValue = YES; \
                 } \
                 set(target, setter, convert([RCTConvert class], type, json)); \

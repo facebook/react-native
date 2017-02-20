@@ -454,6 +454,10 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
   }
 }
 
+float YGNodeStyleGetFlex(const YGNodeRef node) {
+  return node->style.flex;
+}
+
 #define YG_NODE_PROPERTY_IMPL(type, name, paramName, instanceName) \
   void YGNodeSet##name(const YGNodeRef node, type paramName) {     \
     node->instanceName = paramName;                                \
