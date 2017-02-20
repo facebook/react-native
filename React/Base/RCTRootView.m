@@ -45,6 +45,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 @property (nonatomic, readonly) BOOL contentHasAppeared;
 @property (nonatomic, readonly, strong) RCTTouchHandler *touchHandler;
 @property (nonatomic, assign) BOOL passThroughTouches;
+@property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
 
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
@@ -281,8 +282,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
 {
+  if (_sizeFlexibility == sizeFlexibility) {
+    return;
+  }
+
   _sizeFlexibility = sizeFlexibility;
   [self setNeedsLayout];
+  _contentView.sizeFlexibility = _sizeFlexibility;
 }
 
 - (void)layoutSubviews
@@ -383,9 +389,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if ((self = [super initWithFrame:frame])) {
     _bridge = bridge;
     self.reactTag = reactTag;
+    _sizeFlexibility = sizeFlexibility;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
     [_touchHandler attachToView:self];
-    [_bridge.uiManager registerRootView:self withSizeFlexibility:sizeFlexibility];
+    [_bridge.uiManager registerRootView:self];
     self.layer.backgroundColor = NULL;
   }
   return self;
@@ -393,6 +400,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
+
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+  [self updateAvailableSize];
+}
 
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
@@ -407,12 +420,30 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
   });
 }
 
-- (void)setFrame:(CGRect)frame
+- (void)setSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
 {
-  super.frame = frame;
-  if (self.reactTag && _bridge.isValid) {
-    [_bridge.uiManager setSize:frame.size forView:self];
+  if (_sizeFlexibility == sizeFlexibility) {
+    return;
   }
+
+  _sizeFlexibility = sizeFlexibility;
+  [self setNeedsLayout];
+}
+
+- (void)updateAvailableSize
+{
+  if (!self.reactTag || !_bridge.isValid) {
+    return;
+  }
+
+  CGSize size = self.bounds.size;
+  CGSize availableSize =
+    CGSizeMake(
+      _sizeFlexibility & RCTRootViewSizeFlexibilityWidth ? INFINITY : size.width,
+      _sizeFlexibility & RCTRootViewSizeFlexibilityHeight ? INFINITY : size.height
+    );
+
+  [_bridge.uiManager setAvailableSize:availableSize forRootView:self];
 }
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor

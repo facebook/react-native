@@ -22,33 +22,18 @@
   self = [super init];
   if (self) {
     _baseDirection = [[RCTI18nUtil sharedInstance] isRTL] ? YGDirectionRTL : YGDirectionLTR;
+    _availableSize = CGSizeMake(INFINITY, INFINITY);
   }
   return self;
 }
 
-- (void)applySizeConstraints
-{
-  switch (_sizeFlexibility) {
-    case RCTRootViewSizeFlexibilityNone:
-      break;
-    case RCTRootViewSizeFlexibilityWidth:
-      YGNodeStyleSetWidth(self.cssNode, YGUndefined);
-      break;
-    case RCTRootViewSizeFlexibilityHeight:
-      YGNodeStyleSetHeight(self.cssNode, YGUndefined);
-      break;
-    case RCTRootViewSizeFlexibilityWidthAndHeight:
-      YGNodeStyleSetWidth(self.cssNode, YGUndefined);
-      YGNodeStyleSetHeight(self.cssNode, YGUndefined);
-      break;
-  }
-}
-
 - (NSSet<RCTShadowView *> *)collectViewsWithUpdatedFrames
 {
-  [self applySizeConstraints];
+  // Treating `INFINITY` as `YGUndefined` (which equals `NAN`).
+  float availableWidth = _availableSize.width == INFINITY ? YGUndefined : _availableSize.width;
+  float availableHeight = _availableSize.height == INFINITY ? YGUndefined : _availableSize.height;
 
-  YGNodeCalculateLayout(self.cssNode, YGUndefined, YGUndefined, _baseDirection);
+  YGNodeCalculateLayout(self.cssNode, availableWidth, availableHeight, _baseDirection);
 
   NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
   [self applyLayoutNode:self.cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
