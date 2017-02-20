@@ -386,7 +386,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
     }
   }
 #elif defined(__APPLE__)
-  BundleHeader header{};
+  BundleHeader header;
   memcpy(&header, script->c_str(), std::min(script->size(), sizeof(BundleHeader)));
   auto scriptTag = parseTypeFromHeader(header);
 

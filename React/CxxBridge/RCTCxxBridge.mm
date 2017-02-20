@@ -87,7 +87,7 @@ static JSValueRef nativePerformanceNow(
 }
 
 static bool isRAMBundle(NSData *script) {
-  BundleHeader header{};
+  BundleHeader header;
   [script getBytes:&header length:sizeof(header)];
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
