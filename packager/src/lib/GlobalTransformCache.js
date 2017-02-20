@@ -237,7 +237,7 @@ class GlobalTransformCache {
    * megabytes each.
    */
   _fetchFromURI(uri: string, callback: FetchCallback) {
-    request.get({uri, json: true, timeout: 4000}, (error, response, unvalidatedResult) => {
+    request.get({uri, json: true, timeout: 8000}, (error, response, unvalidatedResult) => {
       if (error != null) {
         callback(error);
         return;
