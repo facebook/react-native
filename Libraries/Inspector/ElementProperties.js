@@ -111,6 +111,15 @@ class ElementProperties extends React.Component {
 }
 
 function getInstanceName(instance) {
+  if (typeof instance.tag === 'number') {
+    if (typeof instance.type === 'string') {
+      return instance.type;
+    }
+    if (typeof instance.type === 'function') {
+      return instance.type.displayName || instance.type.name || 'Unknown';
+    }
+    return 'Unknown';
+  }
   if (instance.getName) {
     return instance.getName();
   }

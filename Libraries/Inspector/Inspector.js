@@ -17,17 +17,61 @@
 const Dimensions = require('Dimensions');
 const InspectorOverlay = require('InspectorOverlay');
 const InspectorPanel = require('InspectorPanel');
-const InspectorUtils = require('InspectorUtils');
 const Platform = require('Platform');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 const View = require('View');
+const invariant = require('invariant');
 
-if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  // required for devtools to be able to edit react native styles
-  window.__REACT_DEVTOOLS_GLOBAL_HOOK__.resolveRNStyle = require('flattenStyle');
+export type ReactRenderer = {
+  // Fiber
+  findHostInstanceByFiber: (fiber: any) => ?number,
+  findFiberByHostInstance: (hostInstance: number) => any,
+
+  // Stack
+  ComponentTree: {
+    getNodeFromInstance: (instance: any) => ?number,
+    getClosestInstanceFromNode: (tag: number) => any,
+  },
+};
+
+function findRenderer(): ReactRenderer {
+  const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+  const renderers = hook._renderers;
+  const keys = Object.keys(renderers);
+  invariant(keys.length === 1, 'Expected to find exactly one React Native renderer on DevTools hook.');
+  return renderers[keys[0]];
+}
+
+function traverseOwnerTreeUp(hierarchy, instance) {
+  if (instance) {
+    hierarchy.unshift(instance);
+    const owner = typeof instance.tag === 'number' ?
+      // Fiber
+      instance._debugOwner :
+      // Stack
+      instance._currentElement._owner;
+    traverseOwnerTreeUp(hierarchy, owner);
+  }
+}
+
+function getOwnerHierarchy(instance) {
+  var hierarchy = [];
+  traverseOwnerTreeUp(hierarchy, instance);
+  return hierarchy;
+}
+
+function lastNotNativeInstance(hierarchy) {
+  for (let i = hierarchy.length - 1; i > 1; i--) {
+    const instance = hierarchy[i];
+    if (!instance.viewConfig) {
+      return instance;
+    }
+  }
+  return hierarchy[0];
 }
 
 class Inspector extends React.Component {
@@ -49,6 +93,7 @@ class Inspector extends React.Component {
   };
 
   _subs: ?Array<() => void>;
+  renderer: ReactRenderer;
 
   constructor(props: Object) {
     super(props);
@@ -64,16 +109,15 @@ class Inspector extends React.Component {
       inspectedViewTag: this.props.inspectedViewTag,
       networking: false,
     };
+
+    this.renderer = findRenderer();
   }
 
   componentDidMount() {
-    if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
-      (this : any).attachToDevtools = this.attachToDevtools.bind(this);
-      window.__REACT_DEVTOOLS_GLOBAL_HOOK__.on('react-devtools', this.attachToDevtools);
-      // if devtools is already started
-      if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) {
-        this.attachToDevtools(window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent);
-      }
+    window.__REACT_DEVTOOLS_GLOBAL_HOOK__.on('react-devtools', this.attachToDevtools);
+    // if devtools is already started
+    if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) {
+      this.attachToDevtools(window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent);
     }
   }
 
@@ -81,9 +125,7 @@ class Inspector extends React.Component {
     if (this._subs) {
       this._subs.map(fn => fn());
     }
-    if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
-      window.__REACT_DEVTOOLS_GLOBAL_HOOK__.off('react-devtools', this.attachToDevtools);
-    }
+    window.__REACT_DEVTOOLS_GLOBAL_HOOK__.off('react-devtools', this.attachToDevtools);
   }
 
   componentWillReceiveProps(newProps: Object) {
@@ -94,6 +136,12 @@ class Inspector extends React.Component {
     let _hideWait = null;
     const hlSub = agent.sub('highlight', ({node, name, props}) => {
       clearTimeout(_hideWait);
+
+      if (typeof node !== 'number') {
+        // Fiber
+        node = ReactNative.findNodeHandle(node);
+      }
+
       UIManager.measure(node, (x, y, width, height, left, top) => {
         this.setState({
           hierarchy: [],
@@ -128,15 +176,51 @@ class Inspector extends React.Component {
 
   setSelection(i: number) {
     const instance = this.state.hierarchy[i];
-    // if we inspect a stateless component we can't use the getPublicInstance method
-    // therefore we use the internal _instance property directly.
-    const publicInstance = instance['_instance'] || {};
-    const source = instance['_currentElement'] && instance['_currentElement']['_source'];
-    UIManager.measure(instance.getHostNode(), (x, y, width, height, left, top) => {
+    const props = typeof instance.tag === 'number' ?
+      // Fiber
+      instance.memoizedProps || {} :
+      // Stack
+      (instance['_instance'] || {}).props || {};
+    const source = typeof instance.tag === 'number' ?
+      // Fiber
+      instance._debugSource :
+      // Stack
+      instance['_currentElement'] && instance['_currentElement']['_source'];
+
+    let hostNode;
+    if (typeof instance.tag === 'number') {
+      let fiber = instance;
+      // Stateless components make this complicated.
+      // Look for children first.
+      while (fiber) {
+        hostNode = ReactNative.findNodeHandle(fiber.stateNode);
+        if (hostNode) {
+          break;
+        }
+        fiber = fiber.child;
+      }
+      // Look for parents second.
+      fiber = instance.return;
+      while (fiber) {
+        hostNode = ReactNative.findNodeHandle(fiber.stateNode);
+        if (hostNode) {
+          break;
+        }
+        fiber = fiber.return;
+      }
+      if (!hostNode) {
+        // Not found--hard to imagine.
+        return;
+      }
+    } else {
+      hostNode = instance.getHostNode();
+    }
+
+    UIManager.measure(hostNode, (x, y, width, height, left, top) => {
       this.setState({
         inspected: {
           frame: {left, top, width, height},
-          style: publicInstance.props ? publicInstance.props.style : {},
+          style: props ? props.style : {},
           source,
         },
         selection: i,
@@ -144,22 +228,37 @@ class Inspector extends React.Component {
     });
   }
 
-  onTouchInstance(touched: Object, frame: Object, pointerY: number) {
+  onTouchViewTag(touchedViewTag: number, frame: Object, pointerY: number) {
+    const touched = typeof this.renderer.findFiberByHostInstance === 'function' ?
+      // Fiber
+      this.renderer.findFiberByHostInstance(touchedViewTag) :
+      // Stack
+      this.renderer.ComponentTree.getClosestInstanceFromNode(touchedViewTag);
+    if (!touched) {
+      return;
+    }
+
     // Most likely the touched instance is a native wrapper (like RCTView)
     // which is not very interesting. Most likely user wants a composite
     // instance that contains it (like View)
-    const hierarchy = InspectorUtils.getOwnerHierarchy(touched);
-    const instance = InspectorUtils.lastNotNativeInstance(hierarchy);
+    const hierarchy = getOwnerHierarchy(touched);
+    const instance = lastNotNativeInstance(hierarchy);
 
     if (this.state.devtoolsAgent) {
       this.state.devtoolsAgent.selectFromReactInstance(instance, true);
     }
 
-    // if we inspect a stateless component we can't use the getPublicInstance method
-    // therefore we use the internal _instance property directly.
-    const publicInstance = instance['_instance'] || {};
-    const props = publicInstance.props || {};
-    const source = instance['_currentElement'] && instance['_currentElement']['_source'];
+    const props = typeof instance.tag === 'number' ?
+      // Fiber
+      instance.memoizedProps || {} :
+      // Stack
+      (instance['_instance'] || {}).props || {};
+    const source = typeof instance.tag === 'number' ?
+      // Fiber
+      instance._debugSource :
+      // Stack
+      instance['_currentElement'] && instance['_currentElement']['_source'];
+
     this.setState({
       panelPos: pointerY > Dimensions.get('window').height / 2 ? 'top' : 'bottom',
       selection: hierarchy.indexOf(instance),
@@ -214,7 +313,7 @@ class Inspector extends React.Component {
           <InspectorOverlay
             inspected={this.state.inspected}
             inspectedViewTag={this.state.inspectedViewTag}
-            onTouchInstance={this.onTouchInstance.bind(this)}
+            onTouchViewTag={this.onTouchViewTag.bind(this)}
           />}
         <View style={[styles.panelContainer, panelContainerStyle]}>
           <InspectorPanel

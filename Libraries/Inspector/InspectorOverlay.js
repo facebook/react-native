@@ -12,7 +12,6 @@
 'use strict';
 
 var Dimensions = require('Dimensions');
-var InspectorUtils = require('InspectorUtils');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
@@ -32,7 +31,7 @@ class InspectorOverlay extends React.Component {
       style?: any,
     },
     inspectedViewTag?: number,
-    onTouchInstance: Function,
+    onTouchViewTag: (tag: number) => void,
   };
 
   static propTypes = {
@@ -41,7 +40,7 @@ class InspectorOverlay extends React.Component {
       style: PropTypes.any,
     }),
     inspectedViewTag: PropTypes.number,
-    onTouchInstance: PropTypes.func.isRequired,
+    onTouchViewTag: PropTypes.func.isRequired,
   };
 
   findViewForTouchEvent = (e: EventLike) => {
@@ -50,11 +49,7 @@ class InspectorOverlay extends React.Component {
       this.props.inspectedViewTag,
       [locationX, locationY],
       (nativeViewTag, left, top, width, height) => {
-        var instance = InspectorUtils.findInstanceByNativeTag(nativeViewTag);
-        if (!instance) {
-          return;
-        }
-        this.props.onTouchInstance(instance, {left, top, width, height}, locationY);
+        this.props.onTouchViewTag(nativeViewTag, {left, top, width, height}, locationY);
       }
     );
   };
