@@ -111,20 +111,6 @@ NativeToJsBridge::~NativeToJsBridge() {
     "NativeToJsBridge::destroy() must be called before deallocating the NativeToJsBridge!";
 }
 
-void NativeToJsBridge::loadOptimizedApplicationScript(
-    std::string bundlePath,
-    std::string sourceURL,
-    int flags) {
-  runOnExecutorQueue(
-      m_mainExecutorToken,
-      [bundlePath=std::move(bundlePath),
-       sourceURL=std::move(sourceURL),
-       flags=flags]
-        (JSExecutor* executor) {
-    executor->loadApplicationScript(std::move(bundlePath), std::move(sourceURL), flags);
-  });
-}
-
 void NativeToJsBridge::loadApplication(
     std::unique_ptr<JSModulesUnbundle> unbundle,
     std::unique_ptr<const JSBigString> startupScript,

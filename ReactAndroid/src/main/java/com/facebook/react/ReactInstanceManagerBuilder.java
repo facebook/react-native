@@ -15,7 +15,7 @@ import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.cxxbridge.JSBundleLoader;
-import com.facebook.react.devsupport.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;

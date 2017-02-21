@@ -504,7 +504,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   if (!json) {
     return YGValueUndefined;
   } else if ([json isKindOfClass:[NSNumber class]]) {
-    return (YGValue) { [json floatValue], YGUnitPixel };
+    return (YGValue) { [json floatValue], YGUnitPoint };
   } else if ([json isKindOfClass:[NSString class]]) {
     NSString *s = (NSString *) json;
     if ([s hasSuffix:@"%"]) {
@@ -666,6 +666,12 @@ RCT_ENUM_CONVERTER(YGAlign, (@{
   @"stretch": @(YGAlignStretch),
   @"baseline": @(YGAlignBaseline)
 }), YGAlignFlexStart, intValue)
+
+RCT_ENUM_CONVERTER(YGDirection, (@{
+  @"inherit": @(YGDirectionInherit),
+  @"ltr": @(YGDirectionLTR),
+  @"rtl": @(YGDirectionRTL),
+}), YGDirectionInherit, intValue)
 
 RCT_ENUM_CONVERTER(YGPositionType, (@{
   @"absolute": @(YGPositionTypeAbsolute),

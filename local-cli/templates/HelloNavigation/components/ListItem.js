@@ -1,3 +1,5 @@
+'use strict';
+
 import React, { Component } from 'react';
 import {
   Platform,
@@ -21,7 +23,7 @@ const Touchable = ({onPress, children}) => {
     );
   } else {
     return (
-      <TouchableHighlight onPress={onPress} underlayColor='#ddd'>
+      <TouchableHighlight onPress={onPress} underlayColor="#ddd">
         {child}
       </TouchableHighlight>
     );

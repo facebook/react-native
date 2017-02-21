@@ -18,14 +18,14 @@ function StyleSheetPropType(
   shape: {[key: string]: ReactPropsCheckType}
 ): ReactPropsCheckType {
   var shapePropType = createStrictShapeTypeChecker(shape);
-  return function(props, propName, componentName, location?) {
+  return function(props, propName, componentName, location?, ...rest) {
     var newProps = props;
     if (props[propName]) {
       // Just make a dummy prop object with only the flattened style
       newProps = {};
       newProps[propName] = flattenStyle(props[propName]);
     }
-    return shapePropType(newProps, propName, componentName, location);
+    return shapePropType(newProps, propName, componentName, location, ...rest);
   };
 }
 

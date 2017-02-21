@@ -30,4 +30,6 @@
 @property (nonatomic, strong) UIView *reactPreferredFocusedView;
 #endif
 
+- (void)contentViewInvalidated;
+
 @end

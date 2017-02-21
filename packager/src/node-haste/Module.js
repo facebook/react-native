@@ -25,6 +25,7 @@ const {join: joinPath, relative: relativePath, extname} = require('path');
 import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type GlobalTransformCache from '../lib/GlobalTransformCache';
 import type {SourceMap} from '../lib/SourceMap';
+import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {ReadTransformProps} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
 import type Cache from './Cache';
@@ -58,7 +59,7 @@ export type ConstructorArgs = {
   moduleCache: ModuleCache,
   options: Options,
   reporter: Reporter,
-  transformCacheKey: ?string,
+  getTransformCacheKey: GetTransformCacheKey,
   transformCode: ?TransformCode,
 };
 
@@ -70,7 +71,7 @@ class Module {
   _moduleCache: ModuleCache;
   _cache: Cache;
   _transformCode: ?TransformCode;
-  _transformCacheKey: ?string;
+  _getTransformCacheKey: GetTransformCacheKey;
   _depGraphHelpers: DependencyGraphHelpers;
   _options: Options;
   _reporter: Reporter;
@@ -85,11 +86,11 @@ class Module {
     cache,
     depGraphHelpers,
     file,
+    getTransformCacheKey,
     globalTransformCache,
     moduleCache,
     options,
     reporter,
-    transformCacheKey,
     transformCode,
   }: ConstructorArgs) {
     if (!isAbsolutePath(file)) {
@@ -102,11 +103,7 @@ class Module {
     this._moduleCache = moduleCache;
     this._cache = cache;
     this._transformCode = transformCode;
-    this._transformCacheKey = transformCacheKey;
-    invariant(
-      transformCode == null || transformCacheKey != null,
-      'missing transform cache key',
-    );
+    this._getTransformCacheKey = getTransformCacheKey;
     this._depGraphHelpers = depGraphHelpers;
     this._options = options || {};
     this._reporter = reporter;
@@ -324,12 +321,11 @@ class Module {
       if (extern) {
         transformOptions = {...transformOptions, extern};
       }
-      const transformCacheKey = this._transformCacheKey;
-      invariant(transformCacheKey != null, 'missing transform cache key');
+      const getTransformCacheKey = this._getTransformCacheKey;
       const cacheProps = {
         filePath: this.path,
         sourceCode,
-        transformCacheKey,
+        getTransformCacheKey,
         transformOptions,
         cacheOptions: {
           resetCache: this._options.resetCache,

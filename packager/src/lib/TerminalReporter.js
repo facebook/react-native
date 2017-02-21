@@ -27,7 +27,6 @@ type BundleProgress = {
   transformedFileCount: number,
   totalFileCount: number,
   ratio: number,
-  outdatedModuleCount: number,
 };
 
 const DARK_BLOCK_CHAR = '\u2593';
@@ -47,6 +46,8 @@ export type TerminalReportableEvent = ReportableEvent | {
   transformedFileCount: number,
   totalFileCount: number,
 };
+
+type BuildPhase = 'in_progress' | 'done' | 'failed';
 
 /**
  * We try to print useful information to the terminal for interactive builds.
@@ -77,49 +78,26 @@ class TerminalReporter {
   }
 
   /**
-   * Return a message looking like this:
+   * Construct a message that represents the progress of a
+   * single bundle build, for example:
    *
-   *     Transforming files  |####         | 34.2% (324/945)...
-   *
-   */
-  _getFileTransformMessage(
-    {totalFileCount, transformedFileCount, ratio, outdatedModuleCount}: BundleProgress,
-    build: 'in_progress' | 'done',
-  ): string {
-    if (outdatedModuleCount > 0) {
-      const plural = outdatedModuleCount > 1;
-      return `Updating ${outdatedModuleCount} ` +
-        `module${plural ? 's' : ''} in place` +
-        (build === 'done' ? ', done' : '...');
-    }
-    if (totalFileCount === 0) {
-      return build === 'done'
-        ? 'No module changed.'
-        : 'Analysing...';
-    }
-    return util.format(
-      'Transforming modules  %s%s% (%s/%s)%s',
-      build === 'done' ? '' : getProgressBar(ratio, 30) + '  ',
-      (100 * ratio).toFixed(1),
-      transformedFileCount,
-      totalFileCount,
-      build === 'done' ? ', done.' : '...',
-    );
-  }
-
-  /**
-   * Construct a message that represent the progress of a single bundle build.
+   *     Bunding `foo.js`  |####         | 34.2% (324/945)
    */
   _getBundleStatusMessage(
     entryFilePath: string,
-    progress: BundleProgress,
-    build: 'in_progress' | 'done',
+    {totalFileCount, transformedFileCount, ratio}: BundleProgress,
+    phase: BuildPhase,
   ): string {
     const localPath = path.relative('.', entryFilePath);
-    return [
-      `Bundling \`${localPath}\``,
-      '  ' + this._getFileTransformMessage(progress, build),
-    ].join('\n');
+    return util.format(
+      'Bundling `%s`  %s%s% (%s/%s)%s',
+      localPath,
+      phase === 'in_progress' ? getProgressBar(ratio, 16) + '  ' : '',
+      (100 * ratio).toFixed(1),
+      transformedFileCount,
+      totalFileCount,
+      phase === 'done' ? ', done.' : (phase === 'failed' ? ', failed.' : ''),
+    );
   }
 
   _logCacheDisabled(reason: GlobalCacheDisabledReason): void {
@@ -134,19 +112,38 @@ class TerminalReporter {
     }
   }
 
+  _logBundleBuildDone(entryFilePath: string) {
+    const progress = this._activeBundles.get(entryFilePath);
+    if (progress != null) {
+      const msg = this._getBundleStatusMessage(entryFilePath, {
+        ...progress,
+        ratio: 1,
+        transformedFileCount: progress.totalFileCount,
+      }, 'done');
+      terminal.log(msg);
+    }
+  }
+
+  _logBundleBuildFailed(entryFilePath: string, error: Error) {
+    reporting.logError(terminal, 'bundling: %s', error.stack);
+    const progress = this._activeBundles.get(entryFilePath);
+    if (progress != null) {
+      const msg = this._getBundleStatusMessage(entryFilePath, progress, 'failed');
+      terminal.log(msg);
+    }
+  }
+
   /**
    * This function is only concerned with logging and should not do state
    * or terminal status updates.
    */
   _log(event: TerminalReportableEvent): void {
     switch (event.type) {
-      case 'bundle_built':
-        const progress = this._activeBundles.get(event.entryFilePath);
-        if (progress != null) {
-          terminal.log(
-            this._getBundleStatusMessage(event.entryFilePath, progress, 'done'),
-          );
-        }
+      case 'bundle_build_done':
+        this._logBundleBuildDone(event.entryFilePath);
+        break;
+      case 'bundle_build_failed':
+        this._logBundleBuildFailed(event.entryFilePath, event.error);
         break;
       case 'dep_graph_loaded':
         terminal.log(`${DEP_GRAPH_MESSAGE}, done.`);
@@ -187,21 +184,7 @@ class TerminalReporter {
       ratio,
       transformedFileCount,
       totalFileCount,
-      outdatedModuleCount: 0,
     });
-  }
-
-  _updateBundleOutdatedModuleCount(
-    {entryFilePath, outdatedModuleCount}: {
-      entryFilePath: string,
-      outdatedModuleCount: number,
-    },
-  ) {
-    const currentProgress = this._activeBundles.get(entryFilePath);
-    if (currentProgress == null) {
-      return;
-    }
-    currentProgress.outdatedModuleCount = outdatedModuleCount;
   }
 
   /**
@@ -210,12 +193,15 @@ class TerminalReporter {
    */
   _updateState(event: TerminalReportableEvent): void {
     switch (event.type) {
-      case 'bundle_requested':
+      case 'bundle_build_done':
+      case 'bundle_build_failed':
+        this._activeBundles.delete(event.entryFilePath);
+        break;
+      case 'bundle_build_started':
         this._activeBundles.set(event.entryFilePath, {
           transformedFileCount: 0,
-          totalFileCount: 0,
+          totalFileCount: 1,
           ratio: 0,
-          outdatedModuleCount: 0,
         });
         break;
       case 'bundle_transform_progressed':
@@ -228,12 +214,6 @@ class TerminalReporter {
         break;
       case 'bundle_transform_progressed_throttled':
         this._updateBundleProgress(event);
-        break;
-      case 'bundle_update_existing':
-        this._updateBundleOutdatedModuleCount(event);
-        break;
-      case 'bundle_built':
-        this._activeBundles.delete(event.entryFilePath);
         break;
       case 'dep_graph_loading':
         this._dependencyGraphHasLoaded = false;

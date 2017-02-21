@@ -145,11 +145,11 @@ Type the following in your command prompt to install and launch your app on the 
 $ react-native run-android
 ```
 
-> If you get a "bridge configuration isn't available" error, see [Using adb reverse](#using-adb-reverse).
+> If you get a "bridge configuration isn't available" error, see [Using adb reverse](docs/running-on-device.html#method-1-using-adb-reverse-recommended).
 
 > Hint
 >
-> You can also use the `React Native CLI` to generate and run a `Release` build (e.g. `react-native run-android --configuration Release`).
+> You can also use the `React Native CLI` to generate and run a `Release` build (e.g. `react-native run-android --variant=release`).
 
 <block class="mac windows linux android ios" />
 

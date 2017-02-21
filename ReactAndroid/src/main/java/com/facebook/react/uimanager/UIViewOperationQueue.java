@@ -17,16 +17,19 @@ import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationRegistry;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.ReactConstants;
+import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -536,6 +539,7 @@ public class UIViewOperationQueue {
   private ArrayDeque<UIOperation> mNonBatchedOperations = new ArrayDeque<>();
   private @Nullable NotThreadSafeViewHierarchyUpdateDebugListener mViewHierarchyUpdateDebugListener;
   private boolean mIsDispatchUIFrameCallbackEnqueued = false;
+  private boolean mIsInIllegalUIState = false;
 
   public UIViewOperationQueue(
       ReactApplicationContext reactContext,
@@ -791,6 +795,9 @@ public class UIViewOperationQueue {
                  if (mViewHierarchyUpdateDebugListener != null) {
                    mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateFinished();
                  }
+               } catch (Exception e) {
+                 mIsInIllegalUIState = true;
+                 throw e;
                } finally {
                  Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
                }
@@ -803,9 +810,9 @@ public class UIViewOperationQueue {
     // sure any late-arriving UI commands are executed.
     if (!mIsDispatchUIFrameCallbackEnqueued) {
       UiThreadUtil.runOnUiThread(
-          new Runnable() {
+          new GuardedRunnable(mReactApplicationContext) {
             @Override
-            public void run() {
+            public void runGuarded() {
               flushPendingBatches();
             }
           });
@@ -826,6 +833,12 @@ public class UIViewOperationQueue {
   }
 
   private void flushPendingBatches() {
+    if (mIsInIllegalUIState) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Not flushing pending UI operations because of previously thrown Exception");
+      return;
+    }
     synchronized (mDispatchRunnablesLock) {
       for (int i = 0; i < mDispatchUIRunnables.size(); i++) {
         mDispatchUIRunnables.get(i).run();
@@ -860,6 +873,13 @@ public class UIViewOperationQueue {
 
     @Override
     public void doFrameGuarded(long frameTimeNanos) {
+      if (mIsInIllegalUIState) {
+        FLog.w(
+          ReactConstants.TAG,
+          "Not flushing pending UI operations because of previously thrown Exception");
+        return;
+      }
+
       Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "dispatchNonBatchedUIOperations");
       try {
         dispatchPendingNonBatchedOperations(frameTimeNanos);
@@ -889,7 +909,12 @@ public class UIViewOperationQueue {
           nextOperation = mNonBatchedOperations.pollFirst();
         }
 
-        nextOperation.execute();
+        try {
+          nextOperation.execute();
+        } catch (Exception e) {
+          mIsInIllegalUIState = true;
+          throw e;
+        }
       }
     }
   }

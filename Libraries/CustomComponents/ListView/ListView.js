@@ -466,8 +466,7 @@ var ListView = React.createClass({
         totalIndex++;
 
         if (this.props.renderSeparator &&
-            rowIdx !== rowIDs.length - 1 &&
-            sectionIdx === allRowIDs.length - 1) {
+            (rowIdx !== rowIDs.length - 1 || sectionIdx === allRowIDs.length - 1)) {
           var adjacentRowHighlighted =
             this.state.highlightedRow.sectionID === sectionID && (
               this.state.highlightedRow.rowID === rowID ||
