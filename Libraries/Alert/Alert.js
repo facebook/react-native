@@ -127,18 +127,18 @@ class AlertAndroid {
     if (buttonPositive) {
       config = {...config, buttonPositive: buttonPositive.text || '' };
     }
-    NativeModules.DialogModuleAndroid.showAlert(
+    NativeModules.DialogManagerAndroid.showAlert(
       config,
       (errorMessage) => console.warn(errorMessage),
       (action, buttonKey) => {
-        if (action !== NativeModules.DialogModuleAndroid.buttonClicked) {
+        if (action !== NativeModules.DialogManagerAndroid.buttonClicked) {
           return;
         }
-        if (buttonKey === NativeModules.DialogModuleAndroid.buttonNeutral) {
+        if (buttonKey === NativeModules.DialogManagerAndroid.buttonNeutral) {
           buttonNeutral.onPress && buttonNeutral.onPress();
-        } else if (buttonKey === NativeModules.DialogModuleAndroid.buttonNegative) {
+        } else if (buttonKey === NativeModules.DialogManagerAndroid.buttonNegative) {
           buttonNegative.onPress && buttonNegative.onPress();
-        } else if (buttonKey === NativeModules.DialogModuleAndroid.buttonPositive) {
+        } else if (buttonKey === NativeModules.DialogManagerAndroid.buttonPositive) {
           buttonPositive.onPress && buttonPositive.onPress();
         }
       }
