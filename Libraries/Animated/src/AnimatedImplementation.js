@@ -2030,7 +2030,7 @@ var spring = function(
     },
 
     _isUsingNativeDriver: function(): boolean {
-      return config.useNativeDriver;
+      return config.useNativeDriver || false;
     }
   };
 };
@@ -2058,7 +2058,7 @@ var timing = function(
       } else {
         singleValue.animate(new TimingAnimation(singleConfig), callback);
       }
-  }
+  };
 
   return maybeVectorAnim(value, config, timing) || {
     start: function(callback?: ?EndCallback): void {
@@ -2079,7 +2079,7 @@ var timing = function(
     },
 
     _isUsingNativeDriver: function(): boolean {
-      return config.useNativeDriver;
+      return config.useNativeDriver || false;
     }
   };
 };
@@ -2097,7 +2097,7 @@ var decay = function(
       var singleConfig: any = configuration;
       singleValue.stopTracking();
       singleValue.animate(new DecayAnimation(singleConfig), callback);
-  }
+  };
 
   return maybeVectorAnim(value, config, decay) || {
     start: function(callback?: ?EndCallback): void {
@@ -2118,7 +2118,7 @@ var decay = function(
     },
 
     _isUsingNativeDriver: function(): boolean {
-      return config.useNativeDriver;
+      return config.useNativeDriver || false;
     }
   };
 };
@@ -2160,7 +2160,9 @@ var sequence = function(
 
     reset: function() {
       animations.forEach((animation, idx) => {
-        if (idx <= current) animation.reset();
+        if (idx <= current) {
+          animation.reset();
+        }
       });
       current = 0;
     },
