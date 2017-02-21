@@ -108,7 +108,7 @@ class FlatListExample extends React.PureComponent {
           key={(this.state.horizontal ? 'h' : 'v') + (this.state.fixedHeight ? 'f' : 'd')}
           legacyImplementation={false}
           numColumns={1}
-          onRefresh={this._onRefresh}
+          onRefresh={() => alert('onRefresh: nothing to refresh :P')}
           onViewableItemsChanged={this._onViewableItemsChanged}
           ref={this._captureRef}
           refreshing={false}
@@ -121,7 +121,6 @@ class FlatListExample extends React.PureComponent {
   _getItemLayout = (data: any, index: number) => {
     return getItemLayout(data, index, this.state.horizontal);
   };
-  _onRefresh = () => alert('onRefresh: nothing to refresh :P');
   _renderItemComponent = ({item}) => {
     return (
       <ItemComponent
@@ -155,7 +154,7 @@ class FlatListExample extends React.PureComponent {
   _pressItem = (key: number) => {
     pressItem(this, key);
   };
-  _listRef: FlatList<*>;
+  _listRef: FlatList;
 }
 
 
