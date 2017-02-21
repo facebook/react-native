@@ -266,7 +266,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       // http://stackoverflow.com/questions/1024748/how-do-i-fix-nsurlerrordomain-error-999-in-iphone-3-0-os
       return;
     }
-
+    // fix paly vedio get the following error:Plug-in handled load
+    else if ([error.domain isEqualToString:@"WebKitErrorDomain"] && (error.code == 204)) {
+        return;
+    }
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
     [event addEntriesFromDictionary:@{
       @"domain": error.domain,
