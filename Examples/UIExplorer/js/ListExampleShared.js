@@ -35,7 +35,7 @@ const {
   View,
 } = ReactNative;
 
-type Item = {title: string, text: string, key: number, pressed: boolean};
+type Item = {title: string, text: string, key: number, pressed: boolean, noImage?: ?boolean};
 
 function genItemData(count: number): Array<Item> {
   const dataBlob = [];
@@ -73,7 +73,7 @@ class ItemComponent extends React.PureComponent {
         style={horizontal ? styles.horizItem : styles.item}>
         <View style={[
           styles.row, horizontal && {width: HORIZ_WIDTH}]}>
-          <Image style={styles.thumb} source={imgSource} />
+          {!item.noImage && <Image style={styles.thumb} source={imgSource} />}
           <Text
             style={styles.text}
             numberOfLines={(horizontal || fixedHeight) ? 3 : undefined}>
@@ -108,7 +108,7 @@ class FooterComponent extends React.PureComponent {
       <View>
         <SeparatorComponent />
         <View style={styles.headerFooter}>
-          <Text>FOOTER</Text>
+          <Text>LIST FOOTER</Text>
         </View>
       </View>
     );
@@ -120,7 +120,7 @@ class HeaderComponent extends React.PureComponent {
     return (
       <View>
         <View style={styles.headerFooter}>
-          <Text>HEADER</Text>
+          <Text>LIST HEADER</Text>
         </View>
         <SeparatorComponent />
       </View>
@@ -164,7 +164,7 @@ function hashCode(str: string): number {
   return hash;
 }
 
-const HEADER = {height: 30, width: 80};
+const HEADER = {height: 30, width: 100};
 const SEPARATOR_HEIGHT = StyleSheet.hairlineWidth;
 
 function getItemLayout(data: any, index: number, horizontal?: boolean) {

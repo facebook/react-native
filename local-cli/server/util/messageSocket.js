@@ -8,8 +8,9 @@
  */
 'use strict';
 
+const url = require('url');
 const WebSocketServer = require('ws').Server;
-const PROTOCOL_VERSION = 1;
+const PROTOCOL_VERSION = 2;
 
 function parseMessage(data, binary) {
   if (binary) {
@@ -29,6 +30,30 @@ function parseMessage(data, binary) {
   return undefined;
 }
 
+function isBroadcast(message) {
+  return (
+    typeof message.method === 'string' &&
+    message.id === undefined &&
+    message.target === undefined
+  );
+}
+
+function isRequest(message) {
+  return (
+    typeof message.method === 'string' &&
+    typeof message.target === 'string');
+}
+
+function isResponse(message) {
+  return (
+    typeof message.id === 'object' &&
+    typeof message.id.requestId !== undefined &&
+    typeof message.id.clientId === 'string' && (
+      message.result !== undefined ||
+      message.error !== undefined
+  ));
+}
+
 function attachToServer(server, path) {
   const wss = new WebSocketServer({
     server: server,
@@ -37,11 +62,19 @@ function attachToServer(server, path) {
   const clients = new Map();
   let nextClientId = 0;
 
+  function getClientWs(clientId) {
+    const clientWs = clients.get(clientId);
+    if (clientWs === undefined) {
+      throw `could not find id "${clientId}" while forwarding request`;
+    }
+    return clientWs;
+  }
+
   function handleSendBroadcast(broadcasterId, message) {
     const forwarded = {
       version: PROTOCOL_VERSION,
-      target: message.target,
-      action: message.action,
+      method: message.method,
+      params: message.params,
     };
     for (const [otherId, otherWs] of clients) {
       if (otherId !== broadcasterId) {
@@ -58,14 +91,78 @@ function attachToServer(server, path) {
   wss.on('connection', function(clientWs) {
     const clientId = `client#${nextClientId++}`;
 
-    function handleCatchedError(message, error) {
+    function handleCaughtError(message, error) {
       const errorMessage = {
+        id: message.id,
+        method: message.method,
         target: message.target,
-        action: message.action === undefined ? 'undefined' : 'defined',
+        error: message.error === undefined ? 'undefined' : 'defined',
+        params: message.params === undefined ? 'undefined' : 'defined',
+        result: message.result === undefined ? 'undefined' : 'defined',
       };
-      console.error(
-        `Handling message from ${clientId} failed with:\n${error}\n` +
-        `message:\n${JSON.stringify(errorMessage)}`);
+
+      if (message.id === undefined) {
+        console.error(
+          `Handling message from ${clientId} failed with:\n${error}\n` +
+          `message:\n${JSON.stringify(errorMessage)}`);
+      } else {
+        try {
+          clientWs.send(JSON.stringify({
+            version: PROTOCOL_VERSION,
+            error: error,
+            id: message.id,
+          }));
+        } catch (e) {
+          console.error(`Failed to reply to ${clientId} with error:\n${error}` +
+                        `\nmessage:\n${JSON.stringify(errorMessage)}` +
+                        `\ndue to error: ${e.toString()}`);
+        }
+      }
+    }
+
+    function handleServerRequest(message) {
+      let result = null;
+      switch (message.method) {
+        case 'getid':
+          result = clientId;
+          break;
+        case 'getpeers':
+          result = {};
+          clients.forEach((otherWs, otherId) => {
+            if (clientId !== otherId) {
+              result[otherId] = url.parse(otherWs.upgradeReq.url).query;
+            }
+          });
+          break;
+        default:
+          throw `unkown method: ${message.method}`;
+      }
+
+      clientWs.send(JSON.stringify({
+        version: PROTOCOL_VERSION,
+        result: result,
+        id: message.id
+      }));
+    }
+
+    function forwardRequest(message) {
+      getClientWs(message.target).send(JSON.stringify({
+        version: PROTOCOL_VERSION,
+        method: message.method,
+        params: message.params,
+        id: (message.id === undefined
+          ? undefined
+          : {requestId: message.id, clientId: clientId}),
+      }));
+    }
+
+    function forwardResponse(message) {
+      getClientWs(message.id.clientId).send(JSON.stringify({
+        version: PROTOCOL_VERSION,
+        result: message.result,
+        error: message.error,
+        id: message.id.requestId,
+      }));
     }
 
     clients.set(clientId, clientWs);
@@ -82,16 +179,28 @@ function attachToServer(server, path) {
       }
 
       try {
-        handleSendBroadcast(clientId, message);
+        if (isBroadcast(message)) {
+          handleSendBroadcast(clientId, message);
+        } else if (isRequest(message)) {
+          if (message.target === 'server') {
+            handleServerRequest(message);
+          } else {
+            forwardRequest(message);
+          }
+        } else if (isResponse(message)) {
+          forwardResponse(message);
+        } else {
+          throw 'Invalid message, did not match the protocol';
+        }
       } catch (e) {
-        handleCatchedError(message, e.toString());
+        handleCaughtError(message, e.toString());
       }
     };
   });
 
   return {
-    broadcast: (target, action) => {
-      handleSendBroadcast(null, {target: target, action: action});
+    broadcast: (method, params) => {
+      handleSendBroadcast(null, {method: method, params: params});
     }
   };
 }

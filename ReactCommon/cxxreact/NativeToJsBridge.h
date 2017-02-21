@@ -123,12 +123,6 @@ public:
     std::unique_ptr<const JSBigString> startupCode,
     std::string sourceURL);
 
-  /**
-   * Similar to loading a "bundle", but instead of passing js source this method accepts
-   * path to a directory containing files prepared for particular JSExecutor.
-   */
-  void loadOptimizedApplicationScript(std::string bundlePath, std::string sourceURL, int flags);
-
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void* getJavaScriptContext();
   bool supportsProfiling();

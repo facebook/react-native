@@ -9,7 +9,6 @@
 
 #import "RCTImageCache.h"
 
-#import <libkern/OSAtomic.h>
 #import <objc/runtime.h>
 
 #import <ImageIO/ImageIO.h>

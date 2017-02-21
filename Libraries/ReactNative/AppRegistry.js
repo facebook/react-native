@@ -13,13 +13,12 @@
 
 const BatchedBridge = require('BatchedBridge');
 const BugReporting = require('BugReporting');
+const NativeModules = require('NativeModules');
 const ReactNative = require('ReactNative');
 
 const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const renderApplication = require('renderApplication');
-
-const { HeadlessJsTaskSupport } = require('NativeModules');
 
 if (__DEV__) {
   // In order to use Cmd+P to record/dump perf data, we need to make sure
@@ -188,10 +187,10 @@ const AppRegistry = {
       throw new Error(`No task registered for key ${taskKey}`);
     }
     taskProvider()(data)
-      .then(() => HeadlessJsTaskSupport.notifyTaskFinished(taskId))
+      .then(() => NativeModules.HeadlessJsTaskSupport.notifyTaskFinished(taskId))
       .catch(reason => {
         console.error(reason);
-        HeadlessJsTaskSupport.notifyTaskFinished(taskId);
+        NativeModules.HeadlessJsTaskSupport.notifyTaskFinished(taskId);
       });
   }
 

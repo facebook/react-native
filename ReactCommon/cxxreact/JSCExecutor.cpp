@@ -279,8 +279,9 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   #ifdef WITH_JSC_EXTRA_TRACING
   addNativeProfilingHooks(m_context);
   addNativeTracingLegacyHooks(m_context);
-  PerfLogging::installNativeHooks(m_context);
   #endif
+
+  PerfLogging::installNativeHooks(m_context);
 
   #if defined(__APPLE__) || defined(WITH_JSC_EXTRA_TRACING)
   if (JSC_JSSamplingProfilerEnabled(m_context)) {
@@ -343,65 +344,6 @@ static const char* explainLoadSourceStatus(JSLoadSourceStatus status) {
 }
 #endif
 
-#ifdef WITH_FBJSCEXTENSIONS
-void JSCExecutor::loadApplicationScript(
-    std::string bundlePath,
-    std::string sourceURL,
-    int flags) {
-  SystraceSection s("JSCExecutor::loadApplicationScript",
-                    "sourceURL", sourceURL);
-
-  if (!(flags & (UNPACKED_JS_SOURCE | UNPACKED_BYTECODE))) {
-    throw RecoverableError("Optimized bundle with no unpacked source or bytecode");
-  }
-
-  String jsSourceURL(m_context, sourceURL.c_str());
-  JSSourceCodeRef sourceCode = nullptr;
-  SCOPE_EXIT {
-    if (sourceCode) {
-      JSReleaseSourceCode(sourceCode);
-    }
-  };
-
-  if (flags & UNPACKED_BYTECODE) {
-    int fd = open((bundlePath + UNPACKED_BYTECODE_SUFFIX).c_str(), O_RDONLY);
-    RecoverableError::runRethrowingAsRecoverable<std::system_error>([fd]() {
-        folly::checkUnixError(fd, "Couldn't open compiled bundle");
-      });
-    SCOPE_EXIT { close(fd); };
-
-    JSLoadSourceStatus jsStatus;
-    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, &jsStatus);
-
-    if (!sourceCode) {
-      throw RecoverableError(explainLoadSourceStatus(jsStatus));
-    }
-  } else {
-    auto jsScriptBigString = JSBigOptimizedBundleString::fromOptimizedBundle(bundlePath);
-    if (!jsScriptBigString->isAscii()) {
-      LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
-      return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
-    }
-
-    sourceCode = JSCreateSourceCode(
-      jsScriptBigString->fd(),
-      jsSourceURL,
-      jsScriptBigString->hash(),
-      true);
-  }
-
-  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
-
-  evaluateSourceCode(m_context, sourceCode, jsSourceURL);
-
-  bindBridge();
-
-  flush();
-  ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
-  ReactMarker::logMarker("RUN_JS_BUNDLE_END");
-}
-#endif
-
 void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) {
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
@@ -444,7 +386,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
     }
   }
 #elif defined(__APPLE__)
-  BundleHeader header{};
+  BundleHeader header;
   memcpy(&header, script->c_str(), std::min(script->size(), sizeof(BundleHeader)));
   auto scriptTag = parseTypeFromHeader(header);
 

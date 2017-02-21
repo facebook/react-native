@@ -25,7 +25,7 @@ import org.json.JSONObject;
  */
 final public class JSPackagerClient implements ReconnectingWebSocket.MessageCallback {
   private static final String TAG = JSPackagerClient.class.getSimpleName();
-  private static final int PROTOCOL_VERSION = 1;
+  private static final int PROTOCOL_VERSION = 2;
 
   public class Responder {
     private Object mId;
@@ -38,8 +38,8 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
       try {
         JSONObject message = new JSONObject();
         message.put("version", PROTOCOL_VERSION);
-        message.put("target", "profiler");
-        message.put("action", result);
+        message.put("id", mId);
+        message.put("result", result);
         mWebSocket.sendMessage(RequestBody.create(WebSocket.TEXT, message.toString()));
       } catch (Exception e) {
         FLog.e(TAG, "Responding failed", e);
@@ -109,8 +109,9 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
       JSONObject message = new JSONObject(response.string());
 
       int version = message.optInt("version");
-      String target = message.optString("target");
-      String action = message.optString("action");
+      String method = message.optString("method");
+      Object id = message.opt("id");
+      Object params = message.opt("params");
 
       if (version != PROTOCOL_VERSION) {
         FLog.e(
@@ -119,25 +120,34 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
         return;
       }
 
-      if (!"bridge".equals(target)) {
+      if (method == null) {
+        abortOnMessage(id, "No method provided");
         return;
       }
 
-      RequestHandler handler = mRequestHandlers.get(action);
+      RequestHandler handler = mRequestHandlers.get(method);
       if (handler == null) {
-        FLog.e(TAG, "No request handler for action: " + action);
+        abortOnMessage(id, "No request handler for method: " + method);
         return;
       }
 
-      if (!"pokeSamplingProfiler".equals(action)) {
-        handler.onNotification(null);
+      if (id == null) {
+        handler.onNotification(params);
       } else {
-        handler.onRequest(null, new Responder("profiler"));
+        handler.onRequest(params, new Responder(id));
       }
     } catch (Exception e) {
       FLog.e(TAG, "Handling the message failed", e);
     } finally {
       response.close();
     }
+  }
+
+  private void abortOnMessage(Object id, String reason) {
+    if (id != null) {
+      (new Responder(id)).error(reason);
+    }
+
+    FLog.e(TAG, "Handling the message failed with reason: " + reason);
   }
 }

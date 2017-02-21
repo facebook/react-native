@@ -1,4 +1,3 @@
-
 // Copyright 2004-present Facebook. All Rights Reserved.
 #include <sys/mman.h>
 #include <fcntl.h>
@@ -6,7 +5,6 @@
 #include <folly/File.h>
 #include <gtest/gtest.h>
 #include <cxxreact/Executor.h>
-#include <cxxreact/MessageQueueThread.h>
 #include <cxxreact/MethodCall.h>
 
 using namespace facebook;

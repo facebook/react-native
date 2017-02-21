@@ -15,11 +15,6 @@
 #include <jschelpers/Value.h>
 
 using namespace facebook::react;
-using namespace react::CxxUtils;
-
-id RCTConvertFollyDynamic(const folly::dynamic &dyn) {
-  return convertFollyDynamicToId(dyn);
-}
 
 @implementation RCTConvert (folly)
 
@@ -40,6 +35,31 @@ id RCTConvertFollyDynamic(const folly::dynamic &dyn) {
 
 namespace facebook {
 namespace react {
+
+JSContext *contextForGlobalContextRef(JSGlobalContextRef contextRef)
+{
+  static std::mutex s_mutex;
+  static NSMapTable *s_contextCache;
+
+  if (!contextRef) {
+    return nil;
+  }
+
+  // Adding our own lock here, since JSC internal ones are insufficient
+  std::lock_guard<std::mutex> lock(s_mutex);
+  if (!s_contextCache) {
+    NSPointerFunctionsOptions keyOptions = NSPointerFunctionsOpaqueMemory | NSPointerFunctionsOpaquePersonality;
+    NSPointerFunctionsOptions valueOptions = NSPointerFunctionsWeakMemory | NSPointerFunctionsObjectPersonality;
+    s_contextCache = [[NSMapTable alloc] initWithKeyOptions:keyOptions valueOptions:valueOptions capacity:0];
+  }
+
+  JSContext *ctx = [s_contextCache objectForKey:(__bridge id)contextRef];
+  if (!ctx) {
+    ctx = [JSC_JSContext(contextRef) contextWithJSGlobalContextRef:contextRef];
+    [s_contextCache setObject:ctx forKey:(__bridge id)contextRef];
+  }
+  return ctx;
+}
 
 static NSError *errorWithException(const std::exception& e)
 {
