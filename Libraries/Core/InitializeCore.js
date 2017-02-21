@@ -125,8 +125,9 @@ if (!global.__fbDisableExceptionsManager) {
 }
 
 // Set up timers
+const JSTimers = require('JSTimers');
 const defineLazyTimer = name => {
-  defineProperty(global, name, () => require('JSTimers')[name]);
+  defineProperty(global, name, () => JSTimers[name]);
 };
 defineLazyTimer('setTimeout');
 defineLazyTimer('setInterval');
