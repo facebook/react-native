@@ -1914,6 +1914,7 @@ type CompositeAnimation = {
   stop: () => void,
   reset: () => void,
   _startNativeLoop: (iterations?: number) => void,
+  _isUsingNativeDriver: () => boolean,
 };
 
 var add = function(
@@ -2027,6 +2028,10 @@ var spring = function(
     _startNativeLoop: function(iterations?: number): void {
       var singleConfig = { ...config, iterations };
       start(value, singleConfig);
+    },
+
+    _isUsingNativeDriver: function(): boolean {
+      return config.useNativeDriver;
     }
   };
 };
@@ -2072,6 +2077,10 @@ var timing = function(
     _startNativeLoop: function(iterations?: number): void {
       var singleConfig = { ...config, iterations };
       start(value, singleConfig);
+    },
+
+    _isUsingNativeDriver: function(): boolean {
+      return config.useNativeDriver;
     }
   };
 };
@@ -2107,6 +2116,10 @@ var decay = function(
     _startNativeLoop: function(iterations?: number): void {
       var singleConfig = { ...config, iterations };
       start(value, singleConfig);
+    },
+
+    _isUsingNativeDriver: function(): boolean {
+      return config.useNativeDriver;
     }
   };
 };
@@ -2155,6 +2168,10 @@ var sequence = function(
 
     _startNativeLoop: function() {
       throw new Error('Loops run using the native driver cannot contain Animated.sequence animations');
+    },
+
+    _isUsingNativeDriver: function(): boolean {
+      return false;
     }
   };
 };
@@ -2218,6 +2235,10 @@ var parallel = function(
 
     _startNativeLoop: function() {
       throw new Error('Loops run using the native driver cannot contain Animated.parallel animations');
+    },
+
+    _isUsingNativeDriver: function(): boolean {
+      return false;
     }
   };
 
@@ -2245,17 +2266,15 @@ type LoopAnimationConfig = { iterations: number };
 
 var loop = function(
   animation: CompositeAnimation,
-  config: LoopAnimationConfig = {iterations: -1},
+  { iterations = -1 }: LoopAnimationConfig = {},
 ): CompositeAnimation {
   var isFinished = false;
   var iterationsSoFar = 0;
-  // Config without iterations specified (e.g. only 'useNativeDriver') should loop indefinitely
-  if (!config.hasOwnProperty('iterations')) config.iterations = -1;
   return {
     start: function(callback?: ?EndCallback) {
       var restart = function(result: EndResult = {finished: true}): void {
         if (isFinished ||
-            (iterationsSoFar === config.iterations) ||
+            (iterationsSoFar === iterations) ||
             (result.finished === false)) {
           callback && callback(result);
         } else {
@@ -2264,11 +2283,11 @@ var loop = function(
           animation.start(restart);
         }
       };
-      if (!animation || config.iterations === 0) {
+      if (!animation || iterations === 0) {
         callback && callback({finished: true});
       } else {
-        if (config.useNativeDriver) {
-          animation._startNativeLoop(config.iterations);
+        if (animation._isUsingNativeDriver()) {
+          animation._startNativeLoop(iterations);
         } else {
           restart(); // Start looping recursively on the js thread
         }
@@ -2288,6 +2307,10 @@ var loop = function(
 
     _startNativeLoop: function() {
       throw new Error('Loops run using the native driver cannot contain Animated.loop animations');
+    },
+
+    _isUsingNativeDriver: function(): boolean {
+      return animation._isUsingNativeDriver();
     }
   };
 };
@@ -2599,7 +2622,8 @@ module.exports = {
   /**
   * Loops a given animation continuously, so that each time it reaches the
   * end, it resets and begins again from the start. Can specify number of
-  * times to loop using the key 'iterations' in the config.
+  * times to loop using the key 'iterations' in the config. Will loop without
+  * blocking the UI thread if the child animation is set to 'useNativeDriver'.
   */
   loop,
 
