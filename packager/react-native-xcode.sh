@@ -74,7 +74,7 @@ DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 if [[ "$CONFIGURATION" = "Debug" && ! "$PLATFORM_NAME" == *simulator ]]; then
   PLISTBUDDY='/usr/libexec/PlistBuddy'
   PLIST=$TARGET_BUILD_DIR/$INFOPLIST_PATH
-  IP=$(ipconfig getifaddr en0)
+  IP=$(ipconfig getifaddr en0 || ipconfig getifaddr en1 || ipconfig getifaddr en2)
   if [ -z "$IP" ]; then
     IP=$(ifconfig | grep 'inet ' | grep -v 127.0.0.1 | cut -d\   -f2  | awk 'NR==1{print $1}')
   fi
