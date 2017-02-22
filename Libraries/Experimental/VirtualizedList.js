@@ -44,16 +44,16 @@ const invariant = require('fbjs/lib/invariant');
 
 const {computeWindowedRenderLimits} = require('VirtualizeUtils');
 
-import type {Viewable} from 'ViewabilityHelper';
+import type {ViewabilityConfig, Viewable} from 'ViewabilityHelper';
 
 type Item = any;
 type ItemComponentType = ReactClass<{item: Item, index: number}>;
 
 /**
  * Renders a virtual list of items given a data blob and accessor functions. Items that are outside
- * the render window are 'virtualized' e.g. unmounted or never rendered in the first place. This
- * improves performance and saves memory for large data sets, but will reset state on items that
- * scroll too far out of the render window.
+ * the render window (except for the initial items at the top) are 'virtualized' e.g. unmounted or
+ * never rendered in the first place. This improves performance and saves memory for large data
+ * sets, but will reset state on items that scroll too far out of the render window.
  *
  * TODO: Note that LayoutAnimation and sticky section headers both have bugs when used with this and
  * are therefor not supported, but new Animated impl might work?
@@ -68,12 +68,17 @@ type RequiredProps = {
    * The default accessor functions assume this is an Array<{key: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
    */
-  data: any,
+  data?: any,
 };
 type OptionalProps = {
   FooterComponent?: ?ReactClass<*>,
   HeaderComponent?: ?ReactClass<*>,
   SeparatorComponent?: ?ReactClass<*>,
+  /**
+   * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
+   * implementation.
+   */
+  debug?: ?boolean,
   /**
    * DEPRECATED: Virtualization provides significant performance and memory optimizations, but fully
    * unmounts react instances that are outside of the render window. You should only need to disable
@@ -82,13 +87,14 @@ type OptionalProps = {
   disableVirtualization: boolean,
   getItem: (items: any, index: number) => ?Item,
   getItemCount: (items: any) => number,
-  getItemLayout?: (items: any, index: number) => {length: number, offset: number}, // e.g. height, y
-  horizontal: boolean,
+  getItemLayout?: (items: any, index: number) =>
+    {length: number, offset: number, index: number}, // e.g. height, y
+  horizontal?: ?boolean,
   initialNumToRender: number,
   keyExtractor: (item: Item, index: number) => string,
   maxToRenderPerBatch: number,
-  onEndReached: ({distanceFromEnd: number}) => void,
-  onEndReachedThreshold: number, // units of visible length
+  onEndReached?: ?({distanceFromEnd: number}) => void,
+  onEndReachedThreshold?: ?number, // units of visible length
   onLayout?: ?Function,
   /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
@@ -99,31 +105,26 @@ type OptionalProps = {
    * Called when the viewability of rows changes, as defined by the
    * `viewablePercentThreshold` prop.
    */
-  onViewableItemsChanged?: ({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
+  onViewableItemsChanged?: ?({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
   /**
    * Set this true while waiting for new data from a refresh.
    */
-  refreshing?: boolean,
+  refreshing?: ?boolean,
+  removeClippedSubviews?: boolean,
   renderScrollComponent: (props: Object) => React.Element<*>,
   shouldItemUpdate: (
     props: {item: Item, index: number},
     nextProps: {item: Item, index: number}
   ) => boolean,
   updateCellsBatchingPeriod: number,
-  /**
-   * Percent of viewport that must be covered for a partially occluded item to count as
-   * "viewable", 0-100. Fully visible items are always considered viewable. A value of 0 means
-   * that a single pixel in the viewport makes the item viewable, and a value of 100 means that
-   * an item must be either entirely visible or cover the entire viewport to count as viewable.
-   */
-  viewablePercentThreshold: number,
+  viewabilityConfig?: ViewabilityConfig,
   windowSize: number, // units of visible length
 };
-type Props = RequiredProps & OptionalProps;
+export type Props = RequiredProps & OptionalProps;
 
 let _usedIndexForKey = false;
 
-class VirtualizedList extends React.PureComponent {
+class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
   props: Props;
 
   // scrollToEnd may be janky without getItemLayout prop
@@ -175,7 +176,7 @@ class VirtualizedList extends React.PureComponent {
     );
   }
 
-  static defaultProps: OptionalProps = {
+  static defaultProps = {
     disableVirtualization: false,
     getItem: (data: any, index: number) => data[index],
     getItemCount: (data: any) => data ? data.length : 0,
@@ -191,6 +192,7 @@ class VirtualizedList extends React.PureComponent {
     maxToRenderPerBatch: 10,
     onEndReached: () => {},
     onEndReachedThreshold: 2, // multiples of length
+    removeClippedSubviews: true,
     renderScrollComponent: (props: Props) => {
       if (props.onRefresh) {
         invariant(
@@ -229,10 +231,15 @@ class VirtualizedList extends React.PureComponent {
 
   constructor(props: Props) {
     super(props);
+    invariant(
+      !props.onScroll || !props.onScroll.__isNative,
+      'VirtualizedList does not support AnimatedEvent with onScroll and useNativeDriver',
+    );
     this._updateCellsToRenderBatcher = new Batchinator(
       this._updateCellsToRender,
       this.props.updateCellsBatchingPeriod,
     );
+    this._viewabilityHelper = new ViewabilityHelper(this.props.viewabilityConfig);
     this.state = {
       first: 0,
       last: Math.min(this.props.getItemCount(this.props.data), this.props.initialNumToRender) - 1,
@@ -255,9 +262,33 @@ class VirtualizedList extends React.PureComponent {
     this._updateCellsToRenderBatcher.schedule();
   }
 
+  _pushCells(cells, first, last) {
+    const {SeparatorComponent, data, getItem, getItemCount, keyExtractor} = this.props;
+    const end = getItemCount(data) - 1;
+    last = Math.min(end, last);
+    for (let ii = first; ii <= last; ii++) {
+      const item = getItem(data, ii);
+      invariant(item, 'No item for index ' + ii);
+      const key = keyExtractor(item, ii);
+      cells.push(
+        <CellRenderer
+          cellKey={key}
+          index={ii}
+          item={item}
+          key={key}
+          onLayout={this._onCellLayout}
+          onUnmount={this._onCellUnmount}
+          parentProps={this.props}
+        />
+      );
+      if (SeparatorComponent && ii < end) {
+        cells.push(<SeparatorComponent key={'sep' + ii}/>);
+      }
+    }
+  }
   render() {
-    const {FooterComponent, HeaderComponent, SeparatorComponent} = this.props;
-    const {data, disableVirtualization, getItem, horizontal, keyExtractor} = this.props;
+    const {FooterComponent, HeaderComponent} = this.props;
+    const {data, disableVirtualization, horizontal} = this.props;
     const cells = [];
     if (HeaderComponent) {
       cells.push(
@@ -269,31 +300,18 @@ class VirtualizedList extends React.PureComponent {
     const itemCount = this.props.getItemCount(data);
     if (itemCount > 0) {
       _usedIndexForKey = false;
+      const lastInitialIndex = this.props.initialNumToRender - 1;
       const {first, last} = this.state;
-      if (!disableVirtualization && first > 0) {
-        const firstOffset = this._getFrameMetricsApprox(first).offset - this._headerLength;
+      this._pushCells(cells, 0, lastInitialIndex);
+      if (!disableVirtualization && first > lastInitialIndex) {
+        const initBlock = this._getFrameMetricsApprox(lastInitialIndex);
+        const firstSpace = this._getFrameMetricsApprox(first).offset -
+          (initBlock.offset + initBlock.length);
         cells.push(
-          <View key="$lead_spacer" style={{[!horizontal ? 'height' : 'width']: firstOffset}} />
+          <View key="$lead_spacer" style={{[!horizontal ? 'height' : 'width']: firstSpace}} />
         );
       }
-      for (let ii = first; ii <= last; ii++) {
-        const item = getItem(data, ii);
-        invariant(item, 'No item for index ' + ii);
-        const key = keyExtractor(item, ii);
-        cells.push(
-          <CellRenderer
-            cellKey={key}
-            index={ii}
-            item={item}
-            key={key}
-            onLayout={this._onCellLayout}
-            parentProps={this.props}
-          />
-        );
-        if (SeparatorComponent && ii < last) {
-          cells.push(<SeparatorComponent key={'sep' + ii}/>);
-        }
-      }
+      this._pushCells(cells, Math.max(lastInitialIndex + 1, first), last);
       if (!this._hasWarned.keys && _usedIndexForKey) {
         console.warn(
           'VirtualizedList: missing keys for items, make sure to specify a key property on each ' +
@@ -333,7 +351,11 @@ class VirtualizedList extends React.PureComponent {
       },
       cells,
     );
-    return ret;
+    if (this.props.debug) {
+      return <View style={{flex: 1}}>{ret}{this._renderDebugOverlay()}</View>;
+    } else {
+      return ret;
+    }
   }
 
   componentDidUpdate() {
@@ -354,8 +376,7 @@ class VirtualizedList extends React.PureComponent {
   _totalCellLength = 0;
   _totalCellsMeasured = 0;
   _updateCellsToRenderBatcher: Batchinator;
-  _viewableKeys: {[key: string]: boolean} = {};
-  _viewableItems: Array<Viewable> = [];
+  _viewabilityHelper: ViewabilityHelper;
 
   _captureScrollRef = (ref) => {
     this._scrollRef = ref;
@@ -363,7 +384,12 @@ class VirtualizedList extends React.PureComponent {
 
   _onCellLayout = (e, cellKey, index) => {
     const layout = e.nativeEvent.layout;
-    const next = {offset: this._selectOffset(layout), length: this._selectLength(layout), index};
+    const next = {
+      offset: this._selectOffset(layout),
+      length: this._selectLength(layout),
+      index,
+      inLayout: true,
+    };
     const curr = this._frames[cellKey];
     if (!curr ||
       next.offset !== curr.offset ||
@@ -376,6 +402,13 @@ class VirtualizedList extends React.PureComponent {
       this._frames[cellKey] = next;
       this._highestMeasuredFrameIndex = Math.max(this._highestMeasuredFrameIndex, index);
       this._updateCellsToRenderBatcher.schedule();
+    }
+  };
+
+  _onCellUnmount = (cellKey: string) => {
+    const curr = this._frames[cellKey];
+    if (curr) {
+      this._frames[cellKey] = {...curr, inLayout: false};
     }
   };
 
@@ -393,6 +426,53 @@ class VirtualizedList extends React.PureComponent {
     this._headerLength = this._selectLength(e.nativeEvent.layout);
   };
 
+  _renderDebugOverlay() {
+    const normalize = this._scrollMetrics.visibleLength / this._scrollMetrics.contentLength;
+    const framesInLayout = [];
+    const itemCount = this.props.getItemCount(this.props.data);
+    for (let ii = 0; ii < itemCount; ii++) {
+      const frame = this._getFrameMetricsApprox(ii);
+      if (frame.inLayout) {
+        framesInLayout.push(frame);
+      }
+    }
+    const windowTop = this._getFrameMetricsApprox(this.state.first).offset;
+    const frameLast = this._getFrameMetricsApprox(this.state.last);
+    const windowLen = frameLast.offset + frameLast.length - windowTop;
+    const visTop = this._scrollMetrics.offset;
+    const visLen = this._scrollMetrics.visibleLength;
+    const baseStyle = {position: 'absolute', top: 0, right: 0};
+    return (
+      <View style={{...baseStyle, bottom: 0, width: 20, borderColor: 'blue', borderWidth: 1}}>
+        {framesInLayout.map((f, ii) =>
+          <View key={'f' + ii} style={{
+            ...baseStyle,
+            left: 0,
+            top: f.offset * normalize,
+            height: f.length * normalize,
+            backgroundColor: 'orange',
+          }} />
+        )}
+        <View style={{
+          ...baseStyle,
+          left: 0,
+          top: windowTop * normalize,
+          height: windowLen * normalize,
+          borderColor: 'green',
+          borderWidth: 2,
+        }} />
+        <View style={{
+          ...baseStyle,
+          left: 0,
+          top: visTop * normalize,
+          height: visLen * normalize,
+          borderColor: 'red',
+          borderWidth: 2,
+        }} />
+      </View>
+    );
+  }
+
   _selectLength(metrics: {height: number, width: number}): number {
     return !this.props.horizontal ? metrics.height : metrics.width;
   }
@@ -407,6 +487,9 @@ class VirtualizedList extends React.PureComponent {
   };
 
   _onScroll = (e: Object) => {
+    if (this.props.onScroll) {
+      this.props.onScroll(e);
+    }
     const timestamp = e.timeStamp;
     const visibleLength = this._selectLength(e.nativeEvent.layoutMeasurement);
     const contentLength = this._selectLength(e.nativeEvent.contentSize);
@@ -482,12 +565,12 @@ class VirtualizedList extends React.PureComponent {
     });
   };
 
-  _createViewable(index: number, isViewable: boolean): Viewable {
+  _createViewable = (index: number, isViewable: boolean): Viewable => {
     const {data, getItem, keyExtractor} = this.props;
     const item = getItem(data, index);
     invariant(item, 'Missing item for index ' + index);
     return {index, item, key: keyExtractor(item, index), isViewable};
-  }
+  };
 
   _getFrameMetricsApprox = (index: number): {length: number, offset: number} => {
     const frame = this._getFrameMetrics(index);
@@ -520,37 +603,19 @@ class VirtualizedList extends React.PureComponent {
   };
 
   _updateViewableItems(data: any) {
-    const {getItemCount, onViewableItemsChanged, viewablePercentThreshold} = this.props;
+    const {getItemCount, onViewableItemsChanged} = this.props;
     if (!onViewableItemsChanged) {
       return;
     }
-    let viewableIndices = [];
-    if (data) {
-      viewableIndices = ViewabilityHelper.computeViewableItems(
-        viewablePercentThreshold,
-        getItemCount(data),
-        this._scrollMetrics.offset,
-        this._scrollMetrics.visibleLength,
-        this._getFrameMetrics,
-        this.state,
-      );
-    }
-    const viewableKeys = {};
-    const viewableItems = viewableIndices.map((ii) => {
-      const viewable = this._createViewable(ii, true);
-      viewableKeys[viewable.key] = true;
-      return viewable;
-    });
-    const changed = viewableItems.filter(v => !this._viewableKeys[v.key])
-      .concat(
-        this._viewableItems.filter(v => !viewableKeys[v.key])
-        .map(v => ({...v, isViewable: false}))
-      );
-    if (changed.length > 0) {
-      onViewableItemsChanged({viewableItems, changed});
-      this._viewableItems = viewableItems;
-      this._viewableKeys = viewableKeys;
-    }
+    this._viewabilityHelper.onUpdate(
+      getItemCount(data),
+      this._scrollMetrics.offset,
+      this._scrollMetrics.visibleLength,
+      this._getFrameMetrics,
+      this._createViewable,
+      onViewableItemsChanged,
+      this.state,
+    );
   }
 }
 
@@ -560,6 +625,7 @@ class CellRenderer extends React.Component {
     index: number,
     item: Item,
     onLayout: (event: Object, cellKey: string, index: number) => void,
+    onUnmount: (cellKey: string) => void,
     parentProps: {
       ItemComponent: ItemComponentType,
       getItemLayout?: ?Function,
@@ -572,6 +638,9 @@ class CellRenderer extends React.Component {
   _onLayout = (e) => {
     this.props.onLayout(e, this.props.cellKey, this.props.index);
   }
+  componentWillUnmount() {
+    this.props.onUnmount(this.props.cellKey);
+  }
   shouldComponentUpdate(nextProps, nextState) {
     const curr = {item: this.props.item, index: this.props.index};
     const next = {item: nextProps.item, index: nextProps.index};
@@ -581,7 +650,7 @@ class CellRenderer extends React.Component {
     const {item, index, parentProps} = this.props;
     const {ItemComponent, getItemLayout} = parentProps;
     const element = <ItemComponent item={item} index={index} />;
-    if (getItemLayout) {
+    if (getItemLayout && !parentProps.debug) {
       return element;
     }
     return (

@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 
 /**
  * Module that records debug information during transitions (animated navigation events such as

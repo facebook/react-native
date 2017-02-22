@@ -12,6 +12,7 @@ package com.facebook.react.uimanager;
 import java.util.List;
 import java.util.Map;
 
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -42,8 +43,9 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
    */
   /* package */ static Map<String, Object> createConstants(
     List<ViewManager> viewManagers,
-    boolean lazyViewManagersEnabled) {
-    Map<String, Object> constants = UIManagerModuleConstants.getConstants();
+    boolean lazyViewManagersEnabled,
+    float fontScale) {
+    Map<String, Object> constants = UIManagerModuleConstants.getConstants(fontScale);
     Map bubblingEventTypesConstants = UIManagerModuleConstants.getBubblingEventTypeConstants();
     Map directEventTypesConstants = UIManagerModuleConstants.getDirectEventTypeConstants();
 

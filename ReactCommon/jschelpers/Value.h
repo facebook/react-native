@@ -8,10 +8,9 @@
 #include <vector>
 
 #include <folly/dynamic.h>
-
 #include <jschelpers/JavaScriptCore.h>
-#include <jschelpers/noncopyable.h>
 #include <jschelpers/Unicode.h>
+#include <jschelpers/noncopyable.h>
 
 namespace facebook {
 namespace react {
@@ -19,21 +18,24 @@ namespace react {
 class Value;
 class Context;
 
-class JSException : public std::runtime_error {
+class JSException : public std::exception {
 public:
   explicit JSException(const char* msg)
-    : std::runtime_error(msg)
-    , stack_("") {}
+    : msg_(msg), stack_("") {}
 
   JSException(const char* msg, const char* stack)
-    : std::runtime_error(msg)
-    , stack_(stack) {}
+    : msg_(msg), stack_(stack) {}
 
   const std::string& getStack() const {
     return stack_;
   }
 
+  virtual const char* what() const noexcept override {
+    return msg_.c_str();
+  }
+
 private:
+  std::string msg_;
   std::string stack_;
 };
 

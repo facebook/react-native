@@ -160,7 +160,7 @@ function runCopyAndReplace(generatorDir, appName) {
    * This file could have changed between these 2 versions. When generating the new template,
    * we don't want to load the old version of the generator from the cache
    */
-  delete require.cache[copyProjectTemplateAndReplacePath];
+  delete require.cache[require.resolve(copyProjectTemplateAndReplacePath)];
   const copyProjectTemplateAndReplace = require(copyProjectTemplateAndReplacePath);
   copyProjectTemplateAndReplace(
     path.resolve(generatorDir, '..', 'templates', 'HelloWorld'),
