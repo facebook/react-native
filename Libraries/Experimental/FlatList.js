@@ -40,7 +40,7 @@ const VirtualizedList = require('VirtualizedList');
 const invariant = require('invariant');
 
 import type {StyleObj} from 'StyleSheetTypes';
-import type {Viewable} from 'ViewabilityHelper';
+import type {ViewabilityConfig, Viewable} from 'ViewabilityHelper';
 import type {Props as VirtualizedListProps} from 'VirtualizedList';
 
 type Item = any;
@@ -128,6 +128,10 @@ type OptionalProps<ItemT> = {
     prevProps: {item: ItemT, index: number},
     nextProps: {item: ItemT, index: number}
   ) => boolean,
+  /**
+   * See ViewabilityHelper for flow type and comments.
+   */
+  viewabilityConfig?: ViewabilityConfig,
 };
 type Props<ItemT> = RequiredProps<ItemT> & OptionalProps<ItemT> & VirtualizedListProps;
 

@@ -16,8 +16,8 @@
 const NativeModules = require('NativeModules');
 
 // Use RocksDB if available, then SQLite, then file storage.
-const RCTAsyncStorage = NativeModules.AsyncSQLiteDBStorage ||
-  NativeModules.AsyncRocksDBStorage ||
+const RCTAsyncStorage = NativeModules.AsyncRocksDBStorage ||
+  NativeModules.AsyncSQLiteDBStorage ||
   NativeModules.AsyncLocalStorage;
 
 /**
