@@ -154,9 +154,11 @@ const AppRegistry = {
       '(local dev server) from a wrong folder. For example you have ' +
       'multiple apps and the packager is still running for the app you ' +
       'were working on before.\nIf this is the case, simply kill the old ' +
-      'packager instance and start the packager in the correct app folder.\n\n' +
-      'This error can also happen due to a require() error during initialization ' +
-      'or failure to call AppRegistry.registerComponent.\n\n'
+      'packager instance (e.g. close the packager terminal window) ' +
+      'and start the packager in the correct app folder (e.g. cd into app ' +
+      'folder and run \'npm start\').\n\n' +
+      'This error can also happen due to a require() error during ' +
+      'initialization or failure to call AppRegistry.registerComponent.\n\n'
     );
     runnables[appKey].run(appParameters);
   },
