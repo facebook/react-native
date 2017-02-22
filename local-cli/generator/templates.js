@@ -91,7 +91,14 @@ function createProjectFromTemplate(destPath, newProjectName, templateKey, yarnVe
     );
     if (fs.existsSync(dependenciesJsonPath)) {
       console.log('Adding dependencies for the project...');
-      const dependencies = JSON.parse(fs.readFileSync(dependenciesJsonPath));
+      let dependencies;
+      try {
+        dependencies = JSON.parse(fs.readFileSync(dependenciesJsonPath));
+      } catch (err) {
+        throw new Error(
+          'Could not parse the template\'s dependencies.json: ' + err.message
+        );
+      }
       for (let depName in dependencies) {
         const depVersion = dependencies[depName];
         const depToInstall = depName + '@' + depVersion;
