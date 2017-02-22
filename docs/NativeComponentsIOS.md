@@ -377,4 +377,4 @@ The `RCTDatePickerIOSConsts` constants are exported from native by grabbing the 
 }
 ```
 
-This guide covered many of the aspects of bridging over custom native components, but there is even more you might need to consider, such as custom hooks for inserting and laying out subviews.  If you want to go even deeper, check out the actual `RNMapManager` and other components in the [source code](https://github.com/facebook/react-native/blob/master/React/Views).
+This guide covered many of the aspects of bridging over custom native components, but there is even more you might need to consider, such as custom hooks for inserting and laying out subviews.  If you want to go even deeper, check out the actual `RCTMapManager` and other components in the [source code](https://github.com/facebook/react-native/blob/master/React/Views).
