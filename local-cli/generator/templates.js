@@ -60,57 +60,64 @@ function createProjectFromTemplate(destPath, newProjectName, templateKey, yarnVe
     newProjectName
   );
 
-  if (templateKey !== undefined) {
-    // Keep the files from the 'HelloWorld' template, and overwrite some of them
-    // with the specified project template.
-    // The 'HelloWorld' template contains the native files (these are used by
-    // all templates) and every other template only contains additional JS code.
-    // Reason:
-    // This way we don't have to duplicate the native files in every template.
-    // If we duplicated them we'd make RN larger and risk that people would
-    // forget to maintain all the copies so they would go out of sync.
-    const templateName = availableTemplates[templateKey];
-    if (templateName) {
-      copyProjectTemplateAndReplace(
-        path.resolve(
-          'node_modules', 'react-native', 'local-cli', 'templates', templateName
-        ),
-        destPath,
-        newProjectName
-      );
-    } else {
-      throw new Error('Uknown template: ' + templateKey);
-    }
+  if (templateKey === undefined) {
+    // No specific template, use just the HelloWorld template above
+    return;
+  }
 
-    // Add dependencies:
-
-    // dependencies.json is a special file that lists additional dependencies
-    // that are required by this template
-    const dependenciesJsonPath = path.resolve(
-      'node_modules', 'react-native', 'local-cli', 'templates', templateName, 'dependencies.json'
+  // Keep the files from the 'HelloWorld' template, and overwrite some of them
+  // with the specified project template.
+  // The 'HelloWorld' template contains the native files (these are used by
+  // all templates) and every other template only contains additional JS code.
+  // Reason:
+  // This way we don't have to duplicate the native files in every template.
+  // If we duplicated them we'd make RN larger and risk that people would
+  // forget to maintain all the copies so they would go out of sync.
+  const templateName = availableTemplates[templateKey];
+  if (templateName) {
+    copyProjectTemplateAndReplace(
+      path.resolve(
+        'node_modules', 'react-native', 'local-cli', 'templates', templateName
+      ),
+      destPath,
+      newProjectName
     );
-    if (fs.existsSync(dependenciesJsonPath)) {
-      console.log('Adding dependencies for the project...');
-      let dependencies;
-      try {
-        dependencies = JSON.parse(fs.readFileSync(dependenciesJsonPath));
-      } catch (err) {
-        throw new Error(
-          'Could not parse the template\'s dependencies.json: ' + err.message
-        );
-      }
-      for (let depName in dependencies) {
-        const depVersion = dependencies[depName];
-        const depToInstall = depName + '@' + depVersion;
-        console.log('Adding ' + depToInstall + '...');
-        if (yarnVersion) {
-          execSync(`yarn add ${depToInstall}`, {stdio: 'inherit'});
-        } else {
-          execSync(`npm install ${depToInstall} --save --save-exact`, {stdio: 'inherit'});
-        }
-      }
+  } else {
+    throw new Error('Uknown template: ' + templateKey);
+  }
+
+  installTemplateDependencies(templateName, yarnVersion);
+}
+
+function installTemplateDependencies(templateName, yarnVersion) {
+  // dependencies.json is a special file that lists additional dependencies
+  // that are required by this template
+  const dependenciesJsonPath = path.resolve(
+    'node_modules', 'react-native', 'local-cli', 'templates', templateName, 'dependencies.json'
+  );
+  if (!fs.existsSync(dependenciesJsonPath)) {
+    return;
+  }
+  console.log('Adding dependencies for the project...');
+  let dependencies;
+  try {
+    dependencies = JSON.parse(fs.readFileSync(dependenciesJsonPath));
+  } catch (err) {
+    throw new Error(
+      'Could not parse the template\'s dependencies.json: ' + err.message
+    );
+  }
+  for (let depName in dependencies) {
+    const depVersion = dependencies[depName];
+    const depToInstall = depName + '@' + depVersion;
+    console.log('Adding ' + depToInstall + '...');
+    if (yarnVersion) {
+      execSync(`yarn add ${depToInstall}`, {stdio: 'inherit'});
+    } else {
+      execSync(`npm install ${depToInstall} --save --save-exact`, {stdio: 'inherit'});
     }
   }
+  execSync('react-native link');
 }
 
 module.exports = {
