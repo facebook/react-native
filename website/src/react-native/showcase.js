@@ -369,6 +369,15 @@ var featured = [
     infoLink: 'http://x.co/FlareNews',
     infoTitle: 'Social network that connects entrepreneurs to fellow entrepreneurs, consumers, investors and experts',
   },
+  {
+    name: 'Prepd',
+    icon: 'http://is4.mzstatic.com/image/thumb/Purple111/v4/03/56/95/035695ab-77dc-4f3b-0961-3263e32e3494/source/175x175bb.jpg',
+    linkAppStore: 'https://itunes.apple.com/us/app/get-prepd/id1125687122?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.prepd&hl=en',
+    infoLink: 'https://logbook.hanno.co/prepd-pros-cons-react-native/',
+    infoTitle: 'How we built Prepd for iOS and Android using React Native',
+    defaultLink: 'https://itunes.apple.com/us/app/get-prepd/id1125687122?mt=8',
+  },
 ];
 
 /*
@@ -485,15 +494,6 @@ var pinned = [
     infoLink: ' https://medium.com/walmartlabs/react-native-at-walmartlabs-cdd140589560#.ueonqqloc',
     infoTitle: 'React Native at Walmart Labs',
     defaultLink: 'https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8',
-  },
-  {
-    name: 'Prepd',
-    icon: 'http://is4.mzstatic.com/image/thumb/Purple111/v4/03/56/95/035695ab-77dc-4f3b-0961-3263e32e3494/source/175x175bb.jpg',
-    linkAppStore: 'https://itunes.apple.com/us/app/get-prepd/id1125687122?mt=8',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.prepd&hl=en',
-    infoLink: 'https://logbook.hanno.co/prepd-pros-cons-react-native/',
-    infoTitle: 'How we built Prepd for iOS and Android using React Native',
-    defaultLink: 'https://itunes.apple.com/us/app/get-prepd/id1125687122?mt=8',
   },
 ];
 
