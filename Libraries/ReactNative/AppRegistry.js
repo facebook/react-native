@@ -151,7 +151,11 @@ const AppRegistry = {
       runnables[appKey] && runnables[appKey].run,
       'Application ' + appKey + ' has not been registered. This ' +
       'is either due to a require() error during initialization ' +
-      'or failure to call AppRegistry.registerComponent.'
+      'or failure to call AppRegistry.registerComponent.\n\n' +
+      'Hint: This error often happens when you\'re running the packager ' +
+      'from a wrong folder. For example you have multiple apps ' +
+      'and the packager is still running for the app you were working ' +
+      'on before.'
     );
     runnables[appKey].run(appParameters);
   },
