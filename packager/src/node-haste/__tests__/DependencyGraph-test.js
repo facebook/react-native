@@ -2533,7 +2533,7 @@ describe('DependencyGraph', function() {
       const root = 'C:\\root';
       setMockFileSystem({
         'root': {
-          'index.js': 'require("/root/apple.js");',
+          'index.js': 'require("C:/root/apple.js");',
           'apple.js': '',
         },
       });
@@ -2546,16 +2546,16 @@ describe('DependencyGraph', function() {
         expect(deps)
           .toEqual([
             {
-              id: '/root/index.js',
+              id: 'C:\\root\\index.js',
               path: 'C:\\root\\index.js',
-              dependencies: ['C:\\root\\apple.js'],
+              dependencies: ['C:/root/apple.js'],
               isAsset: false,
               isJSON: false,
               isPolyfill: false,
               resolution: undefined,
             },
             {
-              id: '/root/apple.js',
+              id: 'C:\\root\\apple.js',
               path: 'C:\\root\\apple.js',
               dependencies: [],
               isAsset: false,
