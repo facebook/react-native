@@ -278,7 +278,7 @@ class ResolutionRequest {
 
   _resolveFileOrDir(fromModule, toModuleName) {
     const potentialModulePath = isAbsolutePath(toModuleName) ?
-        toModuleName :
+        normalizeWindowsPath(toModuleName) :
         path.join(path.dirname(fromModule.path), toModuleName);
 
     return this._redirectRequire(fromModule, potentialModulePath).then(
@@ -507,6 +507,15 @@ function normalizePath(modulePath) {
   }
 
   return modulePath.replace(/\/$/, '');
+}
+
+// HasteFS stores paths with backslashes on Windows, this ensures the path is
+// in the proper format. Noop on other platforms.
+function normalizeWindowsPath(modulePath) {
+  if (path.sep !== '\\') {
+    return modulePath;
+  }
+  return modulePath.replace(/\//g, '\\');
 }
 
 function resolveKeyWithPromise([key, promise]) {
