@@ -18,6 +18,8 @@ var timespans = {};
 var extras = {};
 var cookies = {};
 
+const PRINT_TO_CONSOLE = false;
+
 /**
  * This is meant to collect and log performance data in production, which means
  * it needs to have minimal overhead.
@@ -56,6 +58,9 @@ var PerformanceLogger = {
       startTime: performanceNow(),
     };
     cookies[key] = Systrace.beginAsyncEvent(key);
+    if (__DEV__ && PRINT_TO_CONSOLE) {
+      console.log('PerformanceLogger.js', 'start: ' + key);
+    }
   },
 
   stopTimespan(key) {
@@ -78,6 +83,9 @@ var PerformanceLogger = {
       return;
     }
 
+    if (__DEV__ && PRINT_TO_CONSOLE) {
+      console.log('PerformanceLogger.js', 'end: ' + key);
+    }
     Systrace.endAsyncEvent(key, cookies[key]);
     delete cookies[key];
     timespans[key].endTime = performanceNow();
