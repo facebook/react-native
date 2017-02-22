@@ -49,114 +49,42 @@ import type {HasteFS} from './types';
 
 const ERROR_BUILDING_DEP_GRAPH = 'DependencyGraphError';
 
+type Options = {
+  assetDependencies: Array<string>,
+  assetExts: Array<string>,
+  cache: Cache,
+  extensions: Array<string>,
+  extraNodeModules: ?Object,
+  forceNodeFilesystemAPI: boolean,
+  getTransformCacheKey: GetTransformCacheKey,
+  globalTransformCache: ?GlobalTransformCache,
+  ignoreFilePath: (filePath: string) => boolean,
+  maxWorkers: ?number,
+  moduleOptions: ModuleOptions,
+  platforms: Set<string>,
+  preferNativePlatform: boolean,
+  providesModuleNodeModules: Array<string>,
+  reporter: Reporter,
+  resetCache: boolean,
+  roots: Array<string>,
+  transformCode: TransformCode,
+  useWatchman: boolean,
+  watch: boolean,
+};
+
 class DependencyGraph {
-  _opts: {|
-    assetExts: Array<string>,
-    extensions: Array<string>,
-    extraNodeModules: ?Object,
-    forceNodeFilesystemAPI: boolean,
-    globalTransformCache: ?GlobalTransformCache,
-    ignoreFilePath: (filePath: string) => boolean,
-    maxWorkers: ?number,
-    mocksPattern: mixed,
-    moduleOptions: ModuleOptions,
-    platforms: Set<string>,
-    preferNativePlatform: boolean,
-    providesModuleNodeModules: Array<string>,
-    resetCache: boolean,
-    roots: Array<string>,
-    shouldThrowOnUnresolvedErrors: () => boolean,
-    getTransformCacheKey: GetTransformCacheKey,
-    transformCode: TransformCode,
-    useWatchman: boolean,
-    watch: boolean,
-  |};
-  _assetDependencies: Array<string>;
-  _cache: Cache;
+  _opts: Options;
   _haste: JestHasteMap;
   _hasteFS: HasteFS;
   _hasteMap: HasteMap;
   _hasteMapError: ?Error;
   _helpers: DependencyGraphHelpers;
   _moduleCache: ModuleCache;
-  _reporter: Reporter;
 
   _loading: Promise<mixed>;
 
-  constructor({
-    assetDependencies,
-    assetExts,
-    cache,
-    extensions,
-    extraNodeModules,
-    forceNodeFilesystemAPI,
-    getTransformCacheKey,
-    globalTransformCache,
-    ignoreFilePath,
-    maxWorkers,
-    mocksPattern,
-    moduleOptions,
-    platforms,
-    preferNativePlatform,
-    providesModuleNodeModules,
-    resetCache,
-    roots,
-    shouldThrowOnUnresolvedErrors = () => true,
-    transformCode,
-    useWatchman,
-    watch,
-    reporter,
-  }: {
-    assetDependencies: Array<string>,
-    assetExts: Array<string>,
-    cache: Cache,
-    extensions?: ?Array<string>,
-    extraNodeModules: ?Object,
-    forceNodeFilesystemAPI?: boolean,
-    getTransformCacheKey: GetTransformCacheKey,
-    globalTransformCache: ?GlobalTransformCache,
-    ignoreFilePath: (filePath: string) => boolean,
-    maxWorkers?: ?number,
-    mocksPattern?: mixed,
-    moduleOptions: ?ModuleOptions,
-    platforms: Array<string>,
-    preferNativePlatform: boolean,
-    providesModuleNodeModules: Array<string>,
-    resetCache: boolean,
-    roots: Array<string>,
-    shouldThrowOnUnresolvedErrors?: () => boolean,
-    transformCode: TransformCode,
-    useWatchman?: ?boolean,
-    watch: boolean,
-    reporter: Reporter,
-  }) {
-    this._opts = {
-      assetExts: assetExts || [],
-      extensions: extensions || ['js', 'json'],
-      extraNodeModules,
-      forceNodeFilesystemAPI: !!forceNodeFilesystemAPI,
-      getTransformCacheKey,
-      globalTransformCache,
-      ignoreFilePath: ignoreFilePath || (() => {}),
-      maxWorkers,
-      mocksPattern,
-      moduleOptions: moduleOptions || {
-        cacheTransformResults: true,
-      },
-      platforms: new Set(platforms || []),
-      preferNativePlatform: preferNativePlatform || false,
-      providesModuleNodeModules,
-      resetCache,
-      roots,
-      shouldThrowOnUnresolvedErrors,
-      transformCode,
-      useWatchman: useWatchman !== false,
-      watch: !!watch,
-    };
-
-    this._reporter = reporter;
-    this._cache = cache;
-    this._assetDependencies = assetDependencies;
+  constructor(opts: Options) {
+    this._opts = {...opts};
     this._helpers = new DependencyGraphHelpers(this._opts);
     this.load();
   }
@@ -185,20 +113,20 @@ class DependencyGraph {
 
     const initializingPackagerLogEntry =
       log(createActionStartEntry('Initializing Packager'));
-    this._reporter.update({type: 'dep_graph_loading'});
+    this._opts.reporter.update({type: 'dep_graph_loading'});
     this._loading = this._haste.build().then(({hasteFS}) => {
       this._hasteFS = hasteFS;
       const hasteFSFiles = hasteFS.getAllFiles();
 
       this._moduleCache = new ModuleCache({
-        cache: this._cache,
+        cache: this._opts.cache,
         getTransformCacheKey: this._opts.getTransformCacheKey,
         globalTransformCache: this._opts.globalTransformCache,
         transformCode: this._opts.transformCode,
         depGraphHelpers: this._helpers,
-        assetDependencies: this._assetDependencies,
+        assetDependencies: this._opts.assetDependencies,
         moduleOptions: this._opts.moduleOptions,
-        reporter: this._reporter,
+        reporter: this._opts.reporter,
         getClosestPackage: filePath => {
           let {dir, root} = path.parse(filePath);
           do {
@@ -235,7 +163,7 @@ class DependencyGraph {
         map => {
           log(createActionEndEntry(buildingHasteMapLogEntry));
           log(createActionEndEntry(initializingPackagerLogEntry));
-          this._reporter.update({type: 'dep_graph_loaded'});
+          this._opts.reporter.update({type: 'dep_graph_loaded'});
           return map;
         },
         err => {
