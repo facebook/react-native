@@ -112,7 +112,16 @@
     "test": "jest",
     "flow": "flow",
     "lint": "eslint Examples/ Libraries/",
-    "start": "/usr/bin/env bash -c './packager/packager.sh \"$@\" || true' --"
+    "start": "/usr/bin/env bash -c './packager/packager.sh \"$@\" || true' --",
+    "test-android-setup": "docker pull containership/android-base:latest",
+    "test-android-build": "docker build -t react/android -f ContainerShip/Dockerfile.android .",
+    "test-android-run-instrumentation": "docker run --cap-add=SYS_ADMIN -it react/android bash ContainerShip/scripts/run-android-docker-instrumentation-tests.sh",
+    "test-android-run-unit": "docker run --cap-add=SYS_ADMIN -it react/android bash ContainerShip/scripts/run-android-docker-unit-tests.sh",
+    "test-android-run-e2e": "docker run -it react/android bash ContainerShip/scripts/run-ci-e2e-tests.sh --android --js",
+    "test-android-all": "npm run test-android-build && npm run test-android-run-unit && npm run test-android-run-instrumentation && npm run test-android-run-e2e",
+    "test-android-instrumentation": "npm run test-android-build && npm run test-android-run-instrumentation",
+    "test-android-unit": "npm run test-android-build && npm run test-android-run-unit",
+    "test-android-e2e": "npm run test-android-build && npm run test-android-run-e2e"
   },
   "bin": {
     "react-native": "local-cli/wrong-react-native.js"

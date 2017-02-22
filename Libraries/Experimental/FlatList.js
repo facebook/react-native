@@ -126,10 +126,6 @@ type OptionalProps = {
     prevProps: {item: Item, index: number},
     nextProps: {item: Item, index: number}
   ) => boolean,
-  /**
-   * See ViewabilityHelper for flow type and comments.
-   */
-  viewabilityConfig?: ViewabilityConfig,
 };
 type Props = RequiredProps & OptionalProps; // plus props from the underlying implementation
 
