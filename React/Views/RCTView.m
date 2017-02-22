@@ -141,8 +141,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   if (super.accessibilityLabel) {
     return super.accessibilityLabel;
   }
-  NSString *str = RCTRecursiveAccessibilityLabel(self);
-  return [str stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+  return RCTRecursiveAccessibilityLabel(self);
 }
 
 - (void)setPointerEvents:(RCTPointerEvents)pointerEvents
