@@ -20,6 +20,9 @@ if (__DEV__) {
   connectToDevTools({
     isAppActive() {
       // Don't steal the DevTools from currently active app.
+      // Note: if you add any AppState subscriptions to this file,
+      // you will also need to guard against `AppState.isAvailable`,
+      // or the code will throw for bundles that don't have it.
       return AppState.currentState !== 'background';
     },
     // Special case: Genymotion is running on a different host.

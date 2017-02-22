@@ -706,7 +706,7 @@ static TaggedScript loadTaggedScript(NSData *script,
 {
   RCT_PROFILE_BEGIN_EVENT(0, @"executeApplicationScript / prepare bundle", nil);
 
-  facebook::react::BundleHeader header{};
+  facebook::react::BundleHeader header;
   [script getBytes:&header length:sizeof(header)];
   facebook::react::ScriptTag tag = facebook::react::parseTypeFromHeader(header);
 
