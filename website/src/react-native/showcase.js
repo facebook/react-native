@@ -376,7 +376,6 @@ var featured = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.prepd&hl=en',
     infoLink: 'https://logbook.hanno.co/prepd-pros-cons-react-native/',
     infoTitle: 'How we built Prepd for iOS and Android using React Native',
-    defaultLink: 'https://itunes.apple.com/us/app/get-prepd/id1125687122?mt=8',
   },
 ];
 
