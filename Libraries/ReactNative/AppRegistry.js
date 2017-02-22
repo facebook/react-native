@@ -149,13 +149,14 @@ const AppRegistry = {
     BugReporting.addSource('AppRegistry.runApplication' + runCount++, () => msg);
     invariant(
       runnables[appKey] && runnables[appKey].run,
-      'Application ' + appKey + ' has not been registered. This ' +
-      'is either due to a require() error during initialization ' +
-      'or failure to call AppRegistry.registerComponent.\n\n' +
+      'Application ' + appKey + ' has not been registered.\n\n' +
       'Hint: This error often happens when you\'re running the packager ' +
-      'from a wrong folder. For example you have multiple apps ' +
-      'and the packager is still running for the app you were working ' +
-      'on before.'
+      '(local dev server) from a wrong folder. For example you have ' +
+      'multiple apps and the packager is still running for the app you ' +
+      'were working on before.\nIf this is the case, simply kill the old ' +
+      'packager instance and start the packager in the correct app folder.\n\n' +
+      'This error can also happen due to a require() error during initialization ' +
+      'or failure to call AppRegistry.registerComponent.\n\n'
     );
     runnables[appKey].run(appParameters);
   },
