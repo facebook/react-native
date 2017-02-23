@@ -33,10 +33,10 @@
   float availableWidth = _availableSize.width == INFINITY ? YGUndefined : _availableSize.width;
   float availableHeight = _availableSize.height == INFINITY ? YGUndefined : _availableSize.height;
 
-  YGNodeCalculateLayout(self.cssNode, availableWidth, availableHeight, _baseDirection);
+  YGNodeCalculateLayout(self.yogaNode, availableWidth, availableHeight, _baseDirection);
 
   NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
-  [self applyLayoutNode:self.cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
+  [self applyLayoutNode:self.yogaNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
   return viewsWithNewFrame;
 }
 

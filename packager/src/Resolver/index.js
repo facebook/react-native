@@ -59,23 +59,27 @@ class Resolver {
       assetExts: opts.assetExts,
       cache: opts.cache,
       extraNodeModules: opts.extraNodeModules,
+      extensions: ['js', 'json'],
+      forceNodeFilesystemAPI: false,
       getTransformCacheKey: opts.getTransformCacheKey,
       globalTransformCache: opts.globalTransformCache,
       ignoreFilePath: function(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
       },
+      maxWorkers: null,
       moduleOptions: {
         cacheTransformResults: true,
         resetCache: opts.resetCache,
       },
-      platforms: opts.platforms,
+      platforms: new Set(opts.platforms),
       preferNativePlatform: true,
       providesModuleNodeModules: opts.providesModuleNodeModules || defaults.providesModuleNodeModules,
       reporter: opts.reporter,
       resetCache: opts.resetCache,
       roots: opts.projectRoots,
       transformCode: opts.transformCode,
+      useWatchman: true,
       watch: opts.watch || false,
     });
 

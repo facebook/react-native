@@ -113,7 +113,7 @@ describe('Resolver', function() {
         platforms: ['ios', 'windows', 'vr'],
       });
       const platforms = DependencyGraph.mock.calls[0][0].platforms;
-      expect(platforms).toEqual(['ios', 'windows', 'vr']);
+      expect(Array.from(platforms)).toEqual(['ios', 'windows', 'vr']);
     });
 
     it('should get dependencies with polyfills', function() {
