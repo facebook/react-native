@@ -81,7 +81,7 @@ class DependencyGraph {
   _helpers: DependencyGraphHelpers;
   _moduleCache: ModuleCache;
 
-  _loading: Promise<mixed>;
+  _loading: Promise<void>;
 
   constructor(opts: Options) {
     this._opts = {...opts};
@@ -89,7 +89,7 @@ class DependencyGraph {
     this.load();
   }
 
-  load() {
+  load(): Promise<void> {
     if (this._loading) {
       return this._loading;
     }
@@ -164,7 +164,6 @@ class DependencyGraph {
           log(createActionEndEntry(buildingHasteMapLogEntry));
           log(createActionEndEntry(initializingPackagerLogEntry));
           this._opts.reporter.update({type: 'dep_graph_loaded'});
-          return map;
         },
         err => {
           const error = new Error(
@@ -300,7 +299,7 @@ class DependencyGraph {
         this._hasteMapError = null;
 
         // Rebuild the entire map if last change resulted in an error.
-        this._loading = this._hasteMap.build();
+        this._loading = this._hasteMap.build().then(() => {});
       } else {
         this._loading = this._hasteMap.processFileChange(type, filePath);
         this._loading.catch(error => {
