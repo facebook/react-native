@@ -15,7 +15,6 @@ const path = require('path');
 
 /**
  * Templates released as part of react-native in local-cli/templates.
- * It's also possible to use templates from npm.
  */
 const builtInTemplates = {
   navigation: 'HelloNavigation',
@@ -125,14 +124,19 @@ function createFromNpmTemplate(templateName, destPath, newProjectName, yarnVersi
     } else {
       execSync(`npm install ${packageName} --save --save-exact --ignore-scripts`, {stdio: 'inherit'});
     }
-    // TODO debug this, package.json is getting overwritten
-    console.log('====== installed template in ' + templatePath);
-    console.log('====== copyProjectTemplateAndReplace ', { templatePath, destPath, newProjectName });
     copyProjectTemplateAndReplace(
       templatePath,
       destPath,
       newProjectName,
+      {
+        // Every template contains a dummy package.json file included
+        // only for publishing the template to npm.
+        // We want to ignore this dummy file, otherwise it would overwrite
+        // our project's package.json file.
+        ignorePaths: ['package.json', 'dependencies.json'],
+      }
     );
+    installTemplateDependencies(templatePath, yarnVersion);
   } finally {
     // Clean up the temp files
     try {
@@ -142,13 +146,14 @@ function createFromNpmTemplate(templateName, destPath, newProjectName, yarnVersi
         execSync(`npm uninstall ${packageName} --ignore-scripts`);
       }
     } catch (err) {
+      // Not critical but we still want people to know and report
+      // if this the clean up fails.
       console.warn(
         `Failed to clean up template temp files in node_modules/${packageName}. ` +
         'This is not a critical error, you can work on your app.'
       );
     }
   }
-  installTemplateDependencies(templatePath, yarnVersion);
 }
 
 function installTemplateDependencies(templatePath, yarnVersion) {
@@ -157,10 +162,12 @@ function installTemplateDependencies(templatePath, yarnVersion) {
   const dependenciesJsonPath = path.resolve(
     templatePath, 'dependencies.json'
   );
+  console.log('Adding dependencies for the project...');
   if (!fs.existsSync(dependenciesJsonPath)) {
+    console.log('No additional dependencies.');
     return;
   }
-  console.log('Adding dependencies for the project...');
+
   let dependencies;
   try {
     dependencies = JSON.parse(fs.readFileSync(dependenciesJsonPath));
@@ -179,7 +186,8 @@ function installTemplateDependencies(templatePath, yarnVersion) {
       execSync(`npm install ${depToInstall} --save --save-exact`, {stdio: 'inherit'});
     }
   }
-  execSync('react-native link');
+  console.log('Linking native dependencies into the project\'s build files...');
+  execSync('react-native link', {stdio: 'inherit'});
 }
 
 module.exports = {
