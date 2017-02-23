@@ -46,7 +46,7 @@ RCT_EXPORT_MODULE()
 ```
 **Note:** Do not attempt to set the `frame` or `backgroundColor` properties on the `UIView` instance that you vend through the `-view` method. React Native will overwrite the values set by your custom class in order to match your JavaScript component's layout props. If you need this granularity of control it might be better to wrap the `UIView` instance you want to style in another `UIView` and return the wrapper `UIView` instead. See [Issue 2948](https://github.com/facebook/react-native/issues/2948) for more context.
 
-> We used RNT as a prefix for our class. You can use any prefix of your choice as long as there's no name collision with React Native or Apple framework classes. To avoid any name collision, it's advisable to use three or more characters other than 'RCT' 
+> In the example above, we prefixed our class name with `RNT`. Prefixes are used to avoid name collisions with other frameworks. Apple frameworks use two-letter prefixes, and React Native uses `RCT` as a prefix. In order to avoid name collisions, we recommend using a three-letter prefix other than `RCT` in your own classes.
 
 Then you just need a little bit of JavaScript to make this a usable React component:
 
