@@ -369,6 +369,13 @@ var featured = [
     infoLink: 'http://x.co/FlareNews',
     infoTitle: 'Social network that connects entrepreneurs to fellow entrepreneurs, consumers, investors and experts',
   },
+  {
+    name: 'Snapdeal',
+    icon: 'https://i3.sdlcdn.com/static/mobile/img/mobile/mobileviews/snapRedLogo.png',
+    linkAppStore: 'https://itunes.apple.com/in/app/snapdeal-online-shopping-app/id721124909',
+    infoLink: 'http://engineering.snapdeal.com/unboxing-react-native-201701/',
+    infoTitle: 'Unboxing React Native',
+  },
 ];
 
 /*
