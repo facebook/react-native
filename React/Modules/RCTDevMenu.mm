@@ -22,10 +22,11 @@
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
+#import "RCTPackagerClient.h"
 #import "RCTProfile.h"
+#import "RCTReloadPackagerMethod.h"
 #import "RCTRootView.h"
 #import "RCTUtils.h"
-#import "RCTWebSocketObserverProtocol.h"
 
 #if RCT_DEV
 
@@ -136,7 +137,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
-@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, RCTWebSocketObserverDelegate>
+@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating>
 
 @property (nonatomic, strong) Class executorClass;
 
@@ -282,53 +283,26 @@ RCT_EXPORT_MODULE()
     return;
   }
 
-  Class webSocketObserverClass = objc_lookUpClass("RCTWebSocketObserver");
-  if (webSocketObserverClass == Nil) {
-    return;
-  }
-
-  // If multiple RCTDevMenus are created, the most recently connected one steals the RCTWebSocketObserver.
-  // (Why this behavior exists is beyond me, as of this writing.)
-  static NSMutableDictionary<NSString *, id<RCTWebSocketObserver>> *observers = nil;
-  if (observers == nil) {
-    observers = [NSMutableDictionary new];
+  // The jsPackagerClient is a static map that holds different packager clients per the packagerURL
+  // In case many instances of DevMenu are created, the latest instance that use the same URL as
+  // previous instances will override given packager client's method handlers
+  static NSMutableDictionary<NSString *, RCTPackagerClient *> *jsPackagerClients = nil;
+  if (jsPackagerClients == nil) {
+    jsPackagerClients = [NSMutableDictionary new];
   }
 
   NSString *key = [url absoluteString];
-  id<RCTWebSocketObserver> existingObserver = observers[key];
-  if (existingObserver) {
-    existingObserver.delegate = self;
+  RCTPackagerClient *packagerClient = jsPackagerClients[key];
+  if (!packagerClient) {
+    packagerClient = [[RCTPackagerClient alloc] initWithURL:url];
+    jsPackagerClients[key] = packagerClient;
   } else {
-    id<RCTWebSocketObserver> newObserver = [(id<RCTWebSocketObserver>)[webSocketObserverClass alloc] initWithURL:url];
-    newObserver.delegate = self;
-    [newObserver start];
-    observers[key] = newObserver;
+    [packagerClient stop];
   }
-}
 
-
-
-- (BOOL)isSupportedVersion:(NSNumber *)version
-{
-  NSArray<NSNumber *> *const kSupportedVersions = @[ @2 ];
-  return [kSupportedVersions containsObject:version];
-}
-
-- (void)didReceiveWebSocketMessage:(NSDictionary<NSString *, id> *)message
-{
-  if ([self isSupportedVersion:message[@"version"]]) {
-    [self processMethod:message[@"method"] params:message[@"params"]];
-  }
-}
-
-- (void)processMethod:(NSString *)method params:(NSDictionary<NSString *, id> *)params
-{
-  if ([method isEqualToString:@"reload"]) {
-    if (![params isEqual:[NSNull null]] && [params[@"debug"] boolValue]) {
-      _bridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
-    }
-    [_bridge reload];
-  }
+  [packagerClient addHandler:[[RCTReloadPackagerMethod alloc] initWithBridge:_bridge]
+                   forMethod:@"reload"];
+  [packagerClient start];
 }
 
 - (dispatch_queue_t)methodQueue
