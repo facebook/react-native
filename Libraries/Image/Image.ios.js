@@ -21,6 +21,7 @@ const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
+const ColorPropType = require('ColorPropType');
 
 const flattenStyle = require('flattenStyle');
 const requireNativeComponent = require('requireNativeComponent');
@@ -168,6 +169,25 @@ const Image = React.createClass({
       }),
       PropTypes.number,
     ]),
+
+    /**
+     * Show a circle loading indicator while loading image from url
+     */
+    showLoadingIndicator: PropTypes.bool,
+    /**
+     * Determines the size of loading indicator
+     */
+    loadingIndicatorSize: PropTypes.oneOf(['small', 'large']),
+    /**
+     * Determines color of loading indicator
+     */
+    loadingIndicatorColor: ColorPropType,
+    /**
+     * A static image to display in case of loading image from url is failed (not a placeholder).
+     * only accept local image, for example require('./image.jpg')
+     */
+    failureImageSource: PropTypes.number,
+
     /**
      * When true, indicates the image is an accessibility element.
      * @platform ios

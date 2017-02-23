@@ -80,12 +80,15 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
    * if any.
    */
   RCTImageLoaderCancellationBlock _reloadImageCancellationBlock;
+  
+  UIActivityIndicatorView *loadingIndicator;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   if ((self = [super init])) {
     _bridge = bridge;
+    loadingIndicator = nil;
 
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center addObserver:self
@@ -201,6 +204,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)cancelImageLoad
 {
+  [self hideLoadingProgress];
   RCTImageLoaderCancellationBlock previousCancellationBlock = _reloadImageCancellationBlock;
   if (previousCancellationBlock) {
     previousCancellationBlock();
@@ -275,6 +279,43 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
          ![desiredImageSource isEqual:_pendingImageSource];
 }
 
+- (void)showLoadingProgress
+{
+  if (!_showLoadingIndicator) {
+    return;
+  }
+  
+  UIActivityIndicatorViewStyle style;
+  switch (_loadingIndicatorSize) {
+    case RCTLoadingIndicatorSizeLarge:
+      style = UIActivityIndicatorViewStyleWhiteLarge;
+      break;
+    default:
+      style = UIActivityIndicatorViewStyleWhite;
+      break;
+  }
+  loadingIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:style];
+  if (_loadingIndicatorColor == nil) {
+    _loadingIndicatorColor = [UIColor grayColor];
+  }
+  [loadingIndicator setColor:_loadingIndicatorColor];
+  CGFloat w = loadingIndicator.frame.size.width;
+  CGFloat h = loadingIndicator.frame.size.height;
+  CGFloat x = self.frame.size.width/2 - w/2;
+  CGFloat y = self.frame.size.height/2 - h/2;
+  loadingIndicator.frame = CGRectMake(x, y, w, h);
+  [self addSubview:loadingIndicator];
+  [loadingIndicator startAnimating];
+}
+
+- (void)hideLoadingProgress
+{
+  if (loadingIndicator != nil) {
+    [loadingIndicator removeFromSuperview];
+    loadingIndicator = nil;
+  }
+}
+
 - (void)reloadImage
 {
   [self cancelImageLoad];
@@ -286,6 +327,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     if (_onLoadStart) {
       _onLoadStart(nil);
     }
+    
+    [self showLoadingProgress];
 
     RCTImageLoaderProgressBlock progressHandler = nil;
     if (_onProgress) {
@@ -330,18 +373,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)imageLoaderLoadedImage:(UIImage *)loadedImage error:(NSError *)error forImageSource:(RCTImageSource *)source partial:(BOOL)isPartialLoad
 {
+  [self hideLoadingProgress];
   if (![source isEqual:_pendingImageSource]) {
     // Bail out if source has changed since we started loading
-    return;
-  }
-
-  if (error) {
-    if (_onError) {
-      _onError(@{ @"error": error.localizedDescription });
-    }
-    if (_onLoadEnd) {
-      _onLoadEnd(nil);
-    }
     return;
   }
 
@@ -371,6 +405,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       }
     }
   };
+  
+  if (error) {
+    if (_onError) {
+      _onError(@{ @"error": error.localizedDescription });
+    }
+    if (_onLoadEnd) {
+      _onLoadEnd(nil);
+    }
+    if (_failureImage != nil) {
+      RCTExecuteOnMainQueue(^{
+        setImageBlock(_failureImage);
+      });
+    }
+    return;
+  }
 
   if (_blurRadius > __FLT_EPSILON__) {
     // Blur on a background thread to avoid blocking interaction

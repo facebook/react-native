@@ -88,6 +88,30 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     view.setLoadingIndicatorSource(source);
   }
 
+  // 2017/01/11 QuangCM added -->
+  @ReactProp(name = "showLoadingIndicator")
+  public void setShowLoadingIndicator(ReactImageView view, boolean show) {
+    view.setShowLoadingIndicator(show);
+  }
+
+  @ReactProp(name = "loadingIndicatorSize")
+  public void setLoadingIndicatorSize(ReactImageView view, @Nullable String size) {
+    view.setLoadingIndicatorSize(ImageLoadingIndicatorSize.from(size));
+  }
+
+  @ReactProp(name = "loadingIndicatorColor", customType = "Color")
+  public void setLoadingIndicatorColor(ReactImageView view, @Nullable Integer color) {
+    if (color != null) {
+      view.setLoadingIndicatorColor(color);
+    }
+  }
+
+  @ReactProp(name = "failureImageSrc")
+  public void setFailureImageSource(ReactImageView view, @Nullable String source) {
+    view.setFailureImageSource(source);
+  }
+  // <-- 2017/01/11 QuangCM added
+
   @ReactProp(name = "borderColor", customType = "Color")
   public void setBorderColor(ReactImageView view, @Nullable Integer borderColor) {
     if (borderColor == null) {

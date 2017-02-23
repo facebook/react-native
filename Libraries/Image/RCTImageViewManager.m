@@ -28,6 +28,10 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(blurRadius, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(capInsets, UIEdgeInsets)
 RCT_REMAP_VIEW_PROPERTY(defaultSource, defaultImage, UIImage)
+RCT_EXPORT_VIEW_PROPERTY(showLoadingIndicator, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(loadingIndicatorSize, RCTLoadingIndicatorSize)
+RCT_EXPORT_VIEW_PROPERTY(loadingIndicatorColor, UIColor)
+RCT_REMAP_VIEW_PROPERTY(failureImageSource, failureImage, UIImage)
 RCT_EXPORT_VIEW_PROPERTY(onLoadStart, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onProgress, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onError, RCTDirectEventBlock)
@@ -37,6 +41,7 @@ RCT_EXPORT_VIEW_PROPERTY(onLoadEnd, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(resizeMode, RCTResizeMode)
 RCT_REMAP_VIEW_PROPERTY(source, imageSources, NSArray<RCTImageSource *>);
 RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTImageView)
+
 {
   // Default tintColor isn't nil - it's inherited from the superView - but we
   // want to treat a null json value for `tintColor` as meaning 'disable tint',

@@ -33,6 +33,7 @@ var PropTypes = React.PropTypes;
 var {
   ImageLoader,
 } = NativeModules;
+var ColorPropType = require('ColorPropType');
 
 let _requestId = 1;
 function generateRequestId() {
@@ -70,6 +71,7 @@ var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   progressiveRenderingEnabled: true,
   fadeDuration: true,
   shouldNotifyLoadEvents: true,
+  failureImageSrc: true,
 });
 
 var ViewStyleKeys = new Set(Object.keys(ViewStylePropTypes));
@@ -118,6 +120,25 @@ var Image = React.createClass({
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
     ]),
+
+    /**
+     * Show a circle loading indicator while loading image from url
+     */
+    showLoadingIndicator: PropTypes.bool,
+    /**
+     * Determines the size of loading indicator
+     */
+    loadingIndicatorSize: PropTypes.oneOf(['small', 'large']),
+    /**
+     * Determines color of loading indicator
+     */
+    loadingIndicatorColor: ColorPropType,
+    /**
+     * A static image to display in case of loading image from url is failed (not a placeholder).
+     * only accept local image, for example require('./image.jpg')
+     */
+    failureImageSource: PropTypes.number,
+
     progressiveRenderingEnabled: PropTypes.bool,
     fadeDuration: PropTypes.number,
     /**
@@ -276,6 +297,7 @@ var Image = React.createClass({
   render: function() {
     const source = resolveAssetSource(this.props.source);
     const loadingIndicatorSource = resolveAssetSource(this.props.loadingIndicatorSource);
+    const failureImageSource = resolveAssetSource(this.props.failureImageSource);
 
     // As opposed to the ios version, here we render `null` when there is no source, source.uri
     // or source array.
@@ -307,6 +329,7 @@ var Image = React.createClass({
         src: sources,
         headers: source.headers,
         loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
+        failureImageSrc: failureImageSource ? failureImageSource.uri : null,
       });
 
       if (nativeProps.children) {
@@ -355,6 +378,7 @@ var cfg = {
     headers: true,
     loadingIndicatorSrc: true,
     shouldNotifyLoadEvents: true,
+    failureImageSrc: true,
   },
 };
 var RKImage = requireNativeComponent('RCTImageView', Image, cfg);

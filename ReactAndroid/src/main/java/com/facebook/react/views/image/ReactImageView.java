@@ -166,6 +166,13 @@ public class ReactImageView extends GenericDraweeView {
   private boolean mProgressiveRenderingEnabled;
   private ReadableMap mHeaders;
 
+  // 2017/01/11 QuangCM added -->
+  private boolean mShowLoadingIndicator;
+  private ImageLoadingIndicatorSize mLoadingIndicatorSize;
+  private int mLoadingIndicatorColor = CircleLoadingIndicatorDrawable.DEFAULT_COLOR;
+  private @Nullable Drawable mFailureImageDrawable;
+  // <-- 2017/01/11 QuangCM added
+
   // We can't specify rounding in XML, so have to do so here
   private static GenericDraweeHierarchy buildHierarchy(Context context) {
     return new GenericDraweeHierarchyBuilder(context.getResources())
@@ -308,6 +315,24 @@ public class ReactImageView extends GenericDraweeView {
     mIsDirty = true;
   }
 
+  public void setShowLoadingIndicator(boolean show) {
+    mShowLoadingIndicator = show;
+  }
+
+  public void setLoadingIndicatorSize(ImageLoadingIndicatorSize size) {
+    mLoadingIndicatorSize = size;
+  }
+
+  public void setLoadingIndicatorColor(int color) {
+    mLoadingIndicatorColor = color;
+  }
+
+  public void setFailureImageSource(@Nullable String name) {
+    if (name != null && name.length() > 0) {
+      mFailureImageDrawable = ResourceDrawableIdHelper.getInstance().getResourceDrawable(getContext(), name);
+    }
+  }
+
   public void setProgressiveRenderingEnabled(boolean enabled) {
     mProgressiveRenderingEnabled = enabled;
     // no worth marking as dirty if it already rendered..
@@ -355,9 +380,23 @@ public class ReactImageView extends GenericDraweeView {
     GenericDraweeHierarchy hierarchy = getHierarchy();
     hierarchy.setActualImageScaleType(mScaleType);
 
-    if (mLoadingImageDrawable != null) {
-      hierarchy.setPlaceholderImage(mLoadingImageDrawable, ScalingUtils.ScaleType.CENTER);
+    // 2017/01/11 QuangCM updated -->
+    if (mShowLoadingIndicator) {
+      CircleLoadingIndicatorDrawable clid = new CircleLoadingIndicatorDrawable();
+      clid.setSize(mLoadingIndicatorSize);
+      clid.setColor(mLoadingIndicatorColor);
+      hierarchy.setProgressBarImage(clid);
+    } else {
+      // keep previous logic of loadingIndicatorSource
+      if (mLoadingImageDrawable != null) {
+        hierarchy.setPlaceholderImage(mLoadingImageDrawable, ScalingUtils.ScaleType.CENTER);
+      }
     }
+
+    if (mFailureImageDrawable != null) {
+      hierarchy.setFailureImage(mFailureImageDrawable, ScalingUtils.ScaleType.CENTER_CROP);
+    }
+    // <-- 2017/01/11 QuangCM updated
 
     boolean usePostprocessorScaling =
         mScaleType != ScalingUtils.ScaleType.CENTER_CROP &&
