@@ -793,6 +793,8 @@ class Server {
     const symbolicatingLogEntry =
       log(createActionStartEntry('Symbolicating'));
 
+    debug('Start symbolication');
+
     /* $FlowFixMe: where is `rowBody` defined? Is it added by
      * the `connect` framework? */
     Promise.resolve(req.rawBody).then(body => {
@@ -842,6 +844,7 @@ class Server {
       });
     }).then(
       stack => {
+        debug('Symbolication done');
         res.end(JSON.stringify({stack: stack}));
         process.nextTick(() => {
           log(createActionEndEntry(symbolicatingLogEntry));
@@ -918,6 +921,7 @@ class Server {
   } {
     // `true` to parse the query param as an object.
     const urlObj = url.parse(reqUrl, true);
+
     /* $FlowFixMe: `pathname` could be empty for an invalid URL */
     const pathname = decodeURIComponent(urlObj.pathname);
 
@@ -930,9 +934,6 @@ class Server {
       }
       return true;
     }).join('.') + '.js';
-
-    const sourceMapUrlObj = Object.assign({}, urlObj);
-    sourceMapUrlObj.pathname = pathname.replace(/\.bundle$/, '.map');
 
     // try to get the platform from the url
     /* $FlowFixMe: `query` could be empty for an invalid URL */
@@ -948,7 +949,12 @@ class Server {
     const dev = this._getBoolOptionFromQuery(urlObj.query, 'dev', true);
     const minify = this._getBoolOptionFromQuery(urlObj.query, 'minify', false);
     return {
-      sourceMapUrl: url.format(sourceMapUrlObj),
+      sourceMapUrl: url.format({
+        hash: urlObj.hash,
+        pathname: pathname.replace(/\.bundle$/, '.map'),
+        query: urlObj.query,
+        search: urlObj.search,
+      }),
       entryFile: entryFile,
       dev,
       minify,
