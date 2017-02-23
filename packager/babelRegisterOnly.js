@@ -25,6 +25,7 @@ function config(onlyList) {
     plugins: [
       'transform-flow-strip-types',
       'syntax-trailing-function-commas',
+      'syntax-class-properties',
       'transform-object-rest-spread',
       'transform-async-to-generator',
     ],
