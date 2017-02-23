@@ -2666,8 +2666,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   }
 
   // STEP 8: MULTI-LINE CONTENT ALIGNMENT
-  if (performLayout &&
-      (lineCount > 1 || node->style.alignContent == YGAlignStretch || YGIsBaselineLayout(node)) &&
+  if (performLayout && (lineCount > 1 || YGIsBaselineLayout(node)) &&
       !YGFloatIsUndefined(availableInnerCrossDim)) {
     const float remainingAlignContentDim = availableInnerCrossDim - totalLineCrossDim;
 
