@@ -25,15 +25,15 @@ Vending a view is simple:
 - Implement the `-(UIView *)view` method.
 
 ```objective-c
-// RNMapManager.m
+// RNTMapManager.m
 #import <MapKit/MapKit.h>
 
 #import <React/RCTViewManager.h>
 
-@interface RNMapManager : RCTViewManager
+@interface RNTMapManager : RCTViewManager
 @end
 
-@implementation RNMapManager
+@implementation RNTMapManager
 
 RCT_EXPORT_MODULE()
 
@@ -46,6 +46,8 @@ RCT_EXPORT_MODULE()
 ```
 **Note:** Do not attempt to set the `frame` or `backgroundColor` properties on the `UIView` instance that you vend through the `-view` method. React Native will overwrite the values set by your custom class in order to match your JavaScript component's layout props. If you need this granularity of control it might be better to wrap the `UIView` instance you want to style in another `UIView` and return the wrapper `UIView` instead. See [Issue 2948](https://github.com/facebook/react-native/issues/2948) for more context.
 
+> We used RNT as a prefix for our class. You can use any prefix of your choice as long as there's no name collision with React Native or Apple framework classes. To avoid any name collision, it's advisable to use three or more characters other than 'RCT' 
+
 Then you just need a little bit of JavaScript to make this a usable React component:
 
 ```javascript
@@ -53,8 +55,8 @@ Then you just need a little bit of JavaScript to make this a usable React compon
 
 import { requireNativeComponent } from 'react-native';
 
-// requireNativeComponent automatically resolves this to "RNMapManager"
-module.exports = requireNativeComponent('RNMap', null);
+// requireNativeComponent automatically resolves this to "RNTMapManager"
+module.exports = requireNativeComponent('RNTMap', null);
 ```
 
 This is now a fully-functioning native map view component in JavaScript, complete with pinch-zoom and other native gesture support.  We can't really control it from JavaScript yet, though :(
@@ -64,7 +66,7 @@ This is now a fully-functioning native map view component in JavaScript, complet
 The first thing we can do to make this component more usable is to bridge over some native properties. Let's say we want to be able to disable pitch control and specify the visible region.  Disabling pitch is a simple boolean, so we add this one line:
 
 ```objective-c
-// RNMapManager.m
+// RNTMapManager.m
 RCT_EXPORT_VIEW_PROPERTY(pitchEnabled, BOOL)
 ```
 
@@ -86,7 +88,7 @@ import { requireNativeComponent } from 'react-native';
 
 class MapView extends React.Component {
   render() {
-    return <RNMap {...this.props} />;
+    return <RNTMap {...this.props} />;
   }
 }
 
@@ -101,7 +103,7 @@ MapView.propTypes = {
   pitchEnabled: React.PropTypes.bool,
 };
 
-var RNMap = requireNativeComponent('RNMap', MapView);
+var RNTMap = requireNativeComponent('RNTMap', MapView);
 
 module.exports = MapView;
 ```
@@ -111,8 +113,8 @@ Now we have a nicely documented wrapper component that is easy to work with.  No
 Next, let's add the more complex `region` prop.  We start by adding the native code:
 
 ```objective-c
-// RNMapManager.m
-RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RNMap)
+// RNTMapManager.m
+RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RNTMap)
 {
   [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
 }
@@ -224,16 +226,16 @@ var RCTSwitch = requireNativeComponent('RCTSwitch', Switch, {
 
 ## Events
 
-So now we have a native map component that we can control easily from JS, but how do we deal with events from the user, like pinch-zooms or panning to change the visible region?  The key is to declare an event handler property on `RNMapManager`, make it a delegate for all the views it vends, and forward events to JS by calling the event handler block from the native view.  This looks like so (simplified from the full implementation):
+So now we have a native map component that we can control easily from JS, but how do we deal with events from the user, like pinch-zooms or panning to change the visible region?  The key is to declare an event handler property on `RNTMapManager`, make it a delegate for all the views it vends, and forward events to JS by calling the event handler block from the native view.  This looks like so (simplified from the full implementation):
 
 ```objective-c
-// RNMap.h
+// RNTMap.h
 
 #import <MapKit/MapKit.h>
 
 #import <React/RCTComponent.h>
 
-@interface RNMap: MKMapView
+@interface RNTMap: MKMapView
 
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 
@@ -241,29 +243,29 @@ So now we have a native map component that we can control easily from JS, but ho
 ```
 
 ```objective-c
-// RNMap.m
+// RNTMap.m
 
-#import "RNMap.h"
+#import "RNTMap.h"
 
-@implementation RNMap
+@implementation RNTMap
 
 @end
 ```
 
 ```objective-c
-// RNMapManager.m
+// RNTMapManager.m
 
-#import "RNMapManager.h"
+#import "RNTMapManager.h"
 
 #import <MapKit/MapKit.h>
 
-#import "RNMap.h"
+#import "RNTMap.h"
 #import <React/UIView+React.h>
 
-@interface RNMapManager() <MKMapViewDelegate>
+@interface RNTMapManager() <MKMapViewDelegate>
 @end
 
-@implementation RNMapManager
+@implementation RNTMapManager
 
 RCT_EXPORT_MODULE()
 
@@ -271,14 +273,14 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 
 - (UIView *)view
 {
-  RNMap *map = [RNMap new];
+  RNTMap *map = [RNTMap new];
   map.delegate = self;
   return map;
 }
 
 #pragma mark MKMapViewDelegate
 
-- (void)mapView:(RNMap *)mapView regionDidChangeAnimated:(BOOL)animated
+- (void)mapView:(RNTMap *)mapView regionDidChangeAnimated:(BOOL)animated
 {
   if (!mapView.onChange) {
     return;
@@ -312,7 +314,7 @@ class MapView extends React.Component {
     this.props.onRegionChange(event.nativeEvent.region);
   }
   render() {
-    return <RNMap {...this.props} onChange={this._onChange} />;
+    return <RNTMap {...this.props} onChange={this._onChange} />;
   }
 }
 MapView.propTypes = {
