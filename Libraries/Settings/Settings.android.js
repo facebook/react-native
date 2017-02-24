@@ -11,24 +11,33 @@
  */
 'use strict';
 
-var Settings = {
-  get(key: string): mixed {
-    console.warn('Settings is not yet supported on Android');
-    return null;
+const Settings = require('NativeModules').Settings;
+const DeviceEventEmitter = require('RCTDeviceEventEmitter');
+let COUNT = 0;
+
+module.exports = {
+  get(key: string, name: string): mixed {
+    return Settings.get(key, name);
   },
 
-  set(settings: Object) {
-    console.warn('Settings is not yet supported on Android');
+  set(settings: Object, name: string) {
+    Settings.set(settings, name);
   },
 
-  watchKeys(keys: string | Array<string>, callback: Function): number {
-    console.warn('Settings is not yet supported on Android');
-    return -1;
+  watchKeys(keys: string | Array<string>, callback: Function , name: string): number {
+    const id = COUNT++;
+    DeviceEventEmitter.addListener('' + id, (e) => {
+      callback(e);
+    });
+    if (typeof keys === 'string') {
+      keys = [keys];
+    }
+    Settings.watchKeys(keys, '' + id, name);
+    return id;
   },
 
   clearWatch(watchId: number) {
-    console.warn('Settings is not yet supported on Android');
+    return Settings.clearWatch('' + watchId);
   },
 };
 
-module.exports = Settings;

@@ -77,6 +77,7 @@ const apis = [
   '../Libraries/Utilities/PixelRatio.js',
   '../Libraries/PushNotificationIOS/PushNotificationIOS.js',
   '../Libraries/Settings/Settings.ios.js',
+  '../Libraries/Settings/Settings.android.js',
   '../Libraries/Share/Share.js',
   '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',
   '../Libraries/StyleSheet/StyleSheet.js',
