@@ -18,6 +18,7 @@ require('ViewRenderingTestModule');
 require('TestJavaToJSArgumentsModule');
 require('TestJSLocaleModule');
 require('TestJSToJavaParametersModule');
+require('TestJavaToJSReturnValuesModule');
 require('UIManagerTestModule');
 
 require('CatalystRootViewTestModule');

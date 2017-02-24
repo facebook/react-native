@@ -50,6 +50,14 @@ void Instance::initializeBridge(
   CHECK(nativeToJsBridge_);
 }
 
+void Instance::setSourceURL(std::string sourceURL) {
+  callback_->incrementPendingJSCalls();
+  SystraceSection s("reactbridge_xplat_setSourceURL",
+                    "sourceURL", sourceURL);
+
+  nativeToJsBridge_->loadApplication(nullptr, nullptr, std::move(sourceURL));
+}
+
 void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
                                     std::string sourceURL) {
   callback_->incrementPendingJSCalls();
@@ -73,22 +81,13 @@ void Instance::loadScriptFromFile(const std::string& filename,
                     "fileName", filename);
 
   std::unique_ptr<const JSBigFileString> script;
+
   RecoverableError::runRethrowingAsRecoverable<std::system_error>(
     [&filename, &script]() {
       script = JSBigFileString::fromPath(filename);
     });
 
   nativeToJsBridge_->loadApplication(nullptr, std::move(script), sourceURL);
-}
-
-void Instance::loadScriptFromOptimizedBundle(std::string bundlePath,
-                                             std::string sourceURL,
-                                             int flags) {
-  SystraceSection s("reactbridge_xplat_loadScriptFromOptimizedBundle",
-                    "bundlePath", bundlePath);
-  nativeToJsBridge_->loadOptimizedApplicationScript(std::move(bundlePath),
-                                                    std::move(sourceURL),
-                                                    flags);
 }
 
 void Instance::loadUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle,

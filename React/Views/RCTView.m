@@ -81,11 +81,17 @@
 
 static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
+  BOOL isFirstIteration = YES;
   NSMutableString *str = [NSMutableString stringWithString:@""];
   for (UIView *subview in view.subviews) {
+    if (isFirstIteration) {
+      isFirstIteration = NO;
+    } else {
+      [str appendString:@" "];
+    }
+    
     NSString *label = subview.accessibilityLabel;
     if (label) {
-      [str appendString:@" "];
       [str appendString:label];
     } else {
       [str appendString:RCTRecursiveAccessibilityLabel(subview)];
@@ -123,6 +129,18 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
+
+- (void)setReactLayoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
+{
+  _reactLayoutDirection = layoutDirection;
+
+  if ([self respondsToSelector:@selector(setSemanticContentAttribute:)]) {
+    self.semanticContentAttribute =
+      layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
+        UISemanticContentAttributeForceLeftToRight :
+        UISemanticContentAttributeForceRightToLeft;
+  }
+}
 
 - (NSString *)accessibilityLabel
 {
@@ -575,10 +593,10 @@ static void RCTUpdateShadowPathForView(RCTView *view)
       // Can't accurately calculate box shadow, so fall back to pixel-based shadow
       view.layer.shadowPath = nil;
 
-      RCTLogWarn(@"View #%@ of type %@ has a shadow set but cannot calculate "
-                 "shadow efficiently. Consider setting a background color to "
-                 "fix this, or apply the shadow to a more specific component.",
-                 view.reactTag, [view class]);
+      RCTLogAdvice(@"View #%@ of type %@ has a shadow set but cannot calculate "
+        "shadow efficiently. Consider setting a background color to "
+        "fix this, or apply the shadow to a more specific component.",
+        view.reactTag, [view class]);
     }
   }
 }

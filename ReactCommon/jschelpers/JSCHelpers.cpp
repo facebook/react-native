@@ -6,7 +6,6 @@
 #include <fbsystrace.h>
 #endif
 
-#include <folly/String.h>
 #include <glog/logging.h>
 
 #include "JavaScriptCore.h"
@@ -30,7 +29,8 @@ JSValueRef functionCaller(
 }
 
 JSClassRef createFuncClass(JSContextRef ctx) {
-  auto definition = kJSClassDefinitionEmpty;
+  JSClassDefinition definition = kJSClassDefinitionEmpty;
+  definition.attributes |= kJSClassAttributeNoAutomaticPrototype;
   // Need to duplicate the two different finalizer blocks, since there's no way
   // for it to capture this static information.
   if (isCustomJSCPtr(ctx)) {
@@ -107,7 +107,7 @@ void installGlobalProxy(
     const char* name,
     JSObjectGetPropertyCallback callback) {
   JSClassDefinition proxyClassDefintion = kJSClassDefinitionEmpty;
-  proxyClassDefintion.className = "_FBProxyClass";
+  proxyClassDefintion.attributes |= kJSClassAttributeNoAutomaticPrototype;
   proxyClassDefintion.getProperty = callback;
 
   const bool isCustomJSC = isCustomJSCPtr(ctx);

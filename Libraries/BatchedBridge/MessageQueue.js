@@ -157,8 +157,14 @@ class MessageQueue {
         }
       }
       onFail && params.push(this._callbackID);
+      /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+       * detected during the deployment of v0.38.0. To see the error, remove
+       * this comment and run flow */
       this._callbacks[this._callbackID++] = onFail;
       onSucc && params.push(this._callbackID);
+      /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+       * detected during the deployment of v0.38.0. To see the error, remove
+       * this comment and run flow */
       this._callbacks[this._callbackID++] = onSucc;
     }
 
@@ -189,12 +195,14 @@ class MessageQueue {
     }
     Systrace.counterEvent('pending_js_to_native_queue', this._queue[0].length);
     if (__DEV__ && this.__spy && isFinite(moduleID)) {
-        this.__spy(
-          { type: TO_NATIVE,
-            module: this._remoteModuleTable[moduleID],
-            method: this._remoteMethodTable[moduleID][methodID],
-            args: params }
-        );
+      this.__spy(
+        { type: TO_NATIVE,
+          module: this._remoteModuleTable[moduleID],
+          method: this._remoteMethodTable[moduleID][methodID],
+          args: params }
+      );
+    } else if (this.__spy) {
+      this.__spy({type: TO_NATIVE, module: moduleID + '', method: methodID, args: params});
     }
   }
 
@@ -219,7 +227,7 @@ class MessageQueue {
     this._lastFlush = new Date().getTime();
     this._eventLoopStartTime = this._lastFlush;
     Systrace.beginEvent(`${module}.${method}()`);
-    if (__DEV__ && this.__spy) {
+    if (this.__spy) {
       this.__spy({ type: TO_JS, module, method, args});
     }
     const moduleMethods = this._callableModules[module];
@@ -259,7 +267,7 @@ class MessageQueue {
         );
       }
       const profileName = debug ? '<callback for ' + module + '.' + method + '>' : cbID;
-      if (callback && this.__spy && __DEV__) {
+      if (callback && this.__spy) {
         this.__spy({ type: TO_JS, module:null, method:profileName, args });
       }
       Systrace.beginEvent(
@@ -270,7 +278,13 @@ class MessageQueue {
       }
     }
 
+    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+     * detected during the deployment of v0.38.0. To see the error, remove this
+     * comment and run flow */
     this._callbacks[cbID & ~1] = null;
+    /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
+     * detected during the deployment of v0.38.0. To see the error, remove this
+     * comment and run flow */
     this._callbacks[cbID |  1] = null;
     // $FlowIssue(>=0.35.0) #14551610
     callback.apply(null, args);

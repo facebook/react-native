@@ -35,18 +35,19 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.SystemClock;
-import com.facebook.react.devsupport.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
 import com.facebook.react.jstasks.HeadlessJsTaskContext;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.uimanager.ReactChoreographer;
 
 /**
  * Native module for JS timer execution. Timers fire on frame boundaries.
  */
-@ReactModule(name = "RCTTiming", supportsWebWorkers = true)
+@ReactModule(name = Timing.NAME, supportsWebWorkers = true)
 public final class Timing extends ReactContextBaseJavaModule implements LifecycleEventListener,
   OnExecutorUnregisteredListener, HeadlessJsTaskEventListener {
+
+  protected static final String NAME = "Timing";
 
   // These timing contants should be kept in sync with the ones in `JSTimersExecution.js`.
   // The minimum time in milliseconds left in the frame to call idle callbacks.
@@ -349,7 +350,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
 
   @Override
   public String getName() {
-    return "RCTTiming";
+    return NAME;
   }
 
   @Override

@@ -7,14 +7,15 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule NativeMethodsMixin
+ * @flow
  */
 'use strict';
 
+var ReactNative = require('ReactNative');
 var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var TextInputState = require('TextInputState');
 var UIManager = require('UIManager');
 
-var findNodeHandle = require('findNodeHandle');
 var invariant = require('fbjs/lib/invariant');
 
 type MeasureOnSuccessCallback = (
@@ -84,7 +85,7 @@ var NativeMethodsMixin = {
    */
   measure: function(callback: MeasureOnSuccessCallback) {
     UIManager.measure(
-      findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       mountSafeCallback(this, callback)
     );
   },
@@ -106,7 +107,7 @@ var NativeMethodsMixin = {
    */
   measureInWindow: function(callback: MeasureInWindowOnSuccessCallback) {
     UIManager.measureInWindow(
-      findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       mountSafeCallback(this, callback)
     );
   },
@@ -117,7 +118,7 @@ var NativeMethodsMixin = {
    * are relative to the origin x, y of the ancestor view.
    *
    * As always, to obtain a native node handle for a component, you can use
-   * `React.findNodeHandle(component)`.
+   * `ReactNative.findNodeHandle(component)`.
    */
   measureLayout: function(
     relativeToNativeNode: number,
@@ -125,7 +126,7 @@ var NativeMethodsMixin = {
     onFail: () => void /* currently unused */
   ) {
     UIManager.measureLayout(
-      findNodeHandle(this),
+      ReactNative.findNodeHandle(this),
       relativeToNativeNode,
       mountSafeCallback(this, onFail),
       mountSafeCallback(this, onSuccess)
@@ -139,12 +140,6 @@ var NativeMethodsMixin = {
    * Manipulation](docs/direct-manipulation.html)).
    */
   setNativeProps: function(nativeProps: Object) {
-    if (!this.viewConfig) {
-      var ctor = this.constructor;
-      var componentName = ctor.displayName || ctor.name || '<Unknown Component>';
-      invariant(false, componentName + ' "viewConfig" is not defined.');
-    }
-
     if (__DEV__) {
       warnForStyleProps(nativeProps, this.viewConfig.validAttributes);
     }
@@ -155,7 +150,7 @@ var NativeMethodsMixin = {
     );
 
     UIManager.updateView(
-      findNodeHandle(this),
+      (ReactNative.findNodeHandle(this) : any),
       this.viewConfig.uiViewClassName,
       updatePayload
     );
@@ -166,14 +161,14 @@ var NativeMethodsMixin = {
    * will depend on the platform and type of view.
    */
   focus: function() {
-    TextInputState.focusTextInput(findNodeHandle(this));
+    TextInputState.focusTextInput(ReactNative.findNodeHandle(this));
   },
 
   /**
    * Removes focus from an input or view. This is the opposite of `focus()`.
    */
   blur: function() {
-    TextInputState.blurTextInput(findNodeHandle(this));
+    TextInputState.blurTextInput(ReactNative.findNodeHandle(this));
   },
 };
 
@@ -217,7 +212,7 @@ function mountSafeCallback(
   callback: ?Function
 ): any {
   return function() {
-    if (!callback || (context.isMounted && !context.isMounted())) {
+    if (!callback || (typeof context.isMounted === 'function' && !context.isMounted())) {
       return undefined;
     }
     return callback.apply(context, arguments);

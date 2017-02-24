@@ -73,6 +73,7 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, YogaMea
     setDefaultPadding(Spacing.TOP, mEditText.getPaddingTop());
     setDefaultPadding(Spacing.END, mEditText.getPaddingEnd());
     setDefaultPadding(Spacing.BOTTOM, mEditText.getPaddingBottom());
+    mEditText.setPadding(0, 0, 0, 0);
   }
 
   @Override
@@ -90,11 +91,6 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, YogaMea
         TypedValue.COMPLEX_UNIT_PX,
         fontSize == UNSET ?
             (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : fontSize);
-    editText.setPadding(
-        (int) Math.ceil(getPadding(Spacing.START)),
-        (int) Math.ceil(getPadding(Spacing.TOP)),
-        (int) Math.ceil(getPadding(Spacing.END)),
-        (int) Math.ceil(getPadding(Spacing.BOTTOM)));
 
     if (mNumberOfLines != UNSET) {
       editText.setLines(mNumberOfLines);

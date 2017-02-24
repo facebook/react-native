@@ -11,17 +11,15 @@
  */
 'use strict';
 
-var NativeEventEmitter = require('EventEmitter');
+var EventEmitter = require('EventEmitter');
 var Platform = require('Platform');
 var UIManager = require('UIManager');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 var invariant = require('fbjs/lib/invariant');
 
-type DimensionsChangedEventName = 'backPress';
-
-var eventEmitter = new NativeEventEmitter();
-
+var eventEmitter = new EventEmitter();
+var dimensionsInitialized = false;
 var dimensions = {};
 class Dimensions {
   /**
@@ -65,9 +63,15 @@ class Dimensions {
     }
 
     Object.assign(dimensions, dims);
-
-    var subsubscriptionArgument = Object.assign({}, dimensions);
-    eventEmitter.emit('change', subsubscriptionArgument);
+    if (dimensionsInitialized) {
+      // Don't fire 'change' the first time the dimensions are set.
+      eventEmitter.emit('change', {
+        window: dimensions.window,
+        screen: dimensions.screen
+      });
+    } else {
+      dimensionsInitialized = true;
+    }
   }
 
   /**
@@ -82,13 +86,6 @@ class Dimensions {
    *
    * Example: `var {height, width} = Dimensions.get('window');`
    *
-   * On iOS, the supported keys are `width`, `height`, `scale`,
-   * `iosSizeClassHorizontal`, and `iosSizeClassVertical`. Size classes are
-   * either the string `"compact"` or `"regular"`.
-   *
-   * On Android, the supported keys are `width`, `height`, `scale`, `fontScale`,
-   * and `densityDpi`.
-   *
    * @param {string} dim Name of dimension as defined when calling `set`.
    * @returns {Object?} Value for the dimension.
    */
@@ -98,47 +95,36 @@ class Dimensions {
   }
 
   /**
-   * Only supports 'change' event.
+   * Add an event handler. Supported events:
    *
-   * Detect changes in screen dimensions, usually from rotating the device or
-   * when starting or changing side-by-side view in iOS.
-   *
-   * The callback in invoked with an object keyed by dimension name
-   * (i.e. window, screen)
-   *
-   * Returns an object with a remove function.
-   *
-   * Example:
-   *
-   * ```javascript
-   * Dimensions.addEventListener('change', function(dimensions) {
-   *   deepEqual(dimensions.window, Dimensions.get('window')) === true
-   * });
-   * ```
+   * - `change`: Fires when a property within the `Dimensions` object changes. The argument
+   *   to the event handler is an object with `window` and `screen` properties whose values
+   *   are the same as the return values of `Dimensions.get('window')` and
+   *   `Dimensions.get('screen')`, respectively.
    */
   static addEventListener(
-    eventName: DimensionsChangedEventName,
+    type: string,
     handler: Function
-  ): {remove: () => void} {
+  ) {
     invariant(
-      eventName === 'change',
-      'Trying to subscribe to unknown event: "%s"', eventName
+      'change' === type,
+      'Trying to subscribe to unknown event: "%s"', type
     );
-    eventEmitter.addListener(eventName, handler);
-    return {
-      remove: () => Dimensions.removeEventListener(eventName, handler),
-    };
+    eventEmitter.addListener(type, handler);
   }
 
+  /**
+   * Remove an event handler.
+   */
   static removeEventListener(
-    eventName: DimensionsChangedEventName,
+    type: string,
     handler: Function
-  ): void {
+  ) {
     invariant(
-      eventName === 'change',
-      'Trying to unsubscribe to unknown event: "%s"', eventName
+      'change' === type,
+      'Trying to remove listener for unknown event: "%s"', type
     );
-    eventEmitter.removeListener(eventName, handler);
+    eventEmitter.removeListener(type, handler);
   }
 }
 

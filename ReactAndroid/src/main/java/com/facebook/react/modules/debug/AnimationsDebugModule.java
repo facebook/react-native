@@ -24,13 +24,16 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 
 /**
  * Module that records debug information during transitions (animated navigation events such as
  * going from one screen to another).
  */
-@ReactModule(name = "AnimationsDebugModule")
+@ReactModule(name = AnimationsDebugModule.NAME)
 public class AnimationsDebugModule extends ReactContextBaseJavaModule {
+
+  protected static final String NAME = "AnimationsDebugModule";
 
   private @Nullable FpsDebugFrameCallback mFrameCallback;
   private @Nullable final DeveloperSettings mCatalystSettings;
@@ -44,7 +47,7 @@ public class AnimationsDebugModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "AnimationsDebugModule";
+    return NAME;
   }
 
   @ReactMethod

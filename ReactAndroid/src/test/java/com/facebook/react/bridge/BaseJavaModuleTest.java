@@ -11,7 +11,6 @@ package com.facebook.react.bridge;
 
 import java.util.Map;
 
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableNativeArray;
 
 import org.junit.Before;
@@ -55,18 +54,26 @@ public class BaseJavaModuleTest {
     regularMethod.invoke(null, null, mArguments);
   }
 
-  @Test(expected = NativeArgumentsParseException.class)
-  public void testCallAsyncMethodWithoutEnoughArgs() throws Exception {
-    BaseJavaModule.NativeMethod asyncMethod = mMethods.get("asyncMethod");
+  @Test
+  public void testCallMethodWithEnoughArgs() {
+    BaseJavaModule.NativeMethod regularMethod = mMethods.get("regularMethod");
     Mockito.stub(mArguments.size()).toReturn(2);
-    asyncMethod.invoke(null, null, mArguments);
+    regularMethod.invoke(null, null, mArguments);
   }
 
-  @Test()
-  public void testCallAsyncMethodWithEnoughArgs() throws Exception {
+  @Test
+  public void testCallAsyncMethodWithEnoughArgs() {
+    // Promise block evaluates to 2 args needing to be passed from JS
     BaseJavaModule.NativeMethod asyncMethod = mMethods.get("asyncMethod");
     Mockito.stub(mArguments.size()).toReturn(3);
     asyncMethod.invoke(null, null, mArguments);
+  }
+
+  @Test
+  public void testCallSyncMethod() {
+    BaseJavaModule.NativeMethod syncMethod = mMethods.get("syncMethod");
+    Mockito.stub(mArguments.size()).toReturn(2);
+    syncMethod.invoke(null, null, mArguments);
   }
 
   private static class MethodsModule extends BaseJavaModule {
@@ -76,11 +83,14 @@ public class BaseJavaModuleTest {
     }
 
     @ReactMethod
-    public void regularMethod(String a, int b) {
-    }
+    public void regularMethod(String a, int b) {}
 
     @ReactMethod
-    public void asyncMethod(int a, Promise p) {
+    public void asyncMethod(int a, Promise p) {}
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public int syncMethod(int a, int b) {
+      return a + b;
     }
   }
 }
