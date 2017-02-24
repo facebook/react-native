@@ -82,6 +82,8 @@
 		14F7A0F01BDA714B003C6C10 /* RCTFPSGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F7A0EF1BDA714B003C6C10 /* RCTFPSGraph.m */; };
 		191E3EBE1C29D9AF00C180A6 /* RCTRefreshControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 191E3EBD1C29D9AF00C180A6 /* RCTRefreshControlManager.m */; };
 		191E3EC11C29DC3800C180A6 /* RCTRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 191E3EC01C29DC3800C180A6 /* RCTRefreshControl.m */; };
+		2D074E381E609E65001D6DD0 /* RCTReconnectingWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = A12E9E281E5DEB860029001B /* RCTReconnectingWebSocket.h */; };
+		2D074E391E609E68001D6DD0 /* RCTSRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = A12E9E291E5DEB860029001B /* RCTSRWebSocket.h */; };
 		2D3B5E931D9B087300451313 /* RCTErrorInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */; };
 		2D3B5E941D9B087900451313 /* RCTBundleURLProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */; };
 		2D3B5E951D9B087C00451313 /* RCTAssert.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA4B1A601E3B00E9B192 /* RCTAssert.m */; };
@@ -1912,6 +1914,7 @@
 				3D302F371DF828F800D6DDAE /* RCTEventDispatcher.h in Headers */,
 				3D302F381DF828F800D6DDAE /* RCTFrameUpdate.h in Headers */,
 				3D5AC7221E005763000F9153 /* RCTTVRemoteHandler.h in Headers */,
+				2D074E381E609E65001D6DD0 /* RCTReconnectingWebSocket.h in Headers */,
 				3D302F391DF828F800D6DDAE /* RCTImageSource.h in Headers */,
 				B50558431E43E64600F71A00 /* RCTDevSettings.h in Headers */,
 				3D302F3A1DF828F800D6DDAE /* RCTInvalidating.h in Headers */,
@@ -1955,6 +1958,7 @@
 				3D302F601DF828F800D6DDAE /* RCTKeyboardObserver.h in Headers */,
 				3D302F611DF828F800D6DDAE /* RCTRedBox.h in Headers */,
 				3D302F621DF828F800D6DDAE /* RCTSourceCode.h in Headers */,
+				2D074E391E609E68001D6DD0 /* RCTSRWebSocket.h in Headers */,
 				3D302F631DF828F800D6DDAE /* RCTStatusBarManager.h in Headers */,
 				3D302F641DF828F800D6DDAE /* RCTTiming.h in Headers */,
 				3D302F651DF828F800D6DDAE /* RCTUIManager.h in Headers */,
