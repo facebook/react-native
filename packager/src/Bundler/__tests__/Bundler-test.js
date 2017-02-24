@@ -173,7 +173,7 @@ describe('Bundler', function() {
         expect(ithAddedModule(3)).toEqual('/root/file.json');
 
         expect(bundle.finalize.mock.calls[0]).toEqual([{
-            runMainModule: true,
+            runModule: true,
             runBeforeMainModule: [],
             allowUpdates: false,
         }]);

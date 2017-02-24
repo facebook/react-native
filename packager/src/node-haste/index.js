@@ -264,7 +264,7 @@ class DependencyGraph {
     return platform;
   }
 
-  _getAbsolutePath(filePath) {
+  _getAbsolutePath(filePath: string) {
     if (isAbsolutePath(filePath)) {
       return path.resolve(filePath);
     }
