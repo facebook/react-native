@@ -925,7 +925,9 @@ type ValueXYListenerCallback = (value: {x: number, y: number}) => void;
 /**
  * 2D Value for driving 2D animations, such as pan gestures.  Almost identical
  * API to normal `Animated.Value`, but multiplexed.  Contains two regular
- * `Animated.Value`s under the hood.  Example:
+ * `Animated.Value`s under the hood.
+ *
+ * #### Example
  *
  *```javascript
  *  class DraggableView extends React.Component {
@@ -2276,122 +2278,222 @@ var event = function(
 };
 
 /**
- * Animations are an important part of modern UX, and the `Animated`
- * library is designed to make them fluid, powerful, and easy to build and
- * maintain.
+ * The `Animated` library is designed to make animations fluid, powerful, and
+ * easy to build and maintain. `Animated` focuses on declarative relationships
+ * between inputs and outputs, with configurable transforms in between, and
+ * simple `start`/`stop` methods to control time-based animation execution.
  *
- * The simplest workflow is to create an `Animated.Value`, hook it up to one or
- * more style attributes of an animated component, and then drive updates either
- * via animations, such as `Animated.timing`, or by hooking into gestures like
- * panning or scrolling via `Animated.event`.  `Animated.Value` can also bind to
- * props other than style, and can be interpolated as well.  Here is a basic
- * example of a container view that will fade in when it's mounted:
+ * The simplest workflow for creating an animation is to to create an
+ * `Animated.Value`, hook it up to one or more style attributes of an animated
+ * component, and then drive updates via animations using `Animated.timing()`:
  *
- *```javascript
- *  class FadeInView extends React.Component {
- *    constructor(props) {
- *      super(props);
- *      this.state = {
- *        fadeAnim: new Animated.Value(0), // init opacity 0
- *      };
- *    }
- *    componentDidMount() {
- *      Animated.timing(          // Uses easing functions
- *        this.state.fadeAnim,    // The value to drive
- *        {toValue: 1}            // Configuration
- *      ).start();                // Don't forget start!
- *    }
- *    render() {
- *      return (
- *        <Animated.View          // Special animatable View
- *          style={{opacity: this.state.fadeAnim}}> // Binds
- *          {this.props.children}
- *        </Animated.View>
- *      );
- *    }
- *  }
- *```
+ * ```javascript
+ * Animated.timing(                            // Animate value over time
+ *   this.state.fadeAnim,                      // The value to drive
+ *   {
+ *     toValue: 1,                             // Animate to final value of 1
+ *   }
+ * ).start();                                  // Start the animation
+ * ```
  *
- * Note that only animatable components can be animated.  `View`, `Text`, and
- * `Image` are already provided, and you can create custom ones with
- * `createAnimatedComponent`.  These special components do the magic of binding
- * the animated values to the properties, and do targeted native updates to
- * avoid the cost of the react render and reconciliation process on every frame.
- * They also handle cleanup on unmount so they are safe by default.
+ * Refer to the [Animations](docs/animations.html#animated-api) guide to see
+ * additional examples of `Animated` in action.
  *
- * Animations are heavily configurable.  Custom and pre-defined easing
- * functions, delays, durations, decay factors, spring constants, and more can
- * all be tweaked depending on the type of animation.
+ * ## Overview
  *
- * A single `Animated.Value` can drive any number of properties, and each
- * property can be run through an interpolation first.  An interpolation maps
- * input ranges to output ranges, typically using a linear interpolation but
- * also supports easing functions.  By default, it will extrapolate the curve
- * beyond the ranges given, but you can also have it clamp the output value.
+ * There are two value types you can use with `Animated`:
  *
- * For example, you may want to think about your `Animated.Value` as going from
- * 0 to 1, but animate the position from 150px to 0px and the opacity from 0 to
- * 1. This can easily be done by modifying `style` in the example above like so:
+ * - [`Animated.Value()`](docs/animated.html#value) for single values
+ * - [`Animated.ValueXY()`](docs/animated.html#valuexy) for vectors
  *
- *```javascript
- *  style={{
- *    opacity: this.state.fadeAnim, // Binds directly
- *    transform: [{
- *      translateY: this.state.fadeAnim.interpolate({
- *        inputRange: [0, 1],
- *        outputRange: [150, 0]  // 0 : 150, 0.5 : 75, 1 : 0
- *      }),
- *    }],
- *  }}>
- *```
+ * `Animated.Value` can bind to style properties or other props, and can be
+ * interpolated as well. A single `Animated.Value` can drive any number of
+ * properties.
  *
- * Animations can also be combined in complex ways using composition functions
- * such as `sequence` and `parallel`, and can also be chained together simply
- * by setting the `toValue` of one animation to be another `Animated.Value`.
+ * ### Configuring animations
  *
- * `Animated.ValueXY` is handy for 2D animations, like panning, and there are
- * other helpful additions like `setOffset` and `getLayout` to aid with typical
- * interaction patterns, like drag-and-drop.
+ * `Animated` provides three types of animation types. Each animation type
+ * provides a particular animation curve that controls how your values animate
+ * from their initial value to the final value:
  *
- * You can see more example usage in `AnimationExample.js`, the Gratuitous
- * Animation App, and [Animations documentation guide](docs/animations.html).
+ * - [`Animated.decay()`](docs/animated.html#decay) starts with an initial
+ *   velocity and gradually slows to a stop.
+ * - [`Animated.spring()`](docs/animated.html#spring) provides a simple
+ *   spring physics model.
+ * - [`Animated.timing()`](docs/animated.html#timing) animates a value over time
+ *   using [easing functions](docs/easing.html).
  *
- * Note that `Animated` is designed to be fully serializable so that animations
- * can be run in a high performance way, independent of the normal JavaScript
- * event loop. This does influence the API, so keep that in mind when it seems a
- * little trickier to do something compared to a fully synchronous system.
- * Checkout `Animated.Value.addListener` as a way to work around some of these
- * limitations, but use it sparingly since it might have performance
- * implications in the future.
+ * In most cases, you will be using `timing()`. By default, it uses a symmetric
+ * easeInOut curve that conveys the gradual acceleration of an object to full
+ * speed and concludes by gradually decelerating to a stop.
+ *
+ * ### Working with animations
+ *
+ * Animations are started by calling `start()` on your animation. `start()`
+ * takes a completion callback that will be called when the animation is done.
+ * If the animation finished running normally, the completion callback will be
+ * invoked with `{finished: true}`. If the animation is done because `stop()`
+ * was called on it before it could finish (e.g. because it was interrupted by a
+ * gesture or another animation), then it will receive `{finished: false}`.
+ *
+ * ### Using the native driver
+ *
+ * By using the native driver, we send everything about the animation to native
+ * before starting the animation, allowing native code to perform the animation
+ * on the UI thread without having to go through the bridge on every frame.
+ * Once the animation has started, the JS thread can be blocked without
+ * affecting the animation.
+ *
+ * You can use the native driver by specifying `useNativeDriver: true` in your
+ * animation configuration. See the
+ * [Animations](docs/animations.html#using-the-native-driver) guide to learn
+ * more.
+ *
+ * ### Animatable components
+ *
+ * Only animatable components can be animated. These special components do the
+ * magic of binding the animated values to the properties, and do targeted
+ * native updates to avoid the cost of the react render and reconciliation
+ * process on every frame. They also handle cleanup on unmount so they are safe
+ * by default.
+ *
+ * - [`createAnimatedComponent()`](docs/animated.html#createanimatedcomponent)
+ *   can be used to make a component animatable.
+ *
+ * `Animated` exports the following animatable components using the above
+ * wrapper:
+ *
+ * - `Animated.Image`
+ * - `Animated.ScrollView`
+ * - `Animated.Text`
+ * - `Animated.View`
+ *
+ * ### Composing animations
+ *
+ * Animations can also be combined in complex ways using composition functions:
+ *
+ * - [`Animated.delay()`](docs/animated.html#delay) starts an animation after
+ *   a given delay.
+ * - [`Animated.parallel()`](docs/animated.html#parallel) starts a number of
+ *   animations at the same time.
+ * - [`Animated.sequence()`](docs/animated.html#sequence) starts the animations
+ *   in order, waiting for each to complete before starting the next.
+ * - [`Animated.stagger()`](docs/animated.html#stagger) starts animations in
+ *   order and in parallel, but with successive delays.
+ *
+ * Animations can also be chained together simply by setting the `toValue` of
+ * one animation to be another `Animated.Value`. See
+ * [Tracking dynamic values](docs/animations.html#tracking-dynamic-values) in
+ * the Animations guide.
+ *
+ * By default, if one animation is stopped or interrupted, then all other
+ * animations in the group are also stopped.
+ *
+ * ### Combining animated values
+ *
+ * You can combine two animated values via addition, multiplication, division,
+ * or modulo to make a new animated value:
+ *
+ * - [`Animated.add()`](docs/animated.html#add)
+ * - [`Animated.divide()`](docs/animated.html#divide)
+ * - [`Animated.modulo()`](docs/animated.html#modulo)
+ * - [`Animated.multiply()`](docs/animated.html#multiply)
+ *
+ * ### Interpolation
+ *
+ * The `interpolate()` function allows input ranges to map to different output
+ * ranges. By default, it will extrapolate the curve beyond the ranges given,
+ * but you can also have it clamp the output value. It uses lineal interpolation
+ * by default but also supports easing functions.
+ *
+ * - [`interpolate()`](docs/animated.html#interpolate)
+ *
+ * Read more about interpolation in the
+ * [Animation](docs/animations.html#interpolation) guide.
+ *
+ * ### Handling gestures and other events
+ *
+ * Gestures, like panning or scrolling, and other events can map directly to
+ * animated values using `Animated.event()`. This is done with a structured map
+ * syntax so that values can be extracted from complex event objects. The first
+ * level is an array to allow mapping across multiple args, and that array
+ * contains nested objects.
+ *
+ * - [`Animated.event()`](docs/animated.html#event)
+ *
+ * For example, when working with horizontal scrolling gestures, you would do
+ * the following in order to map `event.nativeEvent.contentOffset.x` to
+ * `scrollX` (an `Animated.Value`):
+ *
+ * ```javascript
+ *  onScroll={Animated.event(
+ *    // scrollX = e.nativeEvent.contentOffset.x
+ *    [{ nativeEvent: {
+ *         contentOffset: {
+ *           x: scrollX
+ *         }
+ *       }
+ *     }]
+ *  )}
+ * ```
+ *
  */
 module.exports = {
   /**
    * Standard value class for driving animations.  Typically initialized with
    * `new Animated.Value(0);`
+   *
+   * See also [`AnimatedValue`](docs/animated.html#animatedvalue).
    */
   Value: AnimatedValue,
   /**
    * 2D value class for driving 2D animations, such as pan gestures.
+   *
+   * See also [`AnimatedValueXY`](docs/animated.html#animatedvaluexy).
    */
   ValueXY: AnimatedValueXY,
   /**
    * exported to use the Interpolation type in flow
+   *
+   * See also [`AnimatedInterpolation`](docs/animated.html#animatedinterpolation).
    */
   Interpolation: AnimatedInterpolation,
 
   /**
    * Animates a value from an initial velocity to zero based on a decay
    * coefficient.
+   *
+   * Config is an object that may have the following options:
+   *
+   *   - `velocity`: Initial velocity.  Required.
+   *   - `deceleration`: Rate of decay.  Default 0.997.
+   *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   decay,
   /**
-   * Animates a value along a timed easing curve.  The `Easing` module has tons
-   * of pre-defined curves, or you can use your own function.
+   * Animates a value along a timed easing curve. The
+   * [`Easing`](docs/easing.html) module has tons of predefined curves, or you
+   * can use your own function.
+   *
+   * Config is an object that may have the following options:
+   *
+   *   - `duration`: Length of animation (milliseconds).  Default 500.
+   *   - `easing`: Easing function to define curve.
+   *     Default is `Easing.inOut(Easing.ease)`.
+   *   - `delay`: Start the animation after delay (milliseconds).  Default 0.
+   *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   timing,
   /**
-   * Spring animation based on Rebound and Origami.  Tracks velocity state to
+   * Spring animation based on Rebound and
+   * [Origami](https://facebook.github.io/origami/).  Tracks velocity state to
    * create fluid motions as the `toValue` updates, and can be chained together.
+   *
+   * Config is an object that may have the following options:
+   *
+   *   - `friction`: Controls "bounciness"/overshoot.  Default 7.
+   *   - `tension`: Controls speed.  Default 40.
+   *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   spring,
 
@@ -2453,8 +2555,8 @@ module.exports = {
   stagger,
 
   /**
-   *  Takes an array of mappings and extracts values from each arg accordingly,
-   *  then calls `setValue` on the mapped outputs.  e.g.
+   * Takes an array of mappings and extracts values from each arg accordingly,
+   * then calls `setValue` on the mapped outputs.  e.g.
    *
    *```javascript
    *  onScroll={Animated.event(
@@ -2467,6 +2569,11 @@ module.exports = {
    *    {dx: this._panX},    // gestureState arg
    *  ]),
    *```
+   *
+   * Config is an object that may have the following options:
+   *
+   *   - `listener`: Optional async listener.
+   *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   event,
 

@@ -15,7 +15,6 @@
 #import <XCTest/XCTest.h>
 
 #import <React/RCTConvert.h>
-#import <React/RCTUtils.h>
 
 @interface RCTConvert_YGValueTests : XCTestCase
 

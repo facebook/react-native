@@ -99,3 +99,10 @@ deployment:
       - echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
       - cd website && GIT_USER=reactjs-bot npm run gh-pages
       - node ./scripts/publish-npm.js
+
+experimental:
+  notify:
+    branches:
+      only:
+        - master
+        - /.*-stable/

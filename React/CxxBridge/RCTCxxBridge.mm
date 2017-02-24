@@ -23,7 +23,7 @@
 #import <React/RCTCxxModule.h>
 #import <React/RCTCxxUtils.h>
 #import <React/RCTDevLoadingView.h>
-#import <React/RCTDevMenu.h>
+#import <React/RCTDevSettings.h>
 #import <React/RCTDisplayLink.h>
 #import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLog.h>
@@ -40,6 +40,7 @@
 #import <cxxreact/Platform.h>
 #import <jschelpers/Value.h>
 
+#import "NSDataBigString.h"
 #import "RCTMessageThread.h"
 #import "RCTNativeModule.h"
 #import "RCTObjcExecutor.h"
@@ -87,7 +88,7 @@ static JSValueRef nativePerformanceNow(
 }
 
 static bool isRAMBundle(NSData *script) {
-  BundleHeader header{};
+  BundleHeader header;
   [script getBytes:&header length:sizeof(header)];
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
@@ -402,7 +403,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     executorFactory.reset(new JSCExecutorFactory("", folly::dynamic::object
       ("UseCustomJSC", (bool)useCustomJSC)
 #if RCT_PROFILE
-      ("StartSamplingProfilerOnInit", (bool)self.devMenu.startSamplingProfilerOnLaunch)
+      ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
 #endif
     ));
   } else {
@@ -1183,10 +1184,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
         self->_reactInstance->loadUnbundle(std::move(ramBundle), std::move(scriptStr),
                                            [[url absoluteString] UTF8String]);
     } else if (self->_reactInstance) {
-      auto bigbuf = std::make_unique<JSBigBufferString>([script length]);
-      memcpy(bigbuf->data(), [script bytes], bigbuf->size());
-
-      self->_reactInstance->loadScriptFromString(std::move(bigbuf),
+      self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
                                                  [[url absoluteString] UTF8String]);
     }
   }];
@@ -1210,10 +1208,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
                                                [[url absoluteString] UTF8String]);
       }
     } else if (self->_reactInstance) {
-      auto bigbuf = std::make_unique<JSBigBufferString>([script length]);
-      memcpy(bigbuf->data(), [script bytes], bigbuf->size());
-
-      self->_reactInstance->loadScriptFromStringSync(std::move(bigbuf), [[url absoluteString] UTF8String]);
+      self->_reactInstance->loadScriptFromStringSync(std::make_unique<NSDataBigString>(script),
+                                                     [[url absoluteString] UTF8String]);
     } else {
       throw std::logic_error(
         "Attempt to call loadApplicationScriptSync: on uninitialized bridge");

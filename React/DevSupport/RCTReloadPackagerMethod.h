@@ -6,9 +6,16 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-'use strict';
 
-// Bug with Jest because we're going to the node_modules that is a sibling
-// of what jest thinks our root (the dir with the package.json) should be.
+#import <React/RCTBridge.h>
+#import <React/RCTPackagerClient.h>
 
-module.exports = require.requireActual('q');
+#if RCT_DEV // Only supported in dev mode
+
+@interface RCTReloadPackagerMethod : NSObject<RCTPackagerClientMethod>
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge;
+
+@end
+
+#endif

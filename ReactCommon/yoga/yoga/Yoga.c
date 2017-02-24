@@ -1928,8 +1928,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   const float paddingAndBorderAxisCross =
       YGNodePaddingAndBorderForAxis(node, crossAxis, parentWidth);
 
-  const YGMeasureMode measureModeMainDim = isMainAxisRow ? widthMeasureMode : heightMeasureMode;
-  const YGMeasureMode measureModeCrossDim = isMainAxisRow ? heightMeasureMode : widthMeasureMode;
+  YGMeasureMode measureModeMainDim = isMainAxisRow ? widthMeasureMode : heightMeasureMode;
+  YGMeasureMode measureModeCrossDim = isMainAxisRow ? heightMeasureMode : widthMeasureMode;
 
   const float paddingAndBorderAxisRow =
       isMainAxisRow ? paddingAndBorderAxisMain : paddingAndBorderAxisCross;
@@ -1974,8 +1974,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   // computedFlexBasis to 0 instead of measuring and shrinking / flexing the child to exactly
   // match the remaining space
   YGNodeRef singleFlexChild = NULL;
-  if ((isMainAxisRow && widthMeasureMode == YGMeasureModeExactly) ||
-      (!isMainAxisRow && heightMeasureMode == YGMeasureModeExactly)) {
+  if (measureModeMainDim == YGMeasureModeExactly) {
     for (uint32_t i = 0; i < childCount; i++) {
       const YGNodeRef child = YGNodeGetChild(node, i);
       if (singleFlexChild) {
@@ -2046,7 +2045,10 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   }
 
   const bool flexBasisOverflows =
-      measureModeMainDim == YGMeasureModeUndefined ? false : totalFlexBasis > availableInnerMainDim;
+    measureModeMainDim == YGMeasureModeUndefined ? false : totalFlexBasis > availableInnerMainDim;
+  if (isNodeFlexWrap && flexBasisOverflows && measureModeMainDim == YGMeasureModeAtMost) {
+    measureModeMainDim = YGMeasureModeExactly;
+  }
 
   // STEP 4: COLLECT FLEX ITEMS INTO FLEX LINES
 
@@ -2664,8 +2666,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   }
 
   // STEP 8: MULTI-LINE CONTENT ALIGNMENT
-  if (performLayout &&
-      (lineCount > 1 || node->style.alignContent == YGAlignStretch || YGIsBaselineLayout(node)) &&
+  if (performLayout && (lineCount > 1 || YGIsBaselineLayout(node)) &&
       !YGFloatIsUndefined(availableInnerCrossDim)) {
     const float remainingAlignContentDim = availableInnerCrossDim - totalLineCrossDim;
 
@@ -2886,7 +2887,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       YGNodeAbsoluteLayoutChild(node,
                                 currentAbsoluteChild,
                                 availableInnerWidth,
-                                widthMeasureMode,
+                                isMainAxisRow ? measureModeMainDim : measureModeCrossDim,
                                 availableInnerHeight,
                                 direction);
     }
@@ -3215,18 +3216,58 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
   return (needToVisitNode || cachedResults == NULL);
 }
 
-static void YGRoundToPixelGrid(const YGNodeRef node) {
-  const float fractialLeft =
-      node->layout.position[YGEdgeLeft] - floorf(node->layout.position[YGEdgeLeft]);
-  const float fractialTop =
-      node->layout.position[YGEdgeTop] - floorf(node->layout.position[YGEdgeTop]);
-  node->layout.dimensions[YGDimensionWidth] =
-      roundf(fractialLeft + node->layout.dimensions[YGDimensionWidth]) - roundf(fractialLeft);
-  node->layout.dimensions[YGDimensionHeight] =
-      roundf(fractialTop + node->layout.dimensions[YGDimensionHeight]) - roundf(fractialTop);
+static float gPointScaleFactor = 1.0;
 
-  node->layout.position[YGEdgeLeft] = roundf(node->layout.position[YGEdgeLeft]);
-  node->layout.position[YGEdgeTop] = roundf(node->layout.position[YGEdgeTop]);
+void YGSetPointScaleFactor(float pixelsInPoint) {
+  YG_ASSERT(pixelsInPoint >= 0.0, "Scale factor should not be less than zero");
+  // We store points for Pixel as we will use it for rounding
+  if (pixelsInPoint == 0.0) {
+    // Zero is used to skip rounding
+    gPointScaleFactor = 0.0;
+  } else {
+    gPointScaleFactor = 1.0 / pixelsInPoint;
+  }
+}
+
+static void YGRoundToPixelGrid(const YGNodeRef node) {
+  if (gPointScaleFactor == 0.0) {
+    return;
+  }
+  const float nodeLeft = node->layout.position[YGEdgeLeft];
+  const float nodeTop = node->layout.position[YGEdgeTop];
+
+  // To round correctly to the pixel grid, first we calculate left and top coordinates
+  float fractialLeft = fmodf(nodeLeft, gPointScaleFactor);
+  float fractialTop = fmodf(nodeTop, gPointScaleFactor);
+  float roundedLeft = nodeLeft - fractialLeft;
+  float roundedTop = nodeTop - fractialTop;
+  
+  // To do the actual rounding we check if leftover fraction is bigger or equal than half of the grid step
+  if (fractialLeft >= gPointScaleFactor / 2.0) {
+    roundedLeft += gPointScaleFactor;
+    fractialLeft -= gPointScaleFactor;
+  }
+  if (fractialTop >= gPointScaleFactor / 2.0) {
+    roundedTop += gPointScaleFactor;
+    fractialTop -= gPointScaleFactor;
+  }
+  node->layout.position[YGEdgeLeft] = roundedLeft;
+  node->layout.position[YGEdgeTop] = roundedTop;
+  
+  // Now we round width and height in the same way accounting for fractial leftovers from rounding position
+  const float adjustedWidth = fractialLeft + node->layout.dimensions[YGDimensionWidth];
+  const float adjustedHeight = fractialTop + node->layout.dimensions[YGDimensionHeight];
+  float roundedWidth = adjustedWidth - fmodf(adjustedWidth, gPointScaleFactor);
+  float roundedHeight = adjustedHeight - fmodf(adjustedHeight, gPointScaleFactor);
+  
+  if (adjustedWidth - roundedWidth >= gPointScaleFactor / 2.0) {
+    roundedWidth += gPointScaleFactor;
+  }
+  if (adjustedHeight - roundedHeight >= gPointScaleFactor / 2.0) {
+    roundedHeight += gPointScaleFactor;
+  }
+  node->layout.dimensions[YGDimensionWidth] = roundedWidth;
+  node->layout.dimensions[YGDimensionHeight] = roundedHeight;
 
   const uint32_t childCount = YGNodeListCount(node->children);
   for (uint32_t i = 0; i < childCount; i++) {
