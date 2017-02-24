@@ -10,21 +10,23 @@
 package com.facebook.react.modules.clipboard;
 
 import android.annotation.SuppressLint;
-import android.content.ClipboardManager;
 import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.os.Build;
 
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
+
 
 /**
  * A module that allows JS to get/set clipboard contents.
  */
 @ReactModule(name = "Clipboard")
-public class ClipboardModule extends ReactContextBaseJavaModule {
+public class ClipboardModule extends ReactContextBaseJavaModule implements ClipboardManager.OnPrimaryClipChangedListener {
 
   public ClipboardModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -37,6 +39,21 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
 
   private ClipboardManager getClipboardService() {
     return (ClipboardManager) getReactApplicationContext().getSystemService(getReactApplicationContext().CLIPBOARD_SERVICE);
+  }
+
+  @Override
+  public void initialize() {
+    getClipboardService().addPrimaryClipChangedListener(this);
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    getClipboardService().removePrimaryClipChangedListener(this);
+  }
+
+  @Override
+  public void onPrimaryClipChanged() {
+    getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class).emit("clipboardChanged", null);
   }
 
   @ReactMethod
@@ -70,4 +87,5 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
       clipboard.setText(text);
     }
   }
+
 }

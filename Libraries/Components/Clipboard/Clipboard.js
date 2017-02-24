@@ -10,24 +10,61 @@
  * @flow
  */
 'use strict';
-
-const Clipboard = require('NativeModules').Clipboard;
+const NativeEventEmitter = require('NativeEventEmitter');
+const RCTClipboard = require('NativeModules').Clipboard;
 
 /**
- * `Clipboard` gives you an interface for setting and getting content from Clipboard on both iOS and Android
+ * `Clipboard` gives you an interface for setting and getting content of the
+ * Clipboard on both iOS and Android. You can subscribe to `clipboardChanged`,
+ * and `Clipboard` will tell you when the content has changed.
  */
-module.exports = {
+class Clipboard extends NativeEventEmitter {
+
   /**
-   * Get content of string type, this method returns a `Promise`, so you can use following code to get clipboard content
+   * Do not use. The exported module will be a Singleton instance.
+   */
+  constructor() {
+    super(RCTClipboard);
+  }
+
+  /**
+   * Add a handler to Clipboard changes by listening to the `clipboardChanged` event type
+   * and providing the handler.
+   * Example usage:
+   * ```javascript
+   * componentDidMount(){
+   *   Clipboard.addListener('clipboardChanged', this._clipboardChanged.bind(this));
+   * }
+   *
+   * componentWillUnmount(){
+   *   Clipboard.removeListener('clipboardChanged', this._clipboardChanged);
+   * }
+   * ```
+   */
+  addEventListener(type: string, handler: Function) {
+    this.addListener(type, handler);
+  }
+
+  /**
+   * Remove a handler by passing the `clipboardChanged` event type and the handler
+   */
+  removeEventListener(type: string, handler: Function ) {
+    this.removeListener(type, handler);
+  }
+
+  /**
+   * Get content of string type, this method returns a `Promise`, so you can
+   * use following code to get clipboard content:
    * ```javascript
    * async _getContent() {
    *   var content = await Clipboard.getString();
    * }
    * ```
    */
-  getString(): Promise<string> {
-    return Clipboard.getString();
-  },
+  getString(): Promise<String>{
+    return RCTClipboard.getString();
+  }
+
   /**
    * Set content of string type. You can use following code to set clipboard content
    * ```javascript
@@ -37,7 +74,9 @@ module.exports = {
    * ```
    * @param the content to be stored in the clipboard.
    */
-  setString(content: string) {
-    Clipboard.setString(content);
+  setString(content: string){
+    RCTClipboard.setString(content);
   }
-};
+}
+
+module.exports = new Clipboard();

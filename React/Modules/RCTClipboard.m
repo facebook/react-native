@@ -20,6 +20,24 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"clipboardChanged"];
+}
+
+- (void)startObserving {
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  [nc addObserver:self selector:@selector(clipboardChanged:) name:UIPasteboardChangedNotification object:[UIPasteboard generalPasteboard]];
+  [nc addObserver:self selector:@selector(clipboardChanged:) name:UIPasteboardRemovedNotification object:[UIPasteboard generalPasteboard]];
+}
+
+- (void)stopObserving {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)clipboardChanged:(NSNotification*)notification{
+  [self sendEventWithName:@"clipboardChanged" body:nil];
+}
 
 RCT_EXPORT_METHOD(setString:(NSString *)content)
 {
