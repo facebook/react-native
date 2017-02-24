@@ -173,7 +173,7 @@ class Server {
 
   _opts: {
     assetExts: Array<string>,
-    blacklistRE: ?RegExp,
+    blacklistRE: void | RegExp,
     cacheVersion: string,
     extraNodeModules: {},
     getTransformOptions?: GetTransformOptions,
@@ -185,7 +185,7 @@ class Server {
     reporter: Reporter,
     resetCache: boolean,
     silent: boolean,
-    transformModulePath: ?string,
+    transformModulePath: void | string,
     transformTimeoutInterval: ?number,
     watch: boolean,
   };

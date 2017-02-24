@@ -36,5 +36,4 @@ export type ExampleModule = {
   title: string,
   description: string,
   examples: Array<Example>,
-  external?: bool,
 };
