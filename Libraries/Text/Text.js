@@ -177,6 +177,10 @@ const Text = React.createClass({
      */
     testID: PropTypes.string,
     /**
+     * If true, plays system sound on touch
+     **/
+    touchSoundEnabled: React.PropTypes.bool,
+    /**
      * Specifies whether fonts should scale to respect Text Size accessibility settings. The
      * default is `true`.
      */
@@ -207,6 +211,7 @@ const Text = React.createClass({
       accessible: true,
       allowFontScaling: true,
       ellipsizeMode: 'tail',
+      touchSoundEnabled: false,
     };
   },
   getInitialState: function(): Object {

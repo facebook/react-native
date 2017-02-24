@@ -1135,6 +1135,11 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
   [self _layoutAndMount];
 }
 
+RCT_EXPORT_METHOD(playTouchSound)
+{
+  AudioServicesPlaySystemSoundWithCompletion(1104, nil);
+}
+
 /**
  * Sets up animations, computes layout, creates UI mounting blocks for computed layout,
  * runs these blocks and all other already existing blocks.

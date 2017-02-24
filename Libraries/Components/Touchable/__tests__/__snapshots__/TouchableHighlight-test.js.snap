@@ -27,7 +27,8 @@ exports[`TouchableHighlight renders correctly 1`] = `
   <Text
     accessible={true}
     allowFontScaling={true}
-    ellipsizeMode="tail">
+    ellipsizeMode="tail"
+    touchSoundEnabled={false}>
     Touchable
   </Text>
 </View>

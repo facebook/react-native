@@ -743,6 +743,9 @@ var TouchableMixin = {
           this._startHighlight(e);
           this._endHighlight(e);
         }
+        if (this.props.touchSoundEnabled) {
+          this._playTouchSound();
+        }
         this.touchableHandlePress(e);
       }
     }
@@ -766,6 +769,10 @@ var TouchableMixin = {
         this.touchableHandleActivePressOut(e);
       }
     }
+  },
+
+  _playTouchSound: function() {
+    UIManager.playTouchSound();
   },
 
 };
