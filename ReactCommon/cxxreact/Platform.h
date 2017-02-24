@@ -6,10 +6,9 @@
 #include <memory>
 #include <string>
 
+#include <cxxreact/Executor.h>
+#include <cxxreact/MessageQueueThread.h>
 #include <jschelpers/JavaScriptCore.h>
-
-#include "Executor.h"
-#include "MessageQueueThread.h"
 
 namespace facebook {
 namespace react {

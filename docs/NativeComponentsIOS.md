@@ -231,7 +231,7 @@ So now we have a native map component that we can control easily from JS, but ho
 
 #import <MapKit/MapKit.h>
 
-#import "RCTComponent.h"
+#import <React/RCTComponent.h>
 
 @interface RCTMap: MKMapView
 
@@ -258,7 +258,7 @@ So now we have a native map component that we can control easily from JS, but ho
 #import <MapKit/MapKit.h>
 
 #import "RCTMap.h"
-#import "UIView+React.h"
+#import <React/UIView+React.h>
 
 @interface RCTMapManager() <MKMapViewDelegate>
 @end

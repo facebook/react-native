@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "ExecutorToken.h"
-#include "Executor.h"
+#include <cxxreact/Executor.h>
+#include <cxxreact/ExecutorToken.h>
 
 namespace facebook {
 namespace react {

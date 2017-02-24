@@ -15,7 +15,7 @@ const Config = require('../util/Config');
 const defaultConfig = require('./default.config');
 const minimist = require('minimist');
 
-import type {GetTransformOptions} from '../../packager/react-packager/src/Bundler';
+import type {GetTransformOptions} from '../../packager/src/Bundler';
 import type {CommandT} from '../commands';
 
 /**

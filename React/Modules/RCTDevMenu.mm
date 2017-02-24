@@ -22,10 +22,11 @@
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
+#import "RCTPackagerClient.h"
 #import "RCTProfile.h"
+#import "RCTReloadPackagerMethod.h"
 #import "RCTRootView.h"
 #import "RCTUtils.h"
-#import "RCTWebSocketObserverProtocol.h"
 
 #if RCT_DEV
 
@@ -136,7 +137,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
-@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, RCTWebSocketObserverDelegate>
+@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating>
 
 @property (nonatomic, strong) Class executorClass;
 
@@ -212,6 +213,9 @@ RCT_EXPORT_MODULE()
       self->_executorOverride = [self->_defaults objectForKey:@"executor-override"];
     });
 
+    // Same values are read during the bridge starup path
+    _startSamplingProfilerOnLaunch = [_settings[@"startSamplingProfilerOnLaunch"] boolValue];
+
     // Delay setup until after Bridge init
     dispatch_async(dispatch_get_main_queue(), ^{
       [weakSelf updateSettings:self->_settings];
@@ -266,7 +270,7 @@ RCT_EXPORT_MODULE()
   if (!port) {
     port = @8081; // Packager default port
   }
-  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/message?role=shell", scheme, host, port]];
+  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/message?role=ios-rn-rctdevmenu", scheme, host, port]];
 }
 
 // TODO: Move non-UI logic into separate RCTDevSettings module
@@ -279,55 +283,26 @@ RCT_EXPORT_MODULE()
     return;
   }
 
-  Class webSocketObserverClass = objc_lookUpClass("RCTWebSocketObserver");
-  if (webSocketObserverClass == Nil) {
-    return;
-  }
-
-  // If multiple RCTDevMenus are created, the most recently connected one steals the RCTWebSocketObserver.
-  // (Why this behavior exists is beyond me, as of this writing.)
-  static NSMutableDictionary<NSString *, id<RCTWebSocketObserver>> *observers = nil;
-  if (observers == nil) {
-    observers = [NSMutableDictionary new];
+  // The jsPackagerClient is a static map that holds different packager clients per the packagerURL
+  // In case many instances of DevMenu are created, the latest instance that use the same URL as
+  // previous instances will override given packager client's method handlers
+  static NSMutableDictionary<NSString *, RCTPackagerClient *> *jsPackagerClients = nil;
+  if (jsPackagerClients == nil) {
+    jsPackagerClients = [NSMutableDictionary new];
   }
 
   NSString *key = [url absoluteString];
-  id<RCTWebSocketObserver> existingObserver = observers[key];
-  if (existingObserver) {
-    existingObserver.delegate = self;
+  RCTPackagerClient *packagerClient = jsPackagerClients[key];
+  if (!packagerClient) {
+    packagerClient = [[RCTPackagerClient alloc] initWithURL:url];
+    jsPackagerClients[key] = packagerClient;
   } else {
-    id<RCTWebSocketObserver> newObserver = [(id<RCTWebSocketObserver>)[webSocketObserverClass alloc] initWithURL:url];
-    newObserver.delegate = self;
-    [newObserver start];
-    observers[key] = newObserver;
+    [packagerClient stop];
   }
-}
 
-
-
-- (BOOL)isSupportedVersion:(NSNumber *)version
-{
-  NSArray<NSNumber *> *const kSupportedVersions = @[ @1 ];
-  return [kSupportedVersions containsObject:version];
-}
-
-- (void)didReceiveWebSocketMessage:(NSDictionary<NSString *, id> *)message
-{
-  if ([self isSupportedVersion:message[@"version"]]) {
-    [self processTarget:message[@"target"] action:message[@"action"] options:message[@"options"]];
-  }
-}
-
-- (void)processTarget:(NSString *)target action:(NSString *)action options:(NSDictionary<NSString *, id> *)options
-{
-  if ([target isEqualToString:@"bridge"]) {
-    if ([action isEqualToString:@"reload"]) {
-      if ([options[@"debug"] boolValue]) {
-        _bridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
-      }
-      [_bridge reload];
-    }
-  }
+  [packagerClient addHandler:[[RCTReloadPackagerMethod alloc] initWithBridge:_bridge]
+                   forMethod:@"reload"];
+  [packagerClient start];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -537,6 +512,8 @@ RCT_EXPORT_MODULE()
   }
 
   // Add toggles for JSC's sampling profiler, if the profiler is enabled
+  // Note: bridge.jsContext is not implemented in the old bridge, so this code is
+  // duplicated in RCTJSCExecutor
   if (JSC_JSSamplingProfilerEnabled(self->_bridge.jsContext.JSGlobalContextRef)) {
     JSContext *context = self->_bridge.jsContext;
     // Allow to toggle the sampling profiler through RN's dev menu
@@ -623,6 +600,12 @@ RCT_EXPORT_METHOD(debugRemotely:(BOOL)enableDebug)
 {
   _shakeToShow = shakeToShow;
   [self updateSetting:@"shakeToShow" value:@(_shakeToShow)];
+}
+
+- (void)setStartSamplingProfilerOnLaunch:(BOOL)startSamplingProfilerOnLaunch
+{
+  _startSamplingProfilerOnLaunch = startSamplingProfilerOnLaunch;
+  [self updateSetting:@"startSamplingProfilerOnLaunch" value:@(_startSamplingProfilerOnLaunch)];
 }
 
 RCT_EXPORT_METHOD(setProfilingEnabled:(BOOL)enabled)

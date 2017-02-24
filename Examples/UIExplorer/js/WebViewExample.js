@@ -469,7 +469,7 @@ exports.examples = [
     }
   },
   {
-    title: 'Mesaging Test',
+    title: 'Messaging Test',
     render(): ReactElement<any> { return <MessagingTest />; }
   },
   {

@@ -87,6 +87,27 @@
   [subview removeFromSuperview];
 }
 
+- (UIUserInterfaceLayoutDirection)reactLayoutDirection
+{
+  if ([self respondsToSelector:@selector(semanticContentAttribute)]) {
+    return [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:self.semanticContentAttribute];
+  } else {
+    return [objc_getAssociatedObject(self, @selector(reactLayoutDirection)) integerValue];
+  }
+}
+
+- (void)setReactLayoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
+{
+  if ([self respondsToSelector:@selector(setSemanticContentAttribute:)]) {
+    self.semanticContentAttribute =
+      layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
+        UISemanticContentAttributeForceLeftToRight :
+        UISemanticContentAttributeForceRightToLeft;
+  } else {
+    objc_setAssociatedObject(self, @selector(reactLayoutDirection), @(layoutDirection), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  }
+}
+
 - (NSInteger)reactZIndex
 {
   return [objc_getAssociatedObject(self, _cmd) integerValue];

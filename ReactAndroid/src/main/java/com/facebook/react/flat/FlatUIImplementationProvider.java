@@ -20,11 +20,26 @@ import com.facebook.react.uimanager.events.EventDispatcher;
  * UIImplementationProvider that creates instances of {@link FlatUIImplementation}.
  */
 public final class FlatUIImplementationProvider extends UIImplementationProvider {
+
+  private final boolean mMemoryImprovementEnabled;
+
+  public FlatUIImplementationProvider() {
+    mMemoryImprovementEnabled = true;
+  }
+
+  public FlatUIImplementationProvider(boolean memoryImprovementEnabled) {
+    mMemoryImprovementEnabled = memoryImprovementEnabled;
+  }
+
   @Override
   public FlatUIImplementation createUIImplementation(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagers,
       EventDispatcher eventDispatcher) {
-    return FlatUIImplementation.createInstance(reactContext, viewManagers, eventDispatcher);
+    return FlatUIImplementation.createInstance(
+      reactContext,
+      viewManagers,
+      eventDispatcher,
+      mMemoryImprovementEnabled);
   }
 }

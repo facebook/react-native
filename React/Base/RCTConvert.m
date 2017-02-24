@@ -465,13 +465,6 @@ RCT_ENUM_CONVERTER(CGLineCap, (@{
   @"square": @(kCGLineCapSquare),
 }), kCGLineCapButt, intValue)
 
-RCT_CGSTRUCT_CONVERTER(CATransform3D, (@[
-  @"m11", @"m12", @"m13", @"m14",
-  @"m21", @"m22", @"m23", @"m24",
-  @"m31", @"m32", @"m33", @"m34",
-  @"m41", @"m42", @"m43", @"m44"
-]), nil)
-
 RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   @"a", @"b", @"c", @"d", @"tx", @"ty"
 ]), nil)
@@ -511,7 +504,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   if (!json) {
     return YGValueUndefined;
   } else if ([json isKindOfClass:[NSNumber class]]) {
-    return (YGValue) { [json floatValue], YGUnitPixel };
+    return (YGValue) { [json floatValue], YGUnitPoint };
   } else if ([json isKindOfClass:[NSString class]]) {
     NSString *s = (NSString *) json;
     if ([s hasSuffix:@"%"]) {
@@ -565,14 +558,15 @@ RCT_ARRAY_CONVERTER(UIColor)
  * representable json array values that require no conversion.
  */
 #if RCT_DEBUG
-#define RCT_JSON_ARRAY_CONVERTER(type) RCT_ARRAY_CONVERTER(type)
+#define RCT_JSON_ARRAY_CONVERTER_NAMED(type, name) RCT_ARRAY_CONVERTER_NAMED(type, name)
 #else
-#define RCT_JSON_ARRAY_CONVERTER(type) + (NSArray *)type##Array:(id)json { return json; }
+#define RCT_JSON_ARRAY_CONVERTER_NAMED(type, name) + (NSArray *)name##Array:(id)json { return json; }
 #endif
+#define RCT_JSON_ARRAY_CONVERTER(type) RCT_JSON_ARRAY_CONVERTER_NAMED(type, type)
 
 RCT_JSON_ARRAY_CONVERTER(NSArray)
 RCT_JSON_ARRAY_CONVERTER(NSString)
-RCT_JSON_ARRAY_CONVERTER(NSStringArray)
+RCT_JSON_ARRAY_CONVERTER_NAMED(NSArray<NSString *>, NSStringArray)
 RCT_JSON_ARRAY_CONVERTER(NSDictionary)
 RCT_JSON_ARRAY_CONVERTER(NSNumber)
 
@@ -672,6 +666,12 @@ RCT_ENUM_CONVERTER(YGAlign, (@{
   @"stretch": @(YGAlignStretch),
   @"baseline": @(YGAlignBaseline)
 }), YGAlignFlexStart, intValue)
+
+RCT_ENUM_CONVERTER(YGDirection, (@{
+  @"inherit": @(YGDirectionInherit),
+  @"ltr": @(YGDirectionLTR),
+  @"rtl": @(YGDirectionRTL),
+}), YGDirectionInherit, intValue)
 
 RCT_ENUM_CONVERTER(YGPositionType, (@{
   @"absolute": @(YGPositionTypeAbsolute),

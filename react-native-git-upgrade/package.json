@@ -1,6 +1,6 @@
 {
   "name": "react-native-git-upgrade",
-  "version": "0.2.4",
+  "version": "0.2.7",
   "license": "BSD-3-Clause",
   "description": "The React Native upgrade tool",
   "main": "cli.js",
