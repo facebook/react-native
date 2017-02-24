@@ -35,7 +35,7 @@ static BOOL isTestingEnvironment(void) {
   return [environment[@"IS_TESTING"] boolValue];
 }
 
-RCT_EXPORT_MODULE(IOSConstants)
+RCT_EXPORT_MODULE(PlatformConstants)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {

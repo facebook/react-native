@@ -44,7 +44,7 @@ const invariant = require('fbjs/lib/invariant');
 
 const {computeWindowedRenderLimits} = require('VirtualizeUtils');
 
-import type {Viewable} from 'ViewabilityHelper';
+import type {ViewabilityConfig, Viewable} from 'ViewabilityHelper';
 
 type Item = any;
 type ItemComponentType = ReactClass<{item: Item, index: number}>;
@@ -117,13 +117,7 @@ type OptionalProps = {
     nextProps: {item: Item, index: number}
   ) => boolean,
   updateCellsBatchingPeriod: number,
-  /**
-   * Percent of viewport that must be covered for a partially occluded item to count as
-   * "viewable", 0-100. Fully visible items are always considered viewable. A value of 0 means
-   * that a single pixel in the viewport makes the item viewable, and a value of 100 means that
-   * an item must be either entirely visible or cover the entire viewport to count as viewable.
-   */
-  viewablePercentThreshold: number,
+  viewabilityConfig?: ViewabilityConfig,
   windowSize: number, // units of visible length
 };
 export type Props = RequiredProps & OptionalProps;
@@ -245,6 +239,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
       this._updateCellsToRender,
       this.props.updateCellsBatchingPeriod,
     );
+    this._viewabilityHelper = new ViewabilityHelper(this.props.viewabilityConfig);
     this.state = {
       first: 0,
       last: Math.min(this.props.getItemCount(this.props.data), this.props.initialNumToRender) - 1,
@@ -381,8 +376,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
   _totalCellLength = 0;
   _totalCellsMeasured = 0;
   _updateCellsToRenderBatcher: Batchinator;
-  _viewableKeys: {[key: string]: boolean} = {};
-  _viewableItems: Array<Viewable> = [];
+  _viewabilityHelper: ViewabilityHelper;
 
   _captureScrollRef = (ref) => {
     this._scrollRef = ref;
@@ -571,12 +565,12 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
     });
   };
 
-  _createViewable(index: number, isViewable: boolean): Viewable {
+  _createViewable = (index: number, isViewable: boolean): Viewable => {
     const {data, getItem, keyExtractor} = this.props;
     const item = getItem(data, index);
     invariant(item, 'Missing item for index ' + index);
     return {index, item, key: keyExtractor(item, index), isViewable};
-  }
+  };
 
   _getFrameMetricsApprox = (index: number): {length: number, offset: number} => {
     const frame = this._getFrameMetrics(index);
@@ -609,37 +603,19 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
   };
 
   _updateViewableItems(data: any) {
-    const {getItemCount, onViewableItemsChanged, viewablePercentThreshold} = this.props;
+    const {getItemCount, onViewableItemsChanged} = this.props;
     if (!onViewableItemsChanged) {
       return;
     }
-    let viewableIndices = [];
-    if (data) {
-      viewableIndices = ViewabilityHelper.computeViewableItems(
-        viewablePercentThreshold,
-        getItemCount(data),
-        this._scrollMetrics.offset,
-        this._scrollMetrics.visibleLength,
-        this._getFrameMetrics,
-        this.state,
-      );
-    }
-    const viewableKeys = {};
-    const viewableItems = viewableIndices.map((ii) => {
-      const viewable = this._createViewable(ii, true);
-      viewableKeys[viewable.key] = true;
-      return viewable;
-    });
-    const changed = viewableItems.filter(v => !this._viewableKeys[v.key])
-      .concat(
-        this._viewableItems.filter(v => !viewableKeys[v.key])
-        .map(v => ({...v, isViewable: false}))
-      );
-    if (changed.length > 0) {
-      onViewableItemsChanged({viewableItems, changed});
-      this._viewableItems = viewableItems;
-      this._viewableKeys = viewableKeys;
-    }
+    this._viewabilityHelper.onUpdate(
+      getItemCount(data),
+      this._scrollMetrics.offset,
+      this._scrollMetrics.visibleLength,
+      this._getFrameMetrics,
+      this._createViewable,
+      onViewableItemsChanged,
+      this.state,
+    );
   }
 }
 

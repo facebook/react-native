@@ -6,7 +6,6 @@
 
 #include <gtest/gtest.h>
 #include <algorithm>
-#include <vector>
 
 using namespace std;
 using namespace folly;
