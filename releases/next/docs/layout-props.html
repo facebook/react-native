@@ -26,8 +26,8 @@ for more details.</p></div></div><div class="prop"><h4 class="propTitle"><a clas
  must use points or percentages. Ems and other units are not supported.</p><p> See <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/bottom">https://developer.mozilla.org/en-US/docs/Web/CSS/bottom</a>
  for more details of how <code>bottom</code> affects layout.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="flex"></a>flex <span class="propType">number</span> <a class="hash-link" href="docs/layout-props.html#flex">#</a></h4><div><p>In React Native <code>flex</code> does not work the same way that it does in CSS.
  <code>flex</code> is a number rather than a string, and it works
- according to the <code>Yoga</code> library
- at <a href="https://github.com/facebook/yoga">https://github.com/facebook/yoga</a></p><p> When <code>flex</code> is a positive number, it makes the component flexible
+ according to the <code>css-layout</code> library
+ at <a href="https://github.com/facebook/css-layout">https://github.com/facebook/css-layout</a>.</p><p> When <code>flex</code> is a positive number, it makes the component flexible
  and it will be sized proportional to its flex value. So a
  component with <code>flex</code> set to 2 will take twice the space as a
  component with <code>flex</code> set to 1.</p><p> When <code>flex</code> is 0, the component is sized according to <code>width</code>
@@ -96,7 +96,7 @@ for more details.</p></div></div><div class="prop"><h4 class="propTitle"><a clas
  pixels relative to its parent, set the child to have <code>absolute</code>
  position.</p><p> If you want to position a child relative to something
  that is not its parent, just don&#x27;t use styles for that. Use the
- component tree.</p><p> See <a href="https://github.com/facebook/yoga">https://github.com/facebook/yoga</a>
+ component tree.</p><p> See <a href="https://github.com/facebook/css-layout">https://github.com/facebook/css-layout</a>
  for more details on how <code>position</code> differs between React Native
  and CSS.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="right"></a>right <span class="propType">number, string</span> <a class="hash-link" href="docs/layout-props.html#right">#</a></h4><div><p><code>right</code> is the number of logical pixels to offset the right edge of
  this component.</p><p> It works similarly to <code>right</code> in CSS, but in React Native you
