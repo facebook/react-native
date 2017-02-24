@@ -747,6 +747,10 @@
 		A12E9E5B1E5DF8600029001B /* RCTReloadPackagerMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E9E591E5DF8600029001B /* RCTReloadPackagerMethod.m */; };
 		A12E9E5C1E5DF86F0029001B /* RCTReloadPackagerMethod.h in Headers */ = {isa = PBXBuildFile; fileRef = A12E9E581E5DF8600029001B /* RCTReloadPackagerMethod.h */; };
 		A12E9E5D1E5DF8720029001B /* RCTReloadPackagerMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E9E591E5DF8600029001B /* RCTReloadPackagerMethod.m */; };
+		A12E9E8E1E5DFA620029001B /* RCTSamplingProfilerPackagerMethod.h in Headers */ = {isa = PBXBuildFile; fileRef = A12E9E8C1E5DFA620029001B /* RCTSamplingProfilerPackagerMethod.h */; };
+		A12E9E8F1E5DFA620029001B /* RCTSamplingProfilerPackagerMethod.mm in Sources */ = {isa = PBXBuildFile; fileRef = A12E9E8D1E5DFA620029001B /* RCTSamplingProfilerPackagerMethod.mm */; };
+		A12E9E901E5DFA6E0029001B /* RCTSamplingProfilerPackagerMethod.mm in Sources */ = {isa = PBXBuildFile; fileRef = A12E9E8D1E5DFA620029001B /* RCTSamplingProfilerPackagerMethod.mm */; };
+		A12E9E911E5DFA720029001B /* RCTSamplingProfilerPackagerMethod.h in Headers */ = {isa = PBXBuildFile; fileRef = A12E9E8C1E5DFA620029001B /* RCTSamplingProfilerPackagerMethod.h */; };
 		A2440AA21DF8D854006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
 		A2440AA31DF8D854006E7BFC /* RCTReloadCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */; };
 		A2440AA41DF8D865006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
@@ -1406,6 +1410,8 @@
 		A12E9E291E5DEB860029001B /* RCTSRWebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTSRWebSocket.h; path = WebSocket/RCTSRWebSocket.h; sourceTree = "<group>"; };
 		A12E9E581E5DF8600029001B /* RCTReloadPackagerMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTReloadPackagerMethod.h; path = DevSupport/RCTReloadPackagerMethod.h; sourceTree = "<group>"; };
 		A12E9E591E5DF8600029001B /* RCTReloadPackagerMethod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTReloadPackagerMethod.m; path = DevSupport/RCTReloadPackagerMethod.m; sourceTree = "<group>"; };
+		A12E9E8C1E5DFA620029001B /* RCTSamplingProfilerPackagerMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTSamplingProfilerPackagerMethod.h; path = DevSupport/RCTSamplingProfilerPackagerMethod.h; sourceTree = "<group>"; };
+		A12E9E8D1E5DFA620029001B /* RCTSamplingProfilerPackagerMethod.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RCTSamplingProfilerPackagerMethod.mm; path = DevSupport/RCTSamplingProfilerPackagerMethod.mm; sourceTree = "<group>"; };
 		A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTReloadCommand.h; sourceTree = "<group>"; };
 		A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTReloadCommand.m; sourceTree = "<group>"; };
 		AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTJavaScriptLoader.mm; sourceTree = "<group>"; };
@@ -1847,6 +1853,8 @@
 				A12E9E591E5DF8600029001B /* RCTReloadPackagerMethod.m */,
 				A12E9E191E5DEA350029001B /* RCTPackagerClientResponder.h */,
 				A12E9E1A1E5DEA350029001B /* RCTPackagerClientResponder.m */,
+				A12E9E8C1E5DFA620029001B /* RCTSamplingProfilerPackagerMethod.h */,
+				A12E9E8D1E5DFA620029001B /* RCTSamplingProfilerPackagerMethod.mm */,
 			);
 			name = DevSupport;
 			sourceTree = "<group>";
@@ -1900,6 +1908,7 @@
 				3D302F341DF828F800D6DDAE /* RCTDisplayLink.h in Headers */,
 				3D302F351DF828F800D6DDAE /* RCTErrorCustomizer.h in Headers */,
 				3D302F361DF828F800D6DDAE /* RCTErrorInfo.h in Headers */,
+				A12E9E911E5DFA720029001B /* RCTSamplingProfilerPackagerMethod.h in Headers */,
 				3D302F371DF828F800D6DDAE /* RCTEventDispatcher.h in Headers */,
 				3D302F381DF828F800D6DDAE /* RCTFrameUpdate.h in Headers */,
 				3D5AC7221E005763000F9153 /* RCTTVRemoteHandler.h in Headers */,
@@ -2071,6 +2080,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D80DA191DF820620028D040 /* RCTImageLoader.h in Headers */,
+				A12E9E8E1E5DFA620029001B /* RCTSamplingProfilerPackagerMethod.h in Headers */,
 				3D80DA1A1DF820620028D040 /* RCTImageStoreManager.h in Headers */,
 				3D80DA1B1DF820620028D040 /* RCTResizeMode.h in Headers */,
 				3D80DA1C1DF820620028D040 /* RCTLinkingManager.h in Headers */,
@@ -2480,6 +2490,7 @@
 				2D3B5EA11D9B08B600451313 /* RCTModuleData.mm in Sources */,
 				2D3B5EEA1D9B09CD00451313 /* RCTTabBar.m in Sources */,
 				2D3B5EAE1D9B08F800451313 /* RCTEventEmitter.m in Sources */,
+				A12E9E901E5DFA6E0029001B /* RCTSamplingProfilerPackagerMethod.mm in Sources */,
 				2D3B5ECA1D9B095F00451313 /* RCTComponentData.m in Sources */,
 				2D3B5EA31D9B08BE00451313 /* RCTParserUtils.m in Sources */,
 				2D3B5EA01D9B08B200451313 /* RCTLog.mm in Sources */,
@@ -2640,6 +2651,7 @@
 				830A229E1A66C68A008503DA /* RCTRootView.m in Sources */,
 				13B07FF01A69327A00A75B9A /* RCTExceptionsManager.m in Sources */,
 				13B202041BFB948C00C07393 /* RCTMapAnnotation.m in Sources */,
+				A12E9E8F1E5DFA620029001B /* RCTSamplingProfilerPackagerMethod.mm in Sources */,
 				13BCE8091C99CB9D00DD7AAD /* RCTRootShadowView.m in Sources */,
 				14C2CA711B3AC63800E6CBB2 /* RCTModuleMethod.m in Sources */,
 				006FC4141D9B20820057AAAD /* RCTMultipartDataTask.m in Sources */,

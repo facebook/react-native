@@ -24,6 +24,7 @@
 #import "RCTPackagerClient.h"
 #import "RCTProfile.h"
 #import "RCTReloadPackagerMethod.h"
+#import "RCTSamplingProfilerPackagerMethod.h"
 #import "RCTUtils.h"
 
 NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
@@ -501,6 +502,8 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 
   [packagerClient addHandler:[[RCTReloadPackagerMethod alloc] initWithBridge:_bridge]
                    forMethod:@"reload"];
+  [packagerClient addHandler:[[RCTSamplingProfilerPackagerMethod alloc] initWithBridge:_bridge]
+                   forMethod:@"pokeSamplingProfiler"];
   [packagerClient start];
 }
 
