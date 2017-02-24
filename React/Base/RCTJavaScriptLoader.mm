@@ -114,7 +114,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
   }
 
-  facebook::react::BundleHeader header{};
+  facebook::react::BundleHeader header;
   size_t readResult = fread(&header, sizeof(header), 1, bundle);
   fclose(bundle);
   if (readResult != 1) {
@@ -151,11 +151,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       }
       return nil;
     }
-    else if ((uint32_t)runtimeBCVersion != header.BCVersion) {
+    else if ((uint32_t)runtimeBCVersion != header.version) {
       if (error) {
         NSString *errDesc =
           [NSString stringWithFormat:@"BC Version Mismatch. Expect: %d, Actual: %u",
-                    runtimeBCVersion, header.BCVersion];
+                    runtimeBCVersion, header.version];
 
         *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
                                      code:RCTJavaScriptLoaderErrorBCVersion
