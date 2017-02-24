@@ -512,7 +512,7 @@ class CalendarManager: NSObject {
 
     let dateConverted = RCTConvert.nsDate(date)
 
-    RCTBridge.rctLogInfo("CalendarManagerSwift - addEvent - Pretending to create an event \(name) at \(location), on \(dateConverted)")
+    RCTBridge.rctLogInfo("Pretending to create an event \(name) at \(location), on \(dateConverted)")
   }
 
 }
