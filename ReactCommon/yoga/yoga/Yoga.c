@@ -3216,18 +3216,58 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
   return (needToVisitNode || cachedResults == NULL);
 }
 
-static void YGRoundToPixelGrid(const YGNodeRef node) {
-  const float fractialLeft =
-      node->layout.position[YGEdgeLeft] - floorf(node->layout.position[YGEdgeLeft]);
-  const float fractialTop =
-      node->layout.position[YGEdgeTop] - floorf(node->layout.position[YGEdgeTop]);
-  node->layout.dimensions[YGDimensionWidth] =
-      roundf(fractialLeft + node->layout.dimensions[YGDimensionWidth]) - roundf(fractialLeft);
-  node->layout.dimensions[YGDimensionHeight] =
-      roundf(fractialTop + node->layout.dimensions[YGDimensionHeight]) - roundf(fractialTop);
+static float gPointScaleFactor = 1.0;
 
-  node->layout.position[YGEdgeLeft] = roundf(node->layout.position[YGEdgeLeft]);
-  node->layout.position[YGEdgeTop] = roundf(node->layout.position[YGEdgeTop]);
+void YGSetPointScaleFactor(float pixelsInPoint) {
+  YG_ASSERT(pixelsInPoint >= 0.0, "Scale factor should not be less than zero");
+  // We store points for Pixel as we will use it for rounding
+  if (pixelsInPoint == 0.0) {
+    // Zero is used to skip rounding
+    gPointScaleFactor = 0.0;
+  } else {
+    gPointScaleFactor = 1.0 / pixelsInPoint;
+  }
+}
+
+static void YGRoundToPixelGrid(const YGNodeRef node) {
+  if (gPointScaleFactor == 0.0) {
+    return;
+  }
+  const float nodeLeft = node->layout.position[YGEdgeLeft];
+  const float nodeTop = node->layout.position[YGEdgeTop];
+
+  // To round correctly to the pixel grid, first we calculate left and top coordinates
+  float fractialLeft = fmodf(nodeLeft, gPointScaleFactor);
+  float fractialTop = fmodf(nodeTop, gPointScaleFactor);
+  float roundedLeft = nodeLeft - fractialLeft;
+  float roundedTop = nodeTop - fractialTop;
+  
+  // To do the actual rounding we check if leftover fraction is bigger or equal than half of the grid step
+  if (fractialLeft >= gPointScaleFactor / 2.0) {
+    roundedLeft += gPointScaleFactor;
+    fractialLeft -= gPointScaleFactor;
+  }
+  if (fractialTop >= gPointScaleFactor / 2.0) {
+    roundedTop += gPointScaleFactor;
+    fractialTop -= gPointScaleFactor;
+  }
+  node->layout.position[YGEdgeLeft] = roundedLeft;
+  node->layout.position[YGEdgeTop] = roundedTop;
+  
+  // Now we round width and height in the same way accounting for fractial leftovers from rounding position
+  const float adjustedWidth = fractialLeft + node->layout.dimensions[YGDimensionWidth];
+  const float adjustedHeight = fractialTop + node->layout.dimensions[YGDimensionHeight];
+  float roundedWidth = adjustedWidth - fmodf(adjustedWidth, gPointScaleFactor);
+  float roundedHeight = adjustedHeight - fmodf(adjustedHeight, gPointScaleFactor);
+  
+  if (adjustedWidth - roundedWidth >= gPointScaleFactor / 2.0) {
+    roundedWidth += gPointScaleFactor;
+  }
+  if (adjustedHeight - roundedHeight >= gPointScaleFactor / 2.0) {
+    roundedHeight += gPointScaleFactor;
+  }
+  node->layout.dimensions[YGDimensionWidth] = roundedWidth;
+  node->layout.dimensions[YGDimensionHeight] = roundedHeight;
 
   const uint32_t childCount = YGNodeListCount(node->children);
   for (uint32_t i = 0; i < childCount; i++) {
