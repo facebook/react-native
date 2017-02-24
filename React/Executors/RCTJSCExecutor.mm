@@ -25,6 +25,7 @@
 #import "RCTBridge+Private.h"
 #import "RCTDefines.h"
 #import "RCTDevMenu.h"
+#import "RCTDevSettings.h"
 #import "RCTJSCErrorHandling.h"
 #import "RCTJSCProfiler.h"
 #import "RCTJavaScriptLoader.h"
@@ -37,8 +38,6 @@ NSString *const RCTJSCThreadName = @"com.facebook.react.JavaScript";
 NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
 RCT_EXTERN NSString *const RCTFBJSContextClassKey = @"_RCTFBJSContextClassKey";
 RCT_EXTERN NSString *const RCTFBJSValueClassKey = @"_RCTFBJSValueClassKey";
-
-static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
 
 struct __attribute__((packed)) ModuleData {
   uint32_t offset;
@@ -168,15 +167,21 @@ RCT_EXPORT_MODULE()
 #if RCT_DEV
 static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 {
+  __weak RCTBridge *weakBridge = bridge;
+  __weak RCTDevSettings *devSettings = bridge.devSettings;
   if (RCTJSCProfilerIsSupported()) {
-    [bridge.devMenu addItem:[RCTDevMenuItem toggleItemWithKey:RCTJSCProfilerEnabledDefaultsKey title:@"Start Profiling" selectedTitle:@"Stop Profiling" handler:^(BOOL shouldStart) {
+    [bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
+      return devSettings.isJSCProfilingEnabled ? @"Stop Profiling" : @"Start Profiling";
+    } handler:^{
+      BOOL shouldStart = !devSettings.isJSCProfilingEnabled;
+      devSettings.isJSCProfilingEnabled = shouldStart;
       if (shouldStart != RCTJSCProfilerIsProfiling(context)) {
         if (shouldStart) {
           RCTJSCProfilerStart(context);
         } else {
           NSString *outputFile = RCTJSCProfilerStop(context);
           NSData *profileData = [NSData dataWithContentsOfFile:outputFile options:NSDataReadingMappedIfSafe error:NULL];
-          RCTProfileSendResult(bridge, @"cpu-profile", profileData);
+          RCTProfileSendResult(weakBridge, @"cpu-profile", profileData);
         }
       }
     }]];
@@ -309,7 +314,7 @@ static NSThread *newJavaScriptThread(void)
     } else {
       if (self->_useCustomJSCLibrary) {
         JSC_configureJSCForIOS(true, RCTJSONStringify(@{
-          @"StartSamplingProfilerOnInit": @(self->_bridge.devMenu.startSamplingProfilerOnLaunch)
+          @"StartSamplingProfilerOnInit": @(self->_bridge.devSettings.startSamplingProfilerOnLaunch)
         }, NULL).UTF8String);
       }
       contextRef = JSC_JSGlobalContextCreateInGroup(self->_useCustomJSCLibrary, nullptr, nullptr);
@@ -401,16 +406,7 @@ static NSThread *newJavaScriptThread(void)
         if (!strongSelf.valid || !weakContext) {
           return;
         }
-
-        // JSPokeSamplingProfiler() toggles the profiling process
-        JSGlobalContextRef ctx = weakContext.JSGlobalContextRef;
-        JSValueRef jsResult = JSC_JSPokeSamplingProfiler(ctx);
-
-        if (JSC_JSValueGetType(ctx, jsResult) != kJSTypeNull) {
-          NSString *results = [[JSC_JSValue(ctx) valueWithJSValueRef:jsResult inContext:weakContext] toObject];
-          JSCSamplingProfiler *profilerModule = [strongSelf->_bridge moduleForClass:[JSCSamplingProfiler class]];
-          [profilerModule operationCompletedWithResults:results];
-        }
+        [weakSelf.bridge.devSettings toggleJSCSamplingProfiler];
       }]];
 
       // Allow for the profiler to be poked from JS code as well
