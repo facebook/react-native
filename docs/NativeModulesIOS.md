@@ -464,3 +464,56 @@ For those of you new to Swift and Objective-C, whenever you [mix the two languag
 ```
 
 You can also use `RCT_EXTERN_REMAP_MODULE` and `RCT_EXTERN_REMAP_METHOD` to alter the JavaScript name of the module or methods you are exporting. For more information see [`RCTBridgeModule`](https://github.com/facebook/react-native/blob/master/React/Base/RCTBridgeModule.h).
+
+### Using React Native macros from Swift: RCTLogInfo
+
+To be able to use the RCTLogInfo macro from Swift code, you can extend the `RCTBridge` (or create an Objective-C class and include its header file in the Calendar-Bridging-Header.h file) and create an accessor (e.g. method, constant, etc.) for each macro you want to use from Swift code. Below you can find and example using a `RCTBridge+Macros` extension:
+
+The `RCTBridge+Macros.h` file:
+
+```objective-c
+#import "React/RCTBridge.h"
+
+@interface RCTBridge (Macros)
+
++ (void) rctLogInfo: (NSString *)string;
+
+@end
+```
+
+The `RCTBridge+Macros.m` file:
+
+```objective-c
+#import "RCTBridge+Macros.h"
+#import "RCTLog.h"
+
+@implementation RCTBridge (Macros)
+
++ (void) rctLogInfo: (NSString *)string {
+    RCTLogInfo(@"%@", string)
+}
+
+@end
+
+```
+
+
+To use rctLogInfo from the swift version of `CalendarManager` class you can do the following:
+
+```swift
+// CalendarManager.swift
+
+@objc(CalendarManager)
+class CalendarManager: NSObject {
+
+  @objc(addEvent:location:date:)
+  func addEvent(name: String, location: String, date: NSNumber) -> Void {
+    // Date is ready to use!
+
+    let dateConverted = RCTConvert.nsDate(date)
+
+    RCTBridge.rctLogInfo("CalendarManagerSwift - addEvent - Pretending to create an event \(name) at \(location), on \(dateConverted)")
+  }
+
+}
+```
