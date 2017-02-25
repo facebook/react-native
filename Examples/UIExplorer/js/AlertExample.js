@@ -121,6 +121,19 @@ class SimpleAlertExampleBlock extends React.Component {
             <Text>Alert that cannot be dismissed</Text>
           </View>
         </TouchableHighlight>
+        <TouchableHighlight style={styles.wrapper}
+          onPress={() => Alert.alert(
+            'Alert Title',
+            alertMessage,
+            null,
+            {
+              mode: 'material'
+            }
+          )}>
+          <View style={styles.button}>
+            <Text>Android material alert with message and default button</Text>
+          </View>
+        </TouchableHighlight>
       </View>
     );
   }
