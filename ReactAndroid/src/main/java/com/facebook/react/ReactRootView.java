@@ -15,7 +15,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -39,6 +38,7 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.common.ApiCompatUtils;
 
 /**
  * Default root view for catalyst apps. Provides the ability to listen for size changes so that a UI
@@ -177,7 +177,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
     if (mIsAttachedToInstance) {
-      getViewTreeObserver().removeOnGlobalLayoutListener(getCustomGlobalLayoutListener());
+      CustomGlobalLayoutListener listener = getCustomGlobalLayoutListener();
+      ApiCompatUtils.removeOnGlobalLayoutListener(getViewTreeObserver(), listener);
     }
   }
 

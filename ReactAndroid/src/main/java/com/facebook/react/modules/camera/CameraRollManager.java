@@ -27,7 +27,6 @@ import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
@@ -48,6 +47,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.common.ApiCompatUtils;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 
@@ -65,8 +65,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
   private static final String ERROR_UNABLE_TO_LOAD_PERMISSION = "E_UNABLE_TO_LOAD_PERMISSION";
   private static final String ERROR_UNABLE_TO_SAVE = "E_UNABLE_TO_SAVE";
 
-  public static final boolean IS_JELLY_BEAN_OR_LATER =
-      Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
+  public static final boolean IS_JELLY_BEAN_OR_LATER = ApiCompatUtils.isJellyBeanOrHigher();
 
   private static final String[] PROJECTION;
   static {

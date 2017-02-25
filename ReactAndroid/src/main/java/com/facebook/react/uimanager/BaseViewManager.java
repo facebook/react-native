@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.common.ApiCompatUtils;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
@@ -66,7 +67,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = PROP_ELEVATION)
   public void setElevation(T view, float elevation) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    if (ApiCompatUtils.isLollipopOrHigher()) {
       view.setElevation(PixelUtil.toPixelFromDIP(elevation));
     }
     // Do nothing on API < 21
@@ -100,14 +101,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = PROP_IMPORTANT_FOR_ACCESSIBILITY)
   public void setImportantForAccessibility(T view, String importantForAccessibility) {
-    if (importantForAccessibility == null || importantForAccessibility.equals("auto")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
-    } else if (importantForAccessibility.equals("yes")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-    } else if (importantForAccessibility.equals("no")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-    } else if (importantForAccessibility.equals("no-hide-descendants")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+    if (ApiCompatUtils.isJellyBeanOrHigher()) {
+      if (importantForAccessibility == null || importantForAccessibility.equals("auto")) {
+        view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+      } else if (importantForAccessibility.equals("yes")) {
+        view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+      } else if (importantForAccessibility.equals("no")) {
+        view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+      } else if (importantForAccessibility.equals("no-hide-descendants")) {
+        if (ApiCompatUtils.isKitkatOrHigher()) {
+          view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+        }
+      }
     }
   }
 

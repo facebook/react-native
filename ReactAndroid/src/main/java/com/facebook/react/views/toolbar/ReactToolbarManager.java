@@ -17,13 +17,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.util.LayoutDirection;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.ApiCompatUtils;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -67,7 +67,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
 
   @ReactProp(name = "rtl")
   public void setRtl(ReactToolbar view, boolean rtl) {
-    view.setLayoutDirection(rtl ? LayoutDirection.RTL : LayoutDirection.LTR);
+    ApiCompatUtils.setRtl(view, rtl);
   }
 
   @ReactProp(name = "subtitle")

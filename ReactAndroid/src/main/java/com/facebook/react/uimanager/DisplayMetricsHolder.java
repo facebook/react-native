@@ -27,7 +27,7 @@ import com.facebook.infer.annotation.Assertions;
  * classes that need it.
  * Note: windowDisplayMetrics are deprecated in favor of ScreenDisplayMetrics: window metrics
  * are supposed to return the drawable area but there's no guarantee that they correspond to the
- * actual size of the {@link ReactRootView}. Moreover, they are not consistent with what iOS
+ * actual size of the {@link com.facebook.react.ReactRootView}. Moreover, they are not consistent with what iOS
  * returns. Screen metrics returns the metrics of the entire screen, is consistent with iOS and
  * should be used instead.
  */
@@ -81,8 +81,14 @@ public class DisplayMetricsHolder {
         Method mGetRawW = Display.class.getMethod("getRawWidth");
         screenDisplayMetrics.widthPixels = (Integer) mGetRawW.invoke(display);
         screenDisplayMetrics.heightPixels = (Integer) mGetRawH.invoke(display);
-      } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-        throw new RuntimeException("Error getting real dimensions for API level < 17", e);
+
+      // Multi-catch with these reflection exceptions requires API level 19 (current min is 15)
+      } catch (InvocationTargetException e) {
+        throw new RuntimeException("Invocation error in getting Display Dimension!", e);
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException("Unable to access method for Display Dimension!", e);
+      } catch (NoSuchMethodException e) {
+        throw new RuntimeException("Unable to find method for Display Dimension!", e);
       }
     }
     DisplayMetricsHolder.setScreenDisplayMetrics(screenDisplayMetrics);

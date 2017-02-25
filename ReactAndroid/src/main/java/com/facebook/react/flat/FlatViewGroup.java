@@ -32,6 +32,7 @@ import android.view.ViewParent;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.SoftAssertions;
+import com.facebook.react.common.ApiCompatUtils;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
@@ -565,9 +566,11 @@ import com.facebook.react.uimanager.ReactClippingViewGroup;
 
   @Override
   public void dispatchDrawableHotspotChanged(float x, float y) {
-    if (mHotspot != null) {
-      mHotspot.setHotspot(x, y);
-      invalidate();
+    if (ApiCompatUtils.isLollipopOrHigher()) {
+      if (mHotspot != null) {
+        mHotspot.setHotspot(x, y);
+        invalidate();
+      }
     }
   }
 

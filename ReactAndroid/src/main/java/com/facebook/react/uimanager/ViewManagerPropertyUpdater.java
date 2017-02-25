@@ -102,8 +102,10 @@ public class ViewManagerPropertyUpdater {
     } catch (ClassNotFoundException e) {
       FLog.w(TAG, "Could not find generated setter for " + cls);
       return null;
-    } catch (InstantiationException | IllegalAccessException e) {
+    } catch (InstantiationException e) {
       throw new RuntimeException("Unable to instantiate methods getter for " + clsName, e);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException("Unable to access methods getter for " + clsName, e);
     }
   }
 

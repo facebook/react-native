@@ -27,6 +27,7 @@ import android.widget.OverScroller;
 import android.widget.ScrollView;
 
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.common.ApiCompatUtils;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
@@ -259,7 +260,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         0,
         scrollWindowHeight / 2);
 
-      postInvalidateOnAnimation();
+      postInvalidateOnAnimationCompat();
 
       // END FB SCROLLVIEW CHANGE
     } else {
@@ -279,11 +280,27 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
             ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
           } else {
             mDoneFlinging = true;
-            ReactScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
+            postOnAnimationDelayedCompat(this, ReactScrollViewHelper.MOMENTUM_DELAY);
           }
         }
       };
-      postOnAnimationDelayed(r, ReactScrollViewHelper.MOMENTUM_DELAY);
+      postOnAnimationDelayedCompat(r, ReactScrollViewHelper.MOMENTUM_DELAY);
+    }
+  }
+
+  public void postInvalidateOnAnimationCompat() {
+    if (ApiCompatUtils.isJellyBeanOrHigher()) {
+      ReactScrollView.this.postInvalidateOnAnimation();
+    } else {
+      ReactScrollView.this.postInvalidateDelayed(ReactScrollViewHelper.MOMENTUM_DELAY);
+    }
+  }
+
+  public void postOnAnimationDelayedCompat(Runnable runnable, long delayMillis) {
+    if (ApiCompatUtils.isJellyBeanOrHigher()) {
+      ReactScrollView.this.postOnAnimationDelayed(runnable, delayMillis);
+    } else {
+      ReactScrollView.this.postDelayed(runnable, delayMillis);
     }
   }
 
@@ -416,14 +433,14 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     if (mReactBackgroundDrawable == null) {
       mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
       Drawable backgroundDrawable = getBackground();
-      super.setBackground(null);  // required so that drawable callback is cleared before we add the
+      ApiCompatUtils.setBackground(this, null);  // required so that drawable callback is cleared before we add the
       // drawable back as a part of LayerDrawable
       if (backgroundDrawable == null) {
-        super.setBackground(mReactBackgroundDrawable);
+        ApiCompatUtils.setBackground(this, mReactBackgroundDrawable);
       } else {
         LayerDrawable layerDrawable =
             new LayerDrawable(new Drawable[]{mReactBackgroundDrawable, backgroundDrawable});
-        super.setBackground(layerDrawable);
+        ApiCompatUtils.setBackground(this, layerDrawable);
       }
     }
     return mReactBackgroundDrawable;

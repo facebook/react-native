@@ -39,6 +39,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.ApiCompatUtils;
 import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactTagSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
@@ -364,7 +365,7 @@ public class ReactEditText extends EditText {
   }
 
   /**
-   * Remove and/or add {@link Spanned.SPAN_EXCLUSIVE_EXCLUSIVE} spans, since they should only exist
+   * Remove and/or add {@link Spanned#SPAN_EXCLUSIVE_EXCLUSIVE} spans, since they should only exist
    * as long as the text they cover is the same. All other spans will remain the same, since they
    * will adapt to the new text, hence why {@link SpannableStringBuilder#replace} never removes
    * them.
@@ -595,14 +596,14 @@ public class ReactEditText extends EditText {
     if (mReactBackgroundDrawable == null) {
       mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
       Drawable backgroundDrawable = getBackground();
-      super.setBackground(null);  // required so that drawable callback is cleared before we add the
+      ApiCompatUtils.setBackground(this, null);  // required so that drawable callback is cleared before we add the
       // drawable back as a part of LayerDrawable
       if (backgroundDrawable == null) {
-        super.setBackground(mReactBackgroundDrawable);
+        ApiCompatUtils.setBackground(this, mReactBackgroundDrawable);
       } else {
         LayerDrawable layerDrawable =
             new LayerDrawable(new Drawable[]{mReactBackgroundDrawable, backgroundDrawable});
-        super.setBackground(layerDrawable);
+        ApiCompatUtils.setBackground(this, layerDrawable);
       }
     }
     return mReactBackgroundDrawable;

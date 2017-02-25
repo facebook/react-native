@@ -9,14 +9,14 @@
 
 package com.facebook.react.uimanager.events;
 
+import android.support.v4.util.LongSparseArray;
+
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
-
-import android.util.LongSparseArray;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.LifecycleEventListener;

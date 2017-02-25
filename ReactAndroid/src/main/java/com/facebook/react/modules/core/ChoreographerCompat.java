@@ -15,15 +15,16 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.Choreographer;
 
+import com.facebook.react.common.ApiCompatUtils;
+
 /**
  * Wrapper class for abstracting away availability of the JellyBean Choreographer. If Choreographer
  * is unavailable we fallback to using a normal Handler.
  */
 public class ChoreographerCompat {
 
-  private static final long ONE_FRAME_MILLIS = 17;
-  private static final boolean IS_JELLYBEAN_OR_HIGHER =
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
+  public static final long ONE_FRAME_MILLIS = 17;
+  private static final boolean IS_JELLYBEAN_OR_HIGHER = ApiCompatUtils.isJellyBeanOrHigher();
   private static final ChoreographerCompat INSTANCE = new ChoreographerCompat();
 
   private Handler mHandler;

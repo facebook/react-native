@@ -10,7 +10,6 @@
 package com.facebook.react.views.textinput;
 
 import javax.annotation.Nullable;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import android.os.Build;
 import android.text.Layout;
@@ -19,7 +18,7 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.facebook.yoga.YogaDirection;
+import com.facebook.react.common.ApiCompatUtils;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNodeAPI;
@@ -32,7 +31,6 @@ import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
-import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.view.MeasureUtil;
 import com.facebook.react.views.text.ReactTextShadowNode;
@@ -64,9 +62,9 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT));
 
-    setDefaultPadding(Spacing.START, mEditText.getPaddingStart());
+    setDefaultPadding(Spacing.START, ApiCompatUtils.getPaddingStart(mEditText));
     setDefaultPadding(Spacing.TOP, mEditText.getPaddingTop());
-    setDefaultPadding(Spacing.END, mEditText.getPaddingEnd());
+    setDefaultPadding(Spacing.END, ApiCompatUtils.getPaddingEnd(mEditText));
     setDefaultPadding(Spacing.BOTTOM, mEditText.getPaddingBottom());
     mEditText.setPadding(0, 0, 0, 0);
   }

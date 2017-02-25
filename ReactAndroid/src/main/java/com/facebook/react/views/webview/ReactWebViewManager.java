@@ -33,6 +33,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.react.common.ApiCompatUtils;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -389,12 +390,16 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   @ReactProp(name = "mediaPlaybackRequiresUserAction")
   public void setMediaPlaybackRequiresUserAction(WebView view, boolean requires) {
-    view.getSettings().setMediaPlaybackRequiresUserGesture(requires);
+    if (ApiCompatUtils.isJellyBeanMR1OrHigher()) {
+      view.getSettings().setMediaPlaybackRequiresUserGesture(requires);
+    }
   }
 
   @ReactProp(name = "allowUniversalAccessFromFileURLs")
   public void setAllowUniversalAccessFromFileURLs(WebView view, boolean allow) {
-    view.getSettings().setAllowUniversalAccessFromFileURLs(allow);
+    if (ApiCompatUtils.isJellyBeanMR1OrHigher()) {
+      view.getSettings().setAllowUniversalAccessFromFileURLs(allow);
+    }
   }
 
   @ReactProp(name = "injectedJavaScript")

@@ -15,12 +15,12 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
-import android.os.Build;
 import android.util.TypedValue;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
+import com.facebook.react.common.ApiCompatUtils;
 import com.facebook.react.uimanager.ViewProps;
 
 /**
@@ -44,8 +44,7 @@ public class ReactDrawableHelper {
             " couldn't be found in the resource list");
       }
       if (context.getTheme().resolveAttribute(attrID, sResolveOutValue, true)) {
-        final int version = Build.VERSION.SDK_INT;
-        if (version >= 21) {
+        if (ApiCompatUtils.isLollipopOrHigher()) {
           return context.getResources()
               .getDrawable(sResolveOutValue.resourceId, context.getTheme());
         } else {
@@ -56,9 +55,9 @@ public class ReactDrawableHelper {
             " couldn't be resolved into a drawable");
       }
     } else if ("RippleAndroid".equals(type)) {
-      if (Build.VERSION.SDK_INT < 21) {
+      if (ApiCompatUtils.isLollipopOrHigher()) {
         throw new JSApplicationIllegalArgumentException("Ripple drawable is not available on " +
-            "android API <21");
+            "android API < 21");
       }
       int color;
       if (drawableDescriptionDict.hasKey(ViewProps.COLOR) &&
