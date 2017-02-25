@@ -90,7 +90,7 @@ class MyScene extends Component {
 
 Check out the [`NavigatorIOS` reference docs](docs/navigatorios.html) to learn more about this component.
 
-> You may also want to check out [react-native-navigation](https://github.com/wix/react-native-navigation), a component that aims to provide native navigation on both iOS and Android.
+> You may also want to check out [react-navigation](https://reactnavigation.org/), a component that aims to provide native navigation on both iOS and Android.
 
 ## NavigationExperimental
 
