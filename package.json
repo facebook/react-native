@@ -84,7 +84,7 @@
       "sinon"
     ]
   },
-  "main": "Libraries/react-native/react-native.js",
+  "main": "Libraries/react-native/react-native-implementation.js",
   "files": [
     ".flowconfig",
     "android",
