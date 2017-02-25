@@ -52,11 +52,6 @@ type Options = {
  *   - Two buttons mean 'negative', 'positive' (such as 'Cancel', 'OK')
  *   - Three buttons mean 'neutral', 'negative', 'positive' (such as 'Later', 'Cancel', 'OK')
  *
- * Note that by default alerts on Android can be dismissed by clicking outside of their alert box.
- * To prevent this behavior, you can provide
- * an optional `options` parameter `{ cancelable: false }` to the Alert method.
- *
- * Example usage:
  * ```
  * // Works on both iOS and Android
  * Alert.alert(
@@ -66,29 +61,43 @@ type Options = {
  *     {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
  *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
  *     {text: 'OK', onPress: () => console.log('OK Pressed')},
- *   ],
- *   { cancelable: false }
+ *   ]
  * )
  * ```
  */
 class Alert {
 
   static alert(
-    title: ?string,
+    title: ?string | { title: ?string, message: ?string, buttons: Buttons, options: Options, type: AlertType, tintColor: ?string },
     message?: ?string,
     buttons?: Buttons,
     options?: Options,
     type?: AlertType,
+    tintColor?: ?string
   ): void {
-    if (Platform.OS === 'ios') {
-      if (typeof type !== 'undefined') {
-        console.warn('Alert.alert() with a 5th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.');
-        AlertIOS.alert(title, message, buttons, type);
-        return;
+    if (typeof title === 'string') {
+      if (Platform.OS === 'ios') {
+        if (typeof type !== 'undefined') {
+          console.warn('Alert.alert() with a 5th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.');
+          AlertIOS.alert(title, message, buttons, type, tintColor);
+          return;
+        }
+        AlertIOS.alert(title, message, buttons, null, tintColor);
+      } else if (Platform.OS === 'android') {
+        AlertAndroid.alert(title, message, buttons, options);
       }
-      AlertIOS.alert(title, message, buttons);
-    } else if (Platform.OS === 'android') {
-      AlertAndroid.alert(title, message, buttons, options);
+    } else {
+      if (Platform.OS === 'ios') {
+        ({title, message, buttons, options, type, tintColor} = title || {});
+        if (typeof type !== 'undefined') {
+          console.warn('Alert.alert() with a 5th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.');
+          AlertIOS.alert(title, message, buttons, type, tintColor);
+          return;
+        }
+        AlertIOS.alert(title, message, buttons, null, tintColor);
+      } else if (Platform.OS === 'android') {
+        AlertAndroid.alert(title, message, buttons, options);
+      }
     }
   }
 }

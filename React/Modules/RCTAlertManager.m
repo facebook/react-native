@@ -180,6 +180,8 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   [_alertControllers addObject:alertController];
 
   [presentingController presentViewController:alertController animated:YES completion:nil];
+
+  [alertController.view setTintColor:[RCTConvert UIColor:args[@"tintColor"]]];
 }
 
 @end

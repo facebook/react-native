@@ -13,6 +13,7 @@
 'use strict';
 
 var RCTAlertManager = require('NativeModules').AlertManager;
+var processColor = require('processColor');
 
 /**
  * An Alert button type
@@ -120,6 +121,8 @@ class AlertIOS {
    *    a `text` key, as well as optional `onPress` and `style` keys. `style`
    *    should be one of 'default', 'cancel' or 'destructive'.
    * @param type Deprecated, do not use.
+   * @param tintColor This is used to set the color of all button's text. It is
+   *    overridden by a button specific style.
    *
    * @example <caption>Example with custom buttons</caption>
    *
@@ -137,13 +140,14 @@ class AlertIOS {
     message?: ?string,
     callbackOrButtons?: ?(() => void) | ButtonsArray,
     type?: AlertType,
+    tintColor?: ?string
   ): void {
     if (typeof type !== 'undefined') {
       console.warn('AlertIOS.alert() with a 4th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.');
-      this.prompt(title, message, callbackOrButtons, type);
+      this.prompt(title, message, callbackOrButtons, type, null, null, tintColor);
       return;
     }
-    this.prompt(title, message, callbackOrButtons, 'default');
+    this.prompt(title, message, callbackOrButtons, null, null, null, tintColor);
   }
 
   /**
@@ -195,9 +199,10 @@ class AlertIOS {
     title: ?string,
     message?: ?string,
     callbackOrButtons?: ?((text: string) => void) | ButtonsArray,
-    type?: ?AlertType = 'plain-text',
+    type?: ?AlertType,
     defaultValue?: string,
-    keyboardType?: string
+    keyboardType?: string,
+    tintColor?: string,
   ): void {
     if (typeof type === 'function') {
       console.warn(
@@ -245,6 +250,7 @@ class AlertIOS {
       title: title || undefined,
       message: message || undefined,
       buttons,
+      tintColor: processColor(tintColor),
       type: type || undefined,
       defaultValue,
       cancelButtonKey,
