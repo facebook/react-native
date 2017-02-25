@@ -355,7 +355,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 #ifdef WITH_FBJSCEXTENSIONS
   if (auto fileStr = dynamic_cast<const JSBigFileString *>(script.get())) {
     JSLoadSourceStatus jsStatus;
-    auto bcSourceCode = JSCreateCompiledSourceCode(fileStr->fd(), jsSourceURL, &jsStatus);
+    auto bcSourceCode = JSCreateSourceCodeFromFile(fileStr->fd(), jsSourceURL, nullptr, &jsStatus);
 
     switch (jsStatus) {
     case JSLoadSourceIsCompiled:
@@ -386,7 +386,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
     }
   }
 #elif defined(__APPLE__)
-  BundleHeader header{};
+  BundleHeader header;
   memcpy(&header, script->c_str(), std::min(script->size(), sizeof(BundleHeader)));
   auto scriptTag = parseTypeFromHeader(header);
 

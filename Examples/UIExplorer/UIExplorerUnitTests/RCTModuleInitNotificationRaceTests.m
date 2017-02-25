@@ -20,7 +20,6 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTJavaScriptExecutor.h>
 #import <React/RCTUIManager.h>
-#import <React/RCTUtils.h>
 #import <React/RCTViewManager.h>
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \

@@ -15,7 +15,7 @@ const ModuleTransport = require('../lib/ModuleTransport');
 export type FinalizeOptions = {
   allowUpdates?: boolean,
   runBeforeMainModule?: Array<string>,
-  runMainModule?: boolean,
+  runModule?: boolean,
 };
 
 export type GetSourceOptions = {

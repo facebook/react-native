@@ -26,9 +26,6 @@ const invariant = require('fbjs/lib/invariant');
  * AppState is frequently used to determine the intent and proper behavior when
  * handling push notifications.
  *
- * This module depends on the native RCTAppState module. If you don't include it,
- * `AppState.isAvailable` will return `false`, and any method calls will throw.
- *
  * ### App States
  *
  *  - `active` - The app is running in the foreground
@@ -90,11 +87,12 @@ class AppState extends NativeEventEmitter {
 
   _eventHandlers: Object;
   currentState: ?string;
-  isAvailable: boolean = true;
+  isAvailable: boolean;
 
   constructor() {
     super(RCTAppState);
 
+    this.isAvailable = true;
     this._eventHandlers = {
       change: new Map(),
       memoryWarning: new Map(),
@@ -213,10 +211,13 @@ class MissingNativeAppStateShim extends EventEmitter {
   }
 }
 
-// Guard against missing native module by throwing on first method call.
-// Keep the API the same so Flow doesn't complain.
-const appState = RCTAppState
-  ? new AppState()
-  : new MissingNativeAppStateShim();
+// This module depends on the native `RCTAppState` module. If you don't include it,
+// `AppState.isAvailable` will return `false`, and any method calls will throw.
+// We reassign the class variable to keep the autodoc generator happy.
+if (RCTAppState) {
+  AppState = new AppState();
+} else {
+  AppState = new MissingNativeAppStateShim();
+}
 
-module.exports = appState;
+module.exports = AppState;

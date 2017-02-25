@@ -78,7 +78,6 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
         dirExists: filePath => hasteFS.dirExists(filePath),
         entryPath: '',
         extraNodeModules,
-        /* $FlowFixMe: object is missing matchFiles method */
         hasteFS,
         hasteMap,
         helpers,

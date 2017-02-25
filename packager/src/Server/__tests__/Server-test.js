@@ -540,6 +540,15 @@ describe('processRequest', () => {
     });
   });
 
+  describe('_getOptionsFromUrl', () => {
+    it('ignores protocol, host and port of the passed in URL', () => {
+      const short = '/path/to/entry-file.js??platform=ios&dev=true&minify=false';
+      const long = `http://localhost:8081${short}`;
+      expect(server._getOptionsFromUrl(long))
+        .toEqual(server._getOptionsFromUrl(short));
+    });
+  });
+
   // ensures that vital properties exist on fake request objects
   function scaffoldReq(req) {
     if (!req.headers) {
