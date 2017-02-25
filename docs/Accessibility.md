@@ -11,6 +11,8 @@ previous: animations
 ## Native App Accessibility (iOS and Android)
 Both iOS and Android provide APIs for making apps accessible to people with disabilities. In addition, both platforms provide bundled assistive technologies, like the screen readers VoiceOver (iOS) and TalkBack (Android) for the visually impaired. Similarly, in React Native we have included APIs designed to provide developers with support for making apps more accessible. Take note, iOS and Android differ slightly in their approaches, and thus the React Native implementations may vary by platform.
 
+In addition to this documentation, you might find [this blog post](https://code.facebook.com/posts/435862739941212/making-react-native-apps-accessible/) about React Native accessibility to be useful.
+
 ## Making Apps Accessible
 
 ### Accessibility properties
@@ -135,7 +137,9 @@ In the case of two overlapping UI components with the same parent, default acces
 
 In the above example, the yellow layout and its descendants are completely invisible to TalkBack and all other accessibility services. So we can easily use overlapping views with the same parent without confusing TalkBack.
 
+### Checking if a Screen Reader is Enabled
 
+The `AccessibilityInfo` API allows you to determine whether or not a screen reader is currently active. See the [AccessibilityInfo documentation](docs/accessibilityinfo.html) for details.
 
 ### Sending Accessibility Events (Android)
 
