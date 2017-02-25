@@ -358,11 +358,17 @@ react-native run-android
 
 ## Testing your React Native Installation
 
-Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder.
+Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native start` inside the newly created folder to start the packager.
 
 ```
 react-native init AwesomeProject
 cd AwesomeProject
+react-native start
+```
+
+Open a new terminal and run `react-native run-android` inside the same folder to launch the app on your AVD.
+
+```
 react-native run-android
 ```
 
