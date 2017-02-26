@@ -17,6 +17,7 @@
 
 #import "RCTBridge.h"
 #import "RCTDevMenu.h"
+#import "RCTDevSettings.h"
 #import "RCTFPSGraph.h"
 #import "RCTInvalidating.h"
 #import "RCTJavaScriptExecutor.h"
@@ -26,7 +27,6 @@
 #import "RCTUIManager.h"
 #import "RCTBridge+Private.h"
 
-static NSString *const RCTPerfMonitorKey = @"RCTPerfMonitorKey";
 static NSString *const RCTPerfMonitorCellIdentifier = @"RCTPerfMonitorCellIdentifier";
 
 static CGFloat const RCTPerfMonitorBarHeight = 50;
@@ -142,10 +142,7 @@ RCT_EXPORT_MODULE()
 {
   _bridge = bridge;
 
-  // TODO: enable on cxx bridge
-  if ([_bridge isKindOfClass:[RCTBatchedBridge class]]) {
-    [_bridge.devMenu addItem:self.devMenuItem];
-  }
+  [_bridge.devMenu addItem:self.devMenuItem];
 }
 
 - (void)invalidate
@@ -157,18 +154,21 @@ RCT_EXPORT_MODULE()
 {
   if (!_devMenuItem) {
     __weak __typeof__(self) weakSelf = self;
+    __weak RCTDevSettings *devSettings = self.bridge.devSettings;
     _devMenuItem =
-      [RCTDevMenuItem toggleItemWithKey:RCTPerfMonitorKey
-                                  title:@"Show Perf Monitor"
-                          selectedTitle:@"Hide Perf Monitor"
-                                handler:
-                                ^(BOOL selected) {
-                                  if (selected) {
-                                    [weakSelf show];
-                                  } else {
-                                    [weakSelf hide];
-                                  }
-                                }];
+    [RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
+      return (devSettings.isPerfMonitorShown) ?
+        @"Hide Perf Monitor" :
+        @"Show Perf Monitor";
+    } handler:^{
+      if (devSettings.isPerfMonitorShown) {
+        [weakSelf hide];
+        devSettings.isPerfMonitorShown = NO;
+      } else {
+        [weakSelf show];
+        devSettings.isPerfMonitorShown = YES;
+      }
+    }];
   }
 
   return _devMenuItem;
@@ -322,23 +322,21 @@ RCT_EXPORT_MODULE()
   [_uiDisplayLink addToRunLoop:[NSRunLoop mainRunLoop]
                        forMode:NSRunLoopCommonModes];
 
-  id<RCTJavaScriptExecutor> executor = [_bridge valueForKey:@"javaScriptExecutor"];
-  if ([executor isKindOfClass:[RCTJSCExecutor class]]) {
-    self.container.frame = (CGRect) {
-      self.container.frame.origin, {
-        self.container.frame.size.width + 44,
-        self.container.frame.size.height
-      }
-    };
-    [self.container addSubview:self.jsGraph];
-    [self.container addSubview:self.jsGraphLabel];
-    [executor executeBlockOnJavaScriptQueue:^{
-      self->_jsDisplayLink = [CADisplayLink displayLinkWithTarget:self
-                                                   selector:@selector(threadUpdate:)];
-      [self->_jsDisplayLink addToRunLoop:[NSRunLoop currentRunLoop]
-                           forMode:NSRunLoopCommonModes];
-    }];
-  }
+  self.container.frame = (CGRect) {
+    self.container.frame.origin, {
+      self.container.frame.size.width + 44,
+      self.container.frame.size.height
+    }
+  };
+  [self.container addSubview:self.jsGraph];
+  [self.container addSubview:self.jsGraphLabel];
+
+  [_bridge dispatchBlock:^{
+    self->_jsDisplayLink = [CADisplayLink displayLinkWithTarget:self
+                                                       selector:@selector(threadUpdate:)];
+    [self->_jsDisplayLink addToRunLoop:[NSRunLoop currentRunLoop]
+                               forMode:NSRunLoopCommonModes];
+  } queue:RCTJSThread];
 }
 
 - (void)hide
@@ -424,7 +422,7 @@ RCT_EXPORT_MODULE()
   static NSRegularExpression *GCRegex;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    NSString *pattern = @"\\[GC: (Eden|Full)Collection, (?:Skipped copying|Did copy), ([\\d\\.]+) (\\wb), ([\\d.]+) (\\ws)\\]";
+    NSString *pattern = @"\\[GC: [\\d\\.]+ \\wb => (Eden|Full)Collection, (?:Skipped copying|Did copy), ([\\d\\.]+) \\wb, [\\d.]+ \\ws\\]";
     GCRegex = [NSRegularExpression regularExpressionWithPattern:pattern
                                                         options:0
                                                           error:nil];

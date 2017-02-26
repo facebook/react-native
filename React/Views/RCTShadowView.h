@@ -44,7 +44,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (void)removeReactSubview:(RCTShadowView *)subview NS_REQUIRES_SUPER;
 
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
-@property (nonatomic, assign, readonly) YGNodeRef cssNode;
+@property (nonatomic, assign, readonly) YGNodeRef yogaNode;
 @property (nonatomic, copy) NSString *viewName;
 @property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
 @property (nonatomic, copy) RCTDirectEventBlock onLayout;
@@ -211,11 +211,11 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
              absolutePosition:(CGPoint)absolutePosition;
 
 /**
- * Return whether or not this node acts as a leaf node in the eyes of Yoga. For example
- * RCTShadowText has children which it does not want Yoga to lay out so in the eyes of
- * Yoga it is a leaf node.
+ * Return whether or not this node acts as a leaf node in the eyes of Yoga.
+ * For example `RCTShadowText` has children which it does not want Yoga
+ * to lay out so in the eyes of Yoga it is a leaf node.
  */
-- (BOOL)isCSSLeafNode;
+- (BOOL)isYogaLeafNode;
 
 - (void)dirtyPropagation NS_REQUIRES_SUPER;
 - (BOOL)isPropagationDirty;
@@ -244,5 +244,15 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * Checks if the current shadow view is a descendant of the provided `ancestor`
  */
 - (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor;
+
+@end
+
+@interface RCTShadowView (Deprecated)
+
+@property (nonatomic, assign, readonly) YGNodeRef cssNode
+__deprecated_msg("Use `yogaNode` instead.");
+
+- (BOOL)isCSSLeafNode
+__deprecated_msg("Use `isYogaLeafNode` instead.");
 
 @end

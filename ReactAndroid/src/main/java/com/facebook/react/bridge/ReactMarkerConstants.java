@@ -58,4 +58,6 @@ public class ReactMarkerConstants {
     "CREATE_I18N_ASSETS_MODULE_START";
   public static final String CREATE_I18N_ASSETS_MODULE_END =
     "CREATE_I18N_ASSETS_MODULE_END";
+  public static final String GET_CONSTANTS_START = "GET_CONSTANTS_START";
+  public static final String GET_CONSTANTS_END = "GET_CONSTANTS_END";
 }

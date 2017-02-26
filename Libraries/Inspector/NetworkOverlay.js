@@ -67,7 +67,6 @@ class NetworkOverlay extends React.Component {
     rowID: number,
     highlightRow: (sectionID: number, rowID: number) => void,
   ) => React.Element<any>;
-  _renderScrollComponent: (props: Object) => React.Element<any>;
   _closeButtonClicked: () => void;
   // Map of `socketId` -> `index in `_requests``.
   _socketIdMap: Object;
@@ -97,7 +96,6 @@ class NetworkOverlay extends React.Component {
     this._captureDetailScrollView = this._captureDetailScrollView.bind(this);
     this._listViewOnLayout = this._listViewOnLayout.bind(this);
     this._renderRow = this._renderRow.bind(this);
-    this._renderScrollComponent = this._renderScrollComponent.bind(this);
     this._closeButtonClicked = this._closeButtonClicked.bind(this);
     this._socketIdMap = {};
     this._xhrIdMap = {};
