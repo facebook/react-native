@@ -296,10 +296,6 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   #ifdef JSC_HAS_PERF_STATS_API
   addJSCPerfStatsHooks(m_context);
   #endif
-
-  #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
-  configureJSContextForAndroid(m_context, m_jscConfig, m_deviceCacheDir);
-  #endif
 }
 
 void JSCExecutor::terminateOnJSVMThread() {
