@@ -56,6 +56,7 @@ const apis = [
   '../Libraries/AppState/AppState.js',
   '../Libraries/Storage/AsyncStorage.js',
   '../Libraries/Utilities/BackAndroid.android.js',
+  '../Libraries/Utilities/BackHandler.android.js',
   '../Libraries/CameraRoll/CameraRoll.js',
   '../Libraries/Components/Clipboard/Clipboard.js',
   '../Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js',
