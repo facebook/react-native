@@ -23,7 +23,6 @@ const HMRBundle = require('./HMRBundle');
 const ModuleTransport = require('../lib/ModuleTransport');
 const imageSize = require('image-size');
 const path = require('path');
-const version = require('../../../package.json').version;
 const denodeify = require('denodeify');
 
 const {
@@ -34,8 +33,10 @@ const {
   extname,
 } = require('path');
 
+const VERSION = require('../../package.json').version;
+
 import type AssetServer from '../AssetServer';
-import type Module from '../node-haste/Module';
+import type Module, {HasteImpl} from '../node-haste/Module';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 import type {Options as JSTransformerOptions, TransformOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
@@ -85,6 +86,7 @@ type Options = {
   extraNodeModules: {},
   getTransformOptions?: GetTransformOptions,
   globalTransformCache: ?GlobalTransformCache,
+  hasteImpl?: HasteImpl,
   moduleFormat: string,
   platforms: Array<string>,
   polyfillModuleNames: Array<string>,
@@ -129,7 +131,7 @@ class Bundler {
 
     const cacheKeyParts =  [
       'react-packager-cache',
-      version,
+      VERSION,
       opts.cacheVersion,
       stableProjectRoots.join(',').split(pathSeparator).join('-'),
       transformModuleHash,
@@ -171,6 +173,7 @@ class Bundler {
       extraNodeModules: opts.extraNodeModules,
       getTransformCacheKey,
       globalTransformCache: opts.globalTransformCache,
+      hasteImpl: opts.hasteImpl,
       minifyCode: this._transformer.minify,
       moduleFormat: opts.moduleFormat,
       platforms: opts.platforms,
