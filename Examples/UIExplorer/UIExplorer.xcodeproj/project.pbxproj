@@ -101,8 +101,6 @@
 		2DD323E81DA2DE3F000FE1B8 /* libRCTText-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D01DA2DD8B000FE1B8 /* libRCTText-tvOS.a */; };
 		2DD323E91DA2DE3F000FE1B8 /* libRCTWebSocket-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D51DA2DD8B000FE1B8 /* libRCTWebSocket-tvOS.a */; };
 		2DD323EA1DA2DE3F000FE1B8 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D91DA2DD8B000FE1B8 /* libReact.a */; };
-		2DFC6D651E49143800207876 /* UIExplorer2048SnapshotTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DFC6D641E49143800207876 /* UIExplorer2048SnapshotTest.m */; };
-		2DFC6D661E49143800207876 /* UIExplorer2048SnapshotTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DFC6D641E49143800207876 /* UIExplorer2048SnapshotTest.m */; };
 		3578590A1B28D2CF00341EDB /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
 		39AA31A41DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 39AA31A31DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m */; };
 		3D05746D1DE6008900184BB4 /* libRCTPushNotification-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D05746C1DE6008900184BB4 /* libRCTPushNotification-tvOS.a */; };
@@ -433,7 +431,6 @@
 		2DD323901DA2DD8A000FE1B8 /* UIExplorer-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "UIExplorer-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DD323A01DA2DD8B000FE1B8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2DD323A51DA2DD8B000FE1B8 /* UIExplorer-tvOSUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UIExplorer-tvOSUnitTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2DFC6D641E49143800207876 /* UIExplorer2048SnapshotTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIExplorer2048SnapshotTest.m; sourceTree = "<group>"; };
 		357858F81B28D2C400341EDB /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = ../../Libraries/LinkingIOS/RCTLinking.xcodeproj; sourceTree = "<group>"; };
 		39AA31A31DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUnicodeDecodeTests.m; sourceTree = "<group>"; };
 		3D13F83E1D6F6AE000E69E0E /* UIExplorerBundle.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UIExplorerBundle.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -704,7 +701,6 @@
 				143BC5A01B21E45C00462512 /* UIExplorerSnapshotTests.m */,
 				83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */,
 				143BC5971B21E3E100462512 /* Supporting Files */,
-				2DFC6D641E49143800207876 /* UIExplorer2048SnapshotTest.m */,
 			);
 			path = UIExplorerIntegrationTests;
 			sourceTree = "<group>";
@@ -731,11 +727,11 @@
 				14AADF041AC3DB95002390C9 /* libReact.a */,
 				2DD323D91DA2DD8B000FE1B8 /* libReact.a */,
 				3D3C08811DE3424E00C268FA /* libyoga.a */,
-				3D3C08831DE3424E00C268FA /* libyoga-tvOS.a */,
+				3D3C08831DE3424E00C268FA /* libyoga.a */,
 				3D05748C1DE6008900184BB4 /* libcxxreact.a */,
-				3D05748E1DE6008900184BB4 /* libcxxreact-tvOS.a */,
+				3D05748E1DE6008900184BB4 /* libcxxreact.a */,
 				3D0574901DE6008900184BB4 /* libjschelpers.a */,
-				3D0574921DE6008900184BB4 /* libjschelpers-tvOS.a */,
+				3D0574921DE6008900184BB4 /* libjschelpers.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1273,7 +1269,7 @@
 			remoteRef = 3D05748B1DE6008900184BB4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		3D05748E1DE6008900184BB4 /* libcxxreact-tvOS.a */ = {
+		3D05748E1DE6008900184BB4 /* libcxxreact.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libcxxreact.a;
@@ -1287,7 +1283,7 @@
 			remoteRef = 3D05748F1DE6008900184BB4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		3D0574921DE6008900184BB4 /* libjschelpers-tvOS.a */ = {
+		3D0574921DE6008900184BB4 /* libjschelpers.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libjschelpers.a;
@@ -1301,7 +1297,7 @@
 			remoteRef = 3D3C08801DE3424E00C268FA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		3D3C08831DE3424E00C268FA /* libyoga-tvOS.a */ = {
+		3D3C08831DE3424E00C268FA /* libyoga.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libyoga.a;
@@ -1472,7 +1468,6 @@
 			files = (
 				3DB99D0C1BA0340600302749 /* UIExplorerIntegrationTests.m in Sources */,
 				83636F8F1B53F22C009F943E /* RCTUIManagerScenarioTests.m in Sources */,
-				2DFC6D651E49143800207876 /* UIExplorer2048SnapshotTest.m in Sources */,
 				3D299BAF1D33EBFA00FA1057 /* RCTLoggingTests.m in Sources */,
 				143BC5A11B21E45C00462512 /* UIExplorerSnapshotTests.m in Sources */,
 				27B885561BED29AF00008352 /* RCTRootViewIntegrationTests.m in Sources */,
@@ -1485,7 +1480,6 @@
 			files = (
 				2D4624FC1DA2EAC300C74D09 /* UIExplorerIntegrationTests.m in Sources */,
 				2D4624FA1DA2EAC300C74D09 /* RCTLoggingTests.m in Sources */,
-				2DFC6D661E49143800207876 /* UIExplorer2048SnapshotTest.m in Sources */,
 				2D4624FE1DA2EAC300C74D09 /* RCTUIManagerScenarioTests.m in Sources */,
 				2D4624FD1DA2EAC300C74D09 /* UIExplorerSnapshotTests.m in Sources */,
 				2D4624FB1DA2EAC300C74D09 /* RCTRootViewIntegrationTests.m in Sources */,
