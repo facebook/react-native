@@ -20,6 +20,7 @@ android_library(
     react_native_target('java/com/facebook/react/modules/debug:interfaces'),
     react_native_target('java/com/facebook/react/modules/systeminfo:systeminfo'),
     react_native_target('java/com/facebook/react/packagerconnection:packagerconnection'),
+    react_native_target('java/com/facebook/react/modules/core:core'),
     react_native_target('res:devsupport'),
   ],
   visibility = [

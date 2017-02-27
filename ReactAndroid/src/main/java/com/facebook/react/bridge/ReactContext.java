@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
+import com.facebook.react.common.ApiCompatUtils;
 import com.facebook.react.common.LifecycleState;
 
 import static com.facebook.react.common.LifecycleState.BEFORE_CREATE;
@@ -348,8 +349,7 @@ public class ReactContext extends ContextWrapper {
   public boolean startActivityForResult(Intent intent, int code, Bundle bundle) {
     Activity activity = getCurrentActivity();
     Assertions.assertNotNull(activity);
-    activity.startActivityForResult(intent, code, bundle);
-    return true;
+    return ApiCompatUtils.startActivityForResult(activity, intent, code, bundle);
   }
 
   /**

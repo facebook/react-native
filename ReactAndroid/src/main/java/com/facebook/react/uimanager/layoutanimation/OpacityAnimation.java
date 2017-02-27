@@ -2,9 +2,13 @@
 
 package com.facebook.react.uimanager.layoutanimation;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+
+import com.facebook.react.common.ApiCompatUtils;
 
 /**
  * Animation responsible for updating opacity of a view. It should ideally use hardware texture
@@ -12,6 +16,7 @@ import android.view.animation.Transformation;
  */
 /* package */ class OpacityAnimation extends Animation {
 
+  @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
   static class OpacityAnimationListener implements AnimationListener {
 
     private final View mView;
@@ -51,7 +56,10 @@ import android.view.animation.Transformation;
     mStartOpacity = startOpacity;
     mDeltaOpacity = endOpacity - startOpacity;
 
-    setAnimationListener(new OpacityAnimationListener(view));
+    // Only add layer type change listener after API 16.
+    if (ApiCompatUtils.isJellyBeanOrHigher()) {
+      setAnimationListener(new OpacityAnimationListener(view));
+    }
   }
 
   @Override

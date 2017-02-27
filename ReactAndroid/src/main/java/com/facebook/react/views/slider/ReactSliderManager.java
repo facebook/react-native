@@ -9,17 +9,15 @@
 
 package com.facebook.react.views.slider;
 
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 
-import com.facebook.react.R;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.common.ApiCompatUtils;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.SimpleViewManager;
@@ -153,10 +151,12 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
   @ReactProp(name = "thumbTintColor", customType = "Color")
   public void setThumbTintColor(ReactSlider view, Integer color) {
-    if (color == null) {
-      view.getThumb().clearColorFilter();
-    } else {
-      view.getThumb().setColorFilter(color, PorterDuff.Mode.SRC_IN);
+    if (ApiCompatUtils.isJellyBeanOrHigher()) {
+      if (color == null) {
+        view.getThumb().clearColorFilter();
+      } else {
+        view.getThumb().setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      }
     }
   }
 

@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.ApiCompatUtils;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
@@ -141,13 +142,13 @@ public class ReactViewGroup extends ViewGroup implements
     // background to be a layer drawable that contains a drawable that has been previously setup
     // as a background previously. This will not work correctly as the drawable callback logic is
     // messed up in AOSP
-    super.setBackground(null);
+    ApiCompatUtils.setBackground(this, null);
     if (mReactBackgroundDrawable != null && background != null) {
       LayerDrawable layerDrawable =
           new LayerDrawable(new Drawable[] {mReactBackgroundDrawable, background});
-      super.setBackground(layerDrawable);
+      ApiCompatUtils.setBackground(this, layerDrawable);
     } else if (background != null) {
-      super.setBackground(background);
+      ApiCompatUtils.setBackground(this, background);
     }
   }
 
@@ -510,14 +511,14 @@ public class ReactViewGroup extends ViewGroup implements
     if (mReactBackgroundDrawable == null) {
       mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
       Drawable backgroundDrawable = getBackground();
-      super.setBackground(null);  // required so that drawable callback is cleared before we add the
+      ApiCompatUtils.setBackground(this, null);  // required so that drawable callback is cleared before we add the
                                   // drawable back as a part of LayerDrawable
       if (backgroundDrawable == null) {
-        super.setBackground(mReactBackgroundDrawable);
+        ApiCompatUtils.setBackground(this, mReactBackgroundDrawable);
       } else {
         LayerDrawable layerDrawable =
             new LayerDrawable(new Drawable[] {mReactBackgroundDrawable, backgroundDrawable});
-        super.setBackground(layerDrawable);
+        ApiCompatUtils.setBackground(this, layerDrawable);
       }
     }
     return mReactBackgroundDrawable;

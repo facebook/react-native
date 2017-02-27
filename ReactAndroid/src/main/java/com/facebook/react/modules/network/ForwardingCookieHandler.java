@@ -26,6 +26,7 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.GuardedResultAsyncTask;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.common.ApiCompatUtils;
 
 /**
  * Cookie handler that forwards all cookies to the WebView CookieManager.
@@ -39,7 +40,7 @@ public class ForwardingCookieHandler extends CookieHandler {
   private static final String COOKIE_HEADER = "Cookie";
 
   // As CookieManager was synchronous before API 21 this class emulates the async behavior on <21.
-  private static final boolean USES_LEGACY_STORE = Build.VERSION.SDK_INT < 21;
+  private static final boolean USES_LEGACY_STORE = !ApiCompatUtils.isLollipopOrHigher();
 
   private final CookieSaver mCookieSaver;
   private final ReactContext mContext;
@@ -92,6 +93,7 @@ public class ForwardingCookieHandler extends CookieHandler {
     }
   }
 
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private void clearCookiesAsync(final Callback callback) {
     getCookieManager().removeAllCookies(
         new ValueCallback<Boolean>() {
