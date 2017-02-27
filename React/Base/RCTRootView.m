@@ -46,7 +46,6 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   NSString *_moduleName;
   NSDictionary *_launchOptions;
   RCTRootContentView *_contentView;
-
   BOOL _passThroughTouches;
 }
 
@@ -60,8 +59,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTRootView init]", nil);
 
-  if ((self = [super initWithFrame:CGRectZero])) {
-
+  if (self = [super initWithFrame:CGRectZero]) {
     self.backgroundColor = [UIColor whiteColor];
 
     _bridge = bridge;
@@ -95,7 +93,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 #endif
 
     if (!_bridge.loading) {
-      [self bundleFinishedLoading:[_bridge batchedBridge]];
+      [self bundleFinishedLoading:([_bridge batchedBridge] ?: _bridge)];
     }
 
     [self showLoadingView];
@@ -137,6 +135,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _contentView.backgroundColor = backgroundColor;
 }
 
+#pragma mark - passThroughTouches
+
 - (BOOL)passThroughTouches
 {
   return _contentView.passThroughTouches;
@@ -146,6 +146,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   _passThroughTouches = passThroughTouches;
   _contentView.passThroughTouches = passThroughTouches;
+}
+
+#pragma mark - Layout
+
+- (CGSize)sizeThatFits:(CGSize)size
+{
+  return CGSizeMake(
+    _sizeFlexibility & RCTRootViewSizeFlexibilityWidth ? MIN(_intrinsicSize.width, size.width) : size.width,
+    _sizeFlexibility & RCTRootViewSizeFlexibilityHeight ? MIN(_intrinsicSize.height, size.height) : size.height
+  );
+}
+
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+  _contentView.frame = self.bounds;
+  _loadingView.center = (CGPoint){
+    CGRectGetMidX(self.bounds),
+    CGRectGetMidY(self.bounds)
+  };
 }
 
 - (UIViewController *)reactViewController
@@ -278,16 +298,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _contentView.sizeFlexibility = _sizeFlexibility;
 }
 
-- (void)layoutSubviews
-{
-  [super layoutSubviews];
-  _contentView.frame = self.bounds;
-  _loadingView.center = (CGPoint){
-    CGRectGetMidX(self.bounds),
-    CGRectGetMidY(self.bounds)
-  };
-}
-
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
   // The root view itself should never receive touches
@@ -323,12 +333,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   _intrinsicSize = intrinsicSize;
 
+  [self invalidateIntrinsicContentSize];
+  [self.superview setNeedsLayout];
+
   // Don't notify the delegate if the content remains invisible or its size has not changed
   if (bothSizesHaveAZeroDimension || sizesAreEqual) {
     return;
   }
 
   [_delegate rootViewDidChangeIntrinsicSize:self];
+}
+
+- (CGSize)intrinsicContentSize
+{
+  return _intrinsicSize;
 }
 
 - (void)contentViewInvalidated
