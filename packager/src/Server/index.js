@@ -26,7 +26,7 @@ const url = require('url');
 
 const debug = require('debug')('RNP:Server');
 
-import type Module from '../node-haste/Module';
+import type Module, {HasteImpl} from '../node-haste/Module';
 import type {Stats} from 'fs';
 import type {IncomingMessage, ServerResponse} from 'http';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
@@ -62,6 +62,7 @@ type Options = {
   extraNodeModules?: {},
   getTransformOptions?: GetTransformOptions,
   globalTransformCache: ?GlobalTransformCache,
+  hasteImpl?: HasteImpl,
   moduleFormat?: string,
   platforms?: Array<string>,
   polyfillModuleNames?: Array<string>,
@@ -178,6 +179,7 @@ class Server {
     cacheVersion: string,
     extraNodeModules: {},
     getTransformOptions?: GetTransformOptions,
+    hasteImpl?: HasteImpl,
     moduleFormat: string,
     platforms: Array<string>,
     polyfillModuleNames: Array<string>,
@@ -212,6 +214,7 @@ class Server {
       extraNodeModules: options.extraNodeModules || {},
       getTransformOptions: options.getTransformOptions,
       globalTransformCache: options.globalTransformCache,
+      hasteImpl: options.hasteImpl,
       moduleFormat: options.moduleFormat != null ? options.moduleFormat : 'haste',
       platforms: options.platforms || defaults.platforms,
       polyfillModuleNames: options.polyfillModuleNames || [],
