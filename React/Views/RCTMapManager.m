@@ -51,9 +51,13 @@ RCT_ENUM_CONVERTER(MKPinAnnotationColor, (@{
 
 - (void)setContentView:(UIView *)contentView
 {
-  [_contentView removeFromSuperview];
+  while (self.subviews.count) {
+    UIView* child = self.subviews.lastObject;
+    [child removeFromSuperview];
+  }
+  
   _contentView = contentView;
-  [self addSubview:_contentView];
+  [self addSubview:contentView];
 }
 
 - (void)layoutSubviews
