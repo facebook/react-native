@@ -47,6 +47,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   NSDictionary *_launchOptions;
   RCTRootContentView *_contentView;
   BOOL _passThroughTouches;
+  CGSize _intrinsicContentSize;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -153,8 +154,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (CGSize)sizeThatFits:(CGSize)size
 {
   return CGSizeMake(
-    _sizeFlexibility & RCTRootViewSizeFlexibilityWidth ? MIN(_intrinsicSize.width, size.width) : size.width,
-    _sizeFlexibility & RCTRootViewSizeFlexibilityHeight ? MIN(_intrinsicSize.height, size.height) : size.height
+    _sizeFlexibility & RCTRootViewSizeFlexibilityWidth ? MIN(_intrinsicContentSize.width, size.width) : size.width,
+    _sizeFlexibility & RCTRootViewSizeFlexibilityHeight ? MIN(_intrinsicContentSize.height, size.height) : size.height
   );
 }
 
@@ -268,7 +269,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self insertSubview:_contentView atIndex:0];
 
   if (_sizeFlexibility == RCTRootViewSizeFlexibilityNone) {
-    self.intrinsicSize = self.bounds.size;
+    self.intrinsicContentSize = self.bounds.size;
   }
 }
 
@@ -323,15 +324,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
-- (void)setIntrinsicSize:(CGSize)intrinsicSize
+- (void)setIntrinsicContentSize:(CGSize)intrinsicContentSize
 {
-  BOOL oldSizeHasAZeroDimension = _intrinsicSize.height == 0 || _intrinsicSize.width == 0;
-  BOOL newSizeHasAZeroDimension = intrinsicSize.height == 0 || intrinsicSize.width == 0;
+  BOOL oldSizeHasAZeroDimension = _intrinsicContentSize.height == 0 || _intrinsicContentSize.width == 0;
+  BOOL newSizeHasAZeroDimension = intrinsicContentSize.height == 0 || intrinsicContentSize.width == 0;
   BOOL bothSizesHaveAZeroDimension = oldSizeHasAZeroDimension && newSizeHasAZeroDimension;
 
-  BOOL sizesAreEqual = CGSizeEqualToSize(_intrinsicSize, intrinsicSize);
+  BOOL sizesAreEqual = CGSizeEqualToSize(_intrinsicContentSize, intrinsicContentSize);
 
-  _intrinsicSize = intrinsicSize;
+  _intrinsicContentSize = intrinsicContentSize;
 
   [self invalidateIntrinsicContentSize];
   [self.superview setNeedsLayout];
@@ -346,7 +347,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (CGSize)intrinsicContentSize
 {
-  return _intrinsicSize;
+  return _intrinsicContentSize;
 }
 
 - (void)contentViewInvalidated
@@ -365,6 +366,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)cancelTouches
 {
   [[_contentView touchHandler] cancel];
+}
+
+@end
+
+@implementation RCTRootView (Deprecated)
+
+- (CGSize)intrinsicSize
+{
+  RCTLogWarn(@"Calling deprecated `[-RCTRootView intrinsicSize]`.");
+  return self.intrinsicContentSize;
 }
 
 @end

@@ -607,7 +607,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
         RCTAssert(view != nil, @"view (for ID %@) not found", reactTag);
 
         RCTRootView *rootView = (RCTRootView *)[view superview];
-        rootView.intrinsicSize = contentSize;
+        rootView.intrinsicContentSize = contentSize;
       });
     }
   }
