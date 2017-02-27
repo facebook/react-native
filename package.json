@@ -1,11 +1,11 @@
 {
   "name": "react-native",
-  "version": "0.38-stable-target",
+  "version": "0.38.1",
   "description": "A framework for building native apps using React",
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "git@github.com:TradeCast/react-native.git"
+    "url": "git@github.com:facebook/react-native.git"
   },
   "engines": {
     "node": ">=4"
@@ -203,7 +203,7 @@
     "wordwrap": "^1.0.0",
     "worker-farm": "^1.3.1",
     "ws": "^1.1.0",
-    "xcode": "git@github.com:TradeCast/node-xcode.git",
+    "xcode": "^0.8.9",
     "xmldoc": "^0.4.0",
     "yargs": "^3.24.0",
     "yeoman-environment": "1.5.3",
