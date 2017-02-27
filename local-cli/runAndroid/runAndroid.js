@@ -31,6 +31,10 @@ function runAndroid(argv, config, args) {
     return;
   }
 
+  if (!args.packager) {
+    return buildAndRun(args);
+  }
+
   return isPackagerRunning().then(result => {
     if (result === 'running') {
       console.log(chalk.bold('JS server already running.'));
@@ -146,9 +150,9 @@ function tryInstallAppOnDevice(args, device) {
   }
 }
 
-function tryLaunchAppOnDevice(device, packageName, adbPath) {
+function tryLaunchAppOnDevice(device, packageName, adbPath, mainActivity) {
   try {
-    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.' + mainActivity];
     console.log(chalk.bold(
       `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
     ));
@@ -163,7 +167,7 @@ function tryLaunchAppOnDevice(device, packageName, adbPath) {
 function installAndLaunchOnDevice(args, selectedDevice, packageName, adbPath) {
   tryRunAdbReverse(selectedDevice);
   tryInstallAppOnDevice(args, selectedDevice);
-  tryLaunchAppOnDevice(selectedDevice, packageName, adbPath);
+  tryLaunchAppOnDevice(selectedDevice, packageName, adbPath, args.mainActivity);
 }
 
 function runOnAllDevices(args, cmd, packageName, adbPath){
@@ -189,7 +193,7 @@ function runOnAllDevices(args, cmd, packageName, adbPath){
     }
 
     console.log(chalk.bold(
-      `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')}...`
+      `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')})...`
     ));
 
     child_process.execFileSync(cmd, gradleArgs, {
@@ -211,7 +215,7 @@ function runOnAllDevices(args, cmd, packageName, adbPath){
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
         tryRunAdbReverse(device);
-        tryLaunchAppOnDevice(device, packageName, adbPath);
+        tryLaunchAppOnDevice(device, packageName, adbPath, args.mainActivity);
       });
     } else {
       try {
@@ -283,8 +287,15 @@ module.exports = {
   }, {
     command: '--variant [string]',
   }, {
+    command: '--main-activity [string]',
+    description: 'Name of the activity to start',
+    default: 'MainActivity',
+  }, {
     command: '--deviceId [string]',
     description: 'builds your app and starts it on a specific device/simulator with the ' +
       'given device id (listed by running "adb devices" on the command line).',
+  }, {
+    command: '--no-packager',
+    description: 'Do not launch packager while building',
   }],
 };

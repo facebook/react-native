@@ -10,6 +10,7 @@
 
 const InspectorProxy = require('./util/inspectorProxy.js');
 const ReactPackager = require('../../packager/react-packager');
+const TerminalReporter = require('../../packager/src/lib/TerminalReporter');
 
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
@@ -17,11 +18,11 @@ const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddlewar
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
 const defaultPlatforms = require('../../packager/defaults').platforms;
+const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
 const heapCaptureMiddleware = require('./middleware/heapCaptureMiddleware.js');
 const http = require('http');
 const indexPageMiddleware = require('./middleware/indexPage');
-const jscProfilerMiddleware = require('./middleware/jscProfilerMiddleware');
 const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
 const messageSocket = require('./util/messageSocket.js');
 const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
@@ -47,7 +48,6 @@ function runServer(args, config, readyCallback) {
     .use(systraceProfileMiddleware)
     .use(heapCaptureMiddleware)
     .use(cpuProfilerMiddleware)
-    .use(jscProfilerMiddleware)
     .use(indexPageMiddleware)
     .use(unless('/inspector', inspectorProxy.processRequest.bind(inspectorProxy)))
     .use(packagerServer.processRequest.bind(packagerServer));
@@ -69,7 +69,6 @@ function runServer(args, config, readyCallback) {
 
       wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
       ms = messageSocket.attachToServer(serverInstance, '/message');
-      webSocketProxy.attachToServer(serverInstance, '/devtools');
       inspectorProxy.attachToServer(serverInstance, '/inspector');
       readyCallback();
     }
@@ -86,6 +85,9 @@ function getPackagerServer(args, config) {
     typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
     undefined;
 
+  const providesModuleNodeModules =
+    args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
+
   return ReactPackager.createServer({
     assetExts: defaultAssetExts.concat(args.assetExts),
     blacklistRE: config.getBlacklistRE(),
@@ -94,6 +96,8 @@ function getPackagerServer(args, config) {
     getTransformOptions: config.getTransformOptions,
     platforms: defaultPlatforms.concat(args.platforms),
     projectRoots: args.projectRoots,
+    providesModuleNodeModules: providesModuleNodeModules,
+    reporter: new TerminalReporter(),
     resetCache: args.resetCache,
     transformModulePath: transformModulePath,
     verbose: args.verbose,
