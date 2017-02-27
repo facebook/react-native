@@ -2,9 +2,8 @@
 
 #pragma once
 
-#include "NativeModule.h"
-
 #include <cxxreact/CxxModule.h>
+#include <cxxreact/NativeModule.h>
 
 namespace facebook {
 namespace react {

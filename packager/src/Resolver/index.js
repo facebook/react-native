@@ -23,6 +23,7 @@ import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
 import type {TransformCode} from '../node-haste/Module';
 import type Cache from '../node-haste/Cache';
+import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type GlobalTransformCache from '../lib/GlobalTransformCache';
 
 type MinifyCode = (filePath: string, code: string, map: SourceMap) =>
@@ -33,6 +34,7 @@ type Options = {
   blacklistRE?: RegExp,
   cache: Cache,
   extraNodeModules?: {},
+  getTransformCacheKey: GetTransformCacheKey,
   globalTransformCache: ?GlobalTransformCache,
   minifyCode: MinifyCode,
   platforms: Array<string>,
@@ -41,7 +43,6 @@ type Options = {
   providesModuleNodeModules?: Array<string>,
   reporter: Reporter,
   resetCache: boolean,
-  transformCacheKey: string,
   transformCode: TransformCode,
   watch?: boolean,
 };
@@ -58,23 +59,27 @@ class Resolver {
       assetExts: opts.assetExts,
       cache: opts.cache,
       extraNodeModules: opts.extraNodeModules,
+      extensions: ['js', 'json'],
+      forceNodeFilesystemAPI: false,
+      getTransformCacheKey: opts.getTransformCacheKey,
       globalTransformCache: opts.globalTransformCache,
       ignoreFilePath: function(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
       },
+      maxWorkers: null,
       moduleOptions: {
         cacheTransformResults: true,
         resetCache: opts.resetCache,
       },
-      platforms: opts.platforms,
+      platforms: new Set(opts.platforms),
       preferNativePlatform: true,
       providesModuleNodeModules: opts.providesModuleNodeModules || defaults.providesModuleNodeModules,
       reporter: opts.reporter,
       resetCache: opts.resetCache,
       roots: opts.projectRoots,
-      transformCacheKey: opts.transformCacheKey,
       transformCode: opts.transformCode,
+      useWatchman: true,
       watch: opts.watch || false,
     });
 

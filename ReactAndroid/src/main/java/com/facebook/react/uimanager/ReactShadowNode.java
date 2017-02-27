@@ -69,10 +69,10 @@ public class ReactShadowNode {
   private int mTotalNativeChildren = 0;
   private @Nullable ReactShadowNode mNativeParent;
   private @Nullable ArrayList<ReactShadowNode> mNativeChildren;
-  private float mAbsoluteLeft;
-  private float mAbsoluteTop;
-  private float mAbsoluteRight;
-  private float mAbsoluteBottom;
+  private int mScreenX;
+  private int mScreenY;
+  private int mScreenWidth;
+  private int mScreenHeight;
   private final Spacing mDefaultPadding = new Spacing(0);
   private final float[] mPadding = new float[Spacing.ALL + 1];
   private final boolean[] mPaddingIsPercent = new boolean[Spacing.ALL + 1];
@@ -292,12 +292,34 @@ public class ReactShadowNode {
     }
 
     if (hasNewLayout()) {
-      mAbsoluteLeft = Math.round(absoluteX + getLayoutX());
-      mAbsoluteTop = Math.round(absoluteY + getLayoutY());
-      mAbsoluteRight = Math.round(absoluteX + getLayoutX() + getLayoutWidth());
-      mAbsoluteBottom = Math.round(absoluteY + getLayoutY() + getLayoutHeight());
-      nativeViewHierarchyOptimizer.handleUpdateLayout(this);
-      return true;
+      float layoutX = getLayoutX();
+      float layoutY = getLayoutY();
+      int newAbsoluteLeft = Math.round(absoluteX + layoutX);
+      int newAbsoluteTop = Math.round(absoluteY + layoutY);
+      int newAbsoluteRight = Math.round(absoluteX + layoutX + getLayoutWidth());
+      int newAbsoluteBottom = Math.round(absoluteY + layoutY + getLayoutHeight());
+
+      int newScreenX = Math.round(layoutX);
+      int newScreenY = Math.round(layoutY);
+      int newScreenWidth = newAbsoluteRight - newAbsoluteLeft;
+      int newScreenHeight = newAbsoluteBottom - newAbsoluteTop;
+
+      boolean layoutHasChanged =
+          newScreenX != mScreenX ||
+          newScreenY != mScreenY ||
+          newScreenWidth != mScreenWidth ||
+          newScreenHeight != mScreenHeight;
+
+      mScreenX = newScreenX;
+      mScreenY = newScreenY;
+      mScreenWidth = newScreenWidth;
+      mScreenHeight = newScreenHeight;
+
+      if (layoutHasChanged) {
+        nativeViewHierarchyOptimizer.handleUpdateLayout(this);
+      }
+
+      return layoutHasChanged;
     } else {
       return false;
     }
@@ -488,28 +510,28 @@ public class ReactShadowNode {
    * @return the x position of the corresponding view on the screen, rounded to pixels
    */
   public int getScreenX() {
-    return Math.round(getLayoutX());
+    return mScreenX;
   }
 
   /**
    * @return the y position of the corresponding view on the screen, rounded to pixels
    */
   public int getScreenY() {
-    return Math.round(getLayoutY());
+    return mScreenY;
   }
 
   /**
    * @return width corrected for rounding to pixels.
    */
   public int getScreenWidth() {
-    return Math.round(mAbsoluteRight - mAbsoluteLeft);
+    return mScreenWidth;
   }
 
   /**
    * @return height corrected for rounding to pixels.
    */
   public int getScreenHeight() {
-    return Math.round(mAbsoluteBottom - mAbsoluteTop);
+    return mScreenHeight;
   }
 
   public final YogaDirection getLayoutDirection() {

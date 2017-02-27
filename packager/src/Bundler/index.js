@@ -47,6 +47,19 @@ export type GetTransformOptions = (
   getDependencies: string => Promise<Array<string>>,
 ) => {} | Promise<{}>;
 
+type Asset = {
+  __packager_asset: boolean,
+  fileSystemLocation: string,
+  httpServerLocation: string,
+  width: ?number,
+  height: ?number,
+  scales: number,
+  files: Array<string>,
+  hash: string,
+  name: string,
+  type: string,
+};
+
 const sizeOf = denodeify(imageSize);
 
 const noop = () => {};
@@ -124,11 +137,12 @@ class Bundler {
 
     this._getModuleId = createModuleIdFactory();
 
+    let getCacheKey = () => '';
     if (opts.transformModulePath) {
       /* $FlowFixMe: dynamic requires prevent static typing :'(  */
       const transformer = require(opts.transformModulePath);
-      if (typeof transformer.cacheKey !== 'undefined') {
-        cacheKeyParts.push(transformer.cacheKey);
+      if (typeof transformer.getCacheKey !== 'undefined') {
+        getCacheKey = transformer.getCacheKey;
       }
     }
 
@@ -146,11 +160,16 @@ class Bundler {
     /* $FlowFixMe: in practice it's always here. */
     this._transformer = new Transformer(opts.transformModulePath);
 
+    const getTransformCacheKey = (src, filename, options) => {
+      return transformCacheKey + getCacheKey(src, filename, options);
+    };
+
     this._resolver = new Resolver({
       assetExts: opts.assetExts,
       blacklistRE: opts.blacklistRE,
       cache: this._cache,
       extraNodeModules: opts.extraNodeModules,
+      getTransformCacheKey,
       globalTransformCache: opts.globalTransformCache,
       minifyCode: this._transformer.minify,
       moduleFormat: opts.moduleFormat,
@@ -160,7 +179,6 @@ class Bundler {
       providesModuleNodeModules: opts.providesModuleNodeModules,
       reporter: opts.reporter,
       resetCache: opts.resetCache,
-      transformCacheKey,
       transformCode:
         (module, code, transformCodeOptions) => this._transformer.transformFile(
           module.path,
@@ -200,7 +218,7 @@ class Bundler {
     });
   }
 
-  _sourceHMRURL(platform, hmrpath) {
+  _sourceHMRURL(platform: ?string, hmrpath: string) {
     return this._hmrURL(
       '',
       platform,
@@ -209,7 +227,7 @@ class Bundler {
     );
   }
 
-  _sourceMappingHMRURL(platform, hmrpath) {
+  _sourceMappingHMRURL(platform: ?string, hmrpath: string) {
     // Chrome expects `sourceURL` when eval'ing code
     return this._hmrURL(
       '\/\/# sourceURL=',
@@ -219,7 +237,7 @@ class Bundler {
     );
   }
 
-  _hmrURL(prefix, platform, extensionOverride, filePath) {
+  _hmrURL(prefix: string, platform: ?string, extensionOverride: string, filePath: string) {
     const matchingRoot = this._projectRoots.find(root => filePath.startsWith(root));
 
     if (!matchingRoot) {
@@ -240,7 +258,7 @@ class Bundler {
     return (
       prefix + resource +
       '.' + extensionOverride + '?' +
-      'platform=' + platform + '&runModule=false&entryModuleOnly=true&hot=true'
+      'platform=' + (platform || '') + '&runModule=false&entryModuleOnly=true&hot=true'
     );
   }
 
@@ -260,30 +278,47 @@ class Bundler {
   }
 
   _bundle({
-    bundle,
-    entryFile,
-    runModule: runMainModule,
-    runBeforeMainModule,
-    dev,
-    minify,
-    platform,
-    moduleSystemDeps = [],
-    hot,
-    unbundle,
-    entryModuleOnly,
-    resolutionResponse,
-    isolateModuleIDs,
-    generateSourceMaps,
     assetPlugins,
+    bundle,
+    dev,
+    entryFile,
+    entryModuleOnly,
+    generateSourceMaps,
+    hot,
+    isolateModuleIDs,
+    minify,
+    moduleSystemDeps = [],
     onProgress,
+    platform,
+    resolutionResponse,
+    runBeforeMainModule,
+    runModule,
+    unbundle,
+  }: {
+    assetPlugins?: Array<string>,
+    bundle: Bundle,
+    dev: boolean,
+    entryFile?: string,
+    entryModuleOnly?: boolean,
+    generateSourceMaps?: boolean,
+    hot?: boolean,
+    isolateModuleIDs?: boolean,
+    minify?: boolean,
+    moduleSystemDeps?: Array<Module>,
+    onProgress?: () => void,
+    platform?: ?string,
+    resolutionResponse?: ResolutionResponse,
+    runBeforeMainModule?: boolean,
+    runModule?: boolean,
+    unbundle?: boolean,
   }) {
     const onResolutionResponse = (response: ResolutionResponse) => {
       /* $FlowFixMe: looks like ResolutionResponse is monkey-patched
        * with `getModuleId`. */
       bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
-      if (entryModuleOnly) {
+      if (entryModuleOnly && entryFile) {
         response.dependencies = response.dependencies.filter(module =>
-          module.path.endsWith(entryFile)
+          module.path.endsWith(entryFile || '')
         );
       } else {
         response.dependencies = moduleSystemDeps.concat(response.dependencies);
@@ -308,7 +343,7 @@ class Bundler {
           : undefined;
 
         finalBundle.finalize({
-          runMainModule,
+          runModule,
           runBeforeMainModule: runBeforeMainModuleIds,
           allowUpdates: this._opts.allowBundleUpdates,
         });
@@ -603,7 +638,11 @@ class Bundler {
     });
   }
 
-  _generateAssetObjAndCode(module, assetPlugins, platform: ?string = null) {
+  _generateAssetObjAndCode(
+    module: Module,
+    assetPlugins: Array<string>,
+    platform: ?string = null,
+  ) {
     const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
     var assetUrlPath = joinPath('/assets', pathDirname(relPath));
 
@@ -654,7 +693,10 @@ class Bundler {
     });
   }
 
-  _applyAssetPlugins(assetPlugins, asset) {
+  _applyAssetPlugins(
+    assetPlugins: Array<string>,
+    asset: Asset,
+  ) {
     if (!assetPlugins.length) {
       return asset;
     }

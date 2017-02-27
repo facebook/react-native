@@ -16,7 +16,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.modules.debug.DeveloperSettings;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 
 /**
  * Helper class for accessing developers settings that should not be accessed outside of the package

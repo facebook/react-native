@@ -24,18 +24,20 @@ const {any, objectContaining} = jasmine;
 describe('transforming JS modules:', () => {
   const filename = 'arbitrary';
 
-  let transform;
+  let transformer;
 
   beforeEach(() => {
-    transform = fn();
-    transform.stub.yields(null, transformResult());
+    transformer = {
+      transform: fn(),
+    };
+    transformer.transform.stub.returns(transformResult());
   });
 
   const {bodyAst, sourceCode, transformedCode} = createTestData();
 
   const options = variants => ({
     filename,
-    transform,
+    transformer,
     variants,
   });
 
@@ -80,17 +82,17 @@ describe('transforming JS modules:', () => {
     const variants = {dev: {dev: true}, prod: {dev: false}};
 
     transformModule(sourceCode, options(variants), () => {
-      expect(transform)
-        .toBeCalledWith({filename, sourceCode, options: variants.dev}, any(Function));
-      expect(transform)
-        .toBeCalledWith({filename, sourceCode, options: variants.prod}, any(Function));
+      expect(transformer.transform)
+        .toBeCalledWith(sourceCode, filename, variants.dev);
+      expect(transformer.transform)
+        .toBeCalledWith(sourceCode, filename, variants.prod);
       done();
     });
   });
 
   it('calls back with any error yielded by the transform function', done => {
     const error = new Error();
-    transform.stub.yields(error);
+    transformer.transform.stub.throws(error);
 
     transformModule(sourceCode, options(), e => {
       expect(e).toBe(error);
@@ -138,7 +140,7 @@ describe('transforming JS modules:', () => {
     const dep1 = 'foo', dep2 = 'bar';
     const code = `require('${dep1}'),require('${dep2}')`;
     const {body} = parse(code).program;
-    transform.stub.yields(null, transformResult(body));
+    transformer.transform.stub.returns(transformResult(body));
 
     transformModule(code, options(), (error, result) => {
       expect(result.transformed.default)
@@ -149,11 +151,11 @@ describe('transforming JS modules:', () => {
 
   it('transforms for all variants', done => {
     const variants = {dev: {dev: true}, prod: {dev: false}};
-    transform.stub
+    transformer.transform.stub
       .withArgs(filename, sourceCode, variants.dev)
-        .yields(null, transformResult(bodyAst))
+        .returns(transformResult(bodyAst))
       .withArgs(filename, sourceCode, variants.prod)
-        .yields(null, transformResult([]));
+        .returns(transformResult([]));
 
     transformModule(sourceCode, options(variants), (error, result) => {
       const {dev, prod} = result.transformed;

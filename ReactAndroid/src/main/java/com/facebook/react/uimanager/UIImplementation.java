@@ -133,8 +133,15 @@ public class UIImplementation {
    * Unregisters a root node with a given tag.
    */
   public void removeRootView(int rootViewTag) {
-    mShadowNodeRegistry.removeRootNode(rootViewTag);
+    removeRootShadowNode(rootViewTag);
     mOperationsQueue.enqueueRemoveRootView(rootViewTag);
+  }
+
+  /**
+   * Unregisters a root node with a given tag from the shadow node registry
+   */
+  public void removeRootShadowNode(int rootViewTag) {
+    mShadowNodeRegistry.removeRootNode(rootViewTag);
   }
 
   /**

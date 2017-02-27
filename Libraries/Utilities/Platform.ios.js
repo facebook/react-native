@@ -12,21 +12,27 @@
 
 'use strict';
 
+const NativeModules = require('NativeModules');
+
 const Platform = {
   OS: 'ios',
   get Version() {
-    const constants = require('NativeModules').IOSConstants;
-    return constants ? constants.osVersion : '';
+    const constants = NativeModules.PlatformConstants;
+    return constants && constants.osVersion;
+  },
+  get isPad() {
+    const constants = NativeModules.PlatformConstants;
+    return constants ? constants.interfaceIdiom === 'pad' : false;
   },
   get isTVOS() {
-    const constants = require('NativeModules').IOSConstants;
-    return constants ? (constants.interfaceIdiom === 'tv') : false;
+    const constants = NativeModules.PlatformConstants;
+    return constants ? constants.interfaceIdiom === 'tv' : false;
   },
   get isTesting(): boolean {
-    const constants = require('NativeModules').IOSConstants;
+    const constants = NativeModules.PlatformConstants;
     return constants && constants.isTesting;
   },
-  select: (obj: Object) => obj.ios,
+  select: (obj: Object) => 'ios' in obj ? obj.ios : obj.default,
 };
 
 module.exports = Platform;
