@@ -54,6 +54,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.FloatUtil;
+import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -163,6 +164,7 @@ public class ReactImageView extends GenericDraweeView {
   private final @Nullable Object mCallerContext;
   private int mFadeDurationMs = -1;
   private boolean mProgressiveRenderingEnabled;
+  private ReadableMap mHeaders;
 
   // We can't specify rounding in XML, so have to do so here
   private static GenericDraweeHierarchy buildHierarchy(Context context) {
@@ -324,6 +326,10 @@ public class ReactImageView extends GenericDraweeView {
     computedCorners[2] = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[2]) ? mBorderCornerRadii[2] : defaultBorderRadius;
     computedCorners[3] = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[3]) ? mBorderCornerRadii[3] : defaultBorderRadius;
   }
+  
+  public void setHeaders(ReadableMap headers) {
+    mHeaders = headers;
+  }
 
   public void maybeUpdateView() {
     if (!mIsDirty) {
@@ -384,12 +390,13 @@ public class ReactImageView extends GenericDraweeView {
 
     ResizeOptions resizeOptions = doResize ? new ResizeOptions(getWidth(), getHeight()) : null;
 
-    ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(mImageSource.getUri())
+    ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(mImageSource.getUri())
         .setPostprocessor(postprocessor)
         .setResizeOptions(resizeOptions)
         .setAutoRotateEnabled(true)
-        .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled)
-        .build();
+        .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled);
+
+    ImageRequest imageRequest = ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, mHeaders);
 
     // This builder is reused
     mDraweeControllerBuilder.reset();

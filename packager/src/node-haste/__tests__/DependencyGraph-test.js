@@ -106,15 +106,18 @@ describe('DependencyGraph', function() {
     defaults = {
       assetExts: ['png', 'jpg'],
       cache: new Cache(),
+      extensions: ['js', 'json'],
       forceNodeFilesystemAPI: true,
       providesModuleNodeModules: [
         'haste-fbjs',
         'react-haste',
         'react-native',
       ],
-      platforms: ['ios', 'android'],
+      platforms: new Set(['ios', 'android']),
       useWatchman: false,
+      ignoreFilePath: () => false,
       maxWorkers: 1,
+      moduleOptions: {cacheTransformResults: true},
       resetCache: true,
       transformCode: (module, sourceCode, transformOptions) => {
         return new Promise(resolve => {
@@ -127,6 +130,7 @@ describe('DependencyGraph', function() {
       },
       getTransformCacheKey: () => 'abcdef',
       reporter: require('../../lib/reporting').nullReporter,
+      watch: false,
     };
   });
 
@@ -3423,7 +3427,7 @@ describe('DependencyGraph', function() {
 
       var dgraph = new DependencyGraph({
         ...defaults,
-        platforms: ['ios', 'android', 'web'],
+        platforms: new Set(['ios', 'android', 'web']),
         roots: [root],
       });
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.ios.js').then(function(deps) {

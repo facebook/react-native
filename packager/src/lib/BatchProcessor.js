@@ -13,15 +13,18 @@
 
 const invariant = require('fbjs/lib/invariant');
 
-type ProcessBatch<TItem, TResult> = (
-  batch: Array<TItem>,
-  callback: (error?: Error, orderedResults?: Array<TResult>) => mixed,
-) => mixed;
+type ProcessBatch<TItem, TResult> = (batch: Array<TItem>) => Promise<Array<TResult>>;
 
 type BatchProcessorOptions = {
   maximumDelayMs: number,
   maximumItems: number,
   concurrency: number,
+};
+
+type QueueItem<TItem, TResult> = {
+  item: TItem,
+  reject: (error: mixed) => mixed,
+  resolve: (result: TResult) => mixed,
 };
 
 /**
@@ -33,19 +36,13 @@ type BatchProcessorOptions = {
  */
 class BatchProcessor<TItem, TResult> {
 
+  _currentProcessCount: number;
   _options: BatchProcessorOptions;
   _processBatch: ProcessBatch<TItem, TResult>;
-  _queue: Array<{
-    item: TItem,
-    callback: (error?: Error, result?: TResult) => mixed,
-  }>;
+  _queue: Array<QueueItem<TItem, TResult>>;
   _timeoutHandle: ?number;
-  _currentProcessCount: number;
 
-  constructor(
-    options: BatchProcessorOptions,
-    processBatch: ProcessBatch<TItem, TResult>,
-  ) {
+  constructor(options: BatchProcessorOptions, processBatch: ProcessBatch<TItem, TResult>) {
     this._options = options;
     this._processBatch = processBatch;
     this._queue = [];
@@ -54,26 +51,36 @@ class BatchProcessor<TItem, TResult> {
     (this: any)._processQueue = this._processQueue.bind(this);
   }
 
+  _onBatchFinished() {
+    this._currentProcessCount--;
+    this._processQueueOnceReady();
+  }
+
+  _onBatchResults(jobs: Array<QueueItem<TItem, TResult>>, results: Array<TResult>) {
+    invariant(results.length === jobs.length, 'Not enough results returned.');
+    for (let i = 0; i < jobs.length; ++i) {
+      jobs[i].resolve(results[i]);
+    }
+    this._onBatchFinished();
+  }
+
+  _onBatchError(jobs: Array<QueueItem<TItem, TResult>>, error: mixed) {
+    for (let i = 0; i < jobs.length; ++i) {
+      jobs[i].reject(error);
+    }
+    this._onBatchFinished();
+  }
+
   _processQueue() {
     this._timeoutHandle = null;
-    while (
-      this._queue.length > 0 &&
-      this._currentProcessCount < this._options.concurrency
-    ) {
+    const {concurrency} = this._options;
+    while (this._queue.length > 0 && this._currentProcessCount < concurrency) {
       this._currentProcessCount++;
       const jobs = this._queue.splice(0, this._options.maximumItems);
-      const items = jobs.map(job => job.item);
-      this._processBatch(items, (error, results) => {
-        invariant(
-          results == null || results.length === items.length,
-          'Not enough results returned.',
-        );
-        for (let i = 0; i < items.length; ++i) {
-          jobs[i].callback(error, results && results[i]);
-        }
-        this._currentProcessCount--;
-        this._processQueueOnceReady();
-      });
+      this._processBatch(jobs.map(job => job.item)).then(
+        this._onBatchResults.bind(this, jobs),
+        this._onBatchError.bind(this, jobs),
+      );
     }
   }
 
@@ -91,12 +98,11 @@ class BatchProcessor<TItem, TResult> {
     }
   }
 
-  queue(
-    item: TItem,
-    callback: (error?: Error, result?: TResult) => mixed,
-  ) {
-    this._queue.push({item, callback});
-    this._processQueueOnceReady();
+  queue(item: TItem): Promise<TResult> {
+    return new Promise((resolve, reject) => {
+      this._queue.push({item, resolve, reject});
+      this._processQueueOnceReady();
+    });
   }
 
 }

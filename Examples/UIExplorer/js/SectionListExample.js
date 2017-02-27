@@ -36,6 +36,7 @@ const UIExplorerPage = require('./UIExplorerPage');
 const infoLog = require('infoLog');
 
 const {
+  HeaderComponent,
   FooterComponent,
   ItemComponent,
   PlainInput,
@@ -46,11 +47,20 @@ const {
   renderSmallSwitchOption,
 } = require('./ListExampleShared');
 
-const SectionHeaderComponent = ({section}) =>
+const SectionHeaderComponent = ({section}) => (
   <View>
     <Text style={styles.headerText}>SECTION HEADER: {section.key}</Text>
     <SeparatorComponent />
-  </View>;
+  </View>
+);
+
+const CustomSeparatorComponent = ({text}) => (
+  <View>
+    <SeparatorComponent />
+    <Text style={styles.separatorText}>{text}</Text>
+    <SeparatorComponent />
+  </View>
+);
 
 class SectionListExample extends React.PureComponent {
   static title = '<SectionList>';
@@ -85,20 +95,25 @@ class SectionListExample extends React.PureComponent {
         </View>
         <SeparatorComponent />
         <SectionList
-          FooterComponent={FooterComponent}
+          ListHeaderComponent={HeaderComponent}
+          ListFooterComponent={FooterComponent}
           ItemComponent={this._renderItemComponent}
           SectionHeaderComponent={SectionHeaderComponent}
-          SeparatorComponent={SeparatorComponent}
+          SectionSeparatorComponent={() => <CustomSeparatorComponent text="SECTION SEPARATOR" />}
+          ItemSeparatorComponent={() => <CustomSeparatorComponent text="ITEM SEPARATOR" />}
           enableVirtualization={this.state.virtualized}
           onRefresh={() => alert('onRefresh: nothing to refresh :P')}
           onViewableItemsChanged={this._onViewableItemsChanged}
           refreshing={false}
-          shouldItemUpdate={(prev, next) => prev.item !== next.item}
           sections={[
             {ItemComponent: StackedItemComponent, key: 's1', data: [
-              {title: 'Item In Header Section', text: 's1', key: '0'}
+              {title: 'Item In Header Section', text: 'Section s1', key: '0'},
             ]},
-            {key: 's2', data: filteredData},
+            {key: 's2', data: [
+              {noImage: true, title: 'First item', text: 'Section s2', key: '0'},
+              {noImage: true, title: 'Second item', text: 'Section s2', key: '1'},
+            ]},
+            {key: 'Filtered Items', data: filteredData},
           ]}
           viewablePercentThreshold={100}
         />
@@ -133,6 +148,12 @@ const styles = StyleSheet.create({
   },
   searchRow: {
     paddingHorizontal: 10,
+  },
+  separatorText: {
+    color: 'gray',
+    alignSelf: 'center',
+    padding: 4,
+    fontSize: 9,
   },
 });
 

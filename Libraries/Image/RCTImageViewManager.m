@@ -12,7 +12,6 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTConvert.h>
-#import <React/RCTImageSource.h>
 
 #import "RCTImageLoader.h"
 #import "RCTImageView.h"
