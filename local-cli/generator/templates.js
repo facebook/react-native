@@ -50,12 +50,13 @@ function listTemplatesAndExit(newProjectName, options) {
 }
 
 /**
+ * @param destPath Create the new project at this path.
  * @param newProjectName For example 'AwesomeApp'.
- * @param templateKey Template to use, for example 'navigation'.
+ * @param template Template to use, for example 'navigation'.
  * @param yarnVersion Version of yarn available on the system, or null if
  *                    yarn is not available. For example '0.18.1'.
  */
-function createProjectFromTemplate(destPath, newProjectName, templateKey, yarnVersion) {
+function createProjectFromTemplate(destPath, newProjectName, template, yarnVersion) {
   // Expand the basic 'HelloWorld' template
   copyProjectTemplateAndReplace(
     path.resolve('node_modules', 'react-native', 'local-cli', 'templates', 'HelloWorld'),
@@ -63,7 +64,7 @@ function createProjectFromTemplate(destPath, newProjectName, templateKey, yarnVe
     newProjectName
   );
 
-  if (templateKey === undefined) {
+  if (template === undefined) {
     // No specific template, use just the HelloWorld template above
     return;
   }
@@ -76,15 +77,15 @@ function createProjectFromTemplate(destPath, newProjectName, templateKey, yarnVe
   // This way we don't have to duplicate the native files in every template.
   // If we duplicated them we'd make RN larger and risk that people would
   // forget to maintain all the copies so they would go out of sync.
-  const builtInTemplateName = builtInTemplates[templateKey];
+  const builtInTemplateName = builtInTemplates[template];
   if (builtInTemplateName) {
-    // templateKey is e.g. 'navigation',
+    // template is e.g. 'navigation',
     // use the built-in local-cli/templates/HelloNavigation folder
     createFromBuiltInTemplate(builtInTemplateName, destPath, newProjectName, yarnVersion);
   } else {
-    // templateKey is e.g. 'ignite',
+    // template is e.g. 'ignite',
     // use the template react-native-template-ignite from npm
-    createFromNpmTemplate(templateKey, destPath, newProjectName, yarnVersion);
+    createFromRemoteTemplate(template, destPath, newProjectName, yarnVersion);
   }
 }
 
@@ -102,28 +103,35 @@ function createFromBuiltInTemplate(templateName, destPath, newProjectName, yarnV
   installTemplateDependencies(templatePath, yarnVersion);
 }
 
-function createFromNpmTemplate(templateName, destPath, newProjectName, yarnVersion) {
-  const packageName = 'react-native-template-' + templateName;
-  // Check if the template exists
-  console.log(`Fetching template ${packageName} from npm...`);
-  try {
-    if (yarnVersion) {
-      execSync(`yarn info ${packageName}`);
-    } else {
-      execSync(`npm info ${packageName}`);
-    }
-  } catch (err) {
-    throw new Error(`The template ${packageName} was not found on npm:\n` + err.message);
+/**
+ * The following formats are supported for the template:
+ * - 'demo' -> Fetch the package react-native-template-demo from npm
+ * - git://..., http://..., file://... or any other URL supported by npm
+ */
+function createFromRemoteTemplate(template, destPath, newProjectName, yarnVersion) {
+  let installPackage;
+  let templateName;
+  if (template.includes('://')) {
+     // URL, e.g. git://, file://
+     installPackage = template;
+     templateName = template.substr(template.lastIndexOf('/') + 1);
+  } else {
+    // e.g 'demo'
+    installPackage = 'react-native-template-' + template;
+    templateName = installPackage;
   }
-  const templatePath = path.resolve(
-    'node_modules', packageName
-  );
+
+  // Check if the template exists
+  console.log(`Fetching template ${installPackage}...`);
   try {
     if (yarnVersion) {
-      execSync(`yarn add ${packageName} --ignore-scripts`, {stdio: 'inherit'});
+      execSync(`yarn add ${installPackage} --ignore-scripts`, {stdio: 'inherit'});
     } else {
-      execSync(`npm install ${packageName} --save --save-exact --ignore-scripts`, {stdio: 'inherit'});
+      execSync(`npm install ${installPackage} --save --save-exact --ignore-scripts`, {stdio: 'inherit'});
     }
+    const templatePath = path.resolve(
+      'node_modules', templateName
+    );
     copyProjectTemplateAndReplace(
       templatePath,
       destPath,
@@ -141,15 +149,15 @@ function createFromNpmTemplate(templateName, destPath, newProjectName, yarnVersi
     // Clean up the temp files
     try {
       if (yarnVersion) {
-        execSync(`yarn remove ${packageName} --ignore-scripts`);
+        execSync(`yarn remove ${templateName} --ignore-scripts`);
       } else {
-        execSync(`npm uninstall ${packageName} --ignore-scripts`);
+        execSync(`npm uninstall ${templateName} --ignore-scripts`);
       }
     } catch (err) {
       // Not critical but we still want people to know and report
       // if this the clean up fails.
       console.warn(
-        `Failed to clean up template temp files in node_modules/${packageName}. ` +
+        `Failed to clean up template temp files in node_modules/${templateName}. ` +
         'This is not a critical error, you can work on your app.'
       );
     }
