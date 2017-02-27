@@ -118,12 +118,12 @@ describe('computeViewableItems', function() {
         d: {y: 250, height: 50},
       };
       data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
-      let helper = new ViewabilityHelper({itemVisiblePercentThreashold: 0});
+      let helper = new ViewabilityHelper({itemVisiblePercentThreshold: 0});
       expect(helper.computeViewableItems(data.length, 0, 50, getFrameMetrics))
         .toEqual([0]);
       expect(helper.computeViewableItems(data.length, 1, 50, getFrameMetrics))
         .toEqual([0, 1]);
-      helper = new ViewabilityHelper({itemVisiblePercentThreashold: 100});
+      helper = new ViewabilityHelper({itemVisiblePercentThreshold: 100});
       expect(helper.computeViewableItems(data.length, 0, 250, getFrameMetrics))
         .toEqual([0, 1, 2]);
       expect(helper.computeViewableItems(data.length, 1, 250, getFrameMetrics))
