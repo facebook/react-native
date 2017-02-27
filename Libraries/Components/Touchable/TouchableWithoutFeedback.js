@@ -26,8 +26,7 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * Do not use unless you have a very good reason. All the elements that
- * respond to press should have a visual feedback when touched. This is
- * one of the primary reasons a "web" app doesn't feel "native".
+ * respond to press should have a visual feedback when touched.
  *
  * > **NOTE**: TouchableWithoutFeedback supports only one child
  * >
@@ -157,9 +156,7 @@ const TouchableWithoutFeedback = React.createClass({
         ((child._owner && child._owner.getName && child._owner.getName()) || '<unknown>')
     );
     if (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'View') {
-      if (!Array.isArray(children)) {
-        children = [children];
-      }
+      children = React.Children.toArray(children);
       children.push(Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop}));
     }
     const style = (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'Text') ?

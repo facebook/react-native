@@ -4,6 +4,7 @@ android_library(
   name = 'scroll',
   srcs = glob(['*.java']),
   deps = [
+    YOGA_TARGET,
     react_native_dep('third-party/android/support/v4:lib-support-v4'),
     react_native_dep('third-party/java/infer-annotations:infer-annotations'),
     react_native_dep('third-party/java/jsr-305:jsr-305'),
@@ -18,8 +19,4 @@ android_library(
   visibility = [
     'PUBLIC',
   ],
-)
-
-project_config(
-  src_target = ':scroll',
 )

@@ -12,7 +12,7 @@
 'use strict';
 
 // This is a stub for flow to make it understand require('./icon.png')
-// See packager/react-packager/src/Bundler/index.js
+// See packager/src/Bundler/index.js
 
 var AssetRegistry = require('AssetRegistry');
 

@@ -11,9 +11,9 @@
  */
 'use strict';
 
-var AlertIOS = require('AlertIOS');
-var Platform = require('Platform');
-var DialogModuleAndroid = require('NativeModules').DialogManagerAndroid;
+const AlertIOS = require('AlertIOS');
+const NativeModules = require('NativeModules');
+const Platform = require('Platform');
 
 import type { AlertType, AlertButtonStyle } from 'AlertIOS';
 
@@ -52,6 +52,11 @@ type Options = {
  *   - Two buttons mean 'negative', 'positive' (such as 'Cancel', 'OK')
  *   - Three buttons mean 'neutral', 'negative', 'positive' (such as 'Later', 'Cancel', 'OK')
  *
+ * Note that by default alerts on Android can be dismissed by clicking outside of their alert box.
+ * To prevent this behavior, you can provide
+ * an optional `options` parameter `{ cancelable: false }` to the Alert method.
+ *
+ * Example usage:
  * ```
  * // Works on both iOS and Android
  * Alert.alert(
@@ -61,7 +66,8 @@ type Options = {
  *     {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
  *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
  *     {text: 'OK', onPress: () => console.log('OK Pressed')},
- *   ]
+ *   ],
+ *   { cancelable: false }
  * )
  * ```
  */
@@ -121,18 +127,18 @@ class AlertAndroid {
     if (buttonPositive) {
       config = {...config, buttonPositive: buttonPositive.text || '' };
     }
-    DialogModuleAndroid.showAlert(
+    NativeModules.DialogManagerAndroid.showAlert(
       config,
       (errorMessage) => console.warn(errorMessage),
       (action, buttonKey) => {
-        if (action !== DialogModuleAndroid.buttonClicked) {
+        if (action !== NativeModules.DialogManagerAndroid.buttonClicked) {
           return;
         }
-        if (buttonKey === DialogModuleAndroid.buttonNeutral) {
+        if (buttonKey === NativeModules.DialogManagerAndroid.buttonNeutral) {
           buttonNeutral.onPress && buttonNeutral.onPress();
-        } else if (buttonKey === DialogModuleAndroid.buttonNegative) {
+        } else if (buttonKey === NativeModules.DialogManagerAndroid.buttonNegative) {
           buttonNegative.onPress && buttonNegative.onPress();
-        } else if (buttonKey === DialogModuleAndroid.buttonPositive) {
+        } else if (buttonKey === NativeModules.DialogManagerAndroid.buttonPositive) {
           buttonPositive.onPress && buttonPositive.onPress();
         }
       }

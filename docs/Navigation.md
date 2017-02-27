@@ -157,7 +157,7 @@ Push and pop, of course. That seems pretty straightforward to implement. I promi
 
 ### Step 2. Reducing the Navigation State
 
-NavigationExperimental comes built-in with a some useful reducers, and they are all available as part of NavigationStateUtils. The two we will be using right now are called -- yep -- push and pop. They take a navigationState object, and return a new navigationState object.
+NavigationExperimental comes built-in with some useful reducers, and they are all available as part of NavigationStateUtils. The two we will be using right now are called -- yep -- push and pop. They take a navigationState object, and return a new navigationState object.
 
 We can use them to write our `_onNavigationChange` function which, given a "push" or "pop" action, will reduce the state accordingly.
 

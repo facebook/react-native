@@ -10,7 +10,7 @@ next: tutorial
 Welcome to React Native! This page will help you install React Native on
 your system, so that you can build apps with it right away. If you already
 have React Native installed, you can skip ahead to the
-[Tutorial](/react-native/docs/tutorial.html).
+[Tutorial](docs/tutorial.html).
 
 The instructions are a bit different depending on your development operating system, and whether you want to start developing for iOS or Android. If you
 want to develop for both iOS and Android, that's fine - you just have to pick
@@ -124,7 +124,7 @@ Run the following command in a Terminal:
 npm install -g react-native-cli
 ```
 
-> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
+> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
 
 <block class="windows linux android" />
 
@@ -138,7 +138,7 @@ Run the following command in a Terminal:
 npm install -g react-native-cli
 ```
 
-> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
+> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
 
 <block class="mac ios" />
 
@@ -198,18 +198,19 @@ Click "Next" to install all of these components, then [configure VM acceleration
 
 #### 3. Install the Android 6.0 (Marshmallow) SDK
 
-Android Studio installs the most recent Android SDK by default. React Native, however, requires the `Android 6.0 (Marshmallow)` SDK. To install it, launch the SDK Manager, click on "Configure" in the "Welcome to Android Studio" screen.
+Android Studio installs the most recent Android SDK by default. React Native, however, requires the `Android 6.0 (Marshmallow)` SDK. To install it, launch the SDK Manager, click on "Configure" > "SDK Manager" in the "Welcome to Android Studio" screen.
 
 > The SDK Manager can also be found within the Android Studio "Preferences" menu, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
-Select "SDK Platforms" from within the SDK Manager, then check the box next to "Show Package Details". Look for and expand the `Android 6.0 (Marshmallow)` entry, then make sure the following items are all checked:
+Select the "SDK Platforms" tab from within the SDK Manager, then check the box next to "Show Package Details" in the bottom right corner. Look for and expand the `Android 6.0 (Marshmallow)` entry, then make sure the following items are all checked:
 
 - `Google APIs`
+- `Android SDK Platform 23`
 - `Intel x86 Atom System Image`
 - `Intel x86 Atom_64 System Image`
 - `Google APIs Intel x86 Atom_64 System Image`
 
-Next, select "SDK Tools" and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build Tools" entry, then make sure that `Android SDK Build-Tools 23.0.1` is selected.
+Next, select the "SDK Tools" tab and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build Tools" entry, then make sure that `Android SDK Build-Tools 23.0.1` is selected.
 
 Finally, click "Apply" to download and install the Android SDK and related build tools.
 
@@ -224,7 +225,7 @@ The React Native command line interface requires the `ANDROID_HOME` environment 
 Add the following lines to your `~/.bashrc` (or equivalent) config file:
 
 ```
-export ANDROID_HOME=~/Library/Android/sdk
+export ANDROID_HOME=${HOME}/Library/Android/sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools
 export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 ```
@@ -236,7 +237,7 @@ export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 Add the following lines to your `~/.bashrc` (or equivalent) config file:
 
 ```
-export ANDROID_HOME=~/Android/Sdk
+export ANDROID_HOME=${HOME}/Android/Sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools
 export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 ```

@@ -35,12 +35,14 @@ const {
 } = ReactNative;
 
 type Props = {
+  imageStyle?: any,
   onPress: Function,
+  style?: any,
 };
 
 const NavigationHeaderBackButton = (props: Props) => (
-  <TouchableOpacity style={styles.buttonContainer} onPress={props.onPress}>
-    <Image style={styles.button} source={require('./assets/back-icon.png')} />
+  <TouchableOpacity style={[styles.buttonContainer, props.style]} onPress={props.onPress}>
+    <Image style={[styles.button, props.imageStyle]} source={require('./assets/back-icon.png')} />
   </TouchableOpacity>
 );
 

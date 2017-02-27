@@ -13,29 +13,39 @@
 
 YG_EXTERN_C_BEGIN
 
-typedef enum YGFlexDirection {
-  YGFlexDirectionColumn,
-  YGFlexDirectionColumnReverse,
-  YGFlexDirectionRow,
-  YGFlexDirectionRowReverse,
-  YGFlexDirectionCount,
-} YGFlexDirection;
+#define YGAlignCount 8
+typedef YG_ENUM_BEGIN(YGAlign) {
+  YGAlignAuto,
+  YGAlignFlexStart,
+  YGAlignCenter,
+  YGAlignFlexEnd,
+  YGAlignStretch,
+  YGAlignBaseline,
+  YGAlignSpaceBetween,
+  YGAlignSpaceAround,
+} YG_ENUM_END(YGAlign);
 
-typedef enum YGMeasureMode {
-  YGMeasureModeUndefined,
-  YGMeasureModeExactly,
-  YGMeasureModeAtMost,
-  YGMeasureModeCount,
-} YGMeasureMode;
+#define YGDimensionCount 2
+typedef YG_ENUM_BEGIN(YGDimension) {
+  YGDimensionWidth,
+  YGDimensionHeight,
+} YG_ENUM_END(YGDimension);
 
-typedef enum YGPrintOptions {
-  YGPrintOptionsLayout = 1,
-  YGPrintOptionsStyle = 2,
-  YGPrintOptionsChildren = 4,
-  YGPrintOptionsCount,
-} YGPrintOptions;
+#define YGDirectionCount 3
+typedef YG_ENUM_BEGIN(YGDirection) {
+  YGDirectionInherit,
+  YGDirectionLTR,
+  YGDirectionRTL,
+} YG_ENUM_END(YGDirection);
 
-typedef enum YGEdge {
+#define YGDisplayCount 2
+typedef YG_ENUM_BEGIN(YGDisplay) {
+  YGDisplayFlex,
+  YGDisplayNone,
+} YG_ENUM_END(YGDisplay);
+
+#define YGEdgeCount 9
+typedef YG_ENUM_BEGIN(YGEdge) {
   YGEdgeLeft,
   YGEdgeTop,
   YGEdgeRight,
@@ -45,72 +55,80 @@ typedef enum YGEdge {
   YGEdgeHorizontal,
   YGEdgeVertical,
   YGEdgeAll,
-  YGEdgeCount,
-} YGEdge;
+} YG_ENUM_END(YGEdge);
 
-typedef enum YGPositionType {
-  YGPositionTypeRelative,
-  YGPositionTypeAbsolute,
-  YGPositionTypeCount,
-} YGPositionType;
+#define YGExperimentalFeatureCount 2
+typedef YG_ENUM_BEGIN(YGExperimentalFeature) {
+  YGExperimentalFeatureRounding,
+  YGExperimentalFeatureWebFlexBasis,
+} YG_ENUM_END(YGExperimentalFeature);
 
-typedef enum YGDimension {
-  YGDimensionWidth,
-  YGDimensionHeight,
-  YGDimensionCount,
-} YGDimension;
+#define YGFlexDirectionCount 4
+typedef YG_ENUM_BEGIN(YGFlexDirection) {
+  YGFlexDirectionColumn,
+  YGFlexDirectionColumnReverse,
+  YGFlexDirectionRow,
+  YGFlexDirectionRowReverse,
+} YG_ENUM_END(YGFlexDirection);
 
-typedef enum YGJustify {
+#define YGJustifyCount 5
+typedef YG_ENUM_BEGIN(YGJustify) {
   YGJustifyFlexStart,
   YGJustifyCenter,
   YGJustifyFlexEnd,
   YGJustifySpaceBetween,
   YGJustifySpaceAround,
-  YGJustifyCount,
-} YGJustify;
+} YG_ENUM_END(YGJustify);
 
-typedef enum YGDirection {
-  YGDirectionInherit,
-  YGDirectionLTR,
-  YGDirectionRTL,
-  YGDirectionCount,
-} YGDirection;
-
-typedef enum YGLogLevel {
+#define YGLogLevelCount 5
+typedef YG_ENUM_BEGIN(YGLogLevel) {
   YGLogLevelError,
   YGLogLevelWarn,
   YGLogLevelInfo,
   YGLogLevelDebug,
   YGLogLevelVerbose,
-  YGLogLevelCount,
-} YGLogLevel;
+} YG_ENUM_END(YGLogLevel);
 
-typedef enum YGWrap {
-  YGWrapNoWrap,
-  YGWrapWrap,
-  YGWrapCount,
-} YGWrap;
+#define YGMeasureModeCount 3
+typedef YG_ENUM_BEGIN(YGMeasureMode) {
+  YGMeasureModeUndefined,
+  YGMeasureModeExactly,
+  YGMeasureModeAtMost,
+} YG_ENUM_END(YGMeasureMode);
 
-typedef enum YGOverflow {
+#define YGOverflowCount 3
+typedef YG_ENUM_BEGIN(YGOverflow) {
   YGOverflowVisible,
   YGOverflowHidden,
   YGOverflowScroll,
-  YGOverflowCount,
-} YGOverflow;
+} YG_ENUM_END(YGOverflow);
 
-typedef enum YGExperimentalFeature {
-  YGExperimentalFeatureRounding,
-  YGExperimentalFeatureWebFlexBasis,
-  YGExperimentalFeatureCount,
-} YGExperimentalFeature;
+#define YGPositionTypeCount 2
+typedef YG_ENUM_BEGIN(YGPositionType) {
+  YGPositionTypeRelative,
+  YGPositionTypeAbsolute,
+} YG_ENUM_END(YGPositionType);
 
-typedef enum YGAlign {
-  YGAlignAuto,
-  YGAlignFlexStart,
-  YGAlignCenter,
-  YGAlignFlexEnd,
-  YGAlignStretch,
-  YGAlignCount,
-} YGAlign;
+#define YGPrintOptionsCount 3
+typedef YG_ENUM_BEGIN(YGPrintOptions) {
+  YGPrintOptionsLayout = 1,
+  YGPrintOptionsStyle = 2,
+  YGPrintOptionsChildren = 4,
+} YG_ENUM_END(YGPrintOptions);
+
+#define YGUnitCount 4
+typedef YG_ENUM_BEGIN(YGUnit) {
+  YGUnitUndefined,
+  YGUnitPoint,
+  YGUnitPercent,
+  YGUnitAuto,
+} YG_ENUM_END(YGUnit);
+
+#define YGWrapCount 3
+typedef YG_ENUM_BEGIN(YGWrap) {
+  YGWrapNoWrap,
+  YGWrapWrap,
+  YGWrapWrapReverse,
+} YG_ENUM_END(YGWrap);
 
 YG_EXTERN_C_END

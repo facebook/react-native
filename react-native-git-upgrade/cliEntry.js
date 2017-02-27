@@ -100,7 +100,8 @@ function parseInformationJsonOutput(jsonOutput, requestedVersion) {
   try {
     const output = JSON.parse(jsonOutput);
     const newVersion = output.version;
-    const newReactVersionRange = output['peerDependencies.react'];
+    const peerDependencies = output.peerDependencies;
+    const newReactVersionRange = peerDependencies.react;
 
     assert(semver.valid(newVersion));
 
@@ -159,7 +160,7 @@ function runCopyAndReplace(generatorDir, appName) {
    * This file could have changed between these 2 versions. When generating the new template,
    * we don't want to load the old version of the generator from the cache
    */
-  delete require.cache[copyProjectTemplateAndReplacePath];
+  delete require.cache[require.resolve(copyProjectTemplateAndReplacePath)];
   const copyProjectTemplateAndReplace = require(copyProjectTemplateAndReplacePath);
   copyProjectTemplateAndReplace(
     path.resolve(generatorDir, '..', 'templates', 'HelloWorld'),
@@ -258,7 +259,7 @@ async function run(requestedVersion, cliArgs) {
     checkGitAvailable();
 
     log.info('Get information from NPM registry');
-    const viewCommand = 'npm view react-native@' + (requestedVersion || 'latest') + ' peerDependencies.react version --json';
+    const viewCommand = 'npm view react-native@' + (requestedVersion || 'latest') + ' --json';
     const jsonOutput = await exec(viewCommand, verbose);
     const {newVersion, newReactVersionRange} = parseInformationJsonOutput(jsonOutput, requestedVersion);
     // Print which versions we're upgrading to
@@ -316,7 +317,7 @@ async function run(requestedVersion, cliArgs) {
     await exec('git commit -m "New version" --allow-empty', verbose);
 
     log.info('Generate the patch between the 2 versions');
-    const diffOutput = await exec('git diff HEAD~1 HEAD', verbose);
+    const diffOutput = await exec('git diff --binary --no-color HEAD~1 HEAD', verbose);
 
     log.info('Save the patch in temp directory');
     const patchPath = path.resolve(tmpDir, `upgrade_${currentVersion}_${newVersion}.patch`);

@@ -19,6 +19,7 @@ var React = require('React');
 var ReactNative = require('ReactNative');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
+var TVEventHandler = require('TVEventHandler');
 var View = require('View');
 
 var invariant = require('fbjs/lib/invariant');
@@ -37,13 +38,13 @@ function getuid() {
 }
 
 class NavigatorTransitionerIOS extends React.Component {
-  requestSchedulingNavigation = (cb) => {
+  requestSchedulingNavigation(cb) {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
       ReactNative.findNodeHandle(this),
       logError,
       cb
     );
-  };
+  }
 
   render() {
     return (
@@ -89,11 +90,11 @@ type Route = {
   backButtonIcon?: Object,
   leftButtonTitle?: string,
   leftButtonIcon?: Object,
-  leftButtonSystemIcon?: SystemButtonType;
+  leftButtonSystemIcon?: SystemButtonType,
   onLeftButtonPress?: Function,
   rightButtonTitle?: string,
   rightButtonIcon?: Object,
-  rightButtonSystemIcon?: SystemButtonType;
+  rightButtonSystemIcon?: SystemButtonType,
   onRightButtonPress?: Function,
   wrapperStyle?: any,
 };
@@ -132,7 +133,7 @@ type Event = Object;
  * animations and behavior from UIKIt.
  *
  * As the name implies, it is only available on iOS. Take a look at
- * [`Navigator`](/react-native/docs/navigator.html) for a similar solution for your
+ * [`Navigator`](docs/navigator.html) for a similar solution for your
  * cross-platform needs, or check out
  * [react-native-navigation](https://github.com/wix/react-native-navigation), a
  * component that aims to provide native navigation on both iOS and Android.
@@ -519,11 +520,13 @@ var NavigatorIOS = React.createClass({
 
   componentDidMount: function() {
     this._emitDidFocus(this.state.routeStack[this.state.observedTopOfStack]);
+    this._enableTVEventHandler();
   },
 
   componentWillUnmount: function() {
     this.navigationContext.dispose();
     this.navigationContext = new NavigationContext();
+    this._disableTVEventHandler();
   },
 
   getDefaultProps: function(): Object {
@@ -889,6 +892,24 @@ var NavigatorIOS = React.createClass({
         </NavigatorTransitionerIOS>
       </StaticContainer>
     );
+  },
+
+  _tvEventHandler: (undefined: ?TVEventHandler),
+
+  _enableTVEventHandler: function() {
+    this._tvEventHandler = new TVEventHandler();
+    this._tvEventHandler.enable(this, function(cmp, evt) {
+      if (evt && evt.eventType === 'menu') {
+        cmp.pop();
+      }
+    });
+  },
+
+  _disableTVEventHandler: function() {
+    if (this._tvEventHandler) {
+      this._tvEventHandler.disable();
+      delete this._tvEventHandler;
+    }
   },
 
   render: function() {

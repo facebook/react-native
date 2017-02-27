@@ -86,6 +86,25 @@ var TouchableHighlight = React.createClass({
      * Called immediately after the underlay is hidden
      */
     onHideUnderlay: React.PropTypes.func,
+    /**
+     * *(Apple TV only)* TV preferred focus (see documentation for the View component).
+     *
+     * @platform ios
+     */
+    hasTVPreferredFocus: React.PropTypes.bool,
+    /**
+     * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
+     *
+     * enabled: If true, parallax effects are enabled.  Defaults to true.
+     * shiftDistanceX: Defaults to 2.0.
+     * shiftDistanceY: Defaults to 2.0.
+     * tiltAngle: Defaults to 0.05.
+     * magnification: Defaults to 1.0.
+     *
+     * @platform ios
+     */
+    tvParallaxProperties: React.PropTypes.object,
+
   },
 
   mixins: [NativeMethodsMixin, TimerMixin, Touchable.Mixin],
@@ -108,7 +127,8 @@ var TouchableHighlight = React.createClass({
       underlayStyle: [
         INACTIVE_UNDERLAY_PROPS.style,
         props.style,
-      ]
+      ],
+      hasTVPreferredFocus: props.hasTVPreferredFocus
     };
   },
 
@@ -234,6 +254,9 @@ var TouchableHighlight = React.createClass({
         style={this.state.underlayStyle}
         onLayout={this.props.onLayout}
         hitSlop={this.props.hitSlop}
+        isTVSelectable={true}
+        tvParallaxProperties={this.props.tvParallaxProperties}
+        hasTVPreferredFocus={this.state.hasTVPreferredFocus}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
         onResponderGrant={this.touchableHandleResponderGrant}
