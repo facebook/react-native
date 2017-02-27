@@ -57,7 +57,7 @@ The keys to integrating React Native components into your iOS application are to
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
 7. [Debug](/react-native/releases/next/docs/debugging.html).
-8. Prepare for [deployment](/react-native/docs/running-on-device.html) (e.g., via the `react-native-xcode.sh` script).
+8. Prepare for [deployment](docs/running-on-device.html) (e.g., via the `react-native-xcode.sh` script).
 9. Deploy and Profit!
 
 <block class="android" />
@@ -72,7 +72,7 @@ The keys to integrating React Native components into your Android application ar
 5. Start the React Native server and run your native application.
 6. Optionally add more React Native components.
 7. [Debug](/react-native/releases/next/docs/debugging.html).
-8. [Prepare](/react-native/releases/next/docs/signed-apk-android.html) for [deployment](/react-native/docs/running-on-device.html).
+8. [Prepare](/react-native/releases/next/docs/signed-apk-android.html) for [deployment](docs/running-on-device.html).
 9. Deploy and Profit!
 
 <block class="objc swift android" />
@@ -81,7 +81,7 @@ The keys to integrating React Native components into your Android application ar
 
 <block class="android" />
 
-The [Android Getting Started guide](/react-native/docs/getting-started.html) will install the appropriate prerequisites (e.g., `npm`) for React Native on the Android target platform and your chosen development environment.
+The [Android Getting Started guide](docs/getting-started.html) will install the appropriate prerequisites (e.g., `npm`) for React Native on the Android target platform and your chosen development environment.
 
 > To ensure a smooth experience, make sure your `android` project is under `$root/android`.
 
@@ -89,7 +89,7 @@ The [Android Getting Started guide](/react-native/docs/getting-started.html) wil
 
 ### General
 
-First, follow the [Getting Started guide](/react-native/docs/getting-started.html) for your development environment and the iOS target platform to install the prerequisites for React Native.
+First, follow the [Getting Started guide](docs/getting-started.html) for your development environment and the iOS target platform to install the prerequisites for React Native.
 
 > To ensure a smooth experience, make sure your `iOS` project is under `$root/ios`.
 
@@ -588,7 +588,7 @@ dependencies {
 
 > If you want to ensure that you are always using a specific React Native version in your native build, replace `+` with an actual React Native version you've downloaded from `npm`.
 
-In your project's `build.gradle` file add an entry for the local React Native maven directory:
+In your project's `build.gradle` file add an entry for the local React Native maven directory. Be sure to add it to the "allprojects" block:
 
 ```
 allprojects {

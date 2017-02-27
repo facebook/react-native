@@ -84,7 +84,7 @@ JSValueRef Value::fromDynamic(JSContextRef ctx, const folly::dynamic& value) {
 
 JSValueRef Value::fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj) {
   switch (obj.type()) {
-    // For premitive types (and strings), just create and return an equivalent JSValue
+    // For primitive types (and strings), just create and return an equivalent JSValue
     case folly::dynamic::Type::NULLT:
       return JSC_JSValueMakeNull(ctx);
 
@@ -152,7 +152,7 @@ Value Value::makeError(JSContextRef ctx, const char *error)
   JSObjectRef errorObj = JSC_JSObjectMakeError(ctx, 1, args, &exn);
   if (!errorObj) {
     std::string exceptionText = Value(ctx, exn).toString().str();
-    throwJSExecutionException("Exception calling object as function: %s", exceptionText.c_str());
+    throwJSExecutionException("%s", exceptionText.c_str());
   }
   return Value(ctx, errorObj);
 }

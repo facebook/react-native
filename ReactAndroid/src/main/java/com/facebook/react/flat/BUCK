@@ -5,6 +5,7 @@ android_library(
   srcs = glob(['*.java']),
   deps = [
     YOGA_TARGET,
+    react_native_dep('libraries/fbcore/src/main/java/com/facebook/common/logging:logging'),
     react_native_dep('libraries/fresco/fresco-react-native:fbcore'),
     react_native_dep('libraries/fresco/fresco-react-native:fresco-drawee'),
     react_native_dep('libraries/fresco/fresco-react-native:fresco-react-native'),
@@ -32,4 +33,3 @@ android_library(
     'PUBLIC',
   ],
 )
-

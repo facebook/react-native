@@ -128,7 +128,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
       jsExecutor,
       mReactQueueConfiguration.getJSQueueThread(),
       mReactQueueConfiguration.getNativeModulesQueueThread(),
-      mJavaRegistry.getModuleRegistryHolder(this));
+      mJavaRegistry.getJavaModules(this),
+      mJavaRegistry.getCxxModules());
     mMainExecutorToken = getMainExecutorToken();
   }
 
@@ -179,12 +180,37 @@ public class CatalystInstanceImpl implements CatalystInstance {
                                        JavaScriptExecutor jsExecutor,
                                        MessageQueueThread jsQueue,
                                        MessageQueueThread moduleQueue,
-                                       ModuleRegistryHolder registryHolder);
+                                       Collection<JavaModuleWrapper> javaModules,
+                                       Collection<CxxModuleWrapper> cxxModules);
 
-  /* package */ native void setSourceURL(String sourceURL);
-  /* package */ native void loadScriptFromAssets(AssetManager assetManager, String assetURL);
-  /* package */ native void loadScriptFromFile(String fileName, String sourceURL);
-  /* package */ native void loadScriptFromOptimizedBundle(String path, String sourceURL, int flags);
+  /**
+   * This API is used in situations where the JS bundle is being executed not on
+   * the device, but on a host machine. In that case, we must provide two source
+   * URLs for the JS bundle: One to be used on the device, and one to be used on
+   * the remote debugging machine.
+   *
+   * @param deviceURL A source URL that is accessible from this device.
+   * @param remoteURL A source URL that is accessible from the remote machine
+   * executing the JS.
+   */
+  /* package */ void setSourceURLs(String deviceURL, String remoteURL) {
+    mSourceURL = deviceURL;
+    jniSetSourceURL(remoteURL);
+  }
+
+  /* package */ void loadScriptFromAssets(AssetManager assetManager, String assetURL) {
+    mSourceURL = assetURL;
+    jniLoadScriptFromAssets(assetManager, assetURL);
+  }
+
+  /* package */ void loadScriptFromFile(String fileName, String sourceURL) {
+    mSourceURL = sourceURL;
+    jniLoadScriptFromFile(fileName, sourceURL);
+  }
+
+  private native void jniSetSourceURL(String sourceURL);
+  private native void jniLoadScriptFromAssets(AssetManager assetManager, String assetURL);
+  private native void jniLoadScriptFromFile(String fileName, String sourceURL);
 
   @Override
   public void runJSBundle() {
@@ -192,7 +218,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mJSBundleHasLoaded = true;
 
     // incrementPendingJSCalls();
-    mSourceURL = mJSBundleLoader.loadScript(CatalystInstanceImpl.this);
+    mJSBundleLoader.loadScript(CatalystInstanceImpl.this);
 
     synchronized (mJSCallsPendingInitLock) {
       // Loading the bundle is queued on the JS thread, but may not have
@@ -201,7 +227,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       mAcceptCalls = true;
 
       for (PendingJSCall call : mJSCallsPendingInit) {
-        callJSFunction(call.mExecutorToken, call.mModule, call.mMethod, call.mArguments);
+        jniCallJSFunction(call.mExecutorToken, call.mModule, call.mMethod, call.mArguments);
       }
       mJSCallsPendingInit.clear();
     }
@@ -216,7 +242,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mSourceURL;
   }
 
-  private native void callJSFunction(
+  private native void jniCallJSFunction(
     ExecutorToken token,
     String module,
     String method,
@@ -242,10 +268,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
       }
     }
 
-    callJSFunction(executorToken, module, method, arguments);
+    jniCallJSFunction(executorToken, module, method, arguments);
   }
 
-  private native void callJSCallback(ExecutorToken executorToken, int callbackID, NativeArray arguments);
+  private native void jniCallJSCallback(ExecutorToken executorToken, int callbackID, NativeArray arguments);
 
   @Override
   public void invokeCallback(ExecutorToken executorToken, final int callbackID, final NativeArray arguments) {
@@ -254,7 +280,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return;
     }
 
-    callJSCallback(executorToken, callbackID, arguments);
+    jniCallJSCallback(executorToken, callbackID, arguments);
   }
 
   /**

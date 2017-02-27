@@ -19,6 +19,7 @@
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
+#import "RCTConvert+Transform.h"
 
 #if TARGET_OS_TV
 #import "RCTTVView.h"
@@ -137,19 +138,14 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
   view.layer.shouldRasterize = json ? [RCTConvert BOOL:json] : defaultView.layer.shouldRasterize;
   view.layer.rasterizationScale = view.layer.shouldRasterize ? [UIScreen mainScreen].scale : defaultView.layer.rasterizationScale;
 }
-// TODO: t11041683 Remove this duplicate property name.
-RCT_CUSTOM_VIEW_PROPERTY(transformMatrix, CATransform3D, RCTView)
-{
-  view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
-  // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing
-  view.layer.allowsEdgeAntialiasing = !CATransform3DIsIdentity(view.layer.transform);
-}
+
 RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 {
   view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
   // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing
   view.layer.allowsEdgeAntialiasing = !CATransform3DIsIdentity(view.layer.transform);
 }
+
 RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)
 {
   if ([view respondsToSelector:@selector(setPointerEvents:)]) {
@@ -316,5 +312,6 @@ RCT_EXPORT_SHADOW_PROPERTY(overflow, YGOverflow)
 RCT_EXPORT_SHADOW_PROPERTY(onLayout, RCTDirectEventBlock)
 
 RCT_EXPORT_SHADOW_PROPERTY(zIndex, NSInteger)
+RCT_EXPORT_SHADOW_PROPERTY(direction, YGDirection)
 
 @end

@@ -41,10 +41,16 @@ public abstract class JSBundleLoader {
    * passing large strings from java to native memorory.
    */
   public static JSBundleLoader createFileLoader(final String fileName) {
+    return createFileLoader(fileName, fileName);
+  }
+
+  public static JSBundleLoader createFileLoader(
+      final String fileName,
+      final String assetUrl) {
     return new JSBundleLoader() {
       @Override
       public String loadScript(CatalystInstanceImpl instance) {
-        instance.loadScriptFromFile(fileName, fileName);
+        instance.loadScriptFromFile(fileName, assetUrl);
         return fileName;
       }
     };
@@ -83,7 +89,7 @@ public abstract class JSBundleLoader {
     return new JSBundleLoader() {
       @Override
       public String loadScript(CatalystInstanceImpl instance) {
-        instance.setSourceURL(proxySourceURL);
+        instance.setSourceURLs(realSourceURL, proxySourceURL);
         return realSourceURL;
       }
     };
