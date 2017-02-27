@@ -17,6 +17,7 @@
 
 #import "RCTBridge.h"
 #import "RCTDevMenu.h"
+#import "RCTDevSettings.h"
 #import "RCTFPSGraph.h"
 #import "RCTInvalidating.h"
 #import "RCTJavaScriptExecutor.h"
@@ -26,7 +27,6 @@
 #import "RCTUIManager.h"
 #import "RCTBridge+Private.h"
 
-static NSString *const RCTPerfMonitorKey = @"RCTPerfMonitorKey";
 static NSString *const RCTPerfMonitorCellIdentifier = @"RCTPerfMonitorCellIdentifier";
 
 static CGFloat const RCTPerfMonitorBarHeight = 50;
@@ -154,18 +154,21 @@ RCT_EXPORT_MODULE()
 {
   if (!_devMenuItem) {
     __weak __typeof__(self) weakSelf = self;
+    __weak RCTDevSettings *devSettings = self.bridge.devSettings;
     _devMenuItem =
-      [RCTDevMenuItem toggleItemWithKey:RCTPerfMonitorKey
-                                  title:@"Show Perf Monitor"
-                          selectedTitle:@"Hide Perf Monitor"
-                                handler:
-                                ^(BOOL selected) {
-                                  if (selected) {
-                                    [weakSelf show];
-                                  } else {
-                                    [weakSelf hide];
-                                  }
-                                }];
+    [RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
+      return (devSettings.isPerfMonitorShown) ?
+        @"Hide Perf Monitor" :
+        @"Show Perf Monitor";
+    } handler:^{
+      if (devSettings.isPerfMonitorShown) {
+        [weakSelf hide];
+        devSettings.isPerfMonitorShown = NO;
+      } else {
+        [weakSelf show];
+        devSettings.isPerfMonitorShown = YES;
+      }
+    }];
   }
 
   return _devMenuItem;

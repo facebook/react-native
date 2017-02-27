@@ -75,15 +75,6 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
 
 /**
  * @experimental
- * Inits a new executor instance with given configuration flags. Please refer to
- * the documentation for `RCTJSContextProvider` for more information as to their
- * purpose.
- */
-- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
-                                tryBytecode:(BOOL)tryBytecode;
-
-/**
- * @experimental
  * synchronouslyExecuteApplicationScript:sourceURL:JSContext:error:
  *
  * Run the provided JS Script/Bundle, blocking the caller until it finishes.
@@ -118,18 +109,12 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
  */
 @interface RCTJSContextProvider : NSObject
 
-- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
-                                tryBytecode:(BOOL)tryBytecode;
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
 
 /**
  * Marks whether the provider uses the custom implementation of JSC and not the system one.
  */
 @property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
-
-/**
- * Marks whether it is safe to try and run bytecode if given the choice.
- */
-@property (nonatomic, readonly) BOOL tryBytecode;
 
 /**
  * @experimental

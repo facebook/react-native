@@ -7,12 +7,16 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <JavaScriptCore/JSBase.h>
+
 #import <React/RCTBridge.h>
 
 @class RCTModuleData;
 @protocol RCTJavaScriptExecutor;
 
 RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
+
+RCT_EXTERN __attribute__((weak)) void RCTFBQuickPerformanceLoggerConfigureHooks(JSGlobalContextRef ctx);
 
 #if RCT_DEBUG
 RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);

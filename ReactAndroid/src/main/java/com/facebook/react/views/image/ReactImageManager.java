@@ -21,6 +21,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
@@ -169,6 +170,11 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   @ReactProp(name = "shouldNotifyLoadEvents")
   public void setLoadHandlersRegistered(ReactImageView view, boolean shouldNotifyLoadEvents) {
     view.setShouldNotifyLoadEvents(shouldNotifyLoadEvents);
+  }
+
+  @ReactProp(name = "headers")
+  public void setHeaders(ReactImageView view, ReadableMap headers) {
+    view.setHeaders(headers);
   }
 
   @Override

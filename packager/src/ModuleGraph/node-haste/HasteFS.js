@@ -48,6 +48,12 @@ module.exports = class HasteFS {
     return Array.from(this.files.keys());
   }
 
+  matchFiles() {
+    throw new Error(
+      'HasteFS.matchFiles is not implemented yet.'
+    );
+  }
+
   matches(directory: string, pattern: RegExp) {
     const entries = this.directoryEntries.get(directory);
     return entries ? entries.filter(pattern.test, pattern) : [];

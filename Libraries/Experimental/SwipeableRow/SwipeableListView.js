@@ -34,7 +34,7 @@ type Props = {
   bounceFirstRowOnMount: boolean,
   dataSource: SwipeableListViewDataSource,
   maxSwipeDistance: number | (rowData: any, sectionID: string, rowID: string) => number,
-  onScroll: ?Function,
+  onScroll?: ?Function,
   renderRow: Function,
   renderQuickActions: Function,
 };
@@ -167,13 +167,13 @@ class SwipeableListView extends React.Component {
   }
 
   // This enables rows having variable width slideoutView.
-  _getMaxSwipeDistance = (rowData: Object, sectionID: string, rowID: string): number => {
+  _getMaxSwipeDistance(rowData: Object, sectionID: string, rowID: string): number {
     if (typeof this.props.maxSwipeDistance === 'function') {
       return this.props.maxSwipeDistance(rowData, sectionID, rowID);
     }
 
     return this.props.maxSwipeDistance;
-  };
+  }
 
   _renderRow = (rowData: Object, sectionID: string, rowID: string): React.Element<any> => {
     const slideoutView = this.props.renderQuickActions(rowData, sectionID, rowID);

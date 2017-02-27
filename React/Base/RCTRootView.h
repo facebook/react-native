@@ -21,10 +21,10 @@
  * rootViewDidChangeIntrinsicSize method of the RCTRootViewDelegate will be called.
  */
 typedef NS_ENUM(NSInteger, RCTRootViewSizeFlexibility) {
-  RCTRootViewSizeFlexibilityNone = 0,
-  RCTRootViewSizeFlexibilityWidth,
-  RCTRootViewSizeFlexibilityHeight,
-  RCTRootViewSizeFlexibilityWidthAndHeight,
+  RCTRootViewSizeFlexibilityNone           = 0,
+  RCTRootViewSizeFlexibilityWidth          = 1 << 0,
+  RCTRootViewSizeFlexibilityHeight         = 1 << 1,
+  RCTRootViewSizeFlexibilityWidthAndHeight = RCTRootViewSizeFlexibilityWidth | RCTRootViewSizeFlexibilityHeight,
 };
 
 /**
