@@ -25,14 +25,18 @@ script:
   - if [[ "$TEST_TYPE" = js ]]; then npm test -- --maxWorkers=1; fi
   - if [[ ( "$TEST_TYPE" = podspecs ) && ( "$TRAVIS_PULL_REQUEST" = "false" ) ]]; then gem install cocoapods && ./scripts/process-podspecs.sh; fi
 
+
+matrix:
+  - fast_finish: true # Fail the whole build as soon as one test type fails. Should help with Travis capacity issues (very long queues).
+
+# The order of these tests says which are more likely to run first and fail the whole build fast.
 env:
-  matrix:
-    - TEST_TYPE=e2e-objc-tvos
-    - TEST_TYPE=e2e-objc
-    - TEST_TYPE=objc-ios
-    - TEST_TYPE=objc-tvos
-    - TEST_TYPE=js
-    - TEST_TYPE=podspecs
+  - TEST_TYPE=js
+  - TEST_TYPE=objc-tvos
+  - TEST_TYPE=objc-ios
+  - TEST_TYPE=podspecs
+  - TEST_TYPE=e2e-objc-tvos
+  - TEST_TYPE=e2e-objc
 
 branches:
   only:
@@ -43,7 +47,7 @@ notifications:
   email:
     recipients:
       - mkonicek@fb.com
-      - eloy@artsy.net
+      - eloy@artsy.net # Eloy Durán maintains the podspecs test and wants to be notified about failures
     on_failure: change
     on_success: change
   slack:
