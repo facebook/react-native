@@ -194,7 +194,7 @@ bool CatalystInstanceImpl::isIndexedRAMBundle(const char *sourcePath) {
   if (!bundle_stream) {
     return false;
   }
-  BundleHeader header{};
+  BundleHeader header;
   bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header));
   bundle_stream.close();
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;

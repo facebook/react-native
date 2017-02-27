@@ -95,7 +95,7 @@ describe('Bundle', () => {
         bundle.setMainModuleId('foo');
         bundle.finalize({
           runBeforeMainModule: ['bar'],
-          runMainModule: true,
+          runModule: true,
         });
         expect(bundle.getSource({dev: true})).toBe([
           'transformed foo;',
@@ -172,7 +172,7 @@ describe('Bundle', () => {
         otherBundle.setMainModuleId('foo');
         otherBundle.finalize({
           runBeforeMainModule: ['InitializeCore'],
-          runMainModule: true,
+          runModule: true,
         });
 
         const sourceMap = otherBundle.getSourceMap({dev: true});

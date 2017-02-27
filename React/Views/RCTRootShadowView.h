@@ -13,10 +13,10 @@
 @interface RCTRootShadowView : RCTShadowView
 
 /**
- * Size flexibility type used to find size constraints.
- * Default to RCTRootViewSizeFlexibilityNone
+ * Available size to layout all views.
+ * Defaults to {INFINITY, INFINITY}
  */
-@property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
+@property (nonatomic, assign) CGSize availableSize;
 
 /**
  * Layout direction (LTR or RTL) inherited from native environment and

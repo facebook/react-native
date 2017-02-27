@@ -22,14 +22,14 @@ import javax.annotation.Nullable;
 /**
  * Module that exposes Android Constants to JS.
  */
-@ReactModule(name = "AndroidConstants")
+@ReactModule(name = "PlatformConstants")
 public class AndroidInfoModule extends BaseJavaModule {
 
   private static final String IS_TESTING = "IS_TESTING";
 
   @Override
   public String getName() {
-    return "AndroidConstants";
+    return "PlatformConstants";
   }
 
   @Override

@@ -82,7 +82,7 @@ class ResolutionRequest {
     this._resetResolutionCache();
   }
 
-  _tryResolve(action, secondaryAction) {
+  _tryResolve(action: () => Promise<string>, secondaryAction: () => ?Promise<string>) {
     return action().catch((error) => {
       if (error.type !== 'UnableToResolveError') {
         throw error;
@@ -219,7 +219,7 @@ class ResolutionRequest {
     });
   }
 
-  _resolveHasteDependency(fromModule, toModuleName) {
+  _resolveHasteDependency(fromModule: Module, toModuleName: string) {
     toModuleName = normalizePath(toModuleName);
 
     let p = fromModule.getPackage();
@@ -267,7 +267,7 @@ class ResolutionRequest {
     });
   }
 
-  _redirectRequire(fromModule, modulePath) {
+  _redirectRequire(fromModule: Module, modulePath: string) {
     return Promise.resolve(fromModule.getPackage()).then(p => {
       if (p) {
         return p.redirectRequire(modulePath);
@@ -276,7 +276,7 @@ class ResolutionRequest {
     });
   }
 
-  _resolveFileOrDir(fromModule, toModuleName) {
+  _resolveFileOrDir(fromModule: Module, toModuleName: string) {
     const potentialModulePath = isAbsolutePath(toModuleName) ?
         toModuleName :
         path.join(path.dirname(fromModule.path), toModuleName);
@@ -299,7 +299,7 @@ class ResolutionRequest {
     );
   }
 
-  _resolveNodeDependency(fromModule, toModuleName) {
+  _resolveNodeDependency(fromModule: Module, toModuleName: string) {
     if (isRelativeImport(toModuleName) || isAbsolutePath(toModuleName)) {
       return this._resolveFileOrDir(fromModule, toModuleName);
     } else {
@@ -379,7 +379,7 @@ class ResolutionRequest {
     }
   }
 
-  _loadAsFile(potentialModulePath, fromModule, toModule) {
+  _loadAsFile(potentialModulePath: string, fromModule: Module, toModule: string) {
     return Promise.resolve().then(() => {
       if (this._helpers.isAssetFile(potentialModulePath)) {
         let dirname = path.dirname(potentialModulePath);
@@ -439,7 +439,7 @@ class ResolutionRequest {
     });
   }
 
-  _loadAsDir(potentialDirPath, fromModule, toModule) {
+  _loadAsDir(potentialDirPath: string, fromModule: Module, toModule: string) {
     return Promise.resolve().then(() => {
       if (!this._dirExists(potentialDirPath)) {
         throw new UnableToResolveError(
