@@ -23,7 +23,6 @@ const HMRBundle = require('./HMRBundle');
 const ModuleTransport = require('../lib/ModuleTransport');
 const imageSize = require('image-size');
 const path = require('path');
-const version = require('../../../package.json').version;
 const denodeify = require('denodeify');
 
 const {
@@ -33,6 +32,8 @@ const {
   dirname: pathDirname,
   extname,
 } = require('path');
+
+const VERSION = require('../../package.json').version;
 
 import type AssetServer from '../AssetServer';
 import type Module from '../node-haste/Module';
@@ -129,7 +130,7 @@ class Bundler {
 
     const cacheKeyParts =  [
       'react-packager-cache',
-      version,
+      VERSION,
       opts.cacheVersion,
       stableProjectRoots.join(',').split(pathSeparator).join('-'),
       transformModuleHash,
