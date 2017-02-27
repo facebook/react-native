@@ -175,6 +175,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return ((RCTScrollView *)self.superview).contentView;
 }
 
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  [self centerContent];
+}
+
+- (void) centerContent {
+  if(_centerContent) {
+    UIView *contentView = [self contentView];
+    if (contentView) {
+      CGRect subviewFrame = contentView.frame;
+      CGSize scrollViewSize = self.bounds.size;
+      
+      if (subviewFrame.size.width < scrollViewSize.width)
+        subviewFrame.origin.x = (scrollViewSize.width - subviewFrame.size.width) / 2;
+      else
+        subviewFrame.origin.x = 0;
+      
+      if (subviewFrame.size.height < scrollViewSize.height)
+        subviewFrame.origin.y = (scrollViewSize.height - subviewFrame.size.height) / 2;
+      else
+        subviewFrame.origin.y = 0;
+      
+      contentView.frame = subviewFrame;
+    }
+  }
+}
+
 /**
  * @return Whether or not the scroll view interaction should be blocked because
  * JS was found to be the responder.
@@ -257,28 +284,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   //TODO: shouldn't this call super if _shouldDisableScrollInteraction returns NO?
   return ![self _shouldDisableScrollInteraction];
-}
-
-/*
- * Automatically centers the content such that if the content is smaller than the
- * ScrollView, we force it to be centered, but when you zoom or the content otherwise
- * becomes larger than the ScrollView, there is no padding around the content but it
- * can still fill the whole view.
- */
-- (void)setContentOffset:(CGPoint)contentOffset
-{
-  UIView *contentView = [self contentView];
-  if (contentView && _centerContent) {
-    CGSize subviewSize = contentView.frame.size;
-    CGSize scrollViewSize = self.bounds.size;
-    if (subviewSize.width <= scrollViewSize.width) {
-      contentOffset.x = -(scrollViewSize.width - subviewSize.width) / 2.0;
-    }
-    if (subviewSize.height <= scrollViewSize.height) {
-      contentOffset.y = -(scrollViewSize.height - subviewSize.height) / 2.0;
-    }
-  }
-  super.contentOffset = contentOffset;
 }
 
 - (void)dockClosestSectionHeader
@@ -627,7 +632,6 @@ static inline void RCTApplyTranformationAccordingLayoutDirection(UIView *view, U
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
     // Ensure at least one scroll event will fire
     _allowNextScrollNoMatterWhat = YES;
-    [_scrollView setContentOffset:offset animated:animated];
   }
 }
 
