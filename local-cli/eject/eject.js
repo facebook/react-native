@@ -114,7 +114,6 @@ function eject() {
         obj.images[key].filename = fileName;
         return obj;
       })
-      console.log(obj);
       fs.writeFile(contentPath, JSON.stringify(obj), 'utf8', function(err){
         if(err) throw err;
       })
@@ -147,7 +146,6 @@ function eject() {
     })
 
     pictureSizes.map((size, key) => {
-      console.log(filePaths[key], size);
       sharp(appIcon)
       .resize(size, size)
       .toFile(filePaths[key], function(err) {
