@@ -3,19 +3,16 @@ android_prebuilt_aar(
     aar = ":textlayoutbuilder-aar",
     visibility = ["//ReactAndroid/..."],
 )
-
 remote_file(
     name = "textlayoutbuilder-aar",
     sha1 = "29bc8e5a1e2b33944b88277652ee83092ae1dbc0",
     url = "mvn:com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:aar:1.0.0",
 )
-
 prebuilt_jar(
     name = "staticlayoutproxy",
     binary_jar = ":staticlayoutproxy-jar",
     visibility = ["//ReactAndroid/..."],
 )
-
 remote_file(
     name = "staticlayoutproxy-jar",
     sha1 = "f162442a19fff13995fbd51ba414d9ee05579080",
