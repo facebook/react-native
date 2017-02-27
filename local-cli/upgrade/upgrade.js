@@ -21,6 +21,8 @@ function upgrade(args, config) {
   const pak = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   const version = pak.dependencies['react-native'];
 
+  console.log(version);
+
   if (version) {
     if (version === 'latest' || version === '*') {
       console.warn(
@@ -32,6 +34,9 @@ function upgrade(args, config) {
       );
     } else {
       const installed = JSON.parse(fs.readFileSync('node_modules/react-native/package.json', 'utf8'));
+
+
+      console.log(installed.version);
 
       if (semver.satisfies(installed.version, version)) {
         const v = version.replace(/^(~|\^|=)/, '').replace(/x/i, '0');
@@ -76,6 +81,9 @@ function upgrade(args, config) {
           );
         }
       } else {
+        
+
+
         console.warn(
           chalk.yellow(
             'react-native version in \'package.json\' doesn\'t match the installed version in \'node_modules\'.\n' +
