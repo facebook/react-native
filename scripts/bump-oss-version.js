@@ -11,7 +11,7 @@
 
 /**
  * This script bumps a new version for open source releases.
- * It updates the version in podspec/json/gradle files and makes sure they are consistent between each other
+ * It updates the version in json/gradle files and makes sure they are consistent between each other
  * After changing the files it makes a commit and tags it.
  * All you have to do is push changes to remote and CI will make a new build.
  */
@@ -54,17 +54,11 @@ if (sed(`-i`, /^VERSION_NAME=.*/, `VERSION_NAME=${version}`, `ReactAndroid/gradl
   exit(1);
 }
 
-// - change React.podspec
-if (sed(`-i`, /s\.version\s*=.*/, `s.version             = \"${version}\"`, `React.podspec`).code) {
-  echo(`Couldn't update version for React.podspec`);
-  exit(1);
-}
-
 // verify that files changed, we just do a git diff and check how many times version is added across files
 let numberOfChangedLinesWithNewVersion = exec(`git diff -U0 | grep '^[+]' | grep -c ${version} `, {silent: true})
   .stdout.trim();
-if (+numberOfChangedLinesWithNewVersion !== 3) {
-  echo(`Failed to update all the files. React.podspec, package.json and gradle.properties must have versions in them`);
+if (+numberOfChangedLinesWithNewVersion !== 2) {
+  echo(`Failed to update all the files. package.json and gradle.properties must have versions in them`);
   echo(`Fix the issue, revert and try again`);
   exec(`git diff`);
   exit(1);
