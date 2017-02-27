@@ -13,6 +13,7 @@ const addProjectToLibraries = require('./addProjectToLibraries');
 const addSharedLibraries = require('./addSharedLibraries');
 const isEmpty = require('lodash').isEmpty;
 const getGroup = require('./getGroup');
+const getTarget = require('./getTarget');
 
 /**
  * Register native module IOS adds given dependency to project by adding
@@ -35,11 +36,11 @@ module.exports = function registerNativeModuleIOS(dependencyConfig, projectConfi
 
   getProducts(dependencyProject).forEach(product => {
     project.addStaticLibrary(product, {
-      target: project.getFirstTarget().uuid,
+      target: getTarget(project, projectConfig).uuid,
     });
   });
 
-  addSharedLibraries(project, dependencyConfig.sharedLibraries);
+  addSharedLibraries(project, dependencyConfig.sharedLibraries, projectConfig);
 
   const headers = getHeadersInFolder(dependencyConfig.folder);
   if (!isEmpty(headers)) {

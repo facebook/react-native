@@ -7,6 +7,7 @@ const groupFilesByType = require('../groupFilesByType');
 const createGroupWithMessage = require('./createGroupWithMessage');
 const getPlist = require('./getPlist');
 const getPlistPath = require('./getPlistPath');
+const getTarget = require('./getTarget');
 
 /**
  * This function works in a similar manner to its Android version,
@@ -15,7 +16,7 @@ const getPlistPath = require('./getPlistPath');
 module.exports = function linkAssetsIOS(files, projectConfig) {
   const project = xcode.project(projectConfig.pbxprojPath).parseSync();
   const assets = groupFilesByType(files);
-  const plist = getPlist(project, projectConfig.sourceDir);
+  const plist = getPlist(project, projectConfig.sourceDir, projectConfig);
 
   createGroupWithMessage(project, 'Resources');
 
@@ -23,7 +24,7 @@ module.exports = function linkAssetsIOS(files, projectConfig) {
     .map(asset =>
       project.addResourceFile(
         path.relative(projectConfig.sourceDir, asset),
-        { target: project.getFirstTarget().uuid }
+        { target: getTarget(project, projectConfig).uuid }
       )
     )
     .filter(file => file)   // xcode returns false if file is already there
@@ -37,7 +38,7 @@ module.exports = function linkAssetsIOS(files, projectConfig) {
   );
 
   fs.writeFileSync(
-    getPlistPath(project, projectConfig.sourceDir),
+    getPlistPath(project, projectConfig.sourceDir, projectConfig),
     plistParser.build(plist)
   );
 };

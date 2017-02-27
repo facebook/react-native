@@ -203,7 +203,7 @@
     "wordwrap": "^1.0.0",
     "worker-farm": "^1.3.1",
     "ws": "^1.1.0",
-    "xcode": "^0.8.9",
+    "xcode": "git@github.com:TradeCast/node-xcode.git",
     "xmldoc": "^0.4.0",
     "yargs": "^3.24.0",
     "yeoman-environment": "1.5.3",

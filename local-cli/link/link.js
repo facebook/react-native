@@ -100,8 +100,11 @@ const linkAssets = (project, assets) => {
  *
  * If optional argument [packageName] is provided, it's the only one that's checked
  */
-function link(args, config) {
-  var project;
+function link(argv, config, args) {
+    var project;
+
+    console.log(argv, args);
+
   try {
     project = config.getProjectConfig();
   } catch (err) {
@@ -112,14 +115,23 @@ function link(args, config) {
     return Promise.reject(err);
   }
 
-  const packageName = args[0];
+  const packageName = argv[0];
+  const packageTargetIos = args.targetIos;
+  const packageTargetAndroid = args.targetAndroid;
 
   const dependencies = getDependencyConfig(
     config,
     packageName ? [packageName] : getProjectDependencies()
   );
 
-  const assets = dedupeAssets(dependencies.reduce(
+  if (packageTargetIos && project.ios) {
+    project.ios.target = packageTargetIos;
+  }
+
+    console.log(project);
+
+
+    const assets = dedupeAssets(dependencies.reduce(
     (assets, dependency) => assets.concat(dependency.config.assets),
     project.assets
   ));
@@ -146,4 +158,15 @@ module.exports = {
   func: link,
   description: 'links all native dependencies',
   name: 'link [packageName]',
+  options: [
+    {
+      command: '--target-ios [string]',
+      description: 'Use a specific ios project target',
+    },
+    {
+      command: '--target-android [string]',
+      description: 'Use a specific android project target',
+    },
+  ],
 };
+

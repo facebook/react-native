@@ -13,6 +13,7 @@ const removeProjectFromLibraries = require('./removeProjectFromLibraries');
 const removeFromStaticLibraries = require('./removeFromStaticLibraries');
 const removeFromHeaderSearchPaths = require('./removeFromHeaderSearchPaths');
 const removeSharedLibraries = require('./removeSharedLibraries');
+const getTarget = require('./getTarget');
 
 /**
  * Unregister native module IOS
@@ -34,7 +35,7 @@ module.exports = function unregisterNativeModule(dependencyConfig, projectConfig
 
   getProducts(dependencyProject).forEach(product => {
     removeFromStaticLibraries(project, product, {
-      target: project.getFirstTarget().uuid,
+      target: getTarget(project, projectConfig).uuid,
     });
   });
 
@@ -46,7 +47,7 @@ module.exports = function unregisterNativeModule(dependencyConfig, projectConfig
     )
   );
 
-  removeSharedLibraries(project, sharedLibraries);
+  removeSharedLibraries(project, sharedLibraries, projectConfig);
 
   const headers = getHeadersInFolder(dependencyConfig.folder);
   if (!isEmpty(headers)) {
