@@ -153,6 +153,7 @@
     "bser": "^1.0.2",
     "chalk": "^1.1.1",
     "commander": "^2.9.0",
+    "concat-stream": "^1.6.0",
     "connect": "^2.8.3",
     "core-js": "^2.2.2",
     "debug": "^2.2.0",
@@ -207,6 +208,7 @@
     "ws": "^1.1.0",
     "xcode": "^0.8.9",
     "xmldoc": "^0.4.0",
+    "xpipe": "^1.0.5",
     "yargs": "^6.4.0"
   },
   "devDependencies": {

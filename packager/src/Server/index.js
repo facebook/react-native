@@ -15,12 +15,12 @@ const AssetServer = require('../AssetServer');
 const getPlatformExtension = require('../node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const MultipartResponse = require('./MultipartResponse');
-const SourceMapConsumer = require('source-map').SourceMapConsumer;
 
 const declareOpts = require('../lib/declareOpts');
 const defaults = require('../../defaults');
 const mime = require('mime-types');
 const path = require('path');
+const symbolicate = require('./symbolicate');
 const terminal = require('../lib/terminal');
 const url = require('url');
 
@@ -34,6 +34,7 @@ import type Bundle from '../Bundler/Bundle';
 import type {Reporter} from '../lib/reporting';
 import type {GetTransformOptions} from '../Bundler';
 import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {SourceMap, Symbolicate} from './symbolicate';
 
 const {
   createActionStartEntry,
@@ -201,6 +202,7 @@ class Server {
   _debouncedFileChangeHandler: (filePath: string) => mixed;
   _hmrFileChangeListener: (type: string, filePath: string) => mixed;
   _reporter: Reporter;
+  _symbolicateInWorker: Symbolicate;
 
   constructor(options: Options) {
     this._opts = {
@@ -281,6 +283,8 @@ class Server {
       }
       this._informChangeWatchers();
     }, 50);
+
+    this._symbolicateInWorker = symbolicate.createWorker();
   }
 
   end(): mixed {
@@ -802,45 +806,27 @@ class Server {
 
       // In case of multiple bundles / HMR, some stack frames can have
       // different URLs from others
-      const urlIndexes = {};
-      const uniqueUrls = [];
+      const urls = new Set();
       stack.forEach(frame => {
         const sourceUrl = frame.file;
         // Skip `/debuggerWorker.js` which drives remote debugging because it
         // does not need to symbolication.
         // Skip anything except http(s), because there is no support for that yet
-        if (!urlIndexes.hasOwnProperty(sourceUrl) &&
+        if (!urls.has(sourceUrl) &&
             !sourceUrl.endsWith('/debuggerWorker.js') &&
             sourceUrl.startsWith('http')) {
-          urlIndexes[sourceUrl] = uniqueUrls.length;
-          uniqueUrls.push(sourceUrl);
+          urls.add(sourceUrl);
         }
       });
 
-      const sourceMaps = uniqueUrls.map(
-        sourceUrl => this._sourceMapForURL(sourceUrl)
-      );
-      return Promise.all(sourceMaps).then(consumers => {
-        return stack.map(frame => {
-          const sourceUrl = frame.file;
-          if (!urlIndexes.hasOwnProperty(sourceUrl)) {
-            return frame;
-          }
-          const idx = urlIndexes[sourceUrl];
-          const consumer = consumers[idx];
-          const original = consumer.originalPositionFor({
-            line: frame.lineNumber,
-            column: frame.column,
-          });
-          if (!original) {
-            return frame;
-          }
-          return Object.assign({}, frame, {
-            file: original.source,
-            lineNumber: original.line,
-            column: original.column,
-          });
-        });
+      const mapPromises =
+        Array.from(urls.values()).map(this._sourceMapForURL, this);
+
+      debug('Getting source maps for symbolication');
+      return Promise.all(mapPromises).then(maps => {
+        debug('Sending stacks and maps to symbolication worker');
+        const urlsToMaps = zip(urls.values(), maps);
+        return this._symbolicateInWorker(stack, urlsToMaps);
       });
     }).then(
       stack => {
@@ -858,16 +844,13 @@ class Server {
     );
   }
 
-  _sourceMapForURL(reqUrl: string): Promise<SourceMapConsumer> {
+  _sourceMapForURL(reqUrl: string): Promise<SourceMap> {
     const options = this._getOptionsFromUrl(reqUrl);
     const building = this._useCachedOrUpdateOrCreateBundle(options);
-    return building.then(p => {
-      const sourceMap = p.getSourceMap({
-        minify: options.minify,
-        dev: options.dev,
-      });
-      return new SourceMapConsumer(sourceMap);
-    });
+    return building.then(p => p.getSourceMap({
+      minify: options.minify,
+      dev: options.dev,
+    }));
   }
 
   _handleError(res: ServerResponse, bundleID: string, error: {
@@ -988,6 +971,18 @@ class Server {
 
 function contentsEqual(array: Array<mixed>, set: Set<mixed>): boolean {
   return array.length === set.size && array.every(set.has, set);
+}
+
+function* zip<X, Y>(xs: Iterable<X>, ys: Iterable<Y>): Iterable<[X, Y]> {
+  //$FlowIssue #9324959
+  const ysIter: Iterator<Y> = ys[Symbol.iterator]();
+  for (const x of xs) {
+    const y = ysIter.next();
+    if (y.done) {
+      return;
+    }
+    yield [x, y.value];
+  }
 }
 
 module.exports = Server;
