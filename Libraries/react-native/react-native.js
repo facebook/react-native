@@ -76,7 +76,7 @@ const ReactNative = {
   get AppRegistry() { return require('AppRegistry'); },
   get AppState() { return require('AppState'); },
   get AsyncStorage() { return require('AsyncStorage'); },
-  get BackAndroid() { return require('BackHandler'); }, // Deprecated: leave this until external projects like react-navigation move to BackHandler
+  get BackAndroid() { return require('BackAndroid'); }, // deprecated: use BackHandler instead
   get BackHandler() { return require('BackHandler'); },
   get CameraRoll() { return require('CameraRoll'); },
   get Clipboard() { return require('Clipboard'); },
