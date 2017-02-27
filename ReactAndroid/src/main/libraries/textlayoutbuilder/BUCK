@@ -1,20 +1,11 @@
-android_library(
-    name = 'textlayoutbuilder',
-    exported_deps = [
-      ':textlayoutbuilder-base',
-      ':staticlayoutproxy',
-    ],
-    visibility = ['//ReactAndroid/...',],
-)
-
 android_prebuilt_aar(
-    name = 'textlayoutbuilder-base',
-    aar = ':textlayoutbuilder-base-aar',
+    name = 'textlayoutbuilder',
+    aar = ':textlayoutbuilder-aar',
     visibility = ['//ReactAndroid/...',],
 )
 
 remote_file(
-    name = 'textlayoutbuilder-base-aar',
+    name = 'textlayoutbuilder-aar',
     url = 'mvn:com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:aar:1.0.0',
     sha1 = '29bc8e5a1e2b33944b88277652ee83092ae1dbc0',
 )
