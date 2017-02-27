@@ -346,6 +346,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } catch (IllegalAccessException ex) {}
   }
 
+  @ReactProp(name = "caretHidden", defaultBoolean = false)
+  public void setCaretHidden(ReactEditText view, boolean caretHidden) {
+    view.setCursorVisible(!caretHidden);
+  }
+
   @ReactProp(name = "selectTextOnFocus", defaultBoolean = false)
   public void setSelectTextOnFocus(ReactEditText view, boolean selectTextOnFocus) {
     view.setSelectAllOnFocus(selectTextOnFocus);
@@ -365,7 +370,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (underlineColor == null) {
       view.getBackground().clearColorFilter();
     } else {
-      view.getBackground().setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+      view.getBackground().mutate().setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
     }
   }
 

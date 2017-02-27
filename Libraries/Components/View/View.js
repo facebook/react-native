@@ -39,8 +39,8 @@ const PropTypes = React.PropTypes;
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
-const forceTouchAvailable = (NativeModules.IOSConstants &&
-  NativeModules.IOSConstants.forceTouchAvailable) || false;
+const forceTouchAvailable = (NativeModules.PlatformConstants &&
+  NativeModules.PlatformConstants.forceTouchAvailable) || false;
 
 const statics = {
   AccessibilityTraits,

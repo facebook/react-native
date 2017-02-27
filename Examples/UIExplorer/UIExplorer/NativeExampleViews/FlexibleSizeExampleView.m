@@ -101,7 +101,7 @@ RCT_EXPORT_MODULE();
 - (void)rootViewDidChangeIntrinsicSize:(RCTRootView *)rootView
 {
   CGRect newFrame = rootView.frame;
-  newFrame.size = rootView.intrinsicSize;
+  newFrame.size = rootView.intrinsicContentSize;
 
   if (!_sizeUpdated) {
     _sizeUpdated = TRUE;

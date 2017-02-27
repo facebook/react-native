@@ -29,6 +29,7 @@ function dependencies(argv, config, args, packagerInstance) {
     projectRoots: config.getProjectRoots(),
     blacklistRE: config.getBlacklistRE(),
     getTransformOptions: config.getTransformOptions,
+    hasteImpl: config.hasteImpl,
     transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
     verbose: config.verbose,

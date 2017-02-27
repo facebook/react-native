@@ -296,10 +296,6 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   #ifdef JSC_HAS_PERF_STATS_API
   addJSCPerfStatsHooks(m_context);
   #endif
-
-  #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
-  configureJSContextForAndroid(m_context, m_jscConfig, m_deviceCacheDir);
-  #endif
 }
 
 void JSCExecutor::terminateOnJSVMThread() {
@@ -355,7 +351,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 #ifdef WITH_FBJSCEXTENSIONS
   if (auto fileStr = dynamic_cast<const JSBigFileString *>(script.get())) {
     JSLoadSourceStatus jsStatus;
-    auto bcSourceCode = JSCreateCompiledSourceCode(fileStr->fd(), jsSourceURL, &jsStatus);
+    auto bcSourceCode = JSCreateSourceCodeFromFile(fileStr->fd(), jsSourceURL, nullptr, &jsStatus);
 
     switch (jsStatus) {
     case JSLoadSourceIsCompiled:

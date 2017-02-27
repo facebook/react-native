@@ -23,7 +23,7 @@
 #import <React/RCTCxxModule.h>
 #import <React/RCTCxxUtils.h>
 #import <React/RCTDevLoadingView.h>
-#import <React/RCTDevMenu.h>
+#import <React/RCTDevSettings.h>
 #import <React/RCTDisplayLink.h>
 #import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLog.h>
@@ -403,7 +403,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     executorFactory.reset(new JSCExecutorFactory("", folly::dynamic::object
       ("UseCustomJSC", (bool)useCustomJSC)
 #if RCT_PROFILE
-      ("StartSamplingProfilerOnInit", (bool)self.devMenu.startSamplingProfilerOnLaunch)
+      ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
 #endif
     ));
   } else {

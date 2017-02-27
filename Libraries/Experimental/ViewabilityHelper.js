@@ -35,7 +35,7 @@ export type ViewabilityConfig = {
    * Similar to `viewAreaPercentThreshold`, but considers the percent of the item that is visible,
    * rather than the fraction of the viewable area it covers.
    */
-  itemVisiblePercentThreashold?: number,
+  itemVisiblePercentThreshold?: number,
 
   /**
    * Nothing is considered viewable until the user scrolls (tbd: or taps) the screen after render.
@@ -68,15 +68,15 @@ class ViewabilityHelper {
     getFrameMetrics: (index: number) => ?{length: number, offset: number},
     renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
   ): Array<number> {
-    const {itemVisiblePercentThreashold, viewAreaCoveragePercentThreshold} = this._config;
+    const {itemVisiblePercentThreshold, viewAreaCoveragePercentThreshold} = this._config;
     const viewAreaMode = viewAreaCoveragePercentThreshold != null;
     const viewablePercentThreshold = viewAreaMode ?
       viewAreaCoveragePercentThreshold :
-      itemVisiblePercentThreashold;
+      itemVisiblePercentThreshold;
     invariant(
       viewablePercentThreshold != null &&
-      (itemVisiblePercentThreashold != null) !== (viewAreaCoveragePercentThreshold != null),
-      'Must set exactly one of itemVisiblePercentThreashold or viewAreaCoveragePercentThreshold',
+      (itemVisiblePercentThreshold != null) !== (viewAreaCoveragePercentThreshold != null),
+      'Must set exactly one of itemVisiblePercentThreshold or viewAreaCoveragePercentThreshold',
     );
     const viewableIndices = [];
     if (itemCount === 0) {
