@@ -223,6 +223,7 @@
     "react": "16.0.0-alpha.2",
     "react-dom": "16.0.0-alpha.2",
     "react-test-renderer": "16.0.0-alpha.2",
+    "sharp": "^0.17.2",
     "shelljs": "0.6.0",
     "sinon": "^2.0.0-pre.2"
   }
