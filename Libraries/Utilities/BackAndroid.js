@@ -18,6 +18,9 @@ var BackHandler = require('BackHandler');
 
 var warning = require('fbjs/lib/warning');
 
+/**
+ * Deprecated.  Use BackHandler instead.
+ */
 var BackAndroid = {
 
   exitApp: function() {
