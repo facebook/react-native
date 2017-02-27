@@ -23,7 +23,7 @@ type EndResult = {finished: boolean};
 type EndCallback = (result: EndResult) => void;
 type EventMapping = {
   nativeEventPath: Array<string>,
-  animatedValueTag: ?number,
+  animatedValueTag: number,
 };
 
 let nativeEventEmitter;
@@ -33,67 +33,67 @@ let nativeEventEmitter;
  * the native module methods
  */
 const API = {
-  createAnimatedNode: function(tag: ?number, config: Object): void {
+  createAnimatedNode: function(tag: number, config: Object): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.createAnimatedNode(tag, config);
   },
-  startListeningToAnimatedNodeValue: function(tag: ?number) {
+  startListeningToAnimatedNodeValue: function(tag: number) {
     assertNativeAnimatedModule();
     NativeAnimatedModule.startListeningToAnimatedNodeValue(tag);
   },
-  stopListeningToAnimatedNodeValue: function(tag: ?number) {
+  stopListeningToAnimatedNodeValue: function(tag: number) {
     assertNativeAnimatedModule();
     NativeAnimatedModule.stopListeningToAnimatedNodeValue(tag);
   },
-  connectAnimatedNodes: function(parentTag: ?number, childTag: ?number): void {
+  connectAnimatedNodes: function(parentTag: number, childTag: number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.connectAnimatedNodes(parentTag, childTag);
   },
-  disconnectAnimatedNodes: function(parentTag: ?number, childTag: ?number): void {
+  disconnectAnimatedNodes: function(parentTag: number, childTag: number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.disconnectAnimatedNodes(parentTag, childTag);
   },
-  startAnimatingNode: function(animationId: ?number, nodeTag: ?number, config: Object, endCallback: EndCallback): void {
+  startAnimatingNode: function(animationId: number, nodeTag: number, config: Object, endCallback: EndCallback): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.startAnimatingNode(animationId, nodeTag, config, endCallback);
   },
-  stopAnimation: function(animationId: ?number) {
+  stopAnimation: function(animationId: number) {
     assertNativeAnimatedModule();
     NativeAnimatedModule.stopAnimation(animationId);
   },
-  setAnimatedNodeValue: function(nodeTag: ?number, value: ?number): void {
+  setAnimatedNodeValue: function(nodeTag: number, value: number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.setAnimatedNodeValue(nodeTag, value);
   },
-  setAnimatedNodeOffset: function(nodeTag: ?number, offset: ?number): void {
+  setAnimatedNodeOffset: function(nodeTag: number, offset: number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.setAnimatedNodeOffset(nodeTag, offset);
   },
-  flattenAnimatedNodeOffset: function(nodeTag: ?number): void {
+  flattenAnimatedNodeOffset: function(nodeTag: number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.flattenAnimatedNodeOffset(nodeTag);
   },
-  extractAnimatedNodeOffset: function(nodeTag: ?number): void {
+  extractAnimatedNodeOffset: function(nodeTag: number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.extractAnimatedNodeOffset(nodeTag);
   },
-  connectAnimatedNodeToView: function(nodeTag: ?number, viewTag: ?number): void {
+  connectAnimatedNodeToView: function(nodeTag: number, viewTag: number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.connectAnimatedNodeToView(nodeTag, viewTag);
   },
-  disconnectAnimatedNodeFromView: function(nodeTag: ?number, viewTag: ?number): void {
+  disconnectAnimatedNodeFromView: function(nodeTag: number, viewTag: number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.disconnectAnimatedNodeFromView(nodeTag, viewTag);
   },
-  dropAnimatedNode: function(tag: ?number): void {
+  dropAnimatedNode: function(tag: number): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.dropAnimatedNode(tag);
   },
-  addAnimatedEventToView: function(viewTag: ?number, eventName: string, eventMapping: EventMapping) {
+  addAnimatedEventToView: function(viewTag: number, eventName: string, eventMapping: EventMapping) {
     assertNativeAnimatedModule();
     NativeAnimatedModule.addAnimatedEventToView(viewTag, eventName, eventMapping);
   },
-  removeAnimatedEventFromView(viewTag: ?number, eventName: string) {
+  removeAnimatedEventFromView(viewTag: number, eventName: string) {
     assertNativeAnimatedModule();
     NativeAnimatedModule.removeAnimatedEventFromView(viewTag, eventName);
   }

@@ -96,7 +96,11 @@ const NativeRenderer = ReactFiberReconciler({
   },
 
   appendInitialChild(parentInstance : Instance, child : Instance | TextInstance) : void {
-    parentInstance._children.push(child);
+    if (typeof child === 'number') {
+      parentInstance._children.push(child);
+    } else {
+      parentInstance._children.push(child);
+    }
   },
 
   commitTextUpdate(

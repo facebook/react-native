@@ -24,7 +24,6 @@ var ReactReconciler = require('ReactReconciler');
 
 if (__DEV__) {
   var checkReactTypeSpec = require('checkReactTypeSpec');
-  var ReactDebugCurrentFrame = require('react/lib/ReactDebugCurrentFrame');
   var warningAboutMissingGetChildContext = {};
 }
 
@@ -33,6 +32,8 @@ var invariant = require('fbjs/lib/invariant');
 var shallowEqual = require('fbjs/lib/shallowEqual');
 var shouldUpdateReactComponent = require('shouldUpdateReactComponent');
 var warning = require('fbjs/lib/warning');
+
+import type { ReactPropTypeLocations } from 'ReactPropTypeLocations';
 
 function StatelessComponent(Component) {
 }
@@ -686,7 +687,7 @@ var ReactCompositeComponent = {
         this._checkContextTypes(
           Component.childContextTypes,
           childContext,
-          'child context'
+          'childContext'
         );
       }
       for (var name in childContext) {
@@ -729,17 +730,17 @@ var ReactCompositeComponent = {
   _checkContextTypes: function(
     typeSpecs,
     values,
-    location: string,
+    location: ReactPropTypeLocations,
   ) {
     if (__DEV__) {
-      ReactDebugCurrentFrame.current = this._debugID;
       checkReactTypeSpec(
         typeSpecs,
         values,
         location,
-        this.getName()
+        this.getName(),
+        null,
+        this._debugID
       );
-      ReactDebugCurrentFrame.current = null;
     }
   },
 
@@ -849,7 +850,6 @@ var ReactCompositeComponent = {
     // _pendingStateQueue which will ensure that any state updates gets
     // immediately reconciled instead of waiting for the next batch.
     if (willReceive && inst.componentWillReceiveProps) {
-      const beforeState = inst.state;
       if (__DEV__) {
         measureLifeCyclePerf(
           () => inst.componentWillReceiveProps(nextProps, nextContext),
@@ -858,20 +858,6 @@ var ReactCompositeComponent = {
         );
       } else {
         inst.componentWillReceiveProps(nextProps, nextContext);
-      }
-      const afterState = inst.state;
-      if (beforeState !== afterState) {
-        inst.state = beforeState;
-        inst.updater.enqueueReplaceState(inst, afterState);
-        if (__DEV__) {
-          warning(
-            false,
-            '%s.componentWillReceiveProps(): Assigning directly to ' +
-            'this.state is deprecated (except inside a component\'s ' +
-            'constructor). Use setState instead.',
-            this.getName() || 'ReactCompositeComponent'
-          );
-        }
       }
     }
 

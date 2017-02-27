@@ -16,10 +16,10 @@ var ReactNativeGlobalResponderHandler = {
   onChange: function(from, to, blockNativeResponder) {
     if (to !== null) {
       // TODO (bvaughn) Clean up once Stack is deprecated
-      var tag = typeof to.tag !== 'number'
-        ? to._rootNodeID
-        : to.stateNode._nativeTag;
-      UIManager.setJSResponder(tag, blockNativeResponder);
+      UIManager.setJSResponder(
+        to._rootNodeID || to.stateNode._nativeTag,
+        blockNativeResponder
+      );
     } else {
       UIManager.clearJSResponder();
     }

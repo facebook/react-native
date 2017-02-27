@@ -67,6 +67,7 @@ var invariant = require('fbjs/lib/invariant');
 if (__DEV__) {
   var ReactDebugCurrentFiber = require('ReactDebugCurrentFiber');
   var warning = require('fbjs/lib/warning');
+
   var warnedAboutStatelessRefs = {};
 }
 
@@ -478,15 +479,6 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
       // Proceed under the assumption that this is a functional component
       workInProgress.tag = FunctionalComponent;
       if (__DEV__) {
-        const Component = workInProgress.type;
-
-        if (Component) {
-          warning(
-            !Component.childContextTypes,
-            '%s(...): childContextTypes cannot be defined on a functional component.',
-            Component.displayName || Component.name || 'Component'
-          );
-        }
         if (workInProgress.ref !== null) {
           let info = '';
           const ownerName = ReactDebugCurrentFiber.getCurrentFiberOwnerName();

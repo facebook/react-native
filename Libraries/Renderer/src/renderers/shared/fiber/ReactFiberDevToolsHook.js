@@ -12,12 +12,14 @@
 
 'use strict';
 
-var warning = require('fbjs/lib/warning');
-
 import type { Fiber } from 'ReactFiber';
 import type { FiberRoot } from 'ReactFiberRoot';
 
 declare var __REACT_DEVTOOLS_GLOBAL_HOOK__ : Object | void;
+
+if (__DEV__) {
+  var warning = require('fbjs/lib/warning');
+}
 
 let rendererID = null;
 let injectInternals = null;

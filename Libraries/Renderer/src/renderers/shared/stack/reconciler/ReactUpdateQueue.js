@@ -38,12 +38,16 @@ function getInternalInstanceReadyForUpdate(publicInstance, callerName) {
   if (!internalInstance) {
     if (__DEV__) {
       var ctor = publicInstance.constructor;
+      // Only warn when we have a callerName. Otherwise we should be silent.
+      // We're probably calling from enqueueCallback. We don't want to warn
+      // there because we already warned for the corresponding lifecycle method.
       warning(
-        false,
-        'Can only update a mounted or mounting component. This usually means ' +
-        'you called setState, replaceState, or forceUpdate on an unmounted ' +
-        'component. This is a no-op.\n\nPlease check the code for the ' +
-        '%s component.',
+        !callerName,
+        '%s(...): Can only update a mounted or mounting component. ' +
+        'This usually means you called %s() on an unmounted component. ' +
+        'This is a no-op.\n\nPlease check the code for the %s component.',
+        callerName,
+        callerName,
         ctor && (ctor.displayName || ctor.name) || 'ReactClass'
       );
     }
@@ -53,10 +57,12 @@ function getInternalInstanceReadyForUpdate(publicInstance, callerName) {
   if (__DEV__) {
     warning(
       ReactCurrentOwner.current == null,
-      'Cannot update during an existing state transition (such as within ' +
-      '`render` or another component\'s constructor). Render methods should ' +
-      'be a pure function of props and state; constructor side-effects are ' +
-      'an anti-pattern, but can be moved to `componentWillMount`.',
+      '%s(...): Cannot update during an existing state transition (such as ' +
+      'within `render` or another component\'s constructor). Render methods ' +
+      'should be a pure function of props and state; constructor ' +
+      'side-effects are an anti-pattern, but can be moved to ' +
+      '`componentWillMount`.',
+      callerName
     );
   }
 
@@ -128,7 +134,10 @@ var ReactUpdateQueue = {
    * @internal
    */
   enqueueForceUpdate: function(publicInstance, callback, callerName) {
-    var internalInstance = getInternalInstanceReadyForUpdate(publicInstance);
+    var internalInstance = getInternalInstanceReadyForUpdate(
+      publicInstance,
+      'forceUpdate'
+    );
 
     if (!internalInstance) {
       return;
@@ -165,7 +174,10 @@ var ReactUpdateQueue = {
    * @internal
    */
   enqueueReplaceState: function(publicInstance, completeState, callback, callerName) {
-    var internalInstance = getInternalInstanceReadyForUpdate(publicInstance);
+    var internalInstance = getInternalInstanceReadyForUpdate(
+      publicInstance,
+      'replaceState'
+    );
 
     if (!internalInstance) {
       return;
@@ -211,7 +223,10 @@ var ReactUpdateQueue = {
       );
     }
 
-    var internalInstance = getInternalInstanceReadyForUpdate(publicInstance);
+    var internalInstance = getInternalInstanceReadyForUpdate(
+      publicInstance,
+      'setState'
+    );
 
     if (!internalInstance) {
       return;

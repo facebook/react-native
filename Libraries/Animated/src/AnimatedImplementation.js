@@ -77,11 +77,11 @@ class Animated {
       throw new Error('This node cannot be made a "native" animated node');
     }
   }
-  __getNativeTag(): ?number {
+  __getNativeTag(): number {
     NativeAnimatedHelper.assertNativeAnimatedModule();
     invariant(this.__isNative, 'Attempt to get native tag from node not marked as "native"');
     if (this.__nativeTag == null) {
-      var nativeTag: ?number = NativeAnimatedHelper.generateNewNodeTag();
+      var nativeTag: number = NativeAnimatedHelper.generateNewNodeTag();
       NativeAnimatedAPI.createAnimatedNode(nativeTag, this.__getNativeConfig());
       this.__nativeTag = nativeTag;
     }

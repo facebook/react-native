@@ -10,14 +10,17 @@
  */
 'use strict';
 
+var ReactPropTypeLocationNames = require('react/lib/ReactPropTypeLocationNames');
+
 var normalizeColor = require('normalizeColor');
 
 var colorPropType = function(isRequired, props, propName, componentName, location, propFullName) {
   var color = props[propName];
   if (color === undefined || color === null) {
     if (isRequired) {
+      var locationName = ReactPropTypeLocationNames[location];
       return new Error(
-        'Required ' + location + ' `' + (propFullName || propName) +
+        'Required ' + locationName + ' `' + (propFullName || propName) +
         '` was not specified in `' + componentName + '`.'
       );
     }
@@ -32,8 +35,9 @@ var colorPropType = function(isRequired, props, propName, componentName, locatio
   }
 
   if (normalizeColor(color) === null) {
+    var locationName = ReactPropTypeLocationNames[location];
     return new Error(
-      'Invalid ' + location + ' `' + (propFullName || propName) +
+      'Invalid ' + locationName + ' `' + (propFullName || propName) +
       '` supplied to `' + componentName + '`: ' + color + '\n' +
 `Valid color formats are
   - '#f0f' (#rgb)
