@@ -12,9 +12,9 @@ var Hero = require('Hero');
 var Prism = require('Prism');
 var React = require('React');
 var Site = require('Site');
+var Metadata = require('Metadata');
 
-var siteConfig = require('../../siteConfig.js');
-const pinnedApps = siteConfig.apps.filter(app => {
+const pinnedApps = Metadata.showcaseApps.filter(app => {
   return app.pinned;
 });
 
