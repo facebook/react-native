@@ -3,6 +3,7 @@
 #include <folly/dynamic.h>
 #include <fb/fbjni.h>
 #include <fb/log.h>
+#include <fb/xplat_init.h>
 #include <cxxreact/Executor.h>
 #include <cxxreact/JSCExecutor.h>
 #include <cxxreact/Platform.h>
@@ -144,7 +145,7 @@ class JReactMarker : public JavaClass<JReactMarker> {
 }
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-  return initialize(vm, [] {
+  return xplat::initialize(vm, [] {
     // Inject some behavior into react/
     ReactMarker::logMarker = JReactMarker::logMarker;
     WebWorkerUtil::createWebWorkerThread = WebWorkers::createWebWorkerThread;
