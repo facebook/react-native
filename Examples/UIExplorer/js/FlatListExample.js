@@ -49,7 +49,7 @@ const {
 
 const VIEWABILITY_CONFIG = {
   minimumViewTime: 3000,
-  viewAreaCoveragePercentThreshold: 0,
+  viewAreaCoveragePercentThreshold: 100,
   waitForInteraction: true,
 };
 

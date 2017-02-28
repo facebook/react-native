@@ -106,7 +106,7 @@ type OptionalProps<SectionT: SectionBase> = {
   onRefresh?: ?Function,
   /**
    * Called when the viewability of rows changes, as defined by the
-   * `viewablePercentThreshold` prop.
+   * `viewabilityConfig` prop.
    */
   onViewableItemsChanged?: ?({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
   /**

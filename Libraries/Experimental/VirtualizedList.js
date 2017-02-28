@@ -103,7 +103,7 @@ type OptionalProps = {
   onRefresh?: ?Function,
   /**
    * Called when the viewability of rows changes, as defined by the
-   * `viewablePercentThreshold` prop.
+   * `viewabilityConfig` prop.
    */
   onViewableItemsChanged?: ?({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
   /**
@@ -225,7 +225,6 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
       nextProps: {item: Item, index: number},
     ) => true,
     updateCellsBatchingPeriod: 50,
-    viewablePercentThreshold: 10,
     windowSize: 21, // multiples of length
   };
 

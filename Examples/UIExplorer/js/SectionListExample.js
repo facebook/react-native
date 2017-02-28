@@ -48,6 +48,12 @@ const {
   renderSmallSwitchOption,
 } = require('./ListExampleShared');
 
+const VIEWABILITY_CONFIG = {
+  minimumViewTime: 3000,
+  viewAreaCoveragePercentThreshold: 100,
+  waitForInteraction: true,
+};
+
 const SectionHeaderComponent = ({section}) => (
   <View>
     <Text style={styles.headerText}>SECTION HEADER: {section.key}</Text>
@@ -116,7 +122,7 @@ class SectionListExample extends React.PureComponent {
             ]},
             {key: 'Filtered Items', data: filteredData},
           ]}
-          viewablePercentThreshold={100}
+          viewabilityConfig={VIEWABILITY_CONFIG}
         />
       </UIExplorerPage>
     );
