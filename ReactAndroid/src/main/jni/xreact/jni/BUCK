@@ -2,7 +2,10 @@ include_defs("//ReactAndroid/DEFS")
 
 EXPORTED_HEADERS = [
     "CxxModuleWrapper.h",
+    "JavaModuleWrapper.h",
+    "JExecutorToken.h",
     "JSLoader.h",
+    "MethodInvoker.h",
     "NativeArray.h",
     "NativeCommon.h",
     "NativeMap.h",
@@ -20,7 +23,6 @@ cxx_library(
         "-Werror",
         "-fexceptions",
         "-std=c++1y",
-        "-fvisibility=hidden",
         "-frtti",
         "-Wno-pessimizing-move",
         "-Wno-inconsistent-missing-override",
