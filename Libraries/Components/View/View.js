@@ -33,6 +33,7 @@ if (Platform.isTVOS) {
   TVViewPropTypes = require('TVViewPropTypes');
 }
 
+const deprecatedPropType = require('deprecatedPropType');
 const requireNativeComponent = require('requireNativeComponent');
 
 const PropTypes = React.PropTypes;
@@ -170,30 +171,26 @@ const View = React.createClass({
     ]),
 
     /**
-     * Controls how view is important for accessibility which is if it
-     * fires accessibility events and if it is reported to accessibility services
-     * that query the screen. Works for Android only.
+     * Controls whether the accessibility elements contained within this view are hidden
+     * from accessibility services that query the screen.
      *
-     * Possible values:
-     *
-     *  - `'auto'` - The system determines whether the view is important for accessibility -
-     *    default (recommended).
-     *  - `'yes'` - The view is important for accessibility.
-     *  - `'no'` - The view is not important for accessibility.
-     *  - `'no-hide-descendants'` - The view is not important for accessibility,
-     *    nor are any of its descendant views.
-     *
-     * See the [Android `importantForAccessibility` docs](http://developer.android.com/reference/android/R.attr.html#importantForAccessibility)
-     * for reference.
-     *
-     * @platform android
+     * - If `true`, this View and all accessibility elements contained within it are hidden
+     * from accessibility services.
+     * - If `false`, this view is visible to accessibility services.
+     * - The default value is `null` which means the OS decides which elements are important
+     * for accessibility.
      */
-    importantForAccessibility: PropTypes.oneOf([
-      'auto',
-      'yes',
-      'no',
-      'no-hide-descendants',
-    ]),
+    accessibilityElementsHidden: PropTypes.bool,
+
+    importantForAccessibility: deprecatedPropType(
+      PropTypes.oneOf([
+        'auto',
+        'yes',
+        'no',
+        'no-hide-descendants',
+      ]),
+      'Use the `accessibilityElementsHidden` prop instead.'
+    ),
 
     /**
      * Provides additional traits to screen reader. By default no traits are

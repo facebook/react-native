@@ -2,6 +2,8 @@
 
 package com.facebook.react.uimanager;
 
+import javax.annotation.Nullable;
+
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
@@ -22,6 +24,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_Z_INDEX = "zIndex";
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
+  private static final String PROP_ACCESSIBILITY_ELEMENTS_HIDDEN = "accessibilityElementsHidden";
   private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
   private static final String PROP_ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
   private static final String PROP_IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
@@ -93,11 +96,26 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setContentDescription(accessibilityLabel);
   }
 
+  @ReactProp(name = PROP_ACCESSIBILITY_ELEMENTS_HIDDEN)
+  public void setAccessibilityElementsHidden(T view, @Nullable Boolean accessibilityElementsHidden) {
+    if (accessibilityElementsHidden == null) {
+      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+    } else {
+
+      view.setImportantForAccessibility(
+          accessibilityElementsHidden.booleanValue()
+          ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+          : View.IMPORTANT_FOR_ACCESSIBILITY_YES
+          );
+    }
+  }
+
   @ReactProp(name = PROP_ACCESSIBILITY_COMPONENT_TYPE)
   public void setAccessibilityComponentType(T view, String accessibilityComponentType) {
     AccessibilityHelper.updateAccessibilityComponentType(view, accessibilityComponentType);
   }
 
+  @Deprecated
   @ReactProp(name = PROP_IMPORTANT_FOR_ACCESSIBILITY)
   public void setImportantForAccessibility(T view, String importantForAccessibility) {
     if (importantForAccessibility == null || importantForAccessibility.equals("auto")) {
