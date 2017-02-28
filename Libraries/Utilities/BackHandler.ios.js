@@ -14,8 +14,8 @@
 
 'use strict';
 
-var Platform = require('Platform');
-var TVEventHandler = require('TVEventHandler');
+const Platform = require('Platform');
+const TVEventHandler = require('TVEventHandler');
 
 type BackPressEventName = $Enum<{
   backPress: string,
@@ -53,12 +53,10 @@ function emptyFunction() {}
  * });
  * ```
  */
-var BackHandler;
+let BackHandler;
 
 if (Platform.isTVOS) {
-
-  var _tvEventHandler = new TVEventHandler();
-
+  const _tvEventHandler = new TVEventHandler();
   var _backPressSubscriptions = new Set();
 
   _tvEventHandler.enable(this, function(cmp, evt) {
@@ -101,9 +99,7 @@ if (Platform.isTVOS) {
 
   };
 
-
 } else {
-
 
   BackHandler = {
     exitApp: emptyFunction,
@@ -115,8 +111,6 @@ if (Platform.isTVOS) {
     removeEventListener: emptyFunction,
   };
 
-
 }
 
 module.exports = BackHandler;
-
