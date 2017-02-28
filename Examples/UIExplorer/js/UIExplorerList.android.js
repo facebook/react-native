@@ -38,6 +38,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ButtonExample'),
   },
   {
+    key: 'FlatListExample',
+    module: require('./FlatListExample'),
+  },
+  {
     key: 'ImageExample',
     module: require('./ImageExample'),
   },
@@ -58,6 +62,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ModalExample'),
   },
   {
+    key: 'MultiColumnExample',
+    module: require('./MultiColumnExample'),
+  },
+  {
     key: 'PickerExample',
     module: require('./PickerExample'),
   },
@@ -72,6 +80,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'ScrollViewSimpleExample',
     module: require('./ScrollViewSimpleExample'),
+  },
+  {
+    key: 'SectionListExample',
+    module: require('./SectionListExample'),
   },
   {
     key: 'SliderExample',

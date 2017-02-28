@@ -23,9 +23,9 @@
  */
 'use strict';
 
-const ListView = require('ListView');
 const Platform = require('Platform');
 const React = require('react');
+const SectionList = require('SectionList');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TextInput = require('TextInput');
@@ -44,11 +44,6 @@ import type {
   StyleObj,
 } from 'StyleSheetTypes';
 
-const ds = new ListView.DataSource({
-  rowHasChanged: (r1, r2) => r1 !== r2,
-  sectionHeaderHasChanged: (h1, h2) => h1 !== h2,
-});
-
 type Props = {
   onNavigate: Function,
   list: {
@@ -60,49 +55,110 @@ type Props = {
   style?: ?StyleObj,
 };
 
+class RowComponent extends React.PureComponent {
+  props: {
+    item: Object,
+    onNavigate: Function,
+    onPress?: Function,
+  };
+  _onPress = () => {
+    if (this.props.onPress) {
+      this.props.onPress();
+      return;
+    }
+    this.props.onNavigate(UIExplorerActions.ExampleAction(this.props.item.key));
+  };
+  render() {
+    const {item} = this.props;
+    return (
+      <View>
+        <TouchableHighlight onPress={this._onPress}>
+          <View style={styles.row}>
+            <Text style={styles.rowTitleText}>
+              {item.module.title}
+            </Text>
+            <Text style={styles.rowDetailText}>
+              {item.module.description}
+            </Text>
+          </View>
+        </TouchableHighlight>
+        <View style={styles.separator} />
+      </View>
+    );
+  }
+}
+
+const renderSectionHeader = ({section}) =>
+  <Text style={styles.sectionHeader}>
+    {section.title}
+  </Text>;
+
 class UIExplorerExampleList extends React.Component {
   props: Props
 
-  render(): ?React.Element<any> {
+  render() {
     const filterText = this.props.persister.state.filter;
     const filterRegex = new RegExp(String(filterText), 'i');
-    const filter = (example) => filterRegex.test(example.module.title) && (!Platform.isTVOS || example.supportsTVOS);
+    const filter = (example) =>
+      this.props.disableSearch ||
+        filterRegex.test(example.module.title) &&
+        (!Platform.isTVOS || example.supportsTVOS);
 
-    const dataSource = ds.cloneWithRowsAndSections({
-      components: this.props.list.ComponentExamples.filter(filter),
-      apis: this.props.list.APIExamples.filter(filter),
-    });
+    const sections = [
+      {
+        data: this.props.list.ComponentExamples.filter(filter),
+        title: 'COMPONENTS',
+        key: 'c',
+      },
+      {
+        data: this.props.list.APIExamples.filter(filter),
+        title: 'APIS',
+        key: 'a',
+      },
+    ];
     return (
       <View style={[styles.listContainer, this.props.style]}>
         {this._renderTitleRow()}
         {this._renderTextInput()}
-        <ListView
+        <SectionList
           style={styles.list}
-          dataSource={dataSource}
-          renderRow={this._renderExampleRow.bind(this)}
-          renderSectionHeader={this._renderSectionHeader}
+          sections={sections}
+          renderItem={this._renderItem}
           enableEmptySections={true}
+          itemShouldUpdate={this._itemShouldUpdate}
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustContentInsets={false}
           keyboardDismissMode="on-drag"
+          legacyImplementation={false}
+          renderSectionHeader={renderSectionHeader}
         />
       </View>
     );
   }
 
+  _itemShouldUpdate(curr, prev) {
+    return curr.item !== prev.item;
+  }
+
+  _renderItem = ({item}) => <RowComponent item={item} onNavigate={this.props.onNavigate} />;
+
   _renderTitleRow(): ?React.Element<any> {
     if (!this.props.displayTitleRow) {
       return null;
     }
-    return this._renderRow(
-      'UIExplorer',
-      'React Native Examples',
-      'home_key',
-      () => {
-        this.props.onNavigate(
-          UIExplorerActions.ExampleListWithFilter('')
-        );
-      }
+    return (
+      <RowComponent
+        item={{module: {
+          title: 'UIExplorer',
+          description: 'React Native Examples',
+        }}}
+        onNavigate={this.props.onNavigate}
+        onPress={() => {
+          this.props.onNavigate(
+            UIExplorerActions.ExampleListWithFilter('')
+          );
+        }}
+      />
     );
   }
 
@@ -125,41 +181,6 @@ class UIExplorerExampleList extends React.Component {
           testID="explorer_search"
           value={this.props.persister.state.filter}
         />
-      </View>
-    );
-  }
-
-  _renderSectionHeader(data: any, section: string): ?React.Element<any> {
-    return (
-      <Text style={styles.sectionHeader}>
-        {section.toUpperCase()}
-      </Text>
-    );
-  }
-
-  _renderExampleRow(example: {key: string, module: Object}): ?React.Element<any> {
-    return this._renderRow(
-      example.module.title,
-      example.module.description,
-      example.key,
-      () => this._handleRowPress(example.key)
-    );
-  }
-
-  _renderRow(title: string, description: string, key: ?string, handler: ?Function): ?React.Element<any> {
-    return (
-      <View key={key || title}>
-        <TouchableHighlight onPress={handler}>
-          <View style={styles.row}>
-            <Text style={styles.rowTitleText}>
-              {title}
-            </Text>
-            <Text style={styles.rowDetailText}>
-              {description}
-            </Text>
-          </View>
-        </TouchableHighlight>
-        <View style={styles.separator} />
       </View>
     );
   }
