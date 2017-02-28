@@ -3280,8 +3280,8 @@ static void YGRoundToPixelGrid(const YGNodeRef node) {
 }
 
 void YGNodeCalculateLayout(const YGNodeRef node,
-                           const float availableWidth,
-                           const float availableHeight,
+                           const float parentWidth,
+                           const float parentHeight,
                            const YGDirection parentDirection) {
   // Increment the generation count. This will force the recursive routine to
   // visit
@@ -3290,33 +3290,28 @@ void YGNodeCalculateLayout(const YGNodeRef node,
   // parameters don't change.
   gCurrentGenerationCount++;
 
-  float width = availableWidth;
-  float height = availableHeight;
-  YGMeasureMode widthMeasureMode = YGMeasureModeUndefined;
-  YGMeasureMode heightMeasureMode = YGMeasureModeUndefined;
-
   YGResolveDimensions(node);
 
-  if (!YGFloatIsUndefined(width)) {
+  float width = YGUndefined;
+  YGMeasureMode widthMeasureMode = YGMeasureModeUndefined;
+  if (YGNodeIsStyleDimDefined(node, YGFlexDirectionRow, parentWidth)) {
+    width = YGValueResolve(node->resolvedDimensions[dim[YGFlexDirectionRow]], parentWidth) +
+            YGNodeMarginForAxis(node, YGFlexDirectionRow, parentWidth);
     widthMeasureMode = YGMeasureModeExactly;
-  } else if (YGNodeIsStyleDimDefined(node, YGFlexDirectionRow, availableWidth)) {
-    width = YGValueResolve(node->resolvedDimensions[dim[YGFlexDirectionRow]], availableWidth) +
-            YGNodeMarginForAxis(node, YGFlexDirectionRow, availableWidth);
-    widthMeasureMode = YGMeasureModeExactly;
-  } else if (YGValueResolve(&node->style.maxDimensions[YGDimensionWidth], availableWidth) >= 0.0f) {
-    width = YGValueResolve(&node->style.maxDimensions[YGDimensionWidth], availableWidth);
+  } else if (YGValueResolve(&node->style.maxDimensions[YGDimensionWidth], parentWidth) >= 0.0f) {
+    width = YGValueResolve(&node->style.maxDimensions[YGDimensionWidth], parentWidth);
     widthMeasureMode = YGMeasureModeAtMost;
   }
 
-  if (!YGFloatIsUndefined(height)) {
+  float height = YGUndefined;
+  YGMeasureMode heightMeasureMode = YGMeasureModeUndefined;
+  if (YGNodeIsStyleDimDefined(node, YGFlexDirectionColumn, parentHeight)) {
+    height = YGValueResolve(node->resolvedDimensions[dim[YGFlexDirectionColumn]], parentHeight) +
+             YGNodeMarginForAxis(node, YGFlexDirectionColumn, parentWidth);
     heightMeasureMode = YGMeasureModeExactly;
-  } else if (YGNodeIsStyleDimDefined(node, YGFlexDirectionColumn, availableHeight)) {
-    height = YGValueResolve(node->resolvedDimensions[dim[YGFlexDirectionColumn]], availableHeight) +
-             YGNodeMarginForAxis(node, YGFlexDirectionColumn, availableWidth);
-    heightMeasureMode = YGMeasureModeExactly;
-  } else if (YGValueResolve(&node->style.maxDimensions[YGDimensionHeight], availableHeight) >=
+  } else if (YGValueResolve(&node->style.maxDimensions[YGDimensionHeight], parentHeight) >=
              0.0f) {
-    height = YGValueResolve(&node->style.maxDimensions[YGDimensionHeight], availableHeight);
+    height = YGValueResolve(&node->style.maxDimensions[YGDimensionHeight], parentHeight);
     heightMeasureMode = YGMeasureModeAtMost;
   }
 
@@ -3326,12 +3321,12 @@ void YGNodeCalculateLayout(const YGNodeRef node,
                            parentDirection,
                            widthMeasureMode,
                            heightMeasureMode,
-                           availableWidth,
-                           availableHeight,
+                           parentWidth,
+                           parentHeight,
                            true,
                            "initia"
                            "l")) {
-    YGNodeSetPosition(node, node->layout.direction, availableWidth, availableHeight, availableWidth);
+    YGNodeSetPosition(node, node->layout.direction, node->layout.dimensions[YGDimensionWidth], node->layout.dimensions[YGDimensionHeight], parentWidth);
 
     if (YGIsExperimentalFeatureEnabled(YGExperimentalFeatureRounding)) {
       YGRoundToPixelGrid(node);
