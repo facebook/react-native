@@ -369,6 +369,14 @@ var featured = [
     infoLink: 'http://x.co/FlareNews',
     infoTitle: 'Social network that connects entrepreneurs to fellow entrepreneurs, consumers, investors and experts',
   },
+  {
+    name: 'Mixcloud',
+    icon: 'https://s3-eu-west-1.amazonaws.com/mixcloud-public/assets/mixcloud-icon.png',
+    linkAppStore: 'https://itunes.apple.com/gb/app/mixcloud-radio-dj-mixes/id401206431?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.mixcloud.player',
+    infoLink: 'https://www.mixcloud.com/about/',
+    infoTitle: 'Re-think radio',
+  },
 ];
 
 /*
