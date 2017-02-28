@@ -18,11 +18,13 @@ const invariant = require('fbjs/lib/invariant');
 
 import type GlobalTransformCache from './src/lib/GlobalTransformCache';
 import type {Reporter} from './src/lib/reporting';
+import type {HasteImpl} from './src/node-haste/Module';
 
 exports.createServer = createServer;
 exports.Logger = Logger;
 
 type Options = {
+  hasteImpl?: HasteImpl,
   globalTransformCache: ?GlobalTransformCache,
   nonPersistent?: boolean,
   projectRoots: Array<string>,
@@ -31,6 +33,7 @@ type Options = {
 };
 
 type StrictOptions = {
+  hasteImpl?: HasteImpl,
   globalTransformCache: ?GlobalTransformCache,
   nonPersistent?: boolean,
   projectRoots: Array<string>,

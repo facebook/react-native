@@ -1239,61 +1239,6 @@ describe('DependencyGraph', function() {
       });
     });
 
-    it('should work with packages with symlinked subdirs', function() {
-      var root = '/root';
-      setMockFileSystem({
-        'symlinkedPackage': {
-          'package.json': JSON.stringify({
-            name: 'aPackage',
-            main: 'main.js',
-          }),
-          'main.js': 'lol',
-          'subdir': {
-            'lolynot.js': 'lolynot',
-          },
-        },
-        'root': {
-          'index.js': [
-            '/**',
-            ' * @providesModule index',
-            ' */',
-            'require("aPackage/subdir/lolynot")',
-          ].join('\n'),
-          'aPackage': { SYMLINK: '/symlinkedPackage' },
-        },
-      });
-
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-      });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-        expect(deps)
-          .toEqual([
-            {
-              id: 'index',
-              path: '/root/index.js',
-              dependencies: ['aPackage/subdir/lolynot'],
-              isAsset: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-              resolveDependency: undefined,
-            },
-            {
-              id: 'aPackage/subdir/lolynot.js',
-              path: '/root/aPackage/subdir/lolynot.js',
-              dependencies: [],
-              isAsset: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-              resolveDependency: undefined,
-            },
-          ]);
-      });
-    });
-
     it('should work with relative modules in packages', function() {
       var root = '/root';
       setMockFileSystem({

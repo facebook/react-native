@@ -43,9 +43,9 @@ type Item = any;
 
 type NormalProps = {
   FooterComponent?: ReactClass<*>,
-  ItemComponent: ReactClass<{item: Item, index: number}>,
-  SectionHeaderComponent?: ReactClass<{info: Object}>,
-  SeparatorComponent?: ReactClass<*>, // not supported yet
+  renderItem: ({item: Item, index: number}) => ?React.Element<*>,
+  renderSectionHeader?: ({section: Object}) => ?React.Element<*>,
+  SeparatorComponent?: ?ReactClass<*>, // not supported yet
 
   // Provide either `items` or `sections`
   items?: ?Array<Item>, // By default, an Item is assumed to be {key: string}
@@ -163,13 +163,12 @@ class MetroListView extends React.Component {
   }
   _renderFooter = () => <this.props.FooterComponent key="$footer" />;
   _renderRow = (item, sectionID, rowID, highlightRow) => {
-    const {ItemComponent} = this.props;
-    return <ItemComponent item={item} index={rowID} />;
+    return this.props.renderItem({item, index: rowID});
   };
   _renderSectionHeader = (section, sectionID) => {
-    const {SectionHeaderComponent} = this.props;
-    invariant(SectionHeaderComponent, 'Must provide SectionHeaderComponent with sections prop');
-    return <SectionHeaderComponent section={section} />;
+    const {renderSectionHeader} = this.props;
+    invariant(renderSectionHeader, 'Must provide renderSectionHeader with sections prop');
+    return renderSectionHeader({section});
   }
   _renderSeparator = (sID, rID) => <this.props.SeparatorComponent key={sID + rID} />;
 }

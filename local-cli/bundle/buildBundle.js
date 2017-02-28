@@ -76,6 +76,7 @@ function buildBundle(
       extraNodeModules: config.extraNodeModules,
       getTransformOptions: config.getTransformOptions,
       globalTransformCache: null,
+      hasteImpl: config.hasteImpl,
       platforms: defaultPlatforms.concat(platforms),
       projectRoots: config.getProjectRoots(),
       providesModuleNodeModules: providesModuleNodeModules,

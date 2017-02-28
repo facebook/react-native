@@ -10,11 +10,14 @@
 
 jest.disableAutomock();
 
-jest.setMock('worker-farm', function() { return () => {}; })
-    .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })
-    .setMock('uglify-js')
-    .setMock('crypto')
-    .setMock('source-map', { SourceMapConsumer: function(fn) {}})
+jest.mock('worker-farm', () => () => () => {})
+    .mock('timers', () => ({ setImmediate: (fn) => setTimeout(fn, 0) }))
+    .mock('uglify-js')
+    .mock('crypto')
+    .mock(
+      '../symbolicate',
+      () => ({createWorker: jest.fn().mockReturnValue(jest.fn())}),
+    )
     .mock('../../Bundler')
     .mock('../../AssetServer')
     .mock('../../lib/declareOpts')
@@ -23,14 +26,14 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .mock('../../lib/GlobalTransformCache');
 
 describe('processRequest', () => {
-  let SourceMapConsumer, Bundler, Server, AssetServer, Promise;
+  let Bundler, Server, AssetServer, Promise, symbolicate;
   beforeEach(() => {
     jest.resetModules();
-    SourceMapConsumer = require('source-map').SourceMapConsumer;
     Bundler = require('../../Bundler');
     Server = require('../');
     AssetServer = require('../../AssetServer');
     Promise = require('promise');
+    symbolicate = require('../symbolicate');
   });
 
   let server;
@@ -69,7 +72,7 @@ describe('processRequest', () => {
       Promise.resolve({
         getModules: () => [],
         getSource: () => 'this is the source',
-        getSourceMap: () => {},
+        getSourceMap: () => ({version: 3}),
         getSourceMapString: () => 'this is the source map',
         getEtag: () => 'this is an etag',
       }));
@@ -464,60 +467,38 @@ describe('processRequest', () => {
   });
 
   describe('/symbolicate endpoint', () => {
+    let symbolicationWorker;
+    beforeEach(() => {
+      symbolicationWorker = symbolicate.createWorker();
+      symbolicationWorker.mockReset();
+    });
+
     it('should symbolicate given stack trace', () => {
-      const body = JSON.stringify({stack: [{
+      const inputStack = [{
         file: 'http://foo.bundle?platform=ios',
         lineNumber: 2100,
         column: 44,
         customPropShouldBeLeftUnchanged: 'foo',
-      }]});
+      }];
+      const outputStack = [{
+        source: 'foo.js',
+        line: 21,
+        column: 4,
+      }];
+      const body = JSON.stringify({stack: inputStack});
 
-      SourceMapConsumer.prototype.originalPositionFor = jest.fn((frame) => {
-        expect(frame.line).toEqual(2100);
-        expect(frame.column).toEqual(44);
-        return {
-          source: 'foo.js',
-          line: 21,
-          column: 4,
-        };
+      expect.assertions(2);
+      symbolicationWorker.mockImplementation(stack => {
+        expect(stack).toEqual(inputStack);
+        return outputStack;
       });
 
       return makeRequest(
         requestHandler,
         '/symbolicate',
-        { rawBody: body }
-      ).then(response => {
-        expect(JSON.parse(response.body)).toEqual({
-          stack: [{
-            file: 'foo.js',
-            lineNumber: 21,
-            column: 4,
-            customPropShouldBeLeftUnchanged: 'foo',
-          }]
-        });
-      });
-    });
-
-    it('ignores `/debuggerWorker.js` stack frames', () => {
-      const body = JSON.stringify({stack: [{
-        file: 'http://localhost:8081/debuggerWorker.js',
-        lineNumber: 123,
-        column: 456,
-      }]});
-
-      return makeRequest(
-        requestHandler,
-        '/symbolicate',
-        { rawBody: body }
-      ).then(response => {
-        expect(JSON.parse(response.body)).toEqual({
-          stack: [{
-            file: 'http://localhost:8081/debuggerWorker.js',
-            lineNumber: 123,
-            column: 456,
-          }]
-        });
-      });
+        {rawBody: body},
+      ).then(response =>
+        expect(JSON.parse(response.body)).toEqual({stack: outputStack}));
     });
   });
 

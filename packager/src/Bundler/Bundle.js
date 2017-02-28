@@ -116,9 +116,9 @@ class Bundle extends BundleBase {
 
   finalize(options: FinalizeOptions) {
     options = options || {};
-    if (options.runMainModule) {
+    if (options.runModule) {
       /* $FlowFixMe: this is unsound, as nothing enforces runBeforeMainModule
-       * to be available if `runMainModule` is true. Refactor. */
+       * to be available if `runModule` is true. Refactor. */
       options.runBeforeMainModule.forEach(this._addRequireCall, this);
       /* $FlowFixMe: this is unsound, as nothing enforces the module ID to have
        * been set beforehand. */
@@ -143,7 +143,7 @@ class Bundle extends BundleBase {
     this._numRequireCalls += 1;
   }
 
-  _getInlineSourceMap(dev) {
+  _getInlineSourceMap(dev: ?boolean) {
     if (this._inlineSourceMap == null) {
       const sourceMap = this.getSourceMapString({excludeSource: true, dev});
       /*eslint-env node*/
@@ -206,7 +206,7 @@ class Bundle extends BundleBase {
    * that makes use of of the `sections` field to combine sourcemaps by adding
    * an offset. This is supported only by Chrome for now.
    */
-  _getCombinedSourceMaps(options): CombinedSourceMap {
+  _getCombinedSourceMaps(options: {excludeSource?: boolean}): CombinedSourceMap {
     const result = {
       version: 3,
       file: this._getSourceMapFile(),

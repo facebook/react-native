@@ -27,6 +27,7 @@ const ReactNative = require('react-native');
 /**
  * Basic example that shows how to use <NavigationCardStack /> to build
  * an app with composite navigation system.
+ * @providesModule NavigationCardStack-NavigationHeader-Tabs-example
  */
 
 const {

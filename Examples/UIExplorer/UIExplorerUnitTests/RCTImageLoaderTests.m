@@ -41,7 +41,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 - (void)setUp
 {
   NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-  _bundleURL = [bundle URLForResource:@"TestBundle" withExtension:@"js"];
+  _bundleURL = [bundle URLForResource:@"UIExplorerUnitTestsBundle" withExtension:@"js"];
 }
 
 - (void)testImageLoading

@@ -9,6 +9,7 @@
 #
 
 lib_deps = []
+
 for jarfile in glob(['libs/*.jar']):
   name = 'jars__' + jarfile[jarfile.rindex('/') + 1: jarfile.rindex('.jar')]
   lib_deps.append(':' + name)
@@ -26,39 +27,39 @@ for aarfile in glob(['libs/*.aar']):
   )
 
 android_library(
-  name = 'all-libs',
-  exported_deps = lib_deps
+    name = "all-libs",
+    exported_deps = lib_deps,
 )
 
 android_library(
-  name = 'app-code',
-  srcs = glob([
-    'src/main/java/**/*.java',
-  ]),
-  deps = [
-    ':all-libs',
-    ':build_config',
-    ':res',
-  ],
+    name = "app-code",
+    srcs = glob([
+        "src/main/java/**/*.java",
+    ]),
+    deps = [
+        ":all-libs",
+        ":build_config",
+        ":res",
+    ],
 )
 
 android_build_config(
-  name = 'build_config',
-  package = 'com.helloworld',
+    name = "build_config",
+    package = "com.helloworld",
 )
 
 android_resource(
-  name = 'res',
-  res = 'src/main/res',
-  package = 'com.helloworld',
+    name = "res",
+    package = "com.helloworld",
+    res = "src/main/res",
 )
 
 android_binary(
-  name = 'app',
-  package_type = 'debug',
-  manifest = 'src/main/AndroidManifest.xml',
-  keystore = '//android/keystores:debug',
-  deps = [
-    ':app-code',
-  ],
+    name = "app",
+    keystore = "//android/keystores:debug",
+    manifest = "src/main/AndroidManifest.xml",
+    package_type = "debug",
+    deps = [
+        ":app-code",
+    ],
 )
