@@ -43,14 +43,21 @@ import type {StyleObj} from 'StyleSheetTypes';
 import type {ViewabilityConfig, ViewToken} from 'ViewabilityHelper';
 import type {Props as VirtualizedListProps} from 'VirtualizedList';
 
-type Item = any;
-
 type RequiredProps<ItemT> = {
   /**
-   * Note this can be a normal class component, or a functional component, such as a render method
-   * on your main component.
+   * Takes an item from `data` and renders it into the list. Typicaly usage:
+   *
+   *   _renderItem = ({item}) => (
+   *     <TouchableOpacity onPress={() => this._onPress(item)}>
+   *       <Text>{item.title}}</Text>
+   *     <TouchableOpacity/>
+   *   );
+   *   ...
+   *   <FlatList data={[{title: 'Title Text'}]} renderItem={this._renderItem} />
+   *
+   * Provides additional metadata like `index` if you need it.
    */
-  ItemComponent: ReactClass<{item: ItemT, index: number}>,
+  renderItem: ({item: ItemT, index: number}) => ?React.Element<*>,
   /**
    * For simplicity, data is just a plain array. If you want to use something else, like an
    * immutable list, use the underlying `VirtualizedList` directly.
@@ -125,8 +132,8 @@ type OptionalProps<ItemT> = {
    * Optional optimization to minimize re-rendering items.
    */
   shouldItemUpdate: (
-    prevProps: {item: ItemT, index: number},
-    nextProps: {item: ItemT, index: number}
+    prevInfo: {item: ItemT, index: number},
+    nextInfo: {item: ItemT, index: number}
   ) => boolean,
   /**
    * See ViewabilityHelper for flow type and comments.
@@ -159,7 +166,7 @@ type DefaultProps = typeof defaultProps;
  *
  *   <FlatList
  *     data={[{key: 'a', {key: 'b'}]}
- *     ItemComponent={({item}) => <Text>{item.key}</Text>}
+ *     renderItem={({item}) => <Text>{item.key}</Text>}
  *   />
  */
 class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, void> {
@@ -186,7 +193,7 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
    * Requires linear scan through data - use scrollToIndex instead if possible. May be janky without
    * `getItemLayout` prop.
   */
-  scrollToItem(params: {animated?: ?boolean, item: Item, viewPosition?: number}) {
+  scrollToItem(params: {animated?: ?boolean, item: ItemT, viewPosition?: number}) {
     this._listRef.scrollToItem(params);
   }
 
@@ -305,18 +312,21 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     }
   };
 
-  _renderItem = ({item, index}) => {
-    const {ItemComponent, numColumns, columnWrapperStyle} = this.props;
+  _renderItem = (info: {item: ItemT | Array<ItemT>, index: number}) => {
+    const {renderItem, numColumns, columnWrapperStyle} = this.props;
     if (numColumns > 1) {
+      const {item, index} = info;
+      invariant(Array.isArray(item), 'Expected array of items with numColumns > 1');
       return (
         <View style={[{flexDirection: 'row'}, columnWrapperStyle]}>
-          {item.map((it, kk) =>
-            <ItemComponent key={kk} item={it} index={index * numColumns + kk} />)
-          }
+          {item.map((it, kk) => {
+            const element = renderItem({item: it, index:  index * numColumns + kk});
+            return element && React.cloneElement(element, {key: kk});
+          })}
         </View>
       );
     } else {
-      return <ItemComponent item={item} index={index} />;
+      return renderItem(info);
     }
   };
 
@@ -340,7 +350,7 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
       return (
         <VirtualizedList
           {...this.props}
-          ItemComponent={this._renderItem}
+          renderItem={this._renderItem}
           getItem={this._getItem}
           getItemCount={this._getItemCount}
           keyExtractor={this._keyExtractor}

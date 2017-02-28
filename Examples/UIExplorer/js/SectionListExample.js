@@ -42,10 +42,10 @@ const {
   ItemComponent,
   PlainInput,
   SeparatorComponent,
-  StackedItemComponent,
   genItemData,
   pressItem,
   renderSmallSwitchOption,
+  renderStackedItem,
 } = require('./ListExampleShared');
 
 const VIEWABILITY_CONFIG = {
@@ -54,7 +54,7 @@ const VIEWABILITY_CONFIG = {
   waitForInteraction: true,
 };
 
-const SectionHeaderComponent = ({section}) => (
+const renderSectionHeader = ({section}) => (
   <View>
     <Text style={styles.headerText}>SECTION HEADER: {section.key}</Text>
     <SeparatorComponent />
@@ -104,16 +104,16 @@ class SectionListExample extends React.PureComponent {
         <SectionList
           ListHeaderComponent={HeaderComponent}
           ListFooterComponent={FooterComponent}
-          ItemComponent={this._renderItemComponent}
-          SectionHeaderComponent={SectionHeaderComponent}
           SectionSeparatorComponent={() => <CustomSeparatorComponent text="SECTION SEPARATOR" />}
           ItemSeparatorComponent={() => <CustomSeparatorComponent text="ITEM SEPARATOR" />}
           enableVirtualization={this.state.virtualized}
           onRefresh={() => alert('onRefresh: nothing to refresh :P')}
           onViewableItemsChanged={this._onViewableItemsChanged}
           refreshing={false}
+          renderItem={this._renderItemComponent}
+          renderSectionHeader={renderSectionHeader}
           sections={[
-            {ItemComponent: StackedItemComponent, key: 's1', data: [
+            {renderItem: renderStackedItem, key: 's1', data: [
               {title: 'Item In Header Section', text: 'Section s1', key: '0'},
             ]},
             {key: 's2', data: [

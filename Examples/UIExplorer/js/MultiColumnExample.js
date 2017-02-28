@@ -99,7 +99,6 @@ class MultiColumnExample extends React.PureComponent {
         <FlatList
           FooterComponent={FooterComponent}
           HeaderComponent={HeaderComponent}
-          ItemComponent={this._renderItemComponent}
           SeparatorComponent={SeparatorComponent}
           getItemLayout={this.state.fixedHeight ? this._getItemLayout : undefined}
           data={filteredData}
@@ -107,6 +106,7 @@ class MultiColumnExample extends React.PureComponent {
           numColumns={this.state.numColumns || 1}
           onRefresh={() => alert('onRefresh: nothing to refresh :P')}
           refreshing={false}
+          renderItem={this._renderItemComponent}
           shouldItemUpdate={this._shouldItemUpdate}
           disableVirtualization={!this.state.virtualized}
           onViewableItemsChanged={this._onViewableItemsChanged}

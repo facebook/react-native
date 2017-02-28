@@ -108,7 +108,6 @@ class FlatListExample extends React.PureComponent {
         <FlatList
           HeaderComponent={HeaderComponent}
           FooterComponent={FooterComponent}
-          ItemComponent={this._renderItemComponent}
           SeparatorComponent={SeparatorComponent}
           data={filteredData}
           debug={this.state.debug}
@@ -122,6 +121,7 @@ class FlatListExample extends React.PureComponent {
           onViewableItemsChanged={this._onViewableItemsChanged}
           ref={this._captureRef}
           refreshing={false}
+          renderItem={this._renderItemComponent}
           shouldItemUpdate={this._shouldItemUpdate}
           viewabilityConfig={VIEWABILITY_CONFIG}
         />

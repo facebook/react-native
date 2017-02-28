@@ -47,7 +47,7 @@ const {computeWindowedRenderLimits} = require('VirtualizeUtils');
 import type {ViewabilityConfig, ViewToken} from 'ViewabilityHelper';
 
 type Item = any;
-type ItemComponentType = ReactClass<{item: Item, index: number}>;
+type renderItemType = ({item: Item, index: number}) => ?React.Element<*>;
 
 /**
  * Renders a virtual list of items given a data blob and accessor functions. Items that are outside
@@ -63,7 +63,7 @@ type ItemComponentType = ReactClass<{item: Item, index: number}>;
  *
  */
 type RequiredProps = {
-  ItemComponent: ItemComponentType,
+  renderItem: renderItemType,
   /**
    * The default accessor functions assume this is an Array<{key: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
@@ -633,7 +633,7 @@ class CellRenderer extends React.Component {
     onLayout: (event: Object, cellKey: string, index: number) => void,
     onUnmount: (cellKey: string) => void,
     parentProps: {
-      ItemComponent: ItemComponentType,
+      renderItem: renderItemType,
       getItemLayout?: ?Function,
       shouldItemUpdate: (
         props: {item: Item, index: number},
@@ -654,8 +654,9 @@ class CellRenderer extends React.Component {
   }
   render() {
     const {item, index, parentProps} = this.props;
-    const {ItemComponent, getItemLayout} = parentProps;
-    const element = <ItemComponent item={item} index={index} />;
+    const {renderItem, getItemLayout} = parentProps;
+    invariant(renderItem, 'no renderItem!');
+    const element = renderItem({item, index});
     if (getItemLayout && !parentProps.debug) {
       return element;
     }

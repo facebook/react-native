@@ -47,7 +47,7 @@ type SectionBase<SectionItemT> = {
   key: string,
 
   // Optional props will override list-wide props just for this section.
-  ItemComponent?: ?ReactClass<{item: SectionItemT, index: number}>,
+  renderItem?: ?({item: SectionItemT, index: number}) => ?React.Element<*>,
   SeparatorComponent?: ?ReactClass<*>,
   keyExtractor?: (item: SectionItemT) => string,
 
@@ -55,10 +55,6 @@ type SectionBase<SectionItemT> = {
   // FooterComponent?: ?ReactClass<*>,
   // HeaderComponent?: ?ReactClass<*>,
   // onViewableItemsChanged?: ({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
-
-  // TODO: support recursive sections
-  // SectionHeaderComponent?: ?ReactClass<{section: SectionBase<*>}>,
-  // sections?: ?Array<Section>;
 };
 
 type RequiredProps<SectionT: SectionBase<*>> = {
@@ -67,9 +63,9 @@ type RequiredProps<SectionT: SectionBase<*>> = {
 
 type OptionalProps<SectionT: SectionBase<*>> = {
   /**
-   * Default renderer for every item in every section.
+   * Default renderer for every item in every section. Can be over-ridden on a per-section basis.
    */
-  ItemComponent: ReactClass<{item: Item, index: number}>,
+  renderItem: ({item: Item, index: number}) => ?React.Element<*>,
   /**
    * Rendered in between adjacent Items within each section.
    */
@@ -85,7 +81,7 @@ type OptionalProps<SectionT: SectionBase<*>> = {
   /**
    * Rendered at the top of each section. Sticky headers are not yet supported.
    */
-  SectionHeaderComponent?: ?ReactClass<{section: SectionT}>,
+  renderSectionHeader?: ?({section: SectionT}) => ?React.Element<*>,
   /**
    * Rendered in between each section.
    */
@@ -93,7 +89,7 @@ type OptionalProps<SectionT: SectionBase<*>> = {
   /**
    * Warning: Virtualization can drastically improve memory consumption for long lists, but trashes
    * the state of items when they scroll out of the render window, so make sure all relavent data is
-   * stored outside of the recursive `ItemComponent` instance tree.
+   * stored outside of the recursive `renderItem` instance tree.
    */
   enableVirtualization?: ?boolean,
   keyExtractor: (item: Item, index: number) => string,
