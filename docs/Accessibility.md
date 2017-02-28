@@ -74,6 +74,13 @@ To use, set the `accessibilityTraits` property to one of (or an array of) access
 * **allowsDirectInteraction** Used when an element allows direct touch interaction for VoiceOver users (for example, a view representing a piano keyboard).
 * **pageTurn** Informs VoiceOver that it should scroll to the next page when it finishes reading the contents of the element.
 
+#### accessibilityViewIsModal (iOS)
+
+A Boolean value indicating whether VoiceOver should ignore the elements within views that are siblings of the receiver.
+
+For example, in a window that contains sibling views `A` and `B`, setting `accessibilityViewIsModal` to `true` on view `B` causes VoiceOver to ignore the elements in the view `A`.
+On the other hand, if view `B` contains a child view `C` and you set `accessibilityViewIsModal` to `true` on view `C`, VoiceOver does not ignore the elements in view `A`.
+
 #### onAccessibilityTap (iOS)
 
 Use this property to assign a custom function to be called when someone activates an accessible element by double tapping on it while it's selected.
