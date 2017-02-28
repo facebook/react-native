@@ -552,13 +552,13 @@ class Bundler {
     });
   }
 
-  getOrderedDependencyPaths({ entryFile, dev, platform }: {
+  getOrderedDependencyPaths({entryFile, dev, platform}: {
     entryFile: string,
     dev: boolean,
     platform: string,
   }) {
     return this.getDependencies({entryFile, dev, platform}).then(
-      ({ dependencies }) => {
+      ({dependencies}) => {
         const ret = [];
         const promises = [];
         const placeHolder = {};
@@ -578,7 +578,7 @@ class Bundler {
         });
 
         return Promise.all(promises).then(assetsData => {
-          assetsData.forEach(({ files }) => {
+          assetsData.forEach(({files}) => {
             const index = ret.indexOf(placeHolder);
             ret.splice(index, 1, ...files);
           });
@@ -636,7 +636,7 @@ class Bundler {
         map,
         meta: {dependencies, dependencyOffsets, preloaded, dependencyPairs},
         sourceCode: source,
-        sourcePath: module.path
+        sourcePath: module.path,
       });
     });
   }
@@ -657,12 +657,12 @@ class Bundler {
     // Test extension against all types supported by image-size module.
     // If it's not one of these, we won't treat it as an image.
     const isImage = [
-      'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff'
+      'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff',
     ].indexOf(extname(module.path).slice(1)) !== -1;
 
-    return this._assetServer.getAssetData(relPath, platform).then((assetData) => {
+    return this._assetServer.getAssetData(relPath, platform).then(assetData => {
       return Promise.all([isImage ? sizeOf(assetData.files[0]) : null, assetData]);
-    }).then((res) => {
+    }).then(res => {
       const dimensions = res[0];
       const assetData = res[1];
       const scale = assetData.scales[0];
@@ -680,7 +680,7 @@ class Bundler {
       };
 
       return this._applyAssetPlugins(assetPlugins, asset);
-    }).then((asset) => {
+    }).then(asset => {
       const json =  JSON.stringify(filterObject(asset, assetPropertyBlacklist));
       const assetRegistryPath = 'react-native/Libraries/Image/AssetRegistry';
       const code =
@@ -691,7 +691,7 @@ class Bundler {
       return {
         asset,
         code,
-        meta: {dependencies, dependencyOffsets}
+        meta: {dependencies, dependencyOffsets},
       };
     });
   }
@@ -736,7 +736,7 @@ class Bundler {
         name,
         id: moduleId,
         code,
-        meta: meta,
+        meta,
         sourceCode: code,
         sourcePath: module.path,
         virtual: true,

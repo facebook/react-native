@@ -125,7 +125,7 @@ function transformCode(
     action_name: 'Transforming file',
     action_phase: 'end',
     file_name: filename,
-    duration_ms: duration_ms,
+    duration_ms,
     log_entry_label: 'Transforming file',
   };
 

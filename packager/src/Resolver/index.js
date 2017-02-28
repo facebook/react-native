@@ -64,7 +64,7 @@ class Resolver {
       forceNodeFilesystemAPI: false,
       getTransformCacheKey: opts.getTransformCacheKey,
       globalTransformCache: opts.globalTransformCache,
-      ignoreFilePath: function(filepath) {
+      ignoreFilePath(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
       },
@@ -253,7 +253,7 @@ function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   return [
     `__d(/* ${verboseName} */`,
     'function(global, require, module, exports) {', // module factory
-      code,
+    code,
     '\n}, ',
     `${JSON.stringify(moduleName)}`, // module id, null = id map. used in ModuleGraph
     dev ? `, null, ${JSON.stringify(verboseName)}` : '',

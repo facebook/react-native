@@ -44,7 +44,7 @@ const {
 
 function debounceAndBatch(fn, delay) {
   let timeout, args = [];
-  return (value) => {
+  return value => {
     args.push(value);
     clearTimeout(timeout);
     timeout = setTimeout(() => {
@@ -434,7 +434,7 @@ class Server {
 
     watchers.forEach(function(w) {
       w.res.writeHead(205, headers);
-      w.res.end(JSON.stringify({ changed: true }));
+      w.res.end(JSON.stringify({changed: true}));
     });
 
     this._changeWatchers = [];
@@ -474,8 +474,8 @@ class Server {
     const watchers = this._changeWatchers;
 
     watchers.push({
-      req: req,
-      res: res,
+      req,
+      res,
     });
 
     req.on('close', () => {
@@ -548,7 +548,7 @@ class Server {
 
   optionsHash(options: {}) {
     // onProgress is a function, can't be serialized
-    return JSON.stringify(Object.assign({}, options, { onProgress: null }));
+    return JSON.stringify(Object.assign({}, options, {onProgress: null}));
   }
 
   /**
@@ -670,11 +670,11 @@ class Server {
 
                 debug('Successfully updated existing bundle');
                 return bundle;
+              });
+            }).catch(e => {
+              debug('Failed to update existing bundle, rebuilding...', e.stack || e.message);
+              return bundleFromScratch();
             });
-          }).catch(e => {
-            debug('Failed to update existing bundle, rebuilding...', e.stack || e.message);
-            return bundleFromScratch();
-          });
           return this._reportBundlePromise(options, bundlePromise);
         } else {
           debug('Using cached bundle');
@@ -834,7 +834,7 @@ class Server {
     }).then(
       stack => {
         debug('Symbolication done');
-        res.end(JSON.stringify({stack: stack}));
+        res.end(JSON.stringify({stack}));
         process.nextTick(() => {
           log(createActionEndEntry(symbolicatingLogEntry));
         });
@@ -941,7 +941,7 @@ class Server {
         query: urlObj.query,
         search: urlObj.search,
       }),
-      entryFile: entryFile,
+      entryFile,
       dev,
       minify,
       hot: this._getBoolOptionFromQuery(urlObj.query, 'hot', false),
@@ -951,7 +951,7 @@ class Server {
         'inlineSourceMap',
         false
       ),
-      platform: platform,
+      platform,
       entryModuleOnly: this._getBoolOptionFromQuery(
         urlObj.query,
         'entryModuleOnly',

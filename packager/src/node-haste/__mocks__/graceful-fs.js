@@ -39,7 +39,7 @@ fs.realpath.mockImplementation((filepath, callback) => {
   callback(null, filepath);
 });
 
-fs.readdirSync.mockImplementation((filepath) => Object.keys(getToNode(filepath)));
+fs.readdirSync.mockImplementation(filepath => Object.keys(getToNode(filepath)));
 
 fs.readdir.mockImplementation((filepath, callback) => {
   callback = asyncCallback(callback);
@@ -213,7 +213,7 @@ fs.createReadStream.mockImplementation(filepath => {
     read() {
       this.push(file, 'utf8');
       this.push(null);
-    }
+    },
   });
 });
 
@@ -226,7 +226,7 @@ fs.createWriteStream.mockImplementation(file => {
       const writeStream = new stream.Writable({
         write(chunk) {
           this.__chunks.push(chunk);
-        }
+        },
       });
       writeStream.__file = file;
       writeStream.__chunks = [];
@@ -240,7 +240,7 @@ fs.createWriteStream.mockImplementation(file => {
 });
 fs.createWriteStream.mock.returned = [];
 
-fs.__setMockFilesystem = (object) => (filesystem = object);
+fs.__setMockFilesystem = object => (filesystem = object);
 
 function getToNode(filepath) {
   // Ignore the drive for Windows paths.
@@ -256,7 +256,7 @@ function getToNode(filepath) {
     throw new Error('Make sure all paths are absolute.');
   }
   let node = filesystem;
-  parts.slice(1).forEach((part) => {
+  parts.slice(1).forEach(part => {
     if (node && node.SYMLINK) {
       node = getToNode(node.SYMLINK);
     }

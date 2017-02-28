@@ -53,7 +53,7 @@ function startupChild(socket) {
         child.removeAllListeners();
         resolve(child);
       });
-      child.send(socket);
+    child.send(socket);
   });
 }
 

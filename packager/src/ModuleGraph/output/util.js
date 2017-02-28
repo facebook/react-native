@@ -80,6 +80,6 @@ function virtualModule(code: string) {
       code,
       path: '',
       type: 'script',
-    }
+    },
   };
 }

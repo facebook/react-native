@@ -38,7 +38,7 @@ function extractDependencies(code: string) {
       }
       dependencyOffsets.push(arg.start);
       dependencies.add(arg.value);
-    }
+    },
   });
 
   return {dependencyOffsets, dependencies: Array.from(dependencies)};

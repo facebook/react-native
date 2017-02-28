@@ -14,7 +14,7 @@ const ModuleTransport = require('../lib/ModuleTransport');
 class HMRBundle extends BundleBase {
   constructor({sourceURLFn, sourceMappingURLFn}) {
     super();
-    this._sourceURLFn = sourceURLFn
+    this._sourceURLFn = sourceURLFn;
     this._sourceMappingURLFn = sourceMappingURLFn;
     this._sourceURLs = [];
     this._sourceMappingURLs = [];

@@ -47,7 +47,7 @@ describe('build map from raw mappings', () => {
         [1, 2],
         [3, 4, 5, 6, 'apples'],
         [7, 8, 9, 10],
-        [11, 12, 13, 14, 'pears']
+        [11, 12, 13, 14, 'pears'],
       ],
       sourceCode: 'code1',
       sourcePath: 'path1',
@@ -65,7 +65,7 @@ describe('build map from raw mappings', () => {
         [11, 12],
         [13, 14, 15, 16, 'bananas'],
         [17, 18, 19, 110],
-        [21, 112, 113, 114, 'pears']
+        [21, 112, 113, 114, 'pears'],
       ],
       sourceCode: 'code3',
       sourcePath: 'path3',
