@@ -217,7 +217,7 @@ describe('Animated tests', () => {
   describe('Animated Loop', () => {
 
     it('loops indefinitely if config not specified', () => {
-      var animation = {start: jest.fn(), reset: jest.fn()};
+      var animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
       var cb = jest.fn();
 
       var loop = Animated.loop(animation);
@@ -244,7 +244,7 @@ describe('Animated tests', () => {
     });
 
     it('loops indefinitely if iterations is -1', () => {
-      var animation = {start: jest.fn(), reset: jest.fn()};
+      var animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
       var cb = jest.fn();
 
       var loop = Animated.loop(animation, { iterations: -1 });
@@ -271,7 +271,7 @@ describe('Animated tests', () => {
     });
 
     it('loops indefinitely if iterations not specified', () => {
-      var animation = {start: jest.fn(), reset: jest.fn()};
+      var animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
       var cb = jest.fn();
 
       var loop = Animated.loop(animation, { anotherKey: 'value' });
@@ -298,7 +298,7 @@ describe('Animated tests', () => {
     });
 
     it('loops three times if iterations is 3', () => {
-      var animation = {start: jest.fn(), reset: jest.fn()};
+      var animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
       var cb = jest.fn();
 
       var loop = Animated.loop(animation, { iterations: 3 });
@@ -325,7 +325,7 @@ describe('Animated tests', () => {
     });
 
     it('does not loop if iterations is 1', () => {
-      var animation = {start: jest.fn(), reset: jest.fn()};
+      var animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
       var cb = jest.fn();
 
       var loop = Animated.loop(animation, { iterations: 1 });
@@ -342,7 +342,7 @@ describe('Animated tests', () => {
     });
 
     it('does not animate if iterations is 0', () => {
-      var animation = {start: jest.fn(), reset: jest.fn()};
+      var animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
       var cb = jest.fn();
 
       var loop = Animated.loop(animation, { iterations: 0 });
@@ -356,7 +356,7 @@ describe('Animated tests', () => {
     });
 
     it('supports interrupting an indefinite loop', () => {
-      var animation = {start: jest.fn(), reset: jest.fn()};
+      var animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
       var cb = jest.fn();
 
       Animated.loop(animation).start(cb);
@@ -374,7 +374,7 @@ describe('Animated tests', () => {
     });
 
     it('supports stopping loop', () => {
-      var animation = {start: jest.fn(), stop: jest.fn(), reset: jest.fn()};
+      var animation = {start: jest.fn(), stop: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
       var cb = jest.fn();
 
       var loop = Animated.loop(animation);
