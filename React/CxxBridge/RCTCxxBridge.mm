@@ -544,7 +544,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   std::vector<std::unique_ptr<NativeModule>> modules;
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    // TODO mhorowitz #10487027: unwrap C++ modules and register them directly.
     if ([moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
       // If a module does not support automatic instantiation, and
       // wasn't provided as an extra module, it may not have an
