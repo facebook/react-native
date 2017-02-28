@@ -369,6 +369,14 @@ var featured = [
     infoLink: 'http://x.co/FlareNews',
     infoTitle: 'Social network that connects entrepreneurs to fellow entrepreneurs, consumers, investors and experts',
   },
+  {
+    name: 'Geektime גיקטיים',
+    icon: 'http://i.imgur.com/iNhyHRF.png',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.zuznow.geektime',
+    linkAppStore: 'https://itunes.apple.com/il/app/geektime-gyqtyym/id824174835',
+    infoLink: 'https://medium.com/@avishayil/release-the-pain-from-running-and-debugging-react-native-app-on-a-real-ios-device-7a2e6048609e',
+    infoTitle: 'Release The Pain from Running and Debugging React Native App on a real iOS Device',
+  },
 ];
 
 /*
