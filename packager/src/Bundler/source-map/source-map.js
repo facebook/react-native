@@ -44,7 +44,7 @@ function fromRawMappings(modules: Array<ModuleTransport>): Generator {
       );
     }
 
-    carryOver = carryOver + countLines(code);
+    carryOver += countLines(code);
   }
 
   return generator;

@@ -13,7 +13,7 @@
 
 const path = require('path');
 
-import type { MixedSourceMap } from './SourceMap';
+import type {MixedSourceMap} from './SourceMap';
 
 function relativizeSourceMapInternal(sourceMap: any, sourcesRoot: string) {
   if (sourceMap.sections) {

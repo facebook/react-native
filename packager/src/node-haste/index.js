@@ -137,7 +137,7 @@ class DependencyGraph {
             dir = path.dirname(dir);
           } while (dir !== '.' && dir !== root);
           return null;
-        }
+        },
       }, this._opts.platforms);
 
       this._hasteMap = new HasteMap({

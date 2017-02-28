@@ -83,7 +83,7 @@ class ResolutionRequest {
   }
 
   _tryResolve(action: () => Promise<string>, secondaryAction: () => ?Promise<string>) {
-    return action().catch((error) => {
+    return action().catch(error => {
       if (error.type !== 'UnableToResolveError') {
         throw error;
       }
@@ -99,7 +99,7 @@ class ResolutionRequest {
       return Promise.resolve(this._immediateResolutionCache[resHash]);
     }
 
-    const cacheResult = (result) => {
+    const cacheResult = result => {
       this._immediateResolutionCache[resHash] = result;
       return result;
     };
@@ -229,7 +229,7 @@ class ResolutionRequest {
       p = Promise.resolve(toModuleName);
     }
 
-    return p.then((realModuleName) => {
+    return p.then(realModuleName => {
       let dep = this._hasteMap.getModule(realModuleName, this._platform);
       if (dep && dep.type === 'Module') {
         return dep;
@@ -453,7 +453,7 @@ class ResolutionRequest {
       if (this._hasteFS.exists(packageJsonPath)) {
         return this._moduleCache.getPackage(packageJsonPath)
           .getMain().then(
-            (main) => this._tryResolve(
+            main => this._tryResolve(
               () => this._loadAsFile(main, fromModule, toModule),
               () => this._loadAsDir(main, fromModule, toModule)
             )

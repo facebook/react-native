@@ -702,7 +702,11 @@ public class DevSupportManagerImpl implements
   }
 
   private void handleCaptureHeap() {
-    JSCHeapCapture.captureHeap(
+    if (mCurrentContext == null) {
+      return;
+    }
+    JSCHeapCapture heapCapture = mCurrentContext.getNativeModule(JSCHeapCapture.class);
+    heapCapture.captureHeap(
       mApplicationContext.getCacheDir().getPath(),
       JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
   }

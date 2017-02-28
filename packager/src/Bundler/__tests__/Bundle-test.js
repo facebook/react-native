@@ -46,7 +46,7 @@ describe('Bundle', () => {
         expect(bundle.getSource({dev: true})).toBe([
           'transformed foo;',
           'transformed bar;',
-          '\/\/# sourceMappingURL=test_url'
+          '\/\/# sourceMappingURL=test_url',
         ].join('\n'));
       });
     });
@@ -118,7 +118,7 @@ describe('Bundle', () => {
       const resolver = {
         wrapModule({name}) {
           return new Promise(resolve => resolves[name] = resolve);
-        }
+        },
       };
 
       const promise = Promise.all(
@@ -180,49 +180,49 @@ describe('Bundle', () => {
           file: 'test_url',
           version: 3,
           sections: [
-            { offset: { line: 0, column: 0 }, map: { name: 'sourcemap foo' } },
-            { offset: { line: 2, column: 0 }, map: { name: 'sourcemap bar' } },
+            {offset: {line: 0, column: 0}, map: {name: 'sourcemap foo'}},
+            {offset: {line: 2, column: 0}, map: {name: 'sourcemap bar'}},
             {
               offset: {
                 column: 0,
-                line: 4
+                line: 4,
               },
               map: {
                 file: 'image.png',
                 mappings: 'AAAA;AACA;',
                 names: [],
-                sources: [ 'image.png' ],
+                sources: ['image.png'],
                 sourcesContent: ['image module;\nimage module;'],
                 version: 3,
-              }
+              },
             },
             {
               offset: {
                 column: 0,
-                line: 6
+                line: 6,
               },
               map: {
                 file: 'require-InitializeCore.js',
                 mappings: 'AAAA;',
                 names: [],
-                sources: [ 'require-InitializeCore.js' ],
+                sources: ['require-InitializeCore.js'],
                 sourcesContent: [';require("InitializeCore");'],
                 version: 3,
-              }
+              },
             },
             {
               offset: {
                 column: 0,
-                line: 7
+                line: 7,
               },
               map: {
                 file: 'require-foo.js',
                 mappings: 'AAAA;',
                 names: [],
-                sources: [ 'require-foo.js' ],
+                sources: ['require-foo.js'],
                 sourcesContent: [';require("foo");'],
                 version: 3,
-              }
+              },
             },
           ],
         });
@@ -342,7 +342,7 @@ describe('Bundle', () => {
       const {groups} = bundle.getUnbundle();
       expect(groups).toEqual(new Map([[
         idFor('Product1'),
-        new Set(['React', 'ReactFoo', 'invariant', 'ReactBar', 'cx'].map(idFor))
+        new Set(['React', 'ReactFoo', 'invariant', 'ReactBar', 'cx'].map(idFor)),
       ]]));
     });
 

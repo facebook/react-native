@@ -22,13 +22,13 @@ describe('declareOpts', function() {
       age: {
         type: 'number',
         default: 21,
-      }
+      },
     });
-    var opts = validate({ name: 'fooer' });
+    var opts = validate({name: 'fooer'});
 
     expect(opts).toEqual({
       name: 'fooer',
-      age: 21
+      age: 21,
     });
   });
 
@@ -41,12 +41,12 @@ describe('declareOpts', function() {
       stuff: {
         type: 'object',
         required: true,
-      }
+      },
     });
 
-    var opts = validate({ things: [1, 2, 3], stuff: {hai: 1} });
+    var opts = validate({things: [1, 2, 3], stuff: {hai: 1}});
     expect(opts).toEqual({
-      things: [1,2,3],
+      things: [1, 2, 3],
       stuff: {hai: 1},
     });
   });
@@ -56,7 +56,7 @@ describe('declareOpts', function() {
       foo: {
         required: true,
         type: 'number',
-      }
+      },
     });
 
     expect(function() {
@@ -68,8 +68,8 @@ describe('declareOpts', function() {
     var validate = declareOpts({
       foo: {
         required: true,
-        type: 'number'
-      }
+        type: 'number',
+      },
     });
 
     expect(function() {
@@ -82,7 +82,7 @@ describe('declareOpts', function() {
       foo: {
         required: true,
         type: 'number',
-      }
+      },
     });
 
     expect(function() {

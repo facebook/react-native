@@ -14,64 +14,77 @@
 const FlatList = require('FlatList');
 const React = require('react');
 
-class MyListItem extends React.Component {
-  props: {
-    item: {
-      title: string,
-    },
-  };
-  render() {
-    return <span />;
-  }
+function renderMyListItem(info: {item: {title: string}, index: number}) {
+  return <span />;
 }
 
 module.exports = {
-  testBadDataWithTypicalItemComponent(): React.Element<*> {
+  testEverythingIsFine() {
+    const data = [{
+      title: 'Title Text',
+      key: 1,
+    }];
+    return <FlatList renderItem={renderMyListItem} data={data} />;
+  },
+
+  testBadDataWithTypicalItem() {
     // $FlowExpectedError - bad title type 6, should be string
     const data = [{
       title: 6,
       key: 1,
     }];
-    return <FlatList ItemComponent={MyListItem} data={data} />;
+    return <FlatList renderItem={renderMyListItem} data={data} />;
   },
 
-  testMissingFieldWithTypicalItemComponent(): React.Element<*> {
+  testMissingFieldWithTypicalItem() {
     const data = [{
       key: 1,
     }];
     // $FlowExpectedError - missing title
-    return <FlatList ItemComponent={MyListItem} data={data} />;
+    return <FlatList renderItem={renderMyListItem} data={data} />;
   },
 
-  testGoodDataWithGoodCustomItemComponentFunction() {
+  testGoodDataWithBadCustomRenderItemFunction() {
     const data = [{
-      widgetCount: 3,
+      widget: 6,
       key: 1,
     }];
     return (
       <FlatList
-        ItemComponent={(props: {widgetCount: number}): React.Element<*> =>
-          <MyListItem item={{title: props.widgetCount + ' Widgets'}} />
+        renderItem={(info) =>
+          // $FlowExpectedError - bad widgetCount type 6, should be Object
+          <span>{info.item.widget.missingProp}</span>
         }
         data={data}
       />
     );
   },
 
-  testBadNonInheritedDefaultProp(): React.Element<*> {
-    const data = [];
-    // $FlowExpectedError - bad numColumns type "lots"
-    return <FlatList ItemComponent={MyListItem} data={data} numColumns="lots" />;
+  testBadRenderItemFunction() {
+    const data = [{
+      title: 'foo',
+      key: 1,
+    }];
+    return [
+      // $FlowExpectedError - title should be inside `item`
+      <FlatList renderItem={(info: {title: string}) => <span /> } data={data} />,
+      // $FlowExpectedError - bad index type string, should be number
+      <FlatList renderItem={(info: {item: any, index: string}) => <span /> } data={data} />,
+      // $FlowExpectedError - bad title type number, should be string
+      <FlatList renderItem={(info: {item: {title: number}}) => <span /> } data={data} />,
+      // EverythingIsFine
+      <FlatList renderItem={(info: {item: {title: string}}) => <span /> } data={data} />,
+    ];
   },
 
-  testBadInheritedDefaultProp(): React.Element<*> {
-    const data = [];
-    // $FlowExpectedError - bad windowSize type "big"
-    return <FlatList ItemComponent={MyListItem} data={data} windowSize="big" />;
-  },
-
-  testMissingData(): React.Element<*> {
-    // $FlowExpectedError - missing `data` prop
-    return <FlatList ItemComponent={MyListItem} />;
+  testOtherBadProps() {
+    return [
+      // $FlowExpectedError - bad numColumns type "lots"
+      <FlatList renderItem={renderMyListItem} data={[]} numColumns="lots" />,
+      // $FlowExpectedError - bad windowSize type "big"
+      <FlatList renderItem={renderMyListItem} data={[]} windowSize="big" />,
+      // $FlowExpectedError - missing `data` prop
+      <FlatList renderItem={renderMyListItem} />,
+    ];
   },
 };

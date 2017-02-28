@@ -42,9 +42,9 @@ export type GetTransformCacheKey = (sourceCode: string, filename: string, option
  * will be, for example, installed in a different `node_modules/` folder for
  * different projects.
  */
-const getCacheDirPath = (function () {
+const getCacheDirPath = (function() {
   let dirPath;
-  return function () {
+  return function() {
     if (dirPath == null) {
       dirPath = path.join(
         require('os').tmpdir(),
@@ -351,5 +351,5 @@ module.exports = {
     const msg = result ? 'Cache hit: ' : 'Cache miss: ';
     debugRead(msg + props.filePath);
     return result;
-  }
+  },
 };

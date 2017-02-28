@@ -224,7 +224,7 @@ function createTestData() {
       if (path.node.callee.name === 'some') {
         path.replaceWith(path.node.arguments[0]);
       }
-    }
+    },
   });
   return {
     bodyAst: fileAst.program.body,

@@ -110,11 +110,11 @@ function encode(value: number, buffer: Buffer, position: number): number {
   let digit, vlq = toVLQSigned(value);
   do {
     digit = vlq & VLQ_BASE_MASK;
-    vlq = vlq >>> VLQ_BASE_SHIFT;
+    vlq >>>= VLQ_BASE_SHIFT;
     if (vlq > 0) {
       // There are still more digits in this value, so we must make sure the
       // continuation bit is marked.
-      digit = digit | VLQ_CONTINUATION_BIT;
+      digit |= VLQ_CONTINUATION_BIT;
     }
     buffer[position++] = CHAR_MAP[digit];
   } while (vlq > 0);
