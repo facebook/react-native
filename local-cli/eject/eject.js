@@ -92,8 +92,8 @@ function eject() {
     let contentPath = 'ios/SomeTest/Images.xcassets/AppIcon.appiconset/Contents.json';
 
     let fileNames = pictureSizes.reduce( (acc, size) => {
-      let filePath = 'ios/SomeTest/Images.xcassets/AppIcon.appiconset/' + size + 'pt-' + appIcon;
-      let fileName = size+'pt-'+appIcon;
+      let filePath = `ios/SomeTest/Images.xcassets/AppIcon.appiconset/${size}pt-${appIcon}`;
+      let fileName = `${size}pt-${appIcon}`;
       sharp(appIcon)
       .resize(size, size)
       .toFile(filePath, function(err) {
@@ -107,10 +107,10 @@ function eject() {
       if (err) throw err;
       let obj = JSON.parse(data);
 
-      obj.images.map((image, key) => {
+      obj.images.forEach((image, key) => {
         let size = parseInt(image.size.split('x')[0]);
         let scale = parseInt(image.scale.replace('x', ''));
-        let fileName = fileNames['SIZE_'+ scale*size];
+        let fileName = fileNames[`SIZE_${scale*size}`];
         obj.images[key].filename = fileName;
         return obj;
       })
@@ -131,21 +131,21 @@ function eject() {
     );
 
     console.log('Setting up App Icons');
-    const hdpiPath = 'android/app/src/main/res/mipmap-hdpi' + '/ic_launcher.png';
-    const mdpiPath = 'android/app/src/main/res/mipmap-mdpi' + '/ic_launcher.png';
-    const xhdpiPath = 'android/app/src/main/res/mipmap-xhdpi' + '/ic_launcher.png';
-    const xxhdpiPath = 'android/app/src/main/res/mipmap-xxhdpi' + '/ic_launcher.png';
+    const hdpiPath = 'android/app/src/main/res/mipmap-hdpi/ic_launcher.png';
+    const mdpiPath = 'android/app/src/main/res/mipmap-mdpi/ic_launcher.png';
+    const xhdpiPath = 'android/app/src/main/res/mipmap-xhdpi/ic_launcher.png';
+    const xxhdpiPath = 'android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png';
 
     const pictureSizes = [48, 72, 96, 144];
     const filePaths = [hdpiPath, mdpiPath, xhdpiPath, xxhdpiPath];
 
-    filePaths.map((path) => {
+    filePaths.forEach((path) => {
       fs.unlink(path, (err) => {
         if(err) throw err;
       })
     })
 
-    pictureSizes.map((size, key) => {
+    pictureSizes.forEach((size, key) => {
       sharp(appIcon)
       .resize(size, size)
       .toFile(filePaths[key], function(err) {
