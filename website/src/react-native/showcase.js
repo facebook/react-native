@@ -66,6 +66,12 @@ const featuredApps = showcaseApps.filter(app => {
 
 const apps = pinnedApps.concat(featuredApps);
 
+var AppIcon = React.createClass({
+  render: function() {
+    return <img src={this.props.icon} alt={this.props.appName} />;
+  }
+});
+
 var AppList = React.createClass({
 
   render: function() {
@@ -77,53 +83,34 @@ var AppList = React.createClass({
   },
 
   _renderApp: function(app, i) {
-    var inner = (
-      <div>
-        {this._renderIcon(app)}
-        {this._renderTitle(app)}
-        {this._renderLinks(app)}
-        {this._renderInfo(app)}
-      </div>
-    );
-
-    if (app.linkAppStore && app.linkPlayStore) {
-      return (<div className="showcase" key={i}>{inner}</div>);
-    }
-
     return (
       <div className="showcase" key={i}>
-        {inner}
+        <div>
+          {this._renderAppIcon(app)}
+          {this._renderAppName(app)}
+          {this._renderLinks(app)}
+          {this._renderInfo(app)}
+        </div>
       </div>
     );
   },
 
-  _renderIcon: function(app) {
-    var icon = (
-      <img src={app.icon} alt={app.name} />
-    );
-
-    return (
-      {icon}
-    );
+  _renderAppIcon: function(app) {
+    return <img src={app.icon} alt={app.name} />;
   },
 
-  _renderTitle: function(app) {
-    var title = (
-      <h3>{app.name}</h3>
-    );
-
-    return (
-      {title}
-    );
+  _renderAppName: function(app) {
+    return <h3>{app.name}</h3>;
   },
 
   _renderInfo: function(app) {
-    if (!app.infoLink) {
-      return;
+    let info = null;
+    if (app.infoLink) {
+      info = <p><a href={app.infoLink} target="_blank">{app.infoTitle}</a></p>;
     }
 
     return (
-      <p><a href={app.infoLink} target="_blank">{app.infoTitle}</a></p>
+      {info}
     );
   },
 
