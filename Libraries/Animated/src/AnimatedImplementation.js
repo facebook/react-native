@@ -90,6 +90,9 @@ class Animated {
   __getNativeConfig(): Object {
     throw new Error('This JS animated node type cannot be used as native animated node');
   }
+  // Called before listeners are triggered.
+  // Should update internal value so __getValue returns the most recently received value
+  __updateValueFromListener(data: any): void {}
   toJSON(): any { return this.__getValue(); }
 }
 
@@ -144,10 +147,13 @@ class Animation {
 
 class AnimatedWithChildren extends Animated {
   _children: Array<Animated>;
+  _listeners: {[key: string]: ValueListenerCallback};
+  __nativeAnimatedValueListener: ?any;
 
   constructor() {
     super();
     this._children = [];
+    this._listeners = {};
   }
 
   __makeNative() {
@@ -156,6 +162,9 @@ class AnimatedWithChildren extends Animated {
       for (var child of this._children) {
         child.__makeNative();
         NativeAnimatedAPI.connectAnimatedNodes(this.__getNativeTag(), child.__getNativeTag());
+      }
+      if (Object.keys(this._listeners).length) {
+        this._startListeningToNativeValueUpdates();
       }
     }
   }
@@ -189,6 +198,74 @@ class AnimatedWithChildren extends Animated {
 
   __getChildren(): Array<Animated> {
     return this._children;
+  }
+
+  addListener(callback: ValueListenerCallback): string {
+    var id = String(_uniqueId++);
+    this._listeners[id] = callback;
+    if (this.__isNative) {
+      this._startListeningToNativeValueUpdates();
+    }
+    return id;
+  }
+
+  removeListener(id: string): void {
+    delete this._listeners[id];
+    if (this.__isNative && Object.keys(this._listeners).length === 0) {
+      this._stopListeningForNativeValueUpdates();
+    }
+  }
+
+  removeAllListeners(): void {
+    this._listeners = {};
+    if (this.__isNative) {
+      this._stopListeningForNativeValueUpdates();
+    }
+  }
+
+  _startListeningToNativeValueUpdates(): void {
+    if (this.__nativeAnimatedValueListener) {
+      return;
+    }
+
+    NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
+    this.__nativeAnimatedValueListener = NativeAnimatedHelper.nativeEventEmitter.addListener(
+      'onAnimatedValueUpdate',
+      (data) => {
+        if (data.tag !== this.__getNativeTag()) {
+          return;
+        }
+
+        this.__updateValueFromListener(data);
+        // Native 'onAnimatedValueUpdate' is triggered on all child nodes,
+        // so we don't need event propagation
+        this.triggerListeners(false /*eventPropagation*/);
+      }
+    );
+  }
+
+  /* Typically used internally */
+  triggerListeners(eventPropagation?: bool = true): void {
+    for (var key in this._listeners) {
+      this._listeners[key]({value: this.__getValue()});
+    }
+    if(eventPropagation) {
+      for (var child of this._children) {
+        if(child instanceof AnimatedWithChildren) {
+          child.triggerListeners();
+        }
+      }
+    }
+  }
+
+  _stopListeningForNativeValueUpdates() {
+    if (!this.__nativeAnimatedValueListener) {
+      return;
+    }
+
+    this.__nativeAnimatedValueListener.remove();
+    this.__nativeAnimatedValueListener = null;
+    NativeAnimatedAPI.stopListeningToAnimatedNodeValue(this.__getNativeTag());
   }
 }
 
@@ -698,15 +775,12 @@ class AnimatedValue extends AnimatedWithChildren {
   _offset: number;
   _animation: ?Animation;
   _tracking: ?Animated;
-  _listeners: {[key: string]: ValueListenerCallback};
-  __nativeAnimatedValueListener: ?any;
 
   constructor(value: number) {
     super();
     this._value = value;
     this._offset = 0;
     this._animation = null;
-    this._listeners = {};
   }
 
   __detach() {
@@ -720,10 +794,6 @@ class AnimatedValue extends AnimatedWithChildren {
 
   __makeNative() {
     super.__makeNative();
-
-    if (Object.keys(this._listeners).length) {
-      this._startListeningToNativeValueUpdates();
-    }
   }
 
   /**
@@ -777,61 +847,6 @@ class AnimatedValue extends AnimatedWithChildren {
     if (this.__isNative) {
       NativeAnimatedAPI.extractAnimatedNodeOffset(this.__getNativeTag());
     }
-  }
-
-  /**
-   * Adds an asynchronous listener to the value so you can observe updates from
-   * animations.  This is useful because there is no way to
-   * synchronously read the value because it might be driven natively.
-   */
-  addListener(callback: ValueListenerCallback): string {
-    var id = String(_uniqueId++);
-    this._listeners[id] = callback;
-    if (this.__isNative) {
-      this._startListeningToNativeValueUpdates();
-    }
-    return id;
-  }
-
-  removeListener(id: string): void {
-    delete this._listeners[id];
-    if (this.__isNative && Object.keys(this._listeners).length === 0) {
-      this._stopListeningForNativeValueUpdates();
-    }
-  }
-
-  removeAllListeners(): void {
-    this._listeners = {};
-    if (this.__isNative) {
-      this._stopListeningForNativeValueUpdates();
-    }
-  }
-
-  _startListeningToNativeValueUpdates() {
-    if (this.__nativeAnimatedValueListener) {
-      return;
-    }
-
-    NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
-    this.__nativeAnimatedValueListener = NativeAnimatedHelper.nativeEventEmitter.addListener(
-      'onAnimatedValueUpdate',
-      (data) => {
-        if (data.tag !== this.__getNativeTag()) {
-          return;
-        }
-        this._updateValue(data.value, false /* flush */);
-      }
-    );
-  }
-
-  _stopListeningForNativeValueUpdates() {
-    if (!this.__nativeAnimatedValueListener) {
-      return;
-    }
-
-    this.__nativeAnimatedValueListener.remove();
-    this.__nativeAnimatedValueListener = null;
-    NativeAnimatedAPI.stopListeningToAnimatedNodeValue(this.__getNativeTag());
   }
 
   /**
@@ -901,14 +916,16 @@ class AnimatedValue extends AnimatedWithChildren {
     this._tracking = tracking;
   }
 
+  __updateValueFromListener(data): void {
+    this._value = data.value;
+  }
+
   _updateValue(value: number, flush: bool): void {
     this._value = value;
     if (flush) {
       _flush(this);
     }
-    for (var key in this._listeners) {
-      this._listeners[key]({value: this.__getValue()});
-    }
+    this.triggerListeners();
   }
 
   __getNativeConfig(): Object {
