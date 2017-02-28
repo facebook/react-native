@@ -93,92 +93,55 @@ fs.readFileSync.mockImplementation(function(filepath, encoding) {
   return node;
 });
 
+function makeStatResult(node) {
+  const isSymlink = node != null && node.SYMLINK != null;
+  return {
+    isDirectory: () => node != null && typeof node === 'object' && !isSymlink,
+    isSymbolicLink: () => isSymlink,
+    mtime,
+  };
+}
+
+function statSync(filepath) {
+  const node = getToNode(filepath);
+  if (node.SYMLINK) {
+    return statSync(node.SYMLINK);
+  }
+  return makeStatResult(node);
+}
+
 fs.stat.mockImplementation((filepath, callback) => {
   callback = asyncCallback(callback);
-  let node;
+  let result;
   try {
-    node = getToNode(filepath);
+    result = statSync(filepath);
   } catch (e) {
     callback(e);
     return;
   }
-
-  if (node.SYMLINK) {
-    fs.stat(node.SYMLINK, callback);
-    return;
-  }
-
-  if (node && typeof node === 'object') {
-    callback(null, {
-      isDirectory: () => true,
-      isSymbolicLink: () => false,
-      mtime,
-    });
-  } else {
-    callback(null, {
-      isDirectory: () => false,
-      isSymbolicLink: () => false,
-      mtime,
-    });
-  }
+  callback(null, result);
 });
 
-fs.statSync.mockImplementation((filepath) => {
+fs.statSync.mockImplementation(statSync);
+
+function lstatSync(filepath) {
   const node = getToNode(filepath);
-
-  if (node.SYMLINK) {
-    return fs.statSync(node.SYMLINK);
-  }
-
-  return {
-    isDirectory: () => node && typeof node === 'object',
-    isSymbolicLink: () => false,
-    mtime,
-  };
-});
+  return makeStatResult(node);
+}
 
 fs.lstat.mockImplementation((filepath, callback) => {
   callback = asyncCallback(callback);
-  let node;
+  let result;
   try {
-    node = getToNode(filepath);
+    result = lstatSync(filepath);
   } catch (e) {
     callback(e);
     return;
   }
-
-  if (node && typeof node === 'object') {
-    callback(null, {
-      isDirectory: () => true,
-      isSymbolicLink: () => false,
-      mtime,
-    });
-  } else {
-    callback(null, {
-      isDirectory: () => false,
-      isSymbolicLink: () => false,
-      mtime,
-    });
-  }
+  callback(null, result);
 });
 
-fs.lstatSync.mockImplementation((filepath) => {
-  const node = getToNode(filepath);
-
-  if (node.SYMLINK) {
-    return {
-      isDirectory: () => false,
-      isSymbolicLink: () => true,
-      mtime,
-    };
-  }
-
-  return {
-    isDirectory: () => node && typeof node === 'object',
-    isSymbolicLink: () => false,
-    mtime,
-  };
-});
+fs.lstatSync.mockImplementation(lstatSync);
 
 fs.open.mockImplementation(function(filepath) {
   const callback = arguments[arguments.length - 1] || noop;
@@ -276,7 +239,6 @@ fs.createWriteStream.mockImplementation(file => {
   }
 });
 fs.createWriteStream.mock.returned = [];
-
 
 fs.__setMockFilesystem = (object) => (filesystem = object);
 
