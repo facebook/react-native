@@ -4,9 +4,11 @@ button will be an &#x27;OK&#x27; button.</p><p>This is an API that works both on
 alerts. To show an alert that prompts the user to enter some information,
 see <code>AlertIOS</code>; entering text in an alert is common on iOS only.</p><h2><a class="anchor" name="ios"></a>iOS <a class="hash-link" href="docs/alert.html#ios">#</a></h2><p>On iOS you can specify any number of buttons. Each button can optionally
 specify a style, which is one of &#x27;default&#x27;, &#x27;cancel&#x27; or &#x27;destructive&#x27;.</p><h2><a class="anchor" name="android"></a>Android <a class="hash-link" href="docs/alert.html#android">#</a></h2><p>On Android at most three buttons can be specified. Android has a concept
-of a neutral, negative and a positive button:</p><ul><li>If you specify one button, it will be the &#x27;positive&#x27; one (such as &#x27;OK&#x27;)</li><li>Two buttons mean &#x27;negative&#x27;, &#x27;positive&#x27; (such as &#x27;Cancel&#x27;, &#x27;OK&#x27;)</li><li>Three buttons mean &#x27;neutral&#x27;, &#x27;negative&#x27;, &#x27;positive&#x27; (such as &#x27;Later&#x27;, &#x27;Cancel&#x27;, &#x27;OK&#x27;)</li></ul><p>Note that by default alerts on Android can be dismissed by clicking outside of their alert box.
-To prevent this behavior, you can provide
-an optional <code>options</code> parameter <code>{ cancelable: false }</code> to the Alert method.</p><p>Example usage:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// Works on both iOS and Android
+of a neutral, negative and a positive button:</p><ul><li>If you specify one button, it will be the &#x27;positive&#x27; one (such as &#x27;OK&#x27;)</li><li>Two buttons mean &#x27;negative&#x27;, &#x27;positive&#x27; (such as &#x27;Cancel&#x27;, &#x27;OK&#x27;)</li><li>Three buttons mean &#x27;neutral&#x27;, &#x27;negative&#x27;, &#x27;positive&#x27; (such as &#x27;Later&#x27;, &#x27;Cancel&#x27;, &#x27;OK&#x27;)</li></ul><p>By default alerts on Android can be dismissed by tapping outside of the alert
+box. This event can be handled by providing an optional <code>options</code> parameter,
+with an <code>onDismiss</code> callback property <code>{ onDismiss: () =&gt; {} }</code>.</p><p>Alternatively, the dismissing behavior can be disabled altogether by providing
+an optional <code>options</code> parameter with the <code>cancelable</code> property set to <code>false</code>
+i.e. <code>{ cancelable: false }</code></p><p>Example usage:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// Works on both iOS and Android
 </span>Alert<span class="token punctuation">.</span><span class="token function">alert<span class="token punctuation">(</span></span>
   <span class="token string">&#x27;Alert Title&#x27;</span><span class="token punctuation">,</span>
   <span class="token string">&#x27;My Alert Msg&#x27;</span><span class="token punctuation">,</span>
