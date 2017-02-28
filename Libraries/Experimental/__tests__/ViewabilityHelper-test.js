@@ -106,6 +106,12 @@ describe('computeViewableItems', function() {
         .toEqual([2]);
       expect(helper.computeViewableItems(data.length, 600, 200, getFrameMetrics))
         .toEqual([3]);
+
+      helper = new ViewabilityHelper({viewAreaCoveragePercentThreshold: 10});
+      expect(helper.computeViewableItems(data.length, 30, 200, getFrameMetrics))
+        .toEqual([0, 1, 2]);
+      expect(helper.computeViewableItems(data.length, 31, 200, getFrameMetrics))
+        .toEqual([1, 2]);
   });
 
   it(
@@ -123,11 +129,20 @@ describe('computeViewableItems', function() {
         .toEqual([0]);
       expect(helper.computeViewableItems(data.length, 1, 50, getFrameMetrics))
         .toEqual([0, 1]);
+
       helper = new ViewabilityHelper({itemVisiblePercentThreshold: 100});
       expect(helper.computeViewableItems(data.length, 0, 250, getFrameMetrics))
         .toEqual([0, 1, 2]);
       expect(helper.computeViewableItems(data.length, 1, 250, getFrameMetrics))
         .toEqual([1, 2]);
+
+      helper = new ViewabilityHelper({itemVisiblePercentThreshold: 10});
+      expect(helper.computeViewableItems(data.length, 184, 20, getFrameMetrics))
+        .toEqual([1]);
+      expect(helper.computeViewableItems(data.length, 185, 20, getFrameMetrics))
+        .toEqual([1, 2]);
+      expect(helper.computeViewableItems(data.length, 186, 20, getFrameMetrics))
+        .toEqual([2]);
   });
 });
 
@@ -231,4 +246,122 @@ describe('onUpdate', function() {
       });
     },
   );
+
+  it(
+    'minViewTime delays callback',
+    function() {
+      const helper = new ViewabilityHelper({minViewTime: 350, viewAreaCoveragePercentThreshold: 0});
+      rowFrames = {
+        a: {y: 0, height: 200},
+        b: {y: 200, height: 200},
+      };
+      data = [{key: 'a'}, {key: 'b'}];
+      const onViewableItemsChanged = jest.fn();
+      helper.onUpdate(
+        data.length,
+        0,
+        200,
+        getFrameMetrics,
+        createViewable,
+        onViewableItemsChanged,
+      );
+      expect(onViewableItemsChanged).not.toBeCalled();
+
+      jest.runAllTimers();
+
+      expect(onViewableItemsChanged.mock.calls.length).toBe(1);
+      expect(onViewableItemsChanged.mock.calls[0][0]).toEqual({
+        changed: [{isViewable: true, key: 'a'}],
+        viewableItems: [{isViewable: true, key: 'a'}],
+      });
+    }
+  );
+
+  it(
+    'minViewTime skips briefly visible items',
+    function() {
+      const helper = new ViewabilityHelper({minViewTime: 350, viewAreaCoveragePercentThreshold: 0});
+      rowFrames = {
+        a: {y: 0, height: 250},
+        b: {y: 250, height: 200},
+      };
+      data = [{key: 'a'}, {key: 'b'}];
+      const onViewableItemsChanged = jest.fn();
+      helper.onUpdate(
+        data.length,
+        0,
+        200,
+        getFrameMetrics,
+        createViewable,
+        onViewableItemsChanged,
+      );
+      helper.onUpdate(
+        data.length,
+        300, // scroll past item 'a'
+        200,
+        getFrameMetrics,
+        createViewable,
+        onViewableItemsChanged,
+      );
+
+      jest.runAllTimers();
+
+      expect(onViewableItemsChanged.mock.calls.length).toBe(1);
+      expect(onViewableItemsChanged.mock.calls[0][0]).toEqual({
+        changed: [{isViewable: true, key: 'b'}],
+        viewableItems: [{isViewable: true, key: 'b'}],
+      });
+    }
+  );
+
+  it(
+    'waitForInteraction blocks callback until scroll',
+    function() {
+      const helper = new ViewabilityHelper({
+        waitForInteraction: true,
+        viewAreaCoveragePercentThreshold: 0,
+        scrollInteractionFilter: {
+          minimumOffset: 20,
+        },
+      });
+      rowFrames = {
+        a: {y: 0, height: 200},
+        b: {y: 200, height: 200},
+      };
+      data = [{key: 'a'}, {key: 'b'}];
+      const onViewableItemsChanged = jest.fn();
+      helper.onUpdate(
+        data.length,
+        0,
+        100,
+        getFrameMetrics,
+        createViewable,
+        onViewableItemsChanged,
+      );
+      expect(onViewableItemsChanged).not.toBeCalled();
+      helper.onUpdate(
+        data.length,
+        10, // not far enough to meet minimumOffset
+        100,
+        getFrameMetrics,
+        createViewable,
+        onViewableItemsChanged,
+      );
+      expect(onViewableItemsChanged).not.toBeCalled();
+      helper.onUpdate(
+        data.length,
+        20,
+        100,
+        getFrameMetrics,
+        createViewable,
+        onViewableItemsChanged,
+      );
+      expect(onViewableItemsChanged.mock.calls.length).toBe(1);
+      expect(onViewableItemsChanged.mock.calls[0][0]).toEqual({
+        changed: [{isViewable: true, key: 'a'}],
+        viewableItems: [{isViewable: true, key: 'a'}],
+      });
+    }
+  );
+
 });

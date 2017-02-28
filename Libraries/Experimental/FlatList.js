@@ -197,6 +197,15 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     this._listRef.scrollToOffset(params);
   }
 
+  /**
+   * Tells the list an interaction has occured, which should trigger viewability calculations, e.g.
+   * if waitForInteractions is true and the user has not scrolled. This is typically called by taps
+   * on items or by navigation actions.
+   */
+  recordInteraction() {
+    this._listRef.recordInteraction();
+  }
+
   componentWillMount() {
     this._checkProps(this.props);
   }
@@ -253,8 +262,8 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     }
   };
 
-  _getItemCount = (data: Array<ItemT>): number => {
-    return Math.floor(data.length / this.props.numColumns);
+  _getItemCount = (data?: ?Array<ItemT>): number => {
+    return data ? Math.ceil(data.length / this.props.numColumns) : 0;
   };
 
   _keyExtractor = (items: ItemT | Array<ItemT>, index: number): string => {

@@ -47,6 +47,12 @@ const {
   renderSmallSwitchOption,
 } = require('./ListExampleShared');
 
+const VIEWABILITY_CONFIG = {
+  minimumViewTime: 3000,
+  viewAreaCoveragePercentThreshold: 0,
+  waitForInteraction: true,
+};
+
 class FlatListExample extends React.PureComponent {
   static title = '<FlatList>';
   static description = 'Performant, scrollable list of data.';
@@ -66,6 +72,9 @@ class FlatListExample extends React.PureComponent {
   _onChangeScrollToIndex = (text) => {
     this._listRef.scrollToIndex({viewPosition: 0.5, index: Number(text)});
   };
+  componentDidUpdate() {
+    this._listRef.recordInteraction(); // e.g. flipping logViewable switch
+  }
   render() {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
     const filter = (item) => (filterRegex.test(item.text) || filterRegex.test(item.title));
@@ -114,6 +123,7 @@ class FlatListExample extends React.PureComponent {
           ref={this._captureRef}
           refreshing={false}
           shouldItemUpdate={this._shouldItemUpdate}
+          viewabilityConfig={VIEWABILITY_CONFIG}
         />
       </UIExplorerPage>
     );
@@ -154,6 +164,7 @@ class FlatListExample extends React.PureComponent {
     }
   };
   _pressItem = (key: number) => {
+    this._listRef.recordInteraction();
     pressItem(this, key);
   };
   _listRef: FlatList<*>;

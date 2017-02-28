@@ -176,6 +176,11 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
     );
   }
 
+  recordInteraction() {
+    this._viewabilityHelper.recordInteraction();
+    this._updateViewableItems(this.props.data);
+  }
+
   static defaultProps = {
     disableVirtualization: false,
     getItem: (data: any, index: number) => data[index],
@@ -249,6 +254,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
   componentWillUnmount() {
     this._updateViewableItems(null);
     this._updateCellsToRenderBatcher.dispose();
+    this._viewabilityHelper.dispose();
   }
 
   componentWillReceiveProps(newProps: Props) {
@@ -509,6 +515,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
     const velocity = dOffset / dt;
     this._scrollMetrics = {contentLength, dt, offset, timestamp, velocity, visibleLength};
     const {data, getItemCount, onEndReached, onEndReachedThreshold, windowSize} = this.props;
+    this._updateViewableItems(data);
     if (!data) {
       return;
     }
