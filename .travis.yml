@@ -47,7 +47,7 @@ notifications:
   email:
     recipients:
       - mkonicek@fb.com
-      - eloy@artsy.net # Eloy Durán maintains the podspecs test and wants to be notified about failures
+      - eloy@artsy.net # Eloy Durán maintains the podspecs test and wants to be notified about failures.
     on_failure: change
     on_success: change
   slack:
