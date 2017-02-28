@@ -46,3 +46,6 @@ notifications:
     on_success: change
   slack:
     secure: oQL2C966v7/DtxNqfM7WowjY0R5mgLHR2qHkoucwK5iVrmaptnHr8fq01xlj7VT0kDwNLqT3n4+gtCviGw89lq71m3W76c8Pms/10jpjw+LwAfQPVizNw/Bx8MFNNmjDauK/auFxaybiLZupi7zd4xFGOZvScmFdfD4CAAp2OOA=
+    on_pull_requests: false
+    on_failure: change
+    on_success: change
