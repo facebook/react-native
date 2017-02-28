@@ -46,9 +46,20 @@ export type TransformCode = (
   transformOptions: TransformOptions,
 ) => Promise<TransformedCode>;
 
+export type HasteImpl = {
+  getHasteName(filePath: string): (string | void),
+  // This exists temporarily to enforce consistency while we deprecate
+  // @providesModule.
+  enforceHasteNameMatches?: (
+    filePath: string,
+    expectedName: (string | void),
+  ) => void,
+};
+
 export type Options = {
-  resetCache?: boolean,
   cacheTransformResults?: boolean,
+  hasteImpl?: HasteImpl,
+  resetCache?: boolean,
 };
 
 export type ConstructorArgs = {
@@ -191,21 +202,46 @@ class Module {
     return this._docBlock;
   }
 
-  _getHasteName() {
+  _getHasteName(): Promise<string | void> {
     if (!this._hasteName) {
-      // Extract an id for the module if it's using @providesModule syntax
-      // and if it's NOT in node_modules (and not a whitelisted node_module).
-      // This handles the case where a project may have a dep that has @providesModule
-      // docblock comments, but doesn't want it to conflict with whitelisted @providesModule
-      // modules, such as react-haste, fbjs-haste, or react-native or with non-dependency,
-      // project-specific code that is using @providesModule.
-      this._hasteName = this._readDocBlock().then(moduleDocBlock => {
-        const {providesModule} = moduleDocBlock;
-        return providesModule
-          && !this._depGraphHelpers.isNodeModulesDir(this.path)
-            ? /^\S+/.exec(providesModule)[0]
-            : undefined;
-      });
+      const hasteImpl = this._options.hasteImpl;
+      if (hasteImpl === undefined || hasteImpl.enforceHasteNameMatches) {
+        this._hasteName = this._readDocBlock().then(moduleDocBlock => {
+          const {providesModule} = moduleDocBlock;
+          return providesModule
+            && !this._depGraphHelpers.isNodeModulesDir(this.path)
+              ? /^\S+/.exec(providesModule)[0]
+              : undefined;
+        });
+      }
+      if (hasteImpl !== undefined) {
+        const {enforceHasteNameMatches} = hasteImpl;
+        if (enforceHasteNameMatches) {
+          this._hasteName = this._hasteName.then(providesModule => {
+            enforceHasteNameMatches(
+              this.path,
+              providesModule,
+            );
+            return hasteImpl.getHasteName(this.path);
+          });
+        } else {
+          this._hasteName = Promise.resolve(hasteImpl.getHasteName(this.path));
+        }
+      } else {
+        // Extract an id for the module if it's using @providesModule syntax
+        // and if it's NOT in node_modules (and not a whitelisted node_module).
+        // This handles the case where a project may have a dep that has @providesModule
+        // docblock comments, but doesn't want it to conflict with whitelisted @providesModule
+        // modules, such as react-haste, fbjs-haste, or react-native or with non-dependency,
+        // project-specific code that is using @providesModule.
+        this._hasteName = this._readDocBlock().then(moduleDocBlock => {
+          const {providesModule} = moduleDocBlock;
+          return providesModule
+            && !this._depGraphHelpers.isNodeModulesDir(this.path)
+              ? /^\S+/.exec(providesModule)[0]
+              : undefined;
+        });
+      }
     }
     return this._hasteName;
   }

@@ -27,14 +27,14 @@ type ReactNativeBaseComponentViewConfig = {
  * @param {string} config iOS View configuration.
  * @private
  */
-const createReactNativeFiberComponentClass = function(
-  viewConfig: ReactNativeBaseComponentViewConfig
-): ReactClass<any> {
-  // TODO(sema): This actually returns a string. Need to fix this before
-  // we deploy Fiber.
-  return (ReactNativeViewConfigRegistry.register(viewConfig) : any);
-};
-
+ const createReactNativeFiberComponentClass = function(
+   viewConfig: ReactNativeBaseComponentViewConfig
+ ): ReactClass<any> {
+   // TODO(sema): This actually returns a string. Need to fix this before
+   // we deploy Fiber.
+   return (ReactNativeViewConfigRegistry.register(viewConfig) : any);
+ };
+ 
 /**
  * @param {string} config iOS View configuration.
  * @private
@@ -59,6 +59,6 @@ const createReactNativeComponentClass = function(
   return ((Constructor: any): ReactClass<any>);
 };
 
-module.exports = (ReactNativeFeatureFlags.useFiber
+module.exports = ReactNativeFeatureFlags.useFiber
   ? createReactNativeFiberComponentClass
-  : createReactNativeComponentClass);
+  : createReactNativeComponentClass;

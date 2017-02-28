@@ -11,6 +11,7 @@
 
 'use strict';
 
+const nullthrows = require('fbjs/lib/nullthrows');
 const path = require('path');
 
 import type {PackageData} from '../types.flow';
@@ -51,7 +52,7 @@ module.exports = class Package {
   }
 
   getName() {
-    return this.data.then(p => p.name);
+    return this.data.then(p => nullthrows(p.name));
   }
 
   isHaste() {

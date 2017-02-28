@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
+ * @providesModule react-native-implementation
  * @noflow - get/set properties not yet supported by flow. also `...require(x)` is broken #6560135
  */
 'use strict';
@@ -27,6 +28,7 @@ if (__DEV__) {
 // Export React, plus some native additions.
 const ReactNative = {
   // Components
+  get AccessibilityInfo() { return require('AccessibilityInfo'); },
   get ActivityIndicator() { return require('ActivityIndicator'); },
   get ART() { return require('ReactNativeART'); },
   get Button() { return require('Button'); },

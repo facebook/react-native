@@ -1,12 +1,12 @@
 TEST_SRCS = [
-  'CxxMessageQueueTest.cpp',
-  'RecoverableErrorTest.cpp',
-  'jsarg_helpers.cpp',
-  'jsbigstring.cpp',
-  'jscexecutor.cpp',
-  'jsclogging.cpp',
-  'methodcall.cpp',
-  'value.cpp',
+    "CxxMessageQueueTest.cpp",
+    "RecoverableErrorTest.cpp",
+    "jsarg_helpers.cpp",
+    "jsbigstring.cpp",
+    "jscexecutor.cpp",
+    "jsclogging.cpp",
+    "methodcall.cpp",
+    "value.cpp",
 ]
 
 if THIS_IS_FBANDROID:

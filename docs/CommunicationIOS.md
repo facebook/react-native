@@ -203,7 +203,7 @@ Let's look at an example.
 - (void)rootViewDidChangeIntrinsicSize:(RCTRootView *)rootView
 {
   CGRect newFrame = rootView.frame;
-  newFrame.size = rootView.intrinsicSize;
+  newFrame.size = rootView.intrinsicContentSize;
 
   rootView.frame = newFrame;
 }

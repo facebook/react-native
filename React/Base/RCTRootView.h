@@ -89,12 +89,6 @@ extern NSString *const RCTContentDidAppearNotification;
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
 
 /**
- * The size of the root view's content. This is set right before the
- * rootViewDidChangeIntrinsicSize method of RCTRootViewDelegate is called.
- */
-@property (readonly, nonatomic, assign) CGSize intrinsicSize;
-
-/**
  * The delegate that handles intrinsic size updates.
  */
 @property (nonatomic, weak) id<RCTRootViewDelegate> delegate;
@@ -153,5 +147,18 @@ extern NSString *const RCTContentDidAppearNotification;
  */
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDelay;
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDuration;
+
+@end
+
+@interface RCTRootView (Deprecated)
+
+/**
+ * The intrinsic size of the root view's content. This is set right before the
+ * `rootViewDidChangeIntrinsicSize` method of `RCTRootViewDelegate` is called.
+ * This property is deprecated and will be removed in next releases.
+ * Use UIKit `intrinsicContentSize` propery instead.
+ */
+@property (readonly, nonatomic, assign) CGSize intrinsicSize
+__deprecated_msg("Use `intrinsicContentSize` instead.");
 
 @end
