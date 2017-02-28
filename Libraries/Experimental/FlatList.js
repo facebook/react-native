@@ -40,7 +40,7 @@ const VirtualizedList = require('VirtualizedList');
 const invariant = require('invariant');
 
 import type {StyleObj} from 'StyleSheetTypes';
-import type {ViewabilityConfig, Viewable} from 'ViewabilityHelper';
+import type {ViewabilityConfig, ViewToken} from 'ViewabilityHelper';
 import type {Props as VirtualizedListProps} from 'VirtualizedList';
 
 type Item = any;
@@ -111,7 +111,7 @@ type OptionalProps<ItemT> = {
    * Called when the viewability of rows changes, as defined by the
    * `viewablePercentThreshold` prop.
    */
-  onViewableItemsChanged?: ?({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
+  onViewableItemsChanged?: ?({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
   legacyImplementation?: ?boolean,
   /**
    * Set this true while waiting for new data from a refresh.
@@ -281,7 +281,7 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     }
   };
 
-  _pushMultiColumnViewable(arr: Array<Viewable>, v: Viewable): void {
+  _pushMultiColumnViewable(arr: Array<ViewToken>, v: ViewToken): void {
     const {numColumns, keyExtractor} = this.props;
     v.item.forEach((item, ii) => {
       invariant(v.index != null, 'Missing index!');

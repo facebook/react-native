@@ -44,7 +44,7 @@ const invariant = require('fbjs/lib/invariant');
 
 const {computeWindowedRenderLimits} = require('VirtualizeUtils');
 
-import type {ViewabilityConfig, Viewable} from 'ViewabilityHelper';
+import type {ViewabilityConfig, ViewToken} from 'ViewabilityHelper';
 
 type Item = any;
 type ItemComponentType = ReactClass<{item: Item, index: number}>;
@@ -105,7 +105,7 @@ type OptionalProps = {
    * Called when the viewability of rows changes, as defined by the
    * `viewablePercentThreshold` prop.
    */
-  onViewableItemsChanged?: ?({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
+  onViewableItemsChanged?: ?({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
   /**
    * Set this true while waiting for new data from a refresh.
    */
@@ -572,7 +572,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
     });
   };
 
-  _createViewable = (index: number, isViewable: boolean): Viewable => {
+  _createViewToken = (index: number, isViewable: boolean): ViewToken => {
     const {data, getItem, keyExtractor} = this.props;
     const item = getItem(data, index);
     invariant(item, 'Missing item for index ' + index);
@@ -619,7 +619,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
       this._scrollMetrics.offset,
       this._scrollMetrics.visibleLength,
       this._getFrameMetrics,
-      this._createViewable,
+      this._createViewToken,
       onViewableItemsChanged,
       this.state,
     );

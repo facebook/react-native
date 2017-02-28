@@ -39,7 +39,7 @@ const VirtualizedList = require('VirtualizedList');
 const invariant = require('invariant');
 const warning = require('warning');
 
-import type {Viewable} from 'ViewabilityHelper';
+import type {ViewToken} from 'ViewabilityHelper';
 import type {Props as VirtualizedListProps} from 'VirtualizedList';
 
 type Item = any;
@@ -58,7 +58,7 @@ type SectionBase = {
   // TODO: support more optional/override props
   // FooterComponent?: ?ReactClass<*>,
   // HeaderComponent?: ?ReactClass<*>,
-  // onViewableItemsChanged?: ({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
+  // onViewableItemsChanged?: ({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
 
   // TODO: support recursive sections
   // SectionHeaderComponent?: ?ReactClass<{section: SectionBase}>,
@@ -108,7 +108,7 @@ type OptionalProps<SectionT: SectionBase> = {
    * Called when the viewability of rows changes, as defined by the
    * `viewablePercentThreshold` prop.
    */
-  onViewableItemsChanged?: ?({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
+  onViewableItemsChanged?: ?({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
   /**
    * Set this true while waiting for new data from a refresh.
    */
@@ -184,8 +184,8 @@ class VirtualizedSectionList<SectionT: SectionBase>
     }
   }
 
-  _convertViewable = (viewable: Viewable): ?Viewable => {
-    invariant(viewable.index != null, 'Received a broken Viewable');
+  _convertViewable = (viewable: ViewToken): ?ViewToken => {
+    invariant(viewable.index != null, 'Received a broken ViewToken');
     const info = this._subExtractor(viewable.index);
     if (!info) {
       return null;
@@ -200,7 +200,7 @@ class VirtualizedSectionList<SectionT: SectionBase>
   };
 
   _onViewableItemsChanged = (
-    {viewableItems, changed}: {viewableItems: Array<Viewable>, changed: Array<Viewable>}
+    {viewableItems, changed}: {viewableItems: Array<ViewToken>, changed: Array<ViewToken>}
   ) => {
     if (this.props.onViewableItemsChanged) {
       this.props.onViewableItemsChanged({

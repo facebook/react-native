@@ -18,7 +18,7 @@ function getFrameMetrics(index: number) {
   const frame = rowFrames[data[index].key];
   return {length: frame.height, offset: frame.y};
 }
-function createViewable(index: number, isViewable: boolean) {
+function createViewToken(index: number, isViewable: boolean) {
   return {key: data[index].key, isViewable};
 }
 
@@ -161,7 +161,7 @@ describe('onUpdate', function() {
         0,
         200,
         getFrameMetrics,
-        createViewable,
+        createViewToken,
         onViewableItemsChanged,
       );
       expect(onViewableItemsChanged.mock.calls.length).toBe(1);
@@ -174,7 +174,7 @@ describe('onUpdate', function() {
         0,
         200,
         getFrameMetrics,
-        createViewable,
+        createViewToken,
         onViewableItemsChanged,
       );
       expect(onViewableItemsChanged.mock.calls.length).toBe(1); // nothing changed!
@@ -183,7 +183,7 @@ describe('onUpdate', function() {
         100,
         200,
         getFrameMetrics,
-        createViewable,
+        createViewToken,
         onViewableItemsChanged,
       );
       expect(onViewableItemsChanged.mock.calls.length).toBe(2);
@@ -209,7 +209,7 @@ describe('onUpdate', function() {
         0,
         200,
         getFrameMetrics,
-        createViewable,
+        createViewToken,
         onViewableItemsChanged,
       );
       expect(onViewableItemsChanged.mock.calls.length).toBe(1);
@@ -222,7 +222,7 @@ describe('onUpdate', function() {
         100,
         200,
         getFrameMetrics,
-        createViewable,
+        createViewToken,
         onViewableItemsChanged,
       );
       expect(onViewableItemsChanged.mock.calls.length).toBe(2);
@@ -236,7 +236,7 @@ describe('onUpdate', function() {
         200,
         200,
         getFrameMetrics,
-        createViewable,
+        createViewToken,
         onViewableItemsChanged,
       );
       expect(onViewableItemsChanged.mock.calls.length).toBe(3);
@@ -262,7 +262,7 @@ describe('onUpdate', function() {
         0,
         200,
         getFrameMetrics,
-        createViewable,
+        createViewToken,
         onViewableItemsChanged,
       );
       expect(onViewableItemsChanged).not.toBeCalled();
@@ -292,7 +292,7 @@ describe('onUpdate', function() {
         0,
         200,
         getFrameMetrics,
-        createViewable,
+        createViewToken,
         onViewableItemsChanged,
       );
       helper.onUpdate(
@@ -300,7 +300,7 @@ describe('onUpdate', function() {
         300, // scroll past item 'a'
         200,
         getFrameMetrics,
-        createViewable,
+        createViewToken,
         onViewableItemsChanged,
       );
 
@@ -335,7 +335,7 @@ describe('onUpdate', function() {
         0,
         100,
         getFrameMetrics,
-        createViewable,
+        createViewToken,
         onViewableItemsChanged,
       );
       expect(onViewableItemsChanged).not.toBeCalled();
@@ -344,7 +344,7 @@ describe('onUpdate', function() {
         10, // not far enough to meet minimumOffset
         100,
         getFrameMetrics,
-        createViewable,
+        createViewToken,
         onViewableItemsChanged,
       );
       expect(onViewableItemsChanged).not.toBeCalled();
@@ -353,7 +353,7 @@ describe('onUpdate', function() {
         20,
         100,
         getFrameMetrics,
-        createViewable,
+        createViewToken,
         onViewableItemsChanged,
       );
       expect(onViewableItemsChanged.mock.calls.length).toBe(1);

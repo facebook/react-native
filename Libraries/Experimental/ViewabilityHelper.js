@@ -13,7 +13,7 @@
 
 const invariant = require('invariant');
 
-export type Viewable = {item: any, key: string, index: ?number, isViewable: boolean, section?: any};
+export type ViewToken = {item: any, key: string, index: ?number, isViewable: boolean, section?: any};
 
 export type ViewabilityConfig = {|
   /**
@@ -68,7 +68,7 @@ class ViewabilityHelper {
   _lastUpdateTime: number = 0;
   _timers: Set<number> = new Set();
   _viewableIndices: Array<number> = [];
-  _viewableItems: Map<string, Viewable> = new Map();
+  _viewableItems: Map<string, ViewToken> = new Map();
 
   constructor(config: ViewabilityConfig = {viewAreaCoveragePercentThreshold: 0}) {
     invariant(
@@ -140,8 +140,8 @@ class ViewabilityHelper {
     scrollOffset: number,
     viewportHeight: number,
     getFrameMetrics: (index: number) => ?{length: number, offset: number},
-    createViewable: (index: number, isViewable: boolean) => Viewable,
-    onViewableItemsChanged: ({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
+    createViewToken: (index: number, isViewable: boolean) => ViewToken,
+    onViewableItemsChanged: ({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
     renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
   ): void {
     const updateTime = Date.now();
@@ -186,13 +186,13 @@ class ViewabilityHelper {
       const handle = setTimeout(
         () => {
           this._timers.delete(handle);
-          this._onUpdateSync(viewableIndices, onViewableItemsChanged, createViewable);
+          this._onUpdateSync(viewableIndices, onViewableItemsChanged, createViewToken);
         },
         this._config.minViewTime,
       );
       this._timers.add(handle);
     } else {
-      this._onUpdateSync(viewableIndices, onViewableItemsChanged, createViewable);
+      this._onUpdateSync(viewableIndices, onViewableItemsChanged, createViewToken);
     }
   }
 
@@ -200,7 +200,7 @@ class ViewabilityHelper {
     this._hasInteracted = true;
   }
 
-  _onUpdateSync(viewableIndicesToCheck, onViewableItemsChanged, createViewable) {
+  _onUpdateSync(viewableIndicesToCheck, onViewableItemsChanged, createViewToken) {
     // Filter out indices that have gone out of view since this call was scheduled.
     viewableIndicesToCheck = viewableIndicesToCheck.filter(
       (ii) => this._viewableIndices.includes(ii)
@@ -208,7 +208,7 @@ class ViewabilityHelper {
     const prevItems = this._viewableItems;
     const nextItems = new Map(
       viewableIndicesToCheck.map(ii => {
-        const viewable = createViewable(ii, true);
+        const viewable = createViewToken(ii, true);
         return [viewable.key, viewable];
       })
     );

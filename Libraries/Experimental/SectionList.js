@@ -36,7 +36,7 @@ const MetroListView = require('MetroListView');
 const React = require('React');
 const VirtualizedSectionList = require('VirtualizedSectionList');
 
-import type {Viewable} from 'ViewabilityHelper';
+import type {ViewToken} from 'ViewabilityHelper';
 import type {Props as VirtualizedSectionListProps} from 'VirtualizedSectionList';
 
 type Item = any;
@@ -54,7 +54,7 @@ type SectionBase<SectionItemT> = {
   // TODO: support more optional/override props
   // FooterComponent?: ?ReactClass<*>,
   // HeaderComponent?: ?ReactClass<*>,
-  // onViewableItemsChanged?: ({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
+  // onViewableItemsChanged?: ({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
 
   // TODO: support recursive sections
   // SectionHeaderComponent?: ?ReactClass<{section: SectionBase<*>}>,
@@ -107,7 +107,7 @@ type OptionalProps<SectionT: SectionBase<*>> = {
    * Called when the viewability of rows changes, as defined by the
    * `viewablePercentThreshold` prop.
    */
-  onViewableItemsChanged?: ?({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
+  onViewableItemsChanged?: ?({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
   /**
    * Set this true while waiting for new data from a refresh.
    */
