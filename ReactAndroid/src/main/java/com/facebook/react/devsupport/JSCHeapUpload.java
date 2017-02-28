@@ -28,36 +28,32 @@ public class JSCHeapUpload {
   public static JSCHeapCapture.CaptureCallback captureCallback(final String uploadUrl) {
     return new JSCHeapCapture.CaptureCallback() {
       @Override
-      public void onComplete(
-          List<File> captures,
-          List<JSCHeapCapture.CaptureException> failures) {
-        for (JSCHeapCapture.CaptureException e : failures) {
-          Log.e("JSCHeapCapture", e.getMessage());
-        }
-
+      public void onSuccess(File capture) {
         OkHttpClient  httpClient = new OkHttpClient.Builder().build();
+        RequestBody body = RequestBody.create(MediaType.parse("application/json"), capture);
+        Request request = new Request.Builder()
+          .url(uploadUrl)
+          .method("POST", body)
+          .build();
+        Call call = httpClient.newCall(request);
+        call.enqueue(new Callback() {
+          @Override
+          public void onFailure(Call call, IOException e) {
+            Log.e("JSCHeapCapture", "Upload of heap capture failed: " + e.toString());
+          }
 
-        for (File path : captures) {
-          RequestBody body = RequestBody.create(MediaType.parse("application/json"), path);
-          Request request = new Request.Builder()
-            .url(uploadUrl)
-            .method("POST", body)
-            .build();
-          Call call = httpClient.newCall(request);
-          call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-              Log.e("JSCHeapCapture", "Upload of heap capture failed: " + e.toString());
+          @Override
+          public void onResponse(Call call, Response response) throws IOException {
+            if (!response.isSuccessful()) {
+              Log.e("JSCHeapCapture", "Upload of heap capture failed with code: " + Integer.toString(response.code()));
             }
+          }
+        });
+      }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-              if (!response.isSuccessful()) {
-                Log.e("JSCHeapCapture", "Upload of heap capture failed with code: " + Integer.toString(response.code()));
-              }
-            }
-          });
-        }
+      @Override
+      public void onFailure(JSCHeapCapture.CaptureException e) {
+        Log.e("JSCHeapCapture", "Heap capture failed: " + e.toString());
       }
     };
   }
