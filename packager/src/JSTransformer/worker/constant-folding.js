@@ -57,7 +57,7 @@ const plugin = {
             path.replaceWith(value ? node.right : left);
           }
         }
-      }
+      },
     },
     UnaryExpression: {
       exit(path) {
@@ -65,7 +65,7 @@ const plugin = {
         if (node.operator === '!' && t.isLiteral(node.argument)) {
           path.replaceWith(t.valueToNode(!node.argument.value));
         }
-      }
+      },
     },
   },
 };

@@ -18,12 +18,14 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
+ * @providesModule AccessibilityAndroidExample
  */
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
 var {
+  AccessibilityInfo,
   StyleSheet,
   Text,
   View,
@@ -44,7 +46,33 @@ class AccessibilityAndroidExample extends React.Component {
     count: 0,
     backgroundImportantForAcc: 0,
     forgroundImportantForAcc: 0,
+    screenReaderEnabled: false,
   };
+
+  componentDidMount() {
+    AccessibilityInfo.addEventListener(
+      'change',
+      this._handleScreenReaderToggled
+    );
+    AccessibilityInfo.fetch().done((isEnabled) => {
+      this.setState({
+        screenReaderEnabled: isEnabled
+      });
+    });
+  }
+
+  componentWillUnmount() {
+    AccessibilityInfo.removeEventListener(
+      'change',
+      this._handleScreenReaderToggled
+    );
+  }
+
+  _handleScreenReaderToggled = (isEnabled) => {
+    this.setState({
+      screenReaderEnabled: isEnabled,
+    });
+  }
 
   _addOne = () => {
     this.setState({
@@ -121,6 +149,12 @@ class AccessibilityAndroidExample extends React.Component {
           </TouchableWithoutFeedback>
           <Text accessibilityLiveRegion="polite">
             Clicked {this.state.count} times
+          </Text>
+        </UIExplorerBlock>
+
+        <UIExplorerBlock title="Check if the screen reader is enabled">
+          <Text>
+            The screen reader is {this.state.screenReaderEnabled ? 'enabled' : 'disabled'}.
           </Text>
         </UIExplorerBlock>
 

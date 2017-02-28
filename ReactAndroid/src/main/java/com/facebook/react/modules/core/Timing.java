@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.util.SparseArray;
-import android.view.Choreographer;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -81,7 +80,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     }
   }
 
-  private class TimerFrameCallback implements Choreographer.FrameCallback {
+  private class TimerFrameCallback extends ChoreographerCompat.FrameCallback {
 
     // Temporary map for constructing the individual arrays of timers per ExecutorToken
     private final HashMap<ExecutorToken, WritableArray> mTimersToCall = new HashMap<>();
@@ -131,7 +130,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     }
   }
 
-  private class IdleFrameCallback implements Choreographer.FrameCallback {
+  private class IdleFrameCallback extends ChoreographerCompat.FrameCallback {
 
     @Override
     public void doFrame(long frameTimeNanos) {
@@ -248,14 +247,14 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   @Override
   public void onHostPause() {
     isPaused.set(true);
-    clearChoreographerCallback();
-    maybeClearChoreographerIdleCallback();
+    clearFrameCallback();
+    maybeIdleCallback();
   }
 
   @Override
   public void onHostDestroy() {
-    clearChoreographerCallback();
-    maybeClearChoreographerIdleCallback();
+    clearFrameCallback();
+    maybeIdleCallback();
   }
 
   @Override
@@ -281,14 +280,14 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
       HeadlessJsTaskContext.getInstance(getReactApplicationContext());
     if (!headlessJsTaskContext.hasActiveTasks()) {
       isRunningTasks.set(false);
-      clearChoreographerCallback();
-      maybeClearChoreographerIdleCallback();
+      clearFrameCallback();
+      maybeIdleCallback();
     }
   }
 
   @Override
   public void onCatalystInstanceDestroy() {
-    clearChoreographerCallback();
+    clearFrameCallback();
     clearChoreographerIdleCallback();
     HeadlessJsTaskContext headlessJsTaskContext =
       HeadlessJsTaskContext.getInstance(getReactApplicationContext());
@@ -303,9 +302,9 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     }
   }
 
-  private void maybeClearChoreographerIdleCallback() {
+  private void maybeIdleCallback() {
     if (isPaused.get() && !isRunningTasks.get()) {
-      clearChoreographerCallback();
+      clearFrameCallback();
     }
   }
 
@@ -318,7 +317,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     }
   }
 
-  private void clearChoreographerCallback() {
+  private void clearFrameCallback() {
     HeadlessJsTaskContext headlessJsTaskContext =
       HeadlessJsTaskContext.getInstance(getReactApplicationContext());
     if (mFrameCallbackPosted && isPaused.get() &&

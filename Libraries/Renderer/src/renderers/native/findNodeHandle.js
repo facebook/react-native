@@ -53,8 +53,7 @@ import type { ReactInstance } from 'ReactInstanceType';
 let injectedFindNode;
 let injectedFindRootNodeID;
 
-// TODO(sema): Type this more specifically.
-function findNodeHandle(componentOrHandle: any): any {
+function findNodeHandle(componentOrHandle: any): ?number {
   if (__DEV__) {
     // TODO: fix this unsafe cast to work with Fiber.
     var owner = ((ReactCurrentOwner.current: any): ReactInstance | null);

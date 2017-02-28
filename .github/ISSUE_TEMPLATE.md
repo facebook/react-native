@@ -20,6 +20,6 @@ If you have a feature request, post it on Product Pains: https://productpains.co
 
 ### Additional Information
 
-* React Native version: [FILL THIS OUT]
+* React Native version: [FILL THIS OUT: Does the bug reproduce on the latest RN release?]
 * Platform: [FILL THIS OUT: iOS, Android, or both?]
 * Operating System: [FILL THIS OUT: MacOS, Linux, or Windows?]

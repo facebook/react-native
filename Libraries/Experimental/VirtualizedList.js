@@ -44,10 +44,10 @@ const invariant = require('fbjs/lib/invariant');
 
 const {computeWindowedRenderLimits} = require('VirtualizeUtils');
 
-import type {ViewabilityConfig, Viewable} from 'ViewabilityHelper';
+import type {ViewabilityConfig, ViewToken} from 'ViewabilityHelper';
 
 type Item = any;
-type ItemComponentType = ReactClass<{item: Item, index: number}>;
+type renderItemType = ({item: Item, index: number}) => ?React.Element<*>;
 
 /**
  * Renders a virtual list of items given a data blob and accessor functions. Items that are outside
@@ -63,7 +63,7 @@ type ItemComponentType = ReactClass<{item: Item, index: number}>;
  *
  */
 type RequiredProps = {
-  ItemComponent: ItemComponentType,
+  renderItem: renderItemType,
   /**
    * The default accessor functions assume this is an Array<{key: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
@@ -103,9 +103,9 @@ type OptionalProps = {
   onRefresh?: ?Function,
   /**
    * Called when the viewability of rows changes, as defined by the
-   * `viewablePercentThreshold` prop.
+   * `viewabilityConfig` prop.
    */
-  onViewableItemsChanged?: ?({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
+  onViewableItemsChanged?: ?({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
   /**
    * Set this true while waiting for new data from a refresh.
    */
@@ -176,6 +176,11 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
     );
   }
 
+  recordInteraction() {
+    this._viewabilityHelper.recordInteraction();
+    this._updateViewableItems(this.props.data);
+  }
+
   static defaultProps = {
     disableVirtualization: false,
     getItem: (data: any, index: number) => data[index],
@@ -220,7 +225,6 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
       nextProps: {item: Item, index: number},
     ) => true,
     updateCellsBatchingPeriod: 50,
-    viewablePercentThreshold: 10,
     windowSize: 21, // multiples of length
   };
 
@@ -249,6 +253,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
   componentWillUnmount() {
     this._updateViewableItems(null);
     this._updateCellsToRenderBatcher.dispose();
+    this._viewabilityHelper.dispose();
   }
 
   componentWillReceiveProps(newProps: Props) {
@@ -509,6 +514,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
     const velocity = dOffset / dt;
     this._scrollMetrics = {contentLength, dt, offset, timestamp, velocity, visibleLength};
     const {data, getItemCount, onEndReached, onEndReachedThreshold, windowSize} = this.props;
+    this._updateViewableItems(data);
     if (!data) {
       return;
     }
@@ -565,7 +571,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
     });
   };
 
-  _createViewable = (index: number, isViewable: boolean): Viewable => {
+  _createViewToken = (index: number, isViewable: boolean): ViewToken => {
     const {data, getItem, keyExtractor} = this.props;
     const item = getItem(data, index);
     invariant(item, 'Missing item for index ' + index);
@@ -612,7 +618,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
       this._scrollMetrics.offset,
       this._scrollMetrics.visibleLength,
       this._getFrameMetrics,
-      this._createViewable,
+      this._createViewToken,
       onViewableItemsChanged,
       this.state,
     );
@@ -627,7 +633,7 @@ class CellRenderer extends React.Component {
     onLayout: (event: Object, cellKey: string, index: number) => void,
     onUnmount: (cellKey: string) => void,
     parentProps: {
-      ItemComponent: ItemComponentType,
+      renderItem: renderItemType,
       getItemLayout?: ?Function,
       shouldItemUpdate: (
         props: {item: Item, index: number},
@@ -648,8 +654,9 @@ class CellRenderer extends React.Component {
   }
   render() {
     const {item, index, parentProps} = this.props;
-    const {ItemComponent, getItemLayout} = parentProps;
-    const element = <ItemComponent item={item} index={index} />;
+    const {renderItem, getItemLayout} = parentProps;
+    invariant(renderItem, 'no renderItem!');
+    const element = renderItem({item, index});
     if (getItemLayout && !parentProps.debug) {
       return element;
     }

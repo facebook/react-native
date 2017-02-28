@@ -13,15 +13,15 @@
 
 const invariant = require('invariant');
 
-export type Viewable = {item: any, key: string, index: ?number, isViewable: boolean, section?: any};
+export type ViewToken = {item: any, key: string, index: ?number, isViewable: boolean, section?: any};
 
-export type ViewabilityConfig = {
+export type ViewabilityConfig = {|
   /**
    * Minimum amount of time (in milliseconds) that an item must be physically viewable before the
    * viewability callback will be fired. A high number means that scrolling through content without
    * stopping will not mark the content as viewable.
    */
-  minViewTime?: number,
+  minimumViewTime?: number,
 
   /**
    * Percent of viewport that must be covered for a partially occluded item to count as
@@ -35,30 +35,51 @@ export type ViewabilityConfig = {
    * Similar to `viewAreaPercentThreshold`, but considers the percent of the item that is visible,
    * rather than the fraction of the viewable area it covers.
    */
-  itemVisiblePercentThreashold?: number,
+  itemVisiblePercentThreshold?: number,
 
   /**
-   * Nothing is considered viewable until the user scrolls (tbd: or taps) the screen after render.
+   * Nothing is considered viewable until the user scrolls or `recordInteraction` is called after
+   * render.
    */
   waitForInteraction?: boolean,
-}
+
+  /**
+   * Criteria to filter out certain scroll events so they don't count as interactions. By default,
+   * any non-zero scroll offset will be considered an interaction.
+   */
+  scrollInteractionFilter?: {|
+    minimumOffset?: number, // scrolls with an offset less than this are ignored.
+    minimumElapsed?: number, // scrolls that happen before this are ignored.
+  |},
+|};
 
 /**
-* A row is said to be in a "viewable" state when either of the following
-* is true:
-* - Occupying >= viewablePercentThreshold of the viewport
+* An item is said to be in a "viewable" state when any of the following
+* is true for longer than `minViewTime` milliseconds (after an interaction if `waitForInteraction`
+* is true):
+*
+* - Occupying >= `viewAreaCoveragePercentThreshold` of the view area XOR fraction of the item
+*   visible in the view area >= `itemVisiblePercentThreshold`.
 * - Entirely visible on screen
 */
 class ViewabilityHelper {
   _config: ViewabilityConfig;
-  _viewableItems: Map<string, Viewable> = new Map();
+  _hasInteracted: boolean = false;
+  _lastUpdateTime: number = 0;
+  _timers: Set<number> = new Set();
+  _viewableIndices: Array<number> = [];
+  _viewableItems: Map<string, ViewToken> = new Map();
 
   constructor(config: ViewabilityConfig = {viewAreaCoveragePercentThreshold: 0}) {
+    invariant(
+      config.scrollInteractionFilter == null || config.waitForInteraction,
+      'scrollInteractionFilter only works in conjunction with waitForInteraction',
+    );
     this._config = config;
   }
 
-  remove() {
-    // clear all timeouts...
+  dispose() {
+    this._timers.forEach(clearTimeout);
   }
 
   computeViewableItems(
@@ -68,15 +89,15 @@ class ViewabilityHelper {
     getFrameMetrics: (index: number) => ?{length: number, offset: number},
     renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
   ): Array<number> {
-    const {itemVisiblePercentThreashold, viewAreaCoveragePercentThreshold} = this._config;
+    const {itemVisiblePercentThreshold, viewAreaCoveragePercentThreshold} = this._config;
     const viewAreaMode = viewAreaCoveragePercentThreshold != null;
     const viewablePercentThreshold = viewAreaMode ?
       viewAreaCoveragePercentThreshold :
-      itemVisiblePercentThreashold;
+      itemVisiblePercentThreshold;
     invariant(
       viewablePercentThreshold != null &&
-      (itemVisiblePercentThreashold != null) !== (viewAreaCoveragePercentThreshold != null),
-      'Must set exactly one of itemVisiblePercentThreashold or viewAreaCoveragePercentThreshold',
+      (itemVisiblePercentThreshold != null) !== (viewAreaCoveragePercentThreshold != null),
+      'Must set exactly one of itemVisiblePercentThreshold or viewAreaCoveragePercentThreshold',
     );
     const viewableIndices = [];
     if (itemCount === 0) {
@@ -119,10 +140,30 @@ class ViewabilityHelper {
     scrollOffset: number,
     viewportHeight: number,
     getFrameMetrics: (index: number) => ?{length: number, offset: number},
-    createViewable: (index: number, isViewable: boolean) => Viewable,
-    onViewableItemsChanged: ({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
+    createViewToken: (index: number, isViewable: boolean) => ViewToken,
+    onViewableItemsChanged: ({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
     renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
   ): void {
+    const updateTime = Date.now();
+    if (this._lastUpdateTime === 0 && getFrameMetrics(0)) {
+      // Only count updates after the first item is rendered and has a frame.
+      this._lastUpdateTime = updateTime;
+    }
+    const updateElapsed = this._lastUpdateTime ? updateTime - this._lastUpdateTime : 0;
+    if (this._config.waitForInteraction && !this._hasInteracted && scrollOffset !== 0) {
+      const filter = this._config.scrollInteractionFilter;
+      if (filter) {
+        if ((filter.minimumOffset == null || scrollOffset >= filter.minimumOffset) &&
+            (filter.minimumElapsed == null || updateElapsed >= filter.minimumElapsed)) {
+          this._hasInteracted = true;
+        }
+      } else {
+        this._hasInteracted = true;
+      }
+    }
+    if (this._config.waitForInteraction && !this._hasInteracted) {
+      return;
+    }
     let viewableIndices = [];
     if (itemCount) {
       viewableIndices = this.computeViewableItems(
@@ -133,10 +174,41 @@ class ViewabilityHelper {
         renderRange,
       );
     }
+    if (this._viewableIndices.length === viewableIndices.length &&
+        this._viewableIndices.every((v, ii) => v === viewableIndices[ii])) {
+      // We might get a lot of scroll events where visibility doesn't change and we don't want to do
+      // extra work in those cases.
+      return;
+    }
+    this._viewableIndices = viewableIndices;
+    this._lastUpdateTime = updateTime;
+    if (this._config.minViewTime && updateElapsed < this._config.minViewTime) {
+      const handle = setTimeout(
+        () => {
+          this._timers.delete(handle);
+          this._onUpdateSync(viewableIndices, onViewableItemsChanged, createViewToken);
+        },
+        this._config.minViewTime,
+      );
+      this._timers.add(handle);
+    } else {
+      this._onUpdateSync(viewableIndices, onViewableItemsChanged, createViewToken);
+    }
+  }
+
+  recordInteraction() {
+    this._hasInteracted = true;
+  }
+
+  _onUpdateSync(viewableIndicesToCheck, onViewableItemsChanged, createViewToken) {
+    // Filter out indices that have gone out of view since this call was scheduled.
+    viewableIndicesToCheck = viewableIndicesToCheck.filter(
+      (ii) => this._viewableIndices.includes(ii)
+    );
     const prevItems = this._viewableItems;
     const nextItems = new Map(
-      viewableIndices.map(ii => {
-        const viewable = createViewable(ii, true);
+      viewableIndicesToCheck.map(ii => {
+        const viewable = createViewToken(ii, true);
         return [viewable.key, viewable];
       })
     );
@@ -153,8 +225,8 @@ class ViewabilityHelper {
       }
     }
     if (changed.length > 0) {
-      onViewableItemsChanged({viewableItems: Array.from(nextItems.values()), changed});
       this._viewableItems = nextItems;
+      onViewableItemsChanged({viewableItems: Array.from(nextItems.values()), changed});
     }
   }
 }

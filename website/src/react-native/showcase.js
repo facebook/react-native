@@ -52,13 +52,11 @@ var Metadata = require('Metadata');
  * Do not set 'pinned' to true as the pinned list is reserved for a small number
  * of hand picked apps.
  */
-const showcaseApps = Metadata.showcaseApps;
-
-const pinnedApps = showcaseApps.filter(app => {
+const pinnedApps = Metadata.showcaseApps.filter(app => {
   return app.pinned;
 });
 
-const featuredApps = showcaseApps.filter(app => {
+const featuredApps = Metadata.showcaseApps.filter(app => {
   return !app.pinned;
 }).sort(function(a, b) {
   return a.name.localeCompare(b.name);

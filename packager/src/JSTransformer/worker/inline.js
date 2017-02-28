@@ -32,7 +32,7 @@ const dev = {name: '__DEV__'};
 
 const importMap = new Map([['ReactNative', 'react-native']]);
 
-const isGlobal = (binding) => !binding;
+const isGlobal = binding => !binding;
 
 const isToplevelBinding = (binding, isWrappedModule) =>
   isGlobal(binding) ||
@@ -141,7 +141,7 @@ const inlinePlugin = {
 
         path.replaceWith(replacement);
       }
-    }
+    },
   },
 };
 

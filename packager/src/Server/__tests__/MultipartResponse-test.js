@@ -133,8 +133,8 @@ function mockNodeResponse() {
       headers = {...headers, ...hdrs};
     }),
     setHeader: jest.fn((key, val) => { headers[key] = val; }),
-    write: jest.fn((data) => { body += data; }),
-    end: jest.fn((data) => { body += (data || ''); }),
+    write: jest.fn(data => { body += data; }),
+    end: jest.fn(data => { body += (data || ''); }),
 
     // For testing only
     toString() {
@@ -144,7 +144,6 @@ function mockNodeResponse() {
         '',
         body,
       ].join('\r\n');
-    }
+    },
   };
 }
-

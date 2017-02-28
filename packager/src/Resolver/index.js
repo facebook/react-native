@@ -17,7 +17,7 @@ const defaults = require('../../defaults');
 const pathJoin = require('path').join;
 
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
-import type Module from '../node-haste/Module';
+import type Module, {HasteImpl} from '../node-haste/Module';
 import type {SourceMap} from '../lib/SourceMap';
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
@@ -36,6 +36,7 @@ type Options = {
   extraNodeModules?: {},
   getTransformCacheKey: GetTransformCacheKey,
   globalTransformCache: ?GlobalTransformCache,
+  hasteImpl?: HasteImpl,
   minifyCode: MinifyCode,
   platforms: Array<string>,
   polyfillModuleNames?: Array<string>,
@@ -63,13 +64,14 @@ class Resolver {
       forceNodeFilesystemAPI: false,
       getTransformCacheKey: opts.getTransformCacheKey,
       globalTransformCache: opts.globalTransformCache,
-      ignoreFilePath: function(filepath) {
+      ignoreFilePath(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
       },
       maxWorkers: null,
       moduleOptions: {
         cacheTransformResults: true,
+        hasteImpl: opts.hasteImpl,
         resetCache: opts.resetCache,
       },
       platforms: new Set(opts.platforms),
@@ -251,7 +253,7 @@ function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   return [
     `__d(/* ${verboseName} */`,
     'function(global, require, module, exports) {', // module factory
-      code,
+    code,
     '\n}, ',
     `${JSON.stringify(moduleName)}`, // module id, null = id map. used in ModuleGraph
     dev ? `, null, ${JSON.stringify(verboseName)}` : '',

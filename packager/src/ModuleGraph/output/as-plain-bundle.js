@@ -31,7 +31,7 @@ module.exports = (
       if (file.map) {
         sections.push({
           map: file.map,
-          offset: {column: 0, line}
+          offset: {column: 0, line},
         });
       }
       line += countLines(moduleCode);

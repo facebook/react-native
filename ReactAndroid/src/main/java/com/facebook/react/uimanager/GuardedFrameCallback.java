@@ -9,20 +9,19 @@
 
 package com.facebook.react.uimanager;
 
-import android.view.Choreographer;
-
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.modules.core.ChoreographerCompat;
 
 /**
  * Abstract base for a Choreographer FrameCallback that should have any RuntimeExceptions it throws
  * handled by the {@link com.facebook.react.bridge.NativeModuleCallExceptionHandler} registered if
  * the app is in dev mode.
  */
-public abstract class GuardedChoreographerFrameCallback implements Choreographer.FrameCallback {
+public abstract class GuardedFrameCallback extends ChoreographerCompat.FrameCallback {
 
   private final ReactContext mReactContext;
 
-  protected GuardedChoreographerFrameCallback(ReactContext reactContext) {
+  protected GuardedFrameCallback(ReactContext reactContext) {
     mReactContext = reactContext;
   }
 

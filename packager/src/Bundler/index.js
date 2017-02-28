@@ -23,7 +23,6 @@ const HMRBundle = require('./HMRBundle');
 const ModuleTransport = require('../lib/ModuleTransport');
 const imageSize = require('image-size');
 const path = require('path');
-const version = require('../../../package.json').version;
 const denodeify = require('denodeify');
 
 const {
@@ -34,8 +33,10 @@ const {
   extname,
 } = require('path');
 
+const VERSION = require('../../package.json').version;
+
 import type AssetServer from '../AssetServer';
-import type Module from '../node-haste/Module';
+import type Module, {HasteImpl} from '../node-haste/Module';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 import type {Options as JSTransformerOptions, TransformOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
@@ -85,6 +86,7 @@ type Options = {
   extraNodeModules: {},
   getTransformOptions?: GetTransformOptions,
   globalTransformCache: ?GlobalTransformCache,
+  hasteImpl?: HasteImpl,
   moduleFormat: string,
   platforms: Array<string>,
   polyfillModuleNames: Array<string>,
@@ -129,7 +131,7 @@ class Bundler {
 
     const cacheKeyParts =  [
       'react-packager-cache',
-      version,
+      VERSION,
       opts.cacheVersion,
       stableProjectRoots.join(',').split(pathSeparator).join('-'),
       transformModuleHash,
@@ -171,6 +173,7 @@ class Bundler {
       extraNodeModules: opts.extraNodeModules,
       getTransformCacheKey,
       globalTransformCache: opts.globalTransformCache,
+      hasteImpl: opts.hasteImpl,
       minifyCode: this._transformer.minify,
       moduleFormat: opts.moduleFormat,
       platforms: opts.platforms,
@@ -549,13 +552,13 @@ class Bundler {
     });
   }
 
-  getOrderedDependencyPaths({ entryFile, dev, platform }: {
+  getOrderedDependencyPaths({entryFile, dev, platform}: {
     entryFile: string,
     dev: boolean,
     platform: string,
   }) {
     return this.getDependencies({entryFile, dev, platform}).then(
-      ({ dependencies }) => {
+      ({dependencies}) => {
         const ret = [];
         const promises = [];
         const placeHolder = {};
@@ -575,7 +578,7 @@ class Bundler {
         });
 
         return Promise.all(promises).then(assetsData => {
-          assetsData.forEach(({ files }) => {
+          assetsData.forEach(({files}) => {
             const index = ret.indexOf(placeHolder);
             ret.splice(index, 1, ...files);
           });
@@ -633,7 +636,7 @@ class Bundler {
         map,
         meta: {dependencies, dependencyOffsets, preloaded, dependencyPairs},
         sourceCode: source,
-        sourcePath: module.path
+        sourcePath: module.path,
       });
     });
   }
@@ -654,12 +657,12 @@ class Bundler {
     // Test extension against all types supported by image-size module.
     // If it's not one of these, we won't treat it as an image.
     const isImage = [
-      'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff'
+      'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff',
     ].indexOf(extname(module.path).slice(1)) !== -1;
 
-    return this._assetServer.getAssetData(relPath, platform).then((assetData) => {
+    return this._assetServer.getAssetData(relPath, platform).then(assetData => {
       return Promise.all([isImage ? sizeOf(assetData.files[0]) : null, assetData]);
-    }).then((res) => {
+    }).then(res => {
       const dimensions = res[0];
       const assetData = res[1];
       const scale = assetData.scales[0];
@@ -677,7 +680,7 @@ class Bundler {
       };
 
       return this._applyAssetPlugins(assetPlugins, asset);
-    }).then((asset) => {
+    }).then(asset => {
       const json =  JSON.stringify(filterObject(asset, assetPropertyBlacklist));
       const assetRegistryPath = 'react-native/Libraries/Image/AssetRegistry';
       const code =
@@ -688,7 +691,7 @@ class Bundler {
       return {
         asset,
         code,
-        meta: {dependencies, dependencyOffsets}
+        meta: {dependencies, dependencyOffsets},
       };
     });
   }
@@ -733,7 +736,7 @@ class Bundler {
         name,
         id: moduleId,
         code,
-        meta: meta,
+        meta,
         sourceCode: code,
         sourcePath: module.path,
         virtual: true,

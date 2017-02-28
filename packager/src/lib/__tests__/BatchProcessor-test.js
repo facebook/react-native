@@ -29,7 +29,7 @@ describe('BatchProcessor', () => {
     const batches = [];
     let concurrency = 0;
     let maxConcurrency = 0;
-    const bp = new BatchProcessor(options, (items) => new Promise(resolve => {
+    const bp = new BatchProcessor(options, items => new Promise(resolve => {
       ++concurrency;
       expect(concurrency).toBeLessThanOrEqual(options.concurrency);
       maxConcurrency = Math.max(maxConcurrency, concurrency);
@@ -55,7 +55,7 @@ describe('BatchProcessor', () => {
 
   it('report errors', async () => {
     const error = new Error('oh noes');
-    const bp = new BatchProcessor(options, (items) => new Promise((_, reject) => {
+    const bp = new BatchProcessor(options, items => new Promise((_, reject) => {
       setTimeout(reject.bind(null, error), 0);
     }));
     let receivedError;

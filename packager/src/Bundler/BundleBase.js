@@ -94,7 +94,7 @@ class BundleBase {
       return this._source;
     }
 
-    this._source = this._modules.map((module) => module.code).join('\n');
+    this._source = this._modules.map(module => module.code).join('\n');
     return this._source;
   }
 
