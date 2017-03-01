@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 
 import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaDisplay;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -660,6 +661,10 @@ public class ReactShadowNode {
 
   public void setOverflow(YogaOverflow overflow) {
     mYogaNode.setOverflow(overflow);
+  }
+
+  public void setDisplay(YogaDisplay display) {
+    mYogaNode.setDisplay(display);
   }
 
   public void setMargin(int spacingType, float margin) {

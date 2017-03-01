@@ -645,6 +645,11 @@ RCT_ENUM_CONVERTER(YGOverflow, (@{
   @"scroll": @(YGOverflowScroll),
 }), YGOverflowVisible, intValue)
 
+RCT_ENUM_CONVERTER(YGDisplay, (@{
+  @"flex": @(YGDisplayFlex),
+  @"none": @(YGDisplayNone),
+}), YGDisplayFlex, intValue)
+
 RCT_ENUM_CONVERTER(YGFlexDirection, (@{
   @"row": @(YGFlexDirectionRow),
   @"row-reverse": @(YGFlexDirectionRowReverse),

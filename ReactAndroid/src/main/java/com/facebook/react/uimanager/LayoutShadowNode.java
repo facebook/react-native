@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReadableType;
 
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaDisplay;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaOverflow;
@@ -309,6 +310,15 @@ public class LayoutShadowNode extends ReactShadowNode {
     }
     setOverflow(overflow == null ? YogaOverflow.VISIBLE : YogaOverflow.valueOf(
             overflow.toUpperCase(Locale.US).replace("-", "_")));
+  }
+
+  @ReactProp(name = ViewProps.DISPLAY)
+  public void setDisplay(@Nullable String display) {
+    if (isVirtual()) {
+      return;
+    }
+    setDisplay(display == null ? YogaDisplay.FLEX : YogaDisplay.valueOf(
+            display.toUpperCase(Locale.US).replace("-", "_")));
   }
 
   @ReactPropGroup(names = {

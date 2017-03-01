@@ -133,6 +133,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGAlign alignContent;
 @property (nonatomic, assign) YGPositionType position;
 @property (nonatomic, assign) YGWrap flexWrap;
+@property (nonatomic, assign) YGDisplay display;
 
 @property (nonatomic, assign) float flexGrow;
 @property (nonatomic, assign) float flexShrink;

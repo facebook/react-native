@@ -704,6 +704,7 @@ RCT_STYLE_PROPERTY(AlignContent, alignContent, AlignContent, YGAlign)
 RCT_STYLE_PROPERTY(Position, position, PositionType, YGPositionType)
 RCT_STYLE_PROPERTY(FlexWrap, flexWrap, FlexWrap, YGWrap)
 RCT_STYLE_PROPERTY(Overflow, overflow, Overflow, YGOverflow)
+RCT_STYLE_PROPERTY(Display, display, Display, YGDisplay)
 RCT_STYLE_PROPERTY(Direction, direction, Direction, YGDirection)
 RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
 

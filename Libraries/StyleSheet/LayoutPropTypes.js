@@ -27,6 +27,13 @@ var ReactPropTypes = require('React').PropTypes;
  * algorithm and affect the positioning and sizing of views.
  */
 var LayoutPropTypes = {
+  /** `display` sets the display type of this component.
+   *
+   *  It works similarly to `display` in CSS, but only support 'flex' and 'none'.
+   *  'flex' is the default.
+   */
+  display: ReactPropTypes.string,
+
   /** `width` sets the width of this component.
    *
    *  It works similarly to `width` in CSS, but in React Native you
