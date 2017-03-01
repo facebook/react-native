@@ -1247,6 +1247,22 @@ static float YGNodeBoundAxisWithinMinAndMax(const YGNodeRef node,
   return boundValue;
 }
 
+static inline YGValue *YGMarginLeadingValue(const YGNodeRef node, const YGFlexDirection axis) {
+  if (YGFlexDirectionIsRow(axis) && node->style.margin[YGEdgeStart].unit != YGUnitUndefined) {
+    return &node->style.margin[YGEdgeStart];
+  } else {
+    return &node->style.margin[leading[axis]];
+  }
+}
+
+static inline YGValue *YGMarginTrailingValue(const YGNodeRef node, const YGFlexDirection axis) {
+  if (YGFlexDirectionIsRow(axis) && node->style.margin[YGEdgeEnd].unit != YGUnitUndefined) {
+    return &node->style.margin[YGEdgeEnd];
+  } else {
+    return &node->style.margin[trailing[axis]];
+  }
+}
+
 // Like YGNodeBoundAxisWithinMinAndMax but also ensures that the value doesn't go
 // below the
 // padding and border amount.
@@ -2442,10 +2458,10 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     for (uint32_t i = startOfLineIndex; i < endOfLineIndex; i++) {
       const YGNodeRef child = YGNodeListGet(node->children, i);
       if (child->style.positionType == YGPositionTypeRelative) {
-        if (child->style.margin[leading[mainAxis]].unit == YGUnitAuto) {
+        if (YGMarginLeadingValue(child, mainAxis)->unit == YGUnitAuto) {
           numberOfAutoMarginsOnCurrentLine++;
         }
-        if (child->style.margin[trailing[mainAxis]].unit == YGUnitAuto) {
+        if (YGMarginTrailingValue(child, mainAxis)->unit == YGUnitAuto) {
           numberOfAutoMarginsOnCurrentLine++;
         }
       }
@@ -2500,7 +2516,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         // We need to do that only for relative elements. Absolute elements
         // do not take part in that phase.
         if (child->style.positionType == YGPositionTypeRelative) {
-          if (child->style.margin[leading[mainAxis]].unit == YGUnitAuto) {
+          if (YGMarginLeadingValue(child, mainAxis)->unit == YGUnitAuto) {
             mainDim += remainingFreeSpace / numberOfAutoMarginsOnCurrentLine;
           }
 
@@ -2508,7 +2524,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
             child->layout.position[pos[mainAxis]] += mainDim;
           }
 
-          if (child->style.margin[trailing[mainAxis]].unit == YGUnitAuto) {
+          if (YGMarginTrailingValue(child, mainAxis)->unit == YGUnitAuto) {
             mainDim += remainingFreeSpace / numberOfAutoMarginsOnCurrentLine;
           }
 
@@ -2601,8 +2617,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           // forcing the cross-axis size to be the computed cross size for the
           // current line.
           if (alignItem == YGAlignStretch &&
-              child->style.margin[leading[crossAxis]].unit != YGUnitAuto &&
-              child->style.margin[trailing[crossAxis]].unit != YGUnitAuto) {
+              YGMarginLeadingValue(child, crossAxis)->unit != YGUnitAuto &&
+              YGMarginTrailingValue(child, crossAxis)->unit != YGUnitAuto) {
             // If the child defines a definite size for its cross axis, there's
             // no need to stretch.
             if (!YGNodeIsStyleDimDefined(child, crossAxis, availableInnerCrossDim)) {
@@ -2650,12 +2666,12 @@ static void YGNodelayoutImpl(const YGNodeRef node,
             const float remainingCrossDim =
                 containerCrossAxis - YGNodeDimWithMargin(child, crossAxis, availableInnerWidth);
 
-            if (child->style.margin[leading[crossAxis]].unit == YGUnitAuto &&
-                child->style.margin[trailing[crossAxis]].unit == YGUnitAuto) {
+            if (YGMarginLeadingValue(child, crossAxis)->unit == YGUnitAuto &&
+                YGMarginTrailingValue(child, crossAxis)->unit == YGUnitAuto) {
               leadingCrossDim += remainingCrossDim / 2;
-            } else if (child->style.margin[trailing[crossAxis]].unit == YGUnitAuto) {
+            } else if (YGMarginTrailingValue(child, crossAxis)->unit == YGUnitAuto) {
               // No-Op
-            } else if (child->style.margin[leading[crossAxis]].unit == YGUnitAuto) {
+            } else if (YGMarginLeadingValue(child, crossAxis)->unit == YGUnitAuto) {
               leadingCrossDim += remainingCrossDim;
             } else if (alignItem == YGAlignFlexStart) {
               // No-Op
