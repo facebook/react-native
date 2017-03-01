@@ -110,8 +110,8 @@ Go to http://facebook.github.io/stetho/ and replace 1.x.x with the latest versio
 2. From project root, create 2 Java class that will wrap the Stetho call, one for release and one for debug. With the terminal, these cmds should get it done:
    
    ```bash
-   touch android/app/src/debug/java/com/snap/StethoWrapper.java
-   touch android/app/src/release/java/com/snap/StethoWrapper.java
+   touch android/app/src/debug/java/com/{yourAppName}/StethoWrapper.java
+   touch android/app/src/release/java/com/{yourAppName}/StethoWrapper.java
    ```
 
 For release:
