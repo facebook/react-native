@@ -18,7 +18,7 @@ import { AppRegistry, ScrollView, Image, Text } from 'react-native'
 
 class IScrolledDownAndWhatHappenedNextShockedMe extends Component {
   render() {
-      return(
+      return (
         <ScrollView>
           <Text style={{fontSize:96}}>Scroll me plz</Text>
           <Image source={require('./img/favicon.png')} />

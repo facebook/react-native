@@ -46,6 +46,11 @@ const ComponentExamples: Array<UIExplorerExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'FlatListExample',
+    module: require('./FlatListExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'ImageExample',
     module: require('./ImageExample'),
     supportsTVOS: true,
@@ -86,6 +91,11 @@ const ComponentExamples: Array<UIExplorerExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'MultiColumnExample',
+    module: require('./MultiColumnExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'NavigatorExample',
     module: require('./Navigator/NavigatorExample'),
     supportsTVOS: true,
@@ -123,6 +133,11 @@ const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'ScrollViewExample',
     module: require('./ScrollViewExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'SectionListExample',
+    module: require('./SectionListExample'),
     supportsTVOS: true,
   },
   {

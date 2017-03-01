@@ -35,20 +35,6 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     jni_YGSetLogger(logger);
   }
 
-  private static native void jni_YGSetExperimentalFeatureEnabled(
-      int feature,
-      boolean enabled);
-  public static void setExperimentalFeatureEnabled(
-      YogaExperimentalFeature feature,
-      boolean enabled) {
-    jni_YGSetExperimentalFeatureEnabled(feature.intValue(), enabled);
-  }
-
-  private static native boolean jni_YGIsExperimentalFeatureEnabled(int feature);
-  public static boolean isExperimentalFeatureEnabled(YogaExperimentalFeature feature) {
-    return jni_YGIsExperimentalFeatureEnabled(feature.intValue());
-  }
-
   private YogaNode mParent;
   private List<YogaNode> mChildren;
   private YogaMeasureFunction mMeasureFunction;
@@ -99,6 +85,14 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private native long jni_YGNodeNew();
   public YogaNode() {
     mNativePointer = jni_YGNodeNew();
+    if (mNativePointer == 0) {
+      throw new IllegalStateException("Failed to allocate native memory");
+    }
+  }
+
+  private native long jni_YGNodeNewWithConfig(long configPointer);
+  public YogaNode(YogaConfig config) {
+    mNativePointer = jni_YGNodeNewWithConfig(config.mNativePointer);
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
     }

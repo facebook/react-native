@@ -86,22 +86,16 @@ class ItemComponent extends React.PureComponent {
   }
 }
 
-class StackedItemComponent extends React.PureComponent {
-  props: {
-    item: Item,
-  };
-  render() {
-    const {item} = this.props;
-    const itemHash = Math.abs(hashCode(item.title));
-    const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
-    return (
-      <View style={styles.stacked}>
-        <Text style={styles.stackedText}>{item.title} - {item.text}</Text>
-        <Image style={styles.thumb} source={imgSource} />
-      </View>
-    );
-  }
-}
+const renderStackedItem = ({item}: {item: Item}) => {
+  const itemHash = Math.abs(hashCode(item.title));
+  const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
+  return (
+    <View style={styles.stacked}>
+      <Text style={styles.stackedText}>{item.title} - {item.text}</Text>
+      <Image style={styles.thumb} source={imgSource} />
+    </View>
+  );
+};
 
 class FooterComponent extends React.PureComponent {
   render() {
@@ -287,9 +281,9 @@ module.exports = {
   ItemComponent,
   PlainInput,
   SeparatorComponent,
-  StackedItemComponent,
   genItemData,
   getItemLayout,
   pressItem,
   renderSmallSwitchOption,
+  renderStackedItem,
 };

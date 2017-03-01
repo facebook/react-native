@@ -150,6 +150,10 @@ static inline YGNodeRef _jlong2YGNodeRef(jlong addr) {
   return reinterpret_cast<YGNodeRef>(static_cast<intptr_t>(addr));
 }
 
+static inline YGConfigRef _jlong2YGConfigRef(jlong addr) {
+  return reinterpret_cast<YGConfigRef>(static_cast<intptr_t>(addr));
+}
+
 void jni_YGSetLogger(alias_ref<jclass> clazz, alias_ref<jobject> logger) {
   if (jLogger) {
     jLogger->releaseAlias();
@@ -171,20 +175,15 @@ void jni_YGLog(alias_ref<jclass> clazz, jint level, jstring message) {
   Environment::current()->ReleaseStringUTFChars(message, nMessage);
 }
 
-void jni_YGSetExperimentalFeatureEnabled(alias_ref<jclass> clazz, jint feature, jboolean enabled) {
-  YGSetExperimentalFeatureEnabled(static_cast<YGExperimentalFeature>(feature), enabled);
-}
-
-jboolean jni_YGIsExperimentalFeatureEnabled(alias_ref<jclass> clazz, jint feature) {
-  return YGIsExperimentalFeatureEnabled(static_cast<YGExperimentalFeature>(feature));
-}
-
-jint jni_YGNodeGetInstanceCount(alias_ref<jclass> clazz) {
-  return YGNodeGetInstanceCount();
-}
-
 jlong jni_YGNodeNew(alias_ref<jobject> thiz) {
   const YGNodeRef node = YGNodeNew();
+  YGNodeSetContext(node, new weak_ref<jobject>(make_weak(thiz)));
+  YGNodeSetPrintFunc(node, YGPrint);
+  return reinterpret_cast<jlong>(node);
+}
+
+jlong jni_YGNodeNewWithConfig(alias_ref<jobject> thiz, jlong configPointer) {
+  const YGNodeRef node = YGNodeNewWithConfig(_jlong2YGConfigRef(configPointer));
   YGNodeSetContext(node, new weak_ref<jobject>(make_weak(thiz)));
   YGNodeSetPrintFunc(node, YGPrint);
   return reinterpret_cast<jlong>(node);
@@ -368,6 +367,24 @@ YG_NODE_JNI_STYLE_UNIT_PROP(MaxHeight);
 // Yoga specific properties, not compatible with flexbox specification
 YG_NODE_JNI_STYLE_PROP(jfloat, float, AspectRatio);
 
+jlong jni_YGConfigNew(alias_ref<jobject>) {
+  return reinterpret_cast<jlong>(YGConfigNew());
+}
+
+void jni_YGConfigFree(alias_ref<jobject>, jlong nativePointer) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigFree(config);
+}
+
+void jni_YGConfigSetExperimentalFeatureEnabled(alias_ref<jobject>, jlong nativePointer, jint feature, jboolean enabled) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetExperimentalFeatureEnabled(config, static_cast<YGExperimentalFeature>(feature), enabled);
+}
+
+jint jni_YGNodeGetInstanceCount(alias_ref<jclass> clazz) {
+  return YGNodeGetInstanceCount();
+}
+
 #define YGMakeNativeMethod(name) makeNativeMethod(#name, name)
 
 jint JNI_OnLoad(JavaVM *vm, void *) {
@@ -375,6 +392,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
     registerNatives("com/facebook/yoga/YogaNode",
                     {
                         YGMakeNativeMethod(jni_YGNodeNew),
+                        YGMakeNativeMethod(jni_YGNodeNewWithConfig),
                         YGMakeNativeMethod(jni_YGNodeFree),
                         YGMakeNativeMethod(jni_YGNodeReset),
                         YGMakeNativeMethod(jni_YGNodeInsertChild),
@@ -452,8 +470,12 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGNodeGetInstanceCount),
                         YGMakeNativeMethod(jni_YGSetLogger),
                         YGMakeNativeMethod(jni_YGLog),
-                        YGMakeNativeMethod(jni_YGSetExperimentalFeatureEnabled),
-                        YGMakeNativeMethod(jni_YGIsExperimentalFeatureEnabled),
+                    });
+    registerNatives("com/facebook/yoga/YogaConfig",
+                    {
+                        YGMakeNativeMethod(jni_YGConfigNew),
+                        YGMakeNativeMethod(jni_YGConfigFree),
+                        YGMakeNativeMethod(jni_YGConfigSetExperimentalFeatureEnabled),
                     });
   });
 }

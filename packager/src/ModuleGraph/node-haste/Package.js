@@ -126,14 +126,14 @@ function getReplacements(pkg) {
 
   const main = getMain(pkg);
   if (typeof rn !== 'object') {
-    rn = { [main]: rn };
+    rn = {[main]: rn};
   }
 
   if (typeof browser !== 'object') {
-    browser = { [main]: browser };
+    browser = {[main]: browser};
   }
 
   // merge with "browser" as default,
   // "react-native" as override
-  return { ...browser, ...rn };
+  return {...browser, ...rn};
 }

@@ -64,7 +64,7 @@ class Resolver {
       forceNodeFilesystemAPI: false,
       getTransformCacheKey: opts.getTransformCacheKey,
       globalTransformCache: opts.globalTransformCache,
-      ignoreFilePath: function(filepath) {
+      ignoreFilePath(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
       },
@@ -76,7 +76,8 @@ class Resolver {
       },
       platforms: new Set(opts.platforms),
       preferNativePlatform: true,
-      providesModuleNodeModules: opts.providesModuleNodeModules || defaults.providesModuleNodeModules,
+      providesModuleNodeModules:
+        opts.providesModuleNodeModules || defaults.providesModuleNodeModules,
       reporter: opts.reporter,
       resetCache: opts.resetCache,
       roots: opts.projectRoots,
@@ -253,7 +254,7 @@ function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   return [
     `__d(/* ${verboseName} */`,
     'function(global, require, module, exports) {', // module factory
-      code,
+    code,
     '\n}, ',
     `${JSON.stringify(moduleName)}`, // module id, null = id map. used in ModuleGraph
     dev ? `, null, ${JSON.stringify(verboseName)}` : '',
@@ -261,7 +262,7 @@ function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   ].join('');
 }
 
-function definePolyfillCode(code,) {
+function definePolyfillCode(code) {
   return [
     '(function(global) {',
     code,
