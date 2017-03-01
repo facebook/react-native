@@ -36,6 +36,7 @@ const {
   createActionStartEntry,
   log,
 } = require('../Logger');
+const {EventEmitter} = require('events');
 
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type GlobalTransformCache from '../lib/GlobalTransformCache';
@@ -72,7 +73,7 @@ type Options = {
   watch: boolean,
 };
 
-class DependencyGraph {
+class DependencyGraph extends EventEmitter {
   _opts: Options;
   _haste: JestHasteMap;
   _hasteFS: HasteFS;
@@ -84,6 +85,7 @@ class DependencyGraph {
   _loading: Promise<void>;
 
   constructor(opts: Options) {
+    super();
     this._opts = {...opts};
     this._helpers = new DependencyGraphHelpers(this._opts);
     this.load();
@@ -154,6 +156,7 @@ class DependencyGraph {
         eventsQueue.forEach(({type, filePath, stat}) =>
           this.processFileChange(type, filePath, stat)
         );
+        this.emit('change');
       });
 
       const buildingHasteMapLogEntry =

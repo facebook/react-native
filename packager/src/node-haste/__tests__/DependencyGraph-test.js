@@ -130,7 +130,7 @@ describe('DependencyGraph', function() {
       },
       getTransformCacheKey: () => 'abcdef',
       reporter: require('../../lib/reporting').nullReporter,
-      watch: false,
+      watch: true,
     };
   });
 
@@ -3111,70 +3111,74 @@ describe('DependencyGraph', function() {
         filesystem.root['index.js'] = filesystem.root['index.js']
           .replace('require("dontWork")', '')
           .replace('require("wontWork")', '');
-        dgraph.processFileChange('change', root + '/index.js', mockStat);
-        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js')
-          .then(deps => {
-            expect(deps).toEqual([
-              {
-                id: 'index',
-                path: '/root/index.js',
-                dependencies: [
-                  'shouldWork',
-                  'ember',
-                  'internalVendoredPackage',
-                  'anotherIndex',
-                ],
-                isAsset: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-              },
-              {
-                id: 'shouldWork',
-                path: '/root/node_modules/react-haste/main.js',
-                dependencies: ['submodule'],
-                isAsset: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-              },
-              {
-                id: 'submodule/main.js',
-                path: '/root/node_modules/react-haste/node_modules/submodule/main.js',
-                dependencies: [],
-                isAsset: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-              },
-              {
-                id: 'ember/main.js',
-                path: '/root/node_modules/ember/main.js',
-                dependencies: [],
-                isAsset: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-              },
-              {
-                id: 'internalVendoredPackage',
-                path: '/root/vendored_modules/a-vendored-package/main.js',
-                dependencies: [],
-                isAsset: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-              },
-              {
-                id: 'anotherIndex',
-                path: '/anotherRoot/index.js',
-                dependencies: [],
-                isAsset: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-              },
-            ]);
+        triggerWatchEvent('change', root + '/index.js');
+        return new Promise(resolve => {
+          dgraph.once('change', () => {
+            return resolve(getOrderedDependenciesAsJSON(dgraph, '/root/index.js')
+              .then(deps => {
+                expect(deps).toEqual([
+                  {
+                    id: 'index',
+                    path: '/root/index.js',
+                    dependencies: [
+                      'shouldWork',
+                      'ember',
+                      'internalVendoredPackage',
+                      'anotherIndex',
+                    ],
+                    isAsset: false,
+                    isJSON: false,
+                    isPolyfill: false,
+                    resolution: undefined,
+                  },
+                  {
+                    id: 'shouldWork',
+                    path: '/root/node_modules/react-haste/main.js',
+                    dependencies: ['submodule'],
+                    isAsset: false,
+                    isJSON: false,
+                    isPolyfill: false,
+                    resolution: undefined,
+                  },
+                  {
+                    id: 'submodule/main.js',
+                    path: '/root/node_modules/react-haste/node_modules/submodule/main.js',
+                    dependencies: [],
+                    isAsset: false,
+                    isJSON: false,
+                    isPolyfill: false,
+                    resolution: undefined,
+                  },
+                  {
+                    id: 'ember/main.js',
+                    path: '/root/node_modules/ember/main.js',
+                    dependencies: [],
+                    isAsset: false,
+                    isJSON: false,
+                    isPolyfill: false,
+                    resolution: undefined,
+                  },
+                  {
+                    id: 'internalVendoredPackage',
+                    path: '/root/vendored_modules/a-vendored-package/main.js',
+                    dependencies: [],
+                    isAsset: false,
+                    isJSON: false,
+                    isPolyfill: false,
+                    resolution: undefined,
+                  },
+                  {
+                    id: 'anotherIndex',
+                    path: '/anotherRoot/index.js',
+                    dependencies: [],
+                    isAsset: false,
+                    isJSON: false,
+                    isPolyfill: false,
+                    resolution: undefined,
+                  },
+                ]);
+              }));
+            });
           });
       });
     });
@@ -5454,5 +5458,9 @@ describe('DependencyGraph', function() {
 
   function setMockFileSystem(object) {
     return require('graceful-fs').__setMockFilesystem(object);
+  }
+
+  function triggerWatchEvent(eventType, filename) {
+    return require('graceful-fs').__triggerWatchEvent(eventType, filename);
   }
 });
