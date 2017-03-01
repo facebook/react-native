@@ -17,7 +17,7 @@ var Hero = React.createClass({
     return (
       <div className="hero">
         <div className="wrap">
-          <div className="text"><strong>{this.props.title}</strong></div>
+          <div className="text">{this.props.title}</div>
           <div className="minitext">
             {this.props.subtitle}
           </div>
