@@ -87,6 +87,7 @@ class HasteMap extends EventEmitter {
           return this._processHasteModule(absPath, invalidated);
         }
       }
+      return null;
     });
   }
 

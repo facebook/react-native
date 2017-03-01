@@ -748,7 +748,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    it('should work with packages', function() {
+    it('should work with packages with a trailing slash', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {

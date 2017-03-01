@@ -130,7 +130,9 @@ class DependencyGraph extends EventEmitter {
         moduleOptions: this._opts.moduleOptions,
         reporter: this._opts.reporter,
         getClosestPackage: filePath => {
-          let {dir, root} = path.parse(filePath);
+          const parsedPath = path.parse(filePath);
+          const root = parsedPath.root;
+          let dir = parsedPath.dir;
           do {
             const candidate = path.join(dir, 'package.json');
             if (this._hasteFS.exists(candidate)) {

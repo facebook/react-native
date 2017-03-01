@@ -44,7 +44,8 @@ function transformModule(
   callback: Callback<TransformedFile>,
 ): void {
   if (options.filename.endsWith('.json')) {
-    return transformJSON(code, options, callback);
+    transformJSON(code, options, callback);
+    return;
   }
 
   const {filename, transformer, variants = defaultVariants} = options;
@@ -86,6 +87,7 @@ function transformModule(
       type: options.polyfill ? 'script' : 'module',
     });
   });
+  return;
 }
 
 function transformJSON(json, options, callback) {

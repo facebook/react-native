@@ -37,7 +37,7 @@ fs.realpath.mockImplementation((filepath, callback) => {
   if (node && typeof node === 'object' && node.SYMLINK != null) {
     return callback(null, node.SYMLINK);
   }
-  callback(null, filepath);
+  return callback(null, filepath);
 });
 
 fs.readdirSync.mockImplementation(filepath => Object.keys(getToNode(filepath)));
@@ -58,7 +58,7 @@ fs.readdir.mockImplementation((filepath, callback) => {
     return callback(new Error(filepath + ' is not a directory.'));
   }
 
-  callback(null, Object.keys(node));
+  return callback(null, Object.keys(node));
 });
 
 fs.readFile.mockImplementation(function(filepath, encoding, callback) {
@@ -76,9 +76,9 @@ fs.readFile.mockImplementation(function(filepath, encoding, callback) {
       callback(new Error('Error readFile a dir: ' + filepath));
     }
     if (node == null) {
-      callback(Error('No such file: ' + filepath));
+      return callback(Error('No such file: ' + filepath));
     } else {
-      callback(null, node);
+      return callback(null, node);
     }
   } catch (e) {
     return callback(e);

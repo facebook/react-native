@@ -76,7 +76,8 @@ class Resolver {
       },
       platforms: new Set(opts.platforms),
       preferNativePlatform: true,
-      providesModuleNodeModules: opts.providesModuleNodeModules || defaults.providesModuleNodeModules,
+      providesModuleNodeModules:
+        opts.providesModuleNodeModules || defaults.providesModuleNodeModules,
       reporter: opts.reporter,
       resetCache: opts.resetCache,
       roots: opts.projectRoots,
@@ -261,7 +262,7 @@ function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   ].join('');
 }
 
-function definePolyfillCode(code,) {
+function definePolyfillCode(code) {
   return [
     '(function(global) {',
     code,
