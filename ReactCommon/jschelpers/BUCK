@@ -1,10 +1,10 @@
 EXPORTED_HEADERS = [
-  'JavaScriptCore.h',
-  'JSCHelpers.h',
-  'JSCWrapper.h',
-  'noncopyable.h',
-  'Unicode.h',
-  'Value.h',
+    "JavaScriptCore.h",
+    "JSCHelpers.h",
+    "JSCWrapper.h",
+    "noncopyable.h",
+    "Unicode.h",
+    "Value.h",
 ]
 
 if THIS_IS_FBANDROID:
@@ -31,7 +31,7 @@ if THIS_IS_FBANDROID:
     ],
   )
 
-elif THIS_IS_FBOBJC:
+if THIS_IS_FBOBJC:
   ios_library(
     name = 'jschelpers',
     inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,

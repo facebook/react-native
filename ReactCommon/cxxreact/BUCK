@@ -1,5 +1,7 @@
 CXX_LIBRARY_COMPILER_FLAGS = []
+
 REACT_LIBRARY_EXTRA_COMPILER_FLAGS = []
+
 if THIS_IS_FBOBJC:
   inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS
   CXX_LIBRARY_COMPILER_FLAGS = inherited_buck_flags.get_flag_value('compiler_flags')
@@ -54,13 +56,14 @@ if THIS_IS_FBANDROID:
           # `initOnJSVMThread` to be called before the platform-specific hooks
           # have been properly initialised. Bad Times(TM).
           #     -- @ashokmenon (2017/01/03)
+          '//java/com/facebook/java2js:jni',
           react_native_target('jni/xreact/jni:jni'),
           react_native_xplat_target('cxxreact/...'),
         ],
       )
     )
 
-elif THIS_IS_FBOBJC:
+if THIS_IS_FBOBJC:
   def react_library(**kwargs):
     ios_library(
       name = 'bridge',
@@ -83,92 +86,98 @@ elif THIS_IS_FBOBJC:
     )
 
 cxx_library(
-  name = 'module',
-  force_static = True,
-  compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
-  xcode_public_headers_symlinks = True,
-  exported_headers = [
-    'CxxModule.h',
-    'JsArgumentHelpers.h',
-    'JsArgumentHelpers-inl.h',
-  ],
-  header_namespace = 'cxxreact',
-  deps = [
-    '//xplat/folly:molly',
-  ],
-  visibility = [
-    'PUBLIC',
-  ],
+    name = "module",
+    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
+    exported_headers = [
+        "CxxModule.h",
+        "JsArgumentHelpers.h",
+        "JsArgumentHelpers-inl.h",
+    ],
+    force_static = True,
+    header_namespace = "cxxreact",
+    visibility = [
+        "PUBLIC",
+    ],
+    xcode_public_headers_symlinks = True,
+    deps = [
+        "//xplat/folly:molly",
+    ],
 )
 
 cxx_library(
-  name = 'samplemodule',
-  soname = 'libxplat_react_module_samplemodule.so',
-  srcs = ['SampleCxxModule.cpp'],
-  xcode_public_headers_symlinks = True,
-  exported_headers = ['SampleCxxModule.h'],
-  header_namespace = '',
-  compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
-    '-fno-omit-frame-pointer',
-    '-Wall',
-    '-Werror',
-    '-std=c++1y',
-    '-fexceptions',
-  ],
-  deps = [
-    ':module',
-    '//xplat/folly:molly',
-  ],
-  visibility = [
-    'PUBLIC',
-  ],
+    name = "samplemodule",
+    srcs = ["SampleCxxModule.cpp"],
+    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
+        "-fno-omit-frame-pointer",
+        "-Wall",
+        "-Werror",
+        "-std=c++1y",
+        "-fexceptions",
+    ],
+    exported_headers = ["SampleCxxModule.h"],
+    header_namespace = "",
+    soname = "libxplat_react_module_samplemodule.so",
+    visibility = [
+        "PUBLIC",
+    ],
+    xcode_public_headers_symlinks = True,
+    deps = [
+        ":module",
+        "//xplat/folly:molly",
+    ],
 )
 
 CXXREACT_PUBLIC_HEADERS = [
-  'CxxMessageQueue.h',
-  'CxxNativeModule.h',
-  'Executor.h',
-  'ExecutorToken.h',
-  'ExecutorTokenFactory.h',
-  'Instance.h',
-  'JSCExecutor.h',
-  'JSCNativeModules.h',
-  'JSCWebWorker.h',
-  'JSBundleType.h',
-  'JSIndexedRAMBundle.h',
-  'JSModulesUnbundle.h',
-  'MessageQueueThread.h',
-  'MethodCall.h',
-  'ModuleRegistry.h',
-  'NativeModule.h',
-  'NativeToJsBridge.h',
-  'Platform.h',
-  'RecoverableError.h',
-  'SystraceSection.h',
+    "CxxMessageQueue.h",
+    "CxxNativeModule.h",
+    "Executor.h",
+    "ExecutorToken.h",
+    "ExecutorTokenFactory.h",
+    "Instance.h",
+    "JSCExecutor.h",
+    "JSCNativeModules.h",
+    "JSCWebWorker.h",
+    "JSBigString.h",
+    "JSBundleType.h",
+    "JSIndexedRAMBundle.h",
+    "JSModulesUnbundle.h",
+    "MessageQueueThread.h",
+    "MethodCall.h",
+    "ModuleRegistry.h",
+    "NativeModule.h",
+    "NativeToJsBridge.h",
+    "Platform.h",
+    "RecoverableError.h",
+    "SystraceSection.h",
 ]
 
 react_library(
-  header_namespace = 'cxxreact',
-  force_static = True,
-  srcs = glob(['*.cpp'], excludes=['SampleCxxModule.cpp']),
-  headers = glob(['*.h'], excludes=CXXREACT_PUBLIC_HEADERS),
-  xcode_public_headers_symlinks = True,
-  exported_headers = CXXREACT_PUBLIC_HEADERS,
-  preprocessor_flags = [
-    '-DLOG_TAG="ReactNative"',
-    '-DWITH_FBSYSTRACE=1',
-  ],
-  compiler_flags = [
-    '-Wall',
-    '-fexceptions',
-    '-fvisibility=hidden',
-    '-frtti',
-    '-std=c++1y',
-  ] + REACT_LIBRARY_EXTRA_COMPILER_FLAGS,
-  deps = [
-    ':module',
-    '//xplat/fbsystrace:fbsystrace',
-    react_native_xplat_target('jschelpers:jschelpers'),
-    react_native_xplat_target('microprofiler:microprofiler'),
-  ],
+    srcs = glob(
+        ["*.cpp"],
+        excludes = ["SampleCxxModule.cpp"],
+    ),
+    compiler_flags = [
+        "-Wall",
+        "-fexceptions",
+        "-frtti",
+        "-std=c++1y",
+    ] + REACT_LIBRARY_EXTRA_COMPILER_FLAGS,
+    exported_headers = CXXREACT_PUBLIC_HEADERS,
+    force_static = True,
+    header_namespace = "cxxreact",
+    headers = glob(
+        ["*.h"],
+        excludes = CXXREACT_PUBLIC_HEADERS,
+    ),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    xcode_public_headers_symlinks = True,
+    deps = [
+        ":module",
+        "//xplat/fbsystrace:fbsystrace",
+        react_native_xplat_target("jschelpers:jschelpers"),
+        react_native_xplat_target("microprofiler:microprofiler"),
+    ],
 )

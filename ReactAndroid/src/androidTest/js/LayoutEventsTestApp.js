@@ -16,18 +16,58 @@ var View = require('View');
 
 var RecordingModule = require('NativeModules').Recording;
 
+const LAYOUT_SPECS = [
+ [10, 10, 100, 100],
+ [10, 10, 50, 50],
+ [0, 0, 50, 50],
+ [0, 0, 50, 50],
+];
+
 class LayoutEventsTestApp extends React.Component {
+
+  constructor() {
+    super();
+    this.state = {
+      specNumber: 0,
+    };
+    this.numParentLayouts = 0;
+  }
+
   handleOnLayout = (e) => {
     var layout = e.nativeEvent.layout;
     RecordingModule.record(layout.x + ',' + layout.y + '-' + layout.width + 'x' + layout.height);
+
+    if (this.state.specNumber >= LAYOUT_SPECS.length) {
+      // This will cause the test to fail
+      RecordingModule.record('Got an extraneous layout call');
+    } else {
+      this.setState({
+        specNumber: this.state.specNumber + 1,
+      });
+    }
+  };
+
+  handleParentOnLayout = (e) => {
+    if (this.numParentLayouts > 0) {
+      // This will cause the test to fail - the parent's layout doesn't change
+      // so we should only get the event once.
+      RecordingModule.record('Got an extraneous layout call on the parent');
+    }
+    this.numParentLayouts++;
   };
 
   render() {
+    const layout = LAYOUT_SPECS[this.state.specNumber];
     return (
+      <View
+          onLayout={this.handleParentOnLayout}
+          testID="parent"
+          style={{left: 0, top: 0, width: 500, height: 500}}>
         <View
             onLayout={this.handleOnLayout}
             testID="container"
-            style={{left: 10, top: 10, width: 100, height: 100}}/>
+            style={{left: layout[0], top: layout[1], width: layout[2], height: layout[3]}}/>
+      </View>
     );
   }
 }

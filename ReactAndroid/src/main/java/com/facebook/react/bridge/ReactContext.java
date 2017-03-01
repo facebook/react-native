@@ -12,8 +12,6 @@ package com.facebook.react.bridge;
 import javax.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import android.app.Activity;
@@ -27,10 +25,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
-
-import static com.facebook.react.common.LifecycleState.BEFORE_CREATE;
-import static com.facebook.react.common.LifecycleState.BEFORE_RESUME;
-import static com.facebook.react.common.LifecycleState.RESUMED;
 
 /**
  * Abstract ContextWrapper for Android application or activity {@link Context} and
@@ -162,7 +156,11 @@ public class ReactContext extends ContextWrapper {
           runOnUiQueueThread(new Runnable() {
             @Override
             public void run() {
-              listener.onHostResume();
+              try {
+                listener.onHostResume();
+              } catch (RuntimeException e) {
+                handleException(e);
+              }
             }
           });
           break;
@@ -174,20 +172,6 @@ public class ReactContext extends ContextWrapper {
 
   public void removeLifecycleEventListener(LifecycleEventListener listener) {
     mLifecycleEventListeners.remove(listener);
-  }
-
-  public Map<String, Map<String,Double>> getAllPerformanceCounters() {
-    Map<String, Map<String,Double>> totalPerfMap =
-      new HashMap<>();
-    if (mCatalystInstance != null) {
-      for (NativeModule nativeModule : mCatalystInstance.getNativeModules()) {
-        if (nativeModule instanceof PerformanceCounter) {
-          PerformanceCounter perfCounterModule = (PerformanceCounter) nativeModule;
-          totalPerfMap.put(nativeModule.getName(), perfCounterModule.getPerformanceCounters());
-        }
-      }
-    }
-    return totalPerfMap;
   }
 
   public void addActivityEventListener(ActivityEventListener listener) {
@@ -205,9 +189,12 @@ public class ReactContext extends ContextWrapper {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.RESUMED;
     mCurrentActivity = new WeakReference(activity);
-    mLifecycleState = LifecycleState.RESUMED;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
-      listener.onHostResume();
+      try {
+        listener.onHostResume();
+      } catch (RuntimeException e) {
+        handleException(e);
+      }
     }
   }
 
@@ -215,7 +202,11 @@ public class ReactContext extends ContextWrapper {
     UiThreadUtil.assertOnUiThread();
     mCurrentActivity = new WeakReference(activity);
     for (ActivityEventListener listener : mActivityEventListeners) {
-      listener.onNewIntent(intent);
+      try {
+        listener.onNewIntent(intent);
+      } catch (RuntimeException e) {
+        handleException(e);
+      }
     }
   }
 
@@ -226,7 +217,11 @@ public class ReactContext extends ContextWrapper {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_RESUME;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
-      listener.onHostPause();
+      try {
+        listener.onHostPause();
+      } catch (RuntimeException e) {
+        handleException(e);
+      }
     }
   }
 
@@ -237,7 +232,11 @@ public class ReactContext extends ContextWrapper {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_CREATE;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
-      listener.onHostDestroy();
+      try {
+        listener.onHostDestroy();
+      } catch (RuntimeException e) {
+        handleException(e);
+      }
     }
     mCurrentActivity = null;
   }
@@ -258,7 +257,11 @@ public class ReactContext extends ContextWrapper {
    */
   public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
     for (ActivityEventListener listener : mActivityEventListeners) {
-      listener.onActivityResult(activity, requestCode, resultCode, data);
+      try {
+        listener.onActivityResult(activity, requestCode, resultCode, data);
+      } catch (RuntimeException e) {
+        handleException(e);
+      }
     }
   }
 

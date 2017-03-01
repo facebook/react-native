@@ -11,7 +11,6 @@
 #include <folly/json.h>
 #include <folly/Exception.h>
 #include <folly/Memory.h>
-#include <folly/String.h>
 #include <folly/Conv.h>
 #include <fcntl.h>
 #include <sys/time.h>
@@ -24,6 +23,7 @@
 #include <inspector/Inspector.h>
 #endif
 
+#include "JSBundleType.h"
 #include "Platform.h"
 #include "SystraceSection.h"
 #include "JSCNativeModules.h"
@@ -33,7 +33,7 @@
 #include "ModuleRegistry.h"
 #include "RecoverableError.h"
 
-#if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
+#if defined(WITH_JSC_EXTRA_TRACING) || (DEBUG && defined(WITH_FBSYSTRACE))
 #include "JSCTracing.h"
 #endif
 
@@ -226,7 +226,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   #if defined(__APPLE__)
   const bool useCustomJSC = m_jscConfig.getDefault("UseCustomJSC", false).getBool();
   if (useCustomJSC) {
-    JSC_configureJSCForIOS(true);
+    JSC_configureJSCForIOS(true, toJson(m_jscConfig));
   }
   #else
   const bool useCustomJSC = false;
@@ -240,7 +240,9 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   JSClassRef globalClass = nullptr;
   {
     SystraceSection s("JSClassCreate");
-    globalClass = JSC_JSClassCreate(useCustomJSC, &kJSClassDefinitionEmpty);
+    JSClassDefinition definition = kJSClassDefinitionEmpty;
+    definition.attributes |= kJSClassAttributeNoAutomaticPrototype;
+    globalClass = JSC_JSClassCreate(useCustomJSC, &definition);
   }
   {
     SystraceSection s("JSGlobalContextCreateInGroup");
@@ -262,7 +264,6 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   installNativeHook<&JSCExecutor::nativeStartWorker>("nativeStartWorker");
   installNativeHook<&JSCExecutor::nativePostMessageToWorker>("nativePostMessageToWorker");
   installNativeHook<&JSCExecutor::nativeTerminateWorker>("nativeTerminateWorker");
-  installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
 
   installGlobalFunction(m_context, "nativeLoggingHook", JSNativeHooks::loggingHook);
   installGlobalFunction(m_context, "nativePerformanceNow", JSNativeHooks::nowHook);
@@ -271,15 +272,16 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
   #endif
 
-  #if defined(WITH_JSC_EXTRA_TRACING) || DEBUG
+  #if defined(WITH_JSC_EXTRA_TRACING) || (DEBUG && defined(WITH_FBSYSTRACE))
   addNativeTracingHooks(m_context);
   #endif
 
   #ifdef WITH_JSC_EXTRA_TRACING
   addNativeProfilingHooks(m_context);
   addNativeTracingLegacyHooks(m_context);
-  PerfLogging::installNativeHooks(m_context);
   #endif
+
+  PerfLogging::installNativeHooks(m_context);
 
   #if defined(__APPLE__) || defined(WITH_JSC_EXTRA_TRACING)
   if (JSC_JSSamplingProfilerEnabled(m_context)) {
@@ -293,10 +295,6 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
 
   #ifdef JSC_HAS_PERF_STATS_API
   addJSCPerfStatsHooks(m_context);
-  #endif
-
-  #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
-  configureJSContextForAndroid(m_context, m_jscConfig, m_deviceCacheDir);
   #endif
 }
 
@@ -342,65 +340,6 @@ static const char* explainLoadSourceStatus(JSLoadSourceStatus status) {
 }
 #endif
 
-#ifdef WITH_FBJSCEXTENSIONS
-void JSCExecutor::loadApplicationScript(
-    std::string bundlePath,
-    std::string sourceURL,
-    int flags) {
-  SystraceSection s("JSCExecutor::loadApplicationScript",
-                    "sourceURL", sourceURL);
-
-  if (!(flags & (UNPACKED_JS_SOURCE | UNPACKED_BYTECODE))) {
-    throw RecoverableError("Optimized bundle with no unpacked source or bytecode");
-  }
-
-  String jsSourceURL(m_context, sourceURL.c_str());
-  JSSourceCodeRef sourceCode = nullptr;
-  SCOPE_EXIT {
-    if (sourceCode) {
-      JSReleaseSourceCode(sourceCode);
-    }
-  };
-
-  if (flags & UNPACKED_BYTECODE) {
-    int fd = open((bundlePath + UNPACKED_BYTECODE_SUFFIX).c_str(), O_RDONLY);
-    RecoverableError::runRethrowingAsRecoverable<std::system_error>([fd]() {
-        folly::checkUnixError(fd, "Couldn't open compiled bundle");
-      });
-    SCOPE_EXIT { close(fd); };
-
-    JSLoadSourceStatus jsStatus;
-    sourceCode = JSCreateCompiledSourceCode(fd, jsSourceURL, &jsStatus);
-
-    if (!sourceCode) {
-      throw RecoverableError(explainLoadSourceStatus(jsStatus));
-    }
-  } else {
-    auto jsScriptBigString = JSBigOptimizedBundleString::fromOptimizedBundle(bundlePath);
-    if (!jsScriptBigString->isAscii()) {
-      LOG(WARNING) << "Bundle is not ASCII encoded - falling back to the slow path";
-      return loadApplicationScript(std::move(jsScriptBigString), sourceURL);
-    }
-
-    sourceCode = JSCreateSourceCode(
-      jsScriptBigString->fd(),
-      jsSourceURL,
-      jsScriptBigString->hash(),
-      true);
-  }
-
-  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
-
-  evaluateSourceCode(m_context, sourceCode, jsSourceURL);
-
-  bindBridge();
-
-  flush();
-  ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
-  ReactMarker::logMarker("RUN_JS_BUNDLE_END");
-}
-#endif
-
 void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) {
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
@@ -408,10 +347,11 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
   ReactMarker::logMarker("RUN_JS_BUNDLE_START");
   String jsSourceURL(m_context, sourceURL.c_str());
 
+  // TODO t15069155: reduce the number of overrides here
 #ifdef WITH_FBJSCEXTENSIONS
   if (auto fileStr = dynamic_cast<const JSBigFileString *>(script.get())) {
     JSLoadSourceStatus jsStatus;
-    auto bcSourceCode = JSCreateCompiledSourceCode(fileStr->fd(), jsSourceURL, &jsStatus);
+    auto bcSourceCode = JSCreateSourceCodeFromFile(fileStr->fd(), jsSourceURL, nullptr, &jsStatus);
 
     switch (jsStatus) {
     case JSLoadSourceIsCompiled:
@@ -441,29 +381,47 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
       break;
     }
   }
+#elif defined(__APPLE__)
+  BundleHeader header;
+  memcpy(&header, script->c_str(), std::min(script->size(), sizeof(BundleHeader)));
+  auto scriptTag = parseTypeFromHeader(header);
+
+  if (scriptTag == ScriptTag::BCBundle) {
+    using file_ptr = std::unique_ptr<FILE, decltype(&fclose)>;
+    file_ptr source(fopen(sourceURL.c_str(), "r"), fclose);
+    int sourceFD = fileno(source.get());
+
+    JSValueRef jsError;
+    JSValueRef result = JSC_JSEvaluateBytecodeBundle(m_context, NULL, sourceFD, jsSourceURL, &jsError);
+    if (result == nullptr) {
+      formatAndThrowJSException(m_context, jsError, jsSourceURL);
+    }
+  } else
 #endif
+  {
+    #ifdef WITH_FBSYSTRACE
+    fbsystrace_begin_section(
+      TRACE_TAG_REACT_CXX_BRIDGE,
+      "JSCExecutor::loadApplicationScript-createExpectingAscii");
+    #endif
 
-  #ifdef WITH_FBSYSTRACE
-  fbsystrace_begin_section(
-    TRACE_TAG_REACT_CXX_BRIDGE,
-    "JSCExecutor::loadApplicationScript-createExpectingAscii");
-  #endif
+    ReactMarker::logMarker("loadApplicationScript_startStringConvert");
+    String jsScript = jsStringFromBigString(m_context, *script);
+    ReactMarker::logMarker("loadApplicationScript_endStringConvert");
 
-  ReactMarker::logMarker("loadApplicationScript_startStringConvert");
-  String jsScript = jsStringFromBigString(m_context, *script);
-  ReactMarker::logMarker("loadApplicationScript_endStringConvert");
+    #ifdef WITH_FBSYSTRACE
+    fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
+    #endif
 
-  #ifdef WITH_FBSYSTRACE
-  fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
-  #endif
-
-  evaluateScript(m_context, jsScript, jsSourceURL);
+    evaluateScript(m_context, jsScript, jsSourceURL);
+  }
 
   // TODO(luk): t13903306 Remove this check once we make native modules working for java2js
   if (m_delegate) {
     bindBridge();
     flush();
   }
+
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
   ReactMarker::logMarker("RUN_JS_BUNDLE_END");
 }
@@ -525,7 +483,7 @@ void JSCExecutor::callFunction(const std::string& moduleId, const std::string& m
       });
     } catch (...) {
       std::throw_with_nested(
-        std::runtime_error("Error calling function: " + moduleId + ":" + methodId));
+        std::runtime_error("Error calling " + moduleId + "." + methodId));
     }
   }();
 
@@ -542,7 +500,7 @@ void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& 
       });
     } catch (...) {
       std::throw_with_nested(
-        std::runtime_error(folly::to<std::string>("Error invoking callback.", callbackId)));
+        std::runtime_error(folly::to<std::string>("Error invoking callback ", callbackId)));
     }
   }();
 
@@ -865,17 +823,22 @@ JSValueRef JSCExecutor::nativeCallSyncHook(
 
   unsigned int moduleId = Value(m_context, arguments[0]).asUnsignedInteger();
   unsigned int methodId = Value(m_context, arguments[1]).asUnsignedInteger();
-  std::string argsJson = Value(m_context, arguments[2]).toJSONString();
+  folly::dynamic args = folly::parseJson(Value(m_context, arguments[2]).toJSONString());
+
+  if (!args.isArray()) {
+    throw std::invalid_argument(
+      folly::to<std::string>("method parameters should be array, but are ", args.typeName()));
+  }
 
   MethodCallResult result = m_delegate->callSerializableNativeHook(
       *this,
       moduleId,
       methodId,
-      argsJson);
-  if (result.isUndefined) {
+      std::move(args));
+  if (!result.hasValue()) {
     return Value::makeUndefined(m_context);
   }
-  return Value::fromDynamic(m_context, result.result);
+  return Value::fromDynamic(m_context, result.value());
 }
 
 } }

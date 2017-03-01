@@ -14,10 +14,10 @@ import java.util.concurrent.TimeUnit;
 import android.app.Instrumentation;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
-import android.view.Choreographer;
 
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.modules.core.ChoreographerCompat;
 
 public class ReactIdleDetectionUtil {
 
@@ -56,8 +56,8 @@ public class ReactIdleDetectionUtil {
         new Runnable() {
           @Override
           public void run() {
-            Choreographer.getInstance().postFrameCallback(
-                new Choreographer.FrameCallback() {
+            ChoreographerCompat.getInstance().postFrameCallback(
+                new ChoreographerCompat.FrameCallback() {
 
                   private int frameCount = 0;
 
@@ -67,7 +67,7 @@ public class ReactIdleDetectionUtil {
                     if (frameCount == waitFrameCount) {
                       latch.countDown();
                     } else {
-                      Choreographer.getInstance().postFrameCallback(this);
+                      ChoreographerCompat.getInstance().postFrameCallback(this);
                     }
                   }
                 });

@@ -57,6 +57,7 @@ const _warningMap: Map<string, WarningInfo> = new Map();
 
 if (__DEV__) {
   const {error, warn} = console;
+
   (console: any).error = function() {
     error.apply(console, arguments);
     // Show yellow box for the `warning` module.
@@ -65,8 +66,15 @@ if (__DEV__) {
       updateWarningMap.apply(null, arguments);
     }
   };
+
   (console: any).warn = function() {
     warn.apply(console, arguments);
+
+    if (typeof arguments[0] === 'string' &&
+        arguments[0].startsWith('(ADVICE)')) {
+      return;
+    }
+
     updateWarningMap.apply(null, arguments);
   };
 
@@ -232,7 +240,7 @@ const WarningInspector = ({
         <Text style={styles.inspectorCountText}>{countSentence}</Text>
         <TouchableHighlight onPress={toggleStacktrace} underlayColor="transparent">
           <Text style={styles.inspectorButtonText}>
-            {stacktraceVisible ? '▼' : '▶' } Stacktrace
+            {stacktraceVisible ? '\u{25BC}' : '\u{25B6}'} Stacktrace
           </Text>
         </TouchableHighlight>
       </View>
@@ -388,17 +396,12 @@ const rowHeight = 46;
 
 var styles = StyleSheet.create({
   fullScreen: {
-    backgroundColor: 'transparent',
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
+    height: '100%',
     elevation: Number.MAX_VALUE
   },
   inspector: {
     backgroundColor: backgroundColor(0.95),
-    flex: 1,
+    height: '100%',
     paddingTop: 5,
     elevation: Number.MAX_VALUE
   },
@@ -451,9 +454,7 @@ var styles = StyleSheet.create({
     elevation: Number.MAX_VALUE
   },
   listRow: {
-    position: 'relative',
     backgroundColor: backgroundColor(0.95),
-    flex: 1,
     height: rowHeight,
     marginTop: rowGutter,
   },

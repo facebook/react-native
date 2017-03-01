@@ -18,10 +18,11 @@
 #if defined(__APPLE__)
 #import <objc/objc.h>
 #import <JavaScriptCore/JSStringRefCF.h>
+#import <string>
 
 // This is used to substitute an alternate JSC implementation for
 // testing. These calls must all be ABI compatible with the standard JSC.
-extern void configureJSCForIOS();
+extern void configureJSCForIOS(std::string); // TODO: replace with folly::dynamic once supported
 extern JSValueRef JSEvaluateBytecodeBundle(JSContextRef, JSObjectRef, int, JSStringRef, JSValueRef*);
 extern bool JSSamplingProfilerEnabled();
 extern void JSStartSamplingProfilingOnMainJSCThread(JSGlobalContextRef);

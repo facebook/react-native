@@ -394,27 +394,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     }
 
     private void emitUpdateDimensionsEvent() {
-      DisplayMetrics windowDisplayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics();
-      DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
-
-      WritableMap windowDisplayMetricsMap = Arguments.createMap();
-      windowDisplayMetricsMap.putInt("width", windowDisplayMetrics.widthPixels);
-      windowDisplayMetricsMap.putInt("height", windowDisplayMetrics.heightPixels);
-      windowDisplayMetricsMap.putDouble("scale", windowDisplayMetrics.density);
-      windowDisplayMetricsMap.putDouble("fontScale", windowDisplayMetrics.scaledDensity);
-      windowDisplayMetricsMap.putDouble("densityDpi", windowDisplayMetrics.densityDpi);
-
-      WritableMap screenDisplayMetricsMap = Arguments.createMap();
-      screenDisplayMetricsMap.putInt("width", screenDisplayMetrics.widthPixels);
-      screenDisplayMetricsMap.putInt("height", screenDisplayMetrics.heightPixels);
-      screenDisplayMetricsMap.putDouble("scale", screenDisplayMetrics.density);
-      screenDisplayMetricsMap.putDouble("fontScale", screenDisplayMetrics.scaledDensity);
-      screenDisplayMetricsMap.putDouble("densityDpi", screenDisplayMetrics.densityDpi);
-
-      WritableMap dimensionsMap = Arguments.createMap();
-      dimensionsMap.putMap("windowPhysicalPixels", windowDisplayMetricsMap);
-      dimensionsMap.putMap("screenPhysicalPixels", screenDisplayMetricsMap);
-      sendEvent("didUpdateDimensions", dimensionsMap);
+      mReactInstanceManager
+          .getCurrentReactContext()
+          .getNativeModule(UIManagerModule.class)
+          .emitUpdateDimensionsEvent();
     }
 
     private void sendEvent(String eventName, @Nullable WritableMap params) {

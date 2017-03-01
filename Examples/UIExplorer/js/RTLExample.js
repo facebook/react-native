@@ -24,6 +24,7 @@
  * - two custom examples for RTL design
  *
  * @flow
+ * @providesModule RTLExample
  */
 'use strict';
 
@@ -43,6 +44,8 @@ const {
   Switch,
   View,
 } = ReactNative;
+const Platform = require('Platform');
+
 
 const UIExplorerPage = require('./UIExplorerPage');
 const UIExplorerBlock = require('./UIExplorerBlock');
@@ -100,10 +103,15 @@ function TextAlignmentExample(props) {
          Left-to-Right language without text alignment.
        </Text>
        <Text style={props.style}>
-        {'\u0645\u0646 \u0627\u0644\u064A\u0645\u064A\u0646 \u0625\u0644\u0649 \u0627\u0644\u064A\u0633\u0627\u0631 \u0627\u0644\u0644\u063A\u0629 \u062F\u0648\u0646 \u0645\u062D\u0627\u0630\u0627\u0629 \u0627\u0644\u0646\u0635'}
+        {'\u0645\u0646 \u0627\u0644\u064A\u0645\u064A\u0646 ' +
+          '\u0625\u0644\u0649 \u0627\u0644\u064A\u0633\u0627\u0631 ' +
+          '\u0627\u0644\u0644\u063A\u0629 \u062F\u0648\u0646 ' +
+          '\u0645\u062D\u0627\u0630\u0627\u0629 \u0627\u0644\u0646\u0635'}
        </Text>
        <Text style={props.style}>
-        {'\u05DE\u05D9\u05DE\u05D9\u05DF \u05DC\u05E9\u05DE\u05D0\u05DC \u05D4\u05E9\u05E4\u05D4 \u05D1\u05DC\u05D9 \u05D9\u05D9\u05E9\u05D5\u05E8 \u05D8\u05E7\u05E1\u05D8'}
+        {'\u05DE\u05D9\u05DE\u05D9\u05DF \u05DC\u05E9\u05DE\u05D0\u05DC ' +
+          '\u05D4\u05E9\u05E4\u05D4 \u05D1\u05DC\u05D9 ' +
+          '\u05D9\u05D9\u05E9\u05D5\u05E8 \u05D8\u05E7\u05E1\u05D8'}
        </Text>
      </View>
    </UIExplorerBlock>
@@ -157,7 +165,13 @@ class RTLExample extends React.Component {
   render() {
     return (
       <ScrollView
-        style={styles.container}
+        style={[
+          styles.container,
+          // `direction` property is supported only on iOS now.
+          Platform.OS === 'ios' ?
+            {direction: this.state.isRTL ? 'rtl' : 'ltr'} :
+            null
+        ]}
         onLayout={this._onLayout}>
         <UIExplorerPage title={'Right-to-Left (RTL) UI Layout'}>
           <UIExplorerBlock title={'Current Layout Direction'}>
@@ -197,14 +211,17 @@ class RTLExample extends React.Component {
           <TextAlignmentExample
             title={"Using textAlign: 'left'"}
             description={
-              'In iOS, you must change active language to flip text alignment correctly.' +
-              'In Android, using forceRTL() flips alignment correctly.'
+              'In iOS/Android, text alignment flips regardless of ' +
+              'languages or text content.'
             }
             style={[styles.fontSizeSmall, styles.textAlignLeft]}
           />
           <TextAlignmentExample
             title={"Using textAlign: 'right'"}
-            description={'In iOS/Android, text alignment flips regardless of languages or text content.'}
+            description={
+              'In iOS/Android, text alignment flips regardless of ' +
+              'languages or text content.'
+            }
             style={[styles.fontSizeSmall, styles.textAlignRight]}
           />
           <UIExplorerBlock title={'Working With Icons'}>
@@ -235,7 +252,12 @@ class RTLExample extends React.Component {
             <View Style={styles.view}>
               <AnimationBlock
                 onPress={this._linearTap}
-                imgStyle={{transform: [{translateX: this.state.linear}, {scaleX: IS_RTL ? -1 : 1}]}}
+                imgStyle={{
+                  transform: [
+                    {translateX: this.state.linear},
+                    {scaleX: IS_RTL ? -1 : 1}
+                  ]
+                }}
               />
             </View>
           </UIExplorerBlock>
@@ -268,7 +290,8 @@ class RTLExample extends React.Component {
       },
     });
     const offset = IMAGE_SIZE[0] / SCALE / 2 + 10;
-    const toMaxDistance = (IS_RTL ? -1 : 1) * (this.state.windowWidth / 2 - offset);
+    const toMaxDistance =
+     (IS_RTL ? -1 : 1) * (this.state.windowWidth / 2 - offset);
     Animated.timing(this.state.linear, {
       toValue: this.state.toggleStatus[refName] ? toMaxDistance : 0,
       duration: 2000,

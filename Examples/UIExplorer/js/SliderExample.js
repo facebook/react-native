@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule SliderExample
  */
 'use strict';
 
@@ -132,14 +133,21 @@ exports.examples = [
   },
   {
     title: 'Custom min/max track tint color',
-    platform: 'ios',
     render(): React.Element<any> {
       return (
         <SliderExample
-          minimumTrackTintColor={'red'}
-          maximumTrackTintColor={'green'}
+          minimumTrackTintColor={'blue'}
+          maximumTrackTintColor={'red'}
+          value={0.5}
         />
       );
+    }
+  },
+  {
+    title: 'Custom thumb color',
+    platform: 'android',
+    render(): React.Element<any> {
+      return <SliderExample thumbTintColor={'blue'} />;
     }
   },
   {

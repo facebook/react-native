@@ -10,9 +10,9 @@
 
 const mockComponent = require.requireActual('./mockComponent');
 
-require.requireActual('../packager/react-packager/src/Resolver/polyfills/babelHelpers.js');
-require.requireActual('../packager/react-packager/src/Resolver/polyfills/Object.es7.js');
-require.requireActual('../packager/react-packager/src/Resolver/polyfills/error-guard');
+require.requireActual('../packager/src/Resolver/polyfills/babelHelpers.js');
+require.requireActual('../packager/src/Resolver/polyfills/Object.es7.js');
+require.requireActual('../packager/src/Resolver/polyfills/error-guard');
 
 global.__DEV__ = true;
 
@@ -27,7 +27,7 @@ jest
 jest.setMock('ErrorUtils', require('ErrorUtils'));
 
 jest
-  .mock('ReactNativeDefaultInjection')
+  .mock('InitializeCore')
   .mock('Image', () => mockComponent('Image'))
   .mock('Text', () => mockComponent('Text'))
   .mock('TextInput', () => mockComponent('TextInput'))
@@ -50,7 +50,7 @@ jest
           Object.keys(dataBlob).forEach(key => {
             this.items += dataBlob[key] && (
               dataBlob[key].length || dataBlob[key].size || 0
-            )
+            );
           });
         } catch (e) {
           this.items = 'unknown';
