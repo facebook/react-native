@@ -8,6 +8,7 @@
  */
 'use strict';
 
+const {EventEmitter} = require('events');
 const {dirname} = require.requireActual('path');
 const fs = jest.genMockFromModule('fs');
 const path = require('path');
@@ -36,7 +37,7 @@ fs.realpath.mockImplementation((filepath, callback) => {
   if (node && typeof node === 'object' && node.SYMLINK != null) {
     return callback(null, node.SYMLINK);
   }
-  callback(null, filepath);
+  return callback(null, filepath);
 });
 
 fs.readdirSync.mockImplementation(filepath => Object.keys(getToNode(filepath)));
@@ -57,7 +58,7 @@ fs.readdir.mockImplementation((filepath, callback) => {
     return callback(new Error(filepath + ' is not a directory.'));
   }
 
-  callback(null, Object.keys(node));
+  return callback(null, Object.keys(node));
 });
 
 fs.readFile.mockImplementation(function(filepath, encoding, callback) {
@@ -75,9 +76,9 @@ fs.readFile.mockImplementation(function(filepath, encoding, callback) {
       callback(new Error('Error readFile a dir: ' + filepath));
     }
     if (node == null) {
-      callback(Error('No such file: ' + filepath));
+      return callback(Error('No such file: ' + filepath));
     } else {
-      callback(null, node);
+      return callback(null, node);
     }
   } catch (e) {
     return callback(e);
@@ -96,7 +97,12 @@ fs.readFileSync.mockImplementation(function(filepath, encoding) {
 function makeStatResult(node) {
   const isSymlink = node != null && node.SYMLINK != null;
   return {
+    isBlockDevice: () => false,
+    isCharacterDevice: () => false,
     isDirectory: () => node != null && typeof node === 'object' && !isSymlink,
+    isFIFO: () => false,
+    isFile: () => node != null && typeof node === 'string',
+    isSocket: () => false,
     isSymbolicLink: () => isSymlink,
     mtime,
   };
@@ -241,6 +247,34 @@ fs.createWriteStream.mockImplementation(file => {
 fs.createWriteStream.mock.returned = [];
 
 fs.__setMockFilesystem = object => (filesystem = object);
+
+const watcherListByPath = new Map();
+
+fs.watch.mockImplementation((filename, options, listener) => {
+  if (options.recursive) {
+    throw new Error('recursive watch not implemented');
+  }
+  let watcherList = watcherListByPath.get(filename);
+  if (watcherList == null) {
+    watcherList = [];
+    watcherListByPath.set(filename, watcherList);
+  }
+  const fsWatcher = new EventEmitter();
+  fsWatcher.on('change', listener);
+  fsWatcher.close = () => {
+    watcherList.splice(watcherList.indexOf(fsWatcher), 1);
+    fsWatcher.close = () => { throw new Error('FSWatcher is already closed'); };
+  };
+  watcherList.push(fsWatcher);
+});
+
+fs.__triggerWatchEvent = (eventType, filename) => {
+  const directWatchers = watcherListByPath.get(filename) || [];
+  directWatchers.forEach(wtc => wtc.emit('change', eventType));
+  const dirPath = path.dirname(filename);
+  const dirWatchers = watcherListByPath.get(dirPath) || [];
+  dirWatchers.forEach(wtc => wtc.emit('change', eventType, path.relative(dirPath, filename)));
+};
 
 function getToNode(filepath) {
   // Ignore the drive for Windows paths.

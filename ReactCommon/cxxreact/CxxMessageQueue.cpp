@@ -192,6 +192,7 @@ class CxxMessageQueue::QueueRunner {
   }
 
   void bindToThisThread() {
+    // TODO: handle nested runloops (either allow them or throw an exception).
     if (tid_ != std::thread::id{}) {
       throw std::runtime_error("Message queue already bound to thread.");
     }
@@ -290,9 +291,16 @@ MQRegistry& getMQRegistry() {
 }
 }
 
-std::weak_ptr<CxxMessageQueue> CxxMessageQueue::current() {
+std::shared_ptr<CxxMessageQueue> CxxMessageQueue::current() {
   auto tid = std::this_thread::get_id();
-  return getMQRegistry().find(tid);
+  return getMQRegistry().find(tid).lock();
+}
+
+std::function<void()> CxxMessageQueue::getUnregisteredRunLoop() {
+  return [capture=qr_] {
+    capture->bindToThisThread();
+    capture->run();
+  };
 }
 
 std::function<void()> CxxMessageQueue::getRunLoop(std::shared_ptr<CxxMessageQueue> mq) {
@@ -300,7 +308,6 @@ std::function<void()> CxxMessageQueue::getRunLoop(std::shared_ptr<CxxMessageQueu
     capture->bindToThisThread();
     auto tid = std::this_thread::get_id();
 
-    // TODO: handle nested runloops (either allow them or throw an exception).
     getMQRegistry().registerQueue(tid, weakMq);
     capture->run();
     getMQRegistry().unregister(tid);

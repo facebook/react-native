@@ -43,7 +43,8 @@ const {
 } = require('../Logger');
 
 function debounceAndBatch(fn, delay) {
-  let timeout, args = [];
+  let args = [];
+  let timeout;
   return value => {
     args.push(value);
     clearTimeout(timeout);
@@ -957,7 +958,8 @@ class Server {
         'entryModuleOnly',
         false,
       ),
-      generateSourceMaps: minify || !dev || this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap', false),
+      generateSourceMaps:
+        minify || !dev || this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap', false),
       assetPlugins,
     };
   }

@@ -11,11 +11,11 @@ import com.facebook.react.bridge.ReadableType;
 
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaDisplay;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
-import com.facebook.yoga.YogaValue;
 import com.facebook.yoga.YogaUnit;
 import com.facebook.yoga.YogaWrap;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -32,22 +32,36 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
  */
 public class LayoutShadowNode extends ReactShadowNode {
 
-  private static boolean dynamicIsPercent(Dynamic dynamic) {
-    return dynamic.getType() == ReadableType.String && dynamic.asString().endsWith("%");
+  /**
+   * A Mutable version of com.facebook.yoga.YogaValue
+   */
+  private static class MutableYogaValue {
+    float value;
+    YogaUnit unit;
+
+    void setFromDynamic(Dynamic dynamic) {
+      if (dynamic.isNull()) {
+        unit = YogaUnit.UNDEFINED;
+        value = YogaConstants.UNDEFINED;
+      } else if (dynamic.getType() == ReadableType.String) {
+        final String s = dynamic.asString();
+        if (s.equals("auto")) {
+          unit = YogaUnit.AUTO;
+          value = YogaConstants.UNDEFINED;
+        } else if (s.endsWith("%")) {
+          unit = YogaUnit.PERCENT;
+          value = Float.parseFloat(s.substring(0, s.length() - 1));
+        } else {
+          throw new IllegalArgumentException("Unknown value: " + s);
+        }
+      } else {
+        unit = YogaUnit.POINT;
+        value = PixelUtil.toPixelFromDIP(dynamic.asDouble());
+      }
+    }
   }
 
-  private static float getDynamicAsPercent(Dynamic dynamic) {
-    final String value = dynamic.asString();
-    return Float.parseFloat(value.substring(0, value.length() - 1));
-  }
-
-  private static float getDynamicAsFloat(Dynamic dynamic) {
-    return (float) PixelUtil.toPixelFromDIP(dynamic.asDouble());
-  }
-
-  private static boolean isNull(Dynamic d) {
-    return d == null || d.isNull();
-  }
+  private final MutableYogaValue mTempYogaValue = new MutableYogaValue();
 
   @ReactProp(name = ViewProps.WIDTH)
   public void setWidth(Dynamic width) {
@@ -55,10 +69,18 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (!isNull(width) && dynamicIsPercent(width)) {
-      setStyleWidthPercent(getDynamicAsPercent(width));
-    } else {
-      setStyleWidth(isNull(width) ? YogaConstants.UNDEFINED : getDynamicAsFloat(width));
+    mTempYogaValue.setFromDynamic(width);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setStyleWidth(mTempYogaValue.value);
+        break;
+      case AUTO:
+        setStyleWidthAuto();
+        break;
+      case PERCENT:
+        setStyleWidthPercent(mTempYogaValue.value);
+        break;
     }
 
     width.recycle();
@@ -70,10 +92,15 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (!isNull(minWidth) && dynamicIsPercent(minWidth)) {
-      setStyleMinWidthPercent(getDynamicAsPercent(minWidth));
-    } else {
-      setStyleMinWidth(isNull(minWidth) ? YogaConstants.UNDEFINED : getDynamicAsFloat(minWidth));
+    mTempYogaValue.setFromDynamic(minWidth);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setStyleMinWidth(mTempYogaValue.value);
+        break;
+      case PERCENT:
+        setStyleMinWidthPercent(mTempYogaValue.value);
+        break;
     }
 
     minWidth.recycle();
@@ -85,10 +112,15 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (!isNull(maxWidth) && dynamicIsPercent(maxWidth)) {
-      setStyleMaxWidthPercent(getDynamicAsPercent(maxWidth));
-    } else {
-      setStyleMaxWidth(isNull(maxWidth) ? YogaConstants.UNDEFINED : getDynamicAsFloat(maxWidth));
+    mTempYogaValue.setFromDynamic(maxWidth);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setStyleMaxWidth(mTempYogaValue.value);
+        break;
+      case PERCENT:
+        setStyleMaxWidthPercent(mTempYogaValue.value);
+        break;
     }
 
     maxWidth.recycle();
@@ -100,10 +132,18 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (!isNull(height) && dynamicIsPercent(height)) {
-      setStyleHeightPercent(getDynamicAsPercent(height));
-    } else {
-      setStyleHeight(isNull(height) ? YogaConstants.UNDEFINED : getDynamicAsFloat(height));
+    mTempYogaValue.setFromDynamic(height);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setStyleHeight(mTempYogaValue.value);
+        break;
+      case AUTO:
+        setStyleHeightAuto();
+        break;
+      case PERCENT:
+        setStyleHeightPercent(mTempYogaValue.value);
+        break;
     }
 
     height.recycle();
@@ -115,10 +155,15 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (!isNull(minHeight) && dynamicIsPercent(minHeight)) {
-      setStyleMinHeightPercent(getDynamicAsPercent(minHeight));
-    } else {
-      setStyleMinHeight(isNull(minHeight) ? YogaConstants.UNDEFINED : getDynamicAsFloat(minHeight));
+    mTempYogaValue.setFromDynamic(minHeight);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setStyleMinHeight(mTempYogaValue.value);
+        break;
+      case PERCENT:
+        setStyleMinHeightPercent(mTempYogaValue.value);
+        break;
     }
 
     minHeight.recycle();
@@ -130,10 +175,15 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (!isNull(maxHeight) && dynamicIsPercent(maxHeight)) {
-      setStyleMaxHeightPercent(getDynamicAsPercent(maxHeight));
-    } else {
-      setStyleMaxHeight(isNull(maxHeight) ? YogaConstants.UNDEFINED : getDynamicAsFloat(maxHeight));
+    mTempYogaValue.setFromDynamic(maxHeight);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setStyleMaxHeight(mTempYogaValue.value);
+        break;
+      case PERCENT:
+        setStyleMaxHeightPercent(mTempYogaValue.value);
+        break;
     }
 
     maxHeight.recycle();
@@ -169,10 +219,18 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (!isNull(flexBasis) && dynamicIsPercent(flexBasis)) {
-      setFlexBasisPercent(getDynamicAsPercent(flexBasis));
-    } else {
-      setFlexBasis(isNull(flexBasis) ? 0 : getDynamicAsFloat(flexBasis));
+    mTempYogaValue.setFromDynamic(flexBasis);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setFlexBasis(mTempYogaValue.value);
+        break;
+      case AUTO:
+        setFlexBasisAuto();
+        break;
+      case PERCENT:
+        setFlexBasisPercent(mTempYogaValue.value);
+        break;
     }
 
     flexBasis.recycle();
@@ -226,6 +284,16 @@ public class LayoutShadowNode extends ReactShadowNode {
             alignItems.toUpperCase(Locale.US).replace("-", "_")));
   }
 
+  @ReactProp(name = ViewProps.ALIGN_CONTENT)
+  public void setAlignContent(@Nullable String alignContent) {
+    if (isVirtual()) {
+      return;
+    }
+    setAlignContent(
+        alignContent == null ? YogaAlign.FLEX_START : YogaAlign.valueOf(
+            alignContent.toUpperCase(Locale.US).replace("-", "_")));
+  }
+
   @ReactProp(name = ViewProps.JUSTIFY_CONTENT)
   public void setJustifyContent(@Nullable String justifyContent) {
     if (isVirtual()) {
@@ -244,6 +312,15 @@ public class LayoutShadowNode extends ReactShadowNode {
             overflow.toUpperCase(Locale.US).replace("-", "_")));
   }
 
+  @ReactProp(name = ViewProps.DISPLAY)
+  public void setDisplay(@Nullable String display) {
+    if (isVirtual()) {
+      return;
+    }
+    setDisplay(display == null ? YogaDisplay.FLEX : YogaDisplay.valueOf(
+            display.toUpperCase(Locale.US).replace("-", "_")));
+  }
+
   @ReactPropGroup(names = {
       ViewProps.MARGIN,
       ViewProps.MARGIN_VERTICAL,
@@ -258,12 +335,18 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (!isNull(margin) && dynamicIsPercent(margin)) {
-      setMarginPercent(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], getDynamicAsPercent(margin));
-    } else {
-      setMargin(
-          ViewProps.PADDING_MARGIN_SPACING_TYPES[index],
-          isNull(margin) ? YogaConstants.UNDEFINED : getDynamicAsFloat(margin));
+    mTempYogaValue.setFromDynamic(margin);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setMargin(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], mTempYogaValue.value);
+        break;
+      case AUTO:
+        setMarginAuto(ViewProps.PADDING_MARGIN_SPACING_TYPES[index]);
+        break;
+      case PERCENT:
+        setMarginPercent(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], mTempYogaValue.value);
+        break;
     }
 
     margin.recycle();
@@ -283,13 +366,15 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (!isNull(padding) && dynamicIsPercent(padding)) {
-      setPaddingPercent(
-          ViewProps.PADDING_MARGIN_SPACING_TYPES[index], getDynamicAsPercent(padding));
-    } else {
-      setPadding(
-          ViewProps.PADDING_MARGIN_SPACING_TYPES[index],
-          isNull(padding) ? YogaConstants.UNDEFINED : getDynamicAsFloat(padding));
+    mTempYogaValue.setFromDynamic(padding);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setPadding(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], mTempYogaValue.value);
+        break;
+      case PERCENT:
+        setPaddingPercent(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], mTempYogaValue.value);
+        break;
     }
 
     padding.recycle();
@@ -320,12 +405,15 @@ public class LayoutShadowNode extends ReactShadowNode {
       return;
     }
 
-    if (!isNull(position) && dynamicIsPercent(position)) {
-      setPositionPercent(ViewProps.POSITION_SPACING_TYPES[index], getDynamicAsPercent(position));
-    } else {
-      setPosition(
-          ViewProps.POSITION_SPACING_TYPES[index],
-          isNull(position) ? YogaConstants.UNDEFINED : getDynamicAsFloat(position));
+    mTempYogaValue.setFromDynamic(position);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setPosition(ViewProps.POSITION_SPACING_TYPES[index], mTempYogaValue.value);
+        break;
+      case PERCENT:
+        setPositionPercent(ViewProps.POSITION_SPACING_TYPES[index], mTempYogaValue.value);
+        break;
     }
 
     position.recycle();

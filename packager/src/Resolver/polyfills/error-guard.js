@@ -52,6 +52,7 @@ const ErrorUtils = {
     } finally {
       _inGuard--;
     }
+    return null;
   },
   applyWithGuardIfNeeded(fun, context, args) {
     if (ErrorUtils.inGuard()) {
@@ -59,6 +60,7 @@ const ErrorUtils = {
     } else {
       ErrorUtils.applyWithGuard(fun, context, args);
     }
+    return null;
   },
   inGuard() {
     return _inGuard;

@@ -19,8 +19,6 @@ const {parse} = require('babylon');
 const generate = require('babel-generator').default;
 const {traverse} = require('babel-core');
 
-const {any, objectContaining} = jasmine;
-
 describe('transforming JS modules:', () => {
   const filename = 'arbitrary';
 
@@ -47,7 +45,7 @@ describe('transforming JS modules:', () => {
 
   it('passes through file name and code', done => {
     transformModule(sourceCode, options(), (error, result) => {
-      expect(result).toEqual(objectContaining({
+      expect(result).toEqual(expect.objectContaining({
         code: sourceCode,
         file: filename,
       }));
@@ -59,36 +57,39 @@ describe('transforming JS modules:', () => {
     const hasteID = 'TheModule';
     const codeWithHasteID = `/** @providesModule ${hasteID} */`;
     transformModule(codeWithHasteID, options(), (error, result) => {
-      expect(result).toEqual(objectContaining({hasteID}));
+      expect(result).toEqual(expect.objectContaining({hasteID}));
       done();
     });
   });
 
   it('sets `type` to `"module"` by default', done => {
     transformModule(sourceCode, options(), (error, result) => {
-      expect(result).toEqual(objectContaining({type: 'module'}));
+      expect(result).toEqual(expect.objectContaining({type: 'module'}));
       done();
     });
   });
 
   it('sets `type` to `"script"` if the input is a polyfill', done => {
     transformModule(sourceCode, {...options(), polyfill: true}, (error, result) => {
-      expect(result).toEqual(objectContaining({type: 'script'}));
+      expect(result).toEqual(expect.objectContaining({type: 'script'}));
       done();
     });
   });
 
-  it('calls the passed-in transform function with code, file name, and options for all passed in variants', done => {
-    const variants = {dev: {dev: true}, prod: {dev: false}};
+  it('calls the passed-in transform function with code, file name, and options ' +
+    'for all passed in variants',
+    done => {
+      const variants = {dev: {dev: true}, prod: {dev: false}};
 
-    transformModule(sourceCode, options(variants), () => {
-      expect(transformer.transform)
-        .toBeCalledWith(sourceCode, filename, variants.dev);
-      expect(transformer.transform)
-        .toBeCalledWith(sourceCode, filename, variants.prod);
-      done();
-    });
-  });
+      transformModule(sourceCode, options(variants), () => {
+        expect(transformer.transform)
+          .toBeCalledWith(sourceCode, filename, variants.dev);
+        expect(transformer.transform)
+          .toBeCalledWith(sourceCode, filename, variants.prod);
+        done();
+      });
+    },
+  );
 
   it('calls back with any error yielded by the transform function', done => {
     const error = new Error();
@@ -114,7 +115,7 @@ describe('transforming JS modules:', () => {
     });
   });
 
-  it('wraps the code produced by the transform function into an immediately invoked function expression for polyfills', done => {
+  it('wraps the code produced by the transform function into an IIFE for polyfills', done => {
     transformModule(sourceCode, {...options(), polyfill: true}, (error, result) => {
       expect(error).toEqual(null);
 
@@ -131,20 +132,21 @@ describe('transforming JS modules:', () => {
       const column = code.indexOf('code');
       const consumer = new SourceMapConsumer(map);
       expect(consumer.originalPositionFor({line: 1, column}))
-        .toEqual(objectContaining({line: 1, column: sourceCode.indexOf('code')}));
+        .toEqual(expect.objectContaining({line: 1, column: sourceCode.indexOf('code')}));
       done();
     });
   });
 
   it('extracts dependencies (require calls)', done => {
-    const dep1 = 'foo', dep2 = 'bar';
+    const dep1 = 'foo';
+    const dep2 = 'bar';
     const code = `require('${dep1}'),require('${dep2}')`;
     const {body} = parse(code).program;
     transformer.transform.stub.returns(transformResult(body));
 
     transformModule(code, options(), (error, result) => {
       expect(result.transformed.default)
-        .toEqual(objectContaining({dependencies: [dep1, dep2]}));
+        .toEqual(expect.objectContaining({dependencies: [dep1, dep2]}));
       done();
     });
   });
@@ -190,7 +192,7 @@ describe('transforming JS modules:', () => {
   it('does not create source maps for JSON files', done => {
     transformModule('{}', {...options(), filename: 'some.json'}, (error, result) => {
       expect(result.transformed.default)
-        .toEqual(objectContaining({map: null}));
+        .toEqual(expect.objectContaining({map: null}));
       done();
     });
   });

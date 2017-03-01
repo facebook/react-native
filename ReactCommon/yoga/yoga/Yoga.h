@@ -46,6 +46,7 @@ typedef struct YGValue {
 static const YGValue YGValueUndefined = {YGUndefined, YGUnitUndefined};
 static const YGValue YGValueAuto = {YGUndefined, YGUnitAuto};
 
+typedef struct YGConfig *YGConfigRef;
 typedef struct YGNode *YGNodeRef;
 typedef YGSize (*YGMeasureFunc)(YGNodeRef node,
                                 float width,
@@ -63,6 +64,7 @@ typedef void (*YGFree)(void *ptr);
 
 // YGNode
 WIN_EXPORT YGNodeRef YGNodeNew(void);
+WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config);
 WIN_EXPORT void YGNodeFree(const YGNodeRef node);
 WIN_EXPORT void YGNodeFreeRecursive(const YGNodeRef node);
 WIN_EXPORT void YGNodeReset(const YGNodeRef node);
@@ -223,8 +225,15 @@ WIN_EXPORT void YGLog(YGLogLevel level, const char *message, ...);
 // If you want to avoid rounding - set PointScaleFactor to 0
 WIN_EXPORT void YGSetPointScaleFactor(float pixelsInPoint);
 
-WIN_EXPORT void YGSetExperimentalFeatureEnabled(YGExperimentalFeature feature, bool enabled);
-WIN_EXPORT bool YGIsExperimentalFeatureEnabled(YGExperimentalFeature feature);
+// YGConfig
+WIN_EXPORT YGConfigRef YGConfigNew(void);
+WIN_EXPORT void YGConfigFree(const YGConfigRef config);
+
+WIN_EXPORT void YGConfigSetExperimentalFeatureEnabled(const YGConfigRef config,
+                                                      const YGExperimentalFeature feature,
+                                                      const bool enabled);
+WIN_EXPORT bool YGConfigIsExperimentalFeatureEnabled(const YGConfigRef config,
+                                                     const YGExperimentalFeature feature);
 
 WIN_EXPORT void
 YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree);

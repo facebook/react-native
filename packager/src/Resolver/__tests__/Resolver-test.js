@@ -237,40 +237,6 @@ describe('Resolver', function() {
         });
     });
 
-    it('should get dependencies with polyfills', function() {
-      var module = createModule('index');
-      var deps = [module];
-
-      var depResolver = new Resolver({
-        projectRoot: '/root',
-      });
-
-      DependencyGraph.prototype.getDependencies.mockImplementation(function() {
-        return Promise.resolve(new ResolutionResponseMock({
-          dependencies: deps,
-          mainModuleId: 'index',
-        }));
-      });
-
-      const polyfill = {};
-      DependencyGraph.prototype.createPolyfill.mockReturnValueOnce(polyfill);
-      return depResolver
-        .getDependencies(
-          '/root/index.js',
-          {dev: true},
-          undefined,
-          undefined,
-          createGetModuleId()
-        ).then(function(result) {
-          expect(result.mainModuleId).toEqual('index');
-          expect(DependencyGraph.mock.instances[0].getDependencies)
-              .toBeCalledWith({entryPath: '/root/index.js', recursive: true});
-          expect(result.dependencies[0]).toBe(polyfill);
-          expect(result.dependencies[result.dependencies.length - 1])
-              .toBe(module);
-        });
-    });
-
     it('should pass in more polyfills', function() {
       var module = createModule('index');
       var deps = [module];
@@ -296,7 +262,9 @@ describe('Resolver', function() {
           createGetModuleId()
         ).then(result => {
           expect(result.mainModuleId).toEqual('index');
-          expect(DependencyGraph.prototype.createPolyfill.mock.calls[result.dependencies.length - 2]).toEqual([
+          const calls =
+            DependencyGraph.prototype.createPolyfill.mock.calls[result.dependencies.length - 2];
+          expect(calls).toEqual([
             {file: 'some module',
               id: 'some module',
               dependencies: [
@@ -444,7 +412,8 @@ describe('Resolver', function() {
         expect(processedCode).toEqual([
           '(function(global) {',
           'global.fetch = () => 1;',
-          "\n})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);",
+          '\n})' +
+          "(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);",
         ].join(''));
       });
     });

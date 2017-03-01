@@ -94,4 +94,5 @@ function findLast(code, needle) {
       return {line: line + 1, column};
     }
   }
+  return null;
 }

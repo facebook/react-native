@@ -38,7 +38,10 @@ const VERSION = require('../../package.json').version;
 import type AssetServer from '../AssetServer';
 import type Module, {HasteImpl} from '../node-haste/Module';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
-import type {Options as JSTransformerOptions, TransformOptions} from '../JSTransformer/worker/worker';
+import type {
+  Options as JSTransformerOptions,
+  TransformOptions,
+} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
 import type GlobalTransformCache from '../lib/GlobalTransformCache';
 

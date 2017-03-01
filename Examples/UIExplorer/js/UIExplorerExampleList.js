@@ -154,9 +154,7 @@ class UIExplorerExampleList extends React.Component {
         }}}
         onNavigate={this.props.onNavigate}
         onPress={() => {
-          this.props.onNavigate(
-            UIExplorerActions.ExampleListWithFilter('')
-          );
+          this.props.onNavigate(UIExplorerActions.ExampleList());
         }}
       />
     );
