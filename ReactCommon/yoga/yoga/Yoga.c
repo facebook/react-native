@@ -1960,11 +1960,13 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   // above
   float availableInnerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
   if (!YGFloatIsUndefined(availableInnerWidth)) {
+    // We want to make sure our available width does not violate min and max constraints
     availableInnerWidth = fmaxf(fminf(availableInnerWidth, maxInnerWidth), minInnerWidth);
   }
 
   float availableInnerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
   if (!YGFloatIsUndefined(availableInnerHeight)) {
+    // We want to make sure our available height does not violate min and max constraints
     availableInnerHeight = fmaxf(fminf(availableInnerHeight, maxInnerHeight), minInnerHeight);
   }
 
@@ -2149,13 +2151,16 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     // If the main dimension size isn't known, it is computed based on
     // the line length, so there's no more space left to distribute.
 
-    // We resolve main dimension to fit minimum and maximum values
-    if (YGFloatIsUndefined(availableInnerMainDim)) {
+    // If we don't measure with exact main dimension we want to ensure we don't violate min and max
+    if (measureModeMainDim != YGMeasureModeExactly) {
       if (!YGFloatIsUndefined(minInnerMainDim) && sizeConsumedOnCurrentLine < minInnerMainDim) {
         availableInnerMainDim = minInnerMainDim;
-      } else if (!YGFloatIsUndefined(maxInnerMainDim) &&
-                 sizeConsumedOnCurrentLine > maxInnerMainDim) {
+      } else if (!YGFloatIsUndefined(maxInnerMainDim) && sizeConsumedOnCurrentLine > maxInnerMainDim) {
         availableInnerMainDim = maxInnerMainDim;
+      } else if (YGIsExperimentalFeatureEnabled(YGExperimentalFeatureMinFlexFix)) {
+        // TODO: this needs to be moved out of experimental feature, as this is legitimate fix
+        // If the measurement isn't exact, we want to use as little space as possible
+        availableInnerMainDim = sizeConsumedOnCurrentLine;
       }
     }
 
