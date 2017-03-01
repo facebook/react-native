@@ -362,6 +362,13 @@ var featured = [
     infoTitle: 'Why we chose React Native'
   },
   {
+    name: 'JadoPado',
+    icon: 'https://lh3.googleusercontent.com/VX8CXya2KmFc-n9aPChiUpzIg2IkuzudWy76OmFKNMu2eQDFq9xFdDMR-U1E7Sa88eUs=w300-rw',
+    linkAppStore: 'https://itunes.apple.com/ao/app/jadopado/id1149279535',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.jadopado.buyer',
+    infoLink: 'https://blog.jadopado.com/product-updates-and-building-incredible-experiences/',
+    infoTitle: 'Product Updates And Building Incredible Experiences',
+  },
     name: 'Flare',
     icon: 'http://x.co/FlareIcon',
     linkAppStore: 'http://x.co/Flare',
