@@ -21,12 +21,15 @@ import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeModuleLogger;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReadableNativeArray;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
+import static com.facebook.react.bridge.ReactMarkerConstants.GET_CONSTANTS_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.GET_CONSTANTS_START;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 /**
@@ -37,7 +40,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  */
 
 @DoNotStrip
-/* package */ class JavaModuleWrapper {
+public class JavaModuleWrapper {
   @DoNotStrip
   public class MethodDescriptor {
     @DoNotStrip
@@ -67,7 +70,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
   @DoNotStrip
   public String getName() {
-    return mModuleHolder.getInfo().name();
+    return mModuleHolder.getName();
   }
 
   @DoNotStrip
@@ -95,10 +98,11 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
   // NativeMap out of OnLoad.
   @DoNotStrip
   public NativeArray getConstants() {
+    BaseJavaModule baseJavaModule = getModule();
+    ReactMarker.logMarker(GET_CONSTANTS_START, getName());
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "Map constants")
       .arg("moduleName", getName())
       .flush();
-    BaseJavaModule baseJavaModule = getModule();
     Map<String, Object> map = baseJavaModule.getConstants();
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
@@ -119,6 +123,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
     if (baseJavaModule instanceof NativeModuleLogger) {
       ((NativeModuleLogger) baseJavaModule).endConstantsMapConversion();
     }
+    ReactMarker.logMarker(GET_CONSTANTS_END);
     return array;
   }
 

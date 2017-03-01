@@ -10,10 +10,13 @@
 #import "RCTCxxModule.h"
 
 #import <React/RCTBridge.h>
+#import <React/RCTFollyConvert.h>
+#import <React/RCTLog.h>
 #import <cxxreact/CxxModule.h>
 
 #import "RCTCxxMethod.h"
-#import "RCTCxxUtils.h"
+
+using namespace facebook::react;
 
 @implementation RCTCxxModule
 {
@@ -65,7 +68,7 @@
 
   NSMutableDictionary *moduleConstants = [NSMutableDictionary new];
   for (const auto &c : _module->getConstants()) {
-    moduleConstants[@(c.first.c_str())] = RCTConvertFollyDynamic(c.second);
+    moduleConstants[@(c.first.c_str())] = convertFollyDynamicToId(c.second);
   }
   return moduleConstants;
 }

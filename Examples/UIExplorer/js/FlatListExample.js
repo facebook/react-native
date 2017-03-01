@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule FlatListExample
  */
 'use strict';
 
@@ -46,12 +47,19 @@ const {
   renderSmallSwitchOption,
 } = require('./ListExampleShared');
 
+const VIEWABILITY_CONFIG = {
+  minimumViewTime: 3000,
+  viewAreaCoveragePercentThreshold: 100,
+  waitForInteraction: true,
+};
+
 class FlatListExample extends React.PureComponent {
   static title = '<FlatList>';
   static description = 'Performant, scrollable list of data.';
 
   state = {
     data: genItemData(1000),
+    debug: false,
     horizontal: false,
     filterText: '',
     fixedHeight: true,
@@ -64,6 +72,9 @@ class FlatListExample extends React.PureComponent {
   _onChangeScrollToIndex = (text) => {
     this._listRef.scrollToIndex({viewPosition: 0.5, index: Number(text)});
   };
+  componentDidUpdate() {
+    this._listRef.recordInteraction(); // e.g. flipping logViewable switch
+  }
   render() {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
     const filter = (item) => (filterRegex.test(item.text) || filterRegex.test(item.title));
@@ -73,39 +84,46 @@ class FlatListExample extends React.PureComponent {
         noSpacer={true}
         noScroll={true}>
         <View style={styles.searchRow}>
-          <PlainInput
-            onChangeText={this._onChangeFilterText}
-            placeholder="Search..."
-            value={this.state.filterText}
-          />
-          <PlainInput
-            onChangeText={this._onChangeScrollToIndex}
-            placeholder="scrollToIndex..."
-            style={styles.searchTextInput}
-          />
+          <View style={styles.options}>
+            <PlainInput
+              onChangeText={this._onChangeFilterText}
+              placeholder="Search..."
+              value={this.state.filterText}
+            />
+            <PlainInput
+              onChangeText={this._onChangeScrollToIndex}
+              placeholder="scrollToIndex..."
+              style={styles.searchTextInput}
+            />
+          </View>
           <View style={styles.options}>
             {renderSmallSwitchOption(this, 'virtualized')}
             {renderSmallSwitchOption(this, 'horizontal')}
             {renderSmallSwitchOption(this, 'fixedHeight')}
             {renderSmallSwitchOption(this, 'logViewable')}
+            {renderSmallSwitchOption(this, 'debug')}
           </View>
         </View>
+        <SeparatorComponent />
         <FlatList
           HeaderComponent={HeaderComponent}
           FooterComponent={FooterComponent}
-          ItemComponent={this._renderItemComponent}
           SeparatorComponent={SeparatorComponent}
+          data={filteredData}
+          debug={this.state.debug}
           disableVirtualization={!this.state.virtualized}
           getItemLayout={this.state.fixedHeight ? this._getItemLayout : undefined}
           horizontal={this.state.horizontal}
-          data={filteredData}
           key={(this.state.horizontal ? 'h' : 'v') + (this.state.fixedHeight ? 'f' : 'd')}
           legacyImplementation={false}
-          onRefresh={() => alert('onRefresh: nothing to refresh :P')}
-          refreshing={false}
+          numColumns={1}
+          onRefresh={this._onRefresh}
           onViewableItemsChanged={this._onViewableItemsChanged}
           ref={this._captureRef}
+          refreshing={false}
+          renderItem={this._renderItemComponent}
           shouldItemUpdate={this._shouldItemUpdate}
+          viewabilityConfig={VIEWABILITY_CONFIG}
         />
       </UIExplorerPage>
     );
@@ -114,6 +132,7 @@ class FlatListExample extends React.PureComponent {
   _getItemLayout = (data: any, index: number) => {
     return getItemLayout(data, index, this.state.horizontal);
   };
+  _onRefresh = () => alert('onRefresh: nothing to refresh :P');
   _renderItemComponent = ({item}) => {
     return (
       <ItemComponent
@@ -145,9 +164,10 @@ class FlatListExample extends React.PureComponent {
     }
   };
   _pressItem = (key: number) => {
+    this._listRef.recordInteraction();
     pressItem(this, key);
   };
-  _listRef: FlatList;
+  _listRef: FlatList<*>;
 }
 
 
@@ -158,8 +178,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   searchRow: {
-    backgroundColor: '#eeeeee',
-    padding: 10,
+    paddingHorizontal: 10,
   },
 });
 

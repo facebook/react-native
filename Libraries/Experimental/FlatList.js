@@ -34,25 +34,37 @@
 
 const MetroListView = require('MetroListView'); // Used as a fallback legacy option
 const React = require('React');
+const View = require('View');
 const VirtualizedList = require('VirtualizedList');
 
-import type {Viewable} from 'ViewabilityHelper';
+const invariant = require('invariant');
 
-type Item = any;
+import type {StyleObj} from 'StyleSheetTypes';
+import type {ViewabilityConfig, ViewToken} from 'ViewabilityHelper';
+import type {Props as VirtualizedListProps} from 'VirtualizedList';
 
-type RequiredProps = {
+type RequiredProps<ItemT> = {
   /**
-   * Note this can be a normal class component, or a functional component, such as a render method
-   * on your main component.
+   * Takes an item from `data` and renders it into the list. Typicaly usage:
+   *
+   *   _renderItem = ({item}) => (
+   *     <TouchableOpacity onPress={() => this._onPress(item)}>
+   *       <Text>{item.title}}</Text>
+   *     <TouchableOpacity/>
+   *   );
+   *   ...
+   *   <FlatList data={[{title: 'Title Text'}]} renderItem={this._renderItem} />
+   *
+   * Provides additional metadata like `index` if you need it.
    */
-  ItemComponent: ReactClass<{item: Item, index: number}>,
+  renderItem: ({item: ItemT, index: number}) => ?React.Element<*>,
   /**
    * For simplicity, data is just a plain array. If you want to use something else, like an
    * immutable list, use the underlying `VirtualizedList` directly.
    */
-  data: ?Array<Item>,
+  data: ?Array<ItemT>,
 };
-type OptionalProps = {
+type OptionalProps<ItemT> = {
   /**
    * Rendered at the bottom of all the items.
    */
@@ -70,12 +82,13 @@ type OptionalProps = {
    * you know the height of items a priori. getItemLayout is the most efficient, and is easy to use
    * if you have fixed height items, for example:
    *
-   *   getItemLayout={(data, index) => ({length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index})}
+   *   getItemLayout={(data, index) => ({length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index})}
    *
    * Remember to include separator length (height or width) in your offset calculation if you
    * specify `SeparatorComponent`.
    */
-  getItemLayout?: (data: ?Array<Item>, index: number) => {length: number, offset: number},
+  getItemLayout?: (data: ?Array<ItemT>, index: number) =>
+    {length: number, offset: number, index: number},
   /**
    * If true, renders items next to each other horizontally instead of stacked vertically.
    */
@@ -85,7 +98,12 @@ type OptionalProps = {
    * and as the react key to track item re-ordering. The default extractor checks item.key, then
    * falls back to using the index, like react does.
    */
-  keyExtractor?: (item: Item, index: number) => string,
+  keyExtractor: (item: ItemT, index: number) => string,
+  /**
+   * Multiple columns can only be rendered with horizontal={false} and will zig-zag like a flexWrap
+   * layout. Items should all be the same height - masonry layouts are not supported.
+   */
+  numColumns: number,
   /**
    * Called once when the scroll position gets within onEndReachedThreshold of the rendered content.
    */
@@ -100,20 +118,37 @@ type OptionalProps = {
    * Called when the viewability of rows changes, as defined by the
    * `viewablePercentThreshold` prop.
    */
-  onViewableItemsChanged?: ?({viewableItems: Array<Viewable>, changed: Array<Viewable>}) => void,
+  onViewableItemsChanged?: ?({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
+  legacyImplementation?: ?boolean,
   /**
    * Set this true while waiting for new data from a refresh.
    */
   refreshing?: ?boolean,
   /**
+   * Optional custom style for multi-item rows generated when numColumns > 1
+   */
+  columnWrapperStyle?: StyleObj,
+  /**
    * Optional optimization to minimize re-rendering items.
    */
-  shouldItemUpdate?: ?(
-    prevProps: {item: Item, index: number},
-    nextProps: {item: Item, index: number}
+  shouldItemUpdate: (
+    prevInfo: {item: ItemT, index: number},
+    nextInfo: {item: ItemT, index: number}
   ) => boolean,
+  /**
+   * See ViewabilityHelper for flow type and comments.
+   */
+  viewabilityConfig?: ViewabilityConfig,
 };
-type Props = RequiredProps & OptionalProps; // plus props from the underlying implementation
+type Props<ItemT> = RequiredProps<ItemT> & OptionalProps<ItemT> & VirtualizedListProps;
+
+const defaultProps = {
+  ...VirtualizedList.defaultProps,
+  getItem: undefined,
+  getItemCount: undefined,
+  numColumns: 1,
+};
+type DefaultProps = typeof defaultProps;
 
 /**
  * A performant interface for rendering simple, flat lists, supporting the most handy features:
@@ -131,11 +166,12 @@ type Props = RequiredProps & OptionalProps; // plus props from the underlying im
  *
  *   <FlatList
  *     data={[{key: 'a', {key: 'b'}]}
- *     ItemComponent={({item}) => <Text>{item.key}</Text>}
+ *     renderItem={({item}) => <Text>{item.key}</Text>}
  *   />
  */
-class FlatList extends React.PureComponent {
-  props: Props;
+class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, void> {
+  static defaultProps: DefaultProps = defaultProps;
+  props: Props<ItemT>;
   /**
    * Scrolls to the end of the content. May be janky without getItemLayout prop.
    */
@@ -157,7 +193,7 @@ class FlatList extends React.PureComponent {
    * Requires linear scan through data - use scrollToIndex instead if possible. May be janky without
    * `getItemLayout` prop.
   */
-  scrollToItem(params: {animated?: ?boolean, item: Item, viewPosition?: number}) {
+  scrollToItem(params: {animated?: ?boolean, item: ItemT, viewPosition?: number}) {
     this._listRef.scrollToItem(params);
   }
 
@@ -168,11 +204,45 @@ class FlatList extends React.PureComponent {
     this._listRef.scrollToOffset(params);
   }
 
+  /**
+   * Tells the list an interaction has occured, which should trigger viewability calculations, e.g.
+   * if waitForInteractions is true and the user has not scrolled. This is typically called by taps
+   * on items or by navigation actions.
+   */
+  recordInteraction() {
+    this._listRef.recordInteraction();
+  }
+
+  componentWillMount() {
+    this._checkProps(this.props);
+  }
+
+  componentWillReceiveProps(nextProps: Props<ItemT>) {
+    this._checkProps(nextProps);
+  }
+
   _hasWarnedLegacy = false;
   _listRef: VirtualizedList;
+
   _captureRef = (ref) => { this._listRef = ref; };
-  render() {
-    if (this.props.legacyImplementation) {
+
+  _checkProps(props: Props<ItemT>) {
+    const {
+      getItem,
+      getItemCount,
+      horizontal,
+      legacyImplementation,
+      numColumns,
+      columnWrapperStyle,
+    } = props;
+    invariant(!getItem && !getItemCount, 'FlatList does not support custom data formats.');
+    if (numColumns > 1) {
+      invariant(!horizontal, 'numColumns does not support horizontal.');
+    } else {
+      invariant(!columnWrapperStyle, 'columnWrapperStyle not supported for single column lists');
+    }
+    if (legacyImplementation) {
+      invariant(numColumns === 1, 'Legacy list does not support multiple columns.');
       // Warning: may not have full feature parity and is meant more for debugging and performance
       // comparison.
       if (!this._hasWarnedLegacy) {
@@ -182,9 +252,113 @@ class FlatList extends React.PureComponent {
         );
         this._hasWarnedLegacy = true;
       }
+    }
+  }
+
+  _getItem = (data: Array<ItemT>, index: number): ItemT | Array<ItemT> => {
+    const {numColumns} = this.props;
+    if (numColumns > 1) {
+      const ret = [];
+      for (let kk = 0; kk < numColumns; kk++) {
+        const item = data[index * numColumns + kk];
+        item && ret.push(item);
+      }
+      return ret;
+    } else {
+      return data[index];
+    }
+  };
+
+  _getItemCount = (data?: ?Array<ItemT>): number => {
+    return data ? Math.ceil(data.length / this.props.numColumns) : 0;
+  };
+
+  _keyExtractor = (items: ItemT | Array<ItemT>, index: number): string => {
+    const {keyExtractor, numColumns} = this.props;
+    if (numColumns > 1) {
+      invariant(
+        Array.isArray(items),
+        'FlatList: Encountered internal consistency error, expected each item to consist of an ' +
+        'array with 1-%s columns; instead, received a single item.',
+        numColumns,
+      );
+      return items.map((it, kk) => keyExtractor(it, index * numColumns + kk)).join(':');
+    } else {
+      return keyExtractor(items, index);
+    }
+  };
+
+  _pushMultiColumnViewable(arr: Array<ViewToken>, v: ViewToken): void {
+    const {numColumns, keyExtractor} = this.props;
+    v.item.forEach((item, ii) => {
+      invariant(v.index != null, 'Missing index!');
+      const index = v.index * numColumns + ii;
+      arr.push({...v, item, key: keyExtractor(item, index), index});
+    });
+  }
+  _onViewableItemsChanged = (info) => {
+    const {numColumns, onViewableItemsChanged} = this.props;
+    if (!onViewableItemsChanged) {
+      return;
+    }
+    if (numColumns > 1) {
+      const changed = [];
+      const viewableItems = [];
+      info.viewableItems.forEach((v) => this._pushMultiColumnViewable(viewableItems, v));
+      info.changed.forEach((v) => this._pushMultiColumnViewable(changed, v));
+      onViewableItemsChanged({viewableItems, changed});
+    } else {
+      onViewableItemsChanged(info);
+    }
+  };
+
+  _renderItem = (info: {item: ItemT | Array<ItemT>, index: number}) => {
+    const {renderItem, numColumns, columnWrapperStyle} = this.props;
+    if (numColumns > 1) {
+      const {item, index} = info;
+      invariant(Array.isArray(item), 'Expected array of items with numColumns > 1');
+      return (
+        <View style={[{flexDirection: 'row'}, columnWrapperStyle]}>
+          {item.map((it, kk) => {
+            const element = renderItem({item: it, index:  index * numColumns + kk});
+            return element && React.cloneElement(element, {key: kk});
+          })}
+        </View>
+      );
+    } else {
+      return renderItem(info);
+    }
+  };
+
+  _shouldItemUpdate = (prev, next) => {
+    const {numColumns, shouldItemUpdate} = this.props;
+    if (numColumns > 1) {
+      return prev.item.length !== next.item.length ||
+        prev.item.some((prevItem, ii) => shouldItemUpdate(
+          {item: prevItem, index: prev.index + ii},
+          {item: next.item[ii], index: next.index + ii},
+        ));
+    } else {
+      return shouldItemUpdate(prev, next);
+    }
+  };
+
+  render() {
+    if (this.props.legacyImplementation) {
       return <MetroListView {...this.props} items={this.props.data} ref={this._captureRef} />;
     } else {
-      return <VirtualizedList {...this.props} ref={this._captureRef} />;
+      return (
+        <VirtualizedList
+          {...this.props}
+          renderItem={this._renderItem}
+          getItem={this._getItem}
+          getItemCount={this._getItemCount}
+          keyExtractor={this._keyExtractor}
+          ref={this._captureRef}
+          shouldItemUpdate={this._shouldItemUpdate}
+          onViewableItemsChanged={this.props.onViewableItemsChanged && this._onViewableItemsChanged}
+        />
+      );
     }
   }
 }

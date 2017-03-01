@@ -14,6 +14,8 @@
 @implementation RCTRefreshControl {
   BOOL _isInitialRender;
   BOOL _currentRefreshingState;
+  NSString *_title;
+  UIColor *_titleColor;
 }
 
 - (instancetype)init
@@ -86,23 +88,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (NSString *)title
 {
-  return self.attributedTitle.string;
+  return _title;
 }
 
 - (void)setTitle:(NSString *)title
 {
-  NSRange range = NSMakeRange(0, self.attributedTitle.length);
-  NSDictionary *attrs = [self.attributedTitle attributesAtIndex:0 effectiveRange: &range];
-  self.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:attrs];
+  _title = title;
+  [self _updateTitle];
 }
 
 - (void)setTitleColor:(UIColor *)color
 {
-  NSRange range = NSMakeRange(0, self.attributedTitle.length);
-  NSDictionary *attrs = [self.attributedTitle attributesAtIndex:0 effectiveRange: &range];
-  NSMutableDictionary *attrsMutable = [attrs mutableCopy];
-  [attrsMutable setObject:color forKey:NSForegroundColorAttributeName];
-  self.attributedTitle = [[NSAttributedString alloc] initWithString:self.attributedTitle.string attributes:attrsMutable];
+  _titleColor = color;
+  [self _updateTitle];
+}
+
+- (void)_updateTitle
+{
+  if (!_title) {
+    return;
+  }
+
+  NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+  if (_titleColor) {
+    attributes[NSForegroundColorAttributeName] = _titleColor;
+  }
+
+  self.attributedTitle = [[NSAttributedString alloc] initWithString:_title attributes:attributes];
 }
 
 - (void)setRefreshing:(BOOL)refreshing

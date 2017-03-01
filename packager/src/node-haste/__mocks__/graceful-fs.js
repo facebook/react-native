@@ -39,7 +39,7 @@ fs.realpath.mockImplementation((filepath, callback) => {
   callback(null, filepath);
 });
 
-fs.readdirSync.mockImplementation((filepath) => Object.keys(getToNode(filepath)));
+fs.readdirSync.mockImplementation(filepath => Object.keys(getToNode(filepath)));
 
 fs.readdir.mockImplementation((filepath, callback) => {
   callback = asyncCallback(callback);
@@ -93,92 +93,55 @@ fs.readFileSync.mockImplementation(function(filepath, encoding) {
   return node;
 });
 
+function makeStatResult(node) {
+  const isSymlink = node != null && node.SYMLINK != null;
+  return {
+    isDirectory: () => node != null && typeof node === 'object' && !isSymlink,
+    isSymbolicLink: () => isSymlink,
+    mtime,
+  };
+}
+
+function statSync(filepath) {
+  const node = getToNode(filepath);
+  if (node.SYMLINK) {
+    return statSync(node.SYMLINK);
+  }
+  return makeStatResult(node);
+}
+
 fs.stat.mockImplementation((filepath, callback) => {
   callback = asyncCallback(callback);
-  let node;
+  let result;
   try {
-    node = getToNode(filepath);
+    result = statSync(filepath);
   } catch (e) {
     callback(e);
     return;
   }
-
-  if (node.SYMLINK) {
-    fs.stat(node.SYMLINK, callback);
-    return;
-  }
-
-  if (node && typeof node === 'object') {
-    callback(null, {
-      isDirectory: () => true,
-      isSymbolicLink: () => false,
-      mtime,
-    });
-  } else {
-    callback(null, {
-      isDirectory: () => false,
-      isSymbolicLink: () => false,
-      mtime,
-    });
-  }
+  callback(null, result);
 });
 
-fs.statSync.mockImplementation((filepath) => {
+fs.statSync.mockImplementation(statSync);
+
+function lstatSync(filepath) {
   const node = getToNode(filepath);
-
-  if (node.SYMLINK) {
-    return fs.statSync(node.SYMLINK);
-  }
-
-  return {
-    isDirectory: () => node && typeof node === 'object',
-    isSymbolicLink: () => false,
-    mtime,
-  };
-});
+  return makeStatResult(node);
+}
 
 fs.lstat.mockImplementation((filepath, callback) => {
   callback = asyncCallback(callback);
-  let node;
+  let result;
   try {
-    node = getToNode(filepath);
+    result = lstatSync(filepath);
   } catch (e) {
     callback(e);
     return;
   }
-
-  if (node && typeof node === 'object') {
-    callback(null, {
-      isDirectory: () => true,
-      isSymbolicLink: () => false,
-      mtime,
-    });
-  } else {
-    callback(null, {
-      isDirectory: () => false,
-      isSymbolicLink: () => false,
-      mtime,
-    });
-  }
+  callback(null, result);
 });
 
-fs.lstatSync.mockImplementation((filepath) => {
-  const node = getToNode(filepath);
-
-  if (node.SYMLINK) {
-    return {
-      isDirectory: () => false,
-      isSymbolicLink: () => true,
-      mtime,
-    };
-  }
-
-  return {
-    isDirectory: () => node && typeof node === 'object',
-    isSymbolicLink: () => false,
-    mtime,
-  };
-});
+fs.lstatSync.mockImplementation(lstatSync);
 
 fs.open.mockImplementation(function(filepath) {
   const callback = arguments[arguments.length - 1] || noop;
@@ -250,7 +213,7 @@ fs.createReadStream.mockImplementation(filepath => {
     read() {
       this.push(file, 'utf8');
       this.push(null);
-    }
+    },
   });
 });
 
@@ -263,7 +226,7 @@ fs.createWriteStream.mockImplementation(file => {
       const writeStream = new stream.Writable({
         write(chunk) {
           this.__chunks.push(chunk);
-        }
+        },
       });
       writeStream.__file = file;
       writeStream.__chunks = [];
@@ -277,8 +240,7 @@ fs.createWriteStream.mockImplementation(file => {
 });
 fs.createWriteStream.mock.returned = [];
 
-
-fs.__setMockFilesystem = (object) => (filesystem = object);
+fs.__setMockFilesystem = object => (filesystem = object);
 
 function getToNode(filepath) {
   // Ignore the drive for Windows paths.
@@ -294,7 +256,7 @@ function getToNode(filepath) {
     throw new Error('Make sure all paths are absolute.');
   }
   let node = filesystem;
-  parts.slice(1).forEach((part) => {
+  parts.slice(1).forEach(part => {
     if (node && node.SYMLINK) {
       node = getToNode(node.SYMLINK);
     }

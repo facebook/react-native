@@ -36,7 +36,7 @@ describe('Graph:', () => {
   });
 
   it('calls back an error when called without any entry point', done => {
-    graph([], anyPlatform, {log: quiet}, (error) => {
+    graph([], anyPlatform, {log: quiet}, error => {
       expect(error).toEqual(any(Error));
       done();
     });
@@ -214,11 +214,11 @@ describe('Graph:', () => {
 
     const ids = [
       'a',
-        'b',
-          'c', 'd',
-        'e',
-          'f', 'g',
-        'h',
+      'b',
+      'c', 'd',
+      'e',
+      'f', 'g',
+      'h',
     ];
     ids.forEach(id => {
       const path = idToPath(id);
@@ -367,7 +367,7 @@ function createFile(id) {
 function createModule(id, dependencies = []): Module {
   return {
     file: createFile(id),
-    dependencies: dependencies.map(createDependency)
+    dependencies: dependencies.map(createDependency),
   };
 }
 

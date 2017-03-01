@@ -152,19 +152,19 @@ function getReplacements(pkg) {
   if (typeof rn === 'string') {
     /* $FlowFixMe: It is likely unsafe to assume all packages would
      * contain a "main" */
-    rn = { [pkg.main]: rn };
+    rn = {[pkg.main]: rn};
   }
 
   if (typeof browser === 'string') {
     /* $FlowFixMe: It is likely unsafe to assume all packages would
      * contain a "main" */
-    browser = { [pkg.main]: browser };
+    browser = {[pkg.main]: browser};
   }
 
   // merge with "browser" as default,
   // "react-native" as override
   // $FlowFixMe(>=0.35.0) browser and rn should be objects
-  return { ...browser, ...rn };
+  return {...browser, ...rn};
 }
 
 module.exports = Package;

@@ -101,8 +101,8 @@ describe('Resolver', function() {
         .getDependencies(entry, {platform}, transformOptions);
       expect(DependencyGraph.prototype.getDependencies).toBeCalledWith({
         entryPath: entry,
-        platform: platform,
-        transformOptions: transformOptions,
+        platform,
+        transformOptions,
         recursive: true,
       });
     });
@@ -113,7 +113,7 @@ describe('Resolver', function() {
         platforms: ['ios', 'windows', 'vr'],
       });
       const platforms = DependencyGraph.mock.calls[0][0].platforms;
-      expect(platforms).toEqual(['ios', 'windows', 'vr']);
+      expect(Array.from(platforms)).toEqual(['ios', 'windows', 'vr']);
     });
 
     it('should get dependencies with polyfills', function() {
@@ -134,7 +134,7 @@ describe('Resolver', function() {
       return depResolver
         .getDependencies(
           '/root/index.js',
-          { dev: false },
+          {dev: false},
           undefined,
           undefined,
           createGetModuleId()
@@ -147,56 +147,56 @@ describe('Resolver', function() {
               .createPolyfill
               .mock
               .calls
-              .map((call) => call[0]))
+              .map(call => call[0]))
           .toEqual([
-            { id: 'polyfills/polyfills.js',
-              file: 'polyfills/polyfills.js',
-              dependencies: []
+            {id: 'polyfills/Object.es6.js',
+              file: 'polyfills/Object.es6.js',
+              dependencies: [],
             },
-            { id: 'polyfills/console.js',
+            {id: 'polyfills/console.js',
               file: 'polyfills/console.js',
               dependencies: [
-                'polyfills/polyfills.js'
+                'polyfills/Object.es6.js',
               ],
             },
-            { id: 'polyfills/error-guard.js',
+            {id: 'polyfills/error-guard.js',
               file: 'polyfills/error-guard.js',
               dependencies: [
-                'polyfills/polyfills.js',
-                'polyfills/console.js'
+                'polyfills/Object.es6.js',
+                'polyfills/console.js',
               ],
             },
-            { id: 'polyfills/Number.es6.js',
+            {id: 'polyfills/Number.es6.js',
               file: 'polyfills/Number.es6.js',
               dependencies: [
-                'polyfills/polyfills.js',
+                'polyfills/Object.es6.js',
                 'polyfills/console.js',
-                'polyfills/error-guard.js'
+                'polyfills/error-guard.js',
               ],
             },
-            { id: 'polyfills/String.prototype.es6.js',
+            {id: 'polyfills/String.prototype.es6.js',
               file: 'polyfills/String.prototype.es6.js',
               dependencies: [
-                'polyfills/polyfills.js',
+                'polyfills/Object.es6.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
                 'polyfills/Number.es6.js',
               ],
             },
-            { id: 'polyfills/Array.prototype.es6.js',
+            {id: 'polyfills/Array.prototype.es6.js',
               file: 'polyfills/Array.prototype.es6.js',
               dependencies: [
-                'polyfills/polyfills.js',
+                'polyfills/Object.es6.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
                 'polyfills/Number.es6.js',
                 'polyfills/String.prototype.es6.js',
               ],
             },
-            { id: 'polyfills/Array.es6.js',
+            {id: 'polyfills/Array.es6.js',
               file: 'polyfills/Array.es6.js',
               dependencies: [
-                'polyfills/polyfills.js',
+                'polyfills/Object.es6.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
                 'polyfills/Number.es6.js',
@@ -204,10 +204,10 @@ describe('Resolver', function() {
                 'polyfills/Array.prototype.es6.js',
               ],
             },
-            { id: 'polyfills/Object.es7.js',
+            {id: 'polyfills/Object.es7.js',
               file: 'polyfills/Object.es7.js',
               dependencies: [
-                'polyfills/polyfills.js',
+                'polyfills/Object.es6.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
                 'polyfills/Number.es6.js',
@@ -216,10 +216,10 @@ describe('Resolver', function() {
                 'polyfills/Array.es6.js',
               ],
             },
-            { id: 'polyfills/babelHelpers.js',
+            {id: 'polyfills/babelHelpers.js',
               file: 'polyfills/babelHelpers.js',
               dependencies: [
-                'polyfills/polyfills.js',
+                'polyfills/Object.es6.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
                 'polyfills/Number.es6.js',
@@ -232,7 +232,7 @@ describe('Resolver', function() {
           ].map(({id, file, dependencies}) => ({
             id: pathJoin(__dirname, '..', id),
             file: pathJoin(__dirname, '..', file),
-            dependencies: dependencies.map((d => pathJoin(__dirname, '..', d))),
+            dependencies: dependencies.map(d => pathJoin(__dirname, '..', d)),
           })));
         });
     });
@@ -257,7 +257,7 @@ describe('Resolver', function() {
       return depResolver
         .getDependencies(
           '/root/index.js',
-          { dev: true },
+          {dev: true},
           undefined,
           undefined,
           createGetModuleId()
@@ -290,17 +290,17 @@ describe('Resolver', function() {
       return depResolver
         .getDependencies(
           '/root/index.js',
-          { dev: false },
+          {dev: false},
           undefined,
           undefined,
           createGetModuleId()
-        ).then((result) => {
+        ).then(result => {
           expect(result.mainModuleId).toEqual('index');
           expect(DependencyGraph.prototype.createPolyfill.mock.calls[result.dependencies.length - 2]).toEqual([
-            { file: 'some module',
+            {file: 'some module',
               id: 'some module',
               dependencies: [
-                'polyfills/polyfills.js',
+                'polyfills/Object.es6.js',
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
                 'polyfills/Number.es6.js',
@@ -309,7 +309,7 @@ describe('Resolver', function() {
                 'polyfills/Array.es6.js',
                 'polyfills/Object.es7.js',
                 'polyfills/babelHelpers.js',
-              ].map(d => pathJoin(__dirname, '..', d))
+              ].map(d => pathJoin(__dirname, '..', d)),
             },
           ]);
         });

@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule ListExampleShared
  */
 'use strict';
 
@@ -35,7 +36,7 @@ const {
   View,
 } = ReactNative;
 
-type Item = {title: string, text: string, key: number, pressed: boolean};
+type Item = {title: string, text: string, key: number, pressed: boolean, noImage?: ?boolean};
 
 function genItemData(count: number): Array<Item> {
   const dataBlob = [];
@@ -73,7 +74,7 @@ class ItemComponent extends React.PureComponent {
         style={horizontal ? styles.horizItem : styles.item}>
         <View style={[
           styles.row, horizontal && {width: HORIZ_WIDTH}]}>
-          <Image style={styles.thumb} source={imgSource} />
+          {!item.noImage && <Image style={styles.thumb} source={imgSource} />}
           <Text
             style={styles.text}
             numberOfLines={(horizontal || fixedHeight) ? 3 : undefined}>
@@ -85,13 +86,24 @@ class ItemComponent extends React.PureComponent {
   }
 }
 
+const renderStackedItem = ({item}: {item: Item}) => {
+  const itemHash = Math.abs(hashCode(item.title));
+  const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
+  return (
+    <View style={styles.stacked}>
+      <Text style={styles.stackedText}>{item.title} - {item.text}</Text>
+      <Image style={styles.thumb} source={imgSource} />
+    </View>
+  );
+};
+
 class FooterComponent extends React.PureComponent {
   render() {
     return (
       <View>
         <SeparatorComponent />
         <View style={styles.headerFooter}>
-          <Text>FOOTER</Text>
+          <Text>LIST FOOTER</Text>
         </View>
       </View>
     );
@@ -103,7 +115,7 @@ class HeaderComponent extends React.PureComponent {
     return (
       <View>
         <View style={styles.headerFooter}>
-          <Text>HEADER</Text>
+          <Text>LIST HEADER</Text>
         </View>
         <SeparatorComponent />
       </View>
@@ -147,7 +159,7 @@ function hashCode(str: string): number {
   return hash;
 }
 
-const HEADER = {height: 30, width: 80};
+const HEADER = {height: 30, width: 100};
 const SEPARATOR_HEIGHT = StyleSheet.hairlineWidth;
 
 function getItemLayout(data: any, index: number, horizontal?: boolean) {
@@ -182,17 +194,15 @@ function renderSmallSwitchOption(context: Object, key: string) {
   );
 }
 
-function PlainInput({placeholder, value, onChangeText}: Object) {
+function PlainInput(props: Object) {
   return (
     <TextInput
       autoCapitalize="none"
       autoCorrect={false}
       clearButtonMode="always"
-      onChangeText={onChangeText}
-      placeholder={placeholder}
       underlineColorAndroid="transparent"
       style={styles.searchTextInput}
-      value={value}
+      {...props}
     />
   );
 }
@@ -229,6 +239,7 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     height: 26,
     fontSize: 14,
+    flexGrow: 1,
   },
   separator: {
     height: SEPARATOR_HEIGHT,
@@ -246,9 +257,18 @@ const styles = StyleSheet.create({
       transform: [{scale: 0.5}],
     },
   }),
+  stacked: {
+    alignItems: 'center',
+    backgroundColor: '#F6F6F6',
+    padding: 10,
+  },
   thumb: {
     width: 64,
     height: 64,
+  },
+  stackedText: {
+    padding: 4,
+    fontSize: 18,
   },
   text: {
     flex: 1,
@@ -265,4 +285,5 @@ module.exports = {
   getItemLayout,
   pressItem,
   renderSmallSwitchOption,
+  renderStackedItem,
 };

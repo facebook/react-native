@@ -19,154 +19,51 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule UIExplorerNavigationReducer
  */
 'use strict';
 
-const ReactNative = require('react-native');
 // $FlowFixMe : This is a platform-forked component, and flow seems to only run on iOS?
 const UIExplorerList = require('./UIExplorerList');
 
-const {
-  NavigationExperimental,
-} = ReactNative;
-
-
-const {
-  StateUtils: NavigationStateUtils,
-} = NavigationExperimental;
-
-import type {NavigationState} from 'NavigationTypeDefinition';
-
 export type UIExplorerNavigationState = {
-  externalExample: ?string;
-  stack: NavigationState;
+  openExample: ?string,
 };
 
-const defaultGetReducerForState = (initialState) => (state) => state || initialState;
+function UIExplorerNavigationReducer(
+  state: ?UIExplorerNavigationState,
+  action: any
+): UIExplorerNavigationState {
 
-function getNavigationState(state: any): ?NavigationState {
   if (
-    (state instanceof Object) &&
-    (state.routes instanceof Array) &&
-    (state.routes[0] !== undefined) &&
-    (typeof state.index === 'number') &&
-    (state.routes[state.index] !== undefined)
+    // Default value is to see example list
+    !state ||
+
+    // Handle the explicit list action
+    action.type === 'UIExplorerListAction' ||
+
+    // Handle requests to go back to the list when an example is open
+    (state.openExample && action.type === 'UIExplorerBackAction')
   ) {
-    return state;
-  }
-  return null;
-}
-
-function StackReducer({initialState, getReducerForState, getPushedReducerForAction}: any): Function {
-  const getReducerForStateWithDefault = getReducerForState || defaultGetReducerForState;
-  return function (lastState: ?NavigationState, action: any): NavigationState {
-    if (!lastState) {
-      return initialState;
-    }
-    const lastParentState = getNavigationState(lastState);
-    if (!lastParentState) {
-      return lastState;
-    }
-
-    const activeSubState = lastParentState.routes[lastParentState.index];
-    const activeSubReducer = getReducerForStateWithDefault(activeSubState);
-    const nextActiveState = activeSubReducer(activeSubState, action);
-    if (nextActiveState !== activeSubState) {
-      const nextChildren = [...lastParentState.routes];
-      nextChildren[lastParentState.index] = nextActiveState;
-      return {
-        ...lastParentState,
-        routes: nextChildren,
-      };
-    }
-
-    const subReducerToPush = getPushedReducerForAction(action, lastParentState);
-    if (subReducerToPush) {
-      return NavigationStateUtils.push(
-        lastParentState,
-        subReducerToPush(null, action)
-      );
-    }
-
-    switch (action.type) {
-      case 'back':
-      case 'BackAction':
-        if (lastParentState.index === 0 || lastParentState.routes.length === 1) {
-          return lastParentState;
-        }
-        return NavigationStateUtils.pop(lastParentState);
-    }
-
-    return lastParentState;
-  };
-}
-
-const UIExplorerStackReducer = StackReducer({
-  getPushedReducerForAction: (action, lastState) => {
-    if (action.type === 'UIExplorerExampleAction' && UIExplorerList.Modules[action.openExample]) {
-      if (lastState.routes.find(route => route.key === action.openExample)) {
-        // The example is already open, we should avoid pushing examples twice
-        return null;
-      }
-      return (state) => state || {key: action.openExample};
-    }
-    return null;
-  },
-  getReducerForState: (initialState) => (state) => state || initialState,
-  initialState: {
-    key: 'UIExplorerMainStack',
-    index: 0,
-    routes: [
-      {key: 'AppList'},
-    ],
-  },
-});
-
-function UIExplorerNavigationReducer(lastState: ?UIExplorerNavigationState, action: any): UIExplorerNavigationState {
-  if (!lastState) {
     return {
-      externalExample: null,
-      stack: UIExplorerStackReducer(null, action),
+      // A null openExample will cause the views to display the UIExplorer example list
+      openExample: null,
     };
   }
-  if (action.type === 'UIExplorerListWithFilterAction') {
-    return {
-      externalExample: null,
-      stack: {
-        key: 'UIExplorerMainStack',
-        index: 0,
-        routes: [
-          {
-            key: 'AppList',
-            filter: action.filter,
-          },
-        ],
-      },
-    };
-  }
-  if (action.type === 'BackAction' && lastState.externalExample) {
-    return {
-      ...lastState,
-      externalExample: null,
-    };
-  }
+
   if (action.type === 'UIExplorerExampleAction') {
+
+    // Make sure we see the module before returning the new state
     const ExampleModule = UIExplorerList.Modules[action.openExample];
-    if (ExampleModule && ExampleModule.external) {
+
+    if (ExampleModule) {
       return {
-        ...lastState,
-        externalExample: action.openExample,
+        openExample: action.openExample,
       };
     }
   }
-  const newStack = UIExplorerStackReducer(lastState.stack, action);
-  if (newStack !== lastState.stack) {
-    return {
-      externalExample: null,
-      stack: newStack,
-    };
-  }
-  return lastState;
+
+  return state;
 }
 
 module.exports = UIExplorerNavigationReducer;

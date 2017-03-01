@@ -25,11 +25,11 @@ const TimerMixin = require('react-timer-mixin');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
 const View = require('View');
-const warning = require('fbjs/lib/warning');
 
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
+const warning = require('fbjs/lib/warning');
 
 const PropTypes = React.PropTypes;
 
@@ -409,7 +409,7 @@ const TextInput = React.createClass({
      */
     secureTextEntry: PropTypes.bool,
     /**
-    * The highlight (and cursor on iOS) color of the text input.
+    * The highlight and cursor color of the text input.
     */
     selectionColor: ColorPropType,
     /**
@@ -527,6 +527,10 @@ const TextInput = React.createClass({
       PropTypes.oneOf(DataDetectorTypes),
       PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
     ]),
+    /**
+     * If `true`, caret is hidden. The default value is `false`.
+     */
+    caretHidden: PropTypes.bool,
   },
 
   /**
@@ -739,6 +743,7 @@ const TextInput = React.createClass({
         children={children}
         disableFullscreenUI={this.props.disableFullscreenUI}
         textBreakStrategy={this.props.textBreakStrategy}
+        onScroll={this._onScroll}
       />;
 
     return (

@@ -17,12 +17,13 @@ const defaults = require('../../defaults');
 const pathJoin = require('path').join;
 
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
-import type Module from '../node-haste/Module';
+import type Module, {HasteImpl} from '../node-haste/Module';
 import type {SourceMap} from '../lib/SourceMap';
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
 import type {TransformCode} from '../node-haste/Module';
 import type Cache from '../node-haste/Cache';
+import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type GlobalTransformCache from '../lib/GlobalTransformCache';
 
 type MinifyCode = (filePath: string, code: string, map: SourceMap) =>
@@ -33,7 +34,9 @@ type Options = {
   blacklistRE?: RegExp,
   cache: Cache,
   extraNodeModules?: {},
+  getTransformCacheKey: GetTransformCacheKey,
   globalTransformCache: ?GlobalTransformCache,
+  hasteImpl?: HasteImpl,
   minifyCode: MinifyCode,
   platforms: Array<string>,
   polyfillModuleNames?: Array<string>,
@@ -41,7 +44,6 @@ type Options = {
   providesModuleNodeModules?: Array<string>,
   reporter: Reporter,
   resetCache: boolean,
-  transformCacheKey: string,
   transformCode: TransformCode,
   watch?: boolean,
 };
@@ -58,23 +60,28 @@ class Resolver {
       assetExts: opts.assetExts,
       cache: opts.cache,
       extraNodeModules: opts.extraNodeModules,
+      extensions: ['js', 'json'],
+      forceNodeFilesystemAPI: false,
+      getTransformCacheKey: opts.getTransformCacheKey,
       globalTransformCache: opts.globalTransformCache,
-      ignoreFilePath: function(filepath) {
+      ignoreFilePath(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
       },
+      maxWorkers: null,
       moduleOptions: {
         cacheTransformResults: true,
+        hasteImpl: opts.hasteImpl,
         resetCache: opts.resetCache,
       },
-      platforms: opts.platforms,
+      platforms: new Set(opts.platforms),
       preferNativePlatform: true,
       providesModuleNodeModules: opts.providesModuleNodeModules || defaults.providesModuleNodeModules,
       reporter: opts.reporter,
       resetCache: opts.resetCache,
       roots: opts.projectRoots,
-      transformCacheKey: opts.transformCacheKey,
       transformCode: opts.transformCode,
+      useWatchman: true,
       watch: opts.watch || false,
     });
 
@@ -246,7 +253,7 @@ function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   return [
     `__d(/* ${verboseName} */`,
     'function(global, require, module, exports) {', // module factory
-      code,
+    code,
     '\n}, ',
     `${JSON.stringify(moduleName)}`, // module id, null = id map. used in ModuleGraph
     dev ? `, null, ${JSON.stringify(verboseName)}` : '',

@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.ViewGroup.LayoutParams;
+import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -331,6 +332,15 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   protected WebView createViewInstance(ThemedReactContext reactContext) {
     ReactWebView webView = new ReactWebView(reactContext);
     webView.setWebChromeClient(new WebChromeClient() {
+      @Override
+      public boolean onConsoleMessage(ConsoleMessage message) {
+        if (ReactBuildConfig.DEBUG) {
+          return super.onConsoleMessage(message);
+        }
+        // Ignore console logs in non debug builds.
+        return true;
+      }
+
       @Override
       public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
         callback.invoke(origin, true, false);

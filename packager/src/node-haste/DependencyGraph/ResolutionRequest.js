@@ -82,8 +82,8 @@ class ResolutionRequest {
     this._resetResolutionCache();
   }
 
-  _tryResolve(action, secondaryAction) {
-    return action().catch((error) => {
+  _tryResolve(action: () => Promise<string>, secondaryAction: () => ?Promise<string>) {
+    return action().catch(error => {
       if (error.type !== 'UnableToResolveError') {
         throw error;
       }
@@ -99,7 +99,7 @@ class ResolutionRequest {
       return Promise.resolve(this._immediateResolutionCache[resHash]);
     }
 
-    const cacheResult = (result) => {
+    const cacheResult = result => {
       this._immediateResolutionCache[resHash] = result;
       return result;
     };
@@ -219,7 +219,7 @@ class ResolutionRequest {
     });
   }
 
-  _resolveHasteDependency(fromModule, toModuleName) {
+  _resolveHasteDependency(fromModule: Module, toModuleName: string) {
     toModuleName = normalizePath(toModuleName);
 
     let p = fromModule.getPackage();
@@ -229,7 +229,7 @@ class ResolutionRequest {
       p = Promise.resolve(toModuleName);
     }
 
-    return p.then((realModuleName) => {
+    return p.then(realModuleName => {
       let dep = this._hasteMap.getModule(realModuleName, this._platform);
       if (dep && dep.type === 'Module') {
         return dep;
@@ -267,7 +267,7 @@ class ResolutionRequest {
     });
   }
 
-  _redirectRequire(fromModule, modulePath) {
+  _redirectRequire(fromModule: Module, modulePath: string) {
     return Promise.resolve(fromModule.getPackage()).then(p => {
       if (p) {
         return p.redirectRequire(modulePath);
@@ -276,7 +276,7 @@ class ResolutionRequest {
     });
   }
 
-  _resolveFileOrDir(fromModule, toModuleName) {
+  _resolveFileOrDir(fromModule: Module, toModuleName: string) {
     const potentialModulePath = isAbsolutePath(toModuleName) ?
         toModuleName :
         path.join(path.dirname(fromModule.path), toModuleName);
@@ -299,7 +299,7 @@ class ResolutionRequest {
     );
   }
 
-  _resolveNodeDependency(fromModule, toModuleName) {
+  _resolveNodeDependency(fromModule: Module, toModuleName: string) {
     if (isRelativeImport(toModuleName) || isAbsolutePath(toModuleName)) {
       return this._resolveFileOrDir(fromModule, toModuleName);
     } else {
@@ -316,10 +316,10 @@ class ResolutionRequest {
 
           if (isRelativeImport(realModuleName) || isAbsolutePath(realModuleName)) {
             // derive absolute path /.../node_modules/fromModuleDir/realModuleName
-            const fromModuleParentIdx = fromModule.path.lastIndexOf('node_modules/') + 13;
+            const fromModuleParentIdx = fromModule.path.lastIndexOf('node_modules' + path.sep) + 13;
             const fromModuleDir = fromModule.path.slice(
               0,
-              fromModule.path.indexOf('/', fromModuleParentIdx),
+              fromModule.path.indexOf(path.sep, fromModuleParentIdx),
             );
             const absPath = path.join(fromModuleDir, realModuleName);
             return this._resolveFileOrDir(fromModule, absPath);
@@ -339,7 +339,7 @@ class ResolutionRequest {
 
           if (this._extraNodeModules) {
             const {_extraNodeModules} = this;
-            const bits = toModuleName.split('/');
+            const bits = toModuleName.split(path.sep);
             const packageName = bits[0];
             if (_extraNodeModules[packageName]) {
               bits[0] = _extraNodeModules[packageName];
@@ -379,7 +379,7 @@ class ResolutionRequest {
     }
   }
 
-  _loadAsFile(potentialModulePath, fromModule, toModule) {
+  _loadAsFile(potentialModulePath: string, fromModule: Module, toModule: string) {
     return Promise.resolve().then(() => {
       if (this._helpers.isAssetFile(potentialModulePath)) {
         let dirname = path.dirname(potentialModulePath);
@@ -439,7 +439,7 @@ class ResolutionRequest {
     });
   }
 
-  _loadAsDir(potentialDirPath, fromModule, toModule) {
+  _loadAsDir(potentialDirPath: string, fromModule: Module, toModule: string) {
     return Promise.resolve().then(() => {
       if (!this._dirExists(potentialDirPath)) {
         throw new UnableToResolveError(
@@ -453,7 +453,7 @@ class ResolutionRequest {
       if (this._hasteFS.exists(packageJsonPath)) {
         return this._moduleCache.getPackage(packageJsonPath)
           .getMain().then(
-            (main) => this._tryResolve(
+            main => this._tryResolve(
               () => this._loadAsFile(main, fromModule, toModule),
               () => this._loadAsDir(main, fromModule, toModule)
             )
