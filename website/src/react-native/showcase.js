@@ -145,6 +145,12 @@ var featured = [
     infoTitle: 'Convoy, a Seattle-based "Uber for trucking"',
   },
   {
+    name: 'Finance',
+    icon: 'https://lh3.googleusercontent.com/3VIk0kX6WyaHdQkNJVdFqW6Kn-O-rZ1RUwvu1tjQamRC33ThMIGh3dkRALpSRPjUIw=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.kfpun.finance&hl=en',
+    author: 'kf (@7kfpun)',
+  },
+  {
     name: 'Fixt',
     icon: 'http://a5.mzstatic.com/us/r30/Purple62/v4/7f/b3/66/7fb366c4-79fd-34e1-3037-ffc02d8a93f7/icon350x350.png',
     linkAppStore:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
