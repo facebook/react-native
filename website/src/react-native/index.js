@@ -121,7 +121,8 @@ var index = React.createClass({
       <Site>
         <Hero title="React Native" subtitle="Learn once, write anywhere: Build mobile apps with React">
           <div className="buttons-unit">
-            <a href="docs/getting-started.html#content" className="button">Get started with React Native</a>
+            <a href="docs/getting-started.html" className="button">Get Started</a>
+            <a href="docs/tutorial.html" className="button">Take the Tutorial</a>
           </div>
         </Hero>
 
@@ -129,7 +130,7 @@ var index = React.createClass({
 
           <div style={{margin: '40px auto', maxWidth: 800}}>
 
-            <h2>Build Native Mobile Apps using JavaScript and React</h2>
+            <h2>Build native mobile apps using JavaScript and React</h2>
             <p>
               React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components.
             </p>
@@ -156,7 +157,7 @@ class WhyReactNativeIsSoGreat extends Component {
 }`}
             </Prism>
 
-            <h2>A React Native App is a Real Mobile App</h2>
+            <h2>A React Native app is a real mobile app</h2>
             <p>
               With React Native, you don't build a “mobile web app”, an “HTML5 app”, or a “hybrid app”. You build a real mobile app that's indistinguishable from an app built using Objective-C or Java. React Native uses the same fundamental UI building blocks as regular iOS and Android apps. You just put those building blocks together using JavaScript and React.
             </p>
@@ -186,14 +187,14 @@ class AwkwardScrollingImageWithText extends Component {
 }`}
             </Prism>
 
-            <h2>Don't Waste Time Recompiling</h2>
+            <h2>Don't waste time recompiling</h2>
             <p>
               React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With hot reloading, you can even run new code while retaining your application state. Give it a try - it's a magical experience.
             </p>
             <br />
             <img src="https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif" />
 
-            <h2>Use Native Code When You Need To</h2>
+            <h2>Use native code when you need to</h2>
             <p>
               React Native combines smoothly with components written in Objective-C, Java, or Swift. It's simple to drop down to native code if you need to optimize a few aspects of your application. It's also easy to build part of your app in React Native, and part of your app using native code directly - that's how the Facebook app works.
             </p>
@@ -219,9 +220,9 @@ class SomethingFast extends Component {
             </Prism>
           </div>
 
-          <section className="home-bottom-section">
+          <section className="home-get-started-section">
             <div className="buttons-unit">
-              <a href="docs/getting-started.html#content" className="button">Get started with React Native</a>
+              <a href="docs/getting-started.html#content" className="button">Get Started with React Native</a>
             </div>
           </section>
 

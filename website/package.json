@@ -21,6 +21,7 @@
     "jsdoc-api": "^1.1.0",
     "jstransform": "11.0.3",
     "mkdirp": "^0.5.1",
+    "node-sass-middleware": "^0.11.0",
     "optimist": "0.6.0",
     "react": "~0.13.0",
     "react-docgen": "^2.9.0",

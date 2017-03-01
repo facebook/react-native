@@ -7,27 +7,28 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-"use strict";
-var connect = require('connect');
-var http = require('http');
-var optimist = require('optimist');
-var path = require('path');
-var reactMiddleware = require('react-page-middleware');
-var convert = require('./convert.js');
+'use strict';
+const connect = require('connect');
+const convert = require('./convert.js');
+const http = require('http');
+const optimist = require('optimist');
+const path = require('path');
+const reactMiddleware = require('react-page-middleware');
+const sassMiddleware = require('node-sass-middleware');
 
-var argv = optimist.argv;
+const argv = optimist.argv;
 
-var PROJECT_ROOT = path.resolve(__dirname, '..');
-var FILE_SERVE_ROOT = path.join(PROJECT_ROOT, 'src');
+const PROJECT_ROOT = path.resolve(__dirname, '..');
+const FILE_SERVE_ROOT = path.join(PROJECT_ROOT, 'src');
 
-var port = argv.port;
-if (argv.$0 === 'node ./server/generate.js') {
+let port = argv.port;
+if (argv.$0.indexOf('node ./server/generate.js') !== -1) {
   // Using a different port so that you can publish the website
   // and keeping the server up at the same time.
   port = 8079;
 }
 
-var buildOptions = {
+const buildOptions = {
   projectRoot: PROJECT_ROOT,
   pageRouteRoot: FILE_SERVE_ROOT,
   useBrowserBuiltins: false,
@@ -41,7 +42,15 @@ var buildOptions = {
   static: true
 };
 
-var app = connect()
+const app = connect()
+  .use(sassMiddleware({
+    /* Options */
+    src: path.join(PROJECT_ROOT,'styles'),
+    dest: path.join(FILE_SERVE_ROOT,'react-native','css'),
+    response: false,
+    outputStyle: 'extended',
+    prefix: '/react-native/css',
+  }))
   .use(function(req, res, next) {
     // convert all the md files on every request. This is not optimal
     // but fast enough that we don't really need to care right now.
@@ -51,14 +60,14 @@ var app = connect()
     next();
   })
   .use(reactMiddleware.provide(buildOptions))
-  .use(connect['static'](FILE_SERVE_ROOT))
+  .use(connect.static(FILE_SERVE_ROOT))
   .use(connect.favicon(path.join(FILE_SERVE_ROOT, 'react-native', 'img', 'favicon.png')))
   .use(connect.logger())
   .use(connect.compress())
   .use(connect.errorHandler());
 
-var portToUse = port || 8079;
-var server = http.createServer(app);
+const portToUse = port || 8079;
+const server = http.createServer(app);
 server.listen(portToUse, function(){
   console.log('Open http://localhost:' + portToUse + '/react-native/index.html');
 });
