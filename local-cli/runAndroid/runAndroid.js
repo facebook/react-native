@@ -85,10 +85,15 @@ function buildAndRun(args) {
     ? 'gradlew.bat'
     : './gradlew';
 
-  const packageName = fs.readFileSync(
+  const manifestPackage = fs.readFileSync(
       'app/src/main/AndroidManifest.xml',
       'utf8'
     ).match(/package="(.+?)"/)[1];
+
+  const packageName = args.applicationId ?
+                        `${args.applicationId}/${manifestPackage}.`
+                        :
+                        `${manifestPackage}/.`;
 
   const adbPath = getAdbPath();
   if (args.deviceId) {
@@ -152,7 +157,7 @@ function tryInstallAppOnDevice(args, device) {
 
 function tryLaunchAppOnDevice(device, packageName, adbPath, mainActivity) {
   try {
-    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.' + mainActivity];
+    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + mainActivity];
     console.log(chalk.bold(
       `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
     ));
@@ -222,7 +227,7 @@ function runOnAllDevices(args, cmd, packageName, adbPath){
         // If we cannot execute based on adb devices output, fall back to
         // shell am start
         const fallbackAdbArgs = [
-          'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
+          'shell', 'am', 'start', '-n', packageName + args.mainActivity
         ];
         console.log(chalk.bold(
           `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
@@ -294,6 +299,9 @@ module.exports = {
     command: '--deviceId [string]',
     description: 'builds your app and starts it on a specific device/simulator with the ' +
       'given device id (listed by running "adb devices" on the command line).',
+  }, {
+    command: '--applicationId [string]',
+    description: 'Application Id'
   }, {
     command: '--no-packager',
     description: 'Do not launch packager while building',
