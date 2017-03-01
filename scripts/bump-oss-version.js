@@ -55,7 +55,7 @@ if (sed(`-i`, /^VERSION_NAME=.*/, `VERSION_NAME=${version}`, `ReactAndroid/gradl
 }
 
 // - change React.podspec
-if (sed(`-i`, /s.version\s*=.*/, `s.version             = \"${version}\"`, `React.podspec`).code) {
+if (sed(`-i`, /s\.version\s*=.*/, `s.version             = \"${version}\"`, `React.podspec`).code) {
   echo(`Couldn't update version for React.podspec`);
   exit(1);
 }

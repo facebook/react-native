@@ -39,6 +39,7 @@ const {
 
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
 import type {
   Options as ModuleOptions,
@@ -65,7 +66,7 @@ class DependencyGraph {
     resetCache: boolean,
     roots: Array<string>,
     shouldThrowOnUnresolvedErrors: () => boolean,
-    transformCacheKey: string,
+    getTransformCacheKey: GetTransformCacheKey,
     transformCode: TransformCode,
     useWatchman: boolean,
     watch: boolean,
@@ -89,6 +90,7 @@ class DependencyGraph {
     extensions,
     extraNodeModules,
     forceNodeFilesystemAPI,
+    getTransformCacheKey,
     globalTransformCache,
     ignoreFilePath,
     maxWorkers,
@@ -100,7 +102,6 @@ class DependencyGraph {
     resetCache,
     roots,
     shouldThrowOnUnresolvedErrors = () => true,
-    transformCacheKey,
     transformCode,
     useWatchman,
     watch,
@@ -112,6 +113,7 @@ class DependencyGraph {
     extensions?: ?Array<string>,
     extraNodeModules: ?Object,
     forceNodeFilesystemAPI?: boolean,
+    getTransformCacheKey: GetTransformCacheKey,
     globalTransformCache: ?GlobalTransformCache,
     ignoreFilePath: (filePath: string) => boolean,
     maxWorkers?: ?number,
@@ -123,7 +125,6 @@ class DependencyGraph {
     resetCache: boolean,
     roots: Array<string>,
     shouldThrowOnUnresolvedErrors?: () => boolean,
-    transformCacheKey: string,
     transformCode: TransformCode,
     useWatchman?: ?boolean,
     watch: boolean,
@@ -134,6 +135,7 @@ class DependencyGraph {
       extensions: extensions || ['js', 'json'],
       extraNodeModules,
       forceNodeFilesystemAPI: !!forceNodeFilesystemAPI,
+      getTransformCacheKey,
       globalTransformCache,
       ignoreFilePath: ignoreFilePath || (() => {}),
       maxWorkers,
@@ -147,7 +149,6 @@ class DependencyGraph {
       resetCache,
       roots,
       shouldThrowOnUnresolvedErrors,
-      transformCacheKey,
       transformCode,
       useWatchman: useWatchman !== false,
       watch: !!watch,
@@ -191,9 +192,9 @@ class DependencyGraph {
 
       this._moduleCache = new ModuleCache({
         cache: this._cache,
+        getTransformCacheKey: this._opts.getTransformCacheKey,
         globalTransformCache: this._opts.globalTransformCache,
         transformCode: this._opts.transformCode,
-        transformCacheKey: this._opts.transformCacheKey,
         depGraphHelpers: this._helpers,
         assetDependencies: this._assetDependencies,
         moduleOptions: this._opts.moduleOptions,

@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "MessageQueueThread.h"
-
 #include <atomic>
-#include <functional>
 #include <chrono>
+#include <functional>
+#include <memory>
 #include <mutex>
 #include <thread>
-#include <memory>
+
+#include <cxxreact/MessageQueueThread.h>
 
 namespace facebook {
 namespace react {

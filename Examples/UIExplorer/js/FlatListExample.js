@@ -52,6 +52,7 @@ class FlatListExample extends React.PureComponent {
 
   state = {
     data: genItemData(1000),
+    debug: false,
     horizontal: false,
     filterText: '',
     fixedHeight: true,
@@ -73,38 +74,44 @@ class FlatListExample extends React.PureComponent {
         noSpacer={true}
         noScroll={true}>
         <View style={styles.searchRow}>
-          <PlainInput
-            onChangeText={this._onChangeFilterText}
-            placeholder="Search..."
-            value={this.state.filterText}
-          />
-          <PlainInput
-            onChangeText={this._onChangeScrollToIndex}
-            placeholder="scrollToIndex..."
-            style={styles.searchTextInput}
-          />
+          <View style={styles.options}>
+            <PlainInput
+              onChangeText={this._onChangeFilterText}
+              placeholder="Search..."
+              value={this.state.filterText}
+            />
+            <PlainInput
+              onChangeText={this._onChangeScrollToIndex}
+              placeholder="scrollToIndex..."
+              style={styles.searchTextInput}
+            />
+          </View>
           <View style={styles.options}>
             {renderSmallSwitchOption(this, 'virtualized')}
             {renderSmallSwitchOption(this, 'horizontal')}
             {renderSmallSwitchOption(this, 'fixedHeight')}
             {renderSmallSwitchOption(this, 'logViewable')}
+            {renderSmallSwitchOption(this, 'debug')}
           </View>
         </View>
+        <SeparatorComponent />
         <FlatList
           HeaderComponent={HeaderComponent}
           FooterComponent={FooterComponent}
           ItemComponent={this._renderItemComponent}
           SeparatorComponent={SeparatorComponent}
+          data={filteredData}
+          debug={this.state.debug}
           disableVirtualization={!this.state.virtualized}
           getItemLayout={this.state.fixedHeight ? this._getItemLayout : undefined}
           horizontal={this.state.horizontal}
-          data={filteredData}
           key={(this.state.horizontal ? 'h' : 'v') + (this.state.fixedHeight ? 'f' : 'd')}
           legacyImplementation={false}
-          onRefresh={() => alert('onRefresh: nothing to refresh :P')}
-          refreshing={false}
+          numColumns={1}
+          onRefresh={this._onRefresh}
           onViewableItemsChanged={this._onViewableItemsChanged}
           ref={this._captureRef}
+          refreshing={false}
           shouldItemUpdate={this._shouldItemUpdate}
         />
       </UIExplorerPage>
@@ -114,6 +121,7 @@ class FlatListExample extends React.PureComponent {
   _getItemLayout = (data: any, index: number) => {
     return getItemLayout(data, index, this.state.horizontal);
   };
+  _onRefresh = () => alert('onRefresh: nothing to refresh :P');
   _renderItemComponent = ({item}) => {
     return (
       <ItemComponent
@@ -147,7 +155,7 @@ class FlatListExample extends React.PureComponent {
   _pressItem = (key: number) => {
     pressItem(this, key);
   };
-  _listRef: FlatList;
+  _listRef: FlatList<*>;
 }
 
 
@@ -158,8 +166,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   searchRow: {
-    backgroundColor: '#eeeeee',
-    padding: 10,
+    paddingHorizontal: 10,
   },
 });
 

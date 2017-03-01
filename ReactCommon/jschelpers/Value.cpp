@@ -152,7 +152,7 @@ Value Value::makeError(JSContextRef ctx, const char *error)
   JSObjectRef errorObj = JSC_JSObjectMakeError(ctx, 1, args, &exn);
   if (!errorObj) {
     std::string exceptionText = Value(ctx, exn).toString().str();
-    throwJSExecutionException("Exception calling object as function: %s", exceptionText.c_str());
+    throwJSExecutionException("%s", exceptionText.c_str());
   }
   return Value(ctx, errorObj);
 }

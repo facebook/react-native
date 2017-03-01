@@ -2,7 +2,7 @@ include_defs('//ReactAndroid/DEFS')
 
 android_library(
   name = 'debug',
-  srcs = glob(['**/*.java']),
+  srcs = glob(['*.java']),
   deps = [
     react_native_dep('libraries/fbcore/src/main/java/com/facebook/common/logging:logging'),
     react_native_dep('third-party/java/infer-annotations:infer-annotations'),
@@ -10,6 +10,7 @@ android_library(
     react_native_target('java/com/facebook/react/bridge:bridge'),
     react_native_target('java/com/facebook/react/common:common'),
     react_native_target('java/com/facebook/react/module/annotations:annotations'),
+    react_native_target('java/com/facebook/react/modules/debug:interfaces'),
     react_native_target('java/com/facebook/react/uimanager:uimanager'),
   ],
   visibility = [
@@ -17,3 +18,12 @@ android_library(
   ],
 )
 
+android_library(
+  name = 'interfaces',
+  srcs = glob(['interfaces/*.java']),
+  deps = [
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)

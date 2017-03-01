@@ -15,12 +15,12 @@ const BoundingDimensions = require('BoundingDimensions');
 const Platform = require('Platform');
 const Position = require('Position');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const TVEventHandler = require('TVEventHandler');
 const TouchEventUtils = require('fbjs/lib/TouchEventUtils');
 const UIManager = require('UIManager');
 const View = require('View');
 
-const findNodeHandle = require('findNodeHandle');
 const keyMirror = require('fbjs/lib/keyMirror');
 const normalizeColor = require('normalizeColor');
 
@@ -323,7 +323,7 @@ var TouchableMixin = {
 
     this._tvEventHandler = new TVEventHandler();
     this._tvEventHandler.enable(this, function(cmp, evt) {
-      var myTag = findNodeHandle(cmp);
+      var myTag = ReactNative.findNodeHandle(cmp);
       evt.dispatchConfig = {};
       if (myTag === evt.tag) {
         if (evt.eventType === 'focus') {
@@ -603,6 +603,10 @@ var TouchableMixin = {
   },
 
   _handleQueryLayout: function(l, t, w, h, globalX, globalY) {
+    //don't do anything UIManager failed to measure node
+    if (!l && !t && !w && !h && !globalX && !globalY) {
+      return;
+    }
     this.state.touchable.positionOnActivate &&
       Position.release(this.state.touchable.positionOnActivate);
     this.state.touchable.dimensionsOnActivate &&

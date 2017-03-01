@@ -12,7 +12,8 @@
 #include <condition_variable>
 #include <mutex>
 
-#include <React/RCTUtils.h>
+#import <React/RCTCxxUtils.h>
+#import <React/RCTUtils.h>
 #include <jschelpers/JSCHelpers.h>
 
 // A note about the implementation: This class is not used
@@ -58,34 +59,9 @@ void RCTMessageThread::runSync(std::function<void()> func) {
 }
 
 void RCTMessageThread::tryFunc(const std::function<void()>& func) {
-  try {
-    @try {
-      func();
-    }
-    @catch (NSException *exception) {
-      NSString *message =
-        [NSString stringWithFormat:@"Exception '%@' was thrown from JS thread", exception];
-      m_errorBlock(RCTErrorWithMessage(message));
-    }
-    @catch (id exception) {
-      // This will catch any other ObjC exception, but no C++ exceptions
-      m_errorBlock(RCTErrorWithMessage(@"non-std ObjC Exception"));
-    }
-  } catch (const facebook::react::JSException &ex) {
-    // This is a special case.  We want to extract the stack
-    // information and pass it to the redbox.  This will lose the C++
-    // stack, but it's of limited value.
-    NSDictionary *errorInfo = @{
-      RCTJSRawStackTraceKey: @(ex.getStack().c_str()),
-      NSLocalizedDescriptionKey: [@"Unhandled JS Exception: " stringByAppendingString:@(ex.what())]
-    };
-    m_errorBlock([NSError errorWithDomain:RCTErrorDomain code:1 userInfo:errorInfo]);
-  } catch (const std::exception &ex) {
-    m_errorBlock(RCTErrorWithMessage(@(ex.what())));
-  } catch (...) {
-    // On a 64-bit platform, this would catch ObjC exceptions, too, but not on
-    // 32-bit platforms, so we catch those with id exceptions above.
-    m_errorBlock(RCTErrorWithMessage(@"non-std C++ exception"));
+  NSError *error = tryAndReturnError(func);
+  if (error) {
+    m_errorBlock(error);
   }
 }
 
