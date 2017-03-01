@@ -165,7 +165,7 @@ type DefaultProps = typeof defaultProps;
  * Minimal Example:
  *
  *   <FlatList
- *     data={[{key: 'a', {key: 'b'}]}
+ *     data={[{key: 'a'}, {key: 'b'}]}
  *     renderItem={({item}) => <Text>{item.key}</Text>}
  *   />
  */
