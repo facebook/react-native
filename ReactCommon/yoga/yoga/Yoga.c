@@ -3251,7 +3251,7 @@ static void YGRoundToPixelGrid(const YGNodeRef node) {
   float fractialTop = fmodf(nodeTop, gPointScaleFactor);
   float roundedLeft = nodeLeft - fractialLeft;
   float roundedTop = nodeTop - fractialTop;
-  
+
   // To do the actual rounding we check if leftover fraction is bigger or equal than half of the grid step
   if (fractialLeft >= gPointScaleFactor / 2.0) {
     roundedLeft += gPointScaleFactor;
@@ -3263,13 +3263,13 @@ static void YGRoundToPixelGrid(const YGNodeRef node) {
   }
   node->layout.position[YGEdgeLeft] = roundedLeft;
   node->layout.position[YGEdgeTop] = roundedTop;
-  
+
   // Now we round width and height in the same way accounting for fractial leftovers from rounding position
   const float adjustedWidth = fractialLeft + node->layout.dimensions[YGDimensionWidth];
   const float adjustedHeight = fractialTop + node->layout.dimensions[YGDimensionHeight];
   float roundedWidth = adjustedWidth - fmodf(adjustedWidth, gPointScaleFactor);
   float roundedHeight = adjustedHeight - fmodf(adjustedHeight, gPointScaleFactor);
-  
+
   if (adjustedWidth - roundedWidth >= gPointScaleFactor / 2.0) {
     roundedWidth += gPointScaleFactor;
   }
@@ -3307,6 +3307,9 @@ void YGNodeCalculateLayout(const YGNodeRef node,
   } else if (YGValueResolve(&node->style.maxDimensions[YGDimensionWidth], parentWidth) >= 0.0f) {
     width = YGValueResolve(&node->style.maxDimensions[YGDimensionWidth], parentWidth);
     widthMeasureMode = YGMeasureModeAtMost;
+  } else {
+    width = parentWidth;
+    widthMeasureMode = YGFloatIsUndefined(width) ? YGMeasureModeUndefined : YGMeasureModeExactly;
   }
 
   float height = YGUndefined;
@@ -3319,6 +3322,9 @@ void YGNodeCalculateLayout(const YGNodeRef node,
              0.0f) {
     height = YGValueResolve(&node->style.maxDimensions[YGDimensionHeight], parentHeight);
     heightMeasureMode = YGMeasureModeAtMost;
+  } else {
+    height = parentHeight;
+    heightMeasureMode = YGFloatIsUndefined(height) ? YGMeasureModeUndefined : YGMeasureModeExactly;
   }
 
   if (YGLayoutNodeInternal(node,
