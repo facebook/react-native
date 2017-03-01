@@ -53,7 +53,7 @@ type RequiredProps<ItemT> = {
    *     <TouchableOpacity/>
    *   );
    *   ...
-   *   <FlatList data={[{title: 'Title Text'}]} renderItem={this._renderItem} />
+   *   <FlatList data={[{title: 'Title Text', key: 'item1'}]} renderItem={this._renderItem} />
    *
    * Provides additional metadata like `index` if you need it.
    */
@@ -136,7 +136,7 @@ type OptionalProps<ItemT> = {
     nextInfo: {item: ItemT, index: number}
   ) => boolean,
   /**
-   * See ViewabilityHelper for flow type and comments.
+   * See ViewabilityHelper for flow type and further documentation.
    */
   viewabilityConfig?: ViewabilityConfig,
 };
@@ -160,14 +160,24 @@ type DefaultProps = typeof defaultProps;
  *  - Separator support.
  *  - Pull to Refresh
  *
- * If you need sticky section header support, use ListView.
+ * If you need sticky section header support, use ListView for now.
  *
  * Minimal Example:
  *
  *   <FlatList
- *     data={[{key: 'a', {key: 'b'}]}
+ *     data={[{key: 'a'}, {key: 'b'}]}
  *     renderItem={({item}) => <Text>{item.key}</Text>}
  *   />
+ *
+ * Some notes for all of the `VirtualizedList` based components:
+ * - Internal state is not preserved when content scrolls out of the render window. Make sure all
+ *   your data is captured in the item data or external stores like Flux, Redux, or Relay.
+ * - In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
+ *   offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
+ *   blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
+ *   and we are working on improving it behind the scenes.
+ * - By default, the list looks for a `key` prop on each item and uses that for the React key.
+ *   Alternatively, you can provide a custom keyExtractor prop.
  */
 class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, void> {
   static defaultProps: DefaultProps = defaultProps;

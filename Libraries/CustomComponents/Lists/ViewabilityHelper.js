@@ -54,6 +54,9 @@ export type ViewabilityConfig = {|
 |};
 
 /**
+* A Utility class for calculating viewable items based on current metrics like scroll position and
+* layout.
+*
 * An item is said to be in a "viewable" state when any of the following
 * is true for longer than `minViewTime` milliseconds (after an interaction if `waitForInteraction`
 * is true):
@@ -78,10 +81,16 @@ class ViewabilityHelper {
     this._config = config;
   }
 
+  /**
+   * Cleanup, e.g. on unmount. Clears any pending timers.
+   */
   dispose() {
     this._timers.forEach(clearTimeout);
   }
 
+  /**
+   * Determines which items are viewable based on the current metrics and config.
+   */
   computeViewableItems(
     itemCount: number,
     scrollOffset: number,
@@ -135,6 +144,10 @@ class ViewabilityHelper {
     return viewableIndices;
   }
 
+  /**
+   * Figures out which items are viewable and how that has changed from before and calls
+   * `onViewableItemsChanged` as appropriate.
+   */
   onUpdate(
     itemCount: number,
     scrollOffset: number,
@@ -196,6 +209,9 @@ class ViewabilityHelper {
     }
   }
 
+  /**
+   * Records that an interaction has happened even if there has been no scroll.
+   */
   recordInteraction() {
     this._hasInteracted = true;
   }
