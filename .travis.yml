@@ -18,11 +18,7 @@ install:
 
 script:
   - if [[ "$TEST_TYPE" = objc-ios ]]; then travis_retry travis_wait ./scripts/objc-test-ios.sh; fi
-  - if [[ "$TEST_TYPE" = objc-tvos ]]; then travis_retry travis_wait ./scripts/objc-test-tvos.sh; fi
   - if [[ "$TEST_TYPE" = e2e-objc ]]; then node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3; fi
-  - if [[ "$TEST_TYPE" = e2e-objc-tvos ]]; then node ./scripts/run-ci-e2e-tests.js --tvos --retries 3; fi
-  - if [[ "$TEST_TYPE" = js ]]; then npm run flow check; fi
-  - if [[ "$TEST_TYPE" = js ]]; then npm test -- --maxWorkers=1; fi
   - if [[ ( "$TEST_TYPE" = podspecs ) && ( "$TRAVIS_PULL_REQUEST" = "false" ) ]]; then gem install cocoapods && ./scripts/process-podspecs.sh; fi
 
 
@@ -31,11 +27,8 @@ matrix:
 
 # The order of these tests says which are more likely to run first and fail the whole build fast.
 env:
-  - TEST_TYPE=js
-  - TEST_TYPE=objc-tvos
   - TEST_TYPE=objc-ios
   - TEST_TYPE=podspecs
-  - TEST_TYPE=e2e-objc-tvos
   - TEST_TYPE=e2e-objc
 
 branches:
