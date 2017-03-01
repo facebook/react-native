@@ -666,7 +666,9 @@ RCT_ENUM_CONVERTER(YGAlign, (@{
   @"center": @(YGAlignCenter),
   @"auto": @(YGAlignAuto),
   @"stretch": @(YGAlignStretch),
-  @"baseline": @(YGAlignBaseline)
+  @"baseline": @(YGAlignBaseline),
+  @"space-between": @(YGAlignSpaceBetween),
+  @"space-around": @(YGAlignSpaceAround)
 }), YGAlignFlexStart, intValue)
 
 RCT_ENUM_CONVERTER(YGDirection, (@{

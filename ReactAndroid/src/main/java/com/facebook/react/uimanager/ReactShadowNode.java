@@ -650,6 +650,10 @@ public class ReactShadowNode {
     mYogaNode.setAlignItems(alignItems);
   }
 
+  public void setAlignContent(YogaAlign alignContent) {
+    mYogaNode.setAlignContent(alignContent);
+  }
+
   public void setJustifyContent(YogaJustify justifyContent) {
     mYogaNode.setJustifyContent(justifyContent);
   }

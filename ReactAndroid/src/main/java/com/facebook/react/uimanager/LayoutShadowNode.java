@@ -283,6 +283,16 @@ public class LayoutShadowNode extends ReactShadowNode {
             alignItems.toUpperCase(Locale.US).replace("-", "_")));
   }
 
+  @ReactProp(name = ViewProps.ALIGN_CONTENT)
+  public void setAlignContent(@Nullable String alignContent) {
+    if (isVirtual()) {
+      return;
+    }
+    setAlignContent(
+        alignContent == null ? YogaAlign.FLEX_START : YogaAlign.valueOf(
+            alignContent.toUpperCase(Locale.US).replace("-", "_")));
+  }
+
   @ReactProp(name = ViewProps.JUSTIFY_CONTENT)
   public void setJustifyContent(@Nullable String justifyContent) {
     if (isVirtual()) {

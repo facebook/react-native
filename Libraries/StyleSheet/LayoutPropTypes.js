@@ -402,6 +402,20 @@ var LayoutPropTypes = {
     'baseline'
   ]),
 
+  /** `alignContent` controls how a rows align in the cross direction,
+   *  overriding the `alignContent` of the parent.
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/align-content
+   *  for more details.
+   */
+  alignContent: ReactPropTypes.oneOf([
+    'flex-start',
+    'flex-end',
+    'center',
+    'stretch',
+    'space-between',
+    'space-around'
+  ]),
+
   /** `overflow` controls how a children are measured and displayed.
    *  `overflow: hidden` causes views to be clipped while `overflow: scroll`
    *  causes views to be measured independently of their parents main axis.`
