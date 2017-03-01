@@ -103,8 +103,6 @@ const linkAssets = (project, assets) => {
 function link(argv, config, args) {
     var project;
 
-    console.log(argv, args);
-
   try {
     project = config.getProjectConfig();
   } catch (err) {
@@ -128,10 +126,7 @@ function link(argv, config, args) {
     project.ios.target = packageTargetIos;
   }
 
-    console.log(project);
-
-
-    const assets = dedupeAssets(dependencies.reduce(
+  const assets = dedupeAssets(dependencies.reduce(
     (assets, dependency) => assets.concat(dependency.config.assets),
     project.assets
   ));
