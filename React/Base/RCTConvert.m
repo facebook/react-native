@@ -507,7 +507,9 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     return (YGValue) { [json floatValue], YGUnitPoint };
   } else if ([json isKindOfClass:[NSString class]]) {
     NSString *s = (NSString *) json;
-    if ([s hasSuffix:@"%"]) {
+    if ([s isEqualToString:@"auto"]) {
+      return (YGValue) { YGUndefined, YGUnitAuto };
+    } else if ([s hasSuffix:@"%"]) {
       return (YGValue) { [[s substringToIndex:s.length] floatValue], YGUnitPercent };
     } else {
       RCTLogConvertError(json, @"a YGValue. Did you forget the % or pt suffix?");

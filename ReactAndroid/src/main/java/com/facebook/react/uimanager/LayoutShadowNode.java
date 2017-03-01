@@ -74,6 +74,9 @@ public class LayoutShadowNode extends ReactShadowNode {
       case UNDEFINED:
         setStyleWidth(mTempYogaValue.value);
         break;
+      case AUTO:
+        setStyleWidthAuto();
+        break;
       case PERCENT:
         setStyleWidthPercent(mTempYogaValue.value);
         break;
@@ -133,6 +136,9 @@ public class LayoutShadowNode extends ReactShadowNode {
       case POINT:
       case UNDEFINED:
         setStyleHeight(mTempYogaValue.value);
+        break;
+      case AUTO:
+        setStyleHeightAuto();
         break;
       case PERCENT:
         setStyleHeightPercent(mTempYogaValue.value);
@@ -217,6 +223,9 @@ public class LayoutShadowNode extends ReactShadowNode {
       case POINT:
       case UNDEFINED:
         setFlexBasis(mTempYogaValue.value);
+        break;
+      case AUTO:
+        setFlexBasisAuto();
         break;
       case PERCENT:
         setFlexBasisPercent(mTempYogaValue.value);
@@ -311,6 +320,9 @@ public class LayoutShadowNode extends ReactShadowNode {
       case POINT:
       case UNDEFINED:
         setMargin(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], mTempYogaValue.value);
+        break;
+      case AUTO:
+        setMarginAuto(ViewProps.PADDING_MARGIN_SPACING_TYPES[index]);
         break;
       case PERCENT:
         setMarginPercent(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], mTempYogaValue.value);

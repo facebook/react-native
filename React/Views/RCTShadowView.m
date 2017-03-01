@@ -70,19 +70,41 @@ switch (ygvalue.unit) {                          \
     break;                                       \
 }
 
-#define DEFINE_PROCESS_META_PROPS(type)                                                           \
-static void RCTProcessMetaProps##type(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) { \
-  RCT_SET_YGVALUE(metaProps[META_PROP_LEFT], YGNodeStyleSet##type, node, YGEdgeStart);            \
-  RCT_SET_YGVALUE(metaProps[META_PROP_RIGHT], YGNodeStyleSet##type, node, YGEdgeEnd);             \
-  RCT_SET_YGVALUE(metaProps[META_PROP_TOP], YGNodeStyleSet##type, node, YGEdgeTop);               \
-  RCT_SET_YGVALUE(metaProps[META_PROP_BOTTOM], YGNodeStyleSet##type, node, YGEdgeBottom);         \
-  RCT_SET_YGVALUE(metaProps[META_PROP_HORIZONTAL], YGNodeStyleSet##type, node, YGEdgeHorizontal); \
-  RCT_SET_YGVALUE(metaProps[META_PROP_VERTICAL], YGNodeStyleSet##type, node, YGEdgeVertical);     \
-  RCT_SET_YGVALUE(metaProps[META_PROP_ALL], YGNodeStyleSet##type, node, YGEdgeAll);               \
+#define RCT_SET_YGVALUE_AUTO(ygvalue, setter, ...) \
+switch (ygvalue.unit) {                            \
+  case YGUnitAuto:                                 \
+    setter##Auto(__VA_ARGS__);                     \
+    break;                                         \
+  case YGUnitUndefined:                            \
+    setter(__VA_ARGS__, YGUndefined);              \
+    break;                                         \
+  case YGUnitPoint:                                \
+    setter(__VA_ARGS__, ygvalue.value);            \
+    break;                                         \
+  case YGUnitPercent:                              \
+    setter##Percent(__VA_ARGS__, ygvalue.value);   \
+    break;                                         \
 }
 
-DEFINE_PROCESS_META_PROPS(Padding);
-DEFINE_PROCESS_META_PROPS(Margin);
+static void RCTProcessMetaPropsPadding(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) {
+  RCT_SET_YGVALUE(metaProps[META_PROP_LEFT], YGNodeStyleSetPadding, node, YGEdgeStart);
+  RCT_SET_YGVALUE(metaProps[META_PROP_RIGHT], YGNodeStyleSetPadding, node, YGEdgeEnd);
+  RCT_SET_YGVALUE(metaProps[META_PROP_TOP], YGNodeStyleSetPadding, node, YGEdgeTop);
+  RCT_SET_YGVALUE(metaProps[META_PROP_BOTTOM], YGNodeStyleSetPadding, node, YGEdgeBottom);
+  RCT_SET_YGVALUE(metaProps[META_PROP_HORIZONTAL], YGNodeStyleSetPadding, node, YGEdgeHorizontal);
+  RCT_SET_YGVALUE(metaProps[META_PROP_VERTICAL], YGNodeStyleSetPadding, node, YGEdgeVertical);
+  RCT_SET_YGVALUE(metaProps[META_PROP_ALL], YGNodeStyleSetPadding, node, YGEdgeAll);
+}
+
+static void RCTProcessMetaPropsMargin(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) {
+  RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_LEFT], YGNodeStyleSetMargin, node, YGEdgeStart);
+  RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_RIGHT], YGNodeStyleSetMargin, node, YGEdgeEnd);
+  RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_TOP], YGNodeStyleSetMargin, node, YGEdgeTop);
+  RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_BOTTOM], YGNodeStyleSetMargin, node, YGEdgeBottom);
+  RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_HORIZONTAL], YGNodeStyleSetMargin, node, YGEdgeHorizontal);
+  RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_VERTICAL], YGNodeStyleSetMargin, node, YGEdgeVertical);
+  RCT_SET_YGVALUE_AUTO(metaProps[META_PROP_ALL], YGNodeStyleSetMargin, node, YGEdgeAll);
+}
 
 static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node) {
   YGNodeStyleSetBorder(node, YGEdgeStart, metaProps[META_PROP_LEFT].value);
@@ -522,8 +544,18 @@ RCT_BORDER_PROPERTY(Bottom, BOTTOM)
 RCT_BORDER_PROPERTY(Right, RIGHT)
 
 // Dimensions
-
 #define RCT_DIMENSION_PROPERTY(setProp, getProp, cssProp)           \
+- (void)set##setProp:(YGValue)value                                 \
+{                                                                   \
+  RCT_SET_YGVALUE_AUTO(value, YGNodeStyleSet##cssProp, _yogaNode);  \
+  [self dirtyText];                                                 \
+}                                                                   \
+- (YGValue)getProp                                                  \
+{                                                                   \
+  return YGNodeStyleGet##cssProp(_yogaNode);                        \
+}
+
+#define RCT_MIN_MAX_DIMENSION_PROPERTY(setProp, getProp, cssProp)   \
 - (void)set##setProp:(YGValue)value                                 \
 {                                                                   \
   RCT_SET_YGVALUE(value, YGNodeStyleSet##cssProp, _yogaNode);       \
@@ -536,10 +568,10 @@ RCT_BORDER_PROPERTY(Right, RIGHT)
 
 RCT_DIMENSION_PROPERTY(Width, width, Width)
 RCT_DIMENSION_PROPERTY(Height, height, Height)
-RCT_DIMENSION_PROPERTY(MinWidth, minWidth, MinWidth)
-RCT_DIMENSION_PROPERTY(MinHeight, minHeight, MinHeight)
-RCT_DIMENSION_PROPERTY(MaxWidth, maxWidth, MaxWidth)
-RCT_DIMENSION_PROPERTY(MaxHeight, maxHeight, MaxHeight)
+RCT_MIN_MAX_DIMENSION_PROPERTY(MinWidth, minWidth, MinWidth)
+RCT_MIN_MAX_DIMENSION_PROPERTY(MinHeight, minHeight, MinHeight)
+RCT_MIN_MAX_DIMENSION_PROPERTY(MaxWidth, maxWidth, MaxWidth)
+RCT_MIN_MAX_DIMENSION_PROPERTY(MaxHeight, maxHeight, MaxHeight)
 
 // Position
 
@@ -644,7 +676,7 @@ static inline YGSize RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasure
 
 - (void)setFlexBasis:(YGValue)value
 {
-  RCT_SET_YGVALUE(value, YGNodeStyleSetFlexBasis, _yogaNode);
+  RCT_SET_YGVALUE_AUTO(value, YGNodeStyleSetFlexBasis, _yogaNode);
 }
 
 - (YGValue)flexBasis

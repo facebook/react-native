@@ -554,6 +554,10 @@ public class ReactShadowNode {
     mYogaNode.setWidthPercent(percent);
   }
 
+  public void setStyleWidthAuto() {
+    mYogaNode.setWidthAuto();
+  }
+
   public void setStyleMinWidth(float widthPx) {
     mYogaNode.setMinWidth(widthPx);
   }
@@ -580,6 +584,10 @@ public class ReactShadowNode {
 
   public void setStyleHeightPercent(float percent) {
     mYogaNode.setHeightPercent(percent);
+  }
+
+  public void setStyleHeightAuto() {
+    mYogaNode.setHeightAuto();
   }
 
   public void setStyleMinHeight(float widthPx) {
@@ -612,6 +620,10 @@ public class ReactShadowNode {
 
   public void setFlexBasis(float flexBasis) {
     mYogaNode.setFlexBasis(flexBasis);
+  }
+
+  public void setFlexBasisAuto() {
+    mYogaNode.setFlexBasisAuto();
   }
 
   public void setFlexBasisPercent(float percent) {
@@ -652,6 +664,10 @@ public class ReactShadowNode {
 
   public void setMarginPercent(int spacingType, float percent) {
     mYogaNode.setMarginPercent(YogaEdge.fromInt(spacingType), percent);
+  }
+
+  public void setMarginAuto(int spacingType) {
+    mYogaNode.setMarginAuto(YogaEdge.fromInt(spacingType));
   }
 
   public final float getPadding(int spacingType) {
