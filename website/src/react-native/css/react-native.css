@@ -410,10 +410,6 @@ html {
 body {
   background-color: #F5FCFF; }
 
-p {
-  margin: 0 0 10px;
-}
-
 * {
   -moz-box-sizing: border-box;
   -ms-box-sizing: border-box;
@@ -423,6 +419,10 @@ p {
   border: none;
   margin: 0;
   padding: 0; }
+
+p {
+  margin: 0 0 16px;
+  line-height: 1.4; }
 
 em {
   font-style: italic; }
@@ -1791,7 +1791,7 @@ input#algolia-doc-search:focus {
   margin: 0;
   font-size: 33px;
   line-height: 36px;
-}
+  line-height: 1; }
 
 .entry-header h4 {
   margin: 0 0 10px;
@@ -1832,8 +1832,7 @@ input#algolia-doc-search:focus {
   letter-spacing: .4rem;
   text-transform: uppercase;
   font-weight: 400;
-  line-height: 12px;
-}
+  line-height: 12px; }
 
 .entry-share .small-title {
   float: left;

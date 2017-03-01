@@ -93,6 +93,7 @@ function buildFile(layout, metadata, rawContent) {
 function execute() {
   var DOCS_MD_DIR = '../docs/';
   var BLOG_MD_DIR = '../blog/';
+  var CONFIG_JSON_DIR = '../';
 
   glob.sync('src/react-native/docs/*.*').forEach(rmFile);
   glob.sync('src/react-native/blog/*.*').forEach(rmFile);
@@ -163,6 +164,13 @@ function execute() {
     .forEach((key) => {
       metadatas.config[key] = process.env[key];
     });
+
+  // load showcase apps into metadata
+  var showcaseApps = JSON.parse(fs.readFileSync(
+    path.basename(CONFIG_JSON_DIR + 'showcase.json'),
+    {encoding: 'utf8'}
+  ));
+  metadatas.showcaseApps = showcaseApps;
 
   fs.writeFileSync(
     'core/metadata.js',
