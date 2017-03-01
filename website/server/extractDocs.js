@@ -200,8 +200,11 @@ function componentsToMarkdown(type, json, filepath, idx, styles) {
     json.methods = json.methods.filter(filterMethods);
   }
 
+  if (type === 'api') {
+    type = 'API';
+  }
   // Put styles (e.g. Flexbox) into the API category
-  const category = (type === 'style' ? 'apis' : type + 's');
+  const category = (type === 'style' ? 'APIs' : type + 's');
   const next = getNextComponent(idx);
   const previous = getPreviousComponent(idx);
 
