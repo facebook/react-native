@@ -86,6 +86,14 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @DoNotStrip
   private float mPaddingBottom = 0;
   @DoNotStrip
+  private float mBorderLeft = 0;
+  @DoNotStrip
+  private float mBorderTop = 0;
+  @DoNotStrip
+  private float mBorderRight = 0;
+  @DoNotStrip
+  private float mBorderBottom = 0;
+  @DoNotStrip
   private int mLayoutDirection = 0;
 
   private native long jni_YGNodeNew();
@@ -172,10 +180,10 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     return mChildren == null ? -1 : mChildren.indexOf(child);
   }
 
-  private native void jni_YGNodeCalculateLayout(long nativePointer);
+  private native void jni_YGNodeCalculateLayout(long nativePointer, float width, float height);
   @Override
-  public void calculateLayout() {
-    jni_YGNodeCalculateLayout(mNativePointer);
+  public void calculateLayout(float width, float height) {
+    jni_YGNodeCalculateLayout(mNativePointer, width, height);
   }
 
   private native boolean jni_YGNodeHasNewLayout(long nativePointer);
@@ -211,7 +219,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private native int jni_YGNodeStyleGetDirection(long nativePointer);
   @Override
   public YogaDirection getStyleDirection() {
-    return YogaDirection.values()[jni_YGNodeStyleGetDirection(mNativePointer)];
+    return YogaDirection.fromInt(jni_YGNodeStyleGetDirection(mNativePointer));
   }
 
   private native void jni_YGNodeStyleSetDirection(long nativePointer, int direction);
@@ -223,7 +231,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private native int jni_YGNodeStyleGetFlexDirection(long nativePointer);
   @Override
   public YogaFlexDirection getFlexDirection() {
-    return YogaFlexDirection.values()[jni_YGNodeStyleGetFlexDirection(mNativePointer)];
+    return YogaFlexDirection.fromInt(jni_YGNodeStyleGetFlexDirection(mNativePointer));
   }
 
   private native void jni_YGNodeStyleSetFlexDirection(long nativePointer, int flexDirection);
@@ -235,7 +243,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private native int jni_YGNodeStyleGetJustifyContent(long nativePointer);
   @Override
   public YogaJustify getJustifyContent() {
-    return YogaJustify.values()[jni_YGNodeStyleGetJustifyContent(mNativePointer)];
+    return YogaJustify.fromInt(jni_YGNodeStyleGetJustifyContent(mNativePointer));
   }
 
   private native void jni_YGNodeStyleSetJustifyContent(long nativePointer, int justifyContent);
@@ -247,7 +255,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private native int jni_YGNodeStyleGetAlignItems(long nativePointer);
   @Override
   public YogaAlign getAlignItems() {
-    return YogaAlign.values()[jni_YGNodeStyleGetAlignItems(mNativePointer)];
+    return YogaAlign.fromInt(jni_YGNodeStyleGetAlignItems(mNativePointer));
   }
 
   private native void jni_YGNodeStyleSetAlignItems(long nativePointer, int alignItems);
@@ -259,7 +267,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private native int jni_YGNodeStyleGetAlignSelf(long nativePointer);
   @Override
   public YogaAlign getAlignSelf() {
-    return YogaAlign.values()[jni_YGNodeStyleGetAlignSelf(mNativePointer)];
+    return YogaAlign.fromInt(jni_YGNodeStyleGetAlignSelf(mNativePointer));
   }
 
   private native void jni_YGNodeStyleSetAlignSelf(long nativePointer, int alignSelf);
@@ -271,7 +279,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private native int jni_YGNodeStyleGetAlignContent(long nativePointer);
   @Override
   public YogaAlign getAlignContent() {
-    return YogaAlign.values()[jni_YGNodeStyleGetAlignContent(mNativePointer)];
+    return YogaAlign.fromInt(jni_YGNodeStyleGetAlignContent(mNativePointer));
   }
 
   private native void jni_YGNodeStyleSetAlignContent(long nativePointer, int alignContent);
@@ -283,7 +291,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private native int jni_YGNodeStyleGetPositionType(long nativePointer);
   @Override
   public YogaPositionType getPositionType() {
-    return YogaPositionType.values()[jni_YGNodeStyleGetPositionType(mNativePointer)];
+    return YogaPositionType.fromInt(jni_YGNodeStyleGetPositionType(mNativePointer));
   }
 
   private native void jni_YGNodeStyleSetPositionType(long nativePointer, int positionType);
@@ -301,13 +309,25 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private native int jni_YGNodeStyleGetOverflow(long nativePointer);
   @Override
   public YogaOverflow getOverflow() {
-    return YogaOverflow.values()[jni_YGNodeStyleGetOverflow(mNativePointer)];
+    return YogaOverflow.fromInt(jni_YGNodeStyleGetOverflow(mNativePointer));
   }
 
   private native void jni_YGNodeStyleSetOverflow(long nativePointer, int overflow);
   @Override
   public void setOverflow(YogaOverflow overflow) {
     jni_YGNodeStyleSetOverflow(mNativePointer, overflow.intValue());
+  }
+
+  private native int jni_YGNodeStyleGetDisplay(long nativePointer);
+  @Override
+  public YogaDisplay getDisplay() {
+    return YogaDisplay.fromInt(jni_YGNodeStyleGetDisplay(mNativePointer));
+  }
+
+  private native void jni_YGNodeStyleSetDisplay(long nativePointer, int display);
+  @Override
+  public void setDisplay(YogaDisplay display) {
+    jni_YGNodeStyleSetDisplay(mNativePointer, display.intValue());
   }
 
   private native void jni_YGNodeStyleSetFlex(long nativePointer, float flex);
@@ -358,11 +378,17 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     jni_YGNodeStyleSetFlexBasisPercent(mNativePointer, percent);
   }
 
+  private native void jni_YGNodeStyleSetFlexBasisAuto(long nativePointer);
+  @Override
+  public void setFlexBasisAuto() {
+    jni_YGNodeStyleSetFlexBasisAuto(mNativePointer);
+  }
+
   private native Object jni_YGNodeStyleGetMargin(long nativePointer, int edge);
   @Override
   public YogaValue getMargin(YogaEdge edge) {
     if (!mHasSetMargin) {
-      return edge.intValue() < YogaEdge.START.intValue() ? YogaValue.ZERO : YogaValue.UNDEFINED;
+      return YogaValue.UNDEFINED;
     }
     return (YogaValue) jni_YGNodeStyleGetMargin(mNativePointer, edge.intValue());
   }
@@ -381,11 +407,18 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     jni_YGNodeStyleSetMarginPercent(mNativePointer, edge.intValue(), percent);
   }
 
+  private native void jni_YGNodeStyleSetMarginAuto(long nativePointer, int edge);
+  @Override
+  public void setMarginAuto(YogaEdge edge) {
+    mHasSetMargin = true;
+    jni_YGNodeStyleSetMarginAuto(mNativePointer, edge.intValue());
+  }
+
   private native Object jni_YGNodeStyleGetPadding(long nativePointer, int edge);
   @Override
   public YogaValue getPadding(YogaEdge edge) {
     if (!mHasSetPadding) {
-      return edge.intValue() < YogaEdge.START.intValue() ? YogaValue.ZERO : YogaValue.UNDEFINED;
+      return YogaValue.UNDEFINED;
     }
     return (YogaValue) jni_YGNodeStyleGetPadding(mNativePointer, edge.intValue());
   }
@@ -408,7 +441,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public float getBorder(YogaEdge edge) {
     if (!mHasSetBorder) {
-      return edge.intValue() < YogaEdge.START.intValue() ? 0 : YogaConstants.UNDEFINED;
+      return YogaConstants.UNDEFINED;
     }
     return jni_YGNodeStyleGetBorder(mNativePointer, edge.intValue());
   }
@@ -461,6 +494,12 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     jni_YGNodeStyleSetWidthPercent(mNativePointer, percent);
   }
 
+  private native void jni_YGNodeStyleSetWidthAuto(long nativePointer);
+  @Override
+  public void setWidthAuto() {
+    jni_YGNodeStyleSetWidthAuto(mNativePointer);
+  }
+
   private native Object jni_YGNodeStyleGetHeight(long nativePointer);
   @Override
   public YogaValue getHeight() {
@@ -477,6 +516,12 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   @Override
   public void setHeightPercent(float percent) {
     jni_YGNodeStyleSetHeightPercent(mNativePointer, percent);
+  }
+
+  private native void jni_YGNodeStyleSetHeightAuto(long nativePointer);
+  @Override
+  public void setHeightAuto() {
+    jni_YGNodeStyleSetHeightAuto(mNativePointer);
   }
 
   private native Object jni_YGNodeStyleGetMinWidth(long nativePointer);
@@ -622,8 +667,28 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   }
 
   @Override
+  public float getLayoutBorder(YogaEdge edge) {
+    switch (edge) {
+      case LEFT:
+        return mBorderLeft;
+      case TOP:
+        return mBorderTop;
+      case RIGHT:
+        return mBorderRight;
+      case BOTTOM:
+        return mBorderBottom;
+      case START:
+        return getLayoutDirection() == YogaDirection.RTL ? mBorderRight : mBorderLeft;
+      case END:
+        return getLayoutDirection() == YogaDirection.RTL ? mBorderLeft : mBorderRight;
+      default:
+        throw new IllegalArgumentException("Cannot get layout border of multi-edge shorthands");
+    }
+  }
+
+  @Override
   public YogaDirection getLayoutDirection() {
-    return YogaDirection.values()[mLayoutDirection];
+    return YogaDirection.fromInt(mLayoutDirection);
   }
 
   private native void jni_YGNodeSetHasMeasureFunc(long nativePointer, boolean hasMeasureFunc);
@@ -647,9 +712,9 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     return mMeasureFunction.measure(
           this,
           width,
-          YogaMeasureMode.values()[widthMode],
+          YogaMeasureMode.fromInt(widthMode),
           height,
-          YogaMeasureMode.values()[heightMode]);
+          YogaMeasureMode.fromInt(heightMode));
   }
 
   private native void jni_YGNodeSetHasBaselineFunc(long nativePointer, boolean hasMeasureFunc);

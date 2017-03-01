@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "MessageQueueThread.h"
-
 #include <atomic>
-#include <functional>
 #include <chrono>
+#include <functional>
+#include <memory>
 #include <mutex>
 #include <thread>
-#include <memory>
+
+#include <cxxreact/MessageQueueThread.h>
 
 namespace facebook {
 namespace react {
@@ -62,6 +62,9 @@ class CxxMessageQueue : public MessageQueueThread {
 
   bool isOnQueue();
 
+  // If this getRunLoop is used, current() will not work.
+  std::function<void()> getUnregisteredRunLoop();
+
   // This returns a function that will actually run the runloop.
   // This runloop will return some time after quitSynchronous (or after this is destroyed).
   //
@@ -71,7 +74,7 @@ class CxxMessageQueue : public MessageQueueThread {
   // Only one thread should run the runloop.
   static std::function<void()> getRunLoop(std::shared_ptr<CxxMessageQueue> mq);
 
-  static std::weak_ptr<CxxMessageQueue> current();
+  static std::shared_ptr<CxxMessageQueue> current();
  private:
   class QueueRunner;
   std::shared_ptr<QueueRunner> qr_;

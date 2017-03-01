@@ -24,6 +24,13 @@
 - (void)removeReactSubview:(UIView *)subview NS_REQUIRES_SUPER;
 
 /**
+ * Layout direction of the view.
+ * Internally backed to `semanticContentAttribute` property.
+ * Defaults to `LeftToRight` in case of ambiguity.
+ */
+@property (nonatomic, assign) UIUserInterfaceLayoutDirection reactLayoutDirection;
+
+/**
  * z-index, used to override sibling order in didUpdateReactSubviews.
  */
 @property (nonatomic, assign) NSInteger reactZIndex;

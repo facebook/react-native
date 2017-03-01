@@ -354,6 +354,29 @@ var featured = [
     infoLink: 'https://medium.com/@herdani/our-switch-to-react-native-f4ada19f0f3d#.ogwjzf2tw',
     infoTitle: 'Our switch to React Native',
   },
+  {
+    name: 'Causr',
+    icon: 'http://is2.mzstatic.com/image/thumb/Purple111/v4/9d/14/20/9d142015-3319-f613-2886-ad889609466a/source/175x175bb.jpg',
+    linkAppStore: 'https://itunes.apple.com/us/app/causr-business-networking/id1129819484',
+    infoLink: 'https://medium.com/causr/why-we-chose-react-native-abd7d58a18b5',
+    infoTitle: 'Why we chose React Native'
+  },
+  {
+    name: 'Flare',
+    icon: 'http://x.co/FlareIcon',
+    linkAppStore: 'http://x.co/Flare',
+    linkPlayStore: 'http://x.co/FlareAndr',
+    infoLink: 'http://x.co/FlareNews',
+    infoTitle: 'Social network that connects entrepreneurs to fellow entrepreneurs, consumers, investors and experts',
+  },
+  {
+    name: 'Prepd',
+    icon: 'http://is4.mzstatic.com/image/thumb/Purple111/v4/03/56/95/035695ab-77dc-4f3b-0961-3263e32e3494/source/175x175bb.jpg',
+    linkAppStore: 'https://itunes.apple.com/us/app/get-prepd/id1125687122?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.prepd&hl=en',
+    infoLink: 'https://logbook.hanno.co/prepd-pros-cons-react-native/',
+    infoTitle: 'How we built Prepd for iOS and Android using React Native',
+  },
 ];
 
 /*
@@ -392,8 +415,8 @@ var pinned = [
     icon: 'http://a4.mzstatic.com/us/r30/Purple62/v4/1f/8d/f9/1f8df910-8ec7-3b8e-0104-d44e869f4d65/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/app/instagram/id389801252?pt=428156&ct=igweb.unifiedHome.badge&mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.instagram.android&referrer=utm_source%3Dinstagramweb%26utm_campaign%3DunifiedHome%26utm_medium%3Dbadge',
-    infoLink: '',
-    infoTitle: '',
+    infoLink: 'https://engineering.instagram.com/react-native-at-instagram-dd828a9a90c7#.3h4wir4zr',
+    infoTitle: 'React Native at Instagram',
     defaultLink: 'https://www.instagram.com/',
   },
   {

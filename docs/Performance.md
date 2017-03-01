@@ -86,19 +86,6 @@ but their receipt is not necessary for the scroll to occur).
 
 When running a bundled app, these statements can cause a big bottleneck in the JavaScript thread. This includes calls from debugging libraries such as [redux-logger](https://github.com/evgenyrodionov/redux-logger), so make sure to remove them before bundling.
 
-> There is a [babel plugin](https://babeljs.io/docs/plugins/transform-remove-console/) that can remove all `console.*` calls. You need to install it first using `npm install babel-plugin-transform-remove-console --save`, and then edit (or create) `.babelrc` under your project directory like the following:
-```json
-{
-  "env": {
-    "production": {
-      "plugins": ["transform-remove-console"]
-    }
-  }
-}
-```
-Then it will automatically remove all `console.*` calls in a release (production) version of your project. However, the `console.*` calls will still be executed in the debug version of your project.
-
-
 #### Development mode (dev=true)
 
 JavaScript thread performance suffers greatly when running in dev mode.

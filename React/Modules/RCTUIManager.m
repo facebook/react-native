@@ -376,7 +376,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   return RCTGetUIManagerQueue();
 }
 
-- (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
+- (void)registerRootView:(UIView *)rootView
 {
   RCTAssertMainQueue();
 
@@ -390,7 +390,6 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
   // Register view
   _viewRegistry[reactTag] = rootView;
-  CGRect frame = rootView.frame;
 
   // Register shadow view
   dispatch_async(RCTGetUIManagerQueue(), ^{
@@ -400,10 +399,8 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
     RCTRootShadowView *shadowView = [RCTRootShadowView new];
     shadowView.reactTag = reactTag;
-    shadowView.frame = frame;
     shadowView.backgroundColor = rootView.backgroundColor;
     shadowView.viewName = NSStringFromClass([rootView class]);
-    shadowView.sizeFlexibility = sizeFlexibility;
     self->_shadowViewRegistry[shadowView.reactTag] = shadowView;
     [self->_rootViewTags addObject:reactTag];
   });
@@ -425,44 +422,39 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   return _viewRegistry[reactTag];
 }
 
-- (void)setFrame:(CGRect)frame forView:(UIView *)view
+- (void)setAvailableSize:(CGSize)availableSize forRootView:(UIView *)rootView
 {
   RCTAssertMainQueue();
+  NSNumber *reactTag = rootView.reactTag;
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    RCTRootShadowView *shadowView = (RCTRootShadowView *)self->_shadowViewRegistry[reactTag];
+    RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", reactTag);
+    RCTAssert([shadowView isKindOfClass:[RCTRootShadowView class]], @"Located shadow view (with tag #%@) is actually not root view.", reactTag);
 
-  // The following variable has no meaning if the view is not a react root view
-  RCTRootViewSizeFlexibility sizeFlexibility = RCTRootViewSizeFlexibilityNone;
-
-  if (RCTIsReactRootView(view.reactTag)) {
-    RCTRootView *rootView = (RCTRootView *)[view superview];
-    if (rootView != nil) {
-      sizeFlexibility = rootView.sizeFlexibility;
+    if (CGSizeEqualToSize(availableSize, shadowView.availableSize)) {
+      return;
     }
-  }
+
+    shadowView.availableSize = availableSize;
+    [self setNeedsLayout];
+  });
+}
+
+- (void)setSize:(CGSize)size forView:(UIView *)view
+{
+  RCTAssertMainQueue();
 
   NSNumber *reactTag = view.reactTag;
   dispatch_async(RCTGetUIManagerQueue(), ^{
     RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
     RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", reactTag);
 
-    BOOL needsLayout = NO;
-    if (!CGRectEqualToRect(frame, shadowView.frame)) {
-      shadowView.frame = frame;
-      needsLayout = YES;
+    if (CGSizeEqualToSize(size, shadowView.size)) {
+      return;
     }
 
-    // Trigger re-layout when size flexibility changes, as the root view might grow or
-    // shrink in the flexible dimensions.
-    if (RCTIsReactRootView(reactTag)) {
-      RCTRootShadowView *rootShadowView = (RCTRootShadowView *)shadowView;
-      if (rootShadowView.sizeFlexibility != sizeFlexibility) {
-        rootShadowView.sizeFlexibility = sizeFlexibility;
-        needsLayout = YES;
-      }
-    }
-
-    if (needsLayout) {
-      [self setNeedsLayout];
-    }
+    shadowView.size = size;
+    [self setNeedsLayout];
   });
 }
 
@@ -473,11 +465,12 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   NSNumber *reactTag = view.reactTag;
   dispatch_async(RCTGetUIManagerQueue(), ^{
     RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
-    RCTAssert(shadowView != nil, @"Could not locate root view with tag #%@", reactTag);
+    RCTAssert(shadowView != nil, @"Could not locate view with tag #%@", reactTag);
 
-    shadowView.intrinsicContentSize = size;
-
-    [self setNeedsLayout];
+    if (!CGSizeEqualToSize(shadowView.intrinsicContentSize, size)) {
+      shadowView.intrinsicContentSize = size;
+      [self setNeedsLayout];
+    }
   });
 }
 
@@ -551,6 +544,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
   typedef struct {
     CGRect frame;
+    UIUserInterfaceLayoutDirection layoutDirection;
     BOOL isNew;
     BOOL parentIsNew;
     BOOL isHidden;
@@ -567,6 +561,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       reactTags[index] = shadowView.reactTag;
       frameDataArray[index++] = (RCTFrameData){
         shadowView.frame,
+        shadowView.effectiveLayoutDirection,
         shadowView.isNewView,
         shadowView.superview.isNewView,
         shadowView.isHidden,
@@ -612,7 +607,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
         RCTAssert(view != nil, @"view (for ID %@) not found", reactTag);
 
         RCTRootView *rootView = (RCTRootView *)[view superview];
-        rootView.intrinsicSize = contentSize;
+        rootView.intrinsicContentSize = contentSize;
       });
     }
   }
@@ -633,6 +628,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       CGRect frame = frameData.frame;
 
       BOOL isHidden = frameData.isHidden;
+      UIUserInterfaceLayoutDirection layoutDirection = frameData.layoutDirection;
       BOOL isNew = frameData.isNew;
       RCTAnimation *updateAnimation = isNew ? nil : layoutAnimation.updateAnimation;
       BOOL shouldAnimateCreation = isNew && !frameData.parentIsNew;
@@ -651,6 +647,10 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 
       if (view.isHidden != isHidden) {
         view.hidden = isHidden;
+      }
+
+      if (view.reactLayoutDirection != layoutDirection) {
+        view.reactLayoutDirection = layoutDirection;
       }
 
       RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
@@ -1638,6 +1638,22 @@ static UIView *_jsResponder;
 + (UIView *)JSResponder
 {
   return _jsResponder;
+}
+
+@end
+
+@implementation RCTUIManager (Deprecated)
+
+- (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
+{
+  RCTLogWarn(@"Calling of `[-RCTUIManager registerRootView:withSizeFlexibility:]` which is deprecated.");
+  [self registerRootView:rootView];
+}
+
+- (void)setFrame:(CGRect)frame forView:(UIView *)view
+{
+  RCTLogWarn(@"Calling of `[-RCTUIManager setFrame:forView:]` which is deprecated.");
+  [self setSize:frame.size forView:view];
 }
 
 @end

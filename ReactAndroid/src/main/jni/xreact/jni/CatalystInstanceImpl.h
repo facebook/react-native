@@ -5,16 +5,17 @@
 #include <fb/fbjni.h>
 #include <folly/Memory.h>
 
+#include "CxxModuleWrapper.h"
 #include "JExecutorToken.h"
 #include "JMessageQueueThread.h"
 #include "JSLoader.h"
+#include "JavaModuleWrapper.h"
 
 namespace facebook {
 namespace react {
 
 class Instance;
 class JavaScriptExecutorHolder;
-class ModuleRegistryHolder;
 class NativeArray;
 
 struct ReactCallback : public jni::JavaClass<ReactCallback> {
@@ -46,7 +47,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       JavaScriptExecutorHolder* jseh,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
       jni::alias_ref<JavaMessageQueueThread::javaobject> moduleQueue,
-      ModuleRegistryHolder* mrh);
+      jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
+      jni::alias_ref<jni::JCollection<CxxModuleWrapper::javaobject>::javaobject> cxxModules);
 
   /**
    * Sets the source URL of the underlying bridge without loading any JS code.
@@ -55,9 +57,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
 
   void jniLoadScriptFromAssets(jni::alias_ref<JAssetManager::javaobject> assetManager, const std::string& assetURL);
   void jniLoadScriptFromFile(const std::string& fileName, const std::string& sourceURL);
-  void jniLoadScriptFromOptimizedBundle(const std::string& bundlePath, const std::string& sourceURL, jint flags);
-  void callJSFunction(JExecutorToken* token, std::string module, std::string method, NativeArray* arguments);
-  void callJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments);
+  void jniCallJSFunction(JExecutorToken* token, std::string module, std::string method, NativeArray* arguments);
+  void jniCallJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments);
   local_ref<JExecutorToken::JavaPart> getMainExecutorToken();
   void setGlobalVariable(std::string propName,
                          std::string&& jsonValue);
