@@ -13,12 +13,12 @@ const babel = require('babel-core');
 const deepAssign = require('deep-assign');
 const docgen = require('react-docgen');
 const docgenHelpers = require('./docgenHelpers');
+const docsList = require('./docsList');
 const fs = require('fs');
 const jsDocs = require('../jsdocs/jsdocs.js');
 const jsdocApi = require('jsdoc-api');
 const path = require('path');
 const slugify = require('../core/slugify');
-const docsList = require('./docsList');
 
 const ANDROID_SUFFIX = 'android';
 const CROSS_SUFFIX = 'cross';
