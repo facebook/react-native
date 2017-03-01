@@ -92,7 +92,7 @@ class Animated {
   }
   // Called before listeners are triggered.
   // Should update internal value so __getValue returns the most recently received value
-  __updateValueFromListener(data: any): void {}
+  __updateValueFromListener(data: Object): void {}
   toJSON(): any { return this.__getValue(); }
 }
 
@@ -249,9 +249,9 @@ class AnimatedWithChildren extends Animated {
     for (var key in this._listeners) {
       this._listeners[key]({value: this.__getValue()});
     }
-    if(eventPropagation) {
+    if (eventPropagation) {
       for (var child of this._children) {
-        if(child instanceof AnimatedWithChildren) {
+        if (child instanceof AnimatedWithChildren) {
           child.triggerListeners();
         }
       }
@@ -916,7 +916,7 @@ class AnimatedValue extends AnimatedWithChildren {
     this._tracking = tracking;
   }
 
-  __updateValueFromListener(data): void {
+  __updateValueFromListener(data: Object): void {
     this._value = data.value;
   }
 
