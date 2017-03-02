@@ -9,37 +9,55 @@
  * @flow
  */
 
- 'use strict';
+'use strict';
 
- import type { // eslint-disable-line sort-requires
+import type { // eslint-disable-line sort-requires
   Extensions,
   Path,
 } from './node-haste.flow';
 
- import type {
+import type {
   ResolveFn,
   TransformedFile,
 } from '../types.flow';
 
- const DependencyGraphHelpers = require('../../node-haste/DependencyGraph/DependencyGraphHelpers');
- const HasteFS = require('./HasteFS');
- const HasteMap = require('../../node-haste/DependencyGraph/HasteMap');
- const Module = require('./Module');
- const ModuleCache = require('./ModuleCache');
- const ResolutionRequest = require('../../node-haste/DependencyGraph/ResolutionRequest');
+const DependencyGraphHelpers = require('../../node-haste/DependencyGraph/DependencyGraphHelpers');
+const HasteFS = require('./HasteFS');
+const HasteMap = require('../../node-haste/DependencyGraph/HasteMap');
+const Module = require('./Module');
+const ModuleCache = require('./ModuleCache');
+const ResolutionRequest = require('../../node-haste/DependencyGraph/ResolutionRequest');
 
- const defaults = require('../../../defaults');
+const defaults = require('../../../defaults');
 
- type ResolveOptions = {|
+type ResolveOptions = {|
   assetExts: Extensions,
   extraNodeModules: {[id: string]: string},
   transformedFiles: {[path: Path]: TransformedFile},
 |};
 
- const platforms = new Set(defaults.platforms);
+const platforms = new Set(defaults.platforms);
 
- exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
-   const {
+/**
+ * We don't need to crawl the filesystem all over again so we just mock
+ * a jest-haste-map's ModuleMap instance. Eventually, though, we'll
+ * want to figure out how to reunify and get rid of `HasteMap`.
+ */
+function getFakeModuleMap(hasteMap: HasteMap) {
+  return {
+    getModule(name: string, platform_: string): ?string {
+      const module = hasteMap.getModule(name, platform_);
+      return module && module.type === 'Module' ? module.path : null;
+    },
+    getPackage(name: string, platform_: string): ?string {
+      const module = hasteMap.getModule(name, platform_);
+      return module && module.type === 'Package' ? module.path : null;
+    },
+  };
+}
+
+exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
+  const {
     assetExts,
     extraNodeModules,
     transformedFiles,
@@ -82,6 +100,7 @@
          hasteMap,
          helpers,
          moduleCache,
+         moduleMap: getFakeModuleMap(hasteMap),
          platform,
          platforms,
          preferNativePlatform: true,

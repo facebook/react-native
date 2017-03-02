@@ -424,7 +424,7 @@ public class DevSupportManagerImpl implements
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            handleCaptureHeap();
+            handleCaptureHeap(null);
           }
         });
     options.put(
@@ -682,11 +682,11 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void onCaptureHeapCommand() {
+  public void onCaptureHeapCommand(@Nullable final JSPackagerClient.Responder responder) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        handleCaptureHeap();
+        handleCaptureHeap(responder);
       }
     });
   }
@@ -701,14 +701,14 @@ public class DevSupportManagerImpl implements
     });
   }
 
-  private void handleCaptureHeap() {
+  private void handleCaptureHeap(@Nullable final JSPackagerClient.Responder responder) {
     if (mCurrentContext == null) {
       return;
     }
     JSCHeapCapture heapCapture = mCurrentContext.getNativeModule(JSCHeapCapture.class);
     heapCapture.captureHeap(
       mApplicationContext.getCacheDir().getPath(),
-      JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl()));
+      JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl(), responder));
   }
 
   private void handlePokeSamplingProfiler(@Nullable final JSPackagerClient.Responder responder) {

@@ -26,12 +26,12 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  SectionList,
   StyleSheet,
   Text,
   View,
 } = ReactNative;
 
-const SectionList = require('SectionList');
 const UIExplorerPage = require('./UIExplorerPage');
 
 const infoLog = require('infoLog');

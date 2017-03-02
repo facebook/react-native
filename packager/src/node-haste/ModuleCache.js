@@ -78,7 +78,7 @@ class ModuleCache {
     this._reporter = reporter;
   }
 
-  getModule(filePath: string) {
+  getModule(filePath: string): Module {
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new Module({
         cache: this._cache,
