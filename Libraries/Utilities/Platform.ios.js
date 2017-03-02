@@ -39,9 +39,7 @@ const Platform = {
       return obj.ios;
     }
     if (keys.length >= 1) {
-      retObj = {};
-      const multiVal: Object = keys.reduce((prev: Object, curr: Object) => ({...prev, ...obj[curr]}), {});
-      retObj = {...retObj, ...multiVal};
+      retObj = keys.reduce((prev: Object, curr: Object) => ({...prev, ...obj[curr]}), {});
     }
     return retObj;
   },

@@ -31,9 +31,7 @@ const Platform = {
       return obj.android;
     }
     if (keys.length >= 1) {
-      retObj = {};
-      const multiVal = keys.reduce((prev: Object, curr: Object) => ({...prev, ...obj[curr]}), {});
-      retObj = {...retObj, ...multiVal};
+      retObj = keys.reduce((prev: Object, curr: Object) => ({...prev, ...obj[curr]}), {});
     }
     return retObj;
   },
