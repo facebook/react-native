@@ -25,7 +25,9 @@ module.exports = class HasteFS {
   }
 
   closest(path: string, fileName: string): ?string {
-    let {dir, root} = parse(path);
+    const parsedPath = parse(path);
+    const root = parsedPath.root;
+    let dir = parsedPath.dir;
     do {
       const candidate = join(dir, fileName);
       if (this.files.has(candidate)) {
@@ -63,7 +65,9 @@ module.exports = class HasteFS {
 function buildDirectorySet(files) {
   const directories = new Set();
   files.forEach(path => {
-    let {dir, root} = parse(path);
+    const parsedPath = parse(path);
+    const root = parsedPath.root;
+    let dir = parsedPath.dir;
     while (dir !== '.' && dir !== root && !directories.has(dir)) {
       directories.add(dir);
       dir = dirname(dir);

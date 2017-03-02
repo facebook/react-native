@@ -43,23 +43,23 @@ function symbolicateStack(data) {
 }
 
 function mapFrame(frame, consumers) {
-    const sourceUrl = frame.file;
-    const consumer = consumers.get(sourceUrl);
-    if (consumer == null) {
-      return frame;
-    }
-    const original = consumer.originalPositionFor({
-      line: frame.lineNumber,
-      column: frame.column,
-    });
-    if (!original) {
-      return frame;
-    }
-    return Object.assign({}, frame, {
-      file: original.source,
-      lineNumber: original.line,
-      column: original.column,
-    });
+  const sourceUrl = frame.file;
+  const consumer = consumers.get(sourceUrl);
+  if (consumer == null) {
+    return frame;
+  }
+  const original = consumer.originalPositionFor({
+    line: frame.lineNumber,
+    column: frame.column,
+  });
+  if (!original) {
+    return frame;
+  }
+  return Object.assign({}, frame, {
+    file: original.source,
+    lineNumber: original.line,
+    column: original.column,
+  });
 }
 
 function makeErrorMessage(error) {

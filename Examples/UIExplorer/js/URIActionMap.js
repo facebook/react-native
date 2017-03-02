@@ -32,7 +32,9 @@ const {
   Alert,
 } = ReactNative;
 
-function PathActionMap(path: string): ?Object {
+import type { UIExplorerAction } from './UIExplorerActions';
+
+function PathActionMap(path: string): ?UIExplorerAction {
   // Warning! Hacky parsing for example code. Use a library for this!
   const exampleParts = path.split('/example/');
   const exampleKey = exampleParts[1];
@@ -46,11 +48,11 @@ function PathActionMap(path: string): ?Object {
   return null;
 }
 
-function URIActionMap(uri: ?string): ?Object {
-  // Warning! Hacky parsing for example code. Use a library for this!
+function URIActionMap(uri: ?string): ?UIExplorerAction {
   if (!uri) {
     return null;
   }
+  // Warning! Hacky parsing for example code. Use a library for this!
   const parts = uri.split('rnuiexplorer:/');
   if (!parts[1]) {
     return null;

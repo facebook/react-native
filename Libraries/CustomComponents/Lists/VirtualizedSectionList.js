@@ -36,8 +36,8 @@ const React = require('React');
 const View = require('View');
 const VirtualizedList = require('VirtualizedList');
 
-const invariant = require('invariant');
-const warning = require('warning');
+const invariant = require('fbjs/lib/invariant');
+const warning = require('fbjs/lib/warning');
 
 import type {ViewToken} from 'ViewabilityHelper';
 import type {Props as VirtualizedListProps} from 'VirtualizedList';

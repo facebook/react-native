@@ -47,7 +47,7 @@ const {computeWindowedRenderLimits} = require('VirtualizeUtils');
 import type {ViewabilityConfig, ViewToken} from 'ViewabilityHelper';
 
 type Item = any;
-type renderItemType = ({item: Item, index: number}) => ?React.Element<*>;
+type renderItemType = (info: {item: Item, index: number}) => ?React.Element<any>;
 
 /**
  * Renders a virtual list of items given a data blob and accessor functions. Items that are outside
@@ -71,9 +71,9 @@ type RequiredProps = {
   data?: any,
 };
 type OptionalProps = {
-  FooterComponent?: ?ReactClass<*>,
-  HeaderComponent?: ?ReactClass<*>,
-  SeparatorComponent?: ?ReactClass<*>,
+  FooterComponent?: ?ReactClass<any>,
+  HeaderComponent?: ?ReactClass<any>,
+  SeparatorComponent?: ?ReactClass<any>,
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
    * implementation.
@@ -93,7 +93,7 @@ type OptionalProps = {
   initialNumToRender: number,
   keyExtractor: (item: Item, index: number) => string,
   maxToRenderPerBatch: number,
-  onEndReached?: ?({distanceFromEnd: number}) => void,
+  onEndReached?: ?(info: {distanceFromEnd: number}) => void,
   onEndReachedThreshold?: ?number, // units of visible length
   onLayout?: ?Function,
   /**
@@ -105,13 +105,13 @@ type OptionalProps = {
    * Called when the viewability of rows changes, as defined by the
    * `viewabilityConfig` prop.
    */
-  onViewableItemsChanged?: ?({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
+  onViewableItemsChanged?: ?(info: {viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
   /**
    * Set this true while waiting for new data from a refresh.
    */
   refreshing?: ?boolean,
   removeClippedSubviews?: boolean,
-  renderScrollComponent: (props: Object) => React.Element<*>,
+  renderScrollComponent: (props: Object) => React.Element<any>,
   shouldItemUpdate: (
     props: {item: Item, index: number},
     nextProps: {item: Item, index: number}
@@ -124,7 +124,32 @@ export type Props = RequiredProps & OptionalProps;
 
 let _usedIndexForKey = false;
 
-class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
+type State = {first: number, last: number};
+
+/**
+ * Base implementation for the more convenient [`<FlatList>`](/react-native/docs/flatlist.html)
+ * and [`<SectionList>`](/react-native/docs/sectionlist.html) components, which are also better
+ * documented. In general, this should only really be used if you need more flexibility than
+ * `FlatList` provides, e.g. for use with immutable data instead of plain arrays.
+ *
+ * Virtualization massively improves memory consumption and performance of large lists by
+ * maintaining a finite render window of active items and replacing all items outside of the render
+ * window with appropriately sized blank space. The window adapts to scrolling behavior, and items
+ * are rendered incrementally with low-pri (after any running interactions) if they are far from the
+ * visible area, or with hi-pri otherwise to minimize the potential of seeing blank space.
+ *
+ * Some caveats:
+ *
+ * - Internal state is not preserved when content scrolls out of the render window. Make sure all
+ *   your data is captured in the item data or external stores like Flux, Redux, or Relay.
+ * - In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
+ *   offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
+ *   blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
+ *   and we are working on improving it behind the scenes.
+ * - By default, the list looks for a `key` prop on each item and uses that for the React key.
+ *   Alternatively, you can provide a custom keyExtractor prop.
+ */
+class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   props: Props;
 
   // scrollToEnd may be janky without getItemLayout prop
@@ -228,7 +253,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
     windowSize: 21, // multiples of length
   };
 
-  state = {
+  state: State = {
     first: 0,
     last: this.props.initialNumToRender,
   };
@@ -571,7 +596,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, *> {
     });
   };
 
-  _createViewToken = (index: number, isViewable: boolean): ViewToken => {
+  _createViewToken = (index: number, isViewable: boolean) => {
     const {data, getItem, keyExtractor} = this.props;
     const item = getItem(data, index);
     invariant(item, 'Missing item for index ' + index);

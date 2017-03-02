@@ -11,7 +11,7 @@
 jest.disableAutomock();
 
 jest.mock('worker-farm', () => () => () => {})
-    .mock('timers', () => ({ setImmediate: (fn) => setTimeout(fn, 0) }))
+    .mock('timers', () => ({setImmediate: fn => setTimeout(fn, 0)}))
     .mock('uglify-js')
     .mock('crypto')
     .mock(
@@ -39,16 +39,16 @@ describe('processRequest', () => {
   let server;
 
   const options = {
-     projectRoots: ['root'],
-     blacklistRE: null,
-     cacheVersion: null,
-     polyfillModuleNames: null,
-     reporter: require('../../lib/reporting').nullReporter,
+    projectRoots: ['root'],
+    blacklistRE: null,
+    cacheVersion: null,
+    polyfillModuleNames: null,
+    reporter: require('../../lib/reporting').nullReporter,
   };
 
   const makeRequest = (reqHandler, requrl, reqOptions) => new Promise(resolve =>
     reqHandler(
-      { url: requrl, headers:{}, ...reqOptions },
+      {url: requrl, headers:{}, ...reqOptions},
       {
         statusCode: 200,
         headers: {},
@@ -60,7 +60,7 @@ describe('processRequest', () => {
           resolve(this);
         },
       },
-      { next: () => {} },
+      {next: () => {}},
     )
   );
 
@@ -122,7 +122,7 @@ describe('processRequest', () => {
     return makeRequest(
       requestHandler,
       'mybundle.bundle?runModule=true',
-      { headers : { 'if-none-match' : 'this is an etag' } }
+      {headers : {'if-none-match' : 'this is an etag'}}
     ).then(response => {
       expect(response.statusCode).toEqual(304);
     });
@@ -328,7 +328,7 @@ describe('processRequest', () => {
             expect(bundleFunc.mock.calls.length).toBe(2);
           });
         jest.runAllTicks();
-    });
+      });
   });
 
   describe('/onchange endpoint', () => {
@@ -342,7 +342,7 @@ describe('processRequest', () => {
       req.url = '/onchange';
       res = {
         writeHead: jest.fn(),
-        end: jest.fn()
+        end: jest.fn(),
       };
     });
 
@@ -422,7 +422,7 @@ describe('processRequest', () => {
   describe('buildbundle(options)', () => {
     it('Calls the bundler with the correct args', () => {
       return server.buildBundle({
-        entryFile: 'foo file'
+        entryFile: 'foo file',
       }).then(() =>
         expect(Bundler.prototype.bundle).toBeCalledWith({
           entryFile: 'foo file',
@@ -510,7 +510,7 @@ describe('processRequest', () => {
       return makeRequest(
         requestHandler,
         '/symbolicate',
-        { rawBody: body }
+        {rawBody: body}
       ).then(response => {
         expect(response.statusCode).toEqual(500);
         expect(JSON.parse(response.body)).toEqual({

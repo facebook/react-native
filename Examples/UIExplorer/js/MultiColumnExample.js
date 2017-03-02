@@ -26,12 +26,12 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  FlatList,
   StyleSheet,
   Text,
   View,
 } = ReactNative;
 
-const FlatList = require('FlatList');
 const UIExplorerPage = require('./UIExplorerPage');
 
 const infoLog = require('infoLog');

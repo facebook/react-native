@@ -26,7 +26,7 @@ class AssetModule extends Module {
 
   constructor(args: ConstructorArgs & {dependencies: Array<string>}, platforms: Set<string>) {
     super(args);
-    const { resolution, name, type } = getAssetDataFromName(this.path, platforms);
+    const {resolution, name, type} = getAssetDataFromName(this.path, platforms);
     this.resolution = resolution;
     this._name = name;
     this._type = type;
