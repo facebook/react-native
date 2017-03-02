@@ -29,6 +29,7 @@ const {
   FlatList,
   StyleSheet,
   View,
+  Animated,
 } = ReactNative;
 
 const UIExplorerPage = require('./UIExplorerPage');
@@ -65,6 +66,7 @@ class FlatListExample extends React.PureComponent {
     fixedHeight: true,
     logViewable: false,
     virtualized: true,
+    scrollY: new Animated.Value(0),
   };
   _onChangeFilterText = (filterText) => {
     this.setState({filterText});
@@ -79,12 +81,16 @@ class FlatListExample extends React.PureComponent {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
     const filter = (item) => (filterRegex.test(item.text) || filterRegex.test(item.title));
     const filteredData = this.state.data.filter(filter);
+    const opacity = this.state.scrollY.interpolate({
+      inputRange: [0, 200],
+      outputRange: [1, 0],
+    });
     return (
       <UIExplorerPage
         noSpacer={true}
         noScroll={true}>
         <View style={styles.searchRow}>
-          <View style={styles.options}>
+          <Animated.View style={[styles.options, { opacity }]}>
             <PlainInput
               onChangeText={this._onChangeFilterText}
               placeholder="Search..."
@@ -95,7 +101,7 @@ class FlatListExample extends React.PureComponent {
               placeholder="scrollToIndex..."
               style={styles.searchTextInput}
             />
-          </View>
+          </Animated.View>
           <View style={styles.options}>
             {renderSmallSwitchOption(this, 'virtualized')}
             {renderSmallSwitchOption(this, 'horizontal')}
@@ -124,6 +130,16 @@ class FlatListExample extends React.PureComponent {
           renderItem={this._renderItemComponent}
           shouldItemUpdate={this._shouldItemUpdate}
           viewabilityConfig={VIEWABILITY_CONFIG}
+          onScroll={
+            Animated.event([{
+              nativeEvent: { contentOffset: { y: this.state.scrollY } }
+            }], {
+              useNativeDriver: true,
+              listener: (e) => {
+                this._listRef.onScroll(e);
+              }
+            })
+          }
         />
       </UIExplorerPage>
     );

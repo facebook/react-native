@@ -361,6 +361,10 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     }
   };
 
+  onScroll = (e: Object) => {
+    this._listRef._onScroll(e);
+  }
+
   render() {
     if (this.props.legacyImplementation) {
       return <MetroListView {...this.props} items={this.props.data} ref={this._captureRef} />;

@@ -25,6 +25,8 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
+const _ = require('lodash');
+const FlatList = require('FlatList');
 const {
   View,
   Text,
@@ -208,6 +210,45 @@ class EventExample extends React.Component {
             <Text>Scroll me!</Text>
           </View>
         </Animated.ScrollView>
+      </View>
+    );
+  }
+}
+
+class FlatlistEventExample extends React.Component {
+  state = {
+    scrollX: new Animated.Value(0),
+  };
+
+  _listRef: FlatList<*>;
+
+  render() {
+    const opacity = this.state.scrollX.interpolate({
+      inputRange: [0, 200],
+      outputRange: [1, 0],
+    });
+    return (
+      <View>
+        <Animated.View style={[ styles.block, { opacity } ]} />
+        <FlatList
+          horizontal
+          ref={(ref) => { this._listRef = ref; }}
+          style={{ height: 100, marginTop: 16 }}
+          scrollEventThrottle={16}
+          data={_.range(10).map((i) => ({ key: i }))}
+          renderItem={(item) => <View style={styles.block} />}
+          SeparatorComponent={() => <View style={{ width: 2 }}/>}
+          onScroll={
+            Animated.event([{
+              nativeEvent: { contentOffset: { x: this.state.scrollX } }
+            }], {
+              useNativeDriver: true,
+              listener: (e) => {
+                this._listRef.onScroll(e);
+              },
+            })
+          }
+        />
       </View>
     );
   }
@@ -479,6 +520,14 @@ exports.examples = [
     render: function() {
       return (
         <EventExample />
+      );
+    },
+  },
+  {
+    title: 'Flatlist event example',
+    render: function() {
+      return (
+        <FlatlistEventExample />
       );
     },
   },
