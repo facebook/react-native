@@ -160,6 +160,13 @@ class WebView extends React.Component {
      * @platform android
      */
     allowUniversalAccessFromFileURLs: PropTypes.bool,
+
+    /**
+     * Function that accepts a string that will be passed to the WebView and
+     * executed mmediately as JavaScript
+     */
+    injectJavaScript: PropTypes.func,
+
   };
 
   static defaultProps = {
