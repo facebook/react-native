@@ -38,8 +38,8 @@ describe('AssetServer', () => {
           imgs: {
             'b.png': 'b image',
             'b@2x.png': 'b2 image',
-          }
-        }
+          },
+        },
       });
 
       return Promise.all([
@@ -65,8 +65,8 @@ describe('AssetServer', () => {
             'b.android.png': 'b android image',
             'c.png': 'c general image',
             'c.android.png': 'c android image',
-          }
-        }
+          },
+        },
       });
 
       return Promise.all([
@@ -100,8 +100,8 @@ describe('AssetServer', () => {
           imgs: {
             'b.png': 'png image',
             'b.jpg': 'jpeg image',
-          }
-        }
+          },
+        },
       });
 
       return Promise.all([
@@ -128,8 +128,8 @@ describe('AssetServer', () => {
             'b@2x.png': 'b2 image',
             'b@4x.png': 'b4 image',
             'b@4.5x.png': 'b4.5 image',
-          }
-        }
+          },
+        },
       });
 
       return server.get('imgs/b@3x.png').then(data =>
@@ -154,8 +154,8 @@ describe('AssetServer', () => {
             'b@2x.ios.png': 'b2 ios image',
             'b@4x.ios.png': 'b4 ios image',
             'b@4.5x.ios.png': 'b4.5 ios image',
-          }
-        }
+          },
+        },
       });
 
       return Promise.all([
@@ -209,8 +209,8 @@ describe('AssetServer', () => {
             'b@2x.png': 'b2 image',
             'b@4x.png': 'b4 image',
             'b@4.5x.png': 'b4.5 image',
-          }
-        }
+          },
+        },
       });
 
       return server.getAssetData('imgs/b.png').then(data => {
@@ -241,8 +241,8 @@ describe('AssetServer', () => {
             'b@2x.jpg': 'b2 image',
             'b@4x.jpg': 'b4 image',
             'b@4.5x.jpg': 'b4.5 image',
-          }
-        }
+          },
+        },
       });
 
       return server.getAssetData('imgs/b.jpg').then(data => {
@@ -275,11 +275,11 @@ describe('AssetServer', () => {
               'b@2x.jpg': 'b2 image',
               'b@4x.jpg': 'b4 image',
               'b@4.5x.jpg': 'b4.5 image',
-            }
-          }
+            },
+          },
         };
 
-       fs.__setMockFilesystem(mockFS);
+        fs.__setMockFilesystem(mockFS);
       });
 
       it('uses the file contents to build the hash', () => {

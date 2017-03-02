@@ -87,7 +87,7 @@ public class DevServerHelper {
 
   public interface PackagerCommandListener {
     void onPackagerReloadCommand();
-    void onCaptureHeapCommand();
+    void onCaptureHeapCommand(@Nullable final JSPackagerClient.Responder responder);
     void onPokeSamplingProfilerCommand(@Nullable final JSPackagerClient.Responder responder);
   }
 
@@ -129,10 +129,10 @@ public class DevServerHelper {
             commandListener.onPackagerReloadCommand();
           }
         });
-        handlers.put("captureHeap", new JSPackagerClient.NotificationOnlyHandler() {
+        handlers.put("captureHeap", new JSPackagerClient.RequestOnlyHandler() {
           @Override
-          public void onNotification(@Nullable Object params) {
-            commandListener.onCaptureHeapCommand();
+          public void onRequest(@Nullable Object params, JSPackagerClient.Responder responder) {
+            commandListener.onCaptureHeapCommand(responder);
           }
         });
         handlers.put("pokeSamplingProfiler", new JSPackagerClient.RequestOnlyHandler() {

@@ -32,6 +32,15 @@ function clearStringBackwards(stream: tty.WriteStream, str: string): void {
 }
 
 /**
+ * Cut a string into an array of string of the specific maximum size. A newline
+ * ends a chunk immediately (it's not included in the "." RexExp operator), and
+ * is not included in the result.
+ */
+function chunkString(str: string, size: number): Array<string> {
+  return str.match(new RegExp(`.{1,${size}}`, 'g')) || [];
+}
+
+/**
  * We don't just print things to the console, sometimes we also want to show
  * and update progress. This utility just ensures the output stays neat: no
  * missing newlines, no mangled log lines.
@@ -78,6 +87,7 @@ class Terminal {
     const {_statusStr, _stream} = this;
     if (_statusStr !== str && _stream instanceof tty.WriteStream) {
       clearStringBackwards(_stream, _statusStr);
+      str = chunkString(str, _stream.columns).join('\n');
       _stream.write(str);
     }
     this._statusStr = str;

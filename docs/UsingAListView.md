@@ -8,7 +8,7 @@ next: network
 previous: using-a-scrollview
 ---
 
-The `ListView` component displays a vertically scrolling list of changing, but similarly structured, data.
+The `ListView` component displays a scrolling list of changing, but similarly structured, data.
 
 `ListView` works well for long lists of data, where the number of items might change over time. Unlike the more generic [`ScrollView`](docs/using-a-scrollview.html), the `ListView` only renders elements that are currently showing on the screen, not all the elements at once.
 

@@ -39,8 +39,8 @@ const PropTypes = React.PropTypes;
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
-const forceTouchAvailable = (NativeModules.IOSConstants &&
-  NativeModules.IOSConstants.forceTouchAvailable) || false;
+const forceTouchAvailable = (NativeModules.PlatformConstants &&
+  NativeModules.PlatformConstants.forceTouchAvailable) || false;
 
 const statics = {
   AccessibilityTraits,
@@ -230,6 +230,18 @@ const View = React.createClass({
       PropTypes.oneOf(AccessibilityTraits),
       PropTypes.arrayOf(PropTypes.oneOf(AccessibilityTraits)),
     ]),
+
+    /**
+     * A value indicating whether VoiceOver should ignore the elements
+     * within views that are siblings of the receiver.
+     * Default is `false`.
+     *
+     * See the [Accessibility guide](docs/accessibility.html#accessibilitytraits-ios)
+     * for more information.
+     *
+     * @platform ios
+     */
+    accessibilityViewIsModal: PropTypes.bool,
 
     /**
      * When `accessible` is true, the system will try to invoke this function

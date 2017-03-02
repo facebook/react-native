@@ -82,8 +82,8 @@ class ResolutionRequest {
     this._resetResolutionCache();
   }
 
-  _tryResolve(action, secondaryAction) {
-    return action().catch((error) => {
+  _tryResolve(action: () => Promise<string>, secondaryAction: () => ?Promise<string>) {
+    return action().catch(error => {
       if (error.type !== 'UnableToResolveError') {
         throw error;
       }
@@ -99,7 +99,7 @@ class ResolutionRequest {
       return Promise.resolve(this._immediateResolutionCache[resHash]);
     }
 
-    const cacheResult = (result) => {
+    const cacheResult = result => {
       this._immediateResolutionCache[resHash] = result;
       return result;
     };
@@ -219,7 +219,7 @@ class ResolutionRequest {
     });
   }
 
-  _resolveHasteDependency(fromModule, toModuleName) {
+  _resolveHasteDependency(fromModule: Module, toModuleName: string) {
     toModuleName = normalizePath(toModuleName);
 
     let p = fromModule.getPackage();
@@ -229,7 +229,7 @@ class ResolutionRequest {
       p = Promise.resolve(toModuleName);
     }
 
-    return p.then((realModuleName) => {
+    return p.then(realModuleName => {
       let dep = this._hasteMap.getModule(realModuleName, this._platform);
       if (dep && dep.type === 'Module') {
         return dep;
@@ -267,7 +267,7 @@ class ResolutionRequest {
     });
   }
 
-  _redirectRequire(fromModule, modulePath) {
+  _redirectRequire(fromModule: Module, modulePath: string) {
     return Promise.resolve(fromModule.getPackage()).then(p => {
       if (p) {
         return p.redirectRequire(modulePath);
@@ -276,9 +276,9 @@ class ResolutionRequest {
     });
   }
 
-  _resolveFileOrDir(fromModule, toModuleName) {
+  _resolveFileOrDir(fromModule: Module, toModuleName: string) {
     const potentialModulePath = isAbsolutePath(toModuleName) ?
-        toModuleName :
+        resolveWindowsPath(toModuleName) :
         path.join(path.dirname(fromModule.path), toModuleName);
 
     return this._redirectRequire(fromModule, potentialModulePath).then(
@@ -299,7 +299,7 @@ class ResolutionRequest {
     );
   }
 
-  _resolveNodeDependency(fromModule, toModuleName) {
+  _resolveNodeDependency(fromModule: Module, toModuleName: string) {
     if (isRelativeImport(toModuleName) || isAbsolutePath(toModuleName)) {
       return this._resolveFileOrDir(fromModule, toModuleName);
     } else {
@@ -379,7 +379,7 @@ class ResolutionRequest {
     }
   }
 
-  _loadAsFile(potentialModulePath, fromModule, toModule) {
+  _loadAsFile(potentialModulePath: string, fromModule: Module, toModule: string) {
     return Promise.resolve().then(() => {
       if (this._helpers.isAssetFile(potentialModulePath)) {
         let dirname = path.dirname(potentialModulePath);
@@ -439,7 +439,7 @@ class ResolutionRequest {
     });
   }
 
-  _loadAsDir(potentialDirPath, fromModule, toModule) {
+  _loadAsDir(potentialDirPath: string, fromModule: Module, toModule: string) {
     return Promise.resolve().then(() => {
       if (!this._dirExists(potentialDirPath)) {
         throw new UnableToResolveError(
@@ -453,7 +453,7 @@ class ResolutionRequest {
       if (this._hasteFS.exists(packageJsonPath)) {
         return this._moduleCache.getPackage(packageJsonPath)
           .getMain().then(
-            (main) => this._tryResolve(
+            main => this._tryResolve(
               () => this._loadAsFile(main, fromModule, toModule),
               () => this._loadAsDir(main, fromModule, toModule)
             )
@@ -507,6 +507,16 @@ function normalizePath(modulePath) {
   }
 
   return modulePath.replace(/\/$/, '');
+}
+
+// HasteFS stores paths with backslashes on Windows, this ensures the path is
+// in the proper format. Will also add drive letter if not present so `/root` will
+// resolve to `C:\root`. Noop on other platforms.
+function resolveWindowsPath(modulePath) {
+  if (path.sep !== '\\') {
+    return modulePath;
+  }
+  return path.resolve(modulePath);
 }
 
 function resolveKeyWithPromise([key, promise]) {

@@ -36,6 +36,7 @@ import com.facebook.react.flat.RCTViewManager;
 import com.facebook.react.flat.RCTViewPagerManager;
 import com.facebook.react.flat.RCTVirtualTextManager;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
+import com.facebook.react.modules.accessibilityinfo.AccessibilityInfoModule;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.camera.CameraRollManager;
 import com.facebook.react.modules.camera.ImageEditingManager;
@@ -102,6 +103,12 @@ public class MainReactPackage extends LazyReactPackage {
   @Override
   public List<ModuleSpec> getNativeModules(final ReactApplicationContext context) {
     return Arrays.asList(
+      new ModuleSpec(AccessibilityInfoModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new AccessibilityInfoModule(context);
+        }
+      }),
       new ModuleSpec(AppStateModule.class, new Provider<NativeModule>() {
         @Override
         public NativeModule get() {

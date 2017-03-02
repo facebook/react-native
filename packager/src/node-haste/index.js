@@ -36,6 +36,7 @@ const {
   createActionStartEntry,
   log,
 } = require('../Logger');
+const {EventEmitter} = require('events');
 
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type GlobalTransformCache from '../lib/GlobalTransformCache';
@@ -49,119 +50,48 @@ import type {HasteFS} from './types';
 
 const ERROR_BUILDING_DEP_GRAPH = 'DependencyGraphError';
 
-class DependencyGraph {
-  _opts: {|
-    assetExts: Array<string>,
-    extensions: Array<string>,
-    extraNodeModules: ?Object,
-    forceNodeFilesystemAPI: boolean,
-    globalTransformCache: ?GlobalTransformCache,
-    ignoreFilePath: (filePath: string) => boolean,
-    maxWorkers: ?number,
-    mocksPattern: mixed,
-    moduleOptions: ModuleOptions,
-    platforms: Set<string>,
-    preferNativePlatform: boolean,
-    providesModuleNodeModules: Array<string>,
-    resetCache: boolean,
-    roots: Array<string>,
-    shouldThrowOnUnresolvedErrors: () => boolean,
-    getTransformCacheKey: GetTransformCacheKey,
-    transformCode: TransformCode,
-    useWatchman: boolean,
-    watch: boolean,
-  |};
-  _assetDependencies: Array<string>;
-  _cache: Cache;
+type Options = {
+  assetDependencies: Array<string>,
+  assetExts: Array<string>,
+  cache: Cache,
+  extensions: Array<string>,
+  extraNodeModules: ?Object,
+  forceNodeFilesystemAPI: boolean,
+  getTransformCacheKey: GetTransformCacheKey,
+  globalTransformCache: ?GlobalTransformCache,
+  ignoreFilePath: (filePath: string) => boolean,
+  maxWorkers: ?number,
+  moduleOptions: ModuleOptions,
+  platforms: Set<string>,
+  preferNativePlatform: boolean,
+  providesModuleNodeModules: Array<string>,
+  reporter: Reporter,
+  resetCache: boolean,
+  roots: Array<string>,
+  transformCode: TransformCode,
+  useWatchman: boolean,
+  watch: boolean,
+};
+
+class DependencyGraph extends EventEmitter {
+  _opts: Options;
   _haste: JestHasteMap;
   _hasteFS: HasteFS;
   _hasteMap: HasteMap;
   _hasteMapError: ?Error;
   _helpers: DependencyGraphHelpers;
   _moduleCache: ModuleCache;
-  _reporter: Reporter;
 
-  _loading: Promise<mixed>;
+  _loading: Promise<void>;
 
-  constructor({
-    assetDependencies,
-    assetExts,
-    cache,
-    extensions,
-    extraNodeModules,
-    forceNodeFilesystemAPI,
-    getTransformCacheKey,
-    globalTransformCache,
-    ignoreFilePath,
-    maxWorkers,
-    mocksPattern,
-    moduleOptions,
-    platforms,
-    preferNativePlatform,
-    providesModuleNodeModules,
-    resetCache,
-    roots,
-    shouldThrowOnUnresolvedErrors = () => true,
-    transformCode,
-    useWatchman,
-    watch,
-    reporter,
-  }: {
-    assetDependencies: Array<string>,
-    assetExts: Array<string>,
-    cache: Cache,
-    extensions?: ?Array<string>,
-    extraNodeModules: ?Object,
-    forceNodeFilesystemAPI?: boolean,
-    getTransformCacheKey: GetTransformCacheKey,
-    globalTransformCache: ?GlobalTransformCache,
-    ignoreFilePath: (filePath: string) => boolean,
-    maxWorkers?: ?number,
-    mocksPattern?: mixed,
-    moduleOptions: ?ModuleOptions,
-    platforms: Array<string>,
-    preferNativePlatform: boolean,
-    providesModuleNodeModules: Array<string>,
-    resetCache: boolean,
-    roots: Array<string>,
-    shouldThrowOnUnresolvedErrors?: () => boolean,
-    transformCode: TransformCode,
-    useWatchman?: ?boolean,
-    watch: boolean,
-    reporter: Reporter,
-  }) {
-    this._opts = {
-      assetExts: assetExts || [],
-      extensions: extensions || ['js', 'json'],
-      extraNodeModules,
-      forceNodeFilesystemAPI: !!forceNodeFilesystemAPI,
-      getTransformCacheKey,
-      globalTransformCache,
-      ignoreFilePath: ignoreFilePath || (() => {}),
-      maxWorkers,
-      mocksPattern,
-      moduleOptions: moduleOptions || {
-        cacheTransformResults: true,
-      },
-      platforms: new Set(platforms || []),
-      preferNativePlatform: preferNativePlatform || false,
-      providesModuleNodeModules,
-      resetCache,
-      roots,
-      shouldThrowOnUnresolvedErrors,
-      transformCode,
-      useWatchman: useWatchman !== false,
-      watch: !!watch,
-    };
-
-    this._reporter = reporter;
-    this._cache = cache;
-    this._assetDependencies = assetDependencies;
+  constructor(opts: Options) {
+    super();
+    this._opts = {...opts};
     this._helpers = new DependencyGraphHelpers(this._opts);
     this.load();
   }
 
-  load() {
+  load(): Promise<void> {
     if (this._loading) {
       return this._loading;
     }
@@ -185,22 +115,24 @@ class DependencyGraph {
 
     const initializingPackagerLogEntry =
       log(createActionStartEntry('Initializing Packager'));
-    this._reporter.update({type: 'dep_graph_loading'});
+    this._opts.reporter.update({type: 'dep_graph_loading'});
     this._loading = this._haste.build().then(({hasteFS}) => {
       this._hasteFS = hasteFS;
       const hasteFSFiles = hasteFS.getAllFiles();
 
       this._moduleCache = new ModuleCache({
-        cache: this._cache,
+        cache: this._opts.cache,
         getTransformCacheKey: this._opts.getTransformCacheKey,
         globalTransformCache: this._opts.globalTransformCache,
         transformCode: this._opts.transformCode,
         depGraphHelpers: this._helpers,
-        assetDependencies: this._assetDependencies,
+        assetDependencies: this._opts.assetDependencies,
         moduleOptions: this._opts.moduleOptions,
-        reporter: this._reporter,
+        reporter: this._opts.reporter,
         getClosestPackage: filePath => {
-          let {dir, root} = path.parse(filePath);
+          const parsedPath = path.parse(filePath);
+          const root = parsedPath.root;
+          let dir = parsedPath.dir;
           do {
             const candidate = path.join(dir, 'package.json');
             if (this._hasteFS.exists(candidate)) {
@@ -209,7 +141,7 @@ class DependencyGraph {
             dir = path.dirname(dir);
           } while (dir !== '.' && dir !== root);
           return null;
-        }
+        },
       }, this._opts.platforms);
 
       this._hasteMap = new HasteMap({
@@ -226,6 +158,7 @@ class DependencyGraph {
         eventsQueue.forEach(({type, filePath, stat}) =>
           this.processFileChange(type, filePath, stat)
         );
+        this.emit('change');
       });
 
       const buildingHasteMapLogEntry =
@@ -235,8 +168,7 @@ class DependencyGraph {
         map => {
           log(createActionEndEntry(buildingHasteMapLogEntry));
           log(createActionEndEntry(initializingPackagerLogEntry));
-          this._reporter.update({type: 'dep_graph_loaded'});
-          return map;
+          this._opts.reporter.update({type: 'dep_graph_loaded'});
         },
         err => {
           const error = new Error(
@@ -337,7 +269,7 @@ class DependencyGraph {
     return platform;
   }
 
-  _getAbsolutePath(filePath) {
+  _getAbsolutePath(filePath: string) {
     if (isAbsolutePath(filePath)) {
       return path.resolve(filePath);
     }
@@ -372,7 +304,7 @@ class DependencyGraph {
         this._hasteMapError = null;
 
         // Rebuild the entire map if last change resulted in an error.
-        this._loading = this._hasteMap.build();
+        this._loading = this._hasteMap.build().then(() => {});
       } else {
         this._loading = this._hasteMap.processFileChange(type, filePath);
         this._loading.catch(error => {

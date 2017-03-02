@@ -57,7 +57,7 @@ function makeFarm(worker, methods, timeout) {
     {
       autoStart: true,
       maxConcurrentCallsPerWorker: 1,
-      maxConcurrentWorkers: maxConcurrentWorkers,
+      maxConcurrentWorkers,
       maxCallsPerWorker: MAX_CALLS_PER_WORKER,
       maxCallTime: timeout,
       maxRetries: MAX_RETRIES,

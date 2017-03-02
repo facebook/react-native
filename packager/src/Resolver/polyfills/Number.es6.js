@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule Number.es6
  * @polyfill
  */
 
@@ -28,6 +27,7 @@ if (Number.MIN_SAFE_INTEGER === undefined) {
   });
 }
 if (!Number.isNaN) {
+  // eslint-disable-next-line max-len
   // https://github.com/dherman/tc39-codex-wiki/blob/master/data/es6/number/index.md#polyfill-for-numberisnan
   const globalIsNaN = global.isNaN;
   Object.defineProperty(Number, 'isNaN', {
