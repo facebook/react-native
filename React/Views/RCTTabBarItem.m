@@ -71,6 +71,7 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
     _barItem.title = oldItem.title;
     _barItem.imageInsets = oldItem.imageInsets;
     _barItem.badgeValue = oldItem.badgeValue;
+    _barItem.badgeColor = oldItem.badgeColor;
   }
 }
 
@@ -85,6 +86,7 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
     _barItem.imageInsets = oldItem.imageInsets;
     _barItem.selectedImage = oldItem.selectedImage;
     _barItem.badgeValue = oldItem.badgeValue;
+    _barItem.badgeColor = oldItem.badgeColor;
   }
 
   if (_renderAsOriginal) {
