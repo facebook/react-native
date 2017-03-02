@@ -12,13 +12,13 @@
 'use strict';
 
 /**
- * `AdSupport` provides access to the advertisingidentifier. It's not currently linked 
- * because it triggers an automatic detection from Apple on submission to the App Store 
- * to justify its use. 
- * 
- * Before using this you must link the `RCTAdSupport` library. In 
+ * `AdSupport` provides access to the advertisingidentifier. It's not currently linked
+ * because it triggers an automatic detection from Apple on submission to the App Store
+ * to justify its use.
+ *
+ * Before using this you must link the `RCTAdSupport` library. In
  * Xcode, you can manually add the RCTAdSupport.m and RCTAdSupport.h files from
- * node_modules/react-native/Libraries/AdSupport/ to the Libraries/React/Base/ folder of 
+ * node_modules/react-native/Libraries/AdSupport/ to the Libraries/React/Base/ folder of
  * your current project.
  * You can refer to [Linking](docs/linking-libraries-ios.html) for help.
  *
