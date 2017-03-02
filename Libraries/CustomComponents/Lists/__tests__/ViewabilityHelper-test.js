@@ -10,6 +10,7 @@
 'use strict';
 
 jest.unmock('ViewabilityHelper');
+
 const ViewabilityHelper = require('ViewabilityHelper');
 
 let rowFrames;

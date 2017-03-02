@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 
 export type ViewToken = {item: any, key: string, index: ?number, isViewable: boolean, section?: any};
 

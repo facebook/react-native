@@ -34,6 +34,7 @@ const ReactNative = {
   get Button() { return require('Button'); },
   get DatePickerIOS() { return require('DatePickerIOS'); },
   get DrawerLayoutAndroid() { return require('DrawerLayoutAndroid'); },
+  get FlatList() { return require('FlatList'); },
   get Image() { return require('Image'); },
   get ImageEditor() { return require('ImageEditor'); },
   get ImageStore() { return require('ImageStore'); },
@@ -48,6 +49,7 @@ const ReactNative = {
   get ProgressBarAndroid() { return require('ProgressBarAndroid'); },
   get ProgressViewIOS() { return require('ProgressViewIOS'); },
   get ScrollView() { return require('ScrollView'); },
+  get SectionList() { return require('SectionList'); },
   get SegmentedControlIOS() { return require('SegmentedControlIOS'); },
   get Slider() { return require('Slider'); },
   get SnapshotViewIOS() { return require('SnapshotViewIOS'); },
@@ -67,6 +69,7 @@ const ReactNative = {
   get TouchableWithoutFeedback() { return require('TouchableWithoutFeedback'); },
   get View() { return require('View'); },
   get ViewPagerAndroid() { return require('ViewPagerAndroid'); },
+  get VirtualizedList() { return require('VirtualizedList'); },
   get WebView() { return require('WebView'); },
 
   // APIs
