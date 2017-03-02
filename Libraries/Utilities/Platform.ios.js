@@ -32,7 +32,19 @@ const Platform = {
     const constants = NativeModules.PlatformConstants;
     return constants && constants.isTesting;
   },
-  select: (obj: Object) => 'ios' in obj ? obj.ios : obj.default,
+  select: (obj: Object): Object => {
+    let retObj: Object = obj.default;
+    const keys = Object.keys(obj).filter(x => x.match(/\bios\b/));
+    if (keys.length === 1 && 'ios' in obj) {
+      return obj.ios;
+    }
+    if (keys.length >= 1) {
+      retObj = {};
+      const multiVal: Object = keys.reduce((prev: Object, curr: Object) => ({...prev, ...obj[curr]}), {});
+      retObj = {...retObj, ...multiVal};
+    }
+    return retObj;
+  },
 };
 
 module.exports = Platform;
