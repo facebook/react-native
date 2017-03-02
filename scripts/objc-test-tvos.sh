@@ -23,6 +23,12 @@ function cleanup {
 }
 trap cleanup EXIT
 
+# If first argument is "test", actually start the packager and run tests as in the iOS script
+# Otherwise, just build UIExplorer for tvOS and exit
+
+if [ "$1" = "test" ];
+then
+
 # Start the packager 
 open "./packager/launchPackager.command" || echo "Can't start packager automatically"
 open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
@@ -38,13 +44,25 @@ rm temp.bundle
 curl 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o temp.bundle
 rm temp.bundle
 
+# Build and test for tvOS
 # TODO: We use xcodebuild because xctool would stall when collecting info about
 # the tests before running them. Switch back when this issue with xctool has
 # been resolved.
 xcodebuild \
   -project "Examples/UIExplorer/UIExplorer.xcodeproj" \
-  -scheme "UIExplorer" \
-  -sdk "iphonesimulator" \
-  -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.0" \
+  -scheme "UIExplorer-tvOS" \
+  -sdk "appletvsimulator" \
+  -destination "platform=tvOS Simulator,name=Apple TV 1080p,OS=10.1" \
   build test
- 
+
+else
+
+# Build only (no test) for tvOS, to make sure there are no missing files
+xcodebuild \
+  -project "Examples/UIExplorer/UIExplorer.xcodeproj" \
+  -scheme "UIExplorer-tvOS" \
+  -sdk "appletvsimulator" \
+  -destination "platform=tvOS Simulator,name=Apple TV 1080p,OS=10.1" \
+  build
+
+fi 
