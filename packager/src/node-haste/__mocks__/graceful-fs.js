@@ -110,7 +110,7 @@ function makeStatResult(node) {
 
 function statSync(filepath) {
   const node = getToNode(filepath);
-  if (node.SYMLINK) {
+  if (node != null && node.SYMLINK) {
     return statSync(node.SYMLINK);
   }
   return makeStatResult(node);
@@ -295,6 +295,11 @@ function getToNode(filepath) {
       node = getToNode(node.SYMLINK);
     }
     node = node[part];
+    if (node == null) {
+      const err = new Error('ENOENT: no such file or directory');
+      err.code = 'ENOENT';
+      throw err;
+    }
   });
 
   return node;
