@@ -39,7 +39,7 @@ const Platform = {
       return obj.ios;
     }
     if (keys.length >= 1) {
-      retObj = keys.reduce((prev: Object, curr: Object) => ({...prev, ...obj[curr]}), {});
+      retObj = keys.reduce((prev, curr) => ({...prev, ...obj[curr]}), {});
     }
     return retObj;
   },
