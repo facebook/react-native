@@ -160,7 +160,7 @@ class DependencyGraph extends EventEmitter {
         this._hasteFS = event.hasteFS;
         this._moduleMap = event.moduleMap;
         event.eventsQueue.forEach(({type, filePath, stat}) =>
-          this.processFileChange(type, filePath, stat)
+          this._onFileChange(type, filePath, stat)
         );
         this.emit('change');
       });
@@ -293,7 +293,7 @@ class DependencyGraph extends EventEmitter {
     );
   }
 
-  processFileChange(type: string, filePath: string, stat: Object) {
+  _onFileChange(type: string, filePath: string, stat: Object) {
     this._moduleCache.processFileChange(type, filePath, stat);
 
     // This code reports failures but doesn't block recovery in the dev server
