@@ -45,19 +45,19 @@ import type {Props as VirtualizedListProps} from 'VirtualizedList';
 
 type RequiredProps<ItemT> = {
   /**
-   * Takes an item from `data` and renders it into the list. Typicaly usage:
+   * Takes an item from `data` and renders it into the list. Typical usage:
    *
-   *   _renderItem = ({item}) => (
-   *     <TouchableOpacity onPress={() => this._onPress(item)}>
-   *       <Text>{item.title}}</Text>
-   *     <TouchableOpacity/>
-   *   );
-   *   ...
-   *   <FlatList data={[{title: 'Title Text', key: 'item1'}]} renderItem={this._renderItem} />
+   *     _renderItem = ({item}) => (
+   *       <TouchableOpacity onPress={() => this._onPress(item)}>
+   *         <Text>{item.title}}</Text>
+   *       <TouchableOpacity/>
+   *     );
+   *     ...
+   *     <FlatList data={[{title: 'Title Text', key: 'item1'}]} renderItem={this._renderItem} />
    *
    * Provides additional metadata like `index` if you need it.
    */
-  renderItem: ({item: ItemT, index: number}) => ?React.Element<*>,
+  renderItem: (info: {item: ItemT, index: number}) => ?React.Element<any>,
   /**
    * For simplicity, data is just a plain array. If you want to use something else, like an
    * immutable list, use the underlying `VirtualizedList` directly.
@@ -68,21 +68,23 @@ type OptionalProps<ItemT> = {
   /**
    * Rendered at the bottom of all the items.
    */
-  FooterComponent?: ?ReactClass<*>,
+  FooterComponent?: ?ReactClass<any>,
   /**
    * Rendered at the top of all the items.
    */
-  HeaderComponent?: ?ReactClass<*>,
+  HeaderComponent?: ?ReactClass<any>,
   /**
    * Rendered in between each item, but not at the top or bottom.
    */
-  SeparatorComponent?: ?ReactClass<*>,
+  SeparatorComponent?: ?ReactClass<any>,
   /**
-   * getItemLayout is an optional optimizations that let us skip measurement of dynamic content if
-   * you know the height of items a priori. getItemLayout is the most efficient, and is easy to use
-   * if you have fixed height items, for example:
+   * `getItemLayout` is an optional optimizations that let us skip measurement of dynamic content if
+   * you know the height of items a priori. `getItemLayout` is the most efficient, and is easy to
+   * use if you have fixed height items, for example:
    *
-   *   getItemLayout={(data, index) => ({length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index})}
+   *     getItemLayout={(data, index) => (
+   *       {length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index}
+   *     )}
    *
    * Remember to include separator length (height or width) in your offset calculation if you
    * specify `SeparatorComponent`.
@@ -95,30 +97,31 @@ type OptionalProps<ItemT> = {
   horizontal?: ?boolean,
   /**
    * Used to extract a unique key for a given item at the specified index. Key is used for caching
-   * and as the react key to track item re-ordering. The default extractor checks item.key, then
-   * falls back to using the index, like react does.
+   * and as the react key to track item re-ordering. The default extractor checks `item.key`, then
+   * falls back to using the index, like React does.
    */
   keyExtractor: (item: ItemT, index: number) => string,
   /**
-   * Multiple columns can only be rendered with horizontal={false} and will zig-zag like a flexWrap
-   * layout. Items should all be the same height - masonry layouts are not supported.
+   * Multiple columns can only be rendered with `horizontal={false}`` and will zig-zag like a
+   * `flexWrap` layout. Items should all be the same height - masonry layouts are not supported.
    */
   numColumns: number,
   /**
-   * Called once when the scroll position gets within onEndReachedThreshold of the rendered content.
+   * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
+   * content.
    */
-  onEndReached?: ?({distanceFromEnd: number}) => void,
+  onEndReached?: ?(info: {distanceFromEnd: number}) => void,
   onEndReachedThreshold?: ?number,
   /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
    * sure to also set the `refreshing` prop correctly.
    */
-  onRefresh?: ?Function,
+  onRefresh?: ?() => void,
   /**
    * Called when the viewability of rows changes, as defined by the
    * `viewablePercentThreshold` prop.
    */
-  onViewableItemsChanged?: ?({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
+  onViewableItemsChanged?: ?(info: {viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
   legacyImplementation?: ?boolean,
   /**
    * Set this true while waiting for new data from a refresh.
@@ -136,7 +139,7 @@ type OptionalProps<ItemT> = {
     nextInfo: {item: ItemT, index: number}
   ) => boolean,
   /**
-   * See ViewabilityHelper for flow type and further documentation.
+   * See `ViewabilityHelper` for flow type and further documentation.
    */
   viewabilityConfig?: ViewabilityConfig,
 };
@@ -155,21 +158,25 @@ type DefaultProps = typeof defaultProps;
  *
  *  - Fully cross-platform.
  *  - Optional horizontal mode.
- *  - Viewability callbacks.
+ *  - Configurable viewability callbacks.
+ *  - Header support.
  *  - Footer support.
  *  - Separator support.
- *  - Pull to Refresh
+ *  - Pull to Refresh.
+ *  - Scroll loading.
  *
- * If you need sticky section header support, use ListView for now.
+ * If you need section support, use [`<SectionList>`](/react-native/docs/sectionlist.html).
  *
  * Minimal Example:
  *
- *   <FlatList
- *     data={[{key: 'a'}, {key: 'b'}]}
- *     renderItem={({item}) => <Text>{item.key}</Text>}
- *   />
+ *     <FlatList
+ *       data={[{key: 'a'}, {key: 'b'}]}
+ *       renderItem={({item}) => <Text>{item.key}</Text>}
+ *     />
  *
- * Some notes for all of the `VirtualizedList` based components:
+ * This is a convenience wrapper around [`<VirtualizedList>`](/react-native/docs/virtualizedlist.html),
+ * and thus inherits the following caveats:
+ *
  * - Internal state is not preserved when content scrolls out of the render window. Make sure all
  *   your data is captured in the item data or external stores like Flux, Redux, or Relay.
  * - In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
@@ -183,7 +190,7 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
   static defaultProps: DefaultProps = defaultProps;
   props: Props<ItemT>;
   /**
-   * Scrolls to the end of the content. May be janky without getItemLayout prop.
+   * Scrolls to the end of the content. May be janky without `getItemLayout` prop.
    */
   scrollToEnd(params?: ?{animated?: ?boolean}) {
     this._listRef.scrollToEnd(params);
@@ -191,24 +198,25 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
 
   /**
    * Scrolls to the item at a the specified index such that it is positioned in the viewable area
-   * such that viewPosition 0 places it at the top, 1 at the bottom, and 0.5 centered in the middle.
+   * such that `viewPosition` 0 places it at the top, 1 at the bottom, and 0.5 centered in the
+   * middle.
    *
-   * May be janky without getItemLayout prop.
+   * May be janky without `getItemLayout` prop.
    */
   scrollToIndex(params: {animated?: ?boolean, index: number, viewPosition?: number}) {
     this._listRef.scrollToIndex(params);
   }
 
   /**
-   * Requires linear scan through data - use scrollToIndex instead if possible. May be janky without
-   * `getItemLayout` prop.
-  */
+   * Requires linear scan through data - use `scrollToIndex` instead if possible. May be janky
+   * without `getItemLayout` prop.
+   */
   scrollToItem(params: {animated?: ?boolean, item: ItemT, viewPosition?: number}) {
     this._listRef.scrollToItem(params);
   }
 
   /**
-   * Scroll to a specific content pixel offset, like a normal ScrollView.
+   * Scroll to a specific content pixel offset, like a normal `ScrollView`.
    */
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     this._listRef.scrollToOffset(params);
@@ -216,8 +224,8 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
 
   /**
    * Tells the list an interaction has occured, which should trigger viewability calculations, e.g.
-   * if waitForInteractions is true and the user has not scrolled. This is typically called by taps
-   * on items or by navigation actions.
+   * if `waitForInteractions` is true and the user has not scrolled. This is typically called by
+   * taps on items or by navigation actions.
    */
   recordInteraction() {
     this._listRef.recordInteraction();
@@ -265,7 +273,7 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     }
   }
 
-  _getItem = (data: Array<ItemT>, index: number): ItemT | Array<ItemT> => {
+  _getItem = (data: Array<ItemT>, index: number) => {
     const {numColumns} = this.props;
     if (numColumns > 1) {
       const ret = [];
@@ -279,11 +287,11 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     }
   };
 
-  _getItemCount = (data?: ?Array<ItemT>): number => {
+  _getItemCount = (data: ?Array<ItemT>): number => {
     return data ? Math.ceil(data.length / this.props.numColumns) : 0;
   };
 
-  _keyExtractor = (items: ItemT | Array<ItemT>, index: number): string => {
+  _keyExtractor = (items: ItemT | Array<ItemT>, index: number) => {
     const {keyExtractor, numColumns} = this.props;
     if (numColumns > 1) {
       invariant(

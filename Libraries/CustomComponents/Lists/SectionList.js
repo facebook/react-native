@@ -47,8 +47,8 @@ type SectionBase<SectionItemT> = {
   key: string,
 
   // Optional props will override list-wide props just for this section.
-  renderItem?: ?({item: SectionItemT, index: number}) => ?React.Element<*>,
-  SeparatorComponent?: ?ReactClass<*>,
+  renderItem?: ?(info: {item: SectionItemT, index: number}) => ?React.Element<any>,
+  SeparatorComponent?: ?ReactClass<any>,
   keyExtractor?: (item: SectionItemT) => string,
 
   // TODO: support more optional/override props
@@ -57,53 +57,52 @@ type SectionBase<SectionItemT> = {
   // onViewableItemsChanged?: ({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
 };
 
-type RequiredProps<SectionT: SectionBase<*>> = {
+type RequiredProps<SectionT: SectionBase<any>> = {
   sections: Array<SectionT>,
 };
 
-type OptionalProps<SectionT: SectionBase<*>> = {
+type OptionalProps<SectionT: SectionBase<any>> = {
   /**
    * Default renderer for every item in every section. Can be over-ridden on a per-section basis.
    */
-  renderItem: ({item: Item, index: number}) => ?React.Element<*>,
+  renderItem: (info: {item: Item, index: number}) => ?React.Element<any>,
   /**
    * Rendered in between adjacent Items within each section.
    */
-  ItemSeparatorComponent?: ?ReactClass<*>,
+  ItemSeparatorComponent?: ?ReactClass<any>,
   /**
    * Rendered at the very beginning of the list.
    */
-  ListHeaderComponent?: ?ReactClass<*>,
+  ListHeaderComponent?: ?ReactClass<any>,
   /**
    * Rendered at the very end of the list.
    */
-  ListFooterComponent?: ?ReactClass<*>,
+  ListFooterComponent?: ?ReactClass<any>,
   /**
    * Rendered at the top of each section. Sticky headers are not yet supported.
    */
-  renderSectionHeader?: ?({section: SectionT}) => ?React.Element<*>,
+  renderSectionHeader?: ?(info: {section: SectionT}) => ?React.Element<any>,
   /**
    * Rendered in between each section.
    */
-  SectionSeparatorComponent?: ?ReactClass<*>,
+  SectionSeparatorComponent?: ?ReactClass<any>,
   /**
-   * Warning: Virtualization can drastically improve memory consumption for long lists, but trashes
-   * the state of items when they scroll out of the render window, so make sure all relavent data is
-   * stored outside of the recursive `renderItem` instance tree.
+   * Used to extract a unique key for a given item at the specified index. Key is used for caching
+   * and as the react key to track item re-ordering. The default extractor checks item.key, then
+   * falls back to using the index, like react does.
    */
-  enableVirtualization?: ?boolean,
   keyExtractor: (item: Item, index: number) => string,
-  onEndReached?: ?({distanceFromEnd: number}) => void,
+  onEndReached?: ?(info: {distanceFromEnd: number}) => void,
   /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
    * sure to also set the `refreshing` prop correctly.
    */
-  onRefresh?: ?Function,
+  onRefresh?: ?() => void,
   /**
    * Called when the viewability of rows changes, as defined by the
    * `viewabilityConfig` prop.
    */
-  onViewableItemsChanged?: ?({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
+  onViewableItemsChanged?: ?(info: {viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
   /**
    * Set this true while waiting for new data from a refresh.
    */
@@ -127,16 +126,54 @@ type DefaultProps = typeof VirtualizedSectionList.defaultProps;
  * A performant interface for rendering sectioned lists, supporting the most handy features:
  *
  *  - Fully cross-platform.
- *  - Viewability callbacks.
- *  - Footer support.
- *  - Separator support.
- *  - Heterogeneous data and item support.
+ *  - Configurable viewability callbacks.
+ *  - List header support.
+ *  - List footer support.
+ *  - Item separator support.
+ *  - Section header support.
+ *  - Section separator support.
+ *  - Heterogeneous data and item rendering support.
  *  - Pull to Refresh.
+ *  - Scroll loading.
  *
- * If you don't need section support and want a simpler interface, use FlatList.
+ * If you don't need section support and want a simpler interface, use [`<FlatList>`](/react-native/docs/flatlist.html).
+ *
+ * If you need _sticky_ section header support, use `ListView` for now.
+ *
+ * Simple Examples:
+ *
+ *     <SectionList
+ *       renderItem={({item}) => <ListItem title={item.title}}
+ *       renderSectionHeader={({section}) => <H1 title={section.key} />}
+ *       sections={[ // homogenous rendering between sections
+ *         {data: [...], key: ...},
+ *         {data: [...], key: ...},
+ *         {data: [...], key: ...},
+ *       ]}
+ *     />
+ *
+ *     <SectionList
+ *       sections={[ // heterogeneous rendering between sections
+ *         {data: [...], key: ..., renderItem: ...},
+ *         {data: [...], key: ..., renderItem: ...},
+ *         {data: [...], key: ..., renderItem: ...},
+ *       ]}
+ *     />
+ *
+ * This is a convenience wrapper around [`<VirtualizedList>`](/react-native/docs/virtualizedlist.html),
+ * and thus inherits the following caveats:
+ *
+ * - Internal state is not preserved when content scrolls out of the render window. Make sure all
+ *   your data is captured in the item data or external stores like Flux, Redux, or Relay.
+ * - In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
+ *   offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
+ *   blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
+ *   and we are working on improving it behind the scenes.
+ * - By default, the list looks for a `key` prop on each item and uses that for the React key.
+ *   Alternatively, you can provide a custom keyExtractor prop.
  */
-class SectionList<SectionT: SectionBase<*>>
-  extends React.PureComponent<DefaultProps, Props<SectionT>, *>
+class SectionList<SectionT: SectionBase<any>>
+  extends React.PureComponent<DefaultProps, Props<SectionT>, void>
 {
   props: Props<SectionT>;
   static defaultProps: DefaultProps = VirtualizedSectionList.defaultProps;
