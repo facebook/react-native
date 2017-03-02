@@ -42,6 +42,7 @@ import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type GlobalTransformCache from '../lib/GlobalTransformCache';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
+import type {ModuleMap} from './DependencyGraph/ResolutionRequest';
 import type {
   Options as ModuleOptions,
   TransformCode,
@@ -81,6 +82,7 @@ class DependencyGraph extends EventEmitter {
   _hasteMapError: ?Error;
   _helpers: DependencyGraphHelpers;
   _moduleCache: ModuleCache;
+  _moduleMap: ModuleMap;
 
   _loading: Promise<void>;
 
@@ -116,8 +118,9 @@ class DependencyGraph extends EventEmitter {
     const initializingPackagerLogEntry =
       log(createActionStartEntry('Initializing Packager'));
     this._opts.reporter.update({type: 'dep_graph_loading'});
-    this._loading = this._haste.build().then(({hasteFS}) => {
+    this._loading = this._haste.build().then(({hasteFS, moduleMap}) => {
       this._hasteFS = hasteFS;
+      this._moduleMap = moduleMap;
       const hasteFSFiles = hasteFS.getAllFiles();
 
       this._moduleCache = new ModuleCache({
@@ -153,9 +156,10 @@ class DependencyGraph extends EventEmitter {
         platforms: this._opts.platforms,
       });
 
-      this._haste.on('change', ({eventsQueue, hasteFS: newHasteFS}) => {
-        this._hasteFS = newHasteFS;
-        eventsQueue.forEach(({type, filePath, stat}) =>
+      this._haste.on('change', event => {
+        this._hasteFS = event.hasteFS;
+        this._moduleMap = event.moduleMap;
+        event.eventsQueue.forEach(({type, filePath, stat}) =>
           this.processFileChange(type, filePath, stat)
         );
         this.emit('change');
@@ -189,7 +193,7 @@ class DependencyGraph extends EventEmitter {
    * Returns a promise with the direct dependencies the module associated to
    * the given entryPath has.
    */
-  getShallowDependencies(entryPath: string, transformOptions: mixed) {
+  getShallowDependencies(entryPath: string, transformOptions: TransformOptions) {
     return this._moduleCache
       .getModule(entryPath)
       .getDependencies(transformOptions);
@@ -237,9 +241,9 @@ class DependencyGraph extends EventEmitter {
         entryPath: absPath,
         extraNodeModules: this._opts.extraNodeModules,
         hasteFS: this._hasteFS,
-        hasteMap: this._hasteMap,
         helpers: this._helpers,
         moduleCache: this._moduleCache,
+        moduleMap: this._moduleMap,
         platform,
         platforms: this._opts.platforms,
         preferNativePlatform: this._opts.preferNativePlatform,

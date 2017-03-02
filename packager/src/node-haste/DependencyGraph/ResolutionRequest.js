@@ -17,27 +17,35 @@ const debug = require('debug')('RNP:DependencyGraph');
 const util = require('util');
 const path = require('path');
 const realPath = require('path');
+const invariant = require('fbjs/lib/invariant');
 const isAbsolutePath = require('absolute-path');
 const getAssetDataFromName = require('../lib/getAssetDataFromName');
 
 import type {HasteFS} from '../types';
 import type DependencyGraphHelpers from './DependencyGraphHelpers';
-import type HasteMap from './HasteMap';
 import type Module from '../Module';
 import type ModuleCache from '../ModuleCache';
 import type ResolutionResponse from './ResolutionResponse';
 
 type DirExistsFn = (filePath: string) => boolean;
 
+/**
+ * `jest-haste-map`'s interface for ModuleMap.
+ */
+export type ModuleMap = {
+  getModule(name: string, platform: string, supportsNativePlatform: boolean): ?string,
+  getPackage(name: string, platform: string, supportsNativePlatform: boolean): ?string,
+};
+
 type Options = {
   dirExists: DirExistsFn,
   entryPath: string,
   extraNodeModules: ?Object,
   hasteFS: HasteFS,
-  hasteMap: HasteMap,
   helpers: DependencyGraphHelpers,
   // TODO(cpojer): Remove 'any' type. This is used for ModuleGraph/node-haste
   moduleCache: ModuleCache | any,
+  moduleMap: ModuleMap,
   platform: string,
   platforms: Set<string>,
   preferNativePlatform: boolean,
@@ -48,10 +56,10 @@ class ResolutionRequest {
   _entryPath: string;
   _extraNodeModules: ?Object;
   _hasteFS: HasteFS;
-  _hasteMap: HasteMap;
   _helpers: DependencyGraphHelpers;
-  _immediateResolutionCache: {[key: string]: string};
+  _immediateResolutionCache: {[key: string]: Module};
   _moduleCache: ModuleCache;
+  _moduleMap: ModuleMap;
   _platform: string;
   _platforms: Set<string>;
   _preferNativePlatform: boolean;
@@ -62,9 +70,9 @@ class ResolutionRequest {
     entryPath,
     extraNodeModules,
     hasteFS,
-    hasteMap,
     helpers,
     moduleCache,
+    moduleMap,
     platform,
     platforms,
     preferNativePlatform,
@@ -73,16 +81,16 @@ class ResolutionRequest {
     this._entryPath = entryPath;
     this._extraNodeModules = extraNodeModules;
     this._hasteFS = hasteFS;
-    this._hasteMap = hasteMap;
     this._helpers = helpers;
     this._moduleCache = moduleCache;
+    this._moduleMap = moduleMap;
     this._platform = platform;
     this._platforms = platforms;
     this._preferNativePlatform = preferNativePlatform;
     this._resetResolutionCache();
   }
 
-  _tryResolve(action: () => Promise<string>, secondaryAction: () => ?Promise<string>) {
+  _tryResolve<T>(action: () => Promise<T>, secondaryAction: () => ?Promise<T>): Promise<T> {
     return action().catch(error => {
       if (error.type !== 'UnableToResolveError') {
         throw error;
@@ -219,7 +227,7 @@ class ResolutionRequest {
     });
   }
 
-  _resolveHasteDependency(fromModule: Module, toModuleName: string) {
+  _resolveHasteDependency(fromModule: Module, toModuleName: string): Promise<Module> {
     toModuleName = normalizePath(toModuleName);
 
     let p = fromModule.getPackage();
@@ -230,23 +238,34 @@ class ResolutionRequest {
     }
 
     return p.then(realModuleName => {
-      let dep = this._hasteMap.getModule(realModuleName, this._platform);
-      if (dep && dep.type === 'Module') {
-        return dep;
+      const modulePath = this._moduleMap
+        .getModule(realModuleName, this._platform, /* supportsNativePlatform */ true);
+      if (modulePath != null) {
+        const module = this._moduleCache.getModule(modulePath);
+        /* temporary until we strengthen the typing */
+        invariant(module.type === 'Module', 'expected Module type');
+        return module;
       }
 
       let packageName = realModuleName;
+      let packagePath;
       while (packageName && packageName !== '.') {
-        dep = this._hasteMap.getModule(packageName, this._platform);
-        if (dep && dep.type === 'Package') {
+        packagePath = this._moduleMap
+          .getPackage(packageName, this._platform, /* supportsNativePlatform */ true);
+        if (packagePath != null) {
           break;
         }
         packageName = path.dirname(packageName);
       }
 
-      if (dep && dep.type === 'Package') {
+      if (packagePath != null) {
+
+        const package_ = this._moduleCache.getPackage(packagePath);
+        /* temporary until we strengthen the typing */
+        invariant(package_.type === 'Package', 'expected Package type');
+
         const potentialModulePath = path.join(
-          dep.root,
+          package_.root,
           path.relative(packageName, realModuleName)
         );
         return this._tryResolve(
@@ -379,7 +398,7 @@ class ResolutionRequest {
     }
   }
 
-  _loadAsFile(potentialModulePath: string, fromModule: Module, toModule: string) {
+  _loadAsFile(potentialModulePath: string, fromModule: Module, toModule: string): Promise<Module> {
     return Promise.resolve().then(() => {
       if (this._helpers.isAssetFile(potentialModulePath)) {
         let dirname = path.dirname(potentialModulePath);
