@@ -337,7 +337,7 @@ class WebView extends React.Component {
 
     /**
      * Function that accepts a string that will be passed to the WebView and
-     * executed mmediately as JavaScript
+     * executed immediately as JavaScript.
      */
     injectJavaScript: PropTypes.func,
   };
