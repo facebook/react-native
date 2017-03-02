@@ -147,7 +147,7 @@ class Animation {
 
 class AnimatedWithChildren extends Animated {
   _children: Array<Animated>;
-  _listeners: {[key: string]: ValueListenerCallback};
+  _listeners: {[key: string]: AnimatedListenerCallback};
   __nativeAnimatedValueListener: ?any;
 
   constructor() {
@@ -200,7 +200,7 @@ class AnimatedWithChildren extends Animated {
     return this._children;
   }
 
-  addListener(callback: ValueListenerCallback): string {
+  addListener(callback: AnimatedListenerCallback): string {
     var id = String(_uniqueId++);
     this._listeners[id] = callback;
     if (this.__isNative) {
@@ -760,7 +760,7 @@ class SpringAnimation extends Animation {
   }
 }
 
-type ValueListenerCallback = (state: {value: number}) => void;
+type AnimatedListenerCallback = (state: Object) => void;
 
 var _uniqueId = 1;
 
@@ -937,8 +937,6 @@ class AnimatedValue extends AnimatedWithChildren {
   }
 }
 
-type ValueXYListenerCallback = (value: {x: number, y: number}) => void;
-
 /**
  * 2D Value for driving 2D animations, such as pan gestures.  Almost identical
  * API to normal `Animated.Value`, but multiplexed.  Contains two regular
@@ -982,7 +980,7 @@ type ValueXYListenerCallback = (value: {x: number, y: number}) => void;
 class AnimatedValueXY extends AnimatedWithChildren {
   x: AnimatedValue;
   y: AnimatedValue;
-  _listeners: {[key: string]: {x: string, y: string}};
+  _jointListeners: {[key: string]: {x: string, y: string}};
 
   constructor(valueIn?: ?{x: number | AnimatedValue, y: number | AnimatedValue}) {
     super();
@@ -1000,7 +998,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
       this.x = value.x;
       this.y = value.y;
     }
-    this._listeners = {};
+    this._jointListeners = {};
   }
 
   setValue(value: {x: number, y: number}) {
@@ -1036,12 +1034,12 @@ class AnimatedValueXY extends AnimatedWithChildren {
     callback && callback(this.__getValue());
   }
 
-  addListener(callback: ValueXYListenerCallback): string {
+  addListener(callback: AnimatedListenerCallback): string {
     var id = String(_uniqueId++);
     var jointCallback = ({value: number}) => {
       callback(this.__getValue());
     };
-    this._listeners[id] = {
+    this._jointListeners[id] = {
       x: this.x.addListener(jointCallback),
       y: this.y.addListener(jointCallback),
     };
@@ -1051,13 +1049,13 @@ class AnimatedValueXY extends AnimatedWithChildren {
   removeListener(id: string): void {
     this.x.removeListener(this._listeners[id].x);
     this.y.removeListener(this._listeners[id].y);
-    delete this._listeners[id];
+    delete this._jointListeners[id];
   }
 
   removeAllListeners(): void {
     this.x.removeAllListeners();
     this.y.removeAllListeners();
-    this._listeners = {};
+    this._jointListeners = {};
   }
 
   /**
