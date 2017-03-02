@@ -72,7 +72,7 @@ class MultipartResponse {
 
   static serializeHeaders(headers) {
     return Object.keys(headers)
-      .map((key) => `${key}: ${headers[key]}`)
+      .map(key => `${key}: ${headers[key]}`)
       .join(CRLF);
   }
 }

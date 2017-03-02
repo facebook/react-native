@@ -1,0 +1,56 @@
+/** Help **/
+.helpSection h2 {
+  font-size: 24px;
+}
+
+.help-row {
+  margin: 50px 0;
+}
+
+.help-row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.help-col {
+  float: left;
+}
+
+.help-col p {
+  font-size: 16px;
+}
+
+.help-col h3 {
+  color: #2d2d2d;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: normal;
+}
+
+@media (min-width: 600px) {
+  .help-col {
+    float: left;
+    margin-left: 40px;
+    width: 240px;
+  }
+
+  .help-col:first-child {
+    margin-left: 0;
+  }
+}
+
+.help-list {
+  padding: 0;
+  list-style: none;
+  margin: 1.25em 0 1em 0;
+}
+
+.entry ul, li {
+  margin: 0;
+}
+
+.help-list .help-list-entry {
+  padding: 16px 0;
+  border-top: 1px solid #f1eff0;
+}

@@ -4,7 +4,7 @@ title: Networking
 layout: docs
 category: The Basics
 permalink: docs/network.html
-next: using-navigators
+next: more-resources
 previous: using-a-listview
 ---
 

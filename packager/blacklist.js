@@ -29,7 +29,7 @@ function escapeRegExp(pattern) {
   } else if (typeof pattern === 'string') {
     var escaped = pattern.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
     // convert the '/' into an escaped local file separator
-    return escaped.replace(/\//g,'\\' + path.sep);
+    return escaped.replace(/\//g, '\\' + path.sep);
   } else {
     throw new Error('Unexpected packager blacklist pattern: ' + pattern);
   }

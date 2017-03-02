@@ -31,8 +31,9 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 /**
  * A wrapper for making views respond properly to touches.
  * On press down, the opacity of the wrapped view is decreased, dimming it.
- * This is done without actually changing the view hierarchy, and in general is
- * easy to add to an app without weird side-effects.
+ *
+ * Opacity is controlled by wrapping the children in an Animated.View, which is
+ * added to the view hiearchy.  Be aware that this can affect layout.
  *
  * Example:
  *

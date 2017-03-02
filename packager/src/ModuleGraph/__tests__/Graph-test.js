@@ -36,7 +36,7 @@ describe('Graph:', () => {
   });
 
   it('calls back an error when called without any entry point', done => {
-    graph([], anyPlatform, {log: quiet}, (error) => {
+    graph([], anyPlatform, {log: quiet}, error => {
       expect(error).toEqual(any(Error));
       done();
     });
@@ -208,50 +208,52 @@ describe('Graph:', () => {
     });
   });
 
-  it('calls back with an array of modules in depth-first traversal order, regardless of the order of resolution', done => {
-    load.stub.reset();
-    resolve.stub.reset();
+  it('resolves modules in depth-first traversal order, regardless of the order of resolution',
+    done => {
+      load.stub.reset();
+      resolve.stub.reset();
 
-    const ids = [
-      'a',
+      const ids = [
+        'a',
         'b',
-          'c', 'd',
+        'c', 'd',
         'e',
-          'f', 'g',
+        'f', 'g',
         'h',
-    ];
-    ids.forEach(id => {
-      const path = idToPath(id);
-      resolve.stub.withArgs(id).yields(null, path);
-      load.stub.withArgs(path).yields(null, createFile(id), []);
-    });
-    load.stub.withArgs(idToPath('a')).yields(null, createFile('a'), ['b', 'e', 'h']);
-    load.stub.withArgs(idToPath('b')).yields(null, createFile('b'), ['c', 'd']);
-    load.stub.withArgs(idToPath('e')).yields(null, createFile('e'), ['f', 'g']);
+      ];
+      ids.forEach(id => {
+        const path = idToPath(id);
+        resolve.stub.withArgs(id).yields(null, path);
+        load.stub.withArgs(path).yields(null, createFile(id), []);
+      });
+      load.stub.withArgs(idToPath('a')).yields(null, createFile('a'), ['b', 'e', 'h']);
+      load.stub.withArgs(idToPath('b')).yields(null, createFile('b'), ['c', 'd']);
+      load.stub.withArgs(idToPath('e')).yields(null, createFile('e'), ['f', 'g']);
 
-    // load certain ids later
-    ['b', 'e', 'h'].forEach(id => resolve.stub.withArgs(id).resetBehavior());
-    resolve.stub.withArgs('h').func = (a, b, c, d, callback) => {
-      callback(null, idToPath('h'));
-      ['e', 'b'].forEach(
-        id => resolve.stub.withArgs(id).yield(null, idToPath(id)));
-    };
+      // load certain ids later
+      ['b', 'e', 'h'].forEach(id => resolve.stub.withArgs(id).resetBehavior());
+      resolve.stub.withArgs('h').func = (a, b, c, d, callback) => {
+        callback(null, idToPath('h'));
+        ['e', 'b'].forEach(
+          id => resolve.stub.withArgs(id).yield(null, idToPath(id)));
+      };
 
-    graph(['a'], anyPlatform, noOpts, (error, result) => {
-      expect(error).toEqual(null);
-      expect(result.modules).toEqual([
-        createModule('a', ['b', 'e', 'h']),
-        createModule('b', ['c', 'd']),
-        createModule('c'),
-        createModule('d'),
-        createModule('e', ['f', 'g']),
-        createModule('f'),
-        createModule('g'),
-        createModule('h'),
-      ]);
-      done();
-    });
-  });
+      graph(['a'], anyPlatform, noOpts, (error, result) => {
+        expect(error).toEqual(null);
+        expect(result.modules).toEqual([
+          createModule('a', ['b', 'e', 'h']),
+          createModule('b', ['c', 'd']),
+          createModule('c'),
+          createModule('d'),
+          createModule('e', ['f', 'g']),
+          createModule('f'),
+          createModule('g'),
+          createModule('h'),
+        ]);
+        done();
+      });
+    },
+  );
 
   it('calls back with the resolved modules of the entry points', done => {
     load.stub.reset();
@@ -274,7 +276,7 @@ describe('Graph:', () => {
     });
   });
 
-  it('calls back with the resolved modules of the entry points if one entry point is a dependency of another', done => {
+  it('resolves modules for all entry points correctly if one is a dependency of another', done => {
     load.stub.reset();
     resolve.stub.reset();
 
@@ -367,7 +369,7 @@ function createFile(id) {
 function createModule(id, dependencies = []): Module {
   return {
     file: createFile(id),
-    dependencies: dependencies.map(createDependency)
+    dependencies: dependencies.map(createDependency),
   };
 }
 

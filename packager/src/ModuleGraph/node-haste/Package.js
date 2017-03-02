@@ -11,6 +11,7 @@
 
 'use strict';
 
+const nullthrows = require('fbjs/lib/nullthrows');
 const path = require('path');
 
 import type {PackageData} from '../types.flow';
@@ -51,7 +52,7 @@ module.exports = class Package {
   }
 
   getName() {
-    return this.data.then(p => p.name);
+    return this.data.then(p => nullthrows(p.name));
   }
 
   isHaste() {
@@ -125,14 +126,14 @@ function getReplacements(pkg) {
 
   const main = getMain(pkg);
   if (typeof rn !== 'object') {
-    rn = { [main]: rn };
+    rn = {[main]: rn};
   }
 
   if (typeof browser !== 'object') {
-    browser = { [main]: browser };
+    browser = {[main]: browser};
   }
 
   // merge with "browser" as default,
   // "react-native" as override
-  return { ...browser, ...rn };
+  return {...browser, ...rn};
 }

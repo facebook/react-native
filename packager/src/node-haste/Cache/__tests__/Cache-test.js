@@ -268,7 +268,7 @@ describe('Cache', () => {
   });
 
   describe('writing cache to disk', () => {
-    it('should write cache to disk', (done) => {
+    it('should write cache to disk', done => {
       var index = 0;
       var mtimes = [10, 20, 30];
 

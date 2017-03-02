@@ -31,19 +31,19 @@ let _globalHandler = function onError(e) {
  * set) globally before requiring anything.
  */
 const ErrorUtils = {
-  setGlobalHandler: function(fun) {
+  setGlobalHandler(fun) {
     _globalHandler = fun;
   },
-  getGlobalHandler: function() {
+  getGlobalHandler() {
     return _globalHandler;
   },
-  reportError: function(error) {
+  reportError(error) {
     _globalHandler && _globalHandler(error);
   },
-  reportFatalError: function(error) {
+  reportFatalError(error) {
     _globalHandler && _globalHandler(error, true);
   },
-  applyWithGuard: function(fun, context, args) {
+  applyWithGuard(fun, context, args) {
     try {
       _inGuard++;
       return fun.apply(context, args);
@@ -52,18 +52,20 @@ const ErrorUtils = {
     } finally {
       _inGuard--;
     }
+    return null;
   },
-  applyWithGuardIfNeeded: function(fun, context, args) {
+  applyWithGuardIfNeeded(fun, context, args) {
     if (ErrorUtils.inGuard()) {
       return fun.apply(context, args);
     } else {
       ErrorUtils.applyWithGuard(fun, context, args);
     }
+    return null;
   },
-  inGuard: function() {
+  inGuard() {
     return _inGuard;
   },
-  guard: function(fun, name, context) {
+  guard(fun, name, context) {
     if (typeof fun !== 'function') {
       console.warn('A function must be passed to ErrorUtils.guard, got ', fun);
       return null;
@@ -82,7 +84,7 @@ const ErrorUtils = {
     }
 
     return guarded;
-  }
+  },
 };
 
 global.ErrorUtils = ErrorUtils;

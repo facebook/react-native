@@ -2,6 +2,7 @@
 
 #include <folly/dynamic.h>
 #include <fb/fbjni.h>
+#include <fb/glog_init.h>
 #include <fb/log.h>
 #include <cxxreact/Executor.h>
 #include <cxxreact/JSCExecutor.h>
@@ -145,6 +146,7 @@ class JReactMarker : public JavaClass<JReactMarker> {
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
+    gloginit::initialize();
     // Inject some behavior into react/
     ReactMarker::logMarker = JReactMarker::logMarker;
     WebWorkerUtil::createWebWorkerThread = WebWorkers::createWebWorkerThread;
