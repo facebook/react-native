@@ -768,6 +768,45 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
     platform<span class="token punctuation">:</span> <span class="token string">&#x27;ios&#x27;</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Blur Radius&#x27;</span><span class="token punctuation">,</span>
+    render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>horizontal<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+          &lt;Image
+            style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>base<span class="token punctuation">,</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+            source<span class="token operator">=</span><span class="token punctuation">{</span>fullImage<span class="token punctuation">}</span>
+            blurRadius<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">}</span>
+          <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;Image
+            style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>base<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">]</span><span class="token punctuation">}</span>
+            source<span class="token operator">=</span><span class="token punctuation">{</span>fullImage<span class="token punctuation">}</span>
+            blurRadius<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">5</span><span class="token punctuation">}</span>
+          <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;Image
+            style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>base<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">]</span><span class="token punctuation">}</span>
+            source<span class="token operator">=</span><span class="token punctuation">{</span>fullImage<span class="token punctuation">}</span>
+            blurRadius<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">10</span><span class="token punctuation">}</span>
+          <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;Image
+            style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>base<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">]</span><span class="token punctuation">}</span>
+            source<span class="token operator">=</span><span class="token punctuation">{</span>fullImage<span class="token punctuation">}</span>
+            blurRadius<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">15</span><span class="token punctuation">}</span>
+          <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;Image
+            style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>base<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">]</span><span class="token punctuation">}</span>
+            source<span class="token operator">=</span><span class="token punctuation">{</span>fullImage<span class="token punctuation">}</span>
+            blurRadius<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">20</span><span class="token punctuation">}</span>
+          <span class="token operator">/</span><span class="token operator">&gt;</span>
+          &lt;Image
+            style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>base<span class="token punctuation">,</span> styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">]</span><span class="token punctuation">}</span>
+            source<span class="token operator">=</span><span class="token punctuation">{</span>fullImage<span class="token punctuation">}</span>
+            blurRadius<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">25</span><span class="token punctuation">}</span>
+          <span class="token operator">/</span><span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">]</span><span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> fullImage <span class="token operator">=</span> <span class="token punctuation">{</span>uri<span class="token punctuation">:</span> <span class="token string">&#x27;https://facebook.github.io/react/img/logo_og.png&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
