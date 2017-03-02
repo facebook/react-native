@@ -193,10 +193,6 @@ const APIExamples: Array<UIExplorerExample> = [
     module: require('./NativeAnimationsExample'),
   },
   {
-    key: 'NavigationExperimentalExample',
-    module: require('./NavigationExperimental/NavigationExperimentalExample'),
-  },
-  {
     key: 'NetInfoExample',
     module: require('./NetInfoExample'),
   },
