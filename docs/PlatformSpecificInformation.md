@@ -54,6 +54,83 @@ const styles = StyleSheet.create({
 
 This will result in a container having `flex: 1` on both platforms, a red background color on iOS, and a blue background color on Android.
 
+A multi-key is also supported so, for example, instead of:
+
+```javascript
+import { Platform, StyleSheet } from 'react-native';
+const styles = StyleSheet.create({  
+  container: {
+    flex: 1,
+    ...Platform.select({
+      ios: {
+        flexWrap: 'wrap',
+        width: 125,
+        marginLeft: 40,
+        marginRight: 40
+      },
+      android: {
+        flexWrap: 'wrap',
+        width: 125,
+        marginLeft: 40,
+        marginRight: 40
+      },
+    }),
+  },
+});
+```
+
+you can do:
+```javascript
+import { Platform, StyleSheet } from 'react-native';
+const styles = StyleSheet.create({  
+  container: {
+    flex: 1,
+    ...Platform.select({
+      ['ios, android']: {
+        flexWrap: 'wrap',
+        width: 125,
+        marginLeft: 40,
+        marginRight: 40
+      },
+    }),
+  },
+});
+```
+
+thus, avoiding duplicate chunks of code.
+
+You can also combine single keys with multi-keys. This allows you to define a set of common props, and then override one or more values for each specific platform e.g.
+
+```javascript
+import { Platform, StyleSheet } from 'react-native';
+const styles = StyleSheet.create({  
+  container: {
+    flex: 1,
+    ...Platform.select({
+      ['ios, android']: {
+        flexWrap: 'wrap',
+        width: 125,
+        marginLeft: 40,
+        marginRight: 40
+      },
+      ios: {
+        marginRight: 50,  // this will override the value in the multi-key
+        marginTop: 10     
+      },
+      android: {
+        marginRight: 60,  
+      },
+    }),
+  },
+});
+```
+so, in this case this will resolve to 
+
+```javascript
+{ flexWrap: 'wrap', width: 125, marginLeft: 40, marginRight: 50, marginTop: 10 } // for ios
+{ flexWrap: 'wrap', width: 125, marginLeft: 40, marginRight: 60 } // for android
+```
+
 Since it accepts `any` value, you can also use it to return platform specific component, like below:
 
 ```javascript
