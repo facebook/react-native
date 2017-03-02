@@ -134,7 +134,7 @@ Picker.Item = class extends React.Component {
  props: {
   label: string,
   value?: any,
-  color?: $FlowFixMe,
+  color?: ColorPropType,
   testID?: string,
  };
 
