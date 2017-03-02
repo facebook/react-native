@@ -52,7 +52,7 @@ xcodebuild \
   -project "Examples/UIExplorer/UIExplorer.xcodeproj" \
   -scheme "UIExplorer-tvOS" \
   -sdk "appletvsimulator" \
-  -destination "platform=tvOS Simulator,name=Apple TV 1080p,OS=10.1" \
+  -destination "platform=tvOS Simulator,name=Apple TV 1080p,OS=10.0" \
   build test
 
 else
@@ -62,7 +62,7 @@ xcodebuild \
   -project "Examples/UIExplorer/UIExplorer.xcodeproj" \
   -scheme "UIExplorer-tvOS" \
   -sdk "appletvsimulator" \
-  -destination "platform=tvOS Simulator,name=Apple TV 1080p,OS=10.1" \
+  -destination "platform=tvOS Simulator,name=Apple TV 1080p,OS=10.0" \
   build
 
 fi 
