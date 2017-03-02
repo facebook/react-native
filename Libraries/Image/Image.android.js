@@ -90,6 +90,7 @@ var Image = React.createClass({
     source: PropTypes.oneOfType([
       PropTypes.shape({
         uri: PropTypes.string,
+        headers: PropTypes.objectOf(PropTypes.string),
       }),
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
@@ -97,6 +98,7 @@ var Image = React.createClass({
       PropTypes.arrayOf(
         PropTypes.shape({
           uri: PropTypes.string,
+          headers: PropTypes.objectOf(PropTypes.string),
           width: PropTypes.number,
           height: PropTypes.number,
         }))
@@ -287,7 +289,7 @@ var Image = React.createClass({
       let style;
       let sources;
       if (source.uri) {
-        const {width, height} = source;
+        const {width, height, headers} = source;
         style = flattenStyle([{width, height}, styles.base, this.props.style]);
         sources = [{uri: source.uri}];
       } else {
@@ -300,6 +302,7 @@ var Image = React.createClass({
         style,
         shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
         src: sources,
+        headers: source.headers,
         loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
       });
 
@@ -346,6 +349,7 @@ var styles = StyleSheet.create({
 var cfg = {
   nativeOnly: {
     src: true,
+    headers: true,
     loadingIndicatorSrc: true,
     shouldNotifyLoadEvents: true,
   },
