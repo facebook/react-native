@@ -40,7 +40,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  */
 
 @DoNotStrip
-/* package */ class JavaModuleWrapper {
+public class JavaModuleWrapper {
   @DoNotStrip
   public class MethodDescriptor {
     @DoNotStrip

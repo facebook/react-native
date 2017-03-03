@@ -19,12 +19,14 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule AccessibilityIOSExample
  */
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
 var {
+  AccessibilityInfo,
   Text,
   View,
 } = ReactNative;
@@ -63,11 +65,56 @@ class AccessibilityIOSExample extends React.Component {
   }
 }
 
+class ScreenReaderStatusExample extends React.Component {
+  state = {
+    screenReaderEnabled: false,
+  }
+
+  componentDidMount() {
+    AccessibilityInfo.addEventListener(
+      'change',
+      this._handleScreenReaderToggled
+    );
+    AccessibilityInfo.fetch().done((isEnabled) => {
+      this.setState({
+        screenReaderEnabled: isEnabled
+      });
+    });
+  }
+
+  componentWillUnmount() {
+    AccessibilityInfo.removeEventListener(
+      'change',
+      this._handleScreenReaderToggled
+    );
+  }
+
+  _handleScreenReaderToggled = (isEnabled) => {
+    this.setState({
+      screenReaderEnabled: isEnabled,
+    });
+  }
+
+  render() {
+    return (
+      <View>
+        <Text>
+          The screen reader is {this.state.screenReaderEnabled ? 'enabled' : 'disabled'}.
+        </Text>
+      </View>
+    );
+  }
+}
+
 exports.title = 'AccessibilityIOS';
 exports.description = 'Interface to show iOS\' accessibility samples';
 exports.examples = [
   {
     title: 'Accessibility elements',
     render(): React.Element<any> { return <AccessibilityIOSExample />; }
+  },
+  {
+    title: 'Check if the screen reader is enabled',
+    render(): React.Element<any> { return <ScreenReaderStatusExample />; }
   },
 ];
