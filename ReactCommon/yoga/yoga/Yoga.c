@@ -1791,6 +1791,12 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
   node->layout.position[YGEdgeBottom] = 0;
   node->layout.position[YGEdgeLeft] = 0;
   node->layout.position[YGEdgeRight] = 0;
+  node->layout.cachedLayout.availableHeight = 0;
+  node->layout.cachedLayout.availableWidth = 0;
+  node->layout.cachedLayout.heightMeasureMode = YGMeasureModeExactly;
+  node->layout.cachedLayout.widthMeasureMode = YGMeasureModeExactly;
+  node->layout.cachedLayout.computedWidth = 0;
+  node->layout.cachedLayout.computedHeight = 0;
   const uint32_t childCount = YGNodeGetChildCount(node);
   for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeListGet(node->children, i);
