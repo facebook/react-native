@@ -198,6 +198,7 @@ static YGConfig gYGConfigDefaults = {
     .experimentalFeatures =
         {
                 [YGExperimentalFeatureRounding] = false,
+                [YGExperimentalFeatureMinFlexFix] = false,
                 [YGExperimentalFeatureWebFlexBasis] = false,
         },
 };
@@ -2868,7 +2869,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                                          availableInnerWidth,
                                          availableInnerHeight,
                                          true,
-                                         "stretch",
+                                         "multiline-stretch",
                                          config);
                   }
                 }
