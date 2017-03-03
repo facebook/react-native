@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutionException;
 
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -122,7 +123,9 @@ public class ModuleHolder {
       section.arg("name", mName);
     }
     section.flush();
+    ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_START, mName);
     callInitializeOnUiThread(module);
+    ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_END);
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
