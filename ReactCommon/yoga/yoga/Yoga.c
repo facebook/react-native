@@ -94,7 +94,10 @@ typedef struct YGStyle {
   float aspectRatio;
 } YGStyle;
 
-typedef struct YGConfig { bool experimentalFeatures[YGExperimentalFeatureCount + 1]; } YGConfig;
+typedef struct YGConfig {
+  bool experimentalFeatures[YGExperimentalFeatureCount + 1];
+  bool useWebDefaults;
+} YGConfig;
 
 typedef struct YGNode {
   YGStyle style;
@@ -144,6 +147,7 @@ typedef struct YGNode {
 
 static const float kDefaultFlexGrow = 0.0f;
 static const float kDefaultFlexShrink = 0.0f;
+static const float kWebDefaultFlexShrink = 1.0f;
 
 static YGNode gYGNodeDefaults = {
     .parent = NULL,
@@ -201,6 +205,7 @@ static YGConfig gYGConfigDefaults = {
                 [YGExperimentalFeatureMinFlexFix] = false,
                 [YGExperimentalFeatureWebFlexBasis] = false,
         },
+    .useWebDefaults = false,
 };
 
 static void YGNodeMarkDirtyInternal(const YGNodeRef node);
@@ -309,6 +314,10 @@ WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
   gNodeInstanceCount++;
 
   memcpy(node, &gYGNodeDefaults, sizeof(YGNode));
+  if (config->useWebDefaults) {
+    node->style.flexDirection = YGFlexDirectionRow;
+    node->style.alignContent = YGAlignStretch;
+  }
   node->config = config;
   return node;
 }
@@ -463,17 +472,17 @@ float YGNodeStyleGetFlexGrow(const YGNodeRef node) {
 }
 
 float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
-  return YGFloatIsUndefined(node->style.flexShrink) ? kDefaultFlexShrink : node->style.flexShrink;
+  return YGFloatIsUndefined(node->style.flexShrink) ? (node->config->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink) : node->style.flexShrink;
 }
 
 static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
   if (!YGFloatIsUndefined(node->style.flexShrink)) {
     return node->style.flexShrink;
   }
-  if (!YGFloatIsUndefined(node->style.flex) && node->style.flex < 0.0f) {
+  if (!node->config->useWebDefaults && !YGFloatIsUndefined(node->style.flex) && node->style.flex < 0.0f) {
     return -node->style.flex;
   }
-  return kDefaultFlexShrink;
+  return node->config->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
 }
 
 static inline const YGValue *YGNodeResolveFlexBasisPtr(const YGNodeRef node) {
@@ -481,7 +490,7 @@ static inline const YGValue *YGNodeResolveFlexBasisPtr(const YGNodeRef node) {
     return &node->style.flexBasis;
   }
   if (!YGFloatIsUndefined(node->style.flex) && node->style.flex > 0.0f) {
-    return &YGValueZero;
+    return node->config->useWebDefaults ? &YGValueAuto : &YGValueZero;
   }
   return &YGValueAuto;
 }
@@ -3438,6 +3447,14 @@ void YGConfigSetExperimentalFeatureEnabled(const YGConfigRef config,
 inline bool YGConfigIsExperimentalFeatureEnabled(const YGConfigRef config,
                                            const YGExperimentalFeature feature) {
   return config->experimentalFeatures[feature];
+}
+
+void YGConfigSetUseWebDefaults(const YGConfigRef config, const bool enabled) {
+  config->useWebDefaults = enabled;
+}
+
+bool YGConfigGetUseWebDefaults(const YGConfigRef config) {
+  return config->useWebDefaults;
 }
 
 void YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree) {
