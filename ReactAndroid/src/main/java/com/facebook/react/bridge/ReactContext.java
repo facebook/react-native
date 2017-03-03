@@ -189,6 +189,7 @@ public class ReactContext extends ContextWrapper {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.RESUMED;
     mCurrentActivity = new WeakReference(activity);
+    ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_START);
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       try {
         listener.onHostResume();
@@ -196,6 +197,7 @@ public class ReactContext extends ContextWrapper {
         handleException(e);
       }
     }
+    ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_END);
   }
 
   public void onNewIntent(@Nullable Activity activity, Intent intent) {
@@ -216,6 +218,7 @@ public class ReactContext extends ContextWrapper {
   public void onHostPause() {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_RESUME;
+    ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_START);
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       try {
         listener.onHostPause();
@@ -223,6 +226,7 @@ public class ReactContext extends ContextWrapper {
         handleException(e);
       }
     }
+    ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_END);
   }
 
   /**
