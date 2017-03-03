@@ -370,7 +370,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (underlineColor == null) {
       view.getBackground().clearColorFilter();
     } else {
-      view.getBackground().setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+      view.getBackground().mutate().setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
     }
   }
 
