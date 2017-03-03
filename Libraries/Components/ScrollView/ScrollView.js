@@ -739,12 +739,12 @@ if (Platform.OS === 'android') {
   };
   AndroidScrollView = requireNativeComponent(
     'RCTScrollView',
-    (ScrollView: ReactClass<*>),
+    (ScrollView: ReactClass<any>),
     nativeOnlyProps
   );
   AndroidHorizontalScrollView = requireNativeComponent(
     'AndroidHorizontalScrollView',
-    (ScrollView: ReactClass<*>),
+    (ScrollView: ReactClass<any>),
     nativeOnlyProps
   );
 } else if (Platform.OS === 'ios') {
@@ -758,7 +758,7 @@ if (Platform.OS === 'android') {
   };
   RCTScrollView = requireNativeComponent(
     'RCTScrollView',
-    (ScrollView: ReactClass<*>),
+    (ScrollView: ReactClass<any>),
     nativeOnlyProps,
   );
   RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);
