@@ -4,8 +4,8 @@ title: Testing
 layout: docs
 category: Guides
 permalink: docs/testing.html
-next: running-on-device
-previous: debugging
+next: understanding-cli
+previous: gesture-responder-system
 ---
 
 ## Running Tests and Contributing
@@ -60,7 +60,7 @@ Once you have an emulator running, to run the integration tests:
 
 The integration tests should only take a few minutes to run on a modern developer machine.
 
-It's a good idea to add an Android integration test whenever you are working on code that needs both JavaScript and Java to be tested in conjunction. The Android integration tests live under [`ReactAndroid/src/androidTest`](https://github.com/facebook/react-native/tree/master/ReactAndroid/src/androidTest/java/com/facebook/react/tests), so you can browse through that directory for good examples of tests. 
+It's a good idea to add an Android integration test whenever you are working on code that needs both JavaScript and Java to be tested in conjunction. The Android integration tests live under [`ReactAndroid/src/androidTest`](https://github.com/facebook/react-native/tree/master/ReactAndroid/src/androidTest/java/com/facebook/react/tests), so you can browse through that directory for good examples of tests.
 
 ## iOS Integration Tests
 

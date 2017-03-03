@@ -4,8 +4,8 @@ title: Navigation
 layout: docs
 category: Guides
 permalink: docs/navigation.html
-next: performance
-previous: javascript-environment
+next: images
+previous: animations
 ---
 
 This guide covers the various navigation components available in React Native. If you are just getting started with navigation, you will probably want to use React Navigation.

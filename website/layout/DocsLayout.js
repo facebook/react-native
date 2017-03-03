@@ -34,6 +34,8 @@ var DocsLayout = React.createClass({
   render: function() {
     var metadata = this.props.metadata;
     var content = this.props.children;
+    var banner;
+
     return (
       <Site
         section="docs"
@@ -42,6 +44,7 @@ var DocsLayout = React.createClass({
           <DocsSidebar metadata={metadata} />
           <div className="inner-content">
             <a id="content" />
+            {banner}
             <Header level={1}>{metadata.title}</Header>
             <Marked>{content}</Marked>
             <div className="docs-prevnext">
