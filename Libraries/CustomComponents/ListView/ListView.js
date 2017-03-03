@@ -33,6 +33,7 @@
 'use strict';
 
 var ListViewDataSource = require('ListViewDataSource');
+var Platform = require('Platform');
 var React = require('React');
 var ReactNative = require('ReactNative');
 var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
@@ -330,7 +331,7 @@ var ListView = React.createClass({
       renderScrollComponent: props => <ScrollView {...props} />,
       scrollRenderAheadDistance: DEFAULT_SCROLL_RENDER_AHEAD,
       onEndReachedThreshold: DEFAULT_END_REACHED_THRESHOLD,
-      stickySectionHeadersEnabled: true,
+      stickySectionHeadersEnabled: Platform.OS === 'ios',
       stickyHeaderIndices: [],
     };
   },
