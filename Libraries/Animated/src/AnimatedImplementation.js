@@ -2151,9 +2151,53 @@ type EventConfig = {
   useNativeDriver?: bool,
 };
 
+function attachNativeEvent(viewRef: any, eventName: string, argMapping: Array<?Mapping>) {
+  // Find animated values in `argMapping` and create an array representing their
+  // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
+  const eventMappings = [];
+
+  const traverse = (value, path) => {
+    if (value instanceof AnimatedValue) {
+      value.__makeNative();
+
+      eventMappings.push({
+        nativeEventPath: path,
+        animatedValueTag: value.__getNativeTag(),
+      });
+    } else if (typeof value === 'object') {
+      for (const key in value) {
+        traverse(value[key], path.concat(key));
+      }
+    }
+  };
+
+  invariant(
+    argMapping[0] && argMapping[0].nativeEvent,
+    'Native driven events only support animated values contained inside `nativeEvent`.'
+  );
+
+  // Assume that the event containing `nativeEvent` is always the first argument.
+  traverse(argMapping[0].nativeEvent, []);
+
+  const viewTag = ReactNative.findNodeHandle(viewRef);
+
+  eventMappings.forEach((mapping) => {
+    NativeAnimatedAPI.addAnimatedEventToView(viewTag, eventName, mapping);
+  });
+
+  return {
+    detach() {
+      NativeAnimatedAPI.removeAnimatedEventFromView(viewTag, eventName);
+    },
+  };
+}
+
 class AnimatedEvent {
   _argMapping: Array<?Mapping>;
   _listener: ?Function;
+  _attachedEvent: ?{
+    detach: () => void,
+  };
   __isNative: bool;
 
   constructor(
@@ -2162,6 +2206,7 @@ class AnimatedEvent {
   ) {
     this._argMapping = argMapping;
     this._listener = config.listener;
+    this._attachedEvent = null;
     this.__isNative = shouldUseNativeDriver(config);
 
     if (__DEV__) {
@@ -2172,44 +2217,13 @@ class AnimatedEvent {
   __attach(viewRef, eventName) {
     invariant(this.__isNative, 'Only native driven events need to be attached.');
 
-    // Find animated values in `argMapping` and create an array representing their
-    // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
-    const eventMappings = [];
-
-    const traverse = (value, path) => {
-      if (value instanceof AnimatedValue) {
-        value.__makeNative();
-
-        eventMappings.push({
-          nativeEventPath: path,
-          animatedValueTag: value.__getNativeTag(),
-        });
-      } else if (typeof value === 'object') {
-        for (const key in value) {
-          traverse(value[key], path.concat(key));
-        }
-      }
-    };
-
-    invariant(
-      this._argMapping[0] && this._argMapping[0].nativeEvent,
-      'Native driven events only support animated values contained inside `nativeEvent`.'
-    );
-
-    // Assume that the event containing `nativeEvent` is always the first argument.
-    traverse(this._argMapping[0].nativeEvent, []);
-
-    const viewTag = ReactNative.findNodeHandle(viewRef);
-
-    eventMappings.forEach((mapping) => {
-      NativeAnimatedAPI.addAnimatedEventToView(viewTag, eventName, mapping);
-    });
+    this._attachedEvent = attachNativeEvent(viewRef, eventName, this._argMapping);
   }
 
   __detach(viewTag, eventName) {
     invariant(this.__isNative, 'Only native driven events need to be detached.');
 
-    NativeAnimatedAPI.removeAnimatedEventFromView(viewTag, eventName);
+    this._attachedEvent && this._attachedEvent.detach();
   }
 
   __getHandler() {
@@ -2581,6 +2595,12 @@ module.exports = {
    * Make any React component Animatable.  Used to create `Animated.View`, etc.
    */
   createAnimatedComponent,
+
+  /**
+   * Imperative API to attach an animated value to an event on a view. Prefer using
+   * `Animated.event` with `useNativeDrive: true` if possible.
+   */
+  attachNativeEvent,
 
   __PropsOnlyForTests: AnimatedProps,
 };

@@ -14,6 +14,7 @@ const components = [
   '../Libraries/Components/Button.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
+  '../Libraries/CustomComponents/Lists/FlatList.js',
   '../Libraries/Image/Image.ios.js',
   '../Libraries/Components/Keyboard/KeyboardAvoidingView.js',
   '../Libraries/CustomComponents/ListView/ListView.js',
@@ -27,6 +28,7 @@ const components = [
   '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
   '../Libraries/Components/RefreshControl/RefreshControl.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
+  '../Libraries/CustomComponents/Lists/SectionList.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
   '../Libraries/Components/Slider/Slider.js',
   '../Libraries/RCTTest/SnapshotViewIOS.ios.js',
@@ -43,6 +45,7 @@ const components = [
   '../Libraries/Components/Touchable/TouchableWithoutFeedback.js',
   '../Libraries/Components/View/View.js',
   '../Libraries/Components/ViewPager/ViewPagerAndroid.android.js',
+  '../Libraries/CustomComponents/Lists/VirtualizedList.js',
   '../Libraries/Components/WebView/WebView.ios.js',
 ];
 

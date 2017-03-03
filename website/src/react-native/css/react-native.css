@@ -1361,6 +1361,7 @@ div[data-twttr-id] iframe {
   padding: 3px 10px; }
 
 .propType {
+  font-family: 'source-code-pro', Menlo, 'Courier New', Consolas, monospace;
   font-weight: normal;
   font-size: 15px;
   white-space: pre-wrap; }

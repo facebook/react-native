@@ -12,15 +12,16 @@
 'use strict';
 
 var DocsSidebar = require('DocsSidebar');
+var Footer = require('Footer');
 var Header = require('Header');
 var HeaderWithGithub = require('HeaderWithGithub');
-var Footer = require('Footer');
 var Marked = require('Marked');
+var Metadata = require('Metadata');
 var Prism = require('Prism');
 var React = require('React');
 var Site = require('Site');
+
 var slugify = require('slugify');
-var Metadata = require('Metadata');
 
 var styleReferencePattern = /^[^.]+\.propTypes\.style$/;
 
@@ -33,6 +34,10 @@ function renderEnumValue(value) {
 }
 
 function renderType(type) {
+  return <code>{(type.nullable ? '?' : '') + renderBaseType(type)}</code>;
+}
+
+function renderBaseType(type) {
   if (type.name === 'enum') {
     if (typeof type.value === 'string') {
       return type.value;
@@ -92,7 +97,7 @@ function renderType(type) {
     return type.raw;
   }
 
-  return type.name;
+  return type.raw || type.name;
 }
 
 function renderTypeNameLink(typeName, docPath, namedTypes) {
@@ -121,7 +126,7 @@ function renderTypeWithLinks(type, docTitle, namedTypes) {
     <div>
       {
         type.names.map((typeName, index, array) => {
-          let separator = index < array.length - 1 && ' | ';
+          const separator = index < array.length - 1 && ' | ';
           return (
             <span key={index}>
               {renderTypeNameLink(typeName, docPath, namedTypes)}
@@ -176,7 +181,7 @@ function removeCommentsFromDocblock(docblock) {
 }
 
 function getNamedTypes(typedefs) {
-  let namedTypes = {};
+  const namedTypes = {};
   typedefs && typedefs.forEach(typedef => {
     if (typedef.name) {
       const type = typedef.name.toLowerCase();
@@ -195,9 +200,9 @@ var ComponentDoc = React.createClass({
             <span className="platform">{platform}</span>
           )}
           {name}
-          {' '}
-          {prop.type && <span className="propType">
-            {renderType(prop.type)}
+          {prop.required ? ': ' : '?: '}
+          {(prop.type || prop.flowType) && <span className="propType">
+            {renderType(prop.flowType || prop.type)}
           </span>}
         </Header>
         {prop.deprecationMessage && <div className="deprecated">
@@ -428,9 +433,9 @@ var APIDoc = React.createClass({
       <div className="prop" key={property.name}>
         <Header level={4} className="propTitle" toSlug={property.name}>
           {property.name}
-          {property.type &&
+          {(property.type || property.flowType) &&
             <span className="propType">
-              {': ' + renderType(property.type)}
+              {': ' + renderType(property.flowType || property.type)}
             </span>
           }
         </Header>
@@ -654,13 +659,14 @@ var Method = React.createClass({
           </span> || ''}
           {this.props.name}
           <span className="methodType">
-            ({this.props.params && this.props.params.length && this.props.params
+            ({(this.props.params && this.props.params.length && this.props.params
               .map((param) => {
                 var res = param.name;
                 res += param.optional ? '?' : '';
+                param.type && param.type.names && (res += ': ' + param.type.names.join(', '));
                 return res;
               })
-              .join(', ')})
+              .join(', ')) || ''})
               {this.props.returns && ': ' + this.renderTypehint(this.props.returns.type)}
           </span>
         </Header>
@@ -805,7 +811,7 @@ var Modal = React.createClass({
           <div className="modal-content">
             <button className="modal-button-close">&times;</button>
             <div className="center">
-              <iframe className="simulator" src={url} width="256" height="550" frameborder="0" scrolling="no"></iframe>
+              <iframe className="simulator" src={url} width="256" height="550" frameborder="0" scrolling="no" />
               <p>Powered by <a target="_blank" href="https://appetize.io">appetize.io</a></p>
             </div>
           </div>

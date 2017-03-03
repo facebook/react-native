@@ -16,6 +16,8 @@ import java.util.List;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.systrace.Systrace;
@@ -69,14 +71,20 @@ public abstract class LazyReactPackage implements ReactPackage {
   public final List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
     for (ModuleSpec holder : getNativeModules(reactContext)) {
+      NativeModule nativeModule;
       SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createNativeModule")
         .arg("module", holder.getType())
         .flush();
       try {
-        modules.add(holder.getProvider().get());
+        ReactMarker.logMarker(
+          ReactMarkerConstants.CREATE_MODULE_START,
+          holder.getType().getSimpleName());
+        nativeModule = holder.getProvider().get();
+        ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_END);
       } finally {
         Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       }
+      modules.add(nativeModule);
     }
     return modules;
   }
