@@ -281,6 +281,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   super.contentOffset = contentOffset;
 }
 
+- (void)setContentInset:(UIEdgeInsets)contentInset 
+{
+  // Workaround for https://github.com/facebook/react-native/issues/5432
+  if (self.tracking && self.rctRefreshControl != nil && self.rctRefreshControl.refreshing) {
+    CGFloat diff = contentInset.top - self.contentInset.top;
+    CGPoint translation = [self.panGestureRecognizer translationInView:self];
+    translation.y -= diff * 3.0 / 2.0;
+    [self.panGestureRecognizer setTranslation:translation inView:self];
+  }
+  [super setContentInset:contentInset];
+}
+
 - (void)dockClosestSectionHeader
 {
   UIView *contentView = [self contentView];
