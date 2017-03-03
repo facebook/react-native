@@ -3290,18 +3290,18 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
 static float gPointScaleFactor = 1.0;
 
 void YGSetPointScaleFactor(float pixelsInPoint) {
-  YG_ASSERT(pixelsInPoint >= 0.0, "Scale factor should not be less than zero");
+  YG_ASSERT(pixelsInPoint >= 0.0f, "Scale factor should not be less than zero");
   // We store points for Pixel as we will use it for rounding
-  if (pixelsInPoint == 0.0) {
+  if (pixelsInPoint == 0.0f) {
     // Zero is used to skip rounding
-    gPointScaleFactor = 0.0;
+    gPointScaleFactor = 0.0f;
   } else {
-    gPointScaleFactor = 1.0 / pixelsInPoint;
+    gPointScaleFactor = 1.0f / pixelsInPoint;
   }
 }
 
 static void YGRoundToPixelGrid(const YGNodeRef node) {
-  if (gPointScaleFactor == 0.0) {
+  if (gPointScaleFactor == 0.0f) {
     return;
   }
   const float nodeLeft = node->layout.position[YGEdgeLeft];
