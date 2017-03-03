@@ -29,9 +29,9 @@ matrix:
 # The order of these tests says which are more likely to run first and fail the whole build fast.
 env:
   - TEST_TYPE=objc-ios
-  - TEST_TYPE=objc-tvos
   - TEST_TYPE=podspecs
   - TEST_TYPE=e2e-objc
+  - TEST_TYPE=objc-tvos
 
 branches:
   only:
