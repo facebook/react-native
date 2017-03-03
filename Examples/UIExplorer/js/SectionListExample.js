@@ -81,7 +81,9 @@ class SectionListExample extends React.PureComponent {
   };
   render() {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
-    const filter = (item) => (filterRegex.test(item.text) || filterRegex.test(item.title));
+    const filter = (item) => (
+      filterRegex.test(item.text) || filterRegex.test(item.title)
+    );
     const filteredData = this.state.data.filter(filter);
     return (
       <UIExplorerPage
@@ -104,8 +106,12 @@ class SectionListExample extends React.PureComponent {
         <SectionList
           ListHeaderComponent={HeaderComponent}
           ListFooterComponent={FooterComponent}
-          SectionSeparatorComponent={() => <CustomSeparatorComponent text="SECTION SEPARATOR" />}
-          ItemSeparatorComponent={() => <CustomSeparatorComponent text="ITEM SEPARATOR" />}
+          SectionSeparatorComponent={() =>
+            <CustomSeparatorComponent text="SECTION SEPARATOR" />
+          }
+          ItemSeparatorComponent={() =>
+            <CustomSeparatorComponent text="ITEM SEPARATOR" />
+          }
           enableVirtualization={this.state.virtualized}
           onRefresh={() => alert('onRefresh: nothing to refresh :P')}
           onViewableItemsChanged={this._onViewableItemsChanged}
@@ -117,8 +123,8 @@ class SectionListExample extends React.PureComponent {
               {title: 'Item In Header Section', text: 'Section s1', key: '0'},
             ]},
             {key: 's2', data: [
-              {noImage: true, title: 'First item', text: 'Section s2', key: '0'},
-              {noImage: true, title: 'Second item', text: 'Section s2', key: '1'},
+              {noImage: true, title: '1st item', text: 'Section s2', key: '0'},
+              {noImage: true, title: '2nd item', text: 'Section s2', key: '1'},
             ]},
             {key: 'Filtered Items', data: filteredData},
           ]}
@@ -127,11 +133,18 @@ class SectionListExample extends React.PureComponent {
       </UIExplorerPage>
     );
   }
-  _renderItemComponent = ({item}) => <ItemComponent item={item} onPress={this._pressItem} />;
-  // This is called when items change viewability by scrolling into our out of the viewable area.
+  _renderItemComponent = ({item}) => (
+    <ItemComponent item={item} onPress={this._pressItem} />
+  );
+  // This is called when items change viewability by scrolling into our out of
+  // the viewable area.
   _onViewableItemsChanged = (info: {
     changed: Array<{
-      key: string, isViewable: boolean, item: {columns: Array<*>}, index: ?number, section?: any
+      key: string,
+      isViewable: boolean,
+      item: {columns: Array<*>},
+      index: ?number,
+      section?: any
     }>},
   ) => {
     // Impressions can be logged here
