@@ -45,6 +45,6 @@ xcodebuild \
   -project "Examples/UIExplorer/UIExplorer.xcodeproj" \
   -scheme "UIExplorer" \
   -sdk "iphonesimulator" \
-  -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.0" \
+  -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.1" \
   build test
  
