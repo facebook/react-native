@@ -160,7 +160,13 @@ class WebView extends React.Component {
      * @platform android
      */
     allowUniversalAccessFromFileURLs: PropTypes.bool,
-
+      
+    /**
+     * Function that accepts a string that will be passed to the WebView and
+     * executed immediately as JavaScript.
+     */
+    injectJavaScript: PropTypes.func,
+      
     /**
      * Specifies the mixed content mode. i.e WebView will allow a secure origin to load content from any other origin.
      *

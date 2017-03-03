@@ -677,6 +677,45 @@ exports.examples = [
     },
     platform: 'ios',
   },
+  {
+    title: 'Blur Radius',
+    render: function() {
+      return (
+        <View style={styles.horizontal}>
+          <Image
+            style={[styles.base,]}
+            source={fullImage}
+            blurRadius={0}
+          />
+          <Image
+            style={[styles.base, styles.leftMargin]}
+            source={fullImage}
+            blurRadius={5}
+          />
+          <Image
+            style={[styles.base, styles.leftMargin]}
+            source={fullImage}
+            blurRadius={10}
+          />
+          <Image
+            style={[styles.base, styles.leftMargin]}
+            source={fullImage}
+            blurRadius={15}
+          />
+          <Image
+            style={[styles.base, styles.leftMargin]}
+            source={fullImage}
+            blurRadius={20}
+          />
+          <Image
+            style={[styles.base, styles.leftMargin]}
+            source={fullImage}
+            blurRadius={25}
+          />
+        </View>
+      );
+    },
+  },
 ];
 
 var fullImage = {uri: 'https://facebook.github.io/react/img/logo_og.png'};

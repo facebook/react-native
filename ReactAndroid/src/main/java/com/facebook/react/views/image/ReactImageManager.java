@@ -82,6 +82,11 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     view.setSource(sources);
   }
 
+  @ReactProp(name = "blurRadius")
+  public void setBlurRadius(ReactImageView view, float blurRadius) {
+    view.setBlurRadius(blurRadius);
+  }
+
   // In JS this is Image.props.loadingIndicatorSource.uri
   @ReactProp(name = "loadingIndicatorSrc")
   public void setLoadingIndicatorSource(ReactImageView view, @Nullable String source) {
