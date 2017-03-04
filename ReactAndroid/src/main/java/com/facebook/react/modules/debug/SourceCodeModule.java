@@ -22,35 +22,32 @@ import com.facebook.react.module.annotations.ReactModule;
 /**
  * Module that exposes the URL to the source code map (used for exception stack trace parsing) to JS
  */
-@ReactModule(name = "RCTSourceCode")
+@ReactModule(name = SourceCodeModule.NAME)
 public class SourceCodeModule extends BaseJavaModule {
 
+  public static final String NAME = "SourceCode";
+
   private final ReactContext mReactContext;
-  private @Nullable String mSourceUrl;
 
   public SourceCodeModule(ReactContext reactContext) {
     mReactContext = reactContext;
   }
 
   @Override
-  public void initialize() {
-    super.initialize();
-
-    mSourceUrl =
-      Assertions.assertNotNull(
-        mReactContext.getCatalystInstance().getSourceURL(),
-        "No source URL loaded, have you initialised the instance?");
-  }
-
-  @Override
   public String getName() {
-    return "RCTSourceCode";
+    return NAME;
   }
 
   @Override
   public @Nullable Map<String, Object> getConstants() {
     HashMap<String, Object> constants = new HashMap<>();
-    constants.put("scriptURL", mSourceUrl);
+
+    String sourceURL =
+      Assertions.assertNotNull(
+        mReactContext.getCatalystInstance().getSourceURL(),
+        "No source URL loaded, have you initialised the instance?");
+
+    constants.put("scriptURL", sourceURL);
     return constants;
   }
 }

@@ -20,7 +20,7 @@ const makeHMRConfig = require('babel-preset-react-native/configs/hmr');
 const path = require('path');
 const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
 
-const {compactMapping} = require('./react-packager/src/Bundler/source-map');
+const {compactMapping} = require('./src/Bundler/source-map');
 
 /**
  * Return a memoized function that checks for the existence of a
@@ -35,7 +35,7 @@ const getBabelRC = (function() {
       return babelRC;
     }
 
-    babelRC = { plugins: [] }; // empty babelrc
+    babelRC = {plugins: []}; // empty babelrc
 
     // Let's look for the .babelrc in the first project root.
     // In the future let's look into adding a command line option to specify
@@ -50,11 +50,11 @@ const getBabelRC = (function() {
     if (!projectBabelRCPath || !fs.existsSync(projectBabelRCPath)) {
       babelRC = json5.parse(
         fs.readFileSync(
-          path.resolve(__dirname, 'react-packager', 'rn-babelrc.json'))
+          path.resolve(__dirname, 'rn-babelrc.json'))
         );
 
       // Require the babel-preset's listed in the default babel config
-      babelRC.presets = babelRC.presets.map((preset) => require('babel-preset-' + preset));
+      babelRC.presets = babelRC.presets.map(preset => require('babel-preset-' + preset));
       babelRC.plugins = resolvePlugins(babelRC.plugins);
     } else {
       // if we find a .babelrc file we tell babel to use it
@@ -126,17 +126,4 @@ function transform(src, filename, options) {
   }
 }
 
-module.exports = function(data, callback) {
-  let result;
-  try {
-    result = transform(data.sourceCode, data.filename, data.options);
-  } catch (e) {
-    callback(e);
-    return;
-  }
-
-  callback(null, result);
-};
-
-// export for use in jest
 module.exports.transform = transform;

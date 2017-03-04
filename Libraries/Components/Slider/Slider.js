@@ -12,6 +12,7 @@
 'use strict';
 
 var Image = require('Image');
+var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var Platform = require('Platform');
@@ -68,18 +69,16 @@ var Slider = React.createClass({
     maximumValue: PropTypes.number,
 
     /**
-     * The color used for the track to the left of the button. Overrides the
-     * default blue gradient image.
-     * @platform ios
+     * The color used for the track to the left of the button.
+     * Overrides the default blue gradient image on iOS.
      */
-    minimumTrackTintColor: PropTypes.string,
+    minimumTrackTintColor: ColorPropType,
 
     /**
-     * The color used for the track to the right of the button. Overrides the
-     * default blue gradient image.
-     * @platform ios
+     * The color used for the track to the right of the button.
+     * Overrides the default blue gradient image on iOS.
      */
-    maximumTrackTintColor: PropTypes.string,
+    maximumTrackTintColor: ColorPropType,
 
     /**
      * If true the user won't be able to move the slider.
@@ -113,6 +112,12 @@ var Slider = React.createClass({
      * @platform ios
      */
     thumbImage: Image.propTypes.source,
+
+    /**
+     * Color of the foreground switch grip.
+     * @platform android
+     */
+    thumbTintColor: ColorPropType,
 
     /**
      * Callback continuously called while the user is dragging the slider.

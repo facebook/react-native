@@ -148,6 +148,21 @@ RCT_EXPORT_METHOD(scrollTo:(nonnull NSNumber *)reactTag
   }];
 }
 
+RCT_EXPORT_METHOD(scrollToEnd:(nonnull NSNumber *)reactTag
+                  animated:(BOOL)animated)
+{
+  [self.bridge.uiManager addUIBlock:
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
+     UIView *view = viewRegistry[reactTag];
+     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
+       [(id<RCTScrollableProtocol>)view scrollToEnd:animated];
+     } else {
+       RCTLogError(@"tried to scrollTo: on non-RCTScrollableProtocol view %@ "
+                   "with tag #%@", view, reactTag);
+     }
+   }];
+}
+
 RCT_EXPORT_METHOD(zoomToRect:(nonnull NSNumber *)reactTag
                   withRect:(CGRect)rect
                   animated:(BOOL)animated)

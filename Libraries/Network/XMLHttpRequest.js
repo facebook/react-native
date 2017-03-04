@@ -121,7 +121,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   upload: XMLHttpRequestEventTarget = new XMLHttpRequestEventTarget();
 
   _requestId: ?number;
-  _subscriptions: [any];
+  _subscriptions: Array<*>;
 
   _aborted: boolean = false;
   _cachedResponse: Response;

@@ -22,6 +22,9 @@ const windows = require('./windows');
 const wrapCommands = require('./wrapCommands');
 const findPlugins = require('./findPlugins');
 
+const findSymlinksPaths = require('../util/findSymlinksPaths');
+const NODE_MODULES = path.resolve(__dirname, '..', '..', '..');
+
 import type {ConfigT} from './index';
 
 const getRNPMConfig = (folder) =>
@@ -31,6 +34,9 @@ const getRNPMConfig = (folder) =>
 const attachPackage = (command, pkg) => Array.isArray(command)
   ? command.map(cmd => attachPackage(cmd, pkg))
   : { ...command, pkg };
+
+const addSymlinkToRoots = (roots) =>
+  roots.concat(findSymlinksPaths(NODE_MODULES, roots));
 
 /**
  * Default configuration for the CLI.
@@ -97,18 +103,21 @@ const config: ConfigT = {
   getProjectRoots() {
     const root = process.env.REACT_NATIVE_APP_ROOT;
     if (root) {
-      return [path.resolve(root)];
+      return addSymlinkToRoots([path.resolve(root)]);
     }
+
+    var roots;
     if (__dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli[\/\\]core$/)) {
       // Packager is running from node_modules.
       // This is the default case for all projects created using 'react-native init'.
-      return [path.resolve(__dirname, '../../../..')];
+      roots = [path.resolve(__dirname, '../../../..')];
     } else if (__dirname.match(/Pods[\/\\]React[\/\\]packager$/)) {
       // React Native was installed using CocoaPods.
-      return [path.resolve(__dirname, '../../../..')];
+      roots = [path.resolve(__dirname, '../../../..')];
     } else {
-      return [path.resolve(__dirname, '../..')];
+      roots = [path.resolve(__dirname, '../..')];
     }
+    return addSymlinkToRoots(roots);
   },
 };
 

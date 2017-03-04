@@ -55,7 +55,7 @@ If the view is responding, the following handlers can be called:
      + `pageX` - The X position of the touch, relative to the root element
      + `pageY` - The Y position of the touch, relative to the root element
      + `target` - The node id of the element receiving the touch event
-     + `timeStamp` - A time identifier for the touch, useful for velocity calculation
+     + `timestamp` - A time identifier for the touch, useful for velocity calculation
      + `touches` - Array of all current touches on the screen
 
 ### Capture ShouldSet Handlers

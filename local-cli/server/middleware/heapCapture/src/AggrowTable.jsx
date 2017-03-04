@@ -47,7 +47,7 @@ export default class AggrowTable extends React.Component {
   state: State;
 
   componentDidMount() {
-    document.body.addEventListener('keydown', this.keydown);
+    document.body && document.body.addEventListener('keydown', this.keydown);
   }
 
   componentWillReceiveProps(nextProps: Props) {
@@ -61,7 +61,7 @@ export default class AggrowTable extends React.Component {
   }
 
   componentWillUnmount() {
-    document.body.removeEventListener('keydown', this.keydown);
+    document.body && document.body.removeEventListener('keydown', this.keydown);
   }
 
   scroll = (e: SyntheticUIEvent) => {

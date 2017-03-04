@@ -12,7 +12,7 @@ package com.facebook.react.flat;
 /**
  * ViewManager that creates instances of RCTTextInlineImage.
  */
-/* package */ final class RCTTextInlineImageManager extends VirtualViewManager<RCTTextInlineImage> {
+public final class RCTTextInlineImageManager extends VirtualViewManager<RCTTextInlineImage> {
 
   @Override
   public String getName() {

@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule XHRExampleFormData
  */
 'use strict';
 
@@ -37,6 +38,8 @@ const {
   TouchableHighlight,
   View,
 } = ReactNative;
+
+const XHRExampleBinaryUpload = require('./XHRExampleBinaryUpload');
 
 const PAGE_SIZE = 20;
 
@@ -109,31 +112,7 @@ class XHRExampleFormData extends React.Component {
     xhr.open('POST', 'http://posttestserver.com/post.php');
     xhr.onload = () => {
       this.setState({isUploading: false});
-      if (xhr.status !== 200) {
-        Alert.alert(
-          'Upload failed',
-          'Expected HTTP 200 OK response, got ' + xhr.status
-        );
-        return;
-      }
-      if (!xhr.responseText) {
-        Alert.alert(
-          'Upload failed',
-          'No response payload.'
-        );
-        return;
-      }
-      var index = xhr.responseText.indexOf('http://www.posttestserver.com/');
-      if (index === -1) {
-        Alert.alert(
-          'Upload failed',
-          'Invalid response payload.'
-        );
-        return;
-      }
-      var url = xhr.responseText.slice(index).split('\n')[0];
-      console.log('Upload successful: ' + url);
-      Linking.openURL(url);
+      XHRExampleBinaryUpload.handlePostTestServerUpload(xhr);
     };
     var formdata = new FormData();
     if (this.state.randomPhoto) {

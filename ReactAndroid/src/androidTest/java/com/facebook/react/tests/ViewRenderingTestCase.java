@@ -19,6 +19,7 @@ import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIImplementation;
@@ -53,7 +54,8 @@ public class ViewRenderingTestCase extends ReactIntegrationTestCase {
     final UIManagerModule uiManager = new UIManagerModule(
         getContext(),
         viewManagers,
-        new UIImplementationProvider());
+        new UIImplementationProvider(),
+        false);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -66,6 +68,7 @@ public class ViewRenderingTestCase extends ReactIntegrationTestCase {
     mCatalystInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(uiManager)
         .addNativeModule(new AndroidInfoModule())
+        .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
         .addJSModule(ViewRenderingTestModule.class)
         .build();

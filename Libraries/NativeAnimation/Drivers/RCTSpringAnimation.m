@@ -14,7 +14,6 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 
-#import "RCTAnimationUtils.h"
 #import "RCTValueAnimatedNode.h"
 
 @interface RCTSpringAnimation ()

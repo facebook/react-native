@@ -51,4 +51,4 @@ The `AppRegistry` just tells React Native which component is the root one for th
 
 ## This App Doesn't Do Very Much
 
-Good point. To make components do more interesting things, you need to [learn about Props](/react-native/docs/props.html).
+Good point. To make components do more interesting things, you need to [learn about Props](docs/props.html).

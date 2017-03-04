@@ -30,6 +30,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.UnexpectedNativeTypeException;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
@@ -41,11 +42,15 @@ import com.facebook.react.views.view.ReactViewManager;
 
 /**
  * Integration test to verify passing various types of parameters from JS to Java works
+ *
+ * TODO: we should run these tests with isBlockingSynchronousMethod = true as well,
+ * since they currrently use a completely different codepath
  */
 public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTestCase {
 
   private interface TestJSToJavaParametersModule extends JavaScriptModule {
     void returnBasicTypes();
+    void returnBoxedTypes();
     void returnDynamicTypes();
 
     void returnArrayWithBasicTypes();
@@ -81,7 +86,8 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     final UIManagerModule mUIManager = new UIManagerModule(
         getContext(),
         viewManagers,
-        new UIImplementationProvider());
+        new UIImplementationProvider(),
+        false);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -95,6 +101,7 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     mCatalystInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(mRecordingTestModule)
         .addNativeModule(new AndroidInfoModule())
+        .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
         .addNativeModule(mUIManager)
         .addJSModule(TestJSToJavaParametersModule.class)
@@ -113,6 +120,19 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     assertEquals(3.14, args[1]);
     assertEquals(true, args[2]);
     assertNull(args[3]);
+  }
+
+  public void testBoxedTypes() {
+    mCatalystInstance.getJSModule(TestJSToJavaParametersModule.class).returnBoxedTypes();
+    waitForBridgeAndUIIdle();
+
+    List<Object[]> boxedTypesCalls = mRecordingTestModule.getBoxedTypesCalls();
+    assertEquals(1, boxedTypesCalls.size());
+
+    Object[] args = boxedTypesCalls.get(0);
+    assertEquals(Integer.valueOf(42), args[0]);
+    assertEquals(Double.valueOf(3.14), args[1]);
+    assertEquals(Boolean.valueOf(true), args[2]);
   }
 
   public void testDynamicType() {
@@ -681,9 +701,10 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     }
   }
 
-  private class RecordingTestModule extends BaseJavaModule {
+  private static class RecordingTestModule extends BaseJavaModule {
 
     private final List<Object[]> mBasicTypesCalls = new ArrayList<Object[]>();
+    private final List<Object[]> mBoxedTypesCalls = new ArrayList<Object[]>();
     private final List<ReadableArray> mArrayCalls = new ArrayList<ReadableArray>();
     private final List<ReadableMap> mMapCalls = new ArrayList<ReadableMap>();
     private final List<Dynamic> mDynamicCalls = new ArrayList<Dynamic>();
@@ -696,6 +717,11 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     @ReactMethod
     public void receiveBasicTypes(String s, double d, boolean b, String nullableString) {
       mBasicTypesCalls.add(new Object[]{s, d, b, nullableString});
+    }
+
+    @ReactMethod
+    public void receiveBoxedTypes(Integer i, Double d, Boolean b) {
+      mBoxedTypesCalls.add(new Object[]{i, d, b});
     }
 
     @ReactMethod
@@ -715,6 +741,10 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
 
     public List<Object[]> getBasicTypesCalls() {
       return mBasicTypesCalls;
+    }
+
+    public List<Object[]> getBoxedTypesCalls() {
+      return mBoxedTypesCalls;
     }
 
     public List<ReadableArray> getArrayCalls() {

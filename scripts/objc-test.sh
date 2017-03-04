@@ -4,6 +4,7 @@
 
 # Start the packager and preload the UIExplorerApp bundle for better performance in integration tests
 open "./packager/launchPackager.command" || echo "Can't start packager automatically"
+open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
 sleep 20
 curl 'http://localhost:8081/Examples/UIExplorer/js/UIExplorerApp.ios.bundle?platform=ios&dev=true' -o temp.bundle
 rm temp.bundle
@@ -23,8 +24,10 @@ function cleanup {
     WATCHMAN_LOGS=/usr/local/Cellar/watchman/3.1/var/run/watchman/$USER.log
     [ -f $WATCHMAN_LOGS ] && cat $WATCHMAN_LOGS
   fi
-  # kill whatever is occupying port 8081
+  # kill whatever is occupying port 8081 (packager)
   lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
+  # kill whatever is occupying port 5555 (web socket server)
+  lsof -i tcp:5555 | awk 'NR!=1 {print $2}' | xargs kill
 }
 trap cleanup EXIT
 

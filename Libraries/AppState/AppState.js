@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const EventEmitter = require('EventEmitter');
 const NativeEventEmitter = require('NativeEventEmitter');
 const NativeModules = require('NativeModules');
 const RCTAppState = NativeModules.AppState;
@@ -44,25 +45,37 @@ const invariant = require('fbjs/lib/invariant');
  * while `AppState` retrieves it over the bridge.
  *
  * ```
- * getInitialState: function() {
- *   return {
- *     currentAppState: AppState.currentState,
- *   };
- * },
- * componentDidMount: function() {
- *   AppState.addEventListener('change', this._handleAppStateChange);
- * },
- * componentWillUnmount: function() {
- *   AppState.removeEventListener('change', this._handleAppStateChange);
- * },
- * _handleAppStateChange: function(currentAppState) {
- *   this.setState({ currentAppState, });
- * },
- * render: function() {
- *   return (
- *     <Text>Current state is: {this.state.currentAppState}</Text>
- *   );
- * },
+ * import React, {Component} from 'react'
+ * import {AppState, Text} from 'react-native'
+ *
+ * class AppStateExample extends Component {
+ *
+ *   state = {
+ *     appState: AppState.currentState
+ *   }
+ *
+ *   componentDidMount() {
+ *     AppState.addEventListener('change', this._handleAppStateChange);
+ *   }
+ *
+ *   componentWillUnmount() {
+ *     AppState.removeEventListener('change', this._handleAppStateChange);
+ *   }
+ *
+ *   _handleAppStateChange = (nextAppState) => {
+ *     if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+ *       console.log('App has come to the foreground!')
+ *     }
+ *     this.setState({appState: nextAppState});
+ *   }
+ *
+ *   render() {
+ *     return (
+ *       <Text>Current state is: {this.state.appState}</Text>
+ *     );
+ *   }
+ *
+ * }
  * ```
  *
  * This example will only ever appear to say "Current state is: active" because
@@ -74,10 +87,12 @@ class AppState extends NativeEventEmitter {
 
   _eventHandlers: Object;
   currentState: ?string;
+  isAvailable: boolean;
 
   constructor() {
     super(RCTAppState);
 
+    this.isAvailable = true;
     this._eventHandlers = {
       change: new Map(),
       memoryWarning: new Map(),
@@ -161,6 +176,48 @@ class AppState extends NativeEventEmitter {
   }
 }
 
-AppState = new AppState();
+function throwMissingNativeModule() {
+  invariant(
+    false,
+    'Cannot use AppState module when native RCTAppState is not included in the build.\n' +
+    'Either include it, or check AppState.isAvailable before calling any methods.'
+  );
+}
+
+class MissingNativeAppStateShim extends EventEmitter {
+  // AppState
+  isAvailable: boolean = false;
+  currentState: ?string = null;
+
+  addEventListener() {
+    throwMissingNativeModule();
+  }
+
+  removeEventListener() {
+    throwMissingNativeModule();
+  }
+
+  // EventEmitter
+  addListener() {
+    throwMissingNativeModule();
+  }
+
+  removeAllListeners() {
+    throwMissingNativeModule();
+  }
+
+  removeSubscription() {
+    throwMissingNativeModule();
+  }
+}
+
+// This module depends on the native `RCTAppState` module. If you don't include it,
+// `AppState.isAvailable` will return `false`, and any method calls will throw.
+// We reassign the class variable to keep the autodoc generator happy.
+if (RCTAppState) {
+  AppState = new AppState();
+} else {
+  AppState = new MissingNativeAppStateShim();
+}
 
 module.exports = AppState;

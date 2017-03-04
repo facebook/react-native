@@ -42,11 +42,6 @@ RCT_EXTERN void RCTExecuteOnMainQueue(dispatch_block_t block);
 // Please do not use this unless you know what you're doing.
 RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block);
 
-// Deprecated - do not use.
-RCT_EXTERN void RCTExecuteOnMainThread(dispatch_block_t block, BOOL sync)
-__deprecated_msg("Use RCTExecuteOnMainQueue instead. RCTExecuteOnMainQueue is "
-                 "async. If you need to use the `sync` option... please don't.");
-
 // Get screen metrics in a thread-safe way
 RCT_EXTERN CGFloat RCTScreenScale(void);
 RCT_EXTERN CGSize RCTScreenSize(void);

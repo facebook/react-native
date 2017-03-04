@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Executor.h"
+#include <cxxreact/Executor.h>
 
 namespace facebook {
 namespace react {

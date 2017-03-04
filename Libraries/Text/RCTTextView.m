@@ -346,6 +346,8 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   [self updateFrames];
 }
 
+#pragma mark - UITextViewDelegate
+
 - (BOOL)textView:(RCTUITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
   if (textView.textWasPasted) {
@@ -646,6 +648,12 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 
 - (void)textViewDidEndEditing:(UITextView *)textView
 {
+  if (_nativeUpdatesInFlight) {
+    // iOS does't call `textViewDidChange:` delegate method if the change was happened because of autocorrection
+    // which was triggered by loosing focus. So, we call it manually.
+    [self textViewDidChange:textView];
+  }
+
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
                                  reactTag:self.reactTag
                                      text:textView.text
@@ -710,6 +718,8 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 {
   return [UIColor colorWithRed:0.0/255.0 green:0.0/255.0 blue:0.098/255.0 alpha:0.22];
 }
+
+#pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {

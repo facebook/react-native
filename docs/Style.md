@@ -48,6 +48,6 @@ AppRegistry.registerComponent('LotsOfStyles', () => LotsOfStyles);
 One common pattern is to make your component accept a `style` prop which in
 turn is used to style subcomponents. You can use this to make styles "cascade" the way they do in CSS.
 
-There are a lot more ways to customize text style. Check out the [Text component reference](/react-native/docs/text.html) for a complete list.
+There are a lot more ways to customize text style. Check out the [Text component reference](docs/text.html) for a complete list.
 
-Now you can make your text beautiful. The next step in becoming a style master is to [learn how to control component size](/react-native/docs/height-and-width.html).
+Now you can make your text beautiful. The next step in becoming a style master is to [learn how to control component size](docs/height-and-width.html).

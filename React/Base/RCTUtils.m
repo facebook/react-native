@@ -265,21 +265,6 @@ void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
   }
 }
 
-void RCTExecuteOnMainThread(dispatch_block_t block, BOOL sync)
-{
-  if (RCTIsMainQueue()) {
-    block();
-  } else if (sync) {
-    dispatch_sync(dispatch_get_main_queue(), ^{
-      block();
-    });
-  } else {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      block();
-    });
-  }
-}
-
 CGFloat RCTScreenScale()
 {
   static CGFloat scale;

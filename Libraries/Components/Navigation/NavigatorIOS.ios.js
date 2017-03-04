@@ -133,7 +133,7 @@ type Event = Object;
  * animations and behavior from UIKIt.
  *
  * As the name implies, it is only available on iOS. Take a look at
- * [`Navigator`](/react-native/docs/navigator.html) for a similar solution for your
+ * [`Navigator`](docs/navigator.html) for a similar solution for your
  * cross-platform needs, or check out
  * [react-native-navigation](https://github.com/wix/react-native-navigation), a
  * component that aims to provide native navigation on both iOS and Android.
