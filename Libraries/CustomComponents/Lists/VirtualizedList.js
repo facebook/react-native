@@ -33,7 +33,6 @@
 'use strict';
 
 const Batchinator = require('Batchinator');
-const Platform = require('Platform');
 const React = require('React');
 const RefreshControl = require('RefreshControl');
 const ScrollView = require('ScrollView');
@@ -252,7 +251,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     onEndReachedThreshold: 2, // multiples of length
     removeClippedSubviews: true,
     renderScrollComponent: (props: Props) => {
-      if (props.onRefresh && !Platform.isTVOS) {
+      if (props.onRefresh) {
         invariant(
           typeof props.refreshing === 'boolean',
           '`refreshing` prop must be set as a boolean in order to use `onRefresh`, but got `' +
