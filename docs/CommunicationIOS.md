@@ -4,7 +4,7 @@ title: Communication between native and React Native
 layout: docs
 category: Guides (iOS)
 permalink: docs/communication-ios.html
-next: native-modules-android
+next: packaging-an-iOS-component
 previous: running-on-simulator-ios
 ---
 
