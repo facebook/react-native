@@ -512,9 +512,7 @@ const ScrollView = React.createClass({
     ];
     if (previousHeaderIndex != null) {
       const previousHeader = this._stickyHeaderRefs.get(previousHeaderIndex);
-      previousHeader && previousHeader.setNextHeaderY(
-        event.nativeEvent.layout.y - event.nativeEvent.layout.height,
-      );
+      previousHeader && previousHeader.setNextHeaderY(event.nativeEvent.layout.y);
     }
   },
 
