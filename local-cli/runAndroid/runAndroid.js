@@ -319,5 +319,3 @@ module.exports = {
     description: 'Do not launch packager while building',
   }],
 };
-
-
