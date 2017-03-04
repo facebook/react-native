@@ -39,7 +39,8 @@ const Platform = {
       return obj.ios;
     }
     if (keys.length >= 1) {
-      retObj = keys.reduce((prev, curr) => ({...prev, ...obj[curr]}), {});
+      retObj = keys.reduce( (prev, curr) => ((curr === 'ios') ? prev : { ...prev, ...obj[curr] }), {} );
+      if ('ios' in obj) { retObj = {...retObj, ...obj.ios}; }
     }
     return retObj;
   },
