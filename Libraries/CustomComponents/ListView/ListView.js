@@ -404,6 +404,8 @@ var ListView = React.createClass({
     var rowCount = 0;
     var stickySectionHeaderIndices = [];
 
+    const {renderSectionHeader} = this.props;
+
     var header = this.props.renderHeader && this.props.renderHeader();
     var footer = this.props.renderFooter && this.props.renderFooter();
     var totalIndex = header ? 1 : 0;
@@ -427,20 +429,14 @@ var ListView = React.createClass({
         }
       }
 
-      if (this.props.renderSectionHeader) {
-        var shouldUpdateHeader = rowCount >= this._prevRenderedRowsCount &&
-          dataSource.sectionHeaderShouldUpdate(sectionIdx);
-        bodyComponents.push(
-          <StaticRenderer
-            key={'s_' + sectionID}
-            shouldUpdate={!!shouldUpdateHeader}
-            render={this.props.renderSectionHeader.bind(
-              null,
-              dataSource.getSectionHeaderData(sectionIdx),
-              sectionID
-            )}
-          />
-        );
+      if (renderSectionHeader) {
+        bodyComponents.push(React.cloneElement(
+          renderSectionHeader(
+            dataSource.getSectionHeaderData(sectionIdx),
+            sectionID
+          ),
+          {key: 's_' + sectionID},
+        ));
         if (this.props.stickySectionHeadersEnabled) {
           stickySectionHeaderIndices.push(totalIndex++);
         }
