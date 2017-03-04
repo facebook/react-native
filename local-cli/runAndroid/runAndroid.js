@@ -85,34 +85,49 @@ function buildAndRun(args) {
     ? 'gradlew.bat'
     : './gradlew';
 
-  const manifestPackage = fs.readFileSync(
-      'app/src/main/AndroidManifest.xml',
-      'utf8'
-    ).match(/package="(.+?)"/)[1];
-
-  const packageName = args.applicationId ?
-                        `${args.applicationId}/${manifestPackage}.`
-                        :
-                        `${manifestPackage}/.`;
-
   const adbPath = getAdbPath();
   if (args.deviceId) {
     if (isString(args.deviceId)) {
-        runOnSpecificDevice(args, cmd, packageName, adbPath);
+        runOnSpecificDevice(args, cmd, adbPath);
     } else {
       console.log(chalk.red('Argument missing for parameter --deviceId'));
     }
   } else {
-    runOnAllDevices(args, cmd, packageName, adbPath);
+    runOnAllDevices(args, cmd, adbPath);
   }
 }
 
-function runOnSpecificDevice(args, gradlew, packageName, adbPath) {
+function fullMainActivityPath(args) {
+  const packageName = fs.readFileSync(
+    'app/src/main/AndroidManifest.xml',
+    'utf8'
+  ).match(/package="(.+?)"/)[1];
+  const mainActivity = args.mainActivity || 'MainActivity';
+  const variant = args.variant
+
+  if (variant) {
+    const variantKeys = variant.replace(/([A-Z])/g, ' $1').trim().toLowerCase().split(' ');
+    const productFlavor = variantKeys[0], buildType = variantKeys[1];
+    const packagePath = packageName.replace('.', '/');
+    const applicationId = fs.readFileSync(
+      `app/build/generated/source/buildConfig/${productFlavor}/${buildType}/${packagePath}/BuildConfig.java`,
+      'utf8'
+    ).match(/APPLICATION_ID = "(.+?)"/)[1];
+
+    console.log(`${applicationId}/${packageName}.${mainActivity}`);
+    return `${applicationId}/${packageName}.${mainActivity}`;
+  } else {
+    console.log(`${packageName}/.${mainActivity}`);
+    return `${packageName}/.${mainActivity}`;
+  }
+}
+
+function runOnSpecificDevice(args, gradlew, adbPath) {
   let devices = adb.getDevices();
   if (devices && devices.length > 0) {
     if (devices.indexOf(args.deviceId) !== -1) {
       buildApk(gradlew);
-      installAndLaunchOnDevice(args, args.deviceId, packageName, adbPath);
+      installAndLaunchOnDevice(args, args.deviceId, adbPath);
     } else {
       console.log('Could not find device with the id: "' + args.deviceId + '".');
       console.log('Choose one of the following:');
@@ -155,9 +170,9 @@ function tryInstallAppOnDevice(args, device) {
   }
 }
 
-function tryLaunchAppOnDevice(device, packageName, adbPath, mainActivity) {
+function tryLaunchAppOnDevice(device, adbPath, mainActivity) {
   try {
-    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + mainActivity];
+    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', mainActivity];
     console.log(chalk.bold(
       `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
     ));
@@ -169,13 +184,13 @@ function tryLaunchAppOnDevice(device, packageName, adbPath, mainActivity) {
   }
 }
 
-function installAndLaunchOnDevice(args, selectedDevice, packageName, adbPath) {
+function installAndLaunchOnDevice(args, selectedDevice, adbPath) {
   tryRunAdbReverse(selectedDevice);
   tryInstallAppOnDevice(args, selectedDevice);
-  tryLaunchAppOnDevice(selectedDevice, packageName, adbPath, args.mainActivity);
+  tryLaunchAppOnDevice(selectedDevice, adbPath, fullMainActivityPath(args));
 }
 
-function runOnAllDevices(args, cmd, packageName, adbPath){
+function runOnAllDevices(args, cmd, adbPath){
   try {
     const gradleArgs = [];
     if (args.variant) {
@@ -220,14 +235,14 @@ function runOnAllDevices(args, cmd, packageName, adbPath){
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
         tryRunAdbReverse(device);
-        tryLaunchAppOnDevice(device, packageName, adbPath, args.mainActivity);
+        tryLaunchAppOnDevice(device, adbPath, fullMainActivityPath(args));
       });
     } else {
       try {
         // If we cannot execute based on adb devices output, fall back to
         // shell am start
         const fallbackAdbArgs = [
-          'shell', 'am', 'start', '-n', packageName + args.mainActivity
+          'shell', 'am', 'start', '-n', fullMainActivityPath(args)
         ];
         console.log(chalk.bold(
           `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
@@ -300,10 +315,9 @@ module.exports = {
     description: 'builds your app and starts it on a specific device/simulator with the ' +
       'given device id (listed by running "adb devices" on the command line).',
   }, {
-    command: '--applicationId [string]',
-    description: 'Application Id'
-  }, {
     command: '--no-packager',
     description: 'Do not launch packager while building',
   }],
 };
+
+
