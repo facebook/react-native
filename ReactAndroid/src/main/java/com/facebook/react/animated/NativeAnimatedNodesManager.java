@@ -320,7 +320,7 @@ import javax.annotation.Nullable;
     if (mEventDrivers.containsKey(key)) {
       mEventDrivers.get(key).add(event);
     } else {
-      List<EventAnimationDriver> drivers = new LinkedList<>();
+      List<EventAnimationDriver> drivers = new ArrayList<>(1);
       drivers.add(event);
       mEventDrivers.put(key, drivers);
     }
