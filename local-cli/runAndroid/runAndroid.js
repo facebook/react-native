@@ -114,10 +114,8 @@ function fullMainActivityPath(args) {
       'utf8'
     ).match(/APPLICATION_ID = "(.+?)"/)[1];
 
-    console.log(`${applicationId}/${packageName}.${mainActivity}`);
     return `${applicationId}/${packageName}.${mainActivity}`;
   } else {
-    console.log(`${packageName}/.${mainActivity}`);
     return `${packageName}/.${mainActivity}`;
   }
 }
