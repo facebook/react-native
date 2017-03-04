@@ -77,7 +77,9 @@ class FlatListExample extends React.PureComponent {
   }
   render() {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
-    const filter = (item) => (filterRegex.test(item.text) || filterRegex.test(item.title));
+    const filter = (item) => (
+      filterRegex.test(item.text) || filterRegex.test(item.title)
+    );
     const filteredData = this.state.data.filter(filter);
     return (
       <UIExplorerPage
@@ -112,9 +114,14 @@ class FlatListExample extends React.PureComponent {
           data={filteredData}
           debug={this.state.debug}
           disableVirtualization={!this.state.virtualized}
-          getItemLayout={this.state.fixedHeight ? this._getItemLayout : undefined}
+          getItemLayout={this.state.fixedHeight ?
+            this._getItemLayout :
+            undefined
+          }
           horizontal={this.state.horizontal}
-          key={(this.state.horizontal ? 'h' : 'v') + (this.state.fixedHeight ? 'f' : 'd')}
+          key={(this.state.horizontal ? 'h' : 'v') +
+            (this.state.fixedHeight ? 'f' : 'd')
+          }
           legacyImplementation={false}
           numColumns={1}
           onRefresh={this._onRefresh}
@@ -145,22 +152,31 @@ class FlatListExample extends React.PureComponent {
   };
   _shouldItemUpdate(prev, next) {
     /**
-     * Note that this does not check state.horizontal or state.fixedheight because we blow away the
-     * whole list by changing the key in those cases. Make sure that you do the same in your code,
-     * or incorporate all relevant data into the item data, or skip this optimization entirely.
+     * Note that this does not check state.horizontal or state.fixedheight
+     * because we blow away the whole list by changing the key in those cases.
+     * Make sure that you do the same in your code, or incorporate all relevant
+     * data into the item data, or skip this optimization entirely.
      */
     return prev.item !== next.item;
   }
-  // This is called when items change viewability by scrolling into or out of the viewable area.
+  // This is called when items change viewability by scrolling into or out of
+  // the viewable area.
   _onViewableItemsChanged = (info: {
       changed: Array<{
-        key: string, isViewable: boolean, item: any, index: ?number, section?: any
+        key: string,
+        isViewable: boolean,
+        item: any,
+        index: ?number,
+        section?: any,
       }>
     }
   ) => {
     // Impressions can be logged here
     if (this.state.logViewable) {
-      infoLog('onViewableItemsChanged: ', info.changed.map((v) => ({...v, item: '...'})));
+      infoLog(
+        'onViewableItemsChanged: ',
+        info.changed.map((v) => ({...v, item: '...'})),
+      );
     }
   };
   _pressItem = (key: number) => {
