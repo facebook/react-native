@@ -670,7 +670,6 @@ const ScrollView = React.createClass({
       scrollEventThrottle: hasStickyHeaders ? 1 : this.props.scrollEventThrottle,
       sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ?
         true : false,
-      stickyHeaderIndices: null,
     };
 
     const { decelerationRate } = this.props;
