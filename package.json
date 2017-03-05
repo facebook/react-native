@@ -148,7 +148,7 @@
     "babel-runtime": "^6.20.0",
     "babel-traverse": "^6.21.0",
     "babel-types": "^6.21.0",
-    "babylon": "^6.14.1",
+    "babylon": "^6.16.1",
     "base64-js": "^1.1.2",
     "bser": "^1.0.2",
     "chalk": "^1.1.1",
