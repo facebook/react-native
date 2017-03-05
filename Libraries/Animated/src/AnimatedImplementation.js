@@ -1721,7 +1721,11 @@ function createAnimatedComponent(Component: any): any {
       if (newProps !== this.props) {
         this._detachNativeEvents(this.props);
       }
-
+      
+      // Make sure to the component is not null
+	    if(!this._component){
+		    return;
+	    }
       // Make sure to get the scrollable node for components that implement
       // `ScrollResponder.Mixin`.
       const ref = this._component.getScrollableNode ?
@@ -1737,6 +1741,12 @@ function createAnimatedComponent(Component: any): any {
     }
 
     _detachNativeEvents(props) {
+      
+      // Make sure to the component is not null
+	    if(!this._component){
+		    return;
+	    }
+      
       // Make sure to get the scrollable node for components that implement
       // `ScrollResponder.Mixin`.
       const ref = this._component.getScrollableNode ?
