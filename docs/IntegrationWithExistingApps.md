@@ -210,16 +210,20 @@ target 'NumberTileGame' do
 
   # Your 'node_modules' directory is probably in the root of your project,
   # but if not, adjust the `:path` accordingly
-  pod 'React', :path => '../node_modules/react-native', :subspecs => [
+  react_native_path = "../node_modules/react-native"
+  pod 'React', :path => react_native_path, :subspecs => [
     'Core',
     'RCTText',
     'RCTNetwork',
     'RCTWebSocket', # needed for debugging
     # Add any other subspecs you want to use in your project
   ]
+  pod "Yoga", :path => "#{react_native_path}/ReactCommon/yoga"
 
 end
 ```
+
+> **Note:** From RN 0.42.0 you have to include explicitly Yoga in your Podfile.
 
 <block class="swift" />
 
