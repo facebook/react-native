@@ -539,6 +539,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   _onContentSizeChange = (width: number, height: number) => {
+    if (this.props.onContentSizeChange) {
+      this.props.onContentSizeChange(width, height);
+    }
     this._scrollMetrics.contentLength = this._selectLength({height, width});
     this._updateCellsToRenderBatcher.schedule();
   };
