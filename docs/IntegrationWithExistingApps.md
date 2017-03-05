@@ -210,15 +210,13 @@ target 'NumberTileGame' do
 
   # Your 'node_modules' directory is probably in the root of your project,
   # but if not, adjust the `:path` accordingly
-  react_native_path = "../node_modules/react-native"
-  pod 'React', :path => react_native_path, :subspecs => [
+  pod 'React', :path => '../node_modules/react-native', :subspecs => [
     'Core',
     'RCTText',
     'RCTNetwork',
     'RCTWebSocket', # needed for debugging
     # Add any other subspecs you want to use in your project
   ]
-  pod "Yoga", :path => "#{react_native_path}/ReactCommon/yoga"
 
 end
 ```
@@ -251,6 +249,30 @@ end
 ```
 
 <block class="objc swift" />
+
+> **Note:** From React Native `0.42.0` you have to include explicitly Yoga in your Podfile. Here is an exemple:
+
+```
+source 'https://github.com/CocoaPods/Specs.git'
+
+# Required for Swift apps
+platform :ios, '8.0'
+use_frameworks!
+
+# The target name is most likely the name of your project.
+target 'your-project' do
+
+  react_native_path = "../node_modules/react-native"
+  pod 'React', :path => react_native_path, :subspecs => [
+    'Core',
+    'RCTText',
+    'RCTNetwork',
+    'RCTWebSocket',
+  ]
+  # Explicitly include Yoga
+  pod "Yoga", :path => "#{react_native_path}/ReactCommon/yoga"
+end
+```
 
 #### Pod Installation
 
