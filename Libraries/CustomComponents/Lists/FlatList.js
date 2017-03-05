@@ -102,7 +102,7 @@ type OptionalProps<ItemT> = {
    */
   keyExtractor: (item: ItemT, index: number) => string,
   /**
-   * Multiple columns can only be rendered with `horizontal={false}`` and will zig-zag like a
+   * Multiple columns can only be rendered with `horizontal={false}` and will zig-zag like a
    * `flexWrap` layout. Items should all be the same height - masonry layouts are not supported.
    */
   numColumns: number,
@@ -164,6 +164,7 @@ type DefaultProps = typeof defaultProps;
  *  - Separator support.
  *  - Pull to Refresh.
  *  - Scroll loading.
+ *  - ScrollToIndex support.
  *
  * If you need section support, use [`<SectionList>`](/react-native/docs/sectionlist.html).
  *
