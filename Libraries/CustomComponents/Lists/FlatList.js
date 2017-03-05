@@ -130,7 +130,7 @@ type OptionalProps<ItemT> = {
   /**
    * Optional custom style for multi-item rows generated when numColumns > 1
    */
-  columnWrapperStyle?: StyleObj,
+  rowWrapperStyle?: StyleObj,
   /**
    * Optional optimization to minimize re-rendering items.
    */
@@ -252,13 +252,13 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
       horizontal,
       legacyImplementation,
       numColumns,
-      columnWrapperStyle,
+      rowWrapperStyle,
     } = props;
     invariant(!getItem && !getItemCount, 'FlatList does not support custom data formats.');
     if (numColumns > 1) {
       invariant(!horizontal, 'numColumns does not support horizontal.');
     } else {
-      invariant(!columnWrapperStyle, 'columnWrapperStyle not supported for single column lists');
+      invariant(!rowWrapperStyle, 'rowWrapperStyle not supported for single column lists');
     }
     if (legacyImplementation) {
       invariant(numColumns === 1, 'Legacy list does not support multiple columns.');
@@ -332,12 +332,12 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
   };
 
   _renderItem = (info: {item: ItemT | Array<ItemT>, index: number}) => {
-    const {renderItem, numColumns, columnWrapperStyle} = this.props;
+    const {renderItem, numColumns, rowWrapperStyle} = this.props;
     if (numColumns > 1) {
       const {item, index} = info;
       invariant(Array.isArray(item), 'Expected array of items with numColumns > 1');
       return (
-        <View style={[{flexDirection: 'row'}, columnWrapperStyle]}>
+        <View style={[{flexDirection: 'row'}, rowWrapperStyle]}>
           {item.map((it, kk) => {
             const element = renderItem({item: it, index:  index * numColumns + kk});
             return element && React.cloneElement(element, {key: kk});
