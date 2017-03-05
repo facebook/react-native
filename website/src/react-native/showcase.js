@@ -369,7 +369,6 @@ var featured = [
     infoLink: 'http://x.co/FlareNews',
     infoTitle: 'Social network that connects entrepreneurs to fellow entrepreneurs, consumers, investors and experts',
   },
-  ,
   {
     name: 'JadoPado',
     icon: 'https://lh3.googleusercontent.com/VX8CXya2KmFc-n9aPChiUpzIg2IkuzudWy76OmFKNMu2eQDFq9xFdDMR-U1E7Sa88eUs=w300-rw',
