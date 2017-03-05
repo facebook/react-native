@@ -248,7 +248,7 @@ end
 
 <block class="objc swift" />
 
-> **Note:** From React Native `0.42.0` you have to include explicitly Yoga in your Podfile. Here is an exemple:
+> **Note:** From React Native `0.42.0` you have to explicitly include Yoga in your Podfile. Here is an example:
 
 ```
 source 'https://github.com/CocoaPods/Specs.git'
