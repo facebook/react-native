@@ -67,6 +67,7 @@ const requireNativeComponent = require('requireNativeComponent');
  * multiple columns, infinite scroll loading, or any number of other features it
  * supports out of the box.
  */
+// $FlowFixMe(>=0.41.0)
 const ScrollView = React.createClass({
   propTypes: {
     ...View.propTypes,
