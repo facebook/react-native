@@ -67,6 +67,7 @@ const requireNativeComponent = require('requireNativeComponent');
  * multiple columns, infinite scroll loading, or any number of other features it
  * supports out of the box.
  */
+// $FlowFixMe(>=0.41.0)
 const ScrollView = React.createClass({
   propTypes: {
     ...View.propTypes,
@@ -669,7 +670,6 @@ const ScrollView = React.createClass({
       scrollEventThrottle: hasStickyHeaders ? 1 : this.props.scrollEventThrottle,
       sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ?
         true : false,
-      stickyHeaderIndices: null,
     };
 
     const { decelerationRate } = this.props;
