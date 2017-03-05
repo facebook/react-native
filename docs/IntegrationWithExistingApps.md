@@ -221,8 +221,6 @@ target 'NumberTileGame' do
 end
 ```
 
-> **Note:** From RN 0.42.0 you have to include explicitly Yoga in your Podfile.
-
 <block class="swift" />
 
 ```
