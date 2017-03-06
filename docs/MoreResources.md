@@ -4,7 +4,7 @@ title: More Resources
 layout: docs
 category: The Basics
 permalink: docs/more-resources.html
-next: integration-with-existing-apps
+next: handling-touches
 previous: networking
 ---
 

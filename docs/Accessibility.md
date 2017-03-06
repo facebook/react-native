@@ -5,7 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/accessibility.html
 next: timers
-previous: animations
+previous: debugging
 ---
 
 ## Native App Accessibility (iOS and Android)

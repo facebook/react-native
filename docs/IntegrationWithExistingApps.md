@@ -4,8 +4,9 @@ title: Integration With Existing Apps
 layout: docs
 category: Guides
 permalink: docs/integration-with-existing-apps.html
-next: colors
-previous: more-resources
+banner: ejected
+next: running-on-device
+previous: testing
 ---
 
 <div class="integration-toggler">
