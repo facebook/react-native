@@ -16,7 +16,7 @@
 #import "RCTUtils.h"
 #import "RCTViewControllerProtocol.h"
 #import "UIView+React.h"
-#import "RCTAutoInsetsProtocol.h"`
+#import "RCTAutoInsetsProtocol.h"
 
 @implementation RCTWrapperViewController
 {
