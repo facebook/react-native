@@ -48,20 +48,26 @@ const requireNativeComponent = require('requireNativeComponent');
  * view from becoming the responder.
  *
  *
- * `<ScrollView>` vs `<ListView>` - which one to use?
- * ScrollView simply renders all its react child components at once. That
- * makes it very easy to understand and use.
- * On the other hand, this has a performance downside. Imagine you have a very
- * long list of items you want to display, worth of couple of your ScrollView's
- * heights. Creating JS components and native views upfront for all its items,
- * which may not even be shown, will contribute to slow rendering of your
- * screen and increased memory usage.
+ * `<ScrollView>` vs [`<FlatList>`](/react-native/docs/flatlist.html) - which one to use?
  *
- * This is where ListView comes into play. ListView renders items lazily,
- * just when they are about to appear. This laziness comes at cost of a more
- * complicated API, which is worth it unless you are rendering a small fixed
- * set of items.
+ * `ScrollView` simply renders all its react child components at once. That
+ * makes it very easy to understand and use.
+ *
+ * On the other hand, this has a performance downside. Imagine you have a very
+ * long list of items you want to display, maybe several screens worth of
+ * content. Creating JS components and native views for everythign all at once,
+ * much of which may not even be shown, will contribute to slow rendering and
+ * increased memory usage.
+ *
+ * This is where `FlatList` comes into play. `FlatList` renders items lazily,
+ * just when they are about to appear, and removes items that scroll way off
+ * screen to save memory and processing time.
+ *
+ * `FlatList` is also handy if you want to render separators between your items,
+ * multiple columns, infinite scroll loading, or any number of other features it
+ * supports out of the box.
  */
+// $FlowFixMe(>=0.41.0)
 const ScrollView = React.createClass({
   propTypes: {
     ...View.propTypes,
@@ -507,9 +513,7 @@ const ScrollView = React.createClass({
     ];
     if (previousHeaderIndex != null) {
       const previousHeader = this._stickyHeaderRefs.get(previousHeaderIndex);
-      previousHeader && previousHeader.setNextHeaderY(
-        event.nativeEvent.layout.y - event.nativeEvent.layout.height,
-      );
+      previousHeader && previousHeader.setNextHeaderY(event.nativeEvent.layout.y);
     }
   },
 
@@ -666,7 +670,6 @@ const ScrollView = React.createClass({
       scrollEventThrottle: hasStickyHeaders ? 1 : this.props.scrollEventThrottle,
       sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ?
         true : false,
-      stickyHeaderIndices: null,
     };
 
     const { decelerationRate } = this.props;
