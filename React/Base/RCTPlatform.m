@@ -30,7 +30,12 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
   }
 }
 
-RCT_EXPORT_MODULE(IOSConstants)
+static BOOL isTestingEnvironment(void) {
+  NSDictionary *environment = [[NSProcessInfo processInfo] environment];
+  return [environment[@"IS_TESTING"] boolValue];
+}
+
+RCT_EXPORT_MODULE(PlatformConstants)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
@@ -40,6 +45,7 @@ RCT_EXPORT_MODULE(IOSConstants)
     @"osVersion": [device systemVersion],
     @"systemName": [device systemName],
     @"interfaceIdiom": interfaceIdiom([device userInterfaceIdiom]),
+    @"isTesting": @(isTestingEnvironment()),
   };
 }
 

@@ -15,6 +15,7 @@
 #import <React/RCTFrameUpdate.h>
 #import <React/RCTInvalidating.h>
 
+@class JSContext;
 @class JSValue;
 @class RCTBridge;
 @class RCTEventDispatcher;
@@ -183,6 +184,11 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * Use this to check if the bridge has been invalidated.
  */
 @property (nonatomic, readonly, getter=isValid) BOOL valid;
+
+/**
+ * The JSContext used by the bridge.
+ */
+@property (nonatomic, readonly, weak) JSContext *jsContext;
 
 /**
  * Link to the Performance Logger that logs React Native perf events.

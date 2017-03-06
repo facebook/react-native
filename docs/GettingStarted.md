@@ -10,7 +10,7 @@ next: tutorial
 Welcome to React Native! This page will help you install React Native on
 your system, so that you can build apps with it right away. If you already
 have React Native installed, you can skip ahead to the
-[Tutorial](/react-native/docs/tutorial.html).
+[Tutorial](docs/tutorial.html).
 
 The instructions are a bit different depending on your development operating system, and whether you want to start developing for iOS or Android. If you
 want to develop for both iOS and Android, that's fine - you just have to pick
@@ -124,7 +124,7 @@ Run the following command in a Terminal:
 npm install -g react-native-cli
 ```
 
-> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
+> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
 
 <block class="windows linux android" />
 
@@ -138,13 +138,17 @@ Run the following command in a Terminal:
 npm install -g react-native-cli
 ```
 
-> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
+> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
 
 <block class="mac ios" />
 
 ### Xcode
 
 The easiest way to install Xcode is via the [Mac App Store](https://itunes.apple.com/us/app/xcode/id497799835?mt=12). Installing Xcode will also install the iOS Simulator and all the necessary tools to build your iOS app.
+
+You will also need to install the Xcode Command Line Tools. Open Xcode, then choose "Preferences..." from the Xcode menu. Go to the Locations panel and install the tools by selecting the most recent version in the Command Line Tools dropdown.
+
+![Xcode Command Line Tools](img/XcodeCommandLineTools.png)
 
 <block class="mac linux windows android" />
 
@@ -158,20 +162,13 @@ Setting up your development environment can be somewhat tedious if you're new to
 
 <block class="mac android" />
 
-> Android Studio requires the [Java SE Development Kit(JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), version 8. You can type `javac -version` in a terminal to see what version you have, if any.
-
-```
-$ javac -version
-javac 1.8.0_111
-```
-
-> The version string `1.8.x_xxx` corresponds to JDK 8.
+> Android Studio requires a recent version of the [Java SE Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
 
 <block class="mac windows android" />
 
 #### 2. Install the AVD and HAXM
 
-Choose `Custom` installation when running Android Studio for the first time. Make sure the boxes next to all of the following are checked:
+Android Virtual Devices allow you to run Android apps on your computer without the need for an actual Android phone or tablet. Choose `Custom` installation when running Android Studio for the first time. Make sure the boxes next to all of the following are checked:
 
 - `Android SDK`
 - `Android SDK Platform`
@@ -186,7 +183,7 @@ Then, click "Next" to install all of these components.
 
 #### 2. Install the AVD and configure VM acceleration
 
-Choose `Custom` installation when running Android Studio for the first time. Make sure the boxes next to all of the following are checked:
+Android Virtual Devices allow you to run Android apps on your computer without the need for an actual Android phone or tablet. Choose `Custom` installation when running Android Studio for the first time. Make sure the boxes next to all of the following are checked:
 
 - `Android SDK`
 - `Android SDK Platform`
@@ -198,18 +195,20 @@ Click "Next" to install all of these components, then [configure VM acceleration
 
 #### 3. Install the Android 6.0 (Marshmallow) SDK
 
-Android Studio installs the most recent Android SDK by default. React Native, however, requires the `Android 6.0 (Marshmallow)` SDK. To install it, launch the SDK Manager, click on "Configure" in the "Welcome to Android Studio" screen.
+Android Studio installs the most recent Android SDK by default. React Native, however, requires the `Android 6.0 (Marshmallow)` SDK. To install it, launch the SDK Manager, click on "Configure" > "SDK Manager" in the "Welcome to Android Studio" screen.
 
 > The SDK Manager can also be found within the Android Studio "Preferences" menu, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
-Select "SDK Platforms" from within the SDK Manager, then check the box next to "Show Package Details". Look for and expand the `Android 6.0 (Marshmallow)` entry, then make sure the following items are all checked:
+Select the "SDK Platforms" tab from within the SDK Manager, then check the box next to "Show Package Details" in the bottom right corner. Look for and expand the `Android 6.0 (Marshmallow)` entry, then make sure the following items are all checked:
 
 - `Google APIs`
-- `Intel x86 Atom System Image`
+- `Android SDK Platform 23`
 - `Intel x86 Atom_64 System Image`
 - `Google APIs Intel x86 Atom_64 System Image`
 
-Next, select "SDK Tools" and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build Tools" entry, then make sure that `Android SDK Build-Tools 23.0.1` is selected.
+![Android SDK Manager](img/AndroidSDKManager.png)
+
+Next, select the "SDK Tools" tab and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build Tools" entry, then make sure that `Android SDK Build-Tools 23.0.1` is selected.
 
 Finally, click "Apply" to download and install the Android SDK and related build tools.
 
@@ -221,7 +220,7 @@ The React Native command line interface requires the `ANDROID_HOME` environment 
 
 <block class="mac android" />
 
-Add the following lines to your `~/.bashrc` (or equivalent) config file:
+Add the following lines to your `~/.profile` (or equivalent) config file:
 
 ```
 export ANDROID_HOME=${HOME}/Library/Android/sdk
@@ -229,17 +228,21 @@ export PATH=${PATH}:${ANDROID_HOME}/tools
 export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 ```
 
+Type `source ~/.profile` to load the config into your current shell.
+
 > Please make sure you export the correct path for `ANDROID_HOME`. If you installed the Android SDK using Homebrew, it would be located at `/usr/local/opt/android-sdk`.
 
 <block class="linux android" />
 
-Add the following lines to your `~/.bashrc` (or equivalent) config file:
+Add the following lines to your `~/.profile` (or equivalent) config file:
 
 ```
 export ANDROID_HOME=${HOME}/Android/Sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools
 export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 ```
+
+Type `source ~/.profile` to load the config into your current shell.
 
 > Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio.
 
@@ -275,9 +278,15 @@ You can see the list of available AVDs by opening the "AVD Manager" from within 
 android avd
 ```
 
-Once in the "AVD Manager", select your AVD and click "Start...".
+Once in the "AVD Manager", select your AVD and click "Edit...". Choose "Android 6.0 - API Level 23" under Device, and "Intel Atom (x86_64)" under CPU/ABI. Click OK, then select your new AVD and click "Start...", and finally, "Launch".
 
-> Android Studio should have set up an Android Virtual Device for you during installation, but it is very common to run into an issue where Android Studio fails to install the AVD. You may follow the [Android Studio User Guide](https://developer.android.com/studio/run/managing-avds.html) to create a new AVD manually if needed.
+![Android AVD Configuration](img/AndroidAVDConfiguration.png)
+
+> It is very common to run into an issue where Android Studio fails to create a default AVD. You may follow the [Android Studio User Guide](https://developer.android.com/studio/run/managing-avds.html) to create a new AVD manually if needed.
+
+### Using a real device
+
+If you have a physical Android device, you can use it for development in place of an AVD. Plug it in to your computer using a USB cable and [enable USB debugging](https://developer.android.com/training/basics/firstapp/running-app.html) before proceeding to the next step.
 
 <block class="mac ios android" />
 
@@ -295,6 +304,8 @@ react-native run-ios
 
 You should see your new app running in the iOS Simulator shortly.
 
+![AwesomeProject on iOS](img/iOSSuccess.png)
+
 `react-native run-ios` is just one way to run your app. You can also run it directly from within Xcode or [Nuclide](https://nuclide.io/).
 
 <block class="mac android" />
@@ -307,7 +318,9 @@ cd AwesomeProject
 react-native run-android
 ```
 
-If everything is set up correctly, you should see your new app running in your AVD shortly.
+If everything is set up correctly, you should see your new app running in your Android emulator shortly.
+
+![AwesomeProject on Android](img/AndroidSuccess.png)
 
 `react-native run-android` is just one way to run your app - you can also run it directly from within Android Studio or [Nuclide](https://nuclide.io/).
 
@@ -347,7 +360,7 @@ cd AwesomeProject
 react-native start
 ```
 
-Open a new command prompt and run `react-native run-android` inside the same folder to launch the app on your AVD.
+Open a new command prompt and run `react-native run-android` inside the same folder to launch the app on your Android emulator.
 
 ```
 react-native run-android
@@ -369,11 +382,7 @@ react-native run-android
 
 If everything is set up correctly, you should see your new app running in your Android emulator shortly.
 
-<block class="windows android" />
-
-> If you're targeting API level 23, the app might crash on first launch with an error smilar to `Unable to add window android.view.ViewRootImpl$W@c51fa6 -- permission denied for this window type`. To fix this, you need to go to `System settings > Apps > Configure apps > Draw over other apps` and grant the permission for the app.
-
-NOTE: Many React Native modules haven't been tested on Marshmallow and might break. Please thoroughly test the app if you target API level 23 and file a bug report if you find that something is broken.
+![AwesomeProject on Android](img/AndroidSuccess.png)
 
 <block class="windows linux android" />
 

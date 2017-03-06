@@ -10,7 +10,7 @@ const getPlistPath = require('./getPlistPath');
 
 /**
  * This function works in a similar manner to its Android version,
- * except it does not copy fonts but creates XCode Group references
+ * except it does not copy fonts but creates Xcode Group references
  */
 module.exports = function linkAssetsIOS(files, projectConfig) {
   const project = xcode.project(projectConfig.pbxprojPath).parseSync();
@@ -29,7 +29,9 @@ module.exports = function linkAssetsIOS(files, projectConfig) {
     .filter(file => file)   // xcode returns false if file is already there
     .map(file => file.basename);
 
-  plist.UIAppFonts = (plist.UIAppFonts || []).concat(fonts);
+  const existingFonts = (plist.UIAppFonts || []);
+  const allFonts = [...existingFonts, ...fonts];
+  plist.UIAppFonts = Array.from(new Set(allFonts)); // use Set to dedupe w/existing
 
   fs.writeFileSync(
     projectConfig.pbxprojPath,

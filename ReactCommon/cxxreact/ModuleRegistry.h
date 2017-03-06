@@ -5,11 +5,10 @@
 #include <memory>
 #include <vector>
 
-#include <folly/dynamic.h>
+#include <cxxreact/ExecutorToken.h>
+#include <cxxreact/NativeModule.h>
 #include <folly/Optional.h>
-
-#include "ExecutorToken.h"
-#include "NativeModule.h"
+#include <folly/dynamic.h>
 
 namespace facebook {
 namespace react {

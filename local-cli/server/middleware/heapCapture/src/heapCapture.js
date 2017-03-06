@@ -263,17 +263,7 @@ function markModules(refs) {
   });
 }
 
-function registerPathToRoot(refs, registry, strings) {
-  markReactComponentTree(refs, registry, strings);
-  markModules(refs);
-  let breadth = [];
-  forEachRef(refs, (visitor) => {
-    const ref = visitor.getRef();
-    if (ref.type === 'CallbackGlobalObject') {
-      ref.rootPath = registry.insert(registry.root, strings.intern(ref.type));
-      breadth.push(visitor.clone());
-    }
-  });
+function registerPathToRootBFS(breadth, registry, strings) {
   while (breadth.length > 0) {
     const nextBreadth = [];
     for (let i = 0; i < breadth.length; i++) {
@@ -302,6 +292,34 @@ function registerPathToRoot(refs, registry, strings) {
   }
 }
 
+function registerPathToRoot(capture, registry, strings) {
+  const refs = capture.refs;
+  const roots = capture.roots;
+  markReactComponentTree(refs, registry, strings);
+  markModules(refs);
+  let breadth = [];
+  // BFS from global objects first
+  forEachRef(refs, (visitor) => {
+    const ref = visitor.getRef();
+    if (ref.type === 'CallbackGlobalObject') {
+      ref.rootPath = registry.insert(registry.root, strings.intern(ref.type));
+      breadth.push(visitor.clone());
+    }
+  });
+  registerPathToRootBFS(breadth, registry, strings);
+  breadth = [];
+  // lower priority, BFS from other roots
+  for (const id of roots) {
+    const visitor = new RefVisitor(refs, id);
+    const ref = visitor.getRef();
+    if (ref.rootPath === undefined) {
+      ref.rootPath = registry.insert(registry.root, strings.intern(`root ${id}: ${ref.type}`));
+      breadth.push(visitor.clone());
+    }
+  }
+  registerPathToRootBFS(breadth, registry, strings);
+}
+
 function registerCapture(data, captureId, capture, stacks, strings) {
   // NB: capture.refs is potentially VERY large, so we try to avoid making
   // copies, even if iteration is a bit more annoying.
@@ -313,7 +331,7 @@ function registerCapture(data, captureId, capture, stacks, strings) {
     rowCount++;
   }
   const inserter = data.rowInserter(rowCount);
-  registerPathToRoot(capture.refs, stacks, strings);
+  registerPathToRoot(capture, stacks, strings);
   const noneString = strings.intern('#none');
   const noneStack = stacks.insert(stacks.root, noneString);
   forEachRef(capture.refs, (visitor) => {
@@ -324,6 +342,7 @@ function registerCapture(data, captureId, capture, stacks, strings) {
       parseInt(id, 16),
       ref.type,
       ref.size,
+      ref.cellSize,
       captureId,
       ref.rootPath === undefined ? noneStack : ref.rootPath,
       ref.reactTree === undefined ? noneStack : ref.reactTree,
@@ -337,6 +356,7 @@ function registerCapture(data, captureId, capture, stacks, strings) {
       parseInt(id, 16),
       'Marked Block Overhead',
       block.capacity - block.size,
+      0,
       captureId,
       noneStack,
       noneStack,
@@ -354,6 +374,7 @@ if (preLoadedCapture) {
     { name: 'id', type: 'int' },
     { name: 'type', type: 'string', strings: strings },
     { name: 'size', type: 'int' },
+    { name: 'cell', type: 'int' },
     { name: 'trace', type: 'string', strings: strings },
     { name: 'path', type: 'stack', stacks: stacks, getter: x => strings.get(x), formatter: x => x },
     { name: 'react', type: 'stack', stacks: stacks, getter: x => strings.get(x), formatter: x => x },
@@ -380,8 +401,10 @@ if (preLoadedCapture) {
     valueExpander,
   ]);
   const sizeAggregator = aggrow.addSumAggregator('Size', 'size');
+  const cellAggregator = aggrow.addSumAggregator('Cell Size', 'cell');
   const countAggregator = aggrow.addCountAggregator('Count');
   aggrow.expander.setActiveAggregators([
+    cellAggregator,
     sizeAggregator,
     countAggregator,
   ]);

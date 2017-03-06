@@ -198,6 +198,13 @@ import com.facebook.react.uimanager.annotations.ReactProp;
     performCollectAttachDetachListeners(stateBuilder);
   }
 
+  @Override
+  boolean doesDraw() {
+    // assume text always draws - this is a performance optimization to avoid having to
+    // getText() when layout was skipped and when collectState wasn't yet called
+    return true;
+  }
+
   @ReactProp(name = ViewProps.LINE_HEIGHT, defaultDouble = Double.NaN)
   public void setLineHeight(double lineHeight) {
     if (Double.isNaN(lineHeight)) {

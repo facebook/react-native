@@ -23,8 +23,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.uimanager.GuardedChoreographerFrameCallback;
-import com.facebook.react.uimanager.ReactChoreographer;
+import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.uimanager.GuardedFrameCallback;
 import com.facebook.react.uimanager.UIManagerModule;
 
 import java.util.ArrayList;
@@ -79,7 +79,7 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
   }
 
   private final Object mOperationsCopyLock = new Object();
-  private @Nullable GuardedChoreographerFrameCallback mAnimatedFrameCallback;
+  private @Nullable GuardedFrameCallback mAnimatedFrameCallback;
   private @Nullable ReactChoreographer mReactChoreographer;
   private ArrayList<UIThreadOperation> mOperations = new ArrayList<>();
   private volatile @Nullable ArrayList<UIThreadOperation> mReadyOperations = null;
@@ -97,7 +97,7 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
     UIManagerModule uiManager = reactCtx.getNativeModule(UIManagerModule.class);
 
     final NativeAnimatedNodesManager nodesManager = new NativeAnimatedNodesManager(uiManager);
-    mAnimatedFrameCallback = new GuardedChoreographerFrameCallback(reactCtx) {
+    mAnimatedFrameCallback = new GuardedFrameCallback(reactCtx) {
       @Override
       protected void doFrameGuarded(final long frameTimeNanos) {
 
@@ -351,11 +351,11 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
   }
 
   @ReactMethod
-  public void removeAnimatedEventFromView(final int viewTag, final String eventName) {
+  public void removeAnimatedEventFromView(final int viewTag, final String eventName, final int animatedValueTag) {
     mOperations.add(new UIThreadOperation() {
       @Override
       public void execute(NativeAnimatedNodesManager animatedNodesManager) {
-        animatedNodesManager.removeAnimatedEventFromView(viewTag, eventName);
+        animatedNodesManager.removeAnimatedEventFromView(viewTag, eventName, animatedValueTag);
       }
     });
   }

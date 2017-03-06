@@ -100,7 +100,7 @@ type ButtonsArray = Array<{
  * );
  * ```
  *
- * We recommend using the [`Alert.alert`](/docs/alert.html) method for
+ * We recommend using the [`Alert.alert`](docs/alert.html) method for
  * cross-platform support if you don't need to create iOS-only prompts.
  *
  */
@@ -164,6 +164,10 @@ class AlertIOS {
    * @param type This configures the text input. One of 'plain-text',
    *    'secure-text' or 'login-password'.
    * @param defaultValue The default text in text input.
+   * @param keyboardType The keyboard type of first text field(if exists).
+   *    One of 'default', 'email-address', 'numeric', 'phone-pad',
+   *    'ascii-capable', 'numbers-and-punctuation', 'url', 'number-pad',
+   *    'name-phone-pad', 'decimal-pad', 'twitter' or 'web-search'.
    *
    * @example <caption>Example with custom buttons</caption>
    *
@@ -193,13 +197,14 @@ class AlertIOS {
     callbackOrButtons?: ?((text: string) => void) | ButtonsArray,
     type?: ?AlertType = 'plain-text',
     defaultValue?: string,
+    keyboardType?: string
   ): void {
     if (typeof type === 'function') {
       console.warn(
         'You passed a callback function as the "type" argument to AlertIOS.prompt(). React Native is ' +
         'assuming  you want to use the deprecated AlertIOS.prompt(title, defaultValue, buttons, callback) ' +
-        'signature. The current signature is AlertIOS.prompt(title, message, callbackOrButtons, type, defaultValue) ' +
-        'and the old syntax will be removed in a future version.');
+        'signature. The current signature is AlertIOS.prompt(title, message, callbackOrButtons, type, defaultValue, ' +
+        'keyboardType) and the old syntax will be removed in a future version.');
 
       var callback = type;
       var defaultValue = message;
@@ -244,6 +249,7 @@ class AlertIOS {
       defaultValue,
       cancelButtonKey,
       destructiveButtonKey,
+      keyboardType,
     }, (id, value) => {
       var cb = callbacks[id];
       cb && cb(value);

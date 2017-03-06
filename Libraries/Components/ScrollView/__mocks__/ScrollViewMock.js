@@ -20,7 +20,7 @@ const RCTScrollView = requireNativeComponent('RCTScrollView');
 class ScrollViewMock extends React.Component {
   render() {
     return (
-      <RCTScrollView>
+      <RCTScrollView {...this.props}>
         {this.props.refreshControl}
         <View>
           {this.props.children}

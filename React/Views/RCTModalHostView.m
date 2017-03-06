@@ -9,14 +9,14 @@
 
 #import "RCTModalHostView.h"
 
+#import <UIKit/UIKit.h>
+
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTModalHostViewController.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
 #import "UIView+React.h"
-
-#import <UIKit/UIKit.h>
 
 @implementation RCTModalHostView
 {
@@ -56,7 +56,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (void)notifyForBoundsChange:(CGRect)newBounds
 {
   if (_reactSubview && _isPresented) {
-    [_bridge.uiManager setFrame:newBounds forView:_reactSubview];
+    [_bridge.uiManager setSize:newBounds.size forView:_reactSubview];
     [self notifyForOrientationChange];
   }
 }
@@ -87,7 +87,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 {
   RCTAssert(_reactSubview == nil, @"Modal view can only have one subview");
   [super insertReactSubview:subview atIndex:atIndex];
-  [subview addGestureRecognizer:_touchHandler];
+  [_touchHandler attachToView:subview];
   subview.autoresizingMask = UIViewAutoresizingFlexibleHeight |
                              UIViewAutoresizingFlexibleWidth;
 
@@ -99,7 +99,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 {
   RCTAssert(subview == _reactSubview, @"Cannot remove view other than modal view");
   [super removeReactSubview:subview];
-  [subview removeGestureRecognizer:_touchHandler];
+  [_touchHandler detachFromView:subview];
   _reactSubview = nil;
 }
 

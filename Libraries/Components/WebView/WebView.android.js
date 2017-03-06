@@ -160,6 +160,12 @@ class WebView extends React.Component {
      * @platform android
      */
     allowUniversalAccessFromFileURLs: PropTypes.bool,
+
+    /**
+     * Function that accepts a string that will be passed to the WebView and
+     * executed immediately as JavaScript.
+     */
+    injectJavaScript: PropTypes.func,
   };
 
   static defaultProps = {
@@ -283,6 +289,20 @@ class WebView extends React.Component {
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.postMessage,
       [String(data)]
+    );
+  };
+
+  /**
+  * Injects a javascript string into the referenced WebView. Deliberately does not
+  * return a response because using eval() to return a response breaks this method
+  * on pages with a Content Security Policy that disallows eval(). If you need that
+  * functionality, look into postMessage/onMessage.
+  */
+  injectJavaScript = (data) => {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.injectJavaScript,
+      [data]
     );
   };
 

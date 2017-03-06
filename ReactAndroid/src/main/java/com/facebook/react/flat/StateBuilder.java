@@ -261,7 +261,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     }
 
     node.updateNodeRegion(left, top, right, bottom, isVirtual);
-    mNodeRegions.add(node.getNodeRegion());
+    if (node.doesDraw()) {
+      mNodeRegions.add(node.getNodeRegion());
+    }
   }
 
   /**

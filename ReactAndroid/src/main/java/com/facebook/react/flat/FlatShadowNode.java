@@ -30,7 +30,6 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
   /* package */ static final FlatShadowNode[] EMPTY_ARRAY = new FlatShadowNode[0];
 
-  private static final String PROP_DECOMPOSED_MATRIX = "decomposedMatrix";
   private static final String PROP_OPACITY = "opacity";
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
@@ -88,8 +87,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
   /* package */ void handleUpdateProperties(ReactStylesDiffMap styles) {
     if (!mountsToView()) {
       // Make sure we mount this FlatShadowNode to a View if any of these properties are present.
-      if (styles.hasKey(PROP_DECOMPOSED_MATRIX) ||
-          styles.hasKey(PROP_OPACITY) ||
+      if (styles.hasKey(PROP_OPACITY) ||
           styles.hasKey(PROP_RENDER_TO_HARDWARE_TEXTURE) ||
           styles.hasKey(PROP_TEST_ID) ||
           styles.hasKey(PROP_ACCESSIBILITY_LABEL) ||
@@ -142,6 +140,21 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
           clipBottom);
       stateBuilder.addDrawCommand(mDrawBackground);
     }
+  }
+
+  /**
+   * Return whether or not this node draws anything
+   *
+   * This is used to decide whether or not to collect the NodeRegion for this node. This ensures
+   * that any FlatShadowNode that does not emit any DrawCommands should not bother handling touch
+   * (i.e. if it draws absolutely nothing, it is, for all intents and purposes, a layout only node).
+   *
+   * @return whether or not this is node draws anything
+   */
+  boolean doesDraw() {
+    // if it mounts to view or draws a background, we can collect it - otherwise, no, unless a
+    // child suggests some alternative behavior
+    return mDrawView != null || mDrawBackground != null;
   }
 
   @ReactProp(name = ViewProps.BACKGROUND_COLOR)

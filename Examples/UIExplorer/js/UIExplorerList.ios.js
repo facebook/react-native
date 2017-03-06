@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule UIExplorerList
  */
 'use strict';
 
@@ -43,6 +44,11 @@ const ComponentExamples: Array<UIExplorerExample> = [
     key: 'DatePickerIOSExample',
     module: require('./DatePickerIOSExample'),
     supportsTVOS: false,
+  },
+  {
+    key: 'FlatListExample',
+    module: require('./FlatListExample'),
+    supportsTVOS: true,
   },
   {
     key: 'ImageExample',
@@ -85,6 +91,11 @@ const ComponentExamples: Array<UIExplorerExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'MultiColumnExample',
+    module: require('./MultiColumnExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'NavigatorExample',
     module: require('./Navigator/NavigatorExample'),
     supportsTVOS: true,
@@ -122,6 +133,11 @@ const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'ScrollViewExample',
     module: require('./ScrollViewExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'SectionListExample',
+    module: require('./SectionListExample'),
     supportsTVOS: true,
   },
   {
@@ -283,11 +299,6 @@ const APIExamples: Array<UIExplorerExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'NavigationExperimentalExample',
-    module: require('./NavigationExperimental/NavigationExperimentalExample'),
-    supportsTVOS: true,
-  },
-  {
     key: 'NetInfoExample',
     module: require('./NetInfoExample'),
     supportsTVOS: true,
@@ -354,7 +365,7 @@ const APIExamples: Array<UIExplorerExample> = [
   },
   {
     key: 'XHRExample',
-    module: require('./XHRExample.ios'),
+    module: require('./XHRExample'),
     supportsTVOS: true,
   },
 ];

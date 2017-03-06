@@ -19,6 +19,8 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
+const invariant = require('fbjs/lib/invariant');
+
 import type {
   NavigationAnimatedValue,
   NavigationLayout,
@@ -259,14 +261,17 @@ function buildTransitionProps(
     scenes,
   } = state;
 
+  const scene = scenes.find(isSceneActive);
+
+  invariant(scene, 'No active scene when building navigation transition props.');
+
   return {
     layout,
     navigationState,
     position,
     progress,
     scenes,
-    // $FlowFixMe(>=0.32.0) - find can return undefined
-    scene: scenes.find(isSceneActive),
+    scene
   };
 }
 

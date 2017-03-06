@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule TextExample
  */
 'use strict';
 
@@ -386,8 +387,13 @@ class TextExample extends React.Component {
           </Text>
         </UIExplorerBlock>
         <UIExplorerBlock title="selectable attribute">
-          <Text selectable={true}>
+          <Text selectable>
             This text is selectable if you click-and-hold, and will offer the native Android selection menus.
+          </Text>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="selectionColor attribute">
+          <Text selectable selectionColor="orange">
+            This text will have a orange highlight on selection.
           </Text>
         </UIExplorerBlock>
         <UIExplorerBlock title="Inline images">

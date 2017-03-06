@@ -133,7 +133,7 @@ type Event = Object;
  * animations and behavior from UIKIt.
  *
  * As the name implies, it is only available on iOS. Take a look at
- * [`Navigator`](/react-native/docs/navigator.html) for a similar solution for your
+ * [`Navigator`](docs/navigator.html) for a similar solution for your
  * cross-platform needs, or check out
  * [react-native-navigation](https://github.com/wix/react-native-navigation), a
  * component that aims to provide native navigation on both iOS and Android.
@@ -884,6 +884,7 @@ var NavigatorIOS = React.createClass({
         <NavigatorTransitionerIOS
           ref={TRANSITIONER_REF}
           style={styles.transitioner}
+          // $FlowFixMe(>=0.41.0)
           vertical={this.props.vertical}
           requestedTopOfStack={this.state.requestedTopOfStack}
           onNavigationComplete={this._handleNavigationComplete}
@@ -914,6 +915,7 @@ var NavigatorIOS = React.createClass({
 
   render: function() {
     return (
+      // $FlowFixMe(>=0.41.0)
       <View style={this.props.style}>
         {this._renderNavigationStackItems()}
       </View>

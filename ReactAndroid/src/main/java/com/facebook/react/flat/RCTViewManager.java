@@ -30,7 +30,7 @@ import com.facebook.react.views.view.ReactDrawableHelper;
 /**
  * ViewManager that creates instances of RCTView.
  */
-/* package */ final class RCTViewManager extends FlatViewManager {
+public final class RCTViewManager extends FlatViewManager {
 
   private static final int[] TMP_INT_ARRAY = new int[2];
 
@@ -39,7 +39,7 @@ import com.facebook.react.views.view.ReactDrawableHelper;
 
   @Override
   public String getName() {
-    return "RCTView";
+    return ViewProps.VIEW_CLASS_NAME;
   }
 
   public Map<String, Integer> getCommandsMap() {

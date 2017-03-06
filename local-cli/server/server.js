@@ -9,20 +9,15 @@
 'use strict';
 
 const chalk = require('chalk');
-const findSymlinksPaths = require('./findSymlinksPaths');
 const formatBanner = require('./formatBanner');
 const path = require('path');
 const runServer = require('./runServer');
-const NODE_MODULES = path.resolve(__dirname, '..', '..', '..');
 
 /**
  * Starts the React Native Packager Server.
  */
 function server(argv, config, args) {
-  const roots = args.projectRoots.concat(args.root);
-  args.projectRoots = roots.concat(
-    findSymlinksPaths(NODE_MODULES, roots)
-  );
+  args.projectRoots.concat(args.root);
 
   console.log(formatBanner(
     'Running packager on port ' + args.port + '.\n\n' +
@@ -101,6 +96,16 @@ module.exports = {
     description: 'Specify any additional platforms to be used by the packager',
     parse: (val) => val.split(','),
     default: (config) => config.getPlatforms(),
+  }, {
+    command: '--providesModuleNodeModules [list]',
+    description: 'Specify any npm packages that import dependencies with providesModule',
+    parse: (val) => val.split(','),
+    default: (config) => {
+      if (typeof config.getProvidesModuleNodeModules === 'function') {
+        return config.getProvidesModuleNodeModules();
+      }
+      return null;
+    },
   }, {
     command: '--skipflow',
     description: 'Disable flow checks'
