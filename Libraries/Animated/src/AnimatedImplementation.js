@@ -147,7 +147,7 @@ class Animation {
 
 class AnimatedWithChildren extends Animated {
   _children: Array<Animated>;
-  _listeners: {[key: string]: AnimatedListenerCallback};
+  _listeners: {[key: string]: ValueListenerCallback};
   __nativeAnimatedValueListener: ?any;
 
   constructor() {
@@ -200,7 +200,7 @@ class AnimatedWithChildren extends Animated {
     return this._children;
   }
 
-  addListener(callback: AnimatedListenerCallback): string {
+  addListener(callback: ValueListenerCallback): string {
     var id = String(_uniqueId++);
     this._listeners[id] = callback;
     if (this.__isNative) {
@@ -760,7 +760,7 @@ class SpringAnimation extends Animation {
   }
 }
 
-type AnimatedListenerCallback = (state: Object) => void;
+type ValueListenerCallback = (state: {value: number}|{x: number, y: number}) => void;
 
 var _uniqueId = 1;
 
@@ -1034,7 +1034,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
     callback && callback(this.__getValue());
   }
 
-  addListener(callback: AnimatedListenerCallback): string {
+  addListener(callback: ValueListenerCallback): string {
     var id = String(_uniqueId++);
     var jointCallback = ({value: number}) => {
       callback(this.__getValue());
