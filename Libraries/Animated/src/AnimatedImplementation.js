@@ -2187,13 +2187,7 @@ function attachNativeEvent(viewRef: any, eventName: string, argMapping: Array<?M
 
   return {
     detach() {
-      eventMappings.forEach((mapping) => {
-        NativeAnimatedAPI.removeAnimatedEventFromView(
-          viewTag,
-          eventName,
-          mapping.animatedValueTag,
-        );
-      });
+      NativeAnimatedAPI.removeAnimatedEventFromView(viewTag, eventName);
     },
   };
 }
