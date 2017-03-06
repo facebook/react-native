@@ -239,20 +239,20 @@ class AnimatedWithChildren extends Animated {
         this.__updateValueFromListener(data);
         // Native 'onAnimatedValueUpdate' is triggered on all child nodes,
         // so we don't need event propagation
-        this.triggerListeners(false /*eventPropagation*/);
+        this._triggerListeners(false /*eventPropagation*/);
       }
     );
   }
 
   /* Typically used internally */
-  triggerListeners(eventPropagation?: bool = true): void {
+  _triggerListeners(eventPropagation?: bool = true): void {
     for (var key in this._listeners) {
       this._listeners[key]({value: this.__getValue()});
     }
     if (eventPropagation) {
       for (var child of this._children) {
         if (child instanceof AnimatedWithChildren) {
-          child.triggerListeners();
+          child._triggerListeners();
         }
       }
     }
@@ -925,7 +925,7 @@ class AnimatedValue extends AnimatedWithChildren {
     if (flush) {
       _flush(this);
     }
-    this.triggerListeners();
+    this._triggerListeners();
   }
 
   __getNativeConfig(): Object {
