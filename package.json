@@ -185,6 +185,7 @@
     "optimist": "^0.6.1",
     "plist": "^1.2.0",
     "promise": "^7.1.1",
+    "prop-types": "^0.2.0",
     "react-clone-referenced-element": "^1.0.1",
     "react-devtools-core": "^2.0.8",
     "react-timer-mixin": "^0.13.2",
