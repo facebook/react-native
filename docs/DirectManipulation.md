@@ -4,8 +4,8 @@ title: Direct Manipulation
 layout: docs
 category: Guides
 permalink: docs/direct-manipulation.html
-next: debugging
-previous: timers
+next: performance
+previous: javascript-environment
 ---
 
 It is sometimes necessary to make changes directly to a component
