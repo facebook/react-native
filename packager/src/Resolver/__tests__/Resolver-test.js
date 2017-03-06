@@ -131,6 +131,13 @@ describe('Resolver', function() {
         }));
       });
 
+      const polyfill = {
+        id: 'polyfills/Object.es6.js',
+        file: 'polyfills/Object.es6.js',
+        dependencies: [],
+      };
+      DependencyGraph.prototype.createPolyfill.mockReturnValueOnce(polyfill);
+
       return depResolver
         .getDependencies(
           '/root/index.js',
@@ -141,6 +148,11 @@ describe('Resolver', function() {
         ).then(function(result) {
           expect(result.mainModuleId).toEqual('index');
           expect(result.dependencies[result.dependencies.length - 1]).toBe(module);
+
+          expect(DependencyGraph.mock.instances[0].getDependencies)
+              .toBeCalledWith({entryPath: '/root/index.js', recursive: true});
+          expect(result.dependencies[0]).toEqual(polyfill);
+
           expect(
             DependencyGraph
               .prototype
