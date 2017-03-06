@@ -677,8 +677,7 @@ const ScrollView = React.createClass({
       props.decelerationRate = processDecelerationRate(decelerationRate);
     }
 
-    // Native refresh control doesn't exist on tvOS
-    const refreshControl = Platform.isTVOS ? null : this.props.refreshControl;
+    const refreshControl = this.props.refreshControl;
 
     if (refreshControl) {
       if (Platform.OS === 'ios') {
