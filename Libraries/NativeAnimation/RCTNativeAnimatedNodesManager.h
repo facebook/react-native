@@ -70,8 +70,7 @@
                   eventMapping:(NSDictionary<NSString *, id> *__nonnull)eventMapping;
 
 - (void)removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
-                          eventName:(nonnull NSString *)eventName
-                    animatedNodeTag:(nonnull NSNumber *)animatedNodeTag;
+                          eventName:(nonnull NSString *)eventName;
 
 - (void)handleAnimatedEvent:(nonnull id<RCTEvent>)event;
 
