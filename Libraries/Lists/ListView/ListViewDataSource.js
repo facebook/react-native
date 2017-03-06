@@ -316,7 +316,7 @@ class ListViewDataSource {
     */
   dirtyRowCleaned(sectionIndex: number, rowIndex: number): void {
     if (this._dirtyRows.length > sectionIndex) {
-      var section = this._dirtyRows[sectionIndex];
+      const section = this._dirtyRows[sectionIndex];
       if (section.length > rowIndex) {
         this._dirtyRows[sectionIndex][rowIndex] = false;
       }
