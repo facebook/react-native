@@ -37,7 +37,7 @@ public class ReactTestHelper {
     private static class ReactInstanceEasyBuilderImpl implements ReactInstanceEasyBuilder {
 
       private final NativeModuleRegistryBuilder mNativeModuleRegistryBuilder =
-        new NativeModuleRegistryBuilder(null, false);
+        new NativeModuleRegistryBuilder(null, null, false);
       private final JavaScriptModuleRegistry.Builder mJSModuleRegistryBuilder =
         new JavaScriptModuleRegistry.Builder();
 
