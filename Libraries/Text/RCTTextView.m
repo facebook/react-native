@@ -273,7 +273,7 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   CGSize size = (CGSize){_scrollView.frame.size.width, INFINITY};
   size.height = [_textView sizeThatFits:size].height;
   _scrollView.contentSize = size;
-  _textView.frame = (CGRect){CGPointZero, size};
+  _textView.frame = (CGRect){CGPointZero, size.height < _scrollView.frame.size.height ? _scrollView.frame.size : size};
 
   if (_viewDidCompleteInitialLayout && _onContentSizeChange && !CGSizeEqualToSize(_previousContentSize, size)) {
     _previousContentSize = size;
