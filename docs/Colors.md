@@ -4,8 +4,8 @@ title: Colors
 layout: docs
 category: Guides
 permalink: docs/colors.html
-next: images
-previous: integration-with-existing-apps
+next: platform-specific-code
+previous: images
 ---
 
 The following formats are supported:

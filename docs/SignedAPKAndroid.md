@@ -4,7 +4,8 @@ title: Generating Signed APK
 layout: docs
 category: Guides (Android)
 permalink: docs/signed-apk-android.html
-next: android-ui-performance
+banner: ejected
+next: android-building-from-source
 previous: headless-js-android
 ---
 
