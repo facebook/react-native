@@ -325,10 +325,6 @@ class DependencyGraph extends EventEmitter {
     return this._moduleCache.createPolyfill(options);
   }
 
-  getHasteMap() {
-    return this._hasteMap;
-  }
-
   static Cache;
   static Module;
   static Polyfill;

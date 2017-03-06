@@ -228,8 +228,9 @@ RCT_EXPORT_METHOD(setIsDebuggingRemotely:(BOOL)enabled)
 {
   // This value is passed as a command-line argument, so fall back to reading from NSUserDefaults directly
   NSString *executorOverride = [[NSUserDefaults standardUserDefaults] stringForKey:kRCTDevSettingExecutorOverrideClass];
-  if (executorOverride) {
-    self.executorClass = NSClassFromString(executorOverride);
+  Class executorOverrideClass = executorOverride ? NSClassFromString(executorOverride) : nil;
+  if (executorOverrideClass) {
+    self.executorClass = executorOverrideClass;
   } else {
     BOOL enabled = self.isRemoteDebuggingAvailable && self.isDebuggingRemotely;
     self.executorClass = enabled ? objc_getClass("RCTWebSocketExecutor") : nil;
