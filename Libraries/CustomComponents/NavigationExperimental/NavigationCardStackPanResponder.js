@@ -224,7 +224,7 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
     ).start();
   }
 
-  _addNativeListener(animatedValue) {
+  _addNativeListener(animatedValue: Object) {
     if (!animatedValue.__isNative) {
       return;
     }
