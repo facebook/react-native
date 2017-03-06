@@ -28,7 +28,7 @@ describe('getInverseDependencies', () => {
 
     const resolutionResponse = {
       dependencies: [module1, module2, module3, module4],
-      getResolvedDependencyPairs: (module) => {
+      getResolvedDependencyPairs: module => {
         return modulePairs[module.hash()];
       },
     };

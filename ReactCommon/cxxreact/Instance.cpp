@@ -90,16 +90,6 @@ void Instance::loadScriptFromFile(const std::string& filename,
   nativeToJsBridge_->loadApplication(nullptr, std::move(script), sourceURL);
 }
 
-void Instance::loadScriptFromOptimizedBundle(std::string bundlePath,
-                                             std::string sourceURL,
-                                             int flags) {
-  SystraceSection s("reactbridge_xplat_loadScriptFromOptimizedBundle",
-                    "bundlePath", bundlePath);
-  nativeToJsBridge_->loadOptimizedApplicationScript(std::move(bundlePath),
-                                                    std::move(sourceURL),
-                                                    flags);
-}
-
 void Instance::loadUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle,
                             std::unique_ptr<const JSBigString> startupScript,
                             std::string startupScriptSourceURL) {

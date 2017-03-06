@@ -10,18 +10,55 @@
 
 var React = require('React');
 var Site = require('Site');
+var Metadata = require('Metadata');
 
 /*
-Thousands of applications use React Native, so we can't list all of them
-in our showcase. To be useful to someone looking through the showcase,
-either the app must be something that most readers would recognize, or the
-makers of the application must have posted useful technical content about the
-making of the app. It also must be useful considering that the majority of
-readers only speak English. So, each app in the showcase should link to either:
+ * Thousands of applications use React Native, so we can't list all of them
+ * in our showcase. To be useful to someone looking through the showcase,
+ * either the app must be something that most readers would recognize, or the
+ * makers of the application must have posted useful technical content about the
+ * making of the app. It also must be useful considering that the majority of
+ * readers only speak English. So, each app in the showcase should link to
+ * either:
+ *
+ * 1/ An English-language news article discussing the app, built either by a
+ *    funded startup or for a public company
+ * 2/ An English-language technical post on a funded startup or public company
+ *    blog discussing React Native
+ *
+ * The app should be available for download in the App Store or Play Store.
+ *
+ * If you believe your app meets the above critera, add it to the end of the
+ * array in the `../../showcase.json` file in this repository and open a pull
+ * request. PRs that do not follow these guidelines may be closed without
+ * comment.
+ *
+ * Use the 'infoLink' and 'infoTitle' keys to reference the news article or
+ * technical post. Your app icon should be hosted on a CDN and be no smaller
+ * than 200px by 200px. Use the `icon` key to reference your app icon.
+ *
+ * Please use the following format when adding your app to the showcase:
+ *
+ * {
+ *   name: 'App Name in English (Non-English name inside parenthesis, if any)',
+ *   icon: 'CDN URL to your app icon'
+ *   linkAppStore: 'https://itunes.apple.com/app/XXXXX'
+ *   linkPlayStore: "https://play.google.com/store/apps/details?id=XXXXX",
+ *   infoLink: 'Link to content that satisfies critera above',
+ *   infoTitle: 'Short title for the infoLink',
+ *   pinned: false,
+ * }
+ *
+ * Do not set 'pinned' to true as the pinned list is reserved for a small number
+ * of hand picked apps.
+ */
+const showcaseApps = Metadata.showcaseApps;
 
-1/ An English-language news article discussing the app, built either by a funded startup or for a public company
-2/ An English-language technical post on a funded startup or public company blog discussing React Native
+const pinnedApps = showcaseApps.filter(app => {
+  return app.pinned;
+});
 
+/*
 For each app in the showcase, use infoLink and infoTitle to reference this
 content.
 */
@@ -378,128 +415,19 @@ var featured = [
     infoTitle: 'Product Updates And Building Incredible Experiences',
   }
 ];
-
-/*
-If you want your app to be featured in the showcase, add them to the featured
-hash above this line. The pinned list is reserved for a small list of hand-picked apps.
-*/
-var pinned = [
-  {
-    name: 'Facebook',
-    icon: 'https://lh3.googleusercontent.com/ZZPdzvlpK9r_Df9C3M7j1rNRi7hhHRvPhlklJ3lfi5jk86Jd1s0Y5wcQ1QgbVaAP5Q=w300',
-    linkAppStore: 'https://itunes.apple.com/app/facebook/id284882215',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.katana&hl=en',
-    infoLink: 'https://code.facebook.com/posts/895897210527114/dive-into-react-native-performance/',
-    infoTitle: 'Using React Native in the Facebook App',
-    defaultLink: 'https://itunes.apple.com/app/facebook/id284882215',
-  },
-  {
-    name: 'Facebook Ads Manager',
-    icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple5/v4/9e/16/86/9e1686ef-cc55-805a-c977-538ddb5e6832/mzl.gqbhwitj.png',
-    linkAppStore: 'https://itunes.apple.com/us/app/facebook-ads-manager/id964397083?mt=8',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.adsmanager',
-    infoLink: 'https://code.facebook.com/posts/1189117404435352/react-native-for-android-how-we-built-the-first-cross-platform-react-native-app/',
-    infoTitle: 'How We Built the First Cross-Platform React Native App',
-    defaultLink: 'https://itunes.apple.com/us/app/facebook-ads-manager/id964397083?mt=8',
-  },
-  {
-    name: 'Facebook Groups',
-    icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple69/v4/57/f8/4c/57f84c0c-793d-5f9a-95ee-c212d0369e37/mzl.ugjwfhzx.png',
-    linkAppStore: 'https://itunes.apple.com/us/app/facebook-groups/id931735837?mt=8',
-    infoLink: 'https://code.facebook.com/posts/1014532261909640/react-native-bringing-modern-web-techniques-to-mobile/',
-    infoTitle: 'React Native: Bringing Modern Web Techniques to Mobile',
-    defaultLink: 'https://itunes.apple.com/us/app/facebook-groups/id931735837?mt=8',
-  },
-  {
-    name: 'Instagram',
-    icon: 'http://a4.mzstatic.com/us/r30/Purple62/v4/1f/8d/f9/1f8df910-8ec7-3b8e-0104-d44e869f4d65/icon175x175.jpeg',
-    linkAppStore: 'https://itunes.apple.com/app/instagram/id389801252?pt=428156&ct=igweb.unifiedHome.badge&mt=8',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.instagram.android&referrer=utm_source%3Dinstagramweb%26utm_campaign%3DunifiedHome%26utm_medium%3Dbadge',
-    infoLink: 'https://engineering.instagram.com/react-native-at-instagram-dd828a9a90c7#.3h4wir4zr',
-    infoTitle: 'React Native at Instagram',
-    defaultLink: 'https://www.instagram.com/',
-  },
-  {
-    name: 'Airbnb',
-    icon: 'https://a2.muscache.com/airbnb/static/icons/apple-touch-icon-180x180-bcbe0e3960cd084eb8eaf1353cf3c730.png',
-    linkAppStore: 'https://itunes.apple.com/us/app/airbnb/id401626263?mt=8&bev=1472279725_4ITWKWGX6KrmU6pT&utm_medium=web&utm_source=airbnb&_branch_match_id=307510898795870823',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.airbnb.android&hl=en&referrer=bev%3D1472279725_4ITWKWGX6KrmU6pT%26utm_medium%3Dweb%26utm_source%3Dairbnb',
-    infoLink: 'https://www.youtube.com/watch?v=tUfgQtmG3R0',
-    infoTitle: 'Hybrid React Native Apps at Airbnb',
-    defaultLink: 'https://www.airbnb.com/mobile',
-  },
-  {
-    name: 'Baidu (手机百度)',
-    icon: 'http://a3.mzstatic.com/us/r30/Purple62/v4/90/7c/9b/907c9b4e-556d-1a45-45d4-0ea801719abd/icon175x175.png',
-    linkPlayStore: 'http://shouji.baidu.com/software/9896302.html',
-    linkAppStore: 'https://itunes.apple.com/en/app/shou-ji-bai-du-hai-liang-xin/id382201985?l=en&mt=8',
-    infoLink: 'http://baike.baidu.com/link?url=TW8YhcVN4tO_Jz5VqMclCjGhf12EEqMD_TeVC6efe2REZlx80r6T0dX96hdmNl36XogLyExXzrvFU9rFeqxg_K',
-    infoTitle: 'Baidu is a search engine that has 600 million users.',
-    defaultLink: 'http://baike.baidu.com/link?url=TW8YhcVN4tO_Jz5VqMclCjGhf12EEqMD_TeVC6efe2REZlx80r6T0dX96hdmNl36XogLyExXzrvFU9rFeqxg_K',
-  },
-  {
-    name: 'Discord',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg',
-    linkAppStore:  'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
-    infoLink: 'https://discord.engineering/react-native-deep-dive-91fd5e949933#.5jnqftgof',
-    infoTitle: 'Using React Native: One Year Later',
-    defaultLink: 'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
-  },
-  {
-    name: 'Gyroscope',
-    icon: 'https://media.gyrosco.pe/images/magneto/180x180.png',
-    linkAppStore: 'https://itunes.apple.com/app/apple-store/id1104085053?pt=117927205&ct=website&mt=8',
-    infoLink: 'https://blog.gyrosco.pe/building-the-app-1dac1a97d253',
-    infoTitle: 'Building a visualization experience with React Native',
-    defaultLink: 'https://itunes.apple.com/app/apple-store/id1104085053?pt=117927205&ct=website&mt=8',
-  },
-  {
-    name: 'li.st',
-    icon: 'https://lh3.googleusercontent.com/tXt0HgJ7dCgOnuQ-lQr1P7E57mnOYfwXhRsV9lGcPwHPVvrDAN6YmpLVFgy88qKrkFI=w300',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=st.li.listapp',
-    infoLink: 'https://www.youtube.com/watch?v=cI9bDvDEsYE',
-    infoTitle: 'Building li.st for Android with React Native',
-    defaultLink: 'https://play.google.com/store/apps/details?id=st.li.listapp',
-  },
-  {
-    name: 'QQ',
-    icon: 'http://pp.myapp.com/ma_icon/0/icon_6633_1461768893/96',
-    linkPlayStore: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.mobileqq',
-    infoLink: 'https://en.wikipedia.org/wiki/Tencent_QQ',
-    infoTitle: 'QQ is a Chinese messaging service with 829 million active accounts',
-    defaultLink: 'http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.mobileqq',
-  },
-  {
-    name: 'Townske',
-    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/8b/42/20/8b4220af-5165-91fd-0f05-014332df73ef/icon175x175.png',
-    linkAppStore: 'https://itunes.apple.com/us/app/townske-stunning-city-guides/id1018136179?ls=1&mt=8',
-    infoLink: 'https://hackernoon.com/townske-app-in-react-native-6ad557de7a7c',
-    infoTitle: '"I would recommend React Native in a heartbeat."',
-    defaultLink: 'https://itunes.apple.com/us/app/townske-stunning-city-guides/id1018136179?ls=1&mt=8',
-  },
-  {
-    name: 'Vogue',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple30/v4/06/24/92/0624927f-a389-746c-27f9-e2466d59e55b/icon175x175.jpeg',
-    linkAppStore: 'https://itunes.apple.com/app/apple-store/id1087973225?pt=45076&ct=site-promo&mt=8',
-    infoLink: 'http://www.vogue.com/app',
-    infoTitle: '',
-    defaultLink: 'https://itunes.apple.com/app/apple-store/id1087973225?pt=45076&ct=site-promo&mt=8',
-  },
-  {
-    name: 'Walmart',
-    icon: 'http://is2.mzstatic.com/image/thumb/Purple111/v4/64/9f/20/649f2026-e968-0417-660c-e5ee6d7977ff/source/350x350bb.jpg',
-    linkAppStore: 'https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.walmart.android&hl=en',
-    infoLink: ' https://medium.com/walmartlabs/react-native-at-walmartlabs-cdd140589560#.ueonqqloc',
-    infoTitle: 'React Native at Walmart Labs',
-    defaultLink: 'https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8',
-  },
-];
-
-featured.sort(function(a, b) {
+const featuredApps = showcaseApps.filter(app => {
+  return !app.pinned;
+}).sort(function(a, b) {
   return a.name.localeCompare(b.name);
 });
-var apps = pinned.concat(featured);
+
+const apps = pinnedApps.concat(featuredApps);
+
+var AppIcon = React.createClass({
+  render: function() {
+    return <img src={this.props.icon} alt={this.props.appName} />;
+  }
+});
 
 var AppList = React.createClass({
 
@@ -512,53 +440,34 @@ var AppList = React.createClass({
   },
 
   _renderApp: function(app, i) {
-    var inner = (
-      <div>
-        {this._renderIcon(app)}
-        {this._renderTitle(app)}
-        {this._renderLinks(app)}
-        {this._renderInfo(app)}
-      </div>
-    );
-
-    if (app.linkAppStore && app.linkPlayStore) {
-      return (<div className="showcase" key={i}>{inner}</div>);
-    }
-
     return (
       <div className="showcase" key={i}>
-        {inner}
+        <div>
+          {this._renderAppIcon(app)}
+          {this._renderAppName(app)}
+          {this._renderLinks(app)}
+          {this._renderInfo(app)}
+        </div>
       </div>
     );
   },
 
-  _renderIcon: function(app) {
-    var icon = (
-      <img src={app.icon} alt={app.name} />
-    );
-
-    return (
-      {icon}
-    );
+  _renderAppIcon: function(app) {
+    return <img src={app.icon} alt={app.name} />;
   },
 
-  _renderTitle: function(app) {
-    var title = (
-      <h3>{app.name}</h3>
-    );
-
-    return (
-      {title}
-    );
+  _renderAppName: function(app) {
+    return <h3>{app.name}</h3>;
   },
 
   _renderInfo: function(app) {
-    if (!app.infoLink) {
-      return;
+    let info = null;
+    if (app.infoLink) {
+      info = <p><a href={app.infoLink} target="_blank">{app.infoTitle}</a></p>;
     }
 
     return (
-      <p><a href={app.infoLink} target="_blank">{app.infoTitle}</a></p>
+      {info}
     );
   },
 

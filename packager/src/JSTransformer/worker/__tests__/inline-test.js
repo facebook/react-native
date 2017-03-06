@@ -8,6 +8,8 @@
  */
 'use strict';
 
+/* eslint-disable max-len */
+
 jest.disableAutomock();
 const inline = require('../inline');
 const {transform, transformFromAst} = require('babel-core');
@@ -205,7 +207,9 @@ describe('inline constants', () => {
       var b = a.ReactNative.Platform.select({});
     }`;
     const {ast} = inline('arbitrary.js', {code}, {platform: 'ios'});
-    expect(toString(ast)).toEqual(normalize(code.replace(/ReactNative\.Platform\.select[^;]+/, '1')));
+    expect(toString(ast)).toEqual(
+      normalize(code.replace(/ReactNative\.Platform\.select[^;]+/, '1')),
+    );
   });
 
   it('replaces React.Platform.select in the code if React is a top level import', () => {
@@ -237,7 +241,9 @@ describe('inline constants', () => {
         var b = a.ReactNative.Platform.select;
       }`;
     const {ast} = inline('arbitrary.js', {code}, {platform: 'android'});
-    expect(toString(ast)).toEqual(normalize(code.replace(/ReactNative.Platform\.select[^;]+/, '2')));
+    expect(toString(ast)).toEqual(
+      normalize(code.replace(/ReactNative.Platform\.select[^;]+/, '2')),
+    );
   });
 
   it('replaces require("react-native").Platform.select in the code', () => {
@@ -267,18 +273,6 @@ describe('inline constants', () => {
     const {ast} = inline('arbitrary.js', {code}, {dev: false});
     expect(toString(ast)).toEqual(
       normalize(code.replace(/process\.env\.NODE_ENV/, '"production"')));
-  });
-
-  it('replaces process.env.NODE_ENV in the code', () => {
-    const code = `function a() {
-      if (process.env.NODE_ENV === 'production') {
-        return require('Prod');
-      }
-      return require('Dev');
-    }`;
-    const {ast} = inline('arbitrary.js', {code}, {dev: true});
-    expect(toString(ast)).toEqual(
-      normalize(code.replace(/process\.env\.NODE_ENV/, '"development"')));
   });
 
   it('accepts an AST as input', function() {

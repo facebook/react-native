@@ -1,5 +1,3 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -9,11 +7,14 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <Foundation/Foundation.h>
+
 #include <folly/dynamic.h>
 
-namespace react { namespace CxxUtils {
+namespace facebook {
+namespace react {
 
 folly::dynamic convertIdToFollyDynamic(id json);
 id convertFollyDynamicToId(const folly::dynamic &dyn);
 
-}}
+} }

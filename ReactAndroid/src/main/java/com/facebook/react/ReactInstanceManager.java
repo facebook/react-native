@@ -53,15 +53,15 @@ import com.facebook.react.cxxbridge.JavaScriptExecutor;
 import com.facebook.react.cxxbridge.NativeModuleRegistry;
 import com.facebook.react.cxxbridge.ProxyJavaScriptExecutor;
 import com.facebook.react.cxxbridge.UiThreadUtil;
-import com.facebook.react.devsupport.DevServerHelper;
-import com.facebook.react.devsupport.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.modules.debug.DeveloperSettings;
-import com.facebook.react.uimanager.AppRegistry;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
+import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -409,7 +409,7 @@ public class ReactInstanceManager {
         mDevSupportManager.handleReloadJS();
       } else {
         mDevSupportManager.isPackagerRunning(
-            new DevServerHelper.PackagerStatusCallback() {
+            new PackagerStatusCallback() {
               @Override
               public void onPackagerStatusFetched(final boolean packagerIsRunning) {
                 UiThreadUtil.runOnUiThread(

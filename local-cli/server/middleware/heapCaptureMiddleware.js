@@ -11,8 +11,8 @@
 
 const spawn = require('child_process').spawn;
 const fs = require('fs');
-const path = require('path');
 const http = require('http');
+const path = require('path');
 const urlLib = require('url');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
 
@@ -132,7 +132,6 @@ module.exports = function(req, res, next) {
       console.error('Error when symbolicating: ' + err);
     },
     (capture) => {
-      res.end();
       const preload = path.join(__dirname, 'heapCapture/preLoadedCapture.js');
       fs.writeFileSync(preload, 'var preLoadedCapture = ');
       fs.appendFileSync(preload, JSON.stringify(capture));
@@ -157,9 +156,14 @@ module.exports = function(req, res, next) {
       });
       inliner.on('exit', (code, signal) => {
         if (code === 0) {
-          console.log('Heap capture written to: ' + captureHtml);
+          var response = captureHtml;
+          console.log('Heap capture written to: ' + response);
+          res.end(response);
         } else {
-          console.error('Error processing heap capture, inliner returned code: ' + code);
+          var response = 'Error processing heap capture, inliner returned code: ' + code;
+          console.error(response);
+          res.statusCode = 500;
+          res.end(response);
         }
       });
     }

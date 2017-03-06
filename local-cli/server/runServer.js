@@ -69,7 +69,6 @@ function runServer(args, config, readyCallback) {
 
       wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
       ms = messageSocket.attachToServer(serverInstance, '/message');
-      webSocketProxy.attachToServer(serverInstance, '/devtools');
       inspectorProxy.attachToServer(serverInstance, '/inspector');
       readyCallback();
     }
@@ -95,6 +94,7 @@ function getPackagerServer(args, config) {
     cacheVersion: '3',
     extraNodeModules: config.extraNodeModules,
     getTransformOptions: config.getTransformOptions,
+    hasteImpl: config.hasteImpl,
     platforms: defaultPlatforms.concat(args.platforms),
     projectRoots: args.projectRoots,
     providesModuleNodeModules: providesModuleNodeModules,

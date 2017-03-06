@@ -105,10 +105,8 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
     makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),
     makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
-    makeNativeMethod("jniLoadScriptFromOptimizedBundle",
-                     CatalystInstanceImpl::jniLoadScriptFromOptimizedBundle),
-    makeNativeMethod("callJSFunction", CatalystInstanceImpl::callJSFunction),
-    makeNativeMethod("callJSCallback", CatalystInstanceImpl::callJSCallback),
+    makeNativeMethod("jniCallJSFunction", CatalystInstanceImpl::jniCallJSFunction),
+    makeNativeMethod("jniCallJSCallback", CatalystInstanceImpl::jniCallJSCallback),
     makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
     makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
     makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
@@ -217,15 +215,7 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
   }
 }
 
-void CatalystInstanceImpl::jniLoadScriptFromOptimizedBundle(const std::string& bundlePath,
-                                                            const std::string& sourceURL,
-                                                            jint flags) {
-  return instance_->loadScriptFromOptimizedBundle(std::move(bundlePath),
-                                                  std::move(sourceURL),
-                                                  flags);
-}
-
-void CatalystInstanceImpl::callJSFunction(
+void CatalystInstanceImpl::jniCallJSFunction(
     JExecutorToken* token, std::string module, std::string method, NativeArray* arguments) {
   // We want to share the C++ code, and on iOS, modules pass module/method
   // names as strings all the way through to JS, and there's no way to do
@@ -240,7 +230,7 @@ void CatalystInstanceImpl::callJSFunction(
                             arguments->consume());
 }
 
-void CatalystInstanceImpl::callJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments) {
+void CatalystInstanceImpl::jniCallJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments) {
   instance_->callJSCallback(token->getExecutorToken(nullptr), callbackId, arguments->consume());
 }
 

@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule ScrollViewExample
  */
 'use strict';
 
@@ -150,7 +151,6 @@ var styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     margin: 5,
-    textAlign: 'left',
   },
   button: {
     margin: 5,

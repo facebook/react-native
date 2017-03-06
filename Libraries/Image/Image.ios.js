@@ -126,6 +126,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * ```
  *
  */
+// $FlowFixMe(>=0.41.0)
 const Image = React.createClass({
   propTypes: {
     /**

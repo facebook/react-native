@@ -15,6 +15,7 @@ import java.io.File;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.devsupport.interfaces.StackFrame;
 
 /**
  * Helper class converting JS and Java stack traces into arrays of {@link StackFrame} objects.
@@ -24,14 +25,14 @@ public class StackTraceHelper {
   /**
    * Represents a generic entry in a stack trace, be it originally from JS or Java.
    */
-  public static class StackFrame {
+  public static class StackFrameImpl implements StackFrame {
     private final String mFile;
     private final String mMethod;
     private final int mLine;
     private final int mColumn;
     private final String mFileName;
 
-    private StackFrame(String file, String method, int line, int column) {
+    private StackFrameImpl(String file, String method, int line, int column) {
       mFile = file;
       mMethod = method;
       mLine = line;
@@ -39,7 +40,7 @@ public class StackTraceHelper {
       mFileName = new File(file).getName();
     }
 
-    private StackFrame(String file, String fileName, String method, int line, int column) {
+    private StackFrameImpl(String file, String fileName, String method, int line, int column) {
       mFile = file;
       mFileName = fileName;
       mMethod = method;
@@ -105,7 +106,7 @@ public class StackTraceHelper {
       if (frame.hasKey("column") && !frame.isNull("column")) {
         columnNumber = frame.getInt("column");
       }
-      result[i] = new StackFrame(fileName, methodName, lineNumber, columnNumber);
+      result[i] = new StackFrameImpl(fileName, methodName, lineNumber, columnNumber);
     }
     return result;
   }
@@ -117,7 +118,7 @@ public class StackTraceHelper {
     StackTraceElement[] stackTrace = exception.getStackTrace();
     StackFrame[] result = new StackFrame[stackTrace.length];
     for (int i = 0; i < stackTrace.length; i++) {
-      result[i] = new StackFrame(
+      result[i] = new StackFrameImpl(
           stackTrace[i].getClassName(),
           stackTrace[i].getFileName(),
           stackTrace[i].getMethodName(),
