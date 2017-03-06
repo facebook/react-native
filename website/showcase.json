@@ -510,5 +510,15 @@
     "infoLink": "http://x.co/FlareNews",
     "infoTitle": "Social network that connects entrepreneurs to fellow entrepreneurs, consumers, investors and experts",
     "pinned": false
-  }
+  }, 
+  {
+    "name": "SafeRide Health",
+    "icon": "https://saferidehealth.com/images/SafeRideHealthLogo60@3x.png",
+    "linkAppStore": "https://itunes.apple.com/us/app/saferide-health/id1136858920?mt=8",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.saferideandroid&hl=en",
+    "infoLink": "https://saferidehealth.com/",
+    "infoTitle": "At SafeRide Health, we built out our app from scratch using React Native",
+    "defaultLink": "https://itunes.apple.com/us/app/saferide-health/id1136858920?mt=8",
+    "pinned": true
+  },
 ]
