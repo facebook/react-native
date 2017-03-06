@@ -257,10 +257,6 @@ class Server {
         'change',
         ({eventsQueue}) => eventsQueue.forEach(processFileChange),
       );
-      dependencyGraph.getHasteMap().on('change', () => {
-        debug('Clearing bundle cache due to haste map change');
-        this._clearBundles();
-      });
     });
 
     this._debouncedFileChangeHandler = debounceAndBatch(filePaths => {

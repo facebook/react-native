@@ -46,7 +46,6 @@
 @property (nonatomic, assign) BOOL centerContent;
 @property (nonatomic, assign) int snapToInterval;
 @property (nonatomic, copy) NSString *snapToAlignment;
-@property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
 
 // NOTE: currently these event props are only declared so we can export the
 // event names to JS - we don't call the blocks directly because scroll events

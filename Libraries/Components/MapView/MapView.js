@@ -84,6 +84,7 @@ export type AnnotationDragState = $Enum<{
  *
  */
 
+// $FlowFixMe(>=0.41.0)
 const MapView = React.createClass({
 
   mixins: [NativeMethodsMixin],
@@ -519,6 +520,7 @@ const MapView = React.createClass({
 
     // followUserLocation defaults to true if showUserLocation is set
     if (followUserLocation === undefined) {
+      // $FlowFixMe(>=0.41.0)
       followUserLocation = this.props.showUserLocation;
     }
 
