@@ -25,6 +25,7 @@ class SnapshotViewIOS extends React.Component {
     testIdentifier?: string,
   };
 
+  // $FlowFixMe(>=0.41.0)
   static propTypes = {
     ...View.propTypes,
     // A callback when the Snapshot view is ready to be compared

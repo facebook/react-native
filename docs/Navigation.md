@@ -4,8 +4,8 @@ title: Navigation
 layout: docs
 category: Guides
 permalink: docs/navigation.html
-next: performance
-previous: javascript-environment
+next: images
+previous: animations
 ---
 
 This guide covers the various navigation components available in React Native. If you are just getting started with navigation, you will probably want to use React Navigation.
@@ -148,7 +148,7 @@ Check out the [`NavigatorIOS` reference docs](docs/navigatorios.html) to learn m
 
 Since early 2016, React Native has shipped with an experimental re-implementation of the original `Navigator` component called `CardStack`. The major benefit it had over `Navigator` is the smooth native-thread animations provided by the Animated library.
 
-Because `NavigationExperimental` only included view components, it required a lot of boilerplate to use by itself. Several libraries sprung up around it, making it easier to use. Libraries such as `react-native-router-flux`, `ex-navigation`, and `react-router-native` all wrapped NavigationExperimental views in an easier-to-use API. Authors of many of these libraries now support React Navigation.
+Because `NavigationExperimental` only included view components, it required a lot of boilerplate to use by itself. Several libraries sprung up around it, making it easier to use. Libraries such as `react-native-router-flux` and `ex-navigation` wrapped NavigationExperimental views in an easier-to-use API. Authors of many of these libraries now support React Navigation.
 
 The `CardStack` and other NavigationExperimental views live on as a part of the React Navigation project. The new library aims to be easy to use, while continuing to enable the smooth and customizable animations that NavigationExperimental pioneered.
 

@@ -4,8 +4,9 @@ title: Native Modules
 layout: docs
 category: Guides (iOS)
 permalink: docs/native-modules-ios.html
+banner: ejected
 next: native-components-ios
-previous: gesture-responder-system
+previous: upgrading
 ---
 
 Sometimes an app needs access to platform API, and React Native doesn't have a corresponding module yet. Maybe you want to reuse some existing Objective-C, Swift or C++ code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
@@ -402,13 +403,13 @@ You will receive a warning if you expend resources unnecessarily by emitting an 
 }
 
 // Will be called when this module's first listener is added.
--(void)startObserving { 
+-(void)startObserving {
     hasListeners = YES;
     // Set up any upstream listeners or background tasks as necessary
 }
 
 // Will be called when this module's last listener is removed, or on dealloc.
--(void)stopObserving { 
+-(void)stopObserving {
     hasListeners = NO;
     // Remove upstream listeners, stop unnecessary background tasks
 }

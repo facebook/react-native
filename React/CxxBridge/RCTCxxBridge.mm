@@ -1137,6 +1137,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
  */
 - (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
 {
+  if (!self.valid) {
+    return;
+  }
+
   /**
    * AnyThread
    */
