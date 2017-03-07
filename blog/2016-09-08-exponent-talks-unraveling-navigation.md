@@ -9,4 +9,4 @@ youtubeVideoId: oeSjTxVkMhc
 category: videos
 ---
 
-[Adam Miskiewicz](https://twitter.com/skevy) from [Exponent](http://getexponent.com/) talks about mobile navigation and the [`ex-navigation`](https://github.com/exponentjs/ex-navigation) React Native library at Exponent's office hours last week.
+[Adam Miskiewicz](https://twitter.com/skevy) from [Expo](http://expo.io/) talks about mobile navigation and the [`ex-navigation`](https://github.com/exponentjs/ex-navigation) React Native library at Expo's office hours last week.

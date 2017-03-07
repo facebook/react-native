@@ -100,7 +100,7 @@ RCT_EXPORT_MODULE()
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
   NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-  return [bundle URLForResource:@"TestBundle" withExtension:@"js"];
+  return [bundle URLForResource:@"UIExplorerUnitTestsBundle" withExtension:@"js"];
 }
 
 - (NSArray *)extraModulesForBridge:(__unused RCTBridge *)bridge

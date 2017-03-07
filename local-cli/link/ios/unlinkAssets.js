@@ -27,7 +27,7 @@ module.exports = function unlinkAssetsIOS(files, projectConfig) {
   if (!project.pbxGroupByName('Resources')) {
     return log.error(
       'ERRGROUP',
-      `Group 'Resources' does not exist in your XCode project. There is nothing to unlink.`
+      `Group 'Resources' does not exist in your Xcode project. There is nothing to unlink.`
     );
   }
 

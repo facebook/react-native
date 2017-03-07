@@ -18,6 +18,18 @@ const NavigationPropTypes = require('NavigationPropTypes');
 const NavigationStateUtils = require('NavigationStateUtils');
 const NavigationTransitioner = require('NavigationTransitioner');
 
+const warning = require('fbjs/lib/warning');
+
+// This warning will only be reached if the user has required the module
+warning(
+  false,
+  'NavigationExperimental is deprecated and will be removed in a future ' +
+  'version of React Native. The NavigationExperimental views live on in ' +
+  'the React-Navigation project, which also makes it easy to declare ' +
+  'navigation logic for your app. Learn more at https://reactnavigation.org/'
+);
+
+
 const NavigationExperimental = {
   // Core
   StateUtils: NavigationStateUtils,

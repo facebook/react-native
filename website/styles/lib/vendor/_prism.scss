@@ -1,0 +1,30 @@
+.prism {
+  white-space: pre-wrap;
+  font-family: 'source-code-pro', Menlo, 'Courier New', Consolas, monospace;
+  font-size: 13px;
+  line-height: 20px;
+  border-left: 4px solid $color-react-native-blue;
+  padding: 5px 10px;
+  background-color: rgba(5, 165, 209, 0.05);
+  overflow: auto;
+}
+
+.prism + .prism {
+  margin-top: 10px;
+}
+
+.token.keyword {
+  color: #1990B8;
+}
+
+.token.string, .token.regex {
+  color: #2F9C0A;
+}
+
+.token.boolean, .token.number {
+  color: #C92C2C;
+}
+
+.token.comment {
+  color: #7D8B99;
+}

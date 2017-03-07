@@ -23,7 +23,7 @@
 #import <React/RCTCxxModule.h>
 #import <React/RCTCxxUtils.h>
 #import <React/RCTDevLoadingView.h>
-#import <React/RCTDevMenu.h>
+#import <React/RCTDevSettings.h>
 #import <React/RCTDisplayLink.h>
 #import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLog.h>
@@ -403,7 +403,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     executorFactory.reset(new JSCExecutorFactory("", folly::dynamic::object
       ("UseCustomJSC", (bool)useCustomJSC)
 #if RCT_PROFILE
-      ("StartSamplingProfilerOnInit", (bool)self.devMenu.startSamplingProfilerOnLaunch)
+      ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
 #endif
     ));
   } else {
@@ -544,7 +544,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   std::vector<std::unique_ptr<NativeModule>> modules;
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    // TODO mhorowitz #10487027: unwrap C++ modules and register them directly.
     if ([moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
       // If a module does not support automatic instantiation, and
       // wasn't provided as an extra module, it may not have an
@@ -1138,6 +1137,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
  */
 - (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
 {
+  if (!self.valid) {
+    return;
+  }
+
   /**
    * AnyThread
    */

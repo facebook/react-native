@@ -39,8 +39,8 @@ const PropTypes = React.PropTypes;
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
-const forceTouchAvailable = (NativeModules.IOSConstants &&
-  NativeModules.IOSConstants.forceTouchAvailable) || false;
+const forceTouchAvailable = (NativeModules.PlatformConstants &&
+  NativeModules.PlatformConstants.forceTouchAvailable) || false;
 
 const statics = {
   AccessibilityTraits,
@@ -98,6 +98,7 @@ const statics = {
  *   - `timestamp` - A time identifier for the touch, useful for velocity calculation.
  *   - `touches` - Array of all current touches on the screen.
  */
+// $FlowFixMe(>=0.41.0)
 const View = React.createClass({
   // TODO: We should probably expose the mixins, viewConfig, and statics publicly. For example,
   // one of the props is of type AccessibilityComponentType. That is defined as a const[] above,
@@ -230,6 +231,18 @@ const View = React.createClass({
       PropTypes.oneOf(AccessibilityTraits),
       PropTypes.arrayOf(PropTypes.oneOf(AccessibilityTraits)),
     ]),
+
+    /**
+     * A value indicating whether VoiceOver should ignore the elements
+     * within views that are siblings of the receiver.
+     * Default is `false`.
+     *
+     * See the [Accessibility guide](docs/accessibility.html#accessibilitytraits-ios)
+     * for more information.
+     *
+     * @platform ios
+     */
+    accessibilityViewIsModal: PropTypes.bool,
 
     /**
      * When `accessible` is true, the system will try to invoke this function

@@ -4,7 +4,7 @@ title: Animations
 layout: docs
 category: Guides
 permalink: docs/animations.html
-next: accessibility
+next: navigation
 previous: handling-touches
 ---
 

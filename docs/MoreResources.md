@@ -4,8 +4,8 @@ title: More Resources
 layout: docs
 category: The Basics
 permalink: docs/more-resources.html
-next: integration-with-existing-apps
-previous: using-navigators
+next: handling-touches
+previous: networking
 ---
 
 If you just read through this website, you should be able to build a pretty cool React Native app. But React Native isn't just a product made by one company - it's a community of thousands of developers. So if you're interested in React Native, here's some related stuff you might want to check out.
