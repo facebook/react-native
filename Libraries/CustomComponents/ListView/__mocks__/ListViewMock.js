@@ -20,33 +20,46 @@ class ListViewMock extends React.Component {
   static defaultProps = {
     renderScrollComponent: (props) => <ScrollView {...props} />,
   }
+
   componentDidMount() {
     ListViewMock.latestRef = this;
   }
+
   render() {
-    const {dataSource, renderFooter, renderHeader} = this.props;
-    const rows = [renderHeader && renderHeader()];
-    const allRowIDs = dataSource.rowIdentities;
-    for (let sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
-      const sectionID = dataSource.sectionIdentities[sectionIdx];
-      const rowIDs = allRowIDs[sectionIdx];
-      for (let rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
-        const rowID = rowIDs[rowIdx];
-        rows.push(
-          <StaticRenderer
-            key={rowID}
-            shouldUpdate={true}
-            render={this.props.renderRow.bind(
-              null,
-              dataSource.getRowData(sectionIdx, rowIdx),
-              sectionID,
-              rowID
-            )}
-          />
-        );
-      }
-    }
-    renderFooter && rows.push(renderFooter());
+    const { dataSource, renderFooter, renderHeader } = this.props;
+    let rows = [renderHeader &&
+      <StaticRenderer
+        key="renderHeader"
+        shouldUpdate={true}
+        render={renderHeader}
+      />
+    ];
+
+    const dataSourceRows = dataSource.rowIdentities.map((rowIdentity, rowIdentityIndex) => {
+      const sectionID = dataSource.sectionIdentities[rowIdentityIndex];
+      return rowIdentity.map((row, rowIndex) => (
+        <StaticRenderer
+          key={row}
+          shouldUpdate={true}
+          render={this.props.renderRow.bind(
+            null,
+            dataSource.getRowData(rowIdentityIndex, rowIndex),
+            sectionID,
+            row
+          )}
+        />
+      ));
+    });
+
+    rows = [...rows, ...dataSourceRows];
+    renderFooter && rows.push(
+      <StaticRenderer
+        key="renderFooter"
+        shouldUpdate={true}
+        render={renderFooter}
+      />
+    );
+
     return this.props.renderScrollComponent({...this.props, children: rows});
   }
   static DataSource = ListViewDataSource;
