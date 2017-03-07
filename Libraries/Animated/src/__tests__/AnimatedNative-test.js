@@ -17,10 +17,12 @@ jest
   .setMock('NativeModules', {
     NativeAnimatedModule: {},
   })
+  .mock('NativeEventEmitter')
   // findNodeHandle is imported from ReactNative so mock that whole module.
   .setMock('ReactNative', {findNodeHandle: () => 1});
 
 const Animated = require('Animated');
+const NativeAnimatedHelper = require('NativeAnimatedHelper');
 
 function createAndMountComponent(ComponentClass, props) {
   const component = new ComponentClass();
@@ -46,6 +48,10 @@ describe('Animated', () => {
     nativeAnimatedModule.connectAnimatedNodeToView = jest.fn();
     nativeAnimatedModule.disconnectAnimatedNodeFromView = jest.fn();
     nativeAnimatedModule.dropAnimatedNode = jest.fn();
+    nativeAnimatedModule.startListeningToAnimatedNodeValue = jest.fn();
+    nativeAnimatedModule.stopListeningToAnimatedNodeValue = jest.fn();
+    nativeAnimatedModule.addAnimatedEventToView = jest.fn();
+    nativeAnimatedModule.removeAnimatedEventFromView = jest.fn();
 
     // jest environment doesn't have cancelAnimationFrame :(
     if (!global.cancelAnimationFrame) {
@@ -77,6 +83,119 @@ describe('Animated', () => {
 
     expect(nativeAnimatedModule.disconnectAnimatedNodes.mock.calls.length).toBe(2);
     expect(nativeAnimatedModule.dropAnimatedNode.mock.calls.length).toBe(2);
+  });
+
+  describe('Animated Listeners', () => {
+    it('should get updates', () => {
+      const value1 = new Animated.Value(0);
+      value1.__makeNative();
+      const listener = jest.fn();
+      const id = value1.addListener(listener);
+      expect(nativeAnimatedModule.startListeningToAnimatedNodeValue)
+        .toHaveBeenCalledWith(value1.__getNativeTag());
+
+      NativeAnimatedHelper.nativeEventEmitter.emit(
+        'onAnimatedValueUpdate',
+        {value: 42, tag: value1.__getNativeTag()},
+      );
+      expect(listener.mock.calls.length).toBe(1);
+      expect(listener).toBeCalledWith({value: 42});
+      expect(value1.__getValue()).toBe(42);
+
+      NativeAnimatedHelper.nativeEventEmitter.emit(
+        'onAnimatedValueUpdate',
+        {value: 7, tag: value1.__getNativeTag()},
+      );
+      expect(listener.mock.calls.length).toBe(2);
+      expect(listener).toBeCalledWith({value: 7});
+      expect(value1.__getValue()).toBe(7);
+
+      value1.removeListener(id);
+      expect(nativeAnimatedModule.stopListeningToAnimatedNodeValue)
+        .toHaveBeenCalledWith(value1.__getNativeTag());
+
+      NativeAnimatedHelper.nativeEventEmitter.emit(
+        'onAnimatedValueUpdate',
+        {value: 1492, tag: value1.__getNativeTag()},
+      );
+      expect(listener.mock.calls.length).toBe(2);
+      expect(value1.__getValue()).toBe(7);
+    });
+
+    it('should removeAll', () => {
+      const value1 = new Animated.Value(0);
+      value1.__makeNative();
+      const listener = jest.fn();
+      [1,2,3,4].forEach(() => value1.addListener(listener));
+      expect(nativeAnimatedModule.startListeningToAnimatedNodeValue)
+        .toHaveBeenCalledWith(value1.__getNativeTag());
+
+      NativeAnimatedHelper.nativeEventEmitter.emit(
+        'onAnimatedValueUpdate',
+        {value: 42, tag: value1.__getNativeTag()},
+      );
+      expect(listener.mock.calls.length).toBe(4);
+      expect(listener).toBeCalledWith({value: 42});
+
+      value1.removeAllListeners();
+      expect(nativeAnimatedModule.stopListeningToAnimatedNodeValue)
+        .toHaveBeenCalledWith(value1.__getNativeTag());
+
+      NativeAnimatedHelper.nativeEventEmitter.emit(
+        'onAnimatedValueUpdate',
+        {value: 7, tag: value1.__getNativeTag()},
+      );
+      expect(listener.mock.calls.length).toBe(4);
+    });
+  });
+
+  describe('Animated Events', () => {
+    it('should map events', () => {
+      const value = new Animated.Value(0);
+      value.__makeNative();
+      const event = Animated.event(
+        [{nativeEvent: {state: {foo: value}}}],
+        {useNativeDriver: true},
+      );
+      const c = createAndMountComponent(Animated.View, {onTouchMove: event});
+      expect(nativeAnimatedModule.addAnimatedEventToView).toBeCalledWith(
+        1,
+        'onTouchMove',
+        {nativeEventPath: ['state', 'foo'], animatedValueTag: value.__getNativeTag()},
+      );
+
+      c.componentWillUnmount();
+      expect(nativeAnimatedModule.removeAnimatedEventFromView).toBeCalledWith(
+        1,
+        'onTouchMove',
+      );
+    });
+
+    it('should throw on invalid event path', () => {
+      const value = new Animated.Value(0);
+      value.__makeNative();
+      const event = Animated.event(
+        [{notNativeEvent: {foo: value}}],
+        {useNativeDriver: true},
+      );
+      expect(() => createAndMountComponent(Animated.View, {onTouchMove: event}))
+        .toThrowError(/nativeEvent/);
+      expect(nativeAnimatedModule.addAnimatedEventToView).not.toBeCalled();
+    });
+
+    it('should call listeners', () => {
+      const value = new Animated.Value(0);
+      value.__makeNative();
+      const listener = jest.fn();
+      const event = Animated.event(
+        [{nativeEvent: {foo: value}}],
+        {useNativeDriver: true, listener},
+      );
+      const handler = event.__getHandler();
+      handler({foo: 42});
+      expect(listener.mock.calls.length).toBe(1);
+      expect(listener).toBeCalledWith({foo: 42});
+    });
   });
 
   it('sends a valid description for value, style and props nodes', () => {
