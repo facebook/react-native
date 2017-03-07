@@ -407,6 +407,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         onContentSizeChange: this._onContentSizeChange,
         onLayout: this._onLayout,
         onScroll: this._onScroll,
+        onScrollBeginDrag: this._onScrollBeginDrag,
         ref: this._captureScrollRef,
         scrollEventThrottle: 50, // TODO: Android support
       },
@@ -604,6 +605,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this._updateCellsToRenderBatcher.schedule();
   };
 
+  _onScrollBeginDrag = (e): void => {
+    this._viewabilityHelper.recordInteraction();
+    this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
+  };
   _updateCellsToRender = () => {
     const {data, disableVirtualization, getItemCount, onEndReachedThreshold} = this.props;
     this._updateViewableItems(data);
