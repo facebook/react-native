@@ -139,6 +139,9 @@ public class NativeModuleRegistryBuilder {
       }
     }
 
-    return new NativeModuleRegistry(mModules, batchCompleteListenerModules);
+    return new NativeModuleRegistry(
+      mReactApplicationContext,
+      mModules,
+      batchCompleteListenerModules);
   }
 }

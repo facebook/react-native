@@ -285,6 +285,10 @@ public class ReactContext extends ContextWrapper {
     Assertions.assertNotNull(mNativeModulesMessageQueueThread).assertIsOnThread();
   }
 
+  public void assertOnNativeModulesQueueThread(String message) {
+    Assertions.assertNotNull(mNativeModulesMessageQueueThread).assertIsOnThread(message);
+  }
+
   public boolean isOnNativeModulesQueueThread() {
     return Assertions.assertNotNull(mNativeModulesMessageQueueThread).isOnThread();
   }
