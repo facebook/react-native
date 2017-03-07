@@ -394,7 +394,7 @@ const textColor = 'white';
 const rowGutter = 1;
 const rowHeight = 46;
 
-// For unknown reasons, setting elevation: Number.MAX_VALUE causes remote debugging to 
+// For unknown reasons, setting elevation: Number.MAX_VALUE causes remote debugging to
 // hang on iOS (some sort of overflow maybe). Setting it to Number.MAX_SAFE_INTEGER fixes the iOS issue, but since
 // elevation is an android-only style property we might as well remove it altogether for iOS.
 // See: https://github.com/facebook/react-native/issues/12223
