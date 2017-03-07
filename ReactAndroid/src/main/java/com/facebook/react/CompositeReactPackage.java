@@ -25,7 +25,7 @@ import com.facebook.react.uimanager.ViewManager;
  * {@code CompositeReactPackage} allows to create a single package composed of views and modules
  * from several other packages.
  */
-public class CompositeReactPackage implements ReactPackage {
+public class CompositeReactPackage extends ReactInstancePackage {
 
   private final List<ReactPackage> mChildReactPackages = new ArrayList<>();
 
@@ -49,9 +49,35 @@ public class CompositeReactPackage implements ReactPackage {
    */
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+    // This is for backward compatibility.
     final Map<String, NativeModule> moduleMap = new HashMap<>();
     for (ReactPackage reactPackage: mChildReactPackages) {
       for (NativeModule nativeModule: reactPackage.createNativeModules(reactContext)) {
+        moduleMap.put(nativeModule.getName(), nativeModule);
+      }
+    }
+    return new ArrayList(moduleMap.values());
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<NativeModule> createNativeModules(
+      ReactApplicationContext reactContext,
+      ReactInstanceManager reactInstanceManager) {
+    final Map<String, NativeModule> moduleMap = new HashMap<>();
+    for (ReactPackage reactPackage: mChildReactPackages) {
+      List<NativeModule> nativeModules;
+      if (reactPackage instanceof ReactInstancePackage) {
+        ReactInstancePackage reactInstancePackage = (ReactInstancePackage) reactPackage;
+        nativeModules = reactInstancePackage.createNativeModules(
+            reactContext,
+            reactInstanceManager);
+      } else {
+        nativeModules = reactPackage.createNativeModules(reactContext);
+      }
+      for (NativeModule nativeModule: nativeModules) {
         moduleMap.put(nativeModule.getName(), nativeModule);
       }
     }

@@ -2976,6 +2976,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 139D7E8E1E25C6D100323FB7 /* Build configuration list for PBXNativeTarget "double-conversion" */;
 			buildPhases = (
+				190EE32F1E6A43DE00A8543A /* Install Third Party */,
 				139D7E841E25C6D100323FB7 /* Sources */,
 				139D7E851E25C6D100323FB7 /* Frameworks */,
 				139D7E861E25C6D100323FB7 /* CopyFiles */,
@@ -3242,6 +3243,20 @@
 			shellPath = /bin/sh;
 			shellScript = "if [[ \"$CONFIGURATION\" == \"Debug\" ]] && [[ -d \"/tmp/RCTJSCProfiler\" ]]; then\n   find \"${CONFIGURATION_BUILD_DIR}\" -name '*.app' | xargs -I{} sh -c 'cp -r /tmp/RCTJSCProfiler \"$1\"' -- {}\nfi";
 			showEnvVarsInLog = 0;
+		};
+		190EE32F1E6A43DE00A8543A /* Install Third Party */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Install Third Party";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd $SRCROOT/..\n./ios-install-third-party.sh";
 		};
 		2D6948201DA3042200B3FA97 /* Include RCTJSCProfiler */ = {
 			isa = PBXShellScriptBuildPhase;

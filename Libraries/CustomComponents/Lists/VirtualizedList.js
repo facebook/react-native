@@ -163,12 +163,16 @@ type State = {first: number, last: number};
  *
  * - Internal state is not preserved when content scrolls out of the render window. Make sure all
  *   your data is captured in the item data or external stores like Flux, Redux, or Relay.
+ * - This is a `PureComponent` which means that it will not re-render if `props` remain shallow-
+ *   equal. Make sure that everything your `renderItem` function depends on is passed as a prop that
+ *   is not `===` after updates, otherwise your UI may not update on changes. This includes the
+ *   `data` prop and parent component state.
  * - In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
  *   offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
  *   blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
  *   and we are working on improving it behind the scenes.
  * - By default, the list looks for a `key` prop on each item and uses that for the React key.
- *   Alternatively, you can provide a custom keyExtractor prop.
+ *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  * NOTE: `LayoutAnimation` and sticky section headers both have bugs when used with this and are
  * therefore not officially supported yet.
@@ -333,7 +337,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           index={ii}
           item={item}
           key={key}
-          onLayout={this._onCellLayout}
+          onCellLayout={this._onCellLayout}
           onUnmount={this._onCellUnmount}
           parentProps={this.props}
         />
@@ -403,6 +407,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         onContentSizeChange: this._onContentSizeChange,
         onLayout: this._onLayout,
         onScroll: this._onScroll,
+        onScrollBeginDrag: this._onScrollBeginDrag,
         ref: this._captureScrollRef,
         scrollEventThrottle: 50, // TODO: Android support
       },
@@ -539,6 +544,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   _onContentSizeChange = (width: number, height: number) => {
+    if (this.props.onContentSizeChange) {
+      this.props.onContentSizeChange(width, height);
+    }
     this._scrollMetrics.contentLength = this._selectLength({height, width});
     this._updateCellsToRenderBatcher.schedule();
   };
@@ -597,6 +605,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this._updateCellsToRenderBatcher.schedule();
   };
 
+  _onScrollBeginDrag = (e): void => {
+    this._viewabilityHelper.recordInteraction();
+    this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
+  };
   _updateCellsToRender = () => {
     const {data, disableVirtualization, getItemCount, onEndReachedThreshold} = this.props;
     this._updateViewableItems(data);
@@ -682,7 +694,7 @@ class CellRenderer extends React.Component {
     cellKey: string,
     index: number,
     item: Item,
-    onLayout: (event: Object, cellKey: string, index: number) => void,
+    onCellLayout: (event: Object, cellKey: string, index: number) => void,
     onUnmount: (cellKey: string) => void,
     parentProps: {
       renderItem: renderItemType,
@@ -694,7 +706,7 @@ class CellRenderer extends React.Component {
     },
   };
   _onLayout = (e) => {
-    this.props.onLayout(e, this.props.cellKey, this.props.index);
+    this.props.onCellLayout(e, this.props.cellKey, this.props.index);
   }
   componentWillUnmount() {
     this.props.onUnmount(this.props.cellKey);

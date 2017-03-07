@@ -430,15 +430,16 @@ var ListView = React.createClass({
       }
 
       if (renderSectionHeader) {
-        bodyComponents.push(React.cloneElement(
-          renderSectionHeader(
-            dataSource.getSectionHeaderData(sectionIdx),
-            sectionID
-          ),
-          {key: 's_' + sectionID},
-        ));
-        if (this.props.stickySectionHeadersEnabled) {
-          stickySectionHeaderIndices.push(totalIndex++);
+        const element = renderSectionHeader(
+          dataSource.getSectionHeaderData(sectionIdx),
+          sectionID
+        );
+        if (element) {
+          bodyComponents.push(React.cloneElement(element, {key: 's_' + sectionID}));
+          if (this.props.stickySectionHeadersEnabled) {
+            stickySectionHeaderIndices.push(totalIndex);
+          }
+          totalIndex++;
         }
       }
 

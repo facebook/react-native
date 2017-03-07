@@ -17,6 +17,7 @@ import java.util.Map;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.OnBatchCompleteListener;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.systrace.Systrace;
@@ -26,12 +27,15 @@ import com.facebook.systrace.Systrace;
   */
 public class NativeModuleRegistry {
 
+  private final ReactApplicationContext mReactApplicationContext;
   private final Map<Class<? extends NativeModule>, ModuleHolder> mModules;
   private final ArrayList<ModuleHolder> mBatchCompleteListenerModules;
 
   public NativeModuleRegistry(
+    ReactApplicationContext reactApplicationContext,
     Map<Class<? extends NativeModule>, ModuleHolder> modules,
     ArrayList<ModuleHolder> batchCompleteListenerModules) {
+    mReactApplicationContext = reactApplicationContext;
     mModules = modules;
     mBatchCompleteListenerModules = batchCompleteListenerModules;
   }
@@ -60,7 +64,7 @@ public class NativeModuleRegistry {
   }
 
   /* package */ void notifyCatalystInstanceDestroy() {
-    UiThreadUtil.assertOnUiThread();
+    mReactApplicationContext.assertOnNativeModulesQueueThread();
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
         "NativeModuleRegistry_notifyCatalystInstanceDestroy");
@@ -74,8 +78,10 @@ public class NativeModuleRegistry {
   }
 
   /* package */ void notifyCatalystInstanceInitialized() {
-    UiThreadUtil.assertOnUiThread();
-
+    mReactApplicationContext.assertOnNativeModulesQueueThread("From version React Native v0.44, " +
+      "native modules are explicitly not initialized on the UI thread. See " +
+      "https://github.com/facebook/react-native/wiki/Breaking-Changes#d4611211-reactnativeandroidbreaking-move-nativemodule-initialization-off-ui-thread---aaachiuuu " +
+      " for more details.");
     ReactMarker.logMarker(ReactMarkerConstants.NATIVE_MODULE_INITIALIZE_START);
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,

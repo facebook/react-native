@@ -23,6 +23,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaScriptModuleRegistry;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.cxxbridge.CatalystInstanceImpl;
@@ -36,10 +37,9 @@ public class ReactTestHelper {
   private static class DefaultReactTestFactory implements ReactTestFactory {
     private static class ReactInstanceEasyBuilderImpl implements ReactInstanceEasyBuilder {
 
-      private final NativeModuleRegistryBuilder mNativeModuleRegistryBuilder =
-        new NativeModuleRegistryBuilder(null, false);
       private final JavaScriptModuleRegistry.Builder mJSModuleRegistryBuilder =
         new JavaScriptModuleRegistry.Builder();
+      private NativeModuleRegistryBuilder mNativeModuleRegistryBuilder;
 
       private @Nullable Context mContext;
 
@@ -51,6 +51,12 @@ public class ReactTestHelper {
 
       @Override
       public ReactInstanceEasyBuilder addNativeModule(NativeModule nativeModule) {
+        if (mNativeModuleRegistryBuilder == null) {
+          mNativeModuleRegistryBuilder = new NativeModuleRegistryBuilder(
+            (ReactApplicationContext) mContext,
+            null,
+            false);
+        }
         mNativeModuleRegistryBuilder.addNativeModule(nativeModule);
         return this;
       }
@@ -63,6 +69,12 @@ public class ReactTestHelper {
 
       @Override
       public CatalystInstance build() {
+        if (mNativeModuleRegistryBuilder == null) {
+          mNativeModuleRegistryBuilder = new NativeModuleRegistryBuilder(
+            (ReactApplicationContext) mContext,
+            null,
+            false);
+        }
         JavaScriptExecutor executor = null;
         try {
           executor = new JSCJavaScriptExecutor.Factory(new WritableNativeMap()).create();
