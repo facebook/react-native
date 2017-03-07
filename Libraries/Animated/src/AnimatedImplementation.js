@@ -2192,9 +2192,29 @@ function attachNativeEvent(viewRef: any, eventName: string, argMapping: Array<?M
   };
 }
 
+function forkEvent(event: ?AnimatedEvent | ?Function, listener: Function): AnimatedEvent | Function {
+  if (!event) {
+    return listener;
+  } else if (event instanceof AnimatedEvent) {
+    event.__addListener(listener);
+    return event;
+  } else {
+    return (...args) => {
+      typeof event === 'function' && event(...args);
+      listener(...args);
+    };
+  }
+}
+
+function unforkEvent(event: ?AnimatedEvent | ?Function, listener: Function): void {
+  if (event && event instanceof AnimatedEvent) {
+    event.__removeListener(listener);
+  }
+}
+
 class AnimatedEvent {
   _argMapping: Array<?Mapping>;
-  _listener: ?Function;
+  _listeners: Array<Function> = [];
   _attachedEvent: ?{
     detach: () => void,
   };
@@ -2205,13 +2225,23 @@ class AnimatedEvent {
     config?: EventConfig = {}
   ) {
     this._argMapping = argMapping;
-    this._listener = config.listener;
+    if (config.listener) {
+      this.__addListener(config.listener);
+    }
     this._attachedEvent = null;
     this.__isNative = shouldUseNativeDriver(config);
 
     if (__DEV__) {
       this._validateMapping();
     }
+  }
+
+  __addListener(callback: Function): void {
+    this._listeners.push(callback);
+  }
+
+  __removeListener(callback: Function): void {
+    this._listeners = this._listeners.filter((listener) => listener !== callback);
   }
 
   __attach(viewRef, eventName) {
@@ -2228,7 +2258,7 @@ class AnimatedEvent {
 
   __getHandler() {
     if (this.__isNative) {
-      return this._listener;
+      return this._callListeners;
     }
 
     return (...args) => {
@@ -2247,12 +2277,13 @@ class AnimatedEvent {
           traverse(mapping, args[idx], 'arg' + idx);
         });
       }
-
-      if (this._listener) {
-        this._listener.apply(null, args);
-      }
+      this._callListeners(...args);
     };
   }
+
+  _callListeners = (...args) => {
+    this._listeners.forEach(listener => listener(...args));
+  };
 
   _validateMapping() {
     const traverse = (recMapping, recEvt, key) => {
@@ -2601,6 +2632,13 @@ module.exports = {
    * `Animated.event` with `useNativeDrive: true` if possible.
    */
   attachNativeEvent,
+
+  /**
+   * Advanced imperative API for snooping on animated events that are passed in through props. Use
+   * values directly where possible.
+   */
+  forkEvent,
+  unforkEvent,
 
   __PropsOnlyForTests: AnimatedProps,
 };
