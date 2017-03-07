@@ -42,15 +42,6 @@ export type ViewabilityConfig = {|
    * render.
    */
   waitForInteraction?: boolean,
-
-  /**
-   * Criteria to filter out certain scroll events so they don't count as interactions. By default,
-   * any non-zero scroll offset will be considered an interaction.
-   */
-  scrollInteractionFilter?: {|
-    minimumOffset?: number, // scrolls with an offset less than this are ignored.
-    minimumElapsed?: number, // scrolls that happen before this are ignored.
-  |},
 |};
 
 /**
@@ -74,10 +65,6 @@ class ViewabilityHelper {
   _viewableItems: Map<string, ViewToken> = new Map();
 
   constructor(config: ViewabilityConfig = {viewAreaCoveragePercentThreshold: 0}) {
-    invariant(
-      config.scrollInteractionFilter == null || config.waitForInteraction,
-      'scrollInteractionFilter only works in conjunction with waitForInteraction',
-    );
     this._config = config;
   }
 
@@ -163,17 +150,6 @@ class ViewabilityHelper {
       this._lastUpdateTime = updateTime;
     }
     const updateElapsed = this._lastUpdateTime ? updateTime - this._lastUpdateTime : 0;
-    if (this._config.waitForInteraction && !this._hasInteracted && scrollOffset !== 0) {
-      const filter = this._config.scrollInteractionFilter;
-      if (filter) {
-        if ((filter.minimumOffset == null || scrollOffset >= filter.minimumOffset) &&
-            (filter.minimumElapsed == null || updateElapsed >= filter.minimumElapsed)) {
-          this._hasInteracted = true;
-        }
-      } else {
-        this._hasInteracted = true;
-      }
-    }
     if (this._config.waitForInteraction && !this._hasInteracted) {
       return;
     }

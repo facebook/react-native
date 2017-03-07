@@ -24,6 +24,7 @@
 'use strict';
 
 const AsyncStorage = require('AsyncStorage');
+const BackHandler = require('BackHandler');
 const Linking = require('Linking');
 const React = require('react');
 const ReactNative = require('react-native');
@@ -67,6 +68,10 @@ const Header = ({ onBack, title}) => (
 class UIExplorerApp extends React.Component {
   props: Props;
   state: UIExplorerNavigationState;
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this._handleBack);
+  }
 
   componentDidMount() {
     Linking.getInitialURL().then((url) => {
