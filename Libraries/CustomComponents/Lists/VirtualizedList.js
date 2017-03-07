@@ -35,9 +35,9 @@
 const Batchinator = require('Batchinator');
 const React = require('React');
 const RefreshControl = require('RefreshControl');
-const ScrollView = require('ScrollView');
 const View = require('View');
 const ViewabilityHelper = require('ViewabilityHelper');
+const Animated = require('Animated');
 
 const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
@@ -262,7 +262,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
             JSON.stringify(props.refreshing) + '`',
         );
         return (
-          <ScrollView
+          <Animated.ScrollView
             {...props}
             refreshControl={
               <RefreshControl
@@ -273,7 +273,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           />
         );
       } else {
-        return <ScrollView {...props} />;
+        return <Animated.ScrollView {...props} />;
       }
     },
     shouldItemUpdate: (
@@ -291,10 +291,6 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
 
   constructor(props: Props) {
     super(props);
-    invariant(
-      !props.onScroll || !props.onScroll.__isNative,
-      'VirtualizedList does not support AnimatedEvent with onScroll and useNativeDriver',
-    );
     this._updateCellsToRenderBatcher = new Batchinator(
       this._updateCellsToRender,
       this.props.updateCellsBatchingPeriod,
@@ -348,7 +344,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     }
   }
   render() {
-    const {FooterComponent, HeaderComponent} = this.props;
+    const {FooterComponent, HeaderComponent, onScroll} = this.props;
     const {data, disableVirtualization, horizontal} = this.props;
     const cells = [];
     if (HeaderComponent) {
@@ -406,7 +402,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       {
         onContentSizeChange: this._onContentSizeChange,
         onLayout: this._onLayout,
-        onScroll: this._onScroll,
+        onScroll: (onScroll && onScroll.__isNative) ? onScroll : this._onScroll,
         ref: this._captureScrollRef,
         scrollEventThrottle: 50, // TODO: Android support
       },
@@ -551,7 +547,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   };
 
   _onScroll = (e: Object) => {
-    if (this.props.onScroll) {
+    if (this.props.onScroll && !this.props.onScroll.__isNative) {
       this.props.onScroll(e);
     }
     const timestamp = e.timeStamp;
