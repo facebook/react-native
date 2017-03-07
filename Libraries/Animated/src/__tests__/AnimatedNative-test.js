@@ -81,7 +81,7 @@ describe('Animated', () => {
 
   it('sends a valid description for value, style and props nodes', () => {
     const anim = new Animated.Value(0);
-    const c = createAndMountComponent(Animated.View, {
+    createAndMountComponent(Animated.View, {
       style: {
         opacity: anim,
       },
@@ -101,7 +101,7 @@ describe('Animated', () => {
     const first = new Animated.Value(1);
     const second = new Animated.Value(2);
 
-    const c = createAndMountComponent(Animated.View, {
+    createAndMountComponent(Animated.View, {
       style: {
         opacity: Animated.add(first, second),
       },
@@ -132,7 +132,7 @@ describe('Animated', () => {
     const first = new Animated.Value(2);
     const second = new Animated.Value(1);
 
-    const c = createAndMountComponent(Animated.View, {
+    createAndMountComponent(Animated.View, {
       style: {
         opacity: Animated.multiply(first, second),
       },
@@ -162,7 +162,7 @@ describe('Animated', () => {
   it('sends a valid graph description for interpolate() nodes', () => {
     const node = new Animated.Value(10);
 
-    const c = createAndMountComponent(Animated.View, {
+    createAndMountComponent(Animated.View, {
       style: {
         opacity: node.interpolate({
           inputRange: [10, 20],
@@ -249,7 +249,7 @@ describe('Animated', () => {
   it('fails when trying to run non-native animation on native node', () => {
     const anim = new Animated.Value(0);
 
-    const c = createAndMountComponent(Animated.View, {
+    createAndMountComponent(Animated.View, {
       style: {
         opacity: anim,
       },
@@ -265,7 +265,7 @@ describe('Animated', () => {
   it('fails for unsupported styles', () => {
     const anim = new Animated.Value(0);
 
-    const c = createAndMountComponent(Animated.View, {
+    createAndMountComponent(Animated.View, {
       style: {
         left: anim,
       },
