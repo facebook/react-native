@@ -860,6 +860,7 @@ public class ReactInstanceManager {
     final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
     NativeModuleRegistryBuilder nativeModuleRegistryBuilder = new NativeModuleRegistryBuilder(
       reactContext,
+      this,
       mLazyNativeModulesEnabled);
     JavaScriptModuleRegistry.Builder jsModulesBuilder = new JavaScriptModuleRegistry.Builder();
     if (mUseDeveloperSupport) {

@@ -281,6 +281,8 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
         scheme += "https";
       } else if (requestURI.getScheme().equals("ws")) {
         scheme += "http";
+      } else if (requestURI.getScheme().equals("http") || requestURI.getScheme().equals("https")) {
+        scheme += requestURI.getScheme();
       }
 
       if (requestURI.getPort() != -1) {
