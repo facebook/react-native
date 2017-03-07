@@ -337,7 +337,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           index={ii}
           item={item}
           key={key}
-          onLayout={this._onCellLayout}
+          onCellLayout={this._onCellLayout}
           onUnmount={this._onCellUnmount}
           parentProps={this.props}
         />
@@ -689,7 +689,7 @@ class CellRenderer extends React.Component {
     cellKey: string,
     index: number,
     item: Item,
-    onLayout: (event: Object, cellKey: string, index: number) => void,
+    onCellLayout: (event: Object, cellKey: string, index: number) => void,
     onUnmount: (cellKey: string) => void,
     parentProps: {
       renderItem: renderItemType,
@@ -701,7 +701,7 @@ class CellRenderer extends React.Component {
     },
   };
   _onLayout = (e) => {
-    this.props.onLayout(e, this.props.cellKey, this.props.index);
+    this.props.onCellLayout(e, this.props.cellKey, this.props.index);
   }
   componentWillUnmount() {
     this.props.onUnmount(this.props.cellKey);
