@@ -118,11 +118,11 @@ public class DevSupportManagerImpl implements
   private final @Nullable String mJSAppBundleName;
   private final File mJSBundleTempFile;
   private final DefaultNativeModuleCallExceptionHandler mDefaultNativeModuleCallExceptionHandler;
+  private final DevLoadingViewController mDevLoadingViewController;
 
   private @Nullable RedBoxDialog mRedBoxDialog;
   private @Nullable AlertDialog mDevOptionsDialog;
   private @Nullable DebugOverlayController mDebugOverlayController;
-  private @Nullable DevLoadingView mDevLoadingView;
   private boolean mDevLoadingViewVisible = false;
   private @Nullable ReactContext mCurrentContext;
   private DevInternalSettings mDevSettings;
@@ -231,6 +231,7 @@ public class DevSupportManagerImpl implements
     setDevSupportEnabled(enableOnCreate);
 
     mRedBoxHandler = redBoxHandler;
+    mDevLoadingViewController = new DevLoadingViewController(applicationContext);
   }
 
   @Override
@@ -646,7 +647,7 @@ public class DevSupportManagerImpl implements
     }
 
     if (mDevSettings.isRemoteJSDebugEnabled()) {
-      getDevLoadingView().showForRemoteJSEnabled();
+      mDevLoadingViewController.showForRemoteJSEnabled();
       mDevLoadingViewVisible = true;
       reloadJSInProxyMode();
     } else {
@@ -788,12 +789,14 @@ public class DevSupportManagerImpl implements
       @Override
       public void onSuccess() {
         future.set(true);
-        hideDevLoadingView();
+        mDevLoadingViewController.hide();
+        mDevLoadingViewVisible = false;
       }
 
       @Override
       public void onFailure(final Throwable cause) {
-        hideDevLoadingView();
+        mDevLoadingViewController.hide();
+        mDevLoadingViewVisible = false;
         FLog.e(ReactConstants.TAG, "Unable to connect to remote debugger", cause);
         future.setException(
             new IOException(
@@ -803,14 +806,15 @@ public class DevSupportManagerImpl implements
   }
 
   public void reloadJSFromServer(final String bundleURL) {
-    getDevLoadingView().showForUrl(bundleURL);
+    mDevLoadingViewController.showForUrl(bundleURL);
     mDevLoadingViewVisible = true;
 
     mDevServerHelper.downloadBundleFromURL(
         new DevServerHelper.BundleDownloadCallback() {
           @Override
           public void onSuccess() {
-            hideDevLoadingView();
+            mDevLoadingViewController.hide();
+            mDevLoadingViewVisible = false;
             UiThreadUtil.runOnUiThread(
                 new Runnable() {
                   @Override
@@ -822,12 +826,13 @@ public class DevSupportManagerImpl implements
 
           @Override
           public void onProgress(@Nullable final String status, @Nullable final Integer done, @Nullable final Integer total) {
-            getDevLoadingView().updateProgress(status, done, total);
+            mDevLoadingViewController.updateProgress(status, done, total);
           }
 
           @Override
           public void onFailure(final Exception cause) {
-            hideDevLoadingView();
+            mDevLoadingViewController.hide();
+            mDevLoadingViewVisible = false;
             FLog.e(ReactConstants.TAG, "Unable to download JS bundle", cause);
             UiThreadUtil.runOnUiThread(
                 new Runnable() {
@@ -873,8 +878,8 @@ public class DevSupportManagerImpl implements
       }
 
       // show the dev loading if it should be
-      if (mDevLoadingViewVisible && mDevLoadingView != null) {
-        mDevLoadingView.show();
+      if (mDevLoadingViewVisible) {
+        mDevLoadingViewController.show();
       }
 
       mDevServerHelper.openPackagerConnection(this);
@@ -919,38 +924,11 @@ public class DevSupportManagerImpl implements
       }
 
       // hide loading view
-      if (mDevLoadingView != null) {
-        mDevLoadingView.hide();
-      }
+      mDevLoadingViewController.hide();
 
       mDevServerHelper.closePackagerConnection();
       mDevServerHelper.closeInspectorConnection();
       mDevServerHelper.stopPollingOnChangeEndpoint();
     }
-  }
-
-  private void hideDevLoadingView() {
-    if (mDevLoadingView != null && mDevLoadingViewVisible) {
-      mDevLoadingView.hide();
-      mDevLoadingViewVisible = false;
-    }
-  }
-
-  private DevLoadingView getDevLoadingView() {
-    if (mDevLoadingView == null) {
-      mDevLoadingView = new DevLoadingView(mApplicationContext);
-      WindowManager windowManager = (WindowManager) mApplicationContext.getSystemService(Context.WINDOW_SERVICE);
-
-      WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-        WindowManager.LayoutParams.MATCH_PARENT,
-        (int) PixelUtil.toPixelFromDIP(22),
-        WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
-        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-        PixelFormat.TRANSLUCENT);
-      params.gravity = Gravity.TOP;
-      windowManager.addView(mDevLoadingView, params);
-    }
-
-    return mDevLoadingView;
   }
 }

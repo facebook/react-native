@@ -11,7 +11,11 @@ package com.facebook.react.devsupport;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -19,6 +23,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.PixelUtil;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,21 +34,24 @@ import javax.annotation.Nullable;
 /**
  * View to display loading messages on top of the screen. All methods are thread safe.
  */
-public class DevLoadingView extends RelativeLayout {
+public class DevLoadingViewController {
+  private static final int COLOR_DARK_GREEN = Color.parseColor("#035900");
+
   private static boolean sEnabled = true;
+  private final Context mContext;
+  private final WindowManager mWindowManager;
+  private TextView mDevLoadingView;
+  private boolean mIsVisible = false;
 
   public static void setDevLoadingEnabled(boolean enabled) {
     sEnabled = enabled;
   }
 
-  private TextView mMessageTextView;
-
-  public DevLoadingView(Context context) {
-    super(context);
-    inflate(context, R.layout.dev_loading_view, this);
-
-    mMessageTextView = (TextView) findViewById(R.id.loading_text);
-    setVisibility(View.GONE);
+  public DevLoadingViewController(Context context) {
+    mContext = context;
+    mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+    LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    mDevLoadingView = (TextView) inflater.inflate(R.layout.dev_loading_view, null);
   }
 
   public void showMessage(final String message, final int color, final int backgroundColor) {
@@ -54,12 +62,11 @@ public class DevLoadingView extends RelativeLayout {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        setBackgroundColor(backgroundColor);
+        mDevLoadingView.setBackgroundColor(backgroundColor);
+        mDevLoadingView.setText(message);
+        mDevLoadingView.setTextColor(color);
 
-        mMessageTextView.setText(message);
-        mMessageTextView.setTextColor(color);
-
-        setVisibility(View.VISIBLE);
+        setVisible(true);
       }
     });
   }
@@ -74,13 +81,13 @@ public class DevLoadingView extends RelativeLayout {
     }
 
     showMessage(
-      getContext().getString(R.string.catalyst_loading_from_url, parsedURL.getHost() + ":" + parsedURL.getPort()),
+      mContext.getString(R.string.catalyst_loading_from_url, parsedURL.getHost() + ":" + parsedURL.getPort()),
       Color.WHITE,
-      Color.parseColor("#035900"));
+      COLOR_DARK_GREEN);
   }
 
   public void showForRemoteJSEnabled() {
-    showMessage(getContext().getString(R.string.catalyst_remotedbg_message), Color.WHITE, Color.parseColor("#035900"));
+    showMessage(mContext.getString(R.string.catalyst_remotedbg_message), Color.WHITE, COLOR_DARK_GREEN);
   }
 
   public void updateProgress(final @Nullable String status, final @Nullable Integer done, final @Nullable Integer total) {
@@ -96,9 +103,9 @@ public class DevLoadingView extends RelativeLayout {
         if (done != null && total != null && total > 0) {
           message.append(String.format(Locale.getDefault(), " %.1f%% (%d/%d)", (float) done / total * 100, done, total));
         }
-        message.append("\u2026");
+        message.append("\u2026"); // `...` character
 
-        mMessageTextView.setText(message);
+        mDevLoadingView.setText(message);
       }
     });
   }
@@ -111,7 +118,7 @@ public class DevLoadingView extends RelativeLayout {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        setVisibility(View.VISIBLE);
+        setVisible(true);
       }
     });
   }
@@ -124,8 +131,24 @@ public class DevLoadingView extends RelativeLayout {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        setVisibility(View.GONE);
+        setVisible(false);
       }
     });
+  }
+
+  private void setVisible(boolean visible) {
+    if (visible && !mIsVisible) {
+      WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+        WindowManager.LayoutParams.MATCH_PARENT,
+        WindowManager.LayoutParams.WRAP_CONTENT,
+        WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
+        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+        PixelFormat.TRANSLUCENT);
+      params.gravity = Gravity.TOP;
+      mWindowManager.addView(mDevLoadingView, params);
+    } else if (!visible && mIsVisible) {
+      mWindowManager.removeView(mDevLoadingView);
+    }
+    mIsVisible = visible;
   }
 }

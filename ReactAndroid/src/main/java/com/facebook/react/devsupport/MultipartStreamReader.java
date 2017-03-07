@@ -21,6 +21,7 @@ import okio.ByteString;
  * Utility class to parse the body of a response of type multipart/mixed.
  */
 public class MultipartStreamReader {
+  // Standard line separator for HTTP.
   private static final String CRLF = "\r\n";
 
   private final BufferedSource mSource;
