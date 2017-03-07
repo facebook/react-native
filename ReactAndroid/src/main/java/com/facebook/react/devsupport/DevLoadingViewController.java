@@ -29,7 +29,7 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 
 /**
- * View to display loading messages on top of the screen. All methods are thread safe.
+ * Controller to display loading messages on top of the screen. All methods are thread safe.
  */
 public class DevLoadingViewController {
   private static final int COLOR_DARK_GREEN = Color.parseColor("#035900");
