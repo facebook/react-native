@@ -45,7 +45,7 @@ describe('DependencyGraph', function() {
   function getOrderedDependenciesAsJSON(dgraph, entryPath, platform, recursive = true) {
     return dgraph.getDependencies({entryPath, platform, recursive})
       .then(response => response.finalize())
-      .then(({ dependencies }) => Promise.all(dependencies.map(dep => Promise.all([
+      .then(({dependencies}) => Promise.all(dependencies.map(dep => Promise.all([
         dep.getName(),
         dep.getDependencies(),
       ]).then(([name, moduleDependencies]) => ({
@@ -130,7 +130,7 @@ describe('DependencyGraph', function() {
       },
       getTransformCacheKey: () => 'abcdef',
       reporter: require('../../lib/reporting').nullReporter,
-      watch: false,
+      watch: true,
     };
   });
 
@@ -273,7 +273,7 @@ describe('DependencyGraph', function() {
         ...defaults,
         roots: [root],
       });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js', null, false).then((deps) => {
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js', null, false).then(deps => {
         expect(deps)
           .toEqual([
             {
@@ -748,7 +748,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    it('should work with packages', function() {
+    it('should work with packages with a trailing slash', function() {
       var root = '/root';
       setMockFileSystem({
         'root': {
@@ -1239,61 +1239,6 @@ describe('DependencyGraph', function() {
       });
     });
 
-    it('should work with packages with symlinked subdirs', function() {
-      var root = '/root';
-      setMockFileSystem({
-        'symlinkedPackage': {
-          'package.json': JSON.stringify({
-            name: 'aPackage',
-            main: 'main.js',
-          }),
-          'main.js': 'lol',
-          'subdir': {
-            'lolynot.js': 'lolynot',
-          },
-        },
-        'root': {
-          'index.js': [
-            '/**',
-            ' * @providesModule index',
-            ' */',
-            'require("aPackage/subdir/lolynot")',
-          ].join('\n'),
-          'aPackage': { SYMLINK: '/symlinkedPackage' },
-        },
-      });
-
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-      });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-        expect(deps)
-          .toEqual([
-            {
-              id: 'index',
-              path: '/root/index.js',
-              dependencies: ['aPackage/subdir/lolynot'],
-              isAsset: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-              resolveDependency: undefined,
-            },
-            {
-              id: 'aPackage/subdir/lolynot.js',
-              path: '/root/aPackage/subdir/lolynot.js',
-              dependencies: [],
-              isAsset: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-              resolveDependency: undefined,
-            },
-          ]);
-      });
-    });
-
     it('should work with relative modules in packages', function() {
       var root = '/root';
       setMockFileSystem({
@@ -1527,7 +1472,7 @@ describe('DependencyGraph', function() {
                 isPolyfill: false,
                 resolution: undefined,
               },
-              { id: 'aPackage/client.js',
+              {id: 'aPackage/client.js',
                 path: '/root/aPackage/client.js',
                 dependencies: [],
                 isAsset: false,
@@ -1640,7 +1585,7 @@ describe('DependencyGraph', function() {
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
-              { id: 'index',
+              {id: 'index',
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
@@ -1648,7 +1593,7 @@ describe('DependencyGraph', function() {
                 isPolyfill: false,
                 resolution: undefined,
               },
-              { id: 'aPackage/client.js',
+              {id: 'aPackage/client.js',
                 path: '/root/aPackage/client.js',
                 dependencies: ['./node', './dir/server.js'],
                 isAsset: false,
@@ -1656,7 +1601,7 @@ describe('DependencyGraph', function() {
                 isPolyfill: false,
                 resolution: undefined,
               },
-              { id: 'aPackage/not-node.js',
+              {id: 'aPackage/not-node.js',
                 path: '/root/aPackage/not-node.js',
                 dependencies: ['./not-browser'],
                 isAsset: false,
@@ -1664,7 +1609,7 @@ describe('DependencyGraph', function() {
                 isPolyfill: false,
                 resolution: undefined,
               },
-              { id: 'aPackage/browser.js',
+              {id: 'aPackage/browser.js',
                 path: '/root/aPackage/browser.js',
                 dependencies: [],
                 isAsset: false,
@@ -1735,7 +1680,7 @@ describe('DependencyGraph', function() {
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
-              { id: 'index',
+              {id: 'index',
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
@@ -1743,7 +1688,7 @@ describe('DependencyGraph', function() {
                 isPolyfill: false,
                 resolution: undefined,
               },
-              { id: 'aPackage/index.js',
+              {id: 'aPackage/index.js',
                 path: '/root/aPackage/index.js',
                 dependencies: ['node-package'],
                 isAsset: false,
@@ -1751,7 +1696,7 @@ describe('DependencyGraph', function() {
                 isPolyfill: false,
                 resolution: undefined,
               },
-              { id: 'browser-package/index.js',
+              {id: 'browser-package/index.js',
                 path: '/root/aPackage/browser-package/index.js',
                 dependencies: [],
                 isAsset: false,
@@ -1802,7 +1747,7 @@ describe('DependencyGraph', function() {
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
-              { id: 'index',
+              {id: 'index',
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
@@ -1810,7 +1755,7 @@ describe('DependencyGraph', function() {
                 isPolyfill: false,
                 resolution: undefined,
               },
-              { id: 'aPackage/index.js',
+              {id: 'aPackage/index.js',
                 path: '/root/aPackage/index.js',
                 dependencies: ['./dir/ooga'],
                 isAsset: false,
@@ -1818,7 +1763,7 @@ describe('DependencyGraph', function() {
                 isPolyfill: false,
                 resolution: undefined,
               },
-              { id: 'aPackage/dir/ooga.js',
+              {id: 'aPackage/dir/ooga.js',
                 path: '/root/aPackage/dir/ooga.js',
                 dependencies: ['node-package'],
                 isAsset: false,
@@ -1826,7 +1771,7 @@ describe('DependencyGraph', function() {
                 isPolyfill: false,
                 resolution: undefined,
               },
-              { id: 'aPackage/dir/browser.js',
+              {id: 'aPackage/dir/browser.js',
                 path: '/root/aPackage/dir/browser.js',
                 dependencies: [],
                 isAsset: false,
@@ -1879,7 +1824,7 @@ describe('DependencyGraph', function() {
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
-              { id: 'index',
+              {id: 'index',
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
@@ -1887,7 +1832,7 @@ describe('DependencyGraph', function() {
                 isPolyfill: false,
                 resolution: undefined,
               },
-              { id: 'aPackage/index.js',
+              {id: 'aPackage/index.js',
                 path: '/root/aPackage/index.js',
                 dependencies: ['node-package'],
                 isAsset: false,
@@ -1895,7 +1840,7 @@ describe('DependencyGraph', function() {
                 isPolyfill: false,
                 resolution: undefined,
               },
-              { id: 'browser-package/index.js',
+              {id: 'browser-package/index.js',
                 path: '/root/aPackage/browser-package/index.js',
                 dependencies: [],
                 isAsset: false,
@@ -1944,7 +1889,7 @@ describe('DependencyGraph', function() {
         return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
-              { id: 'index',
+              {id: 'index',
                 path: '/root/index.js',
                 dependencies: ['aPackage'],
                 isAsset: false,
@@ -1952,7 +1897,7 @@ describe('DependencyGraph', function() {
                 isPolyfill: false,
                 resolution: undefined,
               },
-              { id: 'aPackage/index.js',
+              {id: 'aPackage/index.js',
                 path: '/root/aPackage/index.js',
                 dependencies: ['booga'],
                 isAsset: false,
@@ -2090,7 +2035,7 @@ describe('DependencyGraph', function() {
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
-            { id: 'index',
+            {id: 'index',
               path: '/root/index.js',
               dependencies: ['aPackage'],
               isAsset: false,
@@ -2098,7 +2043,7 @@ describe('DependencyGraph', function() {
               isPolyfill: false,
               resolution: undefined,
             },
-            { id: 'aPackage/index.js',
+            {id: 'aPackage/index.js',
               path: '/root/aPackage/index.js',
               dependencies: ['node-package'],
               isAsset: false,
@@ -2106,7 +2051,7 @@ describe('DependencyGraph', function() {
               isPolyfill: false,
               resolution: undefined,
             },
-            { id: 'rn-package/index.js',
+            {id: 'rn-package/index.js',
               path: '/root/aPackage/node_modules/rn-package/index.js',
               dependencies: ['nested-package'],
               isAsset: false,
@@ -2114,7 +2059,7 @@ describe('DependencyGraph', function() {
               isPolyfill: false,
               resolution: undefined,
             },
-            { id: 'nested-browser-package/index.js',
+            {id: 'nested-browser-package/index.js',
               path: '/root/aPackage/node_modules/nested-browser-package/index.js',
               dependencies: [],
               isAsset: false,
@@ -2253,7 +2198,7 @@ describe('DependencyGraph', function() {
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
           .toEqual([
-            { id: 'index',
+            {id: 'index',
               path: '/root/index.js',
               dependencies: ['aPackage'],
               isAsset: false,
@@ -2261,7 +2206,7 @@ describe('DependencyGraph', function() {
               isPolyfill: false,
               resolution: undefined,
             },
-            { id: 'aPackage/index.js',
+            {id: 'aPackage/index.js',
               path: '/root/aPackage/index.js',
               dependencies: ['node-package-a', 'node-package-b', 'node-package-c'],
               isAsset: false,
@@ -2269,7 +2214,7 @@ describe('DependencyGraph', function() {
               isPolyfill: false,
               resolution: undefined,
             },
-            { id: 'rn-package-a/index.js',
+            {id: 'rn-package-a/index.js',
               path: '/root/aPackage/node_modules/rn-package-a/index.js',
               dependencies: [],
               isAsset: false,
@@ -2277,7 +2222,7 @@ describe('DependencyGraph', function() {
               isPolyfill: false,
               resolution: undefined,
             },
-            { id: 'rn-package-b/index.js',
+            {id: 'rn-package-b/index.js',
               path: '/root/aPackage/node_modules/rn-package-b/index.js',
               dependencies: [],
               isAsset: false,
@@ -2285,7 +2230,7 @@ describe('DependencyGraph', function() {
               isPolyfill: false,
               resolution: undefined,
             },
-            { id: 'rn-package-d/index.js',
+            {id: 'rn-package-d/index.js',
               path: '/root/aPackage/node_modules/rn-package-d/index.js',
               dependencies: [],
               isAsset: false,
@@ -2363,8 +2308,8 @@ describe('DependencyGraph', function() {
         setMockFileSystem({
           [root.slice(1)]: {
             'index.js': 'require("bar")',
-            'node_modules': { 'bar.js': '' },
-            'provides-bar': { 'index.js': '' },
+            'node_modules': {'bar.js': ''},
+            'provides-bar': {'index.js': ''},
           },
         });
 
@@ -2492,7 +2437,7 @@ describe('DependencyGraph', function() {
         ...defaults,
         roots: [root],
       });
-      return getOrderedDependenciesAsJSON(dgraph, 'C:\\root\\index.js').then((deps) => {
+      return getOrderedDependenciesAsJSON(dgraph, 'C:\\root\\index.js').then(deps => {
         expect(deps)
           .toEqual([
             {
@@ -2533,7 +2478,7 @@ describe('DependencyGraph', function() {
       const root = 'C:\\root';
       setMockFileSystem({
         'root': {
-          'index.js': 'require("C:\\\\root\\\\apple.js");',
+          'index.js': 'require("C:/root/apple.js");',
           'apple.js': '',
         },
       });
@@ -2548,7 +2493,7 @@ describe('DependencyGraph', function() {
             {
               id: 'C:\\root\\index.js',
               path: 'C:\\root\\index.js',
-              dependencies: ['C:\\root\\apple.js'],
+              dependencies: ['C:/root/apple.js'],
               isAsset: false,
               isJSON: false,
               isPolyfill: false,
@@ -3166,71 +3111,75 @@ describe('DependencyGraph', function() {
         filesystem.root['index.js'] = filesystem.root['index.js']
           .replace('require("dontWork")', '')
           .replace('require("wontWork")', '');
-        dgraph.processFileChange('change', root + '/index.js', mockStat);
-        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js')
-          .then(deps => {
-            expect(deps).toEqual([
-              {
-                id: 'index',
-                path: '/root/index.js',
-                dependencies: [
-                  'shouldWork',
-                  'ember',
-                  'internalVendoredPackage',
-                  'anotherIndex',
-                ],
-                isAsset: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-              },
-              {
-                id: 'shouldWork',
-                path: '/root/node_modules/react-haste/main.js',
-                dependencies: ['submodule'],
-                isAsset: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-              },
-              {
-                id: 'submodule/main.js',
-                path: '/root/node_modules/react-haste/node_modules/submodule/main.js',
-                dependencies: [],
-                isAsset: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-              },
-              {
-                id: 'ember/main.js',
-                path: '/root/node_modules/ember/main.js',
-                dependencies: [],
-                isAsset: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-              },
-              {
-                id: 'internalVendoredPackage',
-                path: '/root/vendored_modules/a-vendored-package/main.js',
-                dependencies: [],
-                isAsset: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-              },
-              {
-                id: 'anotherIndex',
-                path: '/anotherRoot/index.js',
-                dependencies: [],
-                isAsset: false,
-                isJSON: false,
-                isPolyfill: false,
-                resolution: undefined,
-              },
-            ]);
-        });
+        triggerWatchEvent('change', root + '/index.js');
+        return new Promise(resolve => {
+          dgraph.once('change', () => {
+            return resolve(getOrderedDependenciesAsJSON(dgraph, '/root/index.js')
+              .then(deps => {
+                expect(deps).toEqual([
+                  {
+                    id: 'index',
+                    path: '/root/index.js',
+                    dependencies: [
+                      'shouldWork',
+                      'ember',
+                      'internalVendoredPackage',
+                      'anotherIndex',
+                    ],
+                    isAsset: false,
+                    isJSON: false,
+                    isPolyfill: false,
+                    resolution: undefined,
+                  },
+                  {
+                    id: 'shouldWork',
+                    path: '/root/node_modules/react-haste/main.js',
+                    dependencies: ['submodule'],
+                    isAsset: false,
+                    isJSON: false,
+                    isPolyfill: false,
+                    resolution: undefined,
+                  },
+                  {
+                    id: 'submodule/main.js',
+                    path: '/root/node_modules/react-haste/node_modules/submodule/main.js',
+                    dependencies: [],
+                    isAsset: false,
+                    isJSON: false,
+                    isPolyfill: false,
+                    resolution: undefined,
+                  },
+                  {
+                    id: 'ember/main.js',
+                    path: '/root/node_modules/ember/main.js',
+                    dependencies: [],
+                    isAsset: false,
+                    isJSON: false,
+                    isPolyfill: false,
+                    resolution: undefined,
+                  },
+                  {
+                    id: 'internalVendoredPackage',
+                    path: '/root/vendored_modules/a-vendored-package/main.js',
+                    dependencies: [],
+                    isAsset: false,
+                    isJSON: false,
+                    isPolyfill: false,
+                    resolution: undefined,
+                  },
+                  {
+                    id: 'anotherIndex',
+                    path: '/anotherRoot/index.js',
+                    dependencies: [],
+                    isAsset: false,
+                    isJSON: false,
+                    isPolyfill: false,
+                    resolution: undefined,
+                  },
+                ]);
+              }));
+            });
+          });
       });
     });
 
@@ -5509,5 +5458,9 @@ describe('DependencyGraph', function() {
 
   function setMockFileSystem(object) {
     return require('graceful-fs').__setMockFilesystem(object);
+  }
+
+  function triggerWatchEvent(eventType, filename) {
+    return require('graceful-fs').__triggerWatchEvent(eventType, filename);
   }
 });

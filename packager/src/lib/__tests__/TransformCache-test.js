@@ -30,7 +30,7 @@ jest.mock('fs', () => ({
   readdirSync(dirPath) {
     // Not required for it to work.
     return [];
-  }
+  },
 }));
 
 jest.mock('write-file-atomic', () => ({

@@ -57,10 +57,11 @@ typedef YG_ENUM_BEGIN(YGEdge) {
   YGEdgeAll,
 } YG_ENUM_END(YGEdge);
 
-#define YGExperimentalFeatureCount 2
+#define YGExperimentalFeatureCount 3
 typedef YG_ENUM_BEGIN(YGExperimentalFeature) {
   YGExperimentalFeatureRounding,
   YGExperimentalFeatureWebFlexBasis,
+  YGExperimentalFeatureMinFlexFix,
 } YG_ENUM_END(YGExperimentalFeature);
 
 #define YGFlexDirectionCount 4

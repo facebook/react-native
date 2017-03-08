@@ -507,7 +507,9 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     return (YGValue) { [json floatValue], YGUnitPoint };
   } else if ([json isKindOfClass:[NSString class]]) {
     NSString *s = (NSString *) json;
-    if ([s hasSuffix:@"%"]) {
+    if ([s isEqualToString:@"auto"]) {
+      return (YGValue) { YGUndefined, YGUnitAuto };
+    } else if ([s hasSuffix:@"%"]) {
       return (YGValue) { [[s substringToIndex:s.length] floatValue], YGUnitPercent };
     } else {
       RCTLogConvertError(json, @"a YGValue. Did you forget the % or pt suffix?");
@@ -643,6 +645,11 @@ RCT_ENUM_CONVERTER(YGOverflow, (@{
   @"scroll": @(YGOverflowScroll),
 }), YGOverflowVisible, intValue)
 
+RCT_ENUM_CONVERTER(YGDisplay, (@{
+  @"flex": @(YGDisplayFlex),
+  @"none": @(YGDisplayNone),
+}), YGDisplayFlex, intValue)
+
 RCT_ENUM_CONVERTER(YGFlexDirection, (@{
   @"row": @(YGFlexDirectionRow),
   @"row-reverse": @(YGFlexDirectionRowReverse),
@@ -664,7 +671,9 @@ RCT_ENUM_CONVERTER(YGAlign, (@{
   @"center": @(YGAlignCenter),
   @"auto": @(YGAlignAuto),
   @"stretch": @(YGAlignStretch),
-  @"baseline": @(YGAlignBaseline)
+  @"baseline": @(YGAlignBaseline),
+  @"space-between": @(YGAlignSpaceBetween),
+  @"space-around": @(YGAlignSpaceAround)
 }), YGAlignFlexStart, intValue)
 
 RCT_ENUM_CONVERTER(YGDirection, (@{

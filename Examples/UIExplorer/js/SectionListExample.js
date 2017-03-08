@@ -19,18 +19,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule SectionListExample
  */
 'use strict';
 
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  SectionList,
   StyleSheet,
   Text,
   View,
 } = ReactNative;
 
-const SectionList = require('SectionList');
 const UIExplorerPage = require('./UIExplorerPage');
 
 const infoLog = require('infoLog');
@@ -41,13 +42,19 @@ const {
   ItemComponent,
   PlainInput,
   SeparatorComponent,
-  StackedItemComponent,
   genItemData,
   pressItem,
   renderSmallSwitchOption,
+  renderStackedItem,
 } = require('./ListExampleShared');
 
-const SectionHeaderComponent = ({section}) => (
+const VIEWABILITY_CONFIG = {
+  minimumViewTime: 3000,
+  viewAreaCoveragePercentThreshold: 100,
+  waitForInteraction: true,
+};
+
+const renderSectionHeader = ({section}) => (
   <View>
     <Text style={styles.headerText}>SECTION HEADER: {section.key}</Text>
     <SeparatorComponent />
@@ -97,16 +104,16 @@ class SectionListExample extends React.PureComponent {
         <SectionList
           ListHeaderComponent={HeaderComponent}
           ListFooterComponent={FooterComponent}
-          ItemComponent={this._renderItemComponent}
-          SectionHeaderComponent={SectionHeaderComponent}
           SectionSeparatorComponent={() => <CustomSeparatorComponent text="SECTION SEPARATOR" />}
           ItemSeparatorComponent={() => <CustomSeparatorComponent text="ITEM SEPARATOR" />}
           enableVirtualization={this.state.virtualized}
           onRefresh={() => alert('onRefresh: nothing to refresh :P')}
           onViewableItemsChanged={this._onViewableItemsChanged}
           refreshing={false}
+          renderItem={this._renderItemComponent}
+          renderSectionHeader={renderSectionHeader}
           sections={[
-            {ItemComponent: StackedItemComponent, key: 's1', data: [
+            {renderItem: renderStackedItem, key: 's1', data: [
               {title: 'Item In Header Section', text: 'Section s1', key: '0'},
             ]},
             {key: 's2', data: [
@@ -115,7 +122,7 @@ class SectionListExample extends React.PureComponent {
             ]},
             {key: 'Filtered Items', data: filteredData},
           ]}
-          viewablePercentThreshold={100}
+          viewabilityConfig={VIEWABILITY_CONFIG}
         />
       </UIExplorerPage>
     );

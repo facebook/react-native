@@ -1,10 +1,19 @@
 require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
+version = package['version']
+
+source = { :git => 'https://github.com/facebook/react-native.git' }
+if version == '1000.0.0'
+  # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
+  source[:commit] = `git rev-parse HEAD`.strip
+else
+  source[:tag] = "v#{version}"
+end
 
 Pod::Spec.new do |s|
   s.name                    = "React"
-  s.version                 = package["version"]
+  s.version                 = version
   s.summary                 = package["description"]
   s.description             = <<-DESC
                                 React Native apps are built using the React JS
@@ -22,7 +31,7 @@ Pod::Spec.new do |s|
   s.homepage                = "http://facebook.github.io/react-native/"
   s.license                 = package["license"]
   s.author                  = "Facebook"
-  s.source                  = { :git => "https://github.com/facebook/react-native.git", :tag => "v#{s.version}" }
+  s.source                  = source
   s.default_subspec         = "Core"
   s.requires_arc            = true
   s.platform                = :ios, "8.0"
@@ -34,9 +43,15 @@ Pod::Spec.new do |s|
     ss.dependency             "Yoga", "#{package["version"]}.React"
     ss.dependency             "React/cxxreact"
     ss.source_files         = "React/**/*.{c,h,m,mm,S}"
-    ss.exclude_files        = "**/__tests__/*", "IntegrationTests/*", "React/**/RCTTVView.*", "ReactCommon/yoga/*", "React/Cxx*/*"
+    ss.exclude_files        = "**/__tests__/*", "IntegrationTests/*", "React/DevSupport/*", "React/Modules/RCTDev{LoadingView,Menu}.*", "React/**/RCTTVView.*", "ReactCommon/yoga/*", "React/Cxx*/*"
     ss.framework            = "JavaScriptCore"
     ss.libraries            = "stdc++"
+  end
+
+  s.subspec "DevSupport" do |ss|
+    ss.dependency             "React/Core"
+    ss.dependency             "React/RCTWebSocket"
+    ss.source_files         = "React/DevSupport/*", "React/Modules/RCTDev{LoadingView,Menu}.*"
   end
 
   s.subspec "tvOS" do |ss|
