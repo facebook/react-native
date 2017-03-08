@@ -13,7 +13,6 @@
 
 const Cache = require('./Cache');
 const DependencyGraphHelpers = require('./DependencyGraph/DependencyGraphHelpers');
-const HasteMap = require('./DependencyGraph/HasteMap');
 const JestHasteMap = require('jest-haste-map');
 const Module = require('./Module');
 const ModuleCache = require('./ModuleCache');
@@ -49,8 +48,6 @@ import type {
 } from './Module';
 import type {HasteFS} from './types';
 
-const ERROR_BUILDING_DEP_GRAPH = 'DependencyGraphError';
-
 type Options = {
   assetDependencies: Array<string>,
   assetExts: Array<string>,
@@ -78,8 +75,6 @@ class DependencyGraph extends EventEmitter {
   _opts: Options;
   _haste: JestHasteMap;
   _hasteFS: HasteFS;
-  _hasteMap: HasteMap;
-  _hasteMapError: ?Error;
   _helpers: DependencyGraphHelpers;
   _moduleCache: ModuleCache;
   _moduleMap: ModuleMap;
@@ -121,7 +116,6 @@ class DependencyGraph extends EventEmitter {
     this._loading = this._haste.build().then(({hasteFS, moduleMap}) => {
       this._hasteFS = hasteFS;
       this._moduleMap = moduleMap;
-      const hasteFSFiles = hasteFS.getAllFiles();
 
       this._moduleCache = new ModuleCache({
         cache: this._opts.cache,
@@ -147,43 +141,18 @@ class DependencyGraph extends EventEmitter {
         },
       }, this._opts.platforms);
 
-      this._hasteMap = new HasteMap({
-        files: hasteFSFiles,
-        extensions: this._opts.extensions,
-        moduleCache: this._moduleCache,
-        preferNativePlatform: this._opts.preferNativePlatform,
-        helpers: this._helpers,
-        platforms: this._opts.platforms,
-      });
-
       this._haste.on('change', event => {
         this._hasteFS = event.hasteFS;
         this._moduleMap = event.moduleMap;
         event.eventsQueue.forEach(({type, filePath, stat}) =>
-          this._onFileChange(type, filePath, stat)
+          this._moduleCache.processFileChange(type, filePath, stat)
         );
         this.emit('change');
       });
 
-      const buildingHasteMapLogEntry =
-        log(createActionStartEntry('Building Haste Map'));
+      log(createActionEndEntry(initializingPackagerLogEntry));
+      this._opts.reporter.update({type: 'dep_graph_loaded'});
 
-      return this._hasteMap.build().then(
-        map => {
-          log(createActionEndEntry(buildingHasteMapLogEntry));
-          log(createActionEndEntry(initializingPackagerLogEntry));
-          this._opts.reporter.update({type: 'dep_graph_loaded'});
-        },
-        err => {
-          const error = new Error(
-            `Failed to build DependencyGraph: ${err.message}`
-          );
-          /* $FlowFixMe: monkey-patching */
-          error.type = ERROR_BUILDING_DEP_GRAPH;
-          error.stack = err.stack;
-          throw error;
-        }
-      );
     });
 
     return this._loading;
@@ -291,34 +260,6 @@ class DependencyGraph extends EventEmitter {
       filePath,
       this._opts.roots
     );
-  }
-
-  _onFileChange(type: string, filePath: string, stat: Object) {
-    this._moduleCache.processFileChange(type, filePath, stat);
-
-    // This code reports failures but doesn't block recovery in the dev server
-    // mode. When the hasteMap is left in an incorrect state, we'll rebuild when
-    // the next file changes.
-    const resolve = () => {
-      if (this._hasteMapError) {
-        console.warn(
-          'Rebuilding haste map to recover from error:\n' +
-          this._hasteMapError.stack
-        );
-        this._hasteMapError = null;
-
-        // Rebuild the entire map if last change resulted in an error.
-        this._loading = this._hasteMap.build().then(() => {});
-      } else {
-        this._loading = this._hasteMap.processFileChange(type, filePath);
-        this._loading.catch(error => {
-          this._hasteMapError = error;
-        });
-      }
-      return this._loading;
-    };
-
-    this._loading = this._loading.then(resolve, resolve);
   }
 
   createPolyfill(options: {file: string}) {
