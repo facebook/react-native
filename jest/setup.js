@@ -35,10 +35,7 @@ jest
   .mock('View', () => mockComponent('View'))
   .mock('RefreshControl', () => require.requireMock('RefreshControlMock'))
   .mock('ScrollView', () => require.requireMock('ScrollViewMock'))
-  .mock(
-    'ActivityIndicator',
-    () => mockComponent('ActivityIndicator'),
-  )
+  .mock('ActivityIndicator',() => mockComponent('ActivityIndicator'))
   .mock('ListView', () => require.requireMock('ListViewMock'))
   .mock('ListViewDataSource', () => {
     const DataSource = require.requireActual('ListViewDataSource');
@@ -200,6 +197,6 @@ jest.doMock('requireNativeComponent', () => {
   return viewName => props => React.createElement(
     viewName,
     props,
-    props.children,
+    props.children
   );
 });
