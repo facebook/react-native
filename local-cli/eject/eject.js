@@ -66,9 +66,14 @@ function eject() {
     process.exit(1);
   }
 
-  let appIconiOS = appConfig.icon.ios;
-  let appIconAndroid = appConfig.icon.android;
-  const appIcon = appConfig.icon.default;
+  // let appIconiOS = appConfig.icon.ios;
+  //let appIconAndroid = appConfig.icon.android;
+  // const appIcon = appConfig.icon.default;
+  const iconConfig = (typeof appConfig.icon === 'string' ? {default: appConfig.icon.default} : appConfig.icon  ) || {};
+  const appIconIOS = iconConfig.ios || iconConfig.default;
+  const appIconAndroid = iconConfig.android || iconConfig.default;
+
+
 
   const templateOptions = { displayName };
 
@@ -81,17 +86,14 @@ function eject() {
       templateOptions
     );
 
-    console.log('Setting Up App Icons.')
-    if(!appIconiOS) {
-      appIconiOS = appIcon;
-    }
+    console.log('Setting Up App Icons for iOS.')
     const pictureSizes = [40, 60, 58, 87, 80, 120, 180];
-    const contentPath = 'ios/SomeTest/Images.xcassets/AppIcon.appiconset/Contents.json';
+    const contentPath = `ios/${appName}/Images.xcassets/AppIcon.appiconset/Contents.json`;
 
     const fileNames = pictureSizes.reduce( (acc, size) => {
-      const filePath = `ios/SomeTest/Images.xcassets/AppIcon.appiconset/${size}pt-${appIconiOS}`;
-      const fileName = `${size}pt-${appIconiOS}`;
-      sharp(appIconiOS)
+      const filePath = `ios/${appName}/Images.xcassets/AppIcon.appiconset/${size}pt-${appIconIOS}`;
+      const fileName = `${size}pt-${appIconIOS}`;
+      sharp(appIconIOS)
       .resize(size, size)
       .toFile(filePath, function(err) {
         if(err) throw err;
@@ -100,21 +102,24 @@ function eject() {
       return acc
     }, []);
 
-    fs.readFile(contentPath, 'utf8', function (err, data) {
-      if (err) throw err;
-      let obj = JSON.parse(data);
+    if ( typeof appIconIOS === 'string') {
+      fs.readFile(contentPath, 'utf8', function (err, data) {
+        if (err) throw err;
+        let obj = JSON.parse(data);
 
-      obj.images.forEach((image, key) => {
-        let size = parseInt(image.size.split('x')[0]);
-        let scale = parseInt(image.scale.replace('x', ''));
-        let fileName = fileNames[`SIZE_${scale*size}`];
-        obj.images[key].filename = fileName;
-        return obj;
-      })
-      fs.writeFile(contentPath, JSON.stringify(obj), 'utf8', function(err){
-        if(err) throw err;
-      })
-    });
+        obj.images.forEach((image, key) => {
+          let size = parseInt(image.size.split('x')[0]);
+          let scale = parseInt(image.scale.replace('x', ''));
+          let fileName = fileNames[`SIZE_${scale*size}`];
+          obj.images[key].filename = fileName;
+          return obj;
+        })
+
+        fs.writeFile(contentPath, JSON.stringify(obj), 'utf8', function(err){
+          if(err) throw err;
+        })
+      });
+    };
 
   }
 
@@ -127,23 +132,21 @@ function eject() {
       templateOptions
     );
 
-    console.log('Setting up App Icons');
-    if(!appIconAndroid) {
-      appIconAndroid = appIcon;
-    }
+    console.log('Setting up App Icons for Android');
     const hdpiPath = 'android/app/src/main/res/mipmap-hdpi/ic_launcher.png';
     const mdpiPath = 'android/app/src/main/res/mipmap-mdpi/ic_launcher.png';
     const xhdpiPath = 'android/app/src/main/res/mipmap-xhdpi/ic_launcher.png';
     const xxhdpiPath = 'android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png';
 
-    const pictureSizes = [48, 72, 96, 144];
     const filePaths = [hdpiPath, mdpiPath, xhdpiPath, xxhdpiPath];
 
-    filePaths.forEach((path) => {
-      fs.unlink(path, (err) => {
-        if(err) throw err;
+    if( typeof appIconAndroid === 'string') {
+      filePaths.forEach((path) => {
+        fs.unlink(path, (err) => {
+          if(err) throw err;
+        })
       })
-    })
+    };
 
     const ICON_SIZES = [{
       android_hdpi: {
@@ -167,7 +170,6 @@ function eject() {
     Object.keys(ICON_SIZES[0]).forEach((prop) => {
       const path = ICON_SIZES[0][prop].path;
       const size = ICON_SIZES[0][prop].size;
-      console.log(path, size);
       sharp(appIconAndroid)
       .resize(size, size)
       .toFile(path), function(err) {
