@@ -294,16 +294,18 @@ describe('Native Animated', () => {
       Animated.timing(anim, {toValue: 10, duration: 1000, useNativeDriver: true}).start();
 
       expect(nativeAnimatedModule.createAnimatedNode)
-        .toBeCalledWith(jasmine.any(Number), { type: 'value', value: 0, offset: 0 });
+        .toBeCalledWith(jasmine.any(Number), {type: 'value', value: 0, offset: 0});
       expect(nativeAnimatedModule.createAnimatedNode)
-        .toBeCalledWith(jasmine.any(Number), { type: 'style', style: { opacity: jasmine.any(Number) }});
+        .toBeCalledWith(jasmine.any(Number), {type: 'style', style: {opacity: jasmine.any(Number)}});
       expect(nativeAnimatedModule.createAnimatedNode)
-        .toBeCalledWith(jasmine.any(Number), { type: 'props', props: { style: jasmine.any(Number) }});
+        .toBeCalledWith(jasmine.any(Number), {type: 'props', props: {style: jasmine.any(Number)}});
     });
 
     it('sends a valid graph description for Animated.add nodes', () => {
       const first = new Animated.Value(1);
       const second = new Animated.Value(2);
+      first.__makeNative();
+      second.__makeNative();
 
       createAndMountComponent(Animated.View, {
         style: {
@@ -311,11 +313,10 @@ describe('Native Animated', () => {
         },
       });
 
-      Animated.timing(first, {toValue: 2, duration: 1000, useNativeDriver: true}).start();
-      Animated.timing(second, {toValue: 3, duration: 1000, useNativeDriver: true}).start();
-
-      expect(nativeAnimatedModule.createAnimatedNode)
-        .toBeCalledWith(jasmine.any(Number), { type: 'addition', input: jasmine.any(Array) });
+      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+        jasmine.any(Number),
+        {type: 'addition', input: jasmine.any(Array)},
+      );
       const additionCalls = nativeAnimatedModule.createAnimatedNode.mock.calls.filter(
         (call) => call[1].type === 'addition'
       );
@@ -327,14 +328,16 @@ describe('Native Animated', () => {
       );
       expect(additionConnectionCalls.length).toBe(2);
       expect(nativeAnimatedModule.createAnimatedNode)
-        .toBeCalledWith(additionCall[1].input[0], { type: 'value', value: 1, offset: 0 });
+        .toBeCalledWith(additionCall[1].input[0], {type: 'value', value: 1, offset: 0});
       expect(nativeAnimatedModule.createAnimatedNode)
-        .toBeCalledWith(additionCall[1].input[1], { type: 'value', value: 2, offset: 0 });
+        .toBeCalledWith(additionCall[1].input[1], {type: 'value', value: 2, offset: 0});
     });
 
     it('sends a valid graph description for Animated.multiply nodes', () => {
       const first = new Animated.Value(2);
       const second = new Animated.Value(1);
+      first.__makeNative();
+      second.__makeNative();
 
       createAndMountComponent(Animated.View, {
         style: {
@@ -342,11 +345,10 @@ describe('Native Animated', () => {
         },
       });
 
-      Animated.timing(first, {toValue: 5, duration: 1000, useNativeDriver: true}).start();
-      Animated.timing(second, {toValue: -1, duration: 1000, useNativeDriver: true}).start();
-
-      expect(nativeAnimatedModule.createAnimatedNode)
-        .toBeCalledWith(jasmine.any(Number), { type: 'multiplication', input: jasmine.any(Array) });
+      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+        jasmine.any(Number),
+        {type: 'multiplication', input: jasmine.any(Array)},
+      );
       const multiplicationCalls = nativeAnimatedModule.createAnimatedNode.mock.calls.filter(
         (call) => call[1].type === 'multiplication'
       );
@@ -358,28 +360,85 @@ describe('Native Animated', () => {
       );
       expect(multiplicationConnectionCalls.length).toBe(2);
       expect(nativeAnimatedModule.createAnimatedNode)
-        .toBeCalledWith(multiplicationCall[1].input[0], { type: 'value', value: 2, offset: 0 });
+        .toBeCalledWith(multiplicationCall[1].input[0], {type: 'value', value: 2, offset: 0});
       expect(nativeAnimatedModule.createAnimatedNode)
-        .toBeCalledWith(multiplicationCall[1].input[1], { type: 'value', value: 1, offset: 0 });
+        .toBeCalledWith(multiplicationCall[1].input[1], {type: 'value', value: 1, offset: 0});
     });
 
-    it('sends a valid graph description for interpolate() nodes', () => {
-      const node = new Animated.Value(10);
+    it('sends a valid graph description for Animated.divide nodes', () => {
+      const first = new Animated.Value(4);
+      const second = new Animated.Value(2);
+      first.__makeNative();
+      second.__makeNative();
 
       createAndMountComponent(Animated.View, {
         style: {
-          opacity: node.interpolate({
+          opacity: Animated.divide(first, second),
+        },
+      });
+
+      expect(nativeAnimatedModule.createAnimatedNode)
+        .toBeCalledWith(jasmine.any(Number), {type: 'division', input: jasmine.any(Array)});
+      const divisionCalls = nativeAnimatedModule.createAnimatedNode.mock.calls.filter(
+        (call) => call[1].type === 'division'
+      );
+      expect(divisionCalls.length).toBe(1);
+      const divisionCall = divisionCalls[0];
+      const divisionNodeTag = divisionCall[0];
+      const divisionConnectionCalls = nativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
+        (call) => call[1] === divisionNodeTag
+      );
+      expect(divisionConnectionCalls.length).toBe(2);
+      expect(nativeAnimatedModule.createAnimatedNode)
+        .toBeCalledWith(divisionCall[1].input[0], {type: 'value', value: 4, offset: 0});
+      expect(nativeAnimatedModule.createAnimatedNode)
+        .toBeCalledWith(divisionCall[1].input[1], {type: 'value', value: 2, offset: 0});
+    });
+
+    it('sends a valid graph description for Animated.modulo nodes', () => {
+      const value = new Animated.Value(4);
+      value.__makeNative();
+
+      createAndMountComponent(Animated.View, {
+        style: {
+          opacity: Animated.modulo(value, 4),
+        },
+      });
+
+      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+        jasmine.any(Number),
+        {type: 'modulus', modulus: 4, input: jasmine.any(Number)},
+      );
+      const moduloCalls = nativeAnimatedModule.createAnimatedNode.mock.calls.filter(
+        (call) => call[1].type === 'modulus'
+      );
+      expect(moduloCalls.length).toBe(1);
+      const moduloCall = moduloCalls[0];
+      const moduloNodeTag = moduloCall[0];
+      const moduloConnectionCalls = nativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
+        (call) => call[1] === moduloNodeTag
+      );
+      expect(moduloConnectionCalls.length).toBe(1);
+      expect(nativeAnimatedModule.createAnimatedNode)
+        .toBeCalledWith(moduloCall[1].input, {type: 'value', value: 4, offset: 0});
+    });
+
+    it('sends a valid graph description for interpolate() nodes', () => {
+      const value = new Animated.Value(10);
+      value.__makeNative();
+
+      createAndMountComponent(Animated.View, {
+        style: {
+          opacity: value.interpolate({
             inputRange: [10, 20],
             outputRange: [0, 1],
           }),
         },
       });
 
-      Animated.timing(node, {toValue: 20, duration: 1000, useNativeDriver: true}).start();
-
       expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         jasmine.any(Number),
-        { type: 'value', value: 10, offset: 0 }
+        {type: 'value', value: 10, offset: 0}
       );
       expect(nativeAnimatedModule.createAnimatedNode)
         .toBeCalledWith(jasmine.any(Number), {
@@ -399,12 +458,12 @@ describe('Native Animated', () => {
     });
 
     it('sends a valid graph description for transform nodes', () => {
-      const anim = new Animated.Value(0);
-      anim.__makeNative();
+      const value = new Animated.Value(0);
+      value.__makeNative();
 
       createAndMountComponent(Animated.View, {
         style: {
-          transform: [{translateX: anim}, {scale: 2}],
+          transform: [{translateX: value}, {scale: 2}],
         },
       });
 
@@ -426,15 +485,14 @@ describe('Native Animated', () => {
     });
 
     it('sends a valid graph description for Animated.diffClamp nodes', () => {
-      const first = new Animated.Value(2);
+      const value = new Animated.Value(2);
+      value.__makeNative();
 
       createAndMountComponent(Animated.View, {
         style: {
-          opacity: Animated.diffClamp(first, 0, 20),
+          opacity: Animated.diffClamp(value, 0, 20),
         },
       });
-
-      Animated.timing(first, {toValue: 5, duration: 1000, useNativeDriver: true}).start();
 
       expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
         jasmine.any(Number),
@@ -501,18 +559,17 @@ describe('Native Animated', () => {
 
     it('works for any `static` props and styles', () => {
       // Passing "unsupported" props should work just fine as long as they are not animated
-      const anim = new Animated.Value(0);
+      const value = new Animated.Value(0);
+      value.__makeNative();
 
-      const node = new Animated.__PropsOnlyForTests({
+      createAndMountComponent(Animated.View, {
         style: {
           left: 10,
           top: 20,
-          opacity: anim,
+          opacity: value,
         },
         removeClippedSubviews: true,
       });
-      Animated.timing(anim, {toValue: 10, duration: 50, useNativeDriver: true}).start();
-      node.__detach();
 
       expect(nativeAnimatedModule.createAnimatedNode)
         .toBeCalledWith(jasmine.any(Number), { type: 'style', style: { opacity: jasmine.any(Number) }});
