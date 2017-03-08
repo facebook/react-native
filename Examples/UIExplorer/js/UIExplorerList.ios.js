@@ -81,11 +81,6 @@ const ComponentExamples: Array<UIExplorerExample> = [
     supportsTVOS: true,
   },
   {
-     key: 'MapViewExample',
-     module: require('./MapViewExample'),
-    supportsTVOS: true,
-  },
-  {
     key: 'ModalExample',
     module: require('./ModalExample'),
     supportsTVOS: true,

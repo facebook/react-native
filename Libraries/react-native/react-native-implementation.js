@@ -40,7 +40,6 @@ const ReactNative = {
   get ImageStore() { return require('ImageStore'); },
   get KeyboardAvoidingView() { return require('KeyboardAvoidingView'); },
   get ListView() { return require('ListView'); },
-  get MapView() { return require('MapView'); },
   get Modal() { return require('Modal'); },
   get Navigator() { return require('Navigator'); },
   get NavigatorIOS() { return require('NavigatorIOS'); },
