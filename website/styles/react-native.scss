@@ -377,7 +377,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   font-size: 14px;
   float: left;
   width: 210px;
-  margin: 5px 48px 0 0;
+  margin: 0 48px 0 0;
 
   ul {
     list-style: none;
@@ -413,7 +413,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
     font-size: 16px;
     font-weight: 400;
     line-height: 20px;
-    margin-top: 12px;
+    margin-top: 0;
     margin-bottom: 5px;
     padding: 10px;
     background-color: $color-sidenav-header-bg;
@@ -1412,6 +1412,27 @@ table.versions  {
   color: #887766;
   text-align: center;
   background-color: rgba(5, 165, 209, 0.05);
+}
+
+.banner-crna-ejected {
+  border: 1px solid $color-react-native-blue;
+  border-radius: 3px;
+  margin-bottom: 40px;
+
+  h3 {
+    font-size: 16px;
+    margin: 0;
+    padding: 0 10px;
+    background-color: $color-react-native-blue;
+    color: white;
+  }
+
+  p {
+    padding: 10px;
+    margin: 2px;
+    text-decoration: none !important;
+    background-color: white;
+  }
 }
 
 @import "lib/vendor/prism";

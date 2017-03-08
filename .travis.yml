@@ -1,6 +1,6 @@
 language: objective-c
 
-osx_image: xcode8
+osx_image: xcode8.2
 
 install:
   - mkdir -p /Users/travis/build/facebook/.nvm
@@ -18,6 +18,7 @@ install:
 
 script:
   - if [[ "$TEST_TYPE" = objc-ios ]]; then travis_retry travis_wait ./scripts/objc-test-ios.sh; fi
+  - if [[ "$TEST_TYPE" = objc-tvos ]]; then travis_retry travis_wait ./scripts/objc-test-tvos.sh; fi
   - if [[ "$TEST_TYPE" = e2e-objc ]]; then node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3; fi
   - if [[ ( "$TEST_TYPE" = podspecs ) && ( "$TRAVIS_PULL_REQUEST" = "false" ) ]]; then gem install cocoapods && ./scripts/process-podspecs.sh; fi
 
@@ -30,6 +31,7 @@ env:
   - TEST_TYPE=objc-ios
   - TEST_TYPE=podspecs
   - TEST_TYPE=e2e-objc
+  - TEST_TYPE=objc-tvos
 
 branches:
   only:
@@ -40,6 +42,7 @@ notifications:
   email:
     recipients:
       - mkonicek@fb.com
+      - douglowder@mac.com # Doug Lowder built and maintains Apple TV specific code and wants to be notified about tvOS failures.
       - eloy@artsy.net # Eloy Durán maintains the podspecs test and wants to be notified about failures.
     on_failure: change
     on_success: change

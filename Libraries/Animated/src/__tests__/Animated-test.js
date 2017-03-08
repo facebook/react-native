@@ -353,6 +353,22 @@ describe('Animated tests', () => {
       expect(listener.mock.calls.length).toBe(1);
       expect(listener).toBeCalledWith({foo: 42});
     });
+    it('should call forked event listeners', () => {
+      var value = new Animated.Value(0);
+      var listener = jest.fn();
+      var handler = Animated.event(
+        [{foo: value}],
+        {listener},
+      );
+      var listener2 = jest.fn();
+      var forkedHandler = Animated.forkEvent(handler, listener2);
+      forkedHandler({foo: 42});
+      expect(value.__getValue()).toBe(42);
+      expect(listener.mock.calls.length).toBe(1);
+      expect(listener).toBeCalledWith({foo: 42});
+      expect(listener2.mock.calls.length).toBe(1);
+      expect(listener2).toBeCalledWith({foo: 42});
+    });
   });
 
   describe('Animated Interactions', () => {

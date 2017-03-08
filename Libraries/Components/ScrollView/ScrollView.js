@@ -678,6 +678,7 @@ const ScrollView = React.createClass({
     }
 
     const refreshControl = this.props.refreshControl;
+
     if (refreshControl) {
       if (Platform.OS === 'ios') {
         // On iOS the RefreshControl is a child of the ScrollView.
