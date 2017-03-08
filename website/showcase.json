@@ -60,7 +60,7 @@
     "pinned": true
   },
   {
-    "name": "Baidu Mobile (手机百度)",
+    "name": "Baidu Mobile (\u624b\u673a\u767e\u5ea6)",
     "icon": "http://a3.mzstatic.com/us/r30/Purple62/v4/90/7c/9b/907c9b4e-556d-1a45-45d4-0ea801719abd/icon175x175.png",
     "linkPlayStore": "http://shouji.baidu.com/software/9896302.html",
     "linkAppStore": "https://itunes.apple.com/us/app/%E6%89%8B%E6%9C%BA%E7%99%BE%E5%BA%A6-%E7%99%BE%E5%BA%A6%E4%B8%80%E4%B8%8B%E4%BD%A0%E5%B0%B1%E5%BE%97%E5%88%B0/id382201985?mt=8",
@@ -96,7 +96,7 @@
   {
     "name": "Discord",
     "icon": "http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg",
-    "linkAppStore":  "https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8",
+    "linkAppStore": "https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8",
     "infoLink": "https://discord.engineering/react-native-deep-dive-91fd5e949933#.5jnqftgof",
     "infoTitle": "Using React Native: One Year Later",
     "pinned": true
@@ -110,13 +110,6 @@
     "pinned": true
   },
   {
-    "name": "Tesla",
-    "icon": "https://lh3.googleusercontent.com/b79jRmQK2sZABaN0xI2wIAFrEcBxs0CuDzNTmF088DGrJXbemaMNRvrhqH0St28J7CU=w300-rw",
-    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.teslamotors.tesla",
-    "linkAppStore": "https://itunes.apple.com/us/app/tesla-motors/id582007913?mt=8",
-    "pinned": true
-  },
-  {
     "name": "Townske",
     "icon": "http://a3.mzstatic.com/us/r30/Purple69/v4/8b/42/20/8b4220af-5165-91fd-0f05-014332df73ef/icon175x175.png",
     "linkAppStore": "https://itunes.apple.com/us/app/townske-stunning-city-guides/id1018136179?ls=1&mt=8",
@@ -125,7 +118,7 @@
     "pinned": true
   },
   {
-    "name": "Qzone (QQ空间)",
+    "name": "Qzone (QQ\u7a7a\u95f4)",
     "icon": "http://pp.myapp.com/ma_icon/0/icon_9959_1460036593/96",
     "linkPlayStore": "http://android.myapp.com/myapp/detail.htm?apkName=com.qzone",
     "infoLink": "https://en.wikipedia.org/wiki/Qzone",
@@ -133,7 +126,7 @@
     "pinned": false
   },
   {
-    "name": "QQ Music (QQ音乐)",
+    "name": "QQ Music (QQ\u97f3\u4e50)",
     "icon": "http://pp.myapp.com/ma_icon/0/icon_6259_1462429453/96",
     "linkPlayStore": "http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.qqmusic",
     "infoLink": "http://www.wsj.com/articles/tencent-customers-come-for-the-music-stay-for-the-perks-1433869369",
@@ -141,7 +134,7 @@
     "pinned": false
   },
   {
-    "name": "Classroom (腾讯课堂)",
+    "name": "Classroom (\u817e\u8baf\u8bfe\u5802)",
     "icon": "http://pp.myapp.com/ma_icon/0/icon_10927178_1479093114/96",
     "linkPlayStore": "http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.edu",
     "linkAppStore": "https://itunes.apple.com/cn/app/teng-xun-ke-tang-zhuan-ye/id931720936?mt=8",
@@ -199,7 +192,7 @@
     "pinned": false
   },
   {
-    "name": "Huiseoul (惠首尔)",
+    "name": "Huiseoul (\u60e0\u9996\u5c14)",
     "icon": "https://cdn.huiseoul.com/icon.png",
     "linkAppStore": "https://itunes.apple.com/us/app/hui-shou-er-ni-si-ren-mei/id1127150360?ls=1&mt=8",
     "infoLink": "https://engineering.huiseoul.com/building-a-conversational-e-commerce-app-in-6-weeks-with-react-native-c35d46637e07",
@@ -216,12 +209,12 @@
     "pinned": false
   },
   {
-    "name": "JD（手机京东）",
+    "name": "JD\uff08\u624b\u673a\u4eac\u4e1c\uff09",
     "icon": "https://lh3.googleusercontent.com/AIIAZsqyEG0KmCFruh1Ec374-2l7n1rfv_LG5RWjdAZOzUBCu-5MRqdLbzJfBnOdSFg=w300-rw",
     "linkAppStore": "https://itunes.apple.com/cn/app/shou-ji-jing-dong-xin-ren/id414245413?mt=8",
     "linkPlayStore": "https://app.jd.com/android.html",
     "infoLink": "http://ir.jd.com/phoenix.zhtml?c=253315&p=irol-homeProfile",
-    "infoTitle": "JD.com is China’s largest ecommerce company by revenue and a member of the Fortune Global 500.",
+    "infoTitle": "JD.com is China\u2019s largest ecommerce company by revenue and a member of the Fortune Global 500.",
     "pinned": false
   },
   {
