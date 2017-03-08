@@ -72,90 +72,102 @@ type Options = {
 };
 
 class DependencyGraph extends EventEmitter {
+
   _opts: Options;
   _haste: JestHasteMap;
-  _hasteFS: HasteFS;
   _helpers: DependencyGraphHelpers;
   _moduleCache: ModuleCache;
+  _hasteFS: HasteFS;
   _moduleMap: ModuleMap;
 
-  _loading: Promise<void>;
-
-  constructor(opts: Options) {
+  constructor(config: {
+    opts: Options,
+    haste: JestHasteMap,
+    initialHasteFS: HasteFS,
+    initialModuleMap: ModuleMap,
+  }) {
     super();
-    this._opts = {...opts};
+    this._opts = {...config.opts};
+    this._haste = config.haste;
+    this._hasteFS = config.initialHasteFS;
+    this._moduleMap = config.initialModuleMap;
     this._helpers = new DependencyGraphHelpers(this._opts);
-    this.load();
+    this._haste.on('change', this._onHasteChange.bind(this));
+    this._moduleCache = this._createModuleCache();
   }
 
-  load(): Promise<void> {
-    if (this._loading) {
-      return this._loading;
-    }
-
-    const mw = this._opts.maxWorkers;
-    this._haste = new JestHasteMap({
-      extensions: this._opts.extensions.concat(this._opts.assetExts),
-      forceNodeFilesystemAPI: this._opts.forceNodeFilesystemAPI,
-      ignorePattern: {test: this._opts.ignoreFilePath},
+  static _createHaste(opts: Options): JestHasteMap {
+    const mw = opts.maxWorkers;
+    return new JestHasteMap({
+      extensions: opts.extensions.concat(opts.assetExts),
+      forceNodeFilesystemAPI: opts.forceNodeFilesystemAPI,
+      ignorePattern: {test: opts.ignoreFilePath},
       maxWorkers: typeof mw === 'number' && mw >= 1 ? mw : getMaxWorkers(),
       mocksPattern: '',
       name: 'react-native-packager',
-      platforms: Array.from(this._opts.platforms),
-      providesModuleNodeModules: this._opts.providesModuleNodeModules,
-      resetCache: this._opts.resetCache,
+      platforms: Array.from(opts.platforms),
+      providesModuleNodeModules: opts.providesModuleNodeModules,
+      resetCache: opts.resetCache,
       retainAllFiles: true,
-      roots: this._opts.roots,
-      useWatchman: this._opts.useWatchman,
-      watch: this._opts.watch,
+      roots: opts.roots,
+      useWatchman: opts.useWatchman,
+      watch: opts.watch,
     });
+  }
 
+  static load(opts: Options): Promise<DependencyGraph> {
     const initializingPackagerLogEntry =
       log(createActionStartEntry('Initializing Packager'));
-    this._opts.reporter.update({type: 'dep_graph_loading'});
-    this._loading = this._haste.build().then(({hasteFS, moduleMap}) => {
-      this._hasteFS = hasteFS;
-      this._moduleMap = moduleMap;
-
-      this._moduleCache = new ModuleCache({
-        cache: this._opts.cache,
-        getTransformCacheKey: this._opts.getTransformCacheKey,
-        globalTransformCache: this._opts.globalTransformCache,
-        transformCode: this._opts.transformCode,
-        depGraphHelpers: this._helpers,
-        assetDependencies: this._opts.assetDependencies,
-        moduleOptions: this._opts.moduleOptions,
-        reporter: this._opts.reporter,
-        getClosestPackage: filePath => {
-          const parsedPath = path.parse(filePath);
-          const root = parsedPath.root;
-          let dir = parsedPath.dir;
-          do {
-            const candidate = path.join(dir, 'package.json');
-            if (this._hasteFS.exists(candidate)) {
-              return candidate;
-            }
-            dir = path.dirname(dir);
-          } while (dir !== '.' && dir !== root);
-          return null;
-        },
-      }, this._opts.platforms);
-
-      this._haste.on('change', event => {
-        this._hasteFS = event.hasteFS;
-        this._moduleMap = event.moduleMap;
-        event.eventsQueue.forEach(({type, filePath, stat}) =>
-          this._moduleCache.processFileChange(type, filePath, stat)
-        );
-        this.emit('change');
-      });
-
+    opts.reporter.update({type: 'dep_graph_loading'});
+    const haste = DependencyGraph._createHaste(opts);
+    return haste.build().then(({hasteFS, moduleMap}) => {
       log(createActionEndEntry(initializingPackagerLogEntry));
-      this._opts.reporter.update({type: 'dep_graph_loaded'});
-
+      opts.reporter.update({type: 'dep_graph_loaded'});
+      return new DependencyGraph({
+        opts,
+        haste,
+        initialHasteFS: hasteFS,
+        initialModuleMap: moduleMap,
+      });
     });
+  }
 
-    return this._loading;
+  _getClosestPackage(filePath: string): ?string {
+    const parsedPath = path.parse(filePath);
+    const root = parsedPath.root;
+    let dir = parsedPath.dir;
+    do {
+      const candidate = path.join(dir, 'package.json');
+      if (this._hasteFS.exists(candidate)) {
+        return candidate;
+      }
+      dir = path.dirname(dir);
+    } while (dir !== '.' && dir !== root);
+    return null;
+  }
+
+  _onHasteChange({eventsQueue, hasteFS, moduleMap}) {
+    this._hasteFS = hasteFS;
+    this._moduleMap = moduleMap;
+    eventsQueue.forEach(({type, filePath, stat}) =>
+      this._moduleCache.processFileChange(type, filePath, stat)
+    );
+    this.emit('change');
+  }
+
+  _createModuleCache() {
+    const {_opts} = this;
+    return new ModuleCache({
+      cache: _opts.cache,
+      getTransformCacheKey: _opts.getTransformCacheKey,
+      globalTransformCache: _opts.globalTransformCache,
+      transformCode: _opts.transformCode,
+      depGraphHelpers: this._helpers,
+      assetDependencies: _opts.assetDependencies,
+      moduleOptions: _opts.moduleOptions,
+      reporter: _opts.reporter,
+      getClosestPackage: this._getClosestPackage.bind(this),
+    }, _opts.platforms);
   }
 
   /**
@@ -180,7 +192,7 @@ class DependencyGraph extends EventEmitter {
   }
 
   getAllModules() {
-    return this.load().then(() => this._moduleCache.getAllModules());
+    return Promise.resolve(this._moduleCache.getAllModules());
   }
 
   getDependencies({
@@ -195,42 +207,40 @@ class DependencyGraph extends EventEmitter {
     transformOptions: TransformOptions,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     recursive: boolean,
-  }) {
-    return this.load().then(() => {
-      platform = this._getRequestPlatform(entryPath, platform);
-      const absPath = this._getAbsolutePath(entryPath);
-      const dirExists = filePath => {
-        try {
-          return fs.lstatSync(filePath).isDirectory();
-        } catch (e) {}
-        return false;
-      };
-      const req = new ResolutionRequest({
-        dirExists,
-        entryPath: absPath,
-        extraNodeModules: this._opts.extraNodeModules,
-        hasteFS: this._hasteFS,
-        helpers: this._helpers,
-        moduleCache: this._moduleCache,
-        moduleMap: this._moduleMap,
-        platform,
-        platforms: this._opts.platforms,
-        preferNativePlatform: this._opts.preferNativePlatform,
-      });
-
-      const response = new ResolutionResponse({transformOptions});
-
-      return req.getOrderedDependencies({
-        response,
-        transformOptions,
-        onProgress,
-        recursive,
-      }).then(() => response);
+  }): Promise<ResolutionResponse> {
+    platform = this._getRequestPlatform(entryPath, platform);
+    const absPath = this._getAbsolutePath(entryPath);
+    const dirExists = filePath => {
+      try {
+        return fs.lstatSync(filePath).isDirectory();
+      } catch (e) {}
+      return false;
+    };
+    const req = new ResolutionRequest({
+      dirExists,
+      entryPath: absPath,
+      extraNodeModules: this._opts.extraNodeModules,
+      hasteFS: this._hasteFS,
+      helpers: this._helpers,
+      moduleCache: this._moduleCache,
+      moduleMap: this._moduleMap,
+      platform,
+      platforms: this._opts.platforms,
+      preferNativePlatform: this._opts.preferNativePlatform,
     });
+
+    const response = new ResolutionResponse({transformOptions});
+
+    return req.getOrderedDependencies({
+      response,
+      transformOptions,
+      onProgress,
+      recursive,
+    }).then(() => response);
   }
 
   matchFilesByPattern(pattern: RegExp) {
-    return this.load().then(() => this._hasteFS.matchFiles(pattern));
+    return Promise.resolve(this._hasteFS.matchFiles(pattern));
   }
 
   _getRequestPlatform(entryPath: string, platform: string) {
