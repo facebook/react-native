@@ -222,6 +222,9 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
 
   // Keyed by viewName
   NSDictionary *_componentDataByName;
+  
+  // Only emit bridge events if true
+  bool hasListeners;
 
   NSMutableSet<id<RCTComponent>> *_bridgeTransactionListeners;
 #if !TARGET_OS_TV
@@ -229,21 +232,40 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
 #endif
 }
 
-@synthesize bridge = _bridge;
-
 RCT_EXPORT_MODULE()
 
 - (void)didReceiveNewContentSizeMultiplier
 {
-  // Report the event across the bridge.
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
-                                              body:@([_bridge.accessibilityManager multiplier])];
+  // Report the event across the bridge only if there are listeners
+  if (hasListeners)
+  {
+    [self sendEventWithName:@"didUpdateContentSizeMultiplier"
+                       body:@([self.bridge.accessibilityManager multiplier])];
+  }
 
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
                                                         object:self];
     [self setNeedsLayout];
   });
+}
+
+#pragma mark -- RCTEventEmitter
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"didUpdateContentSizeMultiplier",
+           @"didUpdateDimensions"];
+}
+
+- (void)startObserving
+{
+  hasListeners = YES;
+}
+
+- (void)stopObserving
+{
+  hasListeners = NO;
 }
 
 - (void)interfaceOrientationDidChange
@@ -253,15 +275,13 @@ RCT_EXPORT_MODULE()
     [RCTSharedApplication() statusBarOrientation];
 
   // Update when we go from portrait to landscape, or landscape to portrait
-  if ((UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
+  if (hasListeners &&
+      ((UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
       !UIInterfaceOrientationIsPortrait(nextOrientation)) ||
       (UIInterfaceOrientationIsLandscape(_currentInterfaceOrientation) &&
-      !UIInterfaceOrientationIsLandscape(nextOrientation))) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                                body:RCTExportedDimensions()];
-#pragma clang diagnostic pop
+      !UIInterfaceOrientationIsLandscape(nextOrientation)))) {
+        [self sendEventWithName:@"didUpdateDimensions"
+                           body:RCTExportedDimensions()];
   }
 
   _currentInterfaceOrientation = nextOrientation;
@@ -287,7 +307,7 @@ RCT_EXPORT_MODULE()
     self->_shadowViewRegistry = nil;
     self->_viewRegistry = nil;
     self->_bridgeTransactionListeners = nil;
-    self->_bridge = nil;
+    [super setBridge:nil];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -314,9 +334,9 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  RCTAssert(_bridge == nil, @"Should not re-use same UIIManager instance");
+  RCTAssert(self.bridge == nil, @"Should not re-use same UIIManager instance");
 
-  _bridge = bridge;
+  [super setBridge:bridge];
 
   _shadowViewRegistry = [NSMutableDictionary new];
   _viewRegistry = [NSMutableDictionary new];
@@ -331,10 +351,10 @@ RCT_EXPORT_MODULE()
 
   // Get view managers from bridge
   NSMutableDictionary *componentDataByName = [NSMutableDictionary new];
-  for (Class moduleClass in _bridge.moduleClasses) {
+  for (Class moduleClass in self.bridge.moduleClasses) {
     if ([moduleClass isSubclassOfClass:[RCTViewManager class]]) {
       RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass
-                                                                                bridge:_bridge];
+                                                                                bridge:self.bridge];
       componentDataByName[componentData.name] = componentData;
     }
   }
@@ -344,7 +364,7 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
-                                             object:_bridge.accessibilityManager];
+                                             object:self.bridge.accessibilityManager];
 #if !TARGET_OS_TV
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceOrientationDidChange)
@@ -1116,11 +1136,11 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   RCTComponentData *componentData = _componentDataByName[shadowView.viewName];
   Class managerClass = componentData.managerClass;
-  RCTModuleData *moduleData = [_bridge moduleDataForName:RCTBridgeModuleNameForClass(managerClass)];
+  RCTModuleData *moduleData = [self.bridge moduleDataForName:RCTBridgeModuleNameForClass(managerClass)];
   id<RCTBridgeMethod> method = moduleData.methods[commandID];
 
   NSArray *args = [@[reactTag] arrayByAddingObjectsFromArray:commandArgs];
-  [method invokeWithBridge:_bridge module:componentData.manager arguments:args];
+  [method invokeWithBridge:self.bridge module:componentData.manager arguments:args];
 }
 
 - (void)partialBatchDidFlush
@@ -1202,7 +1222,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
 {
   // If there is an active batch layout will happen when batch finished, so we will wait for that.
   // Otherwise we immidiately trigger layout.
-  if (![_bridge isBatchActive]) {
+  if (![self.bridge isBatchActive]) {
     [self _layoutAndMount];
   }
 }
@@ -1582,7 +1602,7 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
 
 RCT_EXPORT_METHOD(getContentSizeMultiplier:(nonnull RCTResponseSenderBlock)callback)
 {
-  callback(@[@(_bridge.accessibilityManager.multiplier)]);
+  callback(@[@(self.bridge.accessibilityManager.multiplier)]);
 }
 
 - (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion
