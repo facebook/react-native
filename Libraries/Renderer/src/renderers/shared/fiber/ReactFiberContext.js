@@ -35,6 +35,11 @@ const {
 if (__DEV__) {
   var checkReactTypeSpec = require('checkReactTypeSpec');
   var ReactDebugCurrentFrame = require('react/lib/ReactDebugCurrentFrame');
+  var ReactDebugCurrentFiber = require('ReactDebugCurrentFiber');
+  var {
+    startPhaseTimer,
+    stopPhaseTimer,
+  } = require('ReactDebugFiberPerf');
   var warnedAboutMissingGetChildContext = {};
 }
 
@@ -168,7 +173,16 @@ function processChildContext(fiber : Fiber, parentContext : Object, isReconcilin
     return parentContext;
   }
 
-  const childContext = instance.getChildContext();
+  let childContext;
+  if (__DEV__) {
+    ReactDebugCurrentFiber.phase = 'getChildContext';
+    startPhaseTimer(fiber, 'getChildContext');
+    childContext = instance.getChildContext();
+    stopPhaseTimer();
+    ReactDebugCurrentFiber.phase = null;
+  } else {
+    childContext = instance.getChildContext();
+  }
   for (let contextKey in childContext) {
     invariant(
       contextKey in childContextTypes,
@@ -189,6 +203,7 @@ function processChildContext(fiber : Fiber, parentContext : Object, isReconcilin
     checkReactTypeSpec(childContextTypes, childContext, 'child context', name);
     ReactDebugCurrentFrame.current = null;
   }
+
   return {...parentContext, ...childContext};
 }
 exports.processChildContext = processChildContext;
