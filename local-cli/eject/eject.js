@@ -66,14 +66,9 @@ function eject() {
     process.exit(1);
   }
 
-  // let appIconiOS = appConfig.icon.ios;
-  //let appIconAndroid = appConfig.icon.android;
-  // const appIcon = appConfig.icon.default;
   const iconConfig = (typeof appConfig.icon === 'string' ? {default: appConfig.icon.default} : appConfig.icon  ) || {};
   const appIconIOS = iconConfig.ios || iconConfig.default;
   const appIconAndroid = iconConfig.android || iconConfig.default;
-
-
 
   const templateOptions = { displayName };
 
