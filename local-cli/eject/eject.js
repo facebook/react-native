@@ -66,14 +66,9 @@ function eject() {
     process.exit(1);
   }
 
-  const appIcon = appConfig.icon;
-  if(!appIcon) {
-    console.error(
-      'Please provide an icon for the app'
-    );
-    process.exit(1);
-  }
-
+  let appIconiOS = appConfig.icon.ios;
+  let appIconAndroid = appConfig.icon.android;
+  const appIcon = appConfig.icon.default;
 
   const templateOptions = { displayName };
 
@@ -83,18 +78,20 @@ function eject() {
       path.resolve('node_modules', 'react-native', 'local-cli', 'templates', 'HelloWorld', 'ios'),
       path.resolve('ios'),
       appName,
-      appIcon,
       templateOptions
     );
 
     console.log('Setting Up App Icons.')
+    if(!appIconiOS) {
+      appIconiOS = appIcon;
+    }
     const pictureSizes = [40, 60, 58, 87, 80, 120, 180];
-    let contentPath = 'ios/SomeTest/Images.xcassets/AppIcon.appiconset/Contents.json';
+    const contentPath = 'ios/SomeTest/Images.xcassets/AppIcon.appiconset/Contents.json';
 
-    let fileNames = pictureSizes.reduce( (acc, size) => {
-      let filePath = `ios/SomeTest/Images.xcassets/AppIcon.appiconset/${size}pt-${appIcon}`;
-      let fileName = `${size}pt-${appIcon}`;
-      sharp(appIcon)
+    const fileNames = pictureSizes.reduce( (acc, size) => {
+      const filePath = `ios/SomeTest/Images.xcassets/AppIcon.appiconset/${size}pt-${appIconiOS}`;
+      const fileName = `${size}pt-${appIconiOS}`;
+      sharp(appIconiOS)
       .resize(size, size)
       .toFile(filePath, function(err) {
         if(err) throw err;
@@ -131,6 +128,9 @@ function eject() {
     );
 
     console.log('Setting up App Icons');
+    if(!appIconAndroid) {
+      appIconAndroid = appIcon;
+    }
     const hdpiPath = 'android/app/src/main/res/mipmap-hdpi/ic_launcher.png';
     const mdpiPath = 'android/app/src/main/res/mipmap-mdpi/ic_launcher.png';
     const xhdpiPath = 'android/app/src/main/res/mipmap-xhdpi/ic_launcher.png';
@@ -145,12 +145,34 @@ function eject() {
       })
     })
 
-    pictureSizes.forEach((size, key) => {
-      sharp(appIcon)
+    const ICON_SIZES = [{
+      android_hdpi: {
+        path: 'android/app/src/main/res/mipmap-hdpi/ic_launcher.png',
+        size: 48
+      },
+      android_mdpi: {
+        path: 'android/app/src/main/res/mipmap-mdpi/ic_launcher.png',
+        size: 72
+      },
+      android_xhdpi: {
+        path: 'android/app/src/main/res/mipmap-xhdpi/ic_launcher.png',
+        size: 96
+      },
+      android_xxhdpi: {
+        path: 'android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png',
+        size: 144
+      }
+    }];
+
+    Object.keys(ICON_SIZES[0]).forEach((prop) => {
+      const path = ICON_SIZES[0][prop].path;
+      const size = ICON_SIZES[0][prop].size;
+      console.log(path, size);
+      sharp(appIconAndroid)
       .resize(size, size)
-      .toFile(filePaths[key], function(err) {
+      .toFile(path), function(err) {
         if (err) throw err;
-      });
+      }
     });
   }
 
