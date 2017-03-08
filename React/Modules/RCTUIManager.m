@@ -236,8 +236,13 @@ RCT_EXPORT_MODULE()
 - (void)didReceiveNewContentSizeMultiplier
 {
   // Report the event across the bridge.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
+                                              body:RCTExportedDimensions(_bridge)];
   [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
                                               body:@([_bridge.accessibilityManager multiplier])];
+#pragma clang diagnostic pop
 
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
@@ -260,7 +265,7 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                                body:RCTExportedDimensions()];
+                                                body:RCTExportedDimensions(_bridge)];
 #pragma clang diagnostic pop
   }
 
@@ -1541,23 +1546,26 @@ RCT_EXPORT_METHOD(clearJSResponder)
 
   constants[@"customBubblingEventTypes"] = bubblingEvents;
   constants[@"customDirectEventTypes"] = directEvents;
-  constants[@"Dimensions"] = RCTExportedDimensions();
+  constants[@"Dimensions"] = RCTExportedDimensions(_bridge);
 
   return constants;
 }
 
-static NSDictionary *RCTExportedDimensions()
+static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 {
   RCTAssertMainQueue();
 
   // Don't use RCTScreenSize since it the interface orientation doesn't apply to it
   CGRect screenSize = [[UIScreen mainScreen] bounds];
+  NSDictionary *dims = @{
+    @"width": @(screenSize.size.width),
+    @"height": @(screenSize.size.height),
+    @"scale": @(RCTScreenScale()),
+    @"fontScale": @(bridge.accessibilityManager.multiplier)
+  };
   return @{
-    @"window": @{
-        @"width": @(screenSize.size.width),
-        @"height": @(screenSize.size.height),
-        @"scale": @(RCTScreenScale()),
-    },
+    @"window": dims,
+    @"screen": dims
   };
 }
 
@@ -1578,11 +1586,6 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
   [self addUIBlock:^(RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     uiManager->_layoutAnimation = nextLayoutAnimation;
   }];
-}
-
-RCT_EXPORT_METHOD(getContentSizeMultiplier:(nonnull RCTResponseSenderBlock)callback)
-{
-  callback(@[@(_bridge.accessibilityManager.multiplier)]);
 }
 
 - (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion
@@ -1654,6 +1657,12 @@ static UIView *_jsResponder;
 {
   RCTLogWarn(@"Calling of `[-RCTUIManager setFrame:forView:]` which is deprecated.");
   [self setSize:frame.size forView:view];
+}
+
+RCT_EXPORT_METHOD(getContentSizeMultiplier:(nonnull RCTResponseSenderBlock)callback)
+{
+  RCTLogWarn(@"`getContentSizeMultiplier` is deprecated. Instead, use `PixelRatio.getFontScale()` and listen to the `didUpdateDimensions` event.");
+  callback(@[@(_bridge.accessibilityManager.multiplier)]);
 }
 
 @end
