@@ -84,7 +84,7 @@ describe('Animated', () => {
       anim.setValue(0.5);
 
       expect(nativeAnimatedModule.setAnimatedNodeValue).toBeCalledWith(jasmine.any(Number), 0.5);
-      expect(c.refs.node.setNativeProps.mock.calls.length).toBe(0);
+      expect(c.refs.node.setNativeProps).not.toHaveBeenCalled();
     });
 
     it('should set offset', () => {
@@ -156,7 +156,7 @@ describe('Animated', () => {
         'onAnimatedValueUpdate',
         {value: 42, tag: value1.__getNativeTag()},
       );
-      expect(listener.mock.calls.length).toBe(1);
+      expect(listener).toHaveBeenCalledTimes(1);
       expect(listener).toBeCalledWith({value: 42});
       expect(value1.__getValue()).toBe(42);
 
@@ -164,7 +164,7 @@ describe('Animated', () => {
         'onAnimatedValueUpdate',
         {value: 7, tag: value1.__getNativeTag()},
       );
-      expect(listener.mock.calls.length).toBe(2);
+      expect(listener).toHaveBeenCalledTimes(2);
       expect(listener).toBeCalledWith({value: 7});
       expect(value1.__getValue()).toBe(7);
 
@@ -176,7 +176,7 @@ describe('Animated', () => {
         'onAnimatedValueUpdate',
         {value: 1492, tag: value1.__getNativeTag()},
       );
-      expect(listener.mock.calls.length).toBe(2);
+      expect(listener).toHaveBeenCalledTimes(2);
       expect(value1.__getValue()).toBe(7);
     });
 
@@ -192,7 +192,7 @@ describe('Animated', () => {
         'onAnimatedValueUpdate',
         {value: 42, tag: value1.__getNativeTag()},
       );
-      expect(listener.mock.calls.length).toBe(4);
+      expect(listener).toHaveBeenCalledTimes(4);
       expect(listener).toBeCalledWith({value: 42});
 
       value1.removeAllListeners();
@@ -203,7 +203,7 @@ describe('Animated', () => {
         'onAnimatedValueUpdate',
         {value: 7, tag: value1.__getNativeTag()},
       );
-      expect(listener.mock.calls.length).toBe(4);
+      expect(listener).toHaveBeenCalledTimes(4);
     });
   });
 
@@ -251,7 +251,7 @@ describe('Animated', () => {
       );
       const handler = event.__getHandler();
       handler({foo: 42});
-      expect(listener.mock.calls.length).toBe(1);
+      expect(listener).toHaveBeenCalledTimes(1);
       expect(listener).toBeCalledWith({foo: 42});
     });
   });
@@ -269,8 +269,8 @@ describe('Animated', () => {
 
       c.componentWillUnmount();
 
-      expect(nativeAnimatedModule.createAnimatedNode.mock.calls.length).toBe(3);
-      expect(nativeAnimatedModule.connectAnimatedNodes.mock.calls.length).toBe(2);
+      expect(nativeAnimatedModule.createAnimatedNode).toHaveBeenCalledTimes(3);
+      expect(nativeAnimatedModule.connectAnimatedNodes).toHaveBeenCalledTimes(2);
 
       expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         jasmine.any(Number),
@@ -279,8 +279,8 @@ describe('Animated', () => {
         jasmine.any(Function)
       );
 
-      expect(nativeAnimatedModule.disconnectAnimatedNodes.mock.calls.length).toBe(2);
-      expect(nativeAnimatedModule.dropAnimatedNode.mock.calls.length).toBe(2);
+      expect(nativeAnimatedModule.disconnectAnimatedNodes).toHaveBeenCalledTimes(2);
+      expect(nativeAnimatedModule.dropAnimatedNode).toHaveBeenCalledTimes(2);
     });
 
     it('sends a valid description for value, style and props nodes', () => {
