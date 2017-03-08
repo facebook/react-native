@@ -98,6 +98,7 @@ const statics = {
  *   - `timestamp` - A time identifier for the touch, useful for velocity calculation.
  *   - `touches` - Array of all current touches on the screen.
  */
+// $FlowFixMe(>=0.41.0)
 const View = React.createClass({
   // TODO: We should probably expose the mixins, viewConfig, and statics publicly. For example,
   // one of the props is of type AccessibilityComponentType. That is defined as a const[] above,

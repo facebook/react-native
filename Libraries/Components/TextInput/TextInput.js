@@ -168,6 +168,7 @@ const DataDetectorTypes = [
  * or control this param programmatically with native code.
  *
  */
+// $FlowFixMe(>=0.41.0)
 const TextInput = React.createClass({
   statics: {
     /* TODO(brentvatne) docs are needed for this */

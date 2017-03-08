@@ -4,8 +4,8 @@ title: Debugging
 layout: docs
 category: Guides
 permalink: docs/debugging.html
-next: testing
-previous: direct-manipulation
+next: accessibility
+previous: platform-specific-code
 ---
 
 ## Accessing the In-App Developer Menu

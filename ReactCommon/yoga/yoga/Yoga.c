@@ -94,7 +94,10 @@ typedef struct YGStyle {
   float aspectRatio;
 } YGStyle;
 
-typedef struct YGConfig { bool experimentalFeatures[YGExperimentalFeatureCount + 1]; } YGConfig;
+typedef struct YGConfig {
+  bool experimentalFeatures[YGExperimentalFeatureCount + 1];
+  bool useWebDefaults;
+} YGConfig;
 
 typedef struct YGNode {
   YGStyle style;
@@ -144,6 +147,7 @@ typedef struct YGNode {
 
 static const float kDefaultFlexGrow = 0.0f;
 static const float kDefaultFlexShrink = 0.0f;
+static const float kWebDefaultFlexShrink = 1.0f;
 
 static YGNode gYGNodeDefaults = {
     .parent = NULL,
@@ -198,8 +202,10 @@ static YGConfig gYGConfigDefaults = {
     .experimentalFeatures =
         {
                 [YGExperimentalFeatureRounding] = false,
+                [YGExperimentalFeatureMinFlexFix] = false,
                 [YGExperimentalFeatureWebFlexBasis] = false,
         },
+    .useWebDefaults = false,
 };
 
 static void YGNodeMarkDirtyInternal(const YGNodeRef node);
@@ -308,6 +314,10 @@ WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
   gNodeInstanceCount++;
 
   memcpy(node, &gYGNodeDefaults, sizeof(YGNode));
+  if (config->useWebDefaults) {
+    node->style.flexDirection = YGFlexDirectionRow;
+    node->style.alignContent = YGAlignStretch;
+  }
   node->config = config;
   return node;
 }
@@ -462,17 +472,17 @@ float YGNodeStyleGetFlexGrow(const YGNodeRef node) {
 }
 
 float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
-  return YGFloatIsUndefined(node->style.flexShrink) ? kDefaultFlexShrink : node->style.flexShrink;
+  return YGFloatIsUndefined(node->style.flexShrink) ? (node->config->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink) : node->style.flexShrink;
 }
 
 static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
   if (!YGFloatIsUndefined(node->style.flexShrink)) {
     return node->style.flexShrink;
   }
-  if (!YGFloatIsUndefined(node->style.flex) && node->style.flex < 0.0f) {
+  if (!node->config->useWebDefaults && !YGFloatIsUndefined(node->style.flex) && node->style.flex < 0.0f) {
     return -node->style.flex;
   }
-  return kDefaultFlexShrink;
+  return node->config->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
 }
 
 static inline const YGValue *YGNodeResolveFlexBasisPtr(const YGNodeRef node) {
@@ -480,7 +490,7 @@ static inline const YGValue *YGNodeResolveFlexBasisPtr(const YGNodeRef node) {
     return &node->style.flexBasis;
   }
   if (!YGFloatIsUndefined(node->style.flex) && node->style.flex > 0.0f) {
-    return &YGValueZero;
+    return node->config->useWebDefaults ? &YGValueAuto : &YGValueZero;
   }
   return &YGValueAuto;
 }
@@ -603,8 +613,8 @@ static inline const YGValue *YGNodeResolveFlexBasisPtr(const YGNodeRef node) {
     }                                                                                         \
   }                                                                                           \
                                                                                               \
-  type YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {                        \
-    return node->style.instanceName[edge];                                                    \
+  WIN_STRUCT(type) YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {            \
+    return WIN_STRUCT_REF(node->style.instanceName[edge]);                                    \
   }
 
 #define YG_NODE_STYLE_EDGE_PROPERTY_IMPL(type, name, paramName, instanceName)                 \
@@ -1790,6 +1800,12 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
   node->layout.position[YGEdgeBottom] = 0;
   node->layout.position[YGEdgeLeft] = 0;
   node->layout.position[YGEdgeRight] = 0;
+  node->layout.cachedLayout.availableHeight = 0;
+  node->layout.cachedLayout.availableWidth = 0;
+  node->layout.cachedLayout.heightMeasureMode = YGMeasureModeExactly;
+  node->layout.cachedLayout.widthMeasureMode = YGMeasureModeExactly;
+  node->layout.cachedLayout.computedWidth = 0;
+  node->layout.cachedLayout.computedHeight = 0;
   const uint32_t childCount = YGNodeGetChildCount(node);
   for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeListGet(node->children, i);
@@ -2868,7 +2884,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                                          availableInnerWidth,
                                          availableInnerHeight,
                                          true,
-                                         "stretch",
+                                         "multiline-stretch",
                                          config);
                   }
                 }
@@ -3290,18 +3306,18 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
 static float gPointScaleFactor = 1.0;
 
 void YGSetPointScaleFactor(float pixelsInPoint) {
-  YG_ASSERT(pixelsInPoint >= 0.0, "Scale factor should not be less than zero");
+  YG_ASSERT(pixelsInPoint >= 0.0f, "Scale factor should not be less than zero");
   // We store points for Pixel as we will use it for rounding
-  if (pixelsInPoint == 0.0) {
+  if (pixelsInPoint == 0.0f) {
     // Zero is used to skip rounding
-    gPointScaleFactor = 0.0;
+    gPointScaleFactor = 0.0f;
   } else {
-    gPointScaleFactor = 1.0 / pixelsInPoint;
+    gPointScaleFactor = 1.0f / pixelsInPoint;
   }
 }
 
 static void YGRoundToPixelGrid(const YGNodeRef node) {
-  if (gPointScaleFactor == 0.0) {
+  if (gPointScaleFactor == 0.0f) {
     return;
   }
   const float nodeLeft = node->layout.position[YGEdgeLeft];
@@ -3431,6 +3447,14 @@ void YGConfigSetExperimentalFeatureEnabled(const YGConfigRef config,
 inline bool YGConfigIsExperimentalFeatureEnabled(const YGConfigRef config,
                                            const YGExperimentalFeature feature) {
   return config->experimentalFeatures[feature];
+}
+
+void YGConfigSetUseWebDefaults(const YGConfigRef config, const bool enabled) {
+  config->useWebDefaults = enabled;
+}
+
+bool YGConfigGetUseWebDefaults(const YGConfigRef config) {
+  return config->useWebDefaults;
 }
 
 void YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree) {

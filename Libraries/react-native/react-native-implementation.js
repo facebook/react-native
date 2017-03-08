@@ -81,7 +81,8 @@ const ReactNative = {
   get AppRegistry() { return require('AppRegistry'); },
   get AppState() { return require('AppState'); },
   get AsyncStorage() { return require('AsyncStorage'); },
-  get BackAndroid() { return require('BackAndroid'); },
+  get BackAndroid() { return require('BackAndroid'); }, // deprecated: use BackHandler instead
+  get BackHandler() { return require('BackHandler'); },
   get CameraRoll() { return require('CameraRoll'); },
   get Clipboard() { return require('Clipboard'); },
   get DatePickerAndroid() { return require('DatePickerAndroid'); },
@@ -106,6 +107,7 @@ const ReactNative = {
   get StyleSheet() { return require('StyleSheet'); },
   get Systrace() { return require('Systrace'); },
   get TimePickerAndroid() { return require('TimePickerAndroid'); },
+  get TVEventHandler() { return require('TVEventHandler'); },
   get UIManager() { return require('UIManager'); },
   get Vibration() { return require('Vibration'); },
   get VibrationIOS() { return require('VibrationIOS'); },

@@ -21,6 +21,10 @@
 		130443DD1E401AF500D93A67 /* RCTConvert+Transform.h in Headers */ = {isa = PBXBuildFile; fileRef = 130443C31E401A8C00D93A67 /* RCTConvert+Transform.h */; };
 		130443DE1E401B0D00D93A67 /* RCTTVView.h in Headers */ = {isa = PBXBuildFile; fileRef = 130443D61E401AD800D93A67 /* RCTTVView.h */; };
 		130443DF1E401B0D00D93A67 /* RCTTVView.m in Sources */ = {isa = PBXBuildFile; fileRef = 130443D71E401AD800D93A67 /* RCTTVView.m */; };
+		130E3D881E6A082100ACE484 /* RCTDevSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 130E3D861E6A082100ACE484 /* RCTDevSettings.h */; };
+		130E3D891E6A082100ACE484 /* RCTDevSettings.mm in Sources */ = {isa = PBXBuildFile; fileRef = 130E3D871E6A082100ACE484 /* RCTDevSettings.mm */; };
+		130E3D8A1E6A083600ACE484 /* RCTDevSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 130E3D861E6A082100ACE484 /* RCTDevSettings.h */; };
+		130E3D8B1E6A083900ACE484 /* RCTDevSettings.mm in Sources */ = {isa = PBXBuildFile; fileRef = 130E3D871E6A082100ACE484 /* RCTDevSettings.mm */; };
 		13134C841E296B2A00B9F3CB /* RCTCxxBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 13134C731E296B2A00B9F3CB /* RCTCxxBridge.h */; };
 		13134C851E296B2A00B9F3CB /* RCTCxxBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 13134C731E296B2A00B9F3CB /* RCTCxxBridge.h */; };
 		13134C861E296B2A00B9F3CB /* RCTCxxBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13134C741E296B2A00B9F3CB /* RCTCxxBridge.mm */; };
@@ -113,7 +117,7 @@
 		139D84B21E273B5600323FB7 /* File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D84A51E273B5600323FB7 /* File.cpp */; };
 		139D84B31E273B5600323FB7 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D84A71E273B5600323FB7 /* json.cpp */; };
 		13A0C2891B74F71200B29F6F /* RCTDevLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 13A0C2861B74F71200B29F6F /* RCTDevLoadingView.m */; };
-		13A0C28A1B74F71200B29F6F /* RCTDevMenu.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13A0C2881B74F71200B29F6F /* RCTDevMenu.mm */; };
+		13A0C28A1B74F71200B29F6F /* RCTDevMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 13A0C2881B74F71200B29F6F /* RCTDevMenu.m */; };
 		13A1F71E1A75392D00D3D453 /* RCTKeyCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = 13A1F71D1A75392D00D3D453 /* RCTKeyCommands.m */; };
 		13A6E20E1C19AA0C00845B82 /* RCTParserUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 13A6E20D1C19AA0C00845B82 /* RCTParserUtils.m */; };
 		13AB5E011DF777F2001A8C30 /* YGNodeList.c in Sources */ = {isa = PBXBuildFile; fileRef = 130A77051DF767AF001F9587 /* YGNodeList.c */; };
@@ -312,7 +316,7 @@
 		2D3B5EB11D9B090100451313 /* RCTAppState.m in Sources */ = {isa = PBXBuildFile; fileRef = 1372B7091AB030C200659ED6 /* RCTAppState.m */; };
 		2D3B5EB21D9B090300451313 /* RCTAsyncLocalStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 58114A4E1AAE93D500E7D092 /* RCTAsyncLocalStorage.m */; };
 		2D3B5EB41D9B090A00451313 /* RCTDevLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 13A0C2861B74F71200B29F6F /* RCTDevLoadingView.m */; };
-		2D3B5EB51D9B091100451313 /* RCTDevMenu.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13A0C2881B74F71200B29F6F /* RCTDevMenu.mm */; };
+		2D3B5EB51D9B091100451313 /* RCTDevMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 13A0C2881B74F71200B29F6F /* RCTDevMenu.m */; };
 		2D3B5EB61D9B091400451313 /* RCTExceptionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FEA1A69327A00A75B9A /* RCTExceptionsManager.m */; };
 		2D3B5EB71D9B091800451313 /* RCTRedBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 13F17A841B8493E5007D4C75 /* RCTRedBox.m */; };
 		2D3B5EB81D9B091B00451313 /* RCTSourceCode.m in Sources */ = {isa = PBXBuildFile; fileRef = 000E6CEA1AB0E980000CDF4D /* RCTSourceCode.m */; };
@@ -1506,6 +1510,8 @@
 		130A77061DF767AF001F9587 /* YGNodeList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGNodeList.h; sourceTree = "<group>"; };
 		130A77071DF767AF001F9587 /* Yoga.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Yoga.c; sourceTree = "<group>"; };
 		130A77081DF767AF001F9587 /* Yoga.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Yoga.h; sourceTree = "<group>"; };
+		130E3D861E6A082100ACE484 /* RCTDevSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDevSettings.h; sourceTree = "<group>"; };
+		130E3D871E6A082100ACE484 /* RCTDevSettings.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTDevSettings.mm; sourceTree = "<group>"; };
 		13134C731E296B2A00B9F3CB /* RCTCxxBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTCxxBridge.h; sourceTree = "<group>"; };
 		13134C741E296B2A00B9F3CB /* RCTCxxBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTCxxBridge.mm; sourceTree = "<group>"; };
 		13134C771E296B2A00B9F3CB /* RCTMessageThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTMessageThread.h; sourceTree = "<group>"; };
@@ -1552,24 +1558,24 @@
 		137327E41AA5CF210034F82E /* RCTTabBarItemManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTabBarItemManager.m; sourceTree = "<group>"; };
 		137327E51AA5CF210034F82E /* RCTTabBarManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTabBarManager.h; sourceTree = "<group>"; };
 		137327E61AA5CF210034F82E /* RCTTabBarManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTabBarManager.m; sourceTree = "<group>"; };
-		139D7E391E25C5A300323FB7 /* bignum-dtoa.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "bignum-dtoa.cc"; path = "double-conversion-1.1.1/src/bignum-dtoa.cc"; sourceTree = "<group>"; };
-		139D7E3A1E25C5A300323FB7 /* bignum-dtoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "bignum-dtoa.h"; path = "double-conversion-1.1.1/src/bignum-dtoa.h"; sourceTree = "<group>"; };
-		139D7E3B1E25C5A300323FB7 /* bignum.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bignum.cc; path = "double-conversion-1.1.1/src/bignum.cc"; sourceTree = "<group>"; };
-		139D7E3C1E25C5A300323FB7 /* bignum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bignum.h; path = "double-conversion-1.1.1/src/bignum.h"; sourceTree = "<group>"; };
-		139D7E3D1E25C5A300323FB7 /* cached-powers.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "cached-powers.cc"; path = "double-conversion-1.1.1/src/cached-powers.cc"; sourceTree = "<group>"; };
-		139D7E3E1E25C5A300323FB7 /* cached-powers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "cached-powers.h"; path = "double-conversion-1.1.1/src/cached-powers.h"; sourceTree = "<group>"; };
-		139D7E3F1E25C5A300323FB7 /* diy-fp.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "diy-fp.cc"; path = "double-conversion-1.1.1/src/diy-fp.cc"; sourceTree = "<group>"; };
-		139D7E401E25C5A300323FB7 /* diy-fp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "diy-fp.h"; path = "double-conversion-1.1.1/src/diy-fp.h"; sourceTree = "<group>"; };
-		139D7E411E25C5A300323FB7 /* double-conversion.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "double-conversion.cc"; path = "double-conversion-1.1.1/src/double-conversion.cc"; sourceTree = "<group>"; };
-		139D7E421E25C5A300323FB7 /* double-conversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "double-conversion.h"; path = "double-conversion-1.1.1/src/double-conversion.h"; sourceTree = "<group>"; };
-		139D7E431E25C5A300323FB7 /* fast-dtoa.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "fast-dtoa.cc"; path = "double-conversion-1.1.1/src/fast-dtoa.cc"; sourceTree = "<group>"; };
-		139D7E441E25C5A300323FB7 /* fast-dtoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "fast-dtoa.h"; path = "double-conversion-1.1.1/src/fast-dtoa.h"; sourceTree = "<group>"; };
-		139D7E451E25C5A300323FB7 /* fixed-dtoa.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "fixed-dtoa.cc"; path = "double-conversion-1.1.1/src/fixed-dtoa.cc"; sourceTree = "<group>"; };
-		139D7E461E25C5A300323FB7 /* fixed-dtoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "fixed-dtoa.h"; path = "double-conversion-1.1.1/src/fixed-dtoa.h"; sourceTree = "<group>"; };
-		139D7E471E25C5A300323FB7 /* ieee.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ieee.h; path = "double-conversion-1.1.1/src/ieee.h"; sourceTree = "<group>"; };
-		139D7E481E25C5A300323FB7 /* strtod.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = strtod.cc; path = "double-conversion-1.1.1/src/strtod.cc"; sourceTree = "<group>"; };
-		139D7E491E25C5A300323FB7 /* strtod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = strtod.h; path = "double-conversion-1.1.1/src/strtod.h"; sourceTree = "<group>"; };
-		139D7E4A1E25C5A300323FB7 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utils.h; path = "double-conversion-1.1.1/src/utils.h"; sourceTree = "<group>"; };
+		139D7E391E25C5A300323FB7 /* bignum-dtoa.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "bignum-dtoa.cc"; path = "double-conversion-1.1.5/src/bignum-dtoa.cc"; sourceTree = "<group>"; };
+		139D7E3A1E25C5A300323FB7 /* bignum-dtoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "bignum-dtoa.h"; path = "double-conversion-1.1.5/src/bignum-dtoa.h"; sourceTree = "<group>"; };
+		139D7E3B1E25C5A300323FB7 /* bignum.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bignum.cc; path = "double-conversion-1.1.5/src/bignum.cc"; sourceTree = "<group>"; };
+		139D7E3C1E25C5A300323FB7 /* bignum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bignum.h; path = "double-conversion-1.1.5/src/bignum.h"; sourceTree = "<group>"; };
+		139D7E3D1E25C5A300323FB7 /* cached-powers.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "cached-powers.cc"; path = "double-conversion-1.1.5/src/cached-powers.cc"; sourceTree = "<group>"; };
+		139D7E3E1E25C5A300323FB7 /* cached-powers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "cached-powers.h"; path = "double-conversion-1.1.5/src/cached-powers.h"; sourceTree = "<group>"; };
+		139D7E3F1E25C5A300323FB7 /* diy-fp.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "diy-fp.cc"; path = "double-conversion-1.1.5/src/diy-fp.cc"; sourceTree = "<group>"; };
+		139D7E401E25C5A300323FB7 /* diy-fp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "diy-fp.h"; path = "double-conversion-1.1.5/src/diy-fp.h"; sourceTree = "<group>"; };
+		139D7E411E25C5A300323FB7 /* double-conversion.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "double-conversion.cc"; path = "double-conversion-1.1.5/src/double-conversion.cc"; sourceTree = "<group>"; };
+		139D7E421E25C5A300323FB7 /* double-conversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "double-conversion.h"; path = "double-conversion-1.1.5/src/double-conversion.h"; sourceTree = "<group>"; };
+		139D7E431E25C5A300323FB7 /* fast-dtoa.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "fast-dtoa.cc"; path = "double-conversion-1.1.5/src/fast-dtoa.cc"; sourceTree = "<group>"; };
+		139D7E441E25C5A300323FB7 /* fast-dtoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "fast-dtoa.h"; path = "double-conversion-1.1.5/src/fast-dtoa.h"; sourceTree = "<group>"; };
+		139D7E451E25C5A300323FB7 /* fixed-dtoa.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "fixed-dtoa.cc"; path = "double-conversion-1.1.5/src/fixed-dtoa.cc"; sourceTree = "<group>"; };
+		139D7E461E25C5A300323FB7 /* fixed-dtoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "fixed-dtoa.h"; path = "double-conversion-1.1.5/src/fixed-dtoa.h"; sourceTree = "<group>"; };
+		139D7E471E25C5A300323FB7 /* ieee.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ieee.h; path = "double-conversion-1.1.5/src/ieee.h"; sourceTree = "<group>"; };
+		139D7E481E25C5A300323FB7 /* strtod.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = strtod.cc; path = "double-conversion-1.1.5/src/strtod.cc"; sourceTree = "<group>"; };
+		139D7E491E25C5A300323FB7 /* strtod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = strtod.h; path = "double-conversion-1.1.5/src/strtod.h"; sourceTree = "<group>"; };
+		139D7E4A1E25C5A300323FB7 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utils.h; path = "double-conversion-1.1.5/src/utils.h"; sourceTree = "<group>"; };
 		139D7E881E25C6D100323FB7 /* libdouble-conversion.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libdouble-conversion.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		139D7ECE1E25DB7D00323FB7 /* libthird-party.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libthird-party.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		139D7ED81E25DBDC00323FB7 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = "glog-0.3.4/src/config.h"; sourceTree = "<group>"; };
@@ -1609,7 +1615,7 @@
 		13A0C2851B74F71200B29F6F /* RCTDevLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTDevLoadingView.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		13A0C2861B74F71200B29F6F /* RCTDevLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDevLoadingView.m; sourceTree = "<group>"; };
 		13A0C2871B74F71200B29F6F /* RCTDevMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTDevMenu.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		13A0C2881B74F71200B29F6F /* RCTDevMenu.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTDevMenu.mm; sourceTree = "<group>"; };
+		13A0C2881B74F71200B29F6F /* RCTDevMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDevMenu.m; sourceTree = "<group>"; };
 		13A1F71C1A75392D00D3D453 /* RCTKeyCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTKeyCommands.h; sourceTree = "<group>"; };
 		13A1F71D1A75392D00D3D453 /* RCTKeyCommands.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTKeyCommands.m; sourceTree = "<group>"; };
 		13A6E20C1C19AA0C00845B82 /* RCTParserUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTParserUtils.h; sourceTree = "<group>"; };
@@ -2076,6 +2082,8 @@
 		13B07FE01A69315300A75B9A /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				130E3D861E6A082100ACE484 /* RCTDevSettings.h */,
+				130E3D871E6A082100ACE484 /* RCTDevSettings.mm */,
 				369123DF1DDC75850095B341 /* JSCSamplingProfiler.h */,
 				369123E01DDC75850095B341 /* JSCSamplingProfiler.m */,
 				E9B20B791B500126007A2DA7 /* RCTAccessibilityManager.h */,
@@ -2091,7 +2099,7 @@
 				13A0C2851B74F71200B29F6F /* RCTDevLoadingView.h */,
 				13A0C2861B74F71200B29F6F /* RCTDevLoadingView.m */,
 				13A0C2871B74F71200B29F6F /* RCTDevMenu.h */,
-				13A0C2881B74F71200B29F6F /* RCTDevMenu.mm */,
+				13A0C2881B74F71200B29F6F /* RCTDevMenu.m */,
 				13D9FEE91CDCCECF00158BD7 /* RCTEventEmitter.h */,
 				13D9FEEA1CDCCECF00158BD7 /* RCTEventEmitter.m */,
 				13B07FE91A69327A00A75B9A /* RCTExceptionsManager.h */,
@@ -2561,6 +2569,7 @@
 				3D302F2D1DF828F800D6DDAE /* RCTBridge+Private.h in Headers */,
 				3D302F2E1DF828F800D6DDAE /* RCTBridgeDelegate.h in Headers */,
 				3D302F2F1DF828F800D6DDAE /* RCTBridgeMethod.h in Headers */,
+				130E3D8A1E6A083600ACE484 /* RCTDevSettings.h in Headers */,
 				3D302F301DF828F800D6DDAE /* RCTBridgeModule.h in Headers */,
 				3D302F311DF828F800D6DDAE /* RCTBundleURLProvider.h in Headers */,
 				3D302F321DF828F800D6DDAE /* RCTConvert.h in Headers */,
@@ -2833,6 +2842,7 @@
 				139D7E5C1E25C5A300323FB7 /* utils.h in Headers */,
 				3D80DA301DF820620028D040 /* RCTJavaScriptExecutor.h in Headers */,
 				3D80DA311DF820620028D040 /* RCTJavaScriptLoader.h in Headers */,
+				130E3D881E6A082100ACE484 /* RCTDevSettings.h in Headers */,
 				3D80DA321DF820620028D040 /* RCTJSStackFrame.h in Headers */,
 				130443DC1E401AF400D93A67 /* RCTConvert+Transform.h in Headers */,
 				3D80DA331DF820620028D040 /* RCTKeyCommands.h in Headers */,
@@ -2966,6 +2976,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 139D7E8E1E25C6D100323FB7 /* Build configuration list for PBXNativeTarget "double-conversion" */;
 			buildPhases = (
+				190EE32F1E6A43DE00A8543A /* Install Third Party */,
 				139D7E841E25C6D100323FB7 /* Sources */,
 				139D7E851E25C6D100323FB7 /* Frameworks */,
 				139D7E861E25C6D100323FB7 /* CopyFiles */,
@@ -3233,6 +3244,20 @@
 			shellScript = "if [[ \"$CONFIGURATION\" == \"Debug\" ]] && [[ -d \"/tmp/RCTJSCProfiler\" ]]; then\n   find \"${CONFIGURATION_BUILD_DIR}\" -name '*.app' | xargs -I{} sh -c 'cp -r /tmp/RCTJSCProfiler \"$1\"' -- {}\nfi";
 			showEnvVarsInLog = 0;
 		};
+		190EE32F1E6A43DE00A8543A /* Install Third Party */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Install Third Party";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd $SRCROOT/..\n./ios-install-third-party.sh";
+		};
 		2D6948201DA3042200B3FA97 /* Include RCTJSCProfiler */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -3347,6 +3372,7 @@
 				2D3B5EEF1D9B09DC00451313 /* RCTViewManager.m in Sources */,
 				13134C971E296B2A00B9F3CB /* RCTObjcExecutor.mm in Sources */,
 				2D3B5EE11D9B09B000451313 /* RCTScrollView.m in Sources */,
+				130E3D8B1E6A083900ACE484 /* RCTDevSettings.mm in Sources */,
 				2D3B5ED81D9B098A00451313 /* RCTNavigatorManager.m in Sources */,
 				2D3B5E951D9B087C00451313 /* RCTAssert.m in Sources */,
 				2D3B5ED21D9B097800451313 /* RCTMapManager.m in Sources */,
@@ -3373,7 +3399,7 @@
 				59FBEFB71E46D91C0095D885 /* RCTScrollContentViewManager.m in Sources */,
 				2D3B5E941D9B087900451313 /* RCTBundleURLProvider.m in Sources */,
 				2D3B5EB81D9B091B00451313 /* RCTSourceCode.m in Sources */,
-				2D3B5EB51D9B091100451313 /* RCTDevMenu.mm in Sources */,
+				2D3B5EB51D9B091100451313 /* RCTDevMenu.m in Sources */,
 				2D3B5EBD1D9B092A00451313 /* RCTTiming.m in Sources */,
 				2D3B5EA81D9B08D300451313 /* RCTUtils.m in Sources */,
 				2D3B5EC81D9B095800451313 /* RCTActivityIndicatorViewManager.m in Sources */,
@@ -3526,7 +3552,7 @@
 				830A229E1A66C68A008503DA /* RCTRootView.m in Sources */,
 				13B07FF01A69327A00A75B9A /* RCTExceptionsManager.m in Sources */,
 				13B202041BFB948C00C07393 /* RCTMapAnnotation.m in Sources */,
-				13A0C28A1B74F71200B29F6F /* RCTDevMenu.mm in Sources */,
+				13A0C28A1B74F71200B29F6F /* RCTDevMenu.m in Sources */,
 				13BCE8091C99CB9D00DD7AAD /* RCTRootShadowView.m in Sources */,
 				14C2CA711B3AC63800E6CBB2 /* RCTModuleMethod.m in Sources */,
 				006FC4141D9B20820057AAAD /* RCTMultipartDataTask.m in Sources */,
@@ -3535,6 +3561,7 @@
 				13AF20451AE707F9005F5298 /* RCTSlider.m in Sources */,
 				130443A21E3FEAA900D93A67 /* RCTFollyConvert.mm in Sources */,
 				58114A501AAE93D500E7D092 /* RCTAsyncLocalStorage.m in Sources */,
+				130E3D891E6A082100ACE484 /* RCTDevSettings.mm in Sources */,
 				13513F3C1B1F43F400FCE529 /* RCTProgressViewManager.m in Sources */,
 				14F7A0F01BDA714B003C6C10 /* RCTFPSGraph.m in Sources */,
 				14F3620D1AABD06A001CE568 /* RCTSwitch.m in Sources */,

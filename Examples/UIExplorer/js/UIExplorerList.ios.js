@@ -299,11 +299,6 @@ const APIExamples: Array<UIExplorerExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'NavigationExperimentalExample',
-    module: require('./NavigationExperimental/NavigationExperimentalExample'),
-    supportsTVOS: true,
-  },
-  {
     key: 'NetInfoExample',
     module: require('./NetInfoExample'),
     supportsTVOS: true,

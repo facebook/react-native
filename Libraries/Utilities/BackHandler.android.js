@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule BackAndroid
+ * @providesModule BackHandler
  */
 
 'use strict';
@@ -34,20 +34,29 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
   }
 
   if (invokeDefault) {
-    BackAndroid.exitApp();
+    BackHandler.exitApp();
   }
 });
 
 /**
- * Detect hardware back button presses, and programmatically invoke the default back button
+ * Detect hardware button presses for back navigation.
+ *
+ * Android: Detect hardware back button presses, and programmatically invoke the default back button
  * functionality to exit the app if there are no listeners or if none of the listeners return true.
+ *
+ * tvOS: Detect presses of the menu button on the TV remote.  (Still to be implemented:
+ * programmatically disable menu button handling
+ * functionality to exit the app if there are no listeners or if none of the listeners return true.)
+ *
+ * iOS: Not applicable.
+ *
  * The event subscriptions are called in reverse order (i.e. last registered subscription first),
  * and if one subscription returns true then subscriptions registered earlier will not be called.
  *
  * Example:
  *
  * ```javascript
- * BackAndroid.addEventListener('hardwareBackPress', function() {
+ * BackHandler.addEventListener('hardwareBackPress', function() {
  *  // this.onMainScreen and this.goBack are just examples, you need to use your own implementation here
  *  // Typically you would use the navigator here to go to the last state.
  *
@@ -59,7 +68,7 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
  * });
  * ```
  */
-var BackAndroid = {
+var BackHandler = {
 
   exitApp: function() {
     DeviceEventManager.invokeDefaultBackPressHandler();
@@ -71,7 +80,7 @@ var BackAndroid = {
   ): {remove: () => void} {
     _backPressSubscriptions.add(handler);
     return {
-      remove: () => BackAndroid.removeEventListener(eventName, handler),
+      remove: () => BackHandler.removeEventListener(eventName, handler),
     };
   },
 
@@ -84,4 +93,4 @@ var BackAndroid = {
 
 };
 
-module.exports = BackAndroid;
+module.exports = BackHandler;

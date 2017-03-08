@@ -24,6 +24,7 @@ var PropTypes = React.PropTypes;
 /**
  * Use `ProgressViewIOS` to render a UIProgressView on iOS.
  */
+// $FlowFixMe(>=0.41.0)
 var ProgressViewIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
