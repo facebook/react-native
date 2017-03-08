@@ -75,6 +75,8 @@ public class TouchEvent extends Event<TouchEvent> {
       TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
     super.init(viewTag);
 
+    Assertions.assertCondition(gestureStartTime != Long.MIN_VALUE,
+        "Gesture start time must be initialized");
     short coalescingKey = 0;
     int action = (motionEventToCopy.getAction() & MotionEvent.ACTION_MASK);
     switch (action) {

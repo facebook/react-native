@@ -113,6 +113,7 @@ public class JSTouchDispatcher {
           mTargetCoordinates[1],
           mTouchEventCoalescingKeyHelper));
       mTargetTag = -1;
+      mGestureStartTime = Long.MIN_VALUE;
     } else if (action == MotionEvent.ACTION_MOVE) {
       // Update pointer position for current gesture
       eventDispatcher.dispatchEvent(
@@ -156,6 +157,7 @@ public class JSTouchDispatcher {
         );
       }
       mTargetTag = -1;
+      mGestureStartTime = Long.MIN_VALUE;
     } else {
       FLog.w(
         ReactConstants.TAG,
