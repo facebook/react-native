@@ -81,6 +81,7 @@ class XMLHttpRequestEventTarget extends EventTarget(...REQUEST_EVENTS) {
   onprogress: ?Function;
   ontimeout: ?Function;
   onerror: ?Function;
+  onabort: ?Function;
   onloadend: ?Function;
 }
 
@@ -109,6 +110,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
   onprogress: ?Function;
   ontimeout: ?Function;
   onerror: ?Function;
+  onabort: ?Function;
   onloadend: ?Function;
   onreadystatechange: ?Function;
 
