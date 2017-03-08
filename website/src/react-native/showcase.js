@@ -8,9 +8,10 @@
 */
 'use strict';
 
-var React = require('React');
-var Site = require('Site');
-var Metadata = require('Metadata');
+const Metadata = require('Metadata');
+const React = require('React');
+const ShowcaseAppIcon = require('ShowcaseAppIcon');
+const Site = require('Site');
 
 /*
  * Thousands of applications use React Native, so we can't list all of them
@@ -66,13 +67,7 @@ const featuredApps = showcaseApps.filter(app => {
 
 const apps = pinnedApps.concat(featuredApps);
 
-var AppIcon = React.createClass({
-  render: function() {
-    return <img src={this.props.icon} alt={this.props.appName} />;
-  }
-});
-
-var AppList = React.createClass({
+const AppList = React.createClass({
 
   render: function() {
     return (
@@ -86,10 +81,13 @@ var AppList = React.createClass({
     return (
       <div className="showcase" key={i}>
         <div>
-          {this._renderAppIcon(app)}
-          {this._renderAppName(app)}
+          <ShowcaseAppIcon
+            iconUri={app.icon}
+            name={app.name}
+            linkUri={app.infoLink} />
+          {this._renderAppName(app.name)}
           {this._renderLinks(app)}
-          {this._renderInfo(app)}
+          {this._renderInfo(app.infoTitle, app.infoLink)}
         </div>
       </div>
     );
@@ -99,14 +97,14 @@ var AppList = React.createClass({
     return <img src={app.icon} alt={app.name} />;
   },
 
-  _renderAppName: function(app) {
-    return <h3>{app.name}</h3>;
+  _renderAppName: function(name) {
+    return <h3>{name}</h3>;
   },
 
-  _renderInfo: function(app) {
+  _renderInfo: function(title, uri) {
     let info = null;
-    if (app.infoLink) {
-      info = <p><a href={app.infoLink} target="_blank">{app.infoTitle}</a></p>;
+    if (uri) {
+      info = <p><a href={uri} target="_blank">{title}</a></p>;
     }
 
     return (
@@ -132,7 +130,7 @@ var AppList = React.createClass({
   },
 });
 
-var showcase = React.createClass({
+const showcase = React.createClass({
   render: function() {
     return (
       <Site section="showcase" title="Showcase">
