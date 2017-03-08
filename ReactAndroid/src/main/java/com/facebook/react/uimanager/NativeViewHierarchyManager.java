@@ -323,78 +323,8 @@ public class NativeViewHierarchyManager {
                 tagsToDelete));
     }
 
-    int lastIndexToRemove = viewManager.getChildCount(viewToManage);
-    if (indicesToRemove != null) {
-      for (int i = indicesToRemove.length - 1; i >= 0; i--) {
-        int indexToRemove = indicesToRemove[i];
-        if (indexToRemove < 0) {
-          throw new IllegalViewOperationException(
-              "Trying to remove a negative view index:"
-                  + indexToRemove + " view tag: " + tag + "\n detail: " +
-                  constructManageChildrenErrorMessage(
-                      viewToManage,
-                      viewManager,
-                      indicesToRemove,
-                      viewsToAdd,
-                      tagsToDelete));
-        }
-        if (indexToRemove >= viewManager.getChildCount(viewToManage)) {
-          throw new IllegalViewOperationException(
-              "Trying to remove a view index above child " +
-                  "count " + indexToRemove + " view tag: " + tag + "\n detail: " +
-                  constructManageChildrenErrorMessage(
-                      viewToManage,
-                      viewManager,
-                      indicesToRemove,
-                      viewsToAdd,
-                      tagsToDelete));
-        }
-        if (indexToRemove >= lastIndexToRemove) {
-          throw new IllegalViewOperationException(
-              "Trying to remove an out of order view index:"
-                  + indexToRemove + " view tag: " + tag + "\n detail: " +
-                  constructManageChildrenErrorMessage(
-                      viewToManage,
-                      viewManager,
-                      indicesToRemove,
-                      viewsToAdd,
-                      tagsToDelete));
-        }
-
-        View viewToRemove = viewManager.getChildAt(viewToManage, indexToRemove);
-
-        if (mLayoutAnimationEnabled &&
-            mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
-            arrayContains(tagsToDelete, viewToRemove.getId())) {
-          // The view will be removed and dropped by the 'delete' layout animation
-          // instead, so do nothing
-        } else {
-          viewManager.removeViewAt(viewToManage, indexToRemove);
-        }
-
-        lastIndexToRemove = indexToRemove;
-      }
-    }
-
-    if (viewsToAdd != null) {
-      for (int i = 0; i < viewsToAdd.length; i++) {
-        ViewAtIndex viewAtIndex = viewsToAdd[i];
-        View viewToAdd = mTagsToViews.get(viewAtIndex.mTag);
-        if (viewToAdd == null) {
-          throw new IllegalViewOperationException(
-              "Trying to add unknown view tag: "
-                  + viewAtIndex.mTag + "\n detail: " +
-                  constructManageChildrenErrorMessage(
-                      viewToManage,
-                      viewManager,
-                      indicesToRemove,
-                      viewsToAdd,
-                      tagsToDelete));
-        }
-        viewManager.addView(viewToManage, viewToAdd, viewAtIndex.mIndex);
-      }
-    }
-
+    // Operate only on tagsToDelete. indicesToRemove coming from JS is not reliable
+    // because views order might've been changed internally after zIndex sorting
     if (tagsToDelete != null) {
       for (int i = 0; i < tagsToDelete.length; i++) {
         int tagToDelete = tagsToDelete[i];
@@ -421,8 +351,28 @@ public class NativeViewHierarchyManager {
             }
           });
         } else {
+          viewManager.removeView(viewToManage, viewToDestroy);
           dropView(viewToDestroy);
         }
+      }
+    }
+
+    if (viewsToAdd != null) {
+      for (int i = 0; i < viewsToAdd.length; i++) {
+        ViewAtIndex viewAtIndex = viewsToAdd[i];
+        View viewToAdd = mTagsToViews.get(viewAtIndex.mTag);
+        if (viewToAdd == null) {
+          throw new IllegalViewOperationException(
+              "Trying to add unknown view tag: "
+                  + viewAtIndex.mTag + "\n detail: " +
+                  constructManageChildrenErrorMessage(
+                      viewToManage,
+                      viewManager,
+                      indicesToRemove,
+                      viewsToAdd,
+                      tagsToDelete));
+        }
+        viewManager.addView(viewToManage, viewToAdd, viewAtIndex.mIndex);
       }
     }
   }
