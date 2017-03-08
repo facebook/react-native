@@ -34,7 +34,7 @@ function createAndMountComponent(ComponentClass, props) {
   return component;
 }
 
-describe('Animated', () => {
+describe('Native Animated', () => {
 
   let nativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
 
