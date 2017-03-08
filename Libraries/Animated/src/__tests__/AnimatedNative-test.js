@@ -440,18 +440,18 @@ describe('Animated', () => {
         jasmine.any(Number),
         {type: 'diffclamp', input: jasmine.any(Number), max: 20, min: 0},
       );
-      const multiplicationCalls = nativeAnimatedModule.createAnimatedNode.mock.calls.filter(
+      const diffClampCalls = nativeAnimatedModule.createAnimatedNode.mock.calls.filter(
         (call) => call[1].type === 'diffclamp'
       );
-      expect(multiplicationCalls.length).toBe(1);
-      const multiplicationCall = multiplicationCalls[0];
-      const multiplicationNodeTag = multiplicationCall[0];
-      const multiplicationConnectionCalls = nativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
-        (call) => call[1] === multiplicationNodeTag
+      expect(diffClampCalls.length).toBe(1);
+      const diffClampCall = diffClampCalls[0];
+      const diffClampNodeTag = diffClampCall[0];
+      const diffClampConnectionCalls = nativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
+        (call) => call[1] === diffClampNodeTag
       );
-      expect(multiplicationConnectionCalls.length).toBe(1);
+      expect(diffClampConnectionCalls.length).toBe(1);
       expect(nativeAnimatedModule.createAnimatedNode)
-        .toBeCalledWith(multiplicationCall[1].input, {type: 'value', value: 2, offset: 0});
+        .toBeCalledWith(diffClampCall[1].input, {type: 'value', value: 2, offset: 0});
     });
 
     it('doesn\'t call into native API if useNativeDriver is set to false', () => {
