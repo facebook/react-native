@@ -8,6 +8,8 @@
  */
 'use strict';
 
+jest.useRealTimers();
+
 jest.unmock('../');
 jest.unmock('../../../defaults');
 jest.mock('path');
@@ -37,6 +39,7 @@ describe('Resolver', function() {
       return polyfill;
     });
 
+    DependencyGraph.load = jest.fn().mockImplementation(opts => Promise.resolve(new DependencyGraph(opts)));
     DependencyGraph.replacePatterns = require.requireActual('../../node-haste/lib/replacePatterns');
     DependencyGraph.prototype.createPolyfill = jest.fn();
     DependencyGraph.prototype.getDependencies = jest.fn();
@@ -91,20 +94,23 @@ describe('Resolver', function() {
 
   describe('getDependencies', function() {
     it('forwards transform options to the dependency graph', function() {
+      expect.assertions(1);
       const transformOptions = {arbitrary: 'options'};
       const platform = 'ios';
       const entry = '/root/index.js';
 
       DependencyGraph.prototype.getDependencies.mockImplementation(
         () => Promise.reject());
-      new Resolver({projectRoot: '/root'})
-        .getDependencies(entry, {platform}, transformOptions);
-      expect(DependencyGraph.prototype.getDependencies).toBeCalledWith({
-        entryPath: entry,
-        platform,
-        transformOptions,
-        recursive: true,
-      });
+      return new Resolver({projectRoot: '/root'})
+        .getDependencies(entry, {platform}, transformOptions)
+        .catch(() => {
+          expect(DependencyGraph.prototype.getDependencies).toBeCalledWith({
+            entryPath: entry,
+            platform,
+            transformOptions,
+            recursive: true,
+          });
+        });
     });
 
     it('passes custom platforms to the dependency graph', function() {
