@@ -46,6 +46,7 @@ export default class MyScene extends Component {
   }
 }
 ```
+Note, the file extension **must** be `.js` and not `.jsx`. Components with a `.jsx` extension will fail to load.
 
 Notice the `export default` in front of the component declaration. This will _export_ the component, and in turn allow other components to _import_ it later on, like so:
 
