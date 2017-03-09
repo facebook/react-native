@@ -15,6 +15,7 @@ import java.lang.reflect.Constructor;
 
 import android.content.Context;
 
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 
 /**
@@ -39,6 +40,7 @@ public class DevSupportManagerFactory {
       reactInstanceCommandsHandler,
       packagerPathForJSBundleName,
       enableOnCreate,
+      null,
       null);
   }
 
@@ -47,7 +49,8 @@ public class DevSupportManagerFactory {
     ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
     @Nullable String packagerPathForJSBundleName,
     boolean enableOnCreate,
-    @Nullable RedBoxHandler redBoxHandler) {
+    @Nullable RedBoxHandler redBoxHandler,
+    @Nullable DevBundleDownloadListener devBundleDownloadListener) {
     if (!enableOnCreate) {
       return new DisabledDevSupportManager();
     }
@@ -68,13 +71,15 @@ public class DevSupportManagerFactory {
           ReactInstanceDevCommandsHandler.class,
           String.class,
           boolean.class,
-          RedBoxHandler.class);
+          RedBoxHandler.class,
+          DevBundleDownloadListener.class);
       return (DevSupportManager) constructor.newInstance(
         applicationContext,
         reactInstanceCommandsHandler,
         packagerPathForJSBundleName,
         true,
-        redBoxHandler);
+        redBoxHandler,
+        devBundleDownloadListener);
     } catch (Exception e) {
       throw new RuntimeException(
         "Requested enabled DevSupportManager, but DevSupportManagerImpl class was not found" +

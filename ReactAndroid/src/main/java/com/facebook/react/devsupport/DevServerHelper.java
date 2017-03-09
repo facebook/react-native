@@ -30,6 +30,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.FileIoHandler;
@@ -83,12 +84,6 @@ public class DevServerHelper {
   private static final int LONG_POLL_KEEP_ALIVE_DURATION_MS = 2 * 60 * 1000; // 2 mins
   private static final int LONG_POLL_FAILURE_DELAY_MS = 5000;
   private static final int HTTP_CONNECT_TIMEOUT_MS = 5000;
-
-  public interface BundleDownloadCallback {
-    void onSuccess();
-    void onProgress(@Nullable String status, @Nullable Integer done, @Nullable Integer total);
-    void onFailure(Exception cause);
-  }
 
   public interface OnServerContentChangeListener {
     void onServerContentChanged();
@@ -302,7 +297,7 @@ public class DevServerHelper {
   }
 
   public void downloadBundleFromURL(
-      final BundleDownloadCallback callback,
+      final DevBundleDownloadListener callback,
       final File outputFile,
       final String bundleURL) {
     final Request request = new Request.Builder()
@@ -400,7 +395,7 @@ public class DevServerHelper {
       int statusCode,
       BufferedSource body,
       File outputFile,
-      BundleDownloadCallback callback) throws IOException {
+      DevBundleDownloadListener callback) throws IOException {
     // Check for server errors. If the server error has the expected form, fail with more info.
     if (statusCode != 200) {
       String bodyString = body.readUtf8();
