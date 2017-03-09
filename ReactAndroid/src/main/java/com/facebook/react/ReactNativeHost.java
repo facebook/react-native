@@ -63,7 +63,7 @@ public abstract class ReactNativeHost {
   }
 
   protected ReactInstanceManager createReactInstanceManager() {
-    ReactInstanceManager.Builder builder = ReactInstanceManager.builder()
+    ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
       .setApplication(mApplication)
       .setJSMainModuleName(getJSMainModuleName())
       .setUseDeveloperSupport(getUseDeveloperSupport())

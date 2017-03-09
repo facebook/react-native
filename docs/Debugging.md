@@ -4,9 +4,13 @@ title: Debugging
 layout: docs
 category: Guides
 permalink: docs/debugging.html
-next: testing
-previous: direct-manipulation
+next: accessibility
+previous: platform-specific-code
 ---
+
+## Enabling Keyboard Shortcuts
+
+React Native supports a few keyboard shortcuts in the iOS Simulator. They are described below. To enable them, open the Hardware menu, select Keyboard, and make sure that "Connect Hardware Keyboard" is checked.
 
 ## Accessing the In-App Developer Menu
 
@@ -19,8 +23,6 @@ You can access the developer menu by shaking your device or by selecting "Shake 
 ## Reloading JavaScript
 
 Instead of recompiling your app every time you make a change, you can reload your app's JavaScript code instantly. To do so, select "Reload" from the Developer Menu. You can also press **`Command`**`⌘` + **`R`** in the iOS Simulator, or press **`R`** twice on Android emulators.
-
-> If the **`Command`**`⌘` + **`R`** keyboard shortcut does not seem to reload the iOS Simulator, go to the Hardware menu, select Keyboard, and make sure that "Connect Hardware Keyboard" is checked.
 
 ### Automatic reloading
 
@@ -49,7 +51,9 @@ Warnings will be displayed on screen with a yellow background. These alerts are 
 
 As with a RedBox, you can use `console.warn()` to trigger a YellowBox.
 
-YellowBoxes can be disabled during development by using `console.disableYellowBox = true;`. Specific warnings can be ignored programmatically by setting an array of prefixes that should be ignored: `console.ignoredYellowBox = ['Warning: ...'];`
+YellowBoxes can be disabled during development by using `console.disableYellowBox = true;`. Specific warnings can be ignored programmatically by setting an array of prefixes that should be ignored: `console.ignoredYellowBox = ['Warning: ...'];`.
+
+In CI/Xcode, YellowBoxes can also be disabled by setting the `IS_TESTING` environment variable.
 
 > RedBoxes and YellowBoxes are automatically disabled in release (production) builds.
 
@@ -92,7 +96,7 @@ The debugger will receive a list of all project roots, separated by a space. For
 
 > Custom debugger commands executed this way should be short-lived processes, and they shouldn't produce more than 200 kilobytes of output.
 
-### Debugging with [Stetho](http://facebook.github.io/stetho/) on Android 
+### Debugging with [Stetho](http://facebook.github.io/stetho/) on Android
 
 1. In ```android/app/build.gradle```, add these lines in the `dependencies` section:
 
@@ -101,10 +105,9 @@ The debugger will receive a list of all project roots, separated by a space. For
    compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
    ```
 
-2. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java```, add the following imports: 
+2. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java```, add the following imports:
 
    ```java
-   import android.os.Bundle;
    import com.facebook.react.modules.network.ReactCookieJarContainer;
    import com.facebook.stetho.Stetho;
    import okhttp3.OkHttpClient;
@@ -115,8 +118,8 @@ The debugger will receive a list of all project roots, separated by a space. For
 
 3. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java``` add the function:
    ```java
-   public void onCreate(Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
+   public void onCreate() {
+         super.onCreate();
          Stetho.initializeWithDefaults(this);
          OkHttpClient client = new OkHttpClient.Builder()
          .connectTimeout(0, TimeUnit.MILLISECONDS)

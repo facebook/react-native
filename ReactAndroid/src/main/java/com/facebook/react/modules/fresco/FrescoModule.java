@@ -28,6 +28,8 @@ import com.facebook.react.modules.common.ModuleDataCleaner;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.soloader.SoLoader;
 
+import okhttp3.OkHttpClient;
+
 /**
  * Module to initialize the Fresco library.
  *
@@ -124,8 +126,10 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     HashSet<RequestListener> requestListeners = new HashSet<>();
     requestListeners.add(new SystraceRequestListener());
 
+    OkHttpClient okHttpClient = OkHttpClientProvider.getOkHttpClient();
     return OkHttpImagePipelineConfigFactory
-      .newBuilder(context.getApplicationContext(), OkHttpClientProvider.getOkHttpClient())
+      .newBuilder(context.getApplicationContext(), okHttpClient)
+      .setNetworkFetcher(new ReactOkHttpNetworkFetcher(okHttpClient))
       .setDownsampleEnabled(false)
       .setRequestListeners(requestListeners);
   }

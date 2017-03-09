@@ -377,11 +377,11 @@ var ScrollResponderMixin = {
   },
 
   /**
-   * A helper function to scroll to a specific point  in the scrollview.
-   * This is currently used to help focus on child textviews, but can also
+   * A helper function to scroll to a specific point in the ScrollView.
+   * This is currently used to help focus child TextViews, but can also
    * be used to quickly scroll to any element we want to focus. Syntax:
    *
-   * scrollResponderScrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})
+   * `scrollResponderScrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})`
    *
    * Note: The weird argument signature is due to the fact that, for historical reasons,
    * the function also accepts separate arguments as as alternative to the options object.
@@ -401,6 +401,26 @@ var ScrollResponderMixin = {
       this.scrollResponderGetScrollableNode(),
       UIManager.RCTScrollView.Commands.scrollTo,
       [x || 0, y || 0, animated !== false],
+    );
+  },
+
+  /**
+   * Scrolls to the end of the ScrollView, either immediately or with a smooth
+   * animation.
+   *
+   * Example:
+   *
+   * `scrollResponderScrollToEnd({animated: true})`
+   */
+  scrollResponderScrollToEnd: function(
+    options?: { animated?: boolean },
+  ) {
+    // Default to true
+    const animated = (options && options.animated) !== false;
+    UIManager.dispatchViewManagerCommand(
+      this.scrollResponderGetScrollableNode(),
+      UIManager.RCTScrollView.Commands.scrollToEnd,
+      [animated],
     );
   },
 
@@ -436,7 +456,7 @@ var ScrollResponderMixin = {
    * parent view. Note that any module using this mixin needs to return
    * the parent view's ref in getScrollViewRef() in order to use this method.
    * @param {any} nodeHandle The TextInput node handle
-   * @param {number} additionalOffset The scroll view's top "contentInset".
+   * @param {number} additionalOffset The scroll view's bottom "contentInset".
    *        Default is 0.
    * @param {bool} preventNegativeScrolling Whether to allow pulling the content
    *        down to make it meet the keyboard's top. Default is false.

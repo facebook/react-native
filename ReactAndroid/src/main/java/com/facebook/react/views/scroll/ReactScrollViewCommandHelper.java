@@ -25,9 +25,11 @@ import com.facebook.react.common.MapBuilder;
 public class ReactScrollViewCommandHelper {
 
   public static final int COMMAND_SCROLL_TO = 1;
+  public static final int COMMAND_SCROLL_TO_END = 2;
 
   public interface ScrollCommandHandler<T> {
     void scrollTo(T scrollView, ScrollToCommandData data);
+    void scrollToEnd(T scrollView, ScrollToEndCommandData data);
   }
 
   public static class ScrollToCommandData {
@@ -42,10 +44,21 @@ public class ReactScrollViewCommandHelper {
     }
   }
 
+  public static class ScrollToEndCommandData {
+
+    public final boolean mAnimated;
+
+    ScrollToEndCommandData(boolean animated) {
+      mAnimated = animated;
+    }
+  }
+
   public static Map<String,Integer> getCommandsMap() {
     return MapBuilder.of(
         "scrollTo",
-        COMMAND_SCROLL_TO);
+        COMMAND_SCROLL_TO,
+        "scrollToEnd",
+        COMMAND_SCROLL_TO_END);
   }
 
   public static <T> void receiveCommand(
@@ -62,6 +75,11 @@ public class ReactScrollViewCommandHelper {
         int destY = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(1)));
         boolean animated = args.getBoolean(2);
         viewManager.scrollTo(scrollView, new ScrollToCommandData(destX, destY, animated));
+        return;
+      }
+      case COMMAND_SCROLL_TO_END: {
+        boolean animated = args.getBoolean(0);
+        viewManager.scrollToEnd(scrollView, new ScrollToEndCommandData(animated));
         return;
       }
       default:

@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule WebViewExample
  */
 'use strict';
 
@@ -264,6 +265,35 @@ class MessagingTest extends React.Component {
   }
 }
 
+class InjectJS extends React.Component {
+  webview = null;
+  injectJS = () => {
+    const script = 'document.write("Injected JS ")';  // eslint-disable-line quotes
+    if (this.webview) {
+      this.webview.injectJavaScript(script);
+    }
+  }
+  render() {
+    return (
+      <View>
+        <WebView
+          ref={webview => { this.webview = webview; }}
+          style={{
+            backgroundColor: BGWASH,
+            height: 300,
+          }}
+          source={{uri: 'https://www.facebook.com'}}
+          scalesPageToFit={true}
+        />
+        <View style={styles.buttons}>
+          <Button text="Inject JS" enabled onPress={this.injectJS} />
+        </View>
+    </View>
+    );
+  }
+}
+
+
 var styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -440,7 +470,11 @@ exports.examples = [
     }
   },
   {
-    title: 'Mesaging Test',
+    title: 'Messaging Test',
     render(): ReactElement<any> { return <MessagingTest />; }
-  }
+  },
+  {
+    title: 'Inject JavaScript',
+    render(): React.Element<any> { return <InjectJS />; }
+  },
 ];

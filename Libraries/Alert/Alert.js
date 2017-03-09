@@ -11,9 +11,9 @@
  */
 'use strict';
 
-var AlertIOS = require('AlertIOS');
-var Platform = require('Platform');
-var DialogModuleAndroid = require('NativeModules').DialogManagerAndroid;
+const AlertIOS = require('AlertIOS');
+const NativeModules = require('NativeModules');
+const Platform = require('Platform');
 
 import type { AlertType, AlertButtonStyle } from 'AlertIOS';
 
@@ -25,6 +25,7 @@ type Buttons = Array<{
 
 type Options = {
   cancelable?: ?boolean,
+  onDismiss?: ?Function,
 };
 
 /**
@@ -52,6 +53,15 @@ type Options = {
  *   - Two buttons mean 'negative', 'positive' (such as 'Cancel', 'OK')
  *   - Three buttons mean 'neutral', 'negative', 'positive' (such as 'Later', 'Cancel', 'OK')
  *
+ * By default alerts on Android can be dismissed by tapping outside of the alert
+ * box. This event can be handled by providing an optional `options` parameter,
+ * with an `onDismiss` callback property `{ onDismiss: () => {} }`.
+ *
+ * Alternatively, the dismissing behavior can be disabled altogether by providing
+ * an optional `options` parameter with the `cancelable` property set to `false`
+ * i.e. `{ cancelable: false }`
+ *
+ * Example usage:
  * ```
  * // Works on both iOS and Android
  * Alert.alert(
@@ -61,7 +71,8 @@ type Options = {
  *     {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
  *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
  *     {text: 'OK', onPress: () => console.log('OK Pressed')},
- *   ]
+ *   ],
+ *   { cancelable: false }
  * )
  * ```
  */
@@ -121,19 +132,20 @@ class AlertAndroid {
     if (buttonPositive) {
       config = {...config, buttonPositive: buttonPositive.text || '' };
     }
-    DialogModuleAndroid.showAlert(
+    NativeModules.DialogManagerAndroid.showAlert(
       config,
       (errorMessage) => console.warn(errorMessage),
       (action, buttonKey) => {
-        if (action !== DialogModuleAndroid.buttonClicked) {
-          return;
-        }
-        if (buttonKey === DialogModuleAndroid.buttonNeutral) {
-          buttonNeutral.onPress && buttonNeutral.onPress();
-        } else if (buttonKey === DialogModuleAndroid.buttonNegative) {
-          buttonNegative.onPress && buttonNegative.onPress();
-        } else if (buttonKey === DialogModuleAndroid.buttonPositive) {
-          buttonPositive.onPress && buttonPositive.onPress();
+        if (action === NativeModules.DialogManagerAndroid.buttonClicked) {
+          if (buttonKey === NativeModules.DialogManagerAndroid.buttonNeutral) {
+            buttonNeutral.onPress && buttonNeutral.onPress();
+          } else if (buttonKey === NativeModules.DialogManagerAndroid.buttonNegative) {
+            buttonNegative.onPress && buttonNegative.onPress();
+          } else if (buttonKey === NativeModules.DialogManagerAndroid.buttonPositive) {
+            buttonPositive.onPress && buttonPositive.onPress();
+          }
+        } else if (action === NativeModules.DialogManagerAndroid.dismissed) {
+          options && options.onDismiss && options.onDismiss();
         }
       }
     );

@@ -400,7 +400,7 @@ RCT_EXPORT_MODULE()
   [self showErrorMessage:message withStack:stack isUpdate:YES];
 }
 
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray *)stack isUpdate:(BOOL)isUpdate
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray<id> *)stack isUpdate:(BOOL)isUpdate
 {
   if (![[stack firstObject] isKindOfClass:[RCTJSStackFrame class]]) {
     stack = [RCTJSStackFrame stackFramesWithDictionaries:stack];
@@ -454,6 +454,7 @@ RCT_EXPORT_METHOD(dismiss)
 - (void)reloadFromRedBoxWindow:(__unused RCTRedBoxWindow *)redBoxWindow
 {
   [_bridge reload];
+  [self dismiss];
 }
 
 @end

@@ -11,8 +11,7 @@
 const querystring = require('querystring');
 const url = require('url');
 
-const {createEntry, print} = require('../../../packager/react-packager/src/Logger');
-const {getInverseDependencies} = require('../../../packager/react-packager/src/node-haste');
+const {getInverseDependencies} = require('../../../packager/src//node-haste');
 
 const blacklist = [
   'Libraries/Utilities/HMRClient.js',
@@ -114,9 +113,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
     path: path,
   });
 
-  print(createEntry(`HMR Server listening on ${path}`));
   wss.on('connection', ws => {
-    print(createEntry('HMR Client connected'));
     const params = querystring.parse(url.parse(ws.upgradeReq.url).query);
 
     getDependencies(params.platform, params.bundleEntry)
@@ -140,7 +137,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           if (!client) {
             return;
           }
-          print(createEntry('HMR Server detected file change'));
 
           const blacklisted = blacklist.find(blacklistedPath =>
             filename.indexOf(blacklistedPath) !== -1
@@ -297,7 +293,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   return;
                 }
 
-                print(createEntry('HMR Server sending update to client'));
                 client.ws.send(update);
               });
 

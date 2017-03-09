@@ -7,6 +7,7 @@ LOCAL_MODULE := libreactnativejnifb
 LOCAL_SRC_FILES := \
   CatalystInstanceImpl.cpp \
   CxxModuleWrapper.cpp \
+  JavaModuleWrapper.cpp \
   JExecutorToken.cpp \
   JMessageQueueThread.cpp \
   JSCPerfLogging.cpp \
@@ -14,7 +15,6 @@ LOCAL_SRC_FILES := \
   JSLogging.cpp \
   JniJSModulesUnbundle.cpp \
   MethodInvoker.cpp \
-  ModuleRegistryHolder.cpp \
   NativeArray.cpp \
   NativeCommon.cpp \
   NativeMap.cpp \

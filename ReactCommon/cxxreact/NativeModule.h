@@ -5,9 +5,8 @@
 #include <string>
 #include <vector>
 
+#include <cxxreact/ExecutorToken.h>
 #include <folly/dynamic.h>
-
-#include "ExecutorToken.h"
 
 namespace facebook {
 namespace react {

@@ -158,7 +158,7 @@ class GameEndOverlay extends React.Component {
     var tie = board.tie();
     var winner = board.winner();
     if (!winner && !tie) {
-      return <View />;
+      return null;
     }
 
     var message;

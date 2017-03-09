@@ -50,6 +50,7 @@ import type {
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
   NavigationTransitionProps,
+  NavigationStyleInterpolator,
 } from 'NavigationTypeDefinition';
 
 import type {
@@ -65,12 +66,14 @@ type Props = {
   cardStyle?: any,
   style: any,
   gestureResponseDistance?: ?number,
-  enableGestures: ?boolean
+  enableGestures: ?boolean,
+  cardStyleInterpolator?: ?NavigationStyleInterpolator,
+  scenesStyle?: any,
 };
 
 type DefaultProps = {
   direction: NavigationGestureDirection,
-  enableGestures: boolean
+  enableGestures: boolean,
 };
 
 /**
@@ -141,9 +144,18 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
 
     /**
      * The distance from the edge of the card which gesture response can start
-     * for. Defaults value is `30`.
+     * for. Default value is `30`.
      */
     gestureResponseDistance: PropTypes.number,
+
+    /**
+     * An interpolator function that is passed an object parameter of type
+     * NavigationSceneRendererProps and should return a style object to apply to
+     * the transitioning navigation card.
+     *
+     * Default interpolator transitions translateX, scale, and opacity.
+     */
+    cardStyleInterpolator: PropTypes.func,
 
     /**
      * Enable gestures. Default value is true.
@@ -191,6 +203,11 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
      * Custom style applied to the cards stack.
      */
     style: View.propTypes.style,
+
+    /**
+     * Custom style applied to the scenes stack.
+     */
+    scenesStyle: View.propTypes.style,
   };
 
   static defaultProps: DefaultProps = {
@@ -253,7 +270,7 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
     return (
       <View style={styles.container}>
         <View
-          style={styles.scenes}>
+          style={[styles.scenes, this.props.scenesStyle]}>
           {scenes}
         </View>
         {header}
@@ -264,9 +281,11 @@ class NavigationCardStack extends React.Component<DefaultProps, Props, void> {
   _renderScene(props: NavigationSceneRendererProps): React.Element<any> {
     const isVertical = this.props.direction === 'vertical';
 
-    const style = isVertical ?
-      NavigationCardStackStyleInterpolator.forVertical(props) :
-      NavigationCardStackStyleInterpolator.forHorizontal(props);
+    const interpolator = this.props.cardStyleInterpolator || (isVertical ?
+      NavigationCardStackStyleInterpolator.forVertical :
+      NavigationCardStackStyleInterpolator.forHorizontal);
+
+    const style = interpolator(props);
 
     let panHandlers = null;
 

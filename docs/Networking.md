@@ -4,7 +4,7 @@ title: Networking
 layout: docs
 category: The Basics
 permalink: docs/network.html
-next: using-navigators
+next: more-resources
 previous: using-a-listview
 ---
 
@@ -75,7 +75,7 @@ You can also use the proposed ES2017 `async`/`await` syntax in a React Native ap
 
 Don't forget to catch any errors that may be thrown by `fetch`, otherwise they will be dropped silently.
 
-> By default, iOS will block any request that's not encrypted using SSL. If you need to fetch from a cleartext URL (one that begins with `http`) you will first need to add an App Transport Security exception. If you know ahead of time what domains you will need access to, it is more secure to add exceptions just for those domains; if the domains are not known until runtime you can [disable ATS completely](/react-native/docs/integration-with-existing-apps.html#app-transport-security). Note however that from January 2017, [Apple's App Store review will require reasonable justification for disabling ATS](https://forums.developer.apple.com/thread/48979). See [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW33) for more information.
+> By default, iOS will block any request that's not encrypted using SSL. If you need to fetch from a cleartext URL (one that begins with `http`) you will first need to add an App Transport Security exception. If you know ahead of time what domains you will need access to, it is more secure to add exceptions just for those domains; if the domains are not known until runtime you can [disable ATS completely](docs/integration-with-existing-apps.html#app-transport-security). Note however that from January 2017, [Apple's App Store review will require reasonable justification for disabling ATS](https://forums.developer.apple.com/thread/48979). See [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW33) for more information.
 
 ### Using Other Networking Libraries
 
@@ -130,4 +130,4 @@ ws.onclose = (e) => {
 };
 ```
 
-Your app can now display all sorts of data and you may soon need to organize this content into several screens. To manage the transition between these screens, you will need to learn about [navigators](/react-native/docs/using-navigators.html).
+Your app can now display all sorts of data and you may soon need to organize this content into several screens. To manage the transition between these screens, you will need to learn about [navigators](docs/using-navigators.html).

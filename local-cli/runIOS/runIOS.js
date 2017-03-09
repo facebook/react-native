@@ -34,7 +34,7 @@ function runIOS(argv, config, args) {
   if (args.device) {
     const selectedDevice = matchingDevice(devices, args.device);
     if (selectedDevice){
-      return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration);
+      return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager);
     } else {
       if (devices){
         console.log('Could not find device with the name: "' + args.device + '".');
@@ -54,7 +54,7 @@ function runIOS(argv, config, args) {
 function runOnDeviceByUdid(args, scheme, xcodeProject, devices) {
   const selectedDevice = matchingDeviceByUdid(devices, args.udid);
   if (selectedDevice){
-    return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration);
+    return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager);
   } else {
     if (devices){
       console.log('Could not find device with the udid: "' + args.udid + '".');
@@ -91,7 +91,7 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
     }
     resolve(selectedSimulator.udid)
   })
-  .then((udid) => buildProject(xcodeProject, udid, scheme, args.configuration))
+  .then((udid) => buildProject(xcodeProject, udid, scheme, args.configuration, args.packager))
   .then((appName) => {
     if (!appName) {
       appName = inferredSchemeName;
@@ -111,8 +111,8 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
   })
 }
 
-function runOnDevice(selectedDevice, scheme, xcodeProject, configuration){
-  return buildProject(xcodeProject, selectedDevice.udid, scheme, configuration)
+function runOnDevice(selectedDevice, scheme, xcodeProject, configuration, launchPackager) {
+  return buildProject(xcodeProject, selectedDevice.udid, scheme, configuration, launchPackager)
   .then((appName) => {
     if (!appName) {
       appName = scheme;
@@ -135,7 +135,7 @@ function runOnDevice(selectedDevice, scheme, xcodeProject, configuration){
   });
 }
 
-function buildProject(xcodeProject, udid, scheme, configuration = 'Debug') {
+function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launchPackager = false) {
   return new Promise((resolve,reject) =>
   {
      var xcodebuildArgs = [
@@ -146,7 +146,7 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug') {
       '-derivedDataPath', 'build',
     ];
     console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
-    const buildProcess = child_process.spawn('xcodebuild', xcodebuildArgs);
+    const buildProcess = child_process.spawn('xcodebuild', xcodebuildArgs, getProcessOptions(launchPackager));
     let buildOutput = "";
     buildProcess.stdout.on('data', function(data) {
       console.log(data.toString());
@@ -197,6 +197,16 @@ function printFoundDevices(devices){
   }
 }
 
+function getProcessOptions(launchPackager) {
+  if (launchPackager) {
+    return {};
+  }
+
+  return {
+    env: Object.assign({}, process.env, { RCT_NO_LAUNCH_PACKAGER: true }),
+  };
+}
+
 module.exports = {
   name: 'run-ios',
   description: 'builds your app and starts it on iOS simulator',
@@ -233,8 +243,11 @@ module.exports = {
   }, {
     command: '--device [string]',
     description: 'Explicitly set device to use by name.  The value is not required if you have a single device connected.',
-  },{
+  }, {
     command: '--udid [string]',
     description: 'Explicitly set device to use by udid',
-  }]
+  }, {
+    command: '--no-packager',
+    description: 'Do not launch packager while building',
+  }],
 };

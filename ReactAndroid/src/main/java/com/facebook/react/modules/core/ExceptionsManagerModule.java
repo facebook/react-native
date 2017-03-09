@@ -18,13 +18,15 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.devsupport.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.common.JavascriptException;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 
-@ReactModule(name = "RKExceptionsManager")
+@ReactModule(name = ExceptionsManagerModule.NAME)
 public class ExceptionsManagerModule extends BaseJavaModule {
+
+  protected static final String NAME = "ExceptionsManager";
 
   static private final Pattern mJsModuleIdPattern = Pattern.compile("(?:^|[/\\\\])(\\d+\\.js)$");
   private final DevSupportManager mDevSupportManager;
@@ -35,7 +37,7 @@ public class ExceptionsManagerModule extends BaseJavaModule {
 
   @Override
   public String getName() {
-    return "RKExceptionsManager";
+    return NAME;
   }
 
   // If the file name of a stack frame is numeric (+ ".js"), we assume it's a lazily injected module

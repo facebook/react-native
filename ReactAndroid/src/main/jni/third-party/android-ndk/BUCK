@@ -3,12 +3,12 @@
 # rules to model the Android NDK's built in libraries.
 
 LIBS = (
-  'android',
-  'EGL',
-  'GLESv2',
-  'jnigraphics',
-  'log',
-  'z',
+    "android",
+    "EGL",
+    "GLESv2",
+    "jnigraphics",
+    "log",
+    "z",
 )
 
 for lib in LIBS:

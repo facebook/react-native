@@ -1,4 +1,3 @@
-
 // Copyright 2004-present Facebook. All Rights Reserved.
 #include <sys/mman.h>
 #include <fcntl.h>
@@ -6,7 +5,6 @@
 #include <folly/File.h>
 #include <gtest/gtest.h>
 #include <cxxreact/Executor.h>
-#include <cxxreact/MessageQueueThread.h>
 #include <cxxreact/MethodCall.h>
 
 using namespace facebook;
@@ -16,7 +14,7 @@ namespace {
 int tempFileFromString(std::string contents)
 {
   std::string tmp {getenv("TMPDIR")};
-  tmp += "/temp.XXXXX";
+  tmp += "/temp.XXXXXX";
 
   std::vector<char> tmpBuf {tmp.begin(), tmp.end()};
   tmpBuf.push_back('\0');
@@ -37,7 +35,6 @@ TEST(JSBigFileString, MapWholeFileTest) {
   JSBigFileString bigStr {fd, size};
 
   // Test
-  ASSERT_EQ(fd, bigStr.fd());
   ASSERT_STREQ(data.c_str(), bigStr.c_str());
 }
 
@@ -53,7 +50,6 @@ TEST(JSBigFileString, MapPartTest) {
   JSBigFileString bigStr {fd, needle.size(), offset};
 
   // Test
-  ASSERT_EQ(fd, bigStr.fd());
   ASSERT_EQ(needle.length(), bigStr.size());
   for (unsigned int i = 0; i < needle.length(); ++i) {
     ASSERT_EQ(needle[i], bigStr.c_str()[i]);

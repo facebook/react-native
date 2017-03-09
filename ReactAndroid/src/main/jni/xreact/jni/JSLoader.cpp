@@ -4,7 +4,7 @@
 
 #include <folly/Memory.h>
 #include <android/asset_manager_jni.h>
-#include <fb/Environment.h>
+#include <fb/fbjni.h>
 #include <fstream>
 #include <sstream>
 #include <streambuf>
@@ -15,26 +15,40 @@
 using fbsystrace::FbSystraceSection;
 #endif
 
+using namespace facebook::jni;
+
 namespace facebook {
 namespace react {
 
-static jclass gApplicationHolderClass;
-static jmethodID gGetApplicationMethod;
-static jmethodID gGetAssetManagerMethod;
+struct JApplication : JavaClass<JApplication> {
+  static constexpr auto kJavaDescriptor = "Landroid/app/Application;";
+
+  local_ref<JAssetManager::javaobject> getAssets() {
+    static auto method = javaClassStatic()->getMethod<JAssetManager::javaobject()>("getAssets");
+    return method(self());
+  }
+};
+
+struct JApplicationHolder : JavaClass<JApplicationHolder> {
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/common/ApplicationHolder;";
+
+  static local_ref<JApplication::javaobject> getApplication() {
+    static auto method = javaClassStatic()
+      ->getStaticMethod<JApplication::javaobject()>("getApplication");
+    return method(javaClassStatic());
+  }
+};
 
 std::unique_ptr<const JSBigString> loadScriptFromAssets(const std::string& assetName) {
-  JNIEnv *env = jni::Environment::current();
-  jobject application = env->CallStaticObjectMethod(
-    gApplicationHolderClass,
-    gGetApplicationMethod);
-  jobject assetManager = env->CallObjectMethod(application, gGetAssetManagerMethod);
-  return loadScriptFromAssets(AAssetManager_fromJava(env, assetManager), assetName);
+  auto env = Environment::current();
+  auto assetManager = JApplicationHolder::getApplication()->getAssets();
+  return loadScriptFromAssets(AAssetManager_fromJava(env, assetManager.get()), assetName);
 }
 
 __attribute__((visibility("default")))
-AAssetManager *extractAssetManager(jobject jassetManager) {
-  auto env = jni::Environment::current();
-  return AAssetManager_fromJava(env, jassetManager);
+AAssetManager *extractAssetManager(alias_ref<JAssetManager::javaobject> assetManager) {
+  auto env = Environment::current();
+  return AAssetManager_fromJava(env, assetManager.get());
 }
 
 __attribute__((visibility("default")))
@@ -86,16 +100,6 @@ std::string loadScriptFromFile(const std::string& fileName) {
 
   FBLOGE("Unable to load script from file: %s", fileName.c_str());
   return "";
-}
-
-void registerJSLoaderNatives() {
-  JNIEnv *env = jni::Environment::current();
-  jclass applicationHolderClass = env->FindClass("com/facebook/react/common/ApplicationHolder");
-  gApplicationHolderClass = (jclass)env->NewGlobalRef(applicationHolderClass);
-  gGetApplicationMethod = env->GetStaticMethodID(applicationHolderClass, "getApplication", "()Landroid/app/Application;");
-
-  jclass appClass = env->FindClass("android/app/Application");
-  gGetAssetManagerMethod = env->GetMethodID(appClass, "getAssets", "()Landroid/content/res/AssetManager;");
 }
 
 } }

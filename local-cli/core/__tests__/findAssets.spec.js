@@ -1,6 +1,6 @@
 jest.autoMockOff();
 
-const findAssets = require('../config/findAssets');
+const findAssets = require('../findAssets');
 const mockFs = require('mock-fs');
 const dependencies = require('../__fixtures__/dependencies');
 const isArray = (arg) =>

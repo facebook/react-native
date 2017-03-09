@@ -20,7 +20,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import android.content.res.AssetManager;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -30,15 +32,13 @@ import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
-import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
+import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
@@ -97,6 +97,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private volatile boolean mAcceptCalls = false;
 
   private boolean mJSBundleHasLoaded;
+  private @Nullable String mSourceURL;
 
   // C++ parts
   private final HybridData mHybridData;
@@ -127,7 +128,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
       jsExecutor,
       mReactQueueConfiguration.getJSQueueThread(),
       mReactQueueConfiguration.getNativeModulesQueueThread(),
-      mJavaRegistry.getModuleRegistryHolder(this));
+      mJavaRegistry.getJavaModules(this),
+      mJavaRegistry.getCxxModules());
     mMainExecutorToken = getMainExecutorToken();
   }
 
@@ -178,16 +180,43 @@ public class CatalystInstanceImpl implements CatalystInstance {
                                        JavaScriptExecutor jsExecutor,
                                        MessageQueueThread jsQueue,
                                        MessageQueueThread moduleQueue,
-                                       ModuleRegistryHolder registryHolder);
+                                       Collection<JavaModuleWrapper> javaModules,
+                                       Collection<CxxModuleWrapper> cxxModules);
 
-  /* package */ native void loadScriptFromAssets(AssetManager assetManager, String assetURL);
-  /* package */ native void loadScriptFromFile(String fileName, String sourceURL);
-  /* package */ native void loadScriptFromOptimizedBundle(String path, String sourceURL, int flags);
+  /**
+   * This API is used in situations where the JS bundle is being executed not on
+   * the device, but on a host machine. In that case, we must provide two source
+   * URLs for the JS bundle: One to be used on the device, and one to be used on
+   * the remote debugging machine.
+   *
+   * @param deviceURL A source URL that is accessible from this device.
+   * @param remoteURL A source URL that is accessible from the remote machine
+   * executing the JS.
+   */
+  /* package */ void setSourceURLs(String deviceURL, String remoteURL) {
+    mSourceURL = deviceURL;
+    jniSetSourceURL(remoteURL);
+  }
+
+  /* package */ void loadScriptFromAssets(AssetManager assetManager, String assetURL) {
+    mSourceURL = assetURL;
+    jniLoadScriptFromAssets(assetManager, assetURL);
+  }
+
+  /* package */ void loadScriptFromFile(String fileName, String sourceURL) {
+    mSourceURL = sourceURL;
+    jniLoadScriptFromFile(fileName, sourceURL);
+  }
+
+  private native void jniSetSourceURL(String sourceURL);
+  private native void jniLoadScriptFromAssets(AssetManager assetManager, String assetURL);
+  private native void jniLoadScriptFromFile(String fileName, String sourceURL);
 
   @Override
   public void runJSBundle() {
     Assertions.assertCondition(!mJSBundleHasLoaded, "JS bundle was already loaded!");
     mJSBundleHasLoaded = true;
+
     // incrementPendingJSCalls();
     mJSBundleLoader.loadScript(CatalystInstanceImpl.this);
 
@@ -198,7 +227,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       mAcceptCalls = true;
 
       for (PendingJSCall call : mJSCallsPendingInit) {
-        callJSFunction(call.mExecutorToken, call.mModule, call.mMethod, call.mArguments);
+        jniCallJSFunction(call.mExecutorToken, call.mModule, call.mMethod, call.mArguments);
       }
       mJSCallsPendingInit.clear();
     }
@@ -208,7 +237,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
     Systrace.registerListener(mTraceListener);
   }
 
-  private native void callJSFunction(
+  @Override
+  public @Nullable String getSourceURL() {
+    return mSourceURL;
+  }
+
+  private native void jniCallJSFunction(
     ExecutorToken token,
     String module,
     String method,
@@ -234,10 +268,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
       }
     }
 
-    callJSFunction(executorToken, module, method, arguments);
+    jniCallJSFunction(executorToken, module, method, arguments);
   }
 
-  private native void callJSCallback(ExecutorToken executorToken, int callbackID, NativeArray arguments);
+  private native void jniCallJSCallback(ExecutorToken executorToken, int callbackID, NativeArray arguments);
 
   @Override
   public void invokeCallback(ExecutorToken executorToken, final int callbackID, final NativeArray arguments) {
@@ -246,7 +280,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return;
     }
 
-    callJSCallback(executorToken, callbackID, arguments);
+    jniCallJSCallback(executorToken, callbackID, arguments);
   }
 
   /**
@@ -265,7 +299,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
     // TODO: tell all APIs to shut down
     mDestroyed = true;
     mHybridData.resetNative();
-    mJavaRegistry.notifyCatalystInstanceDestroy();
+    mReactQueueConfiguration.getNativeModulesQueueThread().runOnQueue(new Runnable() {
+      @Override
+      public void run() {
+        mJavaRegistry.notifyCatalystInstanceDestroy();
+      }
+    });
     boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
     if (!wasIdle && !mBridgeIdleListeners.isEmpty()) {
       for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
@@ -299,7 +338,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
         mAcceptCalls,
         "RunJSBundle hasn't completed.");
     mInitialized = true;
-    mJavaRegistry.notifyCatalystInstanceInitialized();
+    mReactQueueConfiguration.getNativeModulesQueueThread().runOnQueue(new Runnable() {
+      @Override
+      public void run() {
+        mJavaRegistry.notifyCatalystInstanceInitialized();
+      }
+    });
   }
 
   @Override
