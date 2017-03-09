@@ -27,6 +27,7 @@
 #import "RCTModuleData.h"
 #import "RCTModuleMethod.h"
 #import "RCTProfile.h"
+#import "RCTRootContentView.h"
 #import "RCTRootShadowView.h"
 #import "RCTRootViewInternal.h"
 #import "RCTScrollableProtocol.h"
@@ -381,7 +382,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   return RCTGetUIManagerQueue();
 }
 
-- (void)registerRootView:(UIView *)rootView
+- (void)registerRootView:(RCTRootContentView *)rootView
 {
   RCTAssertMainQueue();
 
@@ -393,6 +394,8 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   RCTAssert(existingView == nil || existingView == rootView,
             @"Expect all root views to have unique tag. Added %@ twice", reactTag);
 
+  CGSize availableSize = rootView.availableSize;
+
   // Register view
   _viewRegistry[reactTag] = rootView;
 
@@ -403,6 +406,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
     }
 
     RCTRootShadowView *shadowView = [RCTRootShadowView new];
+    shadowView.availableSize = availableSize;
     shadowView.reactTag = reactTag;
     shadowView.backgroundColor = rootView.backgroundColor;
     shadowView.viewName = NSStringFromClass([rootView class]);

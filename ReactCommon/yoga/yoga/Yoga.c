@@ -1334,7 +1334,14 @@ static float YGNodeRelativePosition(const YGNodeRef node,
                                                : -YGNodeTrailingPosition(node, axis, axisSize);
 }
 
-static void YGConstrainMaxSizeForMode(const float maxSize, YGMeasureMode *mode, float *size) {
+static void YGConstrainMaxSizeForMode(const YGNodeRef node,
+                                      const enum YGFlexDirection axis,
+                                      const float parentAxisSize,
+                                      const float parentWidth,
+                                      YGMeasureMode *mode,
+                                      float *size) {
+  const float maxSize = YGValueResolve(&node->style.maxDimensions[dim[axis]], parentAxisSize) +
+                        YGNodeMarginForAxis(node, axis, parentWidth);
   switch (*mode) {
     case YGMeasureModeExactly:
     case YGMeasureModeAtMost:
@@ -1480,14 +1487,10 @@ static void YGNodeComputeFlexBasisForChild(const YGNodeRef node,
       }
     }
 
-    YGConstrainMaxSizeForMode(YGValueResolve(&child->style.maxDimensions[YGDimensionWidth],
-                                             parentWidth),
-                              &childWidthMeasureMode,
-                              &childWidth);
-    YGConstrainMaxSizeForMode(YGValueResolve(&child->style.maxDimensions[YGDimensionHeight],
-                                             parentHeight),
-                              &childHeightMeasureMode,
-                              &childHeight);
+    YGConstrainMaxSizeForMode(
+        child, YGFlexDirectionRow, parentWidth, parentWidth, &childWidthMeasureMode, &childWidth);
+    YGConstrainMaxSizeForMode(
+        child, YGFlexDirectionColumn, parentHeight, parentWidth, &childHeightMeasureMode, &childHeight);
 
     // Measure the child
     YGLayoutNodeInternal(child,
@@ -2443,16 +2446,18 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           childCrossSize += marginCross;
         }
 
-        YGConstrainMaxSizeForMode(
-            YGValueResolve(&currentRelativeChild->style.maxDimensions[dim[mainAxis]],
-                           availableInnerWidth),
-            &childMainMeasureMode,
-            &childMainSize);
-        YGConstrainMaxSizeForMode(
-            YGValueResolve(&currentRelativeChild->style.maxDimensions[dim[crossAxis]],
-                           availableInnerHeight),
-            &childCrossMeasureMode,
-            &childCrossSize);
+        YGConstrainMaxSizeForMode(currentRelativeChild,
+                                  mainAxis,
+                                  availableInnerMainDim,
+                                  availableInnerWidth,
+                                  &childMainMeasureMode,
+                                  &childMainSize);
+        YGConstrainMaxSizeForMode(currentRelativeChild,
+                                  crossAxis,
+                                  availableInnerCrossDim,
+                                  availableInnerWidth,
+                                  &childCrossMeasureMode,
+                                  &childCrossSize);
 
         const bool requiresStretchLayout =
             !YGNodeIsStyleDimDefined(currentRelativeChild, crossAxis, availableInnerCrossDim) &&
@@ -2690,12 +2695,16 @@ static void YGNodelayoutImpl(const YGNodeRef node,
 
               YGMeasureMode childMainMeasureMode = YGMeasureModeExactly;
               YGMeasureMode childCrossMeasureMode = YGMeasureModeExactly;
-              YGConstrainMaxSizeForMode(YGValueResolve(&child->style.maxDimensions[dim[mainAxis]],
-                                                       availableInnerMainDim),
+              YGConstrainMaxSizeForMode(child,
+                                        mainAxis,
+                                        availableInnerMainDim,
+                                        availableInnerWidth,
                                         &childMainMeasureMode,
                                         &childMainSize);
-              YGConstrainMaxSizeForMode(YGValueResolve(&child->style.maxDimensions[dim[crossAxis]],
-                                                       availableInnerCrossDim),
+              YGConstrainMaxSizeForMode(child,
+                                        crossAxis,
+                                        availableInnerCrossDim,
+                                        availableInnerWidth,
                                         &childCrossMeasureMode,
                                         &childCrossSize);
 
