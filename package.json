@@ -143,7 +143,7 @@
     "bser": "^1.0.2",
     "chalk": "^1.1.1",
     "commander": "^2.9.0",
-    "connect": "^2.8.3",
+    "connect": "^3.0.0",
     "core-js": "^2.2.2",
     "debug": "^2.2.0",
     "denodeify": "^1.2.1",
