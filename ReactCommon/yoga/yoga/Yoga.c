@@ -97,6 +97,7 @@ typedef struct YGStyle {
 typedef struct YGConfig {
   bool experimentalFeatures[YGExperimentalFeatureCount + 1];
   bool useWebDefaults;
+  float pointScaleFactor;
 } YGConfig;
 
 typedef struct YGNode {
@@ -206,6 +207,7 @@ static YGConfig gYGConfigDefaults = {
                 [YGExperimentalFeatureWebFlexBasis] = false,
         },
     .useWebDefaults = false,
+    .pointScaleFactor = 1.0f
 };
 
 static void YGNodeMarkDirtyInternal(const YGNodeRef node);
@@ -306,7 +308,6 @@ static inline float YGValueResolveMargin(const YGValue *const value, const float
 }
 
 int32_t gNodeInstanceCount = 0;
-
 
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
   const YGNodeRef node = gYGMalloc(sizeof(YGNode));
@@ -1404,7 +1405,7 @@ static void YGNodeComputeFlexBasisForChild(const YGNodeRef node,
 
   if (!YGFloatIsUndefined(resolvedFlexBasis) && !YGFloatIsUndefined(mainAxisSize)) {
     if (YGFloatIsUndefined(child->layout.computedFlexBasis) ||
-        (YGConfigIsExperimentalFeatureEnabled(config, YGExperimentalFeatureWebFlexBasis) &&
+        (YGConfigIsExperimentalFeatureEnabled(child->config, YGExperimentalFeatureWebFlexBasis) &&
          child->layout.computedFlexBasisGeneration != gCurrentGenerationCount)) {
       child->layout.computedFlexBasis =
           fmaxf(resolvedFlexBasis, YGNodePaddingAndBorderForAxis(child, mainAxis, parentWidth));
@@ -2231,7 +2232,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         availableInnerMainDim = minInnerMainDim;
       } else if (!YGFloatIsUndefined(maxInnerMainDim) && sizeConsumedOnCurrentLine > maxInnerMainDim) {
         availableInnerMainDim = maxInnerMainDim;
-      } else if (YGConfigIsExperimentalFeatureEnabled(config, YGExperimentalFeatureMinFlexFix)) {
+      } else if (YGConfigIsExperimentalFeatureEnabled(node->config, YGExperimentalFeatureMinFlexFix)) {
         // TODO: this needs to be moved out of experimental feature, as this is legitimate fix
         // If the measurement isn't exact, we want to use as little space as possible
         availableInnerMainDim = sizeConsumedOnCurrentLine;
@@ -3312,40 +3313,38 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
   return (needToVisitNode || cachedResults == NULL);
 }
 
-static float gPointScaleFactor = 1.0;
-
-void YGSetPointScaleFactor(float pixelsInPoint) {
+void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInPoint) {
   YG_ASSERT(pixelsInPoint >= 0.0f, "Scale factor should not be less than zero");
   // We store points for Pixel as we will use it for rounding
   if (pixelsInPoint == 0.0f) {
     // Zero is used to skip rounding
-    gPointScaleFactor = 0.0f;
+    config->pointScaleFactor = 0.0f;
   } else {
-    gPointScaleFactor = 1.0f / pixelsInPoint;
+    config->pointScaleFactor = 1.0f / pixelsInPoint;
   }
 }
 
-static void YGRoundToPixelGrid(const YGNodeRef node) {
-  if (gPointScaleFactor == 0.0f) {
+static void YGRoundToPixelGrid(const YGNodeRef node, const float pointScaleFactor) {
+  if (pointScaleFactor == 0.0f) {
     return;
   }
   const float nodeLeft = node->layout.position[YGEdgeLeft];
   const float nodeTop = node->layout.position[YGEdgeTop];
 
   // To round correctly to the pixel grid, first we calculate left and top coordinates
-  float fractialLeft = fmodf(nodeLeft, gPointScaleFactor);
-  float fractialTop = fmodf(nodeTop, gPointScaleFactor);
+  float fractialLeft = fmodf(nodeLeft, pointScaleFactor);
+  float fractialTop = fmodf(nodeTop, pointScaleFactor);
   float roundedLeft = nodeLeft - fractialLeft;
   float roundedTop = nodeTop - fractialTop;
 
   // To do the actual rounding we check if leftover fraction is bigger or equal than half of the grid step
-  if (fractialLeft >= gPointScaleFactor / 2.0) {
-    roundedLeft += gPointScaleFactor;
-    fractialLeft -= gPointScaleFactor;
+  if (fractialLeft >= pointScaleFactor / 2.0f) {
+    roundedLeft += pointScaleFactor;
+    fractialLeft -= pointScaleFactor;
   }
-  if (fractialTop >= gPointScaleFactor / 2.0) {
-    roundedTop += gPointScaleFactor;
-    fractialTop -= gPointScaleFactor;
+  if (fractialTop >= pointScaleFactor / 2.0f) {
+    roundedTop += pointScaleFactor;
+    fractialTop -= pointScaleFactor;
   }
   node->layout.position[YGEdgeLeft] = roundedLeft;
   node->layout.position[YGEdgeTop] = roundedTop;
@@ -3353,21 +3352,21 @@ static void YGRoundToPixelGrid(const YGNodeRef node) {
   // Now we round width and height in the same way accounting for fractial leftovers from rounding position
   const float adjustedWidth = fractialLeft + node->layout.dimensions[YGDimensionWidth];
   const float adjustedHeight = fractialTop + node->layout.dimensions[YGDimensionHeight];
-  float roundedWidth = adjustedWidth - fmodf(adjustedWidth, gPointScaleFactor);
-  float roundedHeight = adjustedHeight - fmodf(adjustedHeight, gPointScaleFactor);
+  float roundedWidth = adjustedWidth - fmodf(adjustedWidth, pointScaleFactor);
+  float roundedHeight = adjustedHeight - fmodf(adjustedHeight, pointScaleFactor);
 
-  if (adjustedWidth - roundedWidth >= gPointScaleFactor / 2.0) {
-    roundedWidth += gPointScaleFactor;
+  if (adjustedWidth - roundedWidth >= pointScaleFactor / 2.0f) {
+    roundedWidth += pointScaleFactor;
   }
-  if (adjustedHeight - roundedHeight >= gPointScaleFactor / 2.0) {
-    roundedHeight += gPointScaleFactor;
+  if (adjustedHeight - roundedHeight >= pointScaleFactor / 2.0f) {
+    roundedHeight += pointScaleFactor;
   }
   node->layout.dimensions[YGDimensionWidth] = roundedWidth;
   node->layout.dimensions[YGDimensionHeight] = roundedHeight;
 
   const uint32_t childCount = YGNodeListCount(node->children);
   for (uint32_t i = 0; i < childCount; i++) {
-    YGRoundToPixelGrid(YGNodeGetChild(node, i));
+    YGRoundToPixelGrid(YGNodeGetChild(node, i), pointScaleFactor);
   }
 }
 
@@ -3427,7 +3426,7 @@ void YGNodeCalculateLayout(const YGNodeRef node,
     YGNodeSetPosition(node, node->layout.direction, parentWidth, parentHeight, parentWidth);
 
     if (YGConfigIsExperimentalFeatureEnabled(node->config, YGExperimentalFeatureRounding)) {
-      YGRoundToPixelGrid(node);
+      YGRoundToPixelGrid(node, node->config->pointScaleFactor);
     }
 
     if (gPrintTree) {
