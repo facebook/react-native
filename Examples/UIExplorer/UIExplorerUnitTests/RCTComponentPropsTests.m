@@ -14,9 +14,9 @@
 
 #import <XCTest/XCTest.h>
 
-#import "RCTUIManager.h"
-#import "RCTViewManager.h"
-#import "RCTView.h"
+#import <React/RCTUIManager.h>
+#import <React/RCTView.h>
+#import <React/RCTViewManager.h>
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 { \
@@ -96,7 +96,7 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
   [super setUp];
 
   NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-  _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"TestBundle" withExtension:@"js"]
+  _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"UIExplorerUnitTestsBundle" withExtension:@"js"]
                                   moduleProvider:nil
                                    launchOptions:nil];
 }

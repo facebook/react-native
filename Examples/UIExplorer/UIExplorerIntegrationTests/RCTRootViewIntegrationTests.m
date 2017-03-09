@@ -26,13 +26,10 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#import "RCTAssert.h"
-
-#import "RCTEventDispatcher.h"
-#import "RCTRootView.h"
-#import "RCTRootViewDelegate.h"
-
 #import <RCTTest/RCTTestRunner.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTRootView.h>
+#import <React/RCTRootViewDelegate.h>
 
 #define RCT_TEST_DATA_CONFIGURATION_BLOCK(appName, testType, input, block) \
 - (void)test##appName##_##testType##_##input                               \
@@ -147,7 +144,7 @@ static ControlBlock propertiesUpdateBlock()
 
 #pragma mark Logic Tests
 
-// This list should be kept in sync with RCTRootViewIntegrationTestApp.js
+// This list should be kept in sync with RCTRootViewIntegrationTestsApp.js
 
 // Simple size flexibility tests - test if the content is measured properly
 RCT_TEST_DATA_CONFIGURATION_BLOCK(SizeFlexibilityUpdateTest, SingleUpdate, none, simpleSizeFlexibilityBlock(RCTNone));

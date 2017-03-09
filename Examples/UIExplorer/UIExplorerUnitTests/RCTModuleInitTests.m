@@ -15,11 +15,11 @@
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
 
-#import "RCTBridge.h"
-#import "RCTBridge+Private.h"
-#import "RCTBridgeModule.h"
-#import "RCTUtils.h"
-#import "RCTJavaScriptExecutor.h"
+#import <React/RCTBridge+Private.h>
+#import <React/RCTBridge.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTJavaScriptExecutor.h>
+#import <React/RCTUtils.h>
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 { \
@@ -149,7 +149,7 @@ RCT_EXPORT_MODULE()
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
   NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-  return [bundle URLForResource:@"TestBundle" withExtension:@"js"];
+  return [bundle URLForResource:@"UIExplorerUnitTestsBundle" withExtension:@"js"];
 }
 
 - (NSArray *)extraModulesForBridge:(__unused RCTBridge *)bridge

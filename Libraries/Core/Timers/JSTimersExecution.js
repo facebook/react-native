@@ -47,7 +47,7 @@ const JSTimersExecution = {
   requestIdleCallbacks: [],
   identifiers: ([] : Array<null | {methodName: string}>),
 
-  errors: (null : ?[Error]),
+  errors: (null : ?Array<Error>),
 
   /**
    * Calls the callback associated with the ID. Also unregister that callback

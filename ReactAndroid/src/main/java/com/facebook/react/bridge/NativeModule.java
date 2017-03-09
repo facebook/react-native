@@ -25,13 +25,6 @@ public interface NativeModule {
   }
 
   /**
-   * A method that can be called from JS synchronously on the JS thread and return a result.
-   * @see ReactSyncHook
-   */
-  interface SyncNativeHook {
-  }
-
-  /**
    * @return the name of this module. This will be the name used to {@code require()} this module
    * from javascript.
    */

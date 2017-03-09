@@ -19,4 +19,12 @@
     UITextAutocorrectionTypeNo;
 }
 
++ (UITextSpellCheckingType)UITextSpellCheckingType:(id)json
+{
+  return
+    json == nil ? UITextSpellCheckingTypeDefault :
+    [RCTConvert BOOL:json] ? UITextSpellCheckingTypeYes :
+    UITextSpellCheckingTypeNo;
+}
+
 @end

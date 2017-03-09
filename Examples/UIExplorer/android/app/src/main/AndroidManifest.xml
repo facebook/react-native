@@ -11,6 +11,10 @@
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
   <uses-permission android:name="android.permission.VIBRATE"/>
 
+  <!--Just to show permissions example-->
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.READ_CALENDAR"/>
+
   <uses-sdk
     android:minSdkVersion="16"
     android:targetSdkVersion="23" />

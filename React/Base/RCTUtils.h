@@ -29,7 +29,7 @@ RCT_EXTERN id RCTJSONClean(id object);
 // Get MD5 hash of a string
 RCT_EXTERN NSString *RCTMD5Hash(NSString *string);
 
-// Check is we are currently on the main queue (not to be confused with
+// Check if we are currently on the main queue (not to be confused with
 // the main thread, which is not neccesarily the same thing)
 // https://twitter.com/olebegemann/status/738656134731599872
 RCT_EXTERN BOOL RCTIsMainQueue(void);
@@ -38,10 +38,9 @@ RCT_EXTERN BOOL RCTIsMainQueue(void);
 // this will execute immediately if we're already on the main queue.
 RCT_EXTERN void RCTExecuteOnMainQueue(dispatch_block_t block);
 
-// Deprecated - do not use.
-RCT_EXTERN void RCTExecuteOnMainThread(dispatch_block_t block, BOOL sync)
-__deprecated_msg("Use RCTExecuteOnMainQueue instead. RCTExecuteOnMainQueue is "
-                 "async. If you need to use the `sync` option... please don't.");
+// Legacy function to execute the specified block on the main queue synchronously.
+// Please do not use this unless you know what you're doing.
+RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block);
 
 // Get screen metrics in a thread-safe way
 RCT_EXTERN CGFloat RCTScreenScale(void);

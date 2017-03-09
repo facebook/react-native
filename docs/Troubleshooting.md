@@ -16,7 +16,7 @@ The React Native packager runs on port 8081. If another process is already using
 
 Run the following command on a Mac to find the id for the process that is listening on port 8081:
 
-`$ sudo lsof -n -i4TCP:8081 | grep LISTEN`
+`$ sudo lsof -i :8081`
 
 Then run the following to terminate the process:
 
@@ -32,7 +32,7 @@ You can configure the packager to use a port other than 8081 by using the `port`
 $ react-native start --port=8088
 ```
 
-You will also need to update your applications to load the JavaScript bundle from the new port. Open the in-app [Developer menu](/react-native/docs/debugging.html#accessing-the-in-app-developer-menu), then go to **Dev Settings** → **Debug server host for device** and replace 8081 with your port of choice.
+You will also need to update your applications to load the JavaScript bundle from the new port. Open the in-app [Developer menu](docs/debugging.html#accessing-the-in-app-developer-menu), then go to **Dev Settings** → **Debug server host for device** and replace 8081 with your port of choice.
 
 ### NPM locking error
 

@@ -1,11 +1,7 @@
 android_library(
-  name = 'perftest',
-  srcs = glob(['*.java']),
-  visibility = [
-    'PUBLIC',
-  ],
-)
-
-project_config(
-  src_target = ':perftest',
+    name = "perftest",
+    srcs = glob(["*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
 )

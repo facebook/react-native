@@ -14,8 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.csslayout.CSSLayoutContext;
-import com.facebook.csslayout.CSSDirection;
+import com.facebook.yoga.YogaDirection;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
@@ -40,7 +39,6 @@ public class UIImplementation {
 
   private final ShadowNodeRegistry mShadowNodeRegistry = new ShadowNodeRegistry();
   private final ViewManagerRegistry mViewManagers;
-  private final CSSLayoutContext mLayoutContext = new CSSLayoutContext();
   private final UIViewOperationQueue mOperationsQueue;
   private final NativeViewHierarchyOptimizer mNativeViewHierarchyOptimizer;
   private final int[] mMeasureBuffer = new int[4];
@@ -86,7 +84,7 @@ public class UIImplementation {
     ReactShadowNode rootCSSNode = new ReactShadowNode();
     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
     if (sharedI18nUtilInstance.isRTL(mReactContext)) {
-      rootCSSNode.setLayoutDirection(CSSDirection.RTL);
+      rootCSSNode.setLayoutDirection(YogaDirection.RTL);
     }
     rootCSSNode.setViewClassName("Root");
     return rootCSSNode;
@@ -135,8 +133,15 @@ public class UIImplementation {
    * Unregisters a root node with a given tag.
    */
   public void removeRootView(int rootViewTag) {
-    mShadowNodeRegistry.removeRootNode(rootViewTag);
+    removeRootShadowNode(rootViewTag);
     mOperationsQueue.enqueueRemoveRootView(rootViewTag);
+  }
+
+  /**
+   * Unregisters a root node with a given tag from the shadow node registry
+   */
+  public void removeRootShadowNode(int rootViewTag) {
+    mShadowNodeRegistry.removeRootNode(rootViewTag);
   }
 
   /**
@@ -565,21 +570,6 @@ public class UIImplementation {
   }
 
   /**
-   * LayoutAnimation API on Android is currently experimental. Therefore, it needs to be enabled
-   * explicitly in order to avoid regression in existing application written for iOS using this API.
-   *
-   * Warning : This method will be removed in future version of React Native, and layout animation
-   * will be enabled by default, so always check for its existence before invoking it.
-   *
-   * TODO(9139831) : remove this method once layout animation is fully stable.
-   *
-   * @param enabled whether layout animation is enabled or not
-   */
-  public void setLayoutAnimationEnabledExperimental(boolean enabled) {
-    mOperationsQueue.enqueueSetLayoutAnimationEnabled(enabled);
-  }
-
-  /**
    * Configure an animation to be used for the native layout changes, and native views
    * creation. The animation will only apply during the current batch operations.
    *
@@ -767,10 +757,10 @@ public class UIImplementation {
         .flush();
     double startTime = (double) System.nanoTime();
     try {
-      cssRoot.calculateLayout(mLayoutContext);
+      cssRoot.calculateLayout();
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-      mLayoutTimer = mLayoutTimer + ((double)System.nanoTime() - startTime)/ 1000000000.0;
+      mLayoutTimer = mLayoutTimer + ((double)System.nanoTime() - startTime) / 1000000.0;
       mLayoutCount = mLayoutCount + 1;
     }
   }

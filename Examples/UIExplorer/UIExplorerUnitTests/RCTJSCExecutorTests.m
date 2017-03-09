@@ -16,8 +16,7 @@
 
 #import <XCTest/XCTest.h>
 
-#import "RCTJSCExecutor.h"
-#import "RCTUtils.h"
+#import <React/RCTJSCExecutor.h>
 
 @interface RCTJSCExecutorTests : XCTestCase
 

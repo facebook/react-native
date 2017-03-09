@@ -17,14 +17,14 @@ import java.util.Comparator;
 import java.util.Map;
 
 import android.util.LongSparseArray;
-import android.view.Choreographer;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.ReactChoreographer;
+import com.facebook.react.modules.core.ChoreographerCompat;
+import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.systrace.Systrace;
 
 /**
@@ -251,7 +251,7 @@ public class EventDispatcher implements LifecycleEventListener {
         (((long) coalescingKey) & 0xffff) << 48;
   }
 
-  private class ScheduleDispatchFrameCallback implements Choreographer.FrameCallback {
+  private class ScheduleDispatchFrameCallback extends ChoreographerCompat.FrameCallback {
     private volatile boolean mIsPosted = false;
     private boolean mShouldStop = false;
 

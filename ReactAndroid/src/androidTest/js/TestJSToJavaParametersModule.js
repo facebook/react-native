@@ -18,6 +18,13 @@ var TestJSToJavaParametersModule = {
   returnBasicTypes: function() {
     Recording.receiveBasicTypes('foo', 3.14, true, null);
   },
+  returnBoxedTypes: function() {
+    Recording.receiveBoxedTypes(42, 3.14, true);
+  },
+  returnDynamicTypes: function() {
+    Recording.receiveDynamic('foo');
+    Recording.receiveDynamic(3.14);
+  },
   returnArrayWithBasicTypes: function() {
     Recording.receiveArray(['foo', 3.14, -111, true, null]);
   },

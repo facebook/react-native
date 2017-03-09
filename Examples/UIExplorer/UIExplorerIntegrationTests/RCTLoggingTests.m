@@ -14,9 +14,9 @@
 
 #import <XCTest/XCTest.h>
 
-#import "RCTAssert.h"
-#import "RCTLog.h"
-#import "RCTBridge.h"
+#import <React/RCTAssert.h>
+#import <React/RCTBridge.h>
+#import <React/RCTLog.h>
 
 @interface RCTLoggingTests : XCTestCase
 

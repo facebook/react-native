@@ -8,11 +8,11 @@
  */
 'use strict';
 
-const child_process = require('child_process');
-const execFile = require('child_process').execFile;
 const fs = require('fs');
-const path = require('path');
 const launchChrome = require('../util/launchChrome');
+const path = require('path');
+
+const {exec} = require('child_process');
 
 function launchChromeDevTools(port) {
   var debuggerURL = 'http://localhost:' + port + '/debugger-ui';
@@ -20,25 +20,25 @@ function launchChromeDevTools(port) {
   launchChrome(debuggerURL);
 }
 
-function escapePath(path) {
-  return '"' + path + '"'; // " Can escape paths with spaces in OS X, Windows, and *nix
+function escapePath(pathname) {
+  return '"' + pathname + '"'; // " Can escape paths with spaces in OS X, Windows, and *nix
 }
 
-function launchDevTools(options, isChromeConnected) {
+function launchDevTools({port, projectRoots}, isChromeConnected) {
   // Explicit config always wins
   var customDebugger = process.env.REACT_DEBUGGER;
   if (customDebugger) {
-    var projects = options.projectRoots.map(escapePath).join(' ');
+    var projects = projectRoots.map(escapePath).join(' ');
     var command = customDebugger + ' ' + projects;
     console.log('Starting custom debugger by executing: ' + command);
-    child_process.exec(command, function (error, stdout, stderr) {
+    exec(command, function (error, stdout, stderr) {
       if (error !== null) {
         console.log('Error while starting custom debugger: ' + error);
       }
     });
   } else if (!isChromeConnected()) {
     // Dev tools are not yet open; we need to open a session
-    launchChromeDevTools(options.port);
+    launchChromeDevTools(port);
   }
 }
 

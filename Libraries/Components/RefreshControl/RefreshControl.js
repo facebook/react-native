@@ -70,6 +70,7 @@ if (Platform.OS === 'android') {
  * __Note:__ `refreshing` is a controlled prop, this is why it needs to be set to true
  * in the `onRefresh` function otherwise the refresh indicator will stop immediately.
  */
+// $FlowFixMe(>=0.41.0)
 const RefreshControl = React.createClass({
   statics: {
     SIZE: RefreshLayoutConsts.SIZE,
@@ -152,7 +153,7 @@ const RefreshControl = React.createClass({
     return (
       <NativeRefreshControl
         {...this.props}
-        ref={ref => this._nativeRef = ref}
+        ref={ref => {this._nativeRef = ref;}}
         onRefresh={this._onRefresh}
       />
     );

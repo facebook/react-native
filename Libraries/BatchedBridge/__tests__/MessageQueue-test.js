@@ -35,7 +35,7 @@ const assertQueue = (flushedQueue, index, moduleID, methodID, params) => {
 // local callbacks stored by IDs are cleaned up.
 describe('MessageQueue', function() {
   beforeEach(function() {
-    jest.resetModuleRegistry();
+    jest.resetModules();
     MessageQueue = require('MessageQueue');
     MessageQueueTestModule = require('MessageQueueTestModule');
     queue = new MessageQueue();

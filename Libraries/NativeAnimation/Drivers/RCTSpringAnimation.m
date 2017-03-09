@@ -14,7 +14,6 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 
-#import "RCTAnimationUtils.h"
 #import "RCTValueAnimatedNode.h"
 
 @interface RCTSpringAnimation ()
@@ -191,11 +190,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   _valueNode.value = outputValue;
   [_valueNode setNeedsUpdate];
-}
-
-- (void)cleanupAnimationUpdate
-{
-  [_valueNode cleanupAnimationUpdate];
 }
 
 @end

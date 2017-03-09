@@ -89,10 +89,11 @@ class AppContainer extends React.Component {
     }
 
     return (
-      <View style={styles.appContainer}>
+      <View style={styles.appContainer} pointerEvents="box-none">
         <View
           collapsable={!this.state.inspector}
           key={this.state.mainKey}
+          pointerEvents="box-none"
           style={styles.appContainer} ref={(ref) => {this._mainRef = ref;}}>
           {this.props.children}
         </View>

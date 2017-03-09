@@ -72,7 +72,7 @@ module.exports = React.createClass({
         <section className="content wrap documentationContent nosidebar">
           <div className="inner-content">
             <h1>React Native Versions</h1>
-            <p>React Native follows a 2-week release train. Every two weeks, a new branch created off master enters the <a href="versions.html#rc">Release Candidate</a> phase, and the previous Release Candidate branch is released and considered <a href="versions.html#latest">stable</a>.</p>
+            <p>React Native follows a monthly release train. Every month, a new branch created off master enters the <a href="versions.html#rc">Release Candidate</a> phase, and the previous Release Candidate branch is released and considered <a href="versions.html#latest">stable</a>.</p>
             <a name="latest" />
             <h3>Current Version (Stable)</h3>
             <table className="versions">

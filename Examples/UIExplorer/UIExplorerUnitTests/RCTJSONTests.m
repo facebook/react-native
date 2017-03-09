@@ -13,7 +13,8 @@
  */
 
 #import <XCTest/XCTest.h>
-#import "RCTUtils.h"
+
+#import <React/RCTUtils.h>
 
 @interface RCTJSONTests : XCTestCase
 
@@ -53,7 +54,7 @@
   NSString *jsonString = RCTJSONStringify(jsonObject, NULL);
   NSDictionary<NSString *, id> *json = RCTJSONParse(jsonString, NULL);
   XCTAssertEqualObjects(json[@"code"], @"EDOMAIN68");
-  XCTAssertEqualObjects(json[@"message"], @"The operation couldn’t be completed. (domain error 68.)");
+  XCTAssertEqualObjects(json[@"message"], @"The operation couldn\u2019t be completed. (domain error 68.)");
   XCTAssertEqualObjects(json[@"domain"], @"domain");
   XCTAssertEqualObjects(json[@"userInfo"][@"NSUnderlyingError"][@"code"], @"421");
   XCTAssertEqualObjects(json[@"userInfo"][@"NSUnderlyingError"][@"message"], @"underlying error");
