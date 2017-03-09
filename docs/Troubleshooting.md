@@ -93,3 +93,12 @@ If you run into issues where running `react-native init` hangs in your system, t
 ```
 react-native init --verbose
 ```
+
+## Unable to start react-native package manager (on Linux)
+### Case 1: Error "code":"ENOSPC","errno":"ENOSPC"
+
+Issue caused by the number of directories [inotify](https://github.com/guard/listen/wiki/Increasing-the-amount-of-inotify-watchers) (used by watchman on Linux) can monitor. To solve it, just run this command in your terminal window
+```
+echo fs.inotify.max_user_watches=582222 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+```
+
