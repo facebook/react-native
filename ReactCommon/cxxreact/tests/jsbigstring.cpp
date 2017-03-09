@@ -14,7 +14,7 @@ namespace {
 int tempFileFromString(std::string contents)
 {
   std::string tmp {getenv("TMPDIR")};
-  tmp += "/temp.XXXXX";
+  tmp += "/temp.XXXXXX";
 
   std::vector<char> tmpBuf {tmp.begin(), tmp.end()};
   tmpBuf.push_back('\0');

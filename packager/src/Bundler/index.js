@@ -23,7 +23,6 @@ const HMRBundle = require('./HMRBundle');
 const ModuleTransport = require('../lib/ModuleTransport');
 const imageSize = require('image-size');
 const path = require('path');
-const version = require('../../../package.json').version;
 const denodeify = require('denodeify');
 
 const {
@@ -34,10 +33,15 @@ const {
   extname,
 } = require('path');
 
+const VERSION = require('../../package.json').version;
+
 import type AssetServer from '../AssetServer';
-import type Module from '../node-haste/Module';
+import type Module, {HasteImpl} from '../node-haste/Module';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
-import type {Options as JSTransformerOptions, TransformOptions} from '../JSTransformer/worker/worker';
+import type {
+  Options as JSTransformerOptions,
+  TransformOptions,
+} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
 import type GlobalTransformCache from '../lib/GlobalTransformCache';
 
@@ -46,6 +50,19 @@ export type GetTransformOptions = (
   options: {},
   getDependencies: string => Promise<Array<string>>,
 ) => {} | Promise<{}>;
+
+type Asset = {
+  __packager_asset: boolean,
+  fileSystemLocation: string,
+  httpServerLocation: string,
+  width: ?number,
+  height: ?number,
+  scales: number,
+  files: Array<string>,
+  hash: string,
+  name: string,
+  type: string,
+};
 
 const sizeOf = denodeify(imageSize);
 
@@ -72,6 +89,7 @@ type Options = {
   extraNodeModules: {},
   getTransformOptions?: GetTransformOptions,
   globalTransformCache: ?GlobalTransformCache,
+  hasteImpl?: HasteImpl,
   moduleFormat: string,
   platforms: Array<string>,
   polyfillModuleNames: Array<string>,
@@ -116,7 +134,7 @@ class Bundler {
 
     const cacheKeyParts =  [
       'react-packager-cache',
-      version,
+      VERSION,
       opts.cacheVersion,
       stableProjectRoots.join(',').split(pathSeparator).join('-'),
       transformModuleHash,
@@ -158,6 +176,7 @@ class Bundler {
       extraNodeModules: opts.extraNodeModules,
       getTransformCacheKey,
       globalTransformCache: opts.globalTransformCache,
+      hasteImpl: opts.hasteImpl,
       minifyCode: this._transformer.minify,
       moduleFormat: opts.moduleFormat,
       platforms: opts.platforms,
@@ -185,7 +204,9 @@ class Bundler {
     this._transformer.kill();
     return Promise.all([
       this._cache.end(),
-      this.getResolver().getDependencyGraph().getWatcher().end(),
+      this.getResolver().getDependencyGraph().then(dependencyGraph => {
+        dependencyGraph.getWatcher().end();
+      }),
     ]);
   }
 
@@ -205,7 +226,7 @@ class Bundler {
     });
   }
 
-  _sourceHMRURL(platform, hmrpath) {
+  _sourceHMRURL(platform: ?string, hmrpath: string) {
     return this._hmrURL(
       '',
       platform,
@@ -214,7 +235,7 @@ class Bundler {
     );
   }
 
-  _sourceMappingHMRURL(platform, hmrpath) {
+  _sourceMappingHMRURL(platform: ?string, hmrpath: string) {
     // Chrome expects `sourceURL` when eval'ing code
     return this._hmrURL(
       '\/\/# sourceURL=',
@@ -224,7 +245,7 @@ class Bundler {
     );
   }
 
-  _hmrURL(prefix, platform, extensionOverride, filePath) {
+  _hmrURL(prefix: string, platform: ?string, extensionOverride: string, filePath: string) {
     const matchingRoot = this._projectRoots.find(root => filePath.startsWith(root));
 
     if (!matchingRoot) {
@@ -245,7 +266,7 @@ class Bundler {
     return (
       prefix + resource +
       '.' + extensionOverride + '?' +
-      'platform=' + platform + '&runModule=false&entryModuleOnly=true&hot=true'
+      'platform=' + (platform || '') + '&runModule=false&entryModuleOnly=true&hot=true'
     );
   }
 
@@ -265,30 +286,47 @@ class Bundler {
   }
 
   _bundle({
-    bundle,
-    entryFile,
-    runModule: runMainModule,
-    runBeforeMainModule,
-    dev,
-    minify,
-    platform,
-    moduleSystemDeps = [],
-    hot,
-    unbundle,
-    entryModuleOnly,
-    resolutionResponse,
-    isolateModuleIDs,
-    generateSourceMaps,
     assetPlugins,
+    bundle,
+    dev,
+    entryFile,
+    entryModuleOnly,
+    generateSourceMaps,
+    hot,
+    isolateModuleIDs,
+    minify,
+    moduleSystemDeps = [],
     onProgress,
+    platform,
+    resolutionResponse,
+    runBeforeMainModule,
+    runModule,
+    unbundle,
+  }: {
+    assetPlugins?: Array<string>,
+    bundle: Bundle,
+    dev: boolean,
+    entryFile?: string,
+    entryModuleOnly?: boolean,
+    generateSourceMaps?: boolean,
+    hot?: boolean,
+    isolateModuleIDs?: boolean,
+    minify?: boolean,
+    moduleSystemDeps?: Array<Module>,
+    onProgress?: () => void,
+    platform?: ?string,
+    resolutionResponse?: ResolutionResponse,
+    runBeforeMainModule?: boolean,
+    runModule?: boolean,
+    unbundle?: boolean,
   }) {
     const onResolutionResponse = (response: ResolutionResponse) => {
       /* $FlowFixMe: looks like ResolutionResponse is monkey-patched
        * with `getModuleId`. */
       bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
-      if (entryModuleOnly) {
+      if (entryModuleOnly && entryFile) {
         response.dependencies = response.dependencies.filter(module =>
-          module.path.endsWith(entryFile)
+          module.path.endsWith(entryFile || '')
         );
       } else {
         response.dependencies = moduleSystemDeps.concat(response.dependencies);
@@ -313,7 +351,7 @@ class Bundler {
           : undefined;
 
         finalBundle.finalize({
-          runMainModule,
+          runModule,
           runBeforeMainModule: runBeforeMainModuleIds,
           allowUpdates: this._opts.allowBundleUpdates,
         });
@@ -519,13 +557,13 @@ class Bundler {
     });
   }
 
-  getOrderedDependencyPaths({ entryFile, dev, platform }: {
+  getOrderedDependencyPaths({entryFile, dev, platform}: {
     entryFile: string,
     dev: boolean,
     platform: string,
   }) {
     return this.getDependencies({entryFile, dev, platform}).then(
-      ({ dependencies }) => {
+      ({dependencies}) => {
         const ret = [];
         const promises = [];
         const placeHolder = {};
@@ -545,7 +583,7 @@ class Bundler {
         });
 
         return Promise.all(promises).then(assetsData => {
-          assetsData.forEach(({ files }) => {
+          assetsData.forEach(({files}) => {
             const index = ret.indexOf(placeHolder);
             ret.splice(index, 1, ...files);
           });
@@ -603,12 +641,16 @@ class Bundler {
         map,
         meta: {dependencies, dependencyOffsets, preloaded, dependencyPairs},
         sourceCode: source,
-        sourcePath: module.path
+        sourcePath: module.path,
       });
     });
   }
 
-  _generateAssetObjAndCode(module, assetPlugins, platform: ?string = null) {
+  _generateAssetObjAndCode(
+    module: Module,
+    assetPlugins: Array<string>,
+    platform: ?string = null,
+  ) {
     const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
     var assetUrlPath = joinPath('/assets', pathDirname(relPath));
 
@@ -620,12 +662,12 @@ class Bundler {
     // Test extension against all types supported by image-size module.
     // If it's not one of these, we won't treat it as an image.
     const isImage = [
-      'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff'
+      'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff',
     ].indexOf(extname(module.path).slice(1)) !== -1;
 
-    return this._assetServer.getAssetData(relPath, platform).then((assetData) => {
+    return this._assetServer.getAssetData(relPath, platform).then(assetData => {
       return Promise.all([isImage ? sizeOf(assetData.files[0]) : null, assetData]);
-    }).then((res) => {
+    }).then(res => {
       const dimensions = res[0];
       const assetData = res[1];
       const scale = assetData.scales[0];
@@ -643,7 +685,7 @@ class Bundler {
       };
 
       return this._applyAssetPlugins(assetPlugins, asset);
-    }).then((asset) => {
+    }).then(asset => {
       const json =  JSON.stringify(filterObject(asset, assetPropertyBlacklist));
       const assetRegistryPath = 'react-native/Libraries/Image/AssetRegistry';
       const code =
@@ -654,12 +696,15 @@ class Bundler {
       return {
         asset,
         code,
-        meta: {dependencies, dependencyOffsets}
+        meta: {dependencies, dependencyOffsets},
       };
     });
   }
 
-  _applyAssetPlugins(assetPlugins, asset) {
+  _applyAssetPlugins(
+    assetPlugins: Array<string>,
+    asset: Asset,
+  ) {
     if (!assetPlugins.length) {
       return asset;
     }
@@ -696,7 +741,7 @@ class Bundler {
         name,
         id: moduleId,
         code,
-        meta: meta,
+        meta,
         sourceCode: code,
         sourcePath: module.path,
         virtual: true,

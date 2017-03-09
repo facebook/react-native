@@ -27,6 +27,7 @@
 #import "RCTModuleData.h"
 #import "RCTModuleMethod.h"
 #import "RCTProfile.h"
+#import "RCTRootContentView.h"
 #import "RCTRootShadowView.h"
 #import "RCTRootViewInternal.h"
 #import "RCTScrollableProtocol.h"
@@ -236,8 +237,13 @@ RCT_EXPORT_MODULE()
 - (void)didReceiveNewContentSizeMultiplier
 {
   // Report the event across the bridge.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
+                                              body:RCTExportedDimensions(_bridge)];
   [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
                                               body:@([_bridge.accessibilityManager multiplier])];
+#pragma clang diagnostic pop
 
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
@@ -260,7 +266,7 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                                body:RCTExportedDimensions()];
+                                                body:RCTExportedDimensions(_bridge)];
 #pragma clang diagnostic pop
   }
 
@@ -376,7 +382,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   return RCTGetUIManagerQueue();
 }
 
-- (void)registerRootView:(UIView *)rootView
+- (void)registerRootView:(RCTRootContentView *)rootView
 {
   RCTAssertMainQueue();
 
@@ -388,6 +394,8 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   RCTAssert(existingView == nil || existingView == rootView,
             @"Expect all root views to have unique tag. Added %@ twice", reactTag);
 
+  CGSize availableSize = rootView.availableSize;
+
   // Register view
   _viewRegistry[reactTag] = rootView;
 
@@ -398,6 +406,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
     }
 
     RCTRootShadowView *shadowView = [RCTRootShadowView new];
+    shadowView.availableSize = availableSize;
     shadowView.reactTag = reactTag;
     shadowView.backgroundColor = rootView.backgroundColor;
     shadowView.viewName = NSStringFromClass([rootView class]);
@@ -607,7 +616,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
         RCTAssert(view != nil, @"view (for ID %@) not found", reactTag);
 
         RCTRootView *rootView = (RCTRootView *)[view superview];
-        rootView.intrinsicSize = contentSize;
+        rootView.intrinsicContentSize = contentSize;
       });
     }
   }
@@ -1541,12 +1550,12 @@ RCT_EXPORT_METHOD(clearJSResponder)
 
   constants[@"customBubblingEventTypes"] = bubblingEvents;
   constants[@"customDirectEventTypes"] = directEvents;
-  constants[@"Dimensions"] = RCTExportedDimensions();
+  constants[@"Dimensions"] = RCTExportedDimensions(_bridge);
 
   return constants;
 }
 
-static NSDictionary *RCTExportedDimensions()
+static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 {
   RCTAssertMainQueue();
 
@@ -1556,14 +1565,18 @@ static NSDictionary *RCTExportedDimensions()
   UIUserInterfaceSizeClass horizontalSizeClass = [[mainScreen traitCollection] horizontalSizeClass];
   UIUserInterfaceSizeClass verticalSizeClass = [[mainScreen traitCollection] verticalSizeClass];
 
+  NSDictionary *dims = @{
+    @"width": @(screenSize.size.width),
+    @"height": @(screenSize.size.height),
+    @"scale": @(RCTScreenScale()),
+    @"fontScale": @(bridge.accessibilityManager.multiplier)
+    @"iosSizeClassHorizontal": @(horizontalSizeClass == UIUserInterfaceSizeClassCompact ? "compact" : "regular"),
+    @"iosSizeClassVertical": @(verticalSizeClass == UIUserInterfaceSizeClassCompact ? "compact" : "regular"),
+  };
+
   return @{
-    @"window": @{
-        @"width": @(screenSize.size.width),
-        @"height": @(screenSize.size.height),
-        @"scale": @(RCTScreenScale()),
-        @"iosSizeClassHorizontal": @(horizontalSizeClass == UIUserInterfaceSizeClassCompact ? "compact" : "regular"),
-        @"iosSizeClassVertical": @(verticalSizeClass == UIUserInterfaceSizeClassCompact ? "compact" : "regular"),
-    },
+    @"window": dims,
+    @"screen": dims
   };
 }
 
@@ -1584,11 +1597,6 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
   [self addUIBlock:^(RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     uiManager->_layoutAnimation = nextLayoutAnimation;
   }];
-}
-
-RCT_EXPORT_METHOD(getContentSizeMultiplier:(nonnull RCTResponseSenderBlock)callback)
-{
-  callback(@[@(_bridge.accessibilityManager.multiplier)]);
 }
 
 - (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion
@@ -1660,6 +1668,12 @@ static UIView *_jsResponder;
 {
   RCTLogWarn(@"Calling of `[-RCTUIManager setFrame:forView:]` which is deprecated.");
   [self setSize:frame.size forView:view];
+}
+
+RCT_EXPORT_METHOD(getContentSizeMultiplier:(nonnull RCTResponseSenderBlock)callback)
+{
+  RCTLogWarn(@"`getContentSizeMultiplier` is deprecated. Instead, use `PixelRatio.getFontScale()` and listen to the `didUpdateDimensions` event.");
+  callback(@[@(_bridge.accessibilityManager.multiplier)]);
 }
 
 @end

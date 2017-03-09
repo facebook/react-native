@@ -8,6 +8,8 @@
  */
 'use strict';
 
+jest.useRealTimers();
+
 jest.unmock('../');
 jest.unmock('../../../defaults');
 jest.mock('path');
@@ -37,6 +39,7 @@ describe('Resolver', function() {
       return polyfill;
     });
 
+    DependencyGraph.load = jest.fn().mockImplementation(opts => Promise.resolve(new DependencyGraph(opts)));
     DependencyGraph.replacePatterns = require.requireActual('../../node-haste/lib/replacePatterns');
     DependencyGraph.prototype.createPolyfill = jest.fn();
     DependencyGraph.prototype.getDependencies = jest.fn();
@@ -91,20 +94,23 @@ describe('Resolver', function() {
 
   describe('getDependencies', function() {
     it('forwards transform options to the dependency graph', function() {
+      expect.assertions(1);
       const transformOptions = {arbitrary: 'options'};
       const platform = 'ios';
       const entry = '/root/index.js';
 
       DependencyGraph.prototype.getDependencies.mockImplementation(
         () => Promise.reject());
-      new Resolver({projectRoot: '/root'})
-        .getDependencies(entry, {platform}, transformOptions);
-      expect(DependencyGraph.prototype.getDependencies).toBeCalledWith({
-        entryPath: entry,
-        platform: platform,
-        transformOptions: transformOptions,
-        recursive: true,
-      });
+      return new Resolver({projectRoot: '/root'})
+        .getDependencies(entry, {platform}, transformOptions)
+        .catch(() => {
+          expect(DependencyGraph.prototype.getDependencies).toBeCalledWith({
+            entryPath: entry,
+            platform,
+            transformOptions,
+            recursive: true,
+          });
+        });
     });
 
     it('passes custom platforms to the dependency graph', function() {
@@ -131,50 +137,62 @@ describe('Resolver', function() {
         }));
       });
 
+      const polyfill = {
+        id: 'polyfills/Object.es6.js',
+        file: 'polyfills/Object.es6.js',
+        dependencies: [],
+      };
+      DependencyGraph.prototype.createPolyfill.mockReturnValueOnce(polyfill);
+
       return depResolver
         .getDependencies(
           '/root/index.js',
-          { dev: false },
+          {dev: false},
           undefined,
           undefined,
           createGetModuleId()
         ).then(function(result) {
           expect(result.mainModuleId).toEqual('index');
           expect(result.dependencies[result.dependencies.length - 1]).toBe(module);
+
+          expect(DependencyGraph.mock.instances[0].getDependencies)
+              .toBeCalledWith({entryPath: '/root/index.js', recursive: true});
+          expect(result.dependencies[0]).toEqual(polyfill);
+
           expect(
             DependencyGraph
               .prototype
               .createPolyfill
               .mock
               .calls
-              .map((call) => call[0]))
+              .map(call => call[0]))
           .toEqual([
-            { id: 'polyfills/Object.es6.js',
+            {id: 'polyfills/Object.es6.js',
               file: 'polyfills/Object.es6.js',
-              dependencies: []
+              dependencies: [],
             },
-            { id: 'polyfills/console.js',
+            {id: 'polyfills/console.js',
               file: 'polyfills/console.js',
               dependencies: [
-                'polyfills/Object.es6.js'
+                'polyfills/Object.es6.js',
               ],
             },
-            { id: 'polyfills/error-guard.js',
+            {id: 'polyfills/error-guard.js',
               file: 'polyfills/error-guard.js',
               dependencies: [
                 'polyfills/Object.es6.js',
-                'polyfills/console.js'
+                'polyfills/console.js',
               ],
             },
-            { id: 'polyfills/Number.es6.js',
+            {id: 'polyfills/Number.es6.js',
               file: 'polyfills/Number.es6.js',
               dependencies: [
                 'polyfills/Object.es6.js',
                 'polyfills/console.js',
-                'polyfills/error-guard.js'
+                'polyfills/error-guard.js',
               ],
             },
-            { id: 'polyfills/String.prototype.es6.js',
+            {id: 'polyfills/String.prototype.es6.js',
               file: 'polyfills/String.prototype.es6.js',
               dependencies: [
                 'polyfills/Object.es6.js',
@@ -183,7 +201,7 @@ describe('Resolver', function() {
                 'polyfills/Number.es6.js',
               ],
             },
-            { id: 'polyfills/Array.prototype.es6.js',
+            {id: 'polyfills/Array.prototype.es6.js',
               file: 'polyfills/Array.prototype.es6.js',
               dependencies: [
                 'polyfills/Object.es6.js',
@@ -193,7 +211,7 @@ describe('Resolver', function() {
                 'polyfills/String.prototype.es6.js',
               ],
             },
-            { id: 'polyfills/Array.es6.js',
+            {id: 'polyfills/Array.es6.js',
               file: 'polyfills/Array.es6.js',
               dependencies: [
                 'polyfills/Object.es6.js',
@@ -204,7 +222,7 @@ describe('Resolver', function() {
                 'polyfills/Array.prototype.es6.js',
               ],
             },
-            { id: 'polyfills/Object.es7.js',
+            {id: 'polyfills/Object.es7.js',
               file: 'polyfills/Object.es7.js',
               dependencies: [
                 'polyfills/Object.es6.js',
@@ -216,7 +234,7 @@ describe('Resolver', function() {
                 'polyfills/Array.es6.js',
               ],
             },
-            { id: 'polyfills/babelHelpers.js',
+            {id: 'polyfills/babelHelpers.js',
               file: 'polyfills/babelHelpers.js',
               dependencies: [
                 'polyfills/Object.es6.js',
@@ -232,42 +250,8 @@ describe('Resolver', function() {
           ].map(({id, file, dependencies}) => ({
             id: pathJoin(__dirname, '..', id),
             file: pathJoin(__dirname, '..', file),
-            dependencies: dependencies.map((d => pathJoin(__dirname, '..', d))),
+            dependencies: dependencies.map(d => pathJoin(__dirname, '..', d)),
           })));
-        });
-    });
-
-    it('should get dependencies with polyfills', function() {
-      var module = createModule('index');
-      var deps = [module];
-
-      var depResolver = new Resolver({
-        projectRoot: '/root',
-      });
-
-      DependencyGraph.prototype.getDependencies.mockImplementation(function() {
-        return Promise.resolve(new ResolutionResponseMock({
-          dependencies: deps,
-          mainModuleId: 'index',
-        }));
-      });
-
-      const polyfill = {};
-      DependencyGraph.prototype.createPolyfill.mockReturnValueOnce(polyfill);
-      return depResolver
-        .getDependencies(
-          '/root/index.js',
-          { dev: true },
-          undefined,
-          undefined,
-          createGetModuleId()
-        ).then(function(result) {
-          expect(result.mainModuleId).toEqual('index');
-          expect(DependencyGraph.mock.instances[0].getDependencies)
-              .toBeCalledWith({entryPath: '/root/index.js', recursive: true});
-          expect(result.dependencies[0]).toBe(polyfill);
-          expect(result.dependencies[result.dependencies.length - 1])
-              .toBe(module);
         });
     });
 
@@ -290,14 +274,16 @@ describe('Resolver', function() {
       return depResolver
         .getDependencies(
           '/root/index.js',
-          { dev: false },
+          {dev: false},
           undefined,
           undefined,
           createGetModuleId()
-        ).then((result) => {
+        ).then(result => {
           expect(result.mainModuleId).toEqual('index');
-          expect(DependencyGraph.prototype.createPolyfill.mock.calls[result.dependencies.length - 2]).toEqual([
-            { file: 'some module',
+          const calls =
+            DependencyGraph.prototype.createPolyfill.mock.calls[result.dependencies.length - 2];
+          expect(calls).toEqual([
+            {file: 'some module',
               id: 'some module',
               dependencies: [
                 'polyfills/Object.es6.js',
@@ -309,7 +295,7 @@ describe('Resolver', function() {
                 'polyfills/Array.es6.js',
                 'polyfills/Object.es7.js',
                 'polyfills/babelHelpers.js',
-              ].map(d => pathJoin(__dirname, '..', d))
+              ].map(d => pathJoin(__dirname, '..', d)),
             },
           ]);
         });
@@ -444,7 +430,8 @@ describe('Resolver', function() {
         expect(processedCode).toEqual([
           '(function(global) {',
           'global.fetch = () => 1;',
-          "\n})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);",
+          '\n})' +
+          "(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);",
         ].join(''));
       });
     });

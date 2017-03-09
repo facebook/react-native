@@ -18,12 +18,9 @@
 #import "JSCSamplingProfiler.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
-#import "RCTDevMenu.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
-#import "RCTPackagerClient.h"
 #import "RCTProfile.h"
-#import "RCTReloadPackagerMethod.h"
 #import "RCTUtils.h"
 
 NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
@@ -41,6 +38,11 @@ NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamplingPro
 NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 #if RCT_DEV
+#if __has_include("RCTPackagerClient.h")
+#import "RCTPackagerClient.h"
+#import "RCTReloadPackagerMethod.h"
+#import "RCTSamplingProfilerPackagerMethod.h"
+#endif
 
 @interface RCTDevSettingsUserDefaultsDataSource : NSObject <RCTDevSettingsDataSource>
 
@@ -226,8 +228,9 @@ RCT_EXPORT_METHOD(setIsDebuggingRemotely:(BOOL)enabled)
 {
   // This value is passed as a command-line argument, so fall back to reading from NSUserDefaults directly
   NSString *executorOverride = [[NSUserDefaults standardUserDefaults] stringForKey:kRCTDevSettingExecutorOverrideClass];
-  if (executorOverride) {
-    self.executorClass = NSClassFromString(executorOverride);
+  Class executorOverrideClass = executorOverride ? NSClassFromString(executorOverride) : nil;
+  if (executorOverrideClass) {
+    self.executorClass = executorOverrideClass;
   } else {
     BOOL enabled = self.isRemoteDebuggingAvailable && self.isDebuggingRemotely;
     self.executorClass = enabled ? objc_getClass("RCTWebSocketExecutor") : nil;
@@ -458,6 +461,9 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 
 - (NSURL *)packagerURL
 {
+#if !__has_include("RCTWebSocketObserver.h")
+  return nil;
+#else
   NSString *host = [_bridge.bundleURL host];
   NSString *scheme = [_bridge.bundleURL scheme];
   if (!host) {
@@ -470,6 +476,7 @@ RCT_EXPORT_METHOD(toggleElementInspector)
     port = @8081; // Packager default port
   }
   return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/message?role=ios-rn-rctdevmenu", scheme, host, port]];
+#endif
 }
 
 // TODO: Move non-UI logic into separate RCTDevSettings module
@@ -482,6 +489,7 @@ RCT_EXPORT_METHOD(toggleElementInspector)
     return;
   }
 
+#if __has_include("RCTPackagerClient.h")
   // The jsPackagerClient is a static map that holds different packager clients per the packagerURL
   // In case many instances of DevMenu are created, the latest instance that use the same URL as
   // previous instances will override given packager client's method handlers
@@ -501,7 +509,10 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 
   [packagerClient addHandler:[[RCTReloadPackagerMethod alloc] initWithBridge:_bridge]
                    forMethod:@"reload"];
+  [packagerClient addHandler:[[RCTSamplingProfilerPackagerMethod alloc] initWithBridge:_bridge]
+                   forMethod:@"pokeSamplingProfiler"];
   [packagerClient start];
+#endif
 }
 
 @end

@@ -12,9 +12,10 @@
 'use strict';
 
 const os = require('os');
-const pkgjson = require('../../../package.json');
 
 const {EventEmitter} = require('events');
+
+const VERSION = require('../../package.json').version;
 
 import type {
   ActionLogEntryData,
@@ -35,7 +36,7 @@ function createEntry(data: LogEntry | string): LogEntry {
   return {
     ...logEntry,
     log_session,
-    packager_version: pkgjson.version,
+    packager_version: VERSION,
   };
 }
 

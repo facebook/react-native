@@ -16,12 +16,22 @@ var AnimatedImplementation = require('AnimatedImplementation');
 var Image = require('Image');
 var Text = require('Text');
 var View = require('View');
-var ScrollView = require('ScrollView');
 
-module.exports = {
-  ...AnimatedImplementation,
+let AnimatedScrollView;
+
+const Animated = {
   View: AnimatedImplementation.createAnimatedComponent(View),
   Text: AnimatedImplementation.createAnimatedComponent(Text),
   Image: AnimatedImplementation.createAnimatedComponent(Image),
-  ScrollView: AnimatedImplementation.createAnimatedComponent(ScrollView),
+  get ScrollView() {
+    // Make this lazy to avoid circular reference.
+    if (!AnimatedScrollView) {
+      AnimatedScrollView = AnimatedImplementation.createAnimatedComponent(require('ScrollView'));
+    }
+    return AnimatedScrollView;
+  },
 };
+
+Object.assign((Animated: Object), AnimatedImplementation);
+
+module.exports = ((Animated: any): (typeof AnimatedImplementation) & typeof Animated);

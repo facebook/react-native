@@ -1,10 +1,10 @@
 EXPORTED_HEADERS = [
-  'JavaScriptCore.h',
-  'JSCHelpers.h',
-  'JSCWrapper.h',
-  'noncopyable.h',
-  'Unicode.h',
-  'Value.h',
+    "JavaScriptCore.h",
+    "JSCHelpers.h",
+    "JSCWrapper.h",
+    "noncopyable.h",
+    "Unicode.h",
+    "Value.h",
 ]
 
 if THIS_IS_FBANDROID:

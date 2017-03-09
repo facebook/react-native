@@ -20,7 +20,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import android.content.res.AssetManager;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -30,15 +32,13 @@ import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
-import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
+import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
@@ -299,7 +299,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
     // TODO: tell all APIs to shut down
     mDestroyed = true;
     mHybridData.resetNative();
-    mJavaRegistry.notifyCatalystInstanceDestroy();
+    mReactQueueConfiguration.getNativeModulesQueueThread().runOnQueue(new Runnable() {
+      @Override
+      public void run() {
+        mJavaRegistry.notifyCatalystInstanceDestroy();
+      }
+    });
     boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
     if (!wasIdle && !mBridgeIdleListeners.isEmpty()) {
       for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
@@ -333,7 +338,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
         mAcceptCalls,
         "RunJSBundle hasn't completed.");
     mInitialized = true;
-    mJavaRegistry.notifyCatalystInstanceInitialized();
+    mReactQueueConfiguration.getNativeModulesQueueThread().runOnQueue(new Runnable() {
+      @Override
+      public void run() {
+        mJavaRegistry.notifyCatalystInstanceInitialized();
+      }
+    });
   }
 
   @Override

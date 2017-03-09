@@ -19,17 +19,18 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule FlatListExample
  */
 'use strict';
 
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  FlatList,
   StyleSheet,
   View,
 } = ReactNative;
 
-const FlatList = require('FlatList');
 const UIExplorerPage = require('./UIExplorerPage');
 
 const infoLog = require('infoLog');
@@ -45,6 +46,12 @@ const {
   pressItem,
   renderSmallSwitchOption,
 } = require('./ListExampleShared');
+
+const VIEWABILITY_CONFIG = {
+  minimumViewTime: 3000,
+  viewAreaCoveragePercentThreshold: 100,
+  waitForInteraction: true,
+};
 
 class FlatListExample extends React.PureComponent {
   static title = '<FlatList>';
@@ -65,9 +72,14 @@ class FlatListExample extends React.PureComponent {
   _onChangeScrollToIndex = (text) => {
     this._listRef.scrollToIndex({viewPosition: 0.5, index: Number(text)});
   };
+  componentDidUpdate() {
+    this._listRef.recordInteraction(); // e.g. flipping logViewable switch
+  }
   render() {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
-    const filter = (item) => (filterRegex.test(item.text) || filterRegex.test(item.title));
+    const filter = (item) => (
+      filterRegex.test(item.text) || filterRegex.test(item.title)
+    );
     const filteredData = this.state.data.filter(filter);
     return (
       <UIExplorerPage
@@ -98,21 +110,27 @@ class FlatListExample extends React.PureComponent {
         <FlatList
           HeaderComponent={HeaderComponent}
           FooterComponent={FooterComponent}
-          ItemComponent={this._renderItemComponent}
           SeparatorComponent={SeparatorComponent}
           data={filteredData}
           debug={this.state.debug}
           disableVirtualization={!this.state.virtualized}
-          getItemLayout={this.state.fixedHeight ? this._getItemLayout : undefined}
+          getItemLayout={this.state.fixedHeight ?
+            this._getItemLayout :
+            undefined
+          }
           horizontal={this.state.horizontal}
-          key={(this.state.horizontal ? 'h' : 'v') + (this.state.fixedHeight ? 'f' : 'd')}
+          key={(this.state.horizontal ? 'h' : 'v') +
+            (this.state.fixedHeight ? 'f' : 'd')
+          }
           legacyImplementation={false}
           numColumns={1}
           onRefresh={this._onRefresh}
           onViewableItemsChanged={this._onViewableItemsChanged}
           ref={this._captureRef}
           refreshing={false}
+          renderItem={this._renderItemComponent}
           shouldItemUpdate={this._shouldItemUpdate}
+          viewabilityConfig={VIEWABILITY_CONFIG}
         />
       </UIExplorerPage>
     );
@@ -134,25 +152,35 @@ class FlatListExample extends React.PureComponent {
   };
   _shouldItemUpdate(prev, next) {
     /**
-     * Note that this does not check state.horizontal or state.fixedheight because we blow away the
-     * whole list by changing the key in those cases. Make sure that you do the same in your code,
-     * or incorporate all relevant data into the item data, or skip this optimization entirely.
+     * Note that this does not check state.horizontal or state.fixedheight
+     * because we blow away the whole list by changing the key in those cases.
+     * Make sure that you do the same in your code, or incorporate all relevant
+     * data into the item data, or skip this optimization entirely.
      */
     return prev.item !== next.item;
   }
-  // This is called when items change viewability by scrolling into or out of the viewable area.
+  // This is called when items change viewability by scrolling into or out of
+  // the viewable area.
   _onViewableItemsChanged = (info: {
       changed: Array<{
-        key: string, isViewable: boolean, item: any, index: ?number, section?: any
+        key: string,
+        isViewable: boolean,
+        item: any,
+        index: ?number,
+        section?: any,
       }>
     }
   ) => {
     // Impressions can be logged here
     if (this.state.logViewable) {
-      infoLog('onViewableItemsChanged: ', info.changed.map((v) => ({...v, item: '...'})));
+      infoLog(
+        'onViewableItemsChanged: ',
+        info.changed.map((v) => ({...v, item: '...'})),
+      );
     }
   };
   _pressItem = (key: number) => {
+    this._listRef.recordInteraction();
     pressItem(this, key);
   };
   _listRef: FlatList<*>;

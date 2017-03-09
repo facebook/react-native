@@ -33,6 +33,7 @@
 'use strict';
 
 var ListViewDataSource = require('ListViewDataSource');
+var Platform = require('Platform');
 var React = require('React');
 var ReactNative = require('ReactNative');
 var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
@@ -330,7 +331,7 @@ var ListView = React.createClass({
       renderScrollComponent: props => <ScrollView {...props} />,
       scrollRenderAheadDistance: DEFAULT_SCROLL_RENDER_AHEAD,
       onEndReachedThreshold: DEFAULT_END_REACHED_THRESHOLD,
-      stickySectionHeadersEnabled: true,
+      stickySectionHeadersEnabled: Platform.OS === 'ios',
       stickyHeaderIndices: [],
     };
   },
@@ -403,6 +404,8 @@ var ListView = React.createClass({
     var rowCount = 0;
     var stickySectionHeaderIndices = [];
 
+    const {renderSectionHeader} = this.props;
+
     var header = this.props.renderHeader && this.props.renderHeader();
     var footer = this.props.renderFooter && this.props.renderFooter();
     var totalIndex = header ? 1 : 0;
@@ -426,22 +429,17 @@ var ListView = React.createClass({
         }
       }
 
-      if (this.props.renderSectionHeader) {
-        var shouldUpdateHeader = rowCount >= this._prevRenderedRowsCount &&
-          dataSource.sectionHeaderShouldUpdate(sectionIdx);
-        bodyComponents.push(
-          <StaticRenderer
-            key={'s_' + sectionID}
-            shouldUpdate={!!shouldUpdateHeader}
-            render={this.props.renderSectionHeader.bind(
-              null,
-              dataSource.getSectionHeaderData(sectionIdx),
-              sectionID
-            )}
-          />
+      if (renderSectionHeader) {
+        const element = renderSectionHeader(
+          dataSource.getSectionHeaderData(sectionIdx),
+          sectionID
         );
-        if (this.props.stickySectionHeadersEnabled) {
-          stickySectionHeaderIndices.push(totalIndex++);
+        if (element) {
+          bodyComponents.push(React.cloneElement(element, {key: 's_' + sectionID}));
+          if (this.props.stickySectionHeadersEnabled) {
+            stickySectionHeaderIndices.push(totalIndex);
+          }
+          totalIndex++;
         }
       }
 
