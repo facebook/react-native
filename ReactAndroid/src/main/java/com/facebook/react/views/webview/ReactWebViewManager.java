@@ -111,7 +111,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   // state and release page resources (including any running JavaScript).
   private static final String BLANK_URL = "about:blank";
 
-  public static final int INPUT_FILE_REQUEST_CODE = 1;
+  public static final int INPUT_FILE_REQUEST_CODE = 1001;
   public static final String EXTRA_FROM_NOTIFICATION = "EXTRA_FROM_NOTIFICATION";
 
   private WebViewConfig mWebViewConfig;
@@ -431,28 +431,29 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     reactContext.addActivityEventListener(new ActivityEventListener() {
       @Override
       public void onActivityResult (Activity activity, int requestCode, int resultCode, Intent data) {
-        if(requestCode == INPUT_FILE_REQUEST_CODE) {
-          Uri[] results = null;
-
-          // Check that the response is a good one
-          if(resultCode == Activity.RESULT_OK) {
-            if(data == null) {
-              // If there is not data, then we may have taken a photo
-              if(mCameraPhotoPath != null) {
-                results = new Uri[]{Uri.parse(mCameraPhotoPath)};
-              }
-            } else {
-              String dataString = data.getDataString();
-              if (dataString != null) {
-                results = new Uri[]{Uri.parse(dataString)};
-              }
-            }
-          }
-
-          mFilePathCallback.onReceiveValue(results);
-          mFilePathCallback = null;
+        if(requestCode != INPUT_FILE_REQUEST_CODE) {
           return;
         }
+        Uri[] results = null;
+
+        // Check that the response is a good one
+        if(resultCode == Activity.RESULT_OK) {
+          if(data == null) {
+            // If there is not data, then we may have taken a photo
+            if(mCameraPhotoPath != null) {
+              results = new Uri[]{Uri.parse(mCameraPhotoPath)};
+            }
+          } else {
+            String dataString = data.getDataString();
+            if (dataString != null) {
+              results = new Uri[]{Uri.parse(dataString)};
+            }
+          }
+        }
+
+        if(results != null) mFilePathCallback.onReceiveValue(results);
+        mFilePathCallback = null;
+        return;
       }
 
       @Override
