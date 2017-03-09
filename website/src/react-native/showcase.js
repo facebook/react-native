@@ -14,44 +14,12 @@ const ShowcaseAppIcon = require('ShowcaseAppIcon');
 const Site = require('Site');
 
 /*
+ * Please don't send pull requests to showcase.json. For consistency the
+ * Showcase is now managed by people on the open source team at Facebook.
+ *
  * Thousands of applications use React Native, so we can't list all of them
- * in our showcase. To be useful to someone looking through the showcase,
- * either the app must be something that most readers would recognize, or the
- * makers of the application must have posted useful technical content about the
- * making of the app. It also must be useful considering that the majority of
- * readers only speak English. So, each app in the showcase should link to
- * either:
- *
- * 1/ An English-language news article discussing the app, built either by a
- *    funded startup or for a public company
- * 2/ An English-language technical post on a funded startup or public company
- *    blog discussing React Native
- *
- * The app should be available for download in the App Store or Play Store.
- *
- * If you believe your app meets the above critera, add it to the end of the
- * array in the `../../showcase.json` file in this repository and open a pull
- * request. PRs that do not follow these guidelines may be closed without
- * comment.
- *
- * Use the 'infoLink' and 'infoTitle' keys to reference the news article or
- * technical post. Your app icon should be hosted on a CDN and be no smaller
- * than 200px by 200px. Use the `icon` key to reference your app icon.
- *
- * Please use the following format when adding your app to the showcase:
- *
- * {
- *   name: 'App Name in English (Non-English name inside parenthesis, if any)',
- *   icon: 'CDN URL to your app icon'
- *   linkAppStore: 'https://itunes.apple.com/app/XXXXX'
- *   linkPlayStore: "https://play.google.com/store/apps/details?id=XXXXX",
- *   infoLink: 'Link to content that satisfies critera above',
- *   infoTitle: 'Short title for the infoLink',
- *   pinned: false,
- * }
- *
- * Do not set 'pinned' to true as the pinned list is reserved for a small number
- * of hand picked apps.
+ * in our showcase. To be useful to someone looking through the showcase the
+ * app must be something that most readers would recognize.
  */
 const showcaseApps = Metadata.showcaseApps;
 
