@@ -108,7 +108,7 @@ class Bundler {
   _getModuleId: (opts: Module) => number;
   _cache: Cache;
   _transformer: Transformer;
-  _resolverPromise: Promise<Resolver>;
+  _resolver: Resolver;
   _projectRoots: Array<string>;
   _assetServer: AssetServer;
   _getTransformOptions: void | GetTransformOptions;
@@ -169,7 +169,7 @@ class Bundler {
       return transformCacheKey + getCacheKey(src, filename, options);
     };
 
-    this._resolverPromise = Resolver.load({
+    this._resolver = new Resolver({
       assetExts: opts.assetExts,
       blacklistRE: opts.blacklistRE,
       cache: this._cache,
@@ -204,9 +204,9 @@ class Bundler {
     this._transformer.kill();
     return Promise.all([
       this._cache.end(),
-      this._resolverPromise.then(
-        resolver => resolver.getDependencyGraph().getWatcher().end(),
-      ),
+      this.getResolver().getDependencyGraph().then(dependencyGraph => {
+        dependencyGraph.getWatcher().end();
+      }),
     ]);
   }
 
@@ -215,15 +215,15 @@ class Bundler {
     minify: boolean,
     unbundle: boolean,
     sourceMapUrl: string,
-  }): Promise<Bundle> {
+  }) {
     const {dev, minify, unbundle} = options;
-    return this._resolverPromise.then(
-      resolver => resolver.getModuleSystemDependencies({dev, unbundle}),
-    ).then(moduleSystemDeps => this._bundle({
+    const moduleSystemDeps =
+      this._resolver.getModuleSystemDependencies({dev, unbundle});
+    return this._bundle({
       ...options,
       bundle: new Bundle({dev, minify, sourceMapUrl: options.sourceMapUrl}),
       moduleSystemDeps,
-    }));
+    });
   }
 
   _sourceHMRURL(platform: ?string, hmrpath: string) {
@@ -338,11 +338,11 @@ class Bundler {
       response: ResolutionResponse,
       modulesByName: {[name: string]: Module},
     }) =>
-      this._resolverPromise.then(resolver => Promise.all(
+      Promise.all(
         transformedModules.map(({module, transformed}) =>
-          finalBundle.addModule(resolver, response, module, transformed)
+          finalBundle.addModule(this._resolver, response, module, transformed)
         )
-      )).then(() => {
+      ).then(() => {
         const runBeforeMainModuleIds = Array.isArray(runBeforeMainModule)
           ? runBeforeMainModule
               .map(name => modulesByName[name])
@@ -415,9 +415,7 @@ class Bundler {
       });
     }
 
-    return Promise.all(
-      [this._resolverPromise, resolutionResponse],
-    ).then(([resolver, response]) => {
+    return Promise.resolve(resolutionResponse).then(response => {
       bundle.setRamGroups(response.transformOptions.transform.ramGroups);
 
       log(createActionEndEntry(transformingFilesLogEntry));
@@ -427,7 +425,7 @@ class Bundler {
       let entryFilePath;
       if (response.dependencies.length > 1) { // skip HMR requests
         const numModuleSystemDependencies =
-          resolver.getModuleSystemDependencies({dev, unbundle}).length;
+          this._resolver.getModuleSystemDependencies({dev, unbundle}).length;
 
         const dependencyIndex =
           (response.numPrependedDependencies || 0) + numModuleSystemDependencies;
@@ -503,14 +501,12 @@ class Bundler {
         transform: transformSpecificOptions,
       };
 
-      return this._resolverPromise.then(
-        resolver => resolver.getShallowDependencies(entryFile, transformOptions),
-      );
+      return this._resolver.getShallowDependencies(entryFile, transformOptions);
     });
   }
 
-  getModuleForPath(entryFile: string): Promise<Module> {
-    return this._resolverPromise.then(resolver => resolver.getModuleForPath(entryFile));
+  getModuleForPath(entryFile: string) {
+    return this._resolver.getModuleForPath(entryFile);
   }
 
   getDependencies({
@@ -551,13 +547,13 @@ class Bundler {
         transform: transformSpecificOptions,
       };
 
-      return this._resolverPromise.then(resolver => resolver.getDependencies(
+      return this._resolver.getDependencies(
         entryFile,
         {dev, platform, recursive},
         transformOptions,
         onProgress,
         isolateModuleIDs ? createModuleIdFactory() : this._getModuleId,
-      ));
+      );
     });
   }
 
@@ -775,8 +771,8 @@ class Bundler {
       });
   }
 
-  getResolver(): Promise<Resolver> {
-    return this._resolverPromise;
+  getResolver() {
+    return this._resolver;
   }
 }
 
