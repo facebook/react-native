@@ -9,19 +9,6 @@
 
 package com.facebook.react.devsupport;
 
-import javax.annotation.Nullable;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -57,6 +44,19 @@ import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.JSPackagerClient;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import javax.annotation.Nullable;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -115,10 +115,12 @@ public class DevSupportManagerImpl implements
   private final @Nullable String mJSAppBundleName;
   private final File mJSBundleTempFile;
   private final DefaultNativeModuleCallExceptionHandler mDefaultNativeModuleCallExceptionHandler;
+  private final DevLoadingViewController mDevLoadingViewController;
 
   private @Nullable RedBoxDialog mRedBoxDialog;
   private @Nullable AlertDialog mDevOptionsDialog;
   private @Nullable DebugOverlayController mDebugOverlayController;
+  private boolean mDevLoadingViewVisible = false;
   private @Nullable ReactContext mCurrentContext;
   private DevInternalSettings mDevSettings;
   private boolean mIsReceiverRegistered = false;
@@ -226,6 +228,7 @@ public class DevSupportManagerImpl implements
     setDevSupportEnabled(enableOnCreate);
 
     mRedBoxHandler = redBoxHandler;
+    mDevLoadingViewController = new DevLoadingViewController(applicationContext);
   }
 
   @Override
@@ -641,7 +644,9 @@ public class DevSupportManagerImpl implements
     }
 
     if (mDevSettings.isRemoteJSDebugEnabled()) {
-      reloadJSInProxyMode(showProgressDialog());
+      mDevLoadingViewController.showForRemoteJSEnabled();
+      mDevLoadingViewVisible = true;
+      reloadJSInProxyMode();
     } else {
       String bundleURL =
         mDevServerHelper.getDevServerBundleURL(Assertions.assertNotNull(mJSAppBundleName));
@@ -748,7 +753,7 @@ public class DevSupportManagerImpl implements
     mLastErrorType = errorType;
   }
 
-  private void reloadJSInProxyMode(final AlertDialog progressDialog) {
+  private void reloadJSInProxyMode() {
     // When using js proxy, there is no need to fetch JS bundle as proxy executor will do that
     // anyway
     mDevServerHelper.launchJSDevtools();
@@ -760,7 +765,7 @@ public class DevSupportManagerImpl implements
         SimpleSettableFuture<Boolean> future = new SimpleSettableFuture<>();
         executor.connect(
             mDevServerHelper.getWebsocketProxyURL(),
-            getExecutorConnectCallback(progressDialog, future));
+            getExecutorConnectCallback(future));
         // TODO(t9349129) Don't use timeout
         try {
           future.get(90, TimeUnit.SECONDS);
@@ -776,18 +781,19 @@ public class DevSupportManagerImpl implements
   }
 
   private WebsocketJavaScriptExecutor.JSExecutorConnectCallback getExecutorConnectCallback(
-      final AlertDialog progressDialog,
       final SimpleSettableFuture<Boolean> future) {
     return new WebsocketJavaScriptExecutor.JSExecutorConnectCallback() {
       @Override
       public void onSuccess() {
         future.set(true);
-        progressDialog.dismiss();
+        mDevLoadingViewController.hide();
+        mDevLoadingViewVisible = false;
       }
 
       @Override
       public void onFailure(final Throwable cause) {
-        progressDialog.dismiss();
+        mDevLoadingViewController.hide();
+        mDevLoadingViewVisible = false;
         FLog.e(ReactConstants.TAG, "Unable to connect to remote debugger", cause);
         future.setException(
             new IOException(
@@ -796,27 +802,16 @@ public class DevSupportManagerImpl implements
     };
   }
 
-  private AlertDialog showProgressDialog() {
-    AlertDialog dialog = new AlertDialog.Builder(mApplicationContext)
-      .setTitle(R.string.catalyst_jsload_title)
-      .setMessage(mApplicationContext.getString(
-          mDevSettings.isRemoteJSDebugEnabled() ?
-          R.string.catalyst_remotedbg_message :
-          R.string.catalyst_jsload_message))
-      .create();
-    dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-    dialog.show();
-    return dialog;
-  }
-
   public void reloadJSFromServer(final String bundleURL) {
-    final AlertDialog progressDialog = showProgressDialog();
+    mDevLoadingViewController.showForUrl(bundleURL);
+    mDevLoadingViewVisible = true;
 
     mDevServerHelper.downloadBundleFromURL(
         new DevServerHelper.BundleDownloadCallback() {
           @Override
           public void onSuccess() {
-            progressDialog.dismiss();
+            mDevLoadingViewController.hide();
+            mDevLoadingViewVisible = false;
             UiThreadUtil.runOnUiThread(
                 new Runnable() {
                   @Override
@@ -827,8 +822,14 @@ public class DevSupportManagerImpl implements
           }
 
           @Override
+          public void onProgress(@Nullable final String status, @Nullable final Integer done, @Nullable final Integer total) {
+            mDevLoadingViewController.updateProgress(status, done, total);
+          }
+
+          @Override
           public void onFailure(final Exception cause) {
-            progressDialog.dismiss();
+            mDevLoadingViewController.hide();
+            mDevLoadingViewVisible = false;
             FLog.e(ReactConstants.TAG, "Unable to download JS bundle", cause);
             UiThreadUtil.runOnUiThread(
                 new Runnable() {
@@ -848,13 +849,6 @@ public class DevSupportManagerImpl implements
         },
         mJSBundleTempFile,
         bundleURL);
-    progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-      @Override
-      public void onCancel(DialogInterface dialog) {
-        mDevServerHelper.cancelDownloadBundleFromURL();
-      }
-    });
-    progressDialog.setCancelable(true);
   }
 
   private void reload() {
@@ -878,6 +872,11 @@ public class DevSupportManagerImpl implements
         filter.addAction(DevServerHelper.getReloadAppAction(mApplicationContext));
         mApplicationContext.registerReceiver(mReloadAppBroadcastReceiver, filter);
         mIsReceiverRegistered = true;
+      }
+
+      // show the dev loading if it should be
+      if (mDevLoadingViewVisible) {
+        mDevLoadingViewController.show();
       }
 
       mDevServerHelper.openPackagerConnection(this);
@@ -920,6 +919,9 @@ public class DevSupportManagerImpl implements
       if (mDevOptionsDialog != null) {
         mDevOptionsDialog.dismiss();
       }
+
+      // hide loading view
+      mDevLoadingViewController.hide();
 
       mDevServerHelper.closePackagerConnection();
       mDevServerHelper.closeInspectorConnection();

@@ -6,7 +6,6 @@
     "linkPlayStore": "https://play.google.com/store/apps/details?id=com.facebook.katana&hl=en",
     "infoLink": "https://code.facebook.com/posts/895897210527114/dive-into-react-native-performance/",
     "infoTitle": "Using React Native in the Facebook App",
-    "defaultLink": "https://itunes.apple.com/app/facebook/id284882215",
     "pinned": true
   },
   {
@@ -16,16 +15,6 @@
     "linkPlayStore": "https://play.google.com/store/apps/details?id=com.facebook.adsmanager",
     "infoLink": "https://code.facebook.com/posts/1189117404435352/react-native-for-android-how-we-built-the-first-cross-platform-react-native-app/",
     "infoTitle": "How We Built the First Cross-Platform React Native App",
-    "defaultLink": "https://itunes.apple.com/us/app/facebook-ads-manager/id964397083?mt=8",
-    "pinned": true
-  },
-  {
-    "name": "Facebook Groups",
-    "icon": "http://is4.mzstatic.com/image/pf/us/r30/Purple69/v4/57/f8/4c/57f84c0c-793d-5f9a-95ee-c212d0369e37/mzl.ugjwfhzx.png",
-    "linkAppStore": "https://itunes.apple.com/us/app/facebook-groups/id931735837?mt=8",
-    "infoLink": "https://code.facebook.com/posts/1014532261909640/react-native-bringing-modern-web-techniques-to-mobile/",
-    "infoTitle": "React Native: Bringing Modern Web Techniques to Mobile",
-    "defaultLink": "https://itunes.apple.com/us/app/facebook-groups/id931735837?mt=8",
     "pinned": true
   },
   {
@@ -35,7 +24,6 @@
     "linkPlayStore": "https://play.google.com/store/apps/details?id=com.instagram.android&referrer=utm_source%3Dinstagramweb%26utm_campaign%3DunifiedHome%26utm_medium%3Dbadge",
     "infoLink": "https://engineering.instagram.com/react-native-at-instagram-dd828a9a90c7#.3h4wir4zr",
     "infoTitle": "React Native at Instagram",
-    "defaultLink": "https://www.instagram.com/",
     "pinned": true
   },
   {
@@ -45,53 +33,15 @@
     "linkPlayStore": "https://play.google.com/store/apps/details?id=com.airbnb.android&hl=en&referrer=bev%3D1472279725_4ITWKWGX6KrmU6pT%26utm_medium%3Dweb%26utm_source%3Dairbnb",
     "infoLink": "https://www.youtube.com/watch?v=tUfgQtmG3R0",
     "infoTitle": "Hybrid React Native Apps at Airbnb",
-    "defaultLink": "https://www.airbnb.com/mobile",
     "pinned": true
   },
   {
-    "name": "Baidu (手机百度)",
-    "icon": "http://a3.mzstatic.com/us/r30/Purple62/v4/90/7c/9b/907c9b4e-556d-1a45-45d4-0ea801719abd/icon175x175.png",
-    "linkPlayStore": "http://shouji.baidu.com/software/9896302.html",
-    "linkAppStore": "https://itunes.apple.com/en/app/shou-ji-bai-du-hai-liang-xin/id382201985?l=en&mt=8",
-    "infoLink": "http://baike.baidu.com/link?url=TW8YhcVN4tO_Jz5VqMclCjGhf12EEqMD_TeVC6efe2REZlx80r6T0dX96hdmNl36XogLyExXzrvFU9rFeqxg_K",
-    "infoTitle": "Baidu is a search engine that has 600 million users.",
-    "defaultLink": "http://baike.baidu.com/link?url=TW8YhcVN4tO_Jz5VqMclCjGhf12EEqMD_TeVC6efe2REZlx80r6T0dX96hdmNl36XogLyExXzrvFU9rFeqxg_K",
-    "pinned": true
-  },
-  {
-    "name": "Discord",
-    "icon": "http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg",
-    "linkAppStore":  "https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8",
-    "infoLink": "https://discord.engineering/react-native-deep-dive-91fd5e949933#.5jnqftgof",
-    "infoTitle": "Using React Native: One Year Later",
-    "defaultLink": "https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8",
-    "pinned": true
-  },
-  {
-    "name": "Gyroscope",
-    "icon": "https://media.gyrosco.pe/images/magneto/180x180.png",
-    "linkAppStore": "https://itunes.apple.com/app/apple-store/id1104085053?pt=117927205&ct=website&mt=8",
-    "infoLink": "https://blog.gyrosco.pe/building-the-app-1dac1a97d253",
-    "infoTitle": "Building a visualization experience with React Native",
-    "defaultLink": "https://itunes.apple.com/app/apple-store/id1104085053?pt=117927205&ct=website&mt=8",
-    "pinned": true
-  },
-  {
-    "name": "li.st",
-    "icon": "https://lh3.googleusercontent.com/tXt0HgJ7dCgOnuQ-lQr1P7E57mnOYfwXhRsV9lGcPwHPVvrDAN6YmpLVFgy88qKrkFI=w300",
-    "linkPlayStore": "https://play.google.com/store/apps/details?id=st.li.listapp",
-    "infoLink": "https://www.youtube.com/watch?v=cI9bDvDEsYE",
-    "infoTitle": "Building li.st for Android with React Native",
-    "defaultLink": "https://play.google.com/store/apps/details?id=st.li.listapp",
-    "pinned": true
-  },
-  {
-    "name": "QQ",
-    "icon": "http://pp.myapp.com/ma_icon/0/icon_6633_1461768893/96",
-    "linkPlayStore": "http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.mobileqq",
-    "infoLink": "https://en.wikipedia.org/wiki/Tencent_QQ",
-    "infoTitle": "QQ is a Chinese messaging service with 829 million active accounts",
-    "defaultLink": "http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.mobileqq",
+    "name": "Walmart",
+    "icon": "http://is2.mzstatic.com/image/thumb/Purple111/v4/64/9f/20/649f2026-e968-0417-660c-e5ee6d7977ff/source/350x350bb.jpg",
+    "linkAppStore": "https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.walmart.android&hl=en",
+    "infoLink": " https://medium.com/walmartlabs/react-native-at-walmartlabs-cdd140589560#.ueonqqloc",
+    "infoTitle": "React Native at Walmart Labs",
     "pinned": true
   },
   {
@@ -102,12 +52,29 @@
     "pinned": true
   },
   {
-    "name": "Townske",
-    "icon": "http://a3.mzstatic.com/us/r30/Purple69/v4/8b/42/20/8b4220af-5165-91fd-0f05-014332df73ef/icon175x175.png",
-    "linkAppStore": "https://itunes.apple.com/us/app/townske-stunning-city-guides/id1018136179?ls=1&mt=8",
-    "infoLink": "https://hackernoon.com/townske-app-in-react-native-6ad557de7a7c",
-    "infoTitle": "The experience of a web developer building an app using React Native",
-    "defaultLink": "https://itunes.apple.com/us/app/townske-stunning-city-guides/id1018136179?ls=1&mt=8",
+    "name": "Tencent QQ",
+    "icon": "http://pp.myapp.com/ma_icon/0/icon_6633_1461768893/96",
+    "linkPlayStore": "http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.mobileqq",
+    "infoLink": "https://www.tencent.com/en-us/system.html",
+    "infoTitle": "QQ is China's largest messaging platform, with over 829 million active accounts",
+    "pinned": true
+  },
+  {
+    "name": "Baidu Mobile (手机百度)",
+    "icon": "http://a3.mzstatic.com/us/r30/Purple62/v4/90/7c/9b/907c9b4e-556d-1a45-45d4-0ea801719abd/icon175x175.png",
+    "linkPlayStore": "http://shouji.baidu.com/software/9896302.html",
+    "linkAppStore": "https://itunes.apple.com/us/app/%E6%89%8B%E6%9C%BA%E7%99%BE%E5%BA%A6-%E7%99%BE%E5%BA%A6%E4%B8%80%E4%B8%8B%E4%BD%A0%E5%B0%B1%E5%BE%97%E5%88%B0/id382201985?mt=8",
+    "infoLink": "http://baike.baidu.com/link?url=TW8YhcVN4tO_Jz5VqMclCjGhf12EEqMD_TeVC6efe2REZlx80r6T0dX96hdmNl36XogLyExXzrvFU9rFeqxg_K",
+    "infoTitle": "Baidu Mobile is a search engine used by over 600 million people in China",
+    "pinned": true
+  },
+  {
+    "name": "Bloomberg",
+    "icon": "http://is1.mzstatic.com/image/thumb/Purple71/v4/31/24/72/312472df-3d53-0acf-fc31-8a25682e528f/source/175x175bb.jpg",
+    "linkAppStore": "https://itunes.apple.com/us/app/bloomberg/id281941097?mt=8",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.bloomberg.android.plus&hl=en",
+    "infoLink": "https://www.techatbloomberg.com/blog/bloomberg-used-react-native-develop-new-consumer-app/",
+    "infoTitle": "How Bloomberg Used React Native to Develop its new Consumer App",
     "pinned": true
   },
   {
@@ -116,17 +83,38 @@
     "linkAppStore": "https://itunes.apple.com/app/apple-store/id1087973225?pt=45076&ct=site-promo&mt=8",
     "infoLink": "http://www.vogue.com/app",
     "infoTitle": "",
-    "defaultLink": "https://itunes.apple.com/app/apple-store/id1087973225?pt=45076&ct=site-promo&mt=8",
     "pinned": true
   },
   {
-    "name": "Walmart",
-    "icon": "http://is2.mzstatic.com/image/thumb/Purple111/v4/64/9f/20/649f2026-e968-0417-660c-e5ee6d7977ff/source/350x350bb.jpg",
-    "linkAppStore": "https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8",
-    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.walmart.android&hl=en",
-    "infoLink": " https://medium.com/walmartlabs/react-native-at-walmartlabs-cdd140589560#.ueonqqloc",
-    "infoTitle": "React Native at Walmart Labs",
-    "defaultLink": "https://itunes.apple.com/us/app/walmart-app-shopping-savings/id338137227?mt=8",
+    "name": "li.st",
+    "icon": "https://lh3.googleusercontent.com/tXt0HgJ7dCgOnuQ-lQr1P7E57mnOYfwXhRsV9lGcPwHPVvrDAN6YmpLVFgy88qKrkFI=w300",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=st.li.listapp",
+    "infoLink": "https://www.youtube.com/watch?v=cI9bDvDEsYE",
+    "infoTitle": "Building li.st for Android with React Native",
+    "pinned": true
+  },
+  {
+    "name": "Discord",
+    "icon": "http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg",
+    "linkAppStore":  "https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8",
+    "infoLink": "https://discord.engineering/react-native-deep-dive-91fd5e949933#.5jnqftgof",
+    "infoTitle": "Using React Native: One Year Later",
+    "pinned": true
+  },
+  {
+    "name": "Gyroscope",
+    "icon": "https://media.gyrosco.pe/images/magneto/180x180.png",
+    "linkAppStore": "https://itunes.apple.com/app/apple-store/id1104085053?pt=117927205&ct=website&mt=8",
+    "infoLink": "https://blog.gyrosco.pe/building-the-app-1dac1a97d253",
+    "infoTitle": "Building a visualization experience with React Native",
+    "pinned": true
+  },
+  {
+    "name": "Townske",
+    "icon": "http://a3.mzstatic.com/us/r30/Purple69/v4/8b/42/20/8b4220af-5165-91fd-0f05-014332df73ef/icon175x175.png",
+    "linkAppStore": "https://itunes.apple.com/us/app/townske-stunning-city-guides/id1018136179?ls=1&mt=8",
+    "infoLink": "https://hackernoon.com/townske-app-in-react-native-6ad557de7a7c",
+    "infoTitle": "The experience of a web developer building an app using React Native",
     "pinned": true
   },
   {
@@ -151,7 +139,7 @@
     "linkPlayStore": "http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.edu",
     "linkAppStore": "https://itunes.apple.com/cn/app/teng-xun-ke-tang-zhuan-ye/id931720936?mt=8",
     "infoLink": "http://baike.baidu.com/view/13030839.htm",
-    "infoTitle": "Classroom is an education app by Chinese Internet giant Tencent",
+    "infoTitle": "Classroom is an education app by Chinese Internet giant Baidu",
     "pinned": false
   },
   {
@@ -235,15 +223,6 @@
     "linkAppStore": "http://apple.co/2dfkYH9",
     "infoLink": "http://blog.getchop.io/2016/10/13/how-we-built-chop/",
     "infoTitle": "How we built Chop using React Native",
-    "pinned": false
-  },
-  {
-    "name": "Bloomberg",
-    "icon": "http://is1.mzstatic.com/image/thumb/Purple71/v4/31/24/72/312472df-3d53-0acf-fc31-8a25682e528f/source/175x175bb.jpg",
-    "linkAppStore": "https://itunes.apple.com/us/app/bloomberg/id281941097?mt=8",
-    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.bloomberg.android.plus&hl=en",
-    "infoLink": "https://www.techatbloomberg.com/blog/bloomberg-used-react-native-develop-new-consumer-app/",
-    "infoTitle": "How Bloomberg Used React Native to Develop its new Consumer App",
     "pinned": false
   },
   {

@@ -6,16 +6,21 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule dismissKeyboard
- *
- * This function dismisses the currently-open keyboard, if any
+ * @providesModule ShowcaseAppIcon
  */
+
 'use strict';
 
-var TextInputState = require('TextInputState');
+var React = require('React');
 
-function dismissKeyboard() {
-  TextInputState.blurTextInput(TextInputState.currentlyFocusedField());
-}
+const ShowcaseAppIcon = React.createClass({
+  render: function() {
+    return (
+      <a href={this.props.linkUri}>
+        <img src={this.props.iconUri} alt={this.props.name} />
+      </a>
+    );
+  }
+});
 
-module.exports = dismissKeyboard;
+module.exports = ShowcaseAppIcon;

@@ -86,6 +86,7 @@ describe('Bundler', function() {
         getModuleSystemDependencies,
       };
     });
+    Resolver.load = jest.fn().mockImplementation(opts => Promise.resolve(new Resolver(opts)));
 
     fs.statSync.mockImplementation(function() {
       return {

@@ -64,7 +64,7 @@ public class NativeModuleRegistryBuilder {
           }
           ReactMarker.logMarker(
             ReactMarkerConstants.CREATE_MODULE_START,
-            moduleSpec.getType().getSimpleName());
+            moduleSpec.getType().getName());
           NativeModule module = moduleSpec.getProvider().get();
           ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_END);
           moduleHolder = new ModuleHolder(module);

@@ -2187,7 +2187,13 @@ function attachNativeEvent(viewRef: any, eventName: string, argMapping: Array<?M
 
   return {
     detach() {
-      NativeAnimatedAPI.removeAnimatedEventFromView(viewTag, eventName);
+      eventMappings.forEach((mapping) => {
+        NativeAnimatedAPI.removeAnimatedEventFromView(
+          viewTag,
+          eventName,
+          mapping.animatedValueTag,
+        );
+      });
     },
   };
 }
@@ -2215,6 +2221,7 @@ function unforkEvent(event: ?AnimatedEvent | ?Function, listener: Function): voi
 class AnimatedEvent {
   _argMapping: Array<?Mapping>;
   _listeners: Array<Function> = [];
+  _callListeners: Function;
   _attachedEvent: ?{
     detach: () => void,
   };
@@ -2228,6 +2235,7 @@ class AnimatedEvent {
     if (config.listener) {
       this.__addListener(config.listener);
     }
+    this._callListeners = this._callListeners.bind(this);
     this._attachedEvent = null;
     this.__isNative = shouldUseNativeDriver(config);
 
@@ -2281,9 +2289,9 @@ class AnimatedEvent {
     };
   }
 
-  _callListeners = (...args) => {
+  _callListeners(...args) {
     this._listeners.forEach(listener => listener(...args));
-  };
+  }
 
   _validateMapping() {
     const traverse = (recMapping, recEvt, key) => {
