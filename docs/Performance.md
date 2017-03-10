@@ -66,7 +66,7 @@ The scroll events are dispatched to the JS thread, but their receipt is not nece
 ### Running in development mode (`dev=true`)
 
 JavaScript thread performance suffers greatly when running in dev mode.
-This is unavoidable: a lot more work needs to be done at runtime to provide you with good warnings and error messages, such as validating propTypes and various other assertions.
+This is unavoidable: a lot more work needs to be done at runtime to provide you with good warnings and error messages, such as validating propTypes and various other assertions. Always make sure to test performance in [release builds](docs/running-on-device.html#building-your-app-for-production).
 
 ### Using `console.log` statements
 
@@ -79,8 +79,6 @@ so make sure to remove them before bundling.
 Use the new [`FlatList`](docs/flatlist.html) or [`SectionList`](docs/sectionlist.html) component instead.
 Besides simplifying the API, the new list components also have significant performance enhancements,
 the main one being nearly constant memory usage for any number of rows.
-
-TODO: Link to blog post
 
 ### JS FPS plunges when re-rendering a view that hardly changes
 
