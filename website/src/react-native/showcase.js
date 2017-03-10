@@ -8,49 +8,18 @@
 */
 'use strict';
 
-var React = require('React');
-var Site = require('Site');
-var Metadata = require('Metadata');
+const Metadata = require('Metadata');
+const React = require('React');
+const ShowcaseAppIcon = require('ShowcaseAppIcon');
+const Site = require('Site');
 
 /*
+ * Please don't send pull requests to showcase.json. For consistency the
+ * Showcase is now managed by people on the open source team at Facebook.
+ *
  * Thousands of applications use React Native, so we can't list all of them
- * in our showcase. To be useful to someone looking through the showcase,
- * either the app must be something that most readers would recognize, or the
- * makers of the application must have posted useful technical content about the
- * making of the app. It also must be useful considering that the majority of
- * readers only speak English. So, each app in the showcase should link to
- * either:
- *
- * 1/ An English-language news article discussing the app, built either by a
- *    funded startup or for a public company
- * 2/ An English-language technical post on a funded startup or public company
- *    blog discussing React Native
- *
- * The app should be available for download in the App Store or Play Store.
- *
- * If you believe your app meets the above critera, add it to the end of the
- * array in the `../../showcase.json` file in this repository and open a pull
- * request. PRs that do not follow these guidelines may be closed without
- * comment.
- *
- * Use the 'infoLink' and 'infoTitle' keys to reference the news article or
- * technical post. Your app icon should be hosted on a CDN and be no smaller
- * than 200px by 200px. Use the `icon` key to reference your app icon.
- *
- * Please use the following format when adding your app to the showcase:
- *
- * {
- *   name: 'App Name in English (Non-English name inside parenthesis, if any)',
- *   icon: 'CDN URL to your app icon'
- *   linkAppStore: 'https://itunes.apple.com/app/XXXXX'
- *   linkPlayStore: "https://play.google.com/store/apps/details?id=XXXXX",
- *   infoLink: 'Link to content that satisfies critera above',
- *   infoTitle: 'Short title for the infoLink',
- *   pinned: false,
- * }
- *
- * Do not set 'pinned' to true as the pinned list is reserved for a small number
- * of hand picked apps.
+ * in our showcase. To be useful to someone looking through the showcase the
+ * app must be something that most readers would recognize.
  */
 const showcaseApps = Metadata.showcaseApps;
 
@@ -66,13 +35,7 @@ const featuredApps = showcaseApps.filter(app => {
 
 const apps = pinnedApps.concat(featuredApps);
 
-var AppIcon = React.createClass({
-  render: function() {
-    return <img src={this.props.icon} alt={this.props.appName} />;
-  }
-});
-
-var AppList = React.createClass({
+const AppList = React.createClass({
 
   render: function() {
     return (
@@ -86,10 +49,13 @@ var AppList = React.createClass({
     return (
       <div className="showcase" key={i}>
         <div>
-          {this._renderAppIcon(app)}
-          {this._renderAppName(app)}
+          <ShowcaseAppIcon
+            iconUri={app.icon}
+            name={app.name}
+            linkUri={app.infoLink} />
+          {this._renderAppName(app.name)}
           {this._renderLinks(app)}
-          {this._renderInfo(app)}
+          {this._renderInfo(app.infoTitle, app.infoLink)}
         </div>
       </div>
     );
@@ -99,14 +65,14 @@ var AppList = React.createClass({
     return <img src={app.icon} alt={app.name} />;
   },
 
-  _renderAppName: function(app) {
-    return <h3>{app.name}</h3>;
+  _renderAppName: function(name) {
+    return <h3>{name}</h3>;
   },
 
-  _renderInfo: function(app) {
+  _renderInfo: function(title, uri) {
     let info = null;
-    if (app.infoLink) {
-      info = <p><a href={app.infoLink} target="_blank">{app.infoTitle}</a></p>;
+    if (uri) {
+      info = <p><a href={uri} target="_blank">{title}</a></p>;
     }
 
     return (
@@ -132,7 +98,7 @@ var AppList = React.createClass({
   },
 });
 
-var showcase = React.createClass({
+const showcase = React.createClass({
   render: function() {
     return (
       <Site section="showcase" title="Showcase">
@@ -147,11 +113,15 @@ var showcase = React.createClass({
             </div>
 
             <div className="inner-content">
-              <p>Some of these are hybrid native/React Native apps. If you built a popular application using React Native, we'd love to have your app on this showcase. Check out the <a href="https://github.com/facebook/react-native/blob/master/website/src/react-native/showcase.js">guidelines on GitHub</a> to update this page.</p>
+              <p>
+                Some of these are hybrid native/React Native apps.
+              </p>
             </div>
 
             <div className="inner-content">
-              <p>Also, <a href="https://github.com/ReactNativeNews/React-Native-Apps">a curated list of open source React Native apps</a> is being kept by React Native News.</p>
+              <p>
+                A curated list of <a href="https://github.com/ReactNativeNews/React-Native-Apps">open source React Native apps</a> is also being kept by React Native News.
+              </p>
             </div>
 
           </div>

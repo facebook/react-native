@@ -251,8 +251,7 @@ class Server {
     this._bundler = new Bundler(bundlerOpts);
 
     // changes to the haste map can affect resolution of files in the bundle
-    const dependencyGraph = this._bundler.getResolver().getDependencyGraph();
-    dependencyGraph.load().then(() => {
+    this._bundler.getResolver().getDependencyGraph().then(dependencyGraph => {
       dependencyGraph.getWatcher().on(
         'change',
         ({eventsQueue}) => eventsQueue.forEach(processFileChange),
@@ -307,7 +306,7 @@ class Server {
     entryFile: string,
     platform?: string,
   }): Promise<Bundle> {
-    return this._bundler.getResolver().getDependencyGraph().load().then(() => {
+    return this._bundler.getResolver().getDependencyGraph().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
       }

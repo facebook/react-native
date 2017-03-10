@@ -204,7 +204,9 @@ class Bundler {
     this._transformer.kill();
     return Promise.all([
       this._cache.end(),
-      this.getResolver().getDependencyGraph().getWatcher().end(),
+      this.getResolver().getDependencyGraph().then(dependencyGraph => {
+        dependencyGraph.getWatcher().end();
+      }),
     ]);
   }
 
