@@ -261,7 +261,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     },
     maxToRenderPerBatch: 10,
     onEndReached: () => {},
-    onEndReachedThreshold: 2, // multiples of length
+    onEndReachedThreshold: 1000,
     removeClippedSubviews: true,
     renderScrollComponent: (props: Props) => {
       if (props.onRefresh) {
@@ -590,7 +590,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     }
     const distanceFromEnd = contentLength - visibleLength - offset;
     const itemCount = getItemCount(data);
-    if (distanceFromEnd < onEndReachedThreshold * visibleLength &&
+    if (distanceFromEnd < onEndReachedThreshold &&
         this._scrollMetrics.contentLength !== this._sentEndForContentLength &&
         this.state.last === itemCount - 1) {
       // Only call onEndReached for a given content length once.

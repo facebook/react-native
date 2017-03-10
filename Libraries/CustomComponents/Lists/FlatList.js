@@ -112,6 +112,9 @@ type OptionalProps<ItemT> = {
    * content.
    */
   onEndReached?: ?(info: {distanceFromEnd: number}) => void,
+  /**
+   * Threshold in pixels (virtual, not physical) for calling onEndReached.
+   */
   onEndReachedThreshold?: ?number,
   /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
