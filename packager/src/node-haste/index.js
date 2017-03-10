@@ -53,7 +53,7 @@ type Options = {
   assetExts: Array<string>,
   cache: Cache,
   extensions: Array<string>,
-  extraNodeModules: ?Object,
+  extraNodeModules: ?{},
   forceNodeFilesystemAPI: boolean,
   getTransformCacheKey: GetTransformCacheKey,
   globalTransformCache: ?GlobalTransformCache,
@@ -87,7 +87,7 @@ class DependencyGraph extends EventEmitter {
     initialModuleMap: ModuleMap,
   }) {
     super();
-    this._opts = {...config.opts};
+    this._opts = config.opts;
     this._haste = config.haste;
     this._hasteFS = config.initialHasteFS;
     this._moduleMap = config.initialModuleMap;

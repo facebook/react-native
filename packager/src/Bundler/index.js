@@ -24,6 +24,7 @@ const ModuleTransport = require('../lib/ModuleTransport');
 const imageSize = require('image-size');
 const path = require('path');
 const denodeify = require('denodeify');
+const defaults = require('../../defaults');
 
 const {
   sep: pathSeparator,
@@ -179,10 +180,11 @@ class Bundler {
       hasteImpl: opts.hasteImpl,
       minifyCode: this._transformer.minify,
       moduleFormat: opts.moduleFormat,
-      platforms: opts.platforms,
+      platforms: new Set(opts.platforms),
       polyfillModuleNames: opts.polyfillModuleNames,
       projectRoots: opts.projectRoots,
-      providesModuleNodeModules: opts.providesModuleNodeModules,
+      providesModuleNodeModules:
+        opts.providesModuleNodeModules || defaults.providesModuleNodeModules,
       reporter: opts.reporter,
       resetCache: opts.resetCache,
       transformCode:
