@@ -20,6 +20,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.listener.RequestListener;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -41,20 +42,35 @@ import okhttp3.OkHttpClient;
  */
 @ReactModule(name = "FrescoModule")
 public class FrescoModule extends ReactContextBaseJavaModule implements
-    ModuleDataCleaner.Cleanable {
+    ModuleDataCleaner.Cleanable, LifecycleEventListener {
 
+  private final boolean mClearOnDestroy;
   private @Nullable ImagePipelineConfig mConfig;
 
   private static boolean sHasBeenInitialized = false;
 
   /**
    * Create a new Fresco module with a default configuration (or the previously given
-   * configuration via {@link #FrescoModule(ReactApplicationContext, ImagePipelineConfig)}.
+   * configuration via {@link #FrescoModule(ReactApplicationContext, boolean, ImagePipelineConfig)}.
    *
    * @param reactContext the context to use
    */
   public FrescoModule(ReactApplicationContext reactContext) {
-    this(reactContext, null);
+    this(reactContext, true, null);
+  }
+
+  /**
+   * Create a new Fresco module with a default configuration (or the previously given
+   * configuration via {@link #FrescoModule(ReactApplicationContext, boolean, ImagePipelineConfig)}.
+   *
+   * @param clearOnDestroy whether to clear the memory cache in onHostDestroy: this should be
+   *        {@code true} for pure RN apps and {@code false} for apps that use Fresco outside of RN
+   *        as well
+   * @param reactContext the context to use
+   *
+   */
+  public FrescoModule(ReactApplicationContext reactContext, boolean clearOnDestroy) {
+    this(reactContext, clearOnDestroy, null);
   }
 
   /**
@@ -65,16 +81,24 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
    * Otherwise, the given Fresco configuration will be ignored.
    *
    * @param reactContext the context to use
+   * @param clearOnDestroy whether to clear the memory cache in onHostDestroy: this should be
+   *        {@code true} for pure RN apps and {@code false} for apps that use Fresco outside of RN
+   *        as well
    * @param config the Fresco configuration, which will only be used for the first initialization
    */
-  public FrescoModule(ReactApplicationContext reactContext, @Nullable ImagePipelineConfig config) {
+  public FrescoModule(
+    ReactApplicationContext reactContext,
+    boolean clearOnDestroy,
+    @Nullable ImagePipelineConfig config) {
     super(reactContext);
+    mClearOnDestroy = clearOnDestroy;
     mConfig = config;
   }
 
   @Override
   public void initialize() {
     super.initialize();
+    getReactApplicationContext().addLifecycleEventListener(this);
     if (!hasBeenInitialized()) {
       // Make sure the SoLoaderShim is configured to use our loader for native libraries.
       // This code can be removed if using Fresco from Maven rather than from source
@@ -143,6 +167,24 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
       .setNetworkFetcher(new ReactOkHttpNetworkFetcher(client))
       .setDownsampleEnabled(false)
       .setRequestListeners(requestListeners);
+  }
+
+  @Override
+  public void onHostResume() {
+  }
+
+  @Override
+  public void onHostPause() {
+  }
+
+  @Override
+  public void onHostDestroy() {
+    // According to the javadoc for LifecycleEventListener#onHostDestroy, this is only called when
+    // the 'last' ReactActivity is being destroyed, which effectively means the app is being
+    // backgrounded.
+    if (mClearOnDestroy) {
+      Fresco.getImagePipeline().clearMemoryCaches();
+    }
   }
 
   private static class FrescoHandler implements SoLoaderShim.Handler {
