@@ -150,6 +150,10 @@ You will also need to install the Xcode Command Line Tools. Open Xcode, then cho
 
 ![Xcode Command Line Tools](img/XcodeCommandLineTools.png)
 
+You will also need to install the Xcode Command Line Tools. Open Xcode, then choose "Preferences..." from the Xcode menu. Go to the Locations panel and install the tools by selecting the most recent version in the Command Line Tools dropdown.
+
+![Xcode Command Line Tools](img/XcodeCommandLineTools.png)
+
 <block class="mac linux windows android" />
 
 ### Android Development Environment
