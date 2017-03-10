@@ -34,7 +34,6 @@
 
 const MetroListView = require('MetroListView'); // Used as a fallback legacy option
 const React = require('React');
-const ReactNative = require('ReactNative');
 const View = require('View');
 const VirtualizedList = require('VirtualizedList');
 
@@ -234,14 +233,6 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
    */
   recordInteraction() {
     this._listRef.recordInteraction();
-  }
-
-  getScrollableNode() {
-    if (this._listRef && this._listRef.getScrollableNode) {
-      return this._listRef.getScrollableNode();
-    } else {
-      return ReactNative.findNodeHandle(this._listRef);
-    }
   }
 
   componentWillMount() {

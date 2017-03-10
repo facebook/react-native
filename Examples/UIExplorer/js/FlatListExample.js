@@ -26,7 +26,6 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {
-  Animated,
   FlatList,
   StyleSheet,
   View,
@@ -48,8 +47,6 @@ const {
   renderSmallSwitchOption,
 } = require('./ListExampleShared');
 
-const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
-
 const VIEWABILITY_CONFIG = {
   minimumViewTime: 3000,
   viewAreaCoveragePercentThreshold: 100,
@@ -69,29 +66,15 @@ class FlatListExample extends React.PureComponent {
     logViewable: false,
     virtualized: true,
   };
-
   _onChangeFilterText = (filterText) => {
     this.setState({filterText});
   };
-
   _onChangeScrollToIndex = (text) => {
-    this._listRef.getNode().scrollToIndex({viewPosition: 0.5, index: Number(text)});
+    this._listRef.scrollToIndex({viewPosition: 0.5, index: Number(text)});
   };
-
-  _scrollPos = new Animated.Value(0);
-  _scrollSinkX = Animated.event(
-    [{nativeEvent: { contentOffset: { x: this._scrollPos } }}],
-    {useNativeDriver: true},
-  );
-  _scrollSinkY = Animated.event(
-    [{nativeEvent: { contentOffset: { y: this._scrollPos } }}],
-    {useNativeDriver: true},
-  );
-
   componentDidUpdate() {
-    this._listRef.getNode().recordInteraction(); // e.g. flipping logViewable switch
+    this._listRef.recordInteraction(); // e.g. flipping logViewable switch
   }
-
   render() {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
     const filter = (item) => (
@@ -112,6 +95,7 @@ class FlatListExample extends React.PureComponent {
             <PlainInput
               onChangeText={this._onChangeScrollToIndex}
               placeholder="scrollToIndex..."
+              style={styles.searchTextInput}
             />
           </View>
           <View style={styles.options}>
@@ -120,19 +104,10 @@ class FlatListExample extends React.PureComponent {
             {renderSmallSwitchOption(this, 'fixedHeight')}
             {renderSmallSwitchOption(this, 'logViewable')}
             {renderSmallSwitchOption(this, 'debug')}
-            <Animated.View style={[styles.spindicator, {
-              transform: [
-                {rotate: this._scrollPos.interpolate({
-                  inputRange: [0, 5000],
-                  outputRange: ['0deg', '360deg'],
-                  extrapolate: 'extend',
-                })}
-              ]
-            }]} />
           </View>
         </View>
         <SeparatorComponent />
-        <AnimatedFlatList
+        <FlatList
           HeaderComponent={HeaderComponent}
           FooterComponent={FooterComponent}
           SeparatorComponent={SeparatorComponent}
@@ -150,7 +125,6 @@ class FlatListExample extends React.PureComponent {
           legacyImplementation={false}
           numColumns={1}
           onRefresh={this._onRefresh}
-          onScroll={this.state.horizontal ? this._scrollSinkX : this._scrollSinkY}
           onViewableItemsChanged={this._onViewableItemsChanged}
           ref={this._captureRef}
           refreshing={false}
@@ -206,7 +180,7 @@ class FlatListExample extends React.PureComponent {
     }
   };
   _pressItem = (key: number) => {
-    this._listRef.getNode().recordInteraction();
+    this._listRef.recordInteraction();
     pressItem(this, key);
   };
   _listRef: FlatList<*>;
@@ -221,12 +195,6 @@ const styles = StyleSheet.create({
   },
   searchRow: {
     paddingHorizontal: 10,
-  },
-  spindicator: {
-    marginLeft: 'auto',
-    width: 2,
-    height: 16,
-    backgroundColor: 'darkgray',
   },
 });
 
