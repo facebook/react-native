@@ -41,6 +41,7 @@ taps on items or by navigation actions.</p></div></div></div></span></div><p cla
 const React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 const ReactNative <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 const <span class="token punctuation">{</span>
+  Animated<span class="token punctuation">,</span>
   FlatList<span class="token punctuation">,</span>
   StyleSheet<span class="token punctuation">,</span>
   View<span class="token punctuation">,</span>
@@ -62,6 +63,8 @@ const <span class="token punctuation">{</span>
   renderSmallSwitchOption<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./ListExampleShared&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
+const AnimatedFlatList <span class="token operator">=</span> Animated<span class="token punctuation">.</span><span class="token function">createAnimatedComponent<span class="token punctuation">(</span></span>FlatList<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
 const VIEWABILITY_CONFIG <span class="token operator">=</span> <span class="token punctuation">{</span>
   minimumViewTime<span class="token punctuation">:</span> <span class="token number">3000</span><span class="token punctuation">,</span>
   viewAreaCoveragePercentThreshold<span class="token punctuation">:</span> <span class="token number">100</span><span class="token punctuation">,</span>
@@ -81,15 +84,29 @@ class <span class="token class-name">FlatListExample</span> extends <span class=
     logViewable<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
     virtualized<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
   _onChangeFilterText <span class="token operator">=</span> <span class="token punctuation">(</span>filterText<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>filterText<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
   _onChangeScrollToIndex <span class="token operator">=</span> <span class="token punctuation">(</span>text<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span>_listRef<span class="token punctuation">.</span><span class="token function">scrollToIndex<span class="token punctuation">(</span></span><span class="token punctuation">{</span>viewPosition<span class="token punctuation">:</span> <span class="token number">0.5</span><span class="token punctuation">,</span> index<span class="token punctuation">:</span> <span class="token function">Number<span class="token punctuation">(</span></span>text<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_listRef<span class="token punctuation">.</span><span class="token function">getNode<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">scrollToIndex<span class="token punctuation">(</span></span><span class="token punctuation">{</span>viewPosition<span class="token punctuation">:</span> <span class="token number">0.5</span><span class="token punctuation">,</span> index<span class="token punctuation">:</span> <span class="token function">Number<span class="token punctuation">(</span></span>text<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  _scrollPos <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Animated<span class="token punctuation">.</span>Value</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  _scrollSinkX <span class="token operator">=</span> Animated<span class="token punctuation">.</span><span class="token function">event<span class="token punctuation">(</span></span>
+    <span class="token punctuation">[</span><span class="token punctuation">{</span>nativeEvent<span class="token punctuation">:</span> <span class="token punctuation">{</span> contentOffset<span class="token punctuation">:</span> <span class="token punctuation">{</span> x<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_scrollPos <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>useNativeDriver<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  _scrollSinkY <span class="token operator">=</span> Animated<span class="token punctuation">.</span><span class="token function">event<span class="token punctuation">(</span></span>
+    <span class="token punctuation">[</span><span class="token punctuation">{</span>nativeEvent<span class="token punctuation">:</span> <span class="token punctuation">{</span> contentOffset<span class="token punctuation">:</span> <span class="token punctuation">{</span> y<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_scrollPos <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>useNativeDriver<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
   <span class="token function">componentDidUpdate<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span>_listRef<span class="token punctuation">.</span><span class="token function">recordInteraction<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true"> // e.g. flipping logViewable switch
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_listRef<span class="token punctuation">.</span><span class="token function">getNode<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">recordInteraction<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true"> // e.g. flipping logViewable switch
 </span>  <span class="token punctuation">}</span>
+
   <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     const filterRegex <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">RegExp</span><span class="token punctuation">(</span><span class="token function">String<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>filterText<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">&#x27;i&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     const filter <span class="token operator">=</span> <span class="token punctuation">(</span>item<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">(</span>
@@ -110,7 +127,6 @@ class <span class="token class-name">FlatListExample</span> extends <span class=
             &lt;PlainInput
               onChangeText<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onChangeScrollToIndex<span class="token punctuation">}</span>
               placeholder<span class="token operator">=</span><span class="token string">&quot;scrollToIndex...&quot;</span>
-              style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>searchTextInput<span class="token punctuation">}</span>
             <span class="token operator">/</span><span class="token operator">&gt;</span>
           &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
           &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>options<span class="token punctuation">}</span><span class="token operator">&gt;</span>
@@ -119,10 +135,19 @@ class <span class="token class-name">FlatListExample</span> extends <span class=
             <span class="token punctuation">{</span><span class="token function">renderSmallSwitchOption<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">,</span> <span class="token string">&#x27;fixedHeight&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
             <span class="token punctuation">{</span><span class="token function">renderSmallSwitchOption<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">,</span> <span class="token string">&#x27;logViewable&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
             <span class="token punctuation">{</span><span class="token function">renderSmallSwitchOption<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">,</span> <span class="token string">&#x27;debug&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+            &lt;Animated<span class="token punctuation">.</span>View style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>spindicator<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+              transform<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+                <span class="token punctuation">{</span>rotate<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_scrollPos<span class="token punctuation">.</span><span class="token function">interpolate<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+                  inputRange<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">5000</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+                  outputRange<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">&#x27;0deg&#x27;</span><span class="token punctuation">,</span> <span class="token string">&#x27;360deg&#x27;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+                  extrapolate<span class="token punctuation">:</span> <span class="token string">&#x27;extend&#x27;</span><span class="token punctuation">,</span>
+                <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+              <span class="token punctuation">]</span>
+            <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span>
           &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
         &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
         &lt;SeparatorComponent <span class="token operator">/</span><span class="token operator">&gt;</span>
-        &lt;FlatList
+        &lt;AnimatedFlatList
           HeaderComponent<span class="token operator">=</span><span class="token punctuation">{</span>HeaderComponent<span class="token punctuation">}</span>
           FooterComponent<span class="token operator">=</span><span class="token punctuation">{</span>FooterComponent<span class="token punctuation">}</span>
           SeparatorComponent<span class="token operator">=</span><span class="token punctuation">{</span>SeparatorComponent<span class="token punctuation">}</span>
@@ -140,6 +165,7 @@ class <span class="token class-name">FlatListExample</span> extends <span class=
           legacyImplementation<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">false</span><span class="token punctuation">}</span>
           numColumns<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">1</span><span class="token punctuation">}</span>
           onRefresh<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onRefresh<span class="token punctuation">}</span>
+          onScroll<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>horizontal <span class="token operator">?</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_scrollSinkX <span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_scrollSinkY<span class="token punctuation">}</span>
           onViewableItemsChanged<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onViewableItemsChanged<span class="token punctuation">}</span>
           ref<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_captureRef<span class="token punctuation">}</span>
           refreshing<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">false</span><span class="token punctuation">}</span>
@@ -195,7 +221,7 @@ class <span class="token class-name">FlatListExample</span> extends <span class=
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
   _pressItem <span class="token operator">=</span> <span class="token punctuation">(</span>key<span class="token punctuation">:</span> number<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span>_listRef<span class="token punctuation">.</span><span class="token function">recordInteraction<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>_listRef<span class="token punctuation">.</span><span class="token function">getNode<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">recordInteraction<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token function">pressItem<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">,</span> key<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
   _listRef<span class="token punctuation">:</span> FlatList&lt;<span class="token operator">*</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
@@ -210,6 +236,12 @@ const styles <span class="token operator">=</span> StyleSheet<span class="token 
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   searchRow<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     paddingHorizontal<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  spindicator<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    marginLeft<span class="token punctuation">:</span> <span class="token string">&#x27;auto&#x27;</span><span class="token punctuation">,</span>
+    width<span class="token punctuation">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+    height<span class="token punctuation">:</span> <span class="token number">16</span><span class="token punctuation">,</span>
+    backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;darkgray&#x27;</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
