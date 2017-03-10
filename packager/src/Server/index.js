@@ -251,8 +251,8 @@ class Server {
     this._bundler = new Bundler(bundlerOpts);
 
     // changes to the haste map can affect resolution of files in the bundle
-    this._bundler.getResolver().getDependencyGraph().then(dependencyGraph => {
-      dependencyGraph.getWatcher().on(
+    this._bundler.getResolver().then(resolver => {
+      resolver.getDependencyGraph().getWatcher().on(
         'change',
         ({eventsQueue}) => eventsQueue.forEach(processFileChange),
       );
@@ -306,7 +306,7 @@ class Server {
     entryFile: string,
     platform?: string,
   }): Promise<Bundle> {
-    return this._bundler.getResolver().getDependencyGraph().then(() => {
+    return this._bundler.getResolver().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
       }
@@ -319,13 +319,14 @@ class Server {
       bundleDeps.set(bundle, {
         files: new Map(
           nonVirtual
-            .map(({sourcePath, meta = {dependencies: []}}) =>
-              [sourcePath, meta.dependencies])
+            .map(({sourcePath, meta}) =>
+              [sourcePath, meta != null ? meta.dependencies : []])
         ),
         idToIndex: new Map(modules.map(({id}, i) => [id, i])),
         dependencyPairs: new Map(
           nonVirtual
             .filter(({meta}) => meta && meta.dependencyPairs)
+            /* $FlowFixMe: the filter above ensures `dependencyPairs` is not null. */
             .map(m => [m.sourcePath, m.meta.dependencyPairs])
         ),
         outdated: new Set(),
@@ -361,7 +362,7 @@ class Server {
     });
   }
 
-  getModuleForPath(entryFile: string): Module {
+  getModuleForPath(entryFile: string): Promise<Module> {
     return this._bundler.getModuleForPath(entryFile);
   }
 
@@ -602,8 +603,6 @@ class Server {
 
           debug('Attempt to update existing bundle');
 
-          const changedModules =
-            Array.from(outdated, this.getModuleForPath, this);
           // $FlowFixMe(>=0.37.0)
           deps.outdated = new Set();
 
@@ -615,11 +614,14 @@ class Server {
           // specific response we can compute a non recursive one which
           // is the least we need and improve performance.
           const bundlePromise = this._bundles[optionsJson] =
-            this.getDependencies({
-              platform, dev, hot, minify,
-              entryFile: options.entryFile,
-              recursive: false,
-            }).then(response => {
+            Promise.all([
+              this.getDependencies({
+                platform, dev, hot, minify,
+                entryFile: options.entryFile,
+                recursive: false,
+              }),
+              Promise.all(Array.from(outdated, this.getModuleForPath, this)),
+            ]).then(([response, changedModules]) => {
               debug('Update bundle: rebuild shallow bundle');
 
               changedModules.forEach(m => {
@@ -969,7 +971,7 @@ class Server {
   }
 }
 
-function contentsEqual(array: Array<mixed>, set: Set<mixed>): boolean {
+function contentsEqual<T>(array: Array<T>, set: Set<T>): boolean {
   return array.length === set.size && array.every(set.has, set);
 }
 
