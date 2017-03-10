@@ -77,6 +77,8 @@
 		14F7A0F01BDA714B003C6C10 /* RCTFPSGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F7A0EF1BDA714B003C6C10 /* RCTFPSGraph.m */; };
 		191E3EBE1C29D9AF00C180A6 /* RCTRefreshControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 191E3EBD1C29D9AF00C180A6 /* RCTRefreshControlManager.m */; };
 		191E3EC11C29DC3800C180A6 /* RCTRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 191E3EC01C29DC3800C180A6 /* RCTRefreshControl.m */; };
+		2638623A1E732AB60010FEBF /* systemJSCWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65F3E41D1E73031C009375BD /* systemJSCWrapper.cpp */; };
+		2638623B1E732AB70010FEBF /* systemJSCWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65F3E41D1E73031C009375BD /* systemJSCWrapper.cpp */; };
 		2D074E381E609E65001D6DD0 /* RCTReconnectingWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = A12E9E281E5DEB860029001B /* RCTReconnectingWebSocket.h */; };
 		2D074E391E609E68001D6DD0 /* RCTSRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = A12E9E291E5DEB860029001B /* RCTSRWebSocket.h */; };
 		2D3B5E931D9B087300451313 /* RCTErrorInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */; };
@@ -687,7 +689,6 @@
 		597AD1BE1E577D7800152581 /* RCTRootContentView.h in Headers */ = {isa = PBXBuildFile; fileRef = 597AD1BB1E577D7800152581 /* RCTRootContentView.h */; };
 		597AD1BF1E577D7800152581 /* RCTRootContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 597AD1BC1E577D7800152581 /* RCTRootContentView.m */; };
 		597AD1C01E577D7800152581 /* RCTRootContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 597AD1BC1E577D7800152581 /* RCTRootContentView.m */; };
-		65F3E41E1E73031C009375BD /* systemJSCWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65F3E41D1E73031C009375BD /* systemJSCWrapper.cpp */; };
 		68EFE4EE1CF6EB3900A1DE13 /* RCTBundleURLProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */; };
 		830A229E1A66C68A008503DA /* RCTRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 830A229D1A66C68A008503DA /* RCTRootView.m */; };
 		83392EB31B6634E10013B15F /* RCTModalHostViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 83392EB21B6634E10013B15F /* RCTModalHostViewController.m */; };
@@ -2536,6 +2537,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D80D9191DF6F7CF0028D040 /* JSCWrapper.cpp in Sources */,
+				2638623A1E732AB60010FEBF /* systemJSCWrapper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2544,6 +2546,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D80D91A1DF6F7CF0028D040 /* JSCWrapper.cpp in Sources */,
+				2638623B1E732AB70010FEBF /* systemJSCWrapper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2642,7 +2645,6 @@
 				137327E91AA5CF210034F82E /* RCTTabBarItemManager.m in Sources */,
 				13A1F71E1A75392D00D3D453 /* RCTKeyCommands.m in Sources */,
 				83CBBA531A601E3B00E9B192 /* RCTUtils.m in Sources */,
-				65F3E41E1E73031C009375BD /* systemJSCWrapper.cpp in Sources */,
 				191E3EC11C29DC3800C180A6 /* RCTRefreshControl.m in Sources */,
 				13C156051AB1A2840079392D /* RCTWebView.m in Sources */,
 				83CBBA601A601EAA00E9B192 /* RCTBridge.m in Sources */,
