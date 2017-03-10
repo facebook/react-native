@@ -50,18 +50,13 @@ type Options = {
 
 class Resolver {
 
+  _depGraphPromise: Promise<DependencyGraph>;
   _depGraph: DependencyGraph;
   _minifyCode: MinifyCode;
   _polyfillModuleNames: Array<string>;
 
-  constructor(opts: Options, depGraph: DependencyGraph) {
-    this._minifyCode = opts.minifyCode;
-    this._polyfillModuleNames = opts.polyfillModuleNames || [];
-    this._depGraph = depGraph;
-  }
-
-  static async load(opts: Options): Promise<Resolver> {
-    const depGraph = await DependencyGraph.load({
+  constructor(opts: Options) {
+    this._depGraphPromise = DependencyGraph.load({
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
       assetExts: opts.assetExts,
       cache: opts.cache,
@@ -91,7 +86,19 @@ class Resolver {
       useWatchman: true,
       watch: opts.watch || false,
     });
-    return new Resolver(opts, depGraph);
+
+    this._minifyCode = opts.minifyCode;
+    this._polyfillModuleNames = opts.polyfillModuleNames || [];
+
+    this._depGraphPromise.then(
+      depGraph => { this._depGraph = depGraph; },
+      err => {
+        console.error(err.message + '\n' + err.stack);
+        // FIXME(jeanlauliac): we shall never exit the process by ourselves,
+        // packager may be used in a server application or the like.
+        process.exit(1);
+      },
+    );
   }
 
   getShallowDependencies(
@@ -113,13 +120,13 @@ class Resolver {
     getModuleId: mixed,
   ): Promise<ResolutionResponse> {
     const {platform, recursive = true} = options;
-    return this._depGraph.getDependencies({
+    return this._depGraphPromise.then(depGraph => depGraph.getDependencies({
       entryPath,
       platform,
       transformOptions,
       recursive,
       onProgress,
-    }).then(resolutionResponse => {
+    })).then(resolutionResponse => {
       this._getPolyfillDependencies().reverse().forEach(
         polyfill => resolutionResponse.prependDependency(polyfill)
       );
@@ -245,8 +252,8 @@ class Resolver {
     return this._minifyCode(path, code, map);
   }
 
-  getDependencyGraph(): DependencyGraph {
-    return this._depGraph;
+  getDependencyGraph(): Promise<DependencyGraph> {
+    return this._depGraphPromise;
   }
 }
 
