@@ -58,6 +58,11 @@ var NUM_SECTIONS = 100;
 var NUM_ROWS_PER_SECTION = 10;
 
 class Thumb extends React.Component {
+  componentWillMount() {
+    UIManager.setLayoutAnimationEnabledExperimental &&
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+
   _getThumbIdx = () => {
     return Math.floor(Math.random() * THUMB_URLS.length);
   };
