@@ -14,20 +14,24 @@ import java.util.HashSet;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-import com.facebook.common.soloader.SoLoaderShim;
 import com.facebook.common.logging.FLog;
+import com.facebook.common.soloader.SoLoaderShim;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.listener.RequestListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.common.ModuleDataCleaner;
+import com.facebook.react.modules.network.CookieJarContainer;
+import com.facebook.react.modules.network.ForwardingCookieHandler;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.soloader.SoLoader;
 
+import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
 
 /**
@@ -112,7 +116,7 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     return sHasBeenInitialized;
   }
 
-  private static ImagePipelineConfig getDefaultConfig(Context context) {
+  private static ImagePipelineConfig getDefaultConfig(ReactContext context) {
     return getDefaultConfigBuilder(context).build();
   }
 
@@ -122,14 +126,21 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
    *
    * @return {@link ImagePipelineConfig.Builder} that has been initialized with default values
    */
-  public static ImagePipelineConfig.Builder getDefaultConfigBuilder(Context context) {
+  public static ImagePipelineConfig.Builder getDefaultConfigBuilder(ReactContext context) {
     HashSet<RequestListener> requestListeners = new HashSet<>();
     requestListeners.add(new SystraceRequestListener());
 
-    OkHttpClient okHttpClient = OkHttpClientProvider.getOkHttpClient();
+    OkHttpClient client = OkHttpClientProvider.createClient();
+
+    // make sure to forward cookies for any requests via the okHttpClient
+    // so that image requests to endpoints that use cookies still work
+    CookieJarContainer container = (CookieJarContainer) client.cookieJar();
+    ForwardingCookieHandler handler = new ForwardingCookieHandler(context);
+    container.setCookieJar(new JavaNetCookieJar(handler));
+
     return OkHttpImagePipelineConfigFactory
-      .newBuilder(context.getApplicationContext(), okHttpClient)
-      .setNetworkFetcher(new ReactOkHttpNetworkFetcher(okHttpClient))
+      .newBuilder(context.getApplicationContext(), client)
+      .setNetworkFetcher(new ReactOkHttpNetworkFetcher(client))
       .setDownsampleEnabled(false)
       .setRequestListeners(requestListeners);
   }

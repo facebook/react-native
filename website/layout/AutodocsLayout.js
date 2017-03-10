@@ -34,7 +34,15 @@ function renderEnumValue(value) {
 }
 
 function renderType(type) {
-  return <code>{(type.nullable ? '?' : '') + renderBaseType(type)}</code>;
+  const baseType = renderBaseType(type);
+  return type.nullable ? <span>?{baseType}</span> : baseType;
+}
+
+function spanJoinMapper(elements, callback, separator) {
+  return <span>{elements.map((rawElement, ii) => {
+    const el = callback(rawElement);
+    return (ii + 1 < elements.length) ? <span>{el}{separator}</span> : el;
+  })}</span>;
 }
 
 function renderBaseType(type) {
@@ -53,14 +61,18 @@ function renderBaseType(type) {
   }
 
   if (type.name === 'shape') {
-    return '{' + Object.keys(type.value).map((key => key + ': ' + renderType(type.value[key]))).join(', ') + '}';
+    return <span>{'{'}{spanJoinMapper(
+      Object.keys(type.value),
+      (key) => <span>{key + ': '}{renderType(type.value[key])}</span>,
+      ', '
+    )}{'}'}</span>;
   }
 
   if (type.name === 'union') {
     if (type.value) {
-      return type.value.map(renderType).join(', ');
+      return spanJoinMapper(type.value, renderType, ', ');
     }
-    return type.elements.map(renderType).join(' | ');
+    return spanJoinMapper(type.elements, renderType, ' | ');
   }
 
   if (type.name === 'arrayOf') {

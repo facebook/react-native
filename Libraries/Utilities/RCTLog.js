@@ -11,11 +11,11 @@
  */
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
+const BatchedBridge = require('BatchedBridge');
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
-var levelsMap = {
+const levelsMap = {
   log: 'log',
   info: 'info',
   warn: 'warn',
@@ -25,18 +25,24 @@ var levelsMap = {
 
 class RCTLog {
   // level one of log, info, warn, error, mustfix
-  static logIfNoNativeHook() {
-    var args = Array.prototype.slice.call(arguments);
-    var level = args.shift();
-    var logFn = levelsMap[level];
+  static logIfNoNativeHook(...args) {
+    if (typeof global.nativeLoggingHook === 'undefined') {
+      // We already printed in xcode, so only log here if using a js debugger
+      RCTLog.logToConsole(...args);
+    }
+
+    return true;
+  }
+
+  // Log to console regardless of nativeLoggingHook
+  static logToConsole(level, ...args) {
+    const logFn = levelsMap[level];
     invariant(
       logFn,
       'Level "' + level + '" not one of ' + Object.keys(levelsMap)
     );
-    if (typeof global.nativeLoggingHook === 'undefined') {
-      // We already printed in xcode, so only log here if using a js debugger
-      console[logFn].apply(console, args);
-    }
+
+    console[logFn](...args);
 
     return true;
   }

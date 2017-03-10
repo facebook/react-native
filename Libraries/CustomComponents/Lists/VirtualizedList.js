@@ -34,6 +34,7 @@
 
 const Batchinator = require('Batchinator');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const RefreshControl = require('RefreshControl');
 const ScrollView = require('ScrollView');
 const View = require('View');
@@ -237,6 +238,14 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this._updateViewableItems(this.props.data);
   }
 
+  getScrollableNode() {
+    if (this._scrollRef && this._scrollRef.getScrollableNode) {
+      return this._scrollRef.getScrollableNode();
+    } else {
+      return ReactNative.findNodeHandle(this._scrollRef);
+    }
+  }
+
   static defaultProps = {
     disableVirtualization: false,
     getItem: (data: any, index: number) => data[index],
@@ -293,7 +302,8 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     super(props);
     invariant(
       !props.onScroll || !props.onScroll.__isNative,
-      'VirtualizedList does not support AnimatedEvent with onScroll and useNativeDriver',
+      'Components based on VirtualizedList must be wrapped with Animated.createAnimatedComponent ' +
+      'to support native onScroll events with useNativeDriver',
     );
     this._updateCellsToRenderBatcher = new Batchinator(
       this._updateCellsToRender,

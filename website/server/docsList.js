@@ -18,7 +18,6 @@ const components = [
   '../Libraries/Image/Image.ios.js',
   '../Libraries/Components/Keyboard/KeyboardAvoidingView.js',
   '../Libraries/CustomComponents/ListView/ListView.js',
-  '../Libraries/Components/MapView/MapView.js',
   '../Libraries/Modal/Modal.js',
   '../Libraries/CustomComponents/Navigator/Navigator.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
