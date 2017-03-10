@@ -115,19 +115,20 @@ class DependencyGraph extends EventEmitter {
     });
   }
 
-  static async load(opts: Options): Promise<DependencyGraph> {
+  static load(opts: Options): Promise<DependencyGraph> {
     const initializingPackagerLogEntry =
       log(createActionStartEntry('Initializing Packager'));
     opts.reporter.update({type: 'dep_graph_loading'});
     const haste = DependencyGraph._createHaste(opts);
-    const {hasteFS, moduleMap} = await haste.build();
-    log(createActionEndEntry(initializingPackagerLogEntry));
-    opts.reporter.update({type: 'dep_graph_loaded'});
-    return new DependencyGraph({
-      opts,
-      haste,
-      initialHasteFS: hasteFS,
-      initialModuleMap: moduleMap,
+    return haste.build().then(({hasteFS, moduleMap}) => {
+      log(createActionEndEntry(initializingPackagerLogEntry));
+      opts.reporter.update({type: 'dep_graph_loaded'});
+      return new DependencyGraph({
+        opts,
+        haste,
+        initialHasteFS: hasteFS,
+        initialModuleMap: moduleMap,
+      });
     });
   }
 
