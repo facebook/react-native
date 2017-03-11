@@ -11,29 +11,29 @@
 
 #import <React/RCTConvert.h>
 
+#import "RCTAdditionAnimatedNode.h"
 #import "RCTAnimatedNode.h"
 #import "RCTAnimationDriver.h"
-#import "RCTEventAnimation.h"
-
-#import "RCTAdditionAnimatedNode.h"
-#import "RCTInterpolationAnimatedNode.h"
 #import "RCTDiffClampAnimatedNode.h"
 #import "RCTDivisionAnimatedNode.h"
+#import "RCTEventAnimation.h"
+#import "RCTFrameAnimation.h"
+#import "RCTInterpolationAnimatedNode.h"
 #import "RCTModuloAnimatedNode.h"
 #import "RCTMultiplicationAnimatedNode.h"
-#import "RCTModuloAnimatedNode.h"
 #import "RCTPropsAnimatedNode.h"
+#import "RCTSpringAnimation.h"
 #import "RCTStyleAnimatedNode.h"
 #import "RCTTransformAnimatedNode.h"
 #import "RCTValueAnimatedNode.h"
-#import "RCTFrameAnimation.h"
-#import "RCTSpringAnimation.h"
 
 @implementation RCTNativeAnimatedNodesManager
 {
   RCTUIManager *_uiManager;
   NSMutableDictionary<NSNumber *, RCTAnimatedNode *> *_animationNodes;
-  NSMutableDictionary<NSString *, RCTEventAnimation *> *_eventDrivers;
+  // Mapping of a view tag and an event name to a list of event animation drivers. 99% of the time
+  // there will be only one driver per mapping so all code code should be optimized around that.
+  NSMutableDictionary<NSString *, NSMutableArray<RCTEventAnimation *> *> *_eventDrivers;
   NSMutableSet<id<RCTAnimationDriver>> *_activeAnimations;
   CADisplayLink *_displayLink;
 }
@@ -207,7 +207,7 @@
   RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)_animationNodes[nodeTag];
 
   NSString *type = config[@"type"];
-  id<RCTAnimationDriver>animationDriver;
+  id<RCTAnimationDriver> animationDriver;
 
   if ([type isEqual:@"frames"]) {
     animationDriver = [[RCTFrameAnimation alloc] initWithId:animationId
@@ -233,7 +233,7 @@
 
 - (void)stopAnimation:(nonnull NSNumber *)animationId
 {
-  for (id<RCTAnimationDriver>driver in _activeAnimations) {
+  for (id<RCTAnimationDriver> driver in _activeAnimations) {
     if ([driver.animationId isEqual:animationId]) {
       [driver removeAnimation];
       [_activeAnimations removeObject:driver];
@@ -264,15 +264,36 @@
   NSArray<NSString *> *eventPath = [RCTConvert NSStringArray:eventMapping[@"nativeEventPath"]];
 
   RCTEventAnimation *driver =
-  [[RCTEventAnimation alloc] initWithEventPath:eventPath valueNode:(RCTValueAnimatedNode *)node];
+    [[RCTEventAnimation alloc] initWithEventPath:eventPath valueNode:(RCTValueAnimatedNode *)node];
 
-  _eventDrivers[[NSString stringWithFormat:@"%@%@", viewTag, eventName]] = driver;
+  NSString *key = [NSString stringWithFormat:@"%@%@", viewTag, eventName];
+  if (_eventDrivers[key] != nil) {
+    [_eventDrivers[key] addObject:driver];
+  } else {
+    NSMutableArray<RCTEventAnimation *> *drivers = [NSMutableArray new];
+    [drivers addObject:driver];
+    _eventDrivers[key] = drivers;
+  }
 }
 
 - (void)removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
                           eventName:(nonnull NSString *)eventName
+                    animatedNodeTag:(nonnull NSNumber *)animatedNodeTag
 {
-  [_eventDrivers removeObjectForKey:[NSString stringWithFormat:@"%@%@", viewTag, eventName]];
+  NSString *key = [NSString stringWithFormat:@"%@%@", viewTag, eventName];
+  if (_eventDrivers[key] != nil) {
+    if (_eventDrivers[key].count == 1) {
+      [_eventDrivers removeObjectForKey:key];
+    } else {
+      NSMutableArray<RCTEventAnimation *> *driversForKey = _eventDrivers[key];
+      for (NSUInteger i = 0; i < driversForKey.count; i++) {
+        if (driversForKey[i].valueNode.nodeTag == animatedNodeTag) {
+          [driversForKey removeObjectAtIndex:i];
+          break;
+        }
+      }
+    }
+  }
 }
 
 - (void)handleAnimatedEvent:(id<RCTEvent>)event
@@ -282,9 +303,12 @@
   }
 
   NSString *key = [NSString stringWithFormat:@"%@%@", event.viewTag, event.eventName];
-  RCTEventAnimation *driver = _eventDrivers[key];
-  if (driver) {
-    [driver updateWithEvent:event];
+  NSMutableArray<RCTEventAnimation *> *driversForKey = _eventDrivers[key];
+  if (driversForKey) {
+    for (RCTEventAnimation *driver in driversForKey) {
+      [driver updateWithEvent:event];
+    }
+
     [self updateAnimations];
   }
 }
@@ -337,13 +361,13 @@
 
 - (void)stepAnimations
 {
-  for (id<RCTAnimationDriver>animationDriver in _activeAnimations) {
+  for (id<RCTAnimationDriver> animationDriver in _activeAnimations) {
     [animationDriver stepAnimation];
   }
 
   [self updateAnimations];
 
-  for (id<RCTAnimationDriver>animationDriver in [_activeAnimations copy]) {
+  for (id<RCTAnimationDriver> animationDriver in [_activeAnimations copy]) {
     if (animationDriver.animationHasFinished) {
       [animationDriver removeAnimation];
       [_activeAnimations removeObject:animationDriver];

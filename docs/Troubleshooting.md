@@ -16,11 +16,15 @@ The React Native packager runs on port 8081. If another process is already using
 
 Run the following command on a Mac to find the id for the process that is listening on port 8081:
 
-`$ sudo lsof -i :8081`
+```
+$ sudo lsof -i :8081
+```
 
 Then run the following to terminate the process:
 
-`$ kill -9 <PID>`
+```
+$ kill -9 <PID>
+```
 
 On Windows you can find the process using port 8081 using [Resource Monitor](https://stackoverflow.com/questions/48198/how-can-you-find-out-which-process-is-listening-on-a-port-on-windows) and stop it using Task Manager.
 
@@ -36,7 +40,7 @@ You will also need to update your applications to load the JavaScript bundle fro
 
 ### NPM locking error
 
-If you encounter an error such as "npm WARN locking Error: EACCES" while using the React Native CLI, try running the following:
+If you encounter an error such as `npm WARN locking Error: EACCES` while using the React Native CLI, try running the following:
 
 ```
 sudo chown -R $USER ~/.npm
@@ -101,4 +105,3 @@ Issue caused by the number of directories [inotify](https://github.com/guard/lis
 ```
 echo fs.inotify.max_user_watches=582222 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 ```
-

@@ -351,6 +351,19 @@ public class UIViewOperationQueue {
     }
   }
 
+  private class SetLayoutAnimationEnabledOperation implements UIOperation {
+    private final boolean mEnabled;
+
+    private SetLayoutAnimationEnabledOperation(final boolean enabled) {
+      mEnabled = enabled;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.setLayoutAnimationEnabled(mEnabled);
+    }
+  }
+
   private class ConfigureLayoutAnimationOperation implements UIOperation {
     private final ReadableMap mConfig;
 
@@ -684,6 +697,11 @@ public class UIViewOperationQueue {
 
   public void enqueueRemoveAnimation(int animationID) {
     mOperations.add(new RemoveAnimationOperation(animationID));
+  }
+
+  public void enqueueSetLayoutAnimationEnabled(
+      final boolean enabled) {
+    mOperations.add(new SetLayoutAnimationEnabledOperation(enabled));
   }
 
   public void enqueueConfigureLayoutAnimation(

@@ -53,7 +53,7 @@ type Options = {
   assetExts: Array<string>,
   cache: Cache,
   extensions: Array<string>,
-  extraNodeModules: ?Object,
+  extraNodeModules: ?{},
   forceNodeFilesystemAPI: boolean,
   getTransformCacheKey: GetTransformCacheKey,
   globalTransformCache: ?GlobalTransformCache,
@@ -87,7 +87,7 @@ class DependencyGraph extends EventEmitter {
     initialModuleMap: ModuleMap,
   }) {
     super();
-    this._opts = {...config.opts};
+    this._opts = config.opts;
     this._haste = config.haste;
     this._hasteFS = config.initialHasteFS;
     this._moduleMap = config.initialModuleMap;
@@ -115,20 +115,19 @@ class DependencyGraph extends EventEmitter {
     });
   }
 
-  static load(opts: Options): Promise<DependencyGraph> {
+  static async load(opts: Options): Promise<DependencyGraph> {
     const initializingPackagerLogEntry =
       log(createActionStartEntry('Initializing Packager'));
     opts.reporter.update({type: 'dep_graph_loading'});
     const haste = DependencyGraph._createHaste(opts);
-    return haste.build().then(({hasteFS, moduleMap}) => {
-      log(createActionEndEntry(initializingPackagerLogEntry));
-      opts.reporter.update({type: 'dep_graph_loaded'});
-      return new DependencyGraph({
-        opts,
-        haste,
-        initialHasteFS: hasteFS,
-        initialModuleMap: moduleMap,
-      });
+    const {hasteFS, moduleMap} = await haste.build();
+    log(createActionEndEntry(initializingPackagerLogEntry));
+    opts.reporter.update({type: 'dep_graph_loaded'});
+    return new DependencyGraph({
+      opts,
+      haste,
+      initialHasteFS: hasteFS,
+      initialModuleMap: moduleMap,
     });
   }
 
