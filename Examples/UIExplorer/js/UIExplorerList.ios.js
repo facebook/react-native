@@ -81,11 +81,6 @@ const ComponentExamples: Array<UIExplorerExample> = [
     supportsTVOS: true,
   },
   {
-     key: 'MapViewExample',
-     module: require('./MapViewExample'),
-    supportsTVOS: true,
-  },
-  {
     key: 'ModalExample',
     module: require('./ModalExample'),
     supportsTVOS: true,
@@ -296,11 +291,6 @@ const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'NativeAnimationsExample',
     module: require('./NativeAnimationsExample'),
-    supportsTVOS: true,
-  },
-  {
-    key: 'NavigationExperimentalExample',
-    module: require('./NavigationExperimental/NavigationExperimentalExample'),
     supportsTVOS: true,
   },
   {

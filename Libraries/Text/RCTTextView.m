@@ -238,6 +238,7 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   [_textView layoutIfNeeded];
 
   [self updatePlaceholderVisibility];
+  [self updateContentSize];
 
   _blockTextShouldChange = NO;
 }

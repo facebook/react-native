@@ -15,6 +15,7 @@ jest
   .setMock('uglify-js')
   .mock('image-size')
   .mock('fs')
+  .mock('os')
   .mock('assert')
   .mock('progress')
   .mock('../../node-haste')
@@ -31,6 +32,7 @@ var Resolver = require('../../Resolver');
 var defaults = require('../../../defaults');
 var sizeOf = require('image-size');
 var fs = require('fs');
+const os = require('os');
 
 var commonOptions = {
   allowBundleUpdates: false,
@@ -76,6 +78,8 @@ describe('Bundler', function() {
   var projectRoots;
 
   beforeEach(function() {
+    os.cpus.mockReturnValue({length: 1});
+
     getDependencies = jest.fn();
     getModuleSystemDependencies = jest.fn();
     projectRoots = ['/root'];
@@ -86,6 +90,7 @@ describe('Bundler', function() {
         getModuleSystemDependencies,
       };
     });
+    Resolver.load = jest.fn().mockImplementation(opts => Promise.resolve(new Resolver(opts)));
 
     fs.statSync.mockImplementation(function() {
       return {
@@ -346,6 +351,17 @@ describe('Bundler', function() {
           '/root/img/new_image2@2x.png',
           '/root/img/new_image2@3x.png',
         ]));
+    });
+
+    it('return correct number of workers', () => {
+      os.cpus.mockReturnValue({length: 1});
+      expect(Bundler.getMaxWorkerCount()).toBe(1);
+      os.cpus.mockReturnValue({length: 8});
+      expect(Bundler.getMaxWorkerCount()).toBe(6);
+      os.cpus.mockReturnValue({length: 24});
+      expect(Bundler.getMaxWorkerCount()).toBe(14);
+      process.env.REACT_NATIVE_MAX_WORKERS = 5;
+      expect(Bundler.getMaxWorkerCount()).toBe(5);
     });
   });
 });

@@ -46,6 +46,7 @@ import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.view.GenericDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.image.ImageInfo;
+import com.facebook.imagepipeline.postprocessors.IterativeBoxBlurPostProcessor;
 import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
@@ -159,6 +160,7 @@ public class ReactImageView extends GenericDraweeView {
   private boolean mIsDirty;
   private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final RoundedCornerPostprocessor mRoundedCornerPostprocessor;
+  private @Nullable IterativeBoxBlurPostProcessor mIterativeBoxBlurPostProcessor;
   private @Nullable ControllerListener mControllerListener;
   private @Nullable ControllerListener mControllerForTesting;
   private final @Nullable Object mCallerContext;
@@ -223,6 +225,16 @@ public class ReactImageView extends GenericDraweeView {
       };
     }
 
+    mIsDirty = true;
+  }
+
+  public void setBlurRadius(float blurRadius) {
+    if (blurRadius == 0) {
+      mIterativeBoxBlurPostProcessor = null;
+    } else {
+      mIterativeBoxBlurPostProcessor =
+        new IterativeBoxBlurPostProcessor((int) PixelUtil.toPixelFromDIP(blurRadius));
+    }
     mIsDirty = true;
   }
 
@@ -326,7 +338,7 @@ public class ReactImageView extends GenericDraweeView {
     computedCorners[2] = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[2]) ? mBorderCornerRadii[2] : defaultBorderRadius;
     computedCorners[3] = mBorderCornerRadii != null && !YogaConstants.isUndefined(mBorderCornerRadii[3]) ? mBorderCornerRadii[3] : defaultBorderRadius;
   }
-  
+
   public void setHeaders(ReadableMap headers) {
     mHeaders = headers;
   }
@@ -386,7 +398,13 @@ public class ReactImageView extends GenericDraweeView {
             ? mFadeDurationMs
             : mImageSource.isResource() ? 0 : REMOTE_IMAGE_FADE_DURATION_MS);
 
-    Postprocessor postprocessor = usePostprocessorScaling ? mRoundedCornerPostprocessor : null;
+    // TODO: t13601664 Support multiple PostProcessors
+    Postprocessor postprocessor = null;
+    if (usePostprocessorScaling) {
+      postprocessor = mRoundedCornerPostprocessor;
+    } else if (mIterativeBoxBlurPostProcessor != null) {
+      postprocessor = mIterativeBoxBlurPostProcessor;
+    }
 
     ResizeOptions resizeOptions = doResize ? new ResizeOptions(getWidth(), getHeight()) : null;
 

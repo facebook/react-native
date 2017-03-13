@@ -4,8 +4,8 @@ title: More Resources
 layout: docs
 category: The Basics
 permalink: docs/more-resources.html
-next: integration-with-existing-apps
-previous: using-navigators
+next: handling-touches
+previous: networking
 ---
 
 If you just read through this website, you should be able to build a pretty cool React Native app. But React Native isn't just a product made by one company - it's a community of thousands of developers. So if you're interested in React Native, here's some related stuff you might want to check out.
@@ -32,7 +32,7 @@ The folks who built the app for Facebook's F8 conference in 2016 also [open-sour
 
 [CodePush](https://microsoft.github.io/code-push/) is a service from Microsoft that makes it easy to deploy live updates to your React Native app. If you don't like going through the app store process to deploy little tweaks, and you also don't like setting up your own backend, give CodePush a try.
 
-[Exponent](http://docs.getexponent.com/versions/v6.0.0/index.html) is a development environment plus application that focuses on letting you build React Native apps in the Exponent development environment, without ever touching Xcode or Android Studio. If you wish React Native was even more JavaScripty and webby, check out Exponent.
+[Expo](https://docs.expo.io) is a development environment plus application that focuses on letting you build React Native apps in the Expo development environment, without ever touching Xcode or Android Studio. If you wish React Native was even more JavaScripty and webby, check out Expo.
 
 [Deco](https://www.decosoftware.com/) is an all-in-one development environment specifically designed for React Native. It can automatically set up a new project, search for open source components, and insert them. You can also tweak your app graphically in real time. Check it out if you use macOS.
 

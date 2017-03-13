@@ -81,11 +81,10 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   public static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
 
-  private static final TextPaint sTextPaintInstance = new TextPaint();
-
-  static {
-    sTextPaintInstance.setFlags(TextPaint.ANTI_ALIAS_FLAG);
-  }
+  // It's important to pass the ANTI_ALIAS_FLAG flag to the constructor rather than setting it
+  // later by calling setFlags. This is because the latter approach triggers a bug on Android 4.4.2.
+  // The bug is that unicode emoticons aren't measured properly which causes text to be clipped.
+  private static final TextPaint sTextPaintInstance = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
 
   private static class SetSpanOperation {
     protected int start, end;

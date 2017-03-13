@@ -43,7 +43,8 @@ const {
 } = require('../Logger');
 
 function debounceAndBatch(fn, delay) {
-  let timeout, args = [];
+  let args = [];
+  let timeout;
   return value => {
     args.push(value);
     clearTimeout(timeout);
@@ -250,16 +251,11 @@ class Server {
     this._bundler = new Bundler(bundlerOpts);
 
     // changes to the haste map can affect resolution of files in the bundle
-    const dependencyGraph = this._bundler.getResolver().getDependencyGraph();
-    dependencyGraph.load().then(() => {
-      dependencyGraph.getWatcher().on(
+    this._bundler.getResolver().then(resolver => {
+      resolver.getDependencyGraph().getWatcher().on(
         'change',
         ({eventsQueue}) => eventsQueue.forEach(processFileChange),
       );
-      dependencyGraph.getHasteMap().on('change', () => {
-        debug('Clearing bundle cache due to haste map change');
-        this._clearBundles();
-      });
     });
 
     this._debouncedFileChangeHandler = debounceAndBatch(filePaths => {
@@ -306,36 +302,28 @@ class Server {
     }
   }
 
-  buildBundle(options: {
-    entryFile: string,
-    platform?: string,
-  }): Promise<Bundle> {
-    return this._bundler.getResolver().getDependencyGraph().load().then(() => {
-      if (!options.platform) {
-        options.platform = getPlatformExtension(options.entryFile);
-      }
-
-      const opts = bundleOpts(options);
-      return this._bundler.bundle(opts);
-    }).then(bundle => {
-      const modules = bundle.getModules();
-      const nonVirtual = modules.filter(m => !m.virtual);
-      bundleDeps.set(bundle, {
-        files: new Map(
-          nonVirtual
-            .map(({sourcePath, meta = {dependencies: []}}) =>
-              [sourcePath, meta.dependencies])
-        ),
-        idToIndex: new Map(modules.map(({id}, i) => [id, i])),
-        dependencyPairs: new Map(
-          nonVirtual
-            .filter(({meta}) => meta && meta.dependencyPairs)
-            .map(m => [m.sourcePath, m.meta.dependencyPairs])
-        ),
-        outdated: new Set(),
-      });
-      return bundle;
+  async buildBundle(options: {entryFile: string, platform?: string}): Promise<Bundle> {
+    if (!options.platform) {
+      options.platform = getPlatformExtension(options.entryFile);
+    }
+    const opts = bundleOpts(options);
+    const bundle = await this._bundler.bundle(opts);
+    const modules = bundle.getModules();
+    const nonVirtual = modules.filter(m => !m.virtual);
+    bundleDeps.set(bundle, {
+      files: new Map(nonVirtual.map(({sourcePath, meta}) =>
+        [sourcePath, meta != null ? meta.dependencies : []],
+      )),
+      idToIndex: new Map(modules.map(({id}, i) => [id, i])),
+      dependencyPairs: new Map(
+        nonVirtual
+          .filter(({meta}) => meta && meta.dependencyPairs)
+          /* $FlowFixMe: the filter above ensures `dependencyPairs` is not null. */
+          .map(m => [m.sourcePath, m.meta.dependencyPairs])
+      ),
+      outdated: new Set(),
     });
+    return bundle;
   }
 
   buildBundleFromUrl(reqUrl: string): Promise<mixed> {
@@ -365,7 +353,7 @@ class Server {
     });
   }
 
-  getModuleForPath(entryFile: string): Module {
+  getModuleForPath(entryFile: string): Promise<Module> {
     return this._bundler.getModuleForPath(entryFile);
   }
 
@@ -606,8 +594,6 @@ class Server {
 
           debug('Attempt to update existing bundle');
 
-          const changedModules =
-            Array.from(outdated, this.getModuleForPath, this);
           // $FlowFixMe(>=0.37.0)
           deps.outdated = new Set();
 
@@ -619,11 +605,14 @@ class Server {
           // specific response we can compute a non recursive one which
           // is the least we need and improve performance.
           const bundlePromise = this._bundles[optionsJson] =
-            this.getDependencies({
-              platform, dev, hot, minify,
-              entryFile: options.entryFile,
-              recursive: false,
-            }).then(response => {
+            Promise.all([
+              this.getDependencies({
+                platform, dev, hot, minify,
+                entryFile: options.entryFile,
+                recursive: false,
+              }),
+              Promise.all(Array.from(outdated, this.getModuleForPath, this)),
+            ]).then(([response, changedModules]) => {
               debug('Update bundle: rebuild shallow bundle');
 
               changedModules.forEach(m => {
@@ -957,7 +946,8 @@ class Server {
         'entryModuleOnly',
         false,
       ),
-      generateSourceMaps: minify || !dev || this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap', false),
+      generateSourceMaps:
+        minify || !dev || this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap', false),
       assetPlugins,
     };
   }
@@ -972,7 +962,7 @@ class Server {
   }
 }
 
-function contentsEqual(array: Array<mixed>, set: Set<mixed>): boolean {
+function contentsEqual<T>(array: Array<T>, set: Set<T>): boolean {
   return array.length === set.size && array.every(set.has, set);
 }
 

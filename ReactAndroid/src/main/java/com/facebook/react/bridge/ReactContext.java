@@ -12,8 +12,6 @@ package com.facebook.react.bridge;
 import javax.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import android.app.Activity;
@@ -27,10 +25,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
-
-import static com.facebook.react.common.LifecycleState.BEFORE_CREATE;
-import static com.facebook.react.common.LifecycleState.BEFORE_RESUME;
-import static com.facebook.react.common.LifecycleState.RESUMED;
 
 /**
  * Abstract ContextWrapper for Android application or activity {@link Context} and
@@ -180,20 +174,6 @@ public class ReactContext extends ContextWrapper {
     mLifecycleEventListeners.remove(listener);
   }
 
-  public Map<String, Map<String,Double>> getAllPerformanceCounters() {
-    Map<String, Map<String,Double>> totalPerfMap =
-      new HashMap<>();
-    if (mCatalystInstance != null) {
-      for (NativeModule nativeModule : mCatalystInstance.getNativeModules()) {
-        if (nativeModule instanceof PerformanceCounter) {
-          PerformanceCounter perfCounterModule = (PerformanceCounter) nativeModule;
-          totalPerfMap.put(nativeModule.getName(), perfCounterModule.getPerformanceCounters());
-        }
-      }
-    }
-    return totalPerfMap;
-  }
-
   public void addActivityEventListener(ActivityEventListener listener) {
     mActivityEventListeners.add(listener);
   }
@@ -209,6 +189,7 @@ public class ReactContext extends ContextWrapper {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.RESUMED;
     mCurrentActivity = new WeakReference(activity);
+    ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_START);
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       try {
         listener.onHostResume();
@@ -216,6 +197,7 @@ public class ReactContext extends ContextWrapper {
         handleException(e);
       }
     }
+    ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_END);
   }
 
   public void onNewIntent(@Nullable Activity activity, Intent intent) {
@@ -236,6 +218,7 @@ public class ReactContext extends ContextWrapper {
   public void onHostPause() {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_RESUME;
+    ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_START);
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       try {
         listener.onHostPause();
@@ -243,6 +226,7 @@ public class ReactContext extends ContextWrapper {
         handleException(e);
       }
     }
+    ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_END);
   }
 
   /**
@@ -299,6 +283,10 @@ public class ReactContext extends ContextWrapper {
 
   public void assertOnNativeModulesQueueThread() {
     Assertions.assertNotNull(mNativeModulesMessageQueueThread).assertIsOnThread();
+  }
+
+  public void assertOnNativeModulesQueueThread(String message) {
+    Assertions.assertNotNull(mNativeModulesMessageQueueThread).assertIsOnThread(message);
   }
 
   public boolean isOnNativeModulesQueueThread() {

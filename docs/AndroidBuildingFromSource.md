@@ -4,6 +4,7 @@ title: Building React Native from source
 layout: docs
 category: Guides (Android)
 permalink: docs/android-building-from-source.html
+banner: ejected
 next: activityindicator
 previous: android-ui-performance
 ---

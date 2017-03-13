@@ -60,4 +60,12 @@ public class ReactMarkerConstants {
     "CREATE_I18N_ASSETS_MODULE_END";
   public static final String GET_CONSTANTS_START = "GET_CONSTANTS_START";
   public static final String GET_CONSTANTS_END = "GET_CONSTANTS_END";
+  public static final String INITIALIZE_MODULE_START = "INITIALIZE_MODULE_START";
+  public static final String INITIALIZE_MODULE_END = "INITIALIZE_MODULE_END";
+  public static final String ON_HOST_RESUME_START = "ON_HOST_RESUME_START";
+  public static final String ON_HOST_RESUME_END = "ON_HOST_RESUME_END";
+  public static final String ON_HOST_PAUSE_START = "ON_HOST_PAUSE_START";
+  public static final String ON_HOST_PAUSE_END = "ON_HOST_PAUSE_END";
+  public static final String CONVERT_CONSTANTS_START = "CONVERT_CONSTANTS_START";
+  public static final String CONVERT_CONSTANTS_END = "CONVERT_CONSTANTS_END";
 }
