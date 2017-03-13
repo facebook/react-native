@@ -24,8 +24,8 @@ const fs = require('fs');
 const getAssetDataFromName = require('./lib/getAssetDataFromName');
 const getInverseDependencies = require('./lib/getInverseDependencies');
 const getPlatformExtension = require('./lib/getPlatformExtension');
+const invariant = require('fbjs/lib/invariant');
 const isAbsolutePath = require('absolute-path');
-const os = require('os');
 const path = require('path');
 const replacePatterns = require('./lib/replacePatterns');
 const util = require('util');
@@ -58,7 +58,7 @@ type Options = {
   getTransformCacheKey: GetTransformCacheKey,
   globalTransformCache: ?GlobalTransformCache,
   ignoreFilePath: (filePath: string) => boolean,
-  maxWorkers: ?number,
+  maxWorkerCount: number,
   moduleOptions: ModuleOptions,
   platforms: Set<string>,
   preferNativePlatform: boolean,
@@ -87,6 +87,7 @@ class DependencyGraph extends EventEmitter {
     initialModuleMap: ModuleMap,
   }) {
     super();
+    invariant(config.opts.maxWorkerCount >= 1, 'worker count must be greater or equal to 1');
     this._opts = config.opts;
     this._haste = config.haste;
     this._hasteFS = config.initialHasteFS;
@@ -97,12 +98,11 @@ class DependencyGraph extends EventEmitter {
   }
 
   static _createHaste(opts: Options): JestHasteMap {
-    const mw = opts.maxWorkers;
     return new JestHasteMap({
       extensions: opts.extensions.concat(opts.assetExts),
       forceNodeFilesystemAPI: opts.forceNodeFilesystemAPI,
       ignorePattern: {test: opts.ignoreFilePath},
-      maxWorkers: typeof mw === 'number' && mw >= 1 ? mw : getMaxWorkers(),
+      maxWorkers: opts.maxWorkerCount,
       mocksPattern: '',
       name: 'react-native-packager',
       platforms: Array.from(opts.platforms),
@@ -305,29 +305,5 @@ function NotFoundError() {
   this.status = 404;
 }
 util.inherits(NotFoundError, Error);
-
-function getMaxWorkers() {
-  const cores = os.cpus().length;
-
-  if (cores <= 1) {
-    // oh well...
-    return 1;
-  }
-  if (cores <= 4) {
-    // don't starve the CPU while still reading reasonably rapidly
-    return cores - 1;
-  }
-  if (cores <= 8) {
-    // empirical testing showed massive diminishing returns when going over
-    // 4 or 5 workers on 8-core machines
-    return Math.floor(cores * 0.75) - 1;
-  }
-
-  // pretty much guesswork
-  if (cores < 24) {
-    return Math.floor(3 / 8 * cores + 3);
-  }
-  return cores / 2;
-}
 
 module.exports = DependencyGraph;
