@@ -131,7 +131,7 @@ class NavigationCardStackPanResponder extends NavigationAbstractPanResponder {
       */
       props.gestureResponseDistance || 30;
 
-    if (positionMax != null && currentDragPosition > positionMax) {
+    if (positionMax != null && currentDragPosition - RESPOND_THRESHOLD > positionMax) {
       return false;
     }
 
