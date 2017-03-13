@@ -669,11 +669,6 @@ static inline YGSize RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasure
 
 // Flex
 
-- (void)setFlex:(float)value
-{
-  YGNodeStyleSetFlex(_yogaNode, value);
-}
-
 - (void)setFlexBasis:(YGValue)value
 {
   RCT_SET_YGVALUE_AUTO(value, YGNodeStyleSetFlexBasis, _yogaNode);
@@ -694,6 +689,7 @@ static inline YGSize RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasure
   return YGNodeStyleGet##cssProp(_yogaNode);                \
 }
 
+RCT_STYLE_PROPERTY(Flex, flex, Flex, float)
 RCT_STYLE_PROPERTY(FlexGrow, flexGrow, FlexGrow, float)
 RCT_STYLE_PROPERTY(FlexShrink, flexShrink, FlexShrink, float)
 RCT_STYLE_PROPERTY(FlexDirection, flexDirection, FlexDirection, YGFlexDirection)
