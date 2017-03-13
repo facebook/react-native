@@ -168,7 +168,7 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 /**
  * The delegate provided during the bridge initialization
  */
-@property (nonatomic, weak, readonly) id<RCTBridgeDelegate> delegate;
+@property (nonatomic, strong, readonly) id<RCTBridgeDelegate> delegate;
 
 /**
  * The launch options that were used to initialize the bridge.
