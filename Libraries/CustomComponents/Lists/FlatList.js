@@ -67,17 +67,17 @@ type RequiredProps<ItemT> = {
 };
 type OptionalProps<ItemT> = {
   /**
+   * Rendered in between each item, but not at the top or bottom.
+   */
+  ItemSeparatorComponent?: ?ReactClass<any>,
+  /**
    * Rendered at the bottom of all the items.
    */
-  FooterComponent?: ?ReactClass<any>,
+  ListFooterComponent?: ?ReactClass<any>,
   /**
    * Rendered at the top of all the items.
    */
-  HeaderComponent?: ?ReactClass<any>,
-  /**
-   * Rendered in between each item, but not at the top or bottom.
-   */
-  SeparatorComponent?: ?ReactClass<any>,
+  ListHeaderComponent?: ?ReactClass<any>,
   /**
    * `getItemLayout` is an optional optimizations that let us skip measurement of dynamic content if
    * you know the height of items a priori. `getItemLayout` is the most efficient, and is easy to
@@ -88,7 +88,7 @@ type OptionalProps<ItemT> = {
    *     )}
    *
    * Remember to include separator length (height or width) in your offset calculation if you
-   * specify `SeparatorComponent`.
+   * specify `ItemSeparatorComponent`.
    */
   getItemLayout?: (data: ?Array<ItemT>, index: number) =>
     {length: number, offset: number, index: number},
@@ -132,13 +132,6 @@ type OptionalProps<ItemT> = {
    * Optional custom style for multi-item rows generated when numColumns > 1
    */
   columnWrapperStyle?: StyleObj,
-  /**
-   * Optional optimization to minimize re-rendering items.
-   */
-  shouldItemUpdate: (
-    prevInfo: {item: ItemT, index: number},
-    nextInfo: {item: ItemT, index: number}
-  ) => boolean,
   /**
    * See `ViewabilityHelper` for flow type and further documentation.
    */

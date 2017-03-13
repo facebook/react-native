@@ -25,6 +25,8 @@ const imageSize = require('image-size');
 const path = require('path');
 const denodeify = require('denodeify');
 const defaults = require('../../defaults');
+const os = require('os');
+const invariant = require('fbjs/lib/invariant');
 
 const {
   sep: pathSeparator,
@@ -163,8 +165,10 @@ class Bundler {
       cacheKey: transformCacheKey,
     });
 
+    const maxWorkerCount = Bundler.getMaxWorkerCount();
+
     /* $FlowFixMe: in practice it's always here. */
-    this._transformer = new Transformer(opts.transformModulePath);
+    this._transformer = new Transformer(opts.transformModulePath, maxWorkerCount);
 
     const getTransformCacheKey = (src, filename, options) => {
       return transformCacheKey + getCacheKey(src, filename, options);
@@ -178,6 +182,7 @@ class Bundler {
       getTransformCacheKey,
       globalTransformCache: opts.globalTransformCache,
       hasteImpl: opts.hasteImpl,
+      maxWorkerCount,
       minifyCode: this._transformer.minify,
       moduleFormat: opts.moduleFormat,
       platforms: new Set(opts.platforms),
@@ -780,6 +785,26 @@ class Bundler {
   getResolver(): Promise<Resolver> {
     return this._resolverPromise;
   }
+
+  /**
+   * Unless overriden, we use a diminishing amount of workers per core, because
+   * using more and more of them does not scale much. Ex. 6 workers for 8
+   * cores, or 14 workers for 24 cores.
+   */
+  static getMaxWorkerCount() {
+    const cores = os.cpus().length;
+    const envStr = process.env.REACT_NATIVE_MAX_WORKERS;
+    if (envStr == null) {
+      return Math.max(1, Math.ceil(cores * (0.5 + 0.5 * Math.exp(-cores * 0.07)) - 1));
+    }
+    const envCount = parseInt(process.env.REACT_NATIVE_MAX_WORKERS, 10);
+    invariant(
+      Number.isInteger(envCount),
+      'environment variable `REACT_NATIVE_MAX_WORKERS` must be a valid integer',
+    );
+    return Math.min(cores, envCount);
+  }
+
 }
 
 function getPathRelativeToRoot(roots, absPath) {
