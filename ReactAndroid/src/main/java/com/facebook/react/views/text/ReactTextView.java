@@ -130,9 +130,8 @@ public class ReactTextView extends TextView implements ReactCompoundView {
 
   @Override
   protected boolean verifyDrawable(Drawable drawable) {
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
-      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+    if (mContainsImages) {
+      TextInlineImageSpan[] spans = getTextInlineImageSpan();
       for (TextInlineImageSpan span : spans) {
         if (span.getDrawable() == drawable) {
           return true;
@@ -144,9 +143,8 @@ public class ReactTextView extends TextView implements ReactCompoundView {
 
   @Override
   public void invalidateDrawable(Drawable drawable) {
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
-      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+    if (mContainsImages) {
+      TextInlineImageSpan[] spans = getTextInlineImageSpan();
       for (TextInlineImageSpan span : spans) {
         if (span.getDrawable() == drawable) {
           invalidate();
@@ -159,9 +157,8 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   @Override
   public void onDetachedFromWindow() {
     super.onDetachedFromWindow();
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
-      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+    if (mContainsImages) {
+      TextInlineImageSpan[] spans = getTextInlineImageSpan();
       for (TextInlineImageSpan span : spans) {
         span.onDetachedFromWindow();
       }
@@ -171,9 +168,8 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   @Override
   public void onStartTemporaryDetach() {
     super.onStartTemporaryDetach();
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
-      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+    if (mContainsImages) {
+      TextInlineImageSpan[] spans = getTextInlineImageSpan();
       for (TextInlineImageSpan span : spans) {
         span.onStartTemporaryDetach();
       }
@@ -183,11 +179,10 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
-      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+    if (mContainsImages) {
+      TextInlineImageSpan[] spans = getTextInlineImageSpan();
       for (TextInlineImageSpan span : spans) {
-        span.onAttachedToWindow();
+          span.onAttachedToWindow();
       }
     }
   }
@@ -195,11 +190,10 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   @Override
   public void onFinishTemporaryDetach() {
     super.onFinishTemporaryDetach();
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
-      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+    if (mContainsImages) {
+      TextInlineImageSpan[] spans = getTextInlineImageSpan();
       for (TextInlineImageSpan span : spans) {
-        span.onFinishTemporaryDetach();
+          span.onFinishTemporaryDetach();
       }
     }
   }
@@ -278,5 +272,13 @@ public class ReactTextView extends TextView implements ReactCompoundView {
       }
     }
     return mReactBackgroundDrawable;
+  }
+  
+  private TextInlineImageSpan[] getTextInlineImageSpan() {
+    if (getText() instanceof Spanned) {
+      Spanned text = (Spanned) getText();
+      return text.getSpans(0, text.length(), TextInlineImageSpan.class);
+    }
+    return new TextInlineImageSpan[] { };
   }
 }
