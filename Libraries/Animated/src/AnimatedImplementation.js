@@ -1328,6 +1328,7 @@ class AnimatedModulo extends AnimatedWithChildren {
 
   __detach(): void {
     this._a.__removeChild(this);
+    super.__detach();
   }
 
   __getNativeConfig(): any {
@@ -1378,6 +1379,7 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
 
   __detach(): void {
     this._a.__removeChild(this);
+    super.__detach();
   }
 
   __getNativeConfig(): any {
@@ -1461,6 +1463,7 @@ class AnimatedTransform extends AnimatedWithChildren {
         }
       }
     });
+    super.__detach();
   }
 
   __getNativeConfig(): any {
@@ -1568,6 +1571,7 @@ class AnimatedStyle extends AnimatedWithChildren {
         value.__removeChild(this);
       }
     }
+    super.__detach();
   }
 
   __makeNative() {
