@@ -17,7 +17,7 @@ This is the workhorse component for simple, performant lists. Provide an array o
 ```
 <FlatList
   data={[{title: 'Title Text', key: 'item1'}, ...]}
-  renderItem={({item}) => <ListItem title={item.title}}
+  renderItem={({item}) => <ListItem title={item.title} />}
 />
 ```
 
