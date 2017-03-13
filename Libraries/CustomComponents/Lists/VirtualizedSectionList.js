@@ -84,7 +84,7 @@ type OptionalProps<SectionT: SectionBase> = {
   renderSectionHeader?: ?({section: SectionT}) => ?React.Element<*>,
   /**
    * Rendered at the bottom of every Section, except the very last one, in place of the normal
-   * SeparatorComponent.
+   * ItemSeparatorComponent.
    */
   SectionSeparatorComponent?: ?ReactClass<*>,
   /**
