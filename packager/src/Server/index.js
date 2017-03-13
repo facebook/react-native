@@ -302,37 +302,28 @@ class Server {
     }
   }
 
-  buildBundle(options: {
-    entryFile: string,
-    platform?: string,
-  }): Promise<Bundle> {
-    return this._bundler.getResolver().then(() => {
-      if (!options.platform) {
-        options.platform = getPlatformExtension(options.entryFile);
-      }
-
-      const opts = bundleOpts(options);
-      return this._bundler.bundle(opts);
-    }).then(bundle => {
-      const modules = bundle.getModules();
-      const nonVirtual = modules.filter(m => !m.virtual);
-      bundleDeps.set(bundle, {
-        files: new Map(
-          nonVirtual
-            .map(({sourcePath, meta}) =>
-              [sourcePath, meta != null ? meta.dependencies : []])
-        ),
-        idToIndex: new Map(modules.map(({id}, i) => [id, i])),
-        dependencyPairs: new Map(
-          nonVirtual
-            .filter(({meta}) => meta && meta.dependencyPairs)
-            /* $FlowFixMe: the filter above ensures `dependencyPairs` is not null. */
-            .map(m => [m.sourcePath, m.meta.dependencyPairs])
-        ),
-        outdated: new Set(),
-      });
-      return bundle;
+  async buildBundle(options: {entryFile: string, platform?: string}): Promise<Bundle> {
+    if (!options.platform) {
+      options.platform = getPlatformExtension(options.entryFile);
+    }
+    const opts = bundleOpts(options);
+    const bundle = await this._bundler.bundle(opts);
+    const modules = bundle.getModules();
+    const nonVirtual = modules.filter(m => !m.virtual);
+    bundleDeps.set(bundle, {
+      files: new Map(nonVirtual.map(({sourcePath, meta}) =>
+        [sourcePath, meta != null ? meta.dependencies : []],
+      )),
+      idToIndex: new Map(modules.map(({id}, i) => [id, i])),
+      dependencyPairs: new Map(
+        nonVirtual
+          .filter(({meta}) => meta && meta.dependencyPairs)
+          /* $FlowFixMe: the filter above ensures `dependencyPairs` is not null. */
+          .map(m => [m.sourcePath, m.meta.dependencyPairs])
+      ),
+      outdated: new Set(),
     });
+    return bundle;
   }
 
   buildBundleFromUrl(reqUrl: string): Promise<mixed> {
