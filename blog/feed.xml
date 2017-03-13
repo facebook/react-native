@@ -2,12 +2,48 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog/</id>
     <title>React Native Blog</title>
-    <updated>2017-02-14T00:00:00Z</updated>
+    <updated>2017-03-13T00:00:00Z</updated>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog/"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
     <rights>Copyright © 2017 Facebook Inc.</rights>
     <generator>Feed for Node.js</generator>
+    <entry>
+        <title type="html"><![CDATA[Introducing Create React Native App]]></title>
+        <id>https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html">
+        </link>
+        <updated>2017-03-13T00:00:00Z</updated>
+        <summary type="html"><![CDATA[Today we’re announcing Create React Native App: a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of Create React App and is the product of a collaboration between Facebook and Expo (formerly Exponent).]]></summary>
+        <author>
+            <name>Adam Perry</name>
+            <uri>https://github.com/dikaiosune</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[idx: The Existential Function]]></title>
+        <id>https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html">
+        </link>
+        <updated>2017-03-13T00:00:00Z</updated>
+        <summary type="html"><![CDATA[At Facebook, we often need to access deeply nested values in data structures fetched with GraphQL. On the way to accessing these deeply nested values, it is common for one or more intermediate fields to be nullable. These intermediate fields may be null for a variety of reasons, from failed privacy checks to the mere fact that null happens to be the most flexible way to represent non-fatal errors.]]></summary>
+        <author>
+            <name>Timothy Yung</name>
+            <uri>https://github.com/yungsters</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Better List Views in React Native]]></title>
+        <id>https://facebook.github.io/react-native/blog/2017/03/13/better-list-views.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/03/13/better-list-views.html">
+        </link>
+        <updated>2017-03-13T00:00:00Z</updated>
+        <summary type="html"><![CDATA[Many of you have started playing with some of our new List components already after our teaser announcement in the community group, but we are officially announcing them today! No more ListViews or DataSources, stale rows, ignored bugs, or excessive memory consumption - with the latest React Native March 2017 release candidate (0.43-rc.1) you can pick from the new suite of components what best fits your use-case, with great perf and feature sets out of the box:]]></summary>
+        <author>
+            <name>Spencer Ahrens</name>
+            <uri>https://github.com/sahrens</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Using Native Driver for Animated]]></title>
         <id>https://facebook.github.io/react-native/blog/2017/02/14/using-native-driver-for-animated.html</id>
