@@ -14,7 +14,8 @@ jest
   .dontMock('json-stable-stringify')
   .dontMock('../TransformCache')
   .dontMock('../toFixedHex')
-  .dontMock('left-pad');
+  .dontMock('left-pad')
+  .dontMock('lodash/throttle');
 
 const imurmurhash = require('imurmurhash');
 
@@ -30,7 +31,7 @@ jest.mock('fs', () => ({
   readdirSync(dirPath) {
     // Not required for it to work.
     return [];
-  }
+  },
 }));
 
 jest.mock('write-file-atomic', () => ({

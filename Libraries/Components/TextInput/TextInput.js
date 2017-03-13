@@ -168,6 +168,7 @@ const DataDetectorTypes = [
  * or control this param programmatically with native code.
  *
  */
+// $FlowFixMe(>=0.41.0)
 const TextInput = React.createClass({
   statics: {
     /* TODO(brentvatne) docs are needed for this */
@@ -527,6 +528,10 @@ const TextInput = React.createClass({
       PropTypes.oneOf(DataDetectorTypes),
       PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
     ]),
+    /**
+     * If `true`, caret is hidden. The default value is `false`.
+     */
+    caretHidden: PropTypes.bool,
   },
 
   /**

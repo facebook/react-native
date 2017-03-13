@@ -21,6 +21,7 @@ export type CapturedError = {
   componentName : ?string,
   componentStack : string,
   error : Error,
+  errorBoundary : ?Object,
   errorBoundaryFound : boolean,
   errorBoundaryName : string | null,
   willRetry : boolean,
@@ -86,8 +87,21 @@ var {
 var invariant = require('fbjs/lib/invariant');
 
 if (__DEV__) {
+  var warning = require('fbjs/lib/warning');
   var ReactFiberInstrumentation = require('ReactFiberInstrumentation');
   var ReactDebugCurrentFiber = require('ReactDebugCurrentFiber');
+
+  var warnAboutUpdateOnUnmounted = function(instance : ReactClass<any>) {
+    const ctor = instance.constructor;
+    warning(
+      false,
+      'Can only update a mounted or mounting component. This usually means ' +
+      'you called setState, replaceState, or forceUpdate on an unmounted ' +
+      'component. This is a no-op.\n\nPlease check the code for the ' +
+      '%s component.',
+      ctor && (ctor.displayName || ctor.name) || 'ReactClass'
+    );
+  };
 }
 
 var timeHeuristicForUnitOfWork = 1;
@@ -348,6 +362,9 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(config : HostConfig<T, P, 
       'related to the return field. This error is likely caused by a bug ' +
       'in React. Please file an issue.'
     );
+
+    // Reset this to null before calling lifecycles
+    ReactCurrentOwner.current = null;
 
     // Updates that occur during the commit phase should have Task priority
     const previousPriorityContext = priorityContext;
@@ -941,6 +958,7 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(config : HostConfig<T, P, 
         componentName,
         componentStack,
         error,
+        errorBoundary: errorBoundaryFound ? boundary.stateNode : null,
         errorBoundaryFound,
         errorBoundaryName,
         willRetry,
@@ -1129,7 +1147,11 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(config : HostConfig<T, P, 
               return;
           }
         } else {
-          // TODO: Warn about setting state on an unmounted component.
+          if (__DEV__) {
+            if (fiber.tag === ClassComponent) {
+              warnAboutUpdateOnUnmounted(fiber.stateNode);
+            }
+          }
           return;
         }
       }

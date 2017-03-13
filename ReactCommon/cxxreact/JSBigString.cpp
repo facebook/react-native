@@ -3,7 +3,6 @@
 #include "JSBigString.h"
 
 #include <fcntl.h>
-#include <stdio.h>
 #include <sys/stat.h>
 
 #include <folly/Memory.h>

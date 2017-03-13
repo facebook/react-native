@@ -77,11 +77,11 @@ class Animated {
       throw new Error('This node cannot be made a "native" animated node');
     }
   }
-  __getNativeTag(): number {
+  __getNativeTag(): ?number {
     NativeAnimatedHelper.assertNativeAnimatedModule();
     invariant(this.__isNative, 'Attempt to get native tag from node not marked as "native"');
     if (this.__nativeTag == null) {
-      var nativeTag: number = NativeAnimatedHelper.generateNewNodeTag();
+      var nativeTag: ?number = NativeAnimatedHelper.generateNewNodeTag();
       NativeAnimatedAPI.createAnimatedNode(nativeTag, this.__getNativeConfig());
       this.__nativeTag = nativeTag;
     }
@@ -2151,9 +2151,80 @@ type EventConfig = {
   useNativeDriver?: bool,
 };
 
+function attachNativeEvent(viewRef: any, eventName: string, argMapping: Array<?Mapping>) {
+  // Find animated values in `argMapping` and create an array representing their
+  // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
+  const eventMappings = [];
+
+  const traverse = (value, path) => {
+    if (value instanceof AnimatedValue) {
+      value.__makeNative();
+
+      eventMappings.push({
+        nativeEventPath: path,
+        animatedValueTag: value.__getNativeTag(),
+      });
+    } else if (typeof value === 'object') {
+      for (const key in value) {
+        traverse(value[key], path.concat(key));
+      }
+    }
+  };
+
+  invariant(
+    argMapping[0] && argMapping[0].nativeEvent,
+    'Native driven events only support animated values contained inside `nativeEvent`.'
+  );
+
+  // Assume that the event containing `nativeEvent` is always the first argument.
+  traverse(argMapping[0].nativeEvent, []);
+
+  const viewTag = ReactNative.findNodeHandle(viewRef);
+
+  eventMappings.forEach((mapping) => {
+    NativeAnimatedAPI.addAnimatedEventToView(viewTag, eventName, mapping);
+  });
+
+  return {
+    detach() {
+      eventMappings.forEach((mapping) => {
+        NativeAnimatedAPI.removeAnimatedEventFromView(
+          viewTag,
+          eventName,
+          mapping.animatedValueTag,
+        );
+      });
+    },
+  };
+}
+
+function forkEvent(event: ?AnimatedEvent | ?Function, listener: Function): AnimatedEvent | Function {
+  if (!event) {
+    return listener;
+  } else if (event instanceof AnimatedEvent) {
+    event.__addListener(listener);
+    return event;
+  } else {
+    return (...args) => {
+      typeof event === 'function' && event(...args);
+      listener(...args);
+    };
+  }
+}
+
+function unforkEvent(event: ?AnimatedEvent | ?Function, listener: Function): void {
+  if (event && event instanceof AnimatedEvent) {
+    event.__removeListener(listener);
+  }
+}
+
 class AnimatedEvent {
   _argMapping: Array<?Mapping>;
-  _listener: ?Function;
+  _listeners: Array<Function> = [];
+  _callListeners: Function;
+  _attachedEvent: ?{
+    detach: () => void,
+  };
   __isNative: bool;
 
   constructor(
@@ -2161,7 +2232,11 @@ class AnimatedEvent {
     config?: EventConfig = {}
   ) {
     this._argMapping = argMapping;
-    this._listener = config.listener;
+    if (config.listener) {
+      this.__addListener(config.listener);
+    }
+    this._callListeners = this._callListeners.bind(this);
+    this._attachedEvent = null;
     this.__isNative = shouldUseNativeDriver(config);
 
     if (__DEV__) {
@@ -2169,52 +2244,29 @@ class AnimatedEvent {
     }
   }
 
+  __addListener(callback: Function): void {
+    this._listeners.push(callback);
+  }
+
+  __removeListener(callback: Function): void {
+    this._listeners = this._listeners.filter((listener) => listener !== callback);
+  }
+
   __attach(viewRef, eventName) {
     invariant(this.__isNative, 'Only native driven events need to be attached.');
 
-    // Find animated values in `argMapping` and create an array representing their
-    // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
-    const eventMappings = [];
-
-    const traverse = (value, path) => {
-      if (value instanceof AnimatedValue) {
-        value.__makeNative();
-
-        eventMappings.push({
-          nativeEventPath: path,
-          animatedValueTag: value.__getNativeTag(),
-        });
-      } else if (typeof value === 'object') {
-        for (const key in value) {
-          traverse(value[key], path.concat(key));
-        }
-      }
-    };
-
-    invariant(
-      this._argMapping[0] && this._argMapping[0].nativeEvent,
-      'Native driven events only support animated values contained inside `nativeEvent`.'
-    );
-
-    // Assume that the event containing `nativeEvent` is always the first argument.
-    traverse(this._argMapping[0].nativeEvent, []);
-
-    const viewTag = ReactNative.findNodeHandle(viewRef);
-
-    eventMappings.forEach((mapping) => {
-      NativeAnimatedAPI.addAnimatedEventToView(viewTag, eventName, mapping);
-    });
+    this._attachedEvent = attachNativeEvent(viewRef, eventName, this._argMapping);
   }
 
   __detach(viewTag, eventName) {
     invariant(this.__isNative, 'Only native driven events need to be detached.');
 
-    NativeAnimatedAPI.removeAnimatedEventFromView(viewTag, eventName);
+    this._attachedEvent && this._attachedEvent.detach();
   }
 
   __getHandler() {
     if (this.__isNative) {
-      return this._listener;
+      return this._callListeners;
     }
 
     return (...args) => {
@@ -2233,11 +2285,12 @@ class AnimatedEvent {
           traverse(mapping, args[idx], 'arg' + idx);
         });
       }
-
-      if (this._listener) {
-        this._listener.apply(null, args);
-      }
+      this._callListeners(...args);
     };
+  }
+
+  _callListeners(...args) {
+    this._listeners.forEach(listener => listener(...args));
   }
 
   _validateMapping() {
@@ -2581,6 +2634,19 @@ module.exports = {
    * Make any React component Animatable.  Used to create `Animated.View`, etc.
    */
   createAnimatedComponent,
+
+  /**
+   * Imperative API to attach an animated value to an event on a view. Prefer using
+   * `Animated.event` with `useNativeDrive: true` if possible.
+   */
+  attachNativeEvent,
+
+  /**
+   * Advanced imperative API for snooping on animated events that are passed in through props. Use
+   * values directly where possible.
+   */
+  forkEvent,
+  unforkEvent,
 
   __PropsOnlyForTests: AnimatedProps,
 };

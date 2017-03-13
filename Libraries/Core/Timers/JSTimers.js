@@ -40,8 +40,6 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
     e.framesToPop = 1;
     const stack = parseErrorStack(e);
     if (stack) {
-      /* $FlowFixMe(>=0.32.0) - this seems to be putting something of the wrong
-       * type into identifiers */
       JSTimersExecution.identifiers[freeIndex] = stack.shift();
     }
   }

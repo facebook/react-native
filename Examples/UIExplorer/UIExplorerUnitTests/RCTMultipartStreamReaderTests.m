@@ -15,7 +15,6 @@
 #import <XCTest/XCTest.h>
 
 #import <React/RCTMultipartStreamReader.h>
-#import <React/RCTUtils.h>
 
 @interface RCTMultipartStreamReaderTests : XCTestCase
 

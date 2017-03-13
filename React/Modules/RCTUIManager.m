@@ -27,6 +27,7 @@
 #import "RCTModuleData.h"
 #import "RCTModuleMethod.h"
 #import "RCTProfile.h"
+#import "RCTRootContentView.h"
 #import "RCTRootShadowView.h"
 #import "RCTRootViewInternal.h"
 #import "RCTScrollableProtocol.h"
@@ -236,8 +237,13 @@ RCT_EXPORT_MODULE()
 - (void)didReceiveNewContentSizeMultiplier
 {
   // Report the event across the bridge.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
+                                              body:RCTExportedDimensions(_bridge)];
   [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
                                               body:@([_bridge.accessibilityManager multiplier])];
+#pragma clang diagnostic pop
 
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
@@ -260,7 +266,7 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                                body:RCTExportedDimensions()];
+                                                body:RCTExportedDimensions(_bridge)];
 #pragma clang diagnostic pop
   }
 
@@ -376,7 +382,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   return RCTGetUIManagerQueue();
 }
 
-- (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
+- (void)registerRootView:(RCTRootContentView *)rootView
 {
   RCTAssertMainQueue();
 
@@ -388,9 +394,10 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   RCTAssert(existingView == nil || existingView == rootView,
             @"Expect all root views to have unique tag. Added %@ twice", reactTag);
 
+  CGSize availableSize = rootView.availableSize;
+
   // Register view
   _viewRegistry[reactTag] = rootView;
-  CGSize size = rootView.bounds.size;
 
   // Register shadow view
   dispatch_async(RCTGetUIManagerQueue(), ^{
@@ -399,11 +406,10 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
     }
 
     RCTRootShadowView *shadowView = [RCTRootShadowView new];
+    shadowView.availableSize = availableSize;
     shadowView.reactTag = reactTag;
-    shadowView.size = size;
     shadowView.backgroundColor = rootView.backgroundColor;
     shadowView.viewName = NSStringFromClass([rootView class]);
-    shadowView.sizeFlexibility = sizeFlexibility;
     self->_shadowViewRegistry[shadowView.reactTag] = shadowView;
     [self->_rootViewTags addObject:reactTag];
   });
@@ -425,44 +431,39 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   return _viewRegistry[reactTag];
 }
 
+- (void)setAvailableSize:(CGSize)availableSize forRootView:(UIView *)rootView
+{
+  RCTAssertMainQueue();
+  NSNumber *reactTag = rootView.reactTag;
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    RCTRootShadowView *shadowView = (RCTRootShadowView *)self->_shadowViewRegistry[reactTag];
+    RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", reactTag);
+    RCTAssert([shadowView isKindOfClass:[RCTRootShadowView class]], @"Located shadow view (with tag #%@) is actually not root view.", reactTag);
+
+    if (CGSizeEqualToSize(availableSize, shadowView.availableSize)) {
+      return;
+    }
+
+    shadowView.availableSize = availableSize;
+    [self setNeedsLayout];
+  });
+}
+
 - (void)setSize:(CGSize)size forView:(UIView *)view
 {
   RCTAssertMainQueue();
-
-  // The following variable has no meaning if the view is not a react root view
-  RCTRootViewSizeFlexibility sizeFlexibility = RCTRootViewSizeFlexibilityNone;
-
-  if (RCTIsReactRootView(view.reactTag)) {
-    RCTRootView *rootView = (RCTRootView *)[view superview];
-    if (rootView != nil) {
-      sizeFlexibility = rootView.sizeFlexibility;
-    }
-  }
 
   NSNumber *reactTag = view.reactTag;
   dispatch_async(RCTGetUIManagerQueue(), ^{
     RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
     RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", reactTag);
 
-    BOOL needsLayout = NO;
-    if (!CGSizeEqualToSize(size, shadowView.size)) {
-      shadowView.size = size;
-      needsLayout = YES;
+    if (CGSizeEqualToSize(size, shadowView.size)) {
+      return;
     }
 
-    // Trigger re-layout when size flexibility changes, as the root view might grow or
-    // shrink in the flexible dimensions.
-    if (RCTIsReactRootView(reactTag)) {
-      RCTRootShadowView *rootShadowView = (RCTRootShadowView *)shadowView;
-      if (rootShadowView.sizeFlexibility != sizeFlexibility) {
-        rootShadowView.sizeFlexibility = sizeFlexibility;
-        needsLayout = YES;
-      }
-    }
-
-    if (needsLayout) {
-      [self setNeedsLayout];
-    }
+    shadowView.size = size;
+    [self setNeedsLayout];
   });
 }
 
@@ -615,7 +616,7 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
         RCTAssert(view != nil, @"view (for ID %@) not found", reactTag);
 
         RCTRootView *rootView = (RCTRootView *)[view superview];
-        rootView.intrinsicSize = contentSize;
+        rootView.intrinsicContentSize = contentSize;
       });
     }
   }
@@ -1549,23 +1550,26 @@ RCT_EXPORT_METHOD(clearJSResponder)
 
   constants[@"customBubblingEventTypes"] = bubblingEvents;
   constants[@"customDirectEventTypes"] = directEvents;
-  constants[@"Dimensions"] = RCTExportedDimensions();
+  constants[@"Dimensions"] = RCTExportedDimensions(_bridge);
 
   return constants;
 }
 
-static NSDictionary *RCTExportedDimensions()
+static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 {
   RCTAssertMainQueue();
 
   // Don't use RCTScreenSize since it the interface orientation doesn't apply to it
   CGRect screenSize = [[UIScreen mainScreen] bounds];
+  NSDictionary *dims = @{
+    @"width": @(screenSize.size.width),
+    @"height": @(screenSize.size.height),
+    @"scale": @(RCTScreenScale()),
+    @"fontScale": @(bridge.accessibilityManager.multiplier)
+  };
   return @{
-    @"window": @{
-        @"width": @(screenSize.size.width),
-        @"height": @(screenSize.size.height),
-        @"scale": @(RCTScreenScale()),
-    },
+    @"window": dims,
+    @"screen": dims
   };
 }
 
@@ -1586,11 +1590,6 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
   [self addUIBlock:^(RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     uiManager->_layoutAnimation = nextLayoutAnimation;
   }];
-}
-
-RCT_EXPORT_METHOD(getContentSizeMultiplier:(nonnull RCTResponseSenderBlock)callback)
-{
-  callback(@[@(_bridge.accessibilityManager.multiplier)]);
 }
 
 - (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion
@@ -1652,10 +1651,22 @@ static UIView *_jsResponder;
 
 @implementation RCTUIManager (Deprecated)
 
+- (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
+{
+  RCTLogWarn(@"Calling of `[-RCTUIManager registerRootView:withSizeFlexibility:]` which is deprecated.");
+  [self registerRootView:rootView];
+}
+
 - (void)setFrame:(CGRect)frame forView:(UIView *)view
 {
   RCTLogWarn(@"Calling of `[-RCTUIManager setFrame:forView:]` which is deprecated.");
   [self setSize:frame.size forView:view];
+}
+
+RCT_EXPORT_METHOD(getContentSizeMultiplier:(nonnull RCTResponseSenderBlock)callback)
+{
+  RCTLogWarn(@"`getContentSizeMultiplier` is deprecated. Instead, use `PixelRatio.getFontScale()` and listen to the `didUpdateDimensions` event.");
+  callback(@[@(_bridge.accessibilityManager.multiplier)]);
 }
 
 @end
