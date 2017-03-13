@@ -233,6 +233,7 @@ type TimingAnimationConfig =  AnimationConfig & {
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
+  shouldLoop?: bool,
 };
 
 type TimingAnimationConfigSingle = AnimationConfig & {
@@ -240,6 +241,7 @@ type TimingAnimationConfigSingle = AnimationConfig & {
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
+  shouldLoop?: bool,
 };
 
 let _easeInOut;
@@ -257,6 +259,7 @@ class TimingAnimation extends Animation {
   _toValue: any;
   _duration: number;
   _delay: number;
+  _shouldLoop: bool;
   _easing: (value: number) => number;
   _onUpdate: (value: number) => void;
   _animationFrame: any;
@@ -271,6 +274,7 @@ class TimingAnimation extends Animation {
     this._easing = config.easing !== undefined ? config.easing : easeInOut();
     this._duration = config.duration !== undefined ? config.duration : 500;
     this._delay = config.delay !== undefined ? config.delay : 0;
+    this._shouldLoop = config.shouldLoop !== undefined ? config.shouldLoop : false;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
     this._useNativeDriver = shouldUseNativeDriver(config);
   }
@@ -286,7 +290,8 @@ class TimingAnimation extends Animation {
       type: 'frames',
       frames,
       toValue: this._toValue,
-      delay: this._delay
+      delay: this._delay,
+      shouldLoop: this._shouldLoop
     };
   }
 
