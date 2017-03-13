@@ -4,8 +4,8 @@ Assuming you have the [Android SDK](https://developer.android.com/sdk/installing
 
 Make sure you have the following installed:
 
-- Android SDK version 23
-- SDK build tools version 23
+- Android SDK version 25
+- SDK build tools version 25
 - Android Support Repository 17 (for Android Support Library)
 
 Follow steps on https://github.com/facebook/react-native/blob/master/react-native-cli/CONTRIBUTING.md, but be sure to bump the version of react-native in package.json to some version > 0.9 (latest published npm version) or set up proxying properly for react-native
