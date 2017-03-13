@@ -8,9 +8,7 @@
  */
 'use strict';
 
-const exec = require('child_process').exec;
 const fs = require('fs');
-const path = require('path');
 
 module.exports = function(req, res, next) {
   if (req.url !== '/systrace') {
