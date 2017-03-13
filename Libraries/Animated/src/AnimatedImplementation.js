@@ -34,7 +34,10 @@ var NativeAnimatedAPI = NativeAnimatedHelper.API;
 
 var warnedMissingNativeAnimated = false;
 
-function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
+function shouldUseNativeDriver(config?: AnimationConfig | EventConfig | AnimatedValueConfig): boolean {
+  if (!config) {
+    return false;
+  }
   if (config.useNativeDriver &&
       !NativeAnimatedHelper.isNativeAnimatedAvailable()) {
     if (!warnedMissingNativeAnimated) {
@@ -49,7 +52,6 @@ function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
     }
     return false;
   }
-
   return config.useNativeDriver || false;
 }
 
@@ -683,6 +685,10 @@ class SpringAnimation extends Animation {
   }
 }
 
+type AnimatedValueConfig = {
+  useNativeDriver?: bool;
+};
+
 type ValueListenerCallback = (state: {value: number}) => void;
 
 var _uniqueId = 1;
@@ -701,12 +707,15 @@ class AnimatedValue extends AnimatedWithChildren {
   _listeners: {[key: string]: ValueListenerCallback};
   __nativeAnimatedValueListener: ?any;
 
-  constructor(value: number) {
+  constructor(value: number, config?: AnimatedValueConfig) {
     super();
     this._value = value;
     this._offset = 0;
     this._animation = null;
     this._listeners = {};
+    if (shouldUseNativeDriver(config)) {
+      this.__makeNative();
+    }
   }
 
   __detach() {
@@ -967,7 +976,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
   y: AnimatedValue;
   _listeners: {[key: string]: {x: string, y: string}};
 
-  constructor(valueIn?: ?{x: number | AnimatedValue, y: number | AnimatedValue}) {
+  constructor(valueIn?: ?{x: number | AnimatedValue, y: number | AnimatedValue}, config?: AnimatedValueConfig) {
     super();
     var value: any = valueIn || {x: 0, y: 0};  // @flowfixme: shouldn't need `: any`
     if (typeof value.x === 'number' && typeof value.y === 'number') {
@@ -984,6 +993,9 @@ class AnimatedValueXY extends AnimatedWithChildren {
       this.y = value.y;
     }
     this._listeners = {};
+    if (shouldUseNativeDriver(config)) {
+      this.__makeNative();
+    }
   }
 
   setValue(value: {x: number, y: number}) {
@@ -1965,6 +1977,9 @@ var spring = function(
   value: AnimatedValue | AnimatedValueXY,
   config: SpringAnimationConfig,
 ): CompositeAnimation {
+  if (value.__isNative) {
+    config.useNativeDriver = true;
+  }
   return maybeVectorAnim(value, config, spring) || {
     start: function(callback?: ?EndCallback): void {
       callback = _combineCallbacks(callback, config);
@@ -1994,6 +2009,9 @@ var timing = function(
   value: AnimatedValue | AnimatedValueXY,
   config: TimingAnimationConfig,
 ): CompositeAnimation {
+  if (value.__isNative) {
+    config.useNativeDriver = true;
+  }
   return maybeVectorAnim(value, config, timing) || {
     start: function(callback?: ?EndCallback): void {
       callback = _combineCallbacks(callback, config);
@@ -2023,6 +2041,9 @@ var decay = function(
   value: AnimatedValue | AnimatedValueXY,
   config: DecayAnimationConfig,
 ): CompositeAnimation {
+  if (value.__isNative) {
+    config.useNativeDriver = true;
+  }
   return maybeVectorAnim(value, config, decay) || {
     start: function(callback?: ?EndCallback): void {
       callback = _combineCallbacks(callback, config);
