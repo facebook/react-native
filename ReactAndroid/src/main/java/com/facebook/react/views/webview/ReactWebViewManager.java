@@ -366,10 +366,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = Environment.getExternalStoragePublicDirectory(
           Environment.DIRECTORY_PICTURES);
-        File imageFile = File.createTempFile(
-          imageFileName,  /* prefix */
-          ".jpg",         /* suffix */
-          storageDir      /* directory */
+        File imageFile = new File(
+          storageDir,           /* directory */
+          imageFileName+".jpg"  /* filename */
         );
         return imageFile;
       }
