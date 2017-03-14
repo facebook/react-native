@@ -22,13 +22,6 @@ const blacklist = [
  * Hot Module Replacement updates to the simulator.
  */
 function attachHMRServer({httpServer, path, packagerServer}) {
-  let client = null;
-
-  function disconnect() {
-    client = null;
-    packagerServer.setHMRFileChangeListener(null);
-  }
-
   // For the give platform and entry file, returns a promise with:
   //   - The full list of dependencies.
   //   - The shallow dependencies each file on the dependency list has
@@ -113,8 +106,75 @@ function attachHMRServer({httpServer, path, packagerServer}) {
     path: path,
   });
 
+  // Support multi hot reloading listener
+  const watchClients: {
+    [bundleEntry: string]: {
+      clients: Object[],
+      fileChangeListener: (type: string, filename: string) => string
+    }
+  } = {};
+
+  const listener = (type, filename) => {
+    for (const bundleEntry in watchClients) {
+      watchClients[bundleEntry].fileChangeListener(type, filename);
+    }
+  };
+
   wss.on('connection', ws => {
     const params = querystring.parse(url.parse(ws.upgradeReq.url).query);
+
+    if (!params.bundleEntry) {
+      return;
+    }
+
+    packagerServer.setHMRFileChangeListener(listener);
+
+    // Group clients by bundleEntry (and platform, included in bundleEntry)
+    const wsList = watchClients[params.bundleEntry] || {clients: []};
+    watchClients[params.bundleEntry] = wsList;
+
+    const wasEmpty = wsList.clients.length === 0;
+
+    wsList.clients.push(ws);
+
+    const removeClient = function (wsClient) {
+      wsList.clients.splice(wsList.clients.indexOf(wsClient), 1);
+      if (wsList.clients.length === 0) {
+        delete watchClients[params.bundleEntry];
+      }
+      if (Object.keys(watchClients).length === 0) {
+        packagerServer.setHMRFileChangeListener(null);
+      }
+    };
+
+    const sendAllClients = function (data) {
+      const removed = [];
+      wsList.clients.forEach(wsClient => {
+        try {
+          wsClient.send(data);
+        } catch (e) {
+          wsClient.close();
+          removed.push(wsClient);
+        }
+      });
+
+      removed.forEach(wsClient => {
+        removeClient(wsClient);
+      });
+    };
+
+    ws.on('error', e => {
+      removeClient(ws);
+      console.error('[Hot Module Replacement] Unexpected error', e);
+    });
+
+    ws.on('close', () => {
+      removeClient(ws);
+    });
+
+    if (!wasEmpty) {
+      return;
+    }
 
     getDependencies(params.platform, params.bundleEntry)
       .then(({
@@ -123,8 +183,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
         shallowDependencies,
         inverseDependenciesCache,
       }) => {
-        client = {
-          ws,
+        const client = {
           platform: params.platform,
           bundleEntry: params.bundleEntry,
           dependenciesCache,
@@ -133,11 +192,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           inverseDependenciesCache,
         };
 
-        packagerServer.setHMRFileChangeListener((type, filename) => {
-          if (!client) {
-            return;
-          }
-
+        wsList.fileChangeListener = (type, filename) => {
           const blacklisted = blacklist.find(blacklistedPath =>
             filename.indexOf(blacklistedPath) !== -1
           );
@@ -146,7 +201,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
             return;
           }
 
-          client.ws.send(JSON.stringify({type: 'update-start'}));
+          sendAllClients(JSON.stringify({type: 'update-start'}));
           const promise = type === 'delete'
             ? Promise.resolve()
             : packagerServer.getShallowDependencies({
@@ -155,10 +210,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 dev: true,
                 hot: true,
               }).then(deps => {
-                if (!client) {
-                  return [];
-                }
-
                 // if the file dependencies have change we need to invalidate the
                 // dependencies caches because the list of files we need to send
                 // to the client may have changed
@@ -191,10 +242,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                     inverseDependenciesCache: inverseDepsCache,
                     resolutionResponse,
                   }) => {
-                    if (!client) {
-                      return {};
-                    }
-
                     // build list of modules for which we'll send HMR updates
                     const modulesToUpdate = [packagerServer.getModuleForPath(filename)];
                     Object.keys(depsModulesCache).forEach(module => {
@@ -225,10 +272,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   });
               })
               .then((resolutionResponse) => {
-                if (!client) {
-                  return;
-                }
-
                 // make sure the file was modified is part of the bundle
                 if (!client.shallowDependencies[filename]) {
                   return;
@@ -251,7 +294,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 }, packagerHost, httpServerAddress.port);
               })
               .then(bundle => {
-                if (!client || !bundle || bundle.isEmpty()) {
+                if (!bundle || bundle.isEmpty()) {
                   return;
                 }
 
@@ -289,24 +332,17 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 return JSON.stringify({type: 'error', body});
               })
               .then(update => {
-                if (!client || !update) {
+                if (!update) {
                   return;
                 }
 
-                client.ws.send(update);
+                sendAllClients(update);
               });
 
           promise.then(() => {
-            client.ws.send(JSON.stringify({type: 'update-done'}));
+            sendAllClients(JSON.stringify({type: 'update-done'}));
           });
-        });
-
-        client.ws.on('error', e => {
-          console.error('[Hot Module Replacement] Unexpected error', e);
-          disconnect();
-        });
-
-        client.ws.on('close', () => disconnect());
+        };
       })
     .catch(err => {
       throw err;
