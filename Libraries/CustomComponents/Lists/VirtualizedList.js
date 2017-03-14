@@ -33,6 +33,7 @@
 'use strict';
 
 const Batchinator = require('Batchinator');
+const Platform = require('Platform');
 const React = require('React');
 const ReactNative = require('ReactNative');
 const RefreshControl = require('RefreshControl');
@@ -259,7 +260,8 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     maxToRenderPerBatch: 10,
     onEndReached: () => {},
     onEndReachedThreshold: 2, // multiples of length
-    removeClippedSubviews: true,
+    // Don't remove clipped subviews on tvOS, it causes focus engine problems.
+    removeClippedSubviews: !Platform.isTVOS,
     renderScrollComponent: (props: Props) => {
       if (props.onRefresh) {
         invariant(

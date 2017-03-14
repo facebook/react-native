@@ -501,7 +501,8 @@ var ListView = React.createClass({
       props.scrollEventThrottle = DEFAULT_SCROLL_CALLBACK_THROTTLE;
     }
     if (props.removeClippedSubviews === undefined) {
-      props.removeClippedSubviews = true;
+      // Don't remove clipped subviews on tvOS, it causes focus engine problems.
+      props.removeClippedSubviews = !Platform.isTVOS;
     }
     Object.assign(props, {
       onScroll: this._onScroll,
