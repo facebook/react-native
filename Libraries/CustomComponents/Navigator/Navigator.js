@@ -1282,10 +1282,7 @@ var Navigator = React.createClass({
         }}
         pointerEvents={disabledScenePointerEvents}
         style={[styles.baseScene, this.props.sceneStyle, disabledSceneStyle]}>
-        {this.props.renderScene(
-          route,
-          this
-        )}
+        {this.props.renderScene(route, this, i)}
       </View>
     );
   },
