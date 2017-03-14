@@ -6,6 +6,6 @@ prebuilt_jar(
 
 remote_file(
     name = "support-annotations-binary-aar",
-    sha1 = "1fce89a6428c51467090d7f424e4c9c3dbd55f7e",
+    sha1 = "4a5a82a027706397fff621b22fd6fa796e91d7c5",
     url = "mvn:com.android.support:support-annotations:jar:25.2.0",
 )

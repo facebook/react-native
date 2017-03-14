@@ -6,6 +6,6 @@ android_prebuilt_aar(
 
 remote_file(
     name = "lib-support-v4-binary-aar",
-    sha1 = "9e8da0e4ecf9f63258c7fbd273889252cba2d0c3",
+    sha1 = "3b9231d6e95d9b7286332e2fc9bab15fe47b14a5",
     url = "mvn:com.android.support:support-v4:aar:25.2.0",
 )
