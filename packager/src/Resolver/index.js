@@ -37,6 +37,7 @@ type Options = {
   getTransformCacheKey: GetTransformCacheKey,
   globalTransformCache: ?GlobalTransformCache,
   hasteImpl?: HasteImpl,
+  maxWorkerCount: number,
   minifyCode: MinifyCode,
   platforms: Set<string>,
   polyfillModuleNames?: Array<string>,
