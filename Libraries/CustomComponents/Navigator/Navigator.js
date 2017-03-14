@@ -284,7 +284,7 @@ var GESTURE_ACTIONS = [
  *     // ...
  *   }
  *   configureScene={(route, routeStack) =>
- *     Navigator.SceneConfigs.FloatFromBottom}
+ *     return Navigator.SceneConfigs.FloatFromBottom}
  * />
  * ```
  * In the above example, the newly pushed scene will float up from the bottom.
