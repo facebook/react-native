@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule react-native-implementation
- * @noflow - get/set properties not yet supported by flow. also `...require(x)` is broken #6560135
+ * @flow
  */
 'use strict';
 
