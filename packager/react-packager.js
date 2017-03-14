@@ -16,6 +16,7 @@ const Logger = require('./src/Logger');
 const debug = require('debug');
 const invariant = require('fbjs/lib/invariant');
 
+import type Server from './src/Server';
 import type GlobalTransformCache from './src/lib/GlobalTransformCache';
 import type {Reporter} from './src/lib/reporting';
 import type {HasteImpl} from './src/node-haste/Module';
@@ -41,9 +42,27 @@ type StrictOptions = {
   watch?: boolean,
 };
 
-exports.buildBundle = function(options: Options, bundleOptions: {}) {
+/**
+ * This is a public API, so we don't trust the values and consider them as
+ * `mixed`. Because it understands `invariant`, Flow ensure that we refine these
+ * values completely.
+ */
+exports.buildBundle = function(options: Options, bundleOptions: mixed) {
+  invariant(
+    typeof bundleOptions === 'object' && bundleOptions != null,
+    '`bundleOptions` must be an object',
+  );
+  const {entryFile, platform} = bundleOptions;
+  invariant(
+    platform === undefined || typeof platform === 'string',
+    '`bundleOptions` field `platform` must be a string',
+  );
+  invariant(
+    typeof entryFile === 'string',
+    '`bundleOptions` must contain a string field `entryFile`',
+  );
   var server = createNonPersistentServer(options);
-  return server.buildBundle(bundleOptions)
+  return server.buildBundle({...bundleOptions, entryFile, platform})
     .then(p => {
       server.end();
       return p;
@@ -73,7 +92,7 @@ function enableDebug() {
   debug.enable(debugPattern);
 }
 
-function createServer(options: StrictOptions) {
+function createServer(options: StrictOptions): Server {
   // the debug module is configured globally, we need to enable debugging
   // *before* requiring any packages that use `debug` for logging
   if (options.verbose) {
@@ -84,11 +103,11 @@ function createServer(options: StrictOptions) {
   invariant(options.reporter != null, 'createServer() requires reporter');
   const serverOptions = Object.assign({}, options);
   delete serverOptions.verbose;
-  var Server = require('./src/Server');
-  return new Server(serverOptions);
+  const ServerClass = require('./src/Server');
+  return new ServerClass(serverOptions);
 }
 
-function createNonPersistentServer(options: Options) {
+function createNonPersistentServer(options: Options): Server {
   const serverOptions = {
     // It's unsound to set-up the reporter here,
     // but this allows backward compatibility.
