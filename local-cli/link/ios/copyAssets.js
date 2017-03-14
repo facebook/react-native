@@ -10,7 +10,7 @@ const getPlistPath = require('./getPlistPath');
 
 /**
  * This function works in a similar manner to its Android version,
- * except it does not copy fonts but creates XCode Group references
+ * except it does not copy fonts but creates Xcode Group references
  */
 module.exports = function linkAssetsIOS(files, projectConfig) {
   const project = xcode.project(projectConfig.pbxprojPath).parseSync();

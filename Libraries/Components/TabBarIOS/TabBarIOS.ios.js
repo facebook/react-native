@@ -33,6 +33,7 @@ class TabBarIOS extends React.Component {
 
   static Item = TabBarItemIOS;
 
+  // $FlowFixMe(>=0.41.0)
   static propTypes = {
     ...View.propTypes,
     style: View.propTypes.style,

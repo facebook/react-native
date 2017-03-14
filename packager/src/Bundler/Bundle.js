@@ -44,10 +44,10 @@ class Bundle extends BundleBase {
   _ramGroups: Array<string> | void;
   _sourceMap: string | null;
   _sourceMapFormat: SourceMapFormat;
-  _sourceMapUrl: string | void;
+  _sourceMapUrl: ?string;
 
   constructor({sourceMapUrl, dev, minify, ramGroups}: {
-    sourceMapUrl?: string,
+    sourceMapUrl: ?string,
     dev?: boolean,
     minify?: boolean,
     ramGroups?: Array<string>,
@@ -229,7 +229,7 @@ class Bundle extends BundleBase {
       }
 
       result.sections.push({
-        offset: { line: line, column: 0 },
+        offset: {line, column: 0},
         map: (map: MixedSourceMap),
       });
       line += module.code.split('\n').length;
@@ -324,11 +324,11 @@ function generateSourceMapForVirtualModule(module): SourceMap {
 
   return {
     version: 3,
-    sources: [ module.sourcePath ],
+    sources: [module.sourcePath],
     names: [],
-    mappings: mappings,
+    mappings,
     file: module.sourcePath,
-    sourcesContent: [ module.sourceCode ],
+    sourcesContent: [module.sourceCode],
   };
 }
 

@@ -31,7 +31,9 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Queue;
 
@@ -55,12 +57,14 @@ import javax.annotation.Nullable;
   private final SparseArray<AnimatedNode> mAnimatedNodes = new SparseArray<>();
   private final SparseArray<AnimationDriver> mActiveAnimations = new SparseArray<>();
   private final SparseArray<AnimatedNode> mUpdatedNodes = new SparseArray<>();
-  private final Map<String, EventAnimationDriver> mEventDrivers = new HashMap<>();
+  // Mapping of a view tag and an event name to a list of event animation drivers. 99% of the time
+  // there will be only one driver per mapping so all code code should be optimized around that.
+  private final Map<String, List<EventAnimationDriver>> mEventDrivers = new HashMap<>();
   private final Map<String, Map<String, String>> mCustomEventTypes;
   private final UIImplementation mUIImplementation;
   private int mAnimatedGraphBFSColor = 0;
-  // Used to avoid allocating a new array on every frame in runUpdates.
-  private final List<AnimatedNode> mRunUpdateNodeList = new ArrayList<>();
+  // Used to avoid allocating a new array on every frame in `runUpdates` and `onEventDispatch`.
+  private final List<AnimatedNode> mRunUpdateNodeList = new LinkedList<>();
 
   public NativeAnimatedNodesManager(UIManagerModule uiManager) {
     mUIImplementation = uiManager.getUIImplementation();
@@ -312,11 +316,32 @@ import javax.annotation.Nullable;
     }
 
     EventAnimationDriver event = new EventAnimationDriver(pathList, (ValueAnimatedNode) node);
-    mEventDrivers.put(viewTag + eventName, event);
+    String key = viewTag + eventName;
+    if (mEventDrivers.containsKey(key)) {
+      mEventDrivers.get(key).add(event);
+    } else {
+      List<EventAnimationDriver> drivers = new ArrayList<>(1);
+      drivers.add(event);
+      mEventDrivers.put(key, drivers);
+    }
   }
 
-  public void removeAnimatedEventFromView(int viewTag, String eventName) {
-    mEventDrivers.remove(viewTag + eventName);
+  public void removeAnimatedEventFromView(int viewTag, String eventName, int animatedValueTag) {
+    String key = viewTag + eventName;
+    if (mEventDrivers.containsKey(key)) {
+      List<EventAnimationDriver> driversForKey = mEventDrivers.get(key);
+      if (driversForKey.size() == 1) {
+        mEventDrivers.remove(viewTag + eventName);
+      } else {
+        ListIterator<EventAnimationDriver> it = driversForKey.listIterator();
+        while (it.hasNext()) {
+          if (it.next().mValueNode.mTag == animatedValueTag) {
+            it.remove();
+            break;
+          }
+        }
+      }
+    }
   }
 
   @Override
@@ -334,11 +359,14 @@ import javax.annotation.Nullable;
         eventName = customEventType.get("registrationName");
       }
 
-      EventAnimationDriver eventDriver = mEventDrivers.get(event.getViewTag() + eventName);
-      if (eventDriver != null) {
-        event.dispatch(eventDriver);
-
-        updateNodes(Collections.singletonList((AnimatedNode) eventDriver.mValueNode));
+      List<EventAnimationDriver> driversForKey = mEventDrivers.get(event.getViewTag() + eventName);
+      if (driversForKey != null) {
+        for (EventAnimationDriver driver : driversForKey) {
+          event.dispatch(driver);
+          mRunUpdateNodeList.add(driver.mValueNode);
+        }
+        updateNodes(mRunUpdateNodeList);
+        mRunUpdateNodeList.clear();
       }
     }
   }
