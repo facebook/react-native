@@ -42,31 +42,46 @@ type StrictOptions = {
   watch?: boolean,
 };
 
+type PublicBundleOptions = {
+  +dev?: boolean,
+  +entryFile: string,
+  +generateSourceMaps?: boolean,
+  +inlineSourceMap?: boolean,
+  +minify?: boolean,
+  +platform?: string,
+  +runModule?: boolean,
+  +sourceMapUrl?: string,
+};
+
 /**
- * This is a public API, so we don't trust the values and consider them as
- * `mixed`. Because it understands `invariant`, Flow ensure that we refine these
- * values completely.
+ * This is a public API, so we don't trust the value and purposefully downgrade
+ * it as `mixed`. Because it understands `invariant`, Flow ensure that we
+ * refine these values completely.
  */
-exports.buildBundle = function(options: Options, bundleOptions: mixed) {
-  invariant(
-    typeof bundleOptions === 'object' && bundleOptions != null,
-    '`bundleOptions` must be an object',
-  );
-  const {entryFile, platform} = bundleOptions;
-  invariant(
-    platform === undefined || typeof platform === 'string',
-    '`bundleOptions` field `platform` must be a string',
-  );
-  invariant(
-    typeof entryFile === 'string',
-    '`bundleOptions` must contain a string field `entryFile`',
-  );
+function assertPublicBundleOptions(bo: mixed): PublicBundleOptions {
+  invariant(typeof bo === 'object' && bo != null, 'bundle options must be an object');
+  invariant(bo.dev === undefined || typeof bo.dev === 'boolean', 'bundle options field `dev` must be a boolean');
+  const {entryFile} = bo;
+  invariant(typeof entryFile === 'string', 'bundle options must contain a string field `entryFile`');
+  invariant(bo.generateSourceMaps === undefined || typeof bo.generateSourceMaps === 'boolean', 'bundle options field `generateSourceMaps` must be a boolean');
+  invariant(bo.inlineSourceMap === undefined || typeof bo.inlineSourceMap === 'boolean', 'bundle options field `inlineSourceMap` must be a boolean');
+  invariant(bo.minify === undefined || typeof bo.minify === 'boolean', 'bundle options field `minify` must be a boolean');
+  invariant(bo.platform === undefined || typeof bo.platform === 'string', 'bundle options field `platform` must be a string');
+  invariant(bo.runModule === undefined || typeof bo.runModule === 'boolean', 'bundle options field `runModule` must be a boolean');
+  invariant(bo.sourceMapUrl === undefined || typeof bo.sourceMapUrl === 'string', 'bundle options field `sourceMapUrl` must be a boolean');
+  return {entryFile, ...bo};
+}
+
+exports.buildBundle = function(options: Options, bundleOptions: PublicBundleOptions) {
   var server = createNonPersistentServer(options);
-  return server.buildBundle({...bundleOptions, entryFile, platform})
-    .then(p => {
-      server.end();
-      return p;
-    });
+  const ServerClass = require('./src/Server');
+  return server.buildBundle({
+    ...ServerClass.DEFAULT_BUNDLE_OPTIONS,
+    ...assertPublicBundleOptions(bundleOptions),
+  }).then(p => {
+    server.end();
+    return p;
+  });
 };
 
 exports.getOrderedDependencyPaths = function(options: Options, bundleOptions: {}) {
