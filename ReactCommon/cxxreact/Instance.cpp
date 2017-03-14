@@ -40,7 +40,7 @@ void Instance::initializeBridge(
   if (!nativeQueue) {
     // TODO pass down a thread/queue from java, instead of creating our own.
 
-    auto queue = std::make_unique<CxxMessageQueue>();
+    auto queue = folly::make_unique<CxxMessageQueue>();
     std::thread t(queue->getUnregisteredRunLoop());
     t.detach();
     nativeQueue = std::move(queue);

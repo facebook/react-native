@@ -110,7 +110,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final JavaScriptModuleRegistry jsModuleRegistry,
       final JSBundleLoader jsBundleLoader,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
-    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
+    FLog.w(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     mHybridData = initHybrid();
 
     mReactQueueConfiguration = ReactQueueConfigurationImpl.create(
@@ -123,6 +123,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mTraceListener = new JSProfilerTraceListener(this);
 
+    FLog.w(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
     initializeBridge(
       new BridgeCallback(this),
       jsExecutor,
@@ -130,6 +131,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       mReactQueueConfiguration.getNativeModulesQueueThread(),
       mJavaRegistry.getJavaModules(this),
       mJavaRegistry.getCxxModules());
+    FLog.w(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
     mMainExecutorToken = getMainExecutorToken();
   }
 
@@ -182,7 +184,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       MessageQueueThread jsQueue,
       MessageQueueThread moduleQueue,
       Collection<JavaModuleWrapper> javaModules,
-      Collection<CxxModuleWrapper> cxxModules);
+      Collection<ModuleHolder> cxxModules);
 
   /**
    * This API is used in situations where the JS bundle is being executed not on

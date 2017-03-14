@@ -53,12 +53,12 @@ public class NativeModuleRegistry {
     return javaModules;
   }
 
-  /* package */ Collection<CxxModuleWrapper> getCxxModules() {
-    ArrayList<CxxModuleWrapper> cxxModules = new ArrayList<>();
+  /* package */ Collection<ModuleHolder> getCxxModules() {
+    ArrayList<ModuleHolder> cxxModules = new ArrayList<>();
     for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
       Class<?> type = entry.getKey();
       if (CxxModuleWrapper.class.isAssignableFrom(type)) {
-        cxxModules.add((CxxModuleWrapper) entry.getValue().getModule());
+        cxxModules.add(entry.getValue());
       }
     }
     return cxxModules;

@@ -47,6 +47,9 @@ public:
 
   void callNativeModules(
       JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) override {
+
+    CHECK(m_registry || calls.empty()) <<
+      "native module calls cannot be completed with no native modules";
     ExecutorToken token = m_nativeToJs->getTokenForExecutor(executor);
     m_nativeQueue->runOnQueue([this, token, calls=std::move(calls), isEndOfBatch] () mutable {
       // An exception anywhere in here stops processing of the batch.  This
@@ -95,13 +98,8 @@ NativeToJsBridge::NativeToJsBridge(
     std::shared_ptr<InstanceCallback> callback)
     : m_destroyed(std::make_shared<bool>(false))
     , m_mainExecutorToken(callback->createExecutorToken())
-    , m_delegate(registry
-                 ? std::make_shared<JsToNativeBridge>(
-                     this, registry, std::move(nativeQueue), callback)
-                 : nullptr) {
-  if (!m_delegate) {
-    nativeQueue->quitSynchronous();
-  }
+    , m_delegate(std::make_shared<JsToNativeBridge>(
+                   this, registry, std::move(nativeQueue), callback)) {
   std::unique_ptr<JSExecutor> mainExecutor =
     jsExecutorFactory->createJSExecutor(m_delegate, jsQueue);
   // cached to avoid locked map lookup in the common case
@@ -318,9 +316,7 @@ ExecutorToken NativeToJsBridge::getTokenForExecutor(JSExecutor& executor) {
 }
 
 void NativeToJsBridge::destroy() {
-  if (m_delegate) {
-    m_delegate->quitQueueSynchronous();
-  }
+  m_delegate->quitQueueSynchronous();
   auto* executorMessageQueueThread = getMessageQueueThread(m_mainExecutorToken);
   // All calls made through runOnExecutorQueue have an early exit if
   // m_destroyed is true. Setting this before the runOnQueueSync will cause
