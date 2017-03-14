@@ -34,6 +34,44 @@ var MODE_DIALOG = 'dialog';
 var MODE_DROPDOWN = 'dropdown';
 
 /**
+ * Individual selectable item in a Picker.
+ */
+class PickerItem extends React.Component {
+ props: {
+  label: string,
+  value?: any,
+  color?: ColorPropType,
+  testID?: string,
+ };
+
+ static propTypes = {
+   /**
+    * Text to display for this item.
+    */
+   label: React.PropTypes.string.isRequired,
+   /**
+    * The value to be passed to picker's `onValueChange` callback when
+    * this item is selected. Can be a string or an integer.
+    */
+   value: React.PropTypes.any,
+   /**
+    * Color of this item's text.
+    * @platform android
+    */
+   color: ColorPropType,
+   /**
+    * Used to locate the item in end-to-end tests.
+    */
+   testID: React.PropTypes.string,
+ };
+
+ render() {
+   // The items are not rendered directly
+   throw null;
+ }
+}
+
+/**
  * Renders the native picker component on iOS and Android. Example:
  *
  *     <Picker
@@ -64,6 +102,8 @@ class Picker extends React.Component {
   * On Android, display the options in a dropdown (this is the default).
   */
  static MODE_DROPDOWN = MODE_DROPDOWN;
+
+ static Item = PickerItem;
 
  static defaultProps = {
    mode: MODE_DIALOG,
@@ -126,44 +166,5 @@ class Picker extends React.Component {
      }
  }
 }
-
-/**
- * Individual selectable item in a Picker.
- */
-// $FlowFixMe found when converting React.createClass to ES6
-Picker.Item = class extends React.Component {
- props: {
-  label: string,
-  value?: any,
-  color?: ColorPropType,
-  testID?: string,
- };
-
- static propTypes = {
-   /**
-    * Text to display for this item.
-    */
-   label: React.PropTypes.string.isRequired,
-   /**
-    * The value to be passed to picker's `onValueChange` callback when
-    * this item is selected. Can be a string or an integer.
-    */
-   value: React.PropTypes.any,
-   /**
-    * Color of this item's text.
-    * @platform android
-    */
-   color: ColorPropType,
-   /**
-    * Used to locate the item in end-to-end tests.
-    */
-   testID: React.PropTypes.string,
- };
-
- render() {
-   // The items are not rendered directly
-   throw null;
- }
-};
 
 module.exports = Picker;

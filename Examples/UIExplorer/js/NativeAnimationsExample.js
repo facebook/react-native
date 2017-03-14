@@ -49,7 +49,7 @@ class Tester extends React.Component {
       this.current && this.props.reverseConfig ? this.props.reverseConfig : this.props.config
     );
     this.current = this.current ? 0 : 1;
-    const config = {
+    const config: Object = {
       ...animConfig,
       toValue: this.current,
     };

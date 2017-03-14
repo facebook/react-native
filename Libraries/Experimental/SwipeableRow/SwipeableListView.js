@@ -101,6 +101,7 @@ class SwipeableListView extends React.Component {
 
   static defaultProps = {
     bounceFirstRowOnMount: false,
+    // $FlowFixMe(>=0.41.0)
     renderQuickActions: () => null,
   };
 

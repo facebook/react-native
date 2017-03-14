@@ -118,6 +118,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     renderTitleComponent: PropTypes.func,
     style: View.propTypes.style,
     statusBarHeight: PropTypes.number,
+    // $FlowFixMe(>=0.41.0)
     viewProps: PropTypes.shape(View.propTypes),
   };
 
