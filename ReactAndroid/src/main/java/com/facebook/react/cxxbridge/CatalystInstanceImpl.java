@@ -176,12 +176,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
     }
   }
 
-  private native void initializeBridge(ReactCallback callback,
-                                       JavaScriptExecutor jsExecutor,
-                                       MessageQueueThread jsQueue,
-                                       MessageQueueThread moduleQueue,
-                                       Collection<JavaModuleWrapper> javaModules,
-                                       Collection<CxxModuleWrapper> cxxModules);
+  private native void initializeBridge(
+      ReactCallback callback,
+      JavaScriptExecutor jsExecutor,
+      MessageQueueThread jsQueue,
+      MessageQueueThread moduleQueue,
+      Collection<JavaModuleWrapper> javaModules,
+      Collection<CxxModuleWrapper> cxxModules);
 
   /**
    * This API is used in situations where the JS bundle is being executed not on
@@ -231,7 +232,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
       }
       mJSCallsPendingInit.clear();
     }
-
 
     // This is registered after JS starts since it makes a JS call
     Systrace.registerListener(mTraceListener);
@@ -302,7 +302,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mReactQueueConfiguration.getNativeModulesQueueThread().runOnQueue(new Runnable() {
       @Override
       public void run() {
-        mJavaRegistry.notifyCatalystInstanceDestroy();
+        mJavaRegistry.notifyJSInstanceDestroy();
       }
     });
     boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
@@ -341,7 +341,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mReactQueueConfiguration.getNativeModulesQueueThread().runOnQueue(new Runnable() {
       @Override
       public void run() {
-        mJavaRegistry.notifyCatalystInstanceInitialized();
+        mJavaRegistry.notifyJSInstanceInitialized();
       }
     });
   }
@@ -390,7 +390,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     if (mDestroyed) {
       return;
     }
-    switch(level) {
+    switch (level) {
       case UI_HIDDEN:
         handleMemoryPressureUiHidden();
         break;
