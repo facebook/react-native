@@ -27,8 +27,7 @@ if THIS_IS_FBANDROID:
         '-Wno-pessimizing-move',
       ],
       deps = [
-        '//xplat/folly:molly',
-        react_native_xplat_target('inspector:inspector'),
+        '//xplat/folly:molly'
       ])
 
     cxx_library(

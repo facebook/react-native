@@ -51,6 +51,5 @@ cxx_library(
         "//xplat/fbsystrace:fbsystrace",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
-        react_native_xplat_target("inspector:inspector"),
     ],
 )
