@@ -228,6 +228,7 @@
 		14F7A0F01BDA714B003C6C10 /* RCTFPSGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F7A0EF1BDA714B003C6C10 /* RCTFPSGraph.m */; };
 		191E3EBE1C29D9AF00C180A6 /* RCTRefreshControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 191E3EBD1C29D9AF00C180A6 /* RCTRefreshControlManager.m */; };
 		191E3EC11C29DC3800C180A6 /* RCTRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 191E3EC01C29DC3800C180A6 /* RCTRefreshControl.m */; };
+		19DED2291E77E29200F089BB /* systemJSCWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 19DED2281E77E29200F089BB /* systemJSCWrapper.cpp */; };
 		27595AA31E575C7800CCE2B1 /* CxxMessageQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A61E03699D0018521A /* CxxMessageQueue.h */; };
 		27595AA41E575C7800CCE2B1 /* CxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A71E03699D0018521A /* CxxModule.h */; };
 		27595AA51E575C7800CCE2B1 /* CxxNativeModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A91E03699D0018521A /* CxxNativeModule.h */; };
@@ -1678,6 +1679,7 @@
 		191E3EBD1C29D9AF00C180A6 /* RCTRefreshControlManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRefreshControlManager.m; sourceTree = "<group>"; };
 		191E3EBF1C29DC3800C180A6 /* RCTRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRefreshControl.h; sourceTree = "<group>"; };
 		191E3EC01C29DC3800C180A6 /* RCTRefreshControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRefreshControl.m; sourceTree = "<group>"; };
+		19DED2281E77E29200F089BB /* systemJSCWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = systemJSCWrapper.cpp; path = ../jschelpers/systemJSCWrapper.cpp; sourceTree = "<group>"; };
 		27B958731E57587D0096647A /* JSBigString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSBigString.cpp; sourceTree = "<group>"; };
 		2D2A28131D9B038B00D4039D /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		352DCFEE1D19F4C20056D623 /* RCTI18nUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTI18nUtil.h; sourceTree = "<group>"; };
@@ -2457,6 +2459,7 @@
 				3D7454791E54757500E74ADD /* RecoverableError.h */,
 				3D92B0D31E03699D0018521A /* SampleCxxModule.cpp */,
 				3D92B0D41E03699D0018521A /* SampleCxxModule.h */,
+				19DED2281E77E29200F089BB /* systemJSCWrapper.cpp */,
 				3D92B0D51E03699D0018521A /* SystraceSection.h */,
 			);
 			path = cxxreact;
@@ -3561,6 +3564,7 @@
 				13F17A851B8493E5007D4C75 /* RCTRedBox.m in Sources */,
 				83392EB31B6634E10013B15F /* RCTModalHostViewController.m in Sources */,
 				13B0801C1A69489C00A75B9A /* RCTNavItem.m in Sources */,
+				19DED2291E77E29200F089BB /* systemJSCWrapper.cpp in Sources */,
 				83CBBA691A601EF300E9B192 /* RCTEventDispatcher.m in Sources */,
 				83A1FE8F1B62643A00BE0E65 /* RCTModalHostViewManager.m in Sources */,
 				13E0674A1A70F434002CDEE1 /* RCTUIManager.m in Sources */,
