@@ -55,7 +55,6 @@ if THIS_IS_FBANDROID:
           # `initOnJSVMThread` to be called before the platform-specific hooks
           # have been properly initialised. Bad Times(TM).
           #     -- @ashokmenon (2017/01/03)
-          '//java/com/facebook/java2js:jni',
           react_native_target('jni/xreact/jni:jni'),
           react_native_xplat_target('cxxreact/...'),
         ],
