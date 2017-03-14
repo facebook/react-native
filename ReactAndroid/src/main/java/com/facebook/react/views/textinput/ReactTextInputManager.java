@@ -750,6 +750,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                       editText.getText().toString()));
             }
 
+            if (actionId == EditorInfo.IME_NULL) {
+              return !editText.getBlurOnSubmit();
+            }
+
             if (editText.getBlurOnSubmit()) {
               editText.clearFocus();
             }
