@@ -11,6 +11,7 @@
  */
 'use strict';
 
+// $FlowFixMe `checkPropTypes` is not in Flow's built in React typedefs yet.
 var {PropTypes, checkPropTypes} = require('React');
 var RCTCameraRollManager = require('NativeModules').CameraRollManager;
 
