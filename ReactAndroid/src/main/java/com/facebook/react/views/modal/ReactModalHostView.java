@@ -67,6 +67,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   // be created.  For instance, animation does since it affects Dialog creation through the theme
   // but transparency does not since we can access the window to update the property.
   private boolean mPropertyRequiresNewDialog;
+  private @Nullable DialogInterface.OnDismissListener mOnDismissListener;
   private @Nullable DialogInterface.OnShowListener mOnShowListener;
   private @Nullable OnRequestCloseListener mOnRequestCloseListener;
 
@@ -142,6 +143,10 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     mOnRequestCloseListener = listener;
   }
 
+  protected void setOnCloseListener(DialogInterface.OnDismissListener listener) {
+    mOnDismissListener = listener;
+  }
+
   protected void setOnShowListener(DialogInterface.OnShowListener listener) {
     mOnShowListener = listener;
   }
@@ -214,6 +219,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     mDialog.setContentView(getContentView());
     updateProperties();
 
+    mDialog.setOnDismissListener(mOnDismissListener);
     mDialog.setOnShowListener(mOnShowListener);
     mDialog.setOnKeyListener(
       new DialogInterface.OnKeyListener() {

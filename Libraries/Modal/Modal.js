@@ -108,6 +108,10 @@ class Modal extends React.Component {
      */
     onRequestClose: Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func,
     /**
+     * The `onClose` prop allows passing a function that will be called once the modal has been closed.
+     */
+    onClose: PropTypes.func,
+    /**
      * The `onShow` prop allows passing a function that will be called once the modal has been shown.
      */
     onShow: PropTypes.func,
@@ -168,6 +172,7 @@ class Modal extends React.Component {
         transparent={this.props.transparent}
         hardwareAccelerated={this.props.hardwareAccelerated}
         onRequestClose={this.props.onRequestClose}
+        onClose={this.props.onClose}
         onShow={this.props.onShow}
         style={styles.modal}
         onStartShouldSetResponder={this._shouldSetResponder}

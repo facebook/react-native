@@ -84,6 +84,13 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
           dispatcher.dispatchEvent(new RequestCloseEvent(view.getId()));
         }
       });
+    view.setOnCloseListener(
+      new DialogInterface.OnDismissListener() {
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+          dispatcher.dispatchEvent(new CloseEvent(view.getId()));
+        }
+    });
     view.setOnShowListener(
       new DialogInterface.OnShowListener() {
         @Override
