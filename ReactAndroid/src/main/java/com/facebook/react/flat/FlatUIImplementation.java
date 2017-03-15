@@ -37,7 +37,8 @@ public class FlatUIImplementation extends UIImplementation {
   public static FlatUIImplementation createInstance(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagers,
-      EventDispatcher eventDispatcher) {
+      EventDispatcher eventDispatcher,
+      boolean memoryImprovementEnabled) {
 
     RCTImageViewManager rctImageViewManager = findRCTImageManager(viewManagers);
     if (rctImageViewManager != null) {
@@ -61,7 +62,8 @@ public class FlatUIImplementation extends UIImplementation {
       rctImageViewManager,
       viewManagerRegistry,
       operationsQueue,
-      eventDispatcher
+      eventDispatcher,
+      memoryImprovementEnabled
     );
   }
 
@@ -73,17 +75,20 @@ public class FlatUIImplementation extends UIImplementation {
   private final ReactApplicationContext mReactContext;
   private @Nullable RCTImageViewManager mRCTImageViewManager;
   private final StateBuilder mStateBuilder;
+  private final boolean mMemoryImprovementEnabled;
 
   private FlatUIImplementation(
       ReactApplicationContext reactContext,
       @Nullable RCTImageViewManager rctImageViewManager,
       ViewManagerRegistry viewManagers,
       FlatUIViewOperationQueue operationsQueue,
-      EventDispatcher eventDispatcher) {
+      EventDispatcher eventDispatcher,
+      boolean memoryImprovementEnabled) {
     super(reactContext, viewManagers, operationsQueue, eventDispatcher);
     mReactContext = reactContext;
     mRCTImageViewManager = rctImageViewManager;
     mStateBuilder = new StateBuilder(operationsQueue);
+    mMemoryImprovementEnabled = memoryImprovementEnabled;
   }
 
   @Override
@@ -521,6 +526,9 @@ public class FlatUIImplementation extends UIImplementation {
 
   @Override
   public void removeRootView(int rootViewTag) {
+    if (mMemoryImprovementEnabled) {
+      removeRootShadowNode(rootViewTag);
+    }
     mStateBuilder.removeRootView(rootViewTag);
   }
 

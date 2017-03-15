@@ -884,6 +884,7 @@ var NavigatorIOS = React.createClass({
         <NavigatorTransitionerIOS
           ref={TRANSITIONER_REF}
           style={styles.transitioner}
+          // $FlowFixMe(>=0.41.0)
           vertical={this.props.vertical}
           requestedTopOfStack={this.state.requestedTopOfStack}
           onNavigationComplete={this._handleNavigationComplete}
@@ -914,6 +915,7 @@ var NavigatorIOS = React.createClass({
 
   render: function() {
     return (
+      // $FlowFixMe(>=0.41.0)
       <View style={this.props.style}>
         {this._renderNavigationStackItems()}
       </View>

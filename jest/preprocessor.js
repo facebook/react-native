@@ -25,13 +25,11 @@ const transformer = require('../packager/transformer.js');
 
 module.exports = {
   process(src, file) {
-    // Don't transform node_modules, except react-tools which includes the
-    // untransformed copy of React
-    if (file.match(/node_modules\/(?!react-tools\/)/)) {
-      return src;
-    } else if (nodeFiles.test(file)) { // node specific transforms only
+    if (nodeFiles.test(file)) { // node specific transforms only
       return babel.transform(
-        src, Object.assign({filename: file}, nodeOptions)).code;
+        src,
+        Object.assign({filename: file}, nodeOptions)
+      ).code;
     }
 
     return transformer.transform(src, file, {inlineRequires: true}).code;

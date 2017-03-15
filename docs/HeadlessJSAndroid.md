@@ -4,6 +4,7 @@ title: Headless JS
 layout: docs
 category: Guides (Android)
 permalink: docs/headless-js-android.html
+banner: ejected
 next: signed-apk-android
 previous: native-components-android
 ---

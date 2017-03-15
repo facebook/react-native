@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const EventEmitter = require('EventEmitter');
 const NativeEventEmitter = require('NativeEventEmitter');
 const NativeModules = require('NativeModules');
 const RCTAppState = NativeModules.AppState;
@@ -86,10 +87,12 @@ class AppState extends NativeEventEmitter {
 
   _eventHandlers: Object;
   currentState: ?string;
+  isAvailable: boolean;
 
   constructor() {
     super(RCTAppState);
 
+    this.isAvailable = true;
     this._eventHandlers = {
       change: new Map(),
       memoryWarning: new Map(),
@@ -173,6 +176,48 @@ class AppState extends NativeEventEmitter {
   }
 }
 
-AppState = new AppState();
+function throwMissingNativeModule() {
+  invariant(
+    false,
+    'Cannot use AppState module when native RCTAppState is not included in the build.\n' +
+    'Either include it, or check AppState.isAvailable before calling any methods.'
+  );
+}
+
+class MissingNativeAppStateShim extends EventEmitter {
+  // AppState
+  isAvailable: boolean = false;
+  currentState: ?string = null;
+
+  addEventListener() {
+    throwMissingNativeModule();
+  }
+
+  removeEventListener() {
+    throwMissingNativeModule();
+  }
+
+  // EventEmitter
+  addListener() {
+    throwMissingNativeModule();
+  }
+
+  removeAllListeners() {
+    throwMissingNativeModule();
+  }
+
+  removeSubscription() {
+    throwMissingNativeModule();
+  }
+}
+
+// This module depends on the native `RCTAppState` module. If you don't include it,
+// `AppState.isAvailable` will return `false`, and any method calls will throw.
+// We reassign the class variable to keep the autodoc generator happy.
+if (RCTAppState) {
+  AppState = new AppState();
+} else {
+  AppState = new MissingNativeAppStateShim();
+}
 
 module.exports = AppState;

@@ -25,6 +25,7 @@ const {join: joinPath, relative: relativePath, extname} = require('path');
 import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type GlobalTransformCache from '../lib/GlobalTransformCache';
 import type {SourceMap} from '../lib/SourceMap';
+import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {ReadTransformProps} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
 import type Cache from './Cache';
@@ -45,9 +46,20 @@ export type TransformCode = (
   transformOptions: TransformOptions,
 ) => Promise<TransformedCode>;
 
+export type HasteImpl = {
+  getHasteName(filePath: string): (string | void),
+  // This exists temporarily to enforce consistency while we deprecate
+  // @providesModule.
+  enforceHasteNameMatches?: (
+    filePath: string,
+    expectedName: (string | void),
+  ) => void,
+};
+
 export type Options = {
-  resetCache?: boolean,
   cacheTransformResults?: boolean,
+  hasteImpl?: HasteImpl,
+  resetCache?: boolean,
 };
 
 export type ConstructorArgs = {
@@ -58,7 +70,7 @@ export type ConstructorArgs = {
   moduleCache: ModuleCache,
   options: Options,
   reporter: Reporter,
-  transformCacheKey: ?string,
+  getTransformCacheKey: GetTransformCacheKey,
   transformCode: ?TransformCode,
 };
 
@@ -70,7 +82,7 @@ class Module {
   _moduleCache: ModuleCache;
   _cache: Cache;
   _transformCode: ?TransformCode;
-  _transformCacheKey: ?string;
+  _getTransformCacheKey: GetTransformCacheKey;
   _depGraphHelpers: DependencyGraphHelpers;
   _options: Options;
   _reporter: Reporter;
@@ -85,11 +97,11 @@ class Module {
     cache,
     depGraphHelpers,
     file,
+    getTransformCacheKey,
     globalTransformCache,
     moduleCache,
     options,
     reporter,
-    transformCacheKey,
     transformCode,
   }: ConstructorArgs) {
     if (!isAbsolutePath(file)) {
@@ -102,11 +114,7 @@ class Module {
     this._moduleCache = moduleCache;
     this._cache = cache;
     this._transformCode = transformCode;
-    this._transformCacheKey = transformCacheKey;
-    invariant(
-      transformCode == null || transformCacheKey != null,
-      'missing transform cache key',
-    );
+    this._getTransformCacheKey = getTransformCacheKey;
     this._depGraphHelpers = depGraphHelpers;
     this._options = options || {};
     this._reporter = reporter;
@@ -194,21 +202,46 @@ class Module {
     return this._docBlock;
   }
 
-  _getHasteName() {
+  _getHasteName(): Promise<string | void> {
     if (!this._hasteName) {
-      // Extract an id for the module if it's using @providesModule syntax
-      // and if it's NOT in node_modules (and not a whitelisted node_module).
-      // This handles the case where a project may have a dep that has @providesModule
-      // docblock comments, but doesn't want it to conflict with whitelisted @providesModule
-      // modules, such as react-haste, fbjs-haste, or react-native or with non-dependency,
-      // project-specific code that is using @providesModule.
-      this._hasteName = this._readDocBlock().then(moduleDocBlock => {
-        const {providesModule} = moduleDocBlock;
-        return providesModule
-          && !this._depGraphHelpers.isNodeModulesDir(this.path)
-            ? /^\S+/.exec(providesModule)[0]
-            : undefined;
-      });
+      const hasteImpl = this._options.hasteImpl;
+      if (hasteImpl === undefined || hasteImpl.enforceHasteNameMatches) {
+        this._hasteName = this._readDocBlock().then(moduleDocBlock => {
+          const {providesModule} = moduleDocBlock;
+          return providesModule
+            && !this._depGraphHelpers.isNodeModulesDir(this.path)
+              ? /^\S+/.exec(providesModule)[0]
+              : undefined;
+        });
+      }
+      if (hasteImpl !== undefined) {
+        const {enforceHasteNameMatches} = hasteImpl;
+        if (enforceHasteNameMatches) {
+          this._hasteName = this._hasteName.then(providesModule => {
+            enforceHasteNameMatches(
+              this.path,
+              providesModule,
+            );
+            return hasteImpl.getHasteName(this.path);
+          });
+        } else {
+          this._hasteName = Promise.resolve(hasteImpl.getHasteName(this.path));
+        }
+      } else {
+        // Extract an id for the module if it's using @providesModule syntax
+        // and if it's NOT in node_modules (and not a whitelisted node_module).
+        // This handles the case where a project may have a dep that has @providesModule
+        // docblock comments, but doesn't want it to conflict with whitelisted @providesModule
+        // modules, such as react-haste, fbjs-haste, or react-native or with non-dependency,
+        // project-specific code that is using @providesModule.
+        this._hasteName = this._readDocBlock().then(moduleDocBlock => {
+          const {providesModule} = moduleDocBlock;
+          return providesModule
+            && !this._depGraphHelpers.isNodeModulesDir(this.path)
+              ? /^\S+/.exec(providesModule)[0]
+              : undefined;
+        });
+      }
     }
     return this._hasteName;
   }
@@ -324,12 +357,11 @@ class Module {
       if (extern) {
         transformOptions = {...transformOptions, extern};
       }
-      const transformCacheKey = this._transformCacheKey;
-      invariant(transformCacheKey != null, 'missing transform cache key');
+      const getTransformCacheKey = this._getTransformCacheKey;
       const cacheProps = {
         filePath: this.path,
         sourceCode,
-        transformCacheKey,
+        getTransformCacheKey,
         transformOptions,
         cacheOptions: {
           resetCache: this._options.resetCache,

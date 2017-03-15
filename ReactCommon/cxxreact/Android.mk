@@ -5,10 +5,11 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := libreactnativefb
 
 LOCAL_SRC_FILES := \
+  CxxMessageQueue.cpp \
   CxxNativeModule.cpp \
-  Executor.cpp \
   Instance.cpp \
   JSCExecutor.cpp \
+  JSBigString.cpp \
   JSBundleType.cpp \
   JSCLegacyProfiler.cpp \
   JSCLegacyTracing.cpp \

@@ -11,12 +11,11 @@
  */
 'use strict';
 
-const DialogManagerAndroid = require('NativeModules').DialogManagerAndroid;
-const Permissions = require('NativeModules').PermissionsAndroid;
+const NativeModules = require('NativeModules');
 
 type Rationale = {
-  title: string;
-  message: string;
+  title: string,
+  message: string,
 }
 
 type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
@@ -113,7 +112,7 @@ class PermissionsAndroid {
    */
   checkPermission(permission: string) : Promise<boolean> {
     console.warn('"PermissionsAndroid.checkPermission" is deprecated. Use "PermissionsAndroid.check" instead');
-    return Permissions.checkPermission(permission);
+    return NativeModules.PermissionsAndroid.checkPermission(permission);
   }
 
   /**
@@ -121,7 +120,7 @@ class PermissionsAndroid {
    * permissions has been granted
    */
   check(permission: string) : Promise<boolean> {
-    return Permissions.checkPermission(permission);
+    return NativeModules.PermissionsAndroid.checkPermission(permission);
   }
 
   /**
@@ -156,19 +155,19 @@ class PermissionsAndroid {
    */
   async request(permission: string, rationale?: Rationale) : Promise<PermissionStatus> {
     if (rationale) {
-      const shouldShowRationale = await Permissions.shouldShowRequestPermissionRationale(permission);
+      const shouldShowRationale = await NativeModules.PermissionsAndroid.shouldShowRequestPermissionRationale(permission);
 
       if (shouldShowRationale) {
         return new Promise((resolve, reject) => {
-          DialogManagerAndroid.showAlert(
+          NativeModules.DialogManagerAndroid.showAlert(
             rationale,
             () => reject(new Error('Error showing rationale')),
-            () => resolve(Permissions.requestPermission(permission))
+            () => resolve(NativeModules.PermissionsAndroid.requestPermission(permission))
           );
         });
       }
     }
-    return Permissions.requestPermission(permission);
+    return NativeModules.PermissionsAndroid.requestPermission(permission);
   }
 
   /**
@@ -177,7 +176,7 @@ class PermissionsAndroid {
    * indicating whether the user allowed or denied the request
    */
   requestMultiple(permissions: Array<string>) : Promise<{[permission: string]: PermissionStatus}> {
-    return Permissions.requestMultiplePermissions(permissions);
+    return NativeModules.PermissionsAndroid.requestMultiplePermissions(permissions);
   }
 }
 

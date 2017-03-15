@@ -1,9 +1,10 @@
+'use strict';
+
 import React, { Component } from 'react';
 import {
-  AppRegistry,
   StyleSheet,
   Text,
-  View
+  View,
 } from 'react-native';
 
 export default class WelcomeText extends Component {
@@ -22,8 +23,8 @@ export default class WelcomeText extends Component {
           file views/welcome/WelcomeText.android.js.
         </Text>
         <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu.
+          Double tap R on your keyboard to reload,{'\n'}
+          Shake or press menu button for dev menu.
         </Text>
       </View>
     );

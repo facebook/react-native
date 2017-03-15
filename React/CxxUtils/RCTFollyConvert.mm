@@ -1,5 +1,3 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -13,9 +11,8 @@
 
 #import <objc/runtime.h>
 
-#import <Foundation/Foundation.h>
-
-namespace react { namespace CxxUtils {
+namespace facebook {
+namespace react {
 
 id convertFollyDynamicToId(const folly::dynamic &dyn) {
   // I could imagine an implementation which avoids copies by wrapping the
@@ -113,4 +110,4 @@ folly::dynamic convertIdToFollyDynamic(id json)
   return nil;
 }
 
-}}
+} }

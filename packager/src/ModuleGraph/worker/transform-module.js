@@ -21,8 +21,8 @@ const {basename} = require('path');
 import type {
   Callback,
   TransformedFile,
-  TransformFn,
-  TransformFnResult,
+  Transformer,
+  TransformerResult,
   TransformResult,
   TransformVariants,
 } from '../types.flow';
@@ -30,7 +30,7 @@ import type {
 export type TransformOptions = {|
   filename: string,
   polyfill?: boolean,
-  transform: TransformFn,
+  transformer: Transformer,
   variants?: TransformVariants,
 |};
 
@@ -44,20 +44,27 @@ function transformModule(
   callback: Callback<TransformedFile>,
 ): void {
   if (options.filename.endsWith('.json')) {
-    return transformJSON(code, options, callback);
+    transformJSON(code, options, callback);
+    return;
   }
 
-  const {filename, transform, variants = defaultVariants} = options;
+  const {filename, transformer, variants = defaultVariants} = options;
   const tasks = {};
   Object.keys(variants).forEach(name => {
-    tasks[name] = cb => transform({
-      filename,
-      sourceCode: code,
-      options: variants[name],
-    }, cb);
+    tasks[name] = cb => {
+      try {
+        cb(null, transformer.transform(
+          code,
+          filename,
+          variants[name],
+        ));
+      } catch (error) {
+        cb(error, null);
+      }
+    };
   });
 
-  series(tasks, (error, results: {[key: string]: TransformFnResult}) => {
+  series(tasks, (error, results: {[key: string]: TransformerResult}) => {
     if (error) {
       callback(error);
       return;
@@ -75,11 +82,12 @@ function transformModule(
     callback(null, {
       code,
       file: filename,
-      hasteID: annotations.providesModule || annotations.provide || null,
+      hasteID: annotations.providesModule || null,
       transformed,
       type: options.polyfill ? 'script' : 'module',
     });
   });
+  return;
 }
 
 function transformJSON(json, options, callback) {

@@ -58,7 +58,7 @@ describe('Module', () => {
   });
 
   let transformCacheKey;
-  const createModule = (options) =>
+  const createModule = options =>
     new Module({
       options: {
         cacheTransformResults: true,
@@ -71,11 +71,11 @@ describe('Module', () => {
       file: options && options.file || fileName,
       depGraphHelpers: new DependencyGraphHelpers(),
       moduleCache: new ModuleCache({cache}),
-      transformCacheKey,
+      getTransformCacheKey: () => transformCacheKey,
     });
 
   const createJSONModule =
-    (options) => createModule({...options, file: '/root/package.json'});
+    options => createModule({...options, file: '/root/package.json'});
 
   beforeEach(function() {
     process.platform = 'linux';
@@ -188,7 +188,7 @@ describe('Module', () => {
             filePath: module.path,
             sourceCode,
             transformOptions: options,
-            transformCacheKey,
+            getTransformCacheKey: () => transformCacheKey,
             result: transformResult,
           });
           return Promise.resolve(transformResult);
@@ -284,7 +284,7 @@ describe('Module', () => {
       };
       const module = createModule({transformCode});
 
-      return module.read().then((result) => {
+      return module.read().then(result => {
         expect(result).toEqual(jasmine.objectContaining(transformResult));
       });
     });
@@ -302,7 +302,7 @@ describe('Module', () => {
         cacheTransformResults: false,
       }});
 
-      return module.read().then((result) => {
+      return module.read().then(result => {
         expect(result).toEqual({
           dependencies: ['foo', 'bar'],
         });
@@ -320,8 +320,8 @@ describe('Module', () => {
       };
       const module = createModule({transformCode, options: undefined});
 
-      return module.read().then((result) => {
-        expect(result).toEqual({ ...transformResult, source: 'arbitrary(code);'});
+      return module.read().then(result => {
+        expect(result).toEqual({...transformResult, source: 'arbitrary(code);'});
       });
     });
 

@@ -4,7 +4,8 @@ title: Upgrading
 layout: docs
 category: Guides
 permalink: docs/upgrading.html
-next: platform-specific-code
+banner: ejected
+next: native-modules-ios
 previous: understanding-cli
 ---
 

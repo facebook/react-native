@@ -45,8 +45,8 @@ function getAssetDataFromName(filename, platforms) {
   assetName = decodeURIComponent(assetName);
 
   return {
-    resolution: resolution,
-    assetName: assetName,
+    resolution,
+    assetName,
     type: ext.slice(1),
     name: path.basename(assetName, ext),
     platform: platformExt,
