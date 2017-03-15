@@ -82,7 +82,7 @@ function transformModule(
     callback(null, {
       code,
       file: filename,
-      hasteID: annotations.providesModule || annotations.provide || null,
+      hasteID: annotations.providesModule || null,
       transformed,
       type: options.polyfill ? 'script' : 'module',
     });

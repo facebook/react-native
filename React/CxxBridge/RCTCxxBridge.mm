@@ -553,7 +553,8 @@ struct RCTInstanceCallback : public InstanceCallback {
       }
       modules.emplace_back(
         new QueueNativeModule(self, std::make_unique<CxxNativeModule>(
-          _reactInstance, [(RCTCxxModule *)(moduleData.instance) move])));
+                                  _reactInstance, [moduleData.name UTF8String],
+                                  [moduleData] { return [(RCTCxxModule *)(moduleData.instance) move]; })));
     } else {
       modules.emplace_back(new RCTNativeModule(self, moduleData));
     }

@@ -316,14 +316,11 @@ describe('onUpdate', function() {
   );
 
   it(
-    'waitForInteraction blocks callback until scroll',
+    'waitForInteraction blocks callback until interaction',
     function() {
       const helper = new ViewabilityHelper({
         waitForInteraction: true,
         viewAreaCoveragePercentThreshold: 0,
-        scrollInteractionFilter: {
-          minimumOffset: 20,
-        },
       });
       rowFrames = {
         a: {y: 0, height: 200},
@@ -340,15 +337,9 @@ describe('onUpdate', function() {
         onViewableItemsChanged,
       );
       expect(onViewableItemsChanged).not.toBeCalled();
-      helper.onUpdate(
-        data.length,
-        10, // not far enough to meet minimumOffset
-        100,
-        getFrameMetrics,
-        createViewToken,
-        onViewableItemsChanged,
-      );
-      expect(onViewableItemsChanged).not.toBeCalled();
+
+      helper.recordInteraction();
+
       helper.onUpdate(
         data.length,
         20,
