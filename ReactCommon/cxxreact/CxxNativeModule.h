@@ -15,8 +15,8 @@ std::function<void(folly::dynamic)> makeCallback(
 
 class CxxNativeModule : public NativeModule {
 public:
-  CxxNativeModule(std::weak_ptr<Instance> instance,
-                  std::unique_ptr<xplat::module::CxxModule> module);
+  CxxNativeModule(std::weak_ptr<Instance> instance, std::string name,
+                  xplat::module::CxxModule::Provider provider);
 
   std::string getName() override;
   std::vector<MethodDescriptor> getMethods() override;
@@ -27,7 +27,11 @@ public:
     ExecutorToken token, unsigned int hookId, folly::dynamic&& args) override;
 
 private:
+  void lazyInit();
+
   std::weak_ptr<Instance> instance_;
+  std::string name_;
+  xplat::module::CxxModule::Provider provider_;
   std::unique_ptr<xplat::module::CxxModule> module_;
   std::vector<xplat::module::CxxModule::Method> methods_;
 };

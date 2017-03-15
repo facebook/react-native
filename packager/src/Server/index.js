@@ -77,70 +77,24 @@ type Options = {
   watch?: boolean,
 };
 
-const bundleOpts = declareOpts({
-  sourceMapUrl: {
-    type: 'string',
-    required: false,
-  },
-  entryFile: {
-    type: 'string',
-    required: true,
-  },
-  dev: {
-    type: 'boolean',
-    default: true,
-  },
-  minify: {
-    type: 'boolean',
-    default: false,
-  },
-  runModule: {
-    type: 'boolean',
-    default: true,
-  },
-  inlineSourceMap: {
-    type: 'boolean',
-    default: false,
-  },
-  platform: {
-    type: 'string',
-    required: true,
-  },
-  runBeforeMainModule: {
-    type: 'array',
-    default: defaults.runBeforeMainModule,
-  },
-  unbundle: {
-    type: 'boolean',
-    default: false,
-  },
-  hot: {
-    type: 'boolean',
-    default: false,
-  },
-  entryModuleOnly: {
-    type: 'boolean',
-    default: false,
-  },
-  isolateModuleIDs: {
-    type: 'boolean',
-    default: false,
-  },
-  resolutionResponse: {
-    type: 'object',
-  },
-  generateSourceMaps: {
-    type: 'boolean',
-    required: false,
-  },
-  assetPlugins: {
-    type: 'array',
-    default: [],
-  },
-  onProgress: {
-    type: 'function',
-  },
-});
+export type BundleOptions = {
+  +assetPlugins: Array<string>,
+  dev: boolean,
+  entryFile: string,
+  +entryModuleOnly: boolean,
+  +generateSourceMaps: boolean,
+  +hot: boolean,
+  +inlineSourceMap: boolean,
+  +isolateModuleIDs: boolean,
+  minify: boolean,
+  onProgress: ?(doneCont: number, totalCount: number) => mixed,
+  +platform: ?string,
+  +resolutionResponse: ?{},
+  +runBeforeMainModule: Array<string>,
+  +runModule: boolean,
+  sourceMapUrl: ?string,
+  unbundle: boolean,
+};
 
 const dependencyOpts = declareOpts({
   platform: {
@@ -302,12 +256,8 @@ class Server {
     }
   }
 
-  async buildBundle(options: {entryFile: string, platform?: string}): Promise<Bundle> {
-    if (!options.platform) {
-      options.platform = getPlatformExtension(options.entryFile);
-    }
-    const opts = bundleOpts(options);
-    const bundle = await this._bundler.bundle(opts);
+  async buildBundle(options: BundleOptions): Promise<Bundle> {
+    const bundle = await this._bundler.bundle(options);
     const modules = bundle.getModules();
     const nonVirtual = modules.filter(m => !m.virtual);
     bundleDeps.set(bundle, {
@@ -359,7 +309,7 @@ class Server {
 
   getDependencies(options: {
     entryFile: string,
-    platform?: string,
+    platform: ?string,
   }): Promise<ResolutionResponse> {
     return Promise.resolve().then(() => {
       if (!options.platform) {
@@ -568,10 +518,7 @@ class Server {
     });
   }
 
-  _useCachedOrUpdateOrCreateBundle(options: {
-    entryFile: string,
-    platform?: string,
-  }): Promise<Bundle> {
+  _useCachedOrUpdateOrCreateBundle(options: BundleOptions): Promise<Bundle> {
     const optionsJson = this.optionsHash(options);
     const bundleFromScratch = () => {
       const building = this.buildBundle(options);
@@ -597,8 +544,7 @@ class Server {
           // $FlowFixMe(>=0.37.0)
           deps.outdated = new Set();
 
-          const opts = bundleOpts(options);
-          const {platform, dev, minify, hot} = opts;
+          const {platform, dev, minify, hot} = options;
 
           // Need to create a resolution response to pass to the bundler
           // to process requires after transform. By providing a
@@ -880,20 +826,7 @@ class Server {
     }
   }
 
-  _getOptionsFromUrl(reqUrl: string): {
-    sourceMapUrl: string,
-    entryFile: string,
-    dev: boolean,
-    minify: boolean,
-    hot: boolean,
-    runModule: boolean,
-    inlineSourceMap: boolean,
-    platform?: string,
-    entryModuleOnly: boolean,
-    generateSourceMaps: boolean,
-    assetPlugins: Array<string>,
-    onProgress?: (doneCont: number, totalCount: number) => mixed,
-  } {
+  _getOptionsFromUrl(reqUrl: string): BundleOptions {
     // `true` to parse the query param as an object.
     const urlObj = url.parse(reqUrl, true);
 
@@ -934,13 +867,16 @@ class Server {
       dev,
       minify,
       hot: this._getBoolOptionFromQuery(urlObj.query, 'hot', false),
+      runBeforeMainModule: defaults.runBeforeMainModule,
       runModule: this._getBoolOptionFromQuery(urlObj.query, 'runModule', true),
       inlineSourceMap: this._getBoolOptionFromQuery(
         urlObj.query,
         'inlineSourceMap',
         false
       ),
+      isolateModuleIDs: false,
       platform,
+      resolutionResponse: null,
       entryModuleOnly: this._getBoolOptionFromQuery(
         urlObj.query,
         'entryModuleOnly',
@@ -949,6 +885,8 @@ class Server {
       generateSourceMaps:
         minify || !dev || this._getBoolOptionFromQuery(urlObj.query, 'babelSourcemap', false),
       assetPlugins,
+      onProgress: null,
+      unbundle: false,
     };
   }
 
@@ -960,7 +898,27 @@ class Server {
 
     return query[opt] === 'true' || query[opt] === '1';
   }
+
+  static DEFAULT_BUNDLE_OPTIONS;
+
 }
+
+Server.DEFAULT_BUNDLE_OPTIONS =  {
+  assetPlugins: [],
+  dev: true,
+  entryModuleOnly: false,
+  generateSourceMaps: false,
+  hot: false,
+  inlineSourceMap: false,
+  isolateModuleIDs: false,
+  minify: false,
+  onProgress: null,
+  resolutionResponse: null,
+  runBeforeMainModule: defaults.runBeforeMainModule,
+  runModule: true,
+  sourceMapUrl: null,
+  unbundle: false,
+};
 
 function contentsEqual<T>(array: Array<T>, set: Set<T>): boolean {
   return array.length === set.size && array.every(set.has, set);
