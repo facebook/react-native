@@ -71,8 +71,8 @@ describe('Animated tests', () => {
             {scale: 0.5},
           ],
           shadowOffset: {
-            width: 0,
-            height: 0,
+            width: 0.5,
+            height: 0.5,
           },
         },
       });
