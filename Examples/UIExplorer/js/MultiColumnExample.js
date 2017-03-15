@@ -19,18 +19,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule MultiColumnExample
  */
 'use strict';
 
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  FlatList,
   StyleSheet,
   Text,
   View,
 } = ReactNative;
 
-const FlatList = require('FlatList');
 const UIExplorerPage = require('./UIExplorerPage');
 
 const infoLog = require('infoLog');
@@ -96,16 +97,16 @@ class MultiColumnExample extends React.PureComponent {
         </View>
         <SeparatorComponent />
         <FlatList
-          FooterComponent={FooterComponent}
-          HeaderComponent={HeaderComponent}
-          ItemComponent={this._renderItemComponent}
-          SeparatorComponent={SeparatorComponent}
+          ItemSeparatorComponent={SeparatorComponent}
+          ListFooterComponent={FooterComponent}
+          ListHeaderComponent={HeaderComponent}
           getItemLayout={this.state.fixedHeight ? this._getItemLayout : undefined}
           data={filteredData}
           key={this.state.numColumns + (this.state.fixedHeight ? 'f' : 'v')}
           numColumns={this.state.numColumns || 1}
           onRefresh={() => alert('onRefresh: nothing to refresh :P')}
           refreshing={false}
+          renderItem={this._renderItemComponent}
           shouldItemUpdate={this._shouldItemUpdate}
           disableVirtualization={!this.state.virtualized}
           onViewableItemsChanged={this._onViewableItemsChanged}

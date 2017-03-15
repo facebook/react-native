@@ -4,8 +4,9 @@ title: Running On Device
 layout: docs
 category: Guides
 permalink: docs/running-on-device.html
-next: javascript-environment
-previous: testing
+banner: ejected
+next: upgrading
+previous: integration-with-existing-apps
 ---
 
 It's always a good idea to test your app on an actual device before releasing it to your users. This document will guide you through the necessary steps to run your React Native app on a device.
@@ -55,7 +56,7 @@ Installing an app on an iOS device requires a Mac, an Apple ID, and a USB cable.
 
 <block class="mac ios" />
 
-Connect your device to your Mac via USB, then open Xcode. In the project navigator, choose your device from the Product > Destination toolbar menu. Xcode will then register your device for development.
+Connect your device to your Mac via USB, then open Xcode. Navigate into `ios` folder of your project and open the file ending .xcodeproj inside it. In the project navigator, choose your device from the Product > Destination toolbar menu. Xcode will then register your device for development.
 
 > If you run into any issues, please take a look at Apple's [Launching Your App on a Device docs](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/LaunchingYourApponDevices/LaunchingYourApponDevices.html#//apple_ref/doc/uid/TP40012582-CH27-SW4).
 

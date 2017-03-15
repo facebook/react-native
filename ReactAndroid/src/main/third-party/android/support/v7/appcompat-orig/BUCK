@@ -1,4 +1,4 @@
-include_defs('//ReactAndroid/DEFS')
+include_defs("//ReactAndroid/DEFS")
 
 # This is a bit messy and hopefully a temporary thing
 # The problem is that Gradle extracts appcompat resources into app namespace, com.facebook.react
@@ -10,52 +10,52 @@ include_defs('//ReactAndroid/DEFS')
 # All this mumbo jumbo will go away after t10182713
 
 android_library(
-  name = 'appcompat',
-  deps = [
-    ':res-for-appcompat',
-  ],
-  visibility = [
-    'PUBLIC',
-  ],
-  exported_deps = [
-    ':classes-for-react-native',
-  ],
+    name = "appcompat",
+    exported_deps = [
+        ":classes-for-react-native",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        ":res-for-appcompat",
+    ],
 )
 
 # still used by appcompat library internally, so we need both during the build
 android_resource(
-  name = 'res-for-appcompat',
-  res = ':res-unpacker-cmd',
-  package = 'android.support.v7.appcompat',
-  visibility = ['//ReactAndroid/...',],
+    name = "res-for-appcompat",
+    package = "android.support.v7.appcompat",
+    res = ":res-unpacker-cmd",
+    visibility = ["//ReactAndroid/..."],
 )
 
 prebuilt_jar(
-    name = 'classes-for-react-native',
-    binary_jar = ':classes-unpacker-cmd',
-    visibility = ['//ReactAndroid/...',],
+    name = "classes-for-react-native",
+    binary_jar = ":classes-unpacker-cmd",
+    visibility = ["//ReactAndroid/..."],
 )
 
 genrule(
-    name = 'classes-unpacker-cmd',
-    cmd = '$(exe :aar-unpacker) $(location :appcompat-binary-aar) classes.jar $OUT',
-    out = 'classes.jar',
+    name = "classes-unpacker-cmd",
+    out = "classes.jar",
+    cmd = "$(exe :aar-unpacker) $(location :appcompat-binary-aar) classes.jar $OUT",
 )
 
 genrule(
-    name = 'res-unpacker-cmd',
-    cmd = '$(exe :aar-unpacker) $(location :appcompat-binary-aar) res/ $OUT',
-    out = 'res',
-    visibility = ['//ReactAndroid/...',],
+    name = "res-unpacker-cmd",
+    out = "res",
+    cmd = "$(exe :aar-unpacker) $(location :appcompat-binary-aar) res/ $OUT",
+    visibility = ["//ReactAndroid/..."],
 )
 
 python_binary(
-    name = 'aar-unpacker',
-    main = 'aar-unpacker.py',
+    name = "aar-unpacker",
+    main = "aar-unpacker.py",
 )
 
 remote_file(
-    name = 'appcompat-binary-aar',
-    url = 'mvn:com.android.support:appcompat-v7:aar:23.0.1',
-    sha1 = '7d659f671541394a8bc2b9f909950aa2a5ec87ff',
+    name = "appcompat-binary-aar",
+    sha1 = "7d659f671541394a8bc2b9f909950aa2a5ec87ff",
+    url = "mvn:com.android.support:appcompat-v7:aar:23.0.1",
 )

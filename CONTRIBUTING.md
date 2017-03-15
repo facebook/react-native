@@ -69,7 +69,7 @@ We are using GitHub Issues for our public bugs. We keep a close eye on this and 
 
 ### Reporting New Issues
 
-The best way to get your bug fixed is to provide a reduced test case. Please provide either a public repository with a runnable example or a [React Native Playground](https://rnplay.org/) snippet.
+The best way to get your bug fixed is to provide a reduced test case. Please provide either a public repository with a runnable example or a [Sketch](https://sketch.expo.io/).
 
 ### Security Bugs
 

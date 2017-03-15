@@ -20,7 +20,7 @@ class DependencyGraphHelpers {
   _providesModuleNodeModules: Array<string>;
   _assetExts: Array<string>;
 
-  constructor({ providesModuleNodeModules, assetExts }: {
+  constructor({providesModuleNodeModules, assetExts}: {
     providesModuleNodeModules: Array<string>,
     assetExts: Array<string>,
   }) {
