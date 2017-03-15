@@ -42,6 +42,20 @@ function chunkString(str: string, size: number): Array<string> {
 }
 
 /**
+ * Get the stream as a TTY if it effectively looks like a valid TTY.
+ */
+function getTTYStream(stream: net$Socket): ?tty.WriteStream {
+  if (
+    stream instanceof tty.WriteStream &&
+    stream.isTTY &&
+    stream.columns >= 1
+  ) {
+    return stream;
+  }
+  return null;
+}
+
+/**
  * We don't just print things to the console, sometimes we also want to show
  * and update progress. This utility just ensures the output stays neat: no
  * missing newlines, no mangled log lines.
@@ -93,19 +107,20 @@ class Terminal {
    */
   _update(): void {
     const {_statusStr, _stream} = this;
+    const ttyStream = getTTYStream(_stream);
     if (_statusStr === this._nextStatusStr && this._logLines.length === 0) {
       return;
     }
-    if (_stream instanceof tty.WriteStream) {
-      clearStringBackwards(_stream, _statusStr);
+    if (ttyStream != null) {
+      clearStringBackwards(ttyStream, _statusStr);
     }
     this._logLines.forEach(line => {
       _stream.write(line);
       _stream.write('\n');
     });
     this._logLines = [];
-    if (_stream instanceof tty.WriteStream) {
-      this._nextStatusStr = chunkString(this._nextStatusStr, _stream.columns).join('\n');
+    if (ttyStream != null) {
+      this._nextStatusStr = chunkString(this._nextStatusStr, ttyStream.columns).join('\n');
       _stream.write(this._nextStatusStr);
     }
     this._statusStr = this._nextStatusStr;

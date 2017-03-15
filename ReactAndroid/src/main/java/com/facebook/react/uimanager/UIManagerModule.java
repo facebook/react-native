@@ -1,4 +1,4 @@
-  /**
+/**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -23,7 +23,6 @@ import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.NativeModuleLogger;
 import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.PerformanceCounter;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -43,8 +42,6 @@ import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
-import static com.facebook.react.bridge.ReactMarkerConstants.UI_MANAGER_MODULE_CONSTANTS_CONVERT_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.UI_MANAGER_MODULE_CONSTANTS_CONVERT_START;
 
   /**
  * <p>Native module to allow JS to create and update native Views.</p>
@@ -77,7 +74,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.UI_MANAGER_MODULE_C
  */
 @ReactModule(name = UIManagerModule.NAME)
 public class UIManagerModule extends ReactContextBaseJavaModule implements
-    OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter, NativeModuleLogger {
+    OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter {
 
   protected static final String NAME = "UIManager";
 
@@ -475,6 +472,22 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   /**
+   * LayoutAnimation API on Android is currently experimental. Therefore, it needs to be enabled
+   * explicitly in order to avoid regression in existing application written for iOS using this API.
+   *
+   * Warning : This method will be removed in future version of React Native, and layout animation
+   * will be enabled by default, so always check for its existence before invoking it.
+   *
+   * TODO(9139831) : remove this method once layout animation is fully stable.
+   *
+   * @param enabled whether layout animation is enabled or not
+   */
+  @ReactMethod
+  public void setLayoutAnimationEnabledExperimental(boolean enabled) {
+    mUIImplementation.setLayoutAnimationEnabledExperimental(enabled);
+  }
+
+  /**
    * Configure an animation to be used for the native layout changes, and native views
    * creation. The animation will only apply during the current batch operations.
    *
@@ -578,16 +591,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    */
   public int resolveRootTagFromReactTag(int reactTag) {
     return mUIImplementation.resolveRootTagFromReactTag(reactTag);
-  }
-
-  @Override
-  public void startConstantsMapConversion() {
-    ReactMarker.logMarker(UI_MANAGER_MODULE_CONSTANTS_CONVERT_START);
-  }
-
-  @Override
-  public void endConstantsMapConversion() {
-    ReactMarker.logMarker(UI_MANAGER_MODULE_CONSTANTS_CONVERT_END);
   }
 
   /**

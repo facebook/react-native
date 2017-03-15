@@ -112,7 +112,7 @@ describe('DependencyGraph', function() {
       platforms: new Set(['ios', 'android']),
       useWatchman: false,
       ignoreFilePath: () => false,
-      maxWorkers: 1,
+      maxWorkerCount: 1,
       moduleOptions: {cacheTransformResults: true},
       resetCache: true,
       transformCode: (module, sourceCode, transformOptions) => {

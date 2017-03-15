@@ -183,16 +183,8 @@ class SectionList<SectionT: SectionBase<any>>
   static defaultProps: DefaultProps = VirtualizedSectionList.defaultProps;
 
   render() {
-    const {ListFooterComponent, ListHeaderComponent, ItemSeparatorComponent} = this.props;
     const List = this.props.legacyImplementation ? MetroListView : VirtualizedSectionList;
-    return (
-      <List
-        {...this.props}
-        FooterComponent={ListFooterComponent}
-        HeaderComponent={ListHeaderComponent}
-        SeparatorComponent={ItemSeparatorComponent}
-      />
-    );
+    return <List {...this.props} />;
   }
 }
 

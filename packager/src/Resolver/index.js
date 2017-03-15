@@ -33,38 +33,39 @@ type Options = {
   assetExts: Array<string>,
   blacklistRE?: RegExp,
   cache: Cache,
-  extraNodeModules?: {},
+  extraNodeModules: ?{},
   getTransformCacheKey: GetTransformCacheKey,
   globalTransformCache: ?GlobalTransformCache,
   hasteImpl?: HasteImpl,
+  maxWorkerCount: number,
   minifyCode: MinifyCode,
-  platforms: Array<string>,
+  platforms: Set<string>,
   polyfillModuleNames?: Array<string>,
   projectRoots: Array<string>,
-  providesModuleNodeModules?: Array<string>,
+  providesModuleNodeModules: Array<string>,
   reporter: Reporter,
   resetCache: boolean,
   transformCode: TransformCode,
-  watch?: boolean,
+  watch: boolean,
 };
 
 class Resolver {
 
-  _depGraphPromise: Promise<DependencyGraph>;
   _depGraph: DependencyGraph;
   _minifyCode: MinifyCode;
   _polyfillModuleNames: Array<string>;
 
-  constructor(opts: Options) {
-    this._depGraphPromise = DependencyGraph.load({
+  constructor(opts: Options, depGraph: DependencyGraph) {
+    this._minifyCode = opts.minifyCode;
+    this._polyfillModuleNames = opts.polyfillModuleNames || [];
+    this._depGraph = depGraph;
+  }
+
+  static async load(opts: Options): Promise<Resolver> {
+    const depGraphOpts = Object.assign(Object.create(opts), {
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
-      assetExts: opts.assetExts,
-      cache: opts.cache,
-      extraNodeModules: opts.extraNodeModules,
       extensions: ['js', 'json'],
       forceNodeFilesystemAPI: false,
-      getTransformCacheKey: opts.getTransformCacheKey,
-      globalTransformCache: opts.globalTransformCache,
       ignoreFilePath(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
@@ -75,30 +76,12 @@ class Resolver {
         hasteImpl: opts.hasteImpl,
         resetCache: opts.resetCache,
       },
-      platforms: new Set(opts.platforms),
       preferNativePlatform: true,
-      providesModuleNodeModules:
-        opts.providesModuleNodeModules || defaults.providesModuleNodeModules,
-      reporter: opts.reporter,
-      resetCache: opts.resetCache,
       roots: opts.projectRoots,
-      transformCode: opts.transformCode,
       useWatchman: true,
-      watch: opts.watch || false,
     });
-
-    this._minifyCode = opts.minifyCode;
-    this._polyfillModuleNames = opts.polyfillModuleNames || [];
-
-    this._depGraphPromise.then(
-      depGraph => { this._depGraph = depGraph; },
-      err => {
-        console.error(err.message + '\n' + err.stack);
-        // FIXME(jeanlauliac): we shall never exit the process by ourselves,
-        // packager may be used in a server application or the like.
-        process.exit(1);
-      },
-    );
+    const depGraph = await DependencyGraph.load(depGraphOpts);
+    return new Resolver(opts, depGraph);
   }
 
   getShallowDependencies(
@@ -120,13 +103,13 @@ class Resolver {
     getModuleId: mixed,
   ): Promise<ResolutionResponse> {
     const {platform, recursive = true} = options;
-    return this._depGraphPromise.then(depGraph => depGraph.getDependencies({
+    return this._depGraph.getDependencies({
       entryPath,
       platform,
       transformOptions,
       recursive,
       onProgress,
-    })).then(resolutionResponse => {
+    }).then(resolutionResponse => {
       this._getPolyfillDependencies().reverse().forEach(
         polyfill => resolutionResponse.prependDependency(polyfill)
       );
@@ -252,8 +235,8 @@ class Resolver {
     return this._minifyCode(path, code, map);
   }
 
-  getDependencyGraph(): Promise<DependencyGraph> {
-    return this._depGraphPromise;
+  getDependencyGraph(): DependencyGraph {
+    return this._depGraph;
   }
 }
 

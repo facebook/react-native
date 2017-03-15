@@ -147,6 +147,9 @@ var EventPluginHub = {
         return null;
       }
       const props = inst._currentElement.props;
+      if (!props) {
+        return null;
+      }
       listener = props[registrationName];
       if (shouldPreventMouseEvent(registrationName, inst._currentElement.type, props)) {
         return null;
