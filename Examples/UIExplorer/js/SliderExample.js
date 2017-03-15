@@ -176,4 +176,15 @@ exports.examples = [
       );
     }
   },
+  {
+    title: 'Custom track height',
+    platform: 'ios',
+    render(): React.Element<any> {
+      return (
+        <SliderExample
+          trackHeight={10}
+        />
+      );
+    }
+  },
 ];
