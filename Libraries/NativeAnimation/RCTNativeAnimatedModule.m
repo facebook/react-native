@@ -168,8 +168,8 @@ RCT_EXPORT_METHOD(addAnimatedEventToView:(nonnull NSNumber *)viewTag
 }
 
 RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
-                  eventName:(nonnull NSString *)eventName)
-            animatedNodeTag:(nonnull NSNumber *)animatedNodeTag
+                  eventName:(nonnull NSString *)eventName
+            animatedNodeTag:(nonnull NSNumber *)animatedNodeTag)
 {
   [_operations addObject:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager removeAnimatedEventFromView:viewTag eventName:eventName animatedNodeTag:animatedNodeTag];

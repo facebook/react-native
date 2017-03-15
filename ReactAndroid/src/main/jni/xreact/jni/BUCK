@@ -6,6 +6,7 @@ EXPORTED_HEADERS = [
     "JExecutorToken.h",
     "JSLoader.h",
     "MethodInvoker.h",
+    "ModuleRegistryBuilder.h",
     "NativeArray.h",
     "NativeCommon.h",
     "NativeMap.h",
@@ -51,6 +52,5 @@ cxx_library(
         "//xplat/fbsystrace:fbsystrace",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
-        react_native_xplat_target("inspector:inspector"),
     ],
 )

@@ -1701,7 +1701,8 @@ input#algolia-doc-search:focus {
   color: rgba(0, 0, 0, 0.4); }
 
 .home-showcase-section .showcase img {
-  width: 110px;
+  width: 100px;
+  height: 100px;
   border-radius: 20px; }
 
 .showcaseHeader {
