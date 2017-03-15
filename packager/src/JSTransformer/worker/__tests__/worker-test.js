@@ -59,7 +59,7 @@ describe('code transformation worker:', () => {
   it('calls back with the result of the transform in the cache', done => {
     const result = {
       code: 'some.other(code)',
-      map: {}
+      map: {},
     };
 
     transformCode(transformer, 'filename', result.code, {}, (error, data) => {
@@ -76,10 +76,10 @@ describe('code transformation worker:', () => {
       const code = '{a:1,b:2}';
       const filePath = 'arbitrary/file.json';
       transformCode(transformer, filePath, code, {}, (error, data) => {
-          expect(error).toBeNull();
-          expect(data.result.code).toEqual(code);
-          done();
-        },
+        expect(error).toBeNull();
+        expect(data.result.code).toEqual(code);
+        done();
+      },
       );
     }
   );
@@ -115,7 +115,7 @@ describe('code transformation worker:', () => {
     it('passes the transformed code the `extractDependencies`', done => {
       const code = 'arbitrary(code)';
 
-      transformCode(transformer, 'filename', code, {}, (error) => {
+      transformCode(transformer, 'filename', code, {}, error => {
         expect(error).toBeNull();
         expect(extractDependencies).toBeCalledWith(code);
         done();
@@ -143,25 +143,25 @@ describe('code transformation worker:', () => {
     it('does not extract requires if files are marked as "extern"', done => {
       const opts = {extern: true};
       transformCode(transformer, 'filename', 'code', opts, (error, data) => {
-          expect(error).toBeNull();
-          const {dependencies, dependencyOffsets} = data.result;
-          expect(extractDependencies).not.toBeCalled();
-          expect(dependencies).toEqual([]);
-          expect(dependencyOffsets).toEqual([]);
-          done();
+        expect(error).toBeNull();
+        const {dependencies, dependencyOffsets} = data.result;
+        expect(extractDependencies).not.toBeCalled();
+        expect(dependencies).toEqual([]);
+        expect(dependencyOffsets).toEqual([]);
+        done();
       });
     });
 
     it('does not extract requires of JSON files', done => {
       const jsonStr = '{"arbitrary":"json"}';
       transformCode(transformer, 'arbitrary.json', jsonStr, {}, (error, data) => {
-          expect(error).toBeNull();
-          const {dependencies, dependencyOffsets} = data.result;
-          expect(extractDependencies).not.toBeCalled();
-          expect(dependencies).toEqual([]);
-          expect(dependencyOffsets).toEqual([]);
-          done();
-        }
+        expect(error).toBeNull();
+        const {dependencies, dependencyOffsets} = data.result;
+        expect(extractDependencies).not.toBeCalled();
+        expect(dependencies).toEqual([]);
+        expect(dependencyOffsets).toEqual([]);
+        done();
+      }
       );
     });
   });
@@ -182,7 +182,7 @@ describe('code transformation worker:', () => {
       options = {minify: true, transform: {generateSourceMaps: true}};
       dependencyData = {
         dependencies: ['a', 'b', 'c'],
-        dependencyOffsets: [100, 120, 140]
+        dependencyOffsets: [100, 120, 140],
       };
 
       extractDependencies.mockImplementation(

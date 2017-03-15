@@ -5,48 +5,63 @@
 # libpthread is implicitly included in the android runtime so, when building
 # on an android platform, we don't do anything.
 prebuilt_cxx_library(
-  name = 'pthread',
-  header_only = True,
-  exported_platform_linker_flags = [
-    ('android', []),
-    ('default', ['-lpthread']),
-    ('static', ['-lpthread']),
-  ],
-  visibility = [
-    'PUBLIC',
-  ],
+    name = "pthread",
+    exported_platform_linker_flags = [
+        (
+            "android",
+            [],
+        ),
+        (
+            "default",
+            ["-lpthread"],
+        ),
+        (
+            "static",
+            ["-lpthread"],
+        ),
+    ],
+    header_only = True,
+    visibility = [
+        "PUBLIC",
+    ],
 )
 
 prebuilt_cxx_library(
-  name = 'dl',
-  header_only = True,
-  exported_linker_flags = [
-    '-ldl',
-  ],
-  visibility = [
-    'PUBLIC',
-  ],
+    name = "dl",
+    exported_linker_flags = [
+        "-ldl",
+    ],
+    header_only = True,
+    visibility = [
+        "PUBLIC",
+    ],
 )
 
 prebuilt_cxx_library(
-  name = 'm',
-  header_only = True,
-  exported_linker_flags = [
-    '-lm',
-  ],
-  visibility = [
-    'PUBLIC',
-  ],
+    name = "m",
+    exported_linker_flags = [
+        "-lm",
+    ],
+    header_only = True,
+    visibility = [
+        "PUBLIC",
+    ],
 )
 
 prebuilt_cxx_library(
-  name = 'rt',
-  header_only = True,
-  exported_platform_linker_flags = [
-    ('android', []),  # Empty, since `-lc` is implicit
-    ('default', ['-lrt']),
-  ],
-  visibility = [
-      'PUBLIC',
-  ],
+    name = "rt",
+    exported_platform_linker_flags = [
+        (
+            "android",  # Empty, since `-lc` is implicit
+            [],
+        ),
+        (
+            "default",
+            ["-lrt"],
+        ),
+    ],
+    header_only = True,
+    visibility = [
+        "PUBLIC",
+    ],
 )

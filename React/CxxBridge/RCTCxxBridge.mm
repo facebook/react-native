@@ -544,7 +544,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   std::vector<std::unique_ptr<NativeModule>> modules;
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    // TODO mhorowitz #10487027: unwrap C++ modules and register them directly.
     if ([moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
       // If a module does not support automatic instantiation, and
       // wasn't provided as an extra module, it may not have an
@@ -554,7 +553,8 @@ struct RCTInstanceCallback : public InstanceCallback {
       }
       modules.emplace_back(
         new QueueNativeModule(self, std::make_unique<CxxNativeModule>(
-          _reactInstance, [(RCTCxxModule *)(moduleData.instance) move])));
+                                  _reactInstance, [moduleData.name UTF8String],
+                                  [moduleData] { return [(RCTCxxModule *)(moduleData.instance) move]; })));
     } else {
       modules.emplace_back(new RCTNativeModule(self, moduleData));
     }
@@ -1138,6 +1138,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
  */
 - (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
 {
+  if (!self.valid) {
+    return;
+  }
+
   /**
    * AnyThread
    */

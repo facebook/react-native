@@ -28,7 +28,7 @@ class FixedDimensionsBasics extends Component {
       </View>
     );
   }
-};
+}
 
 AppRegistry.registerComponent('AwesomeProject', () => FixedDimensionsBasics);
 ```
@@ -58,7 +58,7 @@ class FlexDimensionsBasics extends Component {
       </View>
     );
   }
-};
+}
 
 AppRegistry.registerComponent('AwesomeProject', () => FlexDimensionsBasics);
 ```

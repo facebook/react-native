@@ -12,7 +12,6 @@ jest.disableAutomock();
 
 const Bundle = require('../Bundle');
 const ModuleTransport = require('../../lib/ModuleTransport');
-const SourceMapGenerator = require('source-map').SourceMapGenerator;
 const crypto = require('crypto');
 
 describe('Bundle', () => {
@@ -46,7 +45,7 @@ describe('Bundle', () => {
         expect(bundle.getSource({dev: true})).toBe([
           'transformed foo;',
           'transformed bar;',
-          '\/\/# sourceMappingURL=test_url'
+          '\/\/# sourceMappingURL=test_url',
         ].join('\n'));
       });
     });
@@ -107,33 +106,37 @@ describe('Bundle', () => {
       });
     });
 
-    it('should insert modules in a deterministic order, independent from timing of the wrapping process', () => {
-      const moduleTransports = [
-        createModuleTransport({name: 'module1'}),
-        createModuleTransport({name: 'module2'}),
-        createModuleTransport({name: 'module3'}),
-      ];
+    it('inserts modules in a deterministic order, independent of timing of the wrapper process',
+      () => {
+        const moduleTransports = [
+          createModuleTransport({name: 'module1'}),
+          createModuleTransport({name: 'module2'}),
+          createModuleTransport({name: 'module3'}),
+        ];
 
-      const resolves = {};
-      const resolver = {
-        wrapModule({name}) {
-          return new Promise(resolve => resolves[name] = resolve);
-        }
-      };
+        const resolves = {};
+        const resolver = {
+          wrapModule({name}) {
+            return new Promise(resolve => {
+              resolves[name] = resolve;
+            });
+          },
+        };
 
-      const promise = Promise.all(
-        moduleTransports.map(m => bundle.addModule(resolver, null, {isPolyfill: () => false}, m)))
-      .then(() => {
-        expect(bundle.getModules())
-          .toEqual(moduleTransports);
-      });
+        const promise = Promise.all(moduleTransports.map(
+          m => bundle.addModule(resolver, null, {isPolyfill: () => false}, m)
+        )).then(() => {
+          expect(bundle.getModules())
+            .toEqual(moduleTransports);
+        });
 
-      resolves.module2({code: ''});
-      resolves.module3({code: ''});
-      resolves.module1({code: ''});
+        resolves.module2({code: ''});
+        resolves.module3({code: ''});
+        resolves.module1({code: ''});
 
-      return promise;
-    });
+        return promise;
+      },
+    );
   });
 
   describe('sourcemap bundle', () => {
@@ -180,49 +183,49 @@ describe('Bundle', () => {
           file: 'test_url',
           version: 3,
           sections: [
-            { offset: { line: 0, column: 0 }, map: { name: 'sourcemap foo' } },
-            { offset: { line: 2, column: 0 }, map: { name: 'sourcemap bar' } },
+            {offset: {line: 0, column: 0}, map: {name: 'sourcemap foo'}},
+            {offset: {line: 2, column: 0}, map: {name: 'sourcemap bar'}},
             {
               offset: {
                 column: 0,
-                line: 4
+                line: 4,
               },
               map: {
                 file: 'image.png',
                 mappings: 'AAAA;AACA;',
                 names: [],
-                sources: [ 'image.png' ],
+                sources: ['image.png'],
                 sourcesContent: ['image module;\nimage module;'],
                 version: 3,
-              }
+              },
             },
             {
               offset: {
                 column: 0,
-                line: 6
+                line: 6,
               },
               map: {
                 file: 'require-InitializeCore.js',
                 mappings: 'AAAA;',
                 names: [],
-                sources: [ 'require-InitializeCore.js' ],
+                sources: ['require-InitializeCore.js'],
                 sourcesContent: [';require("InitializeCore");'],
                 version: 3,
-              }
+              },
             },
             {
               offset: {
                 column: 0,
-                line: 7
+                line: 7,
               },
               map: {
                 file: 'require-foo.js',
                 mappings: 'AAAA;',
                 names: [],
-                sources: [ 'require-foo.js' ],
+                sources: ['require-foo.js'],
                 sourcesContent: [';require("foo");'],
                 version: 3,
-              }
+              },
             },
           ],
         });
@@ -268,7 +271,6 @@ describe('Bundle', () => {
 
   describe('getEtag()', function() {
     it('should return an etag', function() {
-      var bundle = new Bundle({sourceMapUrl: 'test_url'});
       bundle.finalize({});
       var eTag = crypto.createHash('md5').update(bundle.getSource()).digest('hex');
       expect(bundle.getEtag()).toEqual(eTag);
@@ -342,7 +344,7 @@ describe('Bundle', () => {
       const {groups} = bundle.getUnbundle();
       expect(groups).toEqual(new Map([[
         idFor('Product1'),
-        new Set(['React', 'ReactFoo', 'invariant', 'ReactBar', 'cx'].map(idFor))
+        new Set(['React', 'ReactFoo', 'invariant', 'ReactBar', 'cx'].map(idFor)),
       ]]));
     });
 

@@ -81,6 +81,7 @@ var getPhotosParamChecker = createStrictShapeTypeChecker({
  * Shape of the return value of the `getPhotos` function.
  */
 var getPhotosReturnChecker = createStrictShapeTypeChecker({
+  // $FlowFixMe(>=0.41.0)
   edges: ReactPropTypes.arrayOf(createStrictShapeTypeChecker({
     node: createStrictShapeTypeChecker({
       type: ReactPropTypes.string.isRequired,

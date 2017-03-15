@@ -24,7 +24,6 @@
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTDefines.h"
-#import "RCTDevMenu.h"
 #import "RCTDevSettings.h"
 #import "RCTJSCErrorHandling.h"
 #import "RCTJSCProfiler.h"
@@ -33,6 +32,10 @@
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
+
+#if (RCT_PROFILE || RCT_DEV) && __has_include("RCTDevMenu.h")
+#import "RCTDevMenu.h"
+#endif
 
 NSString *const RCTJSCThreadName = @"com.facebook.react.JavaScript";
 NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
@@ -167,6 +170,7 @@ RCT_EXPORT_MODULE()
 #if RCT_DEV
 static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 {
+#if __has_include("RCTDevMenu.h")
   __weak RCTBridge *weakBridge = bridge;
   __weak RCTDevSettings *devSettings = bridge.devSettings;
   if (RCTJSCProfilerIsSupported()) {
@@ -186,6 +190,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       }
     }]];
   }
+#endif
 }
 
 #endif
@@ -396,11 +401,13 @@ static NSThread *newJavaScriptThread(void)
 
     // Add toggles for JSC's sampling profiler, if the profiler is enabled
     if (JSC_JSSamplingProfilerEnabled(context.JSGlobalContextRef)) {
-        // Mark this thread as the main JS thread before starting profiling.
-        JSC_JSStartSamplingProfilingOnMainJSCThread(context.JSGlobalContextRef);
+      // Mark this thread as the main JS thread before starting profiling.
+      JSC_JSStartSamplingProfilingOnMainJSCThread(context.JSGlobalContextRef);
 
-      // Allow to toggle the sampling profiler through RN's dev menu
       __weak JSContext *weakContext = self->_context.context;
+
+#if __has_include("RCTDevMenu.h")
+      // Allow to toggle the sampling profiler through RN's dev menu
       [self->_bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:@"Start / Stop JS Sampling Profiler" handler:^{
         RCTJSCExecutor *strongSelf = weakSelf;
         if (!strongSelf.valid || !weakContext) {
@@ -408,6 +415,7 @@ static NSThread *newJavaScriptThread(void)
         }
         [weakSelf.bridge.devSettings toggleJSCSamplingProfiler];
       }]];
+#endif
 
       // Allow for the profiler to be poked from JS code as well
       // (see SamplingProfiler.js for an example of how it could be used with the JSCSamplingProfiler module).
