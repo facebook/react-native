@@ -32,6 +32,8 @@ NSArray<Class> *RCTGetModuleClasses(void)
   return RCTModuleClasses;
 }
 
+void RCTFBQuickPerformanceLoggerConfigureHooks(__unused JSGlobalContextRef ctx) { }
+
 /**
  * Register the given class as a bridge module. All modules must be registered
  * prior to the first bridge initialization.

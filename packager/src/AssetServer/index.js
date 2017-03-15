@@ -15,14 +15,14 @@ const fs = require('fs');
 const getAssetDataFromName = require('../node-haste').getAssetDataFromName;
 const path = require('path');
 
-const createTimeoutPromise = (timeout) => new Promise((resolve, reject) => {
+const createTimeoutPromise = timeout => new Promise((resolve, reject) => {
   setTimeout(reject, timeout, 'fs operation timeout');
 });
 function timeoutableDenodeify(fsFunc, timeout) {
   return function raceWrapper(...args) {
     return Promise.race([
       createTimeoutPromise(timeout),
-      denodeify(fsFunc).apply(this, args)
+      denodeify(fsFunc).apply(this, args),
     ]);
   };
 }
@@ -134,7 +134,7 @@ class AssetServer {
         const map = this._buildAssetMap(dir, files, platform);
 
         let record;
-        if (platform != null){
+        if (platform != null) {
           record = map[getAssetKey(assetData.assetName, platform)] ||
                    map[assetData.assetName];
         } else {

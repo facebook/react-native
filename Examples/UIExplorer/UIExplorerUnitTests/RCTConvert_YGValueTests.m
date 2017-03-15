@@ -15,7 +15,6 @@
 #import <XCTest/XCTest.h>
 
 #import <React/RCTConvert.h>
-#import <React/RCTUtils.h>
 
 @interface RCTConvert_YGValueTests : XCTestCase
 
@@ -32,7 +31,7 @@
 - (void)testNumberPoints
 {
   YGValue value = [RCTConvert YGValue:@100];
-  XCTAssertEqual(value.unit, YGUnitPixel);
+  XCTAssertEqual(value.unit, YGUnitPoint);
   XCTAssertEqual(value.value, 100);
 }
 

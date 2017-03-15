@@ -195,12 +195,14 @@ class MessageQueue {
     }
     Systrace.counterEvent('pending_js_to_native_queue', this._queue[0].length);
     if (__DEV__ && this.__spy && isFinite(moduleID)) {
-        this.__spy(
-          { type: TO_NATIVE,
-            module: this._remoteModuleTable[moduleID],
-            method: this._remoteMethodTable[moduleID][methodID],
-            args: params }
-        );
+      this.__spy(
+        { type: TO_NATIVE,
+          module: this._remoteModuleTable[moduleID],
+          method: this._remoteMethodTable[moduleID][methodID],
+          args: params }
+      );
+    } else if (this.__spy) {
+      this.__spy({type: TO_NATIVE, module: moduleID + '', method: methodID, args: params});
     }
   }
 
@@ -225,7 +227,7 @@ class MessageQueue {
     this._lastFlush = new Date().getTime();
     this._eventLoopStartTime = this._lastFlush;
     Systrace.beginEvent(`${module}.${method}()`);
-    if (__DEV__ && this.__spy) {
+    if (this.__spy) {
       this.__spy({ type: TO_JS, module, method, args});
     }
     const moduleMethods = this._callableModules[module];
@@ -265,7 +267,7 @@ class MessageQueue {
         );
       }
       const profileName = debug ? '<callback for ' + module + '.' + method + '>' : cbID;
-      if (callback && this.__spy && __DEV__) {
+      if (callback && this.__spy) {
         this.__spy({ type: TO_JS, module:null, method:profileName, args });
       }
       Systrace.beginEvent(

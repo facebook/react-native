@@ -70,7 +70,9 @@ type Config = {
 }
 
 function configureNext(config: Config, onAnimationDidEnd?: Function) {
-  configChecker({config}, 'config', 'LayoutAnimation.configureNext');
+  if (__DEV__) {
+    configChecker({config}, 'config', 'LayoutAnimation.configureNext');
+  }
   UIManager.configureNextLayoutAnimation(
     config, onAnimationDidEnd || function() {}, function() { /* unused */ }
   );

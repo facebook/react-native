@@ -13,6 +13,7 @@
 #import <React/RCTBridgeMethod.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCxxUtils.h>
+#import <React/RCTFollyConvert.h>
 #import <React/RCTProfile.h>
 #import <React/RCTUtils.h>
 
@@ -89,7 +90,7 @@ void RCTNativeModule::invoke(ExecutorToken token, unsigned int methodId, folly::
                   methodId, m_moduleData.name);
     }
 
-    NSArray *objcParams = RCTConvertFollyDynamic(*sparams);
+    NSArray *objcParams = convertFollyDynamicToId(*sparams);
 
     @try {
       [method invokeWithBridge:bridge module:m_moduleData.instance arguments:objcParams];

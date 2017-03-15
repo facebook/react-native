@@ -21,6 +21,12 @@ const walk = require('../util/walk');
  * @param srcPath e.g. '/Users/martin/AwesomeApp/node_modules/react-native/local-cli/templates/HelloWorld'
  * @param destPath e.g. '/Users/martin/AwesomeApp'
  * @param newProjectName e.g. 'AwesomeApp'
+ * @param options e.g. {
+ *          upgrade: true,
+ *          force: false,
+ *          displayName: 'Hello World',
+ *          ignorePaths: ['template/file/to/ignore.md'],
+ *        }
  */
 function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, options) {
   if (!srcPath) { throw new Error('Need a path to copy from'); }
@@ -44,6 +50,20 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
     const relativeRenamedPath = dotFilePath(relativeFilePath)
       .replace(/HelloWorld/g, newProjectName)
       .replace(/helloworld/g, newProjectName.toLowerCase());
+
+    // Templates may contain files that we don't want to copy.
+    // Examples:
+    // - Dummy package.json file included in the template only for publishing to npm
+    // - Docs specific to the template (.md files)
+    if (options.ignorePaths) {
+      if (!Array.isArray(options.ignorePaths)) {
+        throw new Error('options.ignorePaths must be an array');
+      }
+      if (options.ignorePaths.some(ignorePath => ignorePath === relativeFilePath)) {
+        // Skip copying this file
+        return;
+      }
+    }
 
     let contentChangedCallback = null;
     if (options.upgrade && (!options.force)) {

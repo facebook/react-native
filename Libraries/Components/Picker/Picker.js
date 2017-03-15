@@ -69,6 +69,7 @@ class Picker extends React.Component {
    mode: MODE_DIALOG,
  };
 
+ // $FlowFixMe(>=0.41.0)
  static propTypes = {
    ...View.propTypes,
    style: pickerStyleType,
@@ -134,7 +135,7 @@ Picker.Item = class extends React.Component {
  props: {
   label: string,
   value?: any,
-  color?: $FlowFixMe,
+  color?: ColorPropType,
   testID?: string,
  };
 

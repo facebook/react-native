@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @noflow
+ * @providesModule XHRExampleHeaders
  */
 'use strict';
 

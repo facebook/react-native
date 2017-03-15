@@ -4,8 +4,9 @@ title: Integration With Existing Apps
 layout: docs
 category: Guides
 permalink: docs/integration-with-existing-apps.html
-next: colors
-previous: more-resources
+banner: ejected
+next: running-on-device
+previous: testing
 ---
 
 <div class="integration-toggler">
@@ -217,6 +218,8 @@ target 'NumberTileGame' do
     'RCTWebSocket', # needed for debugging
     # Add any other subspecs you want to use in your project
   ]
+  # Explicitly include Yoga if you are using RN >= 0.42.0
+  pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
 
 end
 ```
@@ -242,6 +245,8 @@ target 'swift-2048' do
     'RCTWebSocket', # needed for debugging
     # Add any other subspecs you want to use in your project
   ]
+  # Explicitly include Yoga if you are using RN >= 0.42.0
+  pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
 
 end
 ```
@@ -588,7 +593,7 @@ dependencies {
 
 > If you want to ensure that you are always using a specific React Native version in your native build, replace `+` with an actual React Native version you've downloaded from `npm`.
 
-In your project's `build.gradle` file add an entry for the local React Native maven directory:
+In your project's `build.gradle` file add an entry for the local React Native maven directory. Be sure to add it to the "allprojects" block:
 
 ```
 allprojects {

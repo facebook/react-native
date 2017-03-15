@@ -193,7 +193,7 @@ function runOnAllDevices(args, cmd, packageName, adbPath){
     }
 
     console.log(chalk.bold(
-      `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')}...`
+      `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')})...`
     ));
 
     child_process.execFileSync(cmd, gradleArgs, {

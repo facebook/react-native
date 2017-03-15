@@ -1,0 +1,39 @@
+.hero {
+  background: $color-hero-bg;
+  padding: 50px 0;
+  color: #FDF3E7;
+  font-weight: 300;
+}
+
+.hero .text {
+  font-size: 300%;
+  text-align: center;
+}
+
+.hero .minitext {
+  font-size: 24px;
+  text-align: center;
+}
+
+.buttons-unit {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.buttons-unit a {
+  color: #FA6900;
+}
+
+.buttons-unit .button {
+  font-size: 24px;
+  background: $color-react-native-blue;
+  color: #fafafa;
+}
+
+.buttons-unit .button:active {
+  background: #0485A9;
+}
+
+.buttons-unit.downloads {
+  margin: 30px 0;
+}

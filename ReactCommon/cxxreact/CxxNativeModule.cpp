@@ -47,16 +47,19 @@ CxxModule::Callback convertCallback(
 }
 
 CxxNativeModule::CxxNativeModule(std::weak_ptr<Instance> instance,
-                                 std::unique_ptr<CxxModule> module)
+                                 std::string name,
+                                 CxxModule::Provider provider)
   : instance_(instance)
-  , module_(std::move(module))
-  , methods_(module_->getMethods()) {}
+  , name_(std::move(name))
+  , provider_(provider) {}
 
 std::string CxxNativeModule::getName() {
-  return module_->getName();
+  return name_;
 }
 
 std::vector<MethodDescriptor> CxxNativeModule::getMethods() {
+  lazyInit();
+
   std::vector<MethodDescriptor> descs;
   for (auto& method : methods_) {
     assert(method.func || method.syncFunc);
@@ -66,6 +69,8 @@ std::vector<MethodDescriptor> CxxNativeModule::getMethods() {
 }
 
 folly::dynamic CxxNativeModule::getConstants() {
+  lazyInit();
+
   folly::dynamic constants = folly::dynamic::object();
   for (auto& pair : module_->getConstants()) {
     constants.insert(std::move(pair.first), std::move(pair.second));
@@ -164,6 +169,16 @@ MethodCallResult CxxNativeModule::callSerializableNativeHook(
   }
 
   return method.syncFunc(std::move(args));
+}
+
+void CxxNativeModule::lazyInit() {
+  if (module_) {
+    return;
+  }
+
+  module_ = provider_();
+  methods_ = module_->getMethods();
+  module_->setInstance(instance_);
 }
 
 }

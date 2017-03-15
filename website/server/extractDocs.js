@@ -13,12 +13,12 @@ const babel = require('babel-core');
 const deepAssign = require('deep-assign');
 const docgen = require('react-docgen');
 const docgenHelpers = require('./docgenHelpers');
+const docsList = require('./docsList');
 const fs = require('fs');
 const jsDocs = require('../jsdocs/jsdocs.js');
 const jsdocApi = require('jsdoc-api');
 const path = require('path');
 const slugify = require('../core/slugify');
-const docsList = require('./docsList');
 
 const ANDROID_SUFFIX = 'android';
 const CROSS_SUFFIX = 'cross';
@@ -200,8 +200,11 @@ function componentsToMarkdown(type, json, filepath, idx, styles) {
     json.methods = json.methods.filter(filterMethods);
   }
 
+  if (type === 'api') {
+    type = 'API';
+  }
   // Put styles (e.g. Flexbox) into the API category
-  const category = (type === 'style' ? 'apis' : type + 's');
+  const category = (type === 'style' ? 'APIs' : type + 's');
   const next = getNextComponent(idx);
   const previous = getPreviousComponent(idx);
 
@@ -505,12 +508,15 @@ const styleDocs = docsList.stylesForEmbed.reduce(function(docs, filepath) {
 
 function extractDocs() {
   componentCount = 0;
+  var components = docsList.components.map(renderComponent);
+  var apis = docsList.apis.map((filepath) => {
+    return renderAPI(filepath, 'api');
+  });
+  var styles = docsList.stylesWithPermalink.map(renderStyle);
   return [].concat(
-    docsList.components.map(renderComponent),
-    docsList.apis.map((filepath) => {
-      return renderAPI(filepath, 'api');
-    }),
-    docsList.stylesWithPermalink.map(renderStyle)
+    components,
+    apis,
+    styles
   );
 }
 

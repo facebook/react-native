@@ -14,7 +14,8 @@ jest
   .dontMock('json-stable-stringify')
   .dontMock('../TransformCache')
   .dontMock('../toFixedHex')
-  .dontMock('left-pad');
+  .dontMock('left-pad')
+  .dontMock('lodash/throttle');
 
 const imurmurhash = require('imurmurhash');
 
@@ -30,7 +31,7 @@ jest.mock('fs', () => ({
   readdirSync(dirPath) {
     // Not required for it to work.
     return [];
-  }
+  },
 }));
 
 jest.mock('write-file-atomic', () => ({
@@ -58,12 +59,11 @@ describe('TransformCache', () => {
   });
 
   it('is caching different files and options separately', () => {
-    const transformCacheKey = 'abcdef';
     const argsFor = ([filePath, transformOptions]) => {
       const key = filePath + JSON.stringify(transformOptions);
       return {
         sourceCode: `/* source for ${key} */`,
-        transformCacheKey,
+        getTransformCacheKey: () => 'abcdef',
         filePath,
         transformOptions,
         result: {
@@ -97,7 +97,7 @@ describe('TransformCache', () => {
       const key = sourceCode + transformCacheKey;
       return {
         sourceCode,
-        transformCacheKey,
+        getTransformCacheKey: () => transformCacheKey,
         filePath: 'test.js',
         transformOptions: {foo: 1},
         result: {

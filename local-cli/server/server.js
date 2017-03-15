@@ -17,7 +17,7 @@ const runServer = require('./runServer');
  * Starts the React Native Packager Server.
  */
 function server(argv, config, args) {
-  args.projectRoots.concat(args.root);
+  args.projectRoots = args.projectRoots.concat(args.root);
 
   console.log(formatBanner(
     'Running packager on port ' + args.port + '.\n\n' +
