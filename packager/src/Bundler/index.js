@@ -221,7 +221,7 @@ class Bundler {
     dev: boolean,
     minify: boolean,
     unbundle: boolean,
-    sourceMapUrl: string,
+    sourceMapUrl: ?string,
   }): Promise<Bundle> {
     const {dev, minify, unbundle} = options;
     return this._resolverPromise.then(

@@ -14,13 +14,13 @@ package com.facebook.react.bridge;
  */
 public final class CallbackImpl implements Callback {
 
-  private final CatalystInstance mCatalystInstance;
+  private final JSInstance mJSInstance;
   private final ExecutorToken mExecutorToken;
   private final int mCallbackId;
   private boolean mInvoked;
 
-  public CallbackImpl(CatalystInstance bridge, ExecutorToken executorToken, int callbackId) {
-    mCatalystInstance = bridge;
+  public CallbackImpl(JSInstance jsInstance, ExecutorToken executorToken, int callbackId) {
+    mJSInstance = jsInstance;
     mExecutorToken = executorToken;
     mCallbackId = callbackId;
     mInvoked = false;
@@ -33,7 +33,7 @@ public final class CallbackImpl implements Callback {
         "module. This callback type only permits a single invocation from "+
         "native code.");
     }
-    mCatalystInstance.invokeCallback(mExecutorToken, mCallbackId, Arguments.fromJavaArgs(args));
+    mJSInstance.invokeCallback(mExecutorToken, mCallbackId, Arguments.fromJavaArgs(args));
     mInvoked = true;
   }
 }

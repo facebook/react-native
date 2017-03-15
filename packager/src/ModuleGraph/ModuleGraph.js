@@ -52,7 +52,7 @@ exports.createBuildSetup = (
 
     parallel({
       graph: cb => graphWithOptions(
-        concat(defaults.runBeforeMainModule, entryPoints),
+        entryPoints,
         cb,
       ),
       moduleSystem: cb => graphOnlyModules(
