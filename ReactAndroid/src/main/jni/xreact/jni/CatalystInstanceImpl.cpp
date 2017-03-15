@@ -20,6 +20,7 @@
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/CxxNativeModule.h>
 
+#include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
 #include "JNativeRunnable.h"
@@ -128,20 +129,9 @@ void CatalystInstanceImpl::initializeBridge(
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
     jni::alias_ref<JavaMessageQueueThread::javaobject> moduleQueue,
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
-    jni::alias_ref<jni::JCollection<CxxModuleWrapper::javaobject>::javaobject> cxxModules) {
+    jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules) {
   // TODO mhorowitz: how to assert here?
   // Assertions.assertCondition(mBridge == null, "initializeBridge should be called once");
-
-  std::vector<std::unique_ptr<NativeModule>> modules;
-  std::weak_ptr<Instance> winstance(instance_);
-  for (const auto& jm : *javaModules) {
-    modules.emplace_back(folly::make_unique<JavaNativeModule>(winstance, jm));
-  }
-  for (const auto& cm : *cxxModules) {
-    modules.emplace_back(
-      folly::make_unique<CxxNativeModule>(winstance, std::move(cthis(cm)->getModule())));
-  }
-  auto moduleRegistry = std::make_shared<ModuleRegistry>(std::move(modules));
 
   // This used to be:
   //
@@ -163,7 +153,8 @@ void CatalystInstanceImpl::initializeBridge(
                               jseh->getExecutorFactory(),
                               folly::make_unique<JMessageQueueThread>(jsQueue),
                               folly::make_unique<JMessageQueueThread>(moduleQueue),
-                              moduleRegistry);
+                              buildModuleRegistry(std::weak_ptr<Instance>(instance_),
+                                                  javaModules, cxxModules));
 }
 
 void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {

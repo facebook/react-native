@@ -25,7 +25,7 @@
 
 const AppRegistry = require('AppRegistry');
 const AsyncStorage = require('AsyncStorage');
-const BackAndroid = require('BackAndroid');
+const BackHandler = require('BackHandler');
 const Dimensions = require('Dimensions');
 const DrawerLayoutAndroid = require('DrawerLayoutAndroid');
 const Linking = require('Linking');
@@ -73,7 +73,7 @@ class UIExplorerApp extends React.Component {
   state: UIExplorerNavigationState;
 
   componentWillMount() {
-    BackAndroid.addEventListener('hardwareBackPress', this._handleBackButtonPress);
+    BackHandler.addEventListener('hardwareBackPress', this._handleBackButtonPress);
   }
 
   componentDidMount() {

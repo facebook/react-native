@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public interface NativeModule {
   interface NativeMethod {
-    void invoke(CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray parameters);
+    void invoke(JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray parameters);
     String getType();
   }
 

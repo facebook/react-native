@@ -67,6 +67,7 @@ const requireNativeComponent = require('requireNativeComponent');
  * multiple columns, infinite scroll loading, or any number of other features it
  * supports out of the box.
  */
+// $FlowFixMe(>=0.41.0)
 const ScrollView = React.createClass({
   propTypes: {
     ...View.propTypes,
@@ -294,7 +295,6 @@ const ScrollView = React.createClass({
      * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
      * top of the scroll view. This property is not supported in conjunction
      * with `horizontal={true}`.
-     * @platform ios
      */
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
     style: StyleSheetPropType(ViewStylePropTypes),
@@ -437,7 +437,7 @@ const ScrollView = React.createClass({
    * `scrollTo({x: 0; y: 0; animated: true})`
    *
    * Note: The weird function signature is due to the fact that, for historical reasons,
-   * the function also accepts separate arguments as as alternative to the options object.
+   * the function also accepts separate arguments as an alternative to the options object.
    * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    */
   scrollTo: function(
@@ -669,7 +669,6 @@ const ScrollView = React.createClass({
       scrollEventThrottle: hasStickyHeaders ? 1 : this.props.scrollEventThrottle,
       sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ?
         true : false,
-      stickyHeaderIndices: null,
     };
 
     const { decelerationRate } = this.props;
@@ -678,12 +677,14 @@ const ScrollView = React.createClass({
     }
 
     const refreshControl = this.props.refreshControl;
+
     if (refreshControl) {
       if (Platform.OS === 'ios') {
         // On iOS the RefreshControl is a child of the ScrollView.
+        // tvOS lacks native support for RefreshControl, so don't include it in that case
         return (
           <ScrollViewClass {...props} ref={this._setScrollViewRef}>
-            {refreshControl}
+            {Platform.isTVOS ? null : refreshControl}
             {contentContainer}
           </ScrollViewClass>
         );

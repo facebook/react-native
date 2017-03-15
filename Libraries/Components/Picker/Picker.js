@@ -69,6 +69,7 @@ class Picker extends React.Component {
    mode: MODE_DIALOG,
  };
 
+ // $FlowFixMe(>=0.41.0)
  static propTypes = {
    ...View.propTypes,
    style: pickerStyleType,
