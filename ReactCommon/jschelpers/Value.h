@@ -305,6 +305,10 @@ public:
     return Value(ctx, JSC_JSValueMakeUndefined(ctx));
   }
 
+  static Value makeNull(JSContextRef ctx) {
+    return Value(ctx, JSC_JSValueMakeNull(ctx));
+  }
+
   std::string toJSONString(unsigned indent = 0) const;
   static Value fromJSON(JSContextRef ctx, const String& json);
   static JSValueRef fromDynamic(JSContextRef ctx, const folly::dynamic& value);

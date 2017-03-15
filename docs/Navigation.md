@@ -56,7 +56,7 @@ class MainScreen extends React.Component {
 }
 ```
 
-React Navigation routers make it easy to override navigation logic or integrate it into redux. Because routers can be nested inside eachother, developers can override navigation logic for one area of the app without making widespread changes.
+React Navigation routers make it easy to override navigation logic or integrate it into redux. Because routers can be nested inside each other, developers can override navigation logic for one area of the app without making widespread changes.
 
 The views in React Navigation use native components and the `Animated` library to deliver 60fps animations that are run on the native thread. Plus, the animations and gestures can be easily customized.
 

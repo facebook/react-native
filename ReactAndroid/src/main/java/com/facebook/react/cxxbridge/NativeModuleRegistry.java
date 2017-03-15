@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSInstance;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -41,33 +42,33 @@ public class NativeModuleRegistry {
   }
 
   /* package */ Collection<JavaModuleWrapper> getJavaModules(
-      CatalystInstanceImpl catalystInstanceImpl) {
+      JSInstance jsInstance) {
     ArrayList<JavaModuleWrapper> javaModules = new ArrayList<>();
     for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
       Class<?> type = entry.getKey();
       if (!CxxModuleWrapper.class.isAssignableFrom(type)) {
-        javaModules.add(new JavaModuleWrapper(catalystInstanceImpl, entry.getValue()));
+        javaModules.add(new JavaModuleWrapper(jsInstance, entry.getValue()));
       }
     }
     return javaModules;
   }
 
-  /* package */ Collection<CxxModuleWrapper> getCxxModules() {
-    ArrayList<CxxModuleWrapper> cxxModules = new ArrayList<>();
+  /* package */ Collection<ModuleHolder> getCxxModules() {
+    ArrayList<ModuleHolder> cxxModules = new ArrayList<>();
     for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
       Class<?> type = entry.getKey();
       if (CxxModuleWrapper.class.isAssignableFrom(type)) {
-        cxxModules.add((CxxModuleWrapper) entry.getValue().getModule());
+        cxxModules.add(entry.getValue());
       }
     }
     return cxxModules;
   }
 
-  /* package */ void notifyCatalystInstanceDestroy() {
+  /* package */ void notifyJSInstanceDestroy() {
     mReactApplicationContext.assertOnNativeModulesQueueThread();
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-        "NativeModuleRegistry_notifyCatalystInstanceDestroy");
+        "NativeModuleRegistry_notifyJSInstanceDestroy");
     try {
       for (ModuleHolder module : mModules.values()) {
         module.destroy();
@@ -77,7 +78,7 @@ public class NativeModuleRegistry {
     }
   }
 
-  /* package */ void notifyCatalystInstanceInitialized() {
+  /* package */ void notifyJSInstanceInitialized() {
     mReactApplicationContext.assertOnNativeModulesQueueThread("From version React Native v0.44, " +
       "native modules are explicitly not initialized on the UI thread. See " +
       "https://github.com/facebook/react-native/wiki/Breaking-Changes#d4611211-reactnativeandroidbreaking-move-nativemodule-initialization-off-ui-thread---aaachiuuu " +
@@ -85,7 +86,7 @@ public class NativeModuleRegistry {
     ReactMarker.logMarker(ReactMarkerConstants.NATIVE_MODULE_INITIALIZE_START);
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-        "NativeModuleRegistry_notifyCatalystInstanceInitialized");
+        "NativeModuleRegistry_notifyJSInstanceInitialized");
     try {
       for (ModuleHolder module : mModules.values()) {
         module.initialize();

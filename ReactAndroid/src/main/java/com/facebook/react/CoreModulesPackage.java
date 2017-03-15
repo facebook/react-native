@@ -56,7 +56,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
  * view managers from).
  */
 @ReactModuleList(
-  javaModules = {
+  nativeModules = {
     AndroidInfoModule.class,
     AnimationsDebugModule.class,
     DeviceEventManagerModule.class,

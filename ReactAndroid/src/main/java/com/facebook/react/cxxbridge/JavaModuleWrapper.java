@@ -16,8 +16,8 @@ import java.util.Map;
 
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ExecutorToken;
+import com.facebook.react.bridge.JSInstance;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactMarker;
@@ -54,12 +54,12 @@ public class JavaModuleWrapper {
     String type;
   }
 
-  private final CatalystInstance mCatalystInstance;
+  private final JSInstance mJSInstance;
   private final ModuleHolder mModuleHolder;
   private final ArrayList<NativeModule.NativeMethod> mMethods;
 
-  public JavaModuleWrapper(CatalystInstance catalystinstance, ModuleHolder moduleHolder) {
-    mCatalystInstance = catalystinstance;
+  public JavaModuleWrapper(JSInstance jsInstance, ModuleHolder moduleHolder) {
+    mJSInstance = jsInstance;
     mModuleHolder = moduleHolder;
     mMethods = new ArrayList<>();
   }
@@ -135,6 +135,6 @@ public class JavaModuleWrapper {
       return;
     }
 
-    mMethods.get(methodId).invoke(mCatalystInstance, token, parameters);
+    mMethods.get(methodId).invoke(mJSInstance, token, parameters);
   }
 }
