@@ -110,11 +110,6 @@ public class DisabledDevSupportManager implements DevSupportManager {
   }
 
   @Override
-  public String getHeapCaptureUploadUrl() {
-    return null;
-  }
-
-  @Override
   public boolean hasUpToDateJSBundleInCache() {
     return false;
   }

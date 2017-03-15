@@ -10,6 +10,7 @@ package com.facebook.react.packagerconnection;
 
 import javax.annotation.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.facebook.common.logging.FLog;

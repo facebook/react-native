@@ -423,14 +423,6 @@ public class DevSupportManagerImpl implements
         }
       });
     options.put(
-        mApplicationContext.getString(R.string.catalyst_heap_capture),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            handleCaptureHeap(null);
-          }
-        });
-    options.put(
         mApplicationContext.getString(R.string.catalyst_poke_sampling_profiler),
         new DevOptionHandler() {
           @Override
@@ -538,11 +530,6 @@ public class DevSupportManagerImpl implements
   @Override
   public String getDownloadedJSBundleFile() {
     return mJSBundleTempFile.getAbsolutePath();
-  }
-
-  @Override
-  public String getHeapCaptureUploadUrl() {
-    return mDevServerHelper.getHeapCaptureUploadUrl();
   }
 
   /**
@@ -687,7 +674,7 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void onCaptureHeapCommand(@Nullable final JSPackagerClient.Responder responder) {
+  public void onCaptureHeapCommand(final JSPackagerClient.Responder responder) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -706,14 +693,24 @@ public class DevSupportManagerImpl implements
     });
   }
 
-  private void handleCaptureHeap(@Nullable final JSPackagerClient.Responder responder) {
+  private void handleCaptureHeap(final JSPackagerClient.Responder responder) {
     if (mCurrentContext == null) {
       return;
     }
     JSCHeapCapture heapCapture = mCurrentContext.getNativeModule(JSCHeapCapture.class);
     heapCapture.captureHeap(
       mApplicationContext.getCacheDir().getPath(),
-      JSCHeapUpload.captureCallback(mDevServerHelper.getHeapCaptureUploadUrl(), responder));
+      new JSCHeapCapture.CaptureCallback() {
+        @Override
+        public void onSuccess(File capture) {
+          responder.respond(capture.toString());
+        }
+
+        @Override
+        public void onFailure(JSCHeapCapture.CaptureException error) {
+          responder.error(error.toString());
+        }
+      });
   }
 
   private void handlePokeSamplingProfiler(@Nullable final JSPackagerClient.Responder responder) {
