@@ -30,11 +30,10 @@ def react_native_integration_tests_target(path):
 def react_native_dep(path):
   return '//ReactAndroid/src/main/' + path
 
-JSC_INTERNAL_DEPS = [
+JSC_DEPS = [
   '//native/third-party/jsc:jsc',
   '//native/third-party/jsc:jsc_legacy_profiler',
 ]
-JSC_DEPS = JSC_INTERNAL_DEPS
 
 YOGA_TARGET = '//ReactAndroid/src/main/java/com/facebook:yoga'
 FBGLOGINIT_TARGET = '//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit'
