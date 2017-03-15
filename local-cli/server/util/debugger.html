@@ -15,6 +15,19 @@
 <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <title>React Native Debugger</title>
 <script>
+function toggleDark() {
+  const shortcutRule = document.styleSheets[0]['cssRules'][1]
+  const contentRule = document.styleSheets[0]['cssRules'][2]
+  if (document.getElementById("dark").checked) {
+    shortcutRule.style.color = '#777'
+    contentRule.style.color = '#666'
+    contentRule.style.backgroundColor = '#242424'
+  } else {
+    shortcutRule.style.color = '#eee'
+    contentRule.style.color = ''
+    contentRule.style.backgroundColor = ''
+  }
+}
 /* eslint-env browser */
 (function() {
 
@@ -170,6 +183,7 @@ connectToDebuggerProxy();
 </head>
 <body>
   <div class="content">
+    <input type="checkbox" id="dark" onclick="toggleDark()"> Dark background
     <p>
       React Native JS code runs inside this Chrome tab.
     </p>

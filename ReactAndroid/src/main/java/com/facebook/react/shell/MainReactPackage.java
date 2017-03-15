@@ -36,6 +36,7 @@ import com.facebook.react.flat.RCTViewManager;
 import com.facebook.react.flat.RCTViewPagerManager;
 import com.facebook.react.flat.RCTVirtualTextManager;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
+import com.facebook.react.modules.accessibilityinfo.AccessibilityInfoModule;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.camera.CameraRollManager;
 import com.facebook.react.modules.camera.ImageEditingManager;
@@ -67,7 +68,6 @@ import com.facebook.react.views.modal.ReactModalHostManager;
 import com.facebook.react.views.picker.ReactDialogPickerManager;
 import com.facebook.react.views.picker.ReactDropdownPickerManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
-import com.facebook.react.views.recyclerview.RecyclerViewBackedScrollViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
 import com.facebook.react.views.scroll.ReactScrollViewManager;
 import com.facebook.react.views.slider.ReactSliderManager;
@@ -103,6 +103,12 @@ public class MainReactPackage extends LazyReactPackage {
   @Override
   public List<ModuleSpec> getNativeModules(final ReactApplicationContext context) {
     return Arrays.asList(
+      new ModuleSpec(AccessibilityInfoModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new AccessibilityInfoModule(context);
+        }
+      }),
       new ModuleSpec(AppStateModule.class, new Provider<NativeModule>() {
         @Override
         public NativeModule get() {
@@ -142,7 +148,7 @@ public class MainReactPackage extends LazyReactPackage {
       new ModuleSpec(FrescoModule.class, new Provider<NativeModule>() {
         @Override
         public NativeModule get() {
-          return new FrescoModule(context, mConfig != null ? mConfig.getFrescoConfig() : null);
+          return new FrescoModule(context, true, mConfig != null ? mConfig.getFrescoConfig() : null);
         }
       }),
       new ModuleSpec(I18nManagerModule.class, new Provider<NativeModule>() {
@@ -275,7 +281,6 @@ public class MainReactPackage extends LazyReactPackage {
     viewManagers.add(new ReactViewPagerManager());
     viewManagers.add(new ReactVirtualTextViewManager());
     viewManagers.add(new ReactWebViewManager());
-    viewManagers.add(new RecyclerViewBackedScrollViewManager());
     viewManagers.add(new SwipeRefreshLayoutManager());
 
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(reactContext);

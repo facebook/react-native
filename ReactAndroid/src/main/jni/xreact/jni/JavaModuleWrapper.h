@@ -27,6 +27,8 @@ struct JavaModuleWrapper : jni::JavaClass<JavaModuleWrapper> {
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/cxxbridge/JavaModuleWrapper;";
 
   jni::local_ref<JBaseJavaModule::javaobject> getModule() {
+    // This is the call which causes a lazy Java module to actually be
+    // created.
     static auto getModule = javaClassStatic()->getMethod<JBaseJavaModule::javaobject()>("getModule");
     return getModule(self());
   }

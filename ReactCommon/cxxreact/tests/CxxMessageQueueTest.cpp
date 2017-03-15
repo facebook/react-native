@@ -1,3 +1,5 @@
+// Copyright 2004-present Facebook. All Rights Reserved.
+
 #include <gtest/gtest.h>
 
 #include <cxxreact/CxxMessageQueue.h>
@@ -29,6 +31,17 @@ std::shared_ptr<CxxMessageQueue> createAndStartQueue(EventFlag& finishedFlag) {
   return q;
 }
 
+std::unique_ptr<CxxMessageQueue> createAndStartUnregisteredQueue(
+    EventFlag& finishedFlag) {
+  auto q = std::make_unique<CxxMessageQueue>();
+  std::thread t([loop=q->getUnregisteredRunLoop(), &finishedFlag] {
+      loop();
+      finishedFlag.set();
+    });
+  t.detach();
+  return q;
+}
+
 // This is just used to start up a queue for a test and make sure that it is
 // actually shut down after the test.
 struct QueueWithThread {
@@ -39,9 +52,7 @@ struct QueueWithThread {
   ~QueueWithThread() {
     queue->quitSynchronous();
     queue.reset();
-    if (!done.wait_until(now() + milliseconds(300))) {
-      ADD_FAILURE() << "Queue did not exit";
-    }
+    EXPECT_TRUE(done.wait_until(now() + milliseconds(300))) << "Queue did not exit";
   }
 
   EventFlag done;
@@ -53,9 +64,8 @@ TEST(CxxMessageQueue, TestQuit) {
   EventFlag done;
   auto q = createAndStartQueue(done);
   q->quitSynchronous();
-  if (!done.wait_until(now() + milliseconds(300))) {
-    FAIL() << "Queue did not exit runloop after quitSynchronous";
-  }
+  EXPECT_TRUE(done.wait_until(now() + milliseconds(300)))
+    << "Queue did not exit runloop after quitSynchronous";
 }
 
 TEST(CxxMessageQueue, TestPostTask) {
@@ -65,6 +75,34 @@ TEST(CxxMessageQueue, TestPostTask) {
   EventFlag flag;
   q->runOnQueue([&] {
       flag.set();
+    });
+  flag.wait();
+}
+
+TEST(CxxMessageQueue, TestPostUnregistered) {
+  EventFlag qdone;
+  auto q = createAndStartUnregisteredQueue(qdone);
+
+  EventFlag tflag;
+  q->runOnQueue([&] {
+      tflag.set();
+    });
+  tflag.wait();
+
+  q->quitSynchronous();
+  q.reset();
+  EXPECT_TRUE(qdone.wait_until(now() + milliseconds(300))) << "Queue did not exit";
+}
+
+TEST(CxxMessageQueue, TestPostCurrent) {
+  QueueWithThread qt;
+  auto q = qt.queue;
+
+  EventFlag flag;
+  q->runOnQueue([&] {
+      CxxMessageQueue::current()->runOnQueue([&] {
+          flag.set();
+        });
     });
   flag.wait();
 }

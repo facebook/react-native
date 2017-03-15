@@ -14,7 +14,6 @@
 #import "RCTBridge.h"
 #import "RCTBridgeMethod.h"
 #import "RCTConvert.h"
-#import "RCTDevLoadingView.h"
 #import "RCTDisplayLink.h"
 #import "RCTJSCExecutor.h"
 #import "RCTJavaScriptLoader.h"
@@ -24,6 +23,10 @@
 #import "RCTProfile.h"
 #import "RCTRedBox.h"
 #import "RCTUtils.h"
+
+#if RCT_DEV && __has_include("RCTDevLoadingView.h")
+#import "RCTDevLoadingView.h"
+#endif
 
 #define RCTAssertJSThread() \
   RCTAssert(![NSStringFromClass([self->_javaScriptExecutor class]) isEqualToString:@"RCTJSCExecutor"] || \
@@ -116,7 +119,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
     sourceCode = source;
     dispatch_group_leave(initModulesAndLoadSource);
   } onProgress:^(RCTLoadingProgress *progressData) {
-#ifdef RCT_DEV
+#if RCT_DEV && __has_include("RCTDevLoadingView.h")
     RCTDevLoadingView *loadingView = [weakSelf moduleForClass:[RCTDevLoadingView class]];
     [loadingView updateProgress:progressData];
 #endif

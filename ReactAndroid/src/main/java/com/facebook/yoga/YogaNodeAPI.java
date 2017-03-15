@@ -20,7 +20,7 @@ public interface YogaNodeAPI<YogaNodeType extends YogaNodeAPI> {
   void setMeasureFunction(YogaMeasureFunction measureFunction);
   void setBaselineFunction(YogaBaselineFunction measureFunction);
   boolean isMeasureDefined();
-  void calculateLayout();
+  void calculateLayout(float width, float height);
   boolean isDirty();
   boolean hasNewLayout();
   void dirty();
@@ -49,9 +49,11 @@ public interface YogaNodeAPI<YogaNodeType extends YogaNodeAPI> {
   YogaValue getFlexBasis();
   void setFlexBasis(float flexBasis);
   void setFlexBasisPercent(float percent);
+  void setFlexBasisAuto();
   YogaValue getMargin(YogaEdge edge);
   void setMargin(YogaEdge edge, float margin);
   void setMarginPercent(YogaEdge edge, float percent);
+  void setMarginAuto(YogaEdge edge);
   YogaValue getPadding(YogaEdge edge);
   void setPadding(YogaEdge edge, float padding);
   void setPaddingPercent(YogaEdge edge, float percent);
@@ -63,9 +65,11 @@ public interface YogaNodeAPI<YogaNodeType extends YogaNodeAPI> {
   YogaValue getWidth();
   void setWidth(float width);
   void setWidthPercent(float percent);
+  void setWidthAuto();
   YogaValue getHeight();
   void setHeight(float height);
   void setHeightPercent(float percent);
+  void setHeightAuto();
   YogaValue getMaxWidth();
   void setMaxWidth(float maxWidth);
   void setMaxWidthPercent(float percent);
@@ -84,9 +88,12 @@ public interface YogaNodeAPI<YogaNodeType extends YogaNodeAPI> {
   float getLayoutHeight();
   float getLayoutMargin(YogaEdge edge);
   float getLayoutPadding(YogaEdge edge);
+  float getLayoutBorder(YogaEdge edge);
   YogaDirection getLayoutDirection();
   YogaOverflow getOverflow();
   void setOverflow(YogaOverflow overflow);
+  YogaDisplay getDisplay();
+  void setDisplay(YogaDisplay display);
   void setData(Object data);
   Object getData();
   void reset();

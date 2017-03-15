@@ -19,6 +19,8 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
+const invariant = require('fbjs/lib/invariant');
+
 import type {
   NavigationAnimatedValue,
   NavigationLayout,
@@ -259,17 +261,17 @@ function buildTransitionProps(
     scenes,
   } = state;
 
-  /* $FlowFixMe(>=0.38.0 site=react_native_fb,react_native_oss) - Flow error
-   * detected during the deployment of v0.38.0. To see the error, remove this
-   * comment and run flow
-   */
+  const scene = scenes.find(isSceneActive);
+
+  invariant(scene, 'No active scene when building navigation transition props.');
+
   return {
     layout,
     navigationState,
     position,
     progress,
     scenes,
-    scene: scenes.find(isSceneActive),
+    scene
   };
 }
 

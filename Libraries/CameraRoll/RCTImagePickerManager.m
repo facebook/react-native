@@ -15,7 +15,6 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTImageStoreManager.h>
-#import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
 

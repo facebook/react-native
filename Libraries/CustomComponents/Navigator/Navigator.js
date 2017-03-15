@@ -289,7 +289,7 @@ var GESTURE_ACTIONS = [
  * ```
  * In the above example, the newly pushed scene will float up from the bottom.
  * See `Navigator.SceneConfigs` for default animations and more info on
- * available [scene config options](/react-native/docs/navigator.html#configurescene).
+ * available [scene config options](docs/navigator.html#configurescene).
  */
 var Navigator = React.createClass({
 

@@ -15,13 +15,13 @@ const MAGIC_UNBUNDLE_NUMBER = require('./magic-number');
 const buildSourceMapWithMetaData = require('./build-unbundle-sourcemap-with-metadata');
 const mkdirp = require('mkdirp');
 const path = require('path');
-const relativizeSourceMap = require('../../../../packager/react-packager/src/lib/relativizeSourceMap');
+const relativizeSourceMap = require('../../../../packager/src//lib/relativizeSourceMap');
 const writeFile = require('../writeFile');
 const writeSourceMap = require('./write-sourcemap');
 
 const {joinModules} = require('./util');
 
-import type Bundle from '../../../../packager/react-packager/src/Bundler/Bundle';
+import type Bundle from '../../../../packager/src//Bundler/Bundle';
 import type {OutputOptions} from '../../types.flow';
 
 // must not start with a dot, as that won't go into the apk

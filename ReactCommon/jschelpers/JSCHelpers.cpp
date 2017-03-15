@@ -6,7 +6,6 @@
 #include <fbsystrace.h>
 #endif
 
-#include <folly/String.h>
 #include <glog/logging.h>
 
 #include "JavaScriptCore.h"

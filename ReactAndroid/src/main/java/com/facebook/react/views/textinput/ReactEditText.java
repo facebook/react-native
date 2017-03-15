@@ -80,6 +80,7 @@ public class ReactEditText extends EditText {
   private @Nullable String mReturnKeyType;
   private @Nullable SelectionWatcher mSelectionWatcher;
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
+  private @Nullable ScrollWatcher mScrollWatcher;
   private final InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
 
@@ -106,6 +107,7 @@ public class ReactEditText extends EditText {
     mTextWatcherDelegator = null;
     mStagedInputType = getInputType();
     mKeyListener = new InternalKeyListener();
+    mScrollWatcher = null;
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
@@ -172,6 +174,15 @@ public class ReactEditText extends EditText {
   }
 
   @Override
+  protected void onScrollChanged(int horiz, int vert, int oldHoriz, int oldVert) {
+    super.onScrollChanged(horiz, vert, oldHoriz, oldVert);
+
+    if (mScrollWatcher != null) {
+      mScrollWatcher.onScrollChanged(horiz, vert, oldHoriz, oldVert);
+    }
+  }
+
+  @Override
   public void clearFocus() {
     setFocusableInTouchMode(false);
     super.clearFocus();
@@ -218,6 +229,10 @@ public class ReactEditText extends EditText {
 
   public void setContentSizeWatcher(ContentSizeWatcher contentSizeWatcher) {
     mContentSizeWatcher = contentSizeWatcher;
+  }
+
+  public void setScrollWatcher(ScrollWatcher scrollWatcher) {
+    mScrollWatcher = scrollWatcher;
   }
 
   @Override

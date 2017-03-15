@@ -126,6 +126,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * ```
  *
  */
+// $FlowFixMe(>=0.41.0)
 const Image = React.createClass({
   propTypes: {
     /**
@@ -178,7 +179,7 @@ const Image = React.createClass({
      * the image.
      * @platform ios
      */
-    accessibilityLabel: PropTypes.string,
+    accessibilityLabel: PropTypes.node,
     /**
     * blurRadius: the blur radius of the blur filter added to the image
     * @platform ios
@@ -287,6 +288,8 @@ const Image = React.createClass({
      * optimized for that purpose, and may in future be implemented in a way that
      * does not fully load/download the image data. A proper, supported way to
      * preload images will be provided as a separate API.
+     *
+     * Does not work for static image resources.
      *
      * @param uri The location of the image.
      * @param success The function that will be called if the image was successfully found and width
