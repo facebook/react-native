@@ -2624,10 +2624,6 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                                            crossAxisParentSize,
                                            parentWidth) -
                            paddingAndBorderAxisCross;
-
-      if (measureModeCrossDim == YGMeasureModeAtMost) {
-        containerCrossAxis = fminf(containerCrossAxis, availableInnerCrossDim);
-      }
     }
 
     // If there's no flex wrap, the cross dimension is defined by the container.
@@ -2735,11 +2731,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
 
             if (YGMarginLeadingValue(child, crossAxis)->unit == YGUnitAuto &&
                 YGMarginTrailingValue(child, crossAxis)->unit == YGUnitAuto) {
-              leadingCrossDim += remainingCrossDim / 2;
+              leadingCrossDim += fmaxf(0.0f, remainingCrossDim / 2);
             } else if (YGMarginTrailingValue(child, crossAxis)->unit == YGUnitAuto) {
               // No-Op
             } else if (YGMarginLeadingValue(child, crossAxis)->unit == YGUnitAuto) {
-              leadingCrossDim += remainingCrossDim;
+              leadingCrossDim += fmaxf(0.0f, remainingCrossDim);
             } else if (alignItem == YGAlignFlexStart) {
               // No-Op
             } else if (alignItem == YGAlignCenter) {
