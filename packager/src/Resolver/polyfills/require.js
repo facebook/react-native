@@ -195,7 +195,8 @@
    let message = 'Requiring unknown module "' + id + '".';
    if (__DEV__) {
      message +=
-      'If you are sure the module is there, try restarting the packager or running "npm install".';
+      'If you are sure the module is there, try restarting the packager. ' +
+      'You may also want to run `npm install`, or `yarn` (depending on your environment).';
    }
    return Error(message);
  }

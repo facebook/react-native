@@ -87,7 +87,7 @@ class Resolver {
   getShallowDependencies(
     entryFile: string,
     transformOptions: TransformOptions,
-  ): Array<string> {
+  ): Promise<Array<Module>> {
     return this._depGraph.getShallowDependencies(entryFile, transformOptions);
   }
 

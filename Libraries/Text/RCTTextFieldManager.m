@@ -14,12 +14,18 @@
 #import <React/RCTShadowView.h>
 
 #import "RCTConvert+Text.h"
+#import "RCTShadowTextField.h"
 #import "RCTTextField.h"
 
 
 @implementation RCTTextFieldManager
 
 RCT_EXPORT_MODULE()
+
+- (RCTShadowView *)shadowView
+{
+  return [RCTShadowTextField new];
+}
 
 - (UIView *)view
 {
