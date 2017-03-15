@@ -37,7 +37,7 @@ import com.facebook.react.modules.core.Timing;
 import com.facebook.react.modules.debug.AnimationsDebugModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
-import com.facebook.react.uimanager.AppRegistry;
+import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
@@ -56,7 +56,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
  * view managers from).
  */
 @ReactModuleList(
-  javaModules = {
+  nativeModules = {
     AndroidInfoModule.class,
     AnimationsDebugModule.class,
     DeviceEventManagerModule.class,

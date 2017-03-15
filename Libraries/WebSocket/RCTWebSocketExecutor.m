@@ -56,6 +56,7 @@ RCT_EXPORT_MODULE()
   if (!_url) {
     NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
 
+    // TODO t16297016: this seems to be unused, remove?
     NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"];
     if (!port) {
       port = [[[_bridge bundleURL] port] integerValue] ?: 8081;

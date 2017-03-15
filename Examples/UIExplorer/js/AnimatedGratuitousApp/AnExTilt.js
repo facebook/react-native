@@ -123,7 +123,7 @@ class AnExTilt extends React.Component {
               },
             ],
           }}
-          source={NATURE_IMAGE}
+          source={require('./trees.jpg')}
         />
       </Animated.View>
     );
@@ -141,7 +141,5 @@ var styles = StyleSheet.create({
     borderRadius: 20,
   },
 });
-
-var NATURE_IMAGE = {uri: 'http://www.deshow.net/d/file/travel/2009-04/scenic-beauty-of-nature-photography-2-504-4.jpg'};
 
 module.exports = AnExTilt;

@@ -33,6 +33,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * `TouchableMixin` expects us to implement some abstract methods to handle
  * interesting interactions such as `handleTouchablePress`.
  */
+// $FlowFixMe(>=0.41.0)
 var TouchableBounce = React.createClass({
   mixins: [Touchable.Mixin, NativeMethodsMixin],
 
@@ -148,7 +149,9 @@ var TouchableBounce = React.createClass({
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}>
-        {this.props.children}
+        {
+          // $FlowFixMe(>=0.41.0)
+          this.props.children}
         {Touchable.renderDebugView({color: 'orange', hitSlop: this.props.hitSlop})}
       </Animated.View>
     );

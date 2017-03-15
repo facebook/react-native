@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIImplementation;
@@ -95,6 +96,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
     jsModule = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(uiManager)
         .addNativeModule(new AndroidInfoModule())
+        .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
         .addJSModule(UIManagerTestModule.class)
         .build()

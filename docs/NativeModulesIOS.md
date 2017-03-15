@@ -4,8 +4,9 @@ title: Native Modules
 layout: docs
 category: Guides (iOS)
 permalink: docs/native-modules-ios.html
+banner: ejected
 next: native-components-ios
-previous: gesture-responder-system
+previous: upgrading
 ---
 
 Sometimes an app needs access to platform API, and React Native doesn't have a corresponding module yet. Maybe you want to reuse some existing Objective-C, Swift or C++ code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
@@ -34,7 +35,11 @@ In addition to implementing the `RCTBridgeModule` protocol, your class must also
 // CalendarManager.m
 @implementation CalendarManager
 
+// To export a module named CalendarManager
 RCT_EXPORT_MODULE();
+
+// This would name the module AwesomeCalendarManager instead
+// RCT_EXPORT_MODULE(AwesomeCalendarManager);
 
 @end
 ```
@@ -166,7 +171,7 @@ RCT_EXPORT_METHOD(findEvents:(RCTResponseSenderBlock)callback)
 }
 ```
 
-`RCTResponseSenderBlock` accepts only one argument - an array of parameters to pass to the JavaScript callback. In this case we use node's convention to make the first parameter an error object (usually `null` when there is no error) and the rest are the results of the function.
+`RCTResponseSenderBlock` accepts only one argument - an array of parameters to pass to the JavaScript callback. In this case we use Node's convention to make the first parameter an error object (usually `null` when there is no error) and the rest are the results of the function.
 
 ```javascript
 CalendarManager.findEvents((error, events) => {
@@ -178,7 +183,7 @@ CalendarManager.findEvents((error, events) => {
 })
 ```
 
-A native module is supposed to invoke its callback only once. It can, however, store the callback and invoke it later. This pattern is often used to wrap iOS APIs that require delegates. See [`RCTAlertManager`](https://github.com/facebook/react-native/blob/master/React/Modules/RCTAlertManager.m) for an example.
+A native module should invoke its callback exactly once. It's okay to store the callback and invoke it later. This pattern is often used to wrap iOS APIs that require delegates - see [`RCTAlertManager`](https://github.com/facebook/react-native/blob/master/React/Modules/RCTAlertManager.m) for an example. If the callback is never invoked, some memory is leaked. If both `onSuccess` and `onFail` callbacks are passed, you should only invoke one of them.
 
 If you want to pass error-like objects to JavaScript, use `RCTMakeError` from [`RCTUtils.h`](https://github.com/facebook/react-native/blob/master/React/Base/RCTUtils.h).  Right now this just passes an Error-shaped dictionary to JavaScript, but we would like to automatically generate real JavaScript `Error` objects in the future.
 
@@ -398,13 +403,13 @@ You will receive a warning if you expend resources unnecessarily by emitting an 
 }
 
 // Will be called when this module's first listener is added.
--(void)startObserving { 
+-(void)startObserving {
     hasListeners = YES;
     // Set up any upstream listeners or background tasks as necessary
 }
 
 // Will be called when this module's last listener is removed, or on dealloc.
--(void)stopObserving { 
+-(void)stopObserving {
     hasListeners = NO;
     // Remove upstream listeners, stop unnecessary background tasks
 }
