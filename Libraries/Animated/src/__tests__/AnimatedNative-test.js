@@ -217,15 +217,16 @@ describe('Native Animated', () => {
       );
       const c = createAndMountComponent(Animated.View, {onTouchMove: event});
       expect(nativeAnimatedModule.addAnimatedEventToView).toBeCalledWith(
-        1,
+        jasmine.any(Number),
         'onTouchMove',
         {nativeEventPath: ['state', 'foo'], animatedValueTag: value.__getNativeTag()},
       );
 
       c.componentWillUnmount();
       expect(nativeAnimatedModule.removeAnimatedEventFromView).toBeCalledWith(
-        1,
+        jasmine.any(Number),
         'onTouchMove',
+        value.__getNativeTag(),
       );
     });
 
@@ -275,7 +276,7 @@ describe('Native Animated', () => {
       expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         jasmine.any(Number),
         jasmine.any(Number),
-        {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number), delay: jasmine.any(Number)},
+        {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number), delay: jasmine.any(Number), iterations: 1},
         jasmine.any(Function)
       );
 
@@ -586,7 +587,7 @@ describe('Native Animated', () => {
       expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         jasmine.any(Number),
         jasmine.any(Number),
-        {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number), delay: jasmine.any(Number)},
+        {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number), delay: jasmine.any(Number), iterations: 1},
         jasmine.any(Function)
       );
     });
@@ -606,6 +607,7 @@ describe('Native Animated', () => {
           restSpeedThreshold: 0.001,
           tension: 679.08,
           toValue: 10,
+          iterations: 1,
         },
         jasmine.any(Function)
       );
@@ -623,6 +625,7 @@ describe('Native Animated', () => {
           restSpeedThreshold: 0.001,
           tension: 299.61882352941177,
           toValue: 10,
+          iterations: 1,
         },
         jasmine.any(Function)
       );
@@ -635,7 +638,22 @@ describe('Native Animated', () => {
       expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         jasmine.any(Number),
         jasmine.any(Number),
-        {type: 'decay', deceleration: 0.1, velocity: 10},
+        {type: 'decay', deceleration: 0.1, velocity: 10, iterations: 1},
+        jasmine.any(Function)
+      );
+    });
+
+    it('works with Animated.loop', () => {
+      const anim = new Animated.Value(0);
+      Animated.loop(
+        Animated.decay(anim, {velocity: 10, deceleration: 0.1, useNativeDriver: true}),
+        { iterations: 10 },
+      ).start();
+
+      expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
+        jasmine.any(Number),
+        jasmine.any(Number),
+        {type: 'decay', deceleration: 0.1, velocity: 10, iterations: 10},
         jasmine.any(Function)
       );
     });
@@ -648,7 +666,7 @@ describe('Native Animated', () => {
       expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         jasmine.any(Number),
         jasmine.any(Number),
-        {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number), delay: jasmine.any(Number)},
+        {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number), delay: jasmine.any(Number), iterations: 1},
         jasmine.any(Function)
       );
       const animationId = nativeAnimatedModule.startAnimatingNode.mock.calls[0][0];
