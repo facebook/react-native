@@ -277,7 +277,7 @@ class Bundler {
     );
   }
 
-  hmrBundle(options: {platform: ?string}, host: string, port: number) {
+  hmrBundle(options: {platform: ?string}, host: string, port: number): Promise<HMRBundle> {
     return this._bundle({
       ...options,
       bundle: new HMRBundle({
@@ -492,7 +492,7 @@ class Bundler {
     minify?: boolean,
     hot?: boolean,
     generateSourceMaps?: boolean,
-  }) {
+  }): Promise<Array<Module>> {
     return this.getTransformOptions(
       entryFile,
       {
