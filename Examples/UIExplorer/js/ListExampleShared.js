@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule ListExampleShared
  */
 'use strict';
 
@@ -35,7 +36,7 @@ const {
   View,
 } = ReactNative;
 
-type Item = {title: string, text: string, key: number, pressed: boolean};
+type Item = {title: string, text: string, key: number, pressed: boolean, noImage?: ?boolean};
 
 function genItemData(count: number): Array<Item> {
   const dataBlob = [];
@@ -73,7 +74,7 @@ class ItemComponent extends React.PureComponent {
         style={horizontal ? styles.horizItem : styles.item}>
         <View style={[
           styles.row, horizontal && {width: HORIZ_WIDTH}]}>
-          <Image style={styles.thumb} source={imgSource} />
+          {!item.noImage && <Image style={styles.thumb} source={imgSource} />}
           <Text
             style={styles.text}
             numberOfLines={(horizontal || fixedHeight) ? 3 : undefined}>
@@ -85,22 +86,16 @@ class ItemComponent extends React.PureComponent {
   }
 }
 
-class StackedItemComponent extends React.PureComponent {
-  props: {
-    item: Item,
-  };
-  render() {
-    const {item} = this.props;
-    const itemHash = Math.abs(hashCode(item.title));
-    const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
-    return (
-      <View style={styles.stacked}>
-        <Text style={styles.stackedText}>{item.title} - {item.text}</Text>
-        <Image style={styles.thumb} source={imgSource} />
-      </View>
-    );
-  }
-}
+const renderStackedItem = ({item}: {item: Item}) => {
+  const itemHash = Math.abs(hashCode(item.title));
+  const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
+  return (
+    <View style={styles.stacked}>
+      <Text style={styles.stackedText}>{item.title} - {item.text}</Text>
+      <Image style={styles.thumb} source={imgSource} />
+    </View>
+  );
+};
 
 class FooterComponent extends React.PureComponent {
   render() {
@@ -108,7 +103,7 @@ class FooterComponent extends React.PureComponent {
       <View>
         <SeparatorComponent />
         <View style={styles.headerFooter}>
-          <Text>FOOTER</Text>
+          <Text>LIST FOOTER</Text>
         </View>
       </View>
     );
@@ -120,7 +115,7 @@ class HeaderComponent extends React.PureComponent {
     return (
       <View>
         <View style={styles.headerFooter}>
-          <Text>HEADER</Text>
+          <Text>LIST HEADER</Text>
         </View>
         <SeparatorComponent />
       </View>
@@ -164,7 +159,7 @@ function hashCode(str: string): number {
   return hash;
 }
 
-const HEADER = {height: 30, width: 80};
+const HEADER = {height: 30, width: 100};
 const SEPARATOR_HEIGHT = StyleSheet.hairlineWidth;
 
 function getItemLayout(data: any, index: number, horizontal?: boolean) {
@@ -286,9 +281,9 @@ module.exports = {
   ItemComponent,
   PlainInput,
   SeparatorComponent,
-  StackedItemComponent,
   genItemData,
   getItemLayout,
   pressItem,
   renderSmallSwitchOption,
+  renderStackedItem,
 };

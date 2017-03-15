@@ -153,6 +153,12 @@ public class UIImplementation {
       int newWidth,
       int newHeight) {
     ReactShadowNode cssNode = mShadowNodeRegistry.getNode(nodeViewTag);
+    if (cssNode == null) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Tried to update size of non-existent tag: " + nodeViewTag);
+      return;
+    }
     cssNode.setStyleWidth(newWidth);
     cssNode.setStyleHeight(newHeight);
 
@@ -775,7 +781,7 @@ public class UIImplementation {
       cssRoot.calculateLayout();
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-      mLayoutTimer = mLayoutTimer + ((double)System.nanoTime() - startTime)/ 1000000000.0;
+      mLayoutTimer = mLayoutTimer + ((double)System.nanoTime() - startTime) / 1000000.0;
       mLayoutCount = mLayoutCount + 1;
     }
   }

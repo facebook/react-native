@@ -45,9 +45,11 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 /**
  * A wrapper for making views respond properly to touches (Android only).
  * On Android this component uses native state drawable to display touch
- * feedback. At the moment it only supports having a single View instance as a
- * child node, as it's implemented by replacing that View with another instance
- * of RCTView node with some additional properties set.
+ * feedback.
+ *
+ * At the moment it only supports having a single View instance as a child
+ * node, as it's implemented by replacing that View with another instance of
+ * RCTView node with some additional properties set.
  *
  * Background drawable of native feedback touchable can be customized with
  * `background` property.
@@ -253,7 +255,7 @@ var TouchableNativeFeedback = React.createClass({
 
     // We need to clone the actual element so that the ripple background drawable
     // can be applied directly to the background of this element rather than to
-    // a wrapper view as done in outher Touchable*
+    // a wrapper view as done in other Touchable*
     return React.cloneElement(
       child,
       childProps

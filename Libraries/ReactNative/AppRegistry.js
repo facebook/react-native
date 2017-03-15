@@ -13,13 +13,12 @@
 
 const BatchedBridge = require('BatchedBridge');
 const BugReporting = require('BugReporting');
+const NativeModules = require('NativeModules');
 const ReactNative = require('ReactNative');
 
 const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const renderApplication = require('renderApplication');
-
-const { HeadlessJsTaskSupport } = require('NativeModules');
 
 if (__DEV__) {
   // In order to use Cmd+P to record/dump perf data, we need to make sure
@@ -150,9 +149,16 @@ const AppRegistry = {
     BugReporting.addSource('AppRegistry.runApplication' + runCount++, () => msg);
     invariant(
       runnables[appKey] && runnables[appKey].run,
-      'Application ' + appKey + ' has not been registered. This ' +
-      'is either due to a require() error during initialization ' +
-      'or failure to call AppRegistry.registerComponent.'
+      'Application ' + appKey + ' has not been registered.\n\n' +
+      'Hint: This error often happens when you\'re running the packager ' +
+      '(local dev server) from a wrong folder. For example you have ' +
+      'multiple apps and the packager is still running for the app you ' +
+      'were working on before.\nIf this is the case, simply kill the old ' +
+      'packager instance (e.g. close the packager terminal window) ' +
+      'and start the packager in the correct app folder (e.g. cd into app ' +
+      'folder and run \'npm start\').\n\n' +
+      'This error can also happen due to a require() error during ' +
+      'initialization or failure to call AppRegistry.registerComponent.\n\n'
     );
     runnables[appKey].run(appParameters);
   },
@@ -188,10 +194,10 @@ const AppRegistry = {
       throw new Error(`No task registered for key ${taskKey}`);
     }
     taskProvider()(data)
-      .then(() => HeadlessJsTaskSupport.notifyTaskFinished(taskId))
+      .then(() => NativeModules.HeadlessJsTaskSupport.notifyTaskFinished(taskId))
       .catch(reason => {
         console.error(reason);
-        HeadlessJsTaskSupport.notifyTaskFinished(taskId);
+        NativeModules.HeadlessJsTaskSupport.notifyTaskFinished(taskId);
       });
   }
 
