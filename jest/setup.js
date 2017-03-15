@@ -122,7 +122,7 @@ const mockNativeModules = {
   Linking: {
     openURL: jest.fn(),
     canOpenURL: jest.fn(
-      (url) => new Promise((resolve) => resolve(url))
+      () => new Promise((resolve) => resolve(true))
     ),
   },
   ModalFullscreenViewManager: {},
