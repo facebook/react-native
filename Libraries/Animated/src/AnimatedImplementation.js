@@ -1508,32 +1508,48 @@ class AnimatedStyle extends AnimatedWithChildren {
     this._style = style;
   }
 
-  __getValue(): Object {
-    var style = {};
-    for (var key in this._style) {
-      var value = this._style[key];
+  // Recursively get values for nested styles (like iOS's shadowOffset)
+  __walkStyleAndGetValues(style) {
+    let updatedStyle = {};
+    for (let key in style) {
+      let value = style[key];
       if (value instanceof Animated) {
         if (!value.__isNative) {
           // We cannot use value of natively driven nodes this way as the value we have access from
           // JS may not be up to date.
-          style[key] = value.__getValue();
+          updatedStyle[key] = value.__getValue();
         }
+      } else if (value && !Array.isArray(value) && typeof value === 'object') {
+        // Support animating nested values (for example: shadowOffset.height)
+        updatedStyle[key] = this.__walkStyleAndGetValues(value);
       } else {
-        style[key] = value;
+        updatedStyle[key] = value;
       }
     }
-    return style;
+    return updatedStyle;
+  }
+
+  __getValue(): Object {
+    return this.__walkStyleAndGetValues(this._style);
+  }
+
+  // Recursively get animated values for nested styles (like iOS's shadowOffset)
+  __walkStyleAndGetAnimatedValues(style) {
+    let updatedStyle = {};
+    for (let key in style) {
+      let value = style[key];
+      if (value instanceof Animated) {
+        updatedStyle[key] = value.__getAnimatedValue();
+      } else if (value && !Array.isArray(value) && typeof value === 'object') {
+        // Support animating nested values (for example: shadowOffset.height)
+        updatedStyle[key] = this.__walkStyleAndGetAnimatedValues(value);
+      }
+    }
+    return updatedStyle;
   }
 
   __getAnimatedValue(): Object {
-    var style = {};
-    for (var key in this._style) {
-      var value = this._style[key];
-      if (value instanceof Animated) {
-        style[key] = value.__getAnimatedValue();
-      }
-    }
-    return style;
+    return this.__walkStyleAndGetAnimatedValues(this._style);
   }
 
   __attach(): void {
