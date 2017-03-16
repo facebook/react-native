@@ -249,9 +249,9 @@ describe('onUpdate', function() {
   );
 
   it(
-    'minViewTime delays callback',
+    'minimumViewTime delays callback',
     function() {
-      const helper = new ViewabilityHelper({minViewTime: 350, viewAreaCoveragePercentThreshold: 0});
+      const helper = new ViewabilityHelper({minimumViewTime: 350, viewAreaCoveragePercentThreshold: 0});
       rowFrames = {
         a: {y: 0, height: 200},
         b: {y: 200, height: 200},
@@ -279,9 +279,9 @@ describe('onUpdate', function() {
   );
 
   it(
-    'minViewTime skips briefly visible items',
+    'minimumViewTime skips briefly visible items',
     function() {
-      const helper = new ViewabilityHelper({minViewTime: 350, viewAreaCoveragePercentThreshold: 0});
+      const helper = new ViewabilityHelper({minimumViewTime: 350, viewAreaCoveragePercentThreshold: 0});
       rowFrames = {
         a: {y: 0, height: 250},
         b: {y: 250, height: 200},
