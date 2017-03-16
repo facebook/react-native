@@ -97,7 +97,7 @@ See the following for example usage and integration points:
 You can run integration tests locally with cmd+U in the IntegrationTest and UIExplorer apps in Xcode, or by running the following in the command line on macOS:
 
     $ cd react-native
-    $ ./scripts/objc-test-ios.sh
+    $ ./scripts/objc-test-ios.sh test
 
 > Your Xcode install will come with a variety of Simulators running the latest OS. You may need to manually create a new Simulator to match what the `XCODE_DESTINATION` param in the test script.
 
