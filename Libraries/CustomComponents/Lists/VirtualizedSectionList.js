@@ -267,10 +267,8 @@ class VirtualizedSectionList<SectionT: SectionBase>
     return {
       childProps: {
         ...props,
-        FooterComponent: this.props.ListFooterComponent,
-        HeaderComponent: this.props.ListHeaderComponent,
         renderItem: this._renderItem,
-        SeparatorComponent: undefined, // Rendered with renderItem
+        ItemSeparatorComponent: undefined, // Rendered with renderItem
         data: props.sections,
         getItemCount: () => itemCount,
         getItem,
