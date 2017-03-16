@@ -63,7 +63,7 @@ if THIS_IS_FBANDROID:
 
 if THIS_IS_FBOBJC:
   def react_library(**kwargs):
-    ios_library(
+    fb_apple_library(
       name = 'bridge',
       header_path_prefix = "cxxreact",
       inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
