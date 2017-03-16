@@ -2,7 +2,6 @@
 
 #include "JSCNativeModules.h"
 
-#include <jschelpers/JavaScriptCore.h>
 #include <string>
 
 namespace facebook {
@@ -12,6 +11,10 @@ JSCNativeModules::JSCNativeModules(std::shared_ptr<ModuleRegistry> moduleRegistr
   m_moduleRegistry(std::move(moduleRegistry)) {}
 
 JSValueRef JSCNativeModules::getModule(JSContextRef context, JSStringRef jsName) {
+  if (!m_moduleRegistry) {
+    return Value::makeUndefined(context);
+  }
+
   std::string moduleName = String::ref(context, jsName).str();
 
   const auto it = m_objects.find(moduleName);

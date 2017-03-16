@@ -20,15 +20,8 @@ import java.util.Map;
  */
 public interface NativeModule {
   interface NativeMethod {
-    void invoke(CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray parameters);
+    void invoke(JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray parameters);
     String getType();
-  }
-
-  /**
-   * A method that can be called from JS synchronously on the JS thread and return a result.
-   * @see ReactSyncHook
-   */
-  interface SyncNativeHook {
   }
 
   /**

@@ -102,6 +102,17 @@ static RCTNullability RCTParseNullabilityPostfix(const char **input)
   return RCTNullabilityUnspecified;
 }
 
+// returns YES if execution is safe to proceed (enqueue callback invocation), NO if callback has already been invoked
+static BOOL RCTCheckCallbackMultipleInvocations(BOOL *didInvoke) {
+    if (*didInvoke) {
+        RCTFatal(RCTErrorWithMessage(@"Illegal callback invocation from native module. This callback type only permits a single invocation from native code."));
+        return NO;
+    } else {
+        *didInvoke = YES;
+        return YES;
+    }
+}
+
 SEL RCTParseMethodSignature(NSString *, NSArray<RCTMethodArgument *> **);
 SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument *> **arguments)
 {
@@ -205,8 +216,11 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
         return NO;
       }
 
+      __block BOOL didInvoke = NO;
       RCT_BLOCK_ARGUMENT(^(NSArray *args) {
-        [bridge enqueueCallback:json args:args];
+        if (RCTCheckCallbackMultipleInvocations(&didInvoke)) {
+          [bridge enqueueCallback:json args:args];
+        }
       });
     )
   };
@@ -302,8 +316,11 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
           return NO;
         }
 
+        __block BOOL didInvoke = NO;
         RCT_BLOCK_ARGUMENT(^(NSError *error) {
-          [bridge enqueueCallback:json args:@[RCTJSErrorFromNSError(error)]];
+          if (RCTCheckCallbackMultipleInvocations(&didInvoke)) {
+            [bridge enqueueCallback:json args:@[RCTJSErrorFromNSError(error)]];
+          }
         });
       )
     } else if ([typeName isEqualToString:@"RCTPromiseResolveBlock"]) {
@@ -316,8 +333,11 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
           return NO;
         }
 
+        __block BOOL didInvoke = NO;
         RCT_BLOCK_ARGUMENT(^(id result) {
-          [bridge enqueueCallback:json args:result ? @[result] : @[]];
+          if (RCTCheckCallbackMultipleInvocations(&didInvoke)) {
+            [bridge enqueueCallback:json args:result ? @[result] : @[]];
+          }
         });
       )
     } else if ([typeName isEqualToString:@"RCTPromiseRejectBlock"]) {
@@ -330,9 +350,12 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
           return NO;
         }
 
+        __block BOOL didInvoke = NO;
         RCT_BLOCK_ARGUMENT(^(NSString *code, NSString *message, NSError *error) {
-          NSDictionary *errorJSON = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-          [bridge enqueueCallback:json args:@[errorJSON]];
+          if (RCTCheckCallbackMultipleInvocations(&didInvoke)) {
+            NSDictionary *errorJSON = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
+            [bridge enqueueCallback:json args:@[errorJSON]];
+          }
         });
       )
     } else {
@@ -457,10 +480,10 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
         expectedCount -= 2;
       }
 
-      RCTLogError(@"%@.%@ was called with %zd arguments, but expects %zd. \
-                  If you haven\'t changed this method yourself, this usually means that \
-                  your versions of the native code and JavaScript code are out of sync. \
-                  Updating both should make this error go away.",
+      RCTLogError(@"%@.%@ was called with %zd arguments but expects %zd arguments. "
+                  @"If you haven\'t changed this method yourself, this usually means that "
+                  @"your versions of the native code and JavaScript code are out of sync. "
+                  @"Updating both should make this error go away.",
                   RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName,
                   actualCount, expectedCount);
       return nil;

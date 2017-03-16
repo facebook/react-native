@@ -14,8 +14,8 @@
 
 #import <XCTest/XCTest.h>
 
-#import "RCTBridge.h"
-#import "RCTDevMenu.h"
+#import <React/RCTBridge.h>
+#import <React/RCTDevMenu.h>
 
 typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
@@ -39,7 +39,7 @@ typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
   [super setUp];
 
   NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-  _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"TestBundle" withExtension:@"js"]
+  _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"UIExplorerUnitTestsBundle" withExtension:@"js"]
                                   moduleProvider:nil
                                    launchOptions:nil];
 }

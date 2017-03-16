@@ -8,6 +8,7 @@
  */
 'use strict';
 
+const execSync = require('child_process').execSync;
 const fs = require('fs');
 const path = require('path');
 const semver = require('semver');

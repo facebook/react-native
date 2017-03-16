@@ -1,4 +1,4 @@
-React Native GitHub Issue Task Force: AndrewJack, astreet, bestander, brentvatne, browniefed, cancan101, charpeni, chirag04, christopherdro, corbt, cosmith, damusnet, DanielMSchmidt, davidaurelio, dmmiller, dsibiski, foghina, frantic, geirman, grabbou, gre, ide, janicduplessis, javache, jaygarcia, jsierles, kmagiera, knowbody, kmagiera, Kureev, lelandrichardson, martinbigio, melihmucuk, mkonicek, rmevans9, rt2zz, ryankask, satya164, skevy, vjeux
+React Native GitHub Issue Task Force: AndrewJack, astreet, bestander, brentvatne, browniefed, cancan101, charpeni, chirag04, christopherdro, corbt, cosmith, damusnet, DanielMSchmidt, davidaurelio, dmmiller, dsibiski, foghina, frantic, geirman, grabbou, gre, ide, janicduplessis, javache, jaygarcia, jsierles, kmagiera, knowbody, kmagiera, Kureev, lelandrichardson, martinbigio, melihmucuk, mkonicek, ncuillery, rmevans9, rt2zz, ryankask, satya164, skevy, vjeux
 
 @facebook-github-bot answered
 comment Closing this issue as {author} says the question asked has been answered. Please help us by asking questions on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). StackOverflow is amazing for Q&A: it has a reputation system, voting, the ability to mark a question as answered. Because of the reputation system it is likely the community will see and answer your question there. This also helps us use the GitHub bug tracker for bugs only.
@@ -9,7 +9,7 @@ comment {author} tells me this issue is a duplicate of {match0}. Let's discuss t
 close
 
 @facebook-github-bot expected
-comment The comment above tells me this is expected behavior. Closing this as we'd like to use the GitHub issue tracker for bugs. If you'd like to change how this feature works please post a feature request on [Product Pains](https://productpains.com/product/react-native/) so that other people can vote on it.
+comment The comment above tells me this is expected behavior. Closing this as we'd like to use the GitHub issue tracker for bugs. If you'd like to change how this feature works please post a feature request on [Canny](https://react-native.canny.io/feature-requests) so that other people can vote on it.
 close
 
 @facebook-github-bot stack-overflow
@@ -36,7 +36,7 @@ comment Okay, reopening this issue.
 reopen
 
 @facebook-github-bot feature
-comment Hey {issue_author}! Thanks for opening the issue, however it looks like a feature request. As noted in the [Issue template](https://github.com/facebook/react-native/blob/master/.github/ISSUE_TEMPLATE.md) we'd like to use the GitHub issues to track bugs only. Can you implement the feature as a standalone npm module? If not consider sending a pull request or a create an entry on [Product Pains](https://productpains.com/product/react-native). It has a voting system and if the feature gets upvoted enough it might get implemented. Closing this now, thanks for understanding!
+comment Hey {issue_author}! Thanks for opening the issue, however it looks like a feature request. As noted in the [Issue template](https://github.com/facebook/react-native/blob/master/.github/ISSUE_TEMPLATE.md) we'd like to use the GitHub issues to track bugs only. Can you implement the feature as a standalone npm module? If not consider sending a pull request or a create an entry on [Canny](https://react-native.canny.io/feature-requests/). It has a voting system and if the feature gets upvoted enough it might get implemented. Closing this now, thanks for understanding!
 close
 
 @facebook-github-bot cla

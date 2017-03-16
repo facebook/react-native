@@ -2,8 +2,10 @@
 
 #include "Instance.h"
 
+#include "CxxMessageQueue.h"
 #include "Executor.h"
 #include "MethodCall.h"
+#include "RecoverableError.h"
 #include "SystraceSection.h"
 
 #include <folly/json.h>
@@ -13,12 +15,13 @@
 #include <glog/logging.h>
 
 #include <condition_variable>
-#include <fstream>
 #include <mutex>
 #include <string>
 
 namespace facebook {
 namespace react {
+
+using namespace detail;
 
 Instance::~Instance() {
   if (nativeToJsBridge_) {
@@ -34,6 +37,15 @@ void Instance::initializeBridge(
     std::shared_ptr<ModuleRegistry> moduleRegistry) {
   callback_ = std::move(callback);
 
+  if (!nativeQueue) {
+    // TODO pass down a thread/queue from java, instead of creating our own.
+
+    auto queue = folly::make_unique<CxxMessageQueue>();
+    std::thread t(queue->getUnregisteredRunLoop());
+    t.detach();
+    nativeQueue = std::move(queue);
+  }
+
   jsQueue->runOnQueueSync(
     [this, &jsef, moduleRegistry, jsQueue,
      nativeQueue=folly::makeMoveWrapper(std::move(nativeQueue))] () mutable {
@@ -46,6 +58,14 @@ void Instance::initializeBridge(
     });
 
   CHECK(nativeToJsBridge_);
+}
+
+void Instance::setSourceURL(std::string sourceURL) {
+  callback_->incrementPendingJSCalls();
+  SystraceSection s("reactbridge_xplat_setSourceURL",
+                    "sourceURL", sourceURL);
+
+  nativeToJsBridge_->loadApplication(nullptr, nullptr, std::move(sourceURL));
 }
 
 void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
@@ -66,34 +86,18 @@ void Instance::loadScriptFromStringSync(std::unique_ptr<const JSBigString> strin
 
 void Instance::loadScriptFromFile(const std::string& filename,
                                   const std::string& sourceURL) {
-  // TODO mhorowitz: ReactMarker around file read
-  std::unique_ptr<JSBigBufferString> buf;
-  {
-    SystraceSection s("reactbridge_xplat_loadScriptFromFile",
-                      "fileName", filename);
+  callback_->incrementPendingJSCalls();
+  SystraceSection s("reactbridge_xplat_loadScriptFromFile",
+                    "fileName", filename);
 
-    std::ifstream jsfile(filename);
-    if (!jsfile) {
-      LOG(ERROR) << "Unable to load script from file" << filename;
-    } else {
-      jsfile.seekg(0, std::ios::end);
-      buf.reset(new JSBigBufferString(jsfile.tellg()));
-      jsfile.seekg(0, std::ios::beg);
-      jsfile.read(buf->data(), buf->size());
-    }
-  }
+  std::unique_ptr<const JSBigFileString> script;
 
-  loadScriptFromString(std::move(buf), sourceURL);
-}
+  RecoverableError::runRethrowingAsRecoverable<std::system_error>(
+    [&filename, &script]() {
+      script = JSBigFileString::fromPath(filename);
+    });
 
-void Instance::loadScriptFromOptimizedBundle(std::string bundlePath,
-                                             std::string sourceURL,
-                                             int flags) {
-  SystraceSection s("reactbridge_xplat_loadScriptFromOptimizedBundle",
-                    "bundlePath", bundlePath);
-  nativeToJsBridge_->loadOptimizedApplicationScript(std::move(bundlePath),
-                                                    std::move(sourceURL),
-                                                    flags);
+  nativeToJsBridge_->loadApplication(nullptr, std::move(script), sourceURL);
 }
 
 void Instance::loadUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle,

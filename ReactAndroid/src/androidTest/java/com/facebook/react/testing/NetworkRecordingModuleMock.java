@@ -65,7 +65,7 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
 
   @Override
   public final String getName() {
-    return "RCTNetworking";
+    return "Networking";
   }
 
   private void fireReactCallback(

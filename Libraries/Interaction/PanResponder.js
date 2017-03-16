@@ -26,7 +26,7 @@ const currentCentroidY = TouchHistoryMath.currentCentroidY;
  * single-touch gestures resilient to extra touches, and can be used to
  * recognize simple multi-touch gestures.
  *
- * By default, `PanResponder` holds an `InteractionManager handle to block
+ * By default, `PanResponder` holds an `InteractionManager` handle to block
  * long-running JS events from interrupting active gestures.
  *
  * It provides a predictable wrapper of the responder handlers provided by the

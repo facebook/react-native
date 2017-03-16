@@ -30,12 +30,13 @@ def react_native_integration_tests_target(path):
 def react_native_dep(path):
   return '//ReactAndroid/src/main/' + path
 
-JSC_DEPS = [
+JSC_INTERNAL_DEPS = [
   '//native/third-party/jsc:jsc',
   '//native/third-party/jsc:jsc_legacy_profiler',
 ]
+JSC_DEPS = JSC_INTERNAL_DEPS
 
-CSSLAYOUT_TARGET = '//ReactAndroid/src/main/java/com/facebook:csslayout'
+YOGA_TARGET = '//ReactAndroid/src/main/java/com/facebook:yoga'
 FBGLOGINIT_TARGET = '//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit'
 FBJNI_TARGET = '//ReactAndroid/src/main/jni/first-party/fb:jni'
 JNI_TARGET = '//ReactAndroid/src/main/jni/first-party/jni-hack:jni-hack'
@@ -45,38 +46,28 @@ original_android_library=android_library
 def android_library(
   name,
   deps=[],
-  annotation_processors=[],
-  annotation_processor_deps=[],
+  plugins=[],
   *args,
   **kwargs):
 
   if react_native_target('java/com/facebook/react/uimanager/annotations:annotations') in deps and name != 'processing':
-    react_property_processors = [
-      'com.facebook.react.processing.ReactPropertyProcessor',
-    ]
-    react_property_processor_deps = [
+    react_property_plugins = [
       react_native_target('java/com/facebook/react/processing:processing'),
     ]
 
-    annotation_processors = list(set(annotation_processors + react_property_processors))
-    annotation_processor_deps = list(set(annotation_processor_deps + react_property_processor_deps))
+    plugins = list(set(plugins + react_property_plugins))
 
   if react_native_target('java/com/facebook/react/module/annotations:annotations') in deps and name != 'processing':
-    react_module_processors = [
-      'com.facebook.react.module.processing.ReactModuleSpecProcessor',
-    ]
-    react_module_processor_deps = [
+    react_module_plugins = [
       react_native_target('java/com/facebook/react/module/processing:processing'),
     ]
 
-    annotation_processors = list(set(annotation_processors + react_module_processors))
-    annotation_processor_deps = list(set(annotation_processor_deps + react_module_processor_deps))
+    plugins = list(set(plugins + react_module_plugins))
 
   original_android_library(
     name=name,
     deps=deps,
-    annotation_processors=annotation_processors,
-    annotation_processor_deps=annotation_processor_deps,
+    plugins=plugins,
     *args,
     **kwargs)
 
@@ -103,13 +94,14 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
                                                'buck-out/bin'))
 
   # RN tests use  Powermock, which means they get their own ClassLoaders.
-  # Because the csslayout native library (or any native library) can only be loaded into one
+  # Because the yoga native library (or any native library) can only be loaded into one
   # ClassLoader at a time, we need to run each in its own process, hence fork_mode = 'per_test'.
   robolectric_test(
     name = name,
     use_cxx_libraries = True,
     cxx_library_whitelist = [
-      '//ReactAndroid/src/main/jni/first-party/csslayoutjni:jni',
+      '//ReactCommon/yoga:yoga',
+      '//ReactAndroid/src/main/jni/first-party/yogajni:jni',
     ],
     fork_mode = 'per_test',
     srcs = srcs,

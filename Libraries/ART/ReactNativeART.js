@@ -19,6 +19,7 @@ var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var merge = require('merge');
+var invariant = require('fbjs/lib/invariant');
 
 // Diff Helpers
 
@@ -137,6 +138,14 @@ function childrenAsString(children) {
 // Surface - Root node of all ART
 
 class Surface extends React.Component {
+  static childContextTypes = {
+    isInSurface: React.PropTypes.bool,
+  };
+
+  getChildContext() {
+    return { isInSurface: true };
+  }
+
   render() {
     var props = this.props;
     var w = extractNumber(props.width, 0);
@@ -203,8 +212,16 @@ function extractOpacity(props) {
 // ReactART.
 
 class Group extends React.Component {
+  static contextTypes = {
+    isInSurface: React.PropTypes.bool.isRequired,
+  };
+
   render() {
     var props = this.props;
+    invariant(
+      this.context.isInSurface,
+      'ART: <Group /> must be a child of a <Surface />'
+    );
     return (
       <NativeGroup
         opacity={extractOpacity(props)}

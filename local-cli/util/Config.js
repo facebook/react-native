@@ -14,37 +14,25 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 
-import type {GetTransformOptions} from '../../packager/react-packager/src/Bundler/index.js';
-
 const RN_CLI_CONFIG = 'rn-cli.config.js';
 
-export type ConfigT = {
-  extraNodeModules?: {[id: string]: string},
-  getAssetExts?: () => Array<string>,
-  getTransformModulePath?: () => string,
-  getTransformOptions?: GetTransformOptions<*>,
-  transformVariants?: () => {[name: string]: Object},
-
-  getBlacklistRE(): RegExp,
-  getProjectRoots(): Array<string>,
-};
+// TODO: @bestander & @grabbou - get rid when internal tests are fixed
+export type { ConfigT } from '../core';
 
 /**
- * Module capable of getting the configuration that should be used for
- * the `rn-cli`. The configuration file is a JS file named `rn-cli.config.js`.
- * It has to be on any parent directory of the cli.
+ * Module capable of getting the configuration out of a given file.
  *
- * The function will return all the default configuration functions overriden
- * by those found on `rn-cli.config.js`, if any. If no default config is
- * provided and no configuration can be found in the directory hierarchy an
- * error will be thrown.
+ * The function will return all the default configuration, as specified by the
+ * `defaultConfig` param overriden by those found on `rn-cli.config.js` files, if any. If no
+ * default config is provided and no configuration can be found in the directory
+ * hierarchy, an error will be thrown.
  */
 const Config = {
-  get(
+  get<T>(
     cwd: string,
-    defaultConfig?: ConfigT | null,
+    defaultConfig?: T | null,
     pathToConfig?: string | null,
-  ): ConfigT {
+  ): T {
     let baseConfig;
 
     // Handle the legacy code path where pathToConfig is unspecified
@@ -67,6 +55,7 @@ const Config = {
         require(path.join(cwd, pathToConfig));
     }
 
+    // $FlowFixMe we return `at least` T + extras
     return {
       ...defaultConfig,
       ...baseConfig,

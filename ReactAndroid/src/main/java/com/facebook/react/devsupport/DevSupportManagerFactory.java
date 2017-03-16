@@ -15,6 +15,8 @@ import java.lang.reflect.Constructor;
 
 import android.content.Context;
 
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
+
 /**
  * A simple factory that creates instances of {@link DevSupportManager} implementations. Uses
  * reflection to create DevSupportManagerImpl if it exists. This allows ProGuard to strip that class

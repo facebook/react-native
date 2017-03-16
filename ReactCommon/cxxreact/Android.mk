@@ -5,10 +5,12 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := libreactnativefb
 
 LOCAL_SRC_FILES := \
+  CxxMessageQueue.cpp \
   CxxNativeModule.cpp \
-  Executor.cpp \
   Instance.cpp \
   JSCExecutor.cpp \
+  JSBigString.cpp \
+  JSBundleType.cpp \
   JSCLegacyProfiler.cpp \
   JSCLegacyTracing.cpp \
   JSCMemory.cpp \
@@ -16,6 +18,7 @@ LOCAL_SRC_FILES := \
   JSCPerfStats.cpp \
   JSCTracing.cpp \
   JSCWebWorker.cpp \
+  JSIndexedRAMBundle.cpp \
   MethodCall.cpp \
   ModuleRegistry.cpp \
   NativeToJsBridge.cpp \

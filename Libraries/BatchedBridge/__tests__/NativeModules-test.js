@@ -40,7 +40,7 @@ const assertQueue = (flushedQueue, index, moduleID, methodID, params) => {
 // [ ] Remote invocation throws if not supplying an error callback.
 describe('MessageQueue', function() {
   beforeEach(function() {
-    jest.resetModuleRegistry();
+    jest.resetModules();
 
     global.__fbBatchedBridgeConfig = require('MessageQueueTestConfig');
     BatchedBridge = require('BatchedBridge');

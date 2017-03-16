@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.csslayout.CSSDirection;
+import com.facebook.yoga.YogaDirection;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
@@ -84,7 +84,7 @@ public class UIImplementation {
     ReactShadowNode rootCSSNode = new ReactShadowNode();
     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
     if (sharedI18nUtilInstance.isRTL(mReactContext)) {
-      rootCSSNode.setLayoutDirection(CSSDirection.RTL);
+      rootCSSNode.setLayoutDirection(YogaDirection.RTL);
     }
     rootCSSNode.setViewClassName("Root");
     return rootCSSNode;
@@ -133,8 +133,15 @@ public class UIImplementation {
    * Unregisters a root node with a given tag.
    */
   public void removeRootView(int rootViewTag) {
-    mShadowNodeRegistry.removeRootNode(rootViewTag);
+    removeRootShadowNode(rootViewTag);
     mOperationsQueue.enqueueRemoveRootView(rootViewTag);
+  }
+
+  /**
+   * Unregisters a root node with a given tag from the shadow node registry
+   */
+  public void removeRootShadowNode(int rootViewTag) {
+    mShadowNodeRegistry.removeRootNode(rootViewTag);
   }
 
   /**
@@ -146,6 +153,12 @@ public class UIImplementation {
       int newWidth,
       int newHeight) {
     ReactShadowNode cssNode = mShadowNodeRegistry.getNode(nodeViewTag);
+    if (cssNode == null) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Tried to update size of non-existent tag: " + nodeViewTag);
+      return;
+    }
     cssNode.setStyleWidth(newWidth);
     cssNode.setStyleHeight(newHeight);
 
@@ -768,7 +781,7 @@ public class UIImplementation {
       cssRoot.calculateLayout();
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-      mLayoutTimer = mLayoutTimer + ((double)System.nanoTime() - startTime)/ 1000000000.0;
+      mLayoutTimer = mLayoutTimer + ((double)System.nanoTime() - startTime) / 1000000.0;
       mLayoutCount = mLayoutCount + 1;
     }
   }

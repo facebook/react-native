@@ -9,7 +9,7 @@
 
 #import "RCTTextManager.h"
 
-#import <CSSLayout/CSSLayout.h>
+#import <yoga/Yoga.h>
 #import <React/RCTAccessibilityManager.h>
 #import <React/RCTAssert.h>
 #import <React/RCTConvert.h>
@@ -35,7 +35,7 @@ static void collectDirtyNonTextDescendants(RCTShadowText *shadowView, NSMutableA
 
 @interface RCTShadowText (Private)
 
-- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(CSSMeasureMode)widthMode;
+- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(YGMeasureMode)widthMode;
 
 @end
 

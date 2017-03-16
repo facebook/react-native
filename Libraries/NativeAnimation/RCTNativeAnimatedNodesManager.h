@@ -9,8 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import <React/RCTUIManager.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTUIManager.h>
 
 #import "RCTValueAnimatedNode.h"
 
@@ -32,7 +32,8 @@
                        childTag:(nonnull NSNumber *)childTag;
 
 - (void)connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
-                          viewTag:(nonnull NSNumber *)viewTag;
+                          viewTag:(nonnull NSNumber *)viewTag
+                         viewName:(nonnull NSString *)viewName;
 
 - (void)disconnectAnimatedNodeFromView:(nonnull NSNumber *)nodeTag
                                viewTag:(nonnull NSNumber *)viewTag;
@@ -60,6 +61,8 @@
 
 - (void)stopAnimation:(nonnull NSNumber *)animationId;
 
+- (void)stopAnimationLoop;
+
 // events
 
 - (void)addAnimatedEventToView:(nonnull NSNumber *)viewTag
@@ -67,7 +70,8 @@
                   eventMapping:(NSDictionary<NSString *, id> *__nonnull)eventMapping;
 
 - (void)removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
-                          eventName:(nonnull NSString *)eventName;
+                          eventName:(nonnull NSString *)eventName
+                    animatedNodeTag:(nonnull NSNumber *)animatedNodeTag;
 
 - (void)handleAnimatedEvent:(nonnull id<RCTEvent>)event;
 

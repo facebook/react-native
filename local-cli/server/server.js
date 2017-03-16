@@ -9,20 +9,15 @@
 'use strict';
 
 const chalk = require('chalk');
-const findSymlinksPaths = require('./findSymlinksPaths');
 const formatBanner = require('./formatBanner');
 const path = require('path');
 const runServer = require('./runServer');
-const NODE_MODULES = path.resolve(__dirname, '..', '..', '..');
 
 /**
  * Starts the React Native Packager Server.
  */
 function server(argv, config, args) {
-  const roots = args.projectRoots.concat(args.root);
-  args.projectRoots = roots.concat(
-    findSymlinksPaths(NODE_MODULES, roots)
-  );
+  args.projectRoots = args.projectRoots.concat(args.root);
 
   console.log(formatBanner(
     'Running packager on port ' + args.port + '.\n\n' +
@@ -50,8 +45,8 @@ function server(argv, config, args) {
       );
       console.log('Most likely another process is already using this port');
       console.log('Run the following command to find out which process:');
-      console.log('\n  ', chalk.bold('lsof -n -i4TCP:' + args.port), '\n');
-      console.log('You can either shut down the other process:');
+      console.log('\n  ', chalk.bold('lsof -i :' + args.port), '\n');
+      console.log('Then, you can either shut down the other process:');
       console.log('\n  ', chalk.bold('kill -9 <PID>'), '\n');
       console.log('or run packager on different port.');
     } else {
@@ -96,6 +91,21 @@ module.exports = {
     description: 'Specify any additional asset extentions to be used by the packager',
     parse: (val) => val.split(','),
     default: (config) => config.getAssetExts(),
+  }, {
+    command: '--platforms [list]',
+    description: 'Specify any additional platforms to be used by the packager',
+    parse: (val) => val.split(','),
+    default: (config) => config.getPlatforms(),
+  }, {
+    command: '--providesModuleNodeModules [list]',
+    description: 'Specify any npm packages that import dependencies with providesModule',
+    parse: (val) => val.split(','),
+    default: (config) => {
+      if (typeof config.getProvidesModuleNodeModules === 'function') {
+        return config.getProvidesModuleNodeModules();
+      }
+      return null;
+    },
   }, {
     command: '--skipflow',
     description: 'Disable flow checks'

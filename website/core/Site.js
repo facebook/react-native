@@ -156,7 +156,7 @@ var Site = React.createClass({
                   <a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a>
                   <a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a>
                   <a href="/react-native/versions.html" target="_blank">Latest Releases</a>
-                  <a href="https://productpains.com/product/react-native/" target="_blank">Feature Requests</a>
+                  <a href="https://react-native.canny.io/feature-requests" target="_blank">Feature Requests</a>
                 </div>
                 <div>
                   <h5>More</h5>

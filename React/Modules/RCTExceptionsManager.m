@@ -56,7 +56,7 @@ RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
   static NSUInteger reloadRetries = 0;
   if (!RCT_DEBUG && reloadRetries < _maxReloadAttempts) {
     reloadRetries++;
-    [_bridge requestReload];
+    [_bridge reload];
   } else {
     NSString *description = [@"Unhandled JS Exception: " stringByAppendingString:message];
     NSDictionary *errorInfo = @{ NSLocalizedDescriptionKey: description, RCTJSStackTraceKey: stack };
