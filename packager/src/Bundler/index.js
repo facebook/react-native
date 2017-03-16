@@ -24,6 +24,9 @@ const ModuleTransport = require('../lib/ModuleTransport');
 const imageSize = require('image-size');
 const path = require('path');
 const denodeify = require('denodeify');
+const defaults = require('../../defaults');
+const os = require('os');
+const invariant = require('fbjs/lib/invariant');
 
 const {
   sep: pathSeparator,
@@ -108,7 +111,7 @@ class Bundler {
   _getModuleId: (opts: Module) => number;
   _cache: Cache;
   _transformer: Transformer;
-  _resolver: Resolver;
+  _resolverPromise: Promise<Resolver>;
   _projectRoots: Array<string>;
   _assetServer: AssetServer;
   _getTransformOptions: void | GetTransformOptions;
@@ -162,14 +165,16 @@ class Bundler {
       cacheKey: transformCacheKey,
     });
 
+    const maxWorkerCount = Bundler.getMaxWorkerCount();
+
     /* $FlowFixMe: in practice it's always here. */
-    this._transformer = new Transformer(opts.transformModulePath);
+    this._transformer = new Transformer(opts.transformModulePath, maxWorkerCount);
 
     const getTransformCacheKey = (src, filename, options) => {
       return transformCacheKey + getCacheKey(src, filename, options);
     };
 
-    this._resolver = new Resolver({
+    this._resolverPromise = Resolver.load({
       assetExts: opts.assetExts,
       blacklistRE: opts.blacklistRE,
       cache: this._cache,
@@ -177,12 +182,14 @@ class Bundler {
       getTransformCacheKey,
       globalTransformCache: opts.globalTransformCache,
       hasteImpl: opts.hasteImpl,
+      maxWorkerCount,
       minifyCode: this._transformer.minify,
       moduleFormat: opts.moduleFormat,
-      platforms: opts.platforms,
+      platforms: new Set(opts.platforms),
       polyfillModuleNames: opts.polyfillModuleNames,
       projectRoots: opts.projectRoots,
-      providesModuleNodeModules: opts.providesModuleNodeModules,
+      providesModuleNodeModules:
+        opts.providesModuleNodeModules || defaults.providesModuleNodeModules,
       reporter: opts.reporter,
       resetCache: opts.resetCache,
       transformCode:
@@ -204,7 +211,9 @@ class Bundler {
     this._transformer.kill();
     return Promise.all([
       this._cache.end(),
-      this.getResolver().getDependencyGraph().getWatcher().end(),
+      this._resolverPromise.then(
+        resolver => resolver.getDependencyGraph().getWatcher().end(),
+      ),
     ]);
   }
 
@@ -212,16 +221,16 @@ class Bundler {
     dev: boolean,
     minify: boolean,
     unbundle: boolean,
-    sourceMapUrl: string,
-  }) {
+    sourceMapUrl: ?string,
+  }): Promise<Bundle> {
     const {dev, minify, unbundle} = options;
-    const moduleSystemDeps =
-      this._resolver.getModuleSystemDependencies({dev, unbundle});
-    return this._bundle({
+    return this._resolverPromise.then(
+      resolver => resolver.getModuleSystemDependencies({dev, unbundle}),
+    ).then(moduleSystemDeps => this._bundle({
       ...options,
       bundle: new Bundle({dev, minify, sourceMapUrl: options.sourceMapUrl}),
       moduleSystemDeps,
-    });
+    }));
   }
 
   _sourceHMRURL(platform: ?string, hmrpath: string) {
@@ -268,7 +277,7 @@ class Bundler {
     );
   }
 
-  hmrBundle(options: {platform: ?string}, host: string, port: number) {
+  hmrBundle(options: {platform: ?string}, host: string, port: number): Promise<HMRBundle> {
     return this._bundle({
       ...options,
       bundle: new HMRBundle({
@@ -336,11 +345,11 @@ class Bundler {
       response: ResolutionResponse,
       modulesByName: {[name: string]: Module},
     }) =>
-      Promise.all(
+      this._resolverPromise.then(resolver => Promise.all(
         transformedModules.map(({module, transformed}) =>
-          finalBundle.addModule(this._resolver, response, module, transformed)
+          finalBundle.addModule(resolver, response, module, transformed)
         )
-      ).then(() => {
+      )).then(() => {
         const runBeforeMainModuleIds = Array.isArray(runBeforeMainModule)
           ? runBeforeMainModule
               .map(name => modulesByName[name])
@@ -413,7 +422,9 @@ class Bundler {
       });
     }
 
-    return Promise.resolve(resolutionResponse).then(response => {
+    return Promise.all(
+      [this._resolverPromise, resolutionResponse],
+    ).then(([resolver, response]) => {
       bundle.setRamGroups(response.transformOptions.transform.ramGroups);
 
       log(createActionEndEntry(transformingFilesLogEntry));
@@ -423,7 +434,7 @@ class Bundler {
       let entryFilePath;
       if (response.dependencies.length > 1) { // skip HMR requests
         const numModuleSystemDependencies =
-          this._resolver.getModuleSystemDependencies({dev, unbundle}).length;
+          resolver.getModuleSystemDependencies({dev, unbundle}).length;
 
         const dependencyIndex =
           (response.numPrependedDependencies || 0) + numModuleSystemDependencies;
@@ -481,7 +492,7 @@ class Bundler {
     minify?: boolean,
     hot?: boolean,
     generateSourceMaps?: boolean,
-  }) {
+  }): Promise<Array<Module>> {
     return this.getTransformOptions(
       entryFile,
       {
@@ -499,12 +510,14 @@ class Bundler {
         transform: transformSpecificOptions,
       };
 
-      return this._resolver.getShallowDependencies(entryFile, transformOptions);
+      return this._resolverPromise.then(
+        resolver => resolver.getShallowDependencies(entryFile, transformOptions),
+      );
     });
   }
 
-  getModuleForPath(entryFile: string) {
-    return this._resolver.getModuleForPath(entryFile);
+  getModuleForPath(entryFile: string): Promise<Module> {
+    return this._resolverPromise.then(resolver => resolver.getModuleForPath(entryFile));
   }
 
   getDependencies({
@@ -545,13 +558,13 @@ class Bundler {
         transform: transformSpecificOptions,
       };
 
-      return this._resolver.getDependencies(
+      return this._resolverPromise.then(resolver => resolver.getDependencies(
         entryFile,
         {dev, platform, recursive},
         transformOptions,
         onProgress,
         isolateModuleIDs ? createModuleIdFactory() : this._getModuleId,
-      );
+      ));
     });
   }
 
@@ -769,9 +782,29 @@ class Bundler {
       });
   }
 
-  getResolver() {
-    return this._resolver;
+  getResolver(): Promise<Resolver> {
+    return this._resolverPromise;
   }
+
+  /**
+   * Unless overriden, we use a diminishing amount of workers per core, because
+   * using more and more of them does not scale much. Ex. 6 workers for 8
+   * cores, or 14 workers for 24 cores.
+   */
+  static getMaxWorkerCount() {
+    const cores = os.cpus().length;
+    const envStr = process.env.REACT_NATIVE_MAX_WORKERS;
+    if (envStr == null) {
+      return Math.max(1, Math.ceil(cores * (0.5 + 0.5 * Math.exp(-cores * 0.07)) - 1));
+    }
+    const envCount = parseInt(process.env.REACT_NATIVE_MAX_WORKERS, 10);
+    invariant(
+      Number.isInteger(envCount),
+      'environment variable `REACT_NATIVE_MAX_WORKERS` must be a valid integer',
+    );
+    return Math.min(cores, envCount);
+  }
+
 }
 
 function getPathRelativeToRoot(roots, absPath) {

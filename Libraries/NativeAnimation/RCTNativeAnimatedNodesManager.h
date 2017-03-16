@@ -9,8 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import <React/RCTUIManager.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTUIManager.h>
 
 #import "RCTValueAnimatedNode.h"
 

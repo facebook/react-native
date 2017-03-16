@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifdef WITH_INSPECTOR
+
 #include <inspector/Inspector.h>
 
 #include <fb/fbjni.h>
@@ -59,3 +61,5 @@ private:
 
 }
 }
+
+#endif

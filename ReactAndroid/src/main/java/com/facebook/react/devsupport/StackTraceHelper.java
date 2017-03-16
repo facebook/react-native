@@ -22,6 +22,9 @@ import com.facebook.react.devsupport.interfaces.StackFrame;
  */
 public class StackTraceHelper {
 
+  public static final java.lang.String COLUMN_KEY = "column";
+  public static final java.lang.String LINE_NUMBER_KEY = "lineNumber";
+
   /**
    * Represents a generic entry in a stack trace, be it originally from JS or Java.
    */
@@ -101,10 +104,13 @@ public class StackTraceHelper {
       ReadableMap frame = stack.getMap(i);
       String methodName = frame.getString("methodName");
       String fileName = frame.getString("file");
-      int lineNumber = frame.getInt("lineNumber");
+      int lineNumber = -1;
+      if (frame.hasKey(LINE_NUMBER_KEY) && !frame.isNull(LINE_NUMBER_KEY)) {
+        lineNumber = frame.getInt(LINE_NUMBER_KEY);
+      }
       int columnNumber = -1;
-      if (frame.hasKey("column") && !frame.isNull("column")) {
-        columnNumber = frame.getInt("column");
+      if (frame.hasKey(COLUMN_KEY) && !frame.isNull(COLUMN_KEY)) {
+        columnNumber = frame.getInt(COLUMN_KEY);
       }
       result[i] = new StackFrameImpl(fileName, methodName, lineNumber, columnNumber);
     }
@@ -132,12 +138,17 @@ public class StackTraceHelper {
    * Format a {@link StackFrame} to a String (method name is not included).
    */
   public static String formatFrameSource(StackFrame frame) {
-    String lineInfo = "";
-    final int column = frame.getColumn();
-    // If the column is 0, don't show it in red box.
-    final String columnString = column <= 0 ? "" : ":" + column;
-    lineInfo += frame.getFileName() + ":" + frame.getLine() + columnString;
-    return lineInfo;
+    StringBuilder lineInfo = new StringBuilder();
+    lineInfo.append(frame.getFileName());
+    final int line = frame.getLine();
+    if (line > 0) {
+      lineInfo.append(":").append(line);
+      final int column = frame.getColumn();
+      if (column > 0) {
+        lineInfo.append(":").append(column);
+      }
+    }
+    return lineInfo.toString();
   }
 
   /**

@@ -33,7 +33,7 @@ template <>
 struct ValueEncoder<NSArray *> {
   static Value toValue(JSGlobalContextRef ctx, NSArray *const __strong array)
   {
-    JSValue *value = [JSValue valueWithObject:array inContext:contextForGlobalContextRef(ctx)];
+    JSValue *value = [JSC_JSValue(ctx) valueWithObject:array inContext:contextForGlobalContextRef(ctx)];
     return {ctx, [value JSValueRef]};
   }
 };
