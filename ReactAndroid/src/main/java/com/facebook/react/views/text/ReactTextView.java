@@ -182,7 +182,7 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     if (mContainsImages) {
       TextInlineImageSpan[] spans = getTextInlineImageSpan();
       for (TextInlineImageSpan span : spans) {
-          span.onAttachedToWindow();
+        span.onAttachedToWindow();
       }
     }
   }
@@ -193,7 +193,7 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     if (mContainsImages) {
       TextInlineImageSpan[] spans = getTextInlineImageSpan();
       for (TextInlineImageSpan span : spans) {
-          span.onFinishTemporaryDetach();
+        span.onFinishTemporaryDetach();
       }
     }
   }
