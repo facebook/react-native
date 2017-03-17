@@ -14,14 +14,15 @@
 #import <React/RCTBridgeModule.h>
 #import <cxxreact/CxxModule.h>
 
+/**
+ * Subclass RCTCxxModule to use cross-platform CxxModule on iOS.
+ *
+ * Subclasses must implement the createModule method to lazily produce the module. When running under the Cxx bridge
+ * modules will be accessed directly, under the Objective-C bridge method access is wrapped through RCTCxxMethod.
+ */
 @interface RCTCxxModule : NSObject <RCTBridgeModule>
 
-- (instancetype)initWithCxxModule:(std::unique_ptr<facebook::xplat::module::CxxModule>)module;
-
-- (NSArray *)methodsToExport;
-- (NSDictionary *)constantsToExport;
-
-// Extracts the module from its objc wrapper
-- (std::unique_ptr<facebook::xplat::module::CxxModule>)move;
+// To be implemented by subclasses
+- (std::unique_ptr<facebook::xplat::module::CxxModule>)createModule;
 
 @end

@@ -505,7 +505,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       modules.emplace_back(std::make_unique<CxxNativeModule>(
         _reactInstance,
         [moduleData.name UTF8String],
-        [moduleData] { return [(RCTCxxModule *)(moduleData.instance) move]; },
+        [moduleData] { return [(RCTCxxModule *)(moduleData.instance) createModule]; },
         std::make_shared<DispatchMessageQueueThread>(moduleData)));
     } else {
       modules.emplace_back(std::make_unique<RCTNativeModule>(self, moduleData));
