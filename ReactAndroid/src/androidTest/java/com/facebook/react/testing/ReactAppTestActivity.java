@@ -28,6 +28,8 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.shell.MainReactPackage;
+import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
+import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
 import com.facebook.react.uimanager.UIImplementationProvider;
 
 public class ReactAppTestActivity extends FragmentActivity implements
