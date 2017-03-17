@@ -66,7 +66,9 @@ var invariant = require('fbjs/lib/invariant');
 
 if (__DEV__) {
   var ReactDebugCurrentFiber = require('ReactDebugCurrentFiber');
+  var {cancelWorkTimer} = require('ReactDebugFiberPerf');
   var warning = require('fbjs/lib/warning');
+
   var warnedAboutStatelessRefs = {};
 }
 
@@ -230,7 +232,9 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
 
     if (__DEV__) {
       ReactCurrentOwner.current = workInProgress;
+      ReactDebugCurrentFiber.phase = 'render';
       nextChildren = fn(nextProps, context);
+      ReactDebugCurrentFiber.phase = null;
     } else {
       nextChildren = fn(nextProps, context);
     }
@@ -279,7 +283,14 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
 
     // Rerender
     ReactCurrentOwner.current = workInProgress;
-    const nextChildren = instance.render();
+    let nextChildren;
+    if (__DEV__) {
+      ReactDebugCurrentFiber.phase = 'render';
+      nextChildren = instance.render();
+      ReactDebugCurrentFiber.phase = null;
+    } else {
+      nextChildren = instance.render();
+    }
     reconcileChildren(current, workInProgress, nextChildren);
     // Memoize props and state using the values we just used to render.
     // TODO: Restructure so we never read values from the instance.
@@ -348,7 +359,7 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
         );
       }
     } else if (nextProps === null || memoizedProps === nextProps) {
-      if (memoizedProps.hidden &&
+      if (false &&
           workInProgress.pendingWorkPriority !== OffscreenPriority) {
         // This subtree still has work, but it should be deprioritized so we need
         // to bail out and not do any work yet.
@@ -389,7 +400,7 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
 
     markRef(current, workInProgress);
 
-    if (nextProps.hidden &&
+    if (false &&
         workInProgress.pendingWorkPriority !== OffscreenPriority) {
       // If this host component is hidden, we can bail out on the children.
       // We'll rerender the children later at the lower priority.
@@ -641,6 +652,10 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
   */
 
   function bailoutOnAlreadyFinishedWork(current, workInProgress : Fiber) : Fiber | null {
+    if (__DEV__) {
+      cancelWorkTimer(workInProgress);
+    }
+    
     const priorityLevel = workInProgress.pendingWorkPriority;
     // TODO: We should ideally be able to bail out early if the children have no
     // more work to do. However, since we don't have a separation of this
@@ -668,6 +683,10 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
   }
 
   function bailoutOnLowPriority(current, workInProgress) {
+    if (__DEV__) {
+      cancelWorkTimer(workInProgress);
+    }
+
     // TODO: Handle HostComponent tags here as well and call pushHostContext()?
     // See PR 8590 discussion for context
     switch (workInProgress.tag) {

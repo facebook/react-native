@@ -11,7 +11,6 @@
  */
 'use strict';
 
-var ReactNative = require('ReactNative');
 var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var TextInputState = require('TextInputState');
 var UIManager = require('UIManager');
@@ -84,6 +83,7 @@ var NativeMethodsMixin = {
    * prop](docs/view.html#onlayout) instead.
    */
   measure: function(callback: MeasureOnSuccessCallback) {
+    var ReactNative = require('ReactNative');
     UIManager.measure(
       ReactNative.findNodeHandle(this),
       mountSafeCallback(this, callback)
@@ -106,6 +106,7 @@ var NativeMethodsMixin = {
    * has been completed in native.
    */
   measureInWindow: function(callback: MeasureInWindowOnSuccessCallback) {
+    var ReactNative = require('ReactNative');
     UIManager.measureInWindow(
       ReactNative.findNodeHandle(this),
       mountSafeCallback(this, callback)
@@ -125,6 +126,7 @@ var NativeMethodsMixin = {
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail: () => void /* currently unused */
   ) {
+    var ReactNative = require('ReactNative');
     UIManager.measureLayout(
       ReactNative.findNodeHandle(this),
       relativeToNativeNode,
@@ -149,6 +151,7 @@ var NativeMethodsMixin = {
       this.viewConfig.validAttributes
     );
 
+    var ReactNative = require('ReactNative');
     UIManager.updateView(
       (ReactNative.findNodeHandle(this) : any),
       this.viewConfig.uiViewClassName,
@@ -161,6 +164,7 @@ var NativeMethodsMixin = {
    * will depend on the platform and type of view.
    */
   focus: function() {
+    var ReactNative = require('ReactNative');
     TextInputState.focusTextInput(ReactNative.findNodeHandle(this));
   },
 
@@ -168,6 +172,7 @@ var NativeMethodsMixin = {
    * Removes focus from an input or view. This is the opposite of `focus()`.
    */
   blur: function() {
+    var ReactNative = require('ReactNative');
     TextInputState.blurTextInput(ReactNative.findNodeHandle(this));
   },
 };

@@ -11,6 +11,8 @@
  */
 'use strict';
 
+const invariant = require('invariant');
+
 type RelayProfiler = {
   attachProfileHandler(
     name: string,
@@ -30,47 +32,67 @@ const TRACE_TAG_JSC_CALLS = 1 << 27;
 let _enabled = false;
 let _asyncCookie = 0;
 
-const ReactSystraceDevtool = __DEV__ ? {
-  onBeforeMountComponent(debugID) {
-    const displayName = require('react/lib/ReactComponentTreeHook').getDisplayName(debugID);
-    Systrace.beginEvent(`ReactReconciler.mountComponent(${displayName})`);
+let _markStack = [];
+let _markStackIndex = -1;
+
+const userTimingPolyfill = {
+  mark(markName : string) {
+    if (__DEV__) {
+      if (_enabled) {
+        _markStackIndex++;
+        _markStack[_markStackIndex] = markName;
+        let label = markName;
+        if (markName[0] === '\u269B') {
+          // This is coming from React.
+          // Remove emoji and component IDs.
+          const indexOfId = markName.lastIndexOf(' (#');
+          const cutoffIndex = indexOfId !== -1 ? indexOfId : markName.length;
+          label = markName.slice(2, cutoffIndex);
+        }
+        Systrace.beginEvent(label);
+      }
+    }
   },
-  onMountComponent(debugID) {
-    Systrace.endEvent();
+  measure(label : string, markName : string) {
+    if (__DEV__) {
+      if (_enabled) {
+        invariant(markName === _markStack[_markStackIndex], 'Unexpected measure() call.');
+        // TODO: it would be nice to use `label` because it is more friendly.
+        // I don't know if there's a way to annotate measurements post factum.
+        _markStackIndex--;
+        Systrace.endEvent();
+      }
+    }
   },
-  onBeforeUpdateComponent(debugID) {
-    const displayName = require('react/lib/ReactComponentTreeHook').getDisplayName(debugID);
-    Systrace.beginEvent(`ReactReconciler.updateComponent(${displayName})`);
+  clearMarks(markName : string) {
+    if (__DEV__) {
+      if (_enabled) {
+        if (_markStackIndex > -1 && markName === _markStack[_markStackIndex]) {
+          _markStackIndex--;
+          // TODO: ideally this event shouldn't show up in the first place.
+          // I don't know if there's a way to cancel an ongoing measurement.
+          Systrace.endEvent();
+        }
+      }
+    }
   },
-  onUpdateComponent(debugID) {
-    Systrace.endEvent();
+  clearMeasures() {
+    // Noop.
   },
-  onBeforeUnmountComponent(debugID) {
-    const displayName = require('react/lib/ReactComponentTreeHook').getDisplayName(debugID);
-    Systrace.beginEvent(`ReactReconciler.unmountComponent(${displayName})`);
-  },
-  onUnmountComponent(debugID) {
-    Systrace.endEvent();
-  },
-  onBeginLifeCycleTimer(debugID, timerType) {
-    const displayName = require('react/lib/ReactComponentTreeHook').getDisplayName(debugID);
-    Systrace.beginEvent(`${displayName}.${timerType}()`);
-  },
-  onEndLifeCycleTimer(debugID, timerType) {
-    Systrace.endEvent();
-  },
-} : null;
+};
 
 const Systrace = {
+  getUserTimingPolyfill() {
+    return userTimingPolyfill;
+  },
+
   setEnabled(enabled: boolean) {
     if (_enabled !== enabled) {
       if (__DEV__) {
         if (enabled) {
           global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JSC_CALLS);
-          require('ReactDebugTool').addHook(ReactSystraceDevtool);
         } else {
           global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JSC_CALLS);
-          require('ReactDebugTool').removeHook(ReactSystraceDevtool);
         }
       }
       _enabled = enabled;
