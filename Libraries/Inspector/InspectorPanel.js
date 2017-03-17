@@ -24,6 +24,17 @@ const View = require('View');
 const PropTypes = React.PropTypes;
 
 class InspectorPanel extends React.Component {
+  state: {
+    devtoolsIsOpen: ?bool,
+  };
+
+  constructor(props: Object) {
+    super(props);
+    this.state = {
+      devtoolsIsOpen: null
+    };
+  }
+
   renderWaiting() {
     if (this.props.inspecting) {
       return (
@@ -33,6 +44,16 @@ class InspectorPanel extends React.Component {
       );
     }
     return <Text style={styles.waitingText}>Nothing is inspected</Text>;
+  }
+
+  devtoolsIsOpen(): ?bool {
+    return this.state.devtoolsIsOpen === null ?
+      this.props.devtoolsIsOpen :
+      this.state.devtoolsIsOpen;
+  }
+
+  toggleContents = () => {
+    this.setState({ devtoolsIsOpen: !this.devtoolsIsOpen() });
   }
 
   render() {
@@ -65,9 +86,10 @@ class InspectorPanel extends React.Component {
         </View>
       );
     }
+    var devtoolsIsOpen = this.devtoolsIsOpen();
     return (
       <View style={styles.container}>
-        {!this.props.devtoolsIsOpen && contents}
+        {!devtoolsIsOpen && contents}
         <View style={styles.buttonRow}>
           <Button
             title={'Inspect'}
@@ -85,6 +107,10 @@ class InspectorPanel extends React.Component {
           <Button title={'Touchables'}
             pressed={this.props.touchTargetting}
             onClick={this.props.setTouchTargetting}
+          />
+          <Button title={devtoolsIsOpen ? 'Show' : 'Hide'}
+            pressed={!devtoolsIsOpen}
+            onClick={this.toggleContents}
           />
         </View>
       </View>
