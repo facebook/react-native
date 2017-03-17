@@ -153,10 +153,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-  return CGSizeMake(
-    _sizeFlexibility & RCTRootViewSizeFlexibilityWidth ? MIN(_intrinsicContentSize.width, size.width) : size.width,
-    _sizeFlexibility & RCTRootViewSizeFlexibilityHeight ? MIN(_intrinsicContentSize.height, size.height) : size.height
-  );
+  CGSize fitSize = _intrinsicContentSize;
+  CGSize currentSize = self.bounds.size;
+
+  // Following the current `size` and current `sizeFlexibility` policy.
+  fitSize = CGSizeMake(
+      _sizeFlexibility & RCTRootViewSizeFlexibilityWidth ? fitSize.width : currentSize.width,
+      _sizeFlexibility & RCTRootViewSizeFlexibilityHeight ? fitSize.height : currentSize.height
+    );
+
+  // Following the given size constraints.
+  fitSize = CGSizeMake(
+      MIN(size.width, fitSize.width),
+      MIN(size.height, fitSize.height)
+    );
+
+  return fitSize;
 }
 
 - (void)layoutSubviews

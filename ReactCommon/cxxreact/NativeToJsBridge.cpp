@@ -47,8 +47,13 @@ public:
 
   void callNativeModules(
       JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) override {
+
+    CHECK(m_registry || calls.empty()) <<
+      "native module calls cannot be completed with no native modules";
     ExecutorToken token = m_nativeToJs->getTokenForExecutor(executor);
     m_nativeQueue->runOnQueue([this, token, calls=std::move(calls), isEndOfBatch] () mutable {
+      m_batchHadNativeModuleCalls = m_batchHadNativeModuleCalls || !calls.empty();
+
       // An exception anywhere in here stops processing of the batch.  This
       // was the behavior of the Android bridge, and since exception handling
       // terminates the whole bridge, there's not much point in continuing.
@@ -57,7 +62,10 @@ public:
           token, call.moduleId, call.methodId, std::move(call.arguments), call.callId);
       }
       if (isEndOfBatch) {
-        m_callback->onBatchComplete();
+        if (m_batchHadNativeModuleCalls) {
+          m_callback->onBatchComplete();
+          m_batchHadNativeModuleCalls = false;
+        }
         m_callback->decrementPendingJSCalls();
       }
     });
@@ -85,6 +93,7 @@ private:
   std::shared_ptr<ModuleRegistry> m_registry;
   std::unique_ptr<MessageQueueThread> m_nativeQueue;
   std::shared_ptr<InstanceCallback> m_callback;
+  bool m_batchHadNativeModuleCalls = false;
 };
 
 NativeToJsBridge::NativeToJsBridge(
@@ -95,9 +104,8 @@ NativeToJsBridge::NativeToJsBridge(
     std::shared_ptr<InstanceCallback> callback)
     : m_destroyed(std::make_shared<bool>(false))
     , m_mainExecutorToken(callback->createExecutorToken())
-    , m_delegate(
-      std::make_shared<JsToNativeBridge>(
-        this, registry, std::move(nativeQueue), callback)) {
+    , m_delegate(std::make_shared<JsToNativeBridge>(
+                   this, registry, std::move(nativeQueue), callback)) {
   std::unique_ptr<JSExecutor> mainExecutor =
     jsExecutorFactory->createJSExecutor(m_delegate, jsQueue);
   // cached to avoid locked map lookup in the common case

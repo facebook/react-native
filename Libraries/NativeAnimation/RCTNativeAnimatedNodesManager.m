@@ -11,23 +11,21 @@
 
 #import <React/RCTConvert.h>
 
+#import "RCTAdditionAnimatedNode.h"
 #import "RCTAnimatedNode.h"
 #import "RCTAnimationDriver.h"
-#import "RCTEventAnimation.h"
-
-#import "RCTAdditionAnimatedNode.h"
-#import "RCTInterpolationAnimatedNode.h"
 #import "RCTDiffClampAnimatedNode.h"
 #import "RCTDivisionAnimatedNode.h"
+#import "RCTEventAnimation.h"
+#import "RCTFrameAnimation.h"
+#import "RCTInterpolationAnimatedNode.h"
 #import "RCTModuloAnimatedNode.h"
 #import "RCTMultiplicationAnimatedNode.h"
-#import "RCTModuloAnimatedNode.h"
 #import "RCTPropsAnimatedNode.h"
+#import "RCTSpringAnimation.h"
 #import "RCTStyleAnimatedNode.h"
 #import "RCTTransformAnimatedNode.h"
 #import "RCTValueAnimatedNode.h"
-#import "RCTFrameAnimation.h"
-#import "RCTSpringAnimation.h"
 
 @implementation RCTNativeAnimatedNodesManager
 {
@@ -209,7 +207,7 @@
   RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)_animationNodes[nodeTag];
 
   NSString *type = config[@"type"];
-  id<RCTAnimationDriver>animationDriver;
+  id<RCTAnimationDriver> animationDriver;
 
   if ([type isEqual:@"frames"]) {
     animationDriver = [[RCTFrameAnimation alloc] initWithId:animationId
@@ -235,7 +233,7 @@
 
 - (void)stopAnimation:(nonnull NSNumber *)animationId
 {
-  for (id<RCTAnimationDriver>driver in _activeAnimations) {
+  for (id<RCTAnimationDriver> driver in _activeAnimations) {
     if ([driver.animationId isEqual:animationId]) {
       [driver removeAnimation];
       [_activeAnimations removeObject:driver];
@@ -363,13 +361,13 @@
 
 - (void)stepAnimations
 {
-  for (id<RCTAnimationDriver>animationDriver in _activeAnimations) {
+  for (id<RCTAnimationDriver> animationDriver in _activeAnimations) {
     [animationDriver stepAnimation];
   }
 
   [self updateAnimations];
 
-  for (id<RCTAnimationDriver>animationDriver in [_activeAnimations copy]) {
+  for (id<RCTAnimationDriver> animationDriver in [_activeAnimations copy]) {
     if (animationDriver.animationHasFinished) {
       [animationDriver removeAnimation];
       [_activeAnimations removeObject:animationDriver];

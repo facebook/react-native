@@ -148,7 +148,7 @@ public class MainReactPackage extends LazyReactPackage {
       new ModuleSpec(FrescoModule.class, new Provider<NativeModule>() {
         @Override
         public NativeModule get() {
-          return new FrescoModule(context, mConfig != null ? mConfig.getFrescoConfig() : null);
+          return new FrescoModule(context, true, mConfig != null ? mConfig.getFrescoConfig() : null);
         }
       }),
       new ModuleSpec(I18nManagerModule.class, new Provider<NativeModule>() {

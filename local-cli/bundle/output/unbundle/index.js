@@ -8,17 +8,20 @@
  *
  * @flow
  */
+
 'use strict';
+
+const Server = require('../../../../packager/src/Server');
 
 const asAssets = require('./as-assets');
 const asIndexedFile = require('./as-indexed-file');
 
 import type Bundle from '../../../../packager/src//Bundler/Bundle';
-import type Server from '../../../../packager/src//Server';
 import type {OutputOptions, RequestOptions} from '../../types.flow';
 
 function buildBundle(packagerClient: Server, requestOptions: RequestOptions) {
   return packagerClient.buildBundle({
+    ...Server.DEFAULT_BUNDLE_OPTIONS,
     ...requestOptions,
     unbundle: true,
     isolateModuleIDs: true,

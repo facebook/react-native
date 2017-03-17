@@ -4,8 +4,8 @@ title: Testing
 layout: docs
 category: Guides
 permalink: docs/testing.html
-next: running-on-device
-previous: debugging
+next: understanding-cli
+previous: gesture-responder-system
 ---
 
 This document is about running tests on React Native itself. If you're interested in testing a React Native app, check out the [React Native Tutorial](http://facebook.github.io/jest/docs/tutorial-react-native.html) on the Jest website.
@@ -97,7 +97,7 @@ See the following for example usage and integration points:
 You can run integration tests locally with cmd+U in the IntegrationTest and UIExplorer apps in Xcode, or by running the following in the command line on macOS:
 
     $ cd react-native
-    $ ./scripts/objc-test-ios.sh
+    $ ./scripts/objc-test-ios.sh test
 
 > Your Xcode install will come with a variety of Simulators running the latest OS. You may need to manually create a new Simulator to match what the `XCODE_DESTINATION` param in the test script.
 
