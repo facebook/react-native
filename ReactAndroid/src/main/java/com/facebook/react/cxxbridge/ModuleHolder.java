@@ -5,6 +5,7 @@ package com.facebook.react.cxxbridge;
 import javax.annotation.Nullable;
 import javax.inject.Provider;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -75,6 +76,7 @@ public class ModuleHolder {
     }
   }
 
+  @DoNotStrip
   public String getName() {
     return mName;
   }
@@ -87,6 +89,7 @@ public class ModuleHolder {
     return mSupportsWebWorkers;
   }
 
+  @DoNotStrip
   public synchronized NativeModule getModule() {
     if (mModule == null) {
       mModule = create();

@@ -51,7 +51,7 @@ type RequiredProps<ItemT> = {
    *     _renderItem = ({item}) => (
    *       <TouchableOpacity onPress={() => this._onPress(item)}>
    *         <Text>{item.title}}</Text>
-   *       <TouchableOpacity/>
+   *       </TouchableOpacity>
    *     );
    *     ...
    *     <FlatList data={[{title: 'Title Text', key: 'item1'}]} renderItem={this._renderItem} />
