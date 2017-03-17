@@ -28,6 +28,7 @@
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, strong) NSNumber *maxLength;
+@property (nonatomic, strong) NSNumber *numberOfLines;
 
 @property (nonatomic, copy) RCTDirectEventBlock onChange;
 @property (nonatomic, copy) RCTDirectEventBlock onContentSizeChange;
