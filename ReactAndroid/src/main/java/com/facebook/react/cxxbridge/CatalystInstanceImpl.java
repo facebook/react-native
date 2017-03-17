@@ -93,6 +93,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private final NativeModuleRegistry mJavaRegistry;
   private final NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
+  private final MessageQueueThread mNativeModulesQueueThread;
   private boolean mInitialized = false;
   private volatile boolean mAcceptCalls = false;
 
@@ -121,6 +122,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mJSModuleRegistry = jsModuleRegistry;
     mJSBundleLoader = jsBundleLoader;
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
+    mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
 
     FLog.w(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
@@ -128,7 +130,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       new BridgeCallback(this),
       jsExecutor,
       mReactQueueConfiguration.getJSQueueThread(),
-      mReactQueueConfiguration.getNativeModulesQueueThread(),
+      mNativeModulesQueueThread,
       mJavaRegistry.getJavaModules(this),
       mJavaRegistry.getCxxModules());
     FLog.w(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
@@ -292,19 +294,19 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     // TODO: tell all APIs to shut down
     mDestroyed = true;
-    mReactQueueConfiguration.getNativeModulesQueueThread().runOnQueue(new Runnable() {
+    mNativeModulesQueueThread.runOnQueue(new Runnable() {
       @Override
       public void run() {
         mJavaRegistry.notifyJSInstanceDestroy();
+        boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
+        if (!wasIdle && !mBridgeIdleListeners.isEmpty()) {
+          for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
+            listener.onTransitionToBridgeIdle();
+          }
+        }
         mHybridData.resetNative();
       }
     });
-    boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
-    if (!wasIdle && !mBridgeIdleListeners.isEmpty()) {
-      for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
-        listener.onTransitionToBridgeIdle();
-      }
-    }
 
     // This is a noop if the listener was not yet registered.
     Systrace.unregisterListener(mTraceListener);
@@ -332,7 +334,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
         mAcceptCalls,
         "RunJSBundle hasn't completed.");
     mInitialized = true;
-    mReactQueueConfiguration.getNativeModulesQueueThread().runOnQueue(new Runnable() {
+    mNativeModulesQueueThread.runOnQueue(new Runnable() {
       @Override
       public void run() {
         mJavaRegistry.notifyJSInstanceInitialized();
@@ -442,9 +444,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
         mJsPendingCallsTitleForTrace,
         oldPendingCalls + 1);
     if (wasIdle && !mBridgeIdleListeners.isEmpty()) {
-      for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
-        listener.onTransitionToBridgeBusy();
-      }
+      mNativeModulesQueueThread.runOnQueue(new Runnable() {
+        @Override
+        public void run() {
+          for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
+            listener.onTransitionToBridgeBusy();
+          }
+        }
+      });
     }
   }
 
@@ -459,9 +466,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
         newPendingCalls);
 
     if (isNowIdle && !mBridgeIdleListeners.isEmpty()) {
-      for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
-        listener.onTransitionToBridgeIdle();
-      }
+      mNativeModulesQueueThread.runOnQueue(new Runnable() {
+        @Override
+        public void run() {
+          for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
+            listener.onTransitionToBridgeIdle();
+          }
+        }
+      });
     }
   }
 
