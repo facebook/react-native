@@ -23,7 +23,7 @@ function cleanup {
 }
 trap cleanup EXIT
 
-# If first argument is "test", actually start the packager and run tests as in the iOS script
+# If first argument is "test", actually start the packager and run tests.
 # Otherwise, just build UIExplorer for tvOS and exit
 
 if [ "$1" = "test" ];
@@ -57,12 +57,11 @@ xcodebuild \
 
 else
 
-# Build only (no test) for tvOS, to make sure there are no missing files
+# Only build for tvOS (check there are no missing files in the Xcode project)
 xcodebuild \
   -project "Examples/UIExplorer/UIExplorer.xcodeproj" \
   -scheme "UIExplorer-tvOS" \
   -sdk "appletvsimulator" \
-  -destination "platform=tvOS Simulator,name=Apple TV 1080p,OS=10.1" \
   build
 
 fi 

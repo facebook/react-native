@@ -19,7 +19,6 @@ struct InstanceCallback {
   virtual void onBatchComplete() = 0;
   virtual void incrementPendingJSCalls() = 0;
   virtual void decrementPendingJSCalls() = 0;
-  virtual void onNativeException(const std::string& what) = 0;
   virtual ExecutorToken createExecutorToken() = 0;
   virtual void onExecutorStopped(ExecutorToken) = 0;
 };
@@ -31,7 +30,6 @@ class Instance {
     std::unique_ptr<InstanceCallback> callback,
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
-    std::unique_ptr<MessageQueueThread> nativeQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry);
 
   void setSourceURL(std::string sourceURL);
