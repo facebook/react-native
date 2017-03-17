@@ -101,70 +101,25 @@ namespace {
 // is not the JS thread.  C++ modules don't use RCTNativeModule, so this little
 // adapter does the work.
 
-class QueueNativeModule : public NativeModule {
+class DispatchMessageQueueThread : public MessageQueueThread {
 public:
-  QueueNativeModule(RCTCxxBridge *bridge,
-                    std::unique_ptr<NativeModule> module)
-    : bridge_(bridge)
-    , module_(std::move(module))
-    // Create new queue (store queueName, as it isn't retained by dispatch_queue)
-    , queueName_("com.facebook.react." + module_->getName() + "Queue")
-    , queue_(dispatch_queue_create(queueName_.c_str(), DISPATCH_QUEUE_SERIAL)) {}
+  DispatchMessageQueueThread(RCTModuleData *moduleData)
+    : moduleData_(moduleData) {}
 
-  std::string getName() override {
-    return module_->getName();
-  }
-
-  std::vector<MethodDescriptor> getMethods() override {
-    return module_->getMethods();
-  }
-
-  folly::dynamic getConstants() override {
-    return module_->getConstants();
-  }
-
-  bool supportsWebWorkers() override {
-    return module_->supportsWebWorkers();
-  }
-
-  void invoke(ExecutorToken token, unsigned int reactMethodId,
-              folly::dynamic &&params) override {
-    __weak RCTCxxBridge *bridge = bridge_;
-    auto module = module_;
-    auto cparams = std::make_shared<folly::dynamic>(std::move(params));
-    dispatch_async(queue_, ^{
-      if (!bridge || !bridge.valid) {
-        return;
-      }
-
-      module->invoke(token, reactMethodId, std::move(*cparams));
+  void runOnQueue(std::function<void()>&& func) override {
+    dispatch_async(moduleData_.methodQueue, [func=std::move(func)] {
+      func();
     });
   }
-
-  MethodCallResult callSerializableNativeHook(
-      ExecutorToken token, unsigned int reactMethodId,
-      folly::dynamic &&args) override {
-    return module_->callSerializableNativeHook(token, reactMethodId, std::move(args));
+  void runOnQueueSync(std::function<void()>&& func) override {
+    LOG(FATAL) << "Unsupported operation";
+  }
+  void quitSynchronous() override {
+    LOG(FATAL) << "Unsupported operation";
   }
 
 private:
-  RCTCxxBridge *bridge_;
-  std::shared_ptr<NativeModule> module_;
-  std::string queueName_;
-  dispatch_queue_t queue_;
-};
-
-
-// This is a temporary hack.  The cxx bridge assumes a single native
-// queue handles all native method calls, but that's false on ios.  So
-// this is a no-thread passthrough, and queues are handled in
-// RCTNativeModule.  A similar refactoring should be done on the Java
-// bridge.
-class InlineMessageQueueThread : public MessageQueueThread {
-public:
-  void runOnQueue(std::function<void()>&& func) override { func(); }
-  void runOnQueueSync(std::function<void()>&& func) override { func(); }
-  void quitSynchronous() override {}
+  RCTModuleData *moduleData_;
 };
 
 }
@@ -551,12 +506,13 @@ struct RCTInstanceCallback : public InstanceCallback {
       if (![moduleData hasInstance]) {
         continue;
       }
-      modules.emplace_back(
-        new QueueNativeModule(self, std::make_unique<CxxNativeModule>(
-                                  _reactInstance, [moduleData.name UTF8String],
-                                  [moduleData] { return [(RCTCxxModule *)(moduleData.instance) move]; })));
+      modules.emplace_back(std::make_unique<CxxNativeModule>(
+        _reactInstance,
+        [moduleData.name UTF8String],
+        [moduleData] { return [(RCTCxxModule *)(moduleData.instance) move]; },
+        std::make_shared<DispatchMessageQueueThread>(moduleData)));
     } else {
-      modules.emplace_back(new RCTNativeModule(self, moduleData));
+      modules.emplace_back(std::make_unique<RCTNativeModule>(self, moduleData));
     }
   }
 
@@ -586,7 +542,6 @@ struct RCTInstanceCallback : public InstanceCallback {
       std::unique_ptr<RCTInstanceCallback>(new RCTInstanceCallback(self)),
       executorFactory,
       _jsMessageThread,
-      std::unique_ptr<MessageQueueThread>(new InlineMessageQueueThread),
       std::move([self _createModuleRegistry]));
 
 #if RCT_PROFILE

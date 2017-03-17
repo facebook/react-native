@@ -32,14 +32,16 @@ xplat::module::CxxModule::Provider ModuleHolder::getProvider() const {
 std::unique_ptr<ModuleRegistry> buildModuleRegistry(
     std::weak_ptr<Instance> winstance,
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
-    jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules) {
+    jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules,
+    std::shared_ptr<MessageQueueThread> moduleMessageQueue) {
   std::vector<std::unique_ptr<NativeModule>> modules;
   for (const auto& jm : *javaModules) {
-    modules.emplace_back(folly::make_unique<JavaNativeModule>(winstance, jm));
+    modules.emplace_back(folly::make_unique<JavaNativeModule>(
+      winstance, jm, moduleMessageQueue));
   }
   for (const auto& cm : *cxxModules) {
-    modules.emplace_back(
-      folly::make_unique<CxxNativeModule>(winstance, cm->getName(), cm->getProvider()));
+    modules.emplace_back(folly::make_unique<CxxNativeModule>(
+      winstance, cm->getName(), cm->getProvider(), moduleMessageQueue));
   }
   if (modules.empty()) {
     return nullptr;
