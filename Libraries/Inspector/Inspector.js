@@ -49,6 +49,7 @@ class Inspector extends React.Component {
   };
 
   _subs: ?Array<() => void>;
+  _checkGlobalHook: number;
 
   constructor(props: Object) {
     super(props);
@@ -67,19 +68,21 @@ class Inspector extends React.Component {
   }
 
   componentDidMount() {
-    if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
-      (this : any).attachToDevtools = this.attachToDevtools.bind(this);
-      window.__REACT_DEVTOOLS_GLOBAL_HOOK__.on('react-devtools', this.attachToDevtools);
-      // if devtools is already started
-      if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) {
-        this.attachToDevtools(window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent);
-      }
+    if (!this.useGlobalHook()) {
+      this._checkGlobalHook = setInterval(() => {
+        if (this.useGlobalHook()) {
+          clearInterval(this._checkGlobalHook);
+        }
+      }, 500);
     }
   }
 
   componentWillUnmount() {
     if (this._subs) {
       this._subs.map(fn => fn());
+    }
+    if (this._checkGlobalHook) {
+      clearInterval(this._checkGlobalHook);
     }
     if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
       window.__REACT_DEVTOOLS_GLOBAL_HOOK__.off('react-devtools', this.attachToDevtools);
@@ -88,6 +91,19 @@ class Inspector extends React.Component {
 
   componentWillReceiveProps(newProps: Object) {
     this.setState({inspectedViewTag: newProps.inspectedViewTag});
+  }
+
+  useGlobalHook(): bool {
+    if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
+      return false;
+    }
+
+    window.__REACT_DEVTOOLS_GLOBAL_HOOK__.on('react-devtools', this.attachToDevtools);
+    // if devtools is already started
+    if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) {
+      this.attachToDevtools(window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent);
+    }
+    return true;
   }
 
   attachToDevtools = (agent: Object) => {
