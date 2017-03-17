@@ -1560,13 +1560,20 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
   RCTAssertMainQueue();
 
   // Don't use RCTScreenSize since it the interface orientation doesn't apply to it
-  CGRect screenSize = [[UIScreen mainScreen] bounds];
+  UIScreen *mainScreen = [UIScreen mainScreen];
+  CGRect screenSize = [mainScreen bounds];
+  UIUserInterfaceSizeClass horizontalSizeClass = [[mainScreen traitCollection] horizontalSizeClass];
+  UIUserInterfaceSizeClass verticalSizeClass = [[mainScreen traitCollection] verticalSizeClass];
+
   NSDictionary *dims = @{
     @"width": @(screenSize.size.width),
     @"height": @(screenSize.size.height),
     @"scale": @(RCTScreenScale()),
     @"fontScale": @(bridge.accessibilityManager.multiplier)
+    @"iosSizeClassHorizontal": @(horizontalSizeClass == UIUserInterfaceSizeClassCompact ? "compact" : "regular"),
+    @"iosSizeClassVertical": @(verticalSizeClass == UIUserInterfaceSizeClassCompact ? "compact" : "regular"),
   };
+
   return @{
     @"window": dims,
     @"screen": dims

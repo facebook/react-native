@@ -264,6 +264,10 @@ const APIExamples: Array<UIExplorerExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'DimensionsExample',
+    module: require('./DimensionsExample'),
+  },
+  {
     key: 'GeolocationExample',
     module: require('./GeolocationExample'),
     supportsTVOS: false,
