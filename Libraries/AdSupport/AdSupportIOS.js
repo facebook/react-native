@@ -11,6 +11,8 @@
  */
 'use strict';
 
+var AdSupport = require('NativeModules').AdSupport;
+
 /**
  * `AdSupport` provides access to the advertisingidentifier. It's not currently linked
  * because it triggers an automatic detection from Apple on submission to the App Store
@@ -24,8 +26,6 @@
  *
  *
  */
-
-var AdSupport = require('NativeModules').AdSupport;
 
 module.exports = {
   getAdvertisingId: function(onSuccess: Function, onFailure: Function) {
