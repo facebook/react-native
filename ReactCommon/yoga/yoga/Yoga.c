@@ -423,6 +423,7 @@ void YGNodeInsertChild(const YGNodeRef node, const YGNodeRef child, const uint32
 
 void YGNodeRemoveChild(const YGNodeRef node, const YGNodeRef child) {
   if (YGNodeListDelete(node->children, child) != NULL) {
+    child->layout = gYGNodeDefaults.layout; // layout is no longer valid
     child->parent = NULL;
     YGNodeMarkDirtyInternal(node);
   }
