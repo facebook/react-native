@@ -46,6 +46,8 @@ const nativeImageSource = require('nativeImageSource');
 
 import type { UIExplorerNavigationState } from './UIExplorerNavigationReducer';
 
+UIManager.setLayoutAnimationEnabledExperimental(true);
+
 const DRAWER_WIDTH_LEFT = 56;
 
 type Props = {

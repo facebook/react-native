@@ -295,7 +295,6 @@ const ScrollView = React.createClass({
      * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
      * top of the scroll view. This property is not supported in conjunction
      * with `horizontal={true}`.
-     * @platform ios
      */
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
     style: StyleSheetPropType(ViewStylePropTypes),
@@ -438,7 +437,7 @@ const ScrollView = React.createClass({
    * `scrollTo({x: 0; y: 0; animated: true})`
    *
    * Note: The weird function signature is due to the fact that, for historical reasons,
-   * the function also accepts separate arguments as as alternative to the options object.
+   * the function also accepts separate arguments as an alternative to the options object.
    * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    */
   scrollTo: function(
@@ -682,9 +681,10 @@ const ScrollView = React.createClass({
     if (refreshControl) {
       if (Platform.OS === 'ios') {
         // On iOS the RefreshControl is a child of the ScrollView.
+        // tvOS lacks native support for RefreshControl, so don't include it in that case
         return (
           <ScrollViewClass {...props} ref={this._setScrollViewRef}>
-            {refreshControl}
+            {Platform.isTVOS ? null : refreshControl}
             {contentContainer}
           </ScrollViewClass>
         );

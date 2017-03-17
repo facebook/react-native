@@ -1,8 +1,6 @@
 #!/bin/bash
 set -ex
 
-trap 'kill $(jobs -p)' INT TERM EXIT
-
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname "$SCRIPTS")
 
@@ -18,12 +16,21 @@ function cleanup {
     WATCHMAN_LOGS=/usr/local/Cellar/watchman/3.1/var/run/watchman/$USER.log
     [ -f "$WATCHMAN_LOGS" ] && cat "$WATCHMAN_LOGS"
   fi
+  # kill backgrounded jobs
+  # shellcheck disable=SC2046
+  kill $(jobs -p)
   # kill whatever is occupying port 8081 (packager)
   lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
   # kill whatever is occupying port 5555 (web socket server)
   lsof -i tcp:5555 | awk 'NR!=1 {print $2}' | xargs kill
 }
-trap cleanup EXIT
+trap cleanup INT TERM EXIT
+
+# If first argument is "test", actually start the packager and run tests.
+# Otherwise, just build UIExplorer for tvOS and exit
+
+if [ "$1" = "test" ];
+then
 
 # Start the packager
 (exec "./packager/launchPackager.command" || echo "Can't start packager automatically") &
@@ -59,6 +66,7 @@ rm temp.bundle
 curl 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o temp.bundle
 rm temp.bundle
 
+# Build and test for iOS
 # TODO: We use xcodebuild because xctool would stall when collecting info about
 # the tests before running them. Switch back when this issue with xctool has
 # been resolved.
@@ -69,3 +77,13 @@ xcodebuild \
   -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.1" \
   build test
 
+else
+
+# Only build for iOS (check there are no missing files in the Xcode project)
+xcodebuild \
+  -project "Examples/UIExplorer/UIExplorer.xcodeproj" \
+  -scheme "UIExplorer" \
+  -sdk "iphonesimulator" \
+  build
+
+fi

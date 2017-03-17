@@ -34,6 +34,7 @@
 
 const Batchinator = require('Batchinator');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const RefreshControl = require('RefreshControl');
 const ScrollView = require('ScrollView');
 const View = require('View');
@@ -58,9 +59,6 @@ type RequiredProps = {
   data?: any,
 };
 type OptionalProps = {
-  FooterComponent?: ?ReactClass<any>,
-  HeaderComponent?: ?ReactClass<any>,
-  SeparatorComponent?: ?ReactClass<any>,
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
    * implementation, but with a significant perf hit.
@@ -237,6 +235,14 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this._updateViewableItems(this.props.data);
   }
 
+  getScrollableNode() {
+    if (this._scrollRef && this._scrollRef.getScrollableNode) {
+      return this._scrollRef.getScrollableNode();
+    } else {
+      return ReactNative.findNodeHandle(this._scrollRef);
+    }
+  }
+
   static defaultProps = {
     disableVirtualization: false,
     getItem: (data: any, index: number) => data[index],
@@ -293,8 +299,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     super(props);
     invariant(
       !props.onScroll || !props.onScroll.__isNative,
-      'VirtualizedList does not support AnimatedEvent with onScroll and useNativeDriver',
+      'Components based on VirtualizedList must be wrapped with Animated.createAnimatedComponent ' +
+      'to support native onScroll events with useNativeDriver',
     );
+
     this._updateCellsToRenderBatcher = new Batchinator(
       this._updateCellsToRender,
       this.props.updateCellsBatchingPeriod,
@@ -324,7 +332,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   _pushCells(cells, first, last) {
-    const {SeparatorComponent, data, getItem, getItemCount, keyExtractor} = this.props;
+    const {ItemSeparatorComponent, data, getItem, getItemCount, keyExtractor} = this.props;
     const end = getItemCount(data) - 1;
     last = Math.min(end, last);
     for (let ii = first; ii <= last; ii++) {
@@ -342,19 +350,19 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           parentProps={this.props}
         />
       );
-      if (SeparatorComponent && ii < end) {
-        cells.push(<SeparatorComponent key={'sep' + ii}/>);
+      if (ItemSeparatorComponent && ii < end) {
+        cells.push(<ItemSeparatorComponent key={'sep' + ii}/>);
       }
     }
   }
   render() {
-    const {FooterComponent, HeaderComponent} = this.props;
+    const {ListFooterComponent, ListHeaderComponent} = this.props;
     const {data, disableVirtualization, horizontal} = this.props;
     const cells = [];
-    if (HeaderComponent) {
+    if (ListHeaderComponent) {
       cells.push(
         <View key="$header" onLayout={this._onLayoutHeader}>
-          <HeaderComponent />
+          <ListHeaderComponent />
         </View>
       );
     }
@@ -394,10 +402,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         );
       }
     }
-    if (FooterComponent) {
+    if (ListFooterComponent) {
       cells.push(
         <View key="$footer" onLayout={this._onLayoutFooter}>
-          <FooterComponent />
+          <ListFooterComponent />
         </View>
       );
     }

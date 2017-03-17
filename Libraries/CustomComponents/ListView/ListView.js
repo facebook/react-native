@@ -228,8 +228,9 @@ var ListView = React.createClass({
      * Makes the sections headers sticky. The sticky behavior means that it
      * will scroll with the content at the top of the section until it reaches
      * the top of the screen, at which point it will stick to the top until it
-     * is pushed off the screen by the next section header.
-     * @platform ios
+     * is pushed off the screen by the next section header. This property is
+     * not supported in conjunction with `horizontal={true}`. Only enabled by
+     * default on iOS because of typical platform standards.
      */
     stickySectionHeadersEnabled: React.PropTypes.bool,
     /**
@@ -238,7 +239,6 @@ var ListView = React.createClass({
      * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
      * top of the scroll view. This property is not supported in conjunction
      * with `horizontal={true}`.
-     * @platform ios
      */
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number).isRequired,
     /**

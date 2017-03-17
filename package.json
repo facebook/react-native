@@ -184,6 +184,7 @@
     "opn": "^3.0.2",
     "optimist": "^0.6.1",
     "plist": "^1.2.0",
+    "pretty-format": "^4.2.1",
     "promise": "^7.1.1",
     "react-clone-referenced-element": "^1.0.1",
     "react-devtools-core": "^2.0.8",

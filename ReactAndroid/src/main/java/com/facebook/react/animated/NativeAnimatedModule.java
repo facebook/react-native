@@ -353,11 +353,11 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
   }
 
   @ReactMethod
-  public void removeAnimatedEventFromView(final int viewTag, final String eventName) {
+  public void removeAnimatedEventFromView(final int viewTag, final String eventName, final int animatedValueTag) {
     mOperations.add(new UIThreadOperation() {
       @Override
       public void execute(NativeAnimatedNodesManager animatedNodesManager) {
-        animatedNodesManager.removeAnimatedEventFromView(viewTag, eventName);
+        animatedNodesManager.removeAnimatedEventFromView(viewTag, eventName, animatedValueTag);
       }
     });
   }
