@@ -1252,6 +1252,14 @@ var Navigator = React.createClass({
     return this.state.routeStack.slice();
   },
 
+  getCurrentRouteIndex: function() {
+    return this.state.presentedIndex;
+  },
+
+  getCurrentRoute: function() {
+    return {...this.state.routeStack[this.getCurrentRouteIndex()]};
+  },
+
   _cleanScenesPastIndex: function(index) {
     var newStackLength = index + 1;
     // Remove any unneeded rendered routes.
