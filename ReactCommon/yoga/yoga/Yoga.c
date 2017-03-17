@@ -459,6 +459,18 @@ void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode) {
   }
 }
 
+static int YGNodeRootGenerationCount(const YGNodeRef node) {
+  if (node->parent) {
+    return YGNodeRootGenerationCount(node->parent);
+  } else {
+    return node->layout.generationCount;
+  }
+}
+
+bool YGNodeIsUsingCachedLayout(const YGNodeRef node) {
+  return node->layout.generationCount != YGNodeRootGenerationCount(node);
+}
+
 static inline float YGResolveFlexGrow(const YGNodeRef node) {
   if (!YGFloatIsUndefined(node->style.flexGrow)) {
     return node->style.flexGrow;
@@ -1811,6 +1823,7 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
   node->layout.cachedLayout.widthMeasureMode = YGMeasureModeExactly;
   node->layout.cachedLayout.computedWidth = 0;
   node->layout.cachedLayout.computedHeight = 0;
+  node->layout.generationCount = gCurrentGenerationCount;
   const uint32_t childCount = YGNodeGetChildCount(node);
   for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeListGet(node->children, i);
