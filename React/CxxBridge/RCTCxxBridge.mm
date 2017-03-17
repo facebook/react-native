@@ -42,7 +42,6 @@
 
 #import "NSDataBigString.h"
 #import "RCTMessageThread.h"
-#import "RCTNativeModule.h"
 #import "RCTObjcExecutor.h"
 
 #ifdef WITH_FBSYSTRACE
@@ -94,35 +93,6 @@ static bool isRAMBundle(NSData *script) {
 }
 
 static std::atomic_bool cxxBridgeEnabled(false);
-
-namespace {
-
-// RCTNativeModule arranges for native methods to be invoked on a queue which
-// is not the JS thread.  C++ modules don't use RCTNativeModule, so this little
-// adapter does the work.
-
-class DispatchMessageQueueThread : public MessageQueueThread {
-public:
-  DispatchMessageQueueThread(RCTModuleData *moduleData)
-    : moduleData_(moduleData) {}
-
-  void runOnQueue(std::function<void()>&& func) override {
-    dispatch_async(moduleData_.methodQueue, [func=std::move(func)] {
-      func();
-    });
-  }
-  void runOnQueueSync(std::function<void()>&& func) override {
-    LOG(FATAL) << "Unsupported operation";
-  }
-  void quitSynchronous() override {
-    LOG(FATAL) << "Unsupported operation";
-  }
-
-private:
-  RCTModuleData *moduleData_;
-};
-
-}
 
 @interface RCTCxxBridge ()
 
@@ -484,35 +454,16 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
 }
 
-- (std::shared_ptr<ModuleRegistry>)_createModuleRegistry
+- (std::shared_ptr<ModuleRegistry>)_buildModuleRegistry
 {
   if (!self.valid) {
     return {};
   }
 
   [_performanceLogger markStartForTag:RCTPLNativeModulePrepareConfig];
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge createModuleRegistry]", nil);
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge buildModuleRegistry]", nil);
 
-  std::vector<std::unique_ptr<NativeModule>> modules;
-  for (RCTModuleData *moduleData in _moduleDataByID) {
-    if ([moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
-      // If a module does not support automatic instantiation, and
-      // wasn't provided as an extra module, it may not have an
-      // instance.  If so, skip it.
-      if (![moduleData hasInstance]) {
-        continue;
-      }
-      modules.emplace_back(std::make_unique<CxxNativeModule>(
-        _reactInstance,
-        [moduleData.name UTF8String],
-        [moduleData] { return [(RCTCxxModule *)(moduleData.instance) createModule]; },
-        std::make_shared<DispatchMessageQueueThread>(moduleData)));
-    } else {
-      modules.emplace_back(std::make_unique<RCTNativeModule>(self, moduleData));
-    }
-  }
-
-  auto registry = std::make_shared<ModuleRegistry>(std::move(modules));
+  auto registry = buildModuleRegistry(_moduleDataByID, self, _reactInstance);
 
   [_performanceLogger markStopForTag:RCTPLNativeModulePrepareConfig];
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -538,7 +489,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       std::unique_ptr<RCTInstanceCallback>(new RCTInstanceCallback(self)),
       executorFactory,
       _jsMessageThread,
-      std::move([self _createModuleRegistry]));
+      std::move([self _buildModuleRegistry]));
 
 #if RCT_PROFILE
     if (RCTProfileIsProfiling()) {
