@@ -132,7 +132,6 @@ private:
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge;
 - (void)partialBatchDidFlush;
 - (void)batchDidComplete;
-- (void)handleError:(NSError *)error;
 
 @end
 
@@ -146,9 +145,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
   void incrementPendingJSCalls() override {}
   void decrementPendingJSCalls() override {}
-  void onNativeException(const std::string &what) override {
-    [bridge_ handleError:RCTErrorWithMessage(@(what.c_str()))];
-  }
   ExecutorToken createExecutorToken() override {
     return ExecutorToken(std::make_shared<PlatformExecutorToken>());
   }

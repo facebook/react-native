@@ -168,14 +168,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
         impl.decrementPendingJSCalls();
       }
     }
-
-    @Override
-    public void onNativeException(Exception e) {
-      CatalystInstanceImpl impl = mOuter.get();
-      if (impl != null) {
-        impl.onNativeException(e);
-      }
-    }
   }
 
   private native void initializeBridge(

@@ -19,7 +19,6 @@ struct InstanceCallback {
   virtual void onBatchComplete() = 0;
   virtual void incrementPendingJSCalls() = 0;
   virtual void decrementPendingJSCalls() = 0;
-  virtual void onNativeException(const std::string& what) = 0;
   virtual ExecutorToken createExecutorToken() = 0;
   virtual void onExecutorStopped(ExecutorToken) = 0;
 };

@@ -133,7 +133,6 @@ void CxxNativeModule::invoke(ExecutorToken token, unsigned int reactMethodId, fo
     try {
       method.func(std::move(params), first, second);
     } catch (const facebook::xplat::JsArgumentException& ex) {
-      // This ends up passed to the onNativeException callback.
       throw;
     } catch (...) {
       // This means some C++ code is buggy.  As above, we fail hard so the C++

@@ -71,16 +71,6 @@ class JInstanceCallback : public InstanceCallback {
     method(jobj_);
   }
 
-  void onNativeException(const std::string& what) override {
-    static auto exCtor =
-      Exception::javaClassStatic()->getConstructor<Exception::javaobject(jstring)>();
-    static auto method =
-      ReactCallback::javaClassStatic()->getMethod<void(Exception::javaobject)>("onNativeException");
-
-    method(jobj_, Exception::javaClassStatic()->newObject(
-             exCtor, jni::make_jstring(what).get()).get());
-  }
-
   ExecutorToken createExecutorToken() override {
     auto jobj = JExecutorToken::newObjectCxxArgs();
     return jobj->cthis()->getExecutorToken(jobj);
