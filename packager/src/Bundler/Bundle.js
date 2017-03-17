@@ -44,10 +44,10 @@ class Bundle extends BundleBase {
   _ramGroups: Array<string> | void;
   _sourceMap: string | null;
   _sourceMapFormat: SourceMapFormat;
-  _sourceMapUrl: string | void;
+  _sourceMapUrl: ?string;
 
   constructor({sourceMapUrl, dev, minify, ramGroups}: {
-    sourceMapUrl?: string,
+    sourceMapUrl: ?string,
     dev?: boolean,
     minify?: boolean,
     ramGroups?: Array<string>,

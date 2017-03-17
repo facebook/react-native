@@ -2,6 +2,7 @@
 
 #include "Instance.h"
 
+#include "CxxMessageQueue.h"
 #include "Executor.h"
 #include "MethodCall.h"
 #include "RecoverableError.h"
@@ -35,6 +36,15 @@ void Instance::initializeBridge(
     std::unique_ptr<MessageQueueThread> nativeQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry) {
   callback_ = std::move(callback);
+
+  if (!nativeQueue) {
+    // TODO pass down a thread/queue from java, instead of creating our own.
+
+    auto queue = folly::make_unique<CxxMessageQueue>();
+    std::thread t(queue->getUnregisteredRunLoop());
+    t.detach();
+    nativeQueue = std::move(queue);
+  }
 
   jsQueue->runOnQueueSync(
     [this, &jsef, moduleRegistry, jsQueue,

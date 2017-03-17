@@ -307,17 +307,16 @@ class Module {
       this._transformCodeForCallback(cacheProps, callback);
       return;
     }
-    _globalCache.fetch(cacheProps, (globalCacheError, globalCachedResult) => {
-      if (globalCacheError) {
-        callback(globalCacheError);
-        return;
-      }
-      if (globalCachedResult == null) {
-        this._transformAndStoreCodeGlobally(cacheProps, _globalCache, callback);
-        return;
-      }
-      callback(undefined, globalCachedResult);
-    });
+    _globalCache.fetch(cacheProps).then(
+      globalCachedResult => process.nextTick(() => {
+        if (globalCachedResult == null) {
+          this._transformAndStoreCodeGlobally(cacheProps, _globalCache, callback);
+          return;
+        }
+        callback(undefined, globalCachedResult);
+      }),
+      globalCacheError => process.nextTick(() => callback(globalCacheError)),
+    );
   }
 
   _getAndCacheTransformedCode(

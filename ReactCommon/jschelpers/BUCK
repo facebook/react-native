@@ -54,7 +54,7 @@ if THIS_IS_FBANDROID:
 
 if THIS_IS_FBOBJC:
 
-  ios_library(
+  fb_apple_library(
     name = "jscinternalhelpers",
     inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
     compiler_flags = [
@@ -75,7 +75,7 @@ if THIS_IS_FBOBJC:
     ],
   )
 
-  ios_library(
+  fb_apple_library(
     name = "jschelpers",
     inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
     compiler_flags = [

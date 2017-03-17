@@ -20,13 +20,15 @@ If you're looking for a library that does a specific thing, check out [Awesome R
 
 ## Example Apps
 
-There are a lot of example apps at the [React Native Playground](https://rnplay.org/apps/picks). You can see the code running on a real device, which is a neat feature.
+There are some example apps in the [`Examples/` directory](https://github.com/facebook/react-native/tree/master/Examples) on GitHub. You can run the apps on a simulator or device, and you can see the source code for these apps, which is neat.
 
 The folks who built the app for Facebook's F8 conference in 2016 also [open-sourced the code](https://github.com/fbsamples/f8app) and wrote up a [detailed series of tutorials](http://makeitopen.com/tutorials/building-the-f8-app/planning/). This is useful if you want a more in-depth example that's more realistic than most sample apps out there.
 
 ## Development Tools
 
 [Nuclide](https://nuclide.io/) is the IDE that Facebook uses internally for React Native development. The killer feature of Nuclide is its debugging ability. It also has great inline Flow support.
+
+[Create React Native App](https://github.com/react-community/create-react-native-app) makes it significantly easier to get started with a React Native project. There's no need to use Xcode or Android Studio, and you can develop for your iOS device using Linux or Windows.
 
 [Ignite](https://github.com/infinitered/ignite) is a starter kit that uses Redux and a few different common UI libraries. It has a CLI to generate apps, components, and containers. If you like all of the individual tech choices, Ignite could be perfect for you.
 
