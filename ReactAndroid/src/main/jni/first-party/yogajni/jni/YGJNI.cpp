@@ -24,12 +24,6 @@ static void YGTransferLayoutDirection(YGNodeRef node, alias_ref<jobject> javaNod
 }
 
 static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
-  // If the node is using a cached layout it means we have already
-  // transfered it to java.
-  if (YGNodeIsUsingCachedLayout(root)) {
-    return;
-  }
-
   if (auto obj = YGNodeJobject(root)->lockLocal()) {
     static auto widthField = obj->getClass()->getField<jfloat>("mWidth");
     static auto heightField = obj->getClass()->getField<jfloat>("mHeight");
