@@ -90,12 +90,12 @@ var CameraRollView = React.createClass({
       batchSize: 5,
       imagesPerRow: 1,
       assetType: 'Photos',
-      renderImage: function(asset) {
+      renderImage: function(asset: Image) {
         var imageSize = 150;
         var imageStyle = [styles.image, {width: imageSize, height: imageSize}];
         return (
           <Image
-            key={asset}
+            key={asset.node.image.uri}
             source={asset.node.image}
             style={imageStyle}
           />
