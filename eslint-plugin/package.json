@@ -1,0 +1,17 @@
+{
+  "name": "eslint-plugin-custom",
+  "version": "1.0.0",
+  "license": "BSD-3-Clause",
+  "description": "Custom ESLint rules used in the React Native repo",
+  "main": "index.js",
+  "engines": {
+    "node": ">=6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/react-native.git"
+  },
+  "dependencies": {
+    "eslint-module-utils": "^2.0.0"
+  }
+}

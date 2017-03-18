@@ -11,7 +11,8 @@
   },
 
   "plugins": [
-    "react"
+    "react",
+    "custom"
   ],
 
   // Map from global var to bool specifying if it can be redefined
@@ -242,5 +243,8 @@
     "react/react-in-jsx-scope": 1,
     "react/self-closing-comp": 1,
     "react/wrap-multilines": 0,
+
+    // Custom rules, the plugin is located in the eslint-plugin folder.
+    "custom/fbjs-import": 1
   }
 }

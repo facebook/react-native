@@ -216,6 +216,7 @@
     "babel-eslint": "^7.1.1",
     "eslint": "^3.8.1",
     "eslint-plugin-babel": "^3.3.0",
+    "eslint-plugin-custom": "file:eslint-plugin",
     "eslint-plugin-flowtype": "^2.20.0",
     "eslint-plugin-react": "^6.4.1",
     "flow-bin": "^0.41.0",
