@@ -6,7 +6,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.testing;
+package com.facebook.react.testing.idledetection;
 
 /**
  * Interface for something that knows how to wait for bridge and UI idle.

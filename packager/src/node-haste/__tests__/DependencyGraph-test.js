@@ -5181,6 +5181,69 @@ describe('DependencyGraph', function() {
         expect(deps).toBeDefined();
       });
     });
+
+    it('should recover from multiple modules with the same name (but this is broken right now)', async () => {
+      const root = '/root';
+      console.warn = jest.fn();
+      const filesystem = setMockFileSystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require(\'a\')',
+            'require(\'b\')',
+          ].join('\n'),
+          'a.js': [
+            '/**',
+            ' * @providesModule a',
+            ' */',
+          ].join('\n'),
+          'b.js': [
+            '/**',
+            ' * @providesModule b',
+            ' */',
+          ].join('\n'),
+        },
+      });
+
+      const dgraph = DependencyGraph.load({...defaults, roots: [root]});
+      await getOrderedDependenciesAsJSON(dgraph, root + '/index.js');
+      filesystem.root['b.js'] = [
+        '/**',
+        ' * @providesModule a',
+        ' */',
+      ].join('\n');
+      await triggerAndProcessWatchEvent(dgraph, 'change', root + '/b.js');
+      try {
+        await getOrderedDependenciesAsJSON(dgraph, root + '/index.js');
+        throw new Error('expected `getOrderedDependenciesAsJSON` to fail');
+      } catch (error) {
+        if (error.type !== 'UnableToResolveError') {
+          throw error;
+        }
+        expect(console.warn).toBeCalled();
+        filesystem.root['b.js'] = [
+          '/**',
+          ' * @providesModule b',
+          ' */',
+        ].join('\n');
+        await triggerAndProcessWatchEvent(dgraph, 'change', root + '/b.js');
+      }
+
+      // This verifies that it is broken right now. Instead of throwing it should
+      // return correct results. Once this is fixed in `jest-haste`, remove
+      // the whole try catch and verify results are matching a snapshot.
+      try {
+        await getOrderedDependenciesAsJSON(dgraph, root + '/index.js');
+        throw new Error('expected `getOrderedDependenciesAsJSON` to fail');
+      } catch (error) {
+        if (error.type !== 'UnableToResolveError') {
+          throw error;
+        }
+      }
+    });
+
   });
 
   describe('Extensions', () => {

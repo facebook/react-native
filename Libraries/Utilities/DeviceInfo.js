@@ -6,13 +6,15 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactNative
+ * @providesModule DeviceInfo
  * @flow
  */
 'use strict';
 
-const ReactNativeFeatureFlags = require('ReactNativeFeatureFlags');
+const DeviceInfo = require('NativeModules').DeviceInfo;
 
-module.exports = ReactNativeFeatureFlags.useFiber
-  ? require('ReactNativeFiber')
-  : require('ReactNativeStack')
+const invariant = require('invariant');
+
+invariant(DeviceInfo, 'DeviceInfo native module is not installed correctly');
+
+module.exports = DeviceInfo;

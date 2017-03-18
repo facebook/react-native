@@ -1508,32 +1508,48 @@ class AnimatedStyle extends AnimatedWithChildren {
     this._style = style;
   }
 
-  __getValue(): Object {
-    var style = {};
-    for (var key in this._style) {
-      var value = this._style[key];
+  // Recursively get values for nested styles (like iOS's shadowOffset)
+  __walkStyleAndGetValues(style) {
+    const updatedStyle = {};
+    for (const key in style) {
+      const value = style[key];
       if (value instanceof Animated) {
         if (!value.__isNative) {
           // We cannot use value of natively driven nodes this way as the value we have access from
           // JS may not be up to date.
-          style[key] = value.__getValue();
+          updatedStyle[key] = value.__getValue();
         }
+      } else if (value && !Array.isArray(value) && typeof value === 'object') {
+        // Support animating nested values (for example: shadowOffset.height)
+        updatedStyle[key] = this.__walkStyleAndGetValues(value);
       } else {
-        style[key] = value;
+        updatedStyle[key] = value;
       }
     }
-    return style;
+    return updatedStyle;
+  }
+
+  __getValue(): Object {
+    return this.__walkStyleAndGetValues(this._style);
+  }
+
+  // Recursively get animated values for nested styles (like iOS's shadowOffset)
+  __walkStyleAndGetAnimatedValues(style) {
+    const updatedStyle = {};
+    for (const key in style) {
+      const value = style[key];
+      if (value instanceof Animated) {
+        updatedStyle[key] = value.__getAnimatedValue();
+      } else if (value && !Array.isArray(value) && typeof value === 'object') {
+        // Support animating nested values (for example: shadowOffset.height)
+        updatedStyle[key] = this.__walkStyleAndGetAnimatedValues(value);
+      }
+    }
+    return updatedStyle;
   }
 
   __getAnimatedValue(): Object {
-    var style = {};
-    for (var key in this._style) {
-      var value = this._style[key];
-      if (value instanceof Animated) {
-        style[key] = value.__getAnimatedValue();
-      }
-    }
-    return style;
+    return this.__walkStyleAndGetAnimatedValues(this._style);
   }
 
   __attach(): void {
@@ -1674,7 +1690,9 @@ class AnimatedProps extends Animated {
   }
 
   setNativeView(animatedView: any): void {
-    invariant(this._animatedView === undefined, 'Animated view already set.');
+    if (this._animatedView === animatedView) {
+      return;
+    }
     this._animatedView = animatedView;
     if (this.__isNative) {
       this.__connectAnimatedView();
@@ -1713,7 +1731,9 @@ class AnimatedProps extends Animated {
 function createAnimatedComponent(Component: any): any {
   class AnimatedComponent extends React.Component {
     _component: any;
+    _prevComponent: any;
     _propsAnimated: AnimatedProps;
+    _eventDetachers: Array<Function> = [];
     _setComponentRef: Function;
 
     constructor(props: Object) {
@@ -1723,7 +1743,7 @@ function createAnimatedComponent(Component: any): any {
 
     componentWillUnmount() {
       this._propsAnimated && this._propsAnimated.__detach();
-      this._detachNativeEvents(this.props);
+      this._detachNativeEvents();
     }
 
     setNativeProps(props) {
@@ -1736,42 +1756,28 @@ function createAnimatedComponent(Component: any): any {
 
     componentDidMount() {
       this._propsAnimated.setNativeView(this._component);
-
-      this._attachNativeEvents(this.props);
+      this._attachNativeEvents();
     }
 
-    _attachNativeEvents(newProps) {
-      if (newProps !== this.props) {
-        this._detachNativeEvents(this.props);
-      }
-
+    _attachNativeEvents() {
       // Make sure to get the scrollable node for components that implement
       // `ScrollResponder.Mixin`.
-      const ref = this._component.getScrollableNode ?
+      const scrollableNode = this._component.getScrollableNode ?
         this._component.getScrollableNode() :
         this._component;
 
-      for (const key in newProps) {
-        const prop = newProps[key];
+      for (const key in this.props) {
+        const prop = this.props[key];
         if (prop instanceof AnimatedEvent && prop.__isNative) {
-          prop.__attach(ref, key);
+           prop.__attach(scrollableNode, key);
+           this._eventDetachers.push(() => prop.__detach(scrollableNode, key));
         }
       }
     }
 
-    _detachNativeEvents(props) {
-      // Make sure to get the scrollable node for components that implement
-      // `ScrollResponder.Mixin`.
-      const ref = this._component.getScrollableNode ?
-        this._component.getScrollableNode() :
-        this._component;
-
-      for (const key in props) {
-        const prop = props[key];
-        if (prop instanceof AnimatedEvent && prop.__isNative) {
-          prop.__detach(ref, key);
-        }
-      }
+    _detachNativeEvents() {
+      this._eventDetachers.forEach(remove => remove());
+      this._eventDetachers = [];
     }
 
     _attachProps(nextProps) {
@@ -1804,10 +1810,6 @@ function createAnimatedComponent(Component: any): any {
         callback,
       );
 
-      if (this._component) {
-        this._propsAnimated.setNativeView(this._component);
-      }
-
       // When you call detach, it removes the element from the parent list
       // of children. If it goes to 0, then the parent also detaches itself
       // and so on.
@@ -1819,9 +1821,18 @@ function createAnimatedComponent(Component: any): any {
       oldPropsAnimated && oldPropsAnimated.__detach();
     }
 
-    componentWillReceiveProps(nextProps) {
-      this._attachProps(nextProps);
-      this._attachNativeEvents(nextProps);
+    componentWillReceiveProps(newProps) {
+      this._attachProps(newProps);
+    }
+
+    componentDidUpdate(prevProps) {
+      if (this._component !== this._prevComponent) {
+        this._propsAnimated.setNativeView(this._component);
+      }
+      if (this._component !== this._prevComponent || prevProps !== this.props) {
+        this._detachNativeEvents();
+        this._attachNativeEvents();
+      }
     }
 
     render() {
@@ -1834,6 +1845,7 @@ function createAnimatedComponent(Component: any): any {
     }
 
     _setComponentRef(c) {
+      this._prevComponent = this._component;
       this._component = c;
     }
 

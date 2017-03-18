@@ -26,6 +26,12 @@ function cleanup {
 }
 trap cleanup INT TERM EXIT
 
+# If first argument is "test", actually start the packager and run tests.
+# Otherwise, just build UIExplorer for tvOS and exit
+
+if [ "$1" = "test" ];
+then
+
 # Start the packager
 (exec "./packager/launchPackager.command" || echo "Can't start packager automatically") &
 (exec "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically") &
@@ -60,6 +66,7 @@ rm temp.bundle
 curl 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o temp.bundle
 rm temp.bundle
 
+# Build and test for iOS
 # TODO: We use xcodebuild because xctool would stall when collecting info about
 # the tests before running them. Switch back when this issue with xctool has
 # been resolved.
@@ -70,3 +77,13 @@ xcodebuild \
   -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.1" \
   build test
 
+else
+
+# Only build for iOS (check there are no missing files in the Xcode project)
+xcodebuild \
+  -project "Examples/UIExplorer/UIExplorer.xcodeproj" \
+  -scheme "UIExplorer" \
+  -sdk "iphonesimulator" \
+  build
+
+fi
