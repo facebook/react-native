@@ -42,6 +42,7 @@ const documentedCommands = [
   require('./library/library'),
   require('./bundle/bundle'),
   require('./bundle/unbundle'),
+  require('./eject/eject'),
   require('./link/link'),
   require('./link/unlink'),
   require('./install/install'),
