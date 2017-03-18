@@ -12,6 +12,7 @@
 'use strict';
 
 const readline = require('readline');
+const throttle = require('lodash/throttle');
 const tty = require('tty');
 const util = require('util');
 
@@ -38,6 +39,20 @@ function clearStringBackwards(stream: tty.WriteStream, str: string): void {
  */
 function chunkString(str: string, size: number): Array<string> {
   return str.match(new RegExp(`.{1,${size}}`, 'g')) || [];
+}
+
+/**
+ * Get the stream as a TTY if it effectively looks like a valid TTY.
+ */
+function getTTYStream(stream: net$Socket): ?tty.WriteStream {
+  if (
+    stream instanceof tty.WriteStream &&
+    stream.isTTY &&
+    stream.columns >= 1
+  ) {
+    return stream;
+  }
+  return null;
 }
 
 /**
@@ -70,28 +85,45 @@ function chunkString(str: string, size: number): Array<string> {
  */
 class Terminal {
 
+  _logLines: Array<string>;
+  _nextStatusStr: string;
+  _scheduleUpdate: () => void;
   _statusStr: string;
   _stream: net$Socket;
 
   constructor(stream: net$Socket) {
-    this._stream = stream;
+    this._logLines = [];
+    this._nextStatusStr = '';
+    this._scheduleUpdate = throttle(this._update, 0);
     this._statusStr = '';
+    this._stream = stream;
   }
 
   /**
-   * Same as status() without the formatting capabilities. We just clear and
-   * rewrite with the new status. If the stream is non-interactive we still
-   * keep track of the string so that `persistStatus` works.
+   * Clear and write the new status, logging in bulk in-between. Doing this in a
+   * throttled way (in a different tick than the calls to `log()` and
+   * `status()`) prevents us from repeatedly rewriting the status in case
+   * `terminal.log()` is called several times.
    */
-  _setStatus(str: string): string {
+  _update(): void {
     const {_statusStr, _stream} = this;
-    if (_statusStr !== str && _stream instanceof tty.WriteStream) {
-      clearStringBackwards(_stream, _statusStr);
-      str = chunkString(str, _stream.columns).join('\n');
-      _stream.write(str);
+    const ttyStream = getTTYStream(_stream);
+    if (_statusStr === this._nextStatusStr && this._logLines.length === 0) {
+      return;
     }
-    this._statusStr = str;
-    return _statusStr;
+    if (ttyStream != null) {
+      clearStringBackwards(ttyStream, _statusStr);
+    }
+    this._logLines.forEach(line => {
+      _stream.write(line);
+      _stream.write('\n');
+    });
+    this._logLines = [];
+    if (ttyStream != null) {
+      this._nextStatusStr = chunkString(this._nextStatusStr, ttyStream.columns).join('\n');
+      _stream.write(this._nextStatusStr);
+    }
+    this._statusStr = this._nextStatusStr;
   }
 
   /**
@@ -102,7 +134,10 @@ class Terminal {
    * file, then we don't care too much about having a progress bar.
    */
   status(format: string, ...args: Array<mixed>): string {
-    return this._setStatus(util.format(format, ...args));
+    const {_nextStatusStr} = this;
+    this._nextStatusStr = util.format(format, ...args);
+    this._scheduleUpdate();
+    return _nextStatusStr;
   }
 
   /**
@@ -111,9 +146,8 @@ class Terminal {
    * `console.log`.
    */
   log(format: string, ...args: Array<mixed>): void {
-    const oldStatus = this._setStatus('');
-    this._stream.write(util.format(format, ...args) + '\n');
-    this._setStatus(oldStatus);
+    this._logLines.push(util.format(format, ...args));
+    this._scheduleUpdate();
   }
 
   /**
@@ -121,7 +155,8 @@ class Terminal {
    * status was the last one of a series of updates.
    */
   persistStatus(): void {
-    return this.log(this.status(''));
+    this.log(this._nextStatusStr);
+    this._nextStatusStr = '';
   }
 
 }

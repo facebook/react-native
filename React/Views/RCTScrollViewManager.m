@@ -67,7 +67,6 @@ RCT_EXPORT_VIEW_PROPERTY(scrollsToTop, BOOL)
 #endif
 RCT_EXPORT_VIEW_PROPERTY(showsHorizontalScrollIndicator, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsVerticalScrollIndicator, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(stickyHeaderIndices, NSIndexSet)
 RCT_EXPORT_VIEW_PROPERTY(scrollEventThrottle, NSTimeInterval)
 RCT_EXPORT_VIEW_PROPERTY(zoomScale, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets)

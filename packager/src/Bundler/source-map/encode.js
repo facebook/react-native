@@ -8,13 +8,14 @@
  *
  * @flow
  */
+
 /**
  * Copyright 2011 Mozilla Foundation and contributors
  * Licensed under the New BSD license. See LICENSE or:
  * http://opensource.org/licenses/BSD-3-Clause
  *
  * Based on the Base 64 VLQ implementation in Closure Compiler:
- * https://code.google.com/p/closure-compiler/source/browse/trunk/src/com/google/debugging/sourcemap/Base64VLQ.java
+ * https://git.io/vymuA
  *
  * Copyright 2011 The Closure Compiler Authors. All rights reserved.
  * Redistribution and use in source and binary forms, with or without
@@ -107,7 +108,8 @@ function toVLQSigned(value) {
  * V8 OPTIMIZATION!
  */
 function encode(value: number, buffer: Buffer, position: number): number {
-  let digit, vlq = toVLQSigned(value);
+  let vlq = toVLQSigned(value);
+  let digit;
   do {
     digit = vlq & VLQ_BASE_MASK;
     vlq >>>= VLQ_BASE_SHIFT;

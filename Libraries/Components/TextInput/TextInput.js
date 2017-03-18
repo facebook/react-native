@@ -168,6 +168,7 @@ const DataDetectorTypes = [
  * or control this param programmatically with native code.
  *
  */
+// $FlowFixMe(>=0.41.0)
 const TextInput = React.createClass({
   statics: {
     /* TODO(brentvatne) docs are needed for this */
@@ -451,7 +452,7 @@ const TextInput = React.createClass({
      * Useful for simple use-cases where you do not want to deal with listening
      * to events and updating the value prop to keep the controlled state in sync.
      */
-    defaultValue: PropTypes.node,
+    defaultValue: PropTypes.string,
     /**
      * When the clear button should appear on the right side of the text view.
      * @platform ios

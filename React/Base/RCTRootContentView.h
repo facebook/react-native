@@ -22,6 +22,7 @@
 @property (nonatomic, readonly, strong) RCTTouchHandler *touchHandler;
 @property (nonatomic, assign) BOOL passThroughTouches;
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
+@property (nonatomic, readonly) CGSize availableSize;
 
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge

@@ -26,12 +26,12 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  FlatList,
   StyleSheet,
   Text,
   View,
 } = ReactNative;
 
-const FlatList = require('FlatList');
 const UIExplorerPage = require('./UIExplorerPage');
 
 const infoLog = require('infoLog');
@@ -97,9 +97,9 @@ class MultiColumnExample extends React.PureComponent {
         </View>
         <SeparatorComponent />
         <FlatList
-          FooterComponent={FooterComponent}
-          HeaderComponent={HeaderComponent}
-          SeparatorComponent={SeparatorComponent}
+          ItemSeparatorComponent={SeparatorComponent}
+          ListFooterComponent={FooterComponent}
+          ListHeaderComponent={HeaderComponent}
           getItemLayout={this.state.fixedHeight ? this._getItemLayout : undefined}
           data={filteredData}
           key={this.state.numColumns + (this.state.fixedHeight ? 'f' : 'v')}

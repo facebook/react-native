@@ -33,7 +33,12 @@ function extractDependencies(code: string) {
       const node = path.node;
       const callee = node.callee;
       const arg = node.arguments[0];
-      if (callee.type !== 'Identifier' || callee.name !== 'require' || !arg || arg.type !== 'StringLiteral') {
+      if (
+        callee.type !== 'Identifier' ||
+        callee.name !== 'require' ||
+        !arg ||
+        arg.type !== 'StringLiteral'
+      ) {
         return;
       }
       dependencyOffsets.push(arg.start);

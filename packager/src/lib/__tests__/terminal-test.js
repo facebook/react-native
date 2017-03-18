@@ -9,7 +9,7 @@
 
 'use strict';
 
-jest.dontMock('../terminal');
+jest.dontMock('../terminal').dontMock('lodash/throttle');
 
 jest.mock('readline', () => ({
   moveCursor: (stream, dx, dy) => {
@@ -64,8 +64,16 @@ describe('terminal', () => {
     terminal.log('foo %s', 'smth');
     terminal.status('status');
     terminal.log('bar');
-    expect(stream.buffer.join('').trim())
-      .toEqual('foo smth  bar');
+    jest.runAllTimers();
+    expect(stream.buffer.join('').trim()).toEqual('foo smth  bar');
+  });
+
+  it('print status', () => {
+    const {stream, terminal} = prepare(true);
+    terminal.log('foo');
+    terminal.status('status');
+    jest.runAllTimers();
+    expect(stream.buffer.join('').trim()).toEqual('foo       status');
   });
 
   it('updates status when logging, single line', () => {
@@ -74,8 +82,11 @@ describe('terminal', () => {
     terminal.status('status');
     terminal.status('status2');
     terminal.log('bar');
-    expect(stream.buffer.join('').trim())
-      .toEqual('foo       bar       status2');
+    jest.runAllTimers();
+    expect(stream.buffer.join('').trim()).toEqual('foo       bar       status2');
+    terminal.log('beep');
+    jest.runAllTimers();
+    expect(stream.buffer.join('').trim()).toEqual('foo       bar       beep      status2');
   });
 
   it('updates status when logging, multi-line', () => {
@@ -83,6 +94,7 @@ describe('terminal', () => {
     terminal.log('foo');
     terminal.status('status\nanother');
     terminal.log('bar');
+    jest.runAllTimers();
     expect(stream.buffer.join('').trim())
       .toEqual('foo       bar       status    another');
   });
@@ -93,8 +105,8 @@ describe('terminal', () => {
     terminal.status('status');
     terminal.persistStatus();
     terminal.log('bar');
-    expect(stream.buffer.join('').trim())
-      .toEqual('foo       status    bar');
+    jest.runAllTimers();
+    expect(stream.buffer.join('').trim()).toEqual('foo       status    bar');
   });
 
 });

@@ -52,9 +52,9 @@ prebuilt_cxx_library(
     name = "rt",
     exported_platform_linker_flags = [
         (
-            "android",
+            "android",  # Empty, since `-lc` is implicit
             [],
-        ),  # Empty, since `-lc` is implicit
+        ),
         (
             "default",
             ["-lrt"],
