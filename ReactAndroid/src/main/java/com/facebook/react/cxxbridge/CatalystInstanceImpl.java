@@ -292,11 +292,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     // TODO: tell all APIs to shut down
     mDestroyed = true;
-    mHybridData.resetNative();
     mReactQueueConfiguration.getNativeModulesQueueThread().runOnQueue(new Runnable() {
       @Override
       public void run() {
         mJavaRegistry.notifyJSInstanceDestroy();
+        mHybridData.resetNative();
       }
     });
     boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
