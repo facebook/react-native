@@ -20,6 +20,7 @@
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/CxxNativeModule.h>
 
+#include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
 #include "JNativeRunnable.h"
@@ -40,13 +41,17 @@ class Exception : public jni::JavaClass<Exception> {
 
 class JInstanceCallback : public InstanceCallback {
  public:
-  explicit JInstanceCallback(alias_ref<ReactCallback::javaobject> jobj)
-    : jobj_(make_global(jobj)) {}
+  explicit JInstanceCallback(
+    alias_ref<ReactCallback::javaobject> jobj,
+    std::shared_ptr<JMessageQueueThread> messageQueueThread)
+  : jobj_(make_global(jobj)), messageQueueThread_(std::move(messageQueueThread)) {}
 
   void onBatchComplete() override {
-    static auto method =
-      ReactCallback::javaClassStatic()->getMethod<void()>("onBatchComplete");
-    method(jobj_);
+    messageQueueThread_->runOnQueue([this] {
+      static auto method =
+        ReactCallback::javaClassStatic()->getMethod<void()>("onBatchComplete");
+      method(jobj_);
+    });
   }
 
   void incrementPendingJSCalls() override {
@@ -60,19 +65,10 @@ class JInstanceCallback : public InstanceCallback {
   }
 
   void decrementPendingJSCalls() override {
+    jni::ThreadScope guard;
     static auto method =
       ReactCallback::javaClassStatic()->getMethod<void()>("decrementPendingJSCalls");
     method(jobj_);
-  }
-
-  void onNativeException(const std::string& what) override {
-    static auto exCtor =
-      Exception::javaClassStatic()->getConstructor<Exception::javaobject(jstring)>();
-    static auto method =
-      ReactCallback::javaClassStatic()->getMethod<void(Exception::javaobject)>("onNativeException");
-
-    method(jobj_, Exception::javaClassStatic()->newObject(
-             exCtor, jni::make_jstring(what).get()).get());
   }
 
   ExecutorToken createExecutorToken() override {
@@ -80,12 +76,11 @@ class JInstanceCallback : public InstanceCallback {
     return jobj->cthis()->getExecutorToken(jobj);
   }
 
-  void onExecutorStopped(ExecutorToken) override {
-    // TODO(cjhopman): implement this.
-  }
+  void onExecutorStopped(ExecutorToken) override {}
 
  private:
   global_ref<ReactCallback::javaobject> jobj_;
+  std::shared_ptr<JMessageQueueThread> messageQueueThread_;
 };
 
 }
@@ -96,7 +91,12 @@ jni::local_ref<CatalystInstanceImpl::jhybriddata> CatalystInstanceImpl::initHybr
 }
 
 CatalystInstanceImpl::CatalystInstanceImpl()
-    : instance_(folly::make_unique<Instance>()) {}
+  : instance_(folly::make_unique<Instance>()) {}
+
+CatalystInstanceImpl::~CatalystInstanceImpl() {
+  // TODO: 16669252: this prevents onCatalystInstanceDestroy from being called
+  moduleMessageQueue_->quitSynchronous();
+}
 
 void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
@@ -126,22 +126,12 @@ void CatalystInstanceImpl::initializeBridge(
     // This executor is actually a factory holder.
     JavaScriptExecutorHolder* jseh,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
-    jni::alias_ref<JavaMessageQueueThread::javaobject> moduleQueue,
+    jni::alias_ref<JavaMessageQueueThread::javaobject> nativeModulesQueue,
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
-    jni::alias_ref<jni::JCollection<CxxModuleWrapper::javaobject>::javaobject> cxxModules) {
+    jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules) {
   // TODO mhorowitz: how to assert here?
   // Assertions.assertCondition(mBridge == null, "initializeBridge should be called once");
-
-  std::vector<std::unique_ptr<NativeModule>> modules;
-  std::weak_ptr<Instance> winstance(instance_);
-  for (const auto& jm : *javaModules) {
-    modules.emplace_back(folly::make_unique<JavaNativeModule>(winstance, jm));
-  }
-  for (const auto& cm : *cxxModules) {
-    modules.emplace_back(
-      folly::make_unique<CxxNativeModule>(winstance, std::move(cthis(cm)->getModule())));
-  }
-  auto moduleRegistry = std::make_shared<ModuleRegistry>(std::move(modules));
+  moduleMessageQueue_ = std::make_shared<JMessageQueueThread>(nativeModulesQueue);
 
   // This used to be:
   //
@@ -159,11 +149,12 @@ void CatalystInstanceImpl::initializeBridge(
   // don't need jsModuleDescriptions any more, all the way up and down the
   // stack.
 
-  instance_->initializeBridge(folly::make_unique<JInstanceCallback>(callback),
-                              jseh->getExecutorFactory(),
-                              folly::make_unique<JMessageQueueThread>(jsQueue),
-                              folly::make_unique<JMessageQueueThread>(moduleQueue),
-                              moduleRegistry);
+  instance_->initializeBridge(
+    folly::make_unique<JInstanceCallback>(callback, moduleMessageQueue_),
+    jseh->getExecutorFactory(),
+    folly::make_unique<JMessageQueueThread>(jsQueue),
+    buildModuleRegistry(
+      std::weak_ptr<Instance>(instance_), javaModules, cxxModules, moduleMessageQueue_));
 }
 
 void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {

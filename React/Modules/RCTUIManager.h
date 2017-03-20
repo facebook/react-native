@@ -87,7 +87,8 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 
 /**
  * Set the natural size of a view, which is used when no explicit size is set.
- * Use UIViewNoIntrinsicMetric to ignore a dimension.
+ * Use `UIViewNoIntrinsicMetric` to ignore a dimension.
+ * The `size` must NOT include padding and border.
  */
 - (void)setIntrinsicContentSize:(CGSize)size forView:(UIView *)view;
 

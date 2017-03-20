@@ -10,6 +10,7 @@
 #include "JMessageQueueThread.h"
 #include "JSLoader.h"
 #include "JavaModuleWrapper.h"
+#include "ModuleRegistryBuilder.h"
 
 namespace facebook {
 namespace react {
@@ -27,6 +28,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/cxxbridge/CatalystInstanceImpl;";
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
+  ~CatalystInstanceImpl() override;
 
   static void registerNatives();
 
@@ -48,7 +50,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
       jni::alias_ref<JavaMessageQueueThread::javaobject> moduleQueue,
       jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
-      jni::alias_ref<jni::JCollection<CxxModuleWrapper::javaobject>::javaobject> cxxModules);
+      jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules);
 
   /**
    * Sets the source URL of the underlying bridge without loading any JS code.
@@ -73,6 +75,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   // This should be the only long-lived strong reference, but every C++ class
   // will have a weak reference.
   std::shared_ptr<Instance> instance_;
+  std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
 };
 
 }}

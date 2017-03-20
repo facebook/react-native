@@ -16,7 +16,6 @@ const Logger = require('../Logger');
 const debug = require('debug')('RNP:JStransformer');
 const denodeify = require('denodeify');
 const invariant = require('fbjs/lib/invariant');
-const os = require('os');
 const path = require('path');
 const util = require('util');
 const workerFarm = require('worker-farm');
@@ -35,24 +34,7 @@ const TRANSFORM_TIMEOUT_INTERVAL = 301000;
 // How may times can we tolerate failures from the worker.
 const MAX_RETRIES = 2;
 
-const maxConcurrentWorkers = ((cores, override) => {
-  if (override) {
-    return Math.min(cores, override);
-  }
-
-  if (cores < 3) {
-    return cores;
-  }
-  if (cores < 8) {
-    return Math.floor(cores * 0.75);
-  }
-  if (cores < 24) {
-    return Math.floor(3 / 8 * cores + 3); // between cores *.75 and cores / 2
-  }
-  return cores / 2;
-})(os.cpus().length, parseInt(process.env.REACT_NATIVE_MAX_WORKERS, 10));
-
-function makeFarm(worker, methods, timeout) {
+function makeFarm(worker, methods, timeout, maxConcurrentWorkers) {
   return workerFarm(
     {
       autoStart: true,
@@ -83,7 +65,7 @@ class Transformer {
     sourceMap: SourceMap,
   ) => Promise<{code: string, map: SourceMap}>;
 
-  constructor(transformModulePath: string) {
+  constructor(transformModulePath: string, maxWorkerCount: number) {
     invariant(path.isAbsolute(transformModulePath), 'transform module path should be absolute');
     this._transformModulePath = transformModulePath;
 
@@ -91,6 +73,7 @@ class Transformer {
       require.resolve('./worker'),
       ['minify', 'transformAndExtractDependencies'],
       TRANSFORM_TIMEOUT_INTERVAL,
+      maxWorkerCount,
     );
     this._transform = denodeify(this._workers.transformAndExtractDependencies);
     this.minify = denodeify(this._workers.minify);

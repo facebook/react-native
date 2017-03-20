@@ -18,6 +18,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -98,6 +99,7 @@ public class FlatUIImplementation extends UIImplementation {
       // initialization is undefined, and this is pretty much the earliest when we are guarantied
       // that Fresco is initalized and DraweeControllerBuilder can be queried. This also happens
       // relatively rarely to have any performance considerations.
+      mReactContext.getNativeModule(FrescoModule.class); // initialize Fresco
       DraweeRequestHelper.setDraweeControllerBuilder(
         mRCTImageViewManager.getDraweeControllerBuilder());
       mRCTImageViewManager = null;
