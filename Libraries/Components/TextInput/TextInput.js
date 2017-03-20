@@ -540,13 +540,6 @@ const TextInput = React.createClass({
    */
   mixins: [NativeMethodsMixin, TimerMixin],
 
-  viewConfig:
-    ((Platform.OS === 'ios' && RCTTextField ?
-      RCTTextField.viewConfig :
-      (Platform.OS === 'android' && AndroidTextInput ?
-        AndroidTextInput.viewConfig :
-        {})) : Object),
-
   /**
    * Returns `true` if the input is currently focused; `false` otherwise.
    */
