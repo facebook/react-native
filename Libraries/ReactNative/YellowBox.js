@@ -394,16 +394,22 @@ const textColor = 'white';
 const rowGutter = 1;
 const rowHeight = 46;
 
+// For unknown reasons, setting elevation: Number.MAX_VALUE causes remote debugging to
+// hang on iOS (some sort of overflow maybe). Setting it to Number.MAX_SAFE_INTEGER fixes the iOS issue, but since
+// elevation is an android-only style property we might as well remove it altogether for iOS.
+// See: https://github.com/facebook/react-native/issues/12223
+const elevation = Platform.OS === 'android' ? Number.MAX_SAFE_INTEGER : undefined;
+
 var styles = StyleSheet.create({
   fullScreen: {
     height: '100%',
-    elevation: Number.MAX_VALUE
+    elevation: elevation
   },
   inspector: {
     backgroundColor: backgroundColor(0.95),
     height: '100%',
     paddingTop: 5,
-    elevation: Number.MAX_VALUE
+    elevation:elevation
   },
   inspectorButtons: {
     flexDirection: 'row',
@@ -451,7 +457,7 @@ var styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    elevation: Number.MAX_VALUE
+    elevation: elevation
   },
   listRow: {
     backgroundColor: backgroundColor(0.95),

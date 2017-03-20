@@ -76,6 +76,8 @@ public class NativeViewHierarchyManager {
   private final RootViewManager mRootViewManager;
   private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
 
+  private boolean mLayoutAnimationEnabled;
+
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
     this(viewManagers, new RootViewManager());
   }
@@ -108,6 +110,10 @@ public class NativeViewHierarchyManager {
 
   public AnimationRegistry getAnimationRegistry() {
     return mAnimationRegistry;
+  }
+
+  public void setLayoutAnimationEnabled(boolean enabled) {
+    mLayoutAnimationEnabled = enabled;
   }
 
   public void updateProperties(int tag, ReactStylesDiffMap props) {
@@ -186,7 +192,8 @@ public class NativeViewHierarchyManager {
   }
 
   private void updateLayout(View viewToUpdate, int x, int y, int width, int height) {
-    if (mLayoutAnimator.shouldAnimateLayout(viewToUpdate)) {
+    if (mLayoutAnimationEnabled &&
+        mLayoutAnimator.shouldAnimateLayout(viewToUpdate)) {
       mLayoutAnimator.applyLayoutUpdate(viewToUpdate, x, y, width, height);
     } else {
       viewToUpdate.layout(x, y, x + width, y + height);
@@ -356,7 +363,8 @@ public class NativeViewHierarchyManager {
 
         View viewToRemove = viewManager.getChildAt(viewToManage, indexToRemove);
 
-        if (mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
+        if (mLayoutAnimationEnabled &&
+            mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
             arrayContains(tagsToDelete, viewToRemove.getId())) {
           // The view will be removed and dropped by the 'delete' layout animation
           // instead, so do nothing
@@ -403,7 +411,8 @@ public class NativeViewHierarchyManager {
                       tagsToDelete));
         }
 
-        if (mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
+        if (mLayoutAnimationEnabled &&
+            mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
           mLayoutAnimator.deleteView(viewToDestroy, new LayoutAnimationListener() {
             @Override
             public void onAnimationEnd() {

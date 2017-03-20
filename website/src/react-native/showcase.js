@@ -113,11 +113,15 @@ const showcase = React.createClass({
             </div>
 
             <div className="inner-content">
-              <p>Some of these are hybrid native/React Native apps. If you built a popular application using React Native, we'd love to have your app on this showcase. Check out the <a href="https://github.com/facebook/react-native/blob/master/website/src/react-native/showcase.js">guidelines on GitHub</a> to update this page.</p>
+              <p>
+                Some of these are hybrid native/React Native apps.
+              </p>
             </div>
 
             <div className="inner-content">
-              <p>Also, <a href="https://github.com/ReactNativeNews/React-Native-Apps">a curated list of open source React Native apps</a> is being kept by React Native News.</p>
+              <p>
+                A curated list of <a href="https://github.com/ReactNativeNews/React-Native-Apps">open source React Native apps</a> is also being kept by React Native News.
+              </p>
             </div>
 
           </div>
