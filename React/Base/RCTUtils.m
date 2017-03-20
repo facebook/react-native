@@ -637,7 +637,7 @@ UIImage *RCTImageFromLocalAssetURL(NSURL *imageURL)
 
   NSString *imageName = RCTBundlePathForURL(imageURL);
 
-  NSBundle *bundle;
+  NSBundle *bundle = nil;
   NSArray *imagePathComponents = [imageName pathComponents];
   if ([imagePathComponents count] > 1 &&
       [[[imagePathComponents firstObject] pathExtension] isEqualToString:@"bundle"]) {
@@ -646,11 +646,30 @@ UIImage *RCTImageFromLocalAssetURL(NSURL *imageURL)
     imageName = [imageName substringFromIndex:(bundlePath.length + 1)];
   }
 
+  UIImage *image = nil;
   if (bundle) {
-    return [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
+    image = [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
   } else {
-    return [UIImage imageNamed:imageName];
+    image = [UIImage imageNamed:imageName];
   }
+
+  if (!image && !bundle) {
+    // We did not find the image in the mainBundle, check in other shipped frameworks.
+    NSArray<NSURL *> *possibleFrameworks = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:[[NSBundle mainBundle] privateFrameworksURL]
+                                                                        includingPropertiesForKeys:@[]
+                                                                                           options:nil
+                                                                                             error:nil];
+    for (NSURL *frameworkURL in possibleFrameworks) {
+      bundle = [NSBundle bundleWithURL:frameworkURL];
+      image = [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
+      if (image) {
+        RCTLogWarn(@"Image %@ not found in mainBundle, but found in %@", imageName, bundle);
+        break;
+      }
+    }
+  }
+
+  return image;
 }
 
 RCT_EXTERN NSString *__nullable RCTTempFilePath(NSString *extension, NSError **error)
