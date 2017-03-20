@@ -18,64 +18,14 @@
 #import "RCTShadowText.h"
 #import "RCTText.h"
 #import "RCTTextSelection.h"
-
-@interface RCTUITextView : UITextView
-
-@property (nonatomic, assign) BOOL textWasPasted;
-
-@end
-
-@implementation RCTUITextView
-{
-  BOOL _jsRequestingFirstResponder;
-}
-
-- (void)paste:(id)sender
-{
-  _textWasPasted = YES;
-  [super paste:sender];
-}
-
-- (void)reactWillMakeFirstResponder
-{
-  _jsRequestingFirstResponder = YES;
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-  return _jsRequestingFirstResponder;
-}
-
-- (void)reactDidMakeFirstResponder
-{
-  _jsRequestingFirstResponder = NO;
-}
-
-- (void)didMoveToWindow
-{
-  if (_jsRequestingFirstResponder) {
-    [self becomeFirstResponder];
-    [self reactDidMakeFirstResponder];
-  }
-}
-
-- (void)setContentOffset:(CGPoint)contentOffset animated:(__unused BOOL)animated
-{
-  // Turning off scroll animation.
-  // This fixes the problem also known as "flaky scrolling".
-  [super setContentOffset:contentOffset animated:NO];
-}
-
-@end
+#import "RCTUITextView.h"
 
 @implementation RCTTextView
 {
   RCTBridge *_bridge;
   RCTEventDispatcher *_eventDispatcher;
 
-  NSString *_placeholder;
-  UITextView *_placeholderView;
-  UITextView *_textView;
+  RCTUITextView *_textView;
   RCTText *_richTextView;
   NSAttributedString *_pendingAttributedText;
 
@@ -99,7 +49,6 @@
     _contentInset = UIEdgeInsetsZero;
     _bridge = bridge;
     _eventDispatcher = bridge.eventDispatcher;
-    _placeholderTextColor = [self defaultPlaceholderTextColor];
     _blurOnSubmit = NO;
 
     _textView = [[RCTUITextView alloc] initWithFrame:self.bounds];
@@ -241,39 +190,12 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 
   [_textView layoutIfNeeded];
 
-  [self updatePlaceholderVisibility];
   [self invalidateContentSize];
 
   _blockTextShouldChange = NO;
 }
 
-- (void)updatePlaceholder
-{
-  [_placeholderView removeFromSuperview];
-  _placeholderView = nil;
-
-  if (_placeholder) {
-    _placeholderView = [[UITextView alloc] initWithFrame:_textView.frame];
-    _placeholderView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    _placeholderView.textContainer.lineFragmentPadding = 0;
-    _placeholderView.userInteractionEnabled = NO;
-    _placeholderView.backgroundColor = [UIColor clearColor];
-    _placeholderView.scrollEnabled = NO;
-#if !TARGET_OS_TV
-    _placeholderView.editable = NO;
-    _placeholderView.scrollsToTop = NO;
-#endif
-    _placeholderView.attributedText =
-    [[NSAttributedString alloc] initWithString:_placeholder attributes:@{
-      NSFontAttributeName : (_textView.font ? _textView.font : [self defaultPlaceholderFont]),
-      NSForegroundColorAttributeName : _placeholderTextColor
-    }];
-    _placeholderView.textAlignment = _textView.textAlignment;
-
-    [self insertSubview:_placeholderView belowSubview:_textView];
-    [self updatePlaceholderVisibility];
-  }
-}
+#pragma mark - Properties
 
 - (UIFont *)font
 {
@@ -283,40 +205,110 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 - (void)setFont:(UIFont *)font
 {
   _textView.font = font;
-  [self updatePlaceholder];
-}
-
-- (void)setPlaceholder:(NSString *)placeholder
-{
-  _placeholder = placeholder;
-  [self updatePlaceholder];
-}
-
-- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
-{
-  if (placeholderTextColor) {
-    _placeholderTextColor = placeholderTextColor;
-  } else {
-    _placeholderTextColor = [self defaultPlaceholderTextColor];
-  }
-  [self updatePlaceholder];
 }
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
 {
   _contentInset = contentInset;
   _textView.textContainerInset = contentInset;
-  _placeholderView.textContainerInset = contentInset;
   [self setNeedsLayout];
+}
+
+- (void)setSelection:(RCTTextSelection *)selection
+{
+  if (!selection) {
+    return;
+  }
+
+  UITextRange *currentSelection = _textView.selectedTextRange;
+  UITextPosition *start = [_textView positionFromPosition:_textView.beginningOfDocument offset:selection.start];
+  UITextPosition *end = [_textView positionFromPosition:_textView.beginningOfDocument offset:selection.end];
+  UITextRange *selectedTextRange = [_textView textRangeFromPosition:start toPosition:end];
+
+  NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
+  if (eventLag == 0 && ![currentSelection isEqual:selectedTextRange]) {
+    _previousSelectionRange = selectedTextRange;
+    _textView.selectedTextRange = selectedTextRange;
+  } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
+    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
+  }
+}
+
+- (NSString *)text
+{
+  return _textView.text;
+}
+
+- (void)setText:(NSString *)text
+{
+  NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
+  if (eventLag == 0 && ![text isEqualToString:_textView.text]) {
+    UITextRange *selection = _textView.selectedTextRange;
+    NSInteger oldTextLength = _textView.text.length;
+
+    _predictedText = text;
+    _textView.text = text;
+
+    if (selection.empty) {
+      // maintain cursor position relative to the end of the old text
+      NSInteger start = [_textView offsetFromPosition:_textView.beginningOfDocument toPosition:selection.start];
+      NSInteger offsetFromEnd = oldTextLength - start;
+      NSInteger newOffset = text.length - offsetFromEnd;
+      UITextPosition *position = [_textView positionFromPosition:_textView.beginningOfDocument offset:newOffset];
+      _textView.selectedTextRange = [_textView textRangeFromPosition:position toPosition:position];
+    }
+
+    [self invalidateContentSize];
+  } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
+    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
+  }
+}
+
+- (NSString *)placeholder
+{
+  return _textView.placeholderText;
+}
+
+- (void)setPlaceholder:(NSString *)placeholder
+{
+  _textView.placeholderText = placeholder;
+}
+
+- (UIColor *)placeholderTextColor
+{
+  return _textView.placeholderTextColor;
+}
+
+- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
+{
+  _textView.placeholderTextColor = placeholderTextColor;
+}
+
+- (void)setAutocorrectionType:(UITextAutocorrectionType)autocorrectionType
+{
+  _textView.autocorrectionType = autocorrectionType;
+}
+
+- (UITextAutocorrectionType)autocorrectionType
+{
+  return _textView.autocorrectionType;
+}
+
+- (void)setSpellCheckingType:(UITextSpellCheckingType)spellCheckingType
+{
+  _textView.spellCheckingType = spellCheckingType;
+}
+
+- (UITextSpellCheckingType)spellCheckingType
+{
+  return _textView.spellCheckingType;
 }
 
 #pragma mark - UITextViewDelegate
 
 - (BOOL)textView:(RCTUITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
-  if (textView.textWasPasted) {
-    textView.textWasPasted = NO;
-  } else {
+  if (!textView.textWasPasted) {
     [_eventDispatcher sendTextEventWithType:RCTTextEventTypeKeyPress
                                    reactTag:self.reactTag
                                        text:nil
@@ -425,86 +417,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   }
 }
 
-- (NSString *)text
-{
-  return _textView.text;
-}
-
-- (void)setSelection:(RCTTextSelection *)selection
-{
-  if (!selection) {
-    return;
-  }
-
-  UITextRange *currentSelection = _textView.selectedTextRange;
-  UITextPosition *start = [_textView positionFromPosition:_textView.beginningOfDocument offset:selection.start];
-  UITextPosition *end = [_textView positionFromPosition:_textView.beginningOfDocument offset:selection.end];
-  UITextRange *selectedTextRange = [_textView textRangeFromPosition:start toPosition:end];
-
-  NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
-  if (eventLag == 0 && ![currentSelection isEqual:selectedTextRange]) {
-    _previousSelectionRange = selectedTextRange;
-    _textView.selectedTextRange = selectedTextRange;
-  } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
-    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
-  }
-}
-
-- (void)setText:(NSString *)text
-{
-  NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
-  if (eventLag == 0 && ![text isEqualToString:_textView.text]) {
-    UITextRange *selection = _textView.selectedTextRange;
-    NSInteger oldTextLength = _textView.text.length;
-
-    _predictedText = text;
-    _textView.text = text;
-
-    if (selection.empty) {
-      // maintain cursor position relative to the end of the old text
-      NSInteger start = [_textView offsetFromPosition:_textView.beginningOfDocument toPosition:selection.start];
-      NSInteger offsetFromEnd = oldTextLength - start;
-      NSInteger newOffset = text.length - offsetFromEnd;
-      UITextPosition *position = [_textView positionFromPosition:_textView.beginningOfDocument offset:newOffset];
-      _textView.selectedTextRange = [_textView textRangeFromPosition:position toPosition:position];
-    }
-
-    [self updatePlaceholderVisibility];
-    [self invalidateContentSize];
-  } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
-    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
-  }
-}
-
-- (void)updatePlaceholderVisibility
-{
-  if (_textView.text.length > 0) {
-    [_placeholderView setHidden:YES];
-  } else {
-    [_placeholderView setHidden:NO];
-  }
-}
-
-- (void)setAutocorrectionType:(UITextAutocorrectionType)autocorrectionType
-{
-  _textView.autocorrectionType = autocorrectionType;
-}
-
-- (UITextAutocorrectionType)autocorrectionType
-{
-  return _textView.autocorrectionType;
-}
-
-- (void)setSpellCheckingType:(UITextSpellCheckingType)spellCheckingType
-{
-  _textView.spellCheckingType = spellCheckingType;
-}
-
-- (UITextSpellCheckingType)spellCheckingType
-{
-  return _textView.spellCheckingType;
-}
-
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
   if (_selectTextOnFocus) {
@@ -519,7 +431,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 {
   if (_clearTextOnFocus) {
     _textView.text = @"";
-    [self updatePlaceholderVisibility];
   }
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
@@ -560,7 +471,6 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 
 - (void)textViewDidChange:(UITextView *)textView
 {
-  [self updatePlaceholderVisibility];
   [self invalidateContentSize];
 
   // Detect when textView updates happend that didn't invoke `shouldChangeTextInRange`
@@ -580,6 +490,7 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   _nativeUpdatesInFlight = NO;
   _nativeEventCount++;
 
+  // TODO: t16435709 This part will be removed soon.
   if (!self.reactTag || !_onChange) {
     return;
   }
@@ -716,18 +627,6 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 {
   [super layoutSubviews];
   [self invalidateContentSize];
-}
-
-#pragma mark - Default values
-
-- (UIFont *)defaultPlaceholderFont
-{
-  return [UIFont systemFontOfSize:17];
-}
-
-- (UIColor *)defaultPlaceholderTextColor
-{
-  return [UIColor colorWithRed:0.0/255.0 green:0.0/255.0 blue:0.098/255.0 alpha:0.22];
 }
 
 #pragma mark - UIScrollViewDelegate
