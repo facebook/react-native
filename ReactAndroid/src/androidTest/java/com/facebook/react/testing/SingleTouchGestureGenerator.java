@@ -13,8 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import com.facebook.react.testing.idledetection.IdleWaiter;
-
 /**
  * Provides methods for generating touch events and dispatching them directly to a given view.
  * Events scenarios are based on {@link android.test.TouchUtils} but they get gets dispatched

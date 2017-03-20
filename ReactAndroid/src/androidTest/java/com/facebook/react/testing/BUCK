@@ -2,10 +2,7 @@ include_defs("//ReactAndroid/DEFS")
 
 android_library(
     name = "testing",
-    srcs = glob(
-        ["**/*.java"],
-        excludes = ["idledetection/**/*.java"],
-    ),
+    srcs = glob(["**/*.java"]),
     visibility = [
         "PUBLIC",
     ],
@@ -28,6 +25,5 @@ android_library(
         react_native_target("java/com/facebook/react/modules/debug:interfaces"),
         react_native_target("java/com/facebook/react/shell:shell"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
-        react_native_integration_tests_target("java/com/facebook/react/testing/idledetection:idledetection"),
     ],
 )
