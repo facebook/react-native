@@ -87,30 +87,36 @@ bool JavaNativeModule::supportsWebWorkers() {
 }
 
 void JavaNativeModule::invoke(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) {
-  static auto invokeMethod =
-    wrapper_->getClass()->getMethod<void(JExecutorToken::javaobject, jint, ReadableNativeArray::javaobject)>("invoke");
-  invokeMethod(wrapper_, JExecutorToken::extractJavaPartFromToken(token).get(), static_cast<jint>(reactMethodId),
-               ReadableNativeArray::newObjectCxxArgs(std::move(params)).get());
+  messageQueueThread_->runOnQueue([this, token, reactMethodId, params=std::move(params)] {
+    static auto invokeMethod = wrapper_->getClass()->
+      getMethod<void(JExecutorToken::javaobject, jint, ReadableNativeArray::javaobject)>("invoke");
+    invokeMethod(wrapper_,
+        JExecutorToken::extractJavaPartFromToken(token).get(),
+        static_cast<jint>(reactMethodId),
+        ReadableNativeArray::newObjectCxxArgs(std::move(params)).get());
+  });
 }
 
 MethodCallResult JavaNativeModule::callSerializableNativeHook(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) {
-    // TODO: evaluate whether calling through invoke is potentially faster
-    if (reactMethodId >= syncMethods_.size()) {
-      throw std::invalid_argument(
-        folly::to<std::string>("methodId ", reactMethodId, " out of range [0..", syncMethods_.size(), "]"));
-    }
+  // TODO: evaluate whether calling through invoke is potentially faster
+  if (reactMethodId >= syncMethods_.size()) {
+    throw std::invalid_argument(
+      folly::to<std::string>("methodId ", reactMethodId, " out of range [0..", syncMethods_.size(), "]"));
+  }
 
-    auto& method = syncMethods_[reactMethodId];
-    CHECK(method.hasValue() && method->isSyncHook()) << "Trying to invoke a asynchronous method as synchronous hook";
-    return method->invoke(instance_, wrapper_->getModule(), token, params);
+  auto& method = syncMethods_[reactMethodId];
+  CHECK(method.hasValue() && method->isSyncHook()) << "Trying to invoke a asynchronous method as synchronous hook";
+  return method->invoke(instance_, wrapper_->getModule(), token, params);
 }
 
 NewJavaNativeModule::NewJavaNativeModule(
   std::weak_ptr<Instance> instance,
-  jni::alias_ref<JavaModuleWrapper::javaobject> wrapper)
-  : instance_(std::move(instance)),
-    wrapper_(make_global(wrapper)),
-    module_(make_global(wrapper->getModule())) {
+  jni::alias_ref<JavaModuleWrapper::javaobject> wrapper,
+  std::shared_ptr<MessageQueueThread> messageQueueThread)
+: instance_(std::move(instance))
+, wrapper_(make_global(wrapper))
+, module_(make_global(wrapper->getModule()))
+, messageQueueThread_(std::move(messageQueueThread)) {
   auto descs = wrapper_->getMethodDescriptors();
   std::string moduleName = getName();
   methods_.reserve(descs->size());
@@ -161,7 +167,9 @@ void NewJavaNativeModule::invoke(ExecutorToken token, unsigned int reactMethodId
       folly::to<std::string>("methodId ", reactMethodId, " out of range [0..", methods_.size(), "]"));
   }
   CHECK(!methods_[reactMethodId].isSyncHook()) << "Trying to invoke a synchronous hook asynchronously";
-  invokeInner(token, reactMethodId, std::move(params));
+  messageQueueThread_->runOnQueue([this, token, reactMethodId, params=std::move(params)] () mutable {
+    invokeInner(token, reactMethodId, std::move(params));
+  });
 }
 
 MethodCallResult NewJavaNativeModule::callSerializableNativeHook(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) {

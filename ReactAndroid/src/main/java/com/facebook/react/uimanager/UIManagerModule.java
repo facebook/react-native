@@ -87,7 +87,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private final Map<String, Object> mModuleConstants;
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
-  private float mFontScale;
 
   private int mNextRootViewTag = 1;
   private int mBatchId = 0;
@@ -100,8 +99,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mEventDispatcher = new EventDispatcher(reactContext);
-    mFontScale = getReactApplicationContext().getResources().getConfiguration().fontScale;
-    mModuleConstants = createConstants(viewManagerList, lazyViewManagersEnabled, mFontScale);
+    mModuleConstants = createConstants(viewManagerList, lazyViewManagersEnabled);
     mUIImplementation = uiImplementationProvider
       .createUIImplementation(reactContext, viewManagerList, mEventDispatcher);
 
@@ -134,12 +132,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @Override
   public void onHostResume() {
     mUIImplementation.onHostResume();
-
-    float fontScale = getReactApplicationContext().getResources().getConfiguration().fontScale;
-    if (mFontScale != fontScale) {
-      mFontScale = fontScale;
-      emitUpdateDimensionsEvent();
-    }
   }
 
   @Override
@@ -163,15 +155,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   private static Map<String, Object> createConstants(
     List<ViewManager> viewManagerList,
-    boolean lazyViewManagersEnabled,
-    float fontScale) {
+    boolean lazyViewManagersEnabled) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
     try {
       return UIManagerModuleConstantsHelper.createConstants(
         viewManagerList,
-        lazyViewManagersEnabled,
-        fontScale);
+        lazyViewManagersEnabled);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
@@ -548,16 +538,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void sendAccessibilityEvent(int tag, int eventType) {
     mUIImplementation.sendAccessibilityEvent(tag, eventType);
-  }
-
-  public void emitUpdateDimensionsEvent() {
-    sendEvent("didUpdateDimensions", UIManagerModuleConstants.getDimensionsConstants(mFontScale));
-  }
-
-  private void sendEvent(String eventName, @Nullable WritableMap params) {
-    getReactApplicationContext()
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit(eventName, params);
   }
 
   /**

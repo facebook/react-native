@@ -12,6 +12,7 @@ namespace facebook {
 namespace react {
 
 class Instance;
+class MessageQueueThread;
 
 struct JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
   static constexpr auto kJavaDescriptor =
@@ -27,6 +28,8 @@ struct JavaModuleWrapper : jni::JavaClass<JavaModuleWrapper> {
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/cxxbridge/JavaModuleWrapper;";
 
   jni::local_ref<JBaseJavaModule::javaobject> getModule() {
+    // This is the call which causes a lazy Java module to actually be
+    // created.
     static auto getModule = javaClassStatic()->getMethod<JBaseJavaModule::javaobject()>("getModule");
     return getModule(self());
   }
@@ -42,8 +45,11 @@ class JavaNativeModule : public NativeModule {
  public:
   JavaNativeModule(
     std::weak_ptr<Instance> instance,
-    jni::alias_ref<JavaModuleWrapper::javaobject> wrapper)
-  : instance_(std::move(instance)), wrapper_(make_global(wrapper)) {}
+    jni::alias_ref<JavaModuleWrapper::javaobject> wrapper,
+    std::shared_ptr<MessageQueueThread> messageQueueThread)
+  : instance_(std::move(instance))
+  , wrapper_(make_global(wrapper))
+  , messageQueueThread_(std::move(messageQueueThread)) {}
 
   std::string getName() override;
   folly::dynamic getConstants() override;
@@ -55,6 +61,7 @@ class JavaNativeModule : public NativeModule {
  private:
   std::weak_ptr<Instance> instance_;
   jni::global_ref<JavaModuleWrapper::javaobject> wrapper_;
+  std::shared_ptr<MessageQueueThread> messageQueueThread_;
   std::vector<folly::Optional<MethodInvoker>> syncMethods_;
 };
 
@@ -63,7 +70,8 @@ class NewJavaNativeModule : public NativeModule {
  public:
   NewJavaNativeModule(
     std::weak_ptr<Instance> instance,
-    jni::alias_ref<JavaModuleWrapper::javaobject> wrapper);
+    jni::alias_ref<JavaModuleWrapper::javaobject> wrapper,
+    std::shared_ptr<MessageQueueThread> messageQueueThread);
 
   std::string getName() override;
   std::vector<MethodDescriptor> getMethods() override;
@@ -76,6 +84,7 @@ class NewJavaNativeModule : public NativeModule {
   std::weak_ptr<Instance> instance_;
   jni::global_ref<JavaModuleWrapper::javaobject> wrapper_;
   jni::global_ref<JBaseJavaModule::javaobject> module_;
+  std::shared_ptr<MessageQueueThread> messageQueueThread_;
   std::vector<MethodInvoker> methods_;
   std::vector<MethodDescriptor> methodDescriptors_;
 

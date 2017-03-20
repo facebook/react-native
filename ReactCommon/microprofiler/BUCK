@@ -14,6 +14,7 @@ cxx_library(
     ],
     force_static = True,
     header_namespace = "microprofiler",
+    labels = ["accounts_for_platform_and_build_mode_flags"],
     visibility = [
         "PUBLIC",
     ],

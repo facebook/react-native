@@ -49,7 +49,7 @@ export type ViewabilityConfig = {|
 * layout.
 *
 * An item is said to be in a "viewable" state when any of the following
-* is true for longer than `minViewTime` milliseconds (after an interaction if `waitForInteraction`
+* is true for longer than `minimumViewTime` milliseconds (after an interaction if `waitForInteraction`
 * is true):
 *
 * - Occupying >= `viewAreaCoveragePercentThreshold` of the view area XOR fraction of the item
@@ -145,7 +145,7 @@ class ViewabilityHelper {
     renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
   ): void {
     const updateTime = Date.now();
-    if (this._lastUpdateTime === 0 && getFrameMetrics(0)) {
+    if (this._lastUpdateTime === 0 && itemCount > 0 && getFrameMetrics(0)) {
       // Only count updates after the first item is rendered and has a frame.
       this._lastUpdateTime = updateTime;
     }
@@ -171,13 +171,13 @@ class ViewabilityHelper {
     }
     this._viewableIndices = viewableIndices;
     this._lastUpdateTime = updateTime;
-    if (this._config.minViewTime && updateElapsed < this._config.minViewTime) {
+    if (this._config.minimumViewTime && updateElapsed < this._config.minimumViewTime) {
       const handle = setTimeout(
         () => {
           this._timers.delete(handle);
           this._onUpdateSync(viewableIndices, onViewableItemsChanged, createViewToken);
         },
-        this._config.minViewTime,
+        this._config.minimumViewTime,
       );
       this._timers.add(handle);
     } else {

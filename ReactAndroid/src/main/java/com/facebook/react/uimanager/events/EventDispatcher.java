@@ -171,7 +171,12 @@ public class EventDispatcher implements LifecycleEventListener {
   }
 
   public void onCatalystInstanceDestroyed() {
-    stopFrameCallback();
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        stopFrameCallback();
+      }
+    });
   }
 
   private void stopFrameCallback() {
