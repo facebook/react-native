@@ -165,6 +165,13 @@ class PushNotificationIOS {
   }
 
   /**
+   * Remove all delivered notifications from Notification Center
+   */
+  static removeAllDeliveredNotifications() {
+    RCTPushNotificationManager.removeAllDeliveredNotifications();
+  }
+
+  /**
    * Sets the badge number for the app icon on the home screen
    */
   static setApplicationIconBadgeNumber(number: number) {

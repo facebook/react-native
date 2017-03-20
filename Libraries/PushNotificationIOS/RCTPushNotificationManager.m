@@ -14,6 +14,10 @@
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTUtils.h>
 
+#ifdef __has_include(<UserNotifications/UserNotifications.h>)
+#import <UserNotifications/UserNotifications.h>
+#endif
+
 NSString *const RCTLocalNotificationReceived = @"LocalNotificationReceived";
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
 NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
@@ -406,6 +410,19 @@ RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTResponseSenderBlock)callbac
   }
   callback(@[formattedScheduledLocalNotifications]);
 }
+
+#ifdef __has_include(<UserNotifications/UserNotifications.h>)
+RCT_EXPORT_METHOD(removeAllDeliveredNotifications)
+{
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  [center removeAllDeliveredNotifications];
+}
+#else
+RCT_EXPORT_METHOD(removeAllDeliveredNotifications)
+{
+  return;
+}
+#endif // UserNotifications
 
 #endif //TARGET_OS_TV
 
