@@ -58,6 +58,13 @@
   }
 }
 
+- (void)setContentOffset:(CGPoint)contentOffset animated:(__unused BOOL)animated
+{
+  // Turning off scroll animation.
+  // This fixes the problem also known as "flaky scrolling".
+  [super setContentOffset:contentOffset animated:NO];
+}
+
 @end
 
 @implementation RCTTextView
@@ -69,7 +76,6 @@
   UITextView *_textView;
   RCTText *_richTextView;
   NSAttributedString *_pendingAttributedText;
-  UIScrollView *_scrollView;
 
   UITextRange *_previousSelectionRange;
   NSUInteger _previousTextLength;
@@ -100,17 +106,10 @@
 #if !TARGET_OS_TV
     _textView.scrollsToTop = NO;
 #endif
-    _textView.scrollEnabled = NO;
+    _textView.scrollEnabled = YES;
     _textView.delegate = self;
 
-    _scrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
-#if !TARGET_OS_TV
-    _scrollView.scrollsToTop = NO;
-#endif
-    _scrollView.delegate = self;
-    [_scrollView addSubview:_textView];
-
-    [self addSubview:_scrollView];
+    [self addSubview:_textView];
   }
   return self;
 }
@@ -118,9 +117,12 @@
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
+#pragma mark - RCTComponent
+
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)index
 {
   [super insertReactSubview:subview atIndex:index];
+
   if ([subview isKindOfClass:[RCTText class]]) {
     if (_richTextView) {
       RCTLogError(@"Tried to insert a second <Text> into <TextInput> - there can only be one.");
@@ -143,11 +145,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
-- (void)dealloc
-{
-  _scrollView.delegate = nil;
-}
-
 - (void)removeReactSubview:(UIView *)subview
 {
   [super removeReactSubview:subview];
@@ -159,8 +156,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)didUpdateReactSubviews
 {
-  // Do nothing, as we don't allow non-text subviews
+  // Do nothing, as we don't allow non-text subviews.
 }
+
+#pragma mark - Routine
 
 - (void)setMostRecentEventCount:(NSInteger)mostRecentEventCount
 {
@@ -262,7 +261,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   CGRect frame = UIEdgeInsetsInsetRect(self.bounds, adjustedFrameInset);
   _textView.frame = frame;
   _placeholderView.frame = frame;
-  _scrollView.frame = frame;
   [self updateContentSize];
 
   _textView.textContainerInset = adjustedTextContainerInset;
@@ -271,10 +269,8 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 
 - (void)updateContentSize
 {
-  CGSize size = (CGSize){_scrollView.frame.size.width, INFINITY};
-  size.height = [_textView sizeThatFits:size].height;
-  _scrollView.contentSize = size;
-  _textView.frame = (CGRect){CGPointZero, size};
+  CGSize size = _textView.frame.size;
+  size.height = [_textView sizeThatFits:CGSizeMake(size.width, INFINITY)].height;
 
   if (_viewDidCompleteInitialLayout && _onContentSizeChange && !CGSizeEqualToSize(_previousContentSize, size)) {
     _previousContentSize = size;
@@ -725,26 +721,31 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
   if (_onScroll) {
+    CGPoint contentOffset = scrollView.contentOffset;
+    CGSize contentSize = scrollView.contentSize;
+    CGSize size = scrollView.bounds.size;
+    UIEdgeInsets contentInset = scrollView.contentInset;
+
     _onScroll(@{
       @"contentOffset": @{
-        @"x": @(scrollView.contentOffset.x),
-        @"y": @(scrollView.contentOffset.y)
+        @"x": @(contentOffset.x),
+        @"y": @(contentOffset.y)
       },
       @"contentInset": @{
-        @"top": @(_scrollView.contentInset.top),
-        @"left": @(_scrollView.contentInset.left),
-        @"bottom": @(_scrollView.contentInset.bottom),
-        @"right": @(_scrollView.contentInset.right)
+        @"top": @(contentInset.top),
+        @"left": @(contentInset.left),
+        @"bottom": @(contentInset.bottom),
+        @"right": @(contentInset.right)
       },
       @"contentSize": @{
-        @"width": @(_scrollView.contentSize.width),
-        @"height": @(_scrollView.contentSize.height)
+        @"width": @(contentSize.width),
+        @"height": @(contentSize.height)
       },
       @"layoutMeasurement": @{
-        @"width": @(_scrollView.frame.size.width),
-        @"height": @(_scrollView.frame.size.height)
+        @"width": @(size.width),
+        @"height": @(size.height)
       },
-      @"zoomScale": @(_scrollView.zoomScale ?: 1),
+      @"zoomScale": @(scrollView.zoomScale ?: 1),
     });
   }
 }
