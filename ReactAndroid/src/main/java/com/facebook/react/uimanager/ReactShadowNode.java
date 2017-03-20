@@ -774,7 +774,7 @@ public class ReactShadowNode {
       return mYogaNode.toString();
     }
 
-    return getClass().getSimpleName() + " (mYogaNode == null)";
+    return getClass().getSimpleName() + " (virtual node)";
   }
 
   public void dispose() {
