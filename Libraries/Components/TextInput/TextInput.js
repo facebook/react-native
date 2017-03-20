@@ -678,6 +678,7 @@ const TextInput = React.createClass({
       if (props.inputView) {
         children = [children, props.inputView];
       }
+      props.style.unshift(styles.multilineInput);
       textContainer =
         <RCTTextView
           ref={this._setNativeRef}
@@ -866,6 +867,12 @@ const TextInput = React.createClass({
 var styles = StyleSheet.create({
   input: {
     alignSelf: 'stretch',
+  },
+  multilineInput: {
+    // This default top inset makes RCTTextView seem as close as possible
+    // to single-line RCTTextField defaults, using the system defaults
+    // of font size 17 and a height of 31 points.
+    paddingTop: 5,
   },
 });
 

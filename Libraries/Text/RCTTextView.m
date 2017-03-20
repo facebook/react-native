@@ -11,6 +11,7 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
+#import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
@@ -69,6 +70,7 @@
 
 @implementation RCTTextView
 {
+  RCTBridge *_bridge;
   RCTEventDispatcher *_eventDispatcher;
 
   NSString *_placeholder;
@@ -87,22 +89,25 @@
   NSInteger _nativeEventCount;
 
   CGSize _previousContentSize;
-  BOOL _viewDidCompleteInitialLayout;
 }
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithBridge:(RCTBridge *)bridge
 {
-  RCTAssertParam(eventDispatcher);
+  RCTAssertParam(bridge);
 
-  if ((self = [super initWithFrame:CGRectZero])) {
+  if (self = [super initWithFrame:CGRectZero]) {
     _contentInset = UIEdgeInsetsZero;
-    _eventDispatcher = eventDispatcher;
+    _bridge = bridge;
+    _eventDispatcher = bridge.eventDispatcher;
     _placeholderTextColor = [self defaultPlaceholderTextColor];
     _blurOnSubmit = NO;
 
-    _textView = [[RCTUITextView alloc] initWithFrame:CGRectZero];
+    _textView = [[RCTUITextView alloc] initWithFrame:self.bounds];
+    _textView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _textView.backgroundColor = [UIColor clearColor];
     _textView.textColor = [UIColor blackColor];
+    // This line actually removes 5pt (default value) left and right padding in UITextView.
+    _textView.textContainer.lineFragmentPadding = 0;
 #if !TARGET_OS_TV
     _textView.scrollsToTop = NO;
 #endif
@@ -132,7 +137,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     // If this <TextInput> is in rich text editing mode, and the child <Text> node providing rich text
     // styling has a backgroundColor, then the attributedText produced by the child <Text> node will have an
     // NSBackgroundColor attribute. We need to forward this attribute to the text view manually because the text view
-    // always has a clear background color in -initWithEventDispatcher:.
+    // always has a clear background color in `initWithBridge:`.
     //
     // TODO: This should be removed when the related hack in -performPendingTextUpdate is removed.
     if (subview.backgroundColor) {
@@ -237,51 +242,9 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   [_textView layoutIfNeeded];
 
   [self updatePlaceholderVisibility];
-  [self updateContentSize];
+  [self invalidateContentSize];
 
   _blockTextShouldChange = NO;
-}
-
-- (void)updateFrames
-{
-  // Adjust the insets so that they are as close as possible to single-line
-  // RCTTextField defaults, using the system defaults of font size 17 and a
-  // height of 31 points.
-  //
-  // We apply the left inset to the frame since a negative left text-container
-  // inset mysteriously causes the text to be hidden until the text view is
-  // first focused.
-  UIEdgeInsets adjustedFrameInset = UIEdgeInsetsZero;
-  adjustedFrameInset.left = _contentInset.left - 5;
-
-  UIEdgeInsets adjustedTextContainerInset = _contentInset;
-  adjustedTextContainerInset.top += 5;
-  adjustedTextContainerInset.left = 0;
-
-  CGRect frame = UIEdgeInsetsInsetRect(self.bounds, adjustedFrameInset);
-  _textView.frame = frame;
-  _placeholderView.frame = frame;
-  [self updateContentSize];
-
-  _textView.textContainerInset = adjustedTextContainerInset;
-  _placeholderView.textContainerInset = adjustedTextContainerInset;
-}
-
-- (void)updateContentSize
-{
-  CGSize size = _textView.frame.size;
-  size.height = [_textView sizeThatFits:CGSizeMake(size.width, INFINITY)].height;
-
-  if (_viewDidCompleteInitialLayout && _onContentSizeChange && !CGSizeEqualToSize(_previousContentSize, size)) {
-    _previousContentSize = size;
-    _onContentSizeChange(@{
-      @"contentSize": @{
-        @"height": @(size.height),
-        @"width": @(size.width),
-      },
-      @"target": self.reactTag,
-    });
-  }
 }
 
 - (void)updatePlaceholder
@@ -290,7 +253,9 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   _placeholderView = nil;
 
   if (_placeholder) {
-    _placeholderView = [[UITextView alloc] initWithFrame:self.bounds];
+    _placeholderView = [[UITextView alloc] initWithFrame:_textView.frame];
+    _placeholderView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    _placeholderView.textContainer.lineFragmentPadding = 0;
     _placeholderView.userInteractionEnabled = NO;
     _placeholderView.backgroundColor = [UIColor clearColor];
     _placeholderView.scrollEnabled = NO;
@@ -340,7 +305,9 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 - (void)setContentInset:(UIEdgeInsets)contentInset
 {
   _contentInset = contentInset;
-  [self updateFrames];
+  _textView.textContainerInset = contentInset;
+  _placeholderView.textContainerInset = contentInset;
+  [self setNeedsLayout];
 }
 
 #pragma mark - UITextViewDelegate
@@ -503,8 +470,7 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
     }
 
     [self updatePlaceholderVisibility];
-    [self updateContentSize]; //keep the text wrapping when the length of
-    //the textline has been extended longer than the length of textinputView
+    [self invalidateContentSize];
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
     RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
   }
@@ -595,7 +561,7 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 - (void)textViewDidChange:(UITextView *)textView
 {
   [self updatePlaceholderVisibility];
-  [self updateContentSize];
+  [self invalidateContentSize];
 
   // Detect when textView updates happend that didn't invoke `shouldChangeTextInRange`
   // (e.g. typing simplified chinese in pinyin will insert and remove spaces without
@@ -664,6 +630,8 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
                                eventCount:_nativeEventCount];
 }
 
+#pragma mark - UIResponder
+
 - (BOOL)isFirstResponder
 {
   return [_textView isFirstResponder];
@@ -695,16 +663,62 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   return [_textView resignFirstResponder];
 }
 
+#pragma mark - Content Size
+
+- (CGSize)contentSize
+{
+  // Returning value does NOT include insets.
+  CGSize contentSize = self.intrinsicContentSize;
+  contentSize.width -= _contentInset.left + _contentInset.right;
+  contentSize.height -= _contentInset.top + _contentInset.bottom;
+  return contentSize;
+}
+
+- (void)invalidateContentSize
+{
+  CGSize contentSize = self.contentSize;
+
+  if (CGSizeEqualToSize(_previousContentSize, contentSize)) {
+    return;
+  }
+  _previousContentSize = contentSize;
+
+  [_bridge.uiManager setIntrinsicContentSize:contentSize forView:self];
+
+  if (_onContentSizeChange) {
+    _onContentSizeChange(@{
+      @"contentSize": @{
+        @"height": @(contentSize.height),
+        @"width": @(contentSize.width),
+      },
+      @"target": self.reactTag,
+    });
+  }
+}
+
+#pragma mark - Layout
+
+- (CGSize)intrinsicContentSize
+{
+  // Calling `sizeThatFits:` is probably more expensive method to compute
+  // content size compare to direct access `_textView.contentSize` property,
+  // but seems `sizeThatFits:` returns more reliable and consistent result.
+  // Returning value DOES include insets.
+  return [self sizeThatFits:CGSizeMake(self.bounds.size.width, INFINITY)];
+}
+
+- (CGSize)sizeThatFits:(CGSize)size
+{
+  return [_textView sizeThatFits:size];
+}
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-
-  // Start sending content size updates only after the view has been laid out
-  // otherwise we send multiple events with bad dimensions on initial render.
-  _viewDidCompleteInitialLayout = YES;
-
-  [self updateFrames];
+  [self invalidateContentSize];
 }
+
+#pragma mark - Default values
 
 - (UIFont *)defaultPlaceholderFont
 {
