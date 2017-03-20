@@ -103,34 +103,6 @@ class TextEventsExample extends React.Component {
   }
 }
 
-class AutoExpandingTextInput extends React.Component {
-  state: any;
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      text: 'React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about — learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native.',
-      height: 0,
-    };
-  }
-  render() {
-    return (
-      <TextInput
-        {...this.props}
-        multiline={true}
-        onChangeText={(text) => {
-          this.setState({text});
-        }}
-        onContentSizeChange={(event) => {
-          this.setState({height: event.nativeEvent.contentSize.height});
-        }}
-        style={[styles.default, {height: Math.max(35, this.state.height)}]}
-        value={this.state.text}
-      />
-    );
-  }
-}
-
 class RewriteExample extends React.Component {
   state: any;
 
@@ -402,6 +374,10 @@ var styles = StyleSheet.create({
     height: 50,
     padding: 4,
     marginBottom: 4,
+  },
+  multilineExpandable: {
+    height: 'auto',
+    maxHeight: 100,
   },
   multilineWithFontStyles: {
     color: 'blue',
@@ -801,10 +777,13 @@ exports.examples = [
     render: function() {
       return (
         <View>
-          <AutoExpandingTextInput
+          <TextInput
             placeholder="height increases with content"
+            defaultValue="React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about — learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native."
+            multiline={true}
             enablesReturnKeyAutomatically={true}
-            returnKeyType="default"
+            returnKeyType="go"
+            style={[styles.multiline, styles.multilineExpandable]}
           />
         </View>
       );
