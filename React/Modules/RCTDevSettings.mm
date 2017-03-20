@@ -454,6 +454,14 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   dispatch_async(dispatch_get_main_queue(), ^{
     // update state again after the bridge has finished loading
     [self _synchronizeAllSettings];
+
+    // Inspector can only be shown after JS has loaded
+    if ([self isElementInspectorShown]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      [self.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+#pragma clang diagnostic pop
+    }
   });
 }
 
