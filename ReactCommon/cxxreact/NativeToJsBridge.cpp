@@ -24,11 +24,9 @@ class JsToNativeBridge : public react::ExecutorDelegate {
 public:
   JsToNativeBridge(NativeToJsBridge* nativeToJs,
                    std::shared_ptr<ModuleRegistry> registry,
-                   std::unique_ptr<MessageQueueThread> nativeQueue,
                    std::shared_ptr<InstanceCallback> callback)
     : m_nativeToJs(nativeToJs)
     , m_registry(registry)
-    , m_nativeQueue(std::move(nativeQueue))
     , m_callback(callback) {}
 
   void registerExecutor(std::unique_ptr<JSExecutor> executor,
@@ -51,24 +49,25 @@ public:
     CHECK(m_registry || calls.empty()) <<
       "native module calls cannot be completed with no native modules";
     ExecutorToken token = m_nativeToJs->getTokenForExecutor(executor);
-    m_nativeQueue->runOnQueue([this, token, calls=std::move(calls), isEndOfBatch] () mutable {
-      m_batchHadNativeModuleCalls = m_batchHadNativeModuleCalls || !calls.empty();
+    m_batchHadNativeModuleCalls = m_batchHadNativeModuleCalls || !calls.empty();
 
-      // An exception anywhere in here stops processing of the batch.  This
-      // was the behavior of the Android bridge, and since exception handling
-      // terminates the whole bridge, there's not much point in continuing.
-      for (auto& call : react::parseMethodCalls(std::move(calls))) {
-        m_registry->callNativeMethod(
-          token, call.moduleId, call.methodId, std::move(call.arguments), call.callId);
+    // An exception anywhere in here stops processing of the batch.  This
+    // was the behavior of the Android bridge, and since exception handling
+    // terminates the whole bridge, there's not much point in continuing.
+    for (auto& call : parseMethodCalls(std::move(calls))) {
+      m_registry->callNativeMethod(
+        token, call.moduleId, call.methodId, std::move(call.arguments), call.callId);
+    }
+    if (isEndOfBatch) {
+      // onBatchComplete will be called on the native (module) queue, but
+      // decrementPendingJSCalls will be called sync. Be aware that the bridge may still
+      // be processing native calls when the birdge idle signaler fires.
+      if (m_batchHadNativeModuleCalls) {
+        m_callback->onBatchComplete();
+        m_batchHadNativeModuleCalls = false;
       }
-      if (isEndOfBatch) {
-        if (m_batchHadNativeModuleCalls) {
-          m_callback->onBatchComplete();
-          m_batchHadNativeModuleCalls = false;
-        }
-        m_callback->decrementPendingJSCalls();
-      }
-    });
+      m_callback->decrementPendingJSCalls();
+    }
   }
 
   MethodCallResult callSerializableNativeHook(
@@ -76,10 +75,6 @@ public:
       folly::dynamic&& args) override {
     ExecutorToken token = m_nativeToJs->getTokenForExecutor(executor);
     return m_registry->callSerializableNativeHook(token, moduleId, methodId, std::move(args));
-  }
-
-  void quitQueueSynchronous() {
-    m_nativeQueue->quitSynchronous();
   }
 
 private:
@@ -91,7 +86,6 @@ private:
   // valid object during a call to a delegate method from an exectuto.
   NativeToJsBridge* m_nativeToJs;
   std::shared_ptr<ModuleRegistry> m_registry;
-  std::unique_ptr<MessageQueueThread> m_nativeQueue;
   std::shared_ptr<InstanceCallback> m_callback;
   bool m_batchHadNativeModuleCalls = false;
 };
@@ -100,12 +94,10 @@ NativeToJsBridge::NativeToJsBridge(
     JSExecutorFactory* jsExecutorFactory,
     std::shared_ptr<ModuleRegistry> registry,
     std::shared_ptr<MessageQueueThread> jsQueue,
-    std::unique_ptr<MessageQueueThread> nativeQueue,
     std::shared_ptr<InstanceCallback> callback)
     : m_destroyed(std::make_shared<bool>(false))
     , m_mainExecutorToken(callback->createExecutorToken())
-    , m_delegate(std::make_shared<JsToNativeBridge>(
-                   this, registry, std::move(nativeQueue), callback)) {
+    , m_delegate(std::make_shared<JsToNativeBridge>(this, registry, callback)) {
   std::unique_ptr<JSExecutor> mainExecutor =
     jsExecutorFactory->createJSExecutor(m_delegate, jsQueue);
   // cached to avoid locked map lookup in the common case
@@ -129,7 +121,6 @@ void NativeToJsBridge::loadApplication(
        startupScript=folly::makeMoveWrapper(std::move(startupScript)),
        startupScriptSourceURL=std::move(startupScriptSourceURL)]
         (JSExecutor* executor) mutable {
-
     auto unbundle = unbundleWrap.move();
     if (unbundle) {
       executor->setJSModulesUnbundle(std::move(unbundle));
@@ -322,7 +313,6 @@ ExecutorToken NativeToJsBridge::getTokenForExecutor(JSExecutor& executor) {
 }
 
 void NativeToJsBridge::destroy() {
-  m_delegate->quitQueueSynchronous();
   auto* executorMessageQueueThread = getMessageQueueThread(m_mainExecutorToken);
   // All calls made through runOnExecutorQueue have an early exit if
   // m_destroyed is true. Setting this before the runOnQueueSync will cause
@@ -331,7 +321,7 @@ void NativeToJsBridge::destroy() {
   executorMessageQueueThread->runOnQueueSync([this, executorMessageQueueThread] {
     m_mainExecutor->destroy();
     executorMessageQueueThread->quitSynchronous();
-    unregisterExecutor(*m_mainExecutor);
+    m_delegate->unregisterExecutor(*m_mainExecutor);
     m_mainExecutor = nullptr;
   });
 }

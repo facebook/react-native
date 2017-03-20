@@ -7,18 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.cxxbridge;
+#import <UIKit/UIKit.h>
 
-import com.facebook.proguard.annotations.DoNotStrip;
+#import <React/RCTBridge.h>
+#import <React/RCTBridgeModule.h>
 
-@DoNotStrip
-/* package */ interface ReactCallback {
-  @DoNotStrip
-  void onBatchComplete();
+@interface RCTDeviceInfo : NSObject <RCTBridgeModule, RCTInvalidating>
 
-  @DoNotStrip
-  void incrementPendingJSCalls();
-
-  @DoNotStrip
-  void decrementPendingJSCalls();
-}
+@end

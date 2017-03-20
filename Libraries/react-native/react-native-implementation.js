@@ -85,6 +85,7 @@ const ReactNative = {
   get CameraRoll() { return require('CameraRoll'); },
   get Clipboard() { return require('Clipboard'); },
   get DatePickerAndroid() { return require('DatePickerAndroid'); },
+  get DeviceInfo() { return require('DeviceInfo'); },
   get Dimensions() { return require('Dimensions'); },
   get Easing() { return require('Easing'); },
   get I18nManager() { return require('I18nManager'); },

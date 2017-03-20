@@ -5,20 +5,16 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule DeviceInfo
+ * @flow
  */
+'use strict';
 
-package com.facebook.react.cxxbridge;
+const DeviceInfo = require('NativeModules').DeviceInfo;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+const invariant = require('invariant');
 
-@DoNotStrip
-/* package */ interface ReactCallback {
-  @DoNotStrip
-  void onBatchComplete();
+invariant(DeviceInfo, 'DeviceInfo native module is not installed correctly');
 
-  @DoNotStrip
-  void incrementPendingJSCalls();
-
-  @DoNotStrip
-  void decrementPendingJSCalls();
-}
+module.exports = DeviceInfo;
