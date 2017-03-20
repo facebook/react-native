@@ -37,6 +37,7 @@ type Options = {
   getTransformCacheKey: GetTransformCacheKey,
   globalTransformCache: ?GlobalTransformCache,
   hasteImpl?: HasteImpl,
+  maxWorkerCount: number,
   minifyCode: MinifyCode,
   platforms: Set<string>,
   polyfillModuleNames?: Array<string>,
@@ -86,7 +87,7 @@ class Resolver {
   getShallowDependencies(
     entryFile: string,
     transformOptions: TransformOptions,
-  ): Array<string> {
+  ): Promise<Array<Module>> {
     return this._depGraph.getShallowDependencies(entryFile, transformOptions);
   }
 

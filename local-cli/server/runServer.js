@@ -20,7 +20,6 @@ const defaultAssetExts = require('../../packager/defaults').assetExts;
 const defaultPlatforms = require('../../packager/defaults').platforms;
 const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
-const heapCaptureMiddleware = require('./middleware/heapCaptureMiddleware.js');
 const http = require('http');
 const indexPageMiddleware = require('./middleware/indexPage');
 const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
@@ -46,7 +45,6 @@ function runServer(args, config, readyCallback) {
     .use(copyToClipBoardMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
-    .use(heapCaptureMiddleware)
     .use(cpuProfilerMiddleware)
     .use(indexPageMiddleware)
     .use(unless('/inspector', inspectorProxy.processRequest.bind(inspectorProxy)))

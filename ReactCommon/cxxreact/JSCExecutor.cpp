@@ -361,12 +361,8 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 
       evaluateSourceCode(m_context, bcSourceCode, jsSourceURL);
 
-      // TODO(luk): t13903306 Remove this check once we make native modules
-      // working for java2js
-      if (m_delegate) {
-        bindBridge();
-        flush();
-      }
+      bindBridge();
+      flush();
 
       ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
       ReactMarker::logMarker("RUN_JS_BUNDLE_END");
@@ -416,11 +412,8 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
     evaluateScript(m_context, jsScript, jsSourceURL);
   }
 
-  // TODO(luk): t13903306 Remove this check once we make native modules working for java2js
-  if (m_delegate) {
-    bindBridge();
-    flush();
-  }
+  bindBridge();
+  flush();
 
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
   ReactMarker::logMarker("RUN_JS_BUNDLE_END");
@@ -435,6 +428,9 @@ void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbund
 
 void JSCExecutor::bindBridge() throw(JSException) {
   SystraceSection s("JSCExecutor::bindBridge");
+  if (!m_delegate || !m_delegate->getModuleRegistry()) {
+    return;
+  }
   auto global = Object::getGlobalObject(m_context);
   auto batchedBridgeValue = global.getProperty("__fbBatchedBridge");
   if (batchedBridgeValue.isUndefined()) {
@@ -466,7 +462,18 @@ void JSCExecutor::callNativeModules(Value&& value) {
 
 void JSCExecutor::flush() {
   SystraceSection s("JSCExecutor::flush");
-  callNativeModules(m_flushedQueueJS->callAsFunction({}));
+  if (!m_delegate) {
+    // do nothing
+  } else if (!m_delegate->getModuleRegistry()) {
+    callNativeModules(Value::makeNull(m_context));
+  } else {
+    // If this is failing, chances are you have provided a delegate with a
+    // module registry, but haven't loaded the JS which enables native function
+    // queueing.  Add BatchedBridge.js to your bundle, pass a nullptr delegate,
+    // or make delegate->getModuleRegistry() return nullptr.
+    CHECK(m_flushedQueueJS) << "Attempting to use native methods without loading BatchedBridge.js";
+    callNativeModules(m_flushedQueueJS->callAsFunction({}));
+  }
 }
 
 void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
@@ -476,6 +483,9 @@ void JSCExecutor::callFunction(const std::string& moduleId, const std::string& m
 
   auto result = [&] {
     try {
+      // See flush()
+      CHECK(m_callFunctionReturnFlushedQueueJS)
+        << "Attempting to call native methods without loading BatchedBridge.js";
       return m_callFunctionReturnFlushedQueueJS->callAsFunction({
         Value(m_context, String::createExpectingAscii(m_context, moduleId)),
         Value(m_context, String::createExpectingAscii(m_context, methodId)),
@@ -511,6 +521,8 @@ Value JSCExecutor::callFunctionSyncWithValue(
     const std::string& module, const std::string& method, Value args) {
   SystraceSection s("JSCExecutor::callFunction");
 
+  // See flush()
+  CHECK(m_callFunctionReturnResultAndFlushedQueueJS);
   Object result = m_callFunctionReturnResultAndFlushedQueueJS->callAsFunction({
     Value(m_context, String::createExpectingAscii(m_context, module)),
     Value(m_context, String::createExpectingAscii(m_context, method)),

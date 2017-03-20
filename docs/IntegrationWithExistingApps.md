@@ -218,6 +218,8 @@ target 'NumberTileGame' do
     'RCTWebSocket', # needed for debugging
     # Add any other subspecs you want to use in your project
   ]
+  # Explicitly include Yoga if you are using RN >= 0.42.0
+  pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
 
 end
 ```
@@ -243,6 +245,8 @@ target 'swift-2048' do
     'RCTWebSocket', # needed for debugging
     # Add any other subspecs you want to use in your project
   ]
+  # Explicitly include Yoga if you are using RN >= 0.42.0
+  pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
 
 end
 ```

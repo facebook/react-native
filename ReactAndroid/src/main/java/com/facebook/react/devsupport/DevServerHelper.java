@@ -32,6 +32,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
+import com.facebook.react.packagerconnection.FileIoHandler;
 import com.facebook.react.packagerconnection.JSPackagerClient;
 
 import org.json.JSONException;
@@ -149,6 +150,7 @@ public class DevServerHelper {
             commandListener.onPokeSamplingProfilerCommand(responder);
           }
         });
+        handlers.putAll(new FileIoHandler().handlers());
 
         mPackagerClient = new JSPackagerClient(getPackagerConnectionURL(), handlers);
         mPackagerClient.init();
