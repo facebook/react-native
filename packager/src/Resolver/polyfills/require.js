@@ -202,7 +202,8 @@ function unknownModuleError(id) {
 }
 
 function moduleThrewError(id) {
-  return Error('Requiring module "' + id + '", which threw an exception.');
+  const displayName = __DEV__ && modules[id] && modules[id].verboseName || id;
+  return Error('Requiring module "' + displayName + '", which threw an exception.');
 }
 
 if (__DEV__) {
