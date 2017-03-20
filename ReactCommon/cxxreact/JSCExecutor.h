@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <unordered_map>
 
 #include <cxxreact/Executor.h>
@@ -112,6 +113,7 @@ private:
   std::unique_ptr<JSModulesUnbundle> m_unbundle;
   JSCNativeModules m_nativeModules;
   folly::dynamic m_jscConfig;
+  std::once_flag m_bindFlag;
 
   folly::Optional<Object> m_invokeCallbackAndReturnFlushedQueueJS;
   folly::Optional<Object> m_callFunctionReturnFlushedQueueJS;
