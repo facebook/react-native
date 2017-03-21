@@ -98,6 +98,29 @@ static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notificatio
   return formattedLocalNotification;
 }
 
+static NSDictionary *RCTFormatUNNotification(UNNotification *notification)
+{
+  NSMutableDictionary *formattedNotification = [NSMutableDictionary dictionary];
+  UNNotificationContent *content = notification.request.content;
+
+  formattedNotification[@"identifier"] = notification.request.identifier;
+  
+  if (notification.date) {
+    NSDateFormatter *formatter = [NSDateFormatter new];
+    [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"];
+    NSString *dateString = [formatter stringFromDate:notification.date];
+    formattedNotification[@"date"] = dateString;
+  }
+  
+  formattedNotification[@"title"] = RCTNullIfNil(content.title);
+  formattedNotification[@"body"] = RCTNullIfNil(content.body);
+  formattedNotification[@"category"] = RCTNullIfNil(content.categoryIdentifier);
+  formattedNotification[@"thread-id"] = RCTNullIfNil(content.threadIdentifier);
+  formattedNotification[@"userInfo"] = RCTNullIfNil(RCTJSONClean(content.userInfo));
+  
+  return formattedNotification;
+}
+
 #endif //TARGET_OS_TV
 
 RCT_EXPORT_MODULE()
@@ -413,6 +436,29 @@ RCT_EXPORT_METHOD(removeAllDeliveredNotifications)
   if ([UNUserNotificationCenter class]) {
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center removeAllDeliveredNotifications];
+  }
+}
+
+RCT_EXPORT_METHOD(removeDeliveredNotifications:(NSArray<NSString *> *)identifiers)
+{
+  if ([UNUserNotificationCenter class]) {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center removeDeliveredNotificationsWithIdentifiers:identifiers];
+  }
+}
+
+RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTResponseSenderBlock)callback)
+{
+  if ([UNUserNotificationCenter class]) {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
+      NSMutableArray<NSDictionary *> *formattedNotifications = [NSMutableArray new];
+      
+      for (UNNotification *notification in notifications) {
+        [formattedNotifications addObject:RCTFormatUNNotification(notification)];
+      }
+      callback(@[formattedNotifications]);
+    }];
   }
 }
 
