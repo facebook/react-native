@@ -37,8 +37,9 @@ describe('DependencyGraph', function() {
   let ResolutionRequest;
   let defaults;
 
-  function getOrderedDependenciesAsJSON(dgraph, entryPath, platform, recursive = true) {
-    return dgraph.getDependencies({entryPath, platform, recursive})
+  function getOrderedDependenciesAsJSON(dgraphPromise, entryPath, platform, recursive = true) {
+    return dgraphPromise
+      .then(dgraph => dgraph.getDependencies({entryPath, platform, recursive}))
       .then(response => response.finalize())
       .then(({dependencies}) => Promise.all(dependencies.map(dep => Promise.all([
         dep.getName(),
@@ -111,7 +112,7 @@ describe('DependencyGraph', function() {
       platforms: new Set(['ios', 'android']),
       useWatchman: false,
       ignoreFilePath: () => false,
-      maxWorkers: 1,
+      maxWorkerCount: 1,
       moduleOptions: {cacheTransformResults: true},
       resetCache: true,
       transformCode: (module, sourceCode, transformOptions) => {
@@ -167,7 +168,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -220,7 +221,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -264,7 +265,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -316,7 +317,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -364,7 +365,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -418,7 +419,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -466,7 +467,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -519,7 +520,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -594,7 +595,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -665,7 +666,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -714,7 +715,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -763,7 +764,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -820,7 +821,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -872,7 +873,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -919,7 +920,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -965,7 +966,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -1008,7 +1009,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -1055,7 +1056,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -1100,7 +1101,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -1138,12 +1139,12 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
 
-      return dgraph.load().catch(err => {
+      return dgraph.catch(err => {
         expect(err.message).toEqual(
           `Failed to build DependencyGraph: @providesModule naming collision:\n` +
           `  Duplicate module name: index\n` +
@@ -1169,7 +1170,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -1203,7 +1204,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -1258,7 +1259,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -1344,7 +1345,7 @@ describe('DependencyGraph', function() {
           },
         });
 
-        var dgraph = new DependencyGraph({
+        var dgraph = DependencyGraph.load({
           ...defaults,
           roots: [root],
         });
@@ -1397,7 +1398,7 @@ describe('DependencyGraph', function() {
           },
         });
 
-        var dgraph = new DependencyGraph({
+        var dgraph = DependencyGraph.load({
           ...defaults,
           roots: [root],
         });
@@ -1450,7 +1451,7 @@ describe('DependencyGraph', function() {
           },
         });
 
-        var dgraph = new DependencyGraph({
+        var dgraph = DependencyGraph.load({
           ...defaults,
           roots: [root],
           assetExts: ['png', 'jpg'],
@@ -1504,7 +1505,7 @@ describe('DependencyGraph', function() {
           },
         });
 
-        var dgraph = new DependencyGraph({
+        var dgraph = DependencyGraph.load({
           ...defaults,
           roots: [root],
           assetExts: ['png', 'jpg'],
@@ -1573,7 +1574,7 @@ describe('DependencyGraph', function() {
           },
         });
 
-        const dgraph = new DependencyGraph({
+        const dgraph = DependencyGraph.load({
           ...defaults,
           roots: [root],
         });
@@ -1668,7 +1669,7 @@ describe('DependencyGraph', function() {
           },
         });
 
-        var dgraph = new DependencyGraph({
+        var dgraph = DependencyGraph.load({
           ...defaults,
           roots: [root],
         });
@@ -1735,7 +1736,7 @@ describe('DependencyGraph', function() {
           },
         });
 
-        const dgraph = new DependencyGraph({
+        const dgraph = DependencyGraph.load({
           ...defaults,
           roots: [root],
         });
@@ -1812,7 +1813,7 @@ describe('DependencyGraph', function() {
           },
         });
 
-        var dgraph = new DependencyGraph({
+        var dgraph = DependencyGraph.load({
           ...defaults,
           roots: [root],
         });
@@ -1877,7 +1878,7 @@ describe('DependencyGraph', function() {
           },
         });
 
-        const dgraph = new DependencyGraph({
+        const dgraph = DependencyGraph.load({
           ...defaults,
           roots: [root],
         });
@@ -1939,7 +1940,7 @@ describe('DependencyGraph', function() {
           },
         });
 
-        const dgraph = new DependencyGraph({
+        const dgraph = DependencyGraph.load({
           ...defaults,
           roots: [root],
         });
@@ -2023,7 +2024,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -2075,7 +2076,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -2186,7 +2187,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -2254,7 +2255,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
         extraNodeModules: {
@@ -2308,7 +2309,7 @@ describe('DependencyGraph', function() {
           },
         });
 
-        var dgraph = new DependencyGraph({
+        var dgraph = DependencyGraph.load({
           ...defaults,
           roots: [root],
           extraNodeModules: {
@@ -2354,7 +2355,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
         extraNodeModules: {
@@ -2428,7 +2429,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -2478,7 +2479,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -2531,7 +2532,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -2634,7 +2635,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -2710,7 +2711,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -2788,7 +2789,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -2879,7 +2880,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -2959,7 +2960,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -3094,7 +3095,7 @@ describe('DependencyGraph', function() {
       };
       setMockFileSystem(filesystem);
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root, otherRoot],
       });
@@ -3200,7 +3201,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -3251,7 +3252,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -3308,7 +3309,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -3365,7 +3366,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         platforms: new Set(['ios', 'android', 'web']),
         roots: [root],
@@ -3411,7 +3412,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -3469,7 +3470,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -3531,7 +3532,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -3609,7 +3610,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -3685,7 +3686,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -3763,7 +3764,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -3854,7 +3855,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -3934,7 +3935,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -4068,7 +4069,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root, otherRoot],
       });
@@ -4166,7 +4167,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -4218,7 +4219,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -4260,7 +4261,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -4317,7 +4318,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -4374,7 +4375,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -4419,7 +4420,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -4477,7 +4478,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -4566,7 +4567,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -4628,7 +4629,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -4691,7 +4692,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -4731,7 +4732,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -4808,7 +4809,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
         assetExts: ['png'],
@@ -4820,7 +4821,6 @@ describe('DependencyGraph', function() {
         }
       ).then(() => {
         filesystem.root['foo.png'] = '';
-        dgraph._hasteFS._files[root + '/foo.png'] = ['', 8648460, 1, []];
         return triggerAndProcessWatchEvent(dgraph, 'change', root + '/foo.png');
       }).then(
         () => getOrderedDependenciesAsJSON(dgraph, '/root/index.js'),
@@ -4873,7 +4873,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -4933,7 +4933,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -4948,11 +4948,11 @@ describe('DependencyGraph', function() {
           name: 'bPackage',
           main: 'main.js',
         });
-        return new Promise(resolve => {
-          dgraph.once('change', () => resolve());
+        return dgraph.then(dg => new Promise(resolve => {
+          dg.once('change', () => resolve());
           triggerWatchEvent('change', root + '/index.js');
           triggerWatchEvent('change', root + '/aPackage/package.json');
-        });
+        }));
       }).then(
         () => getOrderedDependenciesAsJSON(dgraph, '/root/index.js'),
       ).then(function(deps) {
@@ -5012,7 +5012,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -5105,7 +5105,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -5168,7 +5168,7 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
       });
@@ -5181,6 +5181,69 @@ describe('DependencyGraph', function() {
         expect(deps).toBeDefined();
       });
     });
+
+    it('should recover from multiple modules with the same name (but this is broken right now)', async () => {
+      const root = '/root';
+      console.warn = jest.fn();
+      const filesystem = setMockFileSystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require(\'a\')',
+            'require(\'b\')',
+          ].join('\n'),
+          'a.js': [
+            '/**',
+            ' * @providesModule a',
+            ' */',
+          ].join('\n'),
+          'b.js': [
+            '/**',
+            ' * @providesModule b',
+            ' */',
+          ].join('\n'),
+        },
+      });
+
+      const dgraph = DependencyGraph.load({...defaults, roots: [root]});
+      await getOrderedDependenciesAsJSON(dgraph, root + '/index.js');
+      filesystem.root['b.js'] = [
+        '/**',
+        ' * @providesModule a',
+        ' */',
+      ].join('\n');
+      await triggerAndProcessWatchEvent(dgraph, 'change', root + '/b.js');
+      try {
+        await getOrderedDependenciesAsJSON(dgraph, root + '/index.js');
+        throw new Error('expected `getOrderedDependenciesAsJSON` to fail');
+      } catch (error) {
+        if (error.type !== 'UnableToResolveError') {
+          throw error;
+        }
+        expect(console.warn).toBeCalled();
+        filesystem.root['b.js'] = [
+          '/**',
+          ' * @providesModule b',
+          ' */',
+        ].join('\n');
+        await triggerAndProcessWatchEvent(dgraph, 'change', root + '/b.js');
+      }
+
+      // This verifies that it is broken right now. Instead of throwing it should
+      // return correct results. Once this is fixed in `jest-haste`, remove
+      // the whole try catch and verify results are matching a snapshot.
+      try {
+        await getOrderedDependenciesAsJSON(dgraph, root + '/index.js');
+        throw new Error('expected `getOrderedDependenciesAsJSON` to fail');
+      } catch (error) {
+        if (error.type !== 'UnableToResolveError') {
+          throw error;
+        }
+      }
+    });
+
   });
 
   describe('Extensions', () => {
@@ -5214,13 +5277,14 @@ describe('DependencyGraph', function() {
         },
       });
 
-      var dgraph = new DependencyGraph({
+      var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
         extensions: ['jsx', 'coffee'],
       });
 
-      return dgraph.matchFilesByPattern('.*')
+      return dgraph
+        .then(dg => dg.matchFilesByPattern('.*'))
         .then(files => {
           expect(files).toEqual([
             '/root/index.jsx', '/root/a.coffee',
@@ -5285,10 +5349,10 @@ describe('DependencyGraph', function() {
         },
       });
       const DependencyGraph = require('../');
-      dependencyGraph = new DependencyGraph({
+      return DependencyGraph.load({
         ...defaults,
         roots: ['/root'],
-      });
+      }).then(dg => { dependencyGraph = dg; });
     });
 
     it('calls back for each finished module', () => {
@@ -5330,15 +5394,13 @@ describe('DependencyGraph', function() {
         },
       });
 
-      const dependencyGraph = new DependencyGraph({
+      DependencyGraph.load({
         ...defaults,
         assetDependencies,
         roots: ['/root'],
-      });
-
-      return dependencyGraph.getDependencies({
+      }).then(dependencyGraph => dependencyGraph.getDependencies({
         entryPath: '/root/index.js',
-      }).then(({dependencies}) => {
+      })).then(({dependencies}) => {
         const [, assetModule] = dependencies;
         return assetModule.getDependencies()
           .then(deps => expect(deps).toBe(assetDependencies));
@@ -5374,7 +5436,7 @@ describe('DependencyGraph', function() {
           'f.js': 'require("./c");', // circular dependency
         },
       });
-      dependencyGraph = new DependencyGraph({
+      dependencyGraph = DependencyGraph.load({
         ...defaults,
         roots: ['/root'],
       });
@@ -5462,11 +5524,11 @@ describe('DependencyGraph', function() {
     return require('graceful-fs').__setMockFilesystem(object);
   }
 
-  function triggerAndProcessWatchEvent(dgraph, eventType, filename) {
-    return new Promise(resolve => {
+  function triggerAndProcessWatchEvent(dgraphPromise, eventType, filename) {
+    return dgraphPromise.then(dgraph => new Promise(resolve => {
       dgraph.once('change', () => resolve());
       triggerWatchEvent(eventType, filename);
-    });
+    }));
   }
 
   function triggerWatchEvent(eventType, filename) {

@@ -33,19 +33,20 @@ type Options = {
   assetExts: Array<string>,
   blacklistRE?: RegExp,
   cache: Cache,
-  extraNodeModules?: {},
+  extraNodeModules: ?{},
   getTransformCacheKey: GetTransformCacheKey,
   globalTransformCache: ?GlobalTransformCache,
   hasteImpl?: HasteImpl,
+  maxWorkerCount: number,
   minifyCode: MinifyCode,
-  platforms: Array<string>,
+  platforms: Set<string>,
   polyfillModuleNames?: Array<string>,
   projectRoots: Array<string>,
-  providesModuleNodeModules?: Array<string>,
+  providesModuleNodeModules: Array<string>,
   reporter: Reporter,
   resetCache: boolean,
   transformCode: TransformCode,
-  watch?: boolean,
+  watch: boolean,
 };
 
 class Resolver {
@@ -54,16 +55,17 @@ class Resolver {
   _minifyCode: MinifyCode;
   _polyfillModuleNames: Array<string>;
 
-  constructor(opts: Options) {
-    this._depGraph = new DependencyGraph({
+  constructor(opts: Options, depGraph: DependencyGraph) {
+    this._minifyCode = opts.minifyCode;
+    this._polyfillModuleNames = opts.polyfillModuleNames || [];
+    this._depGraph = depGraph;
+  }
+
+  static async load(opts: Options): Promise<Resolver> {
+    const depGraphOpts = Object.assign(Object.create(opts), {
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
-      assetExts: opts.assetExts,
-      cache: opts.cache,
-      extraNodeModules: opts.extraNodeModules,
       extensions: ['js', 'json'],
       forceNodeFilesystemAPI: false,
-      getTransformCacheKey: opts.getTransformCacheKey,
-      globalTransformCache: opts.globalTransformCache,
       ignoreFilePath(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
@@ -74,31 +76,18 @@ class Resolver {
         hasteImpl: opts.hasteImpl,
         resetCache: opts.resetCache,
       },
-      platforms: new Set(opts.platforms),
       preferNativePlatform: true,
-      providesModuleNodeModules:
-        opts.providesModuleNodeModules || defaults.providesModuleNodeModules,
-      reporter: opts.reporter,
-      resetCache: opts.resetCache,
       roots: opts.projectRoots,
-      transformCode: opts.transformCode,
       useWatchman: true,
-      watch: opts.watch || false,
     });
-
-    this._minifyCode = opts.minifyCode;
-    this._polyfillModuleNames = opts.polyfillModuleNames || [];
-
-    this._depGraph.load().catch(err => {
-      console.error(err.message + '\n' + err.stack);
-      process.exit(1);
-    });
+    const depGraph = await DependencyGraph.load(depGraphOpts);
+    return new Resolver(opts, depGraph);
   }
 
   getShallowDependencies(
     entryFile: string,
     transformOptions: TransformOptions,
-  ): Array<string> {
+  ): Promise<Array<Module>> {
     return this._depGraph.getShallowDependencies(entryFile, transformOptions);
   }
 
@@ -125,6 +114,7 @@ class Resolver {
         polyfill => resolutionResponse.prependDependency(polyfill)
       );
 
+      /* $FlowFixMe: monkey patching */
       resolutionResponse.getModuleId = getModuleId;
       return resolutionResponse.finalize();
     });

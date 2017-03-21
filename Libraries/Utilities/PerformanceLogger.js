@@ -108,6 +108,10 @@ var PerformanceLogger = {
     extras = {};
   },
 
+  currentTimestamp() {
+    return performanceNow();
+  },
+
   getTimespans() {
     return timespans;
   },

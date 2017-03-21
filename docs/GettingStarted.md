@@ -65,19 +65,25 @@ one to start with, since the setup is a bit different.
 
 ## Installing Dependencies
 
-You will need Node.js, Watchman, the React Native command line interface, and Xcode.
+You will need Node, Watchman, the React Native command line interface, and Xcode.
 
 <block class="mac android" />
 
 ## Installing Dependencies
 
-You will need Node.js, Watchman, the React Native command line interface, and Android Studio.
+You will need Node, Watchman, the React Native command line interface, a JDK, and Android Studio.
 
-<block class="windows linux android" />
+<block class="linux android" />
 
 ## Installing Dependencies
 
-You will need Node.js, the React Native command line interface, and Android Studio.
+You will need Node, the React Native command line interface, a JDK, and Android Studio.
+
+<block class="windows android" />
+
+## Installing Dependencies
+
+You will need Node, the React Native command line interface, Python2, a JDK, and Android Studio.
 
 <block class="mac ios android" />
 
@@ -90,25 +96,33 @@ brew install node
 brew install watchman
 ```
 
-> [Watchman](https://facebook.github.io/watchman) is a tool by Facebook for watching
-changes in the filesystem. It is highly recommended you install it for better performance.
+If you have already installed Node on your system, make sure it is version 4 or newer.
+
+[Watchman](https://facebook.github.io/watchman) is a tool by Facebook for watching changes in the filesystem. It is highly recommended you install it for better performance.
 
 <block class="linux android" />
 
 ### Node
 
-Follow the [installation instructions for your Linux distribution](https://nodejs.org/en/download/package-manager/) to install Node.js 4 or newer.
+Follow the [installation instructions for your Linux distribution](https://nodejs.org/en/download/package-manager/) to install Node 4 or newer.
 
 <block class='windows android' />
 
-### Node
+### Node, Python2, JDK
 
-We recommend installing Node.js and Python2 via [Chocolatey](https://chocolatey.org), a popular package manager for Windows. Open a Command Prompt as Administrator, then run:
+We recommend installing Node and Python2 via [Chocolatey](https://chocolatey.org), a popular package manager for Windows.
+
+Android Studio, which we will install next, requires a recent version of the [Java SE Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) which can be installed using Chocolatey.
+
+Open a Command Prompt as Administrator, then run:
 
 ```
 choco install nodejs.install
 choco install python2
+choco install jdk8
 ```
+
+If you have already installed Node on your system, make sure it is version 4 or newer. If you already have a JDK on your system, make sure it is version 8 or newer.
 
 > You can find additional installation options on [Node.js's Downloads page](https://nodejs.org/en/download/).
 
@@ -116,7 +130,7 @@ choco install python2
 
 ### The React Native CLI
 
-Node.js comes with npm, which lets you install the React Native command line interface.
+Node comes with npm, which lets you install the React Native command line interface.
 
 Run the following command in a Terminal:
 
@@ -130,7 +144,7 @@ npm install -g react-native-cli
 
 ### The React Native CLI
 
-Node.js comes with npm, which lets you install the React Native command line interface.
+Node comes with npm, which lets you install the React Native command line interface.
 
 Run the following command in a Terminal:
 
@@ -146,6 +160,8 @@ npm install -g react-native-cli
 
 The easiest way to install Xcode is via the [Mac App Store](https://itunes.apple.com/us/app/xcode/id497799835?mt=12). Installing Xcode will also install the iOS Simulator and all the necessary tools to build your iOS app.
 
+If you have already installed Xcode on your system, make sure it is version 8 or higher.
+
 You will also need to install the Xcode Command Line Tools. Open Xcode, then choose "Preferences..." from the Xcode menu. Go to the Locations panel and install the tools by selecting the most recent version in the Command Line Tools dropdown.
 
 ![Xcode Command Line Tools](img/XcodeCommandLineTools.png)
@@ -156,13 +172,15 @@ You will also need to install the Xcode Command Line Tools. Open Xcode, then cho
 
 Setting up your development environment can be somewhat tedious if you're new to Android development. If you're already familiar with Android development, there are a few things you may need to configure. In either case, please make sure to carefully follow the next few steps.
 
+<block class="mac linux android" />
+
+> Android Studio requires a recent version of the [Java SE Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html). Go ahead and install JDK 8 or newer if needed.
+
+<block class="mac linux windows android" />
+
 #### 1. Download and install Android Studio
 
-[Android Studio](https://developer.android.com/studio/install.html) provides the Android SDK and AVD (emulator) required to run and test your React Native apps.
-
-<block class="mac android" />
-
-> Android Studio requires a recent version of the [Java SE Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
+Android Studio provides the Android SDK and AVD (emulator) required to run and test your React Native apps. [Download Android Studio](https://developer.android.com/studio/index.html), then follow the [installation instructions](https://developer.android.com/studio/install.html). Choose `Custom` installation when prompted by the Setup Wizard, and proceed to the next step.
 
 <block class="mac windows android" />
 
