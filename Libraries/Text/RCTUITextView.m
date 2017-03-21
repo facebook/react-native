@@ -36,7 +36,6 @@ static UIColor *defaultPlaceholderTextColor()
                                                object:self];
 
     _placeholderView = [[UILabel alloc] initWithFrame:self.bounds];
-    _placeholderView.hidden = YES;
     _placeholderView.isAccessibilityElement = NO;
     _placeholderView.numberOfLines = 0;
     [self addSubview:_placeholderView];
@@ -55,20 +54,19 @@ static UIColor *defaultPlaceholderTextColor()
 - (void)setPlaceholderText:(NSString *)placeholderText
 {
   _placeholderText = placeholderText;
-  [self invalidatePlaceholder];
+  _placeholderView.text = _placeholderText;
 }
 
 - (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
 {
   _placeholderTextColor = placeholderTextColor;
-  [self invalidatePlaceholder];
+  _placeholderView.textColor = _placeholderTextColor ?: defaultPlaceholderTextColor();
 }
-
 
 - (void)textDidChange
 {
   _textWasPasted = NO;
-  [self invalidatePlaceholder];
+  [self invalidatePlaceholderVisibility];
 }
 
 #pragma mark - UIResponder
@@ -101,7 +99,13 @@ static UIColor *defaultPlaceholderTextColor()
 - (void)setFont:(UIFont *)font
 {
   [super setFont:font];
-  [self invalidatePlaceholder];
+  _placeholderView.font = font ?: defaultPlaceholderFont();
+}
+
+- (void)setTextAlignment:(NSTextAlignment)textAlignment
+{
+  [super setTextAlignment:textAlignment];
+  _placeholderView.textAlignment = textAlignment;
 }
 
 - (void)setText:(NSString *)text
@@ -168,22 +172,10 @@ static UIColor *defaultPlaceholderTextColor()
 
 #pragma mark - Placeholder
 
-- (void)invalidatePlaceholder
+- (void)invalidatePlaceholderVisibility
 {
-  BOOL wasVisible = !_placeholderView.isHidden;
   BOOL isVisible = _placeholderText.length != 0 && self.text.length == 0;
-
-  if (wasVisible != isVisible) {
-    _placeholderView.hidden = !isVisible;
-  }
-
-  if (isVisible) {
-    _placeholderView.font = self.font ?: defaultPlaceholderFont();
-    _placeholderView.textColor = _placeholderTextColor ?: defaultPlaceholderTextColor();
-    _placeholderView.textAlignment = self.textAlignment;
-    _placeholderView.text = _placeholderText;
-    [self setNeedsLayout];
-  }
+  _placeholderView.hidden = !isVisible;
 }
 
 @end
