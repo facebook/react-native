@@ -10,9 +10,13 @@ package com.facebook.react.packagerconnection;
 
 import javax.annotation.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import android.net.Uri;
+
 import com.facebook.common.logging.FLog;
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -25,6 +29,7 @@ import org.json.JSONObject;
  */
 final public class JSPackagerClient implements ReconnectingWebSocket.MessageCallback {
   private static final String TAG = JSPackagerClient.class.getSimpleName();
+  private static final String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?device=%s&app=%s&context=%s";
   private static final int PROTOCOL_VERSION = 2;
 
   public class Responder {
@@ -82,8 +87,18 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
   private ReconnectingWebSocket mWebSocket;
   private Map<String, RequestHandler> mRequestHandlers;
 
-  public JSPackagerClient(String url, Map<String, RequestHandler> requestHandlers) {
+  public JSPackagerClient(String clientId, PackagerConnectionSettings settings, Map<String, RequestHandler> requestHandlers) {
     super();
+
+    Uri.Builder builder = new Uri.Builder();
+    builder.scheme("ws")
+      .encodedAuthority(settings.getDebugServerHost())
+      .appendPath("message")
+      .appendQueryParameter("device", AndroidInfoHelpers.getFriendlyDeviceName())
+      .appendQueryParameter("app", settings.getPackageName())
+      .appendQueryParameter("clientid", clientId);
+    String url = builder.build().toString();
+
     mWebSocket = new ReconnectingWebSocket(url, this);
     mRequestHandlers = requestHandlers;
   }

@@ -153,6 +153,12 @@ public class UIImplementation {
       int newWidth,
       int newHeight) {
     ReactShadowNode cssNode = mShadowNodeRegistry.getNode(nodeViewTag);
+    if (cssNode == null) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Tried to update size of non-existent tag: " + nodeViewTag);
+      return;
+    }
     cssNode.setStyleWidth(newWidth);
     cssNode.setStyleHeight(newHeight);
 
@@ -567,6 +573,21 @@ public class UIImplementation {
   public void removeAnimation(int reactTag, int animationID) {
     assertViewExists(reactTag, "removeAnimation");
     mOperationsQueue.enqueueRemoveAnimation(animationID);
+  }
+
+  /**
+   * LayoutAnimation API on Android is currently experimental. Therefore, it needs to be enabled
+   * explicitly in order to avoid regression in existing application written for iOS using this API.
+   *
+   * Warning : This method will be removed in future version of React Native, and layout animation
+   * will be enabled by default, so always check for its existence before invoking it.
+   *
+   * TODO(9139831) : remove this method once layout animation is fully stable.
+   *
+   * @param enabled whether layout animation is enabled or not
+   */
+  public void setLayoutAnimationEnabledExperimental(boolean enabled) {
+    mOperationsQueue.enqueueSetLayoutAnimationEnabled(enabled);
   }
 
   /**

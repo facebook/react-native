@@ -15,15 +15,21 @@
 #import <React/RCTShadowView.h>
 
 #import "RCTConvert+Text.h"
+#import "RCTShadowTextView.h"
 #import "RCTTextView.h"
 
 @implementation RCTTextViewManager
 
 RCT_EXPORT_MODULE()
 
+- (RCTShadowView *)shadowView
+{
+  return [RCTShadowTextView new];
+}
+
 - (UIView *)view
 {
-  return [[RCTTextView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
+  return [[RCTTextView alloc] initWithBridge:self.bridge];
 }
 
 RCT_REMAP_VIEW_PROPERTY(autoCapitalize, textView.autocapitalizationType, UITextAutocapitalizationType)

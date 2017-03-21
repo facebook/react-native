@@ -84,7 +84,7 @@ type OptionalProps<SectionT: SectionBase> = {
   renderSectionHeader?: ?({section: SectionT}) => ?React.Element<*>,
   /**
    * Rendered at the bottom of every Section, except the very last one, in place of the normal
-   * SeparatorComponent.
+   * ItemSeparatorComponent.
    */
   SectionSeparatorComponent?: ?ReactClass<*>,
   /**
@@ -267,10 +267,8 @@ class VirtualizedSectionList<SectionT: SectionBase>
     return {
       childProps: {
         ...props,
-        FooterComponent: this.props.ListFooterComponent,
-        HeaderComponent: this.props.ListHeaderComponent,
         renderItem: this._renderItem,
-        SeparatorComponent: undefined, // Rendered with renderItem
+        ItemSeparatorComponent: undefined, // Rendered with renderItem
         data: props.sections,
         getItemCount: () => itemCount,
         getItem,

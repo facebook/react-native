@@ -88,6 +88,10 @@ function create(duration: number, type, creationProp): Config {
     update: {
       type,
     },
+    delete: {
+      type,
+      property: creationProp,
+    },
   };
 }
 
@@ -108,6 +112,10 @@ var Presets = {
       type: Types.spring,
       springDamping: 0.4,
     },
+    delete: {
+      type: Types.linear,
+      property: Properties.opacity,
+    },
   },
 };
 
@@ -116,6 +124,10 @@ var Presets = {
  * next layout happens.
  *
  * A common way to use this API is to call it before calling `setState`.
+ *
+ * Note that in order to get this to work on **Android** you need to set the following flags via `UIManager`:
+ *
+ *     UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
  */
 var LayoutAnimation = {
   /**
