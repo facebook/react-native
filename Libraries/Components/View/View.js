@@ -16,6 +16,7 @@ const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 const React = require('React');
+const ReactNativeFeatureFlags = require('ReactNativeFeatureFlags');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheetPropType = require('StyleSheetPropType');
@@ -98,6 +99,7 @@ const statics = {
  *   - `timestamp` - A time identifier for the touch, useful for velocity calculation.
  *   - `touches` - Array of all current touches on the screen.
  */
+// $FlowFixMe(>=0.41.0)
 const View = React.createClass({
   // TODO: We should probably expose the mixins, viewConfig, and statics publicly. For example,
   // one of the props is of type AccessibilityComponentType. That is defined as a const[] above,
@@ -118,6 +120,9 @@ const View = React.createClass({
     ...statics,
   },
 
+  // TODO (bvaughn) Replace this with a deprecated getter warning. This object
+  // should be accessible via a separate import. It will not be available in
+  // production mode in the future and so should not be directly accessed.
   propTypes: {
     ...TVViewPropTypes,
 
@@ -535,11 +540,20 @@ if (__DEV__) {
   }
 }
 
+// TODO (bvaughn) Remove feature flags once all static View accessors are gone.
+// We temporarily wrap fiber native views with the create-class View above,
+// Because external code sometimes accesses static properties of this view.
 let ViewToExport = RCTView;
-if (__DEV__) {
+if (
+  __DEV__ ||
+  ReactNativeFeatureFlags.useFiber
+) {
   ViewToExport = View;
 } else {
-  Object.assign(RCTView, statics);
+  // TODO (bvaughn) Remove this mixin once all static View accessors are gone.
+  Object.assign((RCTView : any), statics);
 }
 
-module.exports = ViewToExport;
+// TODO (bvaughn) Temporarily mask Flow warnings for View property accesses.
+// We're wrapping the string type (Fiber) for now to avoid any actual problems.
+module.exports = ((ViewToExport : any) : typeof View);

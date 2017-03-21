@@ -35,8 +35,8 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
-import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
 import com.facebook.react.jstasks.HeadlessJsTaskContext;
+import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
 import com.facebook.react.module.annotations.ReactModule;
 
 /**
@@ -236,8 +236,6 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
 
   @Override
   public void initialize() {
-    // Safe to acquire choreographer here, as initialize() is invoked from UI thread.
-    mReactChoreographer = ReactChoreographer.getInstance();
     getReactApplicationContext().addLifecycleEventListener(this);
     HeadlessJsTaskContext headlessJsTaskContext =
       HeadlessJsTaskContext.getInstance(getReactApplicationContext());
@@ -259,6 +257,11 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
 
   @Override
   public void onHostResume() {
+    if (mReactChoreographer == null) {
+      // Safe to acquire choreographer here, as onHostResume() is invoked from UI thread.
+      mReactChoreographer = ReactChoreographer.getInstance();
+    }
+
     isPaused.set(false);
     // TODO(5195192) Investigate possible problems related to restarting all tasks at the same
     // moment
@@ -268,6 +271,11 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
 
   @Override
   public void onHeadlessJsTaskStart(int taskId) {
+    if (mReactChoreographer == null) {
+      // Safe to acquire choreographer here, as onHeadlessJsTaskStart() is invoked from UI thread.
+      mReactChoreographer = ReactChoreographer.getInstance();
+    }
+
     if (!isRunningTasks.getAndSet(true)) {
       setChoreographerCallback();
       maybeSetChoreographerIdleCallback();

@@ -42,15 +42,6 @@ export type ViewabilityConfig = {|
    * render.
    */
   waitForInteraction?: boolean,
-
-  /**
-   * Criteria to filter out certain scroll events so they don't count as interactions. By default,
-   * any non-zero scroll offset will be considered an interaction.
-   */
-  scrollInteractionFilter?: {|
-    minimumOffset?: number, // scrolls with an offset less than this are ignored.
-    minimumElapsed?: number, // scrolls that happen before this are ignored.
-  |},
 |};
 
 /**
@@ -58,7 +49,7 @@ export type ViewabilityConfig = {|
 * layout.
 *
 * An item is said to be in a "viewable" state when any of the following
-* is true for longer than `minViewTime` milliseconds (after an interaction if `waitForInteraction`
+* is true for longer than `minimumViewTime` milliseconds (after an interaction if `waitForInteraction`
 * is true):
 *
 * - Occupying >= `viewAreaCoveragePercentThreshold` of the view area XOR fraction of the item
@@ -74,10 +65,6 @@ class ViewabilityHelper {
   _viewableItems: Map<string, ViewToken> = new Map();
 
   constructor(config: ViewabilityConfig = {viewAreaCoveragePercentThreshold: 0}) {
-    invariant(
-      config.scrollInteractionFilter == null || config.waitForInteraction,
-      'scrollInteractionFilter only works in conjunction with waitForInteraction',
-    );
     this._config = config;
   }
 
@@ -158,22 +145,11 @@ class ViewabilityHelper {
     renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
   ): void {
     const updateTime = Date.now();
-    if (this._lastUpdateTime === 0 && getFrameMetrics(0)) {
+    if (this._lastUpdateTime === 0 && itemCount > 0 && getFrameMetrics(0)) {
       // Only count updates after the first item is rendered and has a frame.
       this._lastUpdateTime = updateTime;
     }
     const updateElapsed = this._lastUpdateTime ? updateTime - this._lastUpdateTime : 0;
-    if (this._config.waitForInteraction && !this._hasInteracted && scrollOffset !== 0) {
-      const filter = this._config.scrollInteractionFilter;
-      if (filter) {
-        if ((filter.minimumOffset == null || scrollOffset >= filter.minimumOffset) &&
-            (filter.minimumElapsed == null || updateElapsed >= filter.minimumElapsed)) {
-          this._hasInteracted = true;
-        }
-      } else {
-        this._hasInteracted = true;
-      }
-    }
     if (this._config.waitForInteraction && !this._hasInteracted) {
       return;
     }
@@ -195,13 +171,13 @@ class ViewabilityHelper {
     }
     this._viewableIndices = viewableIndices;
     this._lastUpdateTime = updateTime;
-    if (this._config.minViewTime && updateElapsed < this._config.minViewTime) {
+    if (this._config.minimumViewTime && updateElapsed < this._config.minimumViewTime) {
       const handle = setTimeout(
         () => {
           this._timers.delete(handle);
           this._onUpdateSync(viewableIndices, onViewableItemsChanged, createViewToken);
         },
-        this._config.minViewTime,
+        this._config.minimumViewTime,
       );
       this._timers.add(handle);
     } else {

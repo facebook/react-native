@@ -2,6 +2,7 @@
 
 #include "Instance.h"
 
+#include "CxxMessageQueue.h"
 #include "Executor.h"
 #include "MethodCall.h"
 #include "RecoverableError.h"
@@ -32,15 +33,13 @@ void Instance::initializeBridge(
     std::unique_ptr<InstanceCallback> callback,
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
-    std::unique_ptr<MessageQueueThread> nativeQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry) {
   callback_ = std::move(callback);
 
   jsQueue->runOnQueueSync(
-    [this, &jsef, moduleRegistry, jsQueue,
-     nativeQueue=folly::makeMoveWrapper(std::move(nativeQueue))] () mutable {
+    [this, &jsef, moduleRegistry, jsQueue] () mutable {
       nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
-          jsef.get(), moduleRegistry, jsQueue, nativeQueue.move(), callback_);
+          jsef.get(), moduleRegistry, jsQueue, callback_);
 
       std::lock_guard<std::mutex> lock(m_syncMutex);
       m_syncReady = true;
