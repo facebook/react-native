@@ -247,14 +247,15 @@ class GlobalTransformCache {
     });
   }
 
+  shouldFetch(props: FetchProps): boolean {
+    return this._profileSet.has(props.transformOptions);
+  }
+
   /**
    * This may return `null` if either the cache doesn't have a value for that
    * key yet, or an error happened, processed separately.
    */
   async fetch(props: FetchProps): Promise<?CachedResult> {
-    if (!this._profileSet.has(props.transformOptions)) {
-      return null;
-    }
     const uri = await this._fetcher.fetch(GlobalTransformCache.keyOf(props));
     if (uri == null) {
       return null;

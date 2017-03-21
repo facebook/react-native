@@ -303,7 +303,7 @@ class Module {
     callback: (error: ?Error, result: ?TransformedCode) => void,
   ) {
     const {_globalCache} = this;
-    if (_globalCache == null) {
+    if (_globalCache == null || !_globalCache.shouldFetch(cacheProps)) {
       this._transformCodeForCallback(cacheProps, callback);
       return;
     }
