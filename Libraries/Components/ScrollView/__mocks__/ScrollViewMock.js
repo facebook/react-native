@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * eslint-env jest
  */
 'use strict';
 
@@ -17,7 +18,9 @@ const requireNativeComponent = require('requireNativeComponent');
 
 const RCTScrollView = requireNativeComponent('RCTScrollView');
 
-class ScrollViewMock extends React.Component {
+const ScrollViewComponent = jest.genMockFromModule('ScrollView');
+
+class ScrollViewMock extends ScrollViewComponent {
   render() {
     return (
       <RCTScrollView {...this.props}>
