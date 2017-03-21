@@ -172,7 +172,6 @@
 		13F887581E2971D400C3C7A1 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887521E2971C500C3C7A1 /* Demangle.cpp */; };
 		13F887591E2971D400C3C7A1 /* StringBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887531E2971C500C3C7A1 /* StringBase.cpp */; };
 		13F8875A1E2971D400C3C7A1 /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887541E2971C500C3C7A1 /* Unicode.cpp */; };
-		13F8876D1E29726200C3C7A1 /* CxxMessageQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0A51E03699D0018521A /* CxxMessageQueue.cpp */; };
 		13F8876E1E29726200C3C7A1 /* CxxNativeModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0A81E03699D0018521A /* CxxNativeModule.cpp */; };
 		13F887701E29726200C3C7A1 /* Instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0AE1E03699D0018521A /* Instance.cpp */; };
 		13F887711E29726200C3C7A1 /* JSBundleType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */; };
@@ -191,7 +190,6 @@
 		13F8877E1E29726200C3C7A1 /* NativeToJsBridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0CF1E03699D0018521A /* NativeToJsBridge.cpp */; };
 		13F8877F1E29726200C3C7A1 /* Platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0D11E03699D0018521A /* Platform.cpp */; };
 		13F887801E29726200C3C7A1 /* SampleCxxModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0D31E03699D0018521A /* SampleCxxModule.cpp */; };
-		13F887811E29726300C3C7A1 /* CxxMessageQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0A51E03699D0018521A /* CxxMessageQueue.cpp */; };
 		13F887821E29726300C3C7A1 /* CxxNativeModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0A81E03699D0018521A /* CxxNativeModule.cpp */; };
 		13F887841E29726300C3C7A1 /* Instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0AE1E03699D0018521A /* Instance.cpp */; };
 		13F887851E29726300C3C7A1 /* JSCExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0B21E03699D0018521A /* JSCExecutor.cpp */; };
@@ -229,7 +227,6 @@
 		191E3EBE1C29D9AF00C180A6 /* RCTRefreshControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 191E3EBD1C29D9AF00C180A6 /* RCTRefreshControlManager.m */; };
 		191E3EC11C29DC3800C180A6 /* RCTRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 191E3EC01C29DC3800C180A6 /* RCTRefreshControl.m */; };
 		19DED2291E77E29200F089BB /* systemJSCWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 19DED2281E77E29200F089BB /* systemJSCWrapper.cpp */; };
-		27595AA31E575C7800CCE2B1 /* CxxMessageQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A61E03699D0018521A /* CxxMessageQueue.h */; };
 		27595AA41E575C7800CCE2B1 /* CxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A71E03699D0018521A /* CxxModule.h */; };
 		27595AA51E575C7800CCE2B1 /* CxxNativeModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A91E03699D0018521A /* CxxNativeModule.h */; };
 		27595AA61E575C7800CCE2B1 /* Executor.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0AB1E03699D0018521A /* Executor.h */; };
@@ -256,7 +253,6 @@
 		27595ABB1E575C7800CCE2B1 /* Platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0D21E03699D0018521A /* Platform.h */; };
 		27595ABC1E575C7800CCE2B1 /* SampleCxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0D41E03699D0018521A /* SampleCxxModule.h */; };
 		27595ABD1E575C7800CCE2B1 /* SystraceSection.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0D51E03699D0018521A /* SystraceSection.h */; };
-		27595ABE1E575C7800CCE2B1 /* CxxMessageQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A61E03699D0018521A /* CxxMessageQueue.h */; };
 		27595ABF1E575C7800CCE2B1 /* CxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A71E03699D0018521A /* CxxModule.h */; };
 		27595AC01E575C7800CCE2B1 /* CxxNativeModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A91E03699D0018521A /* CxxNativeModule.h */; };
 		27595AC11E575C7800CCE2B1 /* Executor.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0AB1E03699D0018521A /* Executor.h */; };
@@ -744,7 +740,6 @@
 		3D8ED92C1E5B120100D83D20 /* libcxxreact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3CD9321DE5FBEE00167DC4 /* libcxxreact.a */; };
 		3D8ED92D1E5B120100D83D20 /* libyoga.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3C06751DE3340C00C268FA /* libyoga.a */; };
 		3DA9819E1E5B0DBB004F2374 /* NSDataBigString.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7454B31E54786200E74ADD /* NSDataBigString.h */; };
-		3DA9819F1E5B0E34004F2374 /* CxxMessageQueue.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A61E03699D0018521A /* CxxMessageQueue.h */; };
 		3DA981A01E5B0E34004F2374 /* CxxModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A71E03699D0018521A /* CxxModule.h */; };
 		3DA981A11E5B0E34004F2374 /* CxxNativeModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A91E03699D0018521A /* CxxNativeModule.h */; };
 		3DA981A21E5B0E34004F2374 /* Executor.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0AB1E03699D0018521A /* Executor.h */; };
@@ -891,7 +886,6 @@
 		3DA982361E5B0F7F004F2374 /* RCTWrapperViewController.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13B080231A694A8400A75B9A /* RCTWrapperViewController.h */; };
 		3DA982381E5B0F7F004F2374 /* UIView+React.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13E067531A70F44B002CDEE1 /* UIView+React.h */; };
 		3DA982391E5B0F8A004F2374 /* UIView+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F15A171B7CC46900F10295 /* UIView+Private.h */; };
-		3DA9823A1E5B1053004F2374 /* CxxMessageQueue.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A61E03699D0018521A /* CxxMessageQueue.h */; };
 		3DA9823B1E5B1053004F2374 /* CxxModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A71E03699D0018521A /* CxxModule.h */; };
 		3DA9823C1E5B1053004F2374 /* CxxNativeModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A91E03699D0018521A /* CxxNativeModule.h */; };
 		3DA9823D1E5B1053004F2374 /* Executor.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0AB1E03699D0018521A /* Executor.h */; };
@@ -1201,7 +1195,6 @@
 			dstPath = include/cxxreact;
 			dstSubfolderSpec = 16;
 			files = (
-				3DA9823A1E5B1053004F2374 /* CxxMessageQueue.h in Copy Headers */,
 				3DA9823B1E5B1053004F2374 /* CxxModule.h in Copy Headers */,
 				3DA9823C1E5B1053004F2374 /* CxxNativeModule.h in Copy Headers */,
 				3DA9823D1E5B1053004F2374 /* Executor.h in Copy Headers */,
@@ -1400,7 +1393,6 @@
 			dstPath = include/cxxreact;
 			dstSubfolderSpec = 16;
 			files = (
-				3DA9819F1E5B0E34004F2374 /* CxxMessageQueue.h in Copy Headers */,
 				3DA981A01E5B0E34004F2374 /* CxxModule.h in Copy Headers */,
 				3DA981A11E5B0E34004F2374 /* CxxNativeModule.h in Copy Headers */,
 				3DA981A21E5B0E34004F2374 /* Executor.h in Copy Headers */,
@@ -1720,8 +1712,6 @@
 		3D7A27DE1DE32541002E3F95 /* JSCWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCWrapper.h; sourceTree = "<group>"; };
 		3D7A27E11DE325B7002E3F95 /* RCTJSCErrorHandling.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTJSCErrorHandling.mm; sourceTree = "<group>"; };
 		3D7AA9C31E548CD5001955CF /* NSDataBigString.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NSDataBigString.mm; sourceTree = "<group>"; };
-		3D92B0A51E03699D0018521A /* CxxMessageQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CxxMessageQueue.cpp; sourceTree = "<group>"; };
-		3D92B0A61E03699D0018521A /* CxxMessageQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CxxMessageQueue.h; sourceTree = "<group>"; };
 		3D92B0A71E03699D0018521A /* CxxModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CxxModule.h; sourceTree = "<group>"; };
 		3D92B0A81E03699D0018521A /* CxxNativeModule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CxxNativeModule.cpp; sourceTree = "<group>"; };
 		3D92B0A91E03699D0018521A /* CxxNativeModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CxxNativeModule.h; sourceTree = "<group>"; };
@@ -2416,8 +2406,6 @@
 		AC70D2EA1DE489FC002E6351 /* cxxreact */ = {
 			isa = PBXGroup;
 			children = (
-				3D92B0A51E03699D0018521A /* CxxMessageQueue.cpp */,
-				3D92B0A61E03699D0018521A /* CxxMessageQueue.h */,
 				3D92B0A71E03699D0018521A /* CxxModule.h */,
 				3D92B0A81E03699D0018521A /* CxxNativeModule.cpp */,
 				3D92B0A91E03699D0018521A /* CxxNativeModule.h */,
@@ -2660,7 +2648,6 @@
 				3D3030221DF8294C00D6DDAE /* JSBundleType.h in Headers */,
 				27595ACA1E575C7800CCE2B1 /* JSCMemory.h in Headers */,
 				3D74547D1E54758900E74ADD /* JSBigString.h in Headers */,
-				27595ABE1E575C7800CCE2B1 /* CxxMessageQueue.h in Headers */,
 				27595AC71E575C7800CCE2B1 /* JSCExecutor.h in Headers */,
 				27595ACD1E575C7800CCE2B1 /* JSCSamplingProfiler.h in Headers */,
 				27595ABF1E575C7800CCE2B1 /* CxxModule.h in Headers */,
@@ -2732,7 +2719,6 @@
 				3D3CD9471DE5FC7800167DC4 /* oss-compat-util.h in Headers */,
 				27595AAF1E575C7800CCE2B1 /* JSCMemory.h in Headers */,
 				3D74547C1E54758900E74ADD /* JSBigString.h in Headers */,
-				27595AA31E575C7800CCE2B1 /* CxxMessageQueue.h in Headers */,
 				27595AAC1E575C7800CCE2B1 /* JSCExecutor.h in Headers */,
 				27595AB21E575C7800CCE2B1 /* JSCSamplingProfiler.h in Headers */,
 				27595AA41E575C7800CCE2B1 /* CxxModule.h in Headers */,
@@ -3436,7 +3422,6 @@
 				13F8877F1E29726200C3C7A1 /* Platform.cpp in Sources */,
 				13F887701E29726200C3C7A1 /* Instance.cpp in Sources */,
 				13F8877E1E29726200C3C7A1 /* NativeToJsBridge.cpp in Sources */,
-				13F8876D1E29726200C3C7A1 /* CxxMessageQueue.cpp in Sources */,
 				13F887761E29726200C3C7A1 /* JSCNativeModules.cpp in Sources */,
 				13F887801E29726200C3C7A1 /* SampleCxxModule.cpp in Sources */,
 			);
@@ -3460,7 +3445,6 @@
 				3D80D9181DF6F7A80028D040 /* JSBundleType.cpp in Sources */,
 				13F8878F1E29726300C3C7A1 /* MethodCall.cpp in Sources */,
 				13F887921E29726300C3C7A1 /* Platform.cpp in Sources */,
-				13F887811E29726300C3C7A1 /* CxxMessageQueue.cpp in Sources */,
 				13F887911E29726300C3C7A1 /* NativeToJsBridge.cpp in Sources */,
 				13F887821E29726300C3C7A1 /* CxxNativeModule.cpp in Sources */,
 				13F887891E29726300C3C7A1 /* JSCNativeModules.cpp in Sources */,
