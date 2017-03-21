@@ -152,9 +152,8 @@ RCT_EXPORT_METHOD(startListeningToAnimatedNodeValue:(nonnull NSNumber *)tag)
 
 RCT_EXPORT_METHOD(stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag)
 {
-  __weak id<RCTValueAnimatedNodeObserver> valueObserver = self;
   [_operations addObject:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager stopListeningToAnimatedNodeValue:tag valueObserver:valueObserver];
+    [nodesManager stopListeningToAnimatedNodeValue:tag];
   }];
 }
 
