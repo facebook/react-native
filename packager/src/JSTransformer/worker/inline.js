@@ -34,6 +34,12 @@ const importMap = new Map([['ReactNative', 'react-native']]);
 
 const isGlobal = binding => !binding;
 
+const isFlowDeclared = binding =>
+  t.isDeclareVariable(binding.path);
+
+const isGlobalOrFlowDeclared = binding =>
+  isGlobal(binding) || isFlowDeclared(binding);
+
 const isToplevelBinding = (binding, isWrappedModule) =>
   isGlobal(binding) ||
   !binding.scope.parent ||
@@ -93,7 +99,7 @@ const isReactPlatformSelect = (node, scope, isWrappedModule) =>
 
 const isDev = (node, parent, scope) =>
   t.isIdentifier(node, dev) &&
-  isGlobal(scope.getBinding(dev.name)) &&
+  isGlobalOrFlowDeclared(scope.getBinding(dev.name)) &&
   !(t.isMemberExpression(parent));
 
 function findProperty(objectExpression, key, fallback) {

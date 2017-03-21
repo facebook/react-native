@@ -90,7 +90,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
 
   // allocate 16 bytes
   movq $0x10, %rdi
-  callq SYMBOL_NAME_PIC(malloc)
+  callq SYMBOL_NAME_PIC(RCTProfileMalloc)
 
   // store the initial value of calle saved registers %r13 and %r14
   movq %r13, 0x0(%rax)
@@ -169,7 +169,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
   andq $-0x10, %rsp
 
   // Free the memory allocated to stash callee saved registers
-  callq SYMBOL_NAME_PIC(free)
+  callq SYMBOL_NAME_PIC(RCTProfileFree)
 
   // unalign  stack and restore %r12
   movq %r12, %rsp

@@ -46,7 +46,7 @@ original_android_library=android_library
 def android_library(
   name,
   deps=[],
-  plugins=[]
+  plugins=[],
   *args,
   **kwargs):
 

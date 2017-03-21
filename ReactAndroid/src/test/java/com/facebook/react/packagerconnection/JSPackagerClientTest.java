@@ -9,6 +9,7 @@
 
 package com.facebook.react.packagerconnection;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -32,11 +33,19 @@ public class JSPackagerClientTest {
     return m;
   }
 
+  private PackagerConnectionSettings mSettings;
+
+  @Before
+  public void setUp() {
+    mSettings = mock(PackagerConnectionSettings.class);
+    when(mSettings.getDebugServerHost()).thenReturn("ws://not_needed");
+    when(mSettings.getPackageName()).thenReturn("my_test_package");
+  }
+
   @Test
   public void test_onMessage_ShouldTriggerNotification() throws IOException {
     JSPackagerClient.RequestHandler handler = mock(JSPackagerClient.RequestHandler.class);
-    final JSPackagerClient client = new JSPackagerClient("ws://not_needed", createRH("methodValue", handler));
-    WebSocket webSocket = mock(WebSocket.class);
+    final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
     client.onMessage(
         ResponseBody.create(
@@ -49,8 +58,7 @@ public class JSPackagerClientTest {
   @Test
   public void test_onMessage_ShouldTriggerRequest() throws IOException {
     JSPackagerClient.RequestHandler handler = mock(JSPackagerClient.RequestHandler.class);
-    final JSPackagerClient client = new JSPackagerClient("ws://not_needed", createRH("methodValue", handler));
-    WebSocket webSocket = mock(WebSocket.class);
+    final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
     client.onMessage(
         ResponseBody.create(
@@ -63,8 +71,7 @@ public class JSPackagerClientTest {
   @Test
   public void test_onMessage_WithoutParams_ShouldTriggerNotification() throws IOException {
     JSPackagerClient.RequestHandler handler = mock(JSPackagerClient.RequestHandler.class);
-    final JSPackagerClient client = new JSPackagerClient("ws://not_needed", createRH("methodValue", handler));
-    WebSocket webSocket = mock(WebSocket.class);
+    final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
     client.onMessage(
         ResponseBody.create(
@@ -77,8 +84,7 @@ public class JSPackagerClientTest {
   @Test
   public void test_onMessage_WithInvalidContentType_ShouldNotTriggerCallback() throws IOException {
     JSPackagerClient.RequestHandler handler = mock(JSPackagerClient.RequestHandler.class);
-    final JSPackagerClient client = new JSPackagerClient("ws://not_needed", createRH("methodValue", handler));
-    WebSocket webSocket = mock(WebSocket.class);
+    final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
     client.onMessage(
         ResponseBody.create(
@@ -91,8 +97,7 @@ public class JSPackagerClientTest {
   @Test
   public void test_onMessage_WithoutMethod_ShouldNotTriggerCallback() throws IOException {
     JSPackagerClient.RequestHandler handler = mock(JSPackagerClient.RequestHandler.class);
-    final JSPackagerClient client = new JSPackagerClient("ws://not_needed", createRH("methodValue", handler));
-    WebSocket webSocket = mock(WebSocket.class);
+    final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
     client.onMessage(
         ResponseBody.create(
@@ -105,8 +110,7 @@ public class JSPackagerClientTest {
   @Test
   public void test_onMessage_With_Null_Action_ShouldNotTriggerCallback() throws IOException {
     JSPackagerClient.RequestHandler handler = mock(JSPackagerClient.RequestHandler.class);
-    final JSPackagerClient client = new JSPackagerClient("ws://not_needed", createRH("methodValue", handler));
-    WebSocket webSocket = mock(WebSocket.class);
+    final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
     client.onMessage(
         ResponseBody.create(
@@ -119,8 +123,7 @@ public class JSPackagerClientTest {
   @Test
   public void test_onMessage_WithInvalidMethod_ShouldNotTriggerCallback() throws IOException {
     JSPackagerClient.RequestHandler handler = mock(JSPackagerClient.RequestHandler.class);
-    final JSPackagerClient client = new JSPackagerClient("ws://not_needed", createRH("methodValue", handler));
-    WebSocket webSocket = mock(WebSocket.class);
+    final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
     client.onMessage(
         ResponseBody.create(
@@ -133,8 +136,7 @@ public class JSPackagerClientTest {
   @Test
   public void test_onMessage_WrongVersion_ShouldNotTriggerCallback() throws IOException {
     JSPackagerClient.RequestHandler handler = mock(JSPackagerClient.RequestHandler.class);
-    final JSPackagerClient client = new JSPackagerClient("ws://not_needed", createRH("methodValue", handler));
-    WebSocket webSocket = mock(WebSocket.class);
+    final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
     client.onMessage(
         ResponseBody.create(

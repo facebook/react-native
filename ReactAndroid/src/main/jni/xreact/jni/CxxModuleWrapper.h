@@ -12,7 +12,13 @@
 namespace facebook {
 namespace react {
 
-class CxxModuleWrapper : public jni::HybridClass<CxxModuleWrapper> {
+struct JNativeModule : jni::JavaClass<JNativeModule> {
+  constexpr static const char *const kJavaDescriptor =
+    "Lcom/facebook/react/bridge/NativeModule;";
+};
+
+class CxxModuleWrapper :
+    public jni::HybridClass<CxxModuleWrapper, JNativeModule> {
 public:
   constexpr static const char *const kJavaDescriptor =
     "Lcom/facebook/react/cxxbridge/CxxModuleWrapper;";

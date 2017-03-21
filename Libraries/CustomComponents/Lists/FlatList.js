@@ -51,7 +51,7 @@ type RequiredProps<ItemT> = {
    *     _renderItem = ({item}) => (
    *       <TouchableOpacity onPress={() => this._onPress(item)}>
    *         <Text>{item.title}}</Text>
-   *       <TouchableOpacity/>
+   *       </TouchableOpacity>
    *     );
    *     ...
    *     <FlatList data={[{title: 'Title Text', key: 'item1'}]} renderItem={this._renderItem} />
@@ -103,7 +103,7 @@ type OptionalProps<ItemT> = {
    */
   keyExtractor: (item: ItemT, index: number) => string,
   /**
-   * Multiple columns can only be rendered with `horizontal={false}`` and will zig-zag like a
+   * Multiple columns can only be rendered with `horizontal={false}` and will zig-zag like a
    * `flexWrap` layout. Items should all be the same height - masonry layouts are not supported.
    */
   numColumns: number,
