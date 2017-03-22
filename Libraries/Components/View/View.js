@@ -23,6 +23,7 @@ const StyleSheetPropType = require('StyleSheetPropType');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
 const invariant = require('fbjs/lib/invariant');
+const warning = require('fbjs/lib/warning');
 
 const {
   AccessibilityComponentTypes,
@@ -42,16 +43,6 @@ const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
 const forceTouchAvailable = (NativeModules.PlatformConstants &&
   NativeModules.PlatformConstants.forceTouchAvailable) || false;
-
-const statics = {
-  AccessibilityTraits,
-  AccessibilityComponentType: AccessibilityComponentTypes,
-  /**
-   * Is 3D Touch / Force Touch available (i.e. will touch events include `force`)
-   * @platform ios
-   */
-  forceTouchAvailable,
-};
 
 /**
  * The most fundamental component for building a UI, `View` is a container that supports layout with
@@ -114,10 +105,6 @@ const View = React.createClass({
   viewConfig: {
     uiViewClassName: 'RCTView',
     validAttributes: ReactNativeViewAttributes.RCTView
-  },
-
-  statics: {
-    ...statics,
   },
 
   // TODO (bvaughn) Replace this with a deprecated getter warning. This object
@@ -520,6 +507,63 @@ const View = React.createClass({
   },
 });
 
+// Warn about unsupported use of View static properties as these will no longer
+// be supported with React fiber. This warning message will go away in the next
+// ReactNative release. Use defineProperty() rather than createClass() statics
+// because the mixin process auto-triggers the 1-time warning message.
+// TODO (bvaughn) Remove these warning messages after the April ReactNative tag.
+function mixinStatics (target) {
+  let warnedAboutAccessibilityTraits = false;
+  let warnedAboutAccessibilityComponentType = false;
+  let warnedAboutForceTouchAvailable = false;
+
+  // $FlowFixMe https://github.com/facebook/flow/issues/285
+  Object.defineProperty(target, 'AccessibilityTraits', {
+    get: function() {
+      if (!warnedAboutAccessibilityTraits) {
+        warnedAboutAccessibilityTraits = true;
+        warning(
+          false,
+          'View.AccessibilityTraits has been deprecated and will be ' +
+          'removed in a future version of ReactNative. Use ' +
+          'ViewAccessibility.AccessibilityTraits instead.'
+        );
+      }
+      return AccessibilityTraits;
+    }
+  });
+  // $FlowFixMe https://github.com/facebook/flow/issues/285
+  Object.defineProperty(target, 'AccessibilityComponentType', {
+    get: function() {
+      if (!warnedAboutAccessibilityComponentType) {
+        warnedAboutAccessibilityComponentType = true;
+        warning(
+          false,
+          'View.AccessibilityComponentType has been deprecated and will be ' +
+          'removed in a future version of ReactNative. Use ' +
+          'ViewAccessibility.AccessibilityComponentTypes instead.'
+        );
+      }
+      return AccessibilityComponentTypes;
+    }
+  });
+  // $FlowFixMe https://github.com/facebook/flow/issues/285
+  Object.defineProperty(target, 'forceTouchAvailable', {
+    get: function() {
+      if (!warnedAboutForceTouchAvailable) {
+        warnedAboutForceTouchAvailable = true;
+        warning(
+          false,
+          'View.forceTouchAvailable has been deprecated and will be removed ' +
+          'in a future version of ReactNative. Use ' +
+          'NativeModules.PlatformConstants.forceTouchAvailable instead.'
+        );
+      }
+      return forceTouchAvailable;
+    }
+  });
+}
+
 const RCTView = requireNativeComponent('RCTView', View, {
   nativeOnly: {
     nativeBackgroundAndroid: true,
@@ -548,10 +592,11 @@ if (
   __DEV__ ||
   ReactNativeFeatureFlags.useFiber
 ) {
+  mixinStatics(View);
   ViewToExport = View;
 } else {
   // TODO (bvaughn) Remove this mixin once all static View accessors are gone.
-  Object.assign((RCTView : any), statics);
+  mixinStatics((RCTView : any));
 }
 
 // TODO (bvaughn) Temporarily mask Flow warnings for View property accesses.
