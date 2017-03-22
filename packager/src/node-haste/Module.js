@@ -74,6 +74,8 @@ export type ConstructorArgs = {
   transformCode: ?TransformCode,
 };
 
+type DocBlock = {+[key: string]: string};
+
 class Module {
 
   path: string;
@@ -88,9 +90,9 @@ class Module {
   _reporter: Reporter;
   _globalCache: ?GlobalTransformCache;
 
-  _docBlock: Promise<{[key: string]: string}>;
-  _hasteName: Promise<string | void>;
-  _readSourceCodePromise: Promise<string>;
+  _docBlock: ?DocBlock;
+  _hasteNameCache: ?{+hasteName: ?string};
+  _sourceCode: ?string;
   _readPromises: Map<string, Promise<ReadResult>>;
 
   constructor({
@@ -127,7 +129,7 @@ class Module {
     return this._cache.get(
       this.path,
       'isHaste',
-      () => this._getHasteName().then(name => !!name),
+      () => Promise.resolve(this._getHasteName() != null),
     );
   }
 
@@ -143,8 +145,9 @@ class Module {
     return this._cache.get(
       this.path,
       'name',
-      () => this._getHasteName().then(name => {
-        if (name !== undefined) {
+      () => Promise.resolve().then(() => {
+        const name = this._getHasteName();
+        if (name != null) {
           return name;
         }
 
@@ -183,67 +186,63 @@ class Module {
   invalidate() {
     this._cache.invalidate(this.path);
     this._readPromises.clear();
+    this._sourceCode = null;
+    this._docBlock = null;
+    this._hasteNameCache = null;
   }
 
-  _readSourceCode() {
-    if (!this._readSourceCodePromise) {
-      this._readSourceCodePromise = new Promise(
-        resolve => resolve(fs.readFileSync(this.path, 'utf8'))
-      );
+  _readSourceCode(): string {
+    if (this._sourceCode == null) {
+      this._sourceCode = fs.readFileSync(this.path, 'utf8');
     }
-    return this._readSourceCodePromise;
+    return this._sourceCode;
   }
 
-  _readDocBlock() {
-    if (!this._docBlock) {
-      this._docBlock = this._readSourceCode()
-        .then(source => docblock.parseAsObject(source));
+  _readDocBlock(): DocBlock {
+    if (this._docBlock == null) {
+      this._docBlock = docblock.parseAsObject(this._readSourceCode());
     }
     return this._docBlock;
   }
 
-  _getHasteName(): Promise<string | void> {
-    if (!this._hasteName) {
-      const hasteImpl = this._options.hasteImpl;
-      if (hasteImpl === undefined || hasteImpl.enforceHasteNameMatches) {
-        this._hasteName = this._readDocBlock().then(moduleDocBlock => {
-          const {providesModule} = moduleDocBlock;
-          return providesModule
-            && !this._depGraphHelpers.isNodeModulesDir(this.path)
-              ? /^\S+/.exec(providesModule)[0]
-              : undefined;
-        });
-      }
-      if (hasteImpl !== undefined) {
-        const {enforceHasteNameMatches} = hasteImpl;
-        if (enforceHasteNameMatches) {
-          this._hasteName = this._hasteName.then(providesModule => {
-            enforceHasteNameMatches(
-              this.path,
-              providesModule,
-            );
-            return hasteImpl.getHasteName(this.path);
-          });
-        } else {
-          this._hasteName = Promise.resolve(hasteImpl.getHasteName(this.path));
-        }
-      } else {
-        // Extract an id for the module if it's using @providesModule syntax
-        // and if it's NOT in node_modules (and not a whitelisted node_module).
-        // This handles the case where a project may have a dep that has @providesModule
-        // docblock comments, but doesn't want it to conflict with whitelisted @providesModule
-        // modules, such as react-haste, fbjs-haste, or react-native or with non-dependency,
-        // project-specific code that is using @providesModule.
-        this._hasteName = this._readDocBlock().then(moduleDocBlock => {
-          const {providesModule} = moduleDocBlock;
-          return providesModule
-            && !this._depGraphHelpers.isNodeModulesDir(this.path)
-              ? /^\S+/.exec(providesModule)[0]
-              : undefined;
-        });
-      }
+  _getHasteName(): ?string {
+    if (this._hasteNameCache != null) {
+      return this._hasteNameCache.hasteName;
     }
-    return this._hasteName;
+    const hasteImpl = this._options.hasteImpl;
+    if (hasteImpl === undefined || hasteImpl.enforceHasteNameMatches) {
+      const moduleDocBlock = this._readDocBlock();
+      const {providesModule} = moduleDocBlock;
+      this._hasteNameCache = {
+        hasteName: providesModule && !this._depGraphHelpers.isNodeModulesDir(this.path)
+          ? /^\S+/.exec(providesModule)[0]
+          : undefined,
+      };
+    }
+    if (hasteImpl !== undefined) {
+      const {enforceHasteNameMatches} = hasteImpl;
+      if (enforceHasteNameMatches) {
+        /* $FlowFixMe: this rely on the above if being executed, that is fragile. Rework the algo. */
+        enforceHasteNameMatches(this.path, this._hasteNameCache.hasteName);
+      }
+      this._hasteNameCache = {hasteName: hasteImpl.getHasteName(this.path)};
+    } else {
+      // Extract an id for the module if it's using @providesModule syntax
+      // and if it's NOT in node_modules (and not a whitelisted node_module).
+      // This handles the case where a project may have a dep that has @providesModule
+      // docblock comments, but doesn't want it to conflict with whitelisted @providesModule
+      // modules, such as react-haste, fbjs-haste, or react-native or with non-dependency,
+      // project-specific code that is using @providesModule.
+      const moduleDocBlock = this._readDocBlock();
+      const {providesModule} = moduleDocBlock;
+      this._hasteNameCache = {
+        hasteName:
+          providesModule && !this._depGraphHelpers.isNodeModulesDir(this.path)
+            ? /^\S+/.exec(providesModule)[0]
+            : undefined,
+      };
+    }
+    return this._hasteNameCache.hasteName;
   }
 
   /**
@@ -251,7 +250,7 @@ class Module {
    */
   _finalizeReadResult(
     source: string,
-    id?: string,
+    id: ?string,
     extern: boolean,
     result: TransformedCode,
   ): ReadResult {
@@ -345,11 +344,10 @@ class Module {
     if (promise != null) {
       return promise;
     }
-    const freshPromise = Promise.all([
-      this._readSourceCode(),
-      this._readDocBlock(),
-      this._getHasteName(),
-    ]).then(([sourceCode, moduleDocBlock, id]) => {
+    const freshPromise = Promise.resolve().then(() => {
+      const sourceCode = this._readSourceCode();
+      const moduleDocBlock = this._readDocBlock();
+      const id = this._getHasteName();
       // Ignore requires in JSON files or generated code. An example of this
       // is prebuilt files like the SourceMap library.
       const extern = this.isJSON() || 'extern' in moduleDocBlock;
