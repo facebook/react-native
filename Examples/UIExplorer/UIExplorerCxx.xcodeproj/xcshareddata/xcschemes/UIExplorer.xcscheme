@@ -62,6 +62,20 @@
                ReferencedContainer = "container:UIExplorerCxx.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "143BC5941B21E3E100462512"
+               BuildableName = "UIExplorerIntegrationTests.xctest"
+               BlueprintName = "UIExplorerIntegrationTests"
+               ReferencedContainer = "container:UIExplorerCxx.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -70,6 +84,16 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "004D289D1AAF61C70097A701"
+               BuildableName = "UIExplorerUnitTests.xctest"
+               BlueprintName = "UIExplorerUnitTests"
+               ReferencedContainer = "container:UIExplorerCxx.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
          <TestableReference
             skipped = "NO">
             <BuildableReference
@@ -113,6 +137,13 @@
             ReferencedContainer = "container:UIExplorerCxx.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "CI_USE_PACKAGER"
+            value = "1"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
