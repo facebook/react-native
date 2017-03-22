@@ -62,7 +62,6 @@ type NormalProps = {
   refreshing?: boolean,
 };
 type DefaultProps = {
-  shouldItemUpdate: (curr: {item: Item}, next: {item: Item}) => boolean,
   keyExtractor: (item: Item) => string,
 };
 type Props = NormalProps & DefaultProps;
@@ -90,7 +89,6 @@ class MetroListView extends React.Component {
     );
   }
   static defaultProps: DefaultProps = {
-    shouldItemUpdate: () => true,
     keyExtractor: (item, index) => item.key || index,
     renderScrollComponent: (props: Props) => {
       if (props.onRefresh) {
@@ -114,7 +112,7 @@ class MetroListView extends React.Component {
     this.props,
     {
       ds: new ListView.DataSource({
-        rowHasChanged: (itemA, itemB) => this.props.shouldItemUpdate({item: itemA}, {item: itemB}),
+        rowHasChanged: (itemA, itemB) => true,
         sectionHeaderHasChanged: () => true,
         getSectionHeaderData: (dataBlob, sectionID) => this.state.sectionHeaderData[sectionID],
       }),

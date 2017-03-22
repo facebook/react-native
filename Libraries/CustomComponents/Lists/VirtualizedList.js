@@ -123,10 +123,6 @@ type OptionalProps = {
    * Render a custom scroll component, e.g. with a differently styled `RefreshControl`.
    */
   renderScrollComponent: (props: Object) => React.Element<any>,
-  shouldItemUpdate: (
-    props: {item: Item, index: number},
-    nextProps: {item: Item, index: number}
-  ) => boolean,
   /**
    * Amount of time between low-pri item render batches, e.g. for rendering items quite a ways off
    * screen. Similar fill rate/responsiveness tradeoff as `maxToRenderPerBatch`.
@@ -290,10 +286,6 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         return <ScrollView {...props} />;
       }
     },
-    shouldItemUpdate: (
-      props: {item: Item, index: number},
-      nextProps: {item: Item, index: number},
-    ) => true,
     updateCellsBatchingPeriod: 50,
     windowSize: 21, // multiples of length
   };
@@ -624,9 +616,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     if (dt > 500 && this._scrollMetrics.dt > 500 && (contentLength > (5 * visibleLength)) &&
         !this._hasWarned.perf) {
       infoLog(
-        'VirtualizedList: You have a large list that is slow to update - make sure ' +
-        'shouldItemUpdate is implemented effectively and consider getItemLayout, PureComponent, ' +
-        'etc.',
+        'VirtualizedList: You have a large list that is slow to update - make sure your ' +
+        'renderItem function renders components that follow React performance best practices ' +
+        'like PureComponent, shouldComponentUpdate, etc.',
         {dt, prevDt: this._scrollMetrics.dt, contentLength},
       );
       this._hasWarned.perf = true;
@@ -760,19 +752,10 @@ class CellRenderer extends React.Component {
     parentProps: {
       renderItem: renderItemType,
       getItemLayout?: ?Function,
-      shouldItemUpdate: (
-        props: {item: Item, index: number},
-        nextProps: {item: Item, index: number}
-      ) => boolean,
     },
   };
   componentWillUnmount() {
     this.props.onUnmount(this.props.cellKey);
-  }
-  shouldComponentUpdate(nextProps, nextState) {
-    const curr = {item: this.props.item, index: this.props.index};
-    const next = {item: nextProps.item, index: nextProps.index};
-    return nextProps.parentProps.shouldItemUpdate(curr, next);
   }
   render() {
     const {item, index, parentProps} = this.props;

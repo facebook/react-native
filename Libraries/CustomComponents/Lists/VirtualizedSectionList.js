@@ -113,13 +113,6 @@ type OptionalProps<SectionT: SectionBase> = {
    * Set this true while waiting for new data from a refresh.
    */
   refreshing?: ?boolean,
-  /**
-   * This is an optional optimization to minimize re-rendering items.
-   */
-  shouldItemUpdate: (
-    prevProps: {item: Item, index: number},
-    nextProps: {item: Item, index: number}
-  ) => boolean,
 };
 
 export type Props<SectionT> =
@@ -249,14 +242,6 @@ class VirtualizedSectionList<SectionT: SectionBase>
     return null;
   }
 
-  _shouldItemUpdate = (prev, next) => {
-    const {shouldItemUpdate} = this.props;
-    if (!shouldItemUpdate || shouldItemUpdate(prev, next)) {
-      return true;
-    }
-    return this._getSeparatorComponent(prev.index) !== this._getSeparatorComponent(next.index);
-  }
-
   _computeState(props: Props<SectionT>): State {
     const offset = props.ListHeaderComponent ? 1 : 0;
     const stickyHeaderIndices = [];
@@ -278,7 +263,6 @@ class VirtualizedSectionList<SectionT: SectionBase>
         keyExtractor: this._keyExtractor,
         onViewableItemsChanged:
           props.onViewableItemsChanged ? this._onViewableItemsChanged : undefined,
-        shouldItemUpdate: this._shouldItemUpdate,
         stickyHeaderIndices: props.stickySectionHeadersEnabled ? stickyHeaderIndices : undefined,
       },
     };

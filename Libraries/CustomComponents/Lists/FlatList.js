@@ -354,19 +354,6 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     }
   };
 
-  _shouldItemUpdate = (prev, next) => {
-    const {numColumns, shouldItemUpdate} = this.props;
-    if (numColumns > 1) {
-      return prev.item.length !== next.item.length ||
-        prev.item.some((prevItem, ii) => shouldItemUpdate(
-          {item: prevItem, index: prev.index + ii},
-          {item: next.item[ii], index: next.index + ii},
-        ));
-    } else {
-      return shouldItemUpdate(prev, next);
-    }
-  };
-
   render() {
     if (this.props.legacyImplementation) {
       return <MetroListView {...this.props} items={this.props.data} ref={this._captureRef} />;
@@ -379,7 +366,6 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
           getItemCount={this._getItemCount}
           keyExtractor={this._keyExtractor}
           ref={this._captureRef}
-          shouldItemUpdate={this._shouldItemUpdate}
           onViewableItemsChanged={this.props.onViewableItemsChanged && this._onViewableItemsChanged}
         />
       );

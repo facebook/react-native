@@ -148,7 +148,6 @@ class FlatListExample extends React.PureComponent {
           ref={this._captureRef}
           refreshing={false}
           renderItem={this._renderItemComponent}
-          shouldItemUpdate={this._shouldItemUpdate}
           viewabilityConfig={VIEWABILITY_CONFIG}
         />
       </UIExplorerPage>
@@ -169,15 +168,6 @@ class FlatListExample extends React.PureComponent {
       />
     );
   };
-  _shouldItemUpdate(prev, next) {
-    /**
-     * Note that this does not check state.horizontal or state.fixedheight
-     * because we blow away the whole list by changing the key in those cases.
-     * Make sure that you do the same in your code, or incorporate all relevant
-     * data into the item data, or skip this optimization entirely.
-     */
-    return prev.item !== next.item;
-  }
   // This is called when items change viewability by scrolling into or out of
   // the viewable area.
   _onViewableItemsChanged = (info: {

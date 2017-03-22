@@ -110,13 +110,6 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    */
   refreshing?: ?boolean,
   /**
-   * This is an optional optimization to minimize re-rendering items.
-   */
-  shouldItemUpdate: (
-    prevProps: {item: Item, index: number},
-    nextProps: {item: Item, index: number}
-  ) => boolean,
-  /**
    * Makes section headers stick to the top of the screen until the next one pushes it off. Only
    * enabled by default on iOS because that is the platform standard there.
    */
