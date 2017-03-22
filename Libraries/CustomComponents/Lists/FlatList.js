@@ -158,8 +158,9 @@ type DefaultProps = typeof defaultProps;
  *  - Separator support.
  *  - Pull to Refresh.
  *  - Scroll loading.
+ *  - ScrollToIndex support.
  *
- * If you need section support, use [`<SectionList>`](/react-native/docs/sectionlist.html).
+ * If you need section support, use [`<SectionList>`](docs/sectionlist.html).
  *
  * Minimal Example:
  *
@@ -168,7 +169,7 @@ type DefaultProps = typeof defaultProps;
  *       renderItem={({item}) => <Text>{item.key}</Text>}
  *     />
  *
- * This is a convenience wrapper around [`<VirtualizedList>`](/react-native/docs/virtualizedlist.html),
+ * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist.html),
  * and thus inherits the following caveats:
  *
  * - Internal state is not preserved when content scrolls out of the render window. Make sure all
