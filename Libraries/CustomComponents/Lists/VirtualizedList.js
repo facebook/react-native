@@ -105,7 +105,10 @@ type OptionalProps = {
    * Called when the viewability of rows changes, as defined by the
    * `viewabilityConfig` prop.
    */
-  onViewableItemsChanged?: ?(info: {viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
+  onViewableItemsChanged?: ?(info: {
+    viewableItems: Array<ViewToken>,
+    changed: Array<ViewToken>,
+  }) => void,
   /**
    * Set this true while waiting for new data from a refresh.
    */
@@ -336,21 +339,31 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this._updateCellsToRenderBatcher.schedule();
   }
 
-  _pushCells(cells, first, last) {
+  _pushCells(
+    cells: Array<Object>,
+    stickyHeaderIndices: Array<number>,
+    stickyIndicesFromProps: Set<number>,
+    first: number,
+    last: number,
+  ) {
     const {ItemSeparatorComponent, data, getItem, getItemCount, keyExtractor} = this.props;
+    const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
     const end = getItemCount(data) - 1;
     last = Math.min(end, last);
     for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
       invariant(item, 'No item for index ' + ii);
       const key = keyExtractor(item, ii);
+      if (stickyIndicesFromProps.has(ii + stickyOffset)) {
+        stickyHeaderIndices.push(cells.length);
+      }
       cells.push(
         <CellRenderer
           cellKey={key}
           index={ii}
           item={item}
           key={key}
-          onCellLayout={this._onCellLayout}
+          onLayout={(e) => this._onCellLayout(e, key, ii)}
           onUnmount={this._onCellUnmount}
           parentProps={this.props}
         />
@@ -364,6 +377,8 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const {ListFooterComponent, ListHeaderComponent} = this.props;
     const {data, disableVirtualization, horizontal} = this.props;
     const cells = [];
+    const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
+    const stickyHeaderIndices = [];
     if (ListHeaderComponent) {
       cells.push(
         <View key="$header" onLayout={this._onLayoutHeader}>
@@ -374,18 +389,45 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const itemCount = this.props.getItemCount(data);
     if (itemCount > 0) {
       _usedIndexForKey = false;
+      const spacerKey = !horizontal ? 'height' : 'width';
       const lastInitialIndex = this.props.initialNumToRender - 1;
       const {first, last} = this.state;
-      this._pushCells(cells, 0, lastInitialIndex);
-      if (!disableVirtualization && first > lastInitialIndex) {
-        const initBlock = this._getFrameMetricsApprox(lastInitialIndex);
-        const firstSpace = this._getFrameMetricsApprox(first).offset -
-          (initBlock.offset + initBlock.length);
-        cells.push(
-          <View key="$lead_spacer" style={{[!horizontal ? 'height' : 'width']: firstSpace}} />
-        );
+      this._pushCells(cells, stickyHeaderIndices, stickyIndicesFromProps, 0, lastInitialIndex);
+      const firstAfterInitial = Math.max(lastInitialIndex + 1, first);
+      if (!disableVirtualization && first > lastInitialIndex + 1) {
+        let insertedStickySpacer = false;
+        if (stickyIndicesFromProps.size > 0) {
+          const stickyOffset = ListHeaderComponent ? 1 : 0;
+          // See if there are any sticky headers in the virtualized space that we need to render.
+          for (let ii = firstAfterInitial - 1; ii > lastInitialIndex; ii--) {
+            if (stickyIndicesFromProps.has(ii + stickyOffset)) {
+              const initBlock = this._getFrameMetricsApprox(lastInitialIndex);
+              const stickyBlock = this._getFrameMetricsApprox(ii);
+              const leadSpace = stickyBlock.offset - (initBlock.offset + initBlock.length);
+              cells.push(
+                <View key="$sticky_lead" style={{[spacerKey]: leadSpace}} />
+              );
+              this._pushCells(cells, stickyHeaderIndices, stickyIndicesFromProps, ii, ii);
+              const trailSpace = this._getFrameMetricsApprox(first).offset -
+                (stickyBlock.offset + stickyBlock.length);
+              cells.push(
+                <View key="$sticky_trail" style={{[spacerKey]: trailSpace}} />
+              );
+              insertedStickySpacer = true;
+              break;
+            }
+          }
+        }
+        if (!insertedStickySpacer) {
+          const initBlock = this._getFrameMetricsApprox(lastInitialIndex);
+          const firstSpace = this._getFrameMetricsApprox(first).offset -
+            (initBlock.offset + initBlock.length);
+          cells.push(
+            <View key="$lead_spacer" style={{[spacerKey]: firstSpace}} />
+          );
+        }
       }
-      this._pushCells(cells, Math.max(lastInitialIndex + 1, first), last);
+      this._pushCells(cells, stickyHeaderIndices, stickyIndicesFromProps, firstAfterInitial, last);
       if (!this._hasWarned.keys && _usedIndexForKey) {
         console.warn(
           'VirtualizedList: missing keys for items, make sure to specify a key property on each ' +
@@ -406,7 +448,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           (endFrame.offset + endFrame.length) -
           (lastFrame.offset + lastFrame.length);
         cells.push(
-          <View key="$tail_spacer" style={{[!horizontal ? 'height' : 'width']: tailSpacerLength}} />
+          <View key="$tail_spacer" style={{[spacerKey]: tailSpacerLength}} />
         );
       }
     }
@@ -426,6 +468,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         onScrollBeginDrag: this._onScrollBeginDrag,
         ref: this._captureScrollRef,
         scrollEventThrottle: 50, // TODO: Android support
+        stickyHeaderIndices,
       },
       cells,
     );
@@ -460,7 +503,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this._scrollRef = ref;
   };
 
-  _onCellLayout = (e, cellKey, index) => {
+  _onCellLayout(e, cellKey, index) {
     const layout = e.nativeEvent.layout;
     const next = {
       offset: this._selectOffset(layout),
@@ -480,8 +523,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       this._frames[cellKey] = next;
       this._highestMeasuredFrameIndex = Math.max(this._highestMeasuredFrameIndex, index);
       this._updateCellsToRenderBatcher.schedule();
+    } else {
+      this._frames[cellKey].inLayout = true;
     }
-  };
+  }
 
   _onCellUnmount = (cellKey: string) => {
     const curr = this._frames[cellKey];
@@ -710,7 +755,7 @@ class CellRenderer extends React.Component {
     cellKey: string,
     index: number,
     item: Item,
-    onCellLayout: (event: Object, cellKey: string, index: number) => void,
+    onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
     onUnmount: (cellKey: string) => void,
     parentProps: {
       renderItem: renderItemType,
@@ -721,9 +766,6 @@ class CellRenderer extends React.Component {
       ) => boolean,
     },
   };
-  _onLayout = (e) => {
-    this.props.onCellLayout(e, this.props.cellKey, this.props.index);
-  }
   componentWillUnmount() {
     this.props.onUnmount(this.props.cellKey);
   }
@@ -740,8 +782,10 @@ class CellRenderer extends React.Component {
     if (getItemLayout && !parentProps.debug) {
       return element;
     }
+    // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
+    // called explicitly by `ScrollViewStickyHeader`.
     return (
-      <View onLayout={this._onLayout}>
+      <View onLayout={this.props.onLayout}>
         {element}
       </View>
     );

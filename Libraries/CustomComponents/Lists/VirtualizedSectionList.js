@@ -79,7 +79,7 @@ type OptionalProps<SectionT: SectionBase> = {
    */
   renderItem: ({item: Item, index: number}) => ?React.Element<*>,
   /**
-   * Rendered at the top of each section. In the future, a sticky option will be added.
+   * Rendered at the top of each section.
    */
   renderSectionHeader?: ?({section: SectionT}) => ?React.Element<*>,
   /**
@@ -210,11 +210,6 @@ class VirtualizedSectionList<SectionT: SectionBase>
     }
   }
 
-  _isItemSticky = (item, index) => {
-    const info = this._subExtractor(index);
-    return info && info.index == null;
-  };
-
   _renderItem = ({item, index}: {item: Item, index: number}) => {
     const info = this._subExtractor(index);
     if (!info) {
@@ -263,7 +258,15 @@ class VirtualizedSectionList<SectionT: SectionBase>
   }
 
   _computeState(props: Props<SectionT>): State {
-    const itemCount = props.sections.reduce((v, section) => v + section.data.length + 1, 0);
+    const offset = props.ListHeaderComponent ? 1 : 0;
+    const stickyHeaderIndices = [];
+    const itemCount = props.sections.reduce(
+      (v, section) => {
+        stickyHeaderIndices.push(v + offset);
+        return v + section.data.length + 1;
+      },
+      0
+    );
     return {
       childProps: {
         ...props,
@@ -272,21 +275,17 @@ class VirtualizedSectionList<SectionT: SectionBase>
         data: props.sections,
         getItemCount: () => itemCount,
         getItem,
-        isItemSticky: this._isItemSticky,
         keyExtractor: this._keyExtractor,
         onViewableItemsChanged:
           props.onViewableItemsChanged ? this._onViewableItemsChanged : undefined,
         shouldItemUpdate: this._shouldItemUpdate,
+        stickyHeaderIndices: props.stickySectionHeadersEnabled ? stickyHeaderIndices : undefined,
       },
     };
   }
 
   constructor(props: Props<SectionT>, context: Object) {
     super(props, context);
-    warning(
-      !props.stickySectionHeadersEnabled,
-      'VirtualizedSectionList: Sticky headers only supported with legacyImplementation for now.'
-    );
     this.state = this._computeState(props);
   }
 

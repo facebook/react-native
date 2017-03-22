@@ -53,6 +53,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   renderScrollComponent={[Function]}
   scrollEventThrottle={50}
   shouldItemUpdate={[Function]}
+  stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
@@ -145,6 +146,7 @@ exports[`FlatList renders empty list 1`] = `
   renderScrollComponent={[Function]}
   scrollEventThrottle={50}
   shouldItemUpdate={[Function]}
+  stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
@@ -175,6 +177,7 @@ exports[`FlatList renders null list 1`] = `
   renderScrollComponent={[Function]}
   scrollEventThrottle={50}
   shouldItemUpdate={[Function]}
+  stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
@@ -217,6 +220,7 @@ exports[`FlatList renders simple list 1`] = `
   renderScrollComponent={[Function]}
   scrollEventThrottle={50}
   shouldItemUpdate={[Function]}
+  stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
