@@ -90,15 +90,18 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
       transform = CATransform3DRotate(transform, rotate, 0, 0, 1);
 
     } else if ([property isEqualToString:@"scale"]) {
-      CGFloat scale = MAX([value floatValue], FLT_EPSILON);
+      CGFloat scale = [value floatValue];
+      scale = scale > 0 ? MAX(scale, FLT_EPSILON) : MIN(scale, FLT_EPSILON);
       transform = CATransform3DScale(transform, scale, scale, 1);
 
     } else if ([property isEqualToString:@"scaleX"]) {
-      CGFloat scale = MAX([value floatValue], FLT_EPSILON);
+      CGFloat scale = [value floatValue];
+      scale = scale > 0 ? MAX(scale, FLT_EPSILON) : MIN(scale, FLT_EPSILON);
       transform = CATransform3DScale(transform, scale, 1, 1);
 
     } else if ([property isEqualToString:@"scaleY"]) {
-      CGFloat scale = MAX([value floatValue], FLT_EPSILON);
+      CGFloat scale = [value floatValue];
+      scale = scale > 0 ? MAX(scale, FLT_EPSILON) : MIN(scale, FLT_EPSILON);
       transform = CATransform3DScale(transform, 1, scale, 1);
 
     } else if ([property isEqualToString:@"translate"]) {
