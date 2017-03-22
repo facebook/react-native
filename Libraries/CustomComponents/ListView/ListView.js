@@ -443,6 +443,8 @@ var ListView = React.createClass({
         }
       }
 
+      dataSource.dirtySectionCleaned(sectionIdx);
+
       for (var rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
         var rowID = rowIDs[rowIdx];
         var comboID = sectionID + '_' + rowID;
@@ -484,6 +486,9 @@ var ListView = React.createClass({
             totalIndex++;
           }
         }
+
+        dataSource.dirtyRowCleaned(sectionIdx, rowIdx);
+        
         if (++rowCount === this.state.curRenderedRowsCount) {
           break;
         }

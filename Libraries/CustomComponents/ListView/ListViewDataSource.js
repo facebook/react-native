@@ -319,6 +319,31 @@ class ListViewDataSource {
   }
 
   /**
+    * Mark dirty section as clean.
+    * This method should be called after the listview has rendered the dirty section
+    * so it doesn't need to be rendered again unless changed.
+    */
+  dirtySectionCleaned(sectionIndex: number): void {
+    if (this._dirtySections.length > sectionIndex) {
+      this._dirtySections[sectionIndex] = false;
+    }
+  }
+
+  /**
+    * Mark dirty row as clean.
+    * This method should be called after the listview has rendered the dirty row
+    * so it doesn't need to be rendered again unless changed.
+    */
+  dirtyRowCleaned(sectionIndex: number, rowIndex: number): void {
+    if (this._dirtyRows.length > sectionIndex) {
+      var section = this._dirtyRows[sectionIndex];
+      if (section.length > rowIndex) {
+        this._dirtyRows[sectionIndex][rowIndex] = false;
+      }
+    }
+  }
+
+  /**
    * Private members and methods.
    */
 
