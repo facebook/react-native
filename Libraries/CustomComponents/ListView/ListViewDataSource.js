@@ -207,7 +207,7 @@ class ListViewDataSource {
     } else {
       newSource.rowIdentities = [];
       newSource.sectionIdentities.forEach((sectionID) => {
-        newSource.rowIdentities.push(Object.keys(dataBlob[sectionID]));
+        newSource.rowIdentities.push(Object.keys(dataBlob[sectionID].slice()));
       });
     }
     newSource._cachedRowCount = countRows(newSource.rowIdentities);
