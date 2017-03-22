@@ -9,10 +9,6 @@
 
 package com.facebook.react.modules.network;
 
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
@@ -23,14 +19,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
-import okhttp3.Call;
-import okhttp3.Headers;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okio.Buffer;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +31,19 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
+
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okio.Buffer;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
@@ -87,8 +88,10 @@ public class NetworkingModuleTest {
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    OkHttpClientProvider clientProvider = mock(OkHttpClientProvider.class);
+    when(clientProvider.get()).thenReturn(httpClient);
     NetworkingModule networkingModule =
-      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
+      new NetworkingModule(mock(ReactApplicationContext.class), "", clientProvider);
 
     networkingModule.sendRequest(
       "GET",
@@ -119,7 +122,9 @@ public class NetworkingModuleTest {
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
-    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
+    OkHttpClientProvider clientProvider = mock(OkHttpClientProvider.class);
+    when(clientProvider.get()).thenReturn(httpClient);
+    NetworkingModule networkingModule = new NetworkingModule(context, "", clientProvider);
 
     List<JavaOnlyArray> invalidHeaders = Arrays.asList(JavaOnlyArray.of("foo"));
 
@@ -149,7 +154,9 @@ public class NetworkingModuleTest {
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
-    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
+    OkHttpClientProvider clientProvider = mock(OkHttpClientProvider.class);
+    when(clientProvider.get()).thenReturn(httpClient);
+    NetworkingModule networkingModule = new NetworkingModule(context, "", clientProvider);
 
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "This is request body");
@@ -211,8 +218,10 @@ public class NetworkingModuleTest {
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    OkHttpClientProvider clientProvider = mock(OkHttpClientProvider.class);
+    when(clientProvider.get()).thenReturn(httpClient);
     NetworkingModule networkingModule =
-      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
+      new NetworkingModule(mock(ReactApplicationContext.class), "", clientProvider);
 
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "This is request body");
@@ -253,8 +262,10 @@ public class NetworkingModuleTest {
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    OkHttpClientProvider clientProvider = mock(OkHttpClientProvider.class);
+    when(clientProvider.get()).thenReturn(httpClient);
     NetworkingModule networkingModule =
-      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
+      new NetworkingModule(mock(ReactApplicationContext.class), "", clientProvider);
 
     List<JavaOnlyArray> headers = Arrays.asList(
         JavaOnlyArray.of("Accept", "text/plain"),
@@ -312,8 +323,10 @@ public class NetworkingModuleTest {
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    OkHttpClientProvider clientProvider = mock(OkHttpClientProvider.class);
+    when(clientProvider.get()).thenReturn(httpClient);
     NetworkingModule networkingModule =
-      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
+      new NetworkingModule(mock(ReactApplicationContext.class), "", clientProvider);
     networkingModule.sendRequest(
       "POST",
       "http://someurl/uploadFoo",
@@ -377,8 +390,10 @@ public class NetworkingModuleTest {
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    OkHttpClientProvider clientProvider = mock(OkHttpClientProvider.class);
+    when(clientProvider.get()).thenReturn(httpClient);
     NetworkingModule networkingModule =
-      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
+      new NetworkingModule(mock(ReactApplicationContext.class), "", clientProvider);
     networkingModule.sendRequest(
       "POST",
       "http://someurl/uploadFoo",
@@ -479,9 +494,10 @@ public class NetworkingModuleTest {
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
-
+    OkHttpClientProvider clientProvider = mock(OkHttpClientProvider.class);
+    when(clientProvider.get()).thenReturn(httpClient);
     NetworkingModule networkingModule =
-      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
+      new NetworkingModule(mock(ReactApplicationContext.class), "", clientProvider);
     networkingModule.sendRequest(
       "POST",
       "http://someurl/uploadFoo",
@@ -541,8 +557,10 @@ public class NetworkingModuleTest {
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    OkHttpClientProvider clientProvider = mock(OkHttpClientProvider.class);
+    when(clientProvider.get()).thenReturn(httpClient);
     NetworkingModule networkingModule =
-      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
+      new NetworkingModule(mock(ReactApplicationContext.class), "", clientProvider);
     networkingModule.initialize();
 
     for (int idx = 0; idx < requests; idx++) {
@@ -592,8 +610,10 @@ public class NetworkingModuleTest {
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    OkHttpClientProvider clientProvider = mock(OkHttpClientProvider.class);
+    when(clientProvider.get()).thenReturn(httpClient);
     NetworkingModule networkingModule =
-      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
+      new NetworkingModule(mock(ReactApplicationContext.class), "", clientProvider);
 
     for (int idx = 0; idx < requests; idx++) {
       networkingModule.sendRequest(
