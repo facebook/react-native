@@ -99,15 +99,7 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 @synthesize callableJSModules = _callableJSModules;
 @synthesize bundleManager = _bundleManager;
 
-RCT_EXPORT_MODULE()
-
-+ (void)initialize
-{
-  // We're swizzling here because it's poor form to override methods in a category,
-  // however UIWindow doesn't actually implement motionEnded:withEvent:, so there's
-  // no need to call the original implementation.
-  RCTSwapInstanceMethods([UIWindow class], @selector(motionEnded:withEvent:), @selector(RCT_motionEnded:withEvent:));
-}
++ (NSString *)moduleName { return @"RCTDevMenu"; }
 
 + (BOOL)requiresMainQueueSetup
 {
