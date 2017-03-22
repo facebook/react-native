@@ -47,11 +47,12 @@ type Props = {
   style?: any,
   textStyle?: any,
   viewProps?: any,
+  textProps?: any,
 }
 
-const NavigationHeaderTitle = ({ children, style, textStyle, viewProps }: Props) => (
+const NavigationHeaderTitle = ({ children, style, textStyle, viewProps, textProps }: Props) => (
   <View style={[ styles.title, style ]} {...viewProps}>
-    <Text style={[ styles.titleText, textStyle ]}>{children}</Text>
+    <Text style={[ styles.titleText, textStyle ]} {...textProps}>{children}</Text>
   </View>
 );
 
