@@ -98,6 +98,15 @@ var PerformanceLogger = {
     extras = {};
   },
 
+  clearCompleted() {
+    for (var key in timespans) {
+      if (timespans[key].totalTime) {
+        delete timespans[key];
+      }
+    }
+    extras = {};
+  },
+
   clearExceptTimespans(keys) {
     timespans = Object.keys(timespans).reduce(function(previous, key) {
       if (keys.indexOf(key) !== -1) {
