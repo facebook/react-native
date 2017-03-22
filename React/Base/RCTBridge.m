@@ -276,31 +276,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self reload];
 }
 
-- (void)setUp
-{
-  RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBridge setUp]", nil);
-
-  _performanceLogger = [RCTPerformanceLogger new];
-  [_performanceLogger markStartForTag:RCTPLBridgeStartup];
-  [_performanceLogger markStartForTag:RCTPLTTI];
-
-  // Only update bundleURL from delegate if delegate bundleURL has changed
-  NSURL *previousDelegateURL = _delegateBundleURL;
-  _delegateBundleURL = [self.delegate sourceURLForBridge:self];
-  if (_delegateBundleURL && ![_delegateBundleURL isEqual:previousDelegateURL]) {
-    _bundleURL = _delegateBundleURL;
-  }
-
-  // Sanitize the bundle URL
-  _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
-
-  [self createBatchedBridge];
-  [self.batchedBridge start];
-
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-}
-
-- (void)createBatchedBridge
+- (Class)bridgeClass
 {
   // In order to facilitate switching between bridges with only build
   // file changes, this uses reflection to check which bridges are
@@ -326,7 +302,41 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   RCTAssert(implClass != nil, @"No bridge implementation is available, giving up.");
 
-  self.batchedBridge = [[implClass alloc] initWithParentBridge:self];
+#ifdef WITH_FBSYSTRACE
+  if (implClass == cxxBridgeClass) {
+    [RCTFBSystrace registerCallbacks];
+  } else {
+    [RCTFBSystrace unregisterCallbacks];
+  }
+#endif
+
+  return implClass;
+}
+
+- (void)setUp
+{
+  Class bridgeClass = self.bridgeClass;
+
+  RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBridge setUp]", nil);
+
+  _performanceLogger = [RCTPerformanceLogger new];
+  [_performanceLogger markStartForTag:RCTPLBridgeStartup];
+  [_performanceLogger markStartForTag:RCTPLTTI];
+
+  // Only update bundleURL from delegate if delegate bundleURL has changed
+  NSURL *previousDelegateURL = _delegateBundleURL;
+  _delegateBundleURL = [self.delegate sourceURLForBridge:self];
+  if (_delegateBundleURL && ![_delegateBundleURL isEqual:previousDelegateURL]) {
+    _bundleURL = _delegateBundleURL;
+  }
+
+  // Sanitize the bundle URL
+  _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
+
+  self.batchedBridge = [[bridgeClass alloc] initWithParentBridge:self];
+  [self.batchedBridge start];
+
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
 - (BOOL)isLoading

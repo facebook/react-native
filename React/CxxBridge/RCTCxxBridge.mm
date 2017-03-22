@@ -39,6 +39,7 @@
 #import <jschelpers/Value.h>
 
 #import "NSDataBigString.h"
+#import "RCTJSCHelpers.h"
 #import "RCTMessageThread.h"
 #import "RCTObjcExecutor.h"
 
@@ -66,26 +67,6 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldParams,
   RCTBridgeFieldCallID,
 };
-
-static JSValueRef nativeLoggingHook(
-    JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception) {
-  RCTLogLevel level = RCTLogLevelInfo;
-  if (argumentCount > 1) {
-    level = MAX(level, (RCTLogLevel)Value(ctx, arguments[1]).asNumber());
-  }
-  if (argumentCount > 0) {
-    String message = Value(ctx, arguments[0]).toString();
-    _RCTLogJavaScriptInternal(level, @(message.str().c_str()));
-  }
-  return Value::makeUndefined(ctx);
-}
-
-static JSValueRef nativePerformanceNow(
-    JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception) {
-  return Value::makeNumber(ctx, CACurrentMediaTime() * 1000);
-}
 
 static bool isRAMBundle(NSData *script) {
   BundleHeader header;
@@ -151,10 +132,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 + (void)initialize
 {
   if (self == [RCTCxxBridge class]) {
-    ReactMarker::logMarker = [](const std::string&) {};
-    PerfLogging::installNativeHooks = RCTFBQuickPerformanceLoggerConfigureHooks;
-    JSNativeHooks::loggingHook = nativeLoggingHook;
-    JSNativeHooks::nowHook = nativePerformanceNow;
+    RCTPrepareJSCExecutor();
   }
 }
 
