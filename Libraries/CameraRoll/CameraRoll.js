@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactPropTypes = require('React').PropTypes
+var ReactPropTypes = require('prop-types');
 var RCTCameraRollManager = require('NativeModules').CameraRollManager;
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
