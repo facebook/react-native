@@ -195,12 +195,17 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
 
   // scrollToIndex may be janky without getItemLayout prop
   scrollToIndex(params: {animated?: ?boolean, index: number, viewPosition?: number}) {
-    const {data, horizontal, getItemCount} = this.props;
+    const {data, horizontal, getItemCount, getItemLayout} = this.props;
     const {animated, index, viewPosition} = params;
-    if (!(index >= 0 && index < getItemCount(data))) {
-      console.warn('scrollToIndex out of range ' + index);
-      return;
-    }
+    invariant(
+      index >= 0 && index < getItemCount(data),
+      `scrollToIndex out of range: ${index} vs ${getItemCount(data) - 1}`,
+    );
+    invariant(
+      getItemLayout || index < this._highestMeasuredFrameIndex,
+      'scrollToIndex should be used in conjunction with getItemLayout, ' +
+        'otherwise there is no way to know the location of an arbitrary index.',
+    );
     const frame = this._getFrameMetricsApprox(index);
     const offset = Math.max(
       0,
@@ -390,6 +395,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       }
       if (!disableVirtualization && last < itemCount - 1) {
         const lastFrame = this._getFrameMetricsApprox(last);
+        // Without getItemLayout, we limit our tail spacer to the _highestMeasuredFrameIndex to
+        // prevent the user for hyperscrolling into un-measured area because otherwise content will
+        // likely jump around as it renders in above the viewport.
         const end = this.props.getItemLayout ?
           itemCount - 1 :
           Math.min(itemCount - 1, this._highestMeasuredFrameIndex);
