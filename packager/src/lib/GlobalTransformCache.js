@@ -145,6 +145,13 @@ class TransformProfileSet {
   }
 }
 
+class FetchFailedError extends Error {
+  constructor(message) {
+    super();
+    this.message = message;
+  }
+}
+
 /**
  * For some reason the result stored by the server for a key might mismatch what
  * we expect a result to be. So we need to verify carefully the data.
@@ -170,6 +177,8 @@ class GlobalTransformCache {
   _fetchResultFromURI: FetchResultFromURI;
   _profileSet: TransformProfileSet;
   _store: ?KeyResultStore;
+
+  static FetchFailedError;
 
   /**
    * For using the global cache one needs to have some kind of central key-value
@@ -214,12 +223,13 @@ class GlobalTransformCache {
   static async _fetchResultFromURI(uri: string): Promise<CachedResult> {
     const response = await fetch(uri, {method: 'GET', timeout: 8000});
     if (response.status !== 200) {
-      throw new Error(`Unexpected HTTP status: ${response.status} ${response.statusText} `);
+      const msg = `Unexpected HTTP status: ${response.status} ${response.statusText} `;
+      throw new FetchFailedError(msg);
     }
     const unvalidatedResult = await response.json();
     const result = validateCachedResult(unvalidatedResult);
     if (result == null) {
-      throw new Error('Server returned invalid result.');
+      throw new FetchFailedError('Server returned invalid result.');
     }
     return result;
   }
@@ -237,14 +247,15 @@ class GlobalTransformCache {
     });
   }
 
+  shouldFetch(props: FetchProps): boolean {
+    return this._profileSet.has(props.transformOptions);
+  }
+
   /**
    * This may return `null` if either the cache doesn't have a value for that
    * key yet, or an error happened, processed separately.
    */
   async fetch(props: FetchProps): Promise<?CachedResult> {
-    if (!this._profileSet.has(props.transformOptions)) {
-      return null;
-    }
     const uri = await this._fetcher.fetch(GlobalTransformCache.keyOf(props));
     if (uri == null) {
       return null;
@@ -259,5 +270,7 @@ class GlobalTransformCache {
   }
 
 }
+
+GlobalTransformCache.FetchFailedError = FetchFailedError;
 
 module.exports = GlobalTransformCache;

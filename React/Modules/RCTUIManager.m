@@ -226,9 +226,6 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
 
   NSMutableSet<id<RCTComponent>> *_bridgeTransactionListeners;
   NSMutableSet<id<RCTUIManagerObserver>> *_uiManagerObservers;
-#if !TARGET_OS_TV
-  UIInterfaceOrientation _currentInterfaceOrientation;
-#endif
 }
 
 @synthesize bridge = _bridge;
@@ -240,8 +237,6 @@ RCT_EXPORT_MODULE()
   // Report the event across the bridge.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                              body:RCTExportedDimensions(_bridge)];
   [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
                                               body:@([_bridge.accessibilityManager multiplier])];
 #pragma clang diagnostic pop
@@ -251,28 +246,6 @@ RCT_EXPORT_MODULE()
                                                         object:self];
     [self setNeedsLayout];
   });
-}
-
-- (void)interfaceOrientationDidChange
-{
-#if !TARGET_OS_TV
-  UIInterfaceOrientation nextOrientation =
-    [RCTSharedApplication() statusBarOrientation];
-
-  // Update when we go from portrait to landscape, or landscape to portrait
-  if ((UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
-      !UIInterfaceOrientationIsPortrait(nextOrientation)) ||
-      (UIInterfaceOrientationIsLandscape(_currentInterfaceOrientation) &&
-      !UIInterfaceOrientationIsLandscape(nextOrientation))) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                                body:RCTExportedDimensions(_bridge)];
-#pragma clang diagnostic pop
-  }
-
-  _currentInterfaceOrientation = nextOrientation;
-#endif
 }
 
 - (void)invalidate
@@ -353,13 +326,6 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:_bridge.accessibilityManager];
-#if !TARGET_OS_TV
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(interfaceOrientationDidChange)
-                                               name:UIApplicationDidChangeStatusBarOrientationNotification
-                                             object:nil];
-#endif
-
   [RCTAnimation initializeStatics];
 }
 
@@ -1577,33 +1543,10 @@ RCT_EXPORT_METHOD(clearJSResponder)
      constants[name] = moduleConstants;
   }];
 
-#if !TARGET_OS_TV
-  _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
-#endif
-
   constants[@"customBubblingEventTypes"] = bubblingEvents;
   constants[@"customDirectEventTypes"] = directEvents;
-  constants[@"Dimensions"] = RCTExportedDimensions(_bridge);
 
   return constants;
-}
-
-static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
-{
-  RCTAssertMainQueue();
-
-  // Don't use RCTScreenSize since it the interface orientation doesn't apply to it
-  CGRect screenSize = [[UIScreen mainScreen] bounds];
-  NSDictionary *dims = @{
-    @"width": @(screenSize.size.width),
-    @"height": @(screenSize.size.height),
-    @"scale": @(RCTScreenScale()),
-    @"fontScale": @(bridge.accessibilityManager.multiplier)
-  };
-  return @{
-    @"window": dims,
-    @"screen": dims
-  };
 }
 
 RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config

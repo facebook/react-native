@@ -87,6 +87,16 @@ const mockNativeModules = {
   DataManager: {
     queryData: jest.fn(),
   },
+  DeviceInfo: {
+    Dimensions: {
+      window: {
+        fontScale: 2,
+        height: 1334,
+        scale: 2,
+        width: 750,
+      },
+    },
+  },
   FacebookSDK: {
     login: jest.fn(),
     logout: jest.fn(),
@@ -150,14 +160,6 @@ const mockNativeModules = {
     replaceExistingNonRootView: jest.fn(),
     customBubblingEventTypes: {},
     customDirectEventTypes: {},
-    Dimensions: {
-      window: {
-        fontScale: 2,
-        height: 1334,
-        scale: 2,
-        width: 750,
-      },
-    },
     ModalFullscreenView: {
       Constants: {},
     },

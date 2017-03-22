@@ -237,6 +237,13 @@ public:
   Value(JSContextRef context, JSStringRef value);
   Value(Value&&);
 
+  Value& operator=(Value&& other) {
+    m_context = other.m_context;
+    m_value = other.m_value;
+    other.m_value = NULL;
+    return *this;
+  };
+
   operator JSValueRef() const {
     return m_value;
   }
