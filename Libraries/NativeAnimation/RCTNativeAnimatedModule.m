@@ -33,6 +33,9 @@ RCT_EXPORT_MODULE();
 
 - (dispatch_queue_t)methodQueue
 {
+  // This module needs to be on the same queue as the UIManager to avoid
+  // having to lock `_operations` and `_preOperations` since `uiManagerWillFlushUIBlocks`
+  // will be called from that queue.
   return RCTGetUIManagerQueue();
 }
 

@@ -57,8 +57,9 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 @protocol RCTUIManagerObserver <NSObject>
 
 /**
- * Called before flushing UI blocks at the end of a batch. This is called from
- * the UIManager queue. Can be used to add UI operations in that batch.
+ * Called before flushing UI blocks at the end of a batch. Note that this won't
+ * get called for partial batches when using `unsafeFlushUIChangesBeforeBatchEnds`.
+ * This is called from the UIManager queue. Can be used to add UI operations in that batch.
  */
 - (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)manager;
 
