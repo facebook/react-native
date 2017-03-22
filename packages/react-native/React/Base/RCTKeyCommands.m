@@ -94,22 +94,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 @implementation RCTKeyCommands
 
-+ (void)initialize
-{
-  SEL originalKeyEventSelector = NSSelectorFromString(@"handleKeyUIEvent:");
-  SEL swizzledKeyEventSelector = NSSelectorFromString(
-      [NSString stringWithFormat:@"_rct_swizzle_%x_%@", arc4random(), NSStringFromSelector(originalKeyEventSelector)]);
-
-  void (^handleKeyUIEventSwizzleBlock)(UIApplication *, UIEvent *) = ^(UIApplication *slf, UIEvent *event) {
-    [[[self class] sharedInstance] handleKeyUIEventSwizzle:event];
-
-    ((void (*)(id, SEL, id))objc_msgSend)(slf, swizzledKeyEventSelector, event);
-  };
-
-  RCTSwapInstanceMethodWithBlock(
-      [UIApplication class], originalKeyEventSelector, handleKeyUIEventSwizzleBlock, swizzledKeyEventSelector);
-}
-
 - (void)handleKeyUIEventSwizzle:(UIEvent *)event
 {
   NSString *modifiedInput = nil;
