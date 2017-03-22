@@ -11,7 +11,8 @@
  */
 'use strict';
 
-var {PropTypes} = require('React');
+// $FlowFixMe `checkPropTypes` is not in Flow's built in React typedefs yet.
+var {PropTypes, checkPropTypes} = require('React');
 var UIManager = require('UIManager');
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
@@ -71,7 +72,7 @@ type Config = {
 
 function configureNext(config: Config, onAnimationDidEnd?: Function) {
   if (__DEV__) {
-    configChecker({config}, 'config', 'LayoutAnimation.configureNext');
+    checkPropTypes({config: configChecker}, {config}, 'config', 'LayoutAnimation.configureNext');
   }
   UIManager.configureNextLayoutAnimation(
     config, onAnimationDidEnd || function() {}, function() { /* unused */ }
