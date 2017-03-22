@@ -67,13 +67,13 @@ class Package {
 
   isHaste() {
     return this._cache.get(this.path, 'package-haste', () =>
-      Promise.resolve(!!this.read().name)
+      Promise.resolve().then(() => !!this.read().name)
     );
   }
 
   getName(): Promise<string> {
     return this._cache.get(this.path, 'package-name', () =>
-      Promise.resolve(this.read().name)
+      Promise.resolve().then(() => this.read().name)
     );
   }
 
