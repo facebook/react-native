@@ -9,8 +9,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include "RCTCxxBridge.h"
-
 #include <atomic>
 #include <future>
 #include <libkern/OSAtomic.h>
@@ -47,6 +45,9 @@
 #ifdef WITH_FBSYSTRACE
 #import <React/RCTFBSystrace.h>
 #endif
+
+@interface RCTCxxBridge : RCTBridge
+@end
 
 #define RCTAssertJSThread() \
   RCTAssert(self.executorClass || self->_jsThread == [NSThread currentThread], \
@@ -92,8 +93,6 @@ static bool isRAMBundle(NSData *script) {
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
-static std::atomic_bool cxxBridgeEnabled(false);
-
 @interface RCTCxxBridge ()
 
 @property (nonatomic, weak, readonly) RCTBridge *parentBridge;
@@ -120,19 +119,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
   void onExecutorStopped(ExecutorToken) override {}
 };
-
-@implementation RCTBridge (CxxBridge)
-
-- (void)CXX_createBatchedBridge
-{
-  if (cxxBridgeEnabled) {
-    self.batchedBridge = [[RCTCxxBridge alloc] initWithParentBridge:self];
-  } else {
-    self.batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
-  }
-}
-
-@end
 
 @implementation RCTCxxBridge
 {
@@ -170,35 +156,6 @@ struct RCTInstanceCallback : public InstanceCallback {
     JSNativeHooks::loggingHook = nativeLoggingHook;
     JSNativeHooks::nowHook = nativePerformanceNow;
   }
-}
-
-+ (void)swizzleBridge
-{
-  // Swizzle RCTBridge to use this, instead of RCTBatchedBridge
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    RCTSwapInstanceMethods([RCTBridge class],
-                           NSSelectorFromString(@"createBatchedBridge"),
-                           @selector(CXX_createBatchedBridge));
-  });
-}
-
-+ (void)enable
-{
-  [RCTCxxBridge swizzleBridge];
-#ifdef WITH_FBSYSTRACE
-  [RCTFBSystrace registerCallbacks];
-#endif
-  cxxBridgeEnabled = true;
-}
-
-+ (void)disable
-{
-  [RCTCxxBridge swizzleBridge];
-#ifdef WITH_FBSYSTRACE
-  [RCTFBSystrace unregisterCallbacks];
-#endif
-  cxxBridgeEnabled = false;
 }
 
 - (JSContext *)jsContext
