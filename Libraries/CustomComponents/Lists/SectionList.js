@@ -49,7 +49,7 @@ type SectionBase<SectionItemT> = {
 
   // Optional props will override list-wide props just for this section.
   renderItem?: ?(info: {item: SectionItemT, index: number}) => ?React.Element<any>,
-  SeparatorComponent?: ?ReactClass<any>,
+  ItemSeparatorComponent?: ?ReactClass<any>,
   keyExtractor?: (item: SectionItemT) => string,
 
   // TODO: support more optional/override props

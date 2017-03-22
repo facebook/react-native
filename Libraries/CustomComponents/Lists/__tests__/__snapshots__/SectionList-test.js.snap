@@ -96,7 +96,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
   data={
     Array [
       Object {
-        "SeparatorComponent": [Function],
+        "ItemSeparatorComponent": [Function],
         "data": Array [
           Object {
             "id": "i1s1",
@@ -152,7 +152,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
   sections={
     Array [
       Object {
-        "SeparatorComponent": [Function],
+        "ItemSeparatorComponent": [Function],
         "data": Array [
           Object {
             "id": "i1s1",

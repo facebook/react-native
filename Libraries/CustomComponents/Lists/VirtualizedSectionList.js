@@ -52,7 +52,7 @@ type SectionBase = {
 
   // Optional props will override list-wide props just for this section.
   renderItem?: ?({item: SectionItem, index: number}) => ?React.Element<*>,
-  SeparatorComponent?: ?ReactClass<*>,
+  ItemSeparatorComponent?: ?ReactClass<*>,
   keyExtractor?: (item: SectionItem) => string,
 
   // TODO: support more optional/override props
@@ -229,15 +229,15 @@ class VirtualizedSectionList<SectionT: SectionBase>
     if (!info) {
       return null;
     }
-    const SeparatorComponent = info.section.SeparatorComponent || this.props.ItemSeparatorComponent;
+    const ItemSeparatorComponent = info.section.ItemSeparatorComponent || this.props.ItemSeparatorComponent;
     const {SectionSeparatorComponent} = this.props;
     const isLastItemInList = index === this.state.childProps.getItemCount() - 1;
     const isLastItemInSection = info.index === info.section.data.length - 1;
     if (SectionSeparatorComponent && isLastItemInSection && !isLastItemInList) {
       return SectionSeparatorComponent;
     }
-    if (SeparatorComponent && !isLastItemInSection && !isLastItemInList) {
-      return SeparatorComponent;
+    if (ItemSeparatorComponent && !isLastItemInSection && !isLastItemInList) {
+      return ItemSeparatorComponent;
     }
     return null;
   }

@@ -48,7 +48,7 @@ describe('SectionList', () => {
             renderItem: ({item}) => <itemForSection1 value={item.id} />,
             key: '1st Section',
             keyExtractor: (item, index) => item.id,
-            SeparatorComponent: () => <itemSeparatorForSection1 />,
+            ItemSeparatorComponent: () => <itemSeparatorForSection1 />,
             data: [{id: 'i1s1'}, {id: 'i2s1'}],
           },
           {
