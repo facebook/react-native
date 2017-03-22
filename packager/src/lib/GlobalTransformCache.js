@@ -99,10 +99,11 @@ class KeyResultStore {
 }
 
 /**
- * The transform options contain absolute paths. This can contain, for
- * example, the username if someone works their home directory (very likely).
- * We need to get rid of this user-and-machine-dependent data for the global
- * cache, otherwise nobody  would share the same cache keys.
+ * The transform options contain absolute paths. This can contain, for example,
+ * the username if someone works their home directory (very likely). We get rid
+ * of this local data for the global cache, otherwise nobody would share the
+ * same cache keys. The project roots should not be needed as part of the cache
+ * key as they should not affect the transformation of a single particular file.
  */
 function globalizeTransformOptions(
   options: TransformOptions,
@@ -115,9 +116,7 @@ function globalizeTransformOptions(
     ...options,
     transform: {
       ...transform,
-      projectRoots: transform.projectRoots.map(p => {
-        return path.relative(path.join(__dirname, '../../../../..'), p);
-      }),
+      projectRoots: [],
     },
   };
 }
