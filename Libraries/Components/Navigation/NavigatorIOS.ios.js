@@ -133,10 +133,10 @@ type Event = Object;
  * animations and behavior from UIKIt.
  *
  * As the name implies, it is only available on iOS. Take a look at
- * [`Navigator`](docs/navigator.html) for a similar solution for your
- * cross-platform needs, or check out
- * [react-native-navigation](https://github.com/wix/react-native-navigation), a
- * component that aims to provide native navigation on both iOS and Android.
+ * [`React Navigation`](https://reactnavigation.org/) for a cross-platform 
+ * solution in JavaScript, or check out either of these components for native
+ * solutions: [native-navigation](http://airbnb.io/native-navigation/),
+ * [react-native-navigation](https://github.com/wix/react-native-navigation).
  *
  * To set up the navigator, provide the `initialRoute` prop with a route
  * object. A route object is used to describe each scene that your app

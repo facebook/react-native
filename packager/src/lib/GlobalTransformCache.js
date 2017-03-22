@@ -12,6 +12,7 @@
 'use strict';
 
 const BatchProcessor = require('./BatchProcessor');
+const FetchError = require('node-fetch/lib/fetch-error');
 
 const crypto = require('crypto');
 const fetch = require('node-fetch');
@@ -21,9 +22,9 @@ const path = require('path');
 
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {CachedResult, GetTransformCacheKey} from './TransformCache';
-import type {Reporter} from './reporting';
 
 type FetchResultURIs = (keys: Array<string>) => Promise<Map<string, string>>;
+type FetchResultFromURI = (uri: string) => Promise<?CachedResult>;
 type StoreResults = (resultsByKey: Map<string, CachedResult>) => Promise<void>;
 
 type FetchProps = {
@@ -43,7 +44,6 @@ class KeyURIFetcher {
 
   _batchProcessor: BatchProcessor<string, ?URI>;
   _fetchResultURIs: FetchResultURIs;
-  _processError: (error: Error) => mixed;
 
   /**
    * When a batch request fails for some reason, we process the error locally
@@ -51,13 +51,7 @@ class KeyURIFetcher {
    * a build will not fail just because of the cache.
    */
   async _processKeys(keys: Array<string>): Promise<Array<?URI>> {
-    let URIsByKey;
-    try {
-      URIsByKey = await this._fetchResultURIs(keys);
-    } catch (error) {
-      this._processError(error);
-      return new Array(keys.length);
-    }
+    const URIsByKey = await this._fetchResultURIs(keys);
     return keys.map(key => URIsByKey.get(key));
   }
 
@@ -65,14 +59,13 @@ class KeyURIFetcher {
     return await this._batchProcessor.queue(key);
   }
 
-  constructor(fetchResultURIs: FetchResultURIs, processError: (error: Error) => mixed) {
+  constructor(fetchResultURIs: FetchResultURIs) {
     this._fetchResultURIs = fetchResultURIs;
     this._batchProcessor = new BatchProcessor({
       maximumDelayMs: 10,
       maximumItems: 500,
       concurrency: 25,
     }, this._processKeys.bind(this));
-    this._processError = processError;
   }
 
 }
@@ -105,26 +98,12 @@ class KeyResultStore {
 
 }
 
-function validateCachedResult(cachedResult: mixed): ?CachedResult {
-  if (
-    cachedResult != null &&
-    typeof cachedResult === 'object' &&
-    typeof cachedResult.code === 'string' &&
-    Array.isArray(cachedResult.dependencies) &&
-    cachedResult.dependencies.every(dep => typeof dep === 'string') &&
-    Array.isArray(cachedResult.dependencyOffsets) &&
-    cachedResult.dependencyOffsets.every(offset => typeof offset === 'number')
-  ) {
-    return (cachedResult: any);
-  }
-  return undefined;
-}
-
 /**
- * The transform options contain absolute paths. This can contain, for
- * example, the username if someone works their home directory (very likely).
- * We need to get rid of this user-and-machine-dependent data for the global
- * cache, otherwise nobody  would share the same cache keys.
+ * The transform options contain absolute paths. This can contain, for example,
+ * the username if someone works their home directory (very likely). We get rid
+ * of this local data for the global cache, otherwise nobody would share the
+ * same cache keys. The project roots should not be needed as part of the cache
+ * key as they should not affect the transformation of a single particular file.
  */
 function globalizeTransformOptions(
   options: TransformOptions,
@@ -137,9 +116,7 @@ function globalizeTransformOptions(
     ...options,
     transform: {
       ...transform,
-      projectRoots: transform.projectRoots.map(p => {
-        return path.relative(path.join(__dirname, '../../../../..'), p);
-      }),
+      projectRoots: [],
     },
   };
 }
@@ -167,13 +144,40 @@ class TransformProfileSet {
   }
 }
 
+class FetchFailedError extends Error {
+  constructor(message) {
+    super();
+    this.message = message;
+  }
+}
+
+/**
+ * For some reason the result stored by the server for a key might mismatch what
+ * we expect a result to be. So we need to verify carefully the data.
+ */
+function validateCachedResult(cachedResult: mixed): ?CachedResult {
+  if (
+    cachedResult != null &&
+    typeof cachedResult === 'object' &&
+    typeof cachedResult.code === 'string' &&
+    Array.isArray(cachedResult.dependencies) &&
+    cachedResult.dependencies.every(dep => typeof dep === 'string') &&
+    Array.isArray(cachedResult.dependencyOffsets) &&
+    cachedResult.dependencyOffsets.every(offset => typeof offset === 'number')
+  ) {
+    return (cachedResult: any);
+  }
+  return null;
+}
+
 class GlobalTransformCache {
 
   _fetcher: KeyURIFetcher;
+  _fetchResultFromURI: FetchResultFromURI;
   _profileSet: TransformProfileSet;
-  _reporter: Reporter;
-  _retries: number;
   _store: ?KeyResultStore;
+
+  static FetchFailedError;
 
   /**
    * For using the global cache one needs to have some kind of central key-value
@@ -185,14 +189,13 @@ class GlobalTransformCache {
    */
   constructor(
     fetchResultURIs: FetchResultURIs,
+    fetchResultFromURI: FetchResultFromURI,
     storeResults: ?StoreResults,
     profiles: Iterable<TransformProfile>,
-    reporter: Reporter,
   ) {
-    this._fetcher = new KeyURIFetcher(fetchResultURIs, this._processError.bind(this));
+    this._fetcher = new KeyURIFetcher(fetchResultURIs);
     this._profileSet = new TransformProfileSet(profiles);
-    this._reporter = reporter;
-    this._retries = 4;
+    this._fetchResultFromURI = fetchResultFromURI;
     if (storeResults != null) {
       this._store = new KeyResultStore(storeResults);
     }
@@ -212,48 +215,39 @@ class GlobalTransformCache {
   }
 
   /**
-   * If too many errors already happened, we just drop the additional errors.
-   */
-  _processError(error: Error) {
-    if (this._retries <= 0) {
-      return;
-    }
-    this._reporter.update({type: 'global_cache_error', error});
-    --this._retries;
-    if (this._retries <= 0) {
-      this._reporter.update({type: 'global_cache_disabled', reason: 'too_many_errors'});
-    }
-  }
-
-  /**
    * We may want to improve that logic to return a stream instead of the whole
    * blob of transformed results. However the results are generally only a few
    * megabytes each.
    */
-  async _fetchFromURI(uri: string): Promise<CachedResult> {
+  static async _fetchResultFromURI(uri: string): Promise<CachedResult> {
     const response = await fetch(uri, {method: 'GET', timeout: 8000});
     if (response.status !== 200) {
-      throw new Error(`Unexpected HTTP status: ${response.status} ${response.statusText} `);
+      const msg = `Unexpected HTTP status: ${response.status} ${response.statusText} `;
+      throw new FetchFailedError(msg);
     }
     const unvalidatedResult = await response.json();
     const result = validateCachedResult(unvalidatedResult);
     if (result == null) {
-      throw new Error('Server returned invalid result.');
+      throw new FetchFailedError('Server returned invalid result.');
     }
     return result;
   }
 
   /**
-   * Wrap `_fetchFromURI` with error logging, and return an empty result instead
-   * of errors. This is because the global cache is not critical to the normal
-   * packager operation.
+   * It happens from time to time that a fetch timeouts, we want to try these
+   * again a second time.
    */
-  async _tryFetchingFromURI(uri: string): Promise<?CachedResult> {
-    try {
-      return await this._fetchFromURI(uri);
-    } catch (error) {
-      this._processError(error);
-    }
+  static fetchResultFromURI(uri: string): Promise<CachedResult> {
+    return GlobalTransformCache._fetchResultFromURI(uri).catch(error => {
+      if (!(error instanceof FetchError && error.type === 'request-timeout')) {
+        throw error;
+      }
+      return this._fetchResultFromURI(uri);
+    });
+  }
+
+  shouldFetch(props: FetchProps): boolean {
+    return this._profileSet.has(props.transformOptions);
   }
 
   /**
@@ -261,14 +255,11 @@ class GlobalTransformCache {
    * key yet, or an error happened, processed separately.
    */
   async fetch(props: FetchProps): Promise<?CachedResult> {
-    if (this._retries <= 0 || !this._profileSet.has(props.transformOptions)) {
-      return null;
-    }
     const uri = await this._fetcher.fetch(GlobalTransformCache.keyOf(props));
     if (uri == null) {
       return null;
     }
-    return await this._tryFetchingFromURI(uri);
+    return await this._fetchResultFromURI(uri);
   }
 
   store(props: FetchProps, result: CachedResult) {
@@ -278,5 +269,7 @@ class GlobalTransformCache {
   }
 
 }
+
+GlobalTransformCache.FetchFailedError = FetchFailedError;
 
 module.exports = GlobalTransformCache;

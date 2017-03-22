@@ -10,9 +10,14 @@
 #import "RCTCxxUtils.h"
 
 #import <React/RCTFollyConvert.h>
+#import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
-
+#include <cxxreact/CxxNativeModule.h>
 #include <jschelpers/Value.h>
+
+#import "DispatchMessageQueueThread.h"
+#import "RCTCxxModule.h"
+#import "RCTNativeModule.h"
 
 using namespace facebook::react;
 
@@ -35,6 +40,30 @@ using namespace facebook::react;
 
 namespace facebook {
 namespace react {
+
+std::shared_ptr<ModuleRegistry> buildModuleRegistry(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance)
+{
+  std::vector<std::unique_ptr<NativeModule>> nativeModules;
+  for (RCTModuleData *moduleData in modules) {
+    if ([moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
+      // If a module does not support automatic instantiation, and
+      // wasn't provided as an extra module, it may not have an
+      // instance.  If so, skip it.
+      if (![moduleData hasInstance]) {
+        continue;
+      }
+      nativeModules.emplace_back(std::make_unique<CxxNativeModule>(
+        instance,
+        [moduleData.name UTF8String],
+        [moduleData] { return [(RCTCxxModule *)(moduleData.instance) createModule]; },
+        std::make_shared<DispatchMessageQueueThread>(moduleData)));
+    } else {
+      nativeModules.emplace_back(std::make_unique<RCTNativeModule>(bridge, moduleData));
+    }
+  }
+
+  return std::make_shared<ModuleRegistry>(std::move(nativeModules));
+}
 
 JSContext *contextForGlobalContextRef(JSGlobalContextRef contextRef)
 {
@@ -61,7 +90,7 @@ JSContext *contextForGlobalContextRef(JSGlobalContextRef contextRef)
   return ctx;
 }
 
-static NSError *errorWithException(const std::exception& e)
+static NSError *errorWithException(const std::exception &e)
 {
   NSString *msg = @(e.what());
   NSMutableDictionary *errorInfo = [NSMutableDictionary dictionary];
@@ -75,7 +104,7 @@ static NSError *errorWithException(const std::exception& e)
   NSError *nestedError;
   try {
     std::rethrow_if_nested(e);
-  } catch(const std::exception& e) {
+  } catch(const std::exception &e) {
     nestedError = errorWithException(e);
   } catch(...) {}
 

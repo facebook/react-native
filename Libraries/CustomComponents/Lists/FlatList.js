@@ -103,7 +103,7 @@ type OptionalProps<ItemT> = {
    */
   keyExtractor: (item: ItemT, index: number) => string,
   /**
-   * Multiple columns can only be rendered with `horizontal={false}`` and will zig-zag like a
+   * Multiple columns can only be rendered with `horizontal={false}` and will zig-zag like a
    * `flexWrap` layout. Items should all be the same height - masonry layouts are not supported.
    */
   numColumns: number,
@@ -158,8 +158,9 @@ type DefaultProps = typeof defaultProps;
  *  - Separator support.
  *  - Pull to Refresh.
  *  - Scroll loading.
+ *  - ScrollToIndex support.
  *
- * If you need section support, use [`<SectionList>`](/react-native/docs/sectionlist.html).
+ * If you need section support, use [`<SectionList>`](docs/sectionlist.html).
  *
  * Minimal Example:
  *
@@ -168,7 +169,7 @@ type DefaultProps = typeof defaultProps;
  *       renderItem={({item}) => <Text>{item.key}</Text>}
  *     />
  *
- * This is a convenience wrapper around [`<VirtualizedList>`](/react-native/docs/virtualizedlist.html),
+ * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist.html),
  * and thus inherits the following caveats:
  *
  * - Internal state is not preserved when content scrolls out of the render window. Make sure all
@@ -242,6 +243,11 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
   }
 
   componentWillReceiveProps(nextProps: Props<ItemT>) {
+    invariant(
+      nextProps.numColumns === this.props.numColumns,
+      'Changing numColumns on the fly is not supported. Change the key prop on FlatList when ' +
+      'changing the number of columns to force a fresh render of the component.'
+    );
     this._checkProps(nextProps);
   }
 
@@ -354,19 +360,6 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     }
   };
 
-  _shouldItemUpdate = (prev, next) => {
-    const {numColumns, shouldItemUpdate} = this.props;
-    if (numColumns > 1) {
-      return prev.item.length !== next.item.length ||
-        prev.item.some((prevItem, ii) => shouldItemUpdate(
-          {item: prevItem, index: prev.index + ii},
-          {item: next.item[ii], index: next.index + ii},
-        ));
-    } else {
-      return shouldItemUpdate(prev, next);
-    }
-  };
-
   render() {
     if (this.props.legacyImplementation) {
       return <MetroListView {...this.props} items={this.props.data} ref={this._captureRef} />;
@@ -379,7 +372,6 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
           getItemCount={this._getItemCount}
           keyExtractor={this._keyExtractor}
           ref={this._captureRef}
-          shouldItemUpdate={this._shouldItemUpdate}
           onViewableItemsChanged={this.props.onViewableItemsChanged && this._onViewableItemsChanged}
         />
       );

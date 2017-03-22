@@ -33,6 +33,7 @@
 'use strict';
 
 const MetroListView = require('MetroListView');
+const Platform = require('Platform');
 const React = require('React');
 const VirtualizedSectionList = require('VirtualizedSectionList');
 
@@ -48,13 +49,11 @@ type SectionBase<SectionItemT> = {
 
   // Optional props will override list-wide props just for this section.
   renderItem?: ?(info: {item: SectionItemT, index: number}) => ?React.Element<any>,
-  SeparatorComponent?: ?ReactClass<any>,
+  ItemSeparatorComponent?: ?ReactClass<any>,
   keyExtractor?: (item: SectionItemT) => string,
 
   // TODO: support more optional/override props
-  // FooterComponent?: ?ReactClass<*>,
-  // HeaderComponent?: ?ReactClass<*>,
-  // onViewableItemsChanged?: ({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
+  // onViewableItemsChanged?: ...
 };
 
 type RequiredProps<SectionT: SectionBase<any>> = {
@@ -102,25 +101,31 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    * Called when the viewability of rows changes, as defined by the
    * `viewabilityConfig` prop.
    */
-  onViewableItemsChanged?: ?(info: {viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
+  onViewableItemsChanged?: ?(info: {
+    viewableItems: Array<ViewToken>,
+    changed: Array<ViewToken>,
+  }) => void,
   /**
    * Set this true while waiting for new data from a refresh.
    */
   refreshing?: ?boolean,
   /**
-   * This is an optional optimization to minimize re-rendering items.
+   * Makes section headers stick to the top of the screen until the next one pushes it off. Only
+   * enabled by default on iOS because that is the platform standard there.
    */
-  shouldItemUpdate: (
-    prevProps: {item: Item, index: number},
-    nextProps: {item: Item, index: number}
-  ) => boolean,
+  stickySectionHeadersEnabled?: boolean,
 };
 
 type Props<SectionT> = RequiredProps<SectionT>
   & OptionalProps<SectionT>
   & VirtualizedSectionListProps<SectionT>;
 
-type DefaultProps = typeof VirtualizedSectionList.defaultProps;
+const defaultProps = {
+  ...VirtualizedSectionList.defaultProps,
+  stickySectionHeadersEnabled: Platform.OS === 'ios',
+};
+
+type DefaultProps = typeof defaultProps;
 
 /**
  * A performant interface for rendering sectioned lists, supporting the most handy features:
@@ -136,7 +141,8 @@ type DefaultProps = typeof VirtualizedSectionList.defaultProps;
  *  - Pull to Refresh.
  *  - Scroll loading.
  *
- * If you don't need section support and want a simpler interface, use [`<FlatList>`](/react-native/docs/flatlist.html).
+ * If you don't need section support and want a simpler interface, use
+ * [`<FlatList>`](/react-native/docs/flatlist.html).
  *
  * If you need _sticky_ section header support, use `ListView` for now.
  *
@@ -180,7 +186,7 @@ class SectionList<SectionT: SectionBase<any>>
   extends React.PureComponent<DefaultProps, Props<SectionT>, void>
 {
   props: Props<SectionT>;
-  static defaultProps: DefaultProps = VirtualizedSectionList.defaultProps;
+  static defaultProps: DefaultProps = defaultProps;
 
   render() {
     const List = this.props.legacyImplementation ? MetroListView : VirtualizedSectionList;

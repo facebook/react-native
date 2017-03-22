@@ -26,6 +26,27 @@ invariant(UIManager, 'UIManager is undefined. The native module config is probab
 
 const _takeSnapshot = UIManager.takeSnapshot;
 
+// findNodeHandle() returns a reference to a wrapper component with viewConfig.
+// This wrapper is required for NativeMethodsMixin.setNativeProps, but most
+// callers want the native tag (number) and not the wrapper. For this purpose,
+// the ReactNative renderer decorates findNodeHandle() and extracts the tag.
+// However UIManager can't require ReactNative without introducing a cycle, and
+// deferring the require causes a significant performance regression in Wilde
+// (along the lines of 17% regression in RN Bridge startup). So as a temporary
+// workaround, this wrapper method mimics what the native renderer does.
+// TODO (bvaughn) Remove this and use findNodeHandle directly once stack is gone
+function findNodeHandleWrapper(componentOrHandle : any) : ?number {
+  const instance: any = findNodeHandle(componentOrHandle);
+
+  if (instance) {
+    return typeof instance._nativeTag === 'number'
+      ? instance._nativeTag
+      : instance.getHostNode();
+  } else {
+    return null;
+  }
+}
+
 /**
  * Capture an image of the screen, window or an individual view. The image
  * will be stored in a temporary file that will only exist for as long as the
@@ -57,7 +78,7 @@ UIManager.takeSnapshot = async function(
     return;
   }
   if (typeof view !== 'number' && view !== 'window') {
-    view = findNodeHandle(view) || 'window';
+    view = findNodeHandleWrapper(view) || 'window';
   }
   return _takeSnapshot(view, options);
 };

@@ -306,4 +306,32 @@ describe('inline constants', () => {
     expect(toString(ast)).toEqual(
       normalize(code.replace(/require\([^)]+\)\.Platform\.OS/, '"android"')));
   });
+
+  it('works with flow-declared variables', () => {
+    const stripFlow = require('babel-plugin-transform-flow-strip-types');
+    const code = `declare var __DEV__;
+      const a: boolean = __DEV__;`;
+
+    const transformed = transform(
+      code,
+      {...babelOptions, plugins: [stripFlow, [inline.plugin, {dev: false}]]},
+    ).code;
+
+    expect(transformed).toEqual('const a=false;');
+  });
+
+  it('works with flow-declared variables in wrapped modules', () => {
+    const stripFlow = require('babel-plugin-transform-flow-strip-types');
+    const code = `__d(() => {
+      declare var __DEV__;
+      const a: boolean = __DEV__;
+    });`;
+
+    const transformed = transform(
+      code,
+      {...babelOptions, plugins: [stripFlow, [inline.plugin, {dev: true}]]},
+    ).code;
+
+    expect(transformed).toEqual('__d(()=>{const a=true;});');
+  });
 });

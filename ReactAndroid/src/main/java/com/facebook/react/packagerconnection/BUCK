@@ -13,5 +13,6 @@ android_library(
         react_native_dep("third-party/java/okhttp:okhttp3"),
         react_native_dep("third-party/java/okhttp:okhttp3-ws"),
         react_native_dep("third-party/java/okio:okio"),
+        react_native_target("java/com/facebook/react/modules/systeminfo:systeminfo-moduleless"),
     ],
 )

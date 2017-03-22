@@ -73,7 +73,6 @@ public class DevServerHelper {
   private static final String ONCHANGE_ENDPOINT_URL_FORMAT =
       "http://%s/onchange";
   private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
-  private static final String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?role=android-rn-devserverhelper";
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
   private static final String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
   private static final String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s";
@@ -152,7 +151,7 @@ public class DevServerHelper {
         });
         handlers.putAll(new FileIoHandler().handlers());
 
-        mPackagerClient = new JSPackagerClient(getPackagerConnectionURL(), handlers);
+        mPackagerClient = new JSPackagerClient("devserverhelper", mSettings.getPackagerConnectionSettings(), handlers);
         mPackagerClient.init();
 
         return null;
@@ -213,22 +212,18 @@ public class DevServerHelper {
   }
 
   public String getWebsocketProxyURL() {
-    return String.format(Locale.US, WEBSOCKET_PROXY_URL_FORMAT, getDebugServerHost());
-  }
-
-  private String getPackagerConnectionURL() {
-    return String.format(Locale.US, PACKAGER_CONNECTION_URL_FORMAT, getDebugServerHost());
+    return String.format(Locale.US, WEBSOCKET_PROXY_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
   public String getHeapCaptureUploadUrl() {
-    return String.format(Locale.US, HEAP_CAPTURE_UPLOAD_URL_FORMAT, getDebugServerHost());
+    return String.format(Locale.US, HEAP_CAPTURE_UPLOAD_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
   public String getInspectorDeviceUrl() {
     return String.format(
         Locale.US,
         INSPECTOR_DEVICE_URL_FORMAT,
-        getDebugServerHost(),
+        mSettings.getPackagerConnectionSettings().getDebugServerHost(),
         AndroidInfoHelpers.getFriendlyDeviceName());
   }
 
@@ -260,30 +255,6 @@ public class DevServerHelper {
     return mSettings.isHotModuleReplacementEnabled();
   }
 
-  /**
-   * @return the host to use when connecting to the bundle server.
-   */
-  private String getDebugServerHost() {
-    // Check debug server host setting first. If empty try to detect emulator type and use default
-    // hostname for those
-    String hostFromSettings = mSettings.getDebugServerHost();
-
-    if (!TextUtils.isEmpty(hostFromSettings)) {
-      return Assertions.assertNotNull(hostFromSettings);
-    }
-
-    String host = AndroidInfoHelpers.getServerHost();
-
-    if (host.equals(AndroidInfoHelpers.DEVICE_LOCALHOST)) {
-      FLog.w(
-        ReactConstants.TAG,
-        "You seem to be running on device. Run 'adb reverse tcp:8081 tcp:8081' " +
-          "to forward the debug server's port to the device.");
-    }
-
-    return host;
-  }
-
   private static String createBundleURL(String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {
     return String.format(Locale.US, BUNDLE_URL_FORMAT, host, jsModulePath, devMode, hmr, jsMinify);
   }
@@ -294,7 +265,7 @@ public class DevServerHelper {
 
   public String getDevServerBundleURL(final String jsModulePath) {
     return createBundleURL(
-      getDebugServerHost(),
+      mSettings.getPackagerConnectionSettings().getDebugServerHost(),
       jsModulePath,
       getDevMode(),
       getHMR(),
@@ -438,7 +409,7 @@ public class DevServerHelper {
   }
 
   public void isPackagerRunning(final PackagerStatusCallback callback) {
-    String statusURL = createPackagerStatusURL(getDebugServerHost());
+    String statusURL = createPackagerStatusURL(mSettings.getPackagerConnectionSettings().getDebugServerHost());
     Request request = new Request.Builder()
         .url(statusURL)
         .build();
@@ -558,11 +529,11 @@ public class DevServerHelper {
   }
 
   private String createOnChangeEndpointUrl() {
-    return String.format(Locale.US, ONCHANGE_ENDPOINT_URL_FORMAT, getDebugServerHost());
+    return String.format(Locale.US, ONCHANGE_ENDPOINT_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
   private String createLaunchJSDevtoolsCommandUrl() {
-    return String.format(Locale.US, LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT, getDebugServerHost());
+    return String.format(Locale.US, LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
   public void launchJSDevtools() {
@@ -584,11 +555,11 @@ public class DevServerHelper {
   }
 
   public String getSourceMapUrl(String mainModuleName) {
-    return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
+    return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
   }
 
   public String getSourceUrl(String mainModuleName) {
-    return String.format(Locale.US, BUNDLE_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
+    return String.format(Locale.US, BUNDLE_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
   }
 
   public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
@@ -607,7 +578,7 @@ public class DevServerHelper {
   public @Nullable File downloadBundleResourceFromUrlSync(
       final String resourcePath,
       final File outputFile) {
-    final String resourceURL = createResourceURL(getDebugServerHost(), resourcePath);
+    final String resourceURL = createResourceURL(mSettings.getPackagerConnectionSettings().getDebugServerHost(), resourcePath);
     final Request request = new Request.Builder()
         .url(resourceURL)
         .build();
