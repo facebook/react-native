@@ -83,6 +83,8 @@
 		2638623B1E732AB70010FEBF /* systemJSCWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65F3E41D1E73031C009375BD /* systemJSCWrapper.cpp */; };
 		2D074E381E609E65001D6DD0 /* RCTReconnectingWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = A12E9E281E5DEB860029001B /* RCTReconnectingWebSocket.h */; };
 		2D074E391E609E68001D6DD0 /* RCTSRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = A12E9E291E5DEB860029001B /* RCTSRWebSocket.h */; };
+		2D2B80DA1E83147700F0378B /* RCTJSCErrorHandling.h in Headers */ = {isa = PBXBuildFile; fileRef = 139324FC1E70B069009FD7E0 /* RCTJSCErrorHandling.h */; };
+		2D2B80DB1E83147900F0378B /* RCTJSCErrorHandling.mm in Sources */ = {isa = PBXBuildFile; fileRef = 139324FD1E70B069009FD7E0 /* RCTJSCErrorHandling.mm */; };
 		2D3B5E931D9B087300451313 /* RCTErrorInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */; };
 		2D3B5E941D9B087900451313 /* RCTBundleURLProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */; };
 		2D3B5E951D9B087C00451313 /* RCTAssert.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA4B1A601E3B00E9B192 /* RCTAssert.m */; };
@@ -1843,6 +1845,7 @@
 				3D302F291DF828F800D6DDAE /* RCTNetworkTask.h in Headers */,
 				594AD5D21E46D87500B07237 /* RCTScrollContentViewManager.h in Headers */,
 				594AD5CE1E46D87500B07237 /* RCTScrollContentShadowView.h in Headers */,
+				2D2B80DA1E83147700F0378B /* RCTJSCErrorHandling.h in Headers */,
 				3D302F2A1DF828F800D6DDAE /* RCTPushNotificationManager.h in Headers */,
 				3D302F2B1DF828F800D6DDAE /* RCTAssert.h in Headers */,
 				3D302F2C1DF828F800D6DDAE /* RCTBridge.h in Headers */,
@@ -2456,6 +2459,7 @@
 				2D3B5EE11D9B09B000451313 /* RCTScrollView.m in Sources */,
 				2D3B5ED81D9B098A00451313 /* RCTNavigatorManager.m in Sources */,
 				2D3B5E951D9B087C00451313 /* RCTAssert.m in Sources */,
+				2D2B80DB1E83147900F0378B /* RCTJSCErrorHandling.mm in Sources */,
 				2D3B5EB61D9B091400451313 /* RCTExceptionsManager.m in Sources */,
 				2D3B5EEB1D9B09D000451313 /* RCTTabBarItem.m in Sources */,
 				2D3B5E961D9B088500451313 /* RCTBatchedBridge.m in Sources */,
