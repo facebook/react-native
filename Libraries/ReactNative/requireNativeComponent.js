@@ -46,7 +46,7 @@ function requireNativeComponent(
   viewName: string,
   componentInterface?: ?ComponentInterface,
   extraConfig?: ?{nativeOnly?: Object},
-): Function {
+): ReactClass<any> | string {
   const viewConfig = UIManager[viewName];
   if (!viewConfig || !viewConfig.NativeProps) {
     warning(false, 'Native component for "%s" does not exist', viewName);

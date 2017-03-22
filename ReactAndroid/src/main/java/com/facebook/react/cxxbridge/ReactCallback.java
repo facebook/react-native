@@ -21,7 +21,4 @@ import com.facebook.proguard.annotations.DoNotStrip;
 
   @DoNotStrip
   void decrementPendingJSCalls();
-
-  @DoNotStrip
-  void onNativeException(Exception e);
 }

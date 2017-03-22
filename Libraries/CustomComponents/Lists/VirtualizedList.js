@@ -105,7 +105,10 @@ type OptionalProps = {
    * Called when the viewability of rows changes, as defined by the
    * `viewabilityConfig` prop.
    */
-  onViewableItemsChanged?: ?(info: {viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
+  onViewableItemsChanged?: ?(info: {
+    viewableItems: Array<ViewToken>,
+    changed: Array<ViewToken>,
+  }) => void,
   /**
    * Set this true while waiting for new data from a refresh.
    */
@@ -120,10 +123,6 @@ type OptionalProps = {
    * Render a custom scroll component, e.g. with a differently styled `RefreshControl`.
    */
   renderScrollComponent: (props: Object) => React.Element<any>,
-  shouldItemUpdate: (
-    props: {item: Item, index: number},
-    nextProps: {item: Item, index: number}
-  ) => boolean,
   /**
    * Amount of time between low-pri item render batches, e.g. for rendering items quite a ways off
    * screen. Similar fill rate/responsiveness tradeoff as `maxToRenderPerBatch`.
@@ -195,12 +194,17 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
 
   // scrollToIndex may be janky without getItemLayout prop
   scrollToIndex(params: {animated?: ?boolean, index: number, viewPosition?: number}) {
-    const {data, horizontal, getItemCount} = this.props;
+    const {data, horizontal, getItemCount, getItemLayout} = this.props;
     const {animated, index, viewPosition} = params;
-    if (!(index >= 0 && index < getItemCount(data))) {
-      console.warn('scrollToIndex out of range ' + index);
-      return;
-    }
+    invariant(
+      index >= 0 && index < getItemCount(data),
+      `scrollToIndex out of range: ${index} vs ${getItemCount(data) - 1}`,
+    );
+    invariant(
+      getItemLayout || index < this._highestMeasuredFrameIndex,
+      'scrollToIndex should be used in conjunction with getItemLayout, ' +
+        'otherwise there is no way to know the location of an arbitrary index.',
+    );
     const frame = this._getFrameMetricsApprox(index);
     const offset = Math.max(
       0,
@@ -282,10 +286,6 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         return <ScrollView {...props} />;
       }
     },
-    shouldItemUpdate: (
-      props: {item: Item, index: number},
-      nextProps: {item: Item, index: number},
-    ) => true,
     updateCellsBatchingPeriod: 50,
     windowSize: 21, // multiples of length
   };
@@ -331,21 +331,31 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this._updateCellsToRenderBatcher.schedule();
   }
 
-  _pushCells(cells, first, last) {
+  _pushCells(
+    cells: Array<Object>,
+    stickyHeaderIndices: Array<number>,
+    stickyIndicesFromProps: Set<number>,
+    first: number,
+    last: number,
+  ) {
     const {ItemSeparatorComponent, data, getItem, getItemCount, keyExtractor} = this.props;
+    const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
     const end = getItemCount(data) - 1;
     last = Math.min(end, last);
     for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
       invariant(item, 'No item for index ' + ii);
       const key = keyExtractor(item, ii);
+      if (stickyIndicesFromProps.has(ii + stickyOffset)) {
+        stickyHeaderIndices.push(cells.length);
+      }
       cells.push(
         <CellRenderer
           cellKey={key}
           index={ii}
           item={item}
           key={key}
-          onCellLayout={this._onCellLayout}
+          onLayout={(e) => this._onCellLayout(e, key, ii)}
           onUnmount={this._onCellUnmount}
           parentProps={this.props}
         />
@@ -359,6 +369,8 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const {ListFooterComponent, ListHeaderComponent} = this.props;
     const {data, disableVirtualization, horizontal} = this.props;
     const cells = [];
+    const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
+    const stickyHeaderIndices = [];
     if (ListHeaderComponent) {
       cells.push(
         <View key="$header" onLayout={this._onLayoutHeader}>
@@ -369,18 +381,45 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const itemCount = this.props.getItemCount(data);
     if (itemCount > 0) {
       _usedIndexForKey = false;
+      const spacerKey = !horizontal ? 'height' : 'width';
       const lastInitialIndex = this.props.initialNumToRender - 1;
       const {first, last} = this.state;
-      this._pushCells(cells, 0, lastInitialIndex);
-      if (!disableVirtualization && first > lastInitialIndex) {
-        const initBlock = this._getFrameMetricsApprox(lastInitialIndex);
-        const firstSpace = this._getFrameMetricsApprox(first).offset -
-          (initBlock.offset + initBlock.length);
-        cells.push(
-          <View key="$lead_spacer" style={{[!horizontal ? 'height' : 'width']: firstSpace}} />
-        );
+      this._pushCells(cells, stickyHeaderIndices, stickyIndicesFromProps, 0, lastInitialIndex);
+      const firstAfterInitial = Math.max(lastInitialIndex + 1, first);
+      if (!disableVirtualization && first > lastInitialIndex + 1) {
+        let insertedStickySpacer = false;
+        if (stickyIndicesFromProps.size > 0) {
+          const stickyOffset = ListHeaderComponent ? 1 : 0;
+          // See if there are any sticky headers in the virtualized space that we need to render.
+          for (let ii = firstAfterInitial - 1; ii > lastInitialIndex; ii--) {
+            if (stickyIndicesFromProps.has(ii + stickyOffset)) {
+              const initBlock = this._getFrameMetricsApprox(lastInitialIndex);
+              const stickyBlock = this._getFrameMetricsApprox(ii);
+              const leadSpace = stickyBlock.offset - (initBlock.offset + initBlock.length);
+              cells.push(
+                <View key="$sticky_lead" style={{[spacerKey]: leadSpace}} />
+              );
+              this._pushCells(cells, stickyHeaderIndices, stickyIndicesFromProps, ii, ii);
+              const trailSpace = this._getFrameMetricsApprox(first).offset -
+                (stickyBlock.offset + stickyBlock.length);
+              cells.push(
+                <View key="$sticky_trail" style={{[spacerKey]: trailSpace}} />
+              );
+              insertedStickySpacer = true;
+              break;
+            }
+          }
+        }
+        if (!insertedStickySpacer) {
+          const initBlock = this._getFrameMetricsApprox(lastInitialIndex);
+          const firstSpace = this._getFrameMetricsApprox(first).offset -
+            (initBlock.offset + initBlock.length);
+          cells.push(
+            <View key="$lead_spacer" style={{[spacerKey]: firstSpace}} />
+          );
+        }
       }
-      this._pushCells(cells, Math.max(lastInitialIndex + 1, first), last);
+      this._pushCells(cells, stickyHeaderIndices, stickyIndicesFromProps, firstAfterInitial, last);
       if (!this._hasWarned.keys && _usedIndexForKey) {
         console.warn(
           'VirtualizedList: missing keys for items, make sure to specify a key property on each ' +
@@ -390,6 +429,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       }
       if (!disableVirtualization && last < itemCount - 1) {
         const lastFrame = this._getFrameMetricsApprox(last);
+        // Without getItemLayout, we limit our tail spacer to the _highestMeasuredFrameIndex to
+        // prevent the user for hyperscrolling into un-measured area because otherwise content will
+        // likely jump around as it renders in above the viewport.
         const end = this.props.getItemLayout ?
           itemCount - 1 :
           Math.min(itemCount - 1, this._highestMeasuredFrameIndex);
@@ -398,7 +440,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           (endFrame.offset + endFrame.length) -
           (lastFrame.offset + lastFrame.length);
         cells.push(
-          <View key="$tail_spacer" style={{[!horizontal ? 'height' : 'width']: tailSpacerLength}} />
+          <View key="$tail_spacer" style={{[spacerKey]: tailSpacerLength}} />
         );
       }
     }
@@ -418,6 +460,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         onScrollBeginDrag: this._onScrollBeginDrag,
         ref: this._captureScrollRef,
         scrollEventThrottle: 50, // TODO: Android support
+        stickyHeaderIndices,
       },
       cells,
     );
@@ -452,7 +495,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this._scrollRef = ref;
   };
 
-  _onCellLayout = (e, cellKey, index) => {
+  _onCellLayout(e, cellKey, index) {
     const layout = e.nativeEvent.layout;
     const next = {
       offset: this._selectOffset(layout),
@@ -472,8 +515,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       this._frames[cellKey] = next;
       this._highestMeasuredFrameIndex = Math.max(this._highestMeasuredFrameIndex, index);
       this._updateCellsToRenderBatcher.schedule();
+    } else {
+      this._frames[cellKey].inLayout = true;
     }
-  };
+  }
 
   _onCellUnmount = (cellKey: string) => {
     const curr = this._frames[cellKey];
@@ -571,9 +616,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     if (dt > 500 && this._scrollMetrics.dt > 500 && (contentLength > (5 * visibleLength)) &&
         !this._hasWarned.perf) {
       infoLog(
-        'VirtualizedList: You have a large list that is slow to update - make sure ' +
-        'shouldItemUpdate is implemented effectively and consider getItemLayout, PureComponent, ' +
-        'etc.',
+        'VirtualizedList: You have a large list that is slow to update - make sure your ' +
+        'renderItem function renders components that follow React performance best practices ' +
+        'like PureComponent, shouldComponentUpdate, etc.',
         {dt, prevDt: this._scrollMetrics.dt, contentLength},
       );
       this._hasWarned.perf = true;
@@ -702,27 +747,15 @@ class CellRenderer extends React.Component {
     cellKey: string,
     index: number,
     item: Item,
-    onCellLayout: (event: Object, cellKey: string, index: number) => void,
+    onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
     onUnmount: (cellKey: string) => void,
     parentProps: {
       renderItem: renderItemType,
       getItemLayout?: ?Function,
-      shouldItemUpdate: (
-        props: {item: Item, index: number},
-        nextProps: {item: Item, index: number}
-      ) => boolean,
     },
   };
-  _onLayout = (e) => {
-    this.props.onCellLayout(e, this.props.cellKey, this.props.index);
-  }
   componentWillUnmount() {
     this.props.onUnmount(this.props.cellKey);
-  }
-  shouldComponentUpdate(nextProps, nextState) {
-    const curr = {item: this.props.item, index: this.props.index};
-    const next = {item: nextProps.item, index: nextProps.index};
-    return nextProps.parentProps.shouldItemUpdate(curr, next);
   }
   render() {
     const {item, index, parentProps} = this.props;
@@ -732,8 +765,10 @@ class CellRenderer extends React.Component {
     if (getItemLayout && !parentProps.debug) {
       return element;
     }
+    // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
+    // called explicitly by `ScrollViewStickyHeader`.
     return (
-      <View onLayout={this._onLayout}>
+      <View onLayout={this.props.onLayout}>
         {element}
       </View>
     );

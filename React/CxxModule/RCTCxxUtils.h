@@ -7,11 +7,17 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#include <memory>
+
 #import <React/RCTConvert.h>
 #include <JavaScriptCore/JavaScriptCore.h>
 #include <cxxreact/JSCExecutor.h>
+#include <cxxreact/ModuleRegistry.h>
 #include <folly/dynamic.h>
 #include <jschelpers/JavaScriptCore.h>
+
+@class RCTBridge;
+@class RCTModuleData;
 
 @interface RCTConvert (folly)
 
@@ -21,6 +27,10 @@
 
 namespace facebook {
 namespace react {
+
+class Instance;
+
+std::shared_ptr<ModuleRegistry> buildModuleRegistry(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance);
 
 JSContext *contextForGlobalContextRef(JSGlobalContextRef contextRef);
 
@@ -33,7 +43,7 @@ template <>
 struct ValueEncoder<NSArray *> {
   static Value toValue(JSGlobalContextRef ctx, NSArray *const __strong array)
   {
-    JSValue *value = [JSValue valueWithObject:array inContext:contextForGlobalContextRef(ctx)];
+    JSValue *value = [JSC_JSValue(ctx) valueWithObject:array inContext:contextForGlobalContextRef(ctx)];
     return {ctx, [value JSValueRef]};
   }
 };
