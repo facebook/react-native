@@ -236,6 +236,7 @@ class ListViewDataSource {
     var needsUpdate = this._dirtyRows[sectionIndex][rowIndex];
     warning(needsUpdate !== undefined,
       'missing dirtyBit for section, row: ' + sectionIndex + ', ' + rowIndex);
+    this._dirtyRows[sectionIndex][rowIndex] = false;
     return needsUpdate;
   }
 
