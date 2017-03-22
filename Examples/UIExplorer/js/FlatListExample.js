@@ -42,6 +42,7 @@ const {
   ItemComponent,
   PlainInput,
   SeparatorComponent,
+  Spindicator,
   genItemData,
   getItemLayout,
   pressItem,
@@ -120,15 +121,7 @@ class FlatListExample extends React.PureComponent {
             {renderSmallSwitchOption(this, 'fixedHeight')}
             {renderSmallSwitchOption(this, 'logViewable')}
             {renderSmallSwitchOption(this, 'debug')}
-            <Animated.View style={[styles.spindicator, {
-              transform: [
-                {rotate: this._scrollPos.interpolate({
-                  inputRange: [0, 5000],
-                  outputRange: ['0deg', '360deg'],
-                  extrapolate: 'extend',
-                })}
-              ]
-            }]} />
+            <Spindicator value={this._scrollPos} />
           </View>
         </View>
         <SeparatorComponent />
@@ -221,12 +214,6 @@ const styles = StyleSheet.create({
   },
   searchRow: {
     paddingHorizontal: 10,
-  },
-  spindicator: {
-    marginLeft: 'auto',
-    width: 2,
-    height: 16,
-    backgroundColor: 'darkgray',
   },
 });
 

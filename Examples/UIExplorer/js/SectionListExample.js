@@ -26,6 +26,7 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  Animated,
   SectionList,
   StyleSheet,
   Text,
@@ -42,11 +43,14 @@ const {
   ItemComponent,
   PlainInput,
   SeparatorComponent,
+  Spindicator,
   genItemData,
   pressItem,
   renderSmallSwitchOption,
   renderStackedItem,
 } = require('./ListExampleShared');
+
+const AnimatedSectionList = Animated.createAnimatedComponent(SectionList);
 
 const VIEWABILITY_CONFIG = {
   minimumViewTime: 3000,
@@ -79,6 +83,13 @@ class SectionListExample extends React.PureComponent {
     logViewable: false,
     virtualized: true,
   };
+
+  _scrollPos = new Animated.Value(0);
+  _scrollSinkY = Animated.event(
+    [{nativeEvent: { contentOffset: { y: this._scrollPos } }}],
+    {useNativeDriver: true},
+  );
+
   render() {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
     const filter = (item) => (
@@ -100,10 +111,11 @@ class SectionListExample extends React.PureComponent {
           <View style={styles.optionSection}>
             {renderSmallSwitchOption(this, 'virtualized')}
             {renderSmallSwitchOption(this, 'logViewable')}
+            <Spindicator value={this._scrollPos} />
           </View>
         </View>
         <SeparatorComponent />
-        <SectionList
+        <AnimatedSectionList
           ListHeaderComponent={HeaderComponent}
           ListFooterComponent={FooterComponent}
           SectionSeparatorComponent={() =>
@@ -114,6 +126,7 @@ class SectionListExample extends React.PureComponent {
           }
           enableVirtualization={this.state.virtualized}
           onRefresh={() => alert('onRefresh: nothing to refresh :P')}
+          onScroll={this._scrollSinkY}
           onViewableItemsChanged={this._onViewableItemsChanged}
           refreshing={false}
           renderItem={this._renderItemComponent}
