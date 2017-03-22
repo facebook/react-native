@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GlobalTransformCache fetchResultFromURI fetches result 1`] = `
+Object {
+  "code": "/* code from http://globalcache.com/foo */",
+  "dependencies": Array [],
+  "dependencyOffsets": Array [],
+}
+`;
+
+exports[`GlobalTransformCache fetchResultFromURI retries once on timeout 1`] = `
+Object {
+  "code": "/* code from http://globalcache.com/foo */",
+  "dependencies": Array [],
+  "dependencyOffsets": Array [],
+}
+`;
+
+exports[`GlobalTransformCache fetches results 1`] = `
+Array [
+  Object {
+    "code": "/* code from http://globalcache.com/17ce731dadd36402f15abb768843cb5e8ecf9ca7-foo.js */",
+    "dependencies": Array [],
+    "dependencyOffsets": Array [],
+  },
+  Object {
+    "code": "/* code from http://globalcache.com/d78572916bd877b6ac0e819e99be9fc2954f0e00-bar.js */",
+    "dependencies": Array [],
+    "dependencyOffsets": Array [],
+  },
+]
+`;

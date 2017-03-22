@@ -33,7 +33,11 @@ describe('Animated tests', () => {
               outputRange: [100, 200],
             })},
             {scale: anim},
-          ]
+          ],
+          shadowOffset: {
+            width: anim,
+            height: anim,
+          },
         }
       }, callback);
 
@@ -47,6 +51,10 @@ describe('Animated tests', () => {
             {translateX: 100},
             {scale: 0},
           ],
+          shadowOffset: {
+            width: 0,
+            height: 0,
+          },
         },
       });
 
@@ -62,6 +70,10 @@ describe('Animated tests', () => {
             {translateX: 150},
             {scale: 0.5},
           ],
+          shadowOffset: {
+            width: 0.5,
+            height: 0.5,
+          },
         },
       });
 

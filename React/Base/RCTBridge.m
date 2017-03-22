@@ -276,8 +276,47 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self reload];
 }
 
+- (Class)bridgeClass
+{
+  // In order to facilitate switching between bridges with only build
+  // file changes, this uses reflection to check which bridges are
+  // available.  This is a short-term hack until RCTBatchedBridge is
+  // removed.
+
+  Class batchedBridgeClass = objc_lookUpClass("RCTBatchedBridge");
+  Class cxxBridgeClass = objc_lookUpClass("RCTCxxBridge");
+
+  Class implClass = nil;
+
+  if ([self.delegate respondsToSelector:@selector(shouldBridgeUseCxxBridge:)]) {
+    if ([self.delegate shouldBridgeUseCxxBridge:self]) {
+      implClass = cxxBridgeClass;
+    } else {
+      implClass = batchedBridgeClass;
+    }
+  } else if (batchedBridgeClass != nil) {
+    implClass = batchedBridgeClass;
+  } else if (cxxBridgeClass != nil) {
+    implClass = cxxBridgeClass;
+  }
+
+  RCTAssert(implClass != nil, @"No bridge implementation is available, giving up.");
+
+#ifdef WITH_FBSYSTRACE
+  if (implClass == cxxBridgeClass) {
+    [RCTFBSystrace registerCallbacks];
+  } else {
+    [RCTFBSystrace unregisterCallbacks];
+  }
+#endif
+
+  return implClass;
+}
+
 - (void)setUp
 {
+  Class bridgeClass = self.bridgeClass;
+
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBridge setUp]", nil);
 
   _performanceLogger = [RCTPerformanceLogger new];
@@ -294,15 +333,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
-  [self createBatchedBridge];
+  self.batchedBridge = [[bridgeClass alloc] initWithParentBridge:self];
   [self.batchedBridge start];
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-}
-
-- (void)createBatchedBridge
-{
-  self.batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
 }
 
 - (BOOL)isLoading

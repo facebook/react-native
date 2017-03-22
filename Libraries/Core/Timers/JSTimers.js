@@ -15,6 +15,7 @@
 // in dependencies. NativeModules > BatchedBridge > MessageQueue > JSTimersExecution
 const RCTTiming = require('NativeModules').Timing;
 const JSTimersExecution = require('JSTimersExecution');
+const Platform = require('Platform');
 
 const parseErrorStack = require('parseErrorStack');
 
@@ -64,6 +65,14 @@ function _freeCallback(timerID: number) {
   }
 }
 
+const MAX_TIMER_DURATION_MS = 60 * 1000;
+const IS_ANDROID = Platform.OS === 'android';
+const ANDROID_LONG_TIMER_MESSAGE = 
+  'Setting a timer for a long period of time, i.e. multiple minutes, is a ' +
+  'performance and correctness issue on Android as it keeps the timer ' +
+  'module awake, and timers can only be called when the app is in the foreground. ' +
+  'See https://github.com/facebook/react-native/issues/12981 for more info.';
+
 /**
  * JS implementation of timer functions. Must be completely driven by an
  * external clock signal, all that's stored here is timerID, timer type, and
@@ -75,6 +84,11 @@ const JSTimers = {
    * @param {number} duration Number of milliseconds.
    */
   setTimeout: function(func: Function, duration: number, ...args?: any): number {
+    if (IS_ANDROID && duration > MAX_TIMER_DURATION_MS) {
+      console.warn(
+          ANDROID_LONG_TIMER_MESSAGE + '\n' + '(Saw setTimeout with duration ' +
+          duration + 'ms)');
+    }
     const id = _allocateCallback(() => func.apply(undefined, args), 'setTimeout');
     RCTTiming.createTimer(id, duration || 0, Date.now(), /* recurring */ false);
     return id;
@@ -85,6 +99,11 @@ const JSTimers = {
    * @param {number} duration Number of milliseconds.
    */
   setInterval: function(func: Function, duration: number, ...args?: any): number {
+    if (IS_ANDROID && duration > MAX_TIMER_DURATION_MS) {
+      console.warn(
+          ANDROID_LONG_TIMER_MESSAGE + '\n' + '(Saw setInterval with duration ' +
+          duration + 'ms)');
+    }
     const id = _allocateCallback(() => func.apply(undefined, args), 'setInterval');
     RCTTiming.createTimer(id, duration || 0, Date.now(), /* recurring */ true);
     return id;

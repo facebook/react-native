@@ -232,7 +232,7 @@ class ResolutionRequest {
 
     let p = fromModule.getPackage();
     if (p) {
-      p = p.redirectRequire(toModuleName);
+      p = Promise.resolve(p.redirectRequire(toModuleName));
     } else {
       p = Promise.resolve(toModuleName);
     }
@@ -391,7 +391,7 @@ class ResolutionRequest {
               `To resolve try the following:\n` +
               `  1. Clear watchman watches: \`watchman watch-del-all\`.\n` +
               `  2. Delete the \`node_modules\` folder: \`rm -rf node_modules && npm install\`.\n` +
-              '  3. Reset packager cache: `rm -fr $TMPDIR/react-*` or `npm start --reset-cache`.'
+              '  3. Reset packager cache: `rm -fr $TMPDIR/react-*` or `npm start -- --reset-cache`.'
             );
           });
         });
@@ -470,13 +470,11 @@ class ResolutionRequest {
 
       const packageJsonPath = path.join(potentialDirPath, 'package.json');
       if (this._hasteFS.exists(packageJsonPath)) {
-        return this._moduleCache.getPackage(packageJsonPath)
-          .getMain().then(
-            main => this._tryResolve(
-              () => this._loadAsFile(main, fromModule, toModule),
-              () => this._loadAsDir(main, fromModule, toModule)
-            )
-          );
+        const main = this._moduleCache.getPackage(packageJsonPath).getMain();
+        return this._tryResolve(
+          () => this._loadAsFile(main, fromModule, toModule),
+          () => this._loadAsDir(main, fromModule, toModule),
+        );
       }
 
       return this._loadAsFile(

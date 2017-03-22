@@ -22,7 +22,6 @@
 #import "RCTBridge.h"
 #import "RCTComponentData.h"
 #import "RCTDefines.h"
-#import "RCTJSCExecutor.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTUIManager.h"
@@ -151,6 +150,20 @@ static dispatch_group_t RCTProfileGetUnhookGroup(void)
   });
 
   return unhookGroup;
+}
+
+// Used by RCTProfileTrampoline assembly file to call libc`malloc
+RCT_EXTERN void *RCTProfileMalloc(size_t size);
+void *RCTProfileMalloc(size_t size)
+{
+  return malloc(size);
+}
+
+// Used by RCTProfileTrampoline assembly file to call libc`free
+RCT_EXTERN void RCTProfileFree(void *buf);
+void RCTProfileFree(void *buf)
+{
+  free(buf);
 }
 
 RCT_EXTERN IMP RCTProfileGetImplementation(id obj, SEL cmd);
@@ -459,7 +472,8 @@ void RCTProfileInit(RCTBridge *bridge)
 
   // Set up thread ordering
   dispatch_async(RCTProfileGetQueue(), ^{
-    NSArray *orderedThreads = @[@"JS async", @"RCTPerformanceLogger", RCTJSCThreadName, @(RCTUIManagerQueueName), @"main"];
+    NSArray *orderedThreads = @[@"JS async", @"RCTPerformanceLogger", @"com.facebook.react.JavaScript",
+                                @(RCTUIManagerQueueName), @"main"];
     [orderedThreads enumerateObjectsUsingBlock:^(NSString *thread, NSUInteger idx, __unused BOOL *stop) {
       RCTProfileAddEvent(RCTProfileTraceEvents,
         @"ph": @"M", // metadata event
