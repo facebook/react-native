@@ -6,7 +6,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.testing;
+package com.facebook.react.testing.idledetection;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;

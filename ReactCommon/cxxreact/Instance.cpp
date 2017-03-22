@@ -2,7 +2,6 @@
 
 #include "Instance.h"
 
-#include "CxxMessageQueue.h"
 #include "Executor.h"
 #include "MethodCall.h"
 #include "RecoverableError.h"

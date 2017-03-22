@@ -28,7 +28,6 @@ NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
 NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
 NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
 NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
-NSString *const kRCTDevSettingWebsocketExecutorName = @"websocket-executor-name";
 NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
 NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
 NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
@@ -195,12 +194,6 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(reload)
 {
   [_bridge reload];
-}
-
-- (NSString *)websocketExecutorName
-{
-  // This value is passed as a command-line argument, so fall back to reading from NSUserDefaults directly
-  return [[NSUserDefaults standardUserDefaults] stringForKey:kRCTDevSettingWebsocketExecutorName];
 }
 
 - (void)setIsShakeToShowDevMenuEnabled:(BOOL)isShakeToShowDevMenuEnabled
@@ -454,6 +447,14 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   dispatch_async(dispatch_get_main_queue(), ^{
     // update state again after the bridge has finished loading
     [self _synchronizeAllSettings];
+
+    // Inspector can only be shown after JS has loaded
+    if ([self isElementInspectorShown]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      [self.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+#pragma clang diagnostic pop
+    }
   });
 }
 

@@ -52,7 +52,7 @@ type SectionBase = {
 
   // Optional props will override list-wide props just for this section.
   renderItem?: ?({item: SectionItem, index: number}) => ?React.Element<*>,
-  SeparatorComponent?: ?ReactClass<*>,
+  ItemSeparatorComponent?: ?ReactClass<*>,
   keyExtractor?: (item: SectionItem) => string,
 
   // TODO: support more optional/override props
@@ -79,7 +79,7 @@ type OptionalProps<SectionT: SectionBase> = {
    */
   renderItem: ({item: Item, index: number}) => ?React.Element<*>,
   /**
-   * Rendered at the top of each section. In the future, a sticky option will be added.
+   * Rendered at the top of each section.
    */
   renderSectionHeader?: ?({section: SectionT}) => ?React.Element<*>,
   /**
@@ -113,13 +113,6 @@ type OptionalProps<SectionT: SectionBase> = {
    * Set this true while waiting for new data from a refresh.
    */
   refreshing?: ?boolean,
-  /**
-   * This is an optional optimization to minimize re-rendering items.
-   */
-  shouldItemUpdate: (
-    prevProps: {item: Item, index: number},
-    nextProps: {item: Item, index: number}
-  ) => boolean,
 };
 
 export type Props<SectionT> =
@@ -210,11 +203,6 @@ class VirtualizedSectionList<SectionT: SectionBase>
     }
   }
 
-  _isItemSticky = (item, index) => {
-    const info = this._subExtractor(index);
-    return info && info.index == null;
-  };
-
   _renderItem = ({item, index}: {item: Item, index: number}) => {
     const info = this._subExtractor(index);
     if (!info) {
@@ -241,29 +229,29 @@ class VirtualizedSectionList<SectionT: SectionBase>
     if (!info) {
       return null;
     }
-    const SeparatorComponent = info.section.SeparatorComponent || this.props.ItemSeparatorComponent;
+    const ItemSeparatorComponent = info.section.ItemSeparatorComponent || this.props.ItemSeparatorComponent;
     const {SectionSeparatorComponent} = this.props;
     const isLastItemInList = index === this.state.childProps.getItemCount() - 1;
     const isLastItemInSection = info.index === info.section.data.length - 1;
     if (SectionSeparatorComponent && isLastItemInSection && !isLastItemInList) {
       return SectionSeparatorComponent;
     }
-    if (SeparatorComponent && !isLastItemInSection && !isLastItemInList) {
-      return SeparatorComponent;
+    if (ItemSeparatorComponent && !isLastItemInSection && !isLastItemInList) {
+      return ItemSeparatorComponent;
     }
     return null;
   }
 
-  _shouldItemUpdate = (prev, next) => {
-    const {shouldItemUpdate} = this.props;
-    if (!shouldItemUpdate || shouldItemUpdate(prev, next)) {
-      return true;
-    }
-    return this._getSeparatorComponent(prev.index) !== this._getSeparatorComponent(next.index);
-  }
-
   _computeState(props: Props<SectionT>): State {
-    const itemCount = props.sections.reduce((v, section) => v + section.data.length + 1, 0);
+    const offset = props.ListHeaderComponent ? 1 : 0;
+    const stickyHeaderIndices = [];
+    const itemCount = props.sections.reduce(
+      (v, section) => {
+        stickyHeaderIndices.push(v + offset);
+        return v + section.data.length + 1;
+      },
+      0
+    );
     return {
       childProps: {
         ...props,
@@ -272,21 +260,16 @@ class VirtualizedSectionList<SectionT: SectionBase>
         data: props.sections,
         getItemCount: () => itemCount,
         getItem,
-        isItemSticky: this._isItemSticky,
         keyExtractor: this._keyExtractor,
         onViewableItemsChanged:
           props.onViewableItemsChanged ? this._onViewableItemsChanged : undefined,
-        shouldItemUpdate: this._shouldItemUpdate,
+        stickyHeaderIndices: props.stickySectionHeadersEnabled ? stickyHeaderIndices : undefined,
       },
     };
   }
 
   constructor(props: Props<SectionT>, context: Object) {
     super(props, context);
-    warning(
-      !props.stickySectionHeadersEnabled,
-      'VirtualizedSectionList: Sticky headers only supported with legacyImplementation for now.'
-    );
     this.state = this._computeState(props);
   }
 
