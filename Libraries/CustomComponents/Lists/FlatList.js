@@ -242,6 +242,11 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
   }
 
   componentWillReceiveProps(nextProps: Props<ItemT>) {
+    invariant(
+      nextProps.numColumns === this.props.numColumns,
+      'Changing numColumns on the fly is not supported. Change the key prop on FlatList when ' +
+      'changing the number of columns to force a fresh render of the component.'
+    );
     this._checkProps(nextProps);
   }
 
