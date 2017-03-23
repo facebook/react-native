@@ -31,11 +31,7 @@ import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactPointerEventsView;
-import com.facebook.react.uimanager.ViewGroupManager;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
@@ -101,11 +97,12 @@ public class ReactViewGroup extends ViewGroup implements
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
   private boolean mNeedsOffscreenAlphaCompositing = false;
-  private int mNumberOfChildrenWithZIndex = 0;
-  private @Nullable int[] mDrawingOrderIndices;
+  private final ViewGroupDrawingOrderHelper mDrawingOrderHelper;
 
   public ReactViewGroup(Context context) {
     super(context);
+
+    mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
   }
 
   @Override
@@ -384,71 +381,31 @@ public class ReactViewGroup extends ViewGroup implements
   @Override
   public void addView(View child, int index, LayoutParams params) {
     // This will get called for every overload of addView so there is not need to override every method.
-    if (ReactViewManager.getViewZIndex(child) != null) {
-      mNumberOfChildrenWithZIndex++;
-    }
-
-    setChildrenDrawingOrderEnabled(mNumberOfChildrenWithZIndex > 0);
-    mDrawingOrderIndices = null;
+    mDrawingOrderHelper.handleAddView(child);
+    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
 
     super.addView(child, index, params);
   }
 
   @Override
   public void removeView(View view) {
-    handleRemoveView(view);
+    mDrawingOrderHelper.handleRemoveView(view);
+    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
 
     super.removeView(view);
   }
 
   @Override
   public void removeViewAt(int index) {
-    handleRemoveView(getChildAt(index));
+    mDrawingOrderHelper.handleRemoveView(getChildAt(index));
+    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
 
     super.removeViewAt(index);
   }
 
-  private void handleRemoveView(View view) {
-    if (ReactViewManager.getViewZIndex(view) != null) {
-      mNumberOfChildrenWithZIndex--;
-    }
-
-    setChildrenDrawingOrderEnabled(mNumberOfChildrenWithZIndex > 0);
-    mDrawingOrderIndices = null;
-  }
-
   @Override
   protected int getChildDrawingOrder(int childCount, int index) {
-    if (mDrawingOrderIndices == null) {
-      ArrayList<View> viewsToSort = new ArrayList<>();
-      for (int i = 0; i < childCount; i++) {
-        viewsToSort.add(getChildAt(i));
-      }
-      // Sort the views by zIndex
-      Collections.sort(viewsToSort, new Comparator<View>() {
-        @Override
-        public int compare(View view1, View view2) {
-          Integer view1ZIndex = ViewGroupManager.getViewZIndex(view1);
-          if (view1ZIndex == null) {
-            view1ZIndex = 0;
-          }
-
-          Integer view2ZIndex = ViewGroupManager.getViewZIndex(view2);
-          if (view2ZIndex == null) {
-            view2ZIndex = 0;
-          }
-
-          return view1ZIndex - view2ZIndex;
-        }
-      });
-
-      mDrawingOrderIndices = new int[childCount];
-      for (int i = 0; i < childCount; i++) {
-        View child = viewsToSort.get(i);
-        mDrawingOrderIndices[i] = indexOfChild(child);
-      }
-    }
-    return mDrawingOrderIndices[index];
+    return mDrawingOrderHelper.getChildDrawingOrder(childCount, index);
   }
 
   @Override
