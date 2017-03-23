@@ -79,6 +79,10 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
     Set<? extends Element> reactModuleListElements = roundEnv.getElementsAnnotatedWith(
       ReactModuleList.class);
     for (Element reactModuleListElement : reactModuleListElements) {
+      if (!(reactModuleListElement instanceof TypeElement)) {
+        continue;
+      }
+
       TypeElement typeElement = (TypeElement) reactModuleListElement;
       ReactModuleList reactModuleList = typeElement.getAnnotation(ReactModuleList.class);
       if (reactModuleList == null) {
