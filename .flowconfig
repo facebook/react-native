@@ -21,6 +21,11 @@
 .*/Libraries/react-native/React.js
 .*/Libraries/react-native/ReactNative.js
 
+; Ignore duplicate ReactErrorUtils in react-dom/lib in React 16 alpha 4.
+; TODO (bvaughn) Remove this once we've synced to React 16 alpha 5.
+; For more info see https://phabricator.intern.facebook.com/D4747529#10
+<PROJECT_ROOT>/node_modules/react-dom/lib/ReactErrorUtils.js
+
 [include]
 
 [libs]

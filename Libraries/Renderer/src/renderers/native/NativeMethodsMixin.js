@@ -12,8 +12,8 @@
 'use strict';
 
 var ReactNative = require('ReactNative');
-var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var ReactNativeFeatureFlags = require('ReactNativeFeatureFlags');
+var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var TextInputState = require('TextInputState');
 var UIManager = require('UIManager');
 
@@ -31,7 +31,9 @@ import type {
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
 } from 'NativeMethodsMixinUtils';
-import type { ReactNativeBaseComponentViewConfig } from 'ReactNativeViewConfigRegistry';
+import type {
+  ReactNativeBaseComponentViewConfig,
+} from 'ReactNativeViewConfigRegistry';
 
 /**
  * `NativeMethodsMixin` provides methods to access the underlying native
@@ -70,7 +72,7 @@ var NativeMethodsMixin = {
   measure: function(callback: MeasureOnSuccessCallback) {
     UIManager.measure(
       ReactNative.findNodeHandle(this),
-      mountSafeCallback(this, callback)
+      mountSafeCallback(this, callback),
     );
   },
 
@@ -92,7 +94,7 @@ var NativeMethodsMixin = {
   measureInWindow: function(callback: MeasureInWindowOnSuccessCallback) {
     UIManager.measureInWindow(
       ReactNative.findNodeHandle(this),
-      mountSafeCallback(this, callback)
+      mountSafeCallback(this, callback),
     );
   },
 
@@ -107,13 +109,13 @@ var NativeMethodsMixin = {
   measureLayout: function(
     relativeToNativeNode: number,
     onSuccess: MeasureLayoutOnSuccessCallback,
-    onFail: () => void /* currently unused */
+    onFail: () => void /* currently unused */,
   ) {
     UIManager.measureLayout(
       ReactNative.findNodeHandle(this),
       relativeToNativeNode,
       mountSafeCallback(this, onFail),
-      mountSafeCallback(this, onSuccess)
+      mountSafeCallback(this, onSuccess),
     );
   },
 
@@ -174,8 +176,7 @@ function setNativePropsFiber(componentOrHandle: any, nativeProps: Object) {
     return;
   }
 
-  const viewConfig : ReactNativeBaseComponentViewConfig =
-    maybeInstance.viewConfig;
+  const viewConfig: ReactNativeBaseComponentViewConfig = maybeInstance.viewConfig;
 
   if (__DEV__) {
     warnForStyleProps(nativeProps, viewConfig.validAttributes);
@@ -208,7 +209,7 @@ function setNativePropsStack(componentOrHandle: any, nativeProps: Object) {
     return;
   }
 
-  let viewConfig : ReactNativeBaseComponentViewConfig;
+  let viewConfig: ReactNativeBaseComponentViewConfig;
   if (maybeInstance.viewConfig !== undefined) {
     // ReactNativeBaseComponent
     viewConfig = maybeInstance.viewConfig;
@@ -228,7 +229,7 @@ function setNativePropsStack(componentOrHandle: any, nativeProps: Object) {
     viewConfig = maybeInstance.viewConfig;
   }
 
-  const tag : number = typeof maybeInstance.getHostNode === 'function'
+  const tag: number = typeof maybeInstance.getHostNode === 'function'
     ? maybeInstance.getHostNode()
     : maybeInstance._rootNodeID;
 
@@ -241,11 +242,7 @@ function setNativePropsStack(componentOrHandle: any, nativeProps: Object) {
     viewConfig.validAttributes,
   );
 
-  UIManager.updateView(
-    tag,
-    viewConfig.uiViewClassName,
-    updatePayload,
-  );
+  UIManager.updateView(tag, viewConfig.uiViewClassName, updatePayload);
 }
 
 // Switching based on fiber vs stack to avoid a lot of inline checks at runtime.
@@ -253,8 +250,10 @@ function setNativePropsStack(componentOrHandle: any, nativeProps: Object) {
 // that would result in a cycle between ReactNative and NativeMethodsMixin.
 // We avoid requiring additional code for this injection so it's probably ok?
 // TODO (bvaughn) Remove this once ReactNativeStack is gone.
-let injectedSetNativeProps :
-  (componentOrHandle: any, nativeProps: Object) => void;
+let injectedSetNativeProps: (
+  componentOrHandle: any,
+  nativeProps: Object,
+) => void;
 if (ReactNativeFeatureFlags.useFiber) {
   injectedSetNativeProps = setNativePropsFiber;
 } else {
@@ -268,8 +267,8 @@ if (__DEV__) {
   var NativeMethodsMixin_DEV = (NativeMethodsMixin: any);
   invariant(
     !NativeMethodsMixin_DEV.componentWillMount &&
-    !NativeMethodsMixin_DEV.componentWillReceiveProps,
-    'Do not override existing functions.'
+      !NativeMethodsMixin_DEV.componentWillReceiveProps,
+    'Do not override existing functions.',
   );
   NativeMethodsMixin_DEV.componentWillMount = function() {
     throwOnStylesProp(this, this.props);
