@@ -20,6 +20,9 @@ import java.util.Comparator;
 
 import javax.annotation.Nullable;
 
+/**
+ * Helper to handle implementing ViewGroups with custom drawing order based on z-index.
+ */
 public class ViewGroupDrawingOrderHelper {
   private final ViewGroup mViewGroup;
   private int mNumberOfChildrenWithZIndex = 0;
@@ -29,6 +32,10 @@ public class ViewGroupDrawingOrderHelper {
     mViewGroup = viewGroup;
   }
 
+  /**
+   * This should be called every time a view is added to the ViewGroup in {@link ViewGroup#addView}.
+   * @param view The view that is being added
+   */
   public void handleAddView(View view) {
     if (ReactViewManager.getViewZIndex(view) != null) {
       mNumberOfChildrenWithZIndex++;
@@ -37,6 +44,11 @@ public class ViewGroupDrawingOrderHelper {
     mDrawingOrderIndices = null;
   }
 
+  /**
+   * This should be called every time a view is removed from the ViewGroup in {@link ViewGroup#removeView}
+   * and {@link ViewGroup#removeViewAt}.
+   * @param view The view that is being removed.
+   */
   public void handleRemoveView(View view) {
     if (ReactViewManager.getViewZIndex(view) != null) {
       mNumberOfChildrenWithZIndex--;
@@ -45,10 +57,19 @@ public class ViewGroupDrawingOrderHelper {
     mDrawingOrderIndices = null;
   }
 
+  /**
+   * If the ViewGroup should enable drawing order. ViewGroups should call
+   * {@link ViewGroup#setChildrenDrawingOrderEnabled} with the value returned from this method when
+   * a view is added or removed.
+   */
   public boolean shouldEnableCustomDrawingOrder() {
     return mNumberOfChildrenWithZIndex > 0;
   }
 
+  /**
+   * The index of the child view that should be drawn. This should be used in
+   * {@link ViewGroup#getChildDrawingOrder}.
+   */
   public int getChildDrawingOrder(int childCount, int index) {
     if (mDrawingOrderIndices == null) {
       ArrayList<View> viewsToSort = new ArrayList<>();
