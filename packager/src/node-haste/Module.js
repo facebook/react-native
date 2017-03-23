@@ -129,7 +129,7 @@ class Module {
     return this._cache.get(
       this.path,
       'isHaste',
-      () => Promise.resolve(this._getHasteName() != null),
+      () => Promise.resolve().then(() => this._getHasteName() != null),
     );
   }
 
