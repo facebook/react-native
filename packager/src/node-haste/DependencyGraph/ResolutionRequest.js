@@ -302,120 +302,115 @@ class ResolutionRequest {
     });
   }
 
-  _redirectRequire(fromModule: Module, modulePath: string) {
-    return Promise.resolve(fromModule.getPackage()).then(p => {
-      if (p) {
-        return p.redirectRequire(modulePath);
-      }
-      return modulePath;
-    });
+  _redirectRequire(fromModule: Module, modulePath: string): string | false {
+    const pck = fromModule.getPackage();
+    if (pck) {
+      return pck.redirectRequire(modulePath);
+    }
+    return modulePath;
   }
 
-  _resolveFileOrDir(fromModule: Module, toModuleName: string) {
+  _resolveFileOrDir(fromModule: Module, toModuleName: string): Module {
     const potentialModulePath = isAbsolutePath(toModuleName) ?
-        resolveWindowsPath(toModuleName) :
-        path.join(path.dirname(fromModule.path), toModuleName);
+      resolveWindowsPath(toModuleName) :
+      path.join(path.dirname(fromModule.path), toModuleName);
 
-    return this._redirectRequire(fromModule, potentialModulePath).then(
-      realModuleName => {
-        if (realModuleName === false) {
-          return this._loadAsFile(
-            ResolutionRequest.emptyModule,
-            fromModule,
-            toModuleName,
-          );
-        }
+    const realModuleName = this._redirectRequire(fromModule, potentialModulePath);
+    if (realModuleName === false) {
+      return this._loadAsFile(
+        ResolutionRequest.emptyModule,
+        fromModule,
+        toModuleName,
+      );
+    }
 
-        return tryResolveSync(
-          () => this._loadAsFile(realModuleName, fromModule, toModuleName),
-          () => this._loadAsDir(realModuleName, fromModule, toModuleName)
-        );
-      }
+    return tryResolveSync(
+      () => this._loadAsFile(realModuleName, fromModule, toModuleName),
+      () => this._loadAsDir(realModuleName, fromModule, toModuleName)
     );
   }
 
-  _resolveNodeDependency(fromModule: Module, toModuleName: string) {
-    if (isRelativeImport(toModuleName) || isAbsolutePath(toModuleName)) {
-      return this._resolveFileOrDir(fromModule, toModuleName);
-    } else {
-      return this._redirectRequire(fromModule, toModuleName).then(
-        realModuleName => {
-          // exclude
-          if (realModuleName === false) {
-            return this._loadAsFile(
-              ResolutionRequest.emptyModule,
-              fromModule,
-              toModuleName,
-            );
-          }
+  _resolveNodeDependency(fromModule: Module, toModuleName: string): Promise<Module> {
+    return Promise.resolve().then(() => {
+      if (isRelativeImport(toModuleName) || isAbsolutePath(toModuleName)) {
+        return this._resolveFileOrDir(fromModule, toModuleName);
+      }
+      const realModuleName = this._redirectRequire(fromModule, toModuleName);
+      // exclude
+      if (realModuleName === false) {
+        return this._loadAsFile(
+          ResolutionRequest.emptyModule,
+          fromModule,
+          toModuleName,
+        );
+      }
 
-          if (isRelativeImport(realModuleName) || isAbsolutePath(realModuleName)) {
-            // derive absolute path /.../node_modules/fromModuleDir/realModuleName
-            const fromModuleParentIdx = fromModule.path.lastIndexOf('node_modules' + path.sep) + 13;
-            const fromModuleDir = fromModule.path.slice(
-              0,
-              fromModule.path.indexOf(path.sep, fromModuleParentIdx),
-            );
-            const absPath = path.join(fromModuleDir, realModuleName);
-            return this._resolveFileOrDir(fromModule, absPath);
-          }
+      if (isRelativeImport(realModuleName) || isAbsolutePath(realModuleName)) {
+        // derive absolute path /.../node_modules/fromModuleDir/realModuleName
+        const fromModuleParentIdx = fromModule.path.lastIndexOf('node_modules' + path.sep) + 13;
+        const fromModuleDir = fromModule.path.slice(
+          0,
+          fromModule.path.indexOf(path.sep, fromModuleParentIdx),
+        );
+        const absPath = path.join(fromModuleDir, realModuleName);
+        return this._resolveFileOrDir(fromModule, absPath);
+      }
 
-          const searchQueue = [];
-          for (let currDir = path.dirname(fromModule.path);
-               currDir !== '.' && currDir !== realPath.parse(fromModule.path).root;
-               currDir = path.dirname(currDir)) {
-            const searchPath = path.join(currDir, 'node_modules');
-            if (this._dirExists(searchPath)) {
-              searchQueue.push(
-                path.join(searchPath, realModuleName)
-              );
-            }
-          }
+      const searchQueue = [];
+      for (let currDir = path.dirname(fromModule.path);
+           currDir !== '.' && currDir !== realPath.parse(fromModule.path).root;
+           currDir = path.dirname(currDir)) {
+        const searchPath = path.join(currDir, 'node_modules');
+        if (this._dirExists(searchPath)) {
+          searchQueue.push(
+            path.join(searchPath, realModuleName)
+          );
+        }
+      }
 
-          if (this._extraNodeModules) {
-            const {_extraNodeModules} = this;
-            const bits = toModuleName.split(path.sep);
-            const packageName = bits[0];
-            if (_extraNodeModules[packageName]) {
-              bits[0] = _extraNodeModules[packageName];
-              searchQueue.push(path.join.apply(path, bits));
-            }
-          }
+      if (this._extraNodeModules) {
+        const {_extraNodeModules} = this;
+        const bits = toModuleName.split(path.sep);
+        const packageName = bits[0];
+        if (_extraNodeModules[packageName]) {
+          bits[0] = _extraNodeModules[packageName];
+          searchQueue.push(path.join.apply(path, bits));
+        }
+      }
 
-          let p = Promise.reject(new UnableToResolveError(fromModule, toModuleName));
-          searchQueue.forEach(potentialModulePath => {
-            p = this._tryResolve(
-              () => this._tryResolve(
-                () => p,
-                () => Promise.resolve().then(
-                  () => this._loadAsFile(potentialModulePath, fromModule, toModuleName),
-                ),
-              ),
-              () => Promise.resolve().then(
-                () => this._loadAsDir(potentialModulePath, fromModule, toModuleName),
-              ),
-            );
-          });
+      let p = Promise.reject(new UnableToResolveError(fromModule, toModuleName));
+      searchQueue.forEach(potentialModulePath => {
+        p = this._tryResolve(
+          () => this._tryResolve(
+            () => p,
+            () => Promise.resolve().then(
+              () => this._loadAsFile(potentialModulePath, fromModule, toModuleName),
+            ),
+          ),
+          () => Promise.resolve().then(
+            () => this._loadAsDir(potentialModulePath, fromModule, toModuleName),
+          ),
+        );
+      });
 
-          return p.catch(error => {
-            if (error.type !== 'UnableToResolveError') {
-              throw error;
-            }
-            const hint = searchQueue.length ? ' or in these directories:' : '';
-            throw new UnableToResolveError(
-              fromModule,
-              toModuleName,
-              `Module does not exist in the module map${hint}\n` +
-                searchQueue.map(searchPath => `  ${path.dirname(searchPath)}\n`).join(', ') + '\n' +
-              `This might be related to https://github.com/facebook/react-native/issues/4968\n` +
-              `To resolve try the following:\n` +
-              `  1. Clear watchman watches: \`watchman watch-del-all\`.\n` +
-              `  2. Delete the \`node_modules\` folder: \`rm -rf node_modules && npm install\`.\n` +
-              '  3. Reset packager cache: `rm -fr $TMPDIR/react-*` or `npm start -- --reset-cache`.'
-            );
-          });
-        });
-    }
+      return p.catch(error => {
+        if (error.type !== 'UnableToResolveError') {
+          throw error;
+        }
+        const hint = searchQueue.length ? ' or in these directories:' : '';
+        throw new UnableToResolveError(
+          fromModule,
+          toModuleName,
+          `Module does not exist in the module map${hint}\n` +
+            searchQueue.map(searchPath => `  ${path.dirname(searchPath)}\n`).join(', ') + '\n' +
+          `This might be related to https://github.com/facebook/react-native/issues/4968\n` +
+          `To resolve try the following:\n` +
+          `  1. Clear watchman watches: \`watchman watch-del-all\`.\n` +
+          `  2. Delete the \`node_modules\` folder: \`rm -rf node_modules && npm install\`.\n` +
+          '  3. Reset packager cache: `rm -fr $TMPDIR/react-*` or `npm start -- --reset-cache`.'
+        );
+      });
+    });
   }
 
   _loadAsFile(potentialModulePath: string, fromModule: Module, toModule: string): Module {
