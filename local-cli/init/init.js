@@ -60,15 +60,24 @@ function init(projectDir, argsOrName) {
  */
 function generateProject(destinationRoot, newProjectName, options) {
   var reactNativePackageJson = require('../../package.json');
-  var { peerDependencies } = reactNativePackageJson;
+  var { devDependencies, peerDependencies } = reactNativePackageJson;
   if (!peerDependencies) {
     console.error('Missing React peer dependency in React Native\'s package.json. Aborting.');
+    return;
+  } else if (!devDependencies) {
+    console.error('Missing react-test-renderer dev dependency in React Native\'s package.json. Aborting.');
     return;
   }
 
   var reactVersion = peerDependencies.react;
   if (!reactVersion) {
     console.error('Missing React peer dependency in React Native\'s package.json. Aborting.');
+    return;
+  }
+
+  var reactTestRendererVersion = devDependencies['react-test-renderer'];
+  if (!reactTestRendererVersion) {
+    console.error('Missing react-test-renderer dev dependency in React Native\'s package.json. Aborting.');
     return;
   }
 
@@ -88,7 +97,7 @@ function generateProject(destinationRoot, newProjectName, options) {
   }
   if (!options['skip-jest']) {
     const jestDeps = (
-      `jest babel-jest babel-preset-react-native react-test-renderer@${reactVersion}`
+      `jest babel-jest babel-preset-react-native react-test-renderer@${reactTestRendererVersion}`
     );
     if (yarnVersion) {
       console.log('Adding Jest...');
