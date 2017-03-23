@@ -25,7 +25,7 @@ ReactNativeStackInjection.inject();
 var render = function(
   element: ReactElement<any>,
   mountInto: number,
-  callback?: ?(() => void)
+  callback?: ?() => void,
 ): ?ReactComponent<any, any, any> {
   return ReactNativeMount.renderComponent(element, mountInto, callback);
 };
@@ -36,7 +36,7 @@ var ReactNative = {
   // External users of findNodeHandle() expect the host tag number return type.
   // The injected findNodeHandle() strategy returns the instance wrapper though.
   // See NativeMethodsMixin#setNativeProps for more info on why this is done.
-  findNodeHandle(componentOrHandle : any) : ?number {
+  findNodeHandle(componentOrHandle: any): ?number {
     const nodeHandle = findNodeHandle(componentOrHandle);
     if (nodeHandle == null || typeof nodeHandle === 'number') {
       return nodeHandle;
@@ -59,7 +59,8 @@ var ReactNative = {
 /* globals __REACT_DEVTOOLS_GLOBAL_HOOK__ */
 if (
   typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== 'undefined' &&
-  typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.inject === 'function') {
+  typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.inject === 'function'
+) {
   __REACT_DEVTOOLS_GLOBAL_HOOK__.inject({
     ComponentTree: {
       getClosestInstanceFromNode: function(node) {
