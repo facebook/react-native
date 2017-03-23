@@ -51,6 +51,22 @@ type Options = {
   preferNativePlatform: boolean,
 };
 
+/**
+ * It may not be a great pattern to leverage exception just for "trying" things
+ * out, notably for performance. We should consider replacing these functions
+ * to be nullable-returning, or being better stucture to the algorithm.
+ */
+function tryResolveSync<T>(action: () => T, secondaryAction: () => T): T {
+  try {
+    return action();
+  } catch (error) {
+    if (error.type !== 'UnableToResolveError') {
+      throw error;
+    }
+    return secondaryAction();
+  }
+}
+
 class ResolutionRequest {
   _dirExists: DirExistsFn;
   _entryPath: string;
@@ -268,7 +284,7 @@ class ResolutionRequest {
           package_.root,
           path.relative(packageName, realModuleName)
         );
-        return this._tryResolve(
+        return tryResolveSync(
           () => this._loadAsFile(
             potentialModulePath,
             fromModule,
@@ -310,7 +326,7 @@ class ResolutionRequest {
           );
         }
 
-        return this._tryResolve(
+        return tryResolveSync(
           () => this._loadAsFile(realModuleName, fromModule, toModuleName),
           () => this._loadAsDir(realModuleName, fromModule, toModuleName)
         );
@@ -371,9 +387,13 @@ class ResolutionRequest {
             p = this._tryResolve(
               () => this._tryResolve(
                 () => p,
-                () => this._loadAsFile(potentialModulePath, fromModule, toModuleName),
+                () => Promise.resolve().then(
+                  () => this._loadAsFile(potentialModulePath, fromModule, toModuleName),
+                ),
               ),
-              () => this._loadAsDir(potentialModulePath, fromModule, toModuleName)
+              () => Promise.resolve().then(
+                () => this._loadAsDir(potentialModulePath, fromModule, toModuleName),
+              ),
             );
           });
 
@@ -398,91 +418,87 @@ class ResolutionRequest {
     }
   }
 
-  _loadAsFile(potentialModulePath: string, fromModule: Module, toModule: string): Promise<Module> {
-    return Promise.resolve().then(() => {
-      if (this._helpers.isAssetFile(potentialModulePath)) {
-        let dirname = path.dirname(potentialModulePath);
-        if (!this._dirExists(dirname)) {
-          throw new UnableToResolveError(
-            fromModule,
-            toModule,
-            `Directory ${dirname} doesn't exist`,
-          );
-        }
-
-        const {name, type} = getAssetDataFromName(potentialModulePath, this._platforms);
-
-        let pattern = name + '(@[\\d\\.]+x)?';
-        if (this._platform != null) {
-          pattern += '(\\.' + this._platform + ')?';
-        }
-        pattern += '\\.' + type;
-
-        // Escape backslashes in the path to be able to use it in the regex
-        if (path.sep === '\\') {
-          dirname = dirname.replace(/\\/g, '\\\\');
-        }
-
-        // We arbitrarly grab the first one, because scale selection
-        // will happen somewhere
-        const [assetFile] = this._hasteFS.matchFiles(
-          new RegExp(dirname + '(\/|\\\\)' + pattern)
-        );
-        if (assetFile) {
-          return this._moduleCache.getAssetModule(assetFile);
-        }
-      }
-
-      let file;
-      if (this._hasteFS.exists(potentialModulePath)) {
-        file = potentialModulePath;
-      } else if (this._platform != null &&
-                 this._hasteFS.exists(potentialModulePath + '.' + this._platform + '.js')) {
-        file = potentialModulePath + '.' + this._platform + '.js';
-      } else if (this._preferNativePlatform &&
-                 this._hasteFS.exists(potentialModulePath + '.native.js')) {
-        file = potentialModulePath + '.native.js';
-      } else if (this._hasteFS.exists(potentialModulePath + '.js')) {
-        file = potentialModulePath + '.js';
-      } else if (this._hasteFS.exists(potentialModulePath + '.json')) {
-        file = potentialModulePath + '.json';
-      } else {
+  _loadAsFile(potentialModulePath: string, fromModule: Module, toModule: string): Module {
+    if (this._helpers.isAssetFile(potentialModulePath)) {
+      let dirname = path.dirname(potentialModulePath);
+      if (!this._dirExists(dirname)) {
         throw new UnableToResolveError(
           fromModule,
           toModule,
-          `File ${potentialModulePath} doesn't exist`,
+          `Directory ${dirname} doesn't exist`,
         );
       }
 
-      return this._moduleCache.getModule(file);
-    });
-  }
+      const {name, type} = getAssetDataFromName(potentialModulePath, this._platforms);
 
-  _loadAsDir(potentialDirPath: string, fromModule: Module, toModule: string) {
-    return Promise.resolve().then(() => {
-      if (!this._dirExists(potentialDirPath)) {
-        throw new UnableToResolveError(
-          fromModule,
-          toModule,
-          `Directory ${potentialDirPath} doesn't exist`,
-        );
+      let pattern = name + '(@[\\d\\.]+x)?';
+      if (this._platform != null) {
+        pattern += '(\\.' + this._platform + ')?';
+      }
+      pattern += '\\.' + type;
+
+      // Escape backslashes in the path to be able to use it in the regex
+      if (path.sep === '\\') {
+        dirname = dirname.replace(/\\/g, '\\\\');
       }
 
-      const packageJsonPath = path.join(potentialDirPath, 'package.json');
-      if (this._hasteFS.exists(packageJsonPath)) {
-        const main = this._moduleCache.getPackage(packageJsonPath).getMain();
-        return this._tryResolve(
-          () => this._loadAsFile(main, fromModule, toModule),
-          () => this._loadAsDir(main, fromModule, toModule),
-        );
+      // We arbitrarly grab the first one, because scale selection
+      // will happen somewhere
+      const [assetFile] = this._hasteFS.matchFiles(
+        new RegExp(dirname + '(\/|\\\\)' + pattern)
+      );
+      if (assetFile) {
+        return this._moduleCache.getAssetModule(assetFile);
       }
+    }
 
-      return this._loadAsFile(
-        path.join(potentialDirPath, 'index'),
+    let file;
+    if (this._hasteFS.exists(potentialModulePath)) {
+      file = potentialModulePath;
+    } else if (this._platform != null &&
+               this._hasteFS.exists(potentialModulePath + '.' + this._platform + '.js')) {
+      file = potentialModulePath + '.' + this._platform + '.js';
+    } else if (this._preferNativePlatform &&
+               this._hasteFS.exists(potentialModulePath + '.native.js')) {
+      file = potentialModulePath + '.native.js';
+    } else if (this._hasteFS.exists(potentialModulePath + '.js')) {
+      file = potentialModulePath + '.js';
+    } else if (this._hasteFS.exists(potentialModulePath + '.json')) {
+      file = potentialModulePath + '.json';
+    } else {
+      throw new UnableToResolveError(
         fromModule,
         toModule,
+        `File ${potentialModulePath} doesn't exist`,
       );
-    });
+    }
+
+    return this._moduleCache.getModule(file);
+  }
+
+  _loadAsDir(potentialDirPath: string, fromModule: Module, toModule: string): Module {
+    if (!this._dirExists(potentialDirPath)) {
+      throw new UnableToResolveError(
+        fromModule,
+        toModule,
+        `Directory ${potentialDirPath} doesn't exist`,
+      );
+    }
+
+    const packageJsonPath = path.join(potentialDirPath, 'package.json');
+    if (this._hasteFS.exists(packageJsonPath)) {
+      const main = this._moduleCache.getPackage(packageJsonPath).getMain();
+      return tryResolveSync(
+        () => this._loadAsFile(main, fromModule, toModule),
+        () => this._loadAsDir(main, fromModule, toModule),
+      );
+    }
+
+    return this._loadAsFile(
+      path.join(potentialDirPath, 'index'),
+      fromModule,
+      toModule,
+    );
   }
 
   _resetResolutionCache() {
