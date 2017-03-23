@@ -131,7 +131,7 @@ class ResolutionRequest {
     if (!this._helpers.isNodeModulesDir(fromModule.path)
         && !(isRelativeImport(toModuleName) || isAbsolutePath(toModuleName))) {
       return this._tryResolve(
-        () => this._resolveHasteDependency(fromModule, toModuleName),
+        () => Promise.resolve().then(() => this._resolveHasteDependency(fromModule, toModuleName)),
         () => this._resolveNodeDependency(fromModule, toModuleName)
       ).then(cacheResult);
     }
@@ -243,63 +243,62 @@ class ResolutionRequest {
     });
   }
 
-  _resolveHasteDependency(fromModule: Module, toModuleName: string): Promise<Module> {
+  _resolveHasteDependency(fromModule: Module, toModuleName: string): Module {
     toModuleName = normalizePath(toModuleName);
 
-    let p = fromModule.getPackage();
-    if (p) {
-      p = Promise.resolve(p.redirectRequire(toModuleName));
+    const pck = fromModule.getPackage();
+    let realModuleName;
+    if (pck) {
+      realModuleName = pck.redirectRequire(toModuleName);
     } else {
-      p = Promise.resolve(toModuleName);
+      realModuleName = toModuleName;
     }
 
-    return p.then(realModuleName => {
-      const modulePath = this._moduleMap
-        .getModule(realModuleName, this._platform, /* supportsNativePlatform */ true);
-      if (modulePath != null) {
-        const module = this._moduleCache.getModule(modulePath);
-        /* temporary until we strengthen the typing */
-        invariant(module.type === 'Module', 'expected Module type');
-        return module;
-      }
+    const modulePath = this._moduleMap
+      .getModule(realModuleName, this._platform, /* supportsNativePlatform */ true);
+    if (modulePath != null) {
+      const module = this._moduleCache.getModule(modulePath);
+      /* temporary until we strengthen the typing */
+      invariant(module.type === 'Module', 'expected Module type');
+      return module;
+    }
 
-      let packageName = realModuleName;
-      let packagePath;
-      while (packageName && packageName !== '.') {
-        packagePath = this._moduleMap
-          .getPackage(packageName, this._platform, /* supportsNativePlatform */ true);
-        if (packagePath != null) {
-          break;
-        }
-        packageName = path.dirname(packageName);
-      }
-
+    let packageName = realModuleName;
+    let packagePath;
+    while (packageName && packageName !== '.') {
+      packagePath = this._moduleMap
+        .getPackage(packageName, this._platform, /* supportsNativePlatform */ true);
       if (packagePath != null) {
-
-        const package_ = this._moduleCache.getPackage(packagePath);
-        /* temporary until we strengthen the typing */
-        invariant(package_.type === 'Package', 'expected Package type');
-
-        const potentialModulePath = path.join(
-          package_.root,
-          path.relative(packageName, realModuleName)
-        );
-        return tryResolveSync(
-          () => this._loadAsFile(
-            potentialModulePath,
-            fromModule,
-            toModuleName,
-          ),
-          () => this._loadAsDir(potentialModulePath, fromModule, toModuleName),
-        );
+        break;
       }
+      packageName = path.dirname(packageName);
+    }
 
-      throw new UnableToResolveError(
-        fromModule,
-        toModuleName,
-        'Unable to resolve dependency',
+    if (packagePath != null) {
+
+      const package_ = this._moduleCache.getPackage(packagePath);
+      /* temporary until we strengthen the typing */
+      invariant(package_.type === 'Package', 'expected Package type');
+
+      const potentialModulePath = path.join(
+        package_.root,
+        path.relative(packageName, realModuleName)
       );
-    });
+      return tryResolveSync(
+        () => this._loadAsFile(
+          potentialModulePath,
+          fromModule,
+          toModuleName,
+        ),
+        () => this._loadAsDir(potentialModulePath, fromModule, toModuleName),
+      );
+    }
+
+    throw new UnableToResolveError(
+      fromModule,
+      toModuleName,
+      'Unable to resolve dependency',
+    );
   }
 
   _redirectRequire(fromModule: Module, modulePath: string): string | false {
