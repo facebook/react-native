@@ -52,6 +52,7 @@ import com.facebook.react.modules.location.LocationModule;
 import com.facebook.react.modules.netinfo.NetInfoModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.permissions.PermissionsModule;
+import com.facebook.react.modules.settings.SettingsModule;
 import com.facebook.react.modules.share.ShareModule;
 import com.facebook.react.modules.statusbar.StatusBarModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
@@ -209,6 +210,12 @@ public class MainReactPackage extends LazyReactPackage {
         @Override
         public NativeModule get() {
           return new PermissionsModule(context);
+        }
+      }),
+      new ModuleSpec(SettingsModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new SettingsModule(context);
         }
       }),
       new ModuleSpec(ShareModule.class, new Provider<NativeModule>() {
