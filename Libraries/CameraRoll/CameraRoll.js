@@ -11,7 +11,8 @@
  */
 'use strict';
 
-var ReactPropTypes = require('React').PropTypes
+// $FlowFixMe `checkPropTypes` is not in Flow's built in React typedefs yet.
+var {PropTypes, checkPropTypes} = require('React');
 var RCTCameraRollManager = require('NativeModules').CameraRollManager;
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
@@ -47,34 +48,34 @@ var getPhotosParamChecker = createStrictShapeTypeChecker({
    * The number of photos wanted in reverse order of the photo application
    * (i.e. most recent first for SavedPhotos).
    */
-  first: ReactPropTypes.number.isRequired,
+  first: PropTypes.number.isRequired,
 
   /**
    * A cursor that matches `page_info { end_cursor }` returned from a previous
    * call to `getPhotos`
    */
-  after: ReactPropTypes.string,
+  after: PropTypes.string,
 
   /**
    * Specifies which group types to filter the results to.
    */
-  groupTypes: ReactPropTypes.oneOf(GROUP_TYPES_OPTIONS),
+  groupTypes: PropTypes.oneOf(GROUP_TYPES_OPTIONS),
 
   /**
    * Specifies filter on group names, like 'Recent Photos' or custom album
    * titles.
    */
-  groupName: ReactPropTypes.string,
+  groupName: PropTypes.string,
 
   /**
   * Specifies filter on asset type
   */
-  assetType: ReactPropTypes.oneOf(ASSET_TYPE_OPTIONS),
+  assetType: PropTypes.oneOf(ASSET_TYPE_OPTIONS),
 
   /**
    * Filter by mimetype (e.g. image/jpeg).
    */
-  mimeTypes: ReactPropTypes.arrayOf(ReactPropTypes.string),
+  mimeTypes: PropTypes.arrayOf(PropTypes.string),
 });
 
 /**
@@ -82,30 +83,30 @@ var getPhotosParamChecker = createStrictShapeTypeChecker({
  */
 var getPhotosReturnChecker = createStrictShapeTypeChecker({
   // $FlowFixMe(>=0.41.0)
-  edges: ReactPropTypes.arrayOf(createStrictShapeTypeChecker({
+  edges: PropTypes.arrayOf(createStrictShapeTypeChecker({
     node: createStrictShapeTypeChecker({
-      type: ReactPropTypes.string.isRequired,
-      group_name: ReactPropTypes.string.isRequired,
+      type: PropTypes.string.isRequired,
+      group_name: PropTypes.string.isRequired,
       image: createStrictShapeTypeChecker({
-        uri: ReactPropTypes.string.isRequired,
-        height: ReactPropTypes.number.isRequired,
-        width: ReactPropTypes.number.isRequired,
-        isStored: ReactPropTypes.bool,
+        uri: PropTypes.string.isRequired,
+        height: PropTypes.number.isRequired,
+        width: PropTypes.number.isRequired,
+        isStored: PropTypes.bool,
       }).isRequired,
-      timestamp: ReactPropTypes.number.isRequired,
+      timestamp: PropTypes.number.isRequired,
       location: createStrictShapeTypeChecker({
-        latitude: ReactPropTypes.number,
-        longitude: ReactPropTypes.number,
-        altitude: ReactPropTypes.number,
-        heading: ReactPropTypes.number,
-        speed: ReactPropTypes.number,
+        latitude: PropTypes.number,
+        longitude: PropTypes.number,
+        altitude: PropTypes.number,
+        heading: PropTypes.number,
+        speed: PropTypes.number,
       }),
     }).isRequired,
   })).isRequired,
   page_info: createStrictShapeTypeChecker({
-    has_next_page: ReactPropTypes.bool.isRequired,
-    start_cursor: ReactPropTypes.string,
-    end_cursor: ReactPropTypes.string,
+    has_next_page: PropTypes.bool.isRequired,
+    start_cursor: PropTypes.string,
+    end_cursor: PropTypes.string,
   }).isRequired,
 });
 
@@ -214,7 +215,7 @@ class CameraRoll {
    */
   static getPhotos(params) {
     if (__DEV__) {
-      getPhotosParamChecker({params}, 'params', 'CameraRoll.getPhotos');
+      checkPropTypes({params: getPhotosParamChecker}, {params}, 'params', 'CameraRoll.getPhotos');
     }
     if (arguments.length > 1) {
       console.warn('CameraRoll.getPhotos(tag, success, error) is deprecated.  Use the returned Promise instead');
@@ -222,7 +223,8 @@ class CameraRoll {
       if (__DEV__) {
         const callback = arguments[1];
         successCallback = (response) => {
-          getPhotosReturnChecker(
+          checkPropTypes(
+            {response: getPhotosReturnChecker},
             {response},
             'response',
             'CameraRoll.getPhotos callback'

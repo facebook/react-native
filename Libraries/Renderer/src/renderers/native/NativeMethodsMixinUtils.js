@@ -17,77 +17,85 @@ export type MeasureOnSuccessCallback = (
   width: number,
   height: number,
   pageX: number,
-  pageY: number
-) => void
+  pageY: number,
+) => void;
 
 export type MeasureInWindowOnSuccessCallback = (
   x: number,
   y: number,
   width: number,
   height: number,
-) => void
+) => void;
 
 export type MeasureLayoutOnSuccessCallback = (
   left: number,
   top: number,
   width: number,
-  height: number
-) => void
+  height: number,
+) => void;
 
 /**
  * Shared between ReactNativeFiberHostComponent and NativeMethodsMixin to keep
  * API in sync.
  */
 export interface NativeMethodsInterface {
-  blur() : void,
-  focus() : void,
-  measure(callback : MeasureOnSuccessCallback) : void,
-  measureInWindow(callback : MeasureInWindowOnSuccessCallback) : void,
+  blur(): void,
+  focus(): void,
+  measure(callback: MeasureOnSuccessCallback): void,
+  measureInWindow(callback: MeasureInWindowOnSuccessCallback): void,
   measureLayout(
     relativeToNativeNode: number,
     onSuccess: MeasureLayoutOnSuccessCallback,
-    onFail: () => void /* currently unused */
-  ) : void,
-  setNativeProps(nativeProps: Object) : void,
+    onFail: () => void,
+  ): void,
+  setNativeProps(nativeProps: Object): void,
 }
 
 /**
  * In the future, we should cleanup callbacks by cancelling them instead of
  * using this.
  */
-function mountSafeCallback(
-  context: any,
-  callback: ?Function
-): any {
+function mountSafeCallback(context: any, callback: ?Function): any {
   return function() {
-    if (!callback || (typeof context.isMounted === 'function' && !context.isMounted())) {
+    if (
+      !callback ||
+      (typeof context.isMounted === 'function' && !context.isMounted())
+    ) {
       return undefined;
     }
     return callback.apply(context, arguments);
   };
 }
 
-function throwOnStylesProp(component : any, props : any) {
+function throwOnStylesProp(component: any, props: any) {
   if (props.styles !== undefined) {
     var owner = component._owner || null;
     var name = component.constructor.displayName;
-    var msg = '`styles` is not a supported property of `' + name + '`, did ' +
+    var msg = '`styles` is not a supported property of `' +
+      name +
+      '`, did ' +
       'you mean `style` (singular)?';
     if (owner && owner.constructor && owner.constructor.displayName) {
-      msg += '\n\nCheck the `' + owner.constructor.displayName + '` parent ' +
+      msg += '\n\nCheck the `' +
+        owner.constructor.displayName +
+        '` parent ' +
         ' component.';
     }
     throw new Error(msg);
   }
 }
 
-function warnForStyleProps(props : any, validAttributes : any) {
+function warnForStyleProps(props: any, validAttributes: any) {
   for (var key in validAttributes.style) {
     if (!(validAttributes[key] || props[key] === undefined)) {
       console.error(
-        'You are setting the style `{ ' + key + ': ... }` as a prop. You ' +
-        'should nest it in a style object. ' +
-        'E.g. `{ style: { ' + key + ': ... } }`'
+        'You are setting the style `{ ' +
+          key +
+          ': ... }` as a prop. You ' +
+          'should nest it in a style object. ' +
+          'E.g. `{ style: { ' +
+          key +
+          ': ... } }`',
       );
     }
   }

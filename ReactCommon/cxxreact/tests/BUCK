@@ -1,5 +1,4 @@
 TEST_SRCS = [
-    "CxxMessageQueueTest.cpp",
     "RecoverableErrorTest.cpp",
     "jsarg_helpers.cpp",
     "jsbigstring.cpp",
