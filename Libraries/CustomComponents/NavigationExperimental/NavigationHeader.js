@@ -74,6 +74,7 @@ type Props = NavigationSceneRendererProps & {
   style?: any,
   viewProps?: any,
   statusBarHeight: number | Animated.Value,
+  titleStyleInterpolator?: NavigationStyleInterpolator,
 };
 
 type SubViewName = 'left' | 'title' | 'right';
@@ -118,6 +119,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     renderTitleComponent: PropTypes.func,
     style: View.propTypes.style,
     statusBarHeight: PropTypes.number,
+    titleStyleInterpolator: PropTypes.func,
     viewProps: PropTypes.shape(View.propTypes),
   };
 
@@ -189,7 +191,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
       props,
       'title',
       this.props.renderTitleComponent,
-      NavigationHeaderStyleInterpolator.forCenter,
+      this.props.titleStyleInterpolator || NavigationHeaderStyleInterpolator.forCenter,
     );
   };
 
