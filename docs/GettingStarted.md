@@ -290,11 +290,7 @@ changes in the filesystem. It is highly recommended you install it for better pe
 
 ![Android Studio AVD Manager](img/react-native-tools-avd.png)
 
-You can see the list of available AVDs by opening the "AVD Manager" from within Android Studio. You can also run the following command in a terminal:
-
-```
-android avd
-```
+You can see the list of available AVDs by opening the "AVD Manager" from within Android Studio.
 
 Once in the "AVD Manager", select your AVD and click "Edit...". Choose "Android 6.0 - API Level 23" under Device, and "Intel Atom (x86_64)" under CPU/ABI. Click OK, then select your new AVD and click "Start...", and finally, "Launch".
 

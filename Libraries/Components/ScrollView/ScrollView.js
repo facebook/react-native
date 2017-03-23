@@ -383,7 +383,7 @@ const ScrollView = React.createClass({
   _scrollAnimatedValue: (new Animated.Value(0): Animated.Value),
   _scrollAnimatedValueAttachment: (null: ?{detach: () => void}),
   _stickyHeaderRefs: (new Map(): Map<number, ScrollViewStickyHeader>),
-
+  _headerLayoutYs: (new Map(): Map<string, number>),
   getInitialState: function() {
     return this.scrollResponderMixinGetInitialState();
   },
@@ -391,6 +391,7 @@ const ScrollView = React.createClass({
   componentWillMount: function() {
     this._scrollAnimatedValue = new Animated.Value(0);
     this._stickyHeaderRefs = new Map();
+    this._headerLayoutYs = new Map();
   },
 
   componentDidMount: function() {
@@ -482,6 +483,11 @@ const ScrollView = React.createClass({
     this.scrollTo({x, y, animated: false});
   },
 
+  _getKeyForIndex: function(index, childArray) {
+    const child = childArray[index];
+    return child && child.key;
+  },
+
   _updateAnimatedNodeAttachment: function() {
     if (this.props.stickyHeaderIndices && this.props.stickyHeaderIndices.length > 0) {
       if (!this._scrollAnimatedValueAttachment) {
@@ -498,21 +504,34 @@ const ScrollView = React.createClass({
     }
   },
 
-  _setStickyHeaderRef: function(index, ref) {
-    this._stickyHeaderRefs.set(index, ref);
+  _setStickyHeaderRef: function(key, ref) {
+    if (ref) {
+      this._stickyHeaderRefs.set(key, ref);
+    } else {
+      this._stickyHeaderRefs.delete(key);
+    }
   },
 
-  _onStickyHeaderLayout: function(index, event) {
+  _onStickyHeaderLayout: function(index, event, key) {
     if (!this.props.stickyHeaderIndices) {
       return;
     }
+    const childArray = React.Children.toArray(this.props.children);
+    if (key !== this._getKeyForIndex(index, childArray)) {
+      // ignore stale layout update
+      return;
+    }
 
-    const previousHeaderIndex = this.props.stickyHeaderIndices[
-      this.props.stickyHeaderIndices.indexOf(index) - 1
-    ];
+    const layoutY = event.nativeEvent.layout.y;
+    this._headerLayoutYs.set(key, layoutY);
+
+    const indexOfIndex = this.props.stickyHeaderIndices.indexOf(index);
+    const previousHeaderIndex = this.props.stickyHeaderIndices[indexOfIndex - 1];
     if (previousHeaderIndex != null) {
-      const previousHeader = this._stickyHeaderRefs.get(previousHeaderIndex);
-      previousHeader && previousHeader.setNextHeaderY(event.nativeEvent.layout.y);
+      const previousHeader = this._stickyHeaderRefs.get(
+        this._getKeyForIndex(previousHeaderIndex, childArray)
+      );
+      previousHeader && previousHeader.setNextHeaderY(layoutY);
     }
   },
 
@@ -599,27 +618,33 @@ const ScrollView = React.createClass({
       };
     }
 
-      const {stickyHeaderIndices} = this.props;
-      const hasStickyHeaders = stickyHeaderIndices && stickyHeaderIndices.length > 0;
-      const children = stickyHeaderIndices && hasStickyHeaders ?
-        React.Children.toArray(this.props.children).map((child, index) => {
-          const stickyHeaderIndex = stickyHeaderIndices.indexOf(index);
-          if (child && stickyHeaderIndex >= 0) {
-            return (
-              <ScrollViewStickyHeader
-                key={index}
-                ref={(ref) => this._setStickyHeaderRef(index, ref)}
-                onLayout={(event) => this._onStickyHeaderLayout(index, event)}
-                scrollAnimatedValue={this._scrollAnimatedValue}>
-                {child}
-              </ScrollViewStickyHeader>
-            );
-          } else {
-            return child;
-          }
-        }) :
-        this.props.children;
-      const contentContainer =
+    const {stickyHeaderIndices} = this.props;
+    const hasStickyHeaders = stickyHeaderIndices && stickyHeaderIndices.length > 0;
+    const childArray = hasStickyHeaders && React.Children.toArray(this.props.children);
+    const children = hasStickyHeaders ?
+      childArray.map((child, index) => {
+        const indexOfIndex = child ? stickyHeaderIndices.indexOf(index) : -1;
+        if (indexOfIndex > -1) {
+          const key = child.key;
+          const nextIndex = stickyHeaderIndices[indexOfIndex + 1];
+          return (
+            <ScrollViewStickyHeader
+              key={key}
+              ref={(ref) => this._setStickyHeaderRef(key, ref)}
+              nextHeaderLayoutY={
+                this._headerLayoutYs.get(this._getKeyForIndex(nextIndex, childArray))
+              }
+              onLayout={(event) => this._onStickyHeaderLayout(index, event, key)}
+              scrollAnimatedValue={this._scrollAnimatedValue}>
+              {child}
+            </ScrollViewStickyHeader>
+          );
+        } else {
+          return child;
+        }
+      }) :
+      this.props.children;
+    const contentContainer =
       <ScrollContentContainerViewClass
         {...contentSizeChangeProps}
         ref={this._setInnerViewRef}

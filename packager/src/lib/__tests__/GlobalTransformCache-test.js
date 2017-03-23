@@ -40,7 +40,7 @@ describe('GlobalTransformCache', () => {
       dev: true,
       minify: false,
       platform: 'ios',
-      transform: {projectRoots: [__dirname]},
+      transform: {},
     };
     const result = await Promise.all([cache.fetch({
       filePath: 'foo.js',
