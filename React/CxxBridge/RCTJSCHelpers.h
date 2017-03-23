@@ -1,3 +1,5 @@
+// Copyright 2004-present Facebook. All Rights Reserved.
+
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -7,11 +9,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <React/RCTBridge.h>
+#pragma once
 
-@interface RCTCxxBridge : RCTBridge
+/**
+ * This must be invoked on iOS to set up platform dependencies before
+ * creating an instance of JSCExecutor.
+ */
 
-+ (void)enable;
-+ (void)disable;
-
-@end
+void RCTPrepareJSCExecutor();

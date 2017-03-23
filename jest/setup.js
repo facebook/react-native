@@ -152,7 +152,10 @@ const mockNativeModules = {
     deleteTimer: jest.fn(),
   },
   UIManager: {
+    blur: jest.fn(),
     createView: jest.fn(),
+    dispatchViewManagerCommand: jest.fn(),
+    focus: jest.fn(),
     setChildren: jest.fn(),
     manageChildren: jest.fn(),
     updateView: jest.fn(),
@@ -160,6 +163,9 @@ const mockNativeModules = {
     replaceExistingNonRootView: jest.fn(),
     customBubblingEventTypes: {},
     customDirectEventTypes: {},
+    AndroidTextInput: {
+      Commands: {},
+    },
     ModalFullscreenView: {
       Constants: {},
     },

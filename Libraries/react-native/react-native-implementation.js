@@ -124,50 +124,6 @@ const ReactNative = {
   get ColorPropType() { return require('ColorPropType'); },
   get EdgeInsetsPropType() { return require('EdgeInsetsPropType'); },
   get PointPropType() { return require('PointPropType'); },
-
-  // See http://facebook.github.io/react/docs/addons.html
-  addons: {
-    get PureRenderMixin() {
-      if (__DEV__) {
-        addonWarn('PureRenderMixin', 'react-addons-pure-render-mixin');
-      }
-      return require('react/lib/ReactComponentWithPureRenderMixin');
-    },
-    get TestModule() {
-      if (__DEV__) {
-        warning(
-          warningDedupe.TestModule,
-          'React.addons.TestModule is deprecated. ' +
-          'Use ReactNative.NativeModules.TestModule instead.'
-        );
-        warningDedupe.TestModule = true;
-      }
-      return require('NativeModules').TestModule;
-    },
-    get batchedUpdates() {
-      if (__DEV__) {
-        warning(
-          warningDedupe.batchedUpdates,
-          'React.addons.batchedUpdates is deprecated. ' +
-          'Use ReactNative.unstable_batchedUpdates instead.'
-        );
-        warningDedupe.batchedUpdates = true;
-      }
-      return require('ReactUpdates').batchedUpdates;
-    },
-    get createFragment() {
-      if (__DEV__) {
-        addonWarn('createFragment', 'react-addons-create-fragment');
-      }
-      return require('react/lib/ReactFragment').create;
-    },
-    get update() {
-      if (__DEV__) {
-        addonWarn('update', 'react-addons-update');
-      }
-      return require('react/lib/update');
-    },
-  },
 };
 
 // Better error messages when accessing React APIs on ReactNative

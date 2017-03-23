@@ -107,7 +107,6 @@ class MultiColumnExample extends React.PureComponent {
           onRefresh={() => alert('onRefresh: nothing to refresh :P')}
           refreshing={false}
           renderItem={this._renderItemComponent}
-          shouldItemUpdate={this._shouldItemUpdate}
           disableVirtualization={!this.state.virtualized}
           onViewableItemsChanged={this._onViewableItemsChanged}
           legacyImplementation={false}
@@ -127,11 +126,6 @@ class MultiColumnExample extends React.PureComponent {
       />
     );
   };
-  _shouldItemUpdate(prev, next) {
-    // Note that this does not check state.fixedHeight because we blow away the whole list by
-    // changing the key anyway.
-    return prev.item !== next.item;
-  }
   // This is called when items change viewability by scrolling into or out of the viewable area.
   _onViewableItemsChanged = (info: {
     changed: Array<{

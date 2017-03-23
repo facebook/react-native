@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -70,9 +71,11 @@ import com.facebook.react.uimanager.UIManagerModule;
  * isolates us from the problems that may be caused by concurrent updates of animated graph while UI
  * thread is "executing" the animation loop.
  */
-@ReactModule(name = "NativeAnimatedModule")
+@ReactModule(name = NativeAnimatedModule.NAME)
 public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
     OnBatchCompleteListener, LifecycleEventListener {
+
+  protected static final String NAME = "NativeAnimatedModule";
 
   private interface UIThreadOperation {
     void execute(NativeAnimatedNodesManager animatedNodesManager);
@@ -159,6 +162,10 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
 
   @Override
   public void onHostPause() {
+    if (mReactChoreographer == null) {
+      FLog.e(NAME, "Called NativeAnimated.onHostPause() with a null ReactChoreographer.");
+      return;
+    }
     clearFrameCallback();
   }
 
@@ -169,7 +176,7 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
 
   @Override
   public String getName() {
-    return "NativeAnimatedModule";
+    return NAME;
   }
 
   private void clearFrameCallback() {

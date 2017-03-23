@@ -28,7 +28,6 @@ NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
 NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
 NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
 NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
-NSString *const kRCTDevSettingWebsocketExecutorName = @"websocket-executor-name";
 NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
 NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
 NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
@@ -195,12 +194,6 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(reload)
 {
   [_bridge reload];
-}
-
-- (NSString *)websocketExecutorName
-{
-  // This value is passed as a command-line argument, so fall back to reading from NSUserDefaults directly
-  return [[NSUserDefaults standardUserDefaults] stringForKey:kRCTDevSettingWebsocketExecutorName];
 }
 
 - (void)setIsShakeToShowDevMenuEnabled:(BOOL)isShakeToShowDevMenuEnabled
