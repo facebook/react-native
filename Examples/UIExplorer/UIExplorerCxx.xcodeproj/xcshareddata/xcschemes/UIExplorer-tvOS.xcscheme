@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "83CBBA2D1A601D0E00E9B192"
+               BlueprintIdentifier = "2D2A28121D9B038B00D4039D"
                BuildableName = "libReact.a"
-               BlueprintName = "React"
+               BlueprintName = "React-tvOS"
                ReferencedContainer = "container:../../React/ReactCxx.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -42,37 +42,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "UIExplorer.app"
-               BlueprintName = "UIExplorer"
-               ReferencedContainer = "container:UIExplorerCxx.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "004D289D1AAF61C70097A701"
-               BuildableName = "UIExplorerUnitTests.xctest"
-               BlueprintName = "UIExplorerUnitTests"
-               ReferencedContainer = "container:UIExplorerCxx.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "143BC5941B21E3E100462512"
-               BuildableName = "UIExplorerIntegrationTests.xctest"
-               BlueprintName = "UIExplorerIntegrationTests"
+               BlueprintIdentifier = "2DD3238F1DA2DD8A000FE1B8"
+               BuildableName = "UIExplorer-tvOS.app"
+               BlueprintName = "UIExplorer-tvOS"
                ReferencedContainer = "container:UIExplorerCxx.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -88,9 +60,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "004D289D1AAF61C70097A701"
-               BuildableName = "UIExplorerUnitTests.xctest"
-               BlueprintName = "UIExplorerUnitTests"
+               BlueprintIdentifier = "2DD323A41DA2DD8B000FE1B8"
+               BuildableName = "UIExplorer-tvOSUnitTests.xctest"
+               BlueprintName = "UIExplorer-tvOSUnitTests"
                ReferencedContainer = "container:UIExplorerCxx.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -98,9 +70,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "143BC5941B21E3E100462512"
-               BuildableName = "UIExplorerIntegrationTests.xctest"
-               BlueprintName = "UIExplorerIntegrationTests"
+               BlueprintIdentifier = "2D4624C11DA2EA6900C74D09"
+               BuildableName = "UIExplorer-tvOSIntegrationTests.xctest"
+               BlueprintName = "UIExplorer-tvOSIntegrationTests"
                ReferencedContainer = "container:UIExplorerCxx.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -108,9 +80,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "UIExplorer.app"
-            BlueprintName = "UIExplorer"
+            BlueprintIdentifier = "2DD3238F1DA2DD8A000FE1B8"
+            BuildableName = "UIExplorer-tvOS.app"
+            BlueprintName = "UIExplorer-tvOS"
             ReferencedContainer = "container:UIExplorerCxx.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -131,19 +103,12 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "UIExplorer.app"
-            BlueprintName = "UIExplorer"
+            BlueprintIdentifier = "2DD3238F1DA2DD8A000FE1B8"
+            BuildableName = "UIExplorer-tvOS.app"
+            BlueprintName = "UIExplorer-tvOS"
             ReferencedContainer = "container:UIExplorerCxx.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "CI_USE_PACKAGER"
-            value = "1"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -157,9 +122,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "UIExplorer.app"
-            BlueprintName = "UIExplorer"
+            BlueprintIdentifier = "2DD3238F1DA2DD8A000FE1B8"
+            BuildableName = "UIExplorer-tvOS.app"
+            BlueprintName = "UIExplorer-tvOS"
             ReferencedContainer = "container:UIExplorerCxx.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
