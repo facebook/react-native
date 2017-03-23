@@ -29,5 +29,6 @@ android_library(
         react_native_target("java/com/facebook/react/shell:shell"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_integration_tests_target("java/com/facebook/react/testing/idledetection:idledetection"),
+        react_native_integration_tests_target("java/com/facebook/react/testing/network:network"),
     ],
 )

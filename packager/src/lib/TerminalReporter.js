@@ -148,10 +148,6 @@ class TerminalReporter {
       case 'dep_graph_loaded':
         terminal.log(`${DEP_GRAPH_MESSAGE}, done.`);
         break;
-      case 'global_cache_error':
-        const message = JSON.stringify(event.error.message);
-        reporting.logWarning(terminal, 'the global cache failed: %s', message);
-        break;
       case 'global_cache_disabled':
         this._logCacheDisabled(event.reason);
         break;
