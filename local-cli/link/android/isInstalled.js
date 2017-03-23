@@ -4,5 +4,5 @@ const makeBuildPatch = require('./patches/makeBuildPatch');
 module.exports = function isInstalled(config, name) {
   return fs
     .readFileSync(config.buildGradlePath)
-    .indexOf(makeBuildPatch(name).patch) > -1;
+    .indexOf(makeBuildPatch(name).trim().patch) > -1;
 };
