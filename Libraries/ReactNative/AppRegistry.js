@@ -29,6 +29,8 @@ if (__DEV__) {
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
 export type ComponentProvider = () => ReactClass<any>;
+export type ComponentProviderInstrumentationHook =
+  (component: ComponentProvider) => ReactClass<any>;
 export type AppConfig = {
   appKey: string,
   component?: ComponentProvider,
@@ -51,6 +53,8 @@ const runnables: Runnables = {};
 let runCount = 1;
 const sections: Runnables = {};
 const tasks: Map<string, TaskProvider> = new Map();
+let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
+  (component: ComponentProvider) => component();
 
 /**
  * `AppRegistry` is the JS entry point to running all React Native apps.  App
@@ -96,7 +100,11 @@ const AppRegistry = {
     runnables[appKey] = {
       component,
       run: (appParameters) =>
-        renderApplication(component(), appParameters.initialProps, appParameters.rootTag)
+        renderApplication(
+          componentProviderInstrumentationHook(component),
+          appParameters.initialProps,
+          appParameters.rootTag
+        )
     };
     if (section) {
       sections[appKey] = runnables[appKey];
@@ -136,6 +144,10 @@ const AppRegistry = {
       sections: AppRegistry.getSectionKeys(),
       runnables: {...runnables},
     };
+  },
+
+  setComponentProviderInstrumentationHook(hook: ComponentProviderInstrumentationHook) {
+    componentProviderInstrumentationHook = hook;
   },
 
   runApplication(appKey: string, appParameters: any): void {

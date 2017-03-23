@@ -231,6 +231,7 @@ public class ReactTextView extends TextView implements ReactCompoundView {
 
   public void setNumberOfLines(int numberOfLines) {
     mNumberOfLines = numberOfLines == 0 ? ViewDefaults.NUMBER_OF_LINES : numberOfLines;
+    setSingleLine(mNumberOfLines == 1);
     setMaxLines(mNumberOfLines);
   }
 

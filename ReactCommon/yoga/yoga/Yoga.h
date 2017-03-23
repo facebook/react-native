@@ -218,8 +218,6 @@ YG_NODE_LAYOUT_EDGE_PROPERTY(float, Margin);
 YG_NODE_LAYOUT_EDGE_PROPERTY(float, Border);
 YG_NODE_LAYOUT_EDGE_PROPERTY(float, Padding);
 
-bool YGNodeIsUsingCachedLayout(const YGNodeRef node);
-
 WIN_EXPORT void YGSetLogger(YGLogger logger);
 WIN_EXPORT void YGLog(YGLogLevel level, const char *message, ...);
 

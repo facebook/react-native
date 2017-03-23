@@ -99,10 +99,11 @@ class KeyResultStore {
 }
 
 /**
- * The transform options contain absolute paths. This can contain, for
- * example, the username if someone works their home directory (very likely).
- * We need to get rid of this user-and-machine-dependent data for the global
- * cache, otherwise nobody  would share the same cache keys.
+ * The transform options contain absolute paths. This can contain, for example,
+ * the username if someone works their home directory (very likely). We get rid
+ * of this local data for the global cache, otherwise nobody would share the
+ * same cache keys. The project roots should not be needed as part of the cache
+ * key as they should not affect the transformation of a single particular file.
  */
 function globalizeTransformOptions(
   options: TransformOptions,
@@ -115,9 +116,7 @@ function globalizeTransformOptions(
     ...options,
     transform: {
       ...transform,
-      projectRoots: transform.projectRoots.map(p => {
-        return path.relative(path.join(__dirname, '../../../../..'), p);
-      }),
+      projectRoots: [],
     },
   };
 }
@@ -142,6 +141,13 @@ class TransformProfileSet {
   }
   has(profile: TransformProfile): boolean {
     return this._profileKeys.has(profileKey(profile));
+  }
+}
+
+class FetchFailedError extends Error {
+  constructor(message) {
+    super();
+    this.message = message;
   }
 }
 
@@ -170,6 +176,8 @@ class GlobalTransformCache {
   _fetchResultFromURI: FetchResultFromURI;
   _profileSet: TransformProfileSet;
   _store: ?KeyResultStore;
+
+  static FetchFailedError;
 
   /**
    * For using the global cache one needs to have some kind of central key-value
@@ -214,12 +222,13 @@ class GlobalTransformCache {
   static async _fetchResultFromURI(uri: string): Promise<CachedResult> {
     const response = await fetch(uri, {method: 'GET', timeout: 8000});
     if (response.status !== 200) {
-      throw new Error(`Unexpected HTTP status: ${response.status} ${response.statusText} `);
+      const msg = `Unexpected HTTP status: ${response.status} ${response.statusText} `;
+      throw new FetchFailedError(msg);
     }
     const unvalidatedResult = await response.json();
     const result = validateCachedResult(unvalidatedResult);
     if (result == null) {
-      throw new Error('Server returned invalid result.');
+      throw new FetchFailedError('Server returned invalid result.');
     }
     return result;
   }
@@ -237,14 +246,15 @@ class GlobalTransformCache {
     });
   }
 
+  shouldFetch(props: FetchProps): boolean {
+    return this._profileSet.has(props.transformOptions);
+  }
+
   /**
    * This may return `null` if either the cache doesn't have a value for that
    * key yet, or an error happened, processed separately.
    */
   async fetch(props: FetchProps): Promise<?CachedResult> {
-    if (!this._profileSet.has(props.transformOptions)) {
-      return null;
-    }
     const uri = await this._fetcher.fetch(GlobalTransformCache.keyOf(props));
     if (uri == null) {
       return null;
@@ -259,5 +269,7 @@ class GlobalTransformCache {
   }
 
 }
+
+GlobalTransformCache.FetchFailedError = FetchFailedError;
 
 module.exports = GlobalTransformCache;

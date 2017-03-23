@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 
 #import "RCTAssert.h"
+
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
 #import "RCTBridgeMethod.h"
@@ -20,9 +21,10 @@
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
-#import "RCTProfile.h"
-#import "RCTRedBox.h"
 #import "RCTUtils.h"
+
+#import <React/RCTProfile.h>
+#import <React/RCTRedBox.h>
 
 #if RCT_DEV && __has_include("RCTDevLoadingView.h")
 #import "RCTDevLoadingView.h"
