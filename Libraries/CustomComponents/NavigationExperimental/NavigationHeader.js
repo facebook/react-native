@@ -71,6 +71,9 @@ type Props = NavigationSceneRendererProps & {
   renderLeftComponent: SubViewRenderer,
   renderRightComponent: SubViewRenderer,
   renderTitleComponent: SubViewRenderer,
+  leftContainerStyle?: any,
+  titleContainerStyle?: any,
+  rightContainerStyle?: any,  
   style?: any,
   viewProps?: any,
   statusBarHeight: number | Animated.Value,
@@ -117,6 +120,9 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
     renderRightComponent: PropTypes.func,
     renderTitleComponent: PropTypes.func,
     style: View.propTypes.style,
+    leftContainerStyle: View.propTypes.style,
+    titleContainerStyle: View.propTypes.style,
+    rightContainerStyle: View.propTypes.style,    
     statusBarHeight: PropTypes.number,
     viewProps: PropTypes.shape(View.propTypes),
   };
@@ -240,6 +246,7 @@ class NavigationHeader extends React.Component<DefaultProps, Props, any> {
         key={name + '_' + key}
         style={[
           styles[name],
+          this.props[name + 'ContainerStyle'],
           { marginTop: this.props.statusBarHeight },
           styleInterpolator(props),
         ]}>
