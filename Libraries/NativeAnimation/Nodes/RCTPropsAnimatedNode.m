@@ -86,14 +86,13 @@
   [self.parentNodes enumerateKeysAndObjectsUsingBlock:^(NSNumber * _Nonnull parentTag, RCTAnimatedNode * _Nonnull parentNode, BOOL * _Nonnull stop) {
 
     if ([parentNode isKindOfClass:[RCTStyleAnimatedNode class]]) {
-      [_propsDictionary addEntriesFromDictionary:[(RCTStyleAnimatedNode *)parentNode propsDictionary]];
+      [self->_propsDictionary addEntriesFromDictionary:[(RCTStyleAnimatedNode *)parentNode propsDictionary]];
 
     } else if ([parentNode isKindOfClass:[RCTValueAnimatedNode class]]) {
       NSString *property = [self propertyNameForParentTag:parentTag];
       CGFloat value = [(RCTValueAnimatedNode *)parentNode value];
-      _propsDictionary[property] = @(value);
+      self->_propsDictionary[property] = @(value);
     }
-
   }];
 
   if (_propsDictionary.count) {

@@ -210,13 +210,13 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 
   [uiManager prependUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     for (AnimatedOperation operation in preOperations) {
-      operation(_nodesManager);
+      operation(self->_nodesManager);
     }
   }];
 
   [uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     for (AnimatedOperation operation in operations) {
-      operation(_nodesManager);
+      operation(self->_nodesManager);
     }
   }];
 }
