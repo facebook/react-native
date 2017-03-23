@@ -84,16 +84,16 @@
 		139D7E9B1E25C70B00323FB7 /* fast-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7E431E25C5A300323FB7 /* fast-dtoa.cc */; };
 		139D7E9D1E25C70B00323FB7 /* fixed-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7E451E25C5A300323FB7 /* fixed-dtoa.cc */; };
 		139D7EA01E25C70B00323FB7 /* strtod.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7E481E25C5A300323FB7 /* strtod.cc */; };
-		139D7EA51E25C85300323FB7 /* bignum-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E3A1E25C5A300323FB7 /* bignum-dtoa.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		139D7EA61E25C85300323FB7 /* bignum.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E3C1E25C5A300323FB7 /* bignum.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		139D7EA71E25C85300323FB7 /* cached-powers.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E3E1E25C5A300323FB7 /* cached-powers.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		139D7EA81E25C85300323FB7 /* diy-fp.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E401E25C5A300323FB7 /* diy-fp.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		139D7EA91E25C85300323FB7 /* double-conversion.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E421E25C5A300323FB7 /* double-conversion.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		139D7EAA1E25C85300323FB7 /* fast-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E441E25C5A300323FB7 /* fast-dtoa.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		139D7EAB1E25C85300323FB7 /* fixed-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E461E25C5A300323FB7 /* fixed-dtoa.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		139D7EAC1E25C85300323FB7 /* ieee.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E471E25C5A300323FB7 /* ieee.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		139D7EAD1E25C85300323FB7 /* strtod.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E491E25C5A300323FB7 /* strtod.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		139D7EAE1E25C85300323FB7 /* utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E4A1E25C5A300323FB7 /* utils.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		139D7EA51E25C85300323FB7 /* bignum-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E3A1E25C5A300323FB7 /* bignum-dtoa.h */; };
+		139D7EA61E25C85300323FB7 /* bignum.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E3C1E25C5A300323FB7 /* bignum.h */; };
+		139D7EA71E25C85300323FB7 /* cached-powers.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E3E1E25C5A300323FB7 /* cached-powers.h */; };
+		139D7EA81E25C85300323FB7 /* diy-fp.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E401E25C5A300323FB7 /* diy-fp.h */; };
+		139D7EA91E25C85300323FB7 /* double-conversion.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E421E25C5A300323FB7 /* double-conversion.h */; };
+		139D7EAA1E25C85300323FB7 /* fast-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E441E25C5A300323FB7 /* fast-dtoa.h */; };
+		139D7EAB1E25C85300323FB7 /* fixed-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E461E25C5A300323FB7 /* fixed-dtoa.h */; };
+		139D7EAC1E25C85300323FB7 /* ieee.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E471E25C5A300323FB7 /* ieee.h */; };
+		139D7EAD1E25C85300323FB7 /* strtod.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E491E25C5A300323FB7 /* strtod.h */; };
+		139D7EAE1E25C85300323FB7 /* utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E4A1E25C5A300323FB7 /* utils.h */; };
 		139D7F021E25DE1100323FB7 /* logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EDA1E25DBDC00323FB7 /* logging.cc */; };
 		139D7F031E25DE1100323FB7 /* raw_logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EDB1E25DBDC00323FB7 /* raw_logging.cc */; };
 		139D7F041E25DE1100323FB7 /* signalhandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EDC1E25DBDC00323FB7 /* signalhandler.cc */; };
@@ -147,10 +147,10 @@
 		13EBC67A1E2870E400880AC5 /* Value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B10C1E0369AD0018521A /* Value.cpp */; };
 		13EBC67B1E28723000880AC5 /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B10A1E0369AD0018521A /* Unicode.cpp */; };
 		13EBC67D1E28725900880AC5 /* JSCHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B1071E0369AD0018521A /* JSCHelpers.cpp */; };
-		13EBC67E1E28726000880AC5 /* JSCHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B1081E0369AD0018521A /* JSCHelpers.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		13EBC6801E28733C00880AC5 /* noncopyable.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B1091E0369AD0018521A /* noncopyable.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		13EBC6811E28733C00880AC5 /* Unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B10B1E0369AD0018521A /* Unicode.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		13EBC6821E28733C00880AC5 /* Value.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B10D1E0369AD0018521A /* Value.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		13EBC67E1E28726000880AC5 /* JSCHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B1081E0369AD0018521A /* JSCHelpers.h */; };
+		13EBC6801E28733C00880AC5 /* noncopyable.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B1091E0369AD0018521A /* noncopyable.h */; };
+		13EBC6811E28733C00880AC5 /* Unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B10B1E0369AD0018521A /* Unicode.h */; };
+		13EBC6821E28733C00880AC5 /* Value.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B10D1E0369AD0018521A /* Value.h */; };
 		13F17A851B8493E5007D4C75 /* RCTRedBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 13F17A841B8493E5007D4C75 /* RCTRedBox.m */; };
 		13F880361E296D2800C3C7A1 /* JavaScriptCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */; };
 		13F880371E296D2800C3C7A1 /* JSCHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B1081E0369AD0018521A /* JSCHelpers.h */; };
@@ -213,6 +213,20 @@
 		14F7A0F01BDA714B003C6C10 /* RCTFPSGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F7A0EF1BDA714B003C6C10 /* RCTFPSGraph.m */; };
 		191E3EBE1C29D9AF00C180A6 /* RCTRefreshControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 191E3EBD1C29D9AF00C180A6 /* RCTRefreshControlManager.m */; };
 		191E3EC11C29DC3800C180A6 /* RCTRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 191E3EC01C29DC3800C180A6 /* RCTRefreshControl.m */; };
+		19F61BFA1E8495CD00571D81 /* bignum-dtoa.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E3A1E25C5A300323FB7 /* bignum-dtoa.h */; };
+		19F61BFB1E8495CD00571D81 /* bignum.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E3C1E25C5A300323FB7 /* bignum.h */; };
+		19F61BFC1E8495CD00571D81 /* cached-powers.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E3E1E25C5A300323FB7 /* cached-powers.h */; };
+		19F61BFD1E8495CD00571D81 /* diy-fp.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E401E25C5A300323FB7 /* diy-fp.h */; };
+		19F61BFE1E8495CD00571D81 /* double-conversion.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E421E25C5A300323FB7 /* double-conversion.h */; };
+		19F61BFF1E8495CD00571D81 /* fast-dtoa.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E441E25C5A300323FB7 /* fast-dtoa.h */; };
+		19F61C001E8495CD00571D81 /* fixed-dtoa.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E461E25C5A300323FB7 /* fixed-dtoa.h */; };
+		19F61C011E8495CD00571D81 /* ieee.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E471E25C5A300323FB7 /* ieee.h */; };
+		19F61C021E8495CD00571D81 /* strtod.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E491E25C5A300323FB7 /* strtod.h */; };
+		19F61C031E8495CD00571D81 /* utils.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E4A1E25C5A300323FB7 /* utils.h */; };
+		19F61C041E8495FF00571D81 /* JSCHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B1081E0369AD0018521A /* JSCHelpers.h */; };
+		19F61C051E8495FF00571D81 /* noncopyable.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B1091E0369AD0018521A /* noncopyable.h */; };
+		19F61C061E8495FF00571D81 /* Unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B10B1E0369AD0018521A /* Unicode.h */; };
+		19F61C071E8495FF00571D81 /* Value.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B10D1E0369AD0018521A /* Value.h */; };
 		27595AA41E575C7800CCE2B1 /* CxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A71E03699D0018521A /* CxxModule.h */; };
 		27595AA51E575C7800CCE2B1 /* CxxNativeModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A91E03699D0018521A /* CxxNativeModule.h */; };
 		27595AA61E575C7800CCE2B1 /* Executor.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0AB1E03699D0018521A /* Executor.h */; };
@@ -459,8 +473,8 @@
 		3D3030261DF8295E00D6DDAE /* JSCWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DE1DE32541002E3F95 /* JSCWrapper.h */; };
 		3D37B5821D522B190042D5B5 /* RCTFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3D37B5811D522B190042D5B5 /* RCTFont.mm */; };
 		3D3C08891DE342FB00C268FA /* libyoga.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3C059A1DE3340900C268FA /* libyoga.a */; };
-		3D3CD93D1DE5FC1400167DC4 /* JavaScriptCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3D3CD93E1DE5FC1400167DC4 /* JSCWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DE1DE32541002E3F95 /* JSCWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D3CD93D1DE5FC1400167DC4 /* JavaScriptCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */; };
+		3D3CD93E1DE5FC1400167DC4 /* JSCWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DE1DE32541002E3F95 /* JSCWrapper.h */; };
 		3D3CD9411DE5FC5300167DC4 /* libcxxreact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3CD9251DE5FBEC00167DC4 /* libcxxreact.a */; };
 		3D3CD9451DE5FC7100167DC4 /* JSBundleType.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */; };
 		3D3CD9471DE5FC7800167DC4 /* oss-compat-util.h in Headers */ = {isa = PBXBuildFile; fileRef = AC70D2EE1DE48AC5002E6351 /* oss-compat-util.h */; };
@@ -1016,6 +1030,16 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				19F61BFA1E8495CD00571D81 /* bignum-dtoa.h in CopyFiles */,
+				19F61BFB1E8495CD00571D81 /* bignum.h in CopyFiles */,
+				19F61BFC1E8495CD00571D81 /* cached-powers.h in CopyFiles */,
+				19F61BFD1E8495CD00571D81 /* diy-fp.h in CopyFiles */,
+				19F61BFE1E8495CD00571D81 /* double-conversion.h in CopyFiles */,
+				19F61BFF1E8495CD00571D81 /* fast-dtoa.h in CopyFiles */,
+				19F61C001E8495CD00571D81 /* fixed-dtoa.h in CopyFiles */,
+				19F61C011E8495CD00571D81 /* ieee.h in CopyFiles */,
+				19F61C021E8495CD00571D81 /* strtod.h in CopyFiles */,
+				19F61C031E8495CD00571D81 /* utils.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2618,6 +2642,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19F61C041E8495FF00571D81 /* JSCHelpers.h in Headers */,
+				19F61C051E8495FF00571D81 /* noncopyable.h in Headers */,
+				19F61C061E8495FF00571D81 /* Unicode.h in Headers */,
+				19F61C071E8495FF00571D81 /* Value.h in Headers */,
 				3D3030251DF8295E00D6DDAE /* JavaScriptCore.h in Headers */,
 				3D3030261DF8295E00D6DDAE /* JSCWrapper.h in Headers */,
 			);
