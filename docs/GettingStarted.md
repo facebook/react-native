@@ -226,7 +226,7 @@ Select the "SDK Platforms" tab from within the SDK Manager, then check the box n
 
 ![Android SDK Manager](img/AndroidSDKManager.png)
 
-Next, select the "SDK Tools" tab and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build Tools" entry, then make sure that `Android SDK Build-Tools 23.0.1` is selected.
+Next, select the "SDK Tools" tab and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build Tools" entry, then make sure that `Android SDK Build-Tools 25.0.2` is selected.
 
 Finally, click "Apply" to download and install the Android SDK and related build tools.
 
