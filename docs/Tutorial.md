@@ -32,7 +32,7 @@ class HelloWorldApp extends Component {
 AppRegistry.registerComponent('HelloWorldApp', () => HelloWorldApp);
 ```
 
-If you are feeling curious, you can play around with sample code directly in the web simulators. You can also paste it into your `index.ios.js` or `index.android.js` file to create a real app on your local machine.
+If you are feeling curious, you can play around with sample code directly in the web simulators. You can also paste it into your `index.ios.js` or `index.android.js` file to create a real app on your local machine. To do this with the getting started app that you may have created earlier, you will either need to [change the name of the app to match the code](http://stackoverflow.com/questions/32830046/renaming-a-react-native-project), or change the code to match the app (aka find HelloWorldApp and replace with AwesomeProject in the three places in the above code).
 
 ## What's going on here?
 
