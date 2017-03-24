@@ -34,6 +34,7 @@
 
 const Batchinator = require('Batchinator');
 const IncrementalGroup = require('IncrementalGroup');
+const Platform = require('Platform');
 const React = require('React');
 const ScrollView = require('ScrollView');
 const Set = require('Set');
@@ -567,7 +568,8 @@ class WindowedListView extends React.Component {
     return (
       this.props.renderScrollComponent({
         scrollEventThrottle: 50,
-        removeClippedSubviews: true,
+        // Don't remove clipped subviews on tvOS, it causes focus engine problems.
+        removeClippedSubviews: !Platform.isTVOS,
         ...this.props,
         contentInset,
         ref: (ref) => { this._scrollRef = ref; },

@@ -651,7 +651,7 @@ const ScrollView = React.createClass({
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
         removeClippedSubviews={
-          hasStickyHeaders && Platform.OS === 'android' ? false : this.props.removeClippedSubviews
+          (Platform.isTVOS || (hasStickyHeaders && Platform.OS === 'android')) ? false : this.props.removeClippedSubviews
         }
         collapsable={false}>
         {children}
