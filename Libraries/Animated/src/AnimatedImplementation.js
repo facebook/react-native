@@ -90,6 +90,9 @@ class Animated {
   __getNativeConfig(): Object {
     throw new Error('This JS animated node type cannot be used as native animated node');
   }
+  // Called before listeners are triggered.
+  // Should update internal value so __getValue returns the most recently received value
+  __updateValueFromListener(data: Object): void {}
   toJSON(): any { return this.__getValue(); }
 }
 
@@ -146,10 +149,13 @@ class Animation {
 
 class AnimatedWithChildren extends Animated {
   _children: Array<Animated>;
+  _listeners: {[key: string]: ValueListenerCallback};
+  __nativeAnimatedValueListener: ?any;
 
   constructor() {
     super();
     this._children = [];
+    this._listeners = {};
   }
 
   __makeNative() {
@@ -158,6 +164,9 @@ class AnimatedWithChildren extends Animated {
       for (var child of this._children) {
         child.__makeNative();
         NativeAnimatedAPI.connectAnimatedNodes(this.__getNativeTag(), child.__getNativeTag());
+      }
+      if (Object.keys(this._listeners).length) {
+        this._startListeningToNativeValueUpdates();
       }
     }
   }
@@ -191,6 +200,74 @@ class AnimatedWithChildren extends Animated {
 
   __getChildren(): Array<Animated> {
     return this._children;
+  }
+
+  addListener(callback: ValueListenerCallback): string {
+    var id = String(_uniqueId++);
+    this._listeners[id] = callback;
+    if (this.__isNative) {
+      this._startListeningToNativeValueUpdates();
+    }
+    return id;
+  }
+
+  removeListener(id: string): void {
+    delete this._listeners[id];
+    if (this.__isNative && Object.keys(this._listeners).length === 0) {
+      this._stopListeningForNativeValueUpdates();
+    }
+  }
+
+  removeAllListeners(): void {
+    this._listeners = {};
+    if (this.__isNative) {
+      this._stopListeningForNativeValueUpdates();
+    }
+  }
+
+  _startListeningToNativeValueUpdates(): void {
+    if (this.__nativeAnimatedValueListener) {
+      return;
+    }
+
+    NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
+    this.__nativeAnimatedValueListener = NativeAnimatedHelper.nativeEventEmitter.addListener(
+      'onAnimatedValueUpdate',
+      (data) => {
+        if (data.tag !== this.__getNativeTag()) {
+          return;
+        }
+
+        this.__updateValueFromListener(data);
+        // Native 'onAnimatedValueUpdate' is triggered on all child nodes,
+        // so we don't need event propagation
+        this._triggerListeners(false /*eventPropagation*/);
+      }
+    );
+  }
+
+  /* Typically used internally */
+  _triggerListeners(eventPropagation?: bool = true): void {
+    for (var key in this._listeners) {
+      this._listeners[key]({value: this.__getValue()});
+    }
+    if (eventPropagation) {
+      for (var child of this._children) {
+        if (child instanceof AnimatedWithChildren) {
+          child._triggerListeners();
+        }
+      }
+    }
+  }
+
+  _stopListeningForNativeValueUpdates() {
+    if (!this.__nativeAnimatedValueListener) {
+      return;
+    }
+
+    this.__nativeAnimatedValueListener.remove();
+    this.__nativeAnimatedValueListener = null;
+    NativeAnimatedAPI.stopListeningToAnimatedNodeValue(this.__getNativeTag());
   }
 }
 
@@ -691,7 +768,7 @@ class SpringAnimation extends Animation {
   }
 }
 
-type ValueListenerCallback = (state: {value: number}) => void;
+type ValueListenerCallback = (state: {value: number}|{x: number, y: number}) => void;
 
 var _uniqueId = 1;
 
@@ -707,15 +784,12 @@ class AnimatedValue extends AnimatedWithChildren {
   _offset: number;
   _animation: ?Animation;
   _tracking: ?Animated;
-  _listeners: {[key: string]: ValueListenerCallback};
-  __nativeAnimatedValueListener: ?any;
 
   constructor(value: number) {
     super();
     this._startingValue = this._value = value;
     this._offset = 0;
     this._animation = null;
-    this._listeners = {};
   }
 
   __detach() {
@@ -729,10 +803,6 @@ class AnimatedValue extends AnimatedWithChildren {
 
   __makeNative() {
     super.__makeNative();
-
-    if (Object.keys(this._listeners).length) {
-      this._startListeningToNativeValueUpdates();
-    }
   }
 
   /**
@@ -786,61 +856,6 @@ class AnimatedValue extends AnimatedWithChildren {
     if (this.__isNative) {
       NativeAnimatedAPI.extractAnimatedNodeOffset(this.__getNativeTag());
     }
-  }
-
-  /**
-   * Adds an asynchronous listener to the value so you can observe updates from
-   * animations.  This is useful because there is no way to
-   * synchronously read the value because it might be driven natively.
-   */
-  addListener(callback: ValueListenerCallback): string {
-    var id = String(_uniqueId++);
-    this._listeners[id] = callback;
-    if (this.__isNative) {
-      this._startListeningToNativeValueUpdates();
-    }
-    return id;
-  }
-
-  removeListener(id: string): void {
-    delete this._listeners[id];
-    if (this.__isNative && Object.keys(this._listeners).length === 0) {
-      this._stopListeningForNativeValueUpdates();
-    }
-  }
-
-  removeAllListeners(): void {
-    this._listeners = {};
-    if (this.__isNative) {
-      this._stopListeningForNativeValueUpdates();
-    }
-  }
-
-  _startListeningToNativeValueUpdates() {
-    if (this.__nativeAnimatedValueListener) {
-      return;
-    }
-
-    NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
-    this.__nativeAnimatedValueListener = NativeAnimatedHelper.nativeEventEmitter.addListener(
-      'onAnimatedValueUpdate',
-      (data) => {
-        if (data.tag !== this.__getNativeTag()) {
-          return;
-        }
-        this._updateValue(data.value, false /* flush */);
-      }
-    );
-  }
-
-  _stopListeningForNativeValueUpdates() {
-    if (!this.__nativeAnimatedValueListener) {
-      return;
-    }
-
-    this.__nativeAnimatedValueListener.remove();
-    this.__nativeAnimatedValueListener = null;
-    NativeAnimatedAPI.stopListeningToAnimatedNodeValue(this.__getNativeTag());
   }
 
   /**
@@ -918,14 +933,16 @@ class AnimatedValue extends AnimatedWithChildren {
     this._tracking = tracking;
   }
 
+  __updateValueFromListener(data: Object): void {
+    this._value = data.value;
+  }
+
   _updateValue(value: number, flush: bool): void {
     this._value = value;
     if (flush) {
       _flush(this);
     }
-    for (var key in this._listeners) {
-      this._listeners[key]({value: this.__getValue()});
-    }
+    this._triggerListeners();
   }
 
   __getNativeConfig(): Object {
@@ -936,8 +953,6 @@ class AnimatedValue extends AnimatedWithChildren {
     };
   }
 }
-
-type ValueXYListenerCallback = (value: {x: number, y: number}) => void;
 
 /**
  * 2D Value for driving 2D animations, such as pan gestures.  Almost identical
@@ -982,7 +997,7 @@ type ValueXYListenerCallback = (value: {x: number, y: number}) => void;
 class AnimatedValueXY extends AnimatedWithChildren {
   x: AnimatedValue;
   y: AnimatedValue;
-  _listeners: {[key: string]: {x: string, y: string}};
+  _jointListeners: {[key: string]: {x: string, y: string}};
 
   constructor(valueIn?: ?{x: number | AnimatedValue, y: number | AnimatedValue}) {
     super();
@@ -1000,7 +1015,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
       this.x = value.x;
       this.y = value.y;
     }
-    this._listeners = {};
+    this._jointListeners = {};
   }
 
   setValue(value: {x: number, y: number}) {
@@ -1042,12 +1057,12 @@ class AnimatedValueXY extends AnimatedWithChildren {
     callback && callback(this.__getValue());
   }
 
-  addListener(callback: ValueXYListenerCallback): string {
+  addListener(callback: ValueListenerCallback): string {
     var id = String(_uniqueId++);
     var jointCallback = ({value: number}) => {
       callback(this.__getValue());
     };
-    this._listeners[id] = {
+    this._jointListeners[id] = {
       x: this.x.addListener(jointCallback),
       y: this.y.addListener(jointCallback),
     };
@@ -1057,13 +1072,13 @@ class AnimatedValueXY extends AnimatedWithChildren {
   removeListener(id: string): void {
     this.x.removeListener(this._listeners[id].x);
     this.y.removeListener(this._listeners[id].y);
-    delete this._listeners[id];
+    delete this._jointListeners[id];
   }
 
   removeAllListeners(): void {
     this.x.removeAllListeners();
     this.y.removeAllListeners();
-    this._listeners = {};
+    this._jointListeners = {};
   }
 
   /**
