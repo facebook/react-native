@@ -29,6 +29,8 @@ const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight');
 const View = require('View');
 
+const ViewPropTypes = require('ViewPropTypes');
+
 const {PropTypes} = React;
 
 import type {ImageSource} from 'ImageSource';
@@ -55,7 +57,7 @@ class SwipeableQuickActionButton extends React.Component {
     imageSource: Image.propTypes.source.isRequired,
     imageStyle: Image.propTypes.style,
     onPress: PropTypes.func,
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
     testID: PropTypes.string,
     text: PropTypes.string,
     textStyle: Text.propTypes.style,
