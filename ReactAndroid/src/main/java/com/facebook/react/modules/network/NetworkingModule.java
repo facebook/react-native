@@ -362,7 +362,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
               // Otherwise send the data in one big chunk, in the format that JS requested.
               String responseString = "";
-              if (responseType.equals("text")) {
+              if (responseType.equals("text") && responseBody != null) {
                 responseString = responseBody.string();
               } else if (responseType.equals("base64")) {
                 responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
