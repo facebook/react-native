@@ -20,6 +20,7 @@ dependencies:
     - cd /home/ubuntu/buck && ant
     - buck --version
     - source scripts/circle-ci-android-setup.sh && getAndroidSDK
+    - android list targets --compact
     - buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
     - buck fetch ReactAndroid/src/main/java/com/facebook/react
     - buck fetch ReactAndroid/src/main/java/com/facebook/react/shell

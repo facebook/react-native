@@ -211,22 +211,22 @@ Click "Next" to install all of these components, then [configure VM acceleration
 
 <block class="mac linux windows android" />
 
-#### 3. Install the Android 6.0 (Marshmallow) SDK
+#### 3. Install the Android 7.1.1 (Nougat) SDK
 
-Android Studio installs the most recent Android SDK by default. React Native, however, requires the `Android 6.0 (Marshmallow)` SDK. To install it, launch the SDK Manager, click on "Configure" > "SDK Manager" in the "Welcome to Android Studio" screen.
+Android Studio installs the most recent Android SDK by default. React Native, however, requires the `Android 7.1.1 (Nougat)` SDK. To install it, launch the SDK Manager, click on "Configure" > "SDK Manager" in the "Welcome to Android Studio" screen.
 
 > The SDK Manager can also be found within the Android Studio "Preferences" menu, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
-Select the "SDK Platforms" tab from within the SDK Manager, then check the box next to "Show Package Details" in the bottom right corner. Look for and expand the `Android 6.0 (Marshmallow)` entry, then make sure the following items are all checked:
+Select the "SDK Platforms" tab from within the SDK Manager, then check the box next to "Show Package Details" in the bottom right corner. Look for and expand the `Android 7.1.1 (Nougat)` entry, then make sure the following items are all checked:
 
 - `Google APIs`
-- `Android SDK Platform 23`
+- `Android SDK Platform 25`
 - `Intel x86 Atom_64 System Image`
 - `Google APIs Intel x86 Atom_64 System Image`
 
 ![Android SDK Manager](img/AndroidSDKManager.png)
 
-Next, select the "SDK Tools" tab and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build Tools" entry, then make sure that `Android SDK Build-Tools 23.0.1` is selected.
+Next, select the "SDK Tools" tab and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build Tools" entry, then make sure that `Android SDK Build-Tools 25.0.2` is selected.
 
 Finally, click "Apply" to download and install the Android SDK and related build tools.
 
@@ -292,7 +292,7 @@ changes in the filesystem. It is highly recommended you install it for better pe
 
 You can see the list of available AVDs by opening the "AVD Manager" from within Android Studio.
 
-Once in the "AVD Manager", select your AVD and click "Edit...". Choose "Android 6.0 - API Level 23" under Device, and "Intel Atom (x86_64)" under CPU/ABI. Click OK, then select your new AVD and click "Start...", and finally, "Launch".
+Once in the "AVD Manager", select your AVD and click "Edit...". Choose "Android 7.1.1 - API Level 25" under Device, and "Intel Atom (x86_64)" under CPU/ABI. Click OK, then select your new AVD and click "Start...", and finally, "Launch".
 
 ![Android AVD Configuration](img/AndroidAVDConfiguration.png)
 

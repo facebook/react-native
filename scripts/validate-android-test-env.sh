@@ -41,10 +41,10 @@ if [ -z "$(buck --version)" ]; then
   exit 1
 fi
 
-# BUILD_TOOLS_VERSION is in a format like "23.0.1"
+# BUILD_TOOLS_VERSION is in a format like "25.0.2"
 BUILD_TOOLS_VERSION=`grep buildToolsVersion $(dirname $0)/../ReactAndroid/build.gradle | sed 's/^[^"]*\"//' | sed 's/"//'`
 
-# MAJOR is something like "23"
+# MAJOR is something like "25"
 MAJOR=`echo $BUILD_TOOLS_VERSION | sed 's/\..*//'`
 
 # Check that we have the right major version of the Android SDK.

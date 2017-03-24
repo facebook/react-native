@@ -15,5 +15,5 @@ if [ -n "$STATE" ]; then
 fi
 
 echo "Creating virtual device..."
-echo no | android create avd -n testAVD -f -t android-23 --abi default/x86
+echo no | android create avd -n testAVD -f -t android-25 --abi default/x86
 emulator -avd testAVD
