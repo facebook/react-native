@@ -22,6 +22,8 @@ var StyleSheet = require('StyleSheet');
 var TVEventHandler = require('TVEventHandler');
 var View = require('View');
 
+const ViewPropTypes = require('ViewPropTypes');
+
 var invariant = require('fbjs/lib/invariant');
 var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
@@ -406,7 +408,7 @@ var NavigatorIOS = React.createClass({
       /**
        * Styles for the navigation item containing the component.
        */
-      wrapperStyle: View.propTypes.style,
+      wrapperStyle: ViewPropTypes.style,
 
       /**
        * Boolean value that indicates whether the navigation bar is hidden.
@@ -458,7 +460,7 @@ var NavigatorIOS = React.createClass({
      * The default wrapper style for components in the navigator.
      * A common use case is to set the `backgroundColor` for every scene.
      */
-    itemWrapperStyle: View.propTypes.style,
+    itemWrapperStyle: ViewPropTypes.style,
 
     /**
      * The default color used for the buttons in the navigation bar.

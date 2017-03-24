@@ -95,7 +95,6 @@ const ReactNative = {
   get LayoutAnimation() { return require('LayoutAnimation'); },
   get Linking() { return require('Linking'); },
   get NativeEventEmitter() { return require('NativeEventEmitter'); },
-  get NavigationExperimental() { return require('NavigationExperimental'); },
   get NetInfo() { return require('NetInfo'); },
   get PanResponder() { return require('PanResponder'); },
   get PermissionsAndroid() { return require('PermissionsAndroid'); },
@@ -124,6 +123,7 @@ const ReactNative = {
   get ColorPropType() { return require('ColorPropType'); },
   get EdgeInsetsPropType() { return require('EdgeInsetsPropType'); },
   get PointPropType() { return require('PointPropType'); },
+  get ViewPropTypes() { return require('ViewPropTypes'); },
 };
 
 // Better error messages when accessing React APIs on ReactNative

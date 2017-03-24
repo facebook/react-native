@@ -27,6 +27,8 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
+const ViewPropTypes = require('ViewPropTypes');
+
 /**
  * A thin wrapper around standard quick action buttons that can, if the user
  * chooses, be used with SwipeableListView. Sample usage is as follows, in the
@@ -41,7 +43,7 @@ class SwipeableQuickActions extends React.Component {
   props: {style?: $FlowFixMe};
 
   static propTypes = {
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
   };
 
   render(): React.Element<any> {

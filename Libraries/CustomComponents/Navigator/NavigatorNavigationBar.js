@@ -33,6 +33,8 @@ var Platform = require('Platform');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
+const ViewPropTypes = require('ViewPropTypes');
+
 var guid = require('guid');
 
 var { Map } = require('immutable');
@@ -63,7 +65,7 @@ class NavigatorNavigationBar extends React.Component {
       presentedIndex: React.PropTypes.number,
     }),
     navigationStyles: React.PropTypes.object,
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
   };
 
   static Styles = NavigatorNavigationBarStyles;
