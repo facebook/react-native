@@ -123,6 +123,7 @@ const ReactNative = {
   get ColorPropType() { return require('ColorPropType'); },
   get EdgeInsetsPropType() { return require('EdgeInsetsPropType'); },
   get PointPropType() { return require('PointPropType'); },
+  get ViewPropTypes() { return require('ViewPropTypes'); },
 };
 
 // Better error messages when accessing React APIs on ReactNative
