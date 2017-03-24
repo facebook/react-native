@@ -4,7 +4,10 @@ android_library(
     name = "testing",
     srcs = glob(
         ["**/*.java"],
-        excludes = ["idledetection/**/*.java"],
+        excludes = [
+            "idledetection/**/*.java",
+            "network/**/*.java",
+        ],
     ),
     visibility = [
         "PUBLIC",
