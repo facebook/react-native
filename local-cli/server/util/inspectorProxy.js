@@ -173,7 +173,15 @@ class Device {
 
   _send(message: Event) {
     debug('-> device', this._id, message);
-    this._socket.send(JSON.stringify(message));
+    // This try/catch is unfortunate, but there is a small window where a message can be sent
+    // 1. after the socket is closed, and
+    // 2. before the callback for the 'close' event on the socket is run.
+    // Since we don't want the packager to crash in this situation, we have to guard against this.
+    try {
+      this._socket.send(JSON.stringify(message));
+    } catch (err) {
+      debug('Error sending', err);
+    }
   }
 
   _onMessage(json: string) {

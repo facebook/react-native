@@ -23,7 +23,8 @@ import com.facebook.react.common.annotations.VisibleForTesting;
  * Java APIs be invokable from JavaScript as well.
  */
 @DoNotStrip
-public interface CatalystInstance extends MemoryPressureListener {
+public interface CatalystInstance
+    extends MemoryPressureListener, JSInstance {
   void runJSBundle();
 
   /**
@@ -34,8 +35,11 @@ public interface CatalystInstance extends MemoryPressureListener {
 
   // This is called from java code, so it won't be stripped anyway, but proguard will rename it,
   // which this prevents.
-  @DoNotStrip
-  void invokeCallback(ExecutorToken executorToken, final int callbackID, final NativeArray arguments);
+  @Override @DoNotStrip
+  void invokeCallback(
+      ExecutorToken executorToken,
+      int callbackID,
+      NativeArray arguments);
   @DoNotStrip
   void callFunction(
       ExecutorToken executorToken,

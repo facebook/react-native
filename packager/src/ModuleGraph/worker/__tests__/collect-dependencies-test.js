@@ -63,27 +63,29 @@ describe('dependency collection from ASTs:', () => {
       .toEqual(any(String));
   });
 
-  it('replaces all required module ID strings with array lookups and keeps the ID as second argument', () => {
-    const ast = astFromCode(`
-      const a = require('b/lib/a');
-      const b = require(123);
-      exports.do = () => require("do");
-      if (!something) {
-        require("setup/something");
-      }
-    `);
+  it('replaces all required module ID strings with array lookups, keeps the ID as second argument',
+    () => {
+      const ast = astFromCode(`
+        const a = require('b/lib/a');
+        const b = require(123);
+        exports.do = () => require("do");
+        if (!something) {
+          require("setup/something");
+        }
+      `);
 
-    const {dependencyMapName} = collectDependencies(ast);
+      const {dependencyMapName} = collectDependencies(ast);
 
-    expect(codeFromAst(ast)).toEqual(comparableCode(`
-      const a = require(${dependencyMapName}[0], 'b/lib/a');
-      const b = require(123);
-      exports.do = () => require(${dependencyMapName}[1], "do");
-      if (!something) {
-        require(${dependencyMapName}[2], "setup/something");
-      }
-    `));
-  });
+      expect(codeFromAst(ast)).toEqual(comparableCode(`
+        const a = require(${dependencyMapName}[0], 'b/lib/a');
+        const b = require(123);
+        exports.do = () => require(${dependencyMapName}[1], "do");
+        if (!something) {
+          require(${dependencyMapName}[2], "setup/something");
+        }
+      `));
+    },
+  );
 });
 
 describe('Dependency collection from optimized ASTs:', () => {

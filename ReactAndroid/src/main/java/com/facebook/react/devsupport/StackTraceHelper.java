@@ -15,23 +15,27 @@ import java.io.File;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.devsupport.interfaces.StackFrame;
 
 /**
  * Helper class converting JS and Java stack traces into arrays of {@link StackFrame} objects.
  */
 public class StackTraceHelper {
 
+  public static final java.lang.String COLUMN_KEY = "column";
+  public static final java.lang.String LINE_NUMBER_KEY = "lineNumber";
+
   /**
    * Represents a generic entry in a stack trace, be it originally from JS or Java.
    */
-  public static class StackFrame {
+  public static class StackFrameImpl implements StackFrame {
     private final String mFile;
     private final String mMethod;
     private final int mLine;
     private final int mColumn;
     private final String mFileName;
 
-    private StackFrame(String file, String method, int line, int column) {
+    private StackFrameImpl(String file, String method, int line, int column) {
       mFile = file;
       mMethod = method;
       mLine = line;
@@ -39,7 +43,7 @@ public class StackTraceHelper {
       mFileName = new File(file).getName();
     }
 
-    private StackFrame(String file, String fileName, String method, int line, int column) {
+    private StackFrameImpl(String file, String fileName, String method, int line, int column) {
       mFile = file;
       mFileName = fileName;
       mMethod = method;
@@ -100,12 +104,15 @@ public class StackTraceHelper {
       ReadableMap frame = stack.getMap(i);
       String methodName = frame.getString("methodName");
       String fileName = frame.getString("file");
-      int lineNumber = frame.getInt("lineNumber");
-      int columnNumber = -1;
-      if (frame.hasKey("column") && !frame.isNull("column")) {
-        columnNumber = frame.getInt("column");
+      int lineNumber = -1;
+      if (frame.hasKey(LINE_NUMBER_KEY) && !frame.isNull(LINE_NUMBER_KEY)) {
+        lineNumber = frame.getInt(LINE_NUMBER_KEY);
       }
-      result[i] = new StackFrame(fileName, methodName, lineNumber, columnNumber);
+      int columnNumber = -1;
+      if (frame.hasKey(COLUMN_KEY) && !frame.isNull(COLUMN_KEY)) {
+        columnNumber = frame.getInt(COLUMN_KEY);
+      }
+      result[i] = new StackFrameImpl(fileName, methodName, lineNumber, columnNumber);
     }
     return result;
   }
@@ -117,7 +124,7 @@ public class StackTraceHelper {
     StackTraceElement[] stackTrace = exception.getStackTrace();
     StackFrame[] result = new StackFrame[stackTrace.length];
     for (int i = 0; i < stackTrace.length; i++) {
-      result[i] = new StackFrame(
+      result[i] = new StackFrameImpl(
           stackTrace[i].getClassName(),
           stackTrace[i].getFileName(),
           stackTrace[i].getMethodName(),
@@ -131,12 +138,17 @@ public class StackTraceHelper {
    * Format a {@link StackFrame} to a String (method name is not included).
    */
   public static String formatFrameSource(StackFrame frame) {
-    String lineInfo = "";
-    final int column = frame.getColumn();
-    // If the column is 0, don't show it in red box.
-    final String columnString = column <= 0 ? "" : ":" + column;
-    lineInfo += frame.getFileName() + ":" + frame.getLine() + columnString;
-    return lineInfo;
+    StringBuilder lineInfo = new StringBuilder();
+    lineInfo.append(frame.getFileName());
+    final int line = frame.getLine();
+    if (line > 0) {
+      lineInfo.append(":").append(line);
+      final int column = frame.getColumn();
+      if (column > 0) {
+        lineInfo.append(":").append(column);
+      }
+    }
+    return lineInfo.toString();
   }
 
   /**

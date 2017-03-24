@@ -4,18 +4,17 @@
 
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <unordered_map>
 
-#include <folly/json.h>
+#include <cxxreact/Executor.h>
+#include <cxxreact/ExecutorToken.h>
+#include <cxxreact/JSCNativeModules.h>
 #include <folly/Optional.h>
-
-#include <jschelpers/JavaScriptCore.h>
+#include <folly/json.h>
 #include <jschelpers/JSCHelpers.h>
+#include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Value.h>
-
-#include "Executor.h"
-#include "ExecutorToken.h"
-#include "JSCNativeModules.h"
 
 namespace facebook {
 namespace react {
@@ -63,13 +62,6 @@ public:
   virtual void loadApplicationScript(
     std::unique_ptr<const JSBigString> script,
     std::string sourceURL) override;
-
-#ifdef WITH_FBJSCEXTENSIONS
-  virtual void loadApplicationScript(
-    std::string bundlePath,
-    std::string sourceURL,
-    int flags) override;
-#endif
 
   virtual void setJSModulesUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle) override;
@@ -121,6 +113,7 @@ private:
   std::unique_ptr<JSModulesUnbundle> m_unbundle;
   JSCNativeModules m_nativeModules;
   folly::dynamic m_jscConfig;
+  std::once_flag m_bindFlag;
 
   folly::Optional<Object> m_invokeCallbackAndReturnFlushedQueueJS;
   folly::Optional<Object> m_callFunctionReturnFlushedQueueJS;

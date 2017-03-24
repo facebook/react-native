@@ -154,7 +154,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  */
 #define RCT_REMAP_METHOD(js_name, method) \
   RCT_EXTERN_REMAP_METHOD(js_name, method) \
-  - (void)method
+  - (void)method;
 
 /**
  * Use this macro in a private Objective-C implementation file to automatically

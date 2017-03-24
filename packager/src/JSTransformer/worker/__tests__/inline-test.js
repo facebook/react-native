@@ -8,6 +8,8 @@
  */
 'use strict';
 
+/* eslint-disable max-len */
+
 jest.disableAutomock();
 const inline = require('../inline');
 const {transform, transformFromAst} = require('babel-core');
@@ -150,6 +152,15 @@ describe('inline constants', () => {
     expect(toString(ast)).toEqual(normalize(code.replace(/Platform\.select[^;]+/, '1')));
   });
 
+  it('inlines Platform.select in the code if Platform is a global and the argument doesn\'t have target platform in it\'s keys', () => {
+    const code = `function a() {
+      var a = Platform.select({ios: 1, default: 2});
+      var b = a.Platform.select({ios: 1, default: 2});
+    }`;
+    const {ast} = inline('arbitrary.js', {code}, {platform: 'android'});
+    expect(toString(ast)).toEqual(normalize(code.replace(/Platform\.select[^;]+/, '2')));
+  });
+
   it('replaces Platform.select in the code if Platform is a top level import', () => {
     const code = `
       var Platform = require('Platform');
@@ -196,7 +207,9 @@ describe('inline constants', () => {
       var b = a.ReactNative.Platform.select({});
     }`;
     const {ast} = inline('arbitrary.js', {code}, {platform: 'ios'});
-    expect(toString(ast)).toEqual(normalize(code.replace(/ReactNative\.Platform\.select[^;]+/, '1')));
+    expect(toString(ast)).toEqual(
+      normalize(code.replace(/ReactNative\.Platform\.select[^;]+/, '1')),
+    );
   });
 
   it('replaces React.Platform.select in the code if React is a top level import', () => {
@@ -228,7 +241,9 @@ describe('inline constants', () => {
         var b = a.ReactNative.Platform.select;
       }`;
     const {ast} = inline('arbitrary.js', {code}, {platform: 'android'});
-    expect(toString(ast)).toEqual(normalize(code.replace(/ReactNative.Platform\.select[^;]+/, '2')));
+    expect(toString(ast)).toEqual(
+      normalize(code.replace(/ReactNative.Platform\.select[^;]+/, '2')),
+    );
   });
 
   it('replaces require("react-native").Platform.select in the code', () => {
@@ -258,18 +273,6 @@ describe('inline constants', () => {
     const {ast} = inline('arbitrary.js', {code}, {dev: false});
     expect(toString(ast)).toEqual(
       normalize(code.replace(/process\.env\.NODE_ENV/, '"production"')));
-  });
-
-  it('replaces process.env.NODE_ENV in the code', () => {
-    const code = `function a() {
-      if (process.env.NODE_ENV === 'production') {
-        return require('Prod');
-      }
-      return require('Dev');
-    }`;
-    const {ast} = inline('arbitrary.js', {code}, {dev: true});
-    expect(toString(ast)).toEqual(
-      normalize(code.replace(/process\.env\.NODE_ENV/, '"development"')));
   });
 
   it('accepts an AST as input', function() {
@@ -302,5 +305,33 @@ describe('inline constants', () => {
       'arbitrary', {code}, {dev: true, platform: 'android', isWrapped: true});
     expect(toString(ast)).toEqual(
       normalize(code.replace(/require\([^)]+\)\.Platform\.OS/, '"android"')));
+  });
+
+  it('works with flow-declared variables', () => {
+    const stripFlow = require('babel-plugin-transform-flow-strip-types');
+    const code = `declare var __DEV__;
+      const a: boolean = __DEV__;`;
+
+    const transformed = transform(
+      code,
+      {...babelOptions, plugins: [stripFlow, [inline.plugin, {dev: false}]]},
+    ).code;
+
+    expect(transformed).toEqual('const a=false;');
+  });
+
+  it('works with flow-declared variables in wrapped modules', () => {
+    const stripFlow = require('babel-plugin-transform-flow-strip-types');
+    const code = `__d(() => {
+      declare var __DEV__;
+      const a: boolean = __DEV__;
+    });`;
+
+    const transformed = transform(
+      code,
+      {...babelOptions, plugins: [stripFlow, [inline.plugin, {dev: true}]]},
+    ).code;
+
+    expect(transformed).toEqual('__d(()=>{const a=true;});');
   });
 });

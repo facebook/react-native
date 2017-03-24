@@ -16,7 +16,7 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var Platform = require('Platform');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
-var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -38,9 +38,10 @@ type DefaultProps = {
  * @keyword checkbox
  * @keyword toggle
  */
+// $FlowFixMe(>=0.41.0)
 var Switch = React.createClass({
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * The value of the switch.  If true the switch will be turned on.
      * Default value is false.

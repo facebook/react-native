@@ -33,6 +33,7 @@
 'use strict';
 
 var ListViewDataSource = require('ListViewDataSource');
+var Platform = require('Platform');
 var React = require('React');
 var ReactNative = require('ReactNative');
 var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
@@ -227,8 +228,9 @@ var ListView = React.createClass({
      * Makes the sections headers sticky. The sticky behavior means that it
      * will scroll with the content at the top of the section until it reaches
      * the top of the screen, at which point it will stick to the top until it
-     * is pushed off the screen by the next section header.
-     * @platform ios
+     * is pushed off the screen by the next section header. This property is
+     * not supported in conjunction with `horizontal={true}`. Only enabled by
+     * default on iOS because of typical platform standards.
      */
     stickySectionHeadersEnabled: React.PropTypes.bool,
     /**
@@ -237,7 +239,6 @@ var ListView = React.createClass({
      * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
      * top of the scroll view. This property is not supported in conjunction
      * with `horizontal={true}`.
-     * @platform ios
      */
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number).isRequired,
     /**
@@ -300,7 +301,7 @@ var ListView = React.createClass({
    *
    * See `ScrollView#scrollToEnd`.
    */
-  scrollToEnd: function(options?: { animated?: boolean }) {
+  scrollToEnd: function(options?: ?{ animated?: ?boolean }) {
     if (this._scrollComponent) {
       if (this._scrollComponent.scrollToEnd) {
         this._scrollComponent.scrollToEnd(options);
@@ -330,7 +331,7 @@ var ListView = React.createClass({
       renderScrollComponent: props => <ScrollView {...props} />,
       scrollRenderAheadDistance: DEFAULT_SCROLL_RENDER_AHEAD,
       onEndReachedThreshold: DEFAULT_END_REACHED_THRESHOLD,
-      stickySectionHeadersEnabled: true,
+      stickySectionHeadersEnabled: Platform.OS === 'ios',
       stickyHeaderIndices: [],
     };
   },
@@ -403,6 +404,8 @@ var ListView = React.createClass({
     var rowCount = 0;
     var stickySectionHeaderIndices = [];
 
+    const {renderSectionHeader} = this.props;
+
     var header = this.props.renderHeader && this.props.renderHeader();
     var footer = this.props.renderFooter && this.props.renderFooter();
     var totalIndex = header ? 1 : 0;
@@ -426,22 +429,17 @@ var ListView = React.createClass({
         }
       }
 
-      if (this.props.renderSectionHeader) {
-        var shouldUpdateHeader = rowCount >= this._prevRenderedRowsCount &&
-          dataSource.sectionHeaderShouldUpdate(sectionIdx);
-        bodyComponents.push(
-          <StaticRenderer
-            key={'s_' + sectionID}
-            shouldUpdate={!!shouldUpdateHeader}
-            render={this.props.renderSectionHeader.bind(
-              null,
-              dataSource.getSectionHeaderData(sectionIdx),
-              sectionID
-            )}
-          />
+      if (renderSectionHeader) {
+        const element = renderSectionHeader(
+          dataSource.getSectionHeaderData(sectionIdx),
+          sectionID
         );
-        if (this.props.stickySectionHeadersEnabled) {
-          stickySectionHeaderIndices.push(totalIndex++);
+        if (element) {
+          bodyComponents.push(React.cloneElement(element, {key: 's_' + sectionID}));
+          if (this.props.stickySectionHeadersEnabled) {
+            stickySectionHeaderIndices.push(totalIndex);
+          }
+          totalIndex++;
         }
       }
 
@@ -466,8 +464,7 @@ var ListView = React.createClass({
         totalIndex++;
 
         if (this.props.renderSeparator &&
-            rowIdx !== rowIDs.length - 1 &&
-            sectionIdx === allRowIDs.length - 1) {
+            (rowIdx !== rowIDs.length - 1 || sectionIdx === allRowIDs.length - 1)) {
           var adjacentRowHighlighted =
             this.state.highlightedRow.sectionID === sectionID && (
               this.state.highlightedRow.rowID === rowID ||

@@ -56,7 +56,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (void)notifyForBoundsChange:(CGRect)newBounds
 {
   if (_reactSubview && _isPresented) {
-    [_bridge.uiManager setFrame:newBounds forView:_reactSubview];
+    [_bridge.uiManager setSize:newBounds.size forView:_reactSubview];
     [self notifyForOrientationChange];
   }
 }

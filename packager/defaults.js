@@ -22,7 +22,7 @@ exports.moduleSystem = require.resolve('./src/Resolver/polyfills/require.js');
 exports.platforms = ['ios', 'android', 'windows', 'web'];
 
 exports.polyfills = [
-  require.resolve('./src/Resolver/polyfills/polyfills.js'),
+  require.resolve('./src/Resolver/polyfills/Object.es6.js'),
   require.resolve('./src/Resolver/polyfills/console.js'),
   require.resolve('./src/Resolver/polyfills/error-guard.js'),
   require.resolve('./src/Resolver/polyfills/Number.es6.js'),

@@ -1,0 +1,3 @@
+# Set up common deps
+
+GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"

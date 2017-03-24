@@ -20,7 +20,6 @@ const defaultAssetExts = require('../../packager/defaults').assetExts;
 const defaultPlatforms = require('../../packager/defaults').platforms;
 const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
-const heapCaptureMiddleware = require('./middleware/heapCaptureMiddleware.js');
 const http = require('http');
 const indexPageMiddleware = require('./middleware/indexPage');
 const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
@@ -46,7 +45,6 @@ function runServer(args, config, readyCallback) {
     .use(copyToClipBoardMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
-    .use(heapCaptureMiddleware)
     .use(cpuProfilerMiddleware)
     .use(indexPageMiddleware)
     .use(unless('/inspector', inspectorProxy.processRequest.bind(inspectorProxy)))
@@ -69,7 +67,6 @@ function runServer(args, config, readyCallback) {
 
       wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
       ms = messageSocket.attachToServer(serverInstance, '/message');
-      webSocketProxy.attachToServer(serverInstance, '/devtools');
       inspectorProxy.attachToServer(serverInstance, '/inspector');
       readyCallback();
     }
@@ -95,6 +92,7 @@ function getPackagerServer(args, config) {
     cacheVersion: '3',
     extraNodeModules: config.extraNodeModules,
     getTransformOptions: config.getTransformOptions,
+    hasteImpl: config.hasteImpl,
     platforms: defaultPlatforms.concat(args.platforms),
     projectRoots: args.projectRoots,
     providesModuleNodeModules: providesModuleNodeModules,
