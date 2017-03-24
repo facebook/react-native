@@ -52,7 +52,7 @@ var BASE_STYLES = {
   },
   LeftButton: {
     position: 'absolute',
-    top: 0,
+    bottom: 0,
     left: BUTTON_EFFECTIVE_MARGIN,
     overflow: 'hidden',
     height: NAV_ELEMENT_HEIGHT,
@@ -60,7 +60,7 @@ var BASE_STYLES = {
   },
   RightButton: {
     position: 'absolute',
-    top: 0,
+    bottom: 0,
     right: BUTTON_EFFECTIVE_MARGIN,
     overflow: 'hidden',
     alignItems: 'flex-end',
