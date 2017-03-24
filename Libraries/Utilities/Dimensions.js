@@ -11,9 +11,9 @@
  */
 'use strict';
 
+var DeviceInfo = require('DeviceInfo');
 var EventEmitter = require('EventEmitter');
 var Platform = require('Platform');
-var UIManager = require('UIManager');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 var invariant = require('fbjs/lib/invariant');
@@ -128,7 +128,7 @@ class Dimensions {
   }
 }
 
-Dimensions.set(UIManager.Dimensions);
+Dimensions.set(DeviceInfo.Dimensions);
 RCTDeviceEventEmitter.addListener('didUpdateDimensions', function(update) {
   Dimensions.set(update);
 });

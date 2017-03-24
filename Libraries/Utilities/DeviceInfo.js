@@ -1,19 +1,20 @@
 /**
- * Copyright 2013-present, Facebook, Inc.
+ * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactNativeFeatureFlags
+ * @providesModule DeviceInfo
  * @flow
  */
-
 'use strict';
 
-var ReactNativeFeatureFlags = {
-  useFiber: false,
-};
+const DeviceInfo = require('NativeModules').DeviceInfo;
 
-module.exports = ReactNativeFeatureFlags;
+const invariant = require('invariant');
+
+invariant(DeviceInfo, 'DeviceInfo native module is not installed correctly');
+
+module.exports = DeviceInfo;

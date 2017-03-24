@@ -20,6 +20,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.modules.appstate.AppStateModule;
+import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIImplementation;
@@ -68,6 +69,7 @@ public class ViewRenderingTestCase extends ReactIntegrationTestCase {
     mCatalystInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(uiManager)
         .addNativeModule(new AndroidInfoModule())
+        .addNativeModule(new DeviceInfoModule(getContext()))
         .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
         .addJSModule(ViewRenderingTestModule.class)
