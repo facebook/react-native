@@ -70,7 +70,7 @@ type ParamType = {
  *
  * In this example, a component receives data in chunks, handled by
  * `_onDataArrived`, which concats the new data onto the old data and updates the
- * data source.  We use `concat` to create a new array - mutating `this._data`,
+ * data source.  We use `concat` to create a new array because mutating `this._data`,
  * e.g. with `this._data.push(newRowData)`, would be an error. `_rowHasChanged`
  * understands the shape of the row data and knows how to efficiently compare
  * it.
