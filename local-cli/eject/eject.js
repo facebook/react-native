@@ -23,10 +23,10 @@ const fs = require('fs');
  *
  * - `name` - The short name used for the project, should be TitleCase
  * - `displayName` - The app's name on the home screen
- * - `icon` - with three other properties, `ios`, `android`, `default`
- *        The values of each property should be a path to png files you wish
- *        to use for your apps icon. You can just use `default` to use the
- *        same icon for both platforms, or override `default` with `ios` and `android`
+ * - `icon` - The app's icon that can be set by a path string and will be used for every platform
+ *          `ios` - path string to an icon to use for the ios platform
+ *          `android` - path string to an icon to use for the android platform
+ *          `default` - path string to an icon to use for both platforms. `android` and `ios` override this
  */
 
 function eject() {
@@ -70,7 +70,7 @@ function eject() {
     process.exit(1);
   }
 
-  const iconConfig = (typeof appConfig.icon === 'string' ? {default: appConfig.icon.default} : appConfig.icon  ) || {};
+  const iconConfig = (typeof appConfig.icon === 'string' ? {default: appConfig.icon} : appConfig.icon  ) || {};
   const appIconIOS = iconConfig.ios || iconConfig.default;
   const appIconAndroid = iconConfig.android || iconConfig.default;
 
