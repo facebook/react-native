@@ -20,7 +20,7 @@ var React = require('React');
 var StyleSheetPropType = require('StyleSheetPropType');
 var TextStylePropTypes = require('TextStylePropTypes');
 var UnimplementedView = require('UnimplementedView');
-var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var itemStylePropType = StyleSheetPropType(TextStylePropTypes);
@@ -71,7 +71,7 @@ class Picker extends React.Component {
 
  // $FlowFixMe(>=0.41.0)
  static propTypes = {
-   ...View.propTypes,
+   ...ViewPropTypes,
    style: pickerStyleType,
    /**
     * Value matching value of one of the items. Can be a string or an integer.

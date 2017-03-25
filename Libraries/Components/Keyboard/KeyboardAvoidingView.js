@@ -18,6 +18,8 @@ const React = require('React');
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
 
+const ViewPropTypes = require('ViewPropTypes');
+
 const PropTypes = React.PropTypes;
 
 import type EmitterSubscription from 'EmitterSubscription';
@@ -57,13 +59,13 @@ const KeyboardAvoidingView = React.createClass({
   mixins: [TimerMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     behavior: PropTypes.oneOf(['height', 'position', 'padding']),
 
     /**
      * The style of the content container(View) when behavior is 'position'.
      */
-    contentContainerStyle: View.propTypes.style,
+    contentContainerStyle: ViewPropTypes.style,
 
     /**
      * This is the distance between the top of the user screen and the react native view,

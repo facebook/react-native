@@ -123,7 +123,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
           (LocationManager) getReactApplicationContext().getSystemService(Context.LOCATION_SERVICE);
       String provider = getValidProvider(locationManager, locationOptions.highAccuracy);
       if (provider == null) {
-        error.invoke("No available location provider.");
+        emitError(PositionError.PERMISSION_DENIED, "No location provider available.");
         return;
       }
       Location location = locationManager.getLastKnownLocation(provider);
