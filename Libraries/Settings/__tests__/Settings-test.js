@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.unmock('../Settings.android');
+jest.unmock('../Settings');
 jest.unmock('Platform');
 
 jest.unmock('BatchedBridge');
