@@ -15,72 +15,24 @@ const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 
 const defineLazyObjectProperty = require('defineLazyObjectProperty');
-const findNodeHandle = require('findNodeHandle');
 const invariant = require('fbjs/lib/invariant');
-
-import type React from 'react';
 
 const { UIManager } = NativeModules;
 
 invariant(UIManager, 'UIManager is undefined. The native module config is probably incorrect.');
 
-const _takeSnapshot = UIManager.takeSnapshot;
-
-// findNodeHandle() returns a reference to a wrapper component with viewConfig.
-// This wrapper is required for NativeMethodsMixin.setNativeProps, but most
-// callers want the native tag (number) and not the wrapper. For this purpose,
-// the ReactNative renderer decorates findNodeHandle() and extracts the tag.
-// However UIManager can't require ReactNative without introducing a cycle, and
-// deferring the require causes a significant performance regression in Wilde
-// (along the lines of 17% regression in RN Bridge startup). So as a temporary
-// workaround, this wrapper method mimics what the native renderer does.
-// TODO (bvaughn) Remove this and use findNodeHandle directly once stack is gone
-function findNodeHandleWrapper(componentOrHandle : any) : ?number {
-  const instance: any = findNodeHandle(componentOrHandle);
-
-  if (instance) {
-    return typeof instance._nativeTag === 'number'
-      ? instance._nativeTag
-      : instance.getHostNode();
-  } else {
-    return null;
-  }
-}
-
-/**
- * Capture an image of the screen, window or an individual view. The image
- * will be stored in a temporary file that will only exist for as long as the
- * app is running.
- *
- * The `view` argument can be the literal string `window` if you want to
- * capture the entire window, or it can be a reference to a specific
- * React Native component.
- *
- * The `options` argument may include:
- * - width/height (number) - the width and height of the image to capture.
- * - format (string) - either 'png' or 'jpeg'. Defaults to 'png'.
- * - quality (number) - the quality when using jpeg. 0.0 - 1.0 (default).
- *
- * Returns a Promise.
- * @platform ios
- */
-UIManager.takeSnapshot = async function(
-  view ?: 'window' | React.Element<any> | number,
-  options ?: {
-    width ?: number,
-    height ?: number,
-    format ?: 'png' | 'jpeg',
-    quality ?: number,
-  },
-) {
-  if (!_takeSnapshot) {
-    console.warn('UIManager.takeSnapshot is not available on this platform');
-    return;
-  }
-  if (typeof view !== 'number' && view !== 'window') {
-    view = findNodeHandleWrapper(view) || 'window';
-  }
-  return _takeSnapshot(view, options);
+// In past versions of ReactNative users called UIManager.takeSnapshot()
+// However takeSnapshot was moved to ReactNative in order to support flat
+// bundles and to avoid a cyclic dependency between UIManager and ReactNative.
+// UIManager.takeSnapshot still exists though. In order to avoid confusion or
+// accidental usage, mask the method with a deprecation warning.
+UIManager.__takeSnapshot = UIManager.takeSnapshot;
+UIManager.takeSnapshot = function() {
+  invariant(
+    false,
+    'UIManager.takeSnapshot should not be called directly. ' +
+    'Use ReactNative.takeSnapshot instead.'
+  );
 };
 
 /**

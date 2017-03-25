@@ -12,6 +12,7 @@
 'use strict';
 
 var Dimensions = require('Dimensions');
+var FrameRateLogger = require('FrameRateLogger');
 var Platform = require('Platform');
 var Keyboard = require('Keyboard');
 var ReactNative = require('ReactNative');
@@ -295,6 +296,7 @@ var ScrollResponderMixin = {
    * Invoke this from an `onScrollBeginDrag` event.
    */
   scrollResponderHandleScrollBeginDrag: function(e: Event) {
+    FrameRateLogger.beginScroll(); // TODO: track all scrolls after implementing onScrollEndAnimation
     this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
   },
 
@@ -302,6 +304,16 @@ var ScrollResponderMixin = {
    * Invoke this from an `onScrollEndDrag` event.
    */
   scrollResponderHandleScrollEndDrag: function(e: Event) {
+    const {velocity} = e.nativeEvent;
+    // - If we are animating, then this is a "drag" that is stopping the scrollview and momentum end
+    //   will fire.
+    // - If velocity is non-zero, then the interaction will stop when momentum scroll ends or
+    //   another drag starts and ends.
+    // - If we don't get velocity, better to stop the interaction twice than not stop it.
+    if (!this.scrollResponderIsAnimating() &&
+        (!velocity || velocity.x === 0 && velocity.y === 0)) {
+      FrameRateLogger.endScroll();
+    }
     this.props.onScrollEndDrag && this.props.onScrollEndDrag(e);
   },
 
@@ -317,6 +329,7 @@ var ScrollResponderMixin = {
    * Invoke this from an `onMomentumScrollEnd` event.
    */
   scrollResponderHandleMomentumScrollEnd: function(e: Event) {
+    FrameRateLogger.endScroll();
     this.state.lastMomentumScrollEndTime = Date.now();
     this.props.onMomentumScrollEnd && this.props.onMomentumScrollEnd(e);
   },
