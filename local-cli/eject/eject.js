@@ -13,7 +13,6 @@ const path = require('path');
 const sharp = require('sharp');
 const fs = require('fs');
 
-
 /**
  * The eject command re-creates the `android` and `ios` native folders. Because native code can be
  * difficult to maintain, this new script allows an `app.json` to be defined for the project, which
@@ -139,7 +138,10 @@ function eject() {
 
     const filePaths = [hdpiPath, mdpiPath, xhdpiPath, xxhdpiPath];
 
-    if( typeof appIconAndroid === 'string') {
+    const doesAppIconExist = fs.existsSync(path.resolve(appIconAndroid));
+
+
+    if( typeof appIconAndroid === 'string' && doesAppIconExist) {
       filePaths.forEach((path) => {
         fs.unlink(path, (err) => {
           if(err) throw err;
