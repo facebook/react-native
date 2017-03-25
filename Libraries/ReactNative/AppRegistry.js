@@ -13,6 +13,7 @@
 
 const BatchedBridge = require('BatchedBridge');
 const BugReporting = require('BugReporting');
+const FrameRateLogger = require('FrameRateLogger');
 const NativeModules = require('NativeModules');
 const ReactNative = require('ReactNative');
 
@@ -172,6 +173,7 @@ const AppRegistry = {
       'This error can also happen due to a require() error during ' +
       'initialization or failure to call AppRegistry.registerComponent.\n\n'
     );
+    FrameRateLogger.setContext(appKey);
     runnables[appKey].run(appParameters);
   },
 
