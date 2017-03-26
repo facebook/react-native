@@ -9,6 +9,11 @@
 
 #import "AppDelegate.h"
 
+#define JSBUNDLE_GENERATED_HEADER "JSBundle.generated.h"
+#if __has_include(JSBUNDLE_GENERATED_HEADER)
+#  import JSBUNDLE_GENERATED_HEADER
+#endif
+
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 
@@ -18,7 +23,11 @@
 {
   NSURL *jsCodeLocation;
 
+#if __has_include(JSBUNDLE_GENERATED_HEADER)
+  jsCodeLocation = [NSURL URLWithString:@"data:text/javascript;base64," JSBUNDLE_BASE64];
+#else
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
+#endif
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"HelloWorld"

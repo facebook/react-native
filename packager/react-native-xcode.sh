@@ -83,7 +83,11 @@ if [[ "$CONFIGURATION" = "Debug" && ! "$PLATFORM_NAME" == *simulator ]]; then
   echo "$IP.xip.io" > "$DEST/ip.txt"
 fi
 
-BUNDLE_FILE="$DEST/main.jsbundle"
+if [[ "$EMBED_JS_BUNDLE" = "1" ]]; then
+  BUNDLE_FILE="$TEMP_FILES_DIR/main.jsbundle"
+else
+  BUNDLE_FILE="$DEST/main.jsbundle"
+fi
 
 $NODE_BINARY "$REACT_NATIVE_DIR/local-cli/cli.js" bundle \
   --entry-file "$ENTRY_FILE" \
@@ -97,4 +101,18 @@ if [[ ! $DEV && ! -f "$BUNDLE_FILE" ]]; then
   echo "error: File $BUNDLE_FILE does not exist. This must be a bug with" >&2
   echo "React Native, please report it here: https://github.com/facebook/react-native/issues"
   exit 2
+fi
+
+BUNDLE_BASE64_FILE="${TARGET_BUILD_DIR}/include/JSBundle.generated.h"
+if [[ "$EMBED_JS_BUNDLE" = "1" ]]; then
+  BUNDLE_BASE64=$(base64 -i "$BUNDLE_FILE" -o -)
+
+  cat > "$BUNDLE_BASE64_FILE" <<- EOM
+#pragma once
+
+#define JSBUNDLE_BASE64 @"${BUNDLE_BASE64}"
+
+EOM
+elif [[ -f "$BUNDLE_BASE64_FILE" ]]; then
+  rm -f "$BUNDLE_BASE64_FILE"
 fi

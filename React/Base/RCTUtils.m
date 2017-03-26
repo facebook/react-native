@@ -512,6 +512,12 @@ double RCTZeroIfNaN(double value)
   return isnan(value) || isinf(value) ? 0 : value;
 }
 
+BOOL RCTIsDataURL(NSURL *url)
+{
+  return [url.scheme compare:@"data"
+                     options:NSCaseInsensitiveSearch] == NSOrderedSame;
+}
+
 NSURL *RCTDataURL(NSString *mimeType, NSData *data)
 {
   return [NSURL URLWithString:

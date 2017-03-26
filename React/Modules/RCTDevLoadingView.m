@@ -127,7 +127,7 @@ RCT_EXPORT_METHOD(hide)
   UIColor *color;
   UIColor *backgroundColor;
   NSString *source;
-  if (URL.fileURL) {
+  if (URL.fileURL || RCTIsDataURL(URL)) {
     color = [UIColor grayColor];
     backgroundColor = [UIColor blackColor];
     source = @"pre-bundled file";
