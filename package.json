@@ -128,7 +128,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "~16.0.0-alpha.4"
+    "react": "16.0.0-alpha.6"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -187,6 +187,9 @@
     "plist": "^1.2.0",
     "pretty-format": "^4.2.1",
     "promise": "^7.1.1",
+    "react-addons-create-fragment": "15.5.0-alpha.0",
+    "react-addons-pure-render-mixin": "15.5.0-alpha.0",
+    "react-addons-shallow-compare": "15.5.0-alpha.0",
     "react-clone-referenced-element": "^1.0.1",
     "react-devtools-core": "^2.0.8",
     "react-timer-mixin": "^0.13.2",
@@ -224,9 +227,9 @@
     "jest-repl": "19.0.2",
     "jest-runtime": "19.0.2",
     "mock-fs": "^3.11.0",
-    "react": "~16.0.0-alpha.4",
-    "react-dom": "~16.0.0-alpha.4",
-    "react-test-renderer": "~16.0.0-alpha.3",
+    "react": "16.0.0-alpha.6",
+    "react-dom": "16.0.0-alpha.6",
+    "react-test-renderer": "16.0.0-alpha.6",
     "shelljs": "0.6.0",
     "sinon": "^2.0.0-pre.2"
   }
