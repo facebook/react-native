@@ -131,15 +131,7 @@ function eject() {
     );
 
     console.log('Setting up App Icons for Android');
-    const hdpiPath = 'android/app/src/main/res/mipmap-hdpi/ic_launcher.png';
-    const mdpiPath = 'android/app/src/main/res/mipmap-mdpi/ic_launcher.png';
-    const xhdpiPath = 'android/app/src/main/res/mipmap-xhdpi/ic_launcher.png';
-    const xxhdpiPath = 'android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png';
-
-    const filePaths = [hdpiPath, mdpiPath, xhdpiPath, xxhdpiPath];
-
     const doesAppIconExist = fs.existsSync(path.resolve(appIconAndroid));
-
 
     if( typeof appIconAndroid === 'string' && doesAppIconExist) {
       filePaths.forEach((path) => {
