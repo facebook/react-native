@@ -32,6 +32,7 @@ public class SettingsModule extends ReactContextBaseJavaModule  implements Share
 
   @SuppressWarnings("WeakerAccess")
   static final String NAME = "SettingsManager";
+  static final String DEFAULT_FILE_NAME = "ReactNative";
 
   static private String sFilename = "";
   private Boolean ignoringUpdates = false;
@@ -52,6 +53,8 @@ public class SettingsModule extends ReactContextBaseJavaModule  implements Share
         mPreferences = getReactApplicationContext().getSharedPreferences(SettingsModule.sFilename, Context.MODE_PRIVATE);
       } else if (getCurrentActivity() != null) {
         mPreferences = getCurrentActivity().getPreferences(Context.MODE_PRIVATE);
+      } else {
+        mPreferences = getReactApplicationContext().getSharedPreferences(DEFAULT_FILE_NAME, Context.MODE_PRIVATE);
       }
       mPreferences.registerOnSharedPreferenceChangeListener(this);
     }
