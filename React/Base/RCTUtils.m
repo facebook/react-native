@@ -629,7 +629,7 @@ static NSBundle *bundleForPath(NSString *key)
   return bundleCache[key];
 }
 
-UIImage *RCTImageFromLocalAssetURL(NSURL *imageURL)
+UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
 {
   if (!RCTIsLocalAssetURL(imageURL)) {
     return nil;
@@ -657,7 +657,7 @@ UIImage *RCTImageFromLocalAssetURL(NSURL *imageURL)
     // We did not find the image in the mainBundle, check in other shipped frameworks.
     NSArray<NSURL *> *possibleFrameworks = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:[[NSBundle mainBundle] privateFrameworksURL]
                                                                         includingPropertiesForKeys:@[]
-                                                                                           options:nil
+                                                                                           options:0
                                                                                              error:nil];
     for (NSURL *frameworkURL in possibleFrameworks) {
       bundle = [NSBundle bundleWithURL:frameworkURL];

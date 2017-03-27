@@ -91,6 +91,7 @@
     "cli.js",
     "flow",
     "init.sh",
+    "ios-cc.sh",
     "ios-install-third-party.sh",
     "jest-preset.json",
     "jest",
@@ -127,7 +128,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "~16.0.0-alpha.3"
+    "react": "~16.0.0-alpha.4"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -201,7 +202,7 @@
     "stacktrace-parser": "^0.1.3",
     "temp": "0.8.3",
     "throat": "^3.0.0",
-    "uglify-js": "^2.6.2",
+    "uglify-js": "2.7.5",
     "whatwg-fetch": "^1.0.0",
     "wordwrap": "^1.0.0",
     "worker-farm": "^1.3.1",
@@ -218,13 +219,13 @@
     "eslint-plugin-babel": "^3.3.0",
     "eslint-plugin-flowtype": "^2.20.0",
     "eslint-plugin-react": "^6.4.1",
-    "flow-bin": "^0.41.0",
+    "flow-bin": "^0.42.0",
     "jest": "19.0.2",
     "jest-repl": "19.0.2",
     "jest-runtime": "19.0.2",
     "mock-fs": "^3.11.0",
-    "react": "~16.0.0-alpha.3",
-    "react-dom": "~16.0.0-alpha.3",
+    "react": "~16.0.0-alpha.4",
+    "react-dom": "~16.0.0-alpha.4",
     "react-test-renderer": "~16.0.0-alpha.3",
     "sharp": "^0.17.2",
     "shelljs": "0.6.0",

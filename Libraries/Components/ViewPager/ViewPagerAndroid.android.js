@@ -14,7 +14,7 @@
 var React = require('React');
 var ReactNative = require('ReactNative');
 var UIManager = require('UIManager');
-var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
 var dismissKeyboard = require('dismissKeyboard');
 var requireNativeComponent = require('requireNativeComponent');
@@ -81,7 +81,7 @@ class ViewPagerAndroid extends React.Component {
   };
 
   static propTypes = {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * Index of initial page that should be selected. Use `setPage` method to
      * update the page, and `onPageSelected` to monitor page changes
