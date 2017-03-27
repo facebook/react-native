@@ -24,7 +24,7 @@ const TextInputState = require('TextInputState');
 const TimerMixin = require('react-timer-mixin');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
-const View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
@@ -176,7 +176,7 @@ const TextInput = React.createClass({
   },
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * Can tell `TextInput` to automatically capitalize certain characters.
      *
@@ -540,13 +540,6 @@ const TextInput = React.createClass({
    */
   mixins: [NativeMethodsMixin, TimerMixin],
 
-  viewConfig:
-    ((Platform.OS === 'ios' && RCTTextField ?
-      RCTTextField.viewConfig :
-      (Platform.OS === 'android' && AndroidTextInput ?
-        AndroidTextInput.viewConfig :
-        {})) : Object),
-
   /**
    * Returns `true` if the input is currently focused; `false` otherwise.
    */
@@ -678,6 +671,7 @@ const TextInput = React.createClass({
       if (props.inputView) {
         children = [children, props.inputView];
       }
+      props.style.unshift(styles.multilineInput);
       textContainer =
         <RCTTextView
           ref={this._setNativeRef}
@@ -866,6 +860,12 @@ const TextInput = React.createClass({
 var styles = StyleSheet.create({
   input: {
     alignSelf: 'stretch',
+  },
+  multilineInput: {
+    // This default top inset makes RCTTextView seem as close as possible
+    // to single-line RCTTextField defaults, using the system defaults
+    // of font size 17 and a height of 31 points.
+    paddingTop: 5,
   },
 });
 

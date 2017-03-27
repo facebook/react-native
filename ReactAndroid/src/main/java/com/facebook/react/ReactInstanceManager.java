@@ -78,6 +78,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_CATALYST_INS
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_REACT_CONTEXT_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGERS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGERS_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.PRE_SETUP_REACT_CONTEXT_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.PRE_SETUP_REACT_CONTEXT_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_END;
@@ -217,7 +219,10 @@ public class ReactInstanceManager {
       Assertions.assertCondition(params != null && params.length > 0 && params[0] != null);
       try {
         JavaScriptExecutor jsExecutor = params[0].getJsExecutorFactory().create();
-        return Result.of(createReactContext(jsExecutor, params[0].getJsBundleLoader()));
+        ReactApplicationContext reactApplicationContext =
+          createReactContext(jsExecutor, params[0].getJsBundleLoader());
+        ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_START);
+        return Result.of(reactApplicationContext);
       } catch (Exception e) {
         // Pass exception to onPostExecute() so it can be handled on the main thread
         return Result.of(e);
@@ -777,6 +782,7 @@ public class ReactInstanceManager {
   }
 
   private void setupReactContext(ReactApplicationContext reactContext) {
+    ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_END);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_START);
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "setupReactContext");
     UiThreadUtil.assertOnUiThread();

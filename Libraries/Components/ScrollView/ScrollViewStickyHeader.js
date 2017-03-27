@@ -17,18 +17,29 @@ const StyleSheet = require('StyleSheet');
 
 type Props = {
   children?: React.Element<*>,
-  scrollAnimatedValue: Animated.Value,
+  nextHeaderLayoutY: ?number,
   onLayout: (event: Object) => void,
+  scrollAnimatedValue: Animated.Value,
 };
 
 class ScrollViewStickyHeader extends React.Component {
   props: Props;
-  state = {
-    measured: false,
-    layoutY: 0,
-    layoutHeight: 0,
-    nextHeaderLayoutY: (null: ?number),
+  state: {
+    measured: boolean,
+    layoutY: number,
+    layoutHeight: number,
+    nextHeaderLayoutY: ?number,
   };
+
+  constructor(props: Props, context: Object) {
+    super(props, context);
+    this.state = {
+      measured: false,
+      layoutY: 0,
+      layoutHeight: 0,
+      nextHeaderLayoutY: props.nextHeaderLayoutY,
+    };
+  }
 
   setNextHeaderY(y: number) {
     this.setState({ nextHeaderLayoutY: y });
@@ -65,8 +76,10 @@ class ScrollViewStickyHeader extends React.Component {
       // scroll indefinetly.
       const inputRange = [-1, 0, layoutY];
       const outputRange: Array<number> = [0, 0, 0];
-      if (nextHeaderLayoutY != null) {
-        const collisionPoint = nextHeaderLayoutY - layoutHeight;
+      // Sometimes headers jump around so we make sure we don't violate the monotonic inputRange
+      // condition.
+      const collisionPoint = (nextHeaderLayoutY || 0) - layoutHeight;
+      if (collisionPoint >= layoutY) {
         inputRange.push(collisionPoint, collisionPoint + 1);
         outputRange.push(collisionPoint - layoutY, collisionPoint - layoutY);
       } else {

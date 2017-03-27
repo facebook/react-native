@@ -27,9 +27,11 @@ var React = require('react');
 var ReactNative = require('react-native');
 var {
   ActivityIndicator,
+  Alert,
   CameraRoll,
   Image,
   ListView,
+  PermissionsAndroid,
   Platform,
   StyleSheet,
   View,
@@ -139,13 +141,27 @@ var CameraRollView = React.createClass({
     }
   },
 
-  _fetch: function(clear?: boolean) {
+  _fetch: async function(clear?: boolean) {
     if (clear) {
       this.setState(this.getInitialState(), this.fetch);
       return;
     }
 
-    var fetchParams: Object = {
+    if (Platform.OS === 'android') {
+      const result = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          title: 'Permission Explanation',
+          message: 'UIExplorer would like to access your pictures.',
+        },
+      );
+      if (result !== 'granted') {
+        Alert.alert('Access to pictures was denied.');
+        return;
+      }
+    }
+
+    const fetchParams: Object = {
       first: this.props.batchSize,
       groupTypes: this.props.groupTypes,
       assetType: this.props.assetType,
@@ -158,8 +174,12 @@ var CameraRollView = React.createClass({
       fetchParams.after = this.state.lastCursor;
     }
 
-    CameraRoll.getPhotos(fetchParams)
-      .then((data) => this._appendAssets(data), (e) => logError(e));
+    try {
+      const data = await CameraRoll.getPhotos(fetchParams);
+      this._appendAssets(data);
+    } catch (e) {
+      logError(e);
+    }
   },
 
   /**
@@ -180,6 +200,7 @@ var CameraRollView = React.createClass({
         onEndReached={this._onEndReached}
         style={styles.container}
         dataSource={this.state.dataSource}
+        enableEmptySections
       />
     );
   },

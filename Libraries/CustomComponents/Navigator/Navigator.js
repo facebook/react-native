@@ -29,7 +29,7 @@
  *
  * @providesModule Navigator
  */
- /* eslint-disable no-extra-boolean-cast*/
+/* eslint-disable no-extra-boolean-cast*/
 'use strict';
 
 var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
@@ -46,6 +46,8 @@ var Subscribable = require('Subscribable');
 var TVEventHandler = require('TVEventHandler');
 var TimerMixin = require('react-timer-mixin');
 var View = require('View');
+
+const ViewPropTypes = require('ViewPropTypes');
 
 var clamp = require('clamp');
 var flattenStyle = require('flattenStyle');
@@ -385,7 +387,7 @@ var Navigator = React.createClass({
     /**
      * Styles to apply to the container of each scene.
      */
-    sceneStyle: View.propTypes.style,
+    sceneStyle: ViewPropTypes.style,
   },
 
   statics: {
