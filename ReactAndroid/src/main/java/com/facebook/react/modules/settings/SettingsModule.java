@@ -11,8 +11,6 @@ package com.facebook.react.modules.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-//import android.support.annotation.NonNull;
-import android.support.annotation.NonNull;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -35,7 +33,7 @@ public class SettingsModule extends ReactContextBaseJavaModule  implements Share
   @SuppressWarnings("WeakerAccess")
   static final String NAME = "SettingsManager";
 
-  static private @NonNull String sFilename = "";
+  static private String sFilename = "";
   private Boolean ignoringUpdates = false;
   private SharedPreferences mPreferences;
 
@@ -61,7 +59,7 @@ public class SettingsModule extends ReactContextBaseJavaModule  implements Share
     return mPreferences;
   }
 
-  static public void setFilename(@NonNull String filename) {
+  static public void setFilename(String filename) {
     sFilename = filename;
   }
 
