@@ -30,7 +30,7 @@ public class JSTouchDispatcher {
   private int mTargetTag = -1;
   private final float[] mTargetCoordinates = new float[2];
   private boolean mChildIsHandlingNativeGesture = false;
-  private long mGestureStartTime;
+  private long mGestureStartTime = TouchEvent.UNSET;
   private final ViewGroup mRootViewGroup;
   private final TouchEventCoalescingKeyHelper mTouchEventCoalescingKeyHelper =
     new TouchEventCoalescingKeyHelper();
@@ -113,7 +113,7 @@ public class JSTouchDispatcher {
           mTargetCoordinates[1],
           mTouchEventCoalescingKeyHelper));
       mTargetTag = -1;
-      mGestureStartTime = Long.MIN_VALUE;
+      mGestureStartTime = TouchEvent.UNSET;
     } else if (action == MotionEvent.ACTION_MOVE) {
       // Update pointer position for current gesture
       eventDispatcher.dispatchEvent(
@@ -157,7 +157,7 @@ public class JSTouchDispatcher {
         );
       }
       mTargetTag = -1;
-      mGestureStartTime = Long.MIN_VALUE;
+      mGestureStartTime = TouchEvent.UNSET;
     } else {
       FLog.w(
         ReactConstants.TAG,

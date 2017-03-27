@@ -15,6 +15,7 @@ import android.support.v4.util.Pools;
 import android.view.MotionEvent;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.SoftAssertions;
 
 /**
  * An event representing the start, end or movement of a touch. Corresponds to a single
@@ -30,6 +31,8 @@ public class TouchEvent extends Event<TouchEvent> {
 
   private static final Pools.SynchronizedPool<TouchEvent> EVENTS_POOL =
       new Pools.SynchronizedPool<>(TOUCH_EVENTS_POOL_SIZE);
+
+  public static final long UNSET = Long.MIN_VALUE;
 
   public static TouchEvent obtain(
       int viewTag,
@@ -75,7 +78,7 @@ public class TouchEvent extends Event<TouchEvent> {
       TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
     super.init(viewTag);
 
-    Assertions.assertCondition(gestureStartTime != Long.MIN_VALUE,
+    SoftAssertions.assertCondition(gestureStartTime != UNSET,
         "Gesture start time must be initialized");
     short coalescingKey = 0;
     int action = (motionEventToCopy.getAction() & MotionEvent.ACTION_MASK);
