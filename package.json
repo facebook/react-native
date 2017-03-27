@@ -91,6 +91,7 @@
     "cli.js",
     "flow",
     "init.sh",
+    "ios-cc.sh",
     "ios-install-third-party.sh",
     "jest-preset.json",
     "jest",
