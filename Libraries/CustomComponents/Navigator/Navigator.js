@@ -1192,6 +1192,33 @@ var Navigator = React.createClass({
   },
 
   /**
+   * Replace the previous scene with transition Animations.
+   * @param {object} route Route that replaces the previous scene.
+   */
+  replaceWithAnimation: function (route) {
+    const currentLength = this.state.presentedIndex + 1;
+    const currentRouteStack = this.state.routeStack.slice(0, currentLength);
+    const animationConfigFromSceneConfigStack = this.state.sceneConfigStack.slice(0, currentLength);
+    const nextStack = currentRouteStack.concat([route]);
+    const destIndex = nextStack.length - 1;
+    const nextSceneConfig = this.props.configureScene(route, nextStack);
+    const nextAnimationConfigStack = animationConfigFromSceneConfigStack.concat([nextSceneConfig]);
+
+    const newStack = currentRouteStack.slice(0, currentLength - 1).concat([route]);
+    this._emitWillFocus(nextStack[destIndex]);
+    this.setState({
+      routeStack: nextStack,
+      sceneConfigStack: nextAnimationConfigStack,
+    },() => {
+      this._enableScene(destIndex);
+      this._transitionTo(destIndex, nextSceneConfig.defaultTransitionVelocity, null, () => {
+        // Immediately reset the route stack after the transition is completed
+        this.immediatelyResetRouteStack(newStack);
+      });
+    });
+  },
+
+  /**
    * Replace the previous scene.
    * @param {object} route Route that replaces the previous scene.
    */
