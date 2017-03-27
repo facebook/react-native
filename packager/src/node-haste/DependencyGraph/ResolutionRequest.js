@@ -116,11 +116,12 @@ class ResolutionRequest {
   }
 
   // TODO(cpojer): Remove 'any' type. This is used for ModuleGraph/node-haste
-  resolveDependency(fromModule: Module | any, toModuleName: string) {
+  resolveDependency(fromModule: Module | any, toModuleName: string): Module {
     const resHash = resolutionHash(fromModule.path, toModuleName);
 
-    if (this._immediateResolutionCache[resHash]) {
-      return Promise.resolve(this._immediateResolutionCache[resHash]);
+    const immediateResolution = this._immediateResolutionCache[resHash];
+    if (immediateResolution) {
+      return immediateResolution;
     }
 
     const cacheResult = result => {
@@ -130,15 +131,14 @@ class ResolutionRequest {
 
     if (!this._helpers.isNodeModulesDir(fromModule.path)
         && !(isRelativeImport(toModuleName) || isAbsolutePath(toModuleName))) {
-      return this._tryResolve(
-        () => Promise.resolve().then(() => this._resolveHasteDependency(fromModule, toModuleName)),
-        () => Promise.resolve().then(() => this._resolveNodeDependency(fromModule, toModuleName))
-      ).then(cacheResult);
+      const result = tryResolveSync(
+        () => this._resolveHasteDependency(fromModule, toModuleName),
+        () => this._resolveNodeDependency(fromModule, toModuleName),
+      );
+      return cacheResult(result);
     }
 
-    return Promise.resolve()
-      .then(() => this._resolveNodeDependency(fromModule, toModuleName))
-      .then(cacheResult);
+    return cacheResult(this._resolveNodeDependency(fromModule, toModuleName));
   }
 
   getOrderedDependencies({
@@ -160,11 +160,10 @@ class ResolutionRequest {
 
     const resolveDependencies = module =>
       module.getDependencies(transformOptions)
-        .then(dependencyNames =>
-          Promise.all(
-            dependencyNames.map(name => this.resolveDependency(module, name))
-          ).then(dependencies => [dependencyNames, dependencies])
-        );
+        .then(dependencyNames => {
+          const dependencies = dependencyNames.map(name => this.resolveDependency(module, name));
+          return [dependencyNames, dependencies];
+        });
 
     const collectedDependencies = new MapWithDefaults(module => collect(module));
     const crawlDependencies = (mod, [depNames, dependencies]) => {
