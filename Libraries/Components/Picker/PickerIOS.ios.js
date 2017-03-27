@@ -18,6 +18,7 @@ var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var TextStylePropTypes = require('TextStylePropTypes');
 var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 var processColor = require('processColor');
 
 var itemStylePropType = StyleSheetPropType(TextStylePropTypes);
@@ -27,7 +28,7 @@ var PickerIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     itemStyle: itemStylePropType,
     onValueChange: React.PropTypes.func,
     selectedValue: React.PropTypes.any, // string or integer basically

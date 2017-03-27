@@ -22,6 +22,8 @@ var StyleSheet = require('StyleSheet');
 var TVEventHandler = require('TVEventHandler');
 var View = require('View');
 
+const ViewPropTypes = require('ViewPropTypes');
+
 var invariant = require('fbjs/lib/invariant');
 var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
@@ -133,10 +135,10 @@ type Event = Object;
  * animations and behavior from UIKIt.
  *
  * As the name implies, it is only available on iOS. Take a look at
- * [`Navigator`](docs/navigator.html) for a similar solution for your
- * cross-platform needs, or check out
- * [react-native-navigation](https://github.com/wix/react-native-navigation), a
- * component that aims to provide native navigation on both iOS and Android.
+ * [`React Navigation`](https://reactnavigation.org/) for a cross-platform 
+ * solution in JavaScript, or check out either of these components for native
+ * solutions: [native-navigation](http://airbnb.io/native-navigation/),
+ * [react-native-navigation](https://github.com/wix/react-native-navigation).
  *
  * To set up the navigator, provide the `initialRoute` prop with a route
  * object. A route object is used to describe each scene that your app
@@ -406,7 +408,7 @@ var NavigatorIOS = React.createClass({
       /**
        * Styles for the navigation item containing the component.
        */
-      wrapperStyle: View.propTypes.style,
+      wrapperStyle: ViewPropTypes.style,
 
       /**
        * Boolean value that indicates whether the navigation bar is hidden.
@@ -458,7 +460,7 @@ var NavigatorIOS = React.createClass({
      * The default wrapper style for components in the navigator.
      * A common use case is to set the `backgroundColor` for every scene.
      */
-    itemWrapperStyle: View.propTypes.style,
+    itemWrapperStyle: ViewPropTypes.style,
 
     /**
      * The default color used for the buttons in the navigation bar.

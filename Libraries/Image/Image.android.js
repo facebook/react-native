@@ -22,6 +22,7 @@ var Set = require('Set');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var filterObject = require('fbjs/lib/filterObject');
@@ -78,7 +79,7 @@ var ImageSpecificStyleKeys = new Set(Object.keys(ImageStylePropTypes).filter(x =
 
 var Image = React.createClass({
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     style: StyleSheetPropType(ImageStylePropTypes),
    /**
      * `uri` is a string representing the resource identifier for the image, which
