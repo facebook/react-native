@@ -131,15 +131,6 @@ function eject() {
     );
 
     console.log('Setting up App Icons for Android');
-    const doesAppIconExist = fs.existsSync(path.resolve(appIconAndroid));
-
-    if( typeof appIconAndroid === 'string' && doesAppIconExist) {
-      filePaths.forEach((path) => {
-        fs.unlink(path, (err) => {
-          if(err) throw err;
-        })
-      })
-    };
 
     const ICON_SIZES = [{
       android_hdpi: {
@@ -159,6 +150,22 @@ function eject() {
         size: 144
       }
     }];
+
+    let filePaths = [];
+
+    Object.keys(ICON_SIZES[0]).forEach((prop) => {
+      filePaths.push(ICON_SIZES[0][prop].path);
+    })
+
+    const doesAppIconExist = fs.existsSync(path.resolve(appIconAndroid));
+
+    if( typeof appIconAndroid === 'string' && doesAppIconExist) {
+      filePaths.forEach((path) => {
+        fs.unlink(path, (err) => {
+          if(err) throw err;
+        })
+      })
+    };
 
     Object.keys(ICON_SIZES[0]).forEach((prop) => {
       const path = ICON_SIZES[0][prop].path;
