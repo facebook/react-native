@@ -16,7 +16,7 @@ var ColorPropType = require('ColorPropType');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
-var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var processColor = require('processColor');
@@ -51,7 +51,7 @@ class PickerAndroid extends React.Component {
   state: *;
 
   static propTypes = {
-    ...View.propTypes,
+    ...ViewPropTypes,
     style: pickerStyleType,
     selectedValue: React.PropTypes.any,
     enabled: ReactPropTypes.bool,

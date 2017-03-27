@@ -39,6 +39,8 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
+const ViewPropTypes = require('ViewPropTypes');
+
 const guid = require('guid');
 const invariant = require('fbjs/lib/invariant');
 
@@ -99,7 +101,7 @@ class NavigatorBreadcrumbNavigationBar extends React.Component {
       routeStack: React.PropTypes.arrayOf(React.PropTypes.object),
       presentedIndex: React.PropTypes.number,
     }),
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
   };
 
   static Styles = NavigatorBreadcrumbNavigationBarStyles;
