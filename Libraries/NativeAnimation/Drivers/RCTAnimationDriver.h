@@ -29,9 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
                   callBack:(nullable RCTResponseSenderBlock)callback;
 
 - (void)startAnimation;
+- (void)stepAnimationWithTime:(NSTimeInterval)currentTime;
 - (void)stopAnimation;
-- (void)stepAnimation;
-- (void)removeAnimation;
 
 NS_ASSUME_NONNULL_END
 

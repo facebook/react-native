@@ -20,6 +20,8 @@
 
 - (void)updateAnimations;
 
+- (void)stepAnimations:(nonnull CADisplayLink *)displaylink;
+
 // graph
 
 - (void)createAnimatedNode:(nonnull NSNumber *)tag
@@ -80,7 +82,6 @@
 - (void)startListeningToAnimatedNodeValue:(nonnull NSNumber *)tag
                             valueObserver:(nonnull id<RCTValueAnimatedNodeObserver>)valueObserver;
 
-- (void)stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag
-                           valueObserver:(nonnull id<RCTValueAnimatedNodeObserver>)valueObserver;
+- (void)stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag;
 
 @end
