@@ -173,7 +173,15 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
   scrollToEnd(params?: ?{animated?: ?boolean}) {
     this._listRef.scrollToEnd(params);
   }
-
+ /**
+   * Scrolls to a given x, y offset, either immediately or with a smooth animation.
+   *
+   * See `ScrollView#scrollTo`.
+   */
+   scrollTo(...args: Array<mixed>) {
+     if (this._listRef && this._listRef.scrollTo) {
+         this._listRef.scrollTo(...args);
+   }
   /**
    * Scrolls to the item at a the specified index such that it is positioned in the viewable area
    * such that `viewPosition` 0 places it at the top, 1 at the bottom, and 0.5 centered in the
