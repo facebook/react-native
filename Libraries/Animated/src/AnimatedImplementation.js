@@ -1854,14 +1854,24 @@ function createAnimatedComponent(Component: any): any {
       return this._component;
     }
   }
+
+  // ReactNative `View.propTypes` have been deprecated in favor of
+  // `ViewPropTypes`. In their place a temporary getter has been added with a
+  // deprecated warning message. Avoid triggering that warning here by using
+  // temporary workaround, __propTypesSecretDontUseThesePlease.
+  // TODO (bvaughn) Revert this particular change any time after April 1
+  var propTypes =
+    Component.__propTypesSecretDontUseThesePlease ||
+    Component.propTypes;
+
   AnimatedComponent.propTypes = {
     style: function(props, propName, componentName) {
-      if (!Component.propTypes) {
+      if (!propTypes) {
         return;
       }
 
       for (var key in ViewStylePropTypes) {
-        if (!Component.propTypes[key] && props[key] !== undefined) {
+        if (!propTypes[key] && props[key] !== undefined) {
           console.warn(
             'You are setting the style `{ ' + key + ': ... }` as a prop. You ' +
             'should nest it in a style object. ' +
