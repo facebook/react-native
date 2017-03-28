@@ -217,6 +217,8 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
     for (AnimatedOperation operation in operations) {
       operation(self->_nodesManager);
     }
+
+    [self->_nodesManager updateAnimations];
   }];
 }
 
