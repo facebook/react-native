@@ -225,6 +225,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
   NSDictionary *_componentDataByName;
 
   NSMutableSet<id<RCTComponent>> *_bridgeTransactionListeners;
+  NSMutableSet<id<RCTUIManagerObserver>> *_uiManagerObservers;
 }
 
 @synthesize bridge = _bridge;
@@ -305,6 +306,7 @@ RCT_EXPORT_MODULE()
   _rootViewTags = [NSMutableSet new];
 
   _bridgeTransactionListeners = [NSMutableSet new];
+  _uiManagerObservers = [NSMutableSet new];
 
   _viewsToBeDeleted = [NSMutableSet new];
 
@@ -499,6 +501,19 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   }
 
   [_pendingUIBlocks addObject:block];
+}
+
+- (void)prependUIBlock:(RCTViewManagerUIBlock)block
+{
+  RCTAssertThread(RCTGetUIManagerQueue(),
+                  @"-[RCTUIManager prependUIBlock:] should only be called from the "
+                  "UIManager's queue (get this using `RCTGetUIManagerQueue()`)");
+
+  if (!block || !_viewRegistry) {
+    return;
+  }
+
+  [_pendingUIBlocks insertObject:block atIndex:0];
 }
 
 - (RCTViewManagerUIBlock)uiBlockWithLayoutUpdateForRootView:(RCTRootShadowView *)rootShadowView
@@ -696,6 +711,20 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       }
     }];
   }
+}
+
+- (void)addUIManagerObserver:(id<RCTUIManagerObserver>)observer
+{
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self->_uiManagerObservers addObject:observer];
+  });
+}
+
+- (void)removeUIManagerObserver:(id<RCTUIManagerObserver>)observer
+{
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self->_uiManagerObservers removeObject:observer];
+  });
 }
 
 /**
@@ -1138,6 +1167,10 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
       [node reactBridgeDidFinishTransaction];
     }
   }];
+
+  for (id<RCTUIManagerObserver> observer in _uiManagerObservers) {
+    [observer uiManagerWillFlushUIBlocks:self];
+  }
 
   [self flushUIBlocks];
 }
