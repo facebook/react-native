@@ -21,6 +21,38 @@ var invariant = require('fbjs/lib/invariant');
 var eventEmitter = new EventEmitter();
 var dimensionsInitialized = false;
 var dimensions = {};
+/**
+ * The `Dimensions` module is used to get the size of the window and screen that your
+ * application is running on.
+ *
+ * ### Usage
+ *
+ *```
+ * import { Keyboard, TextInput } from 'react-native';
+ * 
+ * const screenSize = Dimensions.get('screen')
+ * const windowSize = Dimensions.get('window')
+ * 
+ * // Both result in objects with the following shape:
+ * //
+ * // { height: Number, width: Number, scale: Number, fontScale: Number }
+ *
+ * console.log(windowSize.height, windowSize.width)
+ *
+ * Dimensions.addEventListener('change', function (dimensions) {
+ *   // The argument `dimensions` is in the form of `{ window: Object, screen: Object }
+ *   // Log the new height & width of the window:
+ *   console.log(dimensions.window.height, dimensions.window.width);
+ * })
+ *
+ *```
+ *
+ * On iOS, `window` and `screen` are the same values. On Android, the values for
+ * `window` may be smaller than the values of `screen`, as Android 7.0+ supports
+ * running [multiple applications](https://developer.android.com/guide/topics/ui/multi-window.html)
+ * simultaneously each taking a portion of the device screen size.
+ *
+ */
 class Dimensions {
   /**
    * This should only be called from native code by sending the
