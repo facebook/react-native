@@ -61,19 +61,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)startAnimation
 {
-  _animationStartTime = CACurrentMediaTime();
-  _animationCurrentTime = _animationStartTime;
+  _animationStartTime = _animationCurrentTime = -1;
   _animationHasBegun = YES;
 }
 
 - (void)stopAnimation
 {
-  _animationHasFinished = YES;
-}
-
-- (void)removeAnimation
-{
-  [self stopAnimation];
   _valueNode = nil;
   if (_callback) {
     _callback(@[@{
@@ -82,14 +75,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
-- (void)stepAnimation
+- (void)stepAnimationWithTime:(NSTimeInterval)currentTime
 {
   if (!_animationHasBegun || _animationHasFinished || _frames.count == 0) {
     // Animation has not begun or animation has already finished.
     return;
   }
 
-  NSTimeInterval currentTime = CACurrentMediaTime();
+  if (_animationStartTime == -1) {
+    _animationStartTime = _animationCurrentTime = currentTime;
+  }
+
   _animationCurrentTime = currentTime;
   NSTimeInterval currentDuration = _animationCurrentTime - _animationStartTime;
 
@@ -103,7 +99,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     // Update value and flag animation has ended.
     NSNumber *finalValue = _frames.lastObject;
     [self updateOutputWithFrameOutput:finalValue.doubleValue];
-    [self stopAnimation];
+    _animationHasFinished = YES;
     return;
   }
 
