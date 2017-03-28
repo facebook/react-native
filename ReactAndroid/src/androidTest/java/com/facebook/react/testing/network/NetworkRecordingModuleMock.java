@@ -19,12 +19,14 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 /**
  * Mock Networking module that records last request received by {@link #sendRequest} method and
  * returns reponse code and body that should be set with {@link #setResponse}
  */
+@ReactModule(name = "Networking", canOverrideExistingModule = true)
 public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
 
   public int mRequestCount = 0;
@@ -106,6 +108,11 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
   public void abortRequest(int requestId) {
     mLastRequestId = requestId;
     mAbortedRequest = true;
+  }
+
+  @Override
+  public boolean canOverrideExistingModule() {
+    return true;
   }
 
   private void onDataReceived(int requestId, String data) {
