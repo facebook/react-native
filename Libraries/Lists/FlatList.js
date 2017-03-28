@@ -58,6 +58,16 @@ type OptionalProps<ItemT> = {
    */
   ListHeaderComponent?: ?ReactClass<any>,
   /**
+   * Optional custom style for multi-item rows generated when numColumns > 1.
+   */
+  columnWrapperStyle?: StyleObj,
+  /**
+   * A marker property for telling the list to re-render (since it implements `PureComponent`). If
+   * your `renderItem` function depends on anything outside of the `data` prop, stick it here and
+   * treat it immutably.
+   */
+  extraData?: any,
+  /**
    * `getItemLayout` is an optional optimizations that let us skip measurement of dynamic content if
    * you know the height of items a priori. `getItemLayout` is the most efficient, and is easy to
    * use if you have fixed height items, for example:
@@ -76,6 +86,12 @@ type OptionalProps<ItemT> = {
    */
   horizontal?: ?boolean,
   /**
+   * How many items to render in the initial batch. This should be enough to fill the screen but not
+   * much more. Note these items will never be unmounted as part of the windowed rendering in order
+   * to improve perceived performance of scroll-to-top actions.
+   */
+  initialNumToRender: number,
+  /**
    * Used to extract a unique key for a given item at the specified index. Key is used for caching
    * and as the react key to track item re-ordering. The default extractor checks `item.key`, then
    * falls back to using the index, like React does.
@@ -91,6 +107,12 @@ type OptionalProps<ItemT> = {
    * content.
    */
   onEndReached?: ?(info: {distanceFromEnd: number}) => void,
+  /**
+   * How far from the end (in units of visible length of the list) the bottom edge of the
+   * list must be from the end of the content to trigger the `onEndReached` callback.
+   * Thus a value of 0.5 will trigger `onEndReached` when the end of the content is
+   * within half the visible length of the list.
+   */
   onEndReachedThreshold?: ?number,
   /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
@@ -98,19 +120,17 @@ type OptionalProps<ItemT> = {
    */
   onRefresh?: ?() => void,
   /**
-   * Called when the viewability of rows changes, as defined by the
-   * `viewablePercentThreshold` prop.
+   * Called when the viewability of rows changes, as defined by the `viewabilityConfig` prop.
    */
-  onViewableItemsChanged?: ?(info: {viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
+  onViewableItemsChanged?: ?(info: {
+    viewableItems: Array<ViewToken>,
+    changed: Array<ViewToken>,
+  }) => void,
   legacyImplementation?: ?boolean,
   /**
    * Set this true while waiting for new data from a refresh.
    */
   refreshing?: ?boolean,
-  /**
-   * Optional custom style for multi-item rows generated when numColumns > 1
-   */
-  columnWrapperStyle?: StyleObj,
   /**
    * See `ViewabilityHelper` for flow type and further documentation.
    */
@@ -148,8 +168,71 @@ type DefaultProps = typeof defaultProps;
  *       renderItem={({item}) => <Text>{item.key}</Text>}
  *     />
  *
+ * More complex example demonstrating `PureComponent` usage for perf optimization and avoiding bugs.
+ *
+ * - By binding the `onPressItem` handler, the props will remain `===` and `PureComponent` will
+ *   prevent wasteful re-renders unless the actual `id`, `selected`, or `title` props change, even
+ *   if the inner `SomeOtherWidget` has no such optimizations.
+ * - By passing `extraData={this.state}` to `FlatList` we make sure `FlatList` itself will re-render
+ *   when the `state.selected` changes. Without setting this prop, `FlatList` would not know it
+ *   needs to re-render any items because it is also a `PureComponent` and the prop comparison will
+ *   not show any changes.
+ * - `keyExtractor` tells the list to use the `id`s for the react keys.
+ *
+ *
+ *     class MyListItem extends React.PureComponent {
+ *       _onPress = () => {
+ *         this.props.onPressItem(this.props.id);
+ *       };
+ *
+ *       render() {
+ *         return (
+ *           <SomeOtherWidget
+ *             {...this.props}
+ *             onPress={this._onPress}
+ *           />
+ *         )
+ *       }
+ *     }
+ *
+ *     class MyList extends React.PureComponent {
+ *       state = {selected: (new Map(): Map<string, boolean>)};
+ *
+ *       _keyExtractor = (item, index) => item.id;
+ *
+ *       _onPressItem = (id: string) => {
+ *         // updater functions are preferred for transactional updates
+ *         this.setState((state) => {
+ *           // copy the map rather than modifying state.
+ *           const selected = new Map(state.selected);
+ *           selected.set(id, !state.get(id)); // toggle
+ *           return {selected};
+ *         });
+ *       };
+ *
+ *       _renderItem = ({item}) => (
+ *         <MyListItem
+ *           id={item.id}
+ *           onPressItem={this._onPressItem}
+ *           selected={!!this.state.selected.get(item.id)}
+ *           title={item.title}
+ *         />
+ *       );
+ *
+ *       render() {
+ *         return (
+ *           <FlatList
+ *             data={this.props.data}
+ *             extraData={this.state}
+ *             keyExtractor={this._keyExtractor}
+ *             renderItem={this._renderItem}
+ *           />
+ *         );
+ *       }
+ *     }
+ *
  * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist.html),
- * and thus inherits the following caveats:
+ * and thus inherits it's props that aren't explicitly listed here along with the following caveats:
  *
  * - Internal state is not preserved when content scrolls out of the render window. Make sure all
  *   your data is captured in the item data or external stores like Flux, Redux, or Relay.
@@ -305,6 +388,7 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
       arr.push({...v, item, key: keyExtractor(item, index), index});
     });
   }
+
   _onViewableItemsChanged = (info) => {
     const {numColumns, onViewableItemsChanged} = this.props;
     if (!onViewableItemsChanged) {
