@@ -68,5 +68,6 @@ public class ReactMarkerConstants {
   public static final String ON_HOST_PAUSE_END = "ON_HOST_PAUSE_END";
   public static final String CONVERT_CONSTANTS_START = "CONVERT_CONSTANTS_START";
   public static final String CONVERT_CONSTANTS_END = "CONVERT_CONSTANTS_END";
-  public static final String PRE_REACT_CONTEXT_END = "PRE_REACT_CONTEXT_END";
+  public static final String PRE_SETUP_REACT_CONTEXT_START = "PRE_SETUP_REACT_CONTEXT_START";
+  public static final String PRE_SETUP_REACT_CONTEXT_END = "PRE_SETUP_REACT_CONTEXT_END";
 }

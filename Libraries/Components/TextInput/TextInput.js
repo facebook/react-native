@@ -24,7 +24,7 @@ const TextInputState = require('TextInputState');
 const TimerMixin = require('react-timer-mixin');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
-const View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
@@ -176,7 +176,7 @@ const TextInput = React.createClass({
   },
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * Can tell `TextInput` to automatically capitalize certain characters.
      *

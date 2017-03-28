@@ -15,7 +15,7 @@ const ColorPropType = require('ColorPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
-const View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
 
@@ -79,7 +79,7 @@ const RefreshControl = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * Called when the view starts refreshing.
      */

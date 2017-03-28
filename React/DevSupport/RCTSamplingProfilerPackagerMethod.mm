@@ -29,7 +29,7 @@
   return self;
 }
 
-- (void)handleRequest:(id)params withResponder:(RCTPackagerClientResponder *)responder
+- (void)handleRequest:(__unused id)params withResponder:(RCTPackagerClientResponder *)responder
 {
   JSContext *context = _bridge.jsContext;
   JSGlobalContextRef globalContext = context.JSGlobalContextRef;
@@ -48,7 +48,7 @@
   }
 }
 
-- (void)handleNotification:(id)params
+- (void)handleNotification:(__unused id)params
 {
   RCTLogError(@"%@ does not implement onNotification", [self class]);
 }
