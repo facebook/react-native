@@ -170,7 +170,16 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated}
     );
   }
-
+  /**
+   * Scrolls to a given x, y offset, either immediately or with a smooth animation.
+   *
+   * See `ScrollView#scrollTo`.
+   */
+  scrollTo(...args: Array<mixed>) {
+    if (this._scrollRef && this._scrollRef.scrollTo) {
+        this._scrollRef.scrollTo(...args);
+    }
+  }
   // scrollToIndex may be janky without getItemLayout prop
   scrollToIndex(params: {animated?: ?boolean, index: number, viewPosition?: number}) {
     const {data, horizontal, getItemCount, getItemLayout} = this.props;
