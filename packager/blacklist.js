@@ -17,9 +17,6 @@ var sharedBlacklist = [
 
   /website\/node_modules\/.*/,
 
-  // TODO(jkassens, #9876132): Remove this rule when it's no longer needed.
-  'Libraries/Relay/oss/react-relay/classic/tools/relayUnstableBatchedUpdates.js',
-
   /heapCapture\/bundle\.js/,
 ];
 

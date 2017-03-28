@@ -50,6 +50,12 @@ type OptionalProps = {
    */
   disableVirtualization: boolean,
   /**
+   * A marker property for telling the list to re-render (since it implements `PureComponent`). If
+   * your `renderItem` function depends on anything outside of the `data` prop, stick it here and
+   * treat it immutably.
+   */
+  extraData?: any,
+  /**
    * A generic accessor for extracting an item from any sort of data blob.
    */
   getItem: (data: any, index: number) => ?Item,
@@ -62,7 +68,8 @@ type OptionalProps = {
   horizontal?: ?boolean,
   /**
    * How many items to render in the initial batch. This should be enough to fill the screen but not
-   * much more.
+   * much more. Note these items will never be unmounted as part of the windowed rendering in order
+   * to improve perceived performance of scroll-to-top actions.
    */
   initialNumToRender: number,
   keyExtractor: (item: Item, index: number) => string,
