@@ -239,11 +239,15 @@ class GlobalTransformCache {
    */
   static fetchResultFromURI(uri: string): Promise<CachedResult> {
     return GlobalTransformCache._fetchResultFromURI(uri).catch(error => {
-      if (!(error instanceof FetchError && error.type === 'request-timeout')) {
+      if (!GlobalTransformCache.isTimeoutError(error)) {
         throw error;
       }
       return this._fetchResultFromURI(uri);
     });
+  }
+
+  static isTimeoutError(error: Error): boolean {
+    return error instanceof FetchError && error.type === 'request-timeout';
   }
 
   shouldFetch(props: FetchProps): boolean {

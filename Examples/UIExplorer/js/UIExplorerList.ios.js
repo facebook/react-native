@@ -91,11 +91,6 @@ const ComponentExamples: Array<UIExplorerExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'NavigatorExample',
-    module: require('./Navigator/NavigatorExample'),
-    supportsTVOS: true,
-  },
-  {
     key: 'NavigatorIOSColorsExample',
     module: require('./NavigatorIOSColorsExample'),
     supportsTVOS: false,

@@ -424,7 +424,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       std::unique_ptr<RCTInstanceCallback>(new RCTInstanceCallback(self)),
       executorFactory,
       _jsMessageThread,
-      std::move([self _buildModuleRegistry]));
+      [self _buildModuleRegistry]);
 
 #if RCT_PROFILE
     if (RCTProfileIsProfiling()) {

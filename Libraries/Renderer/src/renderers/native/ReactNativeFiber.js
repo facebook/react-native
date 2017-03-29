@@ -27,6 +27,7 @@ const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationI
 const emptyObject = require('fbjs/lib/emptyObject');
 const findNodeHandle = require('findNodeHandle');
 const invariant = require('fbjs/lib/invariant');
+const takeSnapshot = require('takeSnapshot');
 
 const {injectInternals} = require('ReactFiberDevToolsHook');
 
@@ -382,7 +383,10 @@ const ReactNative = {
   // See NativeMethodsMixin#setNativeProps for more info on why this is done.
   findNodeHandle(componentOrHandle: any): ?number {
     const instance: any = findNodeHandle(componentOrHandle);
-    return instance ? instance._nativeTag : null;
+    if (instance == null || typeof instance === 'number') {
+      return instance;
+    }
+    return instance._nativeTag;
   },
 
   render(element: Element<any>, containerTag: any, callback: ?Function) {
@@ -398,6 +402,8 @@ const ReactNative = {
 
     return NativeRenderer.getPublicRootInstance(root);
   },
+
+  takeSnapshot,
 
   unmountComponentAtNode(containerTag: number) {
     const root = roots.get(containerTag);

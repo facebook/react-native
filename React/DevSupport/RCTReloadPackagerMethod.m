@@ -25,7 +25,7 @@
   return self;
 }
 
-- (void)handleRequest:(id)params withResponder:(RCTPackagerClientResponder *)responder
+- (void)handleRequest:(__unused id)params withResponder:(RCTPackagerClientResponder *)responder
 {
   [responder respondWithError:[NSString stringWithFormat: @"%@ does not support onRequest", [self class]]];
 }

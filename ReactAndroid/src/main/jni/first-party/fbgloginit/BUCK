@@ -1,3 +1,5 @@
+include_defs("//ReactCommon/DEFS")
+
 cxx_library(
     name = "fbgloginit",
     srcs = [
@@ -14,6 +16,6 @@ cxx_library(
     visibility = ["PUBLIC"],
     xcode_public_headers_symlinks = True,
     deps = [
-        "//xplat/third-party/glog:glog",
+        GLOG_DEP,
     ],
 )
