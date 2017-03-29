@@ -51,8 +51,8 @@ type OptionalProps = {
   disableVirtualization: boolean,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
-   * your `renderItem` function depends on anything outside of the `data` prop, stick it here and
-   * treat it immutably.
+   * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
+   * `data` prop, stick it here and treat it immutably.
    */
   extraData?: any,
   /**
@@ -307,13 +307,16 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   componentWillReceiveProps(newProps: Props) {
-    const {data, getItemCount, maxToRenderPerBatch} = newProps;
+    const {data, extraData, getItemCount, maxToRenderPerBatch} = newProps;
     // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
     // sure we're rendering a reasonable range here.
     this.setState({
       first: Math.max(0, Math.min(this.state.first, getItemCount(data) - 1 - maxToRenderPerBatch)),
       last: Math.max(0, Math.min(this.state.last, getItemCount(data) - 1)),
     });
+    if (data !== this.props.data || extraData !== this.props.extraData) {
+      this._hasDataChangedSinceEndReached = true;
+    }
     this._updateCellsToRenderBatcher.schedule();
   }
 
@@ -462,6 +465,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   _averageCellLength = 0;
+  _hasDataChangedSinceEndReached = true;
   _hasWarned = {};
   _highestMeasuredFrameIndex = 0;
   _headerLength = 0;
@@ -619,10 +623,12 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     }
     const distanceFromEnd = contentLength - visibleLength - offset;
     const itemCount = getItemCount(data);
-    if (distanceFromEnd < onEndReachedThreshold * visibleLength &&
-        this._scrollMetrics.contentLength !== this._sentEndForContentLength &&
-        this.state.last === itemCount - 1) {
-      // Only call onEndReached for a given content length once.
+    if (this.state.last === itemCount - 1 &&
+        distanceFromEnd < onEndReachedThreshold * visibleLength &&
+        (this._hasDataChangedSinceEndReached ||
+         this._scrollMetrics.contentLength !== this._sentEndForContentLength)) {
+      // Only call onEndReached once for a given dataset + content length.
+      this._hasDataChangedSinceEndReached = false;
       this._sentEndForContentLength = this._scrollMetrics.contentLength;
       onEndReached({distanceFromEnd});
     }
