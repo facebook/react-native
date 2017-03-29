@@ -61,6 +61,12 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    */
   SectionSeparatorComponent?: ?ReactClass<any>,
   /**
+   * A marker property for telling the list to re-render (since it implements `PureComponent`). If
+   * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
+   * `data` prop, stick it here and treat it immutably.
+   */
+  extraData?: any,
+  /**
    * How many items to render in the initial batch. This should be enough to fill the screen but not
    * much more. Note these items will never be unmounted as part of the windowed rendering in order
    * to improve perceived performance of scroll-to-top actions.
