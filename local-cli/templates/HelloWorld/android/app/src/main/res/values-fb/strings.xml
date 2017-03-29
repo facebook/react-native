@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- See fburl.com/140690840 for information about i18n on Android -->
-<!-- @generated -->
-<!-- FB Locale: fb_HA -->
-
-<resources exclude-from-buck-resource-map="true">
-    <string name="app_name" gender="unknown">[Hello App Display Name#eab3e1f9068d3147cc00bd042932f2a6:1]</string>
-</resources>
