@@ -36,7 +36,7 @@ function createAndMountComponent(ComponentClass, props) {
 
 describe('Native Animated', () => {
 
-  let nativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
+  const nativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
 
   beforeEach(() => {
     nativeAnimatedModule.addAnimatedEventToView = jest.fn();
@@ -276,7 +276,7 @@ describe('Native Animated', () => {
       expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         jasmine.any(Number),
         jasmine.any(Number),
-        {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number), delay: jasmine.any(Number), iterations: 1},
+        {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number), iterations: 1},
         jasmine.any(Function)
       );
 
@@ -587,7 +587,7 @@ describe('Native Animated', () => {
       expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         jasmine.any(Number),
         jasmine.any(Number),
-        {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number), delay: jasmine.any(Number), iterations: 1},
+        {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number), iterations: 1},
         jasmine.any(Function)
       );
     });
@@ -666,7 +666,7 @@ describe('Native Animated', () => {
       expect(nativeAnimatedModule.startAnimatingNode).toBeCalledWith(
         jasmine.any(Number),
         jasmine.any(Number),
-        {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number), delay: jasmine.any(Number), iterations: 1},
+        {type: 'frames', frames: jasmine.any(Array), toValue: jasmine.any(Number), iterations: 1},
         jasmine.any(Function)
       );
       const animationId = nativeAnimatedModule.startAnimatingNode.mock.calls[0][0];

@@ -161,9 +161,8 @@ RCT_EXPORT_METHOD(startListeningToAnimatedNodeValue:(nonnull NSNumber *)tag)
 
 RCT_EXPORT_METHOD(stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag)
 {
-  __weak id<RCTValueAnimatedNodeObserver> valueObserver = self;
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager stopListeningToAnimatedNodeValue:tag valueObserver:valueObserver];
+    [nodesManager stopListeningToAnimatedNodeValue:tag];
   }];
 }
 
@@ -218,6 +217,8 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
     for (AnimatedOperation operation in operations) {
       operation(self->_nodesManager);
     }
+
+    [self->_nodesManager updateAnimations];
   }];
 }
 
