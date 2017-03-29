@@ -30,10 +30,12 @@ const systraceProfileMiddleware = require('./middleware/systraceProfileMiddlewar
 const unless = require('./middleware/unless');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
-function runServer(args, config, readyCallback) {
+function runServer(args, config, startedCallback, readyCallback) {
   var wsProxy = null;
   var ms = null;
   const packagerServer = getPackagerServer(args, config);
+  startedCallback(packagerServer._reporter);
+
   const inspectorProxy = new InspectorProxy();
   const app = connect()
     .use(loadRawBodyMiddleware)
@@ -67,7 +69,7 @@ function runServer(args, config, readyCallback) {
       wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
       ms = messageSocket.attachToServer(serverInstance, '/message');
       inspectorProxy.attachToServer(serverInstance, '/inspector');
-      readyCallback();
+      readyCallback(packagerServer._reporter);
     }
   );
   // Disable any kind of automatic timeout behavior for incoming
