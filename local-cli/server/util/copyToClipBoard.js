@@ -13,7 +13,7 @@ var spawn = child_process.spawn;
 var path = require('path');
 var fs  = require('fs');
 
-const xsel = path.join(__dirname, 'vendor/xsel');
+const xsel = path.join(__dirname, 'external/xsel');
 fs.chmodSync(xsel, '0755');
 /**
  * Copy the content to host system clipboard.
