@@ -362,6 +362,10 @@ void YGNodeReset(const YGNodeRef node) {
 
   const YGConfigRef config = node->config;
   memcpy(node, &gYGNodeDefaults, sizeof(YGNode));
+  if (config->useWebDefaults) {
+    node->style.flexDirection = YGFlexDirectionRow;
+    node->style.alignContent = YGAlignStretch;
+  }
   node->config = config;
 }
 
