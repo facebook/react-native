@@ -157,6 +157,14 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
             new SetSpanOperation(
                 start, end, new CustomLineHeightSpan(textShadowNode.getEffectiveLineHeight())));
       }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (textShadowNode.mLetterSpacing != Float.NaN) {
+          ops.add(new SetSpanOperation(
+                  start,
+                  end,
+                  new CustomLetterSpacingSpan(textShadowNode.mLetterSpacing)));
+        }
+      }
       ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textShadowNode.getReactTag())));
     }
   }
@@ -229,6 +237,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   }
 
   protected float mLineHeight = Float.NaN;
+  protected float mLetterSpacing = Float.NaN;
   protected boolean mIsColorSet = false;
   protected boolean mAllowFontScaling = true;
   protected int mColor;
@@ -239,6 +248,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected int mFontSize = UNSET;
   protected float mFontSizeInput = UNSET;
   protected float mLineHeightInput = UNSET;
+  protected float mLetterSpacingInput = Float.NaN;
   protected int mTextAlign = Gravity.NO_GRAVITY;
   protected int mTextBreakStrategy =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
@@ -324,12 +334,22 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
+  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = Float.NaN)
+  public void setLetterSpacing(float letterSpacing) {
+    mLetterSpacingInput = letterSpacing;
+    mLetterSpacing = mAllowFontScaling
+      ? PixelUtil.toPixelFromSP(mLetterSpacingInput)
+      : PixelUtil.toPixelFromDIP(mLetterSpacingInput);
+    markUpdated();
+  }
+
   @ReactProp(name = ViewProps.ALLOW_FONT_SCALING, defaultBoolean = true)
   public void setAllowFontScaling(boolean allowFontScaling) {
     if (allowFontScaling != mAllowFontScaling) {
       mAllowFontScaling = allowFontScaling;
       setFontSize(mFontSizeInput);
       setLineHeight(mLineHeightInput);
+      setLetterSpacing(mLetterSpacingInput);
       markUpdated();
     }
   }
