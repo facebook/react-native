@@ -95,9 +95,13 @@ const viewConfig = {
  * ```
  */
 
+// $FlowFixMe(>=0.41.0)
 const Text = React.createClass({
   propTypes: {
     /**
+     * When `numberOfLines` is set, this prop defines how text will be truncated.
+     * `numberOfLines` must be set in conjunction with this prop.
+     *
      * This can be one of the following values:
      *
      * - `head` - The line is displayed so that the end fits in the container and the missing text
@@ -109,8 +113,6 @@ const Text = React.createClass({
      * - `clip` - Lines are not drawn past the edge of the text container.
      *
      * The default is `tail`.
-     *
-     * `numberOfLines` must be set in conjunction with this prop.
      *
      * > `clip` is working only for iOS
      */
@@ -138,13 +140,13 @@ const Text = React.createClass({
     /**
      * This function is called on press.
      *
-     * e.g., `onPress={() => console.log('1st')}``
+     * e.g., `onPress={() => console.log('1st')}`
      */
     onPress: PropTypes.func,
     /**
      * This function is called on long press.
      *
-     * e.g., `onLongPress={this.increaseSize}>``
+     * e.g., `onLongPress={this.increaseSize}>`
      */
     onLongPress: PropTypes.func,
     /**
@@ -247,6 +249,7 @@ const Text = React.createClass({
         this._handlers = {
           onStartShouldSetResponder: (): bool => {
             const shouldSetFromProps = this.props.onStartShouldSetResponder &&
+                // $FlowFixMe(>=0.41.0)
                 this.props.onStartShouldSetResponder();
             const setResponder = shouldSetFromProps || this._hasPressHandler();
             if (setResponder && !this.touchableHandleActivePressIn) {
@@ -287,33 +290,44 @@ const Text = React.createClass({
                 return this.props.pressRetentionOffset || PRESS_RECT_OFFSET;
               };
             }
+            // $FlowFixMe(>=0.41.0)
             return setResponder;
           },
           onResponderGrant: function(e: SyntheticEvent, dispatchID: string) {
+            // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderGrant(e, dispatchID);
             this.props.onResponderGrant &&
+              // $FlowFixMe(>=0.41.0)
               this.props.onResponderGrant.apply(this, arguments);
           }.bind(this),
           onResponderMove: function(e: SyntheticEvent) {
+            // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderMove(e);
             this.props.onResponderMove &&
+              // $FlowFixMe(>=0.41.0)
               this.props.onResponderMove.apply(this, arguments);
           }.bind(this),
           onResponderRelease: function(e: SyntheticEvent) {
+            // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderRelease(e);
             this.props.onResponderRelease &&
+              // $FlowFixMe(>=0.41.0)
               this.props.onResponderRelease.apply(this, arguments);
           }.bind(this),
           onResponderTerminate: function(e: SyntheticEvent) {
+            // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderTerminate(e);
             this.props.onResponderTerminate &&
+              // $FlowFixMe(>=0.41.0)
               this.props.onResponderTerminate.apply(this, arguments);
           }.bind(this),
           onResponderTerminationRequest: function(): bool {
             // Allow touchable or props.onResponderTerminationRequest to deny
             // the request
+            // $FlowFixMe(>=0.41.0)
             var allowTermination = this.touchableHandleResponderTerminationRequest();
             if (allowTermination && this.props.onResponderTerminationRequest) {
+              // $FlowFixMe(>=0.41.0)
               allowTermination = this.props.onResponderTerminationRequest.apply(this, arguments);
             }
             return allowTermination;

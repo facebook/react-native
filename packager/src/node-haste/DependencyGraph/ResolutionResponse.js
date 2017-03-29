@@ -11,9 +11,8 @@
 
 'use strict';
 
-import Module from '../Module';
-
 import type {Options as TransformOptions} from '../../JSTransformer/worker/worker';
+import type Module from '../Module';
 
 const NO_OPTIONS = {};
 

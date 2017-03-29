@@ -51,6 +51,28 @@ var QuickPerformanceLogger = {
     }
   },
 
+  markerTag(markerId, tag, opts) {
+    if (typeof markerId !== 'number' || typeof tag !== 'string') {
+      return;
+    }
+    if (global.nativeQPLMarkerTag) {
+      opts = fixOpts(opts);
+      global.nativeQPLMarkerTag(markerId, opts.instanceKey, tag);
+    }
+  },
+
+  markerAnnotate(markerId, annotationKey, annotationValue, opts) {
+    if (typeof markerId !== 'number' ||
+        typeof annotationKey !== 'string' ||
+        typeof annotationValue !== 'string') {
+      return;
+    }
+    if (global.nativeQPLMarkerAnnotate) {
+      opts = fixOpts(opts);
+      global.nativeQPLMarkerAnnotate(markerId, opts.instanceKey, annotationKey, annotationValue);
+    }
+  },
+
   markerCancel(markerId, opts) {
     if (typeof markerId !== 'number') {
       return;

@@ -186,6 +186,7 @@ class WindowedListView extends React.Component {
   _viewableRows: Array<number> = [];
   _cellsInProgress: Set<string> = new Set();
   _scrollRef: ?ScrollView;
+  _viewabilityHelper: ViewabilityHelper;
 
   static defaultProps = {
     initialNumToRender: 10,
@@ -207,6 +208,9 @@ class WindowedListView extends React.Component {
       () => this._computeRowsToRender(this.props),
       this.props.recomputeRowsBatchingPeriod,
     );
+    this._viewabilityHelper = new ViewabilityHelper({
+      viewAreaCoveragePercentThreshold: this.props.viewablePercentThreshold,
+    });
     this.state = {
       firstRow: 0,
       lastRow: Math.min(this.props.data.length, this.props.initialNumToRender) - 1,
@@ -257,6 +261,10 @@ class WindowedListView extends React.Component {
   _onMomentumScrollEnd = (e: Object) => {
     this._onScroll(e);
   };
+  _getFrameMetrics = (index: number): ?{length: number, offset: number} => {
+    const frame = this._rowFrames[this.props.data[index].rowKey];
+    return frame && {length: frame.height, offset: frame.y};
+  }
   _onScroll = (e: Object) => {
     const newScrollY = e.nativeEvent.contentOffset.y;
     this._isScrolling = this._scrollOffsetY !== newScrollY;
@@ -268,12 +276,11 @@ class WindowedListView extends React.Component {
       this._computeRowsToRenderBatcher.schedule();
     }
     if (this.props.onViewableRowsChanged && Object.keys(this._rowFrames).length) {
-      const viewableRows = ViewabilityHelper.computeViewableRows(
-        this.props.viewablePercentThreshold,
-        this._rowFrames,
-        this.props.data,
+      const viewableRows = this._viewabilityHelper.computeViewableItems(
+        this.props.data.length,
         e.nativeEvent.contentOffset.y,
-        e.nativeEvent.layoutMeasurement.height
+        e.nativeEvent.layoutMeasurement.height,
+        this._getFrameMetrics,
       );
       if (deepDiffer(viewableRows, this._viewableRows)) {
         this._viewableRows = viewableRows;

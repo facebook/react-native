@@ -79,15 +79,23 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
     Set<? extends Element> reactModuleListElements = roundEnv.getElementsAnnotatedWith(
       ReactModuleList.class);
     for (Element reactModuleListElement : reactModuleListElements) {
+      if (!(reactModuleListElement instanceof TypeElement)) {
+        continue;
+      }
+
       TypeElement typeElement = (TypeElement) reactModuleListElement;
+      ReactModuleList reactModuleList = typeElement.getAnnotation(ReactModuleList.class);
+      if (reactModuleList == null) {
+        continue;
+      }
+
       ClassName className = ClassName.get(typeElement);
       String packageName = ClassName.get(typeElement).packageName();
       String fileName = className.simpleName();
 
-      ReactModuleList reactModuleList = typeElement.getAnnotation(ReactModuleList.class);
       List<String> nativeModules = new ArrayList<>();
       try {
-        reactModuleList.javaModules(); // throws MirroredTypesException
+        reactModuleList.nativeModules(); // throws MirroredTypesException
       } catch (MirroredTypesException mirroredTypesException) {
         List<? extends TypeMirror> typeMirrors = mirroredTypesException.getTypeMirrors();
         for (TypeMirror typeMirror : typeMirrors) {

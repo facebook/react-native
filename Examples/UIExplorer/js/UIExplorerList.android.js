@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule UIExplorerList
  */
 'use strict';
 
@@ -35,6 +36,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'ButtonExample',
     module: require('./ButtonExample'),
+  },
+  {
+    key: 'FlatListExample',
+    module: require('./FlatListExample'),
   },
   {
     key: 'ImageExample',
@@ -57,6 +62,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ModalExample'),
   },
   {
+    key: 'MultiColumnExample',
+    module: require('./MultiColumnExample'),
+  },
+  {
     key: 'PickerExample',
     module: require('./PickerExample'),
   },
@@ -71,6 +80,10 @@ const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'ScrollViewSimpleExample',
     module: require('./ScrollViewSimpleExample'),
+  },
+  {
+    key: 'SectionListExample',
+    module: require('./SectionListExample'),
   },
   {
     key: 'SliderExample',
@@ -178,10 +191,6 @@ const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'NativeAnimationsExample',
     module: require('./NativeAnimationsExample'),
-  },
-  {
-    key: 'NavigationExperimentalExample',
-    module: require('./NavigationExperimental/NavigationExperimentalExample'),
   },
   {
     key: 'NetInfoExample',

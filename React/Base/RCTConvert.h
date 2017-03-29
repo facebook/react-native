@@ -112,12 +112,14 @@ typedef id NSPropertyList;
 
 typedef BOOL css_backface_visibility_t;
 + (YGOverflow)YGOverflow:(id)json;
++ (YGDisplay)YGDisplay:(id)json;
 + (css_backface_visibility_t)css_backface_visibility_t:(id)json;
 + (YGFlexDirection)YGFlexDirection:(id)json;
 + (YGJustify)YGJustify:(id)json;
 + (YGAlign)YGAlign:(id)json;
 + (YGPositionType)YGPositionType:(id)json;
 + (YGWrap)YGWrap:(id)json;
++ (YGDirection)YGDirection:(id)json;
 
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;

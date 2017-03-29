@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Executor.h"
+#include <cxxreact/Executor.h>
 
 namespace facebook {
 namespace react {
@@ -47,7 +47,7 @@ private:
 namespace std {
   template<>
   struct hash<facebook::react::ExecutorToken> {
-    const size_t operator()(const facebook::react::ExecutorToken& token) const {
+    size_t operator()(const facebook::react::ExecutorToken& token) const {
       return (size_t) token.getPlatformExecutorToken().get();
     }
   };

@@ -4,8 +4,9 @@ title: Running On Device
 layout: docs
 category: Guides
 permalink: docs/running-on-device.html
-next: javascript-environment
-previous: testing
+banner: ejected
+next: upgrading
+previous: integration-with-existing-apps
 ---
 
 It's always a good idea to test your app on an actual device before releasing it to your users. This document will guide you through the necessary steps to run your React Native app on a device.
@@ -55,11 +56,11 @@ Installing an app on an iOS device requires a Mac, an Apple ID, and a USB cable.
 
 <block class="mac ios" />
 
-Connect your device to your Mac via USB, then open Xcode. In the project navigator, choose your device from the Product > Destination toolbar menu. Xcode will then register your device for development.
+Connect your device to your Mac using a USB cable. Navigate to the `ios` folder in your project, then open the `.xcodeproj` file within it using Xcode. Open the "Product" menu from the menubar, then go to "Destination". Look for and select your device from the list. Xcode will then register your device for development.
 
-> If you run into any issues, please take a look at Apple's [Launching Your App on a Device docs](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/LaunchingYourApponDevices/LaunchingYourApponDevices.html#//apple_ref/doc/uid/TP40012582-CH27-SW4).
+If everything is set up correctly, your device will be listed as the build target in the Xcode toolbar. You can now press the **Build and run** button or select "Run" from the "Product" menu. Your app will launch on your device shortly.
 
-Finally, select your phone as the build target and press **Build and run**.
+> If you run into any issues, please take a look at Apple's [Launching Your App on a Device](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/LaunchingYourApponDevices/LaunchingYourApponDevices.html#//apple_ref/doc/uid/TP40012582-CH27-SW4) docs.
 
 <block class="mac windows linux android" />
 
@@ -145,11 +146,11 @@ Type the following in your command prompt to install and launch your app on the 
 $ react-native run-android
 ```
 
-> If you get a "bridge configuration isn't available" error, see [Using adb reverse](#using-adb-reverse).
+> If you get a "bridge configuration isn't available" error, see [Using adb reverse](docs/running-on-device.html#method-1-using-adb-reverse-recommended).
 
 > Hint
 >
-> You can also use the `React Native CLI` to generate and run a `Release` build (e.g. `react-native run-android --configuration Release`).
+> You can also use the `React Native CLI` to generate and run a `Release` build (e.g. `react-native run-android --variant=release`).
 
 <block class="mac windows linux android ios" />
 

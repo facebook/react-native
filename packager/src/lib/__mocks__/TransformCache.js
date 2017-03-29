@@ -22,9 +22,9 @@ const mock = {
   },
 };
 
-const transformCacheKeyOf = (props) =>
+const transformCacheKeyOf = props =>
   props.filePath + '-' + imurmurhash(props.sourceCode)
-    .hash(props.transformCacheKey)
+    .hash(props.getTransformCacheKey(props.sourceCode, props.filePath, props.transformOptions))
     .hash(jsonStableStringify(props.transformOptions || {}))
     .result().toString(16);
 
