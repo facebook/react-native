@@ -1811,6 +1811,7 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
   node->layout.cachedLayout.widthMeasureMode = YGMeasureModeExactly;
   node->layout.cachedLayout.computedWidth = 0;
   node->layout.cachedLayout.computedHeight = 0;
+  node->hasNewLayout = true;
   const uint32_t childCount = YGNodeGetChildCount(node);
   for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeListGet(node->children, i);
