@@ -353,7 +353,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
             try {
               // If JS wants progress updates during the download, and it requested a text response,
               // periodically send response data updates to JS.
-              if (useIncrementalUpdates && responseType.equals("text")) {
+              if (useIncrementalUpdates && responseType != null && responseType.equals("text")) {
                 readWithProgress(eventEmitter, requestId, responseBody);
                 ResponseUtil.onRequestSuccess(eventEmitter, requestId);
                 return;
