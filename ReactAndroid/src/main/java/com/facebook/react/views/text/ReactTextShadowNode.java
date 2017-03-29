@@ -180,6 +180,14 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 end,
                 new CustomLineHeightSpan(textShadowNode.getEffectiveLineHeight())));
       }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (textShadowNode.mLetterSpacing != 0) {
+          ops.add(new SetSpanOperation(
+                  start,
+                  end,
+                  new CustomLetterSpacingSpan(textShadowNode.mLetterSpacing)));
+        }
+      }
       ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textShadowNode.getReactTag())));
     }
   }
@@ -329,7 +337,26 @@ public class ReactTextShadowNode extends LayoutShadowNode {
         100 * (fontWeightString.charAt(0) - '0') : -1;
   }
 
+  /**
+   * {@link Android TextView#setLetterSpacing} expects the letter spacing value
+   * in 'EM' unit, where one is defined by the width of the letter 'M'.
+   * Typical values for slight expansion will be around 0.05.
+   * Negative values will tighten text. So we use NaN as not defined value.
+   *
+   * This method calculates an 'EM' <strong>approach</strong> based on the input
+   * and the calculated font size. With common fonts this calculated value
+   * renders a similar spacing and layout to iOS.
+   */
+  private static float calculateLetterSpacing(float letterSpacingInput, int fontSize) {
+    if (Float.isNaN(letterSpacingInput) || letterSpacingInput == 0) {
+      return 0;
+    } else {
+      return letterSpacingInput / fontSize * 2f;
+    }
+  }
+
   private float mLineHeight = Float.NaN;
+  protected float mLetterSpacing = 0;
   private boolean mIsColorSet = false;
   private boolean mAllowFontScaling = true;
   private int mColor;
@@ -340,6 +367,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   protected int mFontSize = UNSET;
   protected float mFontSizeInput = UNSET;
   protected float mLineHeightInput = UNSET;
+  protected float mLetterSpacingInput = Float.NaN;
   protected int mTextAlign = Gravity.NO_GRAVITY;
   protected int mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
       0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
@@ -454,6 +482,13 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
+  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = Float.NaN)
+  public void setLetterSpacing(float letterSpacing) {
+    mLetterSpacingInput = letterSpacing;
+    mLetterSpacing = calculateLetterSpacing(letterSpacing, mFontSize);
+    markUpdated();
+  }
+
   @ReactProp(name = ViewProps.ALLOW_FONT_SCALING, defaultBoolean = true)
   public void setAllowFontScaling(boolean allowFontScaling) {
     if (allowFontScaling != mAllowFontScaling) {
@@ -491,6 +526,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
         : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
     }
     mFontSize = (int) fontSize;
+    mLetterSpacing = calculateLetterSpacing(mLetterSpacingInput, mFontSize);
     markUpdated();
   }
 
@@ -658,6 +694,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
           getPadding(Spacing.TOP),
           getPadding(Spacing.END),
           getPadding(Spacing.BOTTOM),
+          mLetterSpacing,
           getTextAlign(),
           mTextBreakStrategy
         );
