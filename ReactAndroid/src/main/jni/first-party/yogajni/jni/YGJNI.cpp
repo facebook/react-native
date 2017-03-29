@@ -24,54 +24,59 @@ static void YGTransferLayoutDirection(YGNodeRef node, alias_ref<jobject> javaNod
 }
 
 static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
-  if (auto obj = YGNodeJobject(root)->lockLocal()) {
-    static auto widthField = obj->getClass()->getField<jfloat>("mWidth");
-    static auto heightField = obj->getClass()->getField<jfloat>("mHeight");
-    static auto leftField = obj->getClass()->getField<jfloat>("mLeft");
-    static auto topField = obj->getClass()->getField<jfloat>("mTop");
+  if(YGNodeGetHasNewLayout(root)){
+    if (auto obj = YGNodeJobject(root)->lockLocal()) {
+      static auto widthField = obj->getClass()->getField<jfloat>("mWidth");
+      static auto heightField = obj->getClass()->getField<jfloat>("mHeight");
+      static auto leftField = obj->getClass()->getField<jfloat>("mLeft");
+      static auto topField = obj->getClass()->getField<jfloat>("mTop");
 
-    static auto marginLeftField = obj->getClass()->getField<jfloat>("mMarginLeft");
-    static auto marginTopField = obj->getClass()->getField<jfloat>("mMarginTop");
-    static auto marginRightField = obj->getClass()->getField<jfloat>("mMarginRight");
-    static auto marginBottomField = obj->getClass()->getField<jfloat>("mMarginBottom");
+      static auto marginLeftField = obj->getClass()->getField<jfloat>("mMarginLeft");
+      static auto marginTopField = obj->getClass()->getField<jfloat>("mMarginTop");
+      static auto marginRightField = obj->getClass()->getField<jfloat>("mMarginRight");
+      static auto marginBottomField = obj->getClass()->getField<jfloat>("mMarginBottom");
 
-    static auto paddingLeftField = obj->getClass()->getField<jfloat>("mPaddingLeft");
-    static auto paddingTopField = obj->getClass()->getField<jfloat>("mPaddingTop");
-    static auto paddingRightField = obj->getClass()->getField<jfloat>("mPaddingRight");
-    static auto paddingBottomField = obj->getClass()->getField<jfloat>("mPaddingBottom");
+      static auto paddingLeftField = obj->getClass()->getField<jfloat>("mPaddingLeft");
+      static auto paddingTopField = obj->getClass()->getField<jfloat>("mPaddingTop");
+      static auto paddingRightField = obj->getClass()->getField<jfloat>("mPaddingRight");
+      static auto paddingBottomField = obj->getClass()->getField<jfloat>("mPaddingBottom");
 
-    static auto borderLeftField = obj->getClass()->getField<jfloat>("mBorderLeft");
-    static auto borderTopField = obj->getClass()->getField<jfloat>("mBorderTop");
-    static auto borderRightField = obj->getClass()->getField<jfloat>("mBorderRight");
-    static auto borderBottomField = obj->getClass()->getField<jfloat>("mBorderBottom");
+      static auto borderLeftField = obj->getClass()->getField<jfloat>("mBorderLeft");
+      static auto borderTopField = obj->getClass()->getField<jfloat>("mBorderTop");
+      static auto borderRightField = obj->getClass()->getField<jfloat>("mBorderRight");
+      static auto borderBottomField = obj->getClass()->getField<jfloat>("mBorderBottom");
 
-    obj->setFieldValue(widthField, YGNodeLayoutGetWidth(root));
-    obj->setFieldValue(heightField, YGNodeLayoutGetHeight(root));
-    obj->setFieldValue(leftField, YGNodeLayoutGetLeft(root));
-    obj->setFieldValue(topField, YGNodeLayoutGetTop(root));
+      static auto hasNewLayoutField = obj->getClass()->getField<jboolean>("mHasNewLayout");
 
-    obj->setFieldValue(marginLeftField, YGNodeLayoutGetMargin(root, YGEdgeLeft));
-    obj->setFieldValue(marginTopField, YGNodeLayoutGetMargin(root, YGEdgeTop));
-    obj->setFieldValue(marginRightField, YGNodeLayoutGetMargin(root, YGEdgeRight));
-    obj->setFieldValue(marginBottomField, YGNodeLayoutGetMargin(root, YGEdgeBottom));
+      obj->setFieldValue(widthField, YGNodeLayoutGetWidth(root));
+      obj->setFieldValue(heightField, YGNodeLayoutGetHeight(root));
+      obj->setFieldValue(leftField, YGNodeLayoutGetLeft(root));
+      obj->setFieldValue(topField, YGNodeLayoutGetTop(root));
 
-    obj->setFieldValue(paddingLeftField, YGNodeLayoutGetPadding(root, YGEdgeLeft));
-    obj->setFieldValue(paddingTopField, YGNodeLayoutGetPadding(root, YGEdgeTop));
-    obj->setFieldValue(paddingRightField, YGNodeLayoutGetPadding(root, YGEdgeRight));
-    obj->setFieldValue(paddingBottomField, YGNodeLayoutGetPadding(root, YGEdgeBottom));
+      obj->setFieldValue(marginLeftField, YGNodeLayoutGetMargin(root, YGEdgeLeft));
+      obj->setFieldValue(marginTopField, YGNodeLayoutGetMargin(root, YGEdgeTop));
+      obj->setFieldValue(marginRightField, YGNodeLayoutGetMargin(root, YGEdgeRight));
+      obj->setFieldValue(marginBottomField, YGNodeLayoutGetMargin(root, YGEdgeBottom));
 
-    obj->setFieldValue(borderLeftField, YGNodeLayoutGetBorder(root, YGEdgeLeft));
-    obj->setFieldValue(borderTopField, YGNodeLayoutGetBorder(root, YGEdgeTop));
-    obj->setFieldValue(borderRightField, YGNodeLayoutGetBorder(root, YGEdgeRight));
-    obj->setFieldValue(borderBottomField, YGNodeLayoutGetBorder(root, YGEdgeBottom));
+      obj->setFieldValue(paddingLeftField, YGNodeLayoutGetPadding(root, YGEdgeLeft));
+      obj->setFieldValue(paddingTopField, YGNodeLayoutGetPadding(root, YGEdgeTop));
+      obj->setFieldValue(paddingRightField, YGNodeLayoutGetPadding(root, YGEdgeRight));
+      obj->setFieldValue(paddingBottomField, YGNodeLayoutGetPadding(root, YGEdgeBottom));
 
-    YGTransferLayoutDirection(root, obj);
+      obj->setFieldValue(borderLeftField, YGNodeLayoutGetBorder(root, YGEdgeLeft));
+      obj->setFieldValue(borderTopField, YGNodeLayoutGetBorder(root, YGEdgeTop));
+      obj->setFieldValue(borderRightField, YGNodeLayoutGetBorder(root, YGEdgeRight));
+      obj->setFieldValue(borderBottomField, YGNodeLayoutGetBorder(root, YGEdgeBottom));
 
-    for (uint32_t i = 0; i < YGNodeGetChildCount(root); i++) {
-      YGTransferLayoutOutputsRecursive(YGNodeGetChild(root, i));
+      obj->setFieldValue<jboolean>(hasNewLayoutField, true);
+      YGTransferLayoutDirection(root, obj);
+      YGNodeSetHasNewLayout(root, false);
+      for (uint32_t i = 0; i < YGNodeGetChildCount(root); i++) {
+        YGTransferLayoutOutputsRecursive(YGNodeGetChild(root, i));
+      }
+    } else {
+      YGLog(YGLogLevelError, "Java YGNode was GCed during layout calculation\n");
     }
-  } else {
-    YGLog(YGLogLevelError, "Java YGNode was GCed during layout calculation\n");
   }
 }
 
@@ -242,14 +247,6 @@ void jni_YGNodeSetHasBaselineFunc(alias_ref<jobject>,
                         hasBaselineFunc ? YGJNIBaselineFunc : NULL);
 }
 
-jboolean jni_YGNodeHasNewLayout(alias_ref<jobject>, jlong nativePointer) {
-  return (jboolean) YGNodeGetHasNewLayout(_jlong2YGNodeRef(nativePointer));
-}
-
-void jni_YGNodeMarkLayoutSeen(alias_ref<jobject>, jlong nativePointer) {
-  YGNodeSetHasNewLayout(_jlong2YGNodeRef(nativePointer), false);
-}
-
 void jni_YGNodeCopyStyle(alias_ref<jobject>, jlong dstNativePointer, jlong srcNativePointer) {
   YGNodeCopyStyle(_jlong2YGNodeRef(dstNativePointer), _jlong2YGNodeRef(srcNativePointer));
 }
@@ -403,10 +400,8 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGNodeInsertChild),
                         YGMakeNativeMethod(jni_YGNodeRemoveChild),
                         YGMakeNativeMethod(jni_YGNodeCalculateLayout),
-                        YGMakeNativeMethod(jni_YGNodeHasNewLayout),
                         YGMakeNativeMethod(jni_YGNodeMarkDirty),
                         YGMakeNativeMethod(jni_YGNodeIsDirty),
-                        YGMakeNativeMethod(jni_YGNodeMarkLayoutSeen),
                         YGMakeNativeMethod(jni_YGNodeSetHasMeasureFunc),
                         YGMakeNativeMethod(jni_YGNodeSetHasBaselineFunc),
                         YGMakeNativeMethod(jni_YGNodeCopyStyle),
