@@ -81,6 +81,8 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private float mBorderBottom = 0;
   @DoNotStrip
   private int mLayoutDirection = 0;
+  @DoNotStrip
+  private boolean mHasNewLayout = true;
 
   private native long jni_YGNodeNew();
   public YogaNode() {
@@ -115,6 +117,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     mHasSetMargin = false;
     mHasSetBorder = false;
     mHasSetPosition = false;
+    mHasNewLayout = true;
 
     mWidth = YogaConstants.UNDEFINED;
     mHeight = YogaConstants.UNDEFINED;
@@ -180,10 +183,9 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     jni_YGNodeCalculateLayout(mNativePointer, width, height);
   }
 
-  private native boolean jni_YGNodeHasNewLayout(long nativePointer);
   @Override
   public boolean hasNewLayout() {
-    return jni_YGNodeHasNewLayout(mNativePointer);
+    return mHasNewLayout;
   }
 
   private native void jni_YGNodeMarkDirty(long nativePointer);
@@ -198,16 +200,15 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     return jni_YGNodeIsDirty(mNativePointer);
   }
 
-  private native void jni_YGNodeMarkLayoutSeen(long nativePointer);
-  @Override
-  public void markLayoutSeen() {
-    jni_YGNodeMarkLayoutSeen(mNativePointer);
-  }
-
   private native void jni_YGNodeCopyStyle(long dstNativePointer, long srcNativePointer);
   @Override
   public void copyStyle(YogaNode srcNode) {
     jni_YGNodeCopyStyle(mNativePointer, srcNode.mNativePointer);
+  }
+
+  @Override
+  public void markLayoutSeen() {
+    mHasNewLayout = false;
   }
 
   private native int jni_YGNodeStyleGetDirection(long nativePointer);
