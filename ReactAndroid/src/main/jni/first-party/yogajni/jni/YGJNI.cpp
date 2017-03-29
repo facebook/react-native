@@ -381,6 +381,11 @@ void jni_YGConfigSetExperimentalFeatureEnabled(alias_ref<jobject>, jlong nativeP
   YGConfigSetExperimentalFeatureEnabled(config, static_cast<YGExperimentalFeature>(feature), enabled);
 }
 
+void jni_YGConfigSetUseWebDefaults(alias_ref<jobject>, jlong nativePointer, jboolean useWebDefaults) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetUseWebDefaults(config, useWebDefaults);
+}
+
 jint jni_YGNodeGetInstanceCount(alias_ref<jclass> clazz) {
   return YGNodeGetInstanceCount();
 }
@@ -476,6 +481,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGConfigNew),
                         YGMakeNativeMethod(jni_YGConfigFree),
                         YGMakeNativeMethod(jni_YGConfigSetExperimentalFeatureEnabled),
+                        YGMakeNativeMethod(jni_YGConfigSetUseWebDefaults),
                     });
   });
 }

@@ -149,6 +149,10 @@ var NoopRenderer = ReactFiberReconciler({
     parentInstance.children.splice(index, 1);
   },
 
+  shouldDeprioritizeSubtree(type: string, props: Props): boolean {
+    return false;
+  },
+
   scheduleAnimationCallback(callback) {
     if (scheduledAnimationCallback) {
       throw new Error(

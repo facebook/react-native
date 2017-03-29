@@ -15,7 +15,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -32,6 +31,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
@@ -396,7 +396,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     private void emitUpdateDimensionsEvent() {
       mReactInstanceManager
           .getCurrentReactContext()
-          .getNativeModule(UIManagerModule.class)
+          .getNativeModule(DeviceInfoModule.class)
           .emitUpdateDimensionsEvent();
     }
 

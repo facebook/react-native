@@ -17,6 +17,13 @@ const path = require('path');
 
 import type Cache from './Cache';
 
+type PackageContent = {
+  name: string,
+  'react-native': mixed,
+  browser: mixed,
+  main: ?string,
+};
+
 class Package {
 
   path: string;
@@ -24,12 +31,7 @@ class Package {
   type: string;
   _cache: Cache;
 
-  _reading: Promise<{
-    name: string,
-    'react-native': mixed,
-    browser: mixed,
-    main: ?string,
-  }>;
+  _content: ?PackageContent;
 
   constructor({file, cache}: {
     file: string,
@@ -39,39 +41,39 @@ class Package {
     this.root = path.dirname(this.path);
     this.type = 'Package';
     this._cache = cache;
+    this._content = null;
   }
 
   getMain() {
-    return this.read().then(json => {
-      var replacements = getReplacements(json);
-      if (typeof replacements === 'string') {
-        return path.join(this.root, replacements);
-      }
+    const json = this.read();
+    var replacements = getReplacements(json);
+    if (typeof replacements === 'string') {
+      return path.join(this.root, replacements);
+    }
 
-      let main = json.main || 'index';
+    let main = json.main || 'index';
 
-      if (replacements && typeof replacements === 'object') {
-        main = replacements[main] ||
-          replacements[main + '.js'] ||
-          replacements[main + '.json'] ||
-          replacements[main.replace(/(\.js|\.json)$/, '')] ||
-          main;
-      }
+    if (replacements && typeof replacements === 'object') {
+      main = replacements[main] ||
+        replacements[main + '.js'] ||
+        replacements[main + '.json'] ||
+        replacements[main.replace(/(\.js|\.json)$/, '')] ||
+        main;
+    }
 
-      /* $FlowFixMe: `getReplacements` doesn't validate the return value. */
-      return path.join(this.root, main);
-    });
+    /* $FlowFixMe: `getReplacements` doesn't validate the return value. */
+    return path.join(this.root, main);
   }
 
   isHaste() {
     return this._cache.get(this.path, 'package-haste', () =>
-      this.read().then(json => !!json.name)
+      Promise.resolve().then(() => !!this.read().name)
     );
   }
 
   getName(): Promise<string> {
     return this._cache.get(this.path, 'package-name', () =>
-      this.read().then(json => json.name)
+      Promise.resolve().then(() => this.read().name)
     );
   }
 
@@ -79,66 +81,63 @@ class Package {
     this._cache.invalidate(this.path);
   }
 
-  redirectRequire(name: string) {
-    return this.read().then(json => {
-      var replacements = getReplacements(json);
+  redirectRequire(name: string): string | false {
+    const json = this.read();
+    const replacements = getReplacements(json);
 
-      if (!replacements || typeof replacements !== 'object') {
-        return name;
-      }
-
-      if (!isAbsolutePath(name)) {
-        const replacement = replacements[name];
-        // support exclude with "someDependency": false
-        return replacement === false
-          ? false
-          : replacement || name;
-      }
-
-      let relPath = './' + path.relative(this.root, name);
-      if (path.sep !== '/') {
-        relPath = relPath.replace(new RegExp('\\' + path.sep, 'g'), '/');
-      }
-
-      let redirect = replacements[relPath];
-
-      // false is a valid value
-      if (redirect == null) {
-        redirect = replacements[relPath + '.js'];
-        if (redirect == null) {
-          redirect = replacements[relPath + '.json'];
-        }
-      }
-
-      // support exclude with "./someFile": false
-      if (redirect === false) {
-        return false;
-      }
-
-      if (redirect) {
-        return path.join(
-          this.root,
-          /* $FlowFixMe: `getReplacements` doesn't validate the return value. */
-          redirect
-        );
-      }
-
+    if (!replacements || typeof replacements !== 'object') {
       return name;
-    });
-  }
+    }
 
-  read() {
-    if (!this._reading) {
-      this._reading = new Promise(
-        resolve => resolve(JSON.parse(fs.readFileSync(this.path, 'utf8')))
+    if (!isAbsolutePath(name)) {
+      const replacement = replacements[name];
+      // support exclude with "someDependency": false
+      return replacement === false
+        ? false
+        /* $FlowFixMe: type of replacements is not being validated */
+        : replacement || name;
+    }
+
+    let relPath = './' + path.relative(this.root, name);
+    if (path.sep !== '/') {
+      relPath = relPath.replace(new RegExp('\\' + path.sep, 'g'), '/');
+    }
+
+    let redirect = replacements[relPath];
+
+    // false is a valid value
+    if (redirect == null) {
+      redirect = replacements[relPath + '.js'];
+      if (redirect == null) {
+        redirect = replacements[relPath + '.json'];
+      }
+    }
+
+    // support exclude with "./someFile": false
+    if (redirect === false) {
+      return false;
+    }
+
+    if (redirect) {
+      return path.join(
+        this.root,
+        /* $FlowFixMe: `getReplacements` doesn't validate the return value. */
+        redirect
       );
     }
 
-    return this._reading;
+    return name;
+  }
+
+  read(): PackageContent {
+    if (this._content == null) {
+      this._content = JSON.parse(fs.readFileSync(this.path, 'utf8'));
+    }
+    return this._content;
   }
 }
 
-function getReplacements(pkg) {
+function getReplacements(pkg: PackageContent): mixed {
   let rn = pkg['react-native'];
   let browser = pkg.browser;
   if (rn == null) {

@@ -15,10 +15,14 @@ const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const React = require('React');
 const TimerMixin = require('react-timer-mixin');
 const Touchable = require('Touchable');
-const View = require('View');
 
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 const warning = require('fbjs/lib/warning');
+
+const {
+  AccessibilityComponentTypes,
+  AccessibilityTraits,
+} = require('ViewAccessibility');
 
 type Event = Object;
 
@@ -37,10 +41,12 @@ const TouchableWithoutFeedback = React.createClass({
 
   propTypes: {
     accessible: React.PropTypes.bool,
-    accessibilityComponentType: React.PropTypes.oneOf(View.AccessibilityComponentType),
+    accessibilityComponentType: React.PropTypes.oneOf(
+      AccessibilityComponentTypes
+    ),
     accessibilityTraits: React.PropTypes.oneOfType([
-      React.PropTypes.oneOf(View.AccessibilityTraits),
-      React.PropTypes.arrayOf(React.PropTypes.oneOf(View.AccessibilityTraits)),
+      React.PropTypes.oneOf(AccessibilityTraits),
+      React.PropTypes.arrayOf(React.PropTypes.oneOf(AccessibilityTraits)),
     ]),
     /**
      * If true, disable all interactions for this component.
