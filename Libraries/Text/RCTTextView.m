@@ -266,6 +266,7 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 
   _textView.textContainerInset = adjustedTextContainerInset;
   _placeholderView.textContainerInset = adjustedTextContainerInset;
+  _placeholderView.textAlignment = _textView.textAlignment;
 }
 
 - (void)updateContentSize
