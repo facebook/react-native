@@ -68,7 +68,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     return;
   }
 
-  UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+  UIInterfaceOrientation currentOrientation = [RCTSharedApplication() statusBarOrientation];
   if (currentOrientation == _lastKnownOrientation) {
     return;
   }

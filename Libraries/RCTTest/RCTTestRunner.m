@@ -120,7 +120,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     testModule.testSuffix = _testSuffix;
     testModule.view = rootView;
 
-    UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
+    UIViewController *vc = [RCTSharedApplication().delegate.window.rootViewController;
     vc.view = [UIView new];
     [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
 
