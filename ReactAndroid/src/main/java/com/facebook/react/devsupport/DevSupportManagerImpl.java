@@ -21,6 +21,7 @@ import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -93,6 +94,12 @@ public class DevSupportManagerImpl implements
     DevSupportManager,
     PackagerCommandListener,
     DevInternalSettings.Listener {
+
+  /*
+   * Adds support for Android O. See https://developer.android.com/preview/behavior-changes.html#cwt for more info
+   */
+  private static final int O_TYPE_APPLICATION_OVERLAY = 2038;
+  private static final int WINDOW_TYPE = "O".equals(Build.VERSION.CODENAME) ? O_TYPE_APPLICATION_OVERLAY : WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
 
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
@@ -322,7 +329,7 @@ public class DevSupportManagerImpl implements
           public void run() {
             if (mRedBoxDialog == null) {
               mRedBoxDialog = new RedBoxDialog(mApplicationContext, DevSupportManagerImpl.this, mRedBoxHandler);
-              mRedBoxDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+              mRedBoxDialog.getWindow().setType(WINDOW_TYPE);
             }
             if (mRedBoxDialog.isShowing()) {
               // Sometimes errors cause multiple errors to be thrown in JS in quick succession. Only
@@ -464,7 +471,7 @@ public class DevSupportManagerImpl implements
               }
             })
             .create();
-    mDevOptionsDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+    mDevOptionsDialog.getWindow().setType(WINDOW_TYPE);
     mDevOptionsDialog.show();
   }
 
