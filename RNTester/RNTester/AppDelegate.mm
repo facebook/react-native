@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 
 #import <React/JSCExecutorFactory.h>
+#import <React/RCTAsyncLocalStorage.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -182,5 +183,12 @@
 }
 
 #endif
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(__unused RCTBridge *)bridge
+{
+  NSString *documentDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+  NSString *storageDirectory = [documentDirectory stringByAppendingPathComponent:@"RCTAsyncLocalStorage_V1"];
+  return @[[[RCTAsyncLocalStorage alloc] initWithStorageDirectory:storageDirectory]];
+}
 
 @end

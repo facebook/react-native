@@ -66,31 +66,6 @@ static NSString *RCTReadFile(NSString *filePath, NSString *key, NSDictionary **e
   return nil;
 }
 
-static NSString *RCTGetStorageDirectory()
-{
-  static NSString *storageDirectory = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-#if TARGET_OS_TV
-    storageDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
-#else
-    storageDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-#endif
-    storageDirectory = [storageDirectory stringByAppendingPathComponent:RCTStorageDirectory];
-  });
-  return storageDirectory;
-}
-
-static NSString *RCTGetManifestFilePath()
-{
-  static NSString *manifestFilePath = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    manifestFilePath = [RCTGetStorageDirectory() stringByAppendingPathComponent:RCTManifestFileName];
-  });
-  return manifestFilePath;
-}
-
 // Only merges objects - all other types are just clobbered (including arrays)
 static BOOL RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *source)
 {
@@ -119,44 +94,34 @@ static BOOL RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *so
   return modified;
 }
 
-static dispatch_queue_t RCTGetMethodQueue()
-{
-  // We want all instances to share the same queue since they will be reading/writing the same files.
-  static dispatch_queue_t queue;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    queue = dispatch_queue_create("com.facebook.react.AsyncLocalStorageQueue", DISPATCH_QUEUE_SERIAL);
-  });
-  return queue;
-}
+// NOTE(nikki93): We replace with scoped implementations of:
+//   RCTGetStorageDirectory()
+//   RCTGetManifestFilePath()
+//   RCTGetMethodQueue()
+//   RCTGetCache()
+//   RCTDeleteStorageDirectory()
 
-static NSCache *RCTGetCache()
-{
-  // We want all instances to share the same cache since they will be reading/writing the same files.
-  static NSCache *cache;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    cache = [NSCache new];
-    cache.totalCostLimit = 2 * 1024 * 1024; // 2MB
+#define RCTGetStorageDirectory() _storageDirectory
+#define RCTGetManifestFilePath() _manifestFilePath
+#define RCTGetMethodQueue() self.methodQueue
+#define RCTGetCache() self.cache
 
-    // Clear cache in the event of a memory warning
-    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification object:nil queue:nil usingBlock:^(__unused NSNotification *note) {
-      [cache removeAllObjects];
-    }];
-  });
-  return cache;
-}
-
-static BOOL RCTHasCreatedStorageDirectory = NO;
-static NSDictionary *RCTDeleteStorageDirectory()
+static NSDictionary *RCTDeleteStorageDirectory(NSString *storageDirectory)
 {
   NSError *error;
-  [[NSFileManager defaultManager] removeItemAtPath:RCTGetStorageDirectory() error:&error];
-  RCTHasCreatedStorageDirectory = NO;
+  [[NSFileManager defaultManager] removeItemAtPath:storageDirectory error:&error];
   return error ? RCTMakeError(@"Failed to delete storage directory.", error, nil) : nil;
 }
+#define RCTDeleteStorageDirectory() RCTDeleteStorageDirectory(_storageDirectory)
 
 #pragma mark - RCTAsyncLocalStorage
+
+@interface RCTAsyncLocalStorage ()
+
+@property (nonatomic, copy) NSString *storageDirectory;
+@property (nonatomic, copy) NSString *manifestFilePath;
+
+@end
 
 @implementation RCTAsyncLocalStorage
 {
@@ -165,27 +130,42 @@ static NSDictionary *RCTDeleteStorageDirectory()
   // in separate files (as opposed to nil values which don't exist).  The manifest is read off disk at startup, and
   // written to disk after all mutations.
   NSMutableDictionary<NSString *, NSString *> *_manifest;
+  NSCache *_cache;
+  dispatch_once_t _cacheOnceToken;
 }
 
-RCT_EXPORT_MODULE()
-
-- (dispatch_queue_t)methodQueue
+// NOTE(nikki93): Prevents the module from being auto-initialized and allows us to pass our own `storageDirectory`
++ (NSString *)moduleName { return @"RCTAsyncLocalStorage"; }
+- (instancetype)initWithStorageDirectory:(NSString *)storageDirectory
 {
-  return RCTGetMethodQueue();
+  if ((self = [super init])) {
+    _storageDirectory = storageDirectory;
+    _manifestFilePath = [RCTGetStorageDirectory() stringByAppendingPathComponent:RCTManifestFileName];
+  }
+  return self;
+}
+
+// NOTE(nikki93): Use the default `methodQueue` since instances have different storage directories
+@synthesize methodQueue = _methodQueue;
+
+- (NSCache *)cache
+{
+  dispatch_once(&_cacheOnceToken, ^{
+    _cache = [NSCache new];
+    _cache.totalCostLimit = 2 * 1024 * 1024; // 2MB
+
+    // Clear cache in the event of a memory warning
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidReceiveMemoryWarningNotification object:nil queue:nil usingBlock:^(__unused NSNotification *note) {
+      [_cache removeAllObjects];
+    }];
+  });
+  return _cache;
 }
 
 - (void)clearAllData
 {
   dispatch_async(RCTGetMethodQueue(), ^{
     [self->_manifest removeAllObjects];
-    [RCTGetCache() removeAllObjects];
-    RCTDeleteStorageDirectory();
-  });
-}
-
-+ (void)clearAllData
-{
-  dispatch_async(RCTGetMethodQueue(), ^{
     [RCTGetCache() removeAllObjects];
     RCTDeleteStorageDirectory();
   });
@@ -227,15 +207,13 @@ RCT_EXPORT_MODULE()
 #endif
 
   NSError *error = nil;
-  if (!RCTHasCreatedStorageDirectory) {
-    [[NSFileManager defaultManager] createDirectoryAtPath:RCTGetStorageDirectory()
-                              withIntermediateDirectories:YES
-                                               attributes:nil
-                                                    error:&error];
-    if (error) {
-      return RCTMakeError(@"Failed to create storage directory.", error, nil);
-    }
-    RCTHasCreatedStorageDirectory = YES;
+  // NOTE(nikki93): `withIntermediateDirectories:YES` makes this idempotent
+  [[NSFileManager defaultManager] createDirectoryAtPath:RCTGetStorageDirectory()
+                            withIntermediateDirectories:YES
+                                             attributes:nil
+                                                  error:&error];
+  if (error) {
+    return RCTMakeError(@"Failed to create storage directory.", error, nil);
   }
   if (!_haveSetup) {
     NSDictionary *errorOut;
