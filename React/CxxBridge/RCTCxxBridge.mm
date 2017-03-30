@@ -1139,6 +1139,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCTAssertMainQueue();
 
   [self executeBlockOnJavaScriptThread:^{
+    #if WITH_FBSYSTRACE
+    [RCTFBSystrace registerCallbacks];
+    #endif
     RCTProfileInit(self);
   }];
 }
@@ -1151,6 +1154,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     RCTProfileEnd(self, ^(NSString *log) {
       NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
       callback(logData);
+      #if WITH_FBSYSTRACE
+      [RCTFBSystrace unregisterCallbacks];
+      #endif
     });
   }];
 }
