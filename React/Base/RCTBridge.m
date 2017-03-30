@@ -301,15 +301,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   RCTAssert(implClass != nil, @"No bridge implementation is available, giving up.");
-
-#ifdef WITH_FBSYSTRACE
-  if (implClass == cxxBridgeClass) {
-    [RCTFBSystrace registerCallbacks];
-  } else {
-    [RCTFBSystrace unregisterCallbacks];
-  }
-#endif
-
   return implClass;
 }
 
