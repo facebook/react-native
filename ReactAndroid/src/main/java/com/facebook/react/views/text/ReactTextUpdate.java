@@ -52,6 +52,8 @@ public class ReactTextUpdate {
         paddingTop,
         paddingEnd,
         paddingBottom,
+        0f,
+        12,
         textAlign,
         Layout.BREAK_STRATEGY_HIGH_QUALITY);
   }
