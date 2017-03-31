@@ -119,6 +119,9 @@ module.exports = {
     command: '--reset-cache, --resetCache',
     description: 'Removes cached files',
   }, {
+    command: '--custom-log-reporter-path, --customLogReporterPath [string]',
+    description: 'Path to a JavaScript file that exports a log reporter as a replacement for TerminalReporter',
+  }, {
     command: '--verbose',
     description: 'Enables logging',
   }],
