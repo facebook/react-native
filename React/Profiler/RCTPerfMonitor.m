@@ -24,6 +24,7 @@
 #import "RCTRootView.h"
 #import "RCTUIManager.h"
 #import "RCTBridge+Private.h"
+#import "RCTUtils.h"
 
 #if __has_include("RCTDevMenu.h")
 #import "RCTDevMenu.h"

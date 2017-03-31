@@ -16,6 +16,7 @@
 #import "RCTModalHostViewController.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
+#import "RCTUtils.h"
 #import "UIView+React.h"
 
 @implementation RCTModalHostView
