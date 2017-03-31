@@ -11,20 +11,41 @@
  */
 'use strict';
 
+const invariant = require('fbjs/lib/invariant');
 const NativeEventEmitter = require('NativeEventEmitter');
 const KeyboardObserver = require('NativeModules').KeyboardObserver;
 const dismissKeyboard = require('dismissKeyboard');
 const KeyboardEventEmitter = new NativeEventEmitter(KeyboardObserver);
 
+type KeyboardEventName =
+  | 'keyboardWillShow'
+  | 'keyboardDidShow'
+  | 'keyboardWillHide'
+  | 'keyboardDidHide'
+  | 'keyboardWillChangeFrame'
+  | 'keyboardDidChangeFrame';
+
+type KeyboardEventData = {
+  endCoordinates: {
+    width: number,
+    height: number,
+    screenX: number,
+    screenY: number,
+  },
+};
+
+type KeyboardEventListener = (e: KeyboardEventData) => void;
+
 // The following object exists for documentation purposes
 // Actual work happens in
 // https://github.com/facebook/react-native/blob/master/Libraries/EventEmitter/NativeEventEmitter.js
+
 /**
- * `Keyboard` component to control keyboard events.
+ * `Keyboard` module to control keyboard events.
  *
  * ### Usage
  *
- * The Keyboard component allows you to listen for native events and react to them, as
+ * The Keyboard module allows you to listen for native events and react to them, as
  * well as make changes to the keyboard, like dismissing it.
  *
  *```
@@ -60,16 +81,17 @@ const KeyboardEventEmitter = new NativeEventEmitter(KeyboardObserver);
  * }
  *```
  */
-module.exports = {
 
+let Keyboard = {
   /**
    * The `addListener` function connects a JavaScript function to an identified native
    * keyboard notification event.
    *
    * This function then returns the reference to the listener.
    *
-   * @param {string} nativeEvent The `nativeEvent` is the string that identifies the event you're listening for.  This
+   * @param {string} eventName The `nativeEvent` is the string that identifies the event you're listening for.  This
    *can be any of the following:
+   *
    * - `keyboardWillShow`
    * - `keyboardDidShow`
    * - `keyboardWillHide`
@@ -77,10 +99,20 @@ module.exports = {
    * - `keyboardWillChangeFrame`
    * - `keyboardDidChangeFrame`
    *
-   * @param {function} jsFunction function to be called when the event fires.
+   * @param {function} callback function to be called when the event fires.
    */
-  addListener (nativeEvent: string, jsFunction: Function) {
-    return KeyboardEventEmitter.addListener(nativeEvent, jsFunction);
+  addListener(eventName: KeyboardEventName, callback: KeyboardEventListener) {
+    invariant(false, 'Dummy method used for documentation');
+  },
+
+  /**
+   * Removes a specific listener.
+   *
+   * @param {string} eventName The `nativeEvent` is the string that identifies the event you're listening for.
+   * @param {function} callback function to be called when the event fires.
+   */
+  removeListener(eventName: KeyboardEventName, callback: Function) {
+    invariant(false, 'Dummy method used for documentation');
   },
 
   /**
@@ -88,24 +120,21 @@ module.exports = {
    *
    * @param {string} eventType The native event string listeners are watching which will be removed.
    */
-  removeAllListeners (eventType: string) {
-    KeyboardEventEmitter.removeAllListeners(eventType);
-  },
-
-  /**
-   * Removes a specific subscription.
-   *
-   * @param {EmitterSubscription} subscription The subscription emitter to be removed.
-   */
-  removeSubscription (subscription: Object) {
-    KeyboardEventEmitter.removeSubscription(subscription);
+  removeAllListeners(eventName: KeyboardEventName) {
+    invariant(false, 'Dummy method used for documentation');
   },
 
   /**
    * Dismisses the active keyboard and removes focus.
    */
-  dismiss () {
-    dismissKeyboard();
+  dismiss() {
+    invariant(false, 'Dummy method used for documentation');
   }
-
 };
+
+// Throw away the dummy object and reassign it to original module
+Keyboard = KeyboardEventEmitter;
+Keyboard.dismiss = dismissKeyboard;
+
+module.exports = Keyboard;
+

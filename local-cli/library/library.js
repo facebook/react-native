@@ -12,7 +12,6 @@ const copyAndReplace = require('../util/copyAndReplace');
 const fs = require('fs');
 const isValidPackageName = require('../util/isValidPackageName');
 const path = require('path');
-const Promise = require('promise');
 const walk = require('../util/walk');
 
 /**
@@ -56,7 +55,10 @@ function library(argv, config, args) {
   console.log('Created library in', libraryDest);
   console.log('Next Steps:');
   console.log('   Link your library in Xcode:');
-  console.log('   https://facebook.github.io/react-native/docs/linking-libraries-ios.html#content\n');
+  console.log(
+    '   https://facebook.github.io/react-native/docs/' +
+    'linking-libraries-ios.html#content\n'
+  );
 }
 
 module.exports = {

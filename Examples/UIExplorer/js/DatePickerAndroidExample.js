@@ -17,6 +17,7 @@
  * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * @providesModule DatePickerAndroidExample
  */
 'use strict';
 
@@ -38,8 +39,15 @@ class DatePickerAndroidExample extends React.Component {
 
   state = {
     presetDate: new Date(2020, 4, 5),
+    simpleDate: new Date(2020, 4, 5),
+    spinnerDate: new Date(2020, 4, 5),
+    calendarDate: new Date(2020, 4, 5),
+    defaultDate: new Date(2020, 4, 5),
     allDate: new Date(2020, 4, 5),
     simpleText: 'pick a date',
+    spinnerText: 'pick a date',
+    calendarText: 'pick a date',
+    defaultText: 'pick a date',
     minText: 'pick a date, no earlier than today',
     maxText: 'pick a date, no later than today',
     presetText: 'pick a date, preset to 2020/5/5',
@@ -70,6 +78,24 @@ class DatePickerAndroidExample extends React.Component {
           <TouchableWithoutFeedback
             onPress={this.showPicker.bind(this, 'simple', {date: this.state.simpleDate})}>
             <Text style={styles.text}>{this.state.simpleText}</Text>
+          </TouchableWithoutFeedback>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Simple spinner date picker">
+          <TouchableWithoutFeedback
+            onPress={this.showPicker.bind(this, 'spinner', {date: this.state.spinnerDate, mode: 'spinner'})}>
+            <Text style={styles.text}>{this.state.spinnerText}</Text>
+          </TouchableWithoutFeedback>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Simple calendar date picker">
+          <TouchableWithoutFeedback
+            onPress={this.showPicker.bind(this, 'calendar', {date: this.state.calendarDate, mode: 'calendar'})}>
+            <Text style={styles.text}>{this.state.calendarText}</Text>
+          </TouchableWithoutFeedback>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Simple default date picker">
+          <TouchableWithoutFeedback
+            onPress={this.showPicker.bind(this, 'default', {date: this.state.defaultDate, mode: 'default'})}>
+            <Text style={styles.text}>{this.state.defaultText}</Text>
           </TouchableWithoutFeedback>
         </UIExplorerBlock>
         <UIExplorerBlock title="Date picker with pre-set date">

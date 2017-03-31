@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @providesModule IntegrationTestHarnessTest
  */
 'use strict';
 
@@ -51,7 +52,9 @@ class IntegrationTestHarnessTest extends React.Component {
     } else if (!TestModule.markTestCompleted) {
       throw new Error('RCTTestModule.markTestCompleted not defined.');
     }
-    this.setState({done: true}, TestModule.markTestCompleted);
+    this.setState({done: true}, () => {
+      TestModule.markTestCompleted();
+    });
   };
 
   render() {

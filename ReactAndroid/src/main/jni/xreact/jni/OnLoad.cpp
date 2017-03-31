@@ -2,19 +2,24 @@
 
 #include <folly/dynamic.h>
 #include <fb/fbjni.h>
+#include <fb/glog_init.h>
 #include <fb/log.h>
 #include <cxxreact/Executor.h>
 #include <cxxreact/JSCExecutor.h>
 #include <cxxreact/Platform.h>
-#include <cxxreact/Value.h>
+#include <jschelpers/Value.h>
 #include "CatalystInstanceImpl.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JSCPerfLogging.h"
 #include "JSLoader.h"
-#include "ModuleRegistryHolder.h"
 #include "ProxyExecutor.h"
 #include "WebWorkers.h"
 #include "JCallback.h"
+#include "JSLogging.h"
+
+#ifdef WITH_INSPECTOR
+#include "JInspector.h"
+#endif
 
 #include "WritableNativeMap.h"
 #include "WritableNativeArray.h"
@@ -59,29 +64,6 @@ static std::string getApplicationPersistentDir() {
   return getApplicationDir("getFilesDir");
 }
 
-static JSValueRef nativeLoggingHook(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception) {
-  android_LogPriority logLevel = ANDROID_LOG_DEBUG;
-  if (argumentCount > 1) {
-    int level = (int) JSValueToNumber(ctx, arguments[1], NULL);
-    // The lowest log level we get from JS is 0. We shift and cap it to be
-    // in the range the Android logging method expects.
-    logLevel = std::min(
-        static_cast<android_LogPriority>(level + ANDROID_LOG_DEBUG),
-        ANDROID_LOG_FATAL);
-  }
-  if (argumentCount > 0) {
-    JSStringRef jsString = JSValueToStringCopy(ctx, arguments[0], NULL);
-    String message = String::adopt(jsString);
-    FBLOG_PRI(logLevel, "ReactNativeJS", "%s", message.str().c_str());
-  }
-  return JSValueMakeUndefined(ctx);
-}
-
 static JSValueRef nativePerformanceNow(
     JSContextRef ctx,
     JSObjectRef function,
@@ -91,11 +73,17 @@ static JSValueRef nativePerformanceNow(
   static const int64_t NANOSECONDS_IN_SECOND = 1000000000LL;
   static const int64_t NANOSECONDS_IN_MILLISECOND = 1000000LL;
 
-  // This is equivalent to android.os.SystemClock.elapsedRealtime() in native
+  // Since SystemClock.uptimeMillis() is commonly used for performance measurement in Java
+  // and uptimeMillis() internally uses clock_gettime(CLOCK_MONOTONIC),
+  // we use the same API here.
+  // We need that to make sure we use the same time system on both JS and Java sides.
+  // Links to the source code:
+  // https://android.googlesource.com/platform/frameworks/native/+/jb-mr1-release/libs/utils/SystemClock.cpp
+  // https://android.googlesource.com/platform/system/core/+/master/libutils/Timers.cpp
   struct timespec now;
-  clock_gettime(CLOCK_MONOTONIC_RAW, &now);
+  clock_gettime(CLOCK_MONOTONIC, &now);
   int64_t nano = now.tv_sec * NANOSECONDS_IN_SECOND + now.tv_nsec;
-  return JSValueMakeNumber(ctx, (nano / (double)NANOSECONDS_IN_MILLISECOND));
+  return Value::makeNumber(ctx, (nano / (double)NANOSECONDS_IN_MILLISECOND));
 }
 
 class JSCJavaScriptExecutorHolder : public HybridClass<JSCJavaScriptExecutorHolder,
@@ -105,7 +93,7 @@ class JSCJavaScriptExecutorHolder : public HybridClass<JSCJavaScriptExecutorHold
 
   static local_ref<jhybriddata> initHybrid(alias_ref<jclass>, ReadableNativeArray* jscConfigArray) {
     // See JSCJavaScriptExecutor.Factory() for the other side of this hack.
-    folly::dynamic jscConfigMap = jscConfigArray->array[0];
+    folly::dynamic jscConfigMap = jscConfigArray->consume()[0];
     jscConfigMap["PersistentDirectory"] = getApplicationPersistentDir();
     return makeCxxInstance(
       std::make_shared<JSCExecutorFactory>(getApplicationCacheDir(), std::move(jscConfigMap)));
@@ -164,6 +152,7 @@ class JReactMarker : public JavaClass<JReactMarker> {
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
+    gloginit::initialize();
     // Inject some behavior into react/
     ReactMarker::logMarker = JReactMarker::logMarker;
     WebWorkerUtil::createWebWorkerThread = WebWorkers::createWebWorkerThread;
@@ -178,10 +167,11 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     JSCJavaScriptExecutorHolder::registerNatives();
     ProxyJavaScriptExecutorHolder::registerNatives();
     CatalystInstanceImpl::registerNatives();
-    ModuleRegistryHolder::registerNatives();
     CxxModuleWrapper::registerNatives();
     JCallbackImpl::registerNatives();
-    registerJSLoaderNatives();
+    #ifdef WITH_INSPECTOR
+    JInspector::registerNatives();
+    #endif
 
     NativeArray::registerNatives();
     ReadableNativeArray::registerNatives();

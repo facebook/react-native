@@ -8,9 +8,10 @@
  *
  * @providesModule HeaderLinks
  */
+'use strict';
 
-var React = require('React');
 var AlgoliaDocSearch = require('AlgoliaDocSearch');
+var React = require('React');
 
 var HeaderLinks = React.createClass({
   linksInternal: [

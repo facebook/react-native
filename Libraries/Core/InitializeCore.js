@@ -6,22 +6,28 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * Sets up global variables typical in most JavaScript environments.
- *
- * 1. Global timers (via `setTimeout` etc).
- * 2. Global console object.
- * 3. Hooks for printing stack traces with source maps.
- *
- * Leaves enough room in the environment for implementing your own:
- * 1. Require system.
- * 2. Bridged modules.
- *
  * @providesModule InitializeCore
  * @flow
  */
 
-/* eslint strict: 0 */
+/* eslint-disable strict */
 /* globals window: true */
+
+
+/**
+ * Sets up global variables typical in most JavaScript environments.
+ *
+ *   1. Global timers (via `setTimeout` etc).
+ *   2. Global console object.
+ *   3. Hooks for printing stack traces with source maps.
+ *
+ * Leaves enough room in the environment for implementing your own:
+ *
+ *   1. Require system.
+ *   2. Bridged modules.
+ *
+ */
+'use strict';
 
 if (global.GLOBAL === undefined) {
   global.GLOBAL = global;
@@ -98,12 +104,23 @@ Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
 const ExceptionsManager = require('ExceptionsManager');
 ExceptionsManager.installConsoleErrorReporter();
 
+// TODO: Move these around to solve the cycle in a cleaner way
+const BatchedBridge = require('BatchedBridge');
+BatchedBridge.registerCallableModule('Systrace', require('Systrace'));
+BatchedBridge.registerCallableModule('JSTimersExecution', require('JSTimersExecution'));
+BatchedBridge.registerCallableModule('HeapCapture', require('HeapCapture'));
+BatchedBridge.registerCallableModule('SamplingProfiler', require('SamplingProfiler'));
+
+if (__DEV__) {
+  BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));
+}
+
 // RCTLog needs to register with BatchedBridge
 require('RCTLog');
 
 // Set up error handler
 if (!global.__fbDisableExceptionsManager) {
-  function handleError(e, isFatal) {
+  const handleError = (e, isFatal) => {
     try {
       ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {
@@ -112,7 +129,7 @@ if (!global.__fbDisableExceptionsManager) {
       /* eslint-enable no-console-disallow */
       throw e;
     }
-  }
+  };
 
   const ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
@@ -173,11 +190,13 @@ let navigator = global.navigator;
 if (navigator === undefined) {
   global.navigator = navigator = {};
 }
-navigator.product = 'ReactNative';
+
+// see https://github.com/facebook/react-native/issues/10881
+defineProperty(navigator, 'product', () => 'ReactNative', true);
 defineProperty(navigator, 'geolocation', () => require('Geolocation'));
 
 // Set up collections
-// We can't make these lazy because `Map` checks for `global.Map` (which would
+// We can't make these lazy because `Map` checks for `global.Map` (which wouldc
 // not exist if it were lazily defined).
 defineProperty(global, 'Map', () => require('Map'), true);
 defineProperty(global, 'Set', () => require('Set'), true);
@@ -187,12 +206,16 @@ if (__DEV__) {
   // not when debugging in chrome
   // TODO(t12832058) This check is broken
   if (!window.document) {
-    const setupDevtools = require('setupDevtools');
-    setupDevtools();
+    require('setupDevtools');
   }
 
   require('RCTDebugComponentOwnership');
-  require('react-transform-hmr');
+}
+
+// Set up inspector
+if (__DEV__) {
+  const JSInspector = require('JSInspector');
+  JSInspector.registerAgent(require('NetworkAgent'));
 }
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has

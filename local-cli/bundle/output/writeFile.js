@@ -5,21 +5,16 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
+const denodeify = require('denodeify');
 const fs = require('fs');
-const Promise = require('promise');
 
-function writeFile(file, data, encoding) {
-  return new Promise((resolve, reject) => {
-    fs.writeFile(
-      file,
-      data,
-      encoding,
-      error => error ? reject(error) : resolve()
-    );
-  });
-}
+type WriteFn =
+  (file: string, data: string | Buffer, encoding?: ?string) => Promise<mixed>;
+const writeFile: WriteFn = denodeify(fs.writeFile);
 
 module.exports = writeFile;

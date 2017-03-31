@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('React');
+var BlogPostDate = require('BlogPostDate');
 
 var BlogPostHeader = React.createClass({
   render: function() {
@@ -47,7 +48,7 @@ var BlogPostHeader = React.createClass({
             {post.author}
           </a>
           {' — '}
-          <span className="date">{this.props.postedOnDate}</span>
+          <BlogPostDate post={post} />
         </h4>
         <h1 className="entry-title">{title}</h1>
       </header>

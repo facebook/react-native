@@ -14,7 +14,7 @@
 const ColorPropType = require('ColorPropType');
 const DocumentSelectionState = require('DocumentSelectionState');
 const EventEmitter = require('EventEmitter');
-const NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
 const ReactNative = require('ReactNative');
@@ -24,12 +24,12 @@ const TextInputState = require('TextInputState');
 const TimerMixin = require('react-timer-mixin');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
-const View = require('View');
-const warning = require('fbjs/lib/warning');
+const ViewPropTypes = require('ViewPropTypes');
 
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
+const warning = require('fbjs/lib/warning');
 
 const PropTypes = React.PropTypes;
 
@@ -160,7 +160,15 @@ const DataDetectorTypes = [
  * in the correct position, or to not display the border by setting
  * `underlineColorAndroid` to transparent.
  *
+ * Note that on Android performing text selection in input can change
+ * app's activity `windowSoftInputMode` param to `adjustResize`.
+ * This may cause issues with components that have position: 'absolute'
+ * while keyboard is active. To avoid this behavior either specify `windowSoftInputMode`
+ * in AndroidManifest.xml ( https://developer.android.com/guide/topics/manifest/activity-element.html )
+ * or control this param programmatically with native code.
+ *
  */
+// $FlowFixMe(>=0.41.0)
 const TextInput = React.createClass({
   statics: {
     /* TODO(brentvatne) docs are needed for this */
@@ -168,7 +176,7 @@ const TextInput = React.createClass({
   },
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * Can tell `TextInput` to automatically capitalize certain characters.
      *
@@ -187,6 +195,12 @@ const TextInput = React.createClass({
      * If `false`, disables auto-correct. The default value is `true`.
      */
     autoCorrect: PropTypes.bool,
+    /**
+     * If `false`, disables spell-check style (i.e. red underlines).
+     * The default value is inherited from `autoCorrect`.
+     * @platform ios
+     */
+    spellCheck: PropTypes.bool,
     /**
      * If `true`, focuses the input on `componentDidMount`.
      * The default value is `false`.
@@ -298,6 +312,15 @@ const TextInput = React.createClass({
      */
     numberOfLines: PropTypes.number,
     /**
+     * When `false`, if there is a small amount of space available around a text input
+     * (e.g. landscape orientation on a phone), the OS may choose to have the user edit
+     * the text inside of a full screen text input mode. When `true`, this feature is
+     * disabled and users will always edit the text directly inside of the text input.
+     * Defaults to `false`.
+     * @platform android
+     */
+    disableFullscreenUI: PropTypes.bool,
+    /**
      * If `true`, the keyboard disables the return key when there is no text and
      * automatically enables it when there is text. The default value is `false`.
      * @platform ios
@@ -308,6 +331,12 @@ const TextInput = React.createClass({
      * The default value is `false`.
      */
     multiline: PropTypes.bool,
+    /**
+     * Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced`
+     * The default value is `simple`.
+     * @platform android
+     */
+    textBreakStrategy: React.PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
     /**
      * Callback that is called when the text input is blurred.
      */
@@ -339,6 +368,8 @@ const TextInput = React.createClass({
     onEndEditing: PropTypes.func,
     /**
      * Callback that is called when the text input selection is changed.
+     * This will be called with
+     * `{ nativeEvent: { selection: { start, end } } }`.
      */
     onSelectionChange: PropTypes.func,
     /**
@@ -348,7 +379,9 @@ const TextInput = React.createClass({
     onSubmitEditing: PropTypes.func,
     /**
      * Callback that is called when a key is pressed.
-     * Pressed key value is passed as an argument to the callback handler.
+     * This will be called with `{ nativeEvent: { key: keyValue } }`
+     * where `keyValue` is `'Enter'` or `'Backspace'` for respective keys and
+     * the typed-in character otherwise including `' '` for space.
      * Fires before `onChange` callbacks.
      * @platform ios
      */
@@ -357,6 +390,12 @@ const TextInput = React.createClass({
      * Invoked on mount and layout changes with `{x, y, width, height}`.
      */
     onLayout: PropTypes.func,
+    /**
+     * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
+     * May also contain other properties from ScrollEvent but on Android contentSize
+     * is not provided for performance reasons.
+     */
+    onScroll: PropTypes.func,
     /**
      * The string that will be rendered before text input has been entered.
      */
@@ -371,7 +410,7 @@ const TextInput = React.createClass({
      */
     secureTextEntry: PropTypes.bool,
     /**
-    * The highlight (and cursor on iOS) color of the text input.
+    * The highlight and cursor color of the text input.
     */
     selectionColor: ColorPropType,
     /**
@@ -413,7 +452,7 @@ const TextInput = React.createClass({
      * Useful for simple use-cases where you do not want to deal with listening
      * to events and updating the value prop to keep the controlled state in sync.
      */
-    defaultValue: PropTypes.node,
+    defaultValue: PropTypes.string,
     /**
      * When the clear button should appear on the right side of the text view.
      * @platform ios
@@ -442,7 +481,11 @@ const TextInput = React.createClass({
      */
     blurOnSubmit: PropTypes.bool,
     /**
-     * [Styles](/react-native/docs/style.html)
+     * Note that not all Text styles are supported,
+     * see [Issue#7070](https://github.com/facebook/react-native/issues/7070)
+     * for more detail.
+     *
+     * [Styles](docs/style.html)
      */
     style: Text.propTypes.style,
     /**
@@ -485,6 +528,10 @@ const TextInput = React.createClass({
       PropTypes.oneOf(DataDetectorTypes),
       PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
     ]),
+    /**
+     * If `true`, caret is hidden. The default value is `false`.
+     */
+    caretHidden: PropTypes.bool,
   },
 
   /**
@@ -492,13 +539,6 @@ const TextInput = React.createClass({
    * make `this` look like an actual native component class.
    */
   mixins: [NativeMethodsMixin, TimerMixin],
-
-  viewConfig:
-    ((Platform.OS === 'ios' && RCTTextField ?
-      RCTTextField.viewConfig :
-      (Platform.OS === 'android' && AndroidTextInput ?
-        AndroidTextInput.viewConfig :
-        {})) : Object),
 
   /**
    * Returns `true` if the input is currently focused; `false` otherwise.
@@ -631,6 +671,7 @@ const TextInput = React.createClass({
       if (props.inputView) {
         children = [children, props.inputView];
       }
+      props.style.unshift(styles.multilineInput);
       textContainer =
         <RCTTextView
           ref={this._setNativeRef}
@@ -645,6 +686,7 @@ const TextInput = React.createClass({
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           text={this._getText()}
           dataDetectorTypes={this.props.dataDetectorTypes}
+          onScroll={this._onScroll}
         />;
     }
 
@@ -694,6 +736,9 @@ const TextInput = React.createClass({
         onTextInput={this._onTextInput}
         text={this._getText()}
         children={children}
+        disableFullscreenUI={this.props.disableFullscreenUI}
+        textBreakStrategy={this.props.textBreakStrategy}
+        onScroll={this._onScroll}
       />;
 
     return (
@@ -728,9 +773,11 @@ const TextInput = React.createClass({
   _onChange: function(event: Event) {
     // Make sure to fire the mostRecentEventCount first so it is already set on
     // native when the text value is set.
-    this._inputRef.setNativeProps({
-      mostRecentEventCount: event.nativeEvent.eventCount,
-    });
+    if (this._inputRef) {
+      this._inputRef.setNativeProps({
+        mostRecentEventCount: event.nativeEvent.eventCount,
+      });
+    }
 
     var text = event.nativeEvent.text;
     this.props.onChange && this.props.onChange(event);
@@ -781,7 +828,7 @@ const TextInput = React.createClass({
       nativeProps.selection = this.props.selection;
     }
 
-    if (Object.keys(nativeProps).length > 0) {
+    if (Object.keys(nativeProps).length > 0 && this._inputRef) {
       this._inputRef.setNativeProps(nativeProps);
     }
 
@@ -804,11 +851,21 @@ const TextInput = React.createClass({
   _onTextInput: function(event: Event) {
     this.props.onTextInput && this.props.onTextInput(event);
   },
+
+  _onScroll: function(event: Event) {
+    this.props.onScroll && this.props.onScroll(event);
+  },
 });
 
 var styles = StyleSheet.create({
   input: {
     alignSelf: 'stretch',
+  },
+  multilineInput: {
+    // This default top inset makes RCTTextView seem as close as possible
+    // to single-line RCTTextField defaults, using the system defaults
+    // of font size 17 and a height of 31 points.
+    paddingTop: 5,
   },
 });
 

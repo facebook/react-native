@@ -27,12 +27,14 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {
   PermissionsAndroid,
+  Picker,
   StyleSheet,
   Text,
-  TextInput,
   TouchableWithoutFeedback,
   View,
 } = ReactNative;
+
+const Item = Picker.Item;
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
@@ -41,7 +43,7 @@ exports.description = 'Permissions example for API 23+.';
 
 class PermissionsExample extends React.Component {
   state = {
-    permission: PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+    permission: PermissionsAndroid.PERMISSIONS.CAMERA,
     hasPermission: 'Not Checked',
   };
 
@@ -49,13 +51,14 @@ class PermissionsExample extends React.Component {
     return (
       <View style={styles.container}>
         <Text style={styles.text}>Permission Name:</Text>
-        <TextInput
-          autoFocus={true}
-          autoCorrect={false}
-          style={styles.singleLine}
-          onChange={this._updateText}
-          defaultValue={this.state.permission}
-        />
+        <Picker
+          style={styles.picker}
+          selectedValue={this.state.permission}
+          onValueChange={this._onSelectPermission.bind(this)}>
+          <Item label={PermissionsAndroid.PERMISSIONS.CAMERA} value={PermissionsAndroid.PERMISSIONS.CAMERA} />
+          <Item label={PermissionsAndroid.PERMISSIONS.READ_CALENDAR} value={PermissionsAndroid.PERMISSIONS.READ_CALENDAR} />
+          <Item label={PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION} value={PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION} />
+        </Picker>
         <TouchableWithoutFeedback onPress={this._checkPermission}>
           <View>
             <Text style={[styles.touchable, styles.text]}>Check Permission</Text>
@@ -71,14 +74,14 @@ class PermissionsExample extends React.Component {
     );
   }
 
-  _updateText = (event: Object) => {
+  _onSelectPermission = (permission: string) => {
     this.setState({
-      permission: event.nativeEvent.text,
+      permission: permission,
     });
   };
 
   _checkPermission = async () => {
-    let result = await PermissionsAndroid.checkPermission(this.state.permission);
+    let result = await PermissionsAndroid.check(this.state.permission);
     this.setState({
       hasPermission: (result ? 'Granted' : 'Revoked') + ' for ' +
         this.state.permission,
@@ -86,7 +89,7 @@ class PermissionsExample extends React.Component {
   };
 
   _requestPermission = async () => {
-    let result = await PermissionsAndroid.requestPermission(
+    let result = await PermissionsAndroid.request(
       this.state.permission,
       {
         title: 'Permission Explanation',
@@ -95,8 +98,9 @@ class PermissionsExample extends React.Component {
           ' because of reasons. Please approve.'
       },
     );
+
     this.setState({
-      hasPermission: (result ? 'Granted' : 'Revoked') + ' for ' +
+      hasPermission: result + ' for ' +
         this.state.permission,
     });
   };
@@ -125,4 +129,7 @@ var styles = StyleSheet.create({
   touchable: {
     color: '#007AFF',
   },
+  picker: {
+    flex: 1,
+  }
 });

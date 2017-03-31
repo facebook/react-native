@@ -7,8 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTAnimatedNode.h"
 #import <UIKit/UIKit.h>
+
+#import "RCTAnimatedNode.h"
 
 @class RCTValueAnimatedNode;
 
@@ -22,6 +23,7 @@
 
 - (void)setOffset:(CGFloat)offset;
 - (void)flattenOffset;
+- (void)extractOffset;
 
 @property (nonatomic, assign) CGFloat value;
 @property (nonatomic, weak) id<RCTValueAnimatedNodeObserver> valueObserver;

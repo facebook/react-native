@@ -12,12 +12,14 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var TextStylePropTypes = require('TextStylePropTypes');
 var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
+var processColor = require('processColor');
 
 var itemStylePropType = StyleSheetPropType(TextStylePropTypes);
 var requireNativeComponent = require('requireNativeComponent');
@@ -26,7 +28,7 @@ var PickerIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     itemStyle: itemStylePropType,
     onValueChange: React.PropTypes.func,
     selectedValue: React.PropTypes.any, // string or integer basically
@@ -48,7 +50,11 @@ var PickerIOS = React.createClass({
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
       }
-      items.push({value: child.props.value, label: child.props.label});
+      items.push({
+        value: child.props.value,
+        label: child.props.label,
+        textColor: processColor(child.props.color),
+      });
     });
     return {selectedIndex, items};
   },
@@ -62,6 +68,8 @@ var PickerIOS = React.createClass({
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
           onChange={this._onChange}
+          onStartShouldSetResponder={() => true}
+          onResponderTerminationRequest={() => false}
         />
       </View>
     );
@@ -93,6 +101,7 @@ PickerIOS.Item = class extends React.Component {
   static propTypes = {
     value: React.PropTypes.any, // string or integer basically
     label: React.PropTypes.string,
+    color: React.PropTypes.string,
   };
 
   render() {

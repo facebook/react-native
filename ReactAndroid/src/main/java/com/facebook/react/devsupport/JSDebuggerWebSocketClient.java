@@ -9,23 +9,23 @@
 
 package com.facebook.react.devsupport;
 
-import javax.annotation.Nullable;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.TimeUnit;
+import android.util.JsonReader;
+import android.util.JsonToken;
+import android.util.JsonWriter;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.JavascriptException;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.annotation.Nullable;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -42,7 +42,6 @@ import okio.Buffer;
 public class JSDebuggerWebSocketClient implements WebSocketListener {
 
   private static final String TAG = "JSDebuggerWebSocketClient";
-  private static final JsonFactory mJsonFactory = new JsonFactory();
 
   public interface JSDebuggerCallback {
     void onSuccess(@Nullable String response);
@@ -72,34 +71,19 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
     call.enqueue(this);
   }
 
-  /**
-   * Creates the next JSON message to send to remote JS executor, with request ID pre-filled in.
-   */
-  private JsonGenerator startMessageObject(int requestID) throws IOException {
-    JsonGenerator jg = mJsonFactory.createGenerator(new StringWriter());
-    jg.writeStartObject();
-    jg.writeNumberField("id", requestID);
-    return jg;
-  }
-
-  /**
-   * Takes in a JsonGenerator created by {@link #startMessageObject} and returns the stringified
-   * JSON
-   */
-  private String endMessageObject(JsonGenerator jg) throws IOException {
-    jg.writeEndObject();
-    jg.flush();
-    return ((StringWriter) jg.getOutputTarget()).getBuffer().toString();
-  }
-
   public void prepareJSRuntime(JSDebuggerCallback callback) {
     int requestID = mRequestID.getAndIncrement();
     mCallbacks.put(requestID, callback);
 
     try {
-      JsonGenerator jg = startMessageObject(requestID);
-      jg.writeStringField("method", "prepareJSRuntime");
-      sendMessage(requestID, endMessageObject(jg));
+      StringWriter sw = new StringWriter();
+      JsonWriter js = new JsonWriter(sw);
+      js.beginObject()
+        .name("id").value(requestID)
+        .name("method").value("prepareJSRuntime")
+        .endObject()
+        .close();
+      sendMessage(requestID, sw.toString());
     } catch (IOException e) {
       triggerRequestFailure(requestID, e);
     }
@@ -113,15 +97,18 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
     mCallbacks.put(requestID, callback);
 
     try {
-      JsonGenerator jg = startMessageObject(requestID);
-      jg.writeStringField("method", "executeApplicationScript");
-      jg.writeStringField("url", sourceURL);
-      jg.writeObjectFieldStart("inject");
+      StringWriter sw = new StringWriter();
+      JsonWriter js = new JsonWriter(sw)
+         .beginObject()
+         .name("id").value(requestID)
+         .name("method").value("executeApplicationScript")
+         .name("url").value(sourceURL)
+         .name("inject").beginObject();
       for (String key : injectedObjects.keySet()) {
-        jg.writeObjectField(key, injectedObjects.get(key));
+        js.name(key).value(injectedObjects.get(key));
       }
-      jg.writeEndObject();
-      sendMessage(requestID, endMessageObject(jg));
+      js.endObject().endObject().close();
+      sendMessage(requestID, sw.toString());
     } catch (IOException e) {
       triggerRequestFailure(requestID, e);
     }
@@ -131,16 +118,21 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
       String methodName,
       String jsonArgsArray,
       JSDebuggerCallback callback) {
-
     int requestID = mRequestID.getAndIncrement();
     mCallbacks.put(requestID, callback);
 
     try {
-      JsonGenerator jg = startMessageObject(requestID);
-      jg.writeStringField("method", methodName);
-      jg.writeFieldName("arguments");
-      jg.writeRawValue(jsonArgsArray);
-      sendMessage(requestID, endMessageObject(jg));
+      StringWriter sw = new StringWriter();
+      JsonWriter js = new JsonWriter(sw);
+
+      js.beginObject()
+        .name("id").value(requestID)
+        .name("method").value(methodName);
+      /* JsonWriter does not offer writing raw string (without quotes), that's why
+         here we directly write to output string using the the underlying StringWriter */
+      sw.append(",\"arguments\":").append(jsonArgsArray);
+      js.endObject().close();
+      sendMessage(requestID, sw.toString());
     } catch (IOException e) {
       triggerRequestFailure(requestID, e);
     }
@@ -194,28 +186,26 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
       return;
     }
 
-    String message = null;
-    try {
-      message = response.source().readUtf8();
-    } finally {
-      response.close();
-    }
     Integer replyID = null;
 
     try {
-      JsonParser parser = new JsonFactory().createParser(message);
+      JsonReader reader = new JsonReader(response.charStream());
       String result = null;
-      while (parser.nextToken() != JsonToken.END_OBJECT) {
-        String field = parser.getCurrentName();
+      reader.beginObject();
+      while (reader.hasNext()) {
+        String field = reader.nextName();
+
+        if (JsonToken.NULL == reader.peek()) {
+          reader.skipValue();
+          continue;
+        }
+
         if ("replyID".equals(field)) {
-          parser.nextToken();
-          replyID = parser.getIntValue();
+          replyID = reader.nextInt();
         } else if ("result".equals(field)) {
-          parser.nextToken();
-          result = parser.getText();
+          result = reader.nextString();
         } else if ("error".equals(field)) {
-          parser.nextToken();
-          String error = parser.getText();
+          String error = reader.nextString();
           abort(error, new JavascriptException(error));
         }
       }
@@ -228,6 +218,8 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
       } else {
         abort("Parsing response message from websocket failed", e);
       }
+    } finally {
+      response.close();
     }
   }
 

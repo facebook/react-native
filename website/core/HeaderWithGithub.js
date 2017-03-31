@@ -8,6 +8,7 @@
  *
  * @providesModule HeaderWithGithub
  */
+'use strict';
 
 var H = require('Header');
 var React = require('React');

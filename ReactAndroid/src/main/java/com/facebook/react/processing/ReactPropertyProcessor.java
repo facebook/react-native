@@ -33,6 +33,7 @@ import java.util.Set;
 import com.facebook.infer.annotation.SuppressFieldNotInitialized;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
@@ -68,6 +69,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
   private static final TypeName STRING_TYPE = TypeName.get(String.class);
   private static final TypeName READABLE_MAP_TYPE = TypeName.get(ReadableMap.class);
   private static final TypeName READABLE_ARRAY_TYPE = TypeName.get(ReadableArray.class);
+  private static final TypeName DYNAMIC_TYPE = TypeName.get(Dynamic.class);
 
   private static final TypeName VIEW_MANAGER_TYPE =
       ClassName.get("com.facebook.react.uimanager", "ViewManager");
@@ -118,6 +120,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     DEFAULT_TYPES.put(STRING_TYPE, "String");
     DEFAULT_TYPES.put(READABLE_ARRAY_TYPE, "Array");
     DEFAULT_TYPES.put(READABLE_MAP_TYPE, "Map");
+    DEFAULT_TYPES.put(DYNAMIC_TYPE, "Dynamic");
 
     BOXED_PRIMITIVES = new HashSet<>();
     BOXED_PRIMITIVES.add(TypeName.BOOLEAN.box());
@@ -365,6 +368,8 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       return builder.add("props.getArray(name)");
     } else if (propertyType.equals(READABLE_MAP_TYPE)) {
       return builder.add("props.getMap(name)");
+    } else if (propertyType.equals(DYNAMIC_TYPE)) {
+      return builder.add("props.getDynamic(name)");
     }
 
     if (BOXED_PRIMITIVES.contains(propertyType)) {

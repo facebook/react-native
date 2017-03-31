@@ -9,7 +9,7 @@
 
 #import <SystemConfiguration/SystemConfiguration.h>
 
-#import "RCTEventEmitter.h"
+#import <React/RCTEventEmitter.h>
 
 @interface RCTNetInfo : RCTEventEmitter
 

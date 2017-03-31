@@ -1,0 +1,95 @@
+EXPORTED_HEADERS = [
+    "JavaScriptCore.h",
+    "JSCHelpers.h",
+    "JSCWrapper.h",
+    "noncopyable.h",
+    "Unicode.h",
+    "Value.h",
+]
+
+EXPORTED_HEADER_MAP = subdir_glob(
+    (("", header) for header in EXPORTED_HEADERS),
+    prefix = "jschelpers",
+)
+
+if THIS_IS_FBANDROID:
+  include_defs("//ReactAndroid/DEFS")
+
+  cxx_library(
+    name = "jscinternalhelpers",
+    force_static = True,
+    compiler_flags = [
+      "-Wall",
+      "-fexceptions",
+      "-fvisibility=hidden",
+      "-std=c++1y",
+    ],
+    exported_headers = EXPORTED_HEADERS,
+    headers = glob(["*.h"], excludes=EXPORTED_HEADERS),
+    header_namespace = "jschelpers",
+    srcs = glob(["*.cpp"], excludes=["systemJSCWrapper.cpp"]),
+    deps = JSC_INTERNAL_DEPS + [
+      "//xplat/folly:molly",
+    ],
+    visibility = [
+      "PUBLIC",
+    ],
+  )
+
+  cxx_library(
+    name = "jschelpers",
+    force_static = True,
+    compiler_flags = [
+      "-Wall",
+      "-fexceptions",
+      "-fvisibility=hidden",
+      "-std=c++1y",
+    ],
+    srcs = [],
+    deps = [ ":jscinternalhelpers" ],
+    visibility = [
+      "PUBLIC",
+    ],
+  )
+
+if THIS_IS_FBOBJC:
+
+  fb_apple_library(
+    name = "jscinternalhelpers",
+    inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
+    compiler_flags = [
+      "-Wall",
+      "-fexceptions",
+      "-fvisibility=hidden",
+      "-std=c++1y",
+    ],
+    exported_headers = EXPORTED_HEADER_MAP,
+    headers = subdir_glob([("", "*.h")], excludes=EXPORTED_HEADERS, prefix="jschelpers"),
+    header_namespace = "jschelpers",
+    srcs = glob(["*.cpp"], excludes=["systemJSCWrapper.cpp"]),
+    deps = [
+      "//xplat/folly:molly",
+    ],
+    visibility = [
+      "PUBLIC",
+    ],
+  )
+
+  fb_apple_library(
+    name = "jschelpers",
+    inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
+    compiler_flags = [
+      "-Wall",
+      "-fexceptions",
+      "-fvisibility=hidden",
+      "-std=c++1y",
+    ],
+    srcs = ["systemJSCWrapper.cpp"],
+    frameworks = [
+      "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
+    ],
+    deps = [ ":jscinternalhelpers" ],
+    visibility = [
+      "PUBLIC",
+    ],
+  )

@@ -7,52 +7,32 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTI18nUtil.h"
 #import "RCTRootShadowView.h"
+
+#import "RCTI18nUtil.h"
 
 @implementation RCTRootShadowView
 
-/**
- * Init the RCTRootShadowView with RTL status.
- * Returns a RTL CSS layout if isRTL is true (Default is LTR CSS layout).
- */
 - (instancetype)init
 {
   self = [super init];
   if (self) {
-    if ([[RCTI18nUtil sharedInstance] isRTL]) {
-      CSSNodeStyleSetDirection(self.cssNode, CSSDirectionRTL);
-    }
+    _baseDirection = [[RCTI18nUtil sharedInstance] isRTL] ? YGDirectionRTL : YGDirectionLTR;
+    _availableSize = CGSizeMake(INFINITY, INFINITY);
   }
   return self;
 }
 
-- (void)applySizeConstraints
-{
-  switch (_sizeFlexibility) {
-    case RCTRootViewSizeFlexibilityNone:
-      break;
-    case RCTRootViewSizeFlexibilityWidth:
-      CSSNodeStyleSetWidth(self.cssNode, CSSUndefined);
-      break;
-    case RCTRootViewSizeFlexibilityHeight:
-      CSSNodeStyleSetHeight(self.cssNode, CSSUndefined);
-      break;
-    case RCTRootViewSizeFlexibilityWidthAndHeight:
-      CSSNodeStyleSetWidth(self.cssNode, CSSUndefined);
-      CSSNodeStyleSetHeight(self.cssNode, CSSUndefined);
-      break;
-  }
-}
-
 - (NSSet<RCTShadowView *> *)collectViewsWithUpdatedFrames
 {
-  [self applySizeConstraints];
+  // Treating `INFINITY` as `YGUndefined` (which equals `NAN`).
+  float availableWidth = _availableSize.width == INFINITY ? YGUndefined : _availableSize.width;
+  float availableHeight = _availableSize.height == INFINITY ? YGUndefined : _availableSize.height;
 
-  CSSNodeCalculateLayout(self.cssNode, CSSUndefined, CSSUndefined, CSSDirectionInherit);
+  YGNodeCalculateLayout(self.yogaNode, availableWidth, availableHeight, _baseDirection);
 
   NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
-  [self applyLayoutNode:self.cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
+  [self applyLayoutNode:self.yogaNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
   return viewsWithNewFrame;
 }
 

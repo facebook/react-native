@@ -39,11 +39,6 @@ public class ReactRawTextManager extends ReactTextViewManager {
 
   @Override
   public ReactTextShadowNode createShadowNodeInstance() {
-    return new ReactTextShadowNode(true);
-  }
-
-  @Override
-  public Class<ReactTextShadowNode> getShadowNodeClass() {
-    return ReactTextShadowNode.class;
+    return new ReactVirtualTextShadowNode();
   }
 }

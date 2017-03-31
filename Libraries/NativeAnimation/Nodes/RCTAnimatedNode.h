@@ -21,7 +21,6 @@
 @property (nonatomic, copy, readonly) NSDictionary<NSNumber *, RCTAnimatedNode *> *parentNodes;
 
 @property (nonatomic, readonly) BOOL needsUpdate;
-@property (nonatomic, readonly) BOOL hasUpdated;
 
 /**
  * Marks a node and its children as needing update.
@@ -37,11 +36,6 @@
  * Where the actual update code lives. Called internally from updateNodeIfNecessary
  */
 - (void)performUpdate NS_REQUIRES_SUPER;
-
-/**
- * Cleans up after a round of updates.
- */
-- (void)cleanupAnimationUpdate NS_REQUIRES_SUPER;
 
 - (void)addChild:(RCTAnimatedNode *)child NS_REQUIRES_SUPER;
 - (void)removeChild:(RCTAnimatedNode *)child NS_REQUIRES_SUPER;

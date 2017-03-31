@@ -13,6 +13,7 @@ var fs = require('fs');
 var path = require('path');
 var child_process = require('child_process');
 const isAbsolutePath = require('absolute-path');
+const shellQuote = require('shell-quote');
 
 function isTerminalEditor(editor) {
   switch (editor) {
@@ -49,11 +50,13 @@ function getArgumentsForLineNumber(editor, fileName, lineNumber, workspace) {
     case 'mvim':
       return [fileName, '+' + lineNumber];
     case 'atom':
-      return addWorkspaceToArgumentsIfExists([fileName + ':' + lineNumber], workspace);
+    case 'Atom':
+    case 'Atom Beta':
     case 'subl':
     case 'sublime':
     case 'wstorm':
     case 'appcode':
+    case 'charm':
     case 'idea':  
       return [fileName + ':' + lineNumber];
     case 'joe':
@@ -77,7 +80,7 @@ function getArgumentsForLineNumber(editor, fileName, lineNumber, workspace) {
 function guessEditor() {
   // Explicit config always wins
   if (process.env.REACT_EDITOR) {
-    return process.env.REACT_EDITOR;
+    return shellQuote.parse(process.env.REACT_EDITOR);
   }
 
   // Using `ps x` on OSX we can find out which editor is currently running.
@@ -89,7 +92,7 @@ function guessEditor() {
       for (var i = 0; i < processNames.length; i++) {
         var processName = processNames[i];
         if (output.indexOf(processName) !== -1) {
-          return COMMON_EDITORS[processName];
+          return [COMMON_EDITORS[processName]];
         }
       }
     } catch(error) {
@@ -98,7 +101,13 @@ function guessEditor() {
   }
 
   // Last resort, use old skool env vars
-  return process.env.VISUAL || process.env.EDITOR;
+  if (process.env.VISUAL) {
+    return [process.env.VISUAL];
+  } else if (process.env.EDITOR) {
+    return [process.env.EDITOR];
+  }
+
+  return null;
 }
 
 function printInstructions(title) {
@@ -142,16 +151,17 @@ function launchEditor(fileName, lineNumber, projectRoots) {
     return;
   }
 
-  var editor = guessEditor();
+  let [editor, ...args] = guessEditor();
   if (!editor) {
     printInstructions('PRO TIP');
     return;
   }
 
   var workspace = findRootForFile(projectRoots, fileName);
-  var args = [fileName];
   if (lineNumber) {
-    args = getArgumentsForLineNumber(editor, fileName, lineNumber, workspace);
+    args = args.concat(getArgumentsForLineNumber(editor, fileName, lineNumber, workspace));
+  } else {
+    args.push(fileName);
   }
   console.log('Opening ' + chalk.underline(fileName) + ' with ' + chalk.bold(editor));
 

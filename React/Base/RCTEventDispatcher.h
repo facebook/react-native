@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 
 typedef NS_ENUM(NSInteger, RCTTextEventType)
 {
@@ -48,6 +48,19 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 + (NSString *)moduleDotMethod;
 // must contain only JSON compatible values
 - (NSArray *)arguments;
+
+@end
+
+/**
+ * This protocol allows observing events dispatched by RCTEventDispatcher.
+ */
+@protocol RCTEventDispatcherObserver <NSObject>
+
+/**
+ * Called before dispatching an event, on the same thread the event was
+ * dispatched from.
+ */
+- (void)eventDispatcherWillDispatchEvent:(id<RCTEvent>)event;
 
 @end
 
@@ -92,6 +105,16 @@ __deprecated_msg("Use RCTDirectEventBlock or RCTBubblingEventBlock instead");
  * If an event can be coalesced and there is another compatible event waiting, the coalescing will happen immediately.
  */
 - (void)sendEvent:(id<RCTEvent>)event;
+
+/**
+ * Add an event dispatcher observer.
+ */
+- (void)addDispatchObserver:(id<RCTEventDispatcherObserver>)observer;
+
+/**
+ * Remove an event dispatcher observer.
+ */
+- (void)removeDispatchObserver:(id<RCTEventDispatcherObserver>)observer;
 
 @end
 

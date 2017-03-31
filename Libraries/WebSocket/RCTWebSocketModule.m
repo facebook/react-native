@@ -11,8 +11,10 @@
 
 #import <objc/runtime.h>
 
-#import "RCTConvert.h"
-#import "RCTUtils.h"
+#import <React/RCTConvert.h>
+#import <React/RCTUtils.h>
+
+#import "RCTSRWebSocket.h"
 
 @implementation RCTSRWebSocket (React)
 
@@ -25,6 +27,10 @@
 {
   objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
+
+@end
+
+@interface RCTWebSocketModule () <RCTSRWebSocketDelegate>
 
 @end
 

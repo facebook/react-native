@@ -2,7 +2,7 @@
 #include <string>
 #include <gtest/gtest.h>
 #include <folly/json.h>
-#include <cxxreact/Value.h>
+#include <jschelpers/Value.h>
 
 #ifdef WITH_FBJSCEXTENSION
 #undef ASSERT
@@ -12,7 +12,6 @@
 
 #include <stdexcept>
 
-using namespace facebook;
 using namespace facebook::react;
 
 #ifdef ANDROID
@@ -21,32 +20,31 @@ static void prepare() {
   ALooper_prepare(0);
 }
 #else
-static void prepare() {
-}
+static void prepare() {}
 #endif
 
 TEST(Value, Undefined) {
   prepare();
-  JSGlobalContextRef ctx = JSGlobalContextCreateInGroup(nullptr, nullptr);
-  Value v(ctx, JSValueMakeUndefined(ctx));
-  auto s = react::String::adopt(JSValueToStringCopy(ctx, v, nullptr));
+  JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup(false, nullptr, nullptr);
+  auto v = Value::makeUndefined(ctx);
+  auto s = String::adopt(ctx, JSC_JSValueToStringCopy(ctx, v, nullptr));
   EXPECT_EQ("undefined", s.str());
-  JSGlobalContextRelease(ctx);
+  JSC_JSGlobalContextRelease(ctx);
 }
 
 TEST(Value, FromJSON) {
   prepare();
-  JSGlobalContextRef ctx = JSGlobalContextCreateInGroup(nullptr, nullptr);
-  react::String s("{\"a\": 4}");
+  JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup(false, nullptr, nullptr);
+  String s(ctx, "{\"a\": 4}");
   Value v(Value::fromJSON(ctx, s));
-  EXPECT_TRUE(JSValueIsObject(ctx, v));
-  JSGlobalContextRelease(ctx);
+  EXPECT_TRUE(v.isObject());
+  JSC_JSGlobalContextRelease(ctx);
 }
 
 TEST(Value, ToJSONString) {
   prepare();
-  JSGlobalContextRef ctx = JSGlobalContextCreateInGroup(nullptr, nullptr);
-  react::String s("{\"a\": 4}");
+  JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup(false, nullptr, nullptr);
+  String s(ctx, "{\"a\": 4}");
   Value v(Value::fromJSON(ctx, s));
   folly::dynamic dyn = folly::parseJson(v.toJSONString());
   ASSERT_NE(nullptr, dyn);
@@ -57,14 +55,14 @@ TEST(Value, ToJSONString) {
   EXPECT_EQ(4, val.getInt());
   EXPECT_EQ(4.0f, val.asDouble());
 
-  JSGlobalContextRelease(ctx);
+  JSC_JSGlobalContextRelease(ctx);
 }
 
 #ifdef WITH_FBJSCEXTENSION
 // Just test that handling invalid data doesn't crash.
 TEST(Value, FromBadUtf8) {
   prepare();
-  JSGlobalContextRef ctx = JSGlobalContextCreateInGroup(nullptr, nullptr);
+  JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup(false, nullptr, nullptr);
   // 110xxxxx 10xxxxxx
   auto dyn = folly::dynamic("\xC0");
   Value::fromDynamic(ctx, dyn);
@@ -91,18 +89,17 @@ TEST(Value, FromBadUtf8) {
   dyn = "\xF0\x80\x80\x00";
   Value::fromDynamic(ctx, dyn);
   Value(ctx, Value::fromDynamic(ctx, dyn)).toJSONString();
-  JSGlobalContextRelease(ctx);
+  JSC_JSGlobalContextRelease(ctx);
 }
 
 // Just test that handling invalid data doesn't crash.
 TEST(Value, BadUtf16) {
   prepare();
-  JSGlobalContextRef ctx = JSGlobalContextCreateInGroup(nullptr, nullptr);
+  JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup(false, nullptr, nullptr);
   UChar buf[] = { 0xDD00, 0xDD00, 0xDD00, 0x1111 };
   JSStringRef ref = OpaqueJSString::create(buf, 4).leakRef();
   Value v(ctx, ref);
   v.toJSONString(0);
-  JSGlobalContextRelease(ctx);
+  JSC_JSGlobalContextRelease(ctx);
 }
 #endif
-

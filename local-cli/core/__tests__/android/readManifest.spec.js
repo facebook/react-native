@@ -1,7 +1,7 @@
 jest.autoMockOff();
 
-const findManifest = require('../../config/android/findManifest');
-const readManifest = require('../../config/android/readManifest');
+const findManifest = require('../../android/findManifest');
+const readManifest = require('../../android/readManifest');
 const mockFs = require('mock-fs');
 const mocks = require('../../__fixtures__/android');
 

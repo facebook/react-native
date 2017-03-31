@@ -66,6 +66,11 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
     view.setTransparent(transparent);
   }
 
+  @ReactProp(name = "hardwareAccelerated")
+  public void setHardwareAccelerated(ReactModalHostView view, boolean hardwareAccelerated) {
+    view.setHardwareAccelerated(hardwareAccelerated);
+  }
+
   @Override
   protected void addEventEmitters(
       ThemedReactContext reactContext,

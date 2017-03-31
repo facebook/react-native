@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @providesModule ImageSnapshotTest
  */
 'use strict';
 
@@ -32,8 +33,8 @@ class ImageSnapshotTest extends React.Component {
   render() {
     return (
       <Image
-        source={require('image!blue_square')}
-        defaultSource={require('image!red_square')}
+        source={require('./blue_square.png')}
+        defaultSource={require('./red_square.png')}
         onLoad={() => TestModule.verifySnapshot(this.done)} />
     );
   }

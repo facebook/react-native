@@ -9,8 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTDefines.h"
-#import "RCTAssert.h"
+#import <React/RCTAssert.h>
+#import <React/RCTDefines.h>
 
 /**
  * RCTProfile
@@ -175,7 +175,7 @@ typedef struct {
 } systrace_arg_t;
 
 typedef struct {
-  void (*start)(uint64_t enabledTags, char *buffer, size_t bufferSize);
+  char *(*start)(void);
   void (*stop)(void);
 
   void (*begin_section)(uint64_t tag, const char *name, size_t numArgs, systrace_arg_t *args);

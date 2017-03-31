@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @providesModule AsyncStorageTest
  */
 'use strict';
 
@@ -174,7 +175,9 @@ class AsyncStorageTest extends React.Component {
   };
 
   componentDidMount() {
-    done = () => this.setState({done: true}, TestModule.markTestCompleted);
+    done = () => this.setState({done: true}, () => {
+      TestModule.markTestCompleted();
+    });
     updateMessage = (msg) => {
       this.setState({messages: this.state.messages.concat('\n' + msg)});
       DEBUG && console.log(msg);

@@ -14,15 +14,16 @@
 
 'use strict';
 
-var Dimensions = require('Dimensions');
-var InspectorOverlay = require('InspectorOverlay');
-var InspectorPanel = require('InspectorPanel');
-var InspectorUtils = require('InspectorUtils');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var Touchable = require('Touchable');
-var UIManager = require('UIManager');
-var View = require('View');
+const Dimensions = require('Dimensions');
+const InspectorOverlay = require('InspectorOverlay');
+const InspectorPanel = require('InspectorPanel');
+const InspectorUtils = require('InspectorUtils');
+const Platform = require('Platform');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const Touchable = require('Touchable');
+const UIManager = require('UIManager');
+const View = require('View');
 
 if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
   // required for devtools to be able to edit react native styles
@@ -89,9 +90,9 @@ class Inspector extends React.Component {
     this.setState({inspectedViewTag: newProps.inspectedViewTag});
   }
 
-  attachToDevtools(agent: Object) {
-    var _hideWait = null;
-    var hlSub = agent.sub('highlight', ({node, name, props}) => {
+  attachToDevtools = (agent: Object) => {
+    let _hideWait = null;
+    const hlSub = agent.sub('highlight', ({node, name, props}) => {
       clearTimeout(_hideWait);
       UIManager.measure(node, (x, y, width, height, left, top) => {
         this.setState({
@@ -103,7 +104,7 @@ class Inspector extends React.Component {
         });
       });
     });
-    var hideSub = agent.sub('hideHighlight', () => {
+    const hideSub = agent.sub('hideHighlight', () => {
       if (this.state.inspected === null) {
         return;
       }
@@ -123,14 +124,14 @@ class Inspector extends React.Component {
     this.setState({
       devtoolsAgent: agent,
     });
-  }
+  };
 
   setSelection(i: number) {
-    var instance = this.state.hierarchy[i];
+    const instance = this.state.hierarchy[i];
     // if we inspect a stateless component we can't use the getPublicInstance method
     // therefore we use the internal _instance property directly.
-    var publicInstance = instance['_instance'] || {};
-    var source = instance['_currentElement'] && instance['_currentElement']['_source'];
+    const publicInstance = instance['_instance'] || {};
+    const source = instance['_currentElement'] && instance['_currentElement']['_source'];
     UIManager.measure(instance.getHostNode(), (x, y, width, height, left, top) => {
       this.setState({
         inspected: {
@@ -147,8 +148,8 @@ class Inspector extends React.Component {
     // Most likely the touched instance is a native wrapper (like RCTView)
     // which is not very interesting. Most likely user wants a composite
     // instance that contains it (like View)
-    var hierarchy = InspectorUtils.getOwnerHierarchy(touched);
-    var instance = InspectorUtils.lastNotNativeInstance(hierarchy);
+    const hierarchy = InspectorUtils.getOwnerHierarchy(touched);
+    const instance = InspectorUtils.lastNotNativeInstance(hierarchy);
 
     if (this.state.devtoolsAgent) {
       this.state.devtoolsAgent.selectFromReactInstance(instance, true);
@@ -156,9 +157,9 @@ class Inspector extends React.Component {
 
     // if we inspect a stateless component we can't use the getPublicInstance method
     // therefore we use the internal _instance property directly.
-    var publicInstance = instance['_instance'] || {};
-    var props = publicInstance.props || {};
-    var source = instance['_currentElement'] && instance['_currentElement']['_source'];
+    const publicInstance = instance['_instance'] || {};
+    const props = publicInstance.props || {};
+    const source = instance['_currentElement'] && instance['_currentElement']['_source'];
     this.setState({
       panelPos: pointerY > Dimensions.get('window').height / 2 ? 'top' : 'bottom',
       selection: hierarchy.indexOf(instance),
@@ -204,7 +205,9 @@ class Inspector extends React.Component {
   }
 
   render() {
-    var panelContainerStyle = (this.state.panelPos === 'bottom') ? {bottom: 0} : {top: 0};
+    const panelContainerStyle = (this.state.panelPos === 'bottom') ?
+      {bottom: 0} :
+      {top: Platform.OS === 'ios' ? 20 : 0};
     return (
       <View style={styles.container} pointerEvents="box-none">
         {this.state.inspecting &&
@@ -235,7 +238,7 @@ class Inspector extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     backgroundColor: 'transparent',

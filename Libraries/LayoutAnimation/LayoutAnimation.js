@@ -11,11 +11,12 @@
  */
 'use strict';
 
-var {PropTypes} = require('React');
 var UIManager = require('UIManager');
 
-var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 var keyMirror = require('fbjs/lib/keyMirror');
+
+// $FlowFixMe checkPropTypes not yet landed to Flow
+var {checkPropTypes, PropTypes} = require('react');
 
 var TypesEnum = {
   spring: true,
@@ -33,7 +34,7 @@ var PropertiesEnum = {
 };
 var Properties = keyMirror(PropertiesEnum);
 
-var animChecker = createStrictShapeTypeChecker({
+var animType = PropTypes.shape({
   duration: PropTypes.number,
   delay: PropTypes.number,
   springDamping: PropTypes.number,
@@ -55,11 +56,11 @@ type Anim = {
   property?: $Enum<typeof PropertiesEnum>,
 }
 
-var configChecker = createStrictShapeTypeChecker({
+var configType = PropTypes.shape({
   duration: PropTypes.number.isRequired,
-  create: animChecker,
-  update: animChecker,
-  delete: animChecker,
+  create: animType,
+  update: animType,
+  delete: animType,
 });
 
 type Config = {
@@ -69,8 +70,14 @@ type Config = {
   delete?: Anim,
 }
 
+function checkConfig(config: Config, location: string, name: string) {
+  checkPropTypes({config: configType}, {config}, location, name);
+}
+
 function configureNext(config: Config, onAnimationDidEnd?: Function) {
-  configChecker({config}, 'config', 'LayoutAnimation.configureNext');
+  if (__DEV__) {
+    checkConfig(config, 'config', 'LayoutAnimation.configureNext');
+  }
   UIManager.configureNextLayoutAnimation(
     config, onAnimationDidEnd || function() {}, function() { /* unused */ }
   );
@@ -121,8 +128,11 @@ var Presets = {
  * Automatically animates views to their new positions when the
  * next layout happens.
  *
- * A common way to use this API is to call `LayoutAnimation.configureNext`
- * before calling `setState`.
+ * A common way to use this API is to call it before calling `setState`.
+ *
+ * Note that in order to get this to work on **Android** you need to set the following flags via `UIManager`:
+ *
+ *     UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
  */
 var LayoutAnimation = {
   /**
@@ -146,7 +156,7 @@ var LayoutAnimation = {
   create,
   Types,
   Properties,
-  configChecker: configChecker,
+  checkConfig,
   Presets,
   easeInEaseOut: configureNext.bind(
     null, Presets.easeInEaseOut

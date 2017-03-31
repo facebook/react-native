@@ -24,11 +24,11 @@ module.exports = function symbolMember(babel) {
   return {
     visitor: {
       MemberExpression(path) {
-        let node = path.node;
-
-        if (!isAppropriateMember(node)) {
+        if (!isAppropriateMember(path)) {
           return;
         }
+
+        let node = path.node;
 
         path.replaceWith(
           t.conditionalExpression(
@@ -54,8 +54,11 @@ module.exports = function symbolMember(babel) {
   };
 };
 
-function isAppropriateMember(node) {
-  return node.object.type === 'Identifier' &&
+function isAppropriateMember(path) {
+  let node = path.node;
+
+  return path.parentPath.type !== 'AssignmentExpression' &&
+    node.object.type === 'Identifier' &&
     node.object.name === 'Symbol' &&
     node.property.type === 'Identifier';
 }

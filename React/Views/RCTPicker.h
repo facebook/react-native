@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UIView+React.h"
+#import <React/UIView+React.h>
 
 @interface RCTPicker : UIPickerView
 

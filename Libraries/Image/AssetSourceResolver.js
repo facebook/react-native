@@ -9,6 +9,7 @@
  * @providesModule AssetSourceResolver
  * @flow
  */
+'use strict';
 
 export type ResolvedAssetSource = {
   __packager_asset: boolean,

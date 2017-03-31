@@ -18,7 +18,7 @@ module.exports = function makeSettingsPatch(name, androidConfig, projectConfig) 
   }
 
   return {
-    pattern: 'include \':app\'\n',
+    pattern: '\n',
     patch: `include ':${name}'\n` +
       `project(':${name}').projectDir = ` +
       `new File(rootProject.projectDir, '${projectDir}')\n`,

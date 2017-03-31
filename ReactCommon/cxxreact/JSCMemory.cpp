@@ -1,15 +1,16 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#include <JavaScriptCore/JavaScript.h>
+#include "JSCMemory.h"
 
 #ifdef WITH_FB_MEMORY_PROFILING
 
 #include <stdio.h>
 #include <string.h>
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
-#include "JSCHelpers.h"
+#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/Value.h>
 
-#include "Value.h"
+using namespace facebook::react;
 
 static JSValueRef nativeCaptureHeap(
     JSContextRef ctx,
@@ -20,18 +21,17 @@ static JSValueRef nativeCaptureHeap(
     JSValueRef* exception) {
   if (argumentCount < 1) {
       if (exception) {
-          *exception = facebook::react::makeJSCException(
+          *exception = Value::makeError(
             ctx,
             "nativeCaptureHeap requires the path to save the capture");
       }
-      return JSValueMakeUndefined(ctx);
+      return Value::makeUndefined(ctx);
   }
 
-  JSStringRef outputFilename = JSValueToStringCopy(ctx, arguments[0], exception);
-  std::string finalFilename = facebook::react::String::ref(outputFilename).str();
-  JSCaptureHeap(ctx, finalFilename.c_str(), exception);
-  JSStringRelease(outputFilename);
-  return JSValueMakeUndefined(ctx);
+  auto outputFilename = String::adopt(
+    ctx, JSValueToStringCopy(ctx, arguments[0], exception));
+  JSCaptureHeap(ctx, outputFilename.str().c_str(), exception);
+  return Value::makeUndefined(ctx);
 }
 
 #endif // WITH_FB_MEMORY_PROFILING
@@ -43,7 +43,7 @@ void addNativeMemoryHooks(JSGlobalContextRef ctx) {
 #ifdef WITH_FB_MEMORY_PROFILING
   installGlobalFunction(ctx, "nativeCaptureHeap", nativeCaptureHeap);
 #endif // WITH_FB_MEMORY_PROFILING
-  
+
 }
 
 } }

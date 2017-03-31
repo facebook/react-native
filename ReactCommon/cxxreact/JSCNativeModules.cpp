@@ -11,7 +11,11 @@ JSCNativeModules::JSCNativeModules(std::shared_ptr<ModuleRegistry> moduleRegistr
   m_moduleRegistry(std::move(moduleRegistry)) {}
 
 JSValueRef JSCNativeModules::getModule(JSContextRef context, JSStringRef jsName) {
-  std::string moduleName = String::ref(jsName).str();
+  if (!m_moduleRegistry) {
+    return nullptr;
+  }
+
+  std::string moduleName = String::ref(context, jsName).str();
 
   const auto it = m_objects.find(moduleName);
   if (it != m_objects.end()) {
@@ -20,7 +24,8 @@ JSValueRef JSCNativeModules::getModule(JSContextRef context, JSStringRef jsName)
 
   auto module = createModule(moduleName, context);
   if (!module.hasValue()) {
-    return JSValueMakeUndefined(context);
+    // Allow lookup to continue in the objects own properties, which allows for overrides of NativeModules
+    return nullptr;
   }
 
   // Protect since we'll be holding on to this value, even though JS may not
@@ -53,7 +58,7 @@ folly::Optional<Object> JSCNativeModules::createModule(const std::string& name, 
 
   Value moduleInfo = m_genNativeModuleJS->callAsFunction({
     Value::fromDynamic(context, result->config),
-    JSValueMakeNumber(context, result->index)
+    Value::makeNumber(context, result->index)
   });
   CHECK(!moduleInfo.isNull()) << "Module returned from genNativeModule is null";
 

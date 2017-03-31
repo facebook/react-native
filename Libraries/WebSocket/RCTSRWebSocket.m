@@ -22,9 +22,8 @@
 #import <Security/SecRandom.h>
 
 #import <CommonCrypto/CommonDigest.h>
-
-#import "RCTAssert.h"
-#import "RCTLog.h"
+#import <React/RCTAssert.h>
+#import <React/RCTLog.h>
 
 typedef NS_ENUM(NSInteger, RCTSROpCode)  {
   RCTSROpCodeTextFrame = 0x1,

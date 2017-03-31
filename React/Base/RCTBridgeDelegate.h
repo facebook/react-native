@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTJavaScriptLoader.h"
+#import <React/RCTJavaScriptLoader.h>
 
 @class RCTBridge;
 @protocol RCTBridgeModule;
@@ -81,6 +81,29 @@
  * @experimental
  */
 - (BOOL)shouldBridgeInitializeNativeModulesSynchronously:(RCTBridge *)bridge;
+
+/**
+ * Configure whether the JSCExecutor created should use the system JSC API or
+ * alternative hooks provided. When returning YES from this method, you must have
+ * previously called facebook::react::setCustomJSCWrapper.
+ *
+ * @experimental
+ */
+- (BOOL)shouldBridgeUseCustomJSC:(RCTBridge *)bridge;
+
+/**
+ * Configure whether the legacy RCTBatchedBridge or new RCTCxxBridge
+ * should be used.  If this method is implemented and the specified
+ * bridge is not linked in, startup will fail.  If this method is not
+ * implemented, the implementation will default to RCTBatchedBridge,
+ * but if it is not linked in, will try RCTCxxBridge instead.  If
+ * neither bridge is linked in, startup will fail.  This order will be
+ * reversed in the near future, as the legacy bridge is closer to
+ * being removed.
+ *
+ * @experimental
+ */
+- (BOOL)shouldBridgeUseCxxBridge:(RCTBridge *)bridge;
 
 /**
  * The bridge will automatically attempt to load the JS source code from the

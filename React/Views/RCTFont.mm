@@ -301,6 +301,15 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
     }
   }
 
+  // If we still don't have a match at least return the first font in the fontFamily
+  // This is to support built-in font Zapfino and other custom single font families like Impact
+  if (!font) {
+    NSArray *names = [UIFont fontNamesForFamilyName:familyName];
+    if (names.count > 0) {
+      font = [UIFont fontWithName:names[0] size:fontSize];
+    }
+  }
+
   // Apply font variants to font object
   if (variant) {
     NSArray *fontFeatures = [RCTConvert RCTFontVariantDescriptorArray:variant];

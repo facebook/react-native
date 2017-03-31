@@ -6,7 +6,7 @@
 #include <string>
 #include <stdexcept>
 
-#include "noncopyable.h"
+#include <jschelpers/noncopyable.h>
 
 namespace facebook {
 namespace react {

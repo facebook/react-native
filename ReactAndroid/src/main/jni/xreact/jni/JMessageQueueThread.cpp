@@ -9,7 +9,7 @@
 #include <folly/Memory.h>
 #include <fb/fbjni.h>
 
-#include <cxxreact/JSCHelpers.h>
+#include <jschelpers/JSCHelpers.h>
 
 #include "JNativeRunnable.h"
 
@@ -93,4 +93,3 @@ std::unique_ptr<JMessageQueueThread> JMessageQueueThread::currentMessageQueueThr
 }
 
 } }
-

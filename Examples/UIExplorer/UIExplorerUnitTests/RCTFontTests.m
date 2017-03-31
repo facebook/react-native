@@ -12,11 +12,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#import <CoreText/CoreText.h>
 #import <XCTest/XCTest.h>
 
-#import "RCTFont.h"
-
-#import <CoreText/CoreText.h>
+#import <React/RCTFont.h>
 
 @interface RCTFontTests : XCTestCase
 

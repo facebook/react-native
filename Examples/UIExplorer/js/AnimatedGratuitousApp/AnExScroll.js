@@ -69,18 +69,27 @@ class AnExScroll extends React.Component {
         <Animated.Image
           pointerEvents="none"
           style={[styles.bunny, {transform: [
-            {translateX: this.state.scrollX.interpolate({
-              inputRange: [0, width, 2 * width],
-              outputRange: [0, 0, width / 3]}),          //  multi-part ranges
-              extrapolate: 'clamp'},                     //  default is 'extend'
-            {translateY: this.state.scrollX.interpolate({
-              inputRange: [0, width, 2 * width],
-              outputRange: [0, -200, -260]}),
-              extrapolate: 'clamp'},
-            {scale: this.state.scrollX.interpolate({
-              inputRange: [0, width, 2 * width],
-              outputRange: [0.5, 0.5, 2]}),
-              extrapolate: 'clamp'},
+            {
+              translateX: this.state.scrollX.interpolate({
+                inputRange: [0, width, 2 * width],
+                outputRange: [0, 0, width / 3],
+                extrapolate: 'clamp',
+              }),
+            },
+            {
+              translateY: this.state.scrollX.interpolate({
+                inputRange: [0, width, 2 * width],
+                outputRange: [0, -200, -260],
+                extrapolate: 'clamp',
+              }),
+            },
+            {
+              scale: this.state.scrollX.interpolate({
+                inputRange: [0, width, 2 * width],
+                outputRange: [0.5, 0.5, 2],
+                extrapolate: 'clamp',
+              }),
+            },
           ]}]}
           source={BUNNY_PIC}
         />

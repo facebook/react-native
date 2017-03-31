@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule StatusBarExample
  */
 'use strict';
 
@@ -438,7 +439,7 @@ const examples = [{
   render() {
     return (
       <View>
-        <Text>Height: {StatusBar.currentHeight} pts</Text>
+        <Text>Height (Android only): {StatusBar.currentHeight} pts</Text>
       </View>
     );
   },

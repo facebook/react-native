@@ -19,12 +19,14 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule TouchableExample
  */
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
 var {
+  Animated,
   Image,
   StyleSheet,
   Text,
@@ -34,6 +36,11 @@ var {
   TouchableNativeFeedback,
   View,
 } = ReactNative;
+
+const NativeModules = require('NativeModules');
+
+const forceTouchAvailable = (NativeModules.PlatformConstants &&
+  NativeModules.PlatformConstants.forceTouchAvailable) || false;
 
 exports.displayName = (undefined: ?string);
 exports.description = 'Touchable and onPress examples.';
@@ -74,6 +81,30 @@ exports.examples = [
       </View>
     );
   },
+ }, {
+  title: 'TouchableNativeFeedback with Animated child',
+  description: 'TouchableNativeFeedback can have an AnimatedComponent as a' +
+    'direct child.',
+  platform: 'android',
+  render: function() {
+    const mScale = new Animated.Value(1);
+    Animated.timing(mScale, {toValue: 0.3, duration: 1000}).start();
+    const style = {
+      backgroundColor: 'rgb(180, 64, 119)',
+      width: 200,
+      height: 100,
+      transform: [{scale: mScale}]
+    };
+    return (
+      <View>
+        <View style={styles.row}>
+          <TouchableNativeFeedback>
+            <Animated.View style={style}/>
+          </TouchableNativeFeedback>
+        </View>
+      </View>
+    );
+  },
 }, {
   title: '<Text onPress={fn}> with highlight',
   render: function(): React.Element<any> {
@@ -108,7 +139,7 @@ exports.examples = [
    render: function(): React.Element<any> {
      return <TouchableHitSlop />;
    },
- }, {
+}, {
    title: 'Disabled Touchable*',
    description: '<Touchable*> components accept disabled prop which prevents ' +
      'any interaction with component',
@@ -237,7 +268,7 @@ class ForceTouchExample extends React.Component {
   };
 
   _renderConsoleText = () => {
-    return View.forceTouchAvailable ?
+    return forceTouchAvailable ?
       'Force: ' + this.state.force.toFixed(3) :
       '3D Touch is not available on this device';
   };

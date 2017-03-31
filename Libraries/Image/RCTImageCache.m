@@ -9,16 +9,15 @@
 
 #import "RCTImageCache.h"
 
-#import <ImageIO/ImageIO.h>
-
-#import <libkern/OSAtomic.h>
-
 #import <objc/runtime.h>
 
-#import "RCTConvert.h"
+#import <ImageIO/ImageIO.h>
+
+#import <React/RCTConvert.h>
+#import <React/RCTNetworking.h>
+#import <React/RCTUtils.h>
+
 #import "RCTImageUtils.h"
-#import "RCTNetworking.h"
-#import "RCTUtils.h"
 
 static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 1048576; // 1MB
 

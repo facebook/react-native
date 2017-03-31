@@ -12,7 +12,8 @@
 'use strict';
 
 var PixelRatio = require('PixelRatio');
-var ReactNativePropRegistry = require('react/lib/ReactNativePropRegistry');
+var ReactNativePropRegistry = require('ReactNativePropRegistry');
+var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var StyleSheetValidation = require('StyleSheetValidation');
 
 var flatten = require('flattenStyle');
@@ -95,7 +96,7 @@ module.exports = {
    * on the underlying platform. However, you should not rely on it being a
    * constant size, because on different platforms and screen densities its
    * value may be calculated differently.
-   * 
+   *
    * A line with hairline width may not be visible if your simulator is downscaled.
    */
   hairlineWidth,
@@ -163,6 +164,34 @@ module.exports = {
   flatten,
 
   /**
+   * WARNING: EXPERIMENTAL. Breaking changes will probably happen a lot and will
+   * not be reliably announced. The whole thing might be deleted, who knows? Use
+   * at your own risk.
+   *
+   * Sets a function to use to pre-process a style property value. This is used
+   * internally to process color and transform values. You should not use this
+   * unless you really know what you are doing and have exhausted other options.
+   */
+  setStyleAttributePreprocessor(property: string, process: (nextProp: mixed) => mixed) {
+    let value;
+
+    if (typeof ReactNativeStyleAttributes[property] === 'string') {
+      value = {};
+    } else if (typeof ReactNativeStyleAttributes[property] === 'object') {
+      value = ReactNativeStyleAttributes[property];
+    } else {
+      console.error(`${property} is not a valid style attribute`);
+      return;
+    }
+
+    if (__DEV__ && typeof value.process === 'function') {
+      console.warn(`Overwriting ${property} style attribute preprocessor`);
+    }
+
+    ReactNativeStyleAttributes[property] = { ...value, process };
+  },
+
+  /**
    * Creates a StyleSheet style reference from the given object.
    */
   create<S: Styles>(obj: S): StyleSheet<S> {
@@ -172,5 +201,5 @@ module.exports = {
       result[key] = ReactNativePropRegistry.register(obj[key]);
     }
     return result;
-  }
+  },
 };

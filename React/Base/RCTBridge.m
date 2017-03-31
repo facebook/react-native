@@ -14,14 +14,13 @@
 
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
-#import "RCTKeyCommands.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
+#import "RCTReloadCommand.h"
 #import "RCTUtils.h"
 
-NSString *const RCTReloadNotification = @"RCTReloadNotification";
 NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
@@ -32,6 +31,8 @@ NSArray<Class> *RCTGetModuleClasses(void)
 {
   return RCTModuleClasses;
 }
+
+void RCTFBQuickPerformanceLoggerConfigureHooks(__unused JSGlobalContextRef ctx) { }
 
 /**
  * Register the given class as a bridge module. All modules must be registered
@@ -120,6 +121,9 @@ void RCTVerifyAllModulesExported(NSArray *extraModules)
 }
 #endif
 
+@interface RCTBridge () <RCTReloadListener>
+@end
+
 @implementation RCTBridge
 {
   NSURL *_delegateBundleURL;
@@ -186,8 +190,6 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
     _launchOptions = [launchOptions copy];
 
     [self setUp];
-
-    RCTExecuteOnMainQueue(^{ [self bindKeys]; });
   }
   return self;
 }
@@ -200,25 +202,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
    * This runs only on the main thread, but crashes the subclass
    * RCTAssertMainQueue();
    */
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self invalidate];
 }
 
-- (void)bindKeys
+- (void)didReceiveReloadCommand
 {
-  RCTAssertMainQueue();
-
-#if TARGET_IPHONE_SIMULATOR
-  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
-
-  // reload in current mode
-  __weak typeof(self) weakSelf = self;
-  [commands registerKeyCommandWithInput:@"r"
-                          modifierFlags:UIKeyModifierCommand
-                                 action:^(__unused UIKeyCommand *command) {
-    [weakSelf requestReload];
-  }];
-#endif
+  [self reload];
 }
 
 - (NSArray<Class> *)moduleClasses
@@ -273,8 +262,35 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)requestReload
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:self];
   [self reload];
+}
+
+- (Class)bridgeClass
+{
+  // In order to facilitate switching between bridges with only build
+  // file changes, this uses reflection to check which bridges are
+  // available.  This is a short-term hack until RCTBatchedBridge is
+  // removed.
+
+  Class batchedBridgeClass = objc_lookUpClass("RCTBatchedBridge");
+  Class cxxBridgeClass = objc_lookUpClass("RCTCxxBridge");
+
+  Class implClass = nil;
+
+  if ([self.delegate respondsToSelector:@selector(shouldBridgeUseCxxBridge:)]) {
+    if ([self.delegate shouldBridgeUseCxxBridge:self]) {
+      implClass = cxxBridgeClass;
+    } else {
+      implClass = batchedBridgeClass;
+    }
+  } else if (batchedBridgeClass != nil) {
+    implClass = batchedBridgeClass;
+  } else if (cxxBridgeClass != nil) {
+    implClass = cxxBridgeClass;
+  }
+
+  RCTAssert(implClass != nil, @"No bridge implementation is available, giving up.");
+  return implClass;
 }
 
 - (void)setUp
@@ -284,6 +300,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   _performanceLogger = [RCTPerformanceLogger new];
   [_performanceLogger markStartForTag:RCTPLBridgeStartup];
   [_performanceLogger markStartForTag:RCTPLTTI];
+
+  Class bridgeClass = self.bridgeClass;
+
+  #if RCT_DEV
+  RCTExecuteOnMainQueue(^{
+    RCTRegisterReloadCommandListener(self);
+  });
+  #endif
 
   // Only update bundleURL from delegate if delegate bundleURL has changed
   NSURL *previousDelegateURL = _delegateBundleURL;
@@ -295,15 +319,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
-  [self createBatchedBridge];
+  self.batchedBridge = [[bridgeClass alloc] initWithParentBridge:self];
   [self.batchedBridge start];
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-}
-
-- (void)createBatchedBridge
-{
-  self.batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
 }
 
 - (BOOL)isLoading

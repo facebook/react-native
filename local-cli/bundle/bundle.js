@@ -6,18 +6,18 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+'use strict';
 
 const buildBundle = require('./buildBundle');
-const outputBundle = require('./output/bundle');
-const outputPrepack = require('./output/prepack');
 const bundleCommandLineArgs = require('./bundleCommandLineArgs');
+const outputBundle = require('./output/bundle');
 
 /**
  * Builds the bundle starting to look for dependencies at the given entry path.
  */
 function bundleWithOutput(argv, config, args, output, packagerInstance) {
   if (!output) {
-    output = args.prepack ? outputPrepack : outputBundle;
+    output = outputBundle;
   }
   return buildBundle(args, config, output, packagerInstance);
 }

@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
  */
 /*package*/ class ValueAnimatedNode extends AnimatedNode {
   /*package*/ double mValue = Double.NaN;
+  /*package*/ double mOffset = 0;
   private @Nullable AnimatedNodeValueListener mValueListener;
 
   public ValueAnimatedNode() {
@@ -27,6 +28,21 @@ import javax.annotation.Nullable;
 
   public ValueAnimatedNode(ReadableMap config) {
     mValue = config.getDouble("value");
+    mOffset = config.getDouble("offset");
+  }
+
+  public double getValue() {
+    return mOffset + mValue;
+  }
+
+  public void flattenOffset() {
+    mValue += mOffset;
+    mOffset = 0;
+  }
+
+  public void extractOffset() {
+    mOffset += mValue;
+    mValue = 0;
   }
 
   public void onValueUpdate() {

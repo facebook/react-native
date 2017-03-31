@@ -79,15 +79,23 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
     Set<? extends Element> reactModuleListElements = roundEnv.getElementsAnnotatedWith(
       ReactModuleList.class);
     for (Element reactModuleListElement : reactModuleListElements) {
+      if (!(reactModuleListElement instanceof TypeElement)) {
+        continue;
+      }
+
       TypeElement typeElement = (TypeElement) reactModuleListElement;
+      ReactModuleList reactModuleList = typeElement.getAnnotation(ReactModuleList.class);
+      if (reactModuleList == null) {
+        continue;
+      }
+
       ClassName className = ClassName.get(typeElement);
       String packageName = ClassName.get(typeElement).packageName();
       String fileName = className.simpleName();
 
-      ReactModuleList reactModuleList = typeElement.getAnnotation(ReactModuleList.class);
       List<String> nativeModules = new ArrayList<>();
       try {
-        reactModuleList.value(); // throws MirroredTypesException
+        reactModuleList.nativeModules(); // throws MirroredTypesException
       } catch (MirroredTypesException mirroredTypesException) {
         List<? extends TypeMirror> typeMirrors = mirroredTypesException.getTypeMirrors();
         for (TypeMirror typeMirror : typeMirrors) {
@@ -145,7 +153,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
         if (reactModule == null) {
           throw new ReactModuleSpecException(
             keyString + " not found by ReactModuleSpecProcessor. " +
-            "Did you forget to add the @ReactModule annotation the the native module?");
+            "Did you forget to add the @ReactModule annotation to the native module?");
         }
         String valueString = new StringBuilder()
           .append("new ReactModuleInfo(")

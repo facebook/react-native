@@ -11,19 +11,19 @@
  */
 'use strict';
 
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-var UIManager = require('UIManager');
-var UnimplementedView = require('UnimplementedView');
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const UIManager = require('UIManager');
+const UnimplementedView = require('UnimplementedView');
 
-var createReactNativeComponentClass = require('react/lib/createReactNativeComponentClass');
-var insetsDiffer = require('insetsDiffer');
-var matricesDiffer = require('matricesDiffer');
-var pointsDiffer = require('pointsDiffer');
-var processColor = require('processColor');
-var resolveAssetSource = require('resolveAssetSource');
-var sizesDiffer = require('sizesDiffer');
-var verifyPropTypes = require('verifyPropTypes');
-var warning = require('fbjs/lib/warning');
+const createReactNativeComponentClass = require('createReactNativeComponentClass');
+const insetsDiffer = require('insetsDiffer');
+const matricesDiffer = require('matricesDiffer');
+const pointsDiffer = require('pointsDiffer');
+const processColor = require('processColor');
+const resolveAssetSource = require('resolveAssetSource');
+const sizesDiffer = require('sizesDiffer');
+const verifyPropTypes = require('verifyPropTypes');
+const warning = require('fbjs/lib/warning');
 
 /**
  * Used to create React components that directly wrap native component
@@ -46,30 +46,48 @@ function requireNativeComponent(
   viewName: string,
   componentInterface?: ?ComponentInterface,
   extraConfig?: ?{nativeOnly?: Object},
-): Function {
-  var viewConfig = UIManager[viewName];
+): ReactClass<any> | string {
+  const viewConfig = UIManager[viewName];
   if (!viewConfig || !viewConfig.NativeProps) {
     warning(false, 'Native component for "%s" does not exist', viewName);
     return UnimplementedView;
   }
-  var nativeProps = {
+
+  viewConfig.uiViewClassName = viewName;
+  viewConfig.validAttributes = {};
+
+  // ReactNative `View.propTypes` have been deprecated in favor of
+  // `ViewPropTypes`. In their place a temporary getter has been added with a
+  // deprecated warning message. Avoid triggering that warning here by using
+  // temporary workaround, __propTypesSecretDontUseThesePlease.
+  // TODO (bvaughn) Revert this particular change any time after April 1
+  if (componentInterface) {
+    viewConfig.propTypes =
+      typeof componentInterface.__propTypesSecretDontUseThesePlease === 'object'
+        ? componentInterface.__propTypesSecretDontUseThesePlease
+        : componentInterface.propTypes;
+  } else {
+    viewConfig.propTypes = null;
+  }
+
+  // The ViewConfig doesn't contain any props inherited from the view manager's
+  // superclass, so we manually merge in the RCTView ones. Other inheritance
+  // patterns are currenty not supported.
+  const nativeProps = {
     ...UIManager.RCTView.NativeProps,
     ...viewConfig.NativeProps,
   };
-  viewConfig.uiViewClassName = viewName;
-  viewConfig.validAttributes = {};
-  viewConfig.propTypes = componentInterface && componentInterface.propTypes;
-  for (var key in nativeProps) {
-    var useAttribute = false;
-    var attribute = {};
+  for (const key in nativeProps) {
+    let useAttribute = false;
+    const attribute = {};
 
-    var differ = TypeToDifferMap[nativeProps[key]];
+    const differ = TypeToDifferMap[nativeProps[key]];
     if (differ) {
       attribute.diff = differ;
       useAttribute = true;
     }
 
-    var processor = TypeToProcessorMap[nativeProps[key]];
+    const processor = TypeToProcessorMap[nativeProps[key]];
     if (processor) {
       attribute.process = processor;
       useAttribute = true;
@@ -92,10 +110,11 @@ function requireNativeComponent(
       extraConfig && extraConfig.nativeOnly
     );
   }
+
   return createReactNativeComponentClass(viewConfig);
 }
 
-var TypeToDifferMap = {
+const TypeToDifferMap = {
   // iOS Types
   CATransform3D: matricesDiffer,
   CGPoint: pointsDiffer,
@@ -105,11 +124,11 @@ var TypeToDifferMap = {
   // (not yet implemented)
 };
 
-function processColorArray(colors: []): [] {
+function processColorArray(colors: ?Array<any>): ?Array<?number> {
   return colors && colors.map(processColor);
 }
 
-var TypeToProcessorMap = {
+const TypeToProcessorMap = {
   // iOS Types
   CGColor: processColor,
   CGColorArray: processColorArray,

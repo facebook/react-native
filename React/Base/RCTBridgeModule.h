@@ -9,7 +9,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTDefines.h"
+#import <React/RCTDefines.h>
 
 @class RCTBridge;
 @protocol RCTBridgeMethod;
@@ -154,7 +154,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  */
 #define RCT_REMAP_METHOD(js_name, method) \
   RCT_EXTERN_REMAP_METHOD(js_name, method) \
-  - (void)method
+  - (void)method;
 
 /**
  * Use this macro in a private Objective-C implementation file to automatically
@@ -173,7 +173,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  *
  * MyModuleExport.m:
  *
- *   #import "RCTBridgeModule.h"
+ *   #import <React/RCTBridgeModule.h>
  *
  *   @interface RCT_EXTERN_MODULE(MyModule, NSObject)
  *

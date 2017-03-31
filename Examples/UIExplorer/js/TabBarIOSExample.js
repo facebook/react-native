@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule TabBarIOSExample
  */
 'use strict';
 
@@ -58,6 +59,7 @@ class TabBarExample extends React.Component {
       <TabBarIOS
         unselectedTintColor="yellow"
         tintColor="white"
+        unselectedItemTintColor="red"
         barTintColor="darkslateblue">
         <TabBarIOS.Item
           title="Blue Tab"
@@ -73,6 +75,7 @@ class TabBarExample extends React.Component {
         <TabBarIOS.Item
           systemIcon="history"
           badge={this.state.notifCount > 0 ? this.state.notifCount : undefined}
+          badgeColor="black"
           selected={this.state.selectedTab === 'redTab'}
           onPress={() => {
             this.setState({

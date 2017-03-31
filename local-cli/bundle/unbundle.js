@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+'use strict';
 
 const bundleWithOutput = require('./bundle').withOutput;
 const bundleCommandLineArgs = require('./bundleCommandLineArgs');
@@ -22,5 +23,9 @@ module.exports = {
   name: 'unbundle',
   description: 'builds javascript as "unbundle" for offline use',
   func: unbundle,
-  options: bundleCommandLineArgs,
+  options: bundleCommandLineArgs.concat({
+    command: '--indexed-unbundle',
+    description: 'Force indexed unbundle file format, even when building for android',
+    default: false,
+  }),
 };

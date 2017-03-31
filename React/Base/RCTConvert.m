@@ -7,11 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <CoreText/CoreText.h>
-
 #import "RCTConvert.h"
 
 #import <objc/message.h>
+
+#import <CoreText/CoreText.h>
 
 #import "RCTDefines.h"
 #import "RCTImageSource.h"
@@ -118,6 +118,14 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
   }
 }
 
+RCT_ENUM_CONVERTER(NSURLRequestCachePolicy, (@{
+                                               @"default": @(NSURLRequestUseProtocolCachePolicy),
+                                               @"reload": @(NSURLRequestReloadIgnoringLocalCacheData),
+                                               @"force-cache": @(NSURLRequestReturnCacheDataElseLoad),
+                                               @"only-if-cached": @(NSURLRequestReturnCacheDataDontLoad),
+                                               }), NSURLRequestUseProtocolCachePolicy, integerValue)
+
+
 + (NSURLRequest *)NSURLRequest:(id)json
 {
   if ([json isKindOfClass:[NSString class]]) {
@@ -140,8 +148,9 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
 
     NSData *body = [self NSData:json[@"body"]];
     NSString *method = [self NSString:json[@"method"]].uppercaseString ?: @"GET";
+    NSURLRequestCachePolicy cachePolicy = [self NSURLRequestCachePolicy:json[@"cache"]];
     NSDictionary *headers = [self NSDictionary:json[@"headers"]];
-    if ([method isEqualToString:@"GET"] && headers == nil && body == nil) {
+    if ([method isEqualToString:@"GET"] && headers == nil && body == nil && cachePolicy == NSURLRequestUseProtocolCachePolicy) {
       return [NSURLRequest requestWithURL:URL];
     }
 
@@ -164,6 +173,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
     request.HTTPBody = body;
     request.HTTPMethod = method;
+    request.cachePolicy = cachePolicy;
     request.allHTTPHeaderFields = headers;
     return [request copy];
   }
@@ -455,13 +465,6 @@ RCT_ENUM_CONVERTER(CGLineCap, (@{
   @"square": @(kCGLineCapSquare),
 }), kCGLineCapButt, intValue)
 
-RCT_CGSTRUCT_CONVERTER(CATransform3D, (@[
-  @"m11", @"m12", @"m13", @"m14",
-  @"m21", @"m22", @"m23", @"m24",
-  @"m31", @"m32", @"m33", @"m34",
-  @"m41", @"m42", @"m43", @"m44"
-]), nil)
-
 RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   @"a", @"b", @"c", @"d", @"tx", @"ty"
 ]), nil)
@@ -494,6 +497,27 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 + (CGColorRef)CGColor:(id)json
 {
   return [self UIColor:json].CGColor;
+}
+
++ (YGValue)YGValue:(id)json
+{
+  if (!json) {
+    return YGValueUndefined;
+  } else if ([json isKindOfClass:[NSNumber class]]) {
+    return (YGValue) { [json floatValue], YGUnitPoint };
+  } else if ([json isKindOfClass:[NSString class]]) {
+    NSString *s = (NSString *) json;
+    if ([s isEqualToString:@"auto"]) {
+      return (YGValue) { YGUndefined, YGUnitAuto };
+    } else if ([s hasSuffix:@"%"]) {
+      return (YGValue) { [[s substringToIndex:s.length] floatValue], YGUnitPercent };
+    } else {
+      RCTLogConvertError(json, @"a YGValue. Did you forget the % or pt suffix?");
+    }
+  } else {
+    RCTLogConvertError(json, @"a YGValue.");
+  }
+  return YGValueUndefined;
 }
 
 NSArray *RCTConvertArrayValue(SEL type, id json)
@@ -536,14 +560,15 @@ RCT_ARRAY_CONVERTER(UIColor)
  * representable json array values that require no conversion.
  */
 #if RCT_DEBUG
-#define RCT_JSON_ARRAY_CONVERTER(type) RCT_ARRAY_CONVERTER(type)
+#define RCT_JSON_ARRAY_CONVERTER_NAMED(type, name) RCT_ARRAY_CONVERTER_NAMED(type, name)
 #else
-#define RCT_JSON_ARRAY_CONVERTER(type) + (NSArray *)type##Array:(id)json { return json; }
+#define RCT_JSON_ARRAY_CONVERTER_NAMED(type, name) + (NSArray *)name##Array:(id)json { return json; }
 #endif
+#define RCT_JSON_ARRAY_CONVERTER(type) RCT_JSON_ARRAY_CONVERTER_NAMED(type, type)
 
 RCT_JSON_ARRAY_CONVERTER(NSArray)
 RCT_JSON_ARRAY_CONVERTER(NSString)
-RCT_JSON_ARRAY_CONVERTER(NSStringArray)
+RCT_JSON_ARRAY_CONVERTER_NAMED(NSArray<NSString *>, NSStringArray)
 RCT_JSON_ARRAY_CONVERTER(NSDictionary)
 RCT_JSON_ARRAY_CONVERTER(NSNumber)
 
@@ -614,44 +639,58 @@ RCT_ENUM_CONVERTER(css_backface_visibility_t, (@{
   @"visible": @YES
 }), YES, boolValue)
 
-RCT_ENUM_CONVERTER(CSSOverflow, (@{
-  @"hidden": @(CSSOverflowHidden),
-  @"visible": @(CSSOverflowVisible),
-  @"scroll": @(CSSOverflowScroll),
-}), CSSOverflowVisible, intValue)
+RCT_ENUM_CONVERTER(YGOverflow, (@{
+  @"hidden": @(YGOverflowHidden),
+  @"visible": @(YGOverflowVisible),
+  @"scroll": @(YGOverflowScroll),
+}), YGOverflowVisible, intValue)
 
-RCT_ENUM_CONVERTER(CSSFlexDirection, (@{
-  @"row": @(CSSFlexDirectionRow),
-  @"row-reverse": @(CSSFlexDirectionRowReverse),
-  @"column": @(CSSFlexDirectionColumn),
-  @"column-reverse": @(CSSFlexDirectionColumnReverse)
-}), CSSFlexDirectionColumn, intValue)
+RCT_ENUM_CONVERTER(YGDisplay, (@{
+  @"flex": @(YGDisplayFlex),
+  @"none": @(YGDisplayNone),
+}), YGDisplayFlex, intValue)
 
-RCT_ENUM_CONVERTER(CSSJustify, (@{
-  @"flex-start": @(CSSJustifyFlexStart),
-  @"flex-end": @(CSSJustifyFlexEnd),
-  @"center": @(CSSJustifyCenter),
-  @"space-between": @(CSSJustifySpaceBetween),
-  @"space-around": @(CSSJustifySpaceAround)
-}), CSSJustifyFlexStart, intValue)
+RCT_ENUM_CONVERTER(YGFlexDirection, (@{
+  @"row": @(YGFlexDirectionRow),
+  @"row-reverse": @(YGFlexDirectionRowReverse),
+  @"column": @(YGFlexDirectionColumn),
+  @"column-reverse": @(YGFlexDirectionColumnReverse)
+}), YGFlexDirectionColumn, intValue)
 
-RCT_ENUM_CONVERTER(CSSAlign, (@{
-  @"flex-start": @(CSSAlignFlexStart),
-  @"flex-end": @(CSSAlignFlexEnd),
-  @"center": @(CSSAlignCenter),
-  @"auto": @(CSSAlignAuto),
-  @"stretch": @(CSSAlignStretch)
-}), CSSAlignFlexStart, intValue)
+RCT_ENUM_CONVERTER(YGJustify, (@{
+  @"flex-start": @(YGJustifyFlexStart),
+  @"flex-end": @(YGJustifyFlexEnd),
+  @"center": @(YGJustifyCenter),
+  @"space-between": @(YGJustifySpaceBetween),
+  @"space-around": @(YGJustifySpaceAround)
+}), YGJustifyFlexStart, intValue)
 
-RCT_ENUM_CONVERTER(CSSPositionType, (@{
-  @"absolute": @(CSSPositionTypeAbsolute),
-  @"relative": @(CSSPositionTypeRelative)
-}), CSSPositionTypeRelative, intValue)
+RCT_ENUM_CONVERTER(YGAlign, (@{
+  @"flex-start": @(YGAlignFlexStart),
+  @"flex-end": @(YGAlignFlexEnd),
+  @"center": @(YGAlignCenter),
+  @"auto": @(YGAlignAuto),
+  @"stretch": @(YGAlignStretch),
+  @"baseline": @(YGAlignBaseline),
+  @"space-between": @(YGAlignSpaceBetween),
+  @"space-around": @(YGAlignSpaceAround)
+}), YGAlignFlexStart, intValue)
 
-RCT_ENUM_CONVERTER(CSSWrapType, (@{
-  @"wrap": @(CSSWrapTypeWrap),
-  @"nowrap": @(CSSWrapTypeNoWrap)
-}), CSSWrapTypeNoWrap, intValue)
+RCT_ENUM_CONVERTER(YGDirection, (@{
+  @"inherit": @(YGDirectionInherit),
+  @"ltr": @(YGDirectionLTR),
+  @"rtl": @(YGDirectionRTL),
+}), YGDirectionInherit, intValue)
+
+RCT_ENUM_CONVERTER(YGPositionType, (@{
+  @"absolute": @(YGPositionTypeAbsolute),
+  @"relative": @(YGPositionTypeRelative)
+}), YGPositionTypeRelative, intValue)
+
+RCT_ENUM_CONVERTER(YGWrap, (@{
+  @"wrap": @(YGWrapWrap),
+  @"nowrap": @(YGWrapNoWrap)
+}), YGWrapNoWrap, intValue)
 
 RCT_ENUM_CONVERTER(RCTPointerEvents, (@{
   @"none": @(RCTPointerEventsNone),

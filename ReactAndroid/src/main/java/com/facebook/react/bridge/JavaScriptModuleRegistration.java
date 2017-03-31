@@ -10,6 +10,7 @@
 package com.facebook.react.bridge;
 
 import javax.annotation.concurrent.Immutable;
+import javax.annotation.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 public class JavaScriptModuleRegistration {
 
   private final Class<? extends JavaScriptModule> mModuleInterface;
+  private @Nullable String mName;
 
   public JavaScriptModuleRegistration(Class<? extends JavaScriptModule> moduleInterface) {
     mModuleInterface = moduleInterface;
@@ -45,17 +47,22 @@ public class JavaScriptModuleRegistration {
   public Class<? extends JavaScriptModule> getModuleInterface() {
     return mModuleInterface;
   }
-
+  
   public String getName() {
-    // With proguard obfuscation turned on, proguard apparently (poorly) emulates inner classes or
-    // something because Class#getSimpleName() no longer strips the outer class name. We manually
-    // strip it here if necessary.
-    String name = mModuleInterface.getSimpleName();
-    int dollarSignIndex = name.lastIndexOf('$');
-    if (dollarSignIndex != -1) {
-      name = name.substring(dollarSignIndex + 1);
+    if (mName == null) {
+      // With proguard obfuscation turned on, proguard apparently (poorly) emulates inner classes or
+      // something because Class#getSimpleName() no longer strips the outer class name. We manually
+      // strip it here if necessary.
+      String name = mModuleInterface.getSimpleName();
+      int dollarSignIndex = name.lastIndexOf('$');
+      if (dollarSignIndex != -1) {
+        name = name.substring(dollarSignIndex + 1);
+      }
+      
+      // getting the class name every call is expensive, so cache it
+      mName = name;
     }
-    return name;
+    return mName;
   }
 
   public List<Method> getMethods() {

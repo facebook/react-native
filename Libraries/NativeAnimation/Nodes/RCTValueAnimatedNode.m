@@ -35,6 +35,12 @@
   _offset = 0;
 }
 
+- (void)extractOffset
+{
+  _offset += _value;
+  _value = 0;
+}
+
 - (CGFloat)value
 {
   return _value + _offset;

@@ -1,0 +1,30 @@
+{
+  "name": "react-native-git-upgrade",
+  "version": "0.2.7",
+  "license": "BSD-3-Clause",
+  "description": "The React Native upgrade tool",
+  "main": "cli.js",
+  "bin": {
+    "react-native-git-upgrade": "index.js"
+  },
+  "engines": {
+    "node": ">=4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/react-native.git"
+  },
+  "dependencies": {
+    "babel-core": "^6.18.0",
+    "babel-preset-es2015-node": "^6.1.1",
+    "babel-preset-stage-3": "^6.17.0",
+    "babel-register": "^6.18.0",
+    "minimist": "^1.2.0",
+    "npmlog": "^4.0.0",
+    "promise": "^7.1.1",
+    "rimraf": "^2.5.4",
+    "semver": "^5.0.3",
+    "shelljs": "^0.7.5",
+    "yeoman-environment": "1.5.3"
+  }
+}

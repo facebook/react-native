@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 
 /**
  * Object containing information about a TextInput's selection.

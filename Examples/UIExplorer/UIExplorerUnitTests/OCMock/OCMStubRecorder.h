@@ -14,7 +14,7 @@
  *  under the License.
  */
 
-#import "OCMRecorder.h"
+#import <OCMock/OCMRecorder.h>
 
 
 @interface OCMStubRecorder : OCMRecorder
@@ -51,6 +51,3 @@
 @property (nonatomic, readonly) OCMStubRecorder *(^ _andForwardToRealObject)(void);
 
 @end
-
-
-

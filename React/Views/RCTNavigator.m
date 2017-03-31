@@ -590,7 +590,10 @@ BOOL jsGettingtooSlow =
     return;
   }
 
-  _previousViews = [self.reactSubviews copy];
+  // Only make a copy of the subviews whose validity we expect to be able to check (in the loop, above),
+  // otherwise we would unnecessarily retain a reference to view(s) no longer on the React navigation stack:
+  NSUInteger expectedCount = MIN(currentReactCount, self.reactSubviews.count);
+  _previousViews = [[self.reactSubviews subarrayWithRange: NSMakeRange(0, expectedCount)] copy];
   _previousRequestedTopOfStack = _requestedTopOfStack;
 }
 

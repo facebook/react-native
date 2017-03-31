@@ -9,14 +9,16 @@
 
 #import "RCTImageStoreManager.h"
 
-#import <ImageIO/ImageIO.h>
 #import <libkern/OSAtomic.h>
+
+#import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/UTType.h>
 
-#import "RCTAssert.h"
+#import <React/RCTAssert.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
+
 #import "RCTImageUtils.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
 
 static NSString *const RCTImageStoreURLScheme = @"rct-image-store";
 

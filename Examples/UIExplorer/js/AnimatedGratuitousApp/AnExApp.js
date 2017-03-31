@@ -83,6 +83,7 @@ class Circle extends React.Component {
           y: gestureState.dy + this.props.restLayout.y,
         });
         this.props.onDeactivate();
+        this.state.pan.removeAllListeners();
       },
     })}, () => {
       this.props.onActivate();

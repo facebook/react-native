@@ -11,12 +11,13 @@
 
 'use strict';
 
-var BlogPost = require('BlogPost');
-var BlogSidebar = require('BlogSidebar');
-var Marked = require('Marked');
-var MetadataBlog = require('MetadataBlog');
 var React = require('React');
 var Site = require('Site');
+var Hero = require('Hero');
+var MetadataBlog = require('MetadataBlog');
+var BlogPost = require('BlogPost');
+var BlogPostHeader = require('BlogPostHeader');
+var Marked = require('Marked');
 
 var BlogPostLayout = React.createClass({
   render: function() {
@@ -24,19 +25,17 @@ var BlogPostLayout = React.createClass({
       <Site
         section="blog"
         title={this.props.metadata.title}
-        description={this.props.children.trim().split('\n')[0]}
+        description={this.props.metadata.excerpt}
         path={'blog/' + this.props.metadata.path}
         author={this.props.metadata.author}
         authorTwitter={this.props.metadata.authorTwitter}
-        image={this.props.metadata.hero ? 'http://facebook.github.io' + this.props.metadata.hero : 'http://facebook.github.io/react-native/img/opengraph.png' }
+        image={this.props.metadata.hero ? 'https://facebook.github.io' + this.props.metadata.hero : 'https://facebook.github.io/react-native/img/opengraph.png' }
         >
+        <Hero title="React Native Blog" subtitle="Stay up-to-date with the latest React Native news and events." />
         <section className="content wrap documentationContent">
-          <BlogSidebar title={this.props.metadata.title} />
-          <div className="inner-content">
-            <BlogPost
-              post={this.props.metadata}
-              content={this.props.children} />
-          </div>
+          <BlogPost
+            post={this.props.metadata}
+            content={this.props.children} />
         </section>
       </Site>
     );

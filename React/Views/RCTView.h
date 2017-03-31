@@ -7,13 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTView.h"
-
 #import <UIKit/UIKit.h>
 
-#import "RCTBorderStyle.h"
-#import "RCTComponent.h"
-#import "RCTPointerEvents.h"
+#import <React/RCTBorderStyle.h>
+#import <React/RCTComponent.h>
+#import <React/RCTPointerEvents.h>
+#import <React/RCTView.h>
 
 @protocol RCTAutoInsetsProtocol;
 
@@ -40,6 +39,13 @@
  * Find the first view controller whose view, or any subview is the specified view.
  */
 + (UIEdgeInsets)contentInsetsForView:(UIView *)curView;
+
+/**
+ * Layout direction of the view.
+ * This is inherited from UIView+React, but we override it here
+ * to improve perfomance and make subclassing/overriding possible/easier.
+ */
+@property (nonatomic, assign) UIUserInterfaceLayoutDirection reactLayoutDirection;
 
 /**
  * z-index, used to override sibling order in didUpdateReactSubviews. This is

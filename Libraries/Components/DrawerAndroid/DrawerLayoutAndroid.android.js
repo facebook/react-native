@@ -11,7 +11,7 @@
 'use strict';
 
 var ColorPropType = require('ColorPropType');
-var NativeMethodsMixin = require('react/lib/NativeMethodsMixin');
+var NativeMethodsMixin = require('NativeMethodsMixin');
 var Platform = require('Platform');
 var React = require('React');
 var ReactNative = require('ReactNative');
@@ -19,6 +19,8 @@ var StatusBar = require('StatusBar');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
 var View = require('View');
+
+const ViewPropTypes = require('ViewPropTypes');
 
 var DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
 
@@ -73,7 +75,7 @@ var DrawerLayoutAndroid = React.createClass({
   },
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * Determines whether the keyboard gets dismissed in response to a drag.
      *   - 'none' (the default), drags do not dismiss the keyboard.

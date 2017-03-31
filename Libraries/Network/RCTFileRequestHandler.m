@@ -11,7 +11,7 @@
 
 #import <MobileCoreServices/MobileCoreServices.h>
 
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 @implementation RCTFileRequestHandler
 {

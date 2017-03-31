@@ -18,10 +18,6 @@ module.exports = {
     return this._getRoots();
   },
 
-  getAssetRoots() {
-    return this._getRoots();
-  },
-
   getAssetExts() {
     return [];
   },

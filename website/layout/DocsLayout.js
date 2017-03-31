@@ -8,14 +8,15 @@
  *
  * @providesModule DocsLayout
  */
+'use strict';
 
 var DocsSidebar = require('DocsSidebar');
-var Header = require('Header');
 var Footer = require('Footer');
+var Header = require('Header');
 var Marked = require('Marked');
+var Metadata = require('Metadata');
 var React = require('React');
 var Site = require('Site');
-var Metadata = require('Metadata');
 
 var DocsLayout = React.createClass({
   childContextTypes: {

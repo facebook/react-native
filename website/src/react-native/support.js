@@ -6,11 +6,10 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+'use strict';
 
 var React = require('React');
 var Site = require('Site');
-var center = require('center');
-var H2 = require('H2');
 
 var support = React.createClass({
   childContextTypes: {
@@ -130,7 +129,7 @@ var support = React.createClass({
                   <li className="help-list-entry">
                     <h3>Feature Requests</h3>
                     <p>
-                      If you have a feature request, <a href="https://productpains.com/product/react-native/">add it to the list</a> or upvote a similar one. The voting system helps surface which issues are most important to the community.
+                      If you have a feature request, <a href="https://react-native.canny.io/feature-requests">add it to the list</a> or upvote a similar one. The voting system helps surface which issues are most important to the community.
                     </p>
                   </li>
 

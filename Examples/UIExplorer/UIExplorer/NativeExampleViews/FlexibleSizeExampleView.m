@@ -12,15 +12,14 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#import "AppDelegate.h"
-
 #import "FlexibleSizeExampleView.h"
-#import "RCTJavaScriptLoader.h"
-#import "RCTBridge.h"
-#import "RCTRootView.h"
-#import "RCTRootViewDelegate.h"
 
-#import "RCTViewManager.h"
+#import <React/RCTBridge.h>
+#import <React/RCTRootView.h>
+#import <React/RCTRootViewDelegate.h>
+#import <React/RCTViewManager.h>
+
+#import "AppDelegate.h"
 
 @interface FlexibleSizeExampleViewManager : RCTViewManager
 
@@ -38,7 +37,7 @@ RCT_EXPORT_MODULE();
 @end
 
 
-@interface FlexibleSizeExampleView ()<RCTRootViewDelegate>
+@interface FlexibleSizeExampleView () <RCTRootViewDelegate>
 
 @end
 
@@ -102,7 +101,7 @@ RCT_EXPORT_MODULE();
 - (void)rootViewDidChangeIntrinsicSize:(RCTRootView *)rootView
 {
   CGRect newFrame = rootView.frame;
-  newFrame.size = rootView.intrinsicSize;
+  newFrame.size = rootView.intrinsicContentSize;
 
   if (!_sizeUpdated) {
     _sizeUpdated = TRUE;

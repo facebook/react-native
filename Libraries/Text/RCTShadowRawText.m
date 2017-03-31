@@ -9,7 +9,7 @@
 
 #import "RCTShadowRawText.h"
 
-#import "RCTUIManager.h"
+#import <React/RCTUIManager.h>
 
 @implementation RCTShadowRawText
 

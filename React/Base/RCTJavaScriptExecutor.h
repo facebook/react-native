@@ -11,8 +11,8 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-#import "RCTBridgeModule.h"
-#import "RCTInvalidating.h"
+#import <React/RCTBridgeModule.h>
+#import <React/RCTInvalidating.h>
 
 typedef void (^RCTJavaScriptCompleteBlock)(NSError *error);
 typedef void (^RCTJavaScriptCallback)(id result, NSError *error);

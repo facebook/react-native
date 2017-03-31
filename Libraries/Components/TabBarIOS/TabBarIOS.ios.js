@@ -15,7 +15,7 @@ var ColorPropType = require('ColorPropType');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var TabBarItemIOS = require('TabBarItemIOS');
-var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -24,6 +24,7 @@ class TabBarIOS extends React.Component {
     style?: $FlowFixMe,
     unselectedTintColor?: $FlowFixMe,
     tintColor?: $FlowFixMe,
+    unselectedItemTintColor?: $FlowFixMe,
     barTintColor?: $FlowFixMe,
     translucent?: boolean,
     itemPositioning?: 'fill' | 'center' | 'auto',
@@ -31,9 +32,10 @@ class TabBarIOS extends React.Component {
 
   static Item = TabBarItemIOS;
 
+  // $FlowFixMe(>=0.41.0)
   static propTypes = {
-    ...View.propTypes,
-    style: View.propTypes.style,
+    ...ViewPropTypes,
+    style: ViewPropTypes.style,
     /**
      * Color of text on unselected tabs
      */
@@ -42,6 +44,10 @@ class TabBarIOS extends React.Component {
      * Color of the currently selected tab icon
      */
     tintColor: ColorPropType,
+    /**
+     * Color of unselected tab icons. Available since iOS 10.
+     */
+    unselectedItemTintColor: ColorPropType,
     /**
      * Background color of the tab bar
      */
@@ -67,6 +73,7 @@ class TabBarIOS extends React.Component {
       <RCTTabBar
         style={[styles.tabGroup, this.props.style]}
         unselectedTintColor={this.props.unselectedTintColor}
+        unselectedItemTintColor={this.props.unselectedItemTintColor}
         tintColor={this.props.tintColor}
         barTintColor={this.props.barTintColor}
         itemPositioning={this.props.itemPositioning}

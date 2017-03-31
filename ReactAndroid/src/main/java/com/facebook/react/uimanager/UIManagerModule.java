@@ -1,4 +1,4 @@
-  /**
+/**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -11,13 +11,17 @@ package com.facebook.react.uimanager;
 
 import javax.annotation.Nullable;
 
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import android.content.ComponentCallbacks2;
+import android.content.res.Configuration;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.PerformanceCounter;
@@ -27,8 +31,10 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -66,9 +72,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
  *                consider implementing a pool
  * TODO(5483063): Don't dispatch the view hierarchy at the end of a batch if no UI changes occurred
  */
-@ReactModule(name = "RKUIManager")
+@ReactModule(name = UIManagerModule.NAME)
 public class UIManagerModule extends ReactContextBaseJavaModule implements
     OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter {
+
+  protected static final String NAME = "UIManager";
 
   // Keep in sync with ReactIOSTagHandles JS module - see that file for an explanation on why the
   // increment here is 10
@@ -78,6 +86,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private final EventDispatcher mEventDispatcher;
   private final Map<String, Object> mModuleConstants;
   private final UIImplementation mUIImplementation;
+  private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
 
   private int mNextRootViewTag = 1;
   private int mBatchId = 0;
@@ -85,11 +94,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public UIManagerModule(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagerList,
-      UIImplementationProvider uiImplementationProvider) {
+      UIImplementationProvider uiImplementationProvider,
+      boolean lazyViewManagersEnabled) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mEventDispatcher = new EventDispatcher(reactContext);
-    mModuleConstants = createConstants(viewManagerList);
+    mModuleConstants = createConstants(viewManagerList, lazyViewManagersEnabled);
     mUIImplementation = uiImplementationProvider
       .createUIImplementation(reactContext, viewManagerList, mEventDispatcher);
 
@@ -106,12 +116,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   @Override
   public String getName() {
-    return "RKUIManager";
+    return NAME;
   }
 
   @Override
   public Map<String, Object> getConstants() {
     return mModuleConstants;
+  }
+
+  @Override
+  public void initialize() {
+    getReactApplicationContext().registerComponentCallbacks(mMemoryTrimCallback);
   }
 
   @Override
@@ -133,13 +148,20 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
     mEventDispatcher.onCatalystInstanceDestroyed();
+
+    getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
+    YogaNodePool.get().clear();
   }
 
-  private static Map<String, Object> createConstants(List<ViewManager> viewManagerList) {
+  private static Map<String, Object> createConstants(
+    List<ViewManager> viewManagerList,
+    boolean lazyViewManagersEnabled) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
     try {
-      return UIManagerModuleConstantsHelper.createConstants(viewManagerList);
+      return UIManagerModuleConstantsHelper.createConstants(
+        viewManagerList,
+        lazyViewManagersEnabled);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
@@ -180,8 +202,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       height = rootView.getHeight();
     }
 
+    final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     final ThemedReactContext themedRootContext =
-        new ThemedReactContext(getReactApplicationContext(), rootView.getContext());
+        new ThemedReactContext(reactApplicationContext, rootView.getContext());
 
     mUIImplementation.registerRootView(rootView, tag, width, height, themedRootContext);
 
@@ -189,10 +212,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       new SizeMonitoringFrameLayout.OnSizeChangedListener() {
         @Override
         public void onSizeChanged(final int width, final int height, int oldW, int oldH) {
-          getReactApplicationContext().runOnNativeModulesQueueThread(
-            new Runnable() {
+          reactApplicationContext.runOnNativeModulesQueueThread(
+            new GuardedRunnable(reactApplicationContext) {
               @Override
-              public void run() {
+              public void runGuarded() {
                 updateNodeSize(tag, width, height);
               }
             });
@@ -548,5 +571,26 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    */
   public int resolveRootTagFromReactTag(int reactTag) {
     return mUIImplementation.resolveRootTagFromReactTag(reactTag);
+  }
+
+  /**
+   * Listener that drops the CSSNode pool on low memory when the app is backgrounded.
+   */
+  private class MemoryTrimCallback implements ComponentCallbacks2 {
+
+    @Override
+    public void onTrimMemory(int level) {
+      if (level >= TRIM_MEMORY_MODERATE) {
+        YogaNodePool.get().clear();
+      }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+    }
+
+    @Override
+    public void onLowMemory() {
+    }
   }
 }
