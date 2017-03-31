@@ -104,13 +104,13 @@ static RCTNullability RCTParseNullabilityPostfix(const char **input)
 
 // returns YES if execution is safe to proceed (enqueue callback invocation), NO if callback has already been invoked
 static BOOL RCTCheckCallbackMultipleInvocations(BOOL *didInvoke) {
-    if (*didInvoke) {
-        RCTFatal(RCTErrorWithMessage(@"Illegal callback invocation from native module. This callback type only permits a single invocation from native code."));
-        return NO;
-    } else {
-        *didInvoke = YES;
-        return YES;
-    }
+  if (*didInvoke) {
+      RCTFatal(RCTErrorWithMessage(@"Illegal callback invocation from native module. This callback type only permits a single invocation from native code."));
+      return NO;
+  } else {
+      *didInvoke = YES;
+      return YES;
+  }
 }
 
 SEL RCTParseMethodSignature(NSString *, NSArray<RCTMethodArgument *> **);

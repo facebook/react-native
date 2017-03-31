@@ -22,11 +22,10 @@
     "jstransform": "11.0.3",
     "memory-cache": "^0.1.6",
     "mkdirp": "^0.5.1",
-    "node-sass-middleware": "^0.11.0",
     "optimist": "0.6.0",
     "react": "~0.13.0",
     "react-docgen": "^2.9.0",
-    "react-page-middleware": "git://github.com/facebook/react-page-middleware.git",
+    "react-page-middleware": "0.4.1",
     "remove-markdown": "^0.1.0",
     "request": "^2.69.0",
     "semver-compare": "^1.0.0"

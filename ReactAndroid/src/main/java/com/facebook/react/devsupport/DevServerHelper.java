@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.text.TextUtils;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -34,6 +33,10 @@ import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.FileIoHandler;
 import com.facebook.react.packagerconnection.JSPackagerClient;
+import com.facebook.react.packagerconnection.RequestHandler;
+import com.facebook.react.packagerconnection.NotificationOnlyHandler;
+import com.facebook.react.packagerconnection.RequestOnlyHandler;
+import com.facebook.react.packagerconnection.Responder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,8 +98,8 @@ public class DevServerHelper {
 
   public interface PackagerCommandListener {
     void onPackagerReloadCommand();
-    void onCaptureHeapCommand(@Nullable final JSPackagerClient.Responder responder);
-    void onPokeSamplingProfilerCommand(@Nullable final JSPackagerClient.Responder responder);
+    void onCaptureHeapCommand(@Nullable final Responder responder);
+    void onPokeSamplingProfilerCommand(@Nullable final Responder responder);
   }
 
   private final DevInternalSettings mSettings;
@@ -129,23 +132,23 @@ public class DevServerHelper {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... backgroundParams) {
-        Map<String, JSPackagerClient.RequestHandler> handlers =
-          new HashMap<String, JSPackagerClient.RequestHandler>();
-        handlers.put("reload", new JSPackagerClient.NotificationOnlyHandler() {
+        Map<String, RequestHandler> handlers =
+          new HashMap<String, RequestHandler>();
+        handlers.put("reload", new NotificationOnlyHandler() {
           @Override
           public void onNotification(@Nullable Object params) {
             commandListener.onPackagerReloadCommand();
           }
         });
-        handlers.put("captureHeap", new JSPackagerClient.RequestOnlyHandler() {
+        handlers.put("captureHeap", new RequestOnlyHandler() {
           @Override
-          public void onRequest(@Nullable Object params, JSPackagerClient.Responder responder) {
+          public void onRequest(@Nullable Object params, Responder responder) {
             commandListener.onCaptureHeapCommand(responder);
           }
         });
-        handlers.put("pokeSamplingProfiler", new JSPackagerClient.RequestOnlyHandler() {
+        handlers.put("pokeSamplingProfiler", new RequestOnlyHandler() {
           @Override
-          public void onRequest(@Nullable Object params, JSPackagerClient.Responder responder) {
+          public void onRequest(@Nullable Object params, Responder responder) {
             commandListener.onPokeSamplingProfilerCommand(responder);
           }
         });

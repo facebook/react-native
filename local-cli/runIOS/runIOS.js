@@ -222,7 +222,7 @@ module.exports = {
   },
   {
     desc: "Run on a connected device, e.g. Max's iPhone",
-    cmd: "react-native run-ios --device 'Max's iPhone'",
+    cmd: 'react-native run-ios --device "Max\'s iPhone"',
   },
   ],
   options: [{
