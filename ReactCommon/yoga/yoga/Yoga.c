@@ -362,6 +362,10 @@ void YGNodeReset(const YGNodeRef node) {
 
   const YGConfigRef config = node->config;
   memcpy(node, &gYGNodeDefaults, sizeof(YGNode));
+  if (config->useWebDefaults) {
+    node->style.flexDirection = YGFlexDirectionRow;
+    node->style.alignContent = YGAlignStretch;
+  }
   node->config = config;
 }
 
@@ -423,6 +427,7 @@ void YGNodeInsertChild(const YGNodeRef node, const YGNodeRef child, const uint32
 
 void YGNodeRemoveChild(const YGNodeRef node, const YGNodeRef child) {
   if (YGNodeListDelete(node->children, child) != NULL) {
+    child->layout = gYGNodeDefaults.layout; // layout is no longer valid
     child->parent = NULL;
     YGNodeMarkDirtyInternal(node);
   }
@@ -1810,6 +1815,7 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
   node->layout.cachedLayout.widthMeasureMode = YGMeasureModeExactly;
   node->layout.cachedLayout.computedWidth = 0;
   node->layout.cachedLayout.computedHeight = 0;
+  node->hasNewLayout = true;
   const uint32_t childCount = YGNodeGetChildCount(node);
   for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeListGet(node->children, i);

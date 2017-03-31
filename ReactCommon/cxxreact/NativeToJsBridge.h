@@ -61,7 +61,6 @@ public:
       JSExecutorFactory* jsExecutorFactory,
       std::shared_ptr<ModuleRegistry> registry,
       std::shared_ptr<MessageQueueThread> jsQueue,
-      std::unique_ptr<MessageQueueThread> nativeQueue,
       std::shared_ptr<InstanceCallback> callback);
   virtual ~NativeToJsBridge();
 

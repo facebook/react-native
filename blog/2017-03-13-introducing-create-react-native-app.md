@@ -6,6 +6,7 @@ authorURL: https://github.com/dikaiosune
 authorImage: https://avatars2.githubusercontent.com/u/6812281
 authorTwitter: dika10sune
 category: engineering
+youtubeVideoId: 9baaVjGdBqs
 ---
 
 Today we’re announcing [Create React Native App](https://github.com/react-community/create-react-native-app): a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of [Create React App](https://github.com/facebookincubator/create-react-app) and is the product of a collaboration between [Facebook](https://code.facebook.com) and [Expo](https://expo.io) (formerly Exponent).

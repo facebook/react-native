@@ -46,7 +46,7 @@
   },
   {
     "name": "Tesla",
-    "icon": "https://lh3.googleusercontent.com/b79jRmQK2sZABaN0xI2wIAFrEcBxs0CuDzNTmF088DGrJXbemaMNRvrhqH0St28J7CU=w300-rw",
+    "icon": "http://is2.mzstatic.com/image/thumb/Purple122/v4/d2/36/28/d23628e5-c9bf-d0fb-104f-61fa52976ff5/source/175x175bb.jpg",
     "linkPlayStore": "https://play.google.com/store/apps/details?id=com.teslamotors.tesla",
     "linkAppStore": "https://itunes.apple.com/us/app/tesla-motors/id582007913?mt=8",
     "pinned": true
@@ -118,53 +118,10 @@
     "pinned": true
   },
   {
-    "name": "Qzone (QQ空间)",
-    "icon": "http://pp.myapp.com/ma_icon/0/icon_9959_1460036593/96",
-    "linkPlayStore": "http://android.myapp.com/myapp/detail.htm?apkName=com.qzone",
-    "infoLink": "https://en.wikipedia.org/wiki/Qzone",
-    "infoTitle": "Qzone is a Chinese social network with over 600 million users",
-    "pinned": false
-  },
-  {
-    "name": "QQ Music (QQ音乐)",
-    "icon": "http://pp.myapp.com/ma_icon/0/icon_6259_1462429453/96",
-    "linkPlayStore": "http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.qqmusic",
-    "infoLink": "http://www.wsj.com/articles/tencent-customers-come-for-the-music-stay-for-the-perks-1433869369",
-    "infoTitle": "Internet giant tries to get people to pay for digital music",
-    "pinned": false
-  },
-  {
-    "name": "Classroom (腾讯课堂)",
-    "icon": "http://pp.myapp.com/ma_icon/0/icon_10927178_1479093114/96",
-    "linkPlayStore": "http://android.myapp.com/myapp/detail.htm?apkName=com.tencent.edu",
-    "linkAppStore": "https://itunes.apple.com/cn/app/teng-xun-ke-tang-zhuan-ye/id931720936?mt=8",
-    "infoLink": "http://baike.baidu.com/view/13030839.htm",
-    "infoTitle": "Classroom is an education app by Chinese Internet giant Baidu",
-    "pinned": false
-  },
-  {
     "name": "F8",
     "icon": "https://raw.githubusercontent.com/fbsamples/f8app/master/ios/F8v2/Images.xcassets/AppIcon.appiconset/AppIcon%402x.png",
     "infoLink": "http://makeitopen.com/tutorials/building-the-f8-app/planning/",
     "infoTitle": "Tutorial: Building the F8 2016 conference app",
-    "pinned": false
-  },
-  {
-    "name": "Discovery VR",
-    "icon": "http://a2.mzstatic.com/us/r30/Purple6/v4/d1/d5/f4/d1d5f437-9f6b-b5aa-5fe7-47bd19f934bf/icon175x175.png",
-    "linkAppStore": "https://itunes.apple.com/us/app/discovery-vr/id1030815031?mt=8",
-    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.discovery.DiscoveryVR",
-    "infoLink": "https://medium.com/ios-os-x-development/an-ios-developer-on-react-native-1f24786c29f0",
-    "infoTitle": "An iOS developer's experience building an app using React Native",
-    "pinned": false
-  },
-  {
-    "name": "Myntra",
-    "icon": "http://a5.mzstatic.com/us/r30/Purple6/v4/9c/78/df/9c78dfa6-0061-1af2-5026-3e1d5a073c94/icon350x350.png",
-    "linkAppStore": "https://itunes.apple.com/in/app/myntra-fashion-shopping-app/id907394059",
-    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.myntra.android",
-    "infoLink": "https://www.youtube.com/watch?v=bXKr--rbewo",
-    "infoTitle": "React Native in Production at Scale",
     "pinned": false
   },
   {
@@ -200,17 +157,8 @@
     "pinned": false
   },
   {
-    "name": "Sleeperbot",
-    "icon": "https://blitzchat.net/uploads/c8425332190a4f4b852d7770ad32e602/original.png",
-    "linkAppStore": "https://itunes.apple.com/us/app/sleeperbot-fantasy-football/id987367543?mt=8",
-    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.sleeperbot&hl=en",
-    "infoLink": "https://medium.com/sleeperbot-hq/switching-to-react-native-in-production-on-ios-and-android-e6b675402712#.cug6h6qhn",
-    "infoTitle": "Switching to React Native in Production on iOS and Android",
-    "pinned": false
-  },
-  {
     "name": "JD（手机京东）",
-    "icon": "https://lh3.googleusercontent.com/AIIAZsqyEG0KmCFruh1Ec374-2l7n1rfv_LG5RWjdAZOzUBCu-5MRqdLbzJfBnOdSFg=w300-rw",
+    "icon": "http://is3.mzstatic.com/image/thumb/Purple111/v4/d4/3c/10/d43c107a-f120-caac-65c0-d412ace0606c/source/175x175bb.jpg",
     "linkAppStore": "https://itunes.apple.com/cn/app/shou-ji-jing-dong-xin-ren/id414245413?mt=8",
     "linkPlayStore": "https://app.jd.com/android.html",
     "infoLink": "http://ir.jd.com/phoenix.zhtml?c=253315&p=irol-homeProfile",
@@ -226,46 +174,12 @@
     "pinned": false
   },
   {
-    "name": "Blink",
-    "icon": "https://lh3.googleusercontent.com/QaId7rFtOjAT-2tHVkKB4lebX_w4ujWiO7ZIDe3Hd99TfBmPmiZySbLbVJV65qs0ViM=w300-rw",
-    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.witapp",
-    "infoLink": "https://hashnode.com/post/what-we-learned-after-using-react-native-for-a-year-civdr8zv6058l3853wqud7hqp",
-    "infoTitle": "What we learned after using React Native for a year",
-    "pinned": false
-  },
-  {
     "name": "Delivery.com",
-    "icon": "https://lh3.googleusercontent.com/ZwwQHQns9Ut2-LqbMqPcmQrsWBh3YbmbIzeDthfdavw99Ziq0unJ6EHUw8bstXUIpg=w300-rw",
+    "icon": "http://is2.mzstatic.com/image/thumb/Purple122/v4/54/a0/d7/54a0d7df-4551-4f4d-a43a-7baf4003668d/source/175x175bb.jpg",
     "linkAppStore": "https://itunes.apple.com/us/app/delivery.com-food-alcohol/id435168129?mt=8",
     "linkPlayStore": "https://play.google.com/store/apps/details?id=com.deliverycom&hl=en",
     "infoLink": "https://medium.com/delivery-com-engineering/react-native-in-an-existing-ios-app-delivered-874ba95a3c52#.37qruw6ck",
     "infoTitle": "React Native in an Existing iOS App: Getting Started",
-    "pinned": false
-  },
-  {
-    "name": "Yeti Smart Home",
-    "icon": "https://res.cloudinary.com/netbeast/image/upload/v1484303676/Android_192_loykto.png",
-    "linkAppStore": "https://itunes.apple.com/us/app/yeti-smart-home/id1190638808?mt=8",
-    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.netbeast.yeti",
-    "infoLink": "https://medium.com/@jesusdario/developing-beyond-the-screen-9af812b96724#.ozx0xy4lv",
-    "infoTitle": "How React Native is helping us to reinvent the wheel",
-    "pinned": false
-  },
-  {
-    "name": "Jack",
-    "icon": "https://s3-eu-west-1.amazonaws.com/jack-public/react-native-showcase/jack-raw-icon.png",
-    "linkAppStore": "https://itunes.apple.com/us/app/you-have-a-jack/id1019167559?ls=1&mt=8",
-    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.jack45.jack",
-    "infoLink": "https://medium.com/@herdani/our-switch-to-react-native-f4ada19f0f3d#.ogwjzf2tw",
-    "infoTitle": "Our switch to React Native",
-    "pinned": false
-  },
-  {
-    "name": "Causr",
-    "icon": "http://is2.mzstatic.com/image/thumb/Purple111/v4/9d/14/20/9d142015-3319-f613-2886-ad889609466a/source/175x175bb.jpg",
-    "linkAppStore": "https://itunes.apple.com/us/app/causr-business-networking/id1129819484",
-    "infoLink": "https://medium.com/causr/why-we-chose-react-native-abd7d58a18b5",
-    "infoTitle": "Why we chose React Native",
     "pinned": false
   },
   {

@@ -18,6 +18,8 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
+const ViewPropTypes = require('ViewPropTypes');
+
 const requireNativeComponent = require('requireNativeComponent');
 
 const PropTypes = React.PropTypes;
@@ -43,7 +45,7 @@ const DatePickerIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * The currently selected date.
      */

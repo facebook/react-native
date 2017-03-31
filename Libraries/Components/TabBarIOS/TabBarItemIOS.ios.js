@@ -18,11 +18,13 @@ var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
+const ViewPropTypes = require('ViewPropTypes');
+
 var requireNativeComponent = require('requireNativeComponent');
 
 class TabBarItemIOS extends React.Component {
   static propTypes = {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * Little red bubble that sits at the top right of the icon.
      */
@@ -80,7 +82,7 @@ class TabBarItemIOS extends React.Component {
     /**
      * React style object.
      */
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
     /**
      * Text that appears under the icon. It is ignored when a system icon
      * is defined.
