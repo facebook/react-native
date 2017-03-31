@@ -17,7 +17,7 @@ install:
   - $yarn install
 
 script:
-  - if [[ "$TEST_TYPE" = objc-ios ]]; then travis_retry travis_wait ./scripts/objc-test-ios.sh; fi
+  - if [[ "$TEST_TYPE" = objc-ios ]]; then travis_retry travis_wait ./scripts/objc-test-ios.sh test; fi
   - if [[ "$TEST_TYPE" = objc-tvos ]]; then travis_retry travis_wait ./scripts/objc-test-tvos.sh; fi
   - if [[ "$TEST_TYPE" = e2e-objc ]]; then node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3; fi
   - if [[ ( "$TEST_TYPE" = podspecs ) && ( "$TRAVIS_PULL_REQUEST" = "false" ) ]]; then gem install cocoapods && ./scripts/process-podspecs.sh; fi

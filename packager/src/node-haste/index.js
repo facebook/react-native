@@ -71,6 +71,8 @@ type Options = {
   watch: boolean,
 };
 
+const JEST_HASTE_MAP_CACHE_BREAKER = 1;
+
 class DependencyGraph extends EventEmitter {
 
   _opts: Options;
@@ -104,7 +106,7 @@ class DependencyGraph extends EventEmitter {
       ignorePattern: {test: opts.ignoreFilePath},
       maxWorkers: opts.maxWorkerCount,
       mocksPattern: '',
-      name: 'react-native-packager',
+      name: 'react-native-packager-' + JEST_HASTE_MAP_CACHE_BREAKER,
       platforms: Array.from(opts.platforms),
       providesModuleNodeModules: opts.providesModuleNodeModules,
       resetCache: opts.resetCache,
@@ -173,7 +175,10 @@ class DependencyGraph extends EventEmitter {
    * Returns a promise with the direct dependencies the module associated to
    * the given entryPath has.
    */
-  getShallowDependencies(entryPath: string, transformOptions: TransformOptions) {
+  getShallowDependencies(
+    entryPath: string,
+    transformOptions: TransformOptions,
+  ): Promise<Array<Module>> {
     return this._moduleCache
       .getModule(entryPath)
       .getDependencies(transformOptions);

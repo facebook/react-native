@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const invariant = require('fbjs/lib/invariant');
 const warning = require('fbjs/lib/warning');
 
 if (__DEV__) {
@@ -41,7 +42,6 @@ const ReactNative = {
   get KeyboardAvoidingView() { return require('KeyboardAvoidingView'); },
   get ListView() { return require('ListView'); },
   get Modal() { return require('Modal'); },
-  get Navigator() { return require('Navigator'); },
   get NavigatorIOS() { return require('NavigatorIOS'); },
   get Picker() { return require('Picker'); },
   get PickerIOS() { return require('PickerIOS'); },
@@ -85,6 +85,7 @@ const ReactNative = {
   get CameraRoll() { return require('CameraRoll'); },
   get Clipboard() { return require('Clipboard'); },
   get DatePickerAndroid() { return require('DatePickerAndroid'); },
+  get DeviceInfo() { return require('DeviceInfo'); },
   get Dimensions() { return require('Dimensions'); },
   get Easing() { return require('Easing'); },
   get I18nManager() { return require('I18nManager'); },
@@ -94,7 +95,6 @@ const ReactNative = {
   get LayoutAnimation() { return require('LayoutAnimation'); },
   get Linking() { return require('Linking'); },
   get NativeEventEmitter() { return require('NativeEventEmitter'); },
-  get NavigationExperimental() { return require('NavigationExperimental'); },
   get NetInfo() { return require('NetInfo'); },
   get PanResponder() { return require('PanResponder'); },
   get PermissionsAndroid() { return require('PermissionsAndroid'); },
@@ -123,49 +123,17 @@ const ReactNative = {
   get ColorPropType() { return require('ColorPropType'); },
   get EdgeInsetsPropType() { return require('EdgeInsetsPropType'); },
   get PointPropType() { return require('PointPropType'); },
+  get ViewPropTypes() { return require('ViewPropTypes'); },
 
-  // See http://facebook.github.io/react/docs/addons.html
-  addons: {
-    get PureRenderMixin() {
-      if (__DEV__) {
-        addonWarn('PureRenderMixin', 'react-addons-pure-render-mixin');
-      }
-      return require('react/lib/ReactComponentWithPureRenderMixin');
-    },
-    get TestModule() {
-      if (__DEV__) {
-        warning(
-          warningDedupe.TestModule,
-          'React.addons.TestModule is deprecated. ' +
-          'Use ReactNative.NativeModules.TestModule instead.'
-        );
-        warningDedupe.TestModule = true;
-      }
-      return require('NativeModules').TestModule;
-    },
-    get batchedUpdates() {
-      if (__DEV__) {
-        warning(
-          warningDedupe.batchedUpdates,
-          'React.addons.batchedUpdates is deprecated. ' +
-          'Use ReactNative.unstable_batchedUpdates instead.'
-        );
-        warningDedupe.batchedUpdates = true;
-      }
-      return require('ReactUpdates').batchedUpdates;
-    },
-    get createFragment() {
-      if (__DEV__) {
-        addonWarn('createFragment', 'react-addons-create-fragment');
-      }
-      return require('react/lib/ReactFragment').create;
-    },
-    get update() {
-      if (__DEV__) {
-        addonWarn('update', 'react-addons-update');
-      }
-      return require('react/lib/update');
-    },
+  // Deprecated
+  get Navigator() {
+    invariant(
+      false,
+      'Navigator is deprecated and has been removed from this package. It can now be installed ' +
+      'and imported from `react-native-deprecated-custom-components` instead of `react-native`. ' +
+      'Learn about alternative navigation solutions at http://facebook.github.io/react-native/docs/navigation.html'
+    );
+    return null;
   },
 };
 

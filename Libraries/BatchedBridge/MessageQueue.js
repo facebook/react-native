@@ -41,20 +41,13 @@ const TRACE_TAG_REACT_APPS = 1 << 17;
 
 const DEBUG_INFO_LIMIT = 32;
 
-const guard = (fn) => {
-  try {
-    fn();
-  } catch (error) {
-    ErrorUtils.reportFatalError(error);
-  }
-};
-
 class MessageQueue {
   _callableModules: {[key: string]: Object};
   _queue: [Array<number>, Array<number>, Array<any>, number];
   _callbacks: [];
   _callbackID: number;
   _callID: number;
+  _inCall: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
 
@@ -104,7 +97,7 @@ class MessageQueue {
   }
 
   callFunctionReturnFlushedQueue(module: string, method: string, args: Array<any>) {
-    guard(() => {
+    this.__guard(() => {
       this.__callFunction(module, method, args);
       this.__callImmediates();
     });
@@ -114,7 +107,7 @@ class MessageQueue {
 
   callFunctionReturnResultAndFlushedQueue(module: string, method: string, args: Array<any>) {
     let result;
-    guard(() => {
+    this.__guard(() => {
       result = this.__callFunction(module, method, args);
       this.__callImmediates();
     });
@@ -123,7 +116,7 @@ class MessageQueue {
   }
 
   invokeCallbackAndReturnFlushedQueue(cbID: number, args: Array<any>) {
-    guard(() => {
+    this.__guard(() => {
       this.__invokeCallback(cbID, args);
       this.__callImmediates();
     });
@@ -188,7 +181,8 @@ class MessageQueue {
 
     const now = new Date().getTime();
     if (global.nativeFlushQueueImmediate &&
-        now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS) {
+        (now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS ||
+        this._inCall === 0)) {
       global.nativeFlushQueueImmediate(this._queue);
       this._queue = [[], [], [], this._callID];
       this._lastFlush = now;
@@ -214,12 +208,23 @@ class MessageQueue {
   }
 
   /**
-   * "Private" methods
+   * Private methods
    */
+
+  __guard(fn: () => void) {
+    this._inCall++;
+    try {
+      fn();
+    } catch (error) {
+      ErrorUtils.reportFatalError(error);
+    } finally {
+      this._inCall--;
+    }
+  }
 
   __callImmediates() {
     Systrace.beginEvent('JSTimersExecution.callImmediates()');
-    guard(() => JSTimersExecution.callImmediates());
+    this.__guard(() => JSTimersExecution.callImmediates());
     Systrace.endEvent();
   }
 

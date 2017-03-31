@@ -19,6 +19,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.appstate.AppStateModule;
+import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.testing.AssertModule;
 import com.facebook.react.testing.FakeWebSocketModule;
@@ -119,6 +120,7 @@ public class CatalystNativeJavaToJSReturnValuesTestCase extends ReactIntegration
 
     mInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(mAssertModule)
+        .addNativeModule(new DeviceInfoModule(getContext()))
         .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
         .addJSModule(TestJavaToJSReturnValuesModule.class)

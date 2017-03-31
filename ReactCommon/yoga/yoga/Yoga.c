@@ -362,6 +362,10 @@ void YGNodeReset(const YGNodeRef node) {
 
   const YGConfigRef config = node->config;
   memcpy(node, &gYGNodeDefaults, sizeof(YGNode));
+  if (config->useWebDefaults) {
+    node->style.flexDirection = YGFlexDirectionRow;
+    node->style.alignContent = YGAlignStretch;
+  }
   node->config = config;
 }
 
@@ -423,6 +427,7 @@ void YGNodeInsertChild(const YGNodeRef node, const YGNodeRef child, const uint32
 
 void YGNodeRemoveChild(const YGNodeRef node, const YGNodeRef child) {
   if (YGNodeListDelete(node->children, child) != NULL) {
+    child->layout = gYGNodeDefaults.layout; // layout is no longer valid
     child->parent = NULL;
     YGNodeMarkDirtyInternal(node);
   }
@@ -1810,6 +1815,7 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
   node->layout.cachedLayout.widthMeasureMode = YGMeasureModeExactly;
   node->layout.cachedLayout.computedWidth = 0;
   node->layout.cachedLayout.computedHeight = 0;
+  node->hasNewLayout = true;
   const uint32_t childCount = YGNodeGetChildCount(node);
   for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeListGet(node->children, i);
@@ -2624,10 +2630,6 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                                            crossAxisParentSize,
                                            parentWidth) -
                            paddingAndBorderAxisCross;
-
-      if (measureModeCrossDim == YGMeasureModeAtMost) {
-        containerCrossAxis = fminf(containerCrossAxis, availableInnerCrossDim);
-      }
     }
 
     // If there's no flex wrap, the cross dimension is defined by the container.
@@ -2735,11 +2737,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
 
             if (YGMarginLeadingValue(child, crossAxis)->unit == YGUnitAuto &&
                 YGMarginTrailingValue(child, crossAxis)->unit == YGUnitAuto) {
-              leadingCrossDim += remainingCrossDim / 2;
+              leadingCrossDim += fmaxf(0.0f, remainingCrossDim / 2);
             } else if (YGMarginTrailingValue(child, crossAxis)->unit == YGUnitAuto) {
               // No-Op
             } else if (YGMarginLeadingValue(child, crossAxis)->unit == YGUnitAuto) {
-              leadingCrossDim += remainingCrossDim;
+              leadingCrossDim += fmaxf(0.0f, remainingCrossDim);
             } else if (alignItem == YGAlignFlexStart) {
               // No-Op
             } else if (alignItem == YGAlignCenter) {
