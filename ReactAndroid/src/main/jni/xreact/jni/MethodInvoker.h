@@ -38,8 +38,8 @@ public:
   }
 private:
   jmethodID method_;
-  std::size_t jsArgCount_;
   std::string signature_;
+  std::size_t jsArgCount_;
   std::string traceName_;
   bool isSync_;
 };

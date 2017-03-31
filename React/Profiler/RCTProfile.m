@@ -22,7 +22,6 @@
 #import "RCTBridge.h"
 #import "RCTComponentData.h"
 #import "RCTDefines.h"
-#import "RCTJSCExecutor.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTUIManager.h"
@@ -456,9 +455,7 @@ void RCTProfileInit(RCTBridge *bridge)
   OSAtomicOr32Barrier(1, &RCTProfileProfiling);
 
   if (callbacks != NULL) {
-    size_t buffer_size = 1 << 22;
-    systrace_buffer = calloc(1, buffer_size);
-    callbacks->start(~((uint64_t)0), systrace_buffer, buffer_size);
+    systrace_buffer = callbacks->start();
   } else {
     NSTimeInterval time = CACurrentMediaTime();
     dispatch_async(RCTProfileGetQueue(), ^{
@@ -473,7 +470,8 @@ void RCTProfileInit(RCTBridge *bridge)
 
   // Set up thread ordering
   dispatch_async(RCTProfileGetQueue(), ^{
-    NSArray *orderedThreads = @[@"JS async", @"RCTPerformanceLogger", RCTJSCThreadName, @(RCTUIManagerQueueName), @"main"];
+    NSArray *orderedThreads = @[@"JS async", @"RCTPerformanceLogger", @"com.facebook.react.JavaScript",
+                                @(RCTUIManagerQueueName), @"main"];
     [orderedThreads enumerateObjectsUsingBlock:^(NSString *thread, NSUInteger idx, __unused BOOL *stop) {
       RCTProfileAddEvent(RCTProfileTraceEvents,
         @"ph": @"M", // metadata event
@@ -514,9 +512,10 @@ void RCTProfileEnd(RCTBridge *bridge, void (^callback)(NSString *))
   RCTProfileUnhookModules(bridge);
 
   if (callbacks != NULL) {
-    callbacks->stop();
-
-    callback(@(systrace_buffer));
+    if (systrace_buffer) {
+      callbacks->stop();
+      callback(@(systrace_buffer));
+    }
   } else {
     dispatch_async(RCTProfileGetQueue(), ^{
       NSString *log = RCTJSONStringify(RCTProfileInfo, NULL);

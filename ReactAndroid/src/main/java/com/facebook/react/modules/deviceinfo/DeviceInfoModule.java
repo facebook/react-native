@@ -14,12 +14,13 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
 import android.util.DisplayMetrics;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -29,16 +30,21 @@ import com.facebook.react.uimanager.DisplayMetricsHolder;
  * Module that exposes Android Constants to JS.
  */
 @ReactModule(name = "DeviceInfo")
-public class DeviceInfoModule extends ReactContextBaseJavaModule implements
+public class DeviceInfoModule extends BaseJavaModule implements
     LifecycleEventListener {
 
+  private @Nullable ReactApplicationContext mReactApplicationContext;
   private float mFontScale;
 
-  public DeviceInfoModule(
-      ReactApplicationContext reactContext) {
-    super(reactContext);
+  public DeviceInfoModule(ReactApplicationContext reactContext) {
+    this((Context) reactContext);
+    mReactApplicationContext = reactContext;
+  }
 
-    mFontScale = getReactApplicationContext().getResources().getConfiguration().fontScale;
+  public DeviceInfoModule(Context context) {
+    mReactApplicationContext = null;
+    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context);
+    mFontScale = context.getResources().getConfiguration().fontScale;
   }
 
   @Override
@@ -57,7 +63,11 @@ public class DeviceInfoModule extends ReactContextBaseJavaModule implements
 
   @Override
   public void onHostResume() {
-    float fontScale = getReactApplicationContext().getResources().getConfiguration().fontScale;
+    if (mReactApplicationContext == null) {
+      return;
+    }
+
+    float fontScale = mReactApplicationContext.getResources().getConfiguration().fontScale;
     if (mFontScale != fontScale) {
       mFontScale = fontScale;
       emitUpdateDimensionsEvent();
@@ -73,7 +83,11 @@ public class DeviceInfoModule extends ReactContextBaseJavaModule implements
   }
 
   public void emitUpdateDimensionsEvent() {
-    getReactApplicationContext()
+    if (mReactApplicationContext == null) {
+      return;
+    }
+
+    mReactApplicationContext
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
         .emit("didUpdateDimensions", getDimensionsConstants());
   }

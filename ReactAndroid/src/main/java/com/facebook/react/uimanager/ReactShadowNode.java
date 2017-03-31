@@ -372,7 +372,7 @@ public class ReactShadowNode {
   }
 
   public final boolean hasNewLayout() {
-    return mYogaNode == null ? false : mYogaNode.hasNewLayout();
+    return mYogaNode != null && mYogaNode.hasNewLayout();
   }
 
   public final void markLayoutSeen() {
@@ -770,7 +770,11 @@ public class ReactShadowNode {
 
   @Override
   public String toString() {
-    return mYogaNode.toString();
+    if (mYogaNode != null) {
+      return mYogaNode.toString();
+    }
+
+    return getClass().getSimpleName() + " (virtual node)";
   }
 
   public void dispose() {

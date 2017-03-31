@@ -14,7 +14,7 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
-var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -54,7 +54,7 @@ var SegmentedControlIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * The labels for the control's segment buttons, in order.
      */

@@ -23,6 +23,8 @@ var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
 
+const ViewPropTypes = require('ViewPropTypes');
+
 var ensureComponentIsNative = require('ensureComponentIsNative');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var keyOf = require('fbjs/lib/keyOf');
@@ -79,7 +81,7 @@ var TouchableHighlight = React.createClass({
      * active.
      */
     underlayColor: ColorPropType,
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
     /**
      * Called immediately after the underlay is shown
      */

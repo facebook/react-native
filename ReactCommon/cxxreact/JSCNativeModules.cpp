@@ -12,7 +12,7 @@ JSCNativeModules::JSCNativeModules(std::shared_ptr<ModuleRegistry> moduleRegistr
 
 JSValueRef JSCNativeModules::getModule(JSContextRef context, JSStringRef jsName) {
   if (!m_moduleRegistry) {
-    return Value::makeUndefined(context);
+    return nullptr;
   }
 
   std::string moduleName = String::ref(context, jsName).str();
@@ -24,7 +24,8 @@ JSValueRef JSCNativeModules::getModule(JSContextRef context, JSStringRef jsName)
 
   auto module = createModule(moduleName, context);
   if (!module.hasValue()) {
-    return Value::makeUndefined(context);
+    // Allow lookup to continue in the objects own properties, which allows for overrides of NativeModules
+    return nullptr;
   }
 
   // Protect since we'll be holding on to this value, even though JS may not
