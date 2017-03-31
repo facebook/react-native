@@ -113,7 +113,7 @@ and the load is considered to have failed.
 ```javascript
 <Image source={{uri: 'https://facebook.github.io/react/img/logo_og.png', cache: 'only-if-cached'}}
        style={{width: 400, height: 400}} />
-````
+```
 
 ## Local Filesystem Images
 
