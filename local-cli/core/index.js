@@ -11,10 +11,12 @@
 'use strict';
 
 const Config = require('../util/Config');
+
 const defaultConfig = require('./default.config');
 const minimist = require('minimist');
 
-import type {GetTransformOptions} from '../../packager/react-packager/src/Bundler';
+import type {GetTransformOptions} from '../../packager/src/Bundler';
+import type {HasteImpl} from '../../packager/src/node-haste/Module';
 import type {CommandT} from '../commands';
 
 /**
@@ -34,6 +36,11 @@ export type ConfigT = {
    * ending in .custom.js, you would return ['custom'] here.
    */
   getPlatforms: () => Array<string>,
+  /**
+   * Specify any additional node modules that should be processed for
+   * providesModule declarations.
+   */
+  getProvidesModuleNodeModules?: () => Array<string>,
   /**
    * Returns the path to a custom transformer. This can also be overridden
    * with the --transformer commandline argument.
@@ -60,6 +67,13 @@ export type ConfigT = {
    * Returns dependency config from <node_modules>/packageName
    */
   getDependencyConfig(pkgName: string): Object,
+
+  /**
+   * A module that exports:
+   * - a `getHasteName(filePath)` method that returns `hasteName` for module at
+   *  `filePath`, or undefined if `filePath` is not a haste module.
+   */
+  hasteImpl?: HasteImpl,
 };
 
 /**

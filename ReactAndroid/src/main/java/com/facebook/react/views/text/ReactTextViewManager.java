@@ -9,25 +9,25 @@
 
 package com.facebook.react.views.text;
 
-import javax.annotation.Nullable;
-
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.TextView;
 
-import com.facebook.yoga.YogaConstants;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
-import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.yoga.YogaConstants;
+
+import javax.annotation.Nullable;
 
 /**
  * Manages instances of spannable {@link TextView}.
@@ -94,6 +94,15 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   @ReactProp(name = "selectable")
   public void setSelectable(ReactTextView view, boolean isSelectable) {
     view.setTextIsSelectable(isSelectable);
+  }
+
+  @ReactProp(name = "selectionColor", customType = "Color")
+  public void setSelectionColor(ReactTextView view, @Nullable Integer color) {
+    if (color == null) {
+      view.setHighlightColor(DefaultStyleValuesUtil.getDefaultTextColorHighlight(view.getContext()));
+    } else {
+      view.setHighlightColor(color);
+    }
   }
 
   @ReactPropGroup(names = {

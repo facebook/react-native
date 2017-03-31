@@ -42,11 +42,6 @@ RCT_EXTERN void RCTExecuteOnMainQueue(dispatch_block_t block);
 // Please do not use this unless you know what you're doing.
 RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block);
 
-// Deprecated - do not use.
-RCT_EXTERN void RCTExecuteOnMainThread(dispatch_block_t block, BOOL sync)
-__deprecated_msg("Use RCTExecuteOnMainQueue instead. RCTExecuteOnMainQueue is "
-                 "async. If you need to use the `sync` option... please don't.");
-
 // Get screen metrics in a thread-safe way
 RCT_EXTERN CGFloat RCTScreenScale(void);
 RCT_EXTERN CGSize RCTScreenSize(void);
@@ -118,6 +113,10 @@ RCT_EXTERN NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL);
 
 // Determines if a given image URL refers to a local image
 RCT_EXTERN BOOL RCTIsLocalAssetURL(NSURL *__nullable imageURL);
+
+// Returns an UIImage for a local image asset. Returns nil if the URL
+// does not correspond to a local asset.
+RCT_EXTERN UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL);
 
 // Creates a new, unique temporary file path with the specified extension
 RCT_EXTERN NSString *__nullable RCTTempFilePath(NSString *__nullable extension, NSError **error);

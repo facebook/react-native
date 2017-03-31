@@ -16,6 +16,12 @@ static NSString *const EXTRAPOLATE_TYPE_IDENTITY = @"identity";
 static NSString *const EXTRAPOLATE_TYPE_CLAMP = @"clamp";
 static NSString *const EXTRAPOLATE_TYPE_EXTEND = @"extend";
 
+RCT_EXTERN CGFloat RCTInterpolateValueInRange(CGFloat value,
+                                              NSArray<NSNumber *> *inputRange,
+                                              NSArray<NSNumber *> *outputRange,
+                                              NSString *extrapolateLeft,
+                                              NSString *extrapolateRight);
+
 RCT_EXTERN CGFloat RCTInterpolateValue(CGFloat value,
                                        CGFloat inputMin,
                                        CGFloat inputMax,

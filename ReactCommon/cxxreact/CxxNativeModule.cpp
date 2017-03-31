@@ -46,17 +46,13 @@ CxxModule::Callback convertCallback(
 
 }
 
-CxxNativeModule::CxxNativeModule(std::weak_ptr<Instance> instance,
-                                 std::unique_ptr<CxxModule> module)
-  : instance_(instance)
-  , module_(std::move(module))
-  , methods_(module_->getMethods()) {}
-
 std::string CxxNativeModule::getName() {
-  return module_->getName();
+  return name_;
 }
 
 std::vector<MethodDescriptor> CxxNativeModule::getMethods() {
+  lazyInit();
+
   std::vector<MethodDescriptor> descs;
   for (auto& method : methods_) {
     assert(method.func || method.syncFunc);
@@ -66,6 +62,8 @@ std::vector<MethodDescriptor> CxxNativeModule::getMethods() {
 }
 
 folly::dynamic CxxNativeModule::getConstants() {
+  lazyInit();
+
   folly::dynamic constants = folly::dynamic::object();
   for (auto& pair : module_->getConstants()) {
     constants.insert(std::move(pair.first), std::move(pair.second));
@@ -80,8 +78,8 @@ bool CxxNativeModule::supportsWebWorkers() {
 
 void CxxNativeModule::invoke(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) {
   if (reactMethodId >= methods_.size()) {
-    throw std::invalid_argument(
-      folly::to<std::string>("methodId ", reactMethodId, " out of range [0..", methods_.size(), "]"));
+    throw std::invalid_argument(folly::to<std::string>("methodId ", reactMethodId,
+        " out of range [0..", methods_.size(), "]"));
   }
   if (!params.isArray()) {
     throw std::invalid_argument(
@@ -94,25 +92,20 @@ void CxxNativeModule::invoke(ExecutorToken token, unsigned int reactMethodId, fo
   const auto& method = methods_[reactMethodId];
 
   if (!method.func) {
-    throw std::runtime_error(
-      folly::to<std::string>("Method ", method.name,
-                             " is synchronous but invoked asynchronously"));
+    throw std::runtime_error(folly::to<std::string>("Method ", method.name,
+        " is synchronous but invoked asynchronously"));
   }
 
   if (params.size() < method.callbacks) {
-    throw std::invalid_argument(
-      folly::to<std::string>("Expected ", method.callbacks, " callbacks, but only ",
-                             params.size(), " parameters provided"));
+    throw std::invalid_argument(folly::to<std::string>("Expected ", method.callbacks,
+        " callbacks, but only ", params.size(), " parameters provided"));
   }
 
   if (method.callbacks == 1) {
-    first = convertCallback(
-        makeCallback(instance_, token, params[params.size() - 1]));
+    first = convertCallback(makeCallback(instance_, token, params[params.size() - 1]));
   } else if (method.callbacks == 2) {
-    first = convertCallback(
-        makeCallback(instance_, token, params[params.size() - 2]));
-    second = convertCallback(
-        makeCallback(instance_, token, params[params.size() - 1]));
+    first = convertCallback(makeCallback(instance_, token, params[params.size() - 2]));
+    second = convertCallback(makeCallback(instance_, token, params[params.size() - 1]));
   }
 
   params.resize(params.size() - method.callbacks);
@@ -136,16 +129,17 @@ void CxxNativeModule::invoke(ExecutorToken token, unsigned int reactMethodId, fo
   // stack.  I'm told that will be possible in the future.  TODO
   // mhorowitz #7128529: convert C++ exceptions to Java
 
-  try {
-    method.func(std::move(params), first, second);
-  } catch (const facebook::xplat::JsArgumentException& ex) {
-    // This ends up passed to the onNativeException callback.
-    throw;
-  } catch (...) {
-    // This means some C++ code is buggy.  As above, we fail hard so the C++
-    // developer can debug and fix it.
-    std::terminate();
-  }
+  messageQueueThread_->runOnQueue([method, params=std::move(params), first, second] () {
+    try {
+      method.func(std::move(params), first, second);
+    } catch (const facebook::xplat::JsArgumentException& ex) {
+      throw;
+    } catch (...) {
+      // This means some C++ code is buggy.  As above, we fail hard so the C++
+      // developer can debug and fix it.
+      std::terminate();
+    }
+  });
 }
 
 MethodCallResult CxxNativeModule::callSerializableNativeHook(
@@ -163,20 +157,17 @@ MethodCallResult CxxNativeModule::callSerializableNativeHook(
                              " is asynchronous but invoked synchronously"));
   }
 
-  if (!args.isString()) {
-    throw std::invalid_argument(
-      folly::to<std::string>("method parameters should be string, but are ", args.typeName()));
+  return method.syncFunc(std::move(args));
+}
+
+void CxxNativeModule::lazyInit() {
+  if (module_) {
+    return;
   }
 
-  folly::dynamic params = folly::parseJson(args.stringPiece());
-
-  if (!params.isArray()) {
-    throw std::invalid_argument(
-      folly::to<std::string>("parsed method parameters should be array, but are ",
-                             args.typeName()));
-  }
-
-  return { method.syncFunc(std::move(params)), false };
+  module_ = provider_();
+  methods_ = module_->getMethods();
+  module_->setInstance(instance_);
 }
 
 }

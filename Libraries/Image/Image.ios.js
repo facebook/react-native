@@ -35,8 +35,8 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * including network images, static resources, temporary local images, and
  * images from local disk, such as the camera roll.
  *
- * This example shows both fetching and displaying an image from local storage as well as on from
- * network.
+ * This example shows both fetching and displaying an image from local
+ * storage as well as one from network.
  *
  * ```ReactNativeWebPlayer
  * import React, { Component } from 'react';
@@ -126,6 +126,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * ```
  *
  */
+// $FlowFixMe(>=0.41.0)
 const Image = React.createClass({
   propTypes: {
     /**
@@ -140,7 +141,8 @@ const Image = React.createClass({
      * This prop can also contain several remote URLs, specified together with
      * their width and height and potentially with scale/other URI arguments.
      * The native side will then choose the best `uri` to display based on the
-     * measured size of the image container.
+     * measured size of the image container. A `cache` property can be added to
+     * control how networked request interacts with the local cache.
      */
     source: ImageSourcePropType,
     /**
@@ -177,7 +179,7 @@ const Image = React.createClass({
      * the image.
      * @platform ios
      */
-    accessibilityLabel: PropTypes.string,
+    accessibilityLabel: PropTypes.node,
     /**
     * blurRadius: the blur radius of the blur filter added to the image
     * @platform ios
@@ -286,6 +288,8 @@ const Image = React.createClass({
      * optimized for that purpose, and may in future be implemented in a way that
      * does not fully load/download the image data. A proper, supported way to
      * preload images will be provided as a separate API.
+     *
+     * Does not work for static image resources.
      *
      * @param uri The location of the image.
      * @param success The function that will be called if the image was successfully found and width

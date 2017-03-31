@@ -12,12 +12,13 @@
 'use strict';
 
 var Image = require('Image');
+var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var Platform = require('Platform');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
-var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -28,17 +29,18 @@ type Event = Object;
 /**
  * A component used to select a single value from a range of values.
  */
+// $FlowFixMe(>=0.41.0)
 var Slider = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
 
     /**
      * Used to style and layout the `Slider`.  See `StyleSheet.js` and
      * `ViewStylePropTypes.js` for more info.
      */
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
 
     /**
      * Initial value of the slider. The value should be between minimumValue
@@ -68,18 +70,16 @@ var Slider = React.createClass({
     maximumValue: PropTypes.number,
 
     /**
-     * The color used for the track to the left of the button. Overrides the
-     * default blue gradient image.
-     * @platform ios
+     * The color used for the track to the left of the button.
+     * Overrides the default blue gradient image on iOS.
      */
-    minimumTrackTintColor: PropTypes.string,
+    minimumTrackTintColor: ColorPropType,
 
     /**
-     * The color used for the track to the right of the button. Overrides the
-     * default blue gradient image.
-     * @platform ios
+     * The color used for the track to the right of the button.
+     * Overrides the default blue gradient image on iOS.
      */
-    maximumTrackTintColor: PropTypes.string,
+    maximumTrackTintColor: ColorPropType,
 
     /**
      * If true the user won't be able to move the slider.
@@ -113,6 +113,12 @@ var Slider = React.createClass({
      * @platform ios
      */
     thumbImage: Image.propTypes.source,
+
+    /**
+     * Color of the foreground switch grip.
+     * @platform android
+     */
+    thumbTintColor: ColorPropType,
 
     /**
      * Callback continuously called while the user is dragging the slider.

@@ -59,14 +59,14 @@ public abstract class BaseJavaModule implements NativeModule {
     }
 
     public abstract @Nullable T extractArgument(
-        CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex);
+        JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex);
   }
 
   static final private ArgumentExtractor<Boolean> ARGUMENT_EXTRACTOR_BOOLEAN =
       new ArgumentExtractor<Boolean>() {
         @Override
         public Boolean extractArgument(
-            CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+            JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
           return jsArguments.getBoolean(atIndex);
         }
       };
@@ -75,7 +75,7 @@ public abstract class BaseJavaModule implements NativeModule {
       new ArgumentExtractor<Double>() {
         @Override
         public Double extractArgument(
-            CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+            JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
           return jsArguments.getDouble(atIndex);
         }
       };
@@ -84,7 +84,7 @@ public abstract class BaseJavaModule implements NativeModule {
       new ArgumentExtractor<Float>() {
         @Override
         public Float extractArgument(
-            CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+            JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
           return (float) jsArguments.getDouble(atIndex);
         }
       };
@@ -93,7 +93,7 @@ public abstract class BaseJavaModule implements NativeModule {
       new ArgumentExtractor<Integer>() {
         @Override
         public Integer extractArgument(
-            CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+            JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
           return (int) jsArguments.getDouble(atIndex);
         }
       };
@@ -102,7 +102,7 @@ public abstract class BaseJavaModule implements NativeModule {
       new ArgumentExtractor<String>() {
         @Override
         public String extractArgument(
-            CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+            JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
           return jsArguments.getString(atIndex);
         }
       };
@@ -111,7 +111,7 @@ public abstract class BaseJavaModule implements NativeModule {
       new ArgumentExtractor<ReadableNativeArray>() {
         @Override
         public ReadableNativeArray extractArgument(
-            CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+            JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
           return jsArguments.getArray(atIndex);
         }
       };
@@ -120,7 +120,7 @@ public abstract class BaseJavaModule implements NativeModule {
       new ArgumentExtractor<Dynamic>() {
         @Override
         public Dynamic extractArgument(
-            CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+            JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
           return DynamicFromArray.create(jsArguments, atIndex);
         }
       };
@@ -129,7 +129,7 @@ public abstract class BaseJavaModule implements NativeModule {
       new ArgumentExtractor<ReadableMap>() {
         @Override
         public ReadableMap extractArgument(
-            CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+            JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
           return jsArguments.getMap(atIndex);
         }
       };
@@ -138,12 +138,12 @@ public abstract class BaseJavaModule implements NativeModule {
       new ArgumentExtractor<Callback>() {
         @Override
         public @Nullable Callback extractArgument(
-            CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+            JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
           if (jsArguments.isNull(atIndex)) {
             return null;
           } else {
             int id = (int) jsArguments.getDouble(atIndex);
-            return new CallbackImpl(catalystInstance, executorToken, id);
+            return new CallbackImpl(jsInstance, executorToken, id);
           }
         }
       };
@@ -157,36 +157,56 @@ public abstract class BaseJavaModule implements NativeModule {
 
         @Override
         public Promise extractArgument(
-            CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+            JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
           Callback resolve = ARGUMENT_EXTRACTOR_CALLBACK
-              .extractArgument(catalystInstance, executorToken, jsArguments, atIndex);
+              .extractArgument(jsInstance, executorToken, jsArguments, atIndex);
           Callback reject = ARGUMENT_EXTRACTOR_CALLBACK
-              .extractArgument(catalystInstance, executorToken, jsArguments, atIndex + 1);
+              .extractArgument(jsInstance, executorToken, jsArguments, atIndex + 1);
           return new PromiseImpl(resolve, reject);
         }
       };
 
   public class JavaMethod implements NativeMethod {
 
-    private Method mMethod;
-    private final ArgumentExtractor[] mArgumentExtractors;
-    private final String mSignature;
-    private final Object[] mArguments;
+    private final Method mMethod;
+    private final Class[] mParameterTypes;
+    private final int mParamLength;
+    private boolean mArgumentsProcessed = false;
+    private @Nullable ArgumentExtractor[] mArgumentExtractors;
+    private @Nullable String mSignature;
+    private @Nullable Object[] mArguments;
     private String mType = METHOD_TYPE_ASYNC;
-    private final int mJSArgumentsNeeded;
-    private final String mTraceName;
+    private @Nullable int mJSArgumentsNeeded;
+    private String mTraceName;
 
-    public JavaMethod(Method method) {
+    public JavaMethod(Method method, boolean isSync) {
       mMethod = method;
       mMethod.setAccessible(true);
-      Class[] parameterTypes = method.getParameterTypes();
-      mArgumentExtractors = buildArgumentExtractors(parameterTypes);
-      mSignature = buildSignature(parameterTypes);
-      // Since native methods are invoked from a message queue executed on a single thread, it is
-      // save to allocate only one arguments object per method that can be reused across calls
-      mArguments = new Object[parameterTypes.length];
-      mJSArgumentsNeeded = calculateJSArgumentsNeeded();
+      Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "callGetParameterTypes");
+      mParameterTypes = mMethod.getParameterTypes();
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      mParamLength = mParameterTypes.length;
+
+      if (isSync) {
+        mType = METHOD_TYPE_SYNC;
+      } else if (mParamLength > 0 && (mParameterTypes[mParamLength - 1] == Promise.class)) {
+        mType = METHOD_TYPE_PROMISE;
+      }
       mTraceName = BaseJavaModule.this.getName() + "." + mMethod.getName();
+
+    }
+
+    private void processArguments() {
+      if (mArgumentsProcessed) {
+        return;
+      }
+      mArgumentsProcessed = true;
+      mArgumentExtractors = buildArgumentExtractors(mParameterTypes);
+      mSignature = buildSignature(mMethod, mParameterTypes, (mType.equals(METHOD_TYPE_SYNC)));
+      // Since native methods are invoked from a message queue executed on a single thread, it is
+      // safe to allocate only one arguments object per method that can be reused across calls
+      mArguments = new Object[mParameterTypes.length];
+      mJSArgumentsNeeded = calculateJSArgumentsNeeded();
     }
 
     public Method getMethod() {
@@ -194,12 +214,22 @@ public abstract class BaseJavaModule implements NativeModule {
     }
 
     public String getSignature() {
-      return mSignature;
+      if (!mArgumentsProcessed) {
+        processArguments();
+      }
+      return assertNotNull(mSignature);
     }
 
-    private String buildSignature(Class[] paramTypes) {
-      StringBuilder builder = new StringBuilder(paramTypes.length);
-      builder.append("v.");
+    private String buildSignature(Method method, Class[] paramTypes, boolean isSync) {
+      StringBuilder builder = new StringBuilder(paramTypes.length + 2);
+
+      if (isSync) {
+        builder.append(returnTypeToChar(method.getReturnType()));
+        builder.append('.');
+      } else {
+        builder.append("v.");
+      }
+
       for (int i = 0; i < paramTypes.length; i++) {
         Class paramClass = paramTypes[i];
         if (paramClass == ExecutorToken.class) {
@@ -212,7 +242,9 @@ public abstract class BaseJavaModule implements NativeModule {
         } else if (paramClass == Promise.class) {
           Assertions.assertCondition(
             i == paramTypes.length - 1, "Promise must be used as last parameter only");
-          mType = METHOD_TYPE_PROMISE;
+          if (!isSync) {
+            mType = METHOD_TYPE_PROMISE;
+          }
         }
         builder.append(paramTypeToChar(paramClass));
       }
@@ -292,11 +324,17 @@ public abstract class BaseJavaModule implements NativeModule {
     }
 
     @Override
-    public void invoke(CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray parameters) {
+    public void invoke(JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray parameters) {
       SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "callJavaModuleMethod")
           .arg("method", mTraceName)
           .flush();
       try {
+        if (!mArgumentsProcessed) {
+          processArguments();
+        }
+        if (mArguments == null || mArgumentExtractors == null) {
+          throw new Error("processArguments failed");
+        }
         if (mJSArgumentsNeeded != parameters.size()) {
           throw new NativeArgumentsParseException(
               BaseJavaModule.this.getName() + "." + mMethod.getName() + " got " +
@@ -314,7 +352,7 @@ public abstract class BaseJavaModule implements NativeModule {
         try {
           for (; i < mArgumentExtractors.length; i++) {
             mArguments[i + executorTokenOffset] = mArgumentExtractors[i].extractArgument(
-                catalystInstance, executorToken, parameters, jsArgumentsConsumed);
+                jsInstance, executorToken, parameters, jsArgumentsConsumed);
             jsArgumentsConsumed += mArgumentExtractors[i].getJSArgumentsNeeded();
           }
         } catch (UnexpectedNativeTypeException e) {
@@ -352,6 +390,7 @@ public abstract class BaseJavaModule implements NativeModule {
      * Determines how the method is exported in JavaScript:
      * METHOD_TYPE_ASYNC for regular methods
      * METHOD_TYPE_PROMISE for methods that return a promise object to the caller.
+     * METHOD_TYPE_SYNC for sync methods
      */
     @Override
     public String getType() {
@@ -359,82 +398,28 @@ public abstract class BaseJavaModule implements NativeModule {
     }
   }
 
-  public class SyncJavaHook implements SyncNativeHook {
-
-    private Method mMethod;
-    private final String mSignature;
-
-    public SyncJavaHook(Method method) {
-      mMethod = method;
-      mMethod.setAccessible(true);
-      mSignature = buildSignature(method);
-    }
-
-    public Method getMethod() {
-      return mMethod;
-    }
-
-    public String getSignature() {
-      return mSignature;
-    }
-
-    private String buildSignature(Method method) {
-      Class[] paramTypes = method.getParameterTypes();
-      StringBuilder builder = new StringBuilder(paramTypes.length + 2);
-
-      builder.append(returnTypeToChar(method.getReturnType()));
-      builder.append('.');
-
-      for (int i = 0; i < paramTypes.length; i++) {
-        Class paramClass = paramTypes[i];
-        if (paramClass == ExecutorToken.class) {
-          if (!BaseJavaModule.this.supportsWebWorkers()) {
-            throw new RuntimeException(
-              "Module " + BaseJavaModule.this + " doesn't support web workers, but " +
-                mMethod.getName() +
-                " takes an ExecutorToken.");
-          }
-        } else if (paramClass == Promise.class) {
-          Assertions.assertCondition(
-            i == paramTypes.length - 1, "Promise must be used as last parameter only");
-        }
-        builder.append(paramTypeToChar(paramClass));
-      }
-
-      return builder.toString();
-    }
-  }
-
   private @Nullable Map<String, NativeMethod> mMethods;
-  private @Nullable Map<String, SyncNativeHook> mHooks;
 
   private void findMethods() {
     if (mMethods == null) {
       Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "findMethods");
       mMethods = new HashMap<>();
-      mHooks = new HashMap<>();
 
       Method[] targetMethods = getClass().getDeclaredMethods();
       for (Method targetMethod : targetMethods) {
-        if (targetMethod.getAnnotation(ReactMethod.class) != null) {
+        ReactMethod annotation = targetMethod.getAnnotation(ReactMethod.class);
+        if (annotation != null) {
           String methodName = targetMethod.getName();
-          if (mHooks.containsKey(methodName) || mMethods.containsKey(methodName)) {
+          if (mMethods.containsKey(methodName)) {
             // We do not support method overloading since js sees a function as an object regardless
             // of number of params.
             throw new IllegalArgumentException(
-              "Java Module " + getName() + " sync method name already registered: " + methodName);
+              "Java Module " + getName() + " method name already registered: " + methodName);
           }
-          mMethods.put(methodName, new JavaMethod(targetMethod));
-        }
-        if (targetMethod.getAnnotation(ReactSyncHook.class) != null) {
-          String methodName = targetMethod.getName();
-          if (mHooks.containsKey(methodName) || mMethods.containsKey(methodName)) {
-            // We do not support method overloading since js sees a function as an object regardless
-            // of number of params.
-            throw new IllegalArgumentException(
-              "Java Module " + getName() + " sync method name already registered: " + methodName);
-          }
-          mHooks.put(methodName, new SyncJavaHook(targetMethod));
+          mMethods.put(
+              methodName,
+              new JavaMethod(targetMethod,
+            annotation.isBlockingSynchronousMethod()));
         }
       }
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -452,11 +437,6 @@ public abstract class BaseJavaModule implements NativeModule {
    */
   public @Nullable Map<String, Object> getConstants() {
     return null;
-  }
-
-  public final Map<String, SyncNativeHook> getSyncHooks() {
-    findMethods();
-    return assertNotNull(mHooks);
   }
 
   @Override
@@ -504,6 +484,7 @@ public abstract class BaseJavaModule implements NativeModule {
   }
 
   private static char returnTypeToChar(Class returnClass) {
+    // Keep this in sync with MethodInvoker
     char tryCommon = commonTypeToChar(returnClass);
     if (tryCommon != '\0') {
       return tryCommon;

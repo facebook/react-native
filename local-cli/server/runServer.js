@@ -10,7 +10,6 @@
 
 const InspectorProxy = require('./util/inspectorProxy.js');
 const ReactPackager = require('../../packager/react-packager');
-const TerminalReporter = require('../../packager/react-packager/src/lib/TerminalReporter');
 
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
@@ -18,11 +17,10 @@ const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddlewar
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
 const defaultPlatforms = require('../../packager/defaults').platforms;
+const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
-const heapCaptureMiddleware = require('./middleware/heapCaptureMiddleware.js');
 const http = require('http');
 const indexPageMiddleware = require('./middleware/indexPage');
-const jscProfilerMiddleware = require('./middleware/jscProfilerMiddleware');
 const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
 const messageSocket = require('./util/messageSocket.js');
 const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
@@ -46,9 +44,7 @@ function runServer(args, config, readyCallback) {
     .use(copyToClipBoardMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
-    .use(heapCaptureMiddleware)
     .use(cpuProfilerMiddleware)
-    .use(jscProfilerMiddleware)
     .use(indexPageMiddleware)
     .use(unless('/inspector', inspectorProxy.processRequest.bind(inspectorProxy)))
     .use(packagerServer.processRequest.bind(packagerServer));
@@ -70,7 +66,6 @@ function runServer(args, config, readyCallback) {
 
       wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
       ms = messageSocket.attachToServer(serverInstance, '/message');
-      webSocketProxy.attachToServer(serverInstance, '/devtools');
       inspectorProxy.attachToServer(serverInstance, '/inspector');
       readyCallback();
     }
@@ -87,15 +82,35 @@ function getPackagerServer(args, config) {
     typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
     undefined;
 
+  const providesModuleNodeModules =
+    args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
+
+  let LogReporter;
+  if (args.customLogReporterPath) {
+    try {
+      // First we let require resolve it, so we can require packages in node_modules
+      // as expected. eg: require('my-package/reporter');
+      LogReporter = require(args.customLogReporterPath);
+    } catch(e) {
+      // If that doesn't work, then we next try relative to the cwd, eg:
+      // require('./reporter');
+      LogReporter = require(path.resolve(args.customLogReporterPath));
+    }
+  } else {
+    LogReporter = require('../../packager/src/lib/TerminalReporter');
+  }
+
   return ReactPackager.createServer({
     assetExts: defaultAssetExts.concat(args.assetExts),
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
     extraNodeModules: config.extraNodeModules,
     getTransformOptions: config.getTransformOptions,
+    hasteImpl: config.hasteImpl,
     platforms: defaultPlatforms.concat(args.platforms),
     projectRoots: args.projectRoots,
-    reporter: new TerminalReporter(),
+    providesModuleNodeModules: providesModuleNodeModules,
+    reporter: new LogReporter(),
     resetCache: args.resetCache,
     transformModulePath: transformModulePath,
     verbose: args.verbose,

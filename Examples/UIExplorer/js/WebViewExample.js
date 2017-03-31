@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule WebViewExample
  */
 'use strict';
 
@@ -469,7 +470,7 @@ exports.examples = [
     }
   },
   {
-    title: 'Mesaging Test',
+    title: 'Messaging Test',
     render(): ReactElement<any> { return <MessagingTest />; }
   },
   {

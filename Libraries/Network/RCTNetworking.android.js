@@ -16,9 +16,14 @@
 const FormData = require('FormData');
 const NativeEventEmitter = require('NativeEventEmitter');
 const RCTNetworkingNative = require('NativeModules').Networking;
+const convertRequestBody = require('convertRequestBody');
+
+import type {RequestBody} from 'convertRequestBody';
 
 type Header = [string, string];
 
+// Convert FormData headers to arrays, which are easier to consume in
+// native on Android.
 function convertHeadersMapToArray(headers: Object): Array<Header> {
   const headerArray = [];
   for (const name in headers) {
@@ -47,16 +52,19 @@ class RCTNetworking extends NativeEventEmitter {
     trackingName: string,
     url: string,
     headers: Object,
-    data: string | FormData | {uri: string},
+    data: RequestBody,
     responseType: 'text' | 'base64',
     incrementalUpdates: boolean,
     timeout: number,
     callback: (requestId: number) => any
   ) {
-    const body =
-      typeof data === 'string' ? {string: data} :
-      data instanceof FormData ? {formData: getParts(data)} :
-      data;
+    const body = convertRequestBody(data);
+    if (body && body.formData) {
+      body.formData = body.formData.map((part) => ({
+        ...part,
+        headers: convertHeadersMapToArray(part.headers),
+      }));
+    }
     const requestId = generateRequestId();
     RCTNetworkingNative.sendRequest(
       method,
@@ -78,13 +86,6 @@ class RCTNetworking extends NativeEventEmitter {
   clearCookies(callback: (result: boolean) => any) {
     RCTNetworkingNative.clearCookies(callback);
   }
-}
-
-function getParts(data) {
-  return data.getParts().map((part) => {
-    part.headers = convertHeadersMapToArray(part.headers);
-    return part;
-  });
 }
 
 module.exports = new RCTNetworking();

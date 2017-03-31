@@ -37,7 +37,7 @@ RCT_EXPORT_METHOD(operationComplete:(__unused int)token result:(id)profileData e
 
   // Send the request
   NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-  NSURLSessionDataTask *sessionDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *sessionError) {
+  NSURLSessionDataTask *sessionDataTask = [session dataTaskWithRequest:request completionHandler:^(__unused NSData *data, __unused NSURLResponse *response, NSError *sessionError) {
     if (sessionError) {
       RCTLogWarn(@"JS CPU Profile data failed to send. Is the packager server running locally?\nDetails: %@", error);
     } else {

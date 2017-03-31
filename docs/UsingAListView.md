@@ -8,9 +8,9 @@ next: network
 previous: using-a-scrollview
 ---
 
-The `ListView` component displays a vertically scrolling list of changing, but similarly structured, data.
+The `ListView` component displays a scrolling list of changing, but similarly structured, data.
 
-`ListView` works well for long lists of data, where the number of items might change over time. Unlike the more generic [`ScrollView`](/react-native/docs/using-a-scrollview.html), the `ListView` only renders elements that are currently showing on the screen, not all the elements at once.
+`ListView` works well for long lists of data, where the number of items might change over time. Unlike the more generic [`ScrollView`](docs/using-a-scrollview.html), the `ListView` only renders elements that are currently showing on the screen, not all the elements at once.
 
 The `ListView` component requires two props: `dataSource` and `renderRow`. `dataSource` is the source of information for the list. `renderRow` takes one item from the source and returns a formatted component to render.
 
@@ -49,4 +49,4 @@ class ListViewBasics extends Component {
 AppRegistry.registerComponent('ListViewBasics', () => ListViewBasics);
 ```
 
-One of the most common uses for a `ListView` is displaying data that you fetch from a server. To do that, you will need to [learn about networking in React Native](/react-native/docs/network.html).
+One of the most common uses for a `ListView` is displaying data that you fetch from a server. To do that, you will need to [learn about networking in React Native](docs/network.html).

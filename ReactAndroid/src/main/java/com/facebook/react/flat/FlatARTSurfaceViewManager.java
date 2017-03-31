@@ -16,7 +16,7 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.art.ARTSurfaceView;
 
-/* protected */ class FlatARTSurfaceViewManager extends
+public class FlatARTSurfaceViewManager extends
     BaseViewManager<ARTSurfaceView, FlatARTSurfaceViewShadowNode> {
 
   private static final String REACT_CLASS = "ARTSurfaceView";

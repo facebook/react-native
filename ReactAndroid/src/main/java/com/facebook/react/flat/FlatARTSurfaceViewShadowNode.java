@@ -107,7 +107,7 @@ import com.facebook.yoga.YogaUnit;
   @Override
   public void setPadding(int spacingType, float padding) {
     YogaValue current = getStylePadding(spacingType);
-    if (current.unit != YogaUnit.PIXEL || current.value != padding) {
+    if (current.unit != YogaUnit.POINT || current.value != padding) {
       super.setPadding(spacingType, padding);
       mPaddingChanged = true;
       markUpdated();

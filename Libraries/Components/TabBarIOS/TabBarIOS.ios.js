@@ -15,7 +15,7 @@ var ColorPropType = require('ColorPropType');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var TabBarItemIOS = require('TabBarItemIOS');
-var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -32,9 +32,10 @@ class TabBarIOS extends React.Component {
 
   static Item = TabBarItemIOS;
 
+  // $FlowFixMe(>=0.41.0)
   static propTypes = {
-    ...View.propTypes,
-    style: View.propTypes.style,
+    ...ViewPropTypes,
+    style: ViewPropTypes.style,
     /**
      * Color of text on unselected tabs
      */

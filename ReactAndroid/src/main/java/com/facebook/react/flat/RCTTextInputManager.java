@@ -11,7 +11,7 @@ package com.facebook.react.flat;
 
 import com.facebook.react.views.textinput.ReactTextInputManager;
 
-/* package */ class RCTTextInputManager extends ReactTextInputManager {
+public class RCTTextInputManager extends ReactTextInputManager {
 
   @Override
   public RCTTextInput createShadowNodeInstance() {

@@ -23,6 +23,8 @@ var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
 
+const ViewPropTypes = require('ViewPropTypes');
+
 var ensureComponentIsNative = require('ensureComponentIsNative');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var keyOf = require('fbjs/lib/keyOf');
@@ -40,10 +42,15 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 /**
  * A wrapper for making views respond properly to touches.
  * On press down, the opacity of the wrapped view is decreased, which allows
- * the underlay color to show through, darkening or tinting the view.  The
- * underlay comes from adding a view to the view hierarchy, which can sometimes
- * cause unwanted visual artifacts if not used correctly, for example if the
- * backgroundColor of the wrapped view isn't explicitly set to an opaque color.
+ * the underlay color to show through, darkening or tinting the view.
+ *
+ * The underlay comes from wrapping the child in a new View, which can affect
+ * layout, and sometimes cause unwanted visual artifacts if not used correctly,
+ * for example if the backgroundColor of the wrapped view isn't explicitly set
+ * to an opaque color.
+ *
+ * TouchableHighlight must have one child (not zero or more than one).
+ * If you wish to have several child components, wrap them in a View.
  *
  * Example:
  *
@@ -59,9 +66,6 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  *   );
  * },
  * ```
- * > **NOTE**: TouchableHighlight must have one child (not zero or more than one)
- * >
- * > If you wish to have several child components, wrap them in a View.
  */
 
 var TouchableHighlight = React.createClass({
@@ -77,7 +81,7 @@ var TouchableHighlight = React.createClass({
      * active.
      */
     underlayColor: ColorPropType,
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
     /**
      * Called immediately after the underlay is shown
      */

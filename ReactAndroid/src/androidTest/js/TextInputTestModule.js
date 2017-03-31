@@ -18,6 +18,8 @@ var Text = require('Text');
 var TextInput = require('TextInput');
 var View = require('View');
 
+var Recording = require('NativeModules').Recording;
+
 var app;
 
 class TokenizedTextExample extends React.Component {
@@ -81,6 +83,10 @@ class TextInputTestApp extends React.Component {
     app = this;
   }
 
+  handleOnSubmitEditing = (record) => {
+    Recording.record(record);
+  };
+
   render() {
     return (
       <View style={styles.container}>
@@ -127,6 +133,12 @@ class TextInputTestApp extends React.Component {
           style={[styles.textInput, {color: '#00ff00'}]}
           defaultValue="Text"
           testID="textInput6"
+        />
+        <TextInput
+          ref="onSubmitTextInput"
+          onSubmitEditing={this.handleOnSubmitEditing.bind(this, 'onSubmit')}
+          defaultValue=""
+          testID="onSubmitTextInput"
         />
         <TokenizedTextExample />
       </View>

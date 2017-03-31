@@ -33,7 +33,7 @@ const LinkingManager = Platform.OS === 'android' ?
  *
  * ```
  * componentDidMount() {
- *   var url = Linking.getInitialURL().then((url) => {
+ *   Linking.getInitialURL().then((url) => {
  *     if (url) {
  *       console.log('Initial url is: ' + url);
  *     }
@@ -61,7 +61,7 @@ const LinkingManager = Platform.OS === 'android' ?
  * execution you'll need to add the following lines to you `*AppDelegate.m`:
  *
  * ```
- * #import "RCTLinkingManager.h"
+ * #import <React/RCTLinkingManager.h>
  *
  * - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
  *   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
