@@ -95,6 +95,8 @@ class Module {
   _sourceCode: ?string;
   _readPromises: Map<string, Promise<ReadResult>>;
 
+  _readResultsByOptionsKey: Map<string, ?ReadResult>;
+
   constructor({
     cache,
     depGraphHelpers,
@@ -123,6 +125,7 @@ class Module {
     this._globalCache = globalTransformCache;
 
     this._readPromises = new Map();
+    this._readResultsByOptionsKey = new Map();
   }
 
   isHaste(): Promise<boolean> {
@@ -186,6 +189,7 @@ class Module {
   invalidate() {
     this._cache.invalidate(this.path);
     this._readPromises.clear();
+    this._readResultsByOptionsKey.clear();
     this._sourceCode = null;
     this._docBlock = null;
     this._hasteNameCache = null;
@@ -250,10 +254,9 @@ class Module {
    */
   _finalizeReadResult(
     source: string,
-    id: ?string,
-    extern: boolean,
     result: TransformedCode,
   ): ReadResult {
+    const id = this._getHasteName();
     if (this._options.cacheTransformResults === false) {
       const {dependencies} = result;
       /* $FlowFixMe: this code path is dead, remove. */
@@ -334,41 +337,61 @@ class Module {
   }
 
   /**
-   * Read everything about a module: source code, transformed code,
-   * dependencies, etc. The overall process is to read the cache first, and if
-   * it's a miss, we let the worker write to the cache and read it again.
+   * Shorthand for reading both from cache or from fresh for all call sites that
+   * are asynchronous by default.
    */
   read(transformOptions: TransformOptions): Promise<ReadResult> {
+    return Promise.resolve().then(() => {
+      const cached = this.readCached(transformOptions);
+      if (cached != null) {
+        return cached;
+      }
+      return this.readFresh(transformOptions);
+    });
+  }
+
+  /**
+   * Same as `readFresh`, but reads from the cache instead of transforming
+   * the file from source. This has the benefit of being synchronous. As a
+   * result it is possible to read many cached Module in a row, synchronously.
+   */
+  readCached(transformOptions: TransformOptions): ?ReadResult {
+    const key = stableObjectHash(transformOptions || {});
+    if (this._readResultsByOptionsKey.has(key)) {
+      return this._readResultsByOptionsKey.get(key);
+    }
+    const result = this._readFromTransformCache(transformOptions);
+    this._readResultsByOptionsKey.set(key, result);
+    return result;
+  }
+
+  /**
+   * Read again from the TransformCache, on disk. `readCached` should be favored
+   * so it's faster in case the results are already in memory.
+   */
+  _readFromTransformCache(transformOptions: TransformOptions): ?ReadResult {
+    const cacheProps = this._getCacheProps(transformOptions);
+    const cachedResult = TransformCache.readSync(cacheProps);
+    if (cachedResult) {
+      return this._finalizeReadResult(cacheProps.sourceCode, cachedResult);
+    }
+    return null;
+  }
+
+  /**
+   * Gathers relevant data about a module: source code, transformed code,
+   * dependencies, etc. This function reads and transforms the source from
+   * scratch. We don't repeat the same work as `readCached` because we assume
+   * call sites have called it already.
+   */
+  readFresh(transformOptions: TransformOptions): Promise<ReadResult> {
     const key = stableObjectHash(transformOptions || {});
     const promise = this._readPromises.get(key);
     if (promise != null) {
       return promise;
     }
     const freshPromise = Promise.resolve().then(() => {
-      const sourceCode = this._readSourceCode();
-      const moduleDocBlock = this._readDocBlock();
-      const id = this._getHasteName();
-      // Ignore requires in JSON files or generated code. An example of this
-      // is prebuilt files like the SourceMap library.
-      const extern = this.isJSON() || 'extern' in moduleDocBlock;
-      if (extern) {
-        transformOptions = {...transformOptions, extern};
-      }
-      const getTransformCacheKey = this._getTransformCacheKey;
-      const cacheProps = {
-        filePath: this.path,
-        sourceCode,
-        getTransformCacheKey,
-        transformOptions,
-        cacheOptions: {
-          resetCache: this._options.resetCache,
-          reporter: this._reporter,
-        },
-      };
-      const cachedResult = TransformCache.readSync(cacheProps);
-      if (cachedResult) {
-        return Promise.resolve(this._finalizeReadResult(sourceCode, id, extern, cachedResult));
-      }
+      const cacheProps = this._getCacheProps(transformOptions);
       return new Promise((resolve, reject) => {
         this._getAndCacheTransformedCode(
           cacheProps,
@@ -378,13 +401,38 @@ class Module {
               return;
             }
             invariant(freshResult != null, 'inconsistent state');
-            resolve(this._finalizeReadResult(sourceCode, id, extern, freshResult));
+            resolve(this._finalizeReadResult(cacheProps.sourceCode, freshResult));
           },
         );
+      }).then(result => {
+        this._readResultsByOptionsKey.set(key, result);
+        return result;
       });
     });
     this._readPromises.set(key, freshPromise);
     return freshPromise;
+  }
+
+  _getCacheProps(transformOptions: TransformOptions) {
+    const sourceCode = this._readSourceCode();
+    const moduleDocBlock = this._readDocBlock();
+    const getTransformCacheKey = this._getTransformCacheKey;
+    // Ignore requires in JSON files or generated code. An example of this
+    // is prebuilt files like the SourceMap library.
+    const extern = this.isJSON() || 'extern' in moduleDocBlock;
+    if (extern) {
+      transformOptions = {...transformOptions, extern};
+    }
+    return {
+      filePath: this.path,
+      sourceCode,
+      getTransformCacheKey,
+      transformOptions,
+      cacheOptions: {
+        resetCache: this._options.resetCache,
+        reporter: this._reporter,
+      },
+    };
   }
 
   hash() {
