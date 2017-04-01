@@ -42,9 +42,14 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private long mNativePointer;
   private Object mData;
 
-  private boolean mHasSetPadding = false;
-  private boolean mHasSetMargin = false;
-  private boolean mHasSetBorder = false;
+  /* Those flags needs be in sync with YGJNI.cpp */
+  private final static int MARGIN = 1;
+  private final static int PADDING = 2;
+  private final static int BORDER = 4;
+
+  @DoNotStrip
+  private int mEdgeSetFlag = 0;
+
   private boolean mHasSetPosition = false;
 
   @DoNotStrip
@@ -113,9 +118,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private native void jni_YGNodeReset(long nativePointer);
   @Override
   public void reset() {
-    mHasSetPadding = false;
-    mHasSetMargin = false;
-    mHasSetBorder = false;
+    mEdgeSetFlag = 0;
     mHasSetPosition = false;
     mHasNewLayout = true;
 
@@ -123,6 +126,18 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
     mHeight = YogaConstants.UNDEFINED;
     mTop = YogaConstants.UNDEFINED;
     mLeft = YogaConstants.UNDEFINED;
+    mMarginLeft = 0;
+    mMarginTop = 0;
+    mMarginRight = 0;
+    mMarginBottom = 0;
+    mPaddingLeft = 0;
+    mPaddingTop = 0;
+    mPaddingRight = 0;
+    mPaddingBottom = 0;
+    mBorderLeft = 0;
+    mBorderTop = 0;
+    mBorderRight = 0;
+    mBorderBottom = 0;
     mLayoutDirection = 0;
 
     mMeasureFunction = null;
@@ -382,7 +397,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private native Object jni_YGNodeStyleGetMargin(long nativePointer, int edge);
   @Override
   public YogaValue getMargin(YogaEdge edge) {
-    if (!mHasSetMargin) {
+    if (!((mEdgeSetFlag & MARGIN) == MARGIN)) {
       return YogaValue.UNDEFINED;
     }
     return (YogaValue) jni_YGNodeStyleGetMargin(mNativePointer, edge.intValue());
@@ -391,28 +406,28 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private native void jni_YGNodeStyleSetMargin(long nativePointer, int edge, float margin);
   @Override
   public void setMargin(YogaEdge edge, float margin) {
-    mHasSetMargin = true;
+    mEdgeSetFlag |= MARGIN;
     jni_YGNodeStyleSetMargin(mNativePointer, edge.intValue(), margin);
   }
 
   private native void jni_YGNodeStyleSetMarginPercent(long nativePointer, int edge, float percent);
   @Override
   public void setMarginPercent(YogaEdge edge, float percent) {
-    mHasSetMargin = true;
+    mEdgeSetFlag |= MARGIN;
     jni_YGNodeStyleSetMarginPercent(mNativePointer, edge.intValue(), percent);
   }
 
   private native void jni_YGNodeStyleSetMarginAuto(long nativePointer, int edge);
   @Override
   public void setMarginAuto(YogaEdge edge) {
-    mHasSetMargin = true;
+    mEdgeSetFlag |= MARGIN;
     jni_YGNodeStyleSetMarginAuto(mNativePointer, edge.intValue());
   }
 
   private native Object jni_YGNodeStyleGetPadding(long nativePointer, int edge);
   @Override
   public YogaValue getPadding(YogaEdge edge) {
-    if (!mHasSetPadding) {
+    if (!((mEdgeSetFlag & PADDING) == PADDING)) {
       return YogaValue.UNDEFINED;
     }
     return (YogaValue) jni_YGNodeStyleGetPadding(mNativePointer, edge.intValue());
@@ -421,21 +436,21 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private native void jni_YGNodeStyleSetPadding(long nativePointer, int edge, float padding);
   @Override
   public void setPadding(YogaEdge edge, float padding) {
-    mHasSetPadding = true;
+    mEdgeSetFlag |= PADDING;
     jni_YGNodeStyleSetPadding(mNativePointer, edge.intValue(), padding);
   }
 
   private native void jni_YGNodeStyleSetPaddingPercent(long nativePointer, int edge, float percent);
   @Override
   public void setPaddingPercent(YogaEdge edge, float percent) {
-    mHasSetPadding = true;
+    mEdgeSetFlag |= PADDING;
     jni_YGNodeStyleSetPaddingPercent(mNativePointer, edge.intValue(), percent);
   }
 
   private native float jni_YGNodeStyleGetBorder(long nativePointer, int edge);
   @Override
   public float getBorder(YogaEdge edge) {
-    if (!mHasSetBorder) {
+    if (!((mEdgeSetFlag & BORDER) == BORDER)) {
       return YogaConstants.UNDEFINED;
     }
     return jni_YGNodeStyleGetBorder(mNativePointer, edge.intValue());
@@ -444,7 +459,7 @@ public class YogaNode implements YogaNodeAPI<YogaNode> {
   private native void jni_YGNodeStyleSetBorder(long nativePointer, int edge, float border);
   @Override
   public void setBorder(YogaEdge edge, float border) {
-    mHasSetBorder = true;
+    mEdgeSetFlag |= BORDER;
     jni_YGNodeStyleSetBorder(mNativePointer, edge.intValue(), border);
   }
 
