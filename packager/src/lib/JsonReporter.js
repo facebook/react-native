@@ -13,7 +13,7 @@
 
 import {Writable} from 'stream';
 
-class JsonReporter<TEvent> {
+class JsonReporter<TEvent: {}> {
 
   _stream: Writable;
 
@@ -21,7 +21,20 @@ class JsonReporter<TEvent> {
     this._stream = stream;
   }
 
+  /**
+   * There is a special case for errors because they have non-enumerable fields.
+   * (Perhaps we should switch in favor of plain object?)
+   */
   update(event: TEvent) {
+    /* $FlowFixMe: fine to call on `undefined`. */
+    if (Object.prototype.toString.call(event.error) === '[object Error]') {
+      event = {...event};
+      event.error = {
+        ...event.error,
+        message: event.error.message,
+        stack: event.error.stack,
+      };
+    }
     this._stream.write(JSON.stringify(event) + '\n');
   }
 

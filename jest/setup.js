@@ -27,7 +27,7 @@ jest
 jest.setMock('ErrorUtils', require('ErrorUtils'));
 
 jest
-  .mock('ReactNativeDefaultInjection')
+  .mock('InitializeCore')
   .mock('Image', () => mockComponent('Image'))
   .mock('Text', () => mockComponent('Text'))
   .mock('TextInput', () => mockComponent('TextInput'))
@@ -50,7 +50,7 @@ jest
           Object.keys(dataBlob).forEach(key => {
             this.items += dataBlob[key] && (
               dataBlob[key].length || dataBlob[key].size || 0
-            )
+            );
           });
         } catch (e) {
           this.items = 'unknown';
@@ -86,6 +86,16 @@ const mockNativeModules = {
   },
   DataManager: {
     queryData: jest.fn(),
+  },
+  DeviceInfo: {
+    Dimensions: {
+      window: {
+        fontScale: 2,
+        height: 1334,
+        scale: 2,
+        width: 750,
+      },
+    },
   },
   FacebookSDK: {
     login: jest.fn(),
@@ -142,7 +152,10 @@ const mockNativeModules = {
     deleteTimer: jest.fn(),
   },
   UIManager: {
+    blur: jest.fn(),
     createView: jest.fn(),
+    dispatchViewManagerCommand: jest.fn(),
+    focus: jest.fn(),
     setChildren: jest.fn(),
     manageChildren: jest.fn(),
     updateView: jest.fn(),
@@ -150,13 +163,8 @@ const mockNativeModules = {
     replaceExistingNonRootView: jest.fn(),
     customBubblingEventTypes: {},
     customDirectEventTypes: {},
-    Dimensions: {
-      window: {
-        fontScale: 2,
-        height: 1334,
-        scale: 2,
-        width: 750,
-      },
+    AndroidTextInput: {
+      Commands: {},
     },
     ModalFullscreenView: {
       Constants: {},

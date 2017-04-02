@@ -1,25 +1,29 @@
-We use GitHub Issues for bugs.
+Please read the following carefully before opening a new issue.
+Your issue may be closed if it does not provide the information required by this template.
 
-If you have a non-bug question, ask on Stack Overflow: http://stackoverflow.com/questions/tagged/react-native
+We use GitHub Issues for tracking bugs in React Native.
 
-If you have a feature request, post it on Product Pains: https://productpains.com/product/react-native/
+- If you have a question, ask on Stack Overflow: http://stackoverflow.com/questions/tagged/react-native
+- If you have a feature request, post it on Canny: https://react-native.canny.io/feature-requests
 
---- Please use this template, and delete everything above this line before submitting your issue --- 
+--- Delete everything above this line ---
 
 ### Description
 
-[FILL THIS OUT: Explain what you did, what you expected to happen, and what actually happens.]
+Explain what you did, what you expected to happen, and what actually happens.
 
-### Reproduction
+### Reproduction Steps and Sample Code
 
-[FILL THIS OUT: Try to reproduce your bug on rnplay.org and provide a link. If you can't reproduce the bug on rnplay.org, provide a sample project.]
+Try to reproduce your bug on https://sketch.expo.io/ and provide a link. 
+If you can't reproduce the bug on Sketch, provide a sample project. At the very least, provide an example of your code.
 
 ### Solution
 
-[FILL THIS OUT: What needs to be done to address this issue? Ideally, provide a pull request with a fix.]
+What needs to be done to address this issue? Ideally, provide a pull request with a fix.
 
 ### Additional Information
 
-* React Native version: [FILL THIS OUT]
+* React Native version: [FILL THIS OUT: Be specific, filling out "latest" here is not enough.]
 * Platform: [FILL THIS OUT: iOS, Android, or both?]
-* Operating System: [FILL THIS OUT: MacOS, Linux, or Windows?]
+* Development Operating System: [FILL THIS OUT: Are you developing on MacOS, Linux, or Windows?]
+* Dev tools: [FILL THIS OUT: Xcode or Android Studio version, iOS or Android SDK version, if applicable]

@@ -157,7 +157,7 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launc
     });
     buildProcess.on('close', function(code) {
       //FULL_PRODUCT_NAME is the actual file name of the app, which actually comes from the Product Name in the build config, which does not necessary match a scheme name,  example output line: export FULL_PRODUCT_NAME="Super App Dev.app"
-      let productNameMatch = /export FULL_PRODUCT_NAME="?(.+).app/.exec(buildOutput);
+      let productNameMatch = /export FULL_PRODUCT_NAME="?(.+).app"?$/.exec(buildOutput);
       if (productNameMatch && productNameMatch.length && productNameMatch.length > 1) {
         return resolve(productNameMatch[1]);//0 is the full match, 1 is the app name
       }
@@ -222,7 +222,7 @@ module.exports = {
   },
   {
     desc: "Run on a connected device, e.g. Max's iPhone",
-    cmd: "react-native run-ios --device 'Max's iPhone'",
+    cmd: 'react-native run-ios --device "Max\'s iPhone"',
   },
   ],
   options: [{

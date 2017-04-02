@@ -55,6 +55,10 @@
 		14D6D7281B2222EF001FB087 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDED91B0651EA00C62182 /* libRCTWebSocket.a */; };
 		14D6D7291B2222EF001FB087 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14AADF041AC3DB95002390C9 /* libReact.a */; };
 		14DC67F41AB71881001358AB /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14DC67F11AB71876001358AB /* libRCTPushNotification.a */; };
+		192F69B81E82409A008692C7 /* RCTAnimationUtilsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 192F69B51E82409A008692C7 /* RCTAnimationUtilsTests.m */; };
+		192F69B91E82409A008692C7 /* RCTConvert_YGValueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 192F69B61E82409A008692C7 /* RCTConvert_YGValueTests.m */; };
+		192F69BA1E82409A008692C7 /* RCTNativeAnimatedNodesManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 192F69B71E82409A008692C7 /* RCTNativeAnimatedNodesManagerTests.m */; };
+		192F69DA1E8240E2008692C7 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13E501A31D07A502005F35D8 /* libRCTAnimation.a */; };
 		272E6B3F1BEA849E001FCF37 /* UpdatePropertiesExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */; };
 		27B885561BED29AF00008352 /* RCTRootViewIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B885551BED29AF00008352 /* RCTRootViewIntegrationTests.m */; };
 		27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
@@ -84,7 +88,7 @@
 		2D4BD8E31DA2E20D005AC8A8 /* RCTShadowViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 138D6A161B53CD440074A87E /* RCTShadowViewTests.m */; };
 		2D4BD8E41DA2E20D005AC8A8 /* RCTUIManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFAB1B21F5E400C1F8F2 /* RCTUIManagerTests.m */; };
 		2D4BD8E51DA2E20D005AC8A8 /* RCTComponentPropsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BCE84E1C9C209600DD7AAD /* RCTComponentPropsTests.m */; };
-		2D4BD8E61DA2E20D005AC8A8 /* TestBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = 3DD981D51D33C6FB007DC7BE /* TestBundle.js */; };
+		2D4BD8E61DA2E20D005AC8A8 /* UIExplorerUnitTestsBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = 3DD981D51D33C6FB007DC7BE /* UIExplorerUnitTestsBundle.js */; };
 		2D4BD8E71DA2E20D005AC8A8 /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14D6D7101B220EB3001FB087 /* libOCMock.a */; };
 		2D8C2E321DA40403000EE098 /* RCTMultipartStreamReaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 001BFCE31D838343008E587E /* RCTMultipartStreamReaderTests.m */; };
 		2DD323DC1DA2DDBF000FE1B8 /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
@@ -100,7 +104,7 @@
 		2DD323E71DA2DE3F000FE1B8 /* libRCTSettings-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323C81DA2DD8B000FE1B8 /* libRCTSettings-tvOS.a */; };
 		2DD323E81DA2DE3F000FE1B8 /* libRCTText-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D01DA2DD8B000FE1B8 /* libRCTText-tvOS.a */; };
 		2DD323E91DA2DE3F000FE1B8 /* libRCTWebSocket-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D51DA2DD8B000FE1B8 /* libRCTWebSocket-tvOS.a */; };
-		2DD323EA1DA2DE3F000FE1B8 /* libReact-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D91DA2DD8B000FE1B8 /* libReact-tvOS.a */; };
+		2DD323EA1DA2DE3F000FE1B8 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D91DA2DD8B000FE1B8 /* libReact.a */; };
 		3578590A1B28D2CF00341EDB /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
 		39AA31A41DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 39AA31A31DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m */; };
 		3D05746D1DE6008900184BB4 /* libRCTPushNotification-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D05746C1DE6008900184BB4 /* libRCTPushNotification-tvOS.a */; };
@@ -111,7 +115,7 @@
 		3D302F221DF8285100D6DDAE /* libRCTImage-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323BB1DA2DD8B000FE1B8 /* libRCTImage-tvOS.a */; };
 		3D56F9F11D6F6E9B00F53A06 /* UIExplorerBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3D13F83E1D6F6AE000E69E0E /* UIExplorerBundle.bundle */; };
 		3DB99D0C1BA0340600302749 /* UIExplorerIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */; };
-		3DD981D61D33C6FB007DC7BE /* TestBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = 3DD981D51D33C6FB007DC7BE /* TestBundle.js */; };
+		3DD981D61D33C6FB007DC7BE /* UIExplorerUnitTestsBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = 3DD981D51D33C6FB007DC7BE /* UIExplorerUnitTestsBundle.js */; };
 		68FF44381CF6111500720EFD /* RCTBundleURLProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */; };
 		834C36EC1AF8DED70019C93C /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 834C36D21AF8DA610019C93C /* libRCTSettings.a */; };
 		83636F8F1B53F22C009F943E /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */; };
@@ -422,6 +426,9 @@
 		14D6D7101B220EB3001FB087 /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOCMock.a; sourceTree = "<group>"; };
 		14DC67E71AB71876001358AB /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = ../../Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj; sourceTree = "<group>"; };
 		14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = ../../Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj; sourceTree = "<group>"; };
+		192F69B51E82409A008692C7 /* RCTAnimationUtilsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAnimationUtilsTests.m; sourceTree = "<group>"; };
+		192F69B61E82409A008692C7 /* RCTConvert_YGValueTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert_YGValueTests.m; sourceTree = "<group>"; };
+		192F69B71E82409A008692C7 /* RCTNativeAnimatedNodesManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTNativeAnimatedNodesManagerTests.m; sourceTree = "<group>"; };
 		272E6B3B1BEA849E001FCF37 /* UpdatePropertiesExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UpdatePropertiesExampleView.h; path = UIExplorer/NativeExampleViews/UpdatePropertiesExampleView.h; sourceTree = "<group>"; };
 		272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UpdatePropertiesExampleView.m; path = UIExplorer/NativeExampleViews/UpdatePropertiesExampleView.m; sourceTree = "<group>"; };
 		27B885551BED29AF00008352 /* RCTRootViewIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRootViewIntegrationTests.m; sourceTree = "<group>"; };
@@ -440,7 +447,7 @@
 		3D299BAE1D33EBFA00FA1057 /* RCTLoggingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTLoggingTests.m; sourceTree = "<group>"; };
 		3D2AFAF41D646CF80089D1A3 /* legacy_image@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "legacy_image@2x.png"; path = "UIExplorer/legacy_image@2x.png"; sourceTree = "<group>"; };
 		3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIExplorerIntegrationTests.m; sourceTree = "<group>"; };
-		3DD981D51D33C6FB007DC7BE /* TestBundle.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = TestBundle.js; sourceTree = "<group>"; };
+		3DD981D51D33C6FB007DC7BE /* UIExplorerUnitTestsBundle.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = UIExplorerUnitTestsBundle.js; sourceTree = "<group>"; };
 		58005BE41ABA80530062E044 /* RCTTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTest.xcodeproj; path = ../../Libraries/RCTTest/RCTTest.xcodeproj; sourceTree = "<group>"; };
 		68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBundleURLProviderTests.m; sourceTree = "<group>"; };
 		83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerScenarioTests.m; sourceTree = "<group>"; };
@@ -456,6 +463,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				192F69DA1E8240E2008692C7 /* libRCTAnimation.a in Frameworks */,
 				14D6D71E1B2222EF001FB087 /* libRCTActionSheet.a in Frameworks */,
 				14D6D71F1B2222EF001FB087 /* libRCTAdSupport.a in Frameworks */,
 				14D6D7201B2222EF001FB087 /* libRCTGeolocation.a in Frameworks */,
@@ -513,7 +521,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DD323EA1DA2DE3F000FE1B8 /* libReact-tvOS.a in Frameworks */,
+				2DD323EA1DA2DE3F000FE1B8 /* libReact.a in Frameworks */,
 				2DD323E31DA2DE3F000FE1B8 /* libRCTAnimation-tvOS.a in Frameworks */,
 				3D302F221DF8285100D6DDAE /* libRCTImage-tvOS.a in Frameworks */,
 				2DD323E51DA2DE3F000FE1B8 /* libRCTLinking-tvOS.a in Frameworks */,
@@ -660,6 +668,9 @@
 		143BC57C1B21E18100462512 /* UIExplorerUnitTests */ = {
 			isa = PBXGroup;
 			children = (
+				192F69B51E82409A008692C7 /* RCTAnimationUtilsTests.m */,
+				192F69B61E82409A008692C7 /* RCTConvert_YGValueTests.m */,
+				192F69B71E82409A008692C7 /* RCTNativeAnimatedNodesManagerTests.m */,
 				13B6C1A21C34225900D3FAF5 /* RCTURLUtilsTests.m */,
 				68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */,
 				1497CFA41B21F5E400C1F8F2 /* RCTAllocationTests.m */,
@@ -685,7 +696,7 @@
 				13BCE84E1C9C209600DD7AAD /* RCTComponentPropsTests.m */,
 				39AA31A31DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m */,
 				143BC57E1B21E18100462512 /* Info.plist */,
-				3DD981D51D33C6FB007DC7BE /* TestBundle.js */,
+				3DD981D51D33C6FB007DC7BE /* UIExplorerUnitTestsBundle.js */,
 				14D6D7101B220EB3001FB087 /* libOCMock.a */,
 				14D6D7011B220AE3001FB087 /* OCMock */,
 			);
@@ -725,13 +736,13 @@
 			isa = PBXGroup;
 			children = (
 				14AADF041AC3DB95002390C9 /* libReact.a */,
-				2DD323D91DA2DD8B000FE1B8 /* libReact-tvOS.a */,
+				2DD323D91DA2DD8B000FE1B8 /* libReact.a */,
 				3D3C08811DE3424E00C268FA /* libyoga.a */,
-				3D3C08831DE3424E00C268FA /* libyoga-tvOS.a */,
+				3D3C08831DE3424E00C268FA /* libyoga.a */,
 				3D05748C1DE6008900184BB4 /* libcxxreact.a */,
-				3D05748E1DE6008900184BB4 /* libcxxreact-tvOS.a */,
+				3D05748E1DE6008900184BB4 /* libcxxreact.a */,
 				3D0574901DE6008900184BB4 /* libjschelpers.a */,
-				3D0574921DE6008900184BB4 /* libjschelpers-tvOS.a */,
+				3D0574921DE6008900184BB4 /* libjschelpers.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -997,7 +1008,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					004D289D1AAF61C70097A701 = {
@@ -1241,10 +1252,10 @@
 			remoteRef = 2DD323D41DA2DD8B000FE1B8 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2DD323D91DA2DD8B000FE1B8 /* libReact-tvOS.a */ = {
+		2DD323D91DA2DD8B000FE1B8 /* libReact.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libReact-tvOS.a";
+			path = libReact.a;
 			remoteRef = 2DD323D81DA2DD8B000FE1B8 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1269,10 +1280,10 @@
 			remoteRef = 3D05748B1DE6008900184BB4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		3D05748E1DE6008900184BB4 /* libcxxreact-tvOS.a */ = {
+		3D05748E1DE6008900184BB4 /* libcxxreact.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libcxxreact-tvOS.a";
+			path = libcxxreact.a;
 			remoteRef = 3D05748D1DE6008900184BB4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1283,10 +1294,10 @@
 			remoteRef = 3D05748F1DE6008900184BB4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		3D0574921DE6008900184BB4 /* libjschelpers-tvOS.a */ = {
+		3D0574921DE6008900184BB4 /* libjschelpers.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libjschelpers-tvOS.a";
+			path = libjschelpers.a;
 			remoteRef = 3D0574911DE6008900184BB4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1297,10 +1308,10 @@
 			remoteRef = 3D3C08801DE3424E00C268FA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		3D3C08831DE3424E00C268FA /* libyoga-tvOS.a */ = {
+		3D3C08831DE3424E00C268FA /* libyoga.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libyoga-tvOS.a";
+			path = libyoga.a;
 			remoteRef = 3D3C08821DE3424E00C268FA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1332,7 +1343,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3DD981D61D33C6FB007DC7BE /* TestBundle.js in Resources */,
+				3DD981D61D33C6FB007DC7BE /* UIExplorerUnitTestsBundle.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1375,7 +1386,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2D4BD8E61DA2E20D005AC8A8 /* TestBundle.js in Resources */,
+				2D4BD8E61DA2E20D005AC8A8 /* UIExplorerUnitTestsBundle.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1433,8 +1444,10 @@
 				1497CFAF1B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m in Sources */,
 				1497CFAE1B21F5E400C1F8F2 /* RCTJSCExecutorTests.m in Sources */,
 				13129DD41C85F87C007D611C /* RCTModuleInitNotificationRaceTests.m in Sources */,
+				192F69B81E82409A008692C7 /* RCTAnimationUtilsTests.m in Sources */,
 				1497CFAD1B21F5E400C1F8F2 /* RCTBridgeTests.m in Sources */,
 				134CB92A1C85A38800265FA6 /* RCTModuleInitTests.m in Sources */,
+				192F69BA1E82409A008692C7 /* RCTNativeAnimatedNodesManagerTests.m in Sources */,
 				1497CFB11B21F5E400C1F8F2 /* RCTEventDispatcherTests.m in Sources */,
 				1497CFB31B21F5E400C1F8F2 /* RCTUIManagerTests.m in Sources */,
 				13DB03481B5D2ED500C27245 /* RCTJSONTests.m in Sources */,
@@ -1445,6 +1458,7 @@
 				39AA31A41DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m in Sources */,
 				13B6C1A31C34225900D3FAF5 /* RCTURLUtilsTests.m in Sources */,
 				8385CF041B87479200C6273E /* RCTImageLoaderHelpers.m in Sources */,
+				192F69B91E82409A008692C7 /* RCTConvert_YGValueTests.m in Sources */,
 				BC9C03401DC9F1D600B1C635 /* RCTDevMenuTests.m in Sources */,
 				68FF44381CF6111500720EFD /* RCTBundleURLProviderTests.m in Sources */,
 				8385CEF51B873B5C00C6273E /* RCTImageLoaderTests.m in Sources */,
@@ -1613,9 +1627,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				INFOPLIST_FILE = "$(SRCROOT)/UIExplorer/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = UIExplorer;
@@ -1629,7 +1641,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = V9WTTPBFK9;
 				INFOPLIST_FILE = "$(SRCROOT)/UIExplorer/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = UIExplorer;
@@ -1861,9 +1872,12 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_ATOMIC_PROPERTIES = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1872,6 +1886,7 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -1904,9 +1919,7 @@
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wall",
-					"-Wincompatible-pointer-types",
-					"-Wincompatible-pointer-types-discards-qualifiers",
-					"-Wshadow",
+					"-Wno-semicolon-before-method-body",
 				);
 			};
 			name = Debug;
@@ -1927,9 +1940,12 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_ATOMIC_PROPERTIES = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1937,6 +1953,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
@@ -1963,9 +1980,7 @@
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wall",
-					"-Wincompatible-pointer-types",
-					"-Wincompatible-pointer-types-discards-qualifiers",
-					"-Wshadow",
+					"-Wno-semicolon-before-method-body",
 				);
 			};
 			name = Release;

@@ -274,8 +274,6 @@ class StatusBar extends React.Component {
     translucent: React.PropTypes.bool,
     /**
      * Sets the color of the status bar text.
-     *
-     * @platform ios
      */
     barStyle: React.PropTypes.oneOf([
       'default',

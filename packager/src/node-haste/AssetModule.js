@@ -26,7 +26,7 @@ class AssetModule extends Module {
 
   constructor(args: ConstructorArgs & {dependencies: Array<string>}, platforms: Set<string>) {
     super(args);
-    const { resolution, name, type } = getAssetDataFromName(this.path, platforms);
+    const {resolution, name, type} = getAssetDataFromName(this.path, platforms);
     this.resolution = resolution;
     this._name = name;
     this._type = type;
@@ -37,14 +37,14 @@ class AssetModule extends Module {
     return Promise.resolve(false);
   }
 
-  getDependencies() {
-    return Promise.resolve(this._dependencies);
-  }
-
-  read(): Promise<ReadResult> {
+  readCached(): ReadResult {
     /** $FlowFixMe: improper OOP design. AssetModule, being different from a
      * normal Module, shouldn't inherit it in the first place. */
-    return Promise.resolve({});
+    return {dependencies: this._dependencies};
+  }
+
+  readFresh(): Promise<ReadResult> {
+    return Promise.resolve(this.readCached());
   }
 
   getName() {

@@ -36,6 +36,37 @@ rm -rf android
 
 success "Generated artifacts for Maven"
 
+npm install
+
+success "Killing any running packagers"
+lsof -i :8081 | grep LISTEN
+lsof -i :8081 | grep LISTEN | /usr/bin/awk '{print $2}' | xargs kill
+
+info "Start the packager in another terminal by running 'npm start' from the root"
+info "and then press any key."
+info ""
+read -n 1
+
+./gradlew :Examples:UIExplorer:android:app:installDebug || error "Couln't build UIExplorer Android"
+
+info "Press any key to run UIExplorer in an already running Android emulator/device"
+info ""
+read -n 1
+adb shell am start -n com.facebook.react.uiapp/.UIExplorerActivity
+
+info "Press any key to open the project in Xcode, then build and test manually."
+info ""
+read -n 1
+open "Examples/UIExplorer/UIExplorer.xcodeproj"
+
+info "When done testing UIExplorer app on iOS and Android press any key to continue."
+info ""
+read -n 1
+
+success "Killing packager"
+lsof -i :8081 | grep LISTEN
+lsof -i :8081 | grep LISTEN | /usr/bin/awk '{print $2}' | xargs kill
+
 npm pack
 
 PACKAGE=$(pwd)/react-native-$PACKAGE_VERSION.tgz
@@ -70,7 +101,7 @@ info "   - Disable Chrome debugging."
 info "   - Enable Hot Reloading, change a file (index.ios.js, index.android.js) and save. The UI should refresh."
 info "   - Disable Hot Reloading."
 info ""
-info "Press any key to open the project in XCode"
+info "Press any key to open the project in Xcode"
 info ""
 read -n 1
 open "/tmp/${project_name}/ios/${project_name}.xcodeproj"

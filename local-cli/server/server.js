@@ -8,8 +8,6 @@
  */
 'use strict';
 
-const chalk = require('chalk');
-const formatBanner = require('./formatBanner');
 const path = require('path');
 const runServer = require('./runServer');
 
@@ -17,52 +15,33 @@ const runServer = require('./runServer');
  * Starts the React Native Packager Server.
  */
 function server(argv, config, args) {
-  args.projectRoots.concat(args.root);
+  args.projectRoots = args.projectRoots.concat(args.root);
 
-  console.log(formatBanner(
-    'Running packager on port ' + args.port + '.\n\n' +
-    'Keep this packager running while developing on any JS projects. ' +
-    'Feel free to close this tab and run your own packager instance if you ' +
-    'prefer.\n\n' +
-    'https://github.com/facebook/react-native', {
-      marginLeft: 1,
-      marginRight: 1,
-      paddingBottom: 1,
-    })
-  );
+  const startedCallback = logReporter => {
+    logReporter.update({
+      type: 'initialize_packager_started',
+      port: args.port,
+      projectRoots: args.projectRoots,
+    });
 
-  console.log(
-    'Looking for JS files in\n  ',
-    chalk.dim(args.projectRoots.join('\n   ')),
-    '\n'
-  );
+    process.on('uncaughtException', error => {
+      logReporter.update({
+        type: 'initialize_packager_failed',
+        port: args.port,
+        error,
+      });
 
-  process.on('uncaughtException', error => {
-    if (error.code === 'EADDRINUSE') {
-      console.log(
-        chalk.bgRed.bold(' ERROR '),
-        chalk.red('Packager can\'t listen on port', chalk.bold(args.port))
-      );
-      console.log('Most likely another process is already using this port');
-      console.log('Run the following command to find out which process:');
-      console.log('\n  ', chalk.bold('lsof -i :' + args.port), '\n');
-      console.log('Then, you can either shut down the other process:');
-      console.log('\n  ', chalk.bold('kill -9 <PID>'), '\n');
-      console.log('or run packager on different port.');
-    } else {
-      console.log(chalk.bgRed.bold(' ERROR '), chalk.red(error.message));
-      const errorAttributes = JSON.stringify(error);
-      if (errorAttributes !== '{}') {
-        console.error(chalk.red(errorAttributes));
-      }
-      console.error(chalk.red(error.stack));
-    }
-    console.log('\nSee', chalk.underline('http://facebook.github.io/react-native/docs/troubleshooting.html'));
-    console.log('for common problems and solutions.');
-    process.exit(11);
-  });
+      process.exit(11);
+    });
+  };
 
-  runServer(args, config, () => console.log('\nReact packager ready.\n'));
+  const readyCallback = logReporter => {
+    logReporter.update({
+      type: 'initialize_packager_done',
+    });
+  };
+
+  runServer(args, config, startedCallback, readyCallback);
 }
 
 module.exports = {
@@ -118,6 +97,9 @@ module.exports = {
   }, {
     command: '--reset-cache, --resetCache',
     description: 'Removes cached files',
+  }, {
+    command: '--custom-log-reporter-path, --customLogReporterPath [string]',
+    description: 'Path to a JavaScript file that exports a log reporter as a replacement for TerminalReporter',
   }, {
     command: '--verbose',
     description: 'Enables logging',

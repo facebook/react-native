@@ -11,6 +11,7 @@
 'use strict';
 
 import type {SourceMap} from './output/source-map';
+import type {Ast} from 'babel-core';
 import type {Console} from 'console';
 
 export type Callback<A = void, B = void>
@@ -99,18 +100,19 @@ type ResolveOptions = {
   log?: Console,
 };
 
-export type TransformFn = (
-  data: {|
-    filename: string,
-    options?: Object,
-    plugins?: Array<string | Object | [string | Object, any]>,
-    sourceCode: string,
-  |},
-  callback: Callback<TransformFnResult>
-) => void;
+export type TransformerResult = {
+  ast: ?Ast,
+  code: string,
+  map: ?SourceMap,
+};
 
-export type TransformFnResult = {
-  ast: Object,
+export type Transformer = {
+  transform: (
+    sourceCode: string,
+    filename: string,
+    options: ?{},
+    plugins?: Array<string | Object | [string | Object, any]>,
+  ) => {ast: ?Ast, code: string, map: ?SourceMap}
 };
 
 export type TransformResult = {|

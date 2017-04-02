@@ -236,7 +236,7 @@ function loadCacheSync(cachePath) {
   }
 
   try {
-    return JSON.parse(fs.readFileSync(cachePath));
+    return JSON.parse(fs.readFileSync(cachePath, 'utf8'));
   } catch (e) {
     if (e instanceof SyntaxError) {
       console.warn('Unable to parse cache file. Will clear and continue.');

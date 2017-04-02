@@ -3,6 +3,7 @@
 #pragma once
 
 #include <JavaScriptCore/JSContextRef.h>
+
 namespace facebook {
 namespace react {
 

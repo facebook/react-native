@@ -68,7 +68,7 @@ RCT_TEST(TimersTest)
 RCT_TEST(AsyncStorageTest)
 RCT_TEST(AppEventsTest)
 RCT_TEST(ImageCachePolicyTest)
-//RCT_TEST(ImageSnapshotTest) // Disabled: #8985988
+RCT_TEST(ImageSnapshotTest)
 //RCT_TEST(LayoutEventsTest) // Disabled due to flakiness: #8686784
 RCT_TEST(SimpleSnapshotTest)
 RCT_TEST(PromiseTest)

@@ -18,6 +18,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -37,7 +38,8 @@ public class FlatUIImplementation extends UIImplementation {
   public static FlatUIImplementation createInstance(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagers,
-      EventDispatcher eventDispatcher) {
+      EventDispatcher eventDispatcher,
+      boolean memoryImprovementEnabled) {
 
     RCTImageViewManager rctImageViewManager = findRCTImageManager(viewManagers);
     if (rctImageViewManager != null) {
@@ -61,7 +63,8 @@ public class FlatUIImplementation extends UIImplementation {
       rctImageViewManager,
       viewManagerRegistry,
       operationsQueue,
-      eventDispatcher
+      eventDispatcher,
+      memoryImprovementEnabled
     );
   }
 
@@ -73,17 +76,20 @@ public class FlatUIImplementation extends UIImplementation {
   private final ReactApplicationContext mReactContext;
   private @Nullable RCTImageViewManager mRCTImageViewManager;
   private final StateBuilder mStateBuilder;
+  private final boolean mMemoryImprovementEnabled;
 
   private FlatUIImplementation(
       ReactApplicationContext reactContext,
       @Nullable RCTImageViewManager rctImageViewManager,
       ViewManagerRegistry viewManagers,
       FlatUIViewOperationQueue operationsQueue,
-      EventDispatcher eventDispatcher) {
+      EventDispatcher eventDispatcher,
+      boolean memoryImprovementEnabled) {
     super(reactContext, viewManagers, operationsQueue, eventDispatcher);
     mReactContext = reactContext;
     mRCTImageViewManager = rctImageViewManager;
     mStateBuilder = new StateBuilder(operationsQueue);
+    mMemoryImprovementEnabled = memoryImprovementEnabled;
   }
 
   @Override
@@ -93,6 +99,7 @@ public class FlatUIImplementation extends UIImplementation {
       // initialization is undefined, and this is pretty much the earliest when we are guarantied
       // that Fresco is initalized and DraweeControllerBuilder can be queried. This also happens
       // relatively rarely to have any performance considerations.
+      mReactContext.getNativeModule(FrescoModule.class); // initialize Fresco
       DraweeRequestHelper.setDraweeControllerBuilder(
         mRCTImageViewManager.getDraweeControllerBuilder());
       mRCTImageViewManager = null;
@@ -521,6 +528,9 @@ public class FlatUIImplementation extends UIImplementation {
 
   @Override
   public void removeRootView(int rootViewTag) {
+    if (mMemoryImprovementEnabled) {
+      removeRootShadowNode(rootViewTag);
+    }
     mStateBuilder.removeRootView(rootViewTag);
   }
 

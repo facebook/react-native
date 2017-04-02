@@ -9,8 +9,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include "RCTCxxBridge.h"
-
 #include <atomic>
 #include <future>
 #include <libkern/OSAtomic.h>
@@ -23,11 +21,8 @@
 #import <React/RCTCxxModule.h>
 #import <React/RCTCxxUtils.h>
 #import <React/RCTDevLoadingView.h>
-#import <React/RCTDevMenu.h>
+#import <React/RCTDevSettings.h>
 #import <React/RCTDisplayLink.h>
-#ifdef WITH_FBSYSTRACE
-#import <React/RCTFBSystrace.h>
-#endif
 #import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
@@ -43,9 +38,17 @@
 #import <cxxreact/Platform.h>
 #import <jschelpers/Value.h>
 
+#import "NSDataBigString.h"
+#import "RCTJSCHelpers.h"
 #import "RCTMessageThread.h"
-#import "RCTNativeModule.h"
 #import "RCTObjcExecutor.h"
+
+#ifdef WITH_FBSYSTRACE
+#import <React/RCTFBSystrace.h>
+#endif
+
+@interface RCTCxxBridge : RCTBridge
+@end
 
 #define RCTAssertJSThread() \
   RCTAssert(self.executorClass || self->_jsThread == [NSThread currentThread], \
@@ -65,106 +68,10 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldCallID,
 };
 
-static JSValueRef nativeLoggingHook(
-    JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception) {
-  RCTLogLevel level = RCTLogLevelInfo;
-  if (argumentCount > 1) {
-    level = MAX(level, (RCTLogLevel)Value(ctx, arguments[1]).asNumber());
-  }
-  if (argumentCount > 0) {
-    String message = Value(ctx, arguments[0]).toString();
-    _RCTLogJavaScriptInternal(level, @(message.str().c_str()));
-  }
-  return Value::makeUndefined(ctx);
-}
-
-static JSValueRef nativePerformanceNow(
-    JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception) {
-  return Value::makeNumber(ctx, CACurrentMediaTime() * 1000);
-}
-
 static bool isRAMBundle(NSData *script) {
-  BundleHeader header{};
+  BundleHeader header;
   [script getBytes:&header length:sizeof(header)];
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
-}
-
-static std::atomic_bool cxxBridgeEnabled(false);
-
-namespace {
-
-// RCTNativeModule arranges for native methods to be invoked on a queue which
-// is not the JS thread.  C++ modules don't use RCTNativeModule, so this little
-// adapter does the work.
-
-class QueueNativeModule : public NativeModule {
-public:
-  QueueNativeModule(RCTCxxBridge *bridge,
-                    std::unique_ptr<NativeModule> module)
-    : bridge_(bridge)
-    , module_(std::move(module))
-    // Create new queue (store queueName, as it isn't retained by dispatch_queue)
-    , queueName_("com.facebook.react." + module_->getName() + "Queue")
-    , queue_(dispatch_queue_create(queueName_.c_str(), DISPATCH_QUEUE_SERIAL)) {}
-
-  std::string getName() override {
-    return module_->getName();
-  }
-
-  std::vector<MethodDescriptor> getMethods() override {
-    return module_->getMethods();
-  }
-
-  folly::dynamic getConstants() override {
-    return module_->getConstants();
-  }
-
-  bool supportsWebWorkers() override {
-    return module_->supportsWebWorkers();
-  }
-
-  void invoke(ExecutorToken token, unsigned int reactMethodId,
-              folly::dynamic &&params) override {
-    __weak RCTCxxBridge *bridge = bridge_;
-    auto module = module_;
-    auto cparams = std::make_shared<folly::dynamic>(std::move(params));
-    dispatch_async(queue_, ^{
-      if (!bridge || !bridge.valid) {
-        return;
-      }
-
-      module->invoke(token, reactMethodId, std::move(*cparams));
-    });
-  }
-
-  MethodCallResult callSerializableNativeHook(
-      ExecutorToken token, unsigned int reactMethodId,
-      folly::dynamic &&args) override {
-    return module_->callSerializableNativeHook(token, reactMethodId, std::move(args));
-  }
-
-private:
-  RCTCxxBridge *bridge_;
-  std::shared_ptr<NativeModule> module_;
-  std::string queueName_;
-  dispatch_queue_t queue_;
-};
-
-
-// This is a temporary hack.  The cxx bridge assumes a single native
-// queue handles all native method calls, but that's false on ios.  So
-// this is a no-thread passthrough, and queues are handled in
-// RCTNativeModule.  A similar refactoring should be done on the Java
-// bridge.
-class InlineMessageQueueThread : public MessageQueueThread {
-public:
-  void runOnQueue(std::function<void()>&& func) override { func(); }
-  void runOnQueueSync(std::function<void()>&& func) override { func(); }
-  void quitSynchronous() override {}
-};
-
 }
 
 @interface RCTCxxBridge ()
@@ -175,7 +82,6 @@ public:
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge;
 - (void)partialBatchDidFlush;
 - (void)batchDidComplete;
-- (void)handleError:(NSError *)error;
 
 @end
 
@@ -189,27 +95,11 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
   void incrementPendingJSCalls() override {}
   void decrementPendingJSCalls() override {}
-  void onNativeException(const std::string &what) override {
-    [bridge_ handleError:RCTErrorWithMessage(@(what.c_str()))];
-  }
   ExecutorToken createExecutorToken() override {
     return ExecutorToken(std::make_shared<PlatformExecutorToken>());
   }
   void onExecutorStopped(ExecutorToken) override {}
 };
-
-@implementation RCTBridge (CxxBridge)
-
-- (void)CXX_createBatchedBridge
-{
-  if (cxxBridgeEnabled) {
-    self.batchedBridge = [[RCTCxxBridge alloc] initWithParentBridge:self];
-  } else {
-    self.batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
-  }
-}
-
-@end
 
 @implementation RCTCxxBridge
 {
@@ -242,40 +132,8 @@ struct RCTInstanceCallback : public InstanceCallback {
 + (void)initialize
 {
   if (self == [RCTCxxBridge class]) {
-    ReactMarker::logMarker = [](const std::string&) {};
-    PerfLogging::installNativeHooks = [](JSGlobalContextRef){};
-    JSNativeHooks::loggingHook = nativeLoggingHook;
-    JSNativeHooks::nowHook = nativePerformanceNow;
+    RCTPrepareJSCExecutor();
   }
-}
-
-+ (void)swizzleBridge
-{
-  // Swizzle RCTBridge to use this, instead of RCTBatchedBridge
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    RCTSwapInstanceMethods([RCTBridge class],
-                           NSSelectorFromString(@"createBatchedBridge"),
-                           @selector(CXX_createBatchedBridge));
-  });
-}
-
-+ (void)enable
-{
-  [RCTCxxBridge swizzleBridge];
-#ifdef WITH_FBSYSTRACE
-  [RCTFBSystrace registerCallbacks];
-#endif
-  cxxBridgeEnabled = true;
-}
-
-+ (void)disable
-{
-  [RCTCxxBridge swizzleBridge];
-#ifdef WITH_FBSYSTRACE
-  [RCTFBSystrace unregisterCallbacks];
-#endif
-  cxxBridgeEnabled = false;
 }
 
 - (JSContext *)jsContext
@@ -341,40 +199,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 }
 
-static NSError *tryAndReturnError(dispatch_block_t block) {
-  // TODO #10487027: This is mostly duplicated in RCTMessageThread.
-  try {
-    @try {
-      block();
-      return nil;
-    }
-    @catch (NSException *exception) {
-      NSString *message =
-        [NSString stringWithFormat:@"Exception '%@' was thrown from JS thread", exception];
-      return RCTErrorWithMessage(message);
-    }
-    @catch (id exception) {
-      // This will catch any other ObjC exception, but no C++ exceptions
-      return RCTErrorWithMessage(@"non-std ObjC Exception");
-    }
-  } catch (const JSException &ex) {
-    // This is a special case.  We want to extract the stack
-    // information and pass it to the redbox.  This will lose the C++
-    // stack, but it's of limited value.
-    NSDictionary *errorInfo = @{
-      RCTJSRawStackTraceKey: @(ex.getStack().c_str()),
-      NSLocalizedDescriptionKey: [@"Unhandled JS Exception: " stringByAppendingString:@(ex.what())]
-    };
-    return [NSError errorWithDomain:RCTErrorDomain code:1 userInfo:errorInfo];
-  } catch (const std::exception &ex) {
-    return RCTErrorWithMessage(@(ex.what()));
-  } catch (...) {
-    // On a 64-bit platform, this would catch ObjC exceptions, too, but not on
-    // 32-bit platforms, so we catch those with id exceptions above.
-    return RCTErrorWithMessage(@"non-std C++ exception");
-  }
-}
-
 - (void)_tryAndHandleError:(dispatch_block_t)block
 {
   NSError *error = tryAndReturnError(block);
@@ -435,7 +259,7 @@ static NSError *tryAndReturnError(dispatch_block_t block) {
     executorFactory.reset(new JSCExecutorFactory("", folly::dynamic::object
       ("UseCustomJSC", (bool)useCustomJSC)
 #if RCT_PROFILE
-      ("StartSamplingProfilerOnInit", (bool)self.devMenu.startSamplingProfilerOnLaunch)
+      ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
 #endif
     ));
   } else {
@@ -565,35 +389,16 @@ static NSError *tryAndReturnError(dispatch_block_t block) {
   return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
 }
 
-- (std::shared_ptr<ModuleRegistry>)_createModuleRegistry
+- (std::shared_ptr<ModuleRegistry>)_buildModuleRegistry
 {
   if (!self.valid) {
     return {};
   }
 
   [_performanceLogger markStartForTag:RCTPLNativeModulePrepareConfig];
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge createModuleRegistry]", nil);
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge buildModuleRegistry]", nil);
 
-  std::vector<std::unique_ptr<NativeModule>> modules;
-  for (RCTModuleData *moduleData in _moduleDataByID) {
-    // TODO mhorowitz #10487027: unwrap C++ modules and register them directly.
-    if ([moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
-      RCTCxxModule *cxxInstance = moduleData.instance;
-      // If a module does not support automatic instantiation, and
-      // wasn't provided as an extra module, it may not have an
-      // instance.  If so, skip it.
-      if (!cxxInstance) {
-        continue;
-      }
-      modules.emplace_back(
-        new QueueNativeModule(self, std::make_unique<CxxNativeModule>(
-          _reactInstance, [cxxInstance move])));
-    } else {
-      modules.emplace_back(new RCTNativeModule(self, moduleData));
-    }
-  }
-
-  auto registry = std::make_shared<ModuleRegistry>(std::move(modules));
+  auto registry = buildModuleRegistry(_moduleDataByID, self, _reactInstance);
 
   [_performanceLogger markStopForTag:RCTPLNativeModulePrepareConfig];
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -619,8 +424,7 @@ static NSError *tryAndReturnError(dispatch_block_t block) {
       std::unique_ptr<RCTInstanceCallback>(new RCTInstanceCallback(self)),
       executorFactory,
       _jsMessageThread,
-      std::unique_ptr<MessageQueueThread>(new InlineMessageQueueThread),
-      std::move([self _createModuleRegistry]));
+      [self _buildModuleRegistry]);
 
 #if RCT_PROFILE
     if (RCTProfileIsProfiling()) {
@@ -962,7 +766,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
  * Prevent super from calling setUp (that'd create another batchedBridge)
  */
 - (void)setUp {}
-- (void)bindKeys {}
 
 - (void)reload
 {
@@ -1171,6 +974,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
  */
 - (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
 {
+  if (!self.valid) {
+    return;
+  }
+
   /**
    * AnyThread
    */
@@ -1217,10 +1024,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
         self->_reactInstance->loadUnbundle(std::move(ramBundle), std::move(scriptStr),
                                            [[url absoluteString] UTF8String]);
     } else if (self->_reactInstance) {
-      auto bigbuf = std::make_unique<JSBigBufferString>([script length]);
-      memcpy(bigbuf->data(), [script bytes], bigbuf->size());
-
-      self->_reactInstance->loadScriptFromString(std::move(bigbuf),
+      self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
                                                  [[url absoluteString] UTF8String]);
     }
   }];
@@ -1244,10 +1048,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
                                                [[url absoluteString] UTF8String]);
       }
     } else if (self->_reactInstance) {
-      auto bigbuf = std::make_unique<JSBigBufferString>([script length]);
-      memcpy(bigbuf->data(), [script bytes], bigbuf->size());
-
-      self->_reactInstance->loadScriptFromStringSync(std::move(bigbuf), [[url absoluteString] UTF8String]);
+      self->_reactInstance->loadScriptFromStringSync(std::make_unique<NSDataBigString>(script),
+                                                     [[url absoluteString] UTF8String]);
     } else {
       throw std::logic_error(
         "Attempt to call loadApplicationScriptSync: on uninitialized bridge");
@@ -1255,44 +1057,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }];
 }
 
-static JSContext *contextForGlobalContextRef(JSGlobalContextRef contextRef)
-{
-  static std::mutex s_mutex;
-  static NSMapTable *s_contextCache;
 
-  if (!contextRef) {
-    return nil;
-  }
-
-  // Adding our own lock here, since JSC internal ones are insufficient
-  std::lock_guard<std::mutex> lock(s_mutex);
-  if (!s_contextCache) {
-    NSPointerFunctionsOptions keyOptions = NSPointerFunctionsOpaqueMemory | NSPointerFunctionsOpaquePersonality;
-    NSPointerFunctionsOptions valueOptions = NSPointerFunctionsWeakMemory | NSPointerFunctionsObjectPersonality;
-    s_contextCache = [[NSMapTable alloc] initWithKeyOptions:keyOptions valueOptions:valueOptions capacity:0];
-  }
-
-  JSContext *ctx = [s_contextCache objectForKey:(__bridge id)contextRef];
-  if (!ctx) {
-    ctx = [JSC_JSContext(contextRef) contextWithJSGlobalContextRef:contextRef];
-    [s_contextCache setObject:ctx forKey:(__bridge id)contextRef];
-  }
-  return ctx;
-}
-
-/*
- * The ValueEncoder<NSArray *>::toValue is used by callFunctionSync below.
- * Note: Because the NSArray * is really a NSArray * __strong the toValue is
- * accepting NSArray *const __strong instead of NSArray *&&.
- */
-template <>
-struct ValueEncoder<NSArray *> {
-  static Value toValue(JSGlobalContextRef ctx, NSArray *const __strong array)
-  {
-    JSValue *value = [JSValue valueWithObject:array inContext:contextForGlobalContextRef(ctx)];
-    return {ctx, [value JSValueRef]};
-  }
-};
 
 - (JSValue *)callFunctionOnModule:(NSString *)module
                            method:(NSString *)method
@@ -1325,9 +1090,8 @@ struct ValueEncoder<NSArray *> {
     return nil;
   }
 
-  __block JSValue *ret = nil;
-
   RCT_PROFILE_BEGIN_EVENT(0, @"callFunctionOnModule", (@{ @"module": module, @"method": method }));
+  __block JSValue *ret = nil;
   NSError *errorObj = tryAndReturnError(^{
     Value result = self->_reactInstance->callFunctionSync(
       [module UTF8String], [method UTF8String], arguments);
@@ -1374,6 +1138,9 @@ struct ValueEncoder<NSArray *> {
   RCTAssertMainQueue();
 
   [self executeBlockOnJavaScriptThread:^{
+    #if WITH_FBSYSTRACE
+    [RCTFBSystrace registerCallbacks];
+    #endif
     RCTProfileInit(self);
   }];
 }
@@ -1386,6 +1153,9 @@ struct ValueEncoder<NSArray *> {
     RCTProfileEnd(self, ^(NSString *log) {
       NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
       callback(logData);
+      #if WITH_FBSYSTRACE
+      [RCTFBSystrace unregisterCallbacks];
+      #endif
     });
   }];
 }

@@ -29,10 +29,12 @@ const writeFileAtomicSync = require('write-file-atomic').sync;
 
 const CACHE_NAME = 'react-native-packager-cache';
 
-type CacheFilePaths = {transformedCode: string, metadata: string};
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {SourceMap} from './SourceMap';
 import type {Reporter} from './reporting';
+
+type CacheFilePaths = {transformedCode: string, metadata: string};
+export type GetTransformCacheKey = (sourceCode: string, filename: string, options: {}) => string;
 
 /**
  * If packager is running for two different directories, we don't want the
@@ -40,9 +42,9 @@ import type {Reporter} from './reporting';
  * will be, for example, installed in a different `node_modules/` folder for
  * different projects.
  */
-const getCacheDirPath = (function () {
+const getCacheDirPath = (function() {
   let dirPath;
-  return function () {
+  return function() {
     if (dirPath == null) {
       dirPath = path.join(
         require('os').tmpdir(),
@@ -58,10 +60,16 @@ const getCacheDirPath = (function () {
 })();
 
 function hashSourceCode(props: {
+  filePath: string,
   sourceCode: string,
-  transformCacheKey: string,
+  getTransformCacheKey: GetTransformCacheKey,
+  transformOptions: TransformOptions,
 }): string {
-  return imurmurhash(props.transformCacheKey).hash(props.sourceCode).result();
+  return imurmurhash(props.getTransformCacheKey(
+    props.sourceCode,
+    props.filePath,
+    props.transformOptions,
+  )).hash(props.sourceCode).result();
 }
 
 /**
@@ -125,7 +133,7 @@ function unlinkIfExistsSync(filePath: string) {
 function writeSync(props: {
   filePath: string,
   sourceCode: string,
-  transformCacheKey: string,
+  getTransformCacheKey: GetTransformCacheKey,
   transformOptions: TransformOptions,
   result: CachedResult,
 }): void {
@@ -288,7 +296,7 @@ export type ReadTransformProps = {
   filePath: string,
   sourceCode: string,
   transformOptions: TransformOptions,
-  transformCacheKey: string,
+  getTransformCacheKey: GetTransformCacheKey,
   cacheOptions: CacheOptions,
 };
 
@@ -343,5 +351,5 @@ module.exports = {
     const msg = result ? 'Cache hit: ' : 'Cache miss: ';
     debugRead(msg + props.filePath);
     return result;
-  }
+  },
 };

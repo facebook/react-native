@@ -161,7 +161,7 @@ RCT_EXPORT_MODULE(TestModule)
 
   _unregisteredTestModule = [UnregisteredTestModule new];
   NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-  _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"TestBundle" withExtension:@"js"]
+  _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"UIExplorerUnitTestsBundle" withExtension:@"js"]
                                   moduleProvider:^{ return @[self, self->_unregisteredTestModule]; }
                                    launchOptions:nil];
 

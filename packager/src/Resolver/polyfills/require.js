@@ -12,6 +12,8 @@
 
 'use strict';
 
+declare var __DEV__: boolean;
+
 type DependencyMap = Array<ModuleID>;
 type Exports = any;
 type FactoryFn = (
@@ -36,6 +38,7 @@ type ModuleDefinition = {|
   exports: Exports,
   factory: FactoryFn,
   hasError: boolean,
+  error?: any,
   hot?: HotModuleReloadingData,
   isInitialized: boolean,
   verboseName?: string,
@@ -108,7 +111,7 @@ function require(moduleId: ModuleID | VerboseModuleNameForDev) {
 }
 
 let inGuard = false;
-function guardedLoadModule(moduleId: ModuleID , module) {
+function guardedLoadModule(moduleId: ModuleID, module) {
   if (!inGuard && global.ErrorUtils) {
     inGuard = true;
     let returnValue;
@@ -136,7 +139,7 @@ function loadModuleImplementation(moduleId, module) {
   }
 
   if (module.hasError) {
-    throw moduleThrewError(moduleId);
+    throw moduleThrewError(moduleId, module.error);
   }
 
   // `require` calls int  the require polyfill itself are not analyzed and
@@ -183,6 +186,7 @@ function loadModuleImplementation(moduleId, module) {
     return (module.exports = moduleObject.exports);
   } catch (e) {
     module.hasError = true;
+    module.error = e;
     module.isInitialized = false;
     module.exports = undefined;
     throw e;
@@ -193,17 +197,19 @@ function unknownModuleError(id) {
   let message = 'Requiring unknown module "' + id + '".';
   if (__DEV__) {
     message +=
-      'If you are sure the module is there, try restarting the packager or running "npm install".';
+      'If you are sure the module is there, try restarting the packager. ' +
+      'You may also want to run `npm install`, or `yarn` (depending on your environment).';
   }
   return Error(message);
 }
 
-function moduleThrewError(id) {
-  return Error('Requiring module "' + id + '", which threw an exception.');
+function moduleThrewError(id, error: any) {
+  const displayName = __DEV__ && modules[id] && modules[id].verboseName || id;
+  return Error('Requiring module "' + displayName + '", which threw an exception: ' + error);
 }
 
 if (__DEV__) {
-  require.Systrace = { beginEvent: () => {}, endEvent: () => {} };
+  require.Systrace = {beginEvent: () => {}, endEvent: () => {}};
 
   // HOT MODULE RELOADING
   var createHotReloadingObject = function() {

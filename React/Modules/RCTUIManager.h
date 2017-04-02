@@ -48,6 +48,23 @@ RCT_EXTERN NSString *const RCTUIManagerDidRemoveRootViewNotification;
  */
 RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 
+@class RCTUIManager;
+
+/**
+ * Allows to hook into UIManager internals. This can be used to execute code at
+ * specific points during the view updating process.
+ */
+@protocol RCTUIManagerObserver <NSObject>
+
+/**
+ * Called before flushing UI blocks at the end of a batch. Note that this won't
+ * get called for partial batches when using `unsafeFlushUIChangesBeforeBatchEnds`.
+ * This is called from the UIManager queue. Can be used to add UI operations in that batch.
+ */
+- (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)manager;
+
+@end
+
 @protocol RCTScrollableProtocol;
 
 /**
@@ -58,7 +75,7 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 /**
  * Register a root view with the RCTUIManager.
  */
-- (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility;
+- (void)registerRootView:(UIView *)rootView;
 
 /**
  * Gets the view name associated with a reactTag.
@@ -71,6 +88,15 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 - (UIView *)viewForReactTag:(NSNumber *)reactTag;
 
 /**
+ * Set the available size (`availableSize` property) for a root view.
+ * This might be used in response to changes in external layout constraints.
+ * This value will be directly trasmitted to layout engine and defines how big viewport is;
+ * this value does not affect root node size style properties.
+ * Can be considered as something similar to `setSize:forView:` but applicable only for root view.
+ */
+- (void)setAvailableSize:(CGSize)availableSize forRootView:(UIView *)rootView;
+
+/**
  * Set the size of a view. This might be in response to a screen rotation
  * or some other layout event outside of the React-managed view hierarchy.
  */
@@ -78,7 +104,8 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 
 /**
  * Set the natural size of a view, which is used when no explicit size is set.
- * Use UIViewNoIntrinsicMetric to ignore a dimension.
+ * Use `UIViewNoIntrinsicMetric` to ignore a dimension.
+ * The `size` must NOT include padding and border.
  */
 - (void)setIntrinsicContentSize:(CGSize)size forView:(UIView *)view;
 
@@ -94,6 +121,23 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  * view logic after all currently queued view updates have completed.
  */
 - (void)addUIBlock:(RCTViewManagerUIBlock)block;
+
+/**
+ * Schedule a block to be executed on the UI thread. Useful if you need to execute
+ * view logic before all currently queued view updates have completed.
+ */
+- (void)prependUIBlock:(RCTViewManagerUIBlock)block;
+
+/**
+ * Add a UIManagerObserver. See the RCTUIManagerObserver protocol for more info. This
+ * method can be called safely from any queue.
+ */
+- (void)addUIManagerObserver:(id<RCTUIManagerObserver>)observer;
+
+/**
+ * Remove a UIManagerObserver. This method can be called safely from any queue.
+ */
+- (void)removeUIManagerObserver:(id<RCTUIManagerObserver>)observer;
 
 /**
  * Used by native animated module to bypass the process of updating the values through the shadow
@@ -148,6 +192,14 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  */
 - (void)setFrame:(CGRect)frame forView:(UIView *)view
 __deprecated_msg("Use `setSize:forView:` or `setIntrinsicContentSize:forView:` instead.");
+
+
+/**
+ * This method is deprecated and will be removed in next releases.
+ * Use `registerRootView:` instead. There is no need to specify `sizeFlexibility` anymore.
+ */
+- (void)registerRootView:(UIView *)rootView withSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
+__deprecated_msg("Use `registerRootView:` instead.");
 
 @end
 

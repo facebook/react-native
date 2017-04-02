@@ -18,6 +18,7 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @flow
+ * @providesModule TransformExample
  */
 'use strict';
 
@@ -211,7 +212,7 @@ exports.title = 'Transforms';
 exports.description = 'View transforms';
 exports.examples = [
   {
-    title: 'Perspective',
+    title: 'Perspective, Rotate, Animation',
     description: 'perspective: 850, rotateX: Animated.timing(0 -> 360)',
     render(): React.Element<any> { return <Flip />; }
   },

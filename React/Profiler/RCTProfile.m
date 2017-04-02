@@ -22,7 +22,6 @@
 #import "RCTBridge.h"
 #import "RCTComponentData.h"
 #import "RCTDefines.h"
-#import "RCTJSCExecutor.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTUIManager.h"
@@ -151,6 +150,20 @@ static dispatch_group_t RCTProfileGetUnhookGroup(void)
   });
 
   return unhookGroup;
+}
+
+// Used by RCTProfileTrampoline assembly file to call libc`malloc
+RCT_EXTERN void *RCTProfileMalloc(size_t size);
+void *RCTProfileMalloc(size_t size)
+{
+  return malloc(size);
+}
+
+// Used by RCTProfileTrampoline assembly file to call libc`free
+RCT_EXTERN void RCTProfileFree(void *buf);
+void RCTProfileFree(void *buf)
+{
+  free(buf);
 }
 
 RCT_EXTERN IMP RCTProfileGetImplementation(id obj, SEL cmd);
@@ -391,7 +404,7 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
       };
       RCTProfileControlsWindow.hidden = YES;
       dispatch_async(dispatch_get_main_queue(), ^{
-        [[[[[UIApplication sharedApplication] delegate] window] rootViewController] presentViewController:activityViewController
+        [[[[RCTSharedApplication() delegate] window] rootViewController] presentViewController:activityViewController
                                                                                                  animated:YES
                                                                                                completion:nil];
       });
@@ -442,9 +455,7 @@ void RCTProfileInit(RCTBridge *bridge)
   OSAtomicOr32Barrier(1, &RCTProfileProfiling);
 
   if (callbacks != NULL) {
-    size_t buffer_size = 1 << 22;
-    systrace_buffer = calloc(1, buffer_size);
-    callbacks->start(~((uint64_t)0), systrace_buffer, buffer_size);
+    systrace_buffer = callbacks->start();
   } else {
     NSTimeInterval time = CACurrentMediaTime();
     dispatch_async(RCTProfileGetQueue(), ^{
@@ -459,7 +470,8 @@ void RCTProfileInit(RCTBridge *bridge)
 
   // Set up thread ordering
   dispatch_async(RCTProfileGetQueue(), ^{
-    NSArray *orderedThreads = @[@"JS async", @"RCTPerformanceLogger", RCTJSCThreadName, @(RCTUIManagerQueueName), @"main"];
+    NSArray *orderedThreads = @[@"JS async", @"RCTPerformanceLogger", @"com.facebook.react.JavaScript",
+                                @(RCTUIManagerQueueName), @"main"];
     [orderedThreads enumerateObjectsUsingBlock:^(NSString *thread, NSUInteger idx, __unused BOOL *stop) {
       RCTProfileAddEvent(RCTProfileTraceEvents,
         @"ph": @"M", // metadata event
@@ -500,9 +512,10 @@ void RCTProfileEnd(RCTBridge *bridge, void (^callback)(NSString *))
   RCTProfileUnhookModules(bridge);
 
   if (callbacks != NULL) {
-    callbacks->stop();
-
-    callback(@(systrace_buffer));
+    if (systrace_buffer) {
+      callbacks->stop();
+      callback(@(systrace_buffer));
+    }
   } else {
     dispatch_async(RCTProfileGetQueue(), ^{
       NSString *log = RCTJSONStringify(RCTProfileInfo, NULL);
