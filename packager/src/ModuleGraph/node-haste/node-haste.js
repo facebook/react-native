@@ -63,10 +63,13 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
     transformedFiles,
   } = options;
   const files = Object.keys(transformedFiles);
-  const getTransformedFile =
-    path => Promise.resolve(
-      transformedFiles[path] || Promise.reject(new Error(`"${path} does not exist`))
-    );
+  function getTransformedFile(path) {
+    const result = transformedFiles[path];
+    if (!result) {
+      throw new Error(`"${path} does not exist`);
+    }
+    return result;
+  }
 
   const helpers = new DependencyGraphHelpers({
     assetExts,
