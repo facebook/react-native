@@ -32,7 +32,7 @@
 #import <React/RCTRootViewDelegate.h>
 
 #define RCT_TEST_DATA_CONFIGURATION_BLOCK(appName, testType, input, block) \
-- (void)test##appName##_##testType##_##input                               \
+- (void)DISABLED_test##appName##_##testType##_##input                      \
 {                                                                          \
   [_runner runTest:_cmd                                                    \
             module:@#appName                                               \
@@ -41,7 +41,7 @@ configurationBlock:block];                                                 \
 }
 
 #define RCT_TEST_CONFIGURATION_BLOCK(appName, block)  \
-- (void)test##appName                                 \
+- (void)DISABLED_test##appName                        \
 {                                                     \
   [_runner runTest:_cmd                               \
             module:@#appName                          \
@@ -155,9 +155,8 @@ RCT_TEST_DATA_CONFIGURATION_BLOCK(SizeFlexibilityUpdateTest, MultipleUpdates, bo
 RCT_TEST_CONFIGURATION_BLOCK(ReactContentSizeUpdateTest, reactContentSizeUpdateBlock(RCTBoth))
 
 // Test if setting 'appProperties' property updates the RN app
-// Disabled since it's occassionally crashing
-// RCT_TEST_CONFIGURATION_BLOCK(PropertiesUpdateTest, ^(RCTRootView *rootView) {
-//   rootView.appProperties = @{@"markTestPassed":@YES};
-// })
+RCT_TEST_CONFIGURATION_BLOCK(PropertiesUpdateTest, ^(RCTRootView *rootView) {
+  rootView.appProperties = @{@"markTestPassed":@YES};
+})
 
 @end
