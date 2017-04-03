@@ -13,7 +13,6 @@ jest
   .dontMock('imurmurhash')
   .dontMock('json-stable-stringify')
   .dontMock('../TransformCache')
-  .dontMock('../toFixedHex')
   .dontMock('left-pad')
   .dontMock('lodash/throttle')
   .dontMock('crypto');
