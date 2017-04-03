@@ -63,8 +63,8 @@ type OptionalProps<ItemT> = {
   columnWrapperStyle?: StyleObj,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
-   * your `renderItem` function depends on anything outside of the `data` prop, stick it here and
-   * treat it immutably.
+   * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
+   * `data` prop, stick it here and treat it immutably.
    */
   extraData?: any,
   /**

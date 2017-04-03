@@ -16,22 +16,20 @@ const Package = require('./Package');
 
 import type {PackageData, TransformedFile} from '../types.flow';
 
-type GetFn<T> = (path: string) => Promise<T>;
 type GetClosestPackageFn = (filePath: string) => ?string;
 
 module.exports = class ModuleCache {
   _getClosestPackage: GetClosestPackageFn;
-  getPackageData: GetFn<PackageData>;
-  getTransformedFile: GetFn<TransformedFile>;
+  getTransformedFile: string => TransformedFile;
   modules: Map<string, Module>;
   packages: Map<string, Package>;
 
-  constructor(getClosestPackage: GetClosestPackageFn, getTransformedFile: GetFn<TransformedFile>) {
+  constructor(
+    getClosestPackage: GetClosestPackageFn,
+    getTransformedFile: string => TransformedFile,
+  ) {
     this._getClosestPackage = getClosestPackage;
     this.getTransformedFile = getTransformedFile;
-    this.getPackageData = path => getTransformedFile(path).then(
-      f => f.package || Promise.reject(new Error(`"${path}" does not exist`))
-    );
     this.modules = new Map();
     this.packages = new Map();
   }
@@ -56,6 +54,14 @@ module.exports = class ModuleCache {
       this.packages.set(path, p);
     }
     return p;
+  }
+
+  getPackageData(path: string): PackageData {
+    const pkg = this.getTransformedFile(path).package;
+    if (!pkg) {
+        throw new Error(`"${path}" does not exist`);
+    }
+    return pkg;
   }
 
   getPackageOf(filePath: string) {

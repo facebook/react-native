@@ -138,7 +138,8 @@ class Linking extends NativeEventEmitter {
   /**
    * Try to open the given `url` with any of the installed apps.
    *
-   * You can use other URLs, like a location (e.g. "geo:37.484847,-122.148386"), a contact,
+   * You can use other URLs, like a location (e.g. "geo:37.484847,-122.148386" on Android
+   * or "http://maps.apple.com/?ll=37.484847,-122.148386" on iOS), a contact,
    * or any other URL that can be opened with the installed apps.
    *
    * NOTE: This method will fail if the system doesn't know how to open the specified URL.

@@ -281,7 +281,7 @@ describe('Native Animated', () => {
       );
 
       expect(nativeAnimatedModule.disconnectAnimatedNodes).toHaveBeenCalledTimes(2);
-      expect(nativeAnimatedModule.dropAnimatedNode).toHaveBeenCalledTimes(2);
+      expect(nativeAnimatedModule.dropAnimatedNode).toHaveBeenCalledTimes(3);
     });
 
     it('sends a valid description for value, style and props nodes', () => {

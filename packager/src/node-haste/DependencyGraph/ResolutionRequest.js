@@ -141,6 +141,11 @@ class ResolutionRequest {
     return cacheResult(this._resolveNodeDependency(fromModule, toModuleName));
   }
 
+  resolveModuleDependencies(module: Module, dependencyNames: Array<string>): [Array<string>, Array<Module>] {
+    const dependencies = dependencyNames.map(name => this.resolveDependency(module, name));
+    return [dependencyNames, dependencies];
+  }
+
   getOrderedDependencies({
     response,
     transformOptions,
@@ -158,12 +163,14 @@ class ResolutionRequest {
     let totalModules = 1;
     let finishedModules = 0;
 
-    const resolveDependencies = module =>
-      module.getDependencies(transformOptions)
-        .then(dependencyNames => {
-          const dependencies = dependencyNames.map(name => this.resolveDependency(module, name));
-          return [dependencyNames, dependencies];
-        });
+    const resolveDependencies = module => Promise.resolve().then(() => {
+      const result = module.readCached(transformOptions);
+      if (result != null) {
+        return this.resolveModuleDependencies(module, result.dependencies);
+      }
+      return module.read(transformOptions)
+        .then(({dependencies}) => this.resolveModuleDependencies(module, dependencies));
+    });
 
     const collectedDependencies = new MapWithDefaults(module => collect(module));
     const crawlDependencies = (mod, [depNames, dependencies]) => {
