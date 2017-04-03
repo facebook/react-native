@@ -668,7 +668,6 @@ RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)contextName)
                       onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
   RCTAssertParam(script);
-  RCTAssertParam(sourceURL);
 
   NSError *loadError;
   TaggedScript taggedScript = loadTaggedScript(script, sourceURL,
@@ -717,6 +716,7 @@ static TaggedScript loadTaggedScript(NSData *script,
   NSData *loadedScript = NULL;
   switch (tag) {
     case facebook::react::ScriptTag::RAMBundle:
+      RCTAssertParam(sourceURL);
       [performanceLogger markStartForTag:RCTPLRAMBundleLoad];
 
       loadedScript = loadRAMBundle(sourceURL, error, randomAccessBundle);
