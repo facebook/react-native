@@ -11,23 +11,25 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
 var ImageResizeMode = require('ImageResizeMode');
 var ImageStylePropTypes = require('ImageStylePropTypes');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeModules = require('NativeModules');
+var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+var Set = require('Set');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
+var ViewStylePropTypes = require('ViewStylePropTypes');
 
+var filterObject = require('fbjs/lib/filterObject');
 var flattenStyle = require('flattenStyle');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
-var Set = require('Set');
-var filterObject = require('fbjs/lib/filterObject');
 
 var PropTypes = React.PropTypes;
 var {
@@ -77,7 +79,7 @@ var ImageSpecificStyleKeys = new Set(Object.keys(ImageStylePropTypes).filter(x =
 
 var Image = React.createClass({
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     style: StyleSheetPropType(ImageStylePropTypes),
    /**
      * `uri` is a string representing the resource identifier for the image, which
@@ -106,6 +108,10 @@ var Image = React.createClass({
           height: PropTypes.number,
         }))
     ]),
+    /**
+    * blurRadius: the blur radius of the blur filter added to the image
+    */
+    blurRadius: PropTypes.number,
     /**
      * similarly to `source`, this property represents the resource used to render
      * the loading indicator for the image, displayed until image is ready to be

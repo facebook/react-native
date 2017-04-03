@@ -255,7 +255,7 @@ var TouchableNativeFeedback = React.createClass({
 
     // We need to clone the actual element so that the ripple background drawable
     // can be applied directly to the background of this element rather than to
-    // a wrapper view as done in outher Touchable*
+    // a wrapper view as done in other Touchable*
     return React.cloneElement(
       child,
       childProps

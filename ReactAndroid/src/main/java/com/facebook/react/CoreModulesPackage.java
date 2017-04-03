@@ -36,6 +36,7 @@ import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.modules.core.Timing;
 import com.facebook.react.modules.debug.AnimationsDebugModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
+import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.uimanager.UIImplementationProvider;
@@ -56,7 +57,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
  * view managers from).
  */
 @ReactModuleList(
-  javaModules = {
+  nativeModules = {
     AndroidInfoModule.class,
     AnimationsDebugModule.class,
     DeviceEventManagerModule.class,
@@ -65,6 +66,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
     SourceCodeModule.class,
     Timing.class,
     UIManagerModule.class,
+    DeviceInfoModule.class,
     // Debug only
     DebugComponentOwnershipModule.class,
     JSCHeapCapture.class,
@@ -149,6 +151,13 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
         @Override
         public NativeModule get() {
           return createUIManager(reactContext);
+        }
+      }));
+    moduleSpecList.add(
+      new ModuleSpec(DeviceInfoModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new DeviceInfoModule(reactContext);
         }
       }));
 

@@ -193,20 +193,17 @@ RCT_EXPORT_MODULE()
     [bridge reload];
   }]];
 
-  NSString *executorName = devSettings.websocketExecutorName ?: @"Remote JS";
   if (!devSettings.isRemoteDebuggingAvailable) {
-    [items addObject:[RCTDevMenuItem buttonItemWithTitle:[NSString stringWithFormat:@"%@ Debugger Unavailable", executorName] handler:^{
+    [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Remote JS Debugger Unavailable" handler:^{
       UIAlertController *alertController = [UIAlertController
-        alertControllerWithTitle:[NSString stringWithFormat:@"%@ Debugger Unavailable", executorName]
-        message:[NSString stringWithFormat:@"You need to include the RCTWebSocket library to enable %@ debugging", executorName]
+        alertControllerWithTitle:@"Remote JS Debugger Unavailable"
+        message:@"You need to include the RCTWebSocket library to enable remote JS debugging"
         preferredStyle:UIAlertControllerStyleAlert];
       [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
     }]];
   } else {
     [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      return devSettings.isDebuggingRemotely ?
-        [NSString stringWithFormat:@"Stop %@ Debugging", executorName] :
-        [NSString stringWithFormat:@"Debug %@", executorName];
+      return devSettings.isDebuggingRemotely ? @"Stop Remote JS Debugging" : @"Debug JS Remotely";
     } handler:^{
       devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
     }]];

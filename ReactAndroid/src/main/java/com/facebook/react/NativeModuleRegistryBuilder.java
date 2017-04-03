@@ -26,6 +26,7 @@ import com.facebook.react.module.model.ReactModuleInfo;
 public class NativeModuleRegistryBuilder {
 
   private final ReactApplicationContext mReactApplicationContext;
+  private final ReactInstanceManager mReactInstanceManager;
   private final boolean mLazyNativeModulesEnabled;
 
   private final Map<Class<? extends NativeModule>, ModuleHolder> mModules = new HashMap<>();
@@ -33,8 +34,10 @@ public class NativeModuleRegistryBuilder {
 
   public NativeModuleRegistryBuilder(
     ReactApplicationContext reactApplicationContext,
+    ReactInstanceManager reactInstanceManager,
     boolean lazyNativeModulesEnabled) {
     mReactApplicationContext = reactApplicationContext;
+    mReactInstanceManager = reactInstanceManager;
     mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
   }
 
@@ -61,7 +64,7 @@ public class NativeModuleRegistryBuilder {
           }
           ReactMarker.logMarker(
             ReactMarkerConstants.CREATE_MODULE_START,
-            moduleSpec.getType().getSimpleName());
+            moduleSpec.getType().getName());
           NativeModule module = moduleSpec.getProvider().get();
           ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_END);
           moduleHolder = new ModuleHolder(module);
@@ -94,7 +97,16 @@ public class NativeModuleRegistryBuilder {
         ReactConstants.TAG,
         reactPackage.getClass().getSimpleName() +
           " is not a LazyReactPackage, falling back to old version.");
-      for (NativeModule nativeModule : reactPackage.createNativeModules(mReactApplicationContext)) {
+      List<NativeModule> nativeModules;
+      if (reactPackage instanceof ReactInstancePackage) {
+        ReactInstancePackage reactInstancePackage = (ReactInstancePackage) reactPackage;
+        nativeModules = reactInstancePackage.createNativeModules(
+            mReactApplicationContext,
+            mReactInstanceManager);
+      } else {
+        nativeModules = reactPackage.createNativeModules(mReactApplicationContext);
+      }
+      for (NativeModule nativeModule : nativeModules) {
         addNativeModule(nativeModule);
       }
     }
@@ -127,6 +139,9 @@ public class NativeModuleRegistryBuilder {
       }
     }
 
-    return new NativeModuleRegistry(mModules, batchCompleteListenerModules);
+    return new NativeModuleRegistry(
+      mReactApplicationContext,
+      mModules,
+      batchCompleteListenerModules);
   }
 }

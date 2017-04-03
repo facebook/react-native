@@ -27,8 +27,7 @@ if THIS_IS_FBANDROID:
         '-Wno-pessimizing-move',
       ],
       deps = [
-        '//xplat/folly:molly',
-        react_native_xplat_target('inspector:inspector'),
+        '//xplat/folly:molly'
       ])
 
     cxx_library(
@@ -56,7 +55,6 @@ if THIS_IS_FBANDROID:
           # `initOnJSVMThread` to be called before the platform-specific hooks
           # have been properly initialised. Bad Times(TM).
           #     -- @ashokmenon (2017/01/03)
-          '//java/com/facebook/java2js:jni',
           react_native_target('jni/xreact/jni:jni'),
           react_native_xplat_target('cxxreact/...'),
         ],
@@ -65,7 +63,7 @@ if THIS_IS_FBANDROID:
 
 if THIS_IS_FBOBJC:
   def react_library(**kwargs):
-    ios_library(
+    fb_apple_library(
       name = 'bridge',
       header_path_prefix = "cxxreact",
       inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
@@ -95,6 +93,7 @@ cxx_library(
     ],
     force_static = True,
     header_namespace = "cxxreact",
+    labels = ["accounts_for_platform_and_build_mode_flags"],
     visibility = [
         "PUBLIC",
     ],
@@ -128,7 +127,6 @@ cxx_library(
 )
 
 CXXREACT_PUBLIC_HEADERS = [
-    "CxxMessageQueue.h",
     "CxxNativeModule.h",
     "Executor.h",
     "ExecutorToken.h",

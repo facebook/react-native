@@ -15,10 +15,14 @@ const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const React = require('React');
 const TimerMixin = require('react-timer-mixin');
 const Touchable = require('Touchable');
-const View = require('View');
 
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 const warning = require('fbjs/lib/warning');
+
+const {
+  AccessibilityComponentTypes,
+  AccessibilityTraits,
+} = require('ViewAccessibility');
 
 type Event = Object;
 
@@ -31,15 +35,18 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * TouchableWithoutFeedback supports only one child.
  * If you wish to have several child components, wrap them in a View.
  */
+// $FlowFixMe(>=0.41.0)
 const TouchableWithoutFeedback = React.createClass({
   mixins: [TimerMixin, Touchable.Mixin],
 
   propTypes: {
     accessible: React.PropTypes.bool,
-    accessibilityComponentType: React.PropTypes.oneOf(View.AccessibilityComponentType),
+    accessibilityComponentType: React.PropTypes.oneOf(
+      AccessibilityComponentTypes
+    ),
     accessibilityTraits: React.PropTypes.oneOfType([
-      React.PropTypes.oneOf(View.AccessibilityTraits),
-      React.PropTypes.arrayOf(React.PropTypes.oneOf(View.AccessibilityTraits)),
+      React.PropTypes.oneOf(AccessibilityTraits),
+      React.PropTypes.arrayOf(React.PropTypes.oneOf(AccessibilityTraits)),
     ]),
     /**
      * If true, disable all interactions for this component.
@@ -147,6 +154,7 @@ const TouchableWithoutFeedback = React.createClass({
 
   render: function(): React.Element<any> {
     // Note(avik): remove dynamic typecast once Flow has been upgraded
+    // $FlowFixMe(>=0.41.0)
     const child = React.Children.only(this.props.children);
     let children = child.props.children;
     warning(
@@ -163,9 +171,11 @@ const TouchableWithoutFeedback = React.createClass({
       child.props.style;
     return (React: any).cloneElement(child, {
       accessible: this.props.accessible !== false,
+      // $FlowFixMe(>=0.41.0)
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
+      // $FlowFixMe(>=0.41.0)
       testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,

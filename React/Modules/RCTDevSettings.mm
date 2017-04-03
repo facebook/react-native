@@ -28,7 +28,6 @@ NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
 NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
 NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
 NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
-NSString *const kRCTDevSettingWebsocketExecutorName = @"websocket-executor-name";
 NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
 NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
 NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
@@ -197,12 +196,6 @@ RCT_EXPORT_METHOD(reload)
   [_bridge reload];
 }
 
-- (NSString *)websocketExecutorName
-{
-  // This value is passed as a command-line argument, so fall back to reading from NSUserDefaults directly
-  return [[NSUserDefaults standardUserDefaults] stringForKey:kRCTDevSettingWebsocketExecutorName];
-}
-
 - (void)setIsShakeToShowDevMenuEnabled:(BOOL)isShakeToShowDevMenuEnabled
 {
   [self _updateSettingWithValue:@(isShakeToShowDevMenuEnabled) forKey:kRCTDevSettingShakeToShowDevMenu];
@@ -228,8 +221,9 @@ RCT_EXPORT_METHOD(setIsDebuggingRemotely:(BOOL)enabled)
 {
   // This value is passed as a command-line argument, so fall back to reading from NSUserDefaults directly
   NSString *executorOverride = [[NSUserDefaults standardUserDefaults] stringForKey:kRCTDevSettingExecutorOverrideClass];
-  if (executorOverride) {
-    self.executorClass = NSClassFromString(executorOverride);
+  Class executorOverrideClass = executorOverride ? NSClassFromString(executorOverride) : nil;
+  if (executorOverrideClass) {
+    self.executorClass = executorOverrideClass;
   } else {
     BOOL enabled = self.isRemoteDebuggingAvailable && self.isDebuggingRemotely;
     self.executorClass = enabled ? objc_getClass("RCTWebSocketExecutor") : nil;
@@ -453,6 +447,14 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   dispatch_async(dispatch_get_main_queue(), ^{
     // update state again after the bridge has finished loading
     [self _synchronizeAllSettings];
+
+    // Inspector can only be shown after JS has loaded
+    if ([self isElementInspectorShown]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      [self.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
+#pragma clang diagnostic pop
+    }
   });
 }
 

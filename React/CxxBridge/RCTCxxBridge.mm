@@ -9,8 +9,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include "RCTCxxBridge.h"
-
 #include <atomic>
 #include <future>
 #include <libkern/OSAtomic.h>
@@ -41,13 +39,16 @@
 #import <jschelpers/Value.h>
 
 #import "NSDataBigString.h"
+#import "RCTJSCHelpers.h"
 #import "RCTMessageThread.h"
-#import "RCTNativeModule.h"
 #import "RCTObjcExecutor.h"
 
 #ifdef WITH_FBSYSTRACE
 #import <React/RCTFBSystrace.h>
 #endif
+
+@interface RCTCxxBridge : RCTBridge
+@end
 
 #define RCTAssertJSThread() \
   RCTAssert(self.executorClass || self->_jsThread == [NSThread currentThread], \
@@ -67,106 +68,10 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldCallID,
 };
 
-static JSValueRef nativeLoggingHook(
-    JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception) {
-  RCTLogLevel level = RCTLogLevelInfo;
-  if (argumentCount > 1) {
-    level = MAX(level, (RCTLogLevel)Value(ctx, arguments[1]).asNumber());
-  }
-  if (argumentCount > 0) {
-    String message = Value(ctx, arguments[0]).toString();
-    _RCTLogJavaScriptInternal(level, @(message.str().c_str()));
-  }
-  return Value::makeUndefined(ctx);
-}
-
-static JSValueRef nativePerformanceNow(
-    JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception) {
-  return Value::makeNumber(ctx, CACurrentMediaTime() * 1000);
-}
-
 static bool isRAMBundle(NSData *script) {
   BundleHeader header;
   [script getBytes:&header length:sizeof(header)];
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
-}
-
-static std::atomic_bool cxxBridgeEnabled(false);
-
-namespace {
-
-// RCTNativeModule arranges for native methods to be invoked on a queue which
-// is not the JS thread.  C++ modules don't use RCTNativeModule, so this little
-// adapter does the work.
-
-class QueueNativeModule : public NativeModule {
-public:
-  QueueNativeModule(RCTCxxBridge *bridge,
-                    std::unique_ptr<NativeModule> module)
-    : bridge_(bridge)
-    , module_(std::move(module))
-    // Create new queue (store queueName, as it isn't retained by dispatch_queue)
-    , queueName_("com.facebook.react." + module_->getName() + "Queue")
-    , queue_(dispatch_queue_create(queueName_.c_str(), DISPATCH_QUEUE_SERIAL)) {}
-
-  std::string getName() override {
-    return module_->getName();
-  }
-
-  std::vector<MethodDescriptor> getMethods() override {
-    return module_->getMethods();
-  }
-
-  folly::dynamic getConstants() override {
-    return module_->getConstants();
-  }
-
-  bool supportsWebWorkers() override {
-    return module_->supportsWebWorkers();
-  }
-
-  void invoke(ExecutorToken token, unsigned int reactMethodId,
-              folly::dynamic &&params) override {
-    __weak RCTCxxBridge *bridge = bridge_;
-    auto module = module_;
-    auto cparams = std::make_shared<folly::dynamic>(std::move(params));
-    dispatch_async(queue_, ^{
-      if (!bridge || !bridge.valid) {
-        return;
-      }
-
-      module->invoke(token, reactMethodId, std::move(*cparams));
-    });
-  }
-
-  MethodCallResult callSerializableNativeHook(
-      ExecutorToken token, unsigned int reactMethodId,
-      folly::dynamic &&args) override {
-    return module_->callSerializableNativeHook(token, reactMethodId, std::move(args));
-  }
-
-private:
-  RCTCxxBridge *bridge_;
-  std::shared_ptr<NativeModule> module_;
-  std::string queueName_;
-  dispatch_queue_t queue_;
-};
-
-
-// This is a temporary hack.  The cxx bridge assumes a single native
-// queue handles all native method calls, but that's false on ios.  So
-// this is a no-thread passthrough, and queues are handled in
-// RCTNativeModule.  A similar refactoring should be done on the Java
-// bridge.
-class InlineMessageQueueThread : public MessageQueueThread {
-public:
-  void runOnQueue(std::function<void()>&& func) override { func(); }
-  void runOnQueueSync(std::function<void()>&& func) override { func(); }
-  void quitSynchronous() override {}
-};
-
 }
 
 @interface RCTCxxBridge ()
@@ -177,7 +82,6 @@ public:
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge;
 - (void)partialBatchDidFlush;
 - (void)batchDidComplete;
-- (void)handleError:(NSError *)error;
 
 @end
 
@@ -191,27 +95,11 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
   void incrementPendingJSCalls() override {}
   void decrementPendingJSCalls() override {}
-  void onNativeException(const std::string &what) override {
-    [bridge_ handleError:RCTErrorWithMessage(@(what.c_str()))];
-  }
   ExecutorToken createExecutorToken() override {
     return ExecutorToken(std::make_shared<PlatformExecutorToken>());
   }
   void onExecutorStopped(ExecutorToken) override {}
 };
-
-@implementation RCTBridge (CxxBridge)
-
-- (void)CXX_createBatchedBridge
-{
-  if (cxxBridgeEnabled) {
-    self.batchedBridge = [[RCTCxxBridge alloc] initWithParentBridge:self];
-  } else {
-    self.batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
-  }
-}
-
-@end
 
 @implementation RCTCxxBridge
 {
@@ -244,40 +132,8 @@ struct RCTInstanceCallback : public InstanceCallback {
 + (void)initialize
 {
   if (self == [RCTCxxBridge class]) {
-    ReactMarker::logMarker = [](const std::string&) {};
-    PerfLogging::installNativeHooks = RCTFBQuickPerformanceLoggerConfigureHooks;
-    JSNativeHooks::loggingHook = nativeLoggingHook;
-    JSNativeHooks::nowHook = nativePerformanceNow;
+    RCTPrepareJSCExecutor();
   }
-}
-
-+ (void)swizzleBridge
-{
-  // Swizzle RCTBridge to use this, instead of RCTBatchedBridge
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    RCTSwapInstanceMethods([RCTBridge class],
-                           NSSelectorFromString(@"createBatchedBridge"),
-                           @selector(CXX_createBatchedBridge));
-  });
-}
-
-+ (void)enable
-{
-  [RCTCxxBridge swizzleBridge];
-#ifdef WITH_FBSYSTRACE
-  [RCTFBSystrace registerCallbacks];
-#endif
-  cxxBridgeEnabled = true;
-}
-
-+ (void)disable
-{
-  [RCTCxxBridge swizzleBridge];
-#ifdef WITH_FBSYSTRACE
-  [RCTFBSystrace unregisterCallbacks];
-#endif
-  cxxBridgeEnabled = false;
 }
 
 - (JSContext *)jsContext
@@ -533,33 +389,16 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
 }
 
-- (std::shared_ptr<ModuleRegistry>)_createModuleRegistry
+- (std::shared_ptr<ModuleRegistry>)_buildModuleRegistry
 {
   if (!self.valid) {
     return {};
   }
 
   [_performanceLogger markStartForTag:RCTPLNativeModulePrepareConfig];
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge createModuleRegistry]", nil);
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge buildModuleRegistry]", nil);
 
-  std::vector<std::unique_ptr<NativeModule>> modules;
-  for (RCTModuleData *moduleData in _moduleDataByID) {
-    if ([moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
-      // If a module does not support automatic instantiation, and
-      // wasn't provided as an extra module, it may not have an
-      // instance.  If so, skip it.
-      if (![moduleData hasInstance]) {
-        continue;
-      }
-      modules.emplace_back(
-        new QueueNativeModule(self, std::make_unique<CxxNativeModule>(
-          _reactInstance, [(RCTCxxModule *)(moduleData.instance) move])));
-    } else {
-      modules.emplace_back(new RCTNativeModule(self, moduleData));
-    }
-  }
-
-  auto registry = std::make_shared<ModuleRegistry>(std::move(modules));
+  auto registry = buildModuleRegistry(_moduleDataByID, self, _reactInstance);
 
   [_performanceLogger markStopForTag:RCTPLNativeModulePrepareConfig];
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -585,8 +424,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       std::unique_ptr<RCTInstanceCallback>(new RCTInstanceCallback(self)),
       executorFactory,
       _jsMessageThread,
-      std::unique_ptr<MessageQueueThread>(new InlineMessageQueueThread),
-      std::move([self _createModuleRegistry]));
+      [self _buildModuleRegistry]);
 
 #if RCT_PROFILE
     if (RCTProfileIsProfiling()) {
@@ -928,7 +766,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
  * Prevent super from calling setUp (that'd create another batchedBridge)
  */
 - (void)setUp {}
-- (void)bindKeys {}
 
 - (void)reload
 {
@@ -1137,6 +974,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
  */
 - (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
 {
+  if (!self.valid) {
+    return;
+  }
+
   /**
    * AnyThread
    */
@@ -1297,6 +1138,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCTAssertMainQueue();
 
   [self executeBlockOnJavaScriptThread:^{
+    #if WITH_FBSYSTRACE
+    [RCTFBSystrace registerCallbacks];
+    #endif
     RCTProfileInit(self);
   }];
 }
@@ -1309,6 +1153,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     RCTProfileEnd(self, ^(NSString *log) {
       NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
       callback(logData);
+      #if WITH_FBSYSTRACE
+      [RCTFBSystrace unregisterCallbacks];
+      #endif
     });
   }];
 }

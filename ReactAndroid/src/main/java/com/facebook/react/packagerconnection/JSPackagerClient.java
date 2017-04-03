@@ -8,11 +8,12 @@
 
 package com.facebook.react.packagerconnection;
 
-import javax.annotation.Nullable;
-
 import java.util.Map;
 
+import android.net.Uri;
+
 import com.facebook.common.logging.FLog;
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -25,12 +26,13 @@ import org.json.JSONObject;
  */
 final public class JSPackagerClient implements ReconnectingWebSocket.MessageCallback {
   private static final String TAG = JSPackagerClient.class.getSimpleName();
+  private static final String PACKAGER_CONNECTION_URL_FORMAT = "ws://%s/message?device=%s&app=%s&context=%s";
   private static final int PROTOCOL_VERSION = 2;
 
-  public class Responder {
+  private class ResponderImpl implements Responder {
     private Object mId;
 
-    public Responder(Object id) {
+    public ResponderImpl(Object id) {
       mId = id;
     }
 
@@ -59,31 +61,21 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
     }
   }
 
-  public interface RequestHandler {
-    public void onRequest(@Nullable Object params, Responder responder);
-    public void onNotification(@Nullable Object params);
-  }
-
-  public static abstract class NotificationOnlyHandler implements RequestHandler {
-    final public void onRequest(@Nullable Object params, Responder responder) {
-      responder.error("Request is not supported");
-      FLog.e(TAG, "Request is not supported");
-    }
-    abstract public void onNotification(@Nullable Object params);
-  }
-
-  public static abstract class RequestOnlyHandler implements RequestHandler {
-    abstract public void onRequest(@Nullable Object params, Responder responder);
-    final public void onNotification(@Nullable Object params) {
-      FLog.e(TAG, "Notification is not supported");
-    }
-  }
-
   private ReconnectingWebSocket mWebSocket;
   private Map<String, RequestHandler> mRequestHandlers;
 
-  public JSPackagerClient(String url, Map<String, RequestHandler> requestHandlers) {
+  public JSPackagerClient(String clientId, PackagerConnectionSettings settings, Map<String, RequestHandler> requestHandlers) {
     super();
+
+    Uri.Builder builder = new Uri.Builder();
+    builder.scheme("ws")
+      .encodedAuthority(settings.getDebugServerHost())
+      .appendPath("message")
+      .appendQueryParameter("device", AndroidInfoHelpers.getFriendlyDeviceName())
+      .appendQueryParameter("app", settings.getPackageName())
+      .appendQueryParameter("clientid", clientId);
+    String url = builder.build().toString();
+
     mWebSocket = new ReconnectingWebSocket(url, this);
     mRequestHandlers = requestHandlers;
   }
@@ -134,7 +126,7 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
       if (id == null) {
         handler.onNotification(params);
       } else {
-        handler.onRequest(params, new Responder(id));
+        handler.onRequest(params, new ResponderImpl(id));
       }
     } catch (Exception e) {
       FLog.e(TAG, "Handling the message failed", e);
@@ -145,7 +137,7 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
 
   private void abortOnMessage(Object id, String reason) {
     if (id != null) {
-      (new Responder(id)).error(reason);
+      (new ResponderImpl(id)).error(reason);
     }
 
     FLog.e(TAG, "Handling the message failed with reason: " + reason);

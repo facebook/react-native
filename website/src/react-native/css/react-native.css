@@ -410,11 +410,6 @@ html {
 body {
   background-color: #F5FCFF; }
 
-p {
-  margin: 0 0 16px;
-  line-height: 1.4;
-}
-
 * {
   -moz-box-sizing: border-box;
   -ms-box-sizing: border-box;
@@ -424,6 +419,10 @@ p {
   border: none;
   margin: 0;
   padding: 0; }
+
+p {
+  margin: 0 0 16px;
+  line-height: 1.4; }
 
 em {
   font-style: italic; }
@@ -699,7 +698,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   font-size: 14px;
   float: left;
   width: 210px;
-  margin: 5px 48px 0 0; }
+  margin: 0 48px 0 0; }
   .nav-docs ul {
     list-style: none;
     margin: 0;
@@ -723,7 +722,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
     font-size: 16px;
     font-weight: 400;
     line-height: 20px;
-    margin-top: 12px;
+    margin-top: 0;
     margin-bottom: 5px;
     padding: 10px;
     background-color: #222;
@@ -1362,6 +1361,7 @@ div[data-twttr-id] iframe {
   padding: 3px 10px; }
 
 .propType {
+  font-family: 'source-code-pro', Menlo, 'Courier New', Consolas, monospace;
   font-weight: normal;
   font-size: 15px;
   white-space: pre-wrap; }
@@ -1539,6 +1539,22 @@ table.versions {
   text-align: center;
   background-color: rgba(5, 165, 209, 0.05); }
 
+.banner-crna-ejected {
+  border: 1px solid #05A5D1;
+  border-radius: 3px;
+  margin-bottom: 40px; }
+  .banner-crna-ejected h3 {
+    font-size: 16px;
+    margin: 0;
+    padding: 0 10px;
+    background-color: #05A5D1;
+    color: white; }
+  .banner-crna-ejected p {
+    padding: 10px;
+    margin: 2px;
+    text-decoration: none !important;
+    background-color: white; }
+
 .prism {
   white-space: pre-wrap;
   font-family: 'source-code-pro', Menlo, 'Courier New', Consolas, monospace;
@@ -1685,7 +1701,8 @@ input#algolia-doc-search:focus {
   color: rgba(0, 0, 0, 0.4); }
 
 .home-showcase-section .showcase img {
-  width: 110px;
+  width: 100px;
+  height: 100px;
   border-radius: 20px; }
 
 .showcaseHeader {
@@ -1791,8 +1808,8 @@ input#algolia-doc-search:focus {
 .entry-header h1 {
   margin: 0;
   font-size: 33px;
-  line-height: 1;
-}
+  line-height: 36px;
+  line-height: 1; }
 
 .entry-header h4 {
   margin: 0 0 10px;
@@ -1833,8 +1850,7 @@ input#algolia-doc-search:focus {
   letter-spacing: .4rem;
   text-transform: uppercase;
   font-weight: 400;
-  line-height: 1;
-}
+  line-height: 12px; }
 
 .entry-share .small-title {
   float: left;

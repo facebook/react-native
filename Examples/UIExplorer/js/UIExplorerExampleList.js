@@ -201,6 +201,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#eeeeee',
   },
   sectionHeader: {
+    backgroundColor: '#eeeeee',
     padding: 5,
     fontWeight: '500',
     fontSize: 11,

@@ -50,6 +50,8 @@ class CxxModule {
   class SyncTagType {};
 
 public:
+  typedef std::function<std::unique_ptr<CxxModule>()> Provider;
+
   typedef std::function<void(std::vector<folly::dynamic>)> Callback;
 
   constexpr static AsyncTagType AsyncTag = AsyncTagType();

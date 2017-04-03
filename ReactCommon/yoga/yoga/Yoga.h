@@ -141,7 +141,7 @@ WIN_EXPORT void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode
   WIN_EXPORT void YGNodeStyleSet##name##Percent(const YGNodeRef node,   \
                                                 const YGEdge edge,      \
                                                 const float paramName); \
-  WIN_EXPORT type YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge);
+  WIN_EXPORT WIN_STRUCT(type) YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge);
 
 #define YG_NODE_STYLE_EDGE_PROPERTY_UNIT_AUTO(type, name) \
   WIN_EXPORT void YGNodeStyleSet##name##Auto(const YGNodeRef node, const YGEdge edge);
@@ -223,7 +223,7 @@ WIN_EXPORT void YGLog(YGLogLevel level, const char *message, ...);
 
 // Set this to number of pixels in 1 point to round calculation results
 // If you want to avoid rounding - set PointScaleFactor to 0
-WIN_EXPORT void YGSetPointScaleFactor(float pixelsInPoint);
+WIN_EXPORT void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInPoint);
 
 // YGConfig
 WIN_EXPORT YGConfigRef YGConfigNew(void);
@@ -234,6 +234,12 @@ WIN_EXPORT void YGConfigSetExperimentalFeatureEnabled(const YGConfigRef config,
                                                       const bool enabled);
 WIN_EXPORT bool YGConfigIsExperimentalFeatureEnabled(const YGConfigRef config,
                                                      const YGExperimentalFeature feature);
+
+// Using the web defaults is the prefered configuration for new projects.
+// Usage of non web defaults should be considered as legacy.
+WIN_EXPORT void YGConfigSetUseWebDefaults(const YGConfigRef config, const bool enabled);
+
+WIN_EXPORT bool YGConfigGetUseWebDefaults(const YGConfigRef config);
 
 WIN_EXPORT void
 YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree);
