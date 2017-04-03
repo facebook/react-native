@@ -19,7 +19,6 @@ const fs = require('fs');
  * this particular use case.
  */
 const imurmurhash = require('imurmurhash');
-const jsonStableStringify = require('json-stable-stringify');
 const mkdirp = require('mkdirp');
 const path = require('path');
 const rimraf = require('rimraf');
@@ -64,6 +63,7 @@ function hashSourceCode(props: {
   sourceCode: string,
   getTransformCacheKey: GetTransformCacheKey,
   transformOptions: TransformOptions,
+  transformOptionsKey: string,
 }): string {
   return imurmurhash(props.getTransformCacheKey(
     props.sourceCode,
@@ -79,11 +79,11 @@ function hashSourceCode(props: {
  */
 function getCacheFilePaths(props: {
   filePath: string,
-  transformOptions: TransformOptions,
+  transformOptionsKey: string,
 }): CacheFilePaths {
   const hasher = imurmurhash()
     .hash(props.filePath)
-    .hash(jsonStableStringify(props.transformOptions) || '');
+    .hash(props.transformOptionsKey);
   const hash = toFixedHex(8, hasher.result());
   const prefix = hash.substr(0, 2);
   const fileName = `${hash.substr(2)}${path.basename(props.filePath)}`;
@@ -135,6 +135,7 @@ function writeSync(props: {
   sourceCode: string,
   getTransformCacheKey: GetTransformCacheKey,
   transformOptions: TransformOptions,
+  transformOptionsKey: string,
   result: CachedResult,
 }): void {
   const cacheFilePath = getCacheFilePaths(props);
@@ -296,6 +297,7 @@ export type ReadTransformProps = {
   filePath: string,
   sourceCode: string,
   transformOptions: TransformOptions,
+  transformOptionsKey: string,
   getTransformCacheKey: GetTransformCacheKey,
   cacheOptions: CacheOptions,
 };
