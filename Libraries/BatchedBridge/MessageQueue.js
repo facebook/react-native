@@ -182,10 +182,11 @@ class MessageQueue {
     const now = new Date().getTime();
     if (global.nativeFlushQueueImmediate &&
         (now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS ||
-        this._inCall === 0)) {
-      global.nativeFlushQueueImmediate(this._queue);
+         this._inCall === 0)) {
+      var queue = this._queue;
       this._queue = [[], [], [], this._callID];
       this._lastFlush = now;
+      global.nativeFlushQueueImmediate(queue);
     }
     Systrace.counterEvent('pending_js_to_native_queue', this._queue[0].length);
     if (__DEV__ && this.__spy && isFinite(moduleID)) {

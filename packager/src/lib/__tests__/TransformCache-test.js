@@ -13,11 +13,13 @@ jest
   .dontMock('imurmurhash')
   .dontMock('json-stable-stringify')
   .dontMock('../TransformCache')
-  .dontMock('../toFixedHex')
   .dontMock('left-pad')
-  .dontMock('lodash/throttle');
+  .dontMock('lodash/throttle')
+  .dontMock('crypto');
 
 const imurmurhash = require('imurmurhash');
+const crypto = require('crypto');
+const jsonStableStringify = require('json-stable-stringify');
 
 const memoryFS = new Map();
 
@@ -66,6 +68,8 @@ describe('TransformCache', () => {
         getTransformCacheKey: () => 'abcdef',
         filePath,
         transformOptions,
+        transformOptionsKey: crypto.createHash('md5')
+          .update(jsonStableStringify(transformOptions)).digest('hex'),
         result: {
           code: `/* result for ${key} */`,
           dependencies: ['foo', `dep of ${key}`],
@@ -100,6 +104,7 @@ describe('TransformCache', () => {
         getTransformCacheKey: () => transformCacheKey,
         filePath: 'test.js',
         transformOptions: {foo: 1},
+        transformOptionsKey: 'boo!',
         result: {
           code: `/* result for ${key} */`,
           dependencies: ['foo', `dep of ${key}`],

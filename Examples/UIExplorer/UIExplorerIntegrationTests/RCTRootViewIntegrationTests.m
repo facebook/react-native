@@ -121,13 +121,6 @@ static ControlBlock reactContentSizeUpdateBlock(RCTRootViewSizeFlexibility sizeF
   };
 }
 
-static ControlBlock propertiesUpdateBlock()
-{
-  return ^(RCTRootView *rootView){
-    rootView.appProperties = @{@"markTestPassed":@YES};
-  };
-}
-
 @interface RCTRootViewIntegrationTests : XCTestCase
 
 @end
@@ -162,6 +155,9 @@ RCT_TEST_DATA_CONFIGURATION_BLOCK(SizeFlexibilityUpdateTest, MultipleUpdates, bo
 RCT_TEST_CONFIGURATION_BLOCK(ReactContentSizeUpdateTest, reactContentSizeUpdateBlock(RCTBoth))
 
 // Test if setting 'appProperties' property updates the RN app
-RCT_TEST_CONFIGURATION_BLOCK(PropertiesUpdateTest, propertiesUpdateBlock())
+// Disabled since it's occassionally crashing
+// RCT_TEST_CONFIGURATION_BLOCK(PropertiesUpdateTest, ^(RCTRootView *rootView) {
+//   rootView.appProperties = @{@"markTestPassed":@YES};
+// })
 
 @end
