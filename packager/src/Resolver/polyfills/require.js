@@ -38,6 +38,7 @@ type ModuleDefinition = {|
   exports: Exports,
   factory: FactoryFn,
   hasError: boolean,
+  error?: any,
   hot?: HotModuleReloadingData,
   isInitialized: boolean,
   verboseName?: string,
@@ -138,7 +139,7 @@ function loadModuleImplementation(moduleId, module) {
   }
 
   if (module.hasError) {
-    throw moduleThrewError(moduleId);
+    throw moduleThrewError(moduleId, module.error);
   }
 
   // `require` calls int  the require polyfill itself are not analyzed and
@@ -185,6 +186,7 @@ function loadModuleImplementation(moduleId, module) {
     return (module.exports = moduleObject.exports);
   } catch (e) {
     module.hasError = true;
+    module.error = e;
     module.isInitialized = false;
     module.exports = undefined;
     throw e;
@@ -201,9 +203,9 @@ function unknownModuleError(id) {
   return Error(message);
 }
 
-function moduleThrewError(id) {
+function moduleThrewError(id, error: any) {
   const displayName = __DEV__ && modules[id] && modules[id].verboseName || id;
-  return Error('Requiring module "' + displayName + '", which threw an exception.');
+  return Error('Requiring module "' + displayName + '", which threw an exception: ' + error);
 }
 
 if (__DEV__) {

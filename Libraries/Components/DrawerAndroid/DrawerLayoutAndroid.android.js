@@ -20,6 +20,8 @@ var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
 var View = require('View');
 
+const ViewPropTypes = require('ViewPropTypes');
+
 var DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
 
 var dismissKeyboard = require('dismissKeyboard');
@@ -73,7 +75,7 @@ var DrawerLayoutAndroid = React.createClass({
   },
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * Determines whether the keyboard gets dismissed in response to a drag.
      *   - 'none' (the default), drags do not dismiss the keyboard.

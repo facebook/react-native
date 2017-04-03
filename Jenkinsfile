@@ -99,14 +99,14 @@ def runStages() {
                 buildInfo.scm.sha = githubInfo.sha
                 buildInfo.scm.tag = githubInfo.tag
                 buildInfo.scm.isPR = githubInfo.isPR
-                buildInfo.image.tag = "${buildInfo.scm.sha}-${env.BUILD_TAG.replace("/", "-").replace("%2F", "-")}"
+                buildInfo.image.tag = "${buildInfo.scm.sha}-${env.BUILD_TAG.replace(" ", "-").replace("/", "-").replace("%2F", "-")}"
 
                 jsTag = "${buildInfo.image.tag}"
                 androidTag = "${buildInfo.image.tag}"
                 jsImageName = "${buildInfo.image.name}-js:${jsTag}"
                 androidImageName = "${buildInfo.image.name}-android:${androidTag}"
 
-                parallelInstrumentationTests = getParallelInstrumentationTests('./ReactAndroid/src/androidTest/java/com/facebook/react/tests', 3, androidImageName)
+                parallelInstrumentationTests = getParallelInstrumentationTests('./ReactAndroid/src/androidTest/java/com/facebook/react/tests', 1, androidImageName)
 
                 parallel(
                     'javascript build': {
@@ -120,36 +120,53 @@ def runStages() {
             }
 
             stage('Tests JS') {
-                parallel(
-                    'javascript flow': {
-                        runCmdOnDockerImage(jsImageName, 'yarn run flow -- check', '--rm')
-                    },
-                    'javascript tests': {
-                        runCmdOnDockerImage(jsImageName, 'yarn test --maxWorkers=4', '--rm')
-                    },
-                    'documentation tests': {
-                        runCmdOnDockerImage(jsImageName, 'cd website && yarn test', '--rm')
-                    },
-                    'documentation generation': {
-                        runCmdOnDockerImage(jsImageName, 'cd website && node ./server/generate.js', '--rm')
-                    }
-                )
+                try {
+                    parallel(
+                        'javascript flow': {
+                            runCmdOnDockerImage(jsImageName, 'yarn run flow -- check', '--rm')
+                        },
+                        'javascript tests': {
+                            runCmdOnDockerImage(jsImageName, 'yarn test --maxWorkers=4', '--rm')
+                        },
+                        'documentation tests': {
+                            runCmdOnDockerImage(jsImageName, 'cd website && yarn test', '--rm')
+                        },
+                        'documentation generation': {
+                            runCmdOnDockerImage(jsImageName, 'cd website && node ./server/generate.js', '--rm')
+                        }
+                    )
+                } catch(e) {
+                    currentBuild.result = "FAILED"
+                    echo "Test JS Stage Error: ${e}"
+                }
             }
 
             stage('Tests Android') {
-                parallel(
-                    'android unit tests': {
-                        runCmdOnDockerImage(androidImageName, 'bash /app/ContainerShip/scripts/run-android-docker-unit-tests.sh', '--privileged --rm')
-                    },
-                    'android e2e tests': {
-                        runCmdOnDockerImage(androidImageName, 'bash /app/ContainerShip/scripts/run-ci-e2e-tests.sh --android --js', '--rm')
-                    }
-                )
+                try {
+                    parallel(
+                        'android unit tests': {
+                            runCmdOnDockerImage(androidImageName, 'bash /app/ContainerShip/scripts/run-android-docker-unit-tests.sh', '--privileged --rm')
+                        },
+                        'android e2e tests': {
+                            // temporarily disable e2e tests, they have a high transient failure rate
+                            // runCmdOnDockerImage(androidImageName, 'bash /app/ContainerShip/scripts/run-ci-e2e-tests.sh --android --js', '--rm')
+                            echo "Android E2E tests have been temporarily disabled"
+                        }
+                    )
+                } catch(e) {
+                    currentBuild.result = "FAILED"
+                    echo "Tests Android Stage Error: ${e}"
+                }
             }
 
             stage('Tests Android Instrumentation') {
                 // run all tests in parallel
-                parallel(parallelInstrumentationTests)
+                try {
+                    parallel(parallelInstrumentationTests)
+                } catch(e) {
+                    currentBuild.result = "FAILED"
+                    echo "Tests Android Instrumentation Stage Error: ${e}"
+                }
             }
 
             stage('Cleanup') {

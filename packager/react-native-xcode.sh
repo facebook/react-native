@@ -55,6 +55,8 @@ fi
 
 [ -z "$NODE_BINARY" ] && export NODE_BINARY="node"
 
+[ -z "$CLI_PATH" ] && export CLI_PATH="$REACT_NATIVE_DIR/local-cli/cli.js"
+
 nodejs_not_found()
 {
   echo "error: Can't find '$NODE_BINARY' binary to build React Native bundle" >&2
@@ -85,7 +87,7 @@ fi
 
 BUNDLE_FILE="$DEST/main.jsbundle"
 
-$NODE_BINARY "$REACT_NATIVE_DIR/local-cli/cli.js" bundle \
+$NODE_BINARY $CLI_PATH bundle \
   --entry-file "$ENTRY_FILE" \
   --platform ios \
   --dev $DEV \

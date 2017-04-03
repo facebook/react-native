@@ -518,7 +518,7 @@ class Server {
     });
   }
 
-  _useCachedOrUpdateOrCreateBundle(options: BundleOptions): Promise<Bundle> {
+  useCachedOrUpdateOrCreateBundle(options: BundleOptions): Promise<Bundle> {
     const optionsJson = this.optionsHash(options);
     const bundleFromScratch = () => {
       const building = this.buildBundle(options);
@@ -683,7 +683,7 @@ class Server {
     };
 
     debug('Getting bundle for request');
-    const building = this._useCachedOrUpdateOrCreateBundle(options);
+    const building = this.useCachedOrUpdateOrCreateBundle(options);
     building.then(
       p => {
         if (requestType === 'bundle') {
@@ -784,7 +784,7 @@ class Server {
 
   _sourceMapForURL(reqUrl: string): Promise<SourceMap> {
     const options = this._getOptionsFromUrl(reqUrl);
-    const building = this._useCachedOrUpdateOrCreateBundle(options);
+    const building = this.useCachedOrUpdateOrCreateBundle(options);
     return building.then(p => p.getSourceMap({
       minify: options.minify,
       dev: options.dev,

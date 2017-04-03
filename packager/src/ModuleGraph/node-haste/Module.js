@@ -24,9 +24,9 @@ module.exports = class Module {
   constructor(
     path: string,
     moduleCache: ModuleCache,
-    info: Promise<TransformedFile>,
+    info: TransformedFile,
   ) {
-    this.hasteID = info.then(({hasteID}) => hasteID);
+    this.hasteID = Promise.resolve(info.hasteID);
     this.moduleCache = moduleCache;
     this.name = this.hasteID.then(name => name || getName(path));
     this.path = path;
