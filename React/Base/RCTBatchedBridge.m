@@ -596,7 +596,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
  * Prevent super from calling setUp (that'd create another batchedBridge)
  */
 - (void)setUp {}
-- (void)bindKeys {}
 
 - (void)reload
 {

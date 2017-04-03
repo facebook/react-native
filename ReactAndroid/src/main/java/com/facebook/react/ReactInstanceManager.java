@@ -125,6 +125,7 @@ public class ReactInstanceManager {
   private LifecycleState mLifecycleState;
   private @Nullable ReactContextInitParams mPendingReactContextInitParams;
   private @Nullable ReactContextInitAsyncTask mReactContextInitAsyncTask;
+  private @Nullable Thread mCreateReactContextThread;
 
   /* accessed from any thread */
   private final @Nullable JSBundleLoader mBundleLoader; /* path to JS bundle on file system */
@@ -146,6 +147,7 @@ public class ReactInstanceManager {
   private final JSCConfig mJSCConfig;
   private final boolean mLazyNativeModulesEnabled;
   private final boolean mLazyViewManagersEnabled;
+  private final boolean mUseStartupThread;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -199,7 +201,7 @@ public class ReactInstanceManager {
    * be executing one at time, see {@link #recreateReactContextInBackground()}.
    */
   private final class ReactContextInitAsyncTask extends
-      AsyncTask<ReactContextInitParams, Void, Result<ReactApplicationContext>> {
+    AsyncTask<ReactContextInitParams, Void, Result<ReactApplicationContext>> {
     @Override
     protected void onPreExecute() {
       if (mCurrentReactContext != null) {
@@ -242,8 +244,8 @@ public class ReactInstanceManager {
       // Handle enqueued request to re-initialize react context.
       if (mPendingReactContextInitParams != null) {
         recreateReactContextInBackground(
-            mPendingReactContextInitParams.getJsExecutorFactory(),
-            mPendingReactContextInitParams.getJsBundleLoader());
+          mPendingReactContextInitParams.getJsExecutorFactory(),
+          mPendingReactContextInitParams.getJsBundleLoader());
         mPendingReactContextInitParams = null;
       }
     }
@@ -315,7 +317,8 @@ public class ReactInstanceManager {
     JSCConfig jscConfig,
     @Nullable RedBoxHandler redBoxHandler,
     boolean lazyNativeModulesEnabled,
-    boolean lazyViewManagersEnabled) {
+    boolean lazyViewManagersEnabled,
+    boolean useStartupThread) {
 
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -344,6 +347,7 @@ public class ReactInstanceManager {
     mJSCConfig = jscConfig;
     mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
     mLazyViewManagersEnabled = lazyViewManagersEnabled;
+    mUseStartupThread = useStartupThread;
   }
 
   public DevSupportManager getDevSupportManager() {
@@ -612,6 +616,11 @@ public class ReactInstanceManager {
       mReactContextInitAsyncTask.cancel(true);
     }
 
+    if (mCreateReactContextThread != null) {
+      mCreateReactContextThread.interrupt();
+      mCreateReactContextThread = null;
+    }
+
     mMemoryPressureRouter.destroy(mApplicationContext);
 
     if (mCurrentReactContext != null) {
@@ -686,7 +695,9 @@ public class ReactInstanceManager {
 
     // If react context is being created in the background, JS application will be started
     // automatically when creation completes, as root view is part of the attached root view list.
-    if (mReactContextInitAsyncTask == null && mCurrentReactContext != null) {
+    if (mReactContextInitAsyncTask == null &&
+      mCreateReactContextThread == null &&
+      mCurrentReactContext != null) {
       attachMeasuredRootViewToInstance(rootView, mCurrentReactContext.getCatalystInstance());
     }
   }
@@ -768,17 +779,65 @@ public class ReactInstanceManager {
       JSBundleLoader jsBundleLoader) {
     UiThreadUtil.assertOnUiThread();
 
-    ReactContextInitParams initParams =
-        new ReactContextInitParams(jsExecutorFactory, jsBundleLoader);
-    if (mReactContextInitAsyncTask == null) {
-      // No background task to create react context is currently running, create and execute one.
-      mReactContextInitAsyncTask = new ReactContextInitAsyncTask();
-      mReactContextInitAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, initParams);
+    final ReactContextInitParams initParams = new ReactContextInitParams(
+      jsExecutorFactory,
+      jsBundleLoader);
+    if (mUseStartupThread) {
+      if (mCreateReactContextThread == null) {
+        runCreateReactContextOnNewThread(initParams);
+      } else {
+        mPendingReactContextInitParams = initParams;
+      }
     } else {
-      // Background task is currently running, queue up most recent init params to recreate context
-      // once task completes.
-      mPendingReactContextInitParams = initParams;
+      if (mReactContextInitAsyncTask == null) {
+        // No background task to create react context is currently running, create and execute one.
+        mReactContextInitAsyncTask = new ReactContextInitAsyncTask();
+        mReactContextInitAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, initParams);
+      } else {
+        // Background task is currently running, queue up most recent init params to recreate context
+        // once task completes.
+        mPendingReactContextInitParams = initParams;
+      }
     }
+  }
+
+  private void runCreateReactContextOnNewThread(final ReactContextInitParams initParams) {
+    if (mCurrentReactContext != null) {
+      tearDownReactContext(mCurrentReactContext);
+      mCurrentReactContext = null;
+    }
+
+    mCreateReactContextThread = new Thread(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          final ReactApplicationContext reactApplicationContext = createReactContext(
+            initParams.getJsExecutorFactory().create(),
+            initParams.getJsBundleLoader());
+          ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_START);
+          UiThreadUtil.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              mCreateReactContextThread = null;
+              try {
+                setupReactContext(reactApplicationContext);
+              } catch (Exception e) {
+                mDevSupportManager.handleException(e);
+              }
+
+              if (mPendingReactContextInitParams != null) {
+                runCreateReactContextOnNewThread(mPendingReactContextInitParams);
+                mPendingReactContextInitParams = null;
+              }
+            }
+          });
+        } catch (Exception e) {
+          mDevSupportManager.handleException(e);
+        }
+      }
+    });
+    mCreateReactContextThread.setPriority(Thread.MAX_PRIORITY);
+    mCreateReactContextThread.start();
   }
 
   private void setupReactContext(ReactApplicationContext reactContext) {

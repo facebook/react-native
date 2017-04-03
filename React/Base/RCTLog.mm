@@ -218,7 +218,7 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
 #if RCT_DEBUG
 
     // Log to red box in debug mode.
-    if ([UIApplication sharedApplication] && level >= RCTLOG_REDBOX_LEVEL) {
+    if (RCTSharedApplication() && level >= RCTLOG_REDBOX_LEVEL) {
       NSArray<NSString *> *stackSymbols = [NSThread callStackSymbols];
       NSMutableArray<NSDictionary *> *stack =
         [NSMutableArray arrayWithCapacity:(stackSymbols.count - 1)];

@@ -87,6 +87,21 @@ const View = React.createClass({
   // values had to be hardcoded.
   mixins: [NativeMethodsMixin],
 
+  // `propTypes` should not be accessed directly on View since this wrapper only
+  // exists for DEV mode. However it's important for them to be declared.
+  // If the object passed to `createClass` specifies `propTypes`, Flow will
+  // create a static type from it. This property will be over-written below with
+  // a warn-on-use getter though.
+  // TODO (bvaughn) Remove the warn-on-use comment after April 1.
+  propTypes: ViewPropTypes,
+
+  // ReactElementValidator will (temporarily) use this private accessor when
+  // detected to avoid triggering the warning message.
+  // TODO (bvaughn) Remove this after April 1 ReactNative RC is tagged.
+  statics: {
+    __propTypesSecretDontUseThesePlease: ViewPropTypes
+  },
+
   /**
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
    * make `this` look like an actual native component class.
@@ -95,11 +110,6 @@ const View = React.createClass({
     uiViewClassName: 'RCTView',
     validAttributes: ReactNativeViewAttributes.RCTView
   },
-
-  // TODO (bvaughn) Replace this with a deprecated getter warning. This object
-  // should be accessible via a separate import. It will not be available in
-  // production mode in the future and so should not be directly accessed.
-  propTypes: ViewPropTypes,
 
   contextTypes: {
     isInAParentText: React.PropTypes.bool,
@@ -122,55 +132,62 @@ const View = React.createClass({
 // be supported with React fiber. This warning message will go away in the next
 // ReactNative release. Use defineProperty() rather than createClass() statics
 // because the mixin process auto-triggers the 1-time warning message.
-// TODO (bvaughn) Remove these warning messages after the April ReactNative tag.
+// TODO (bvaughn) Remove this after April 1 ReactNative RC is tagged.
 function mixinStatics (target) {
   let warnedAboutAccessibilityTraits = false;
   let warnedAboutAccessibilityComponentType = false;
   let warnedAboutForceTouchAvailable = false;
+  let warnedAboutPropTypes = false;
 
   // $FlowFixMe https://github.com/facebook/flow/issues/285
   Object.defineProperty(target, 'AccessibilityTraits', {
     get: function() {
-      if (!warnedAboutAccessibilityTraits) {
-        warnedAboutAccessibilityTraits = true;
-        warning(
-          false,
-          'View.AccessibilityTraits has been deprecated and will be ' +
-          'removed in a future version of ReactNative. Use ' +
-          'ViewAccessibility.AccessibilityTraits instead.'
-        );
-      }
+      warning(
+        warnedAboutAccessibilityTraits,
+        'View.AccessibilityTraits has been deprecated and will be ' +
+        'removed in a future version of ReactNative. Use ' +
+        'ViewAccessibility.AccessibilityTraits instead.'
+      );
+      warnedAboutAccessibilityTraits = true;
       return AccessibilityTraits;
     }
   });
   // $FlowFixMe https://github.com/facebook/flow/issues/285
   Object.defineProperty(target, 'AccessibilityComponentType', {
     get: function() {
-      if (!warnedAboutAccessibilityComponentType) {
-        warnedAboutAccessibilityComponentType = true;
-        warning(
-          false,
-          'View.AccessibilityComponentType has been deprecated and will be ' +
-          'removed in a future version of ReactNative. Use ' +
-          'ViewAccessibility.AccessibilityComponentTypes instead.'
-        );
-      }
+      warning(
+        warnedAboutAccessibilityComponentType,
+        'View.AccessibilityComponentType has been deprecated and will be ' +
+        'removed in a future version of ReactNative. Use ' +
+        'ViewAccessibility.AccessibilityComponentTypes instead.'
+      );
+      warnedAboutAccessibilityComponentType = true;
       return AccessibilityComponentTypes;
     }
   });
   // $FlowFixMe https://github.com/facebook/flow/issues/285
   Object.defineProperty(target, 'forceTouchAvailable', {
     get: function() {
-      if (!warnedAboutForceTouchAvailable) {
-        warnedAboutForceTouchAvailable = true;
-        warning(
-          false,
-          'View.forceTouchAvailable has been deprecated and will be removed ' +
-          'in a future version of ReactNative. Use ' +
-          'NativeModules.PlatformConstants.forceTouchAvailable instead.'
-        );
-      }
+      warning(
+        warnedAboutForceTouchAvailable,
+        'View.forceTouchAvailable has been deprecated and will be removed ' +
+        'in a future version of ReactNative. Use ' +
+        'NativeModules.PlatformConstants.forceTouchAvailable instead.'
+      );
+      warnedAboutForceTouchAvailable = true;
       return forceTouchAvailable;
+    }
+  });
+  // $FlowFixMe https://github.com/facebook/flow/issues/285
+  Object.defineProperty(target, 'propTypes', {
+    get: function() {
+      warning(
+        warnedAboutPropTypes,
+        'View.propTypes has been deprecated and will be removed in a future ' +
+        'version of ReactNative. Use ViewPropTypes instead.'
+      );
+      warnedAboutPropTypes = true;
+      return ViewPropTypes;
     }
   });
 }

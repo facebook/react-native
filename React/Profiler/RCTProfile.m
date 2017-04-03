@@ -404,7 +404,7 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
       };
       RCTProfileControlsWindow.hidden = YES;
       dispatch_async(dispatch_get_main_queue(), ^{
-        [[[[[UIApplication sharedApplication] delegate] window] rootViewController] presentViewController:activityViewController
+        [[[[RCTSharedApplication() delegate] window] rootViewController] presentViewController:activityViewController
                                                                                                  animated:YES
                                                                                                completion:nil];
       });
@@ -455,9 +455,7 @@ void RCTProfileInit(RCTBridge *bridge)
   OSAtomicOr32Barrier(1, &RCTProfileProfiling);
 
   if (callbacks != NULL) {
-    size_t buffer_size = 1 << 22;
-    systrace_buffer = calloc(1, buffer_size);
-    callbacks->start(~((uint64_t)0), systrace_buffer, buffer_size);
+    systrace_buffer = callbacks->start();
   } else {
     NSTimeInterval time = CACurrentMediaTime();
     dispatch_async(RCTProfileGetQueue(), ^{
@@ -514,9 +512,10 @@ void RCTProfileEnd(RCTBridge *bridge, void (^callback)(NSString *))
   RCTProfileUnhookModules(bridge);
 
   if (callbacks != NULL) {
-    callbacks->stop();
-
-    callback(@(systrace_buffer));
+    if (systrace_buffer) {
+      callbacks->stop();
+      callback(@(systrace_buffer));
+    }
   } else {
     dispatch_async(RCTProfileGetQueue(), ^{
       NSString *log = RCTJSONStringify(RCTProfileInfo, NULL);

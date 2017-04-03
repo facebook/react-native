@@ -33,14 +33,13 @@ export type Package = {
   path: Path,
   root: Path,
   type: 'Package',
-  getMain(): Promise<Path>,
+  getMain(): Path,
   getName(): Promise<ModuleID>,
   isHaste(): Promise<boolean>,
-  redirectRequire(id: ModuleID): Promise<Path | false>,
+  redirectRequire(id: ModuleID): Path | false,
 };
 
-// when changing this to `type`, the code does not typecheck any more
-export interface ModuleCache {
+export type ModuleCache = {
   getAssetModule(path: Path): Module,
   getModule(path: Path): Module,
   getPackage(path: Path): Package,

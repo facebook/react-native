@@ -17,12 +17,12 @@ const path = require('path');
 import type {PackageData} from '../types.flow';
 
 module.exports = class Package {
-  data: Promise<PackageData>;
+  data: PackageData;
   path: string;
   root: string;
   type: 'Package';
 
-  constructor(packagePath: string, data: Promise<PackageData>) {
+  constructor(packagePath: string, data: PackageData) {
     this.data = data;
     this.path = packagePath;
     this.root = path.dirname(packagePath);
@@ -31,80 +31,76 @@ module.exports = class Package {
 
   getMain() {
     // Copied from node-haste/Package.js
-    return this.data.then(data => {
-      const replacements = getReplacements(data);
-      if (typeof replacements === 'string') {
-        return path.join(this.root, replacements);
-      }
+    const replacements = getReplacements(this.data);
+    if (typeof replacements === 'string') {
+      return path.join(this.root, replacements);
+    }
 
-      let main = getMain(data);
+    let main = getMain(this.data);
 
-      if (replacements && typeof replacements === 'object') {
-        main = replacements[main] ||
-          replacements[main + '.js'] ||
-          replacements[main + '.json'] ||
-          replacements[main.replace(/(\.js|\.json)$/, '')] ||
-          main;
-      }
+    if (replacements && typeof replacements === 'object') {
+      main = replacements[main] ||
+        replacements[main + '.js'] ||
+        replacements[main + '.json'] ||
+        replacements[main.replace(/(\.js|\.json)$/, '')] ||
+        main;
+    }
 
-      return path.join(this.root, main);
-    });
+    return path.join(this.root, main);
   }
 
   getName() {
-    return this.data.then(p => nullthrows(p.name));
+    return Promise.resolve(nullthrows(this.data.name));
   }
 
   isHaste() {
-    return this.data.then(p => !!p.name);
+    return Promise.resolve(!!this.data.name);
   }
 
   redirectRequire(name: string) {
     // Copied from node-haste/Package.js
-    return this.data.then(data => {
-      const replacements = getReplacements(data);
+    const replacements = getReplacements(this.data);
 
-      if (!replacements || typeof replacements !== 'object') {
-        return name;
-      }
-
-      if (!path.isAbsolute(name)) {
-        const replacement = replacements[name];
-        // support exclude with "someDependency": false
-        return replacement === false
-          ? false
-          : replacement || name;
-      }
-
-      let relPath = './' + path.relative(this.root, name);
-      if (path.sep !== '/') {
-        relPath = relPath.replace(new RegExp('\\' + path.sep, 'g'), '/');
-      }
-
-      let redirect = replacements[relPath];
-
-      // false is a valid value
-      if (redirect == null) {
-        redirect = replacements[relPath + '.js'];
-        if (redirect == null) {
-          redirect = replacements[relPath + '.json'];
-        }
-      }
-
-      // support exclude with "./someFile": false
-      if (redirect === false) {
-        return false;
-      }
-
-      if (redirect) {
-        return path.join(
-          this.root,
-          redirect
-        );
-      }
-
+    if (!replacements || typeof replacements !== 'object') {
       return name;
-    });
+    }
+
+    if (!path.isAbsolute(name)) {
+      const replacement = replacements[name];
+      // support exclude with "someDependency": false
+      return replacement === false
+        ? false
+        : replacement || name;
+    }
+
+    let relPath = './' + path.relative(this.root, name);
+    if (path.sep !== '/') {
+      relPath = relPath.replace(new RegExp('\\' + path.sep, 'g'), '/');
+    }
+
+    let redirect = replacements[relPath];
+
+    // false is a valid value
+    if (redirect == null) {
+      redirect = replacements[relPath + '.js'];
+      if (redirect == null) {
+        redirect = replacements[relPath + '.json'];
+      }
+    }
+
+    // support exclude with "./someFile": false
+    if (redirect === false) {
+      return false;
+    }
+
+    if (redirect) {
+      return path.join(
+        this.root,
+        redirect
+      );
+    }
+
+    return name;
   }
 };
 
