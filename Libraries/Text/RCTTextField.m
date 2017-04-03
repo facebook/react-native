@@ -48,7 +48,6 @@
 @implementation RCTTextField
 {
   RCTEventDispatcher *_eventDispatcher;
-  BOOL _jsRequestingFirstResponder;
   NSInteger _nativeEventCount;
   BOOL _submitted;
   UITextRange *_previousSelectionRange;
@@ -92,16 +91,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                      text:nil
                                       key:string
                                eventCount:_nativeEventCount];
-}
-
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
-{
-  [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
-  if(context.nextFocusedView == self) {
-    _jsRequestingFirstResponder = YES;
-  } else {
-    _jsRequestingFirstResponder = NO;
-  }
 }
 
 // This method is overridden for `onKeyPress`. The manager
@@ -285,21 +274,6 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   }
 }
 
-- (BOOL)canBecomeFirstResponder
-{
-  return _jsRequestingFirstResponder;
-}
-
-- (void)reactWillMakeFirstResponder
-{
-  _jsRequestingFirstResponder = YES;
-}
-
-- (void)reactDidMakeFirstResponder
-{
-  _jsRequestingFirstResponder = NO;
-}
-
 - (BOOL)resignFirstResponder
 {
   BOOL result = [super resignFirstResponder];
@@ -312,6 +286,11 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
                                  eventCount:_nativeEventCount];
   }
   return result;
+}
+
+- (void)didMoveToWindow
+{
+  [self reactFocusIfNeeded];
 }
 
 #pragma mark - UITextFieldDelegate (Proxied)
