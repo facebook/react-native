@@ -39,7 +39,7 @@ var ReactNativeToExpoSDKVersionMap = {
  */
 var SnackPlayer = React.createClass({
   contextTypes: {
-    version: React.PropTypes.number.isRequried,
+    version: React.PropTypes.number.isRequired,
   },
 
   componentDidMount() {
