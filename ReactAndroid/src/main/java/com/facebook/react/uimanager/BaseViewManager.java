@@ -5,7 +5,6 @@ package com.facebook.react.uimanager;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
-import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
@@ -86,9 +85,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = PROP_TEST_ID)
   public void setTestId(T view, String testId) {
-    view.setTag(R.id.react_test_id, testId);
-
-    // temporarily set the tag and keyed tags to avoid end to end test regressions
     view.setTag(testId);
   }
 

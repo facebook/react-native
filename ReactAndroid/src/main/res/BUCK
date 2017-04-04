@@ -26,12 +26,3 @@ android_resource(
         "PUBLIC",
     ],
 )
-
-android_resource(
-    name = "uimanager",
-    package = "com.facebook.react",
-    res = "views/uimanager",
-    visibility = [
-        "PUBLIC",
-    ],
-)

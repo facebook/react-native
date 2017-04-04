@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.react.NativeModuleRegistryBuilder;
-import com.facebook.react.R;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.bridge.CatalystInstance;
@@ -188,9 +187,7 @@ public class ReactTestHelper {
   }
 
   public static String getTestId(View view) {
-    return view.getTag(R.id.react_test_id) instanceof String
-      ? (String) view.getTag(R.id.react_test_id)
-      : null;
+    return view.getTag() instanceof String ? (String) view.getTag() : null;
   }
 
   private static View findChild(View root, Predicate<View> predicate) {
@@ -214,7 +211,7 @@ public class ReactTestHelper {
     return new Predicate<View>() {
       @Override
       public boolean apply(View view) {
-        Object tag = getTestId(view);
+        Object tag = view.getTag();
         return tag != null && tag.equals(tagValue);
       }
     };
