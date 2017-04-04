@@ -144,10 +144,17 @@ class TransformProfileSet {
   }
 }
 
+type FetchFailedDetails =
+  {+type: 'unhandled_http_status', +statusCode: number} | {+type: 'unspecified'};
+
 class FetchFailedError extends Error {
-  constructor(message) {
+  /** Separate object for details allows us to have a type union. */
+  +details: FetchFailedDetails;
+
+  constructor(message: string, details: FetchFailedDetails) {
     super();
     this.message = message;
+    (this: any).details = details;
   }
 }
 
@@ -223,31 +230,49 @@ class GlobalTransformCache {
     const response = await fetch(uri, {method: 'GET', timeout: 8000});
     if (response.status !== 200) {
       const msg = `Unexpected HTTP status: ${response.status} ${response.statusText} `;
-      throw new FetchFailedError(msg);
+      throw new FetchFailedError(msg, {
+        type: 'unhandled_http_status',
+        statusCode: response.status,
+      });
     }
     const unvalidatedResult = await response.json();
     const result = validateCachedResult(unvalidatedResult);
     if (result == null) {
-      throw new FetchFailedError('Server returned invalid result.');
+      throw new FetchFailedError('Server returned invalid result.', {type: 'unspecified'});
     }
     return result;
   }
 
   /**
-   * It happens from time to time that a fetch timeouts, we want to try these
-   * again a second time.
+   * It happens from time to time that a fetch fails, we want to try these again
+   * a second time if we expect them to be transient. We might even consider
+   * waiting a little time before retring if experience shows it's useful.
    */
   static fetchResultFromURI(uri: string): Promise<CachedResult> {
     return GlobalTransformCache._fetchResultFromURI(uri).catch(error => {
-      if (!GlobalTransformCache.isTimeoutError(error)) {
+      if (!GlobalTransformCache.shouldRetryAfterThatError(error)) {
         throw error;
       }
       return this._fetchResultFromURI(uri);
     });
   }
 
-  static isTimeoutError(error: Error): boolean {
-    return error instanceof FetchError && error.type === 'request-timeout';
+  /**
+   * We want to retry timeouts as they're likely temporary. We retry 503
+   * (Service Unavailable) and 502 (Bad Gateway) because they may be caused by a
+   * some rogue server, or because of throttling.
+   *
+   * There may be other types of error we'd want to retry for, but these are
+   * the ones we experienced the most in practice.
+   */
+  static shouldRetryAfterThatError(error: Error): boolean {
+    return (
+      error instanceof FetchError && error.type === 'request-timeout' || (
+        error instanceof FetchFailedError &&
+        error.details.type === 'wrong_http_status' &&
+        (error.details.statusCode === 503 || error.details.statusCode === 502)
+      )
+    );
   }
 
   shouldFetch(props: FetchProps): boolean {
