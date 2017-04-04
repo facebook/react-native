@@ -85,29 +85,24 @@ function buildAndRun(args) {
     ? 'gradlew.bat'
     : './gradlew';
 
-  const packageName = fs.readFileSync(
-      'app/src/main/AndroidManifest.xml',
-      'utf8'
-    ).match(/package="(.+?)"/)[1];
-
   const adbPath = getAdbPath();
   if (args.deviceId) {
     if (isString(args.deviceId)) {
-        runOnSpecificDevice(args, cmd, packageName, adbPath);
+        runOnSpecificDevice(args, cmd, adbPath);
     } else {
       console.log(chalk.red('Argument missing for parameter --deviceId'));
     }
   } else {
-    runOnAllDevices(args, cmd, packageName, adbPath);
+    runOnAllDevices(args, cmd, adbPath);
   }
 }
 
-function runOnSpecificDevice(args, gradlew, packageName, adbPath) {
+function runOnSpecificDevice(args, gradlew, adbPath) {
   let devices = adb.getDevices();
   if (devices && devices.length > 0) {
     if (devices.indexOf(args.deviceId) !== -1) {
       buildApk(gradlew);
-      installAndLaunchOnDevice(args, args.deviceId, packageName, adbPath);
+      installAndLaunchOnDevice(args, args.deviceId, adbPath);
     } else {
       console.log('Could not find device with the id: "' + args.deviceId + '".');
       console.log('Choose one of the following:');
@@ -150,9 +145,10 @@ function tryInstallAppOnDevice(args, device) {
   }
 }
 
-function tryLaunchAppOnDevice(device, packageName, adbPath, mainActivity) {
+function tryLaunchAppOnDevice(args, device, adbPath) {
   try {
-    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.' + mainActivity];
+    const activityClass = getActivityClass(args);
+    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', activityClass];
     console.log(chalk.bold(
       `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
     ));
@@ -164,13 +160,13 @@ function tryLaunchAppOnDevice(device, packageName, adbPath, mainActivity) {
   }
 }
 
-function installAndLaunchOnDevice(args, selectedDevice, packageName, adbPath) {
+function installAndLaunchOnDevice(args, selectedDevice, adbPath) {
   tryRunAdbReverse(selectedDevice);
   tryInstallAppOnDevice(args, selectedDevice);
-  tryLaunchAppOnDevice(selectedDevice, packageName, adbPath, args.mainActivity);
+  tryLaunchAppOnDevice(args, selectedDevice, adbPath);
 }
 
-function runOnAllDevices(args, cmd, packageName, adbPath){
+function runOnAllDevices(args, cmd, adbPath){
   try {
     const gradleArgs = [];
     if (args.variant) {
@@ -215,14 +211,16 @@ function runOnAllDevices(args, cmd, packageName, adbPath){
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
         tryRunAdbReverse(device);
-        tryLaunchAppOnDevice(device, packageName, adbPath, args.mainActivity);
+        tryLaunchAppOnDevice(args, device,  adbPath);
       });
     } else {
       try {
         // If we cannot execute based on adb devices output, fall back to
         // shell am start
+
+        const activityClass = getActivityClass(args);
         const fallbackAdbArgs = [
-          'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
+          'shell', 'am', 'start', '-n', activityClass
         ];
         console.log(chalk.bold(
           `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
@@ -270,6 +268,107 @@ function startServerInNewWindow() {
     console.log(chalk.red(`Cannot start the packager. Unknown platform ${process.platform}`));
   }
 }
+
+function findPreviousTerm(content, endPos) {
+  while (content[endPos] === ' ') {
+    --endPos;
+  }
+  const regex = new RegExp('\\w');
+  const word = [];
+  while (regex.exec(content[endPos])) {
+    word.push(content[endPos]);
+    --endPos;
+  }
+  return word.reverse().join('');
+}
+
+function findBuildTypes(filePath) {
+  // Read the gradle file and get list of buildTypes defined for the project.
+  const content = fs.readFileSync(filePath, 'utf8');
+  const regex = new RegExp('buildType\\s+{', 'ig');
+  const buildTypes = ['debug', 'release'];
+  const match = regex.exec(content);
+  if (!match) {
+    return buildTypes;
+  }
+  const buildTypeStartPos = regex.lastIndex;
+  let counter = 1;
+  let pos = buildTypeStartPos + 1;
+  while (counter > 0) {
+    if (content[pos] === '{') {
+      counter += 1;
+      if (counter === 2) {
+        const previousTerm = findPreviousTerm(content, pos - 1);
+        if (buildTypes.indexOf(previousTerm) === -1) {
+          buildTypes.push(previousTerm);
+        }
+      }
+    } else if (content[pos] === '}') {
+      --counter;
+    }
+    ++pos;
+  }
+  return buildTypes;
+}
+
+function splitVariant(gradleFilePath, variant) {
+  // Split the variant into buildType and flavor
+  const buildTypes = findBuildTypes(gradleFilePath, 'buildTypes', ['debug', 'release']);
+  const regexp = new RegExp(buildTypes.join('|'), 'gi');
+  const match = regexp.exec(variant);
+  let flavor = null;
+  let buildType = variant;
+  if (match) {
+    flavor = variant.substring(0, match.index);
+    buildType = variant.substring(match.index);
+  }
+  return { buildType, flavor };
+}
+
+function isSeparateBuildEnabled(gradleFilePath) {
+  // Check if separate build enabled for different processors
+  const content = fs.readFileSync(gradleFilePath, 'utf8');
+  const separateBuild = content.match(/enableSeparateBuildPerCPUArchitecture\s+=\s+([\w]+)/)[1];
+  return separateBuild.toLowerCase() === 'true';
+}
+
+function getManifestFile(variant) {
+  // get the path to the correct manifest file to find the correct package name to be used while
+  // starting the app
+  const gradleFilePath = 'app/build.gradle';
+
+  // We first need to identify build type and flavor from the specified variant
+  const { buildType, flavor } = splitVariant(gradleFilePath, variant);
+
+  // Using the buildtype and flavor we create the path to the correct AndroidManifest.xml
+  const paths = ['app/build/intermediates/manifests/full'];
+  if (flavor) {
+    paths.push(flavor);
+  }
+
+  if (isSeparateBuildEnabled(gradleFilePath)) {
+      paths.push('x86');
+  }
+
+  paths.push(buildType);
+  paths.push('AndroidManifest.xml');
+  return paths.join('/');
+}
+
+function getActivityClass(args) {
+  // Get the complete path to the correct activity class depening upon the variant
+  const manifestFile = getManifestFile(args.variant || 'debug');
+  const content = fs.readFileSync(manifestFile, 'utf8');
+
+  //Find the correct package name from the manifest file
+  const packageName = content.match(/package="(.+?)"/)[1];
+
+  //Find the correct activityName from the manifestFile
+  const activityPathRegex = new RegExp(`android:name="(.+?\.${args.mainActivity})"`);
+  const activityPath = content.match(activityPathRegex)[1];
+  return `${packageName}/${activityPath}`;
+}
+
 
 module.exports = {
   name: 'run-android',
