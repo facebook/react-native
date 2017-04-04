@@ -147,9 +147,9 @@ type State = {first: number, last: number};
  * - Internal state is not preserved when content scrolls out of the render window. Make sure all
  *   your data is captured in the item data or external stores like Flux, Redux, or Relay.
  * - This is a `PureComponent` which means that it will not re-render if `props` remain shallow-
- *   equal. Make sure that everything your `renderItem` function depends on is passed as a prop that
- *   is not `===` after updates, otherwise your UI may not update on changes. This includes the
- *   `data` prop and parent component state.
+ *   equal. Make sure that everything your `renderItem` function depends on is passed as a prop
+ *   (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on
+ *   changes. This includes the `data` prop and parent component state.
  * - In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
  *   offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
  *   blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
@@ -157,11 +157,10 @@ type State = {first: number, last: number};
  * - By default, the list looks for a `key` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
- * NOTE: `LayoutAnimation` and sticky section headers both have bugs when used with this and are
- * therefore not officially supported yet.
- *
  * NOTE: `removeClippedSubviews` might not be necessary and may cause bugs. If you see issues with
- * content not rendering, try disabling it, and we may change the default there.
+ * content not rendering, e.g when using `LayoutAnimation`, try setting
+ * `removeClippedSubviews={false}`, and we may change the default in the future after more
+ * experimentation in production apps.
  */
 class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   props: Props;
