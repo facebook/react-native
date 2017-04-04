@@ -77,6 +77,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    * and as the react key to track item re-ordering. The default extractor checks item.key, then
    * falls back to using the index, like react does.
    */
+
   keyExtractor: (item: Item, index: number) => string,
   /**
    * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
@@ -247,7 +248,7 @@ class SectionList<SectionT: SectionBase<any>>
     return <List {...this.props} ref={this._captureRef} />;
   }
 
-  _wrapperListRef: MetroListView | VirtualizedSectionList<*>;
+  _wrapperListRef: MetroListView | VirtualizedSectionList<any>;
   _captureRef = (ref) => { this._wrapperListRef = ref; };
 }
 
