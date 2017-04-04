@@ -194,10 +194,40 @@ class SectionList<SectionT: SectionBase<any>>
   props: Props<SectionT>;
   static defaultProps: DefaultProps = defaultProps;
 
+  /**
+   * Tells the list an interaction has occured, which should trigger viewability calculations, e.g.
+   * if `waitForInteractions` is true and the user has not scrolled. This is typically called by
+   * taps on items or by navigation actions.
+   */
+  recordInteraction() {
+    const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
+    listRef && listRef.recordInteraction();
+  }
+
+  /**
+   * Provides a handle to the underlying scroll responder.
+   */
+  getScrollResponder() {
+    const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
+    if (listRef) {
+      return listRef.getScrollResponder();
+    }
+  }
+
+  getScrollableNode() {
+    const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
+    if (listRef) {
+      return listRef.getScrollableNode();
+    }
+  }
+
   render() {
     const List = this.props.legacyImplementation ? MetroListView : VirtualizedSectionList;
-    return <List {...this.props} />;
+    return <List {...this.props} ref={this._captureRef} />;
   }
+
+  _wrapperListRef: MetroListView | VirtualizedSectionList<*>;
+  _captureRef = (ref) => { this._wrapperListRef = ref; };
 }
 
 module.exports = SectionList;

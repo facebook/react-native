@@ -224,6 +224,17 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this._updateViewableItems(this.props.data);
   }
 
+  /**
+   * Provides a handle to the underlying scroll responder.
+   * Note that `this._scrollRef` might not be a `ScrollView`, so we
+   * need to check that it responds to `getScrollResponder` before calling it.
+   */
+  getScrollResponder() {
+    if (this._scrollRef && this._scrollRef.getScrollResponder) {
+      return this._scrollRef.getScrollResponder();
+    }
+  }
+
   getScrollableNode() {
     if (this._scrollRef && this._scrollRef.getScrollableNode) {
       return this._scrollRef.getScrollableNode();

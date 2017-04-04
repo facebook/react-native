@@ -119,6 +119,10 @@ class VirtualizedSectionList<SectionT: SectionBase>
     data: [],
   };
 
+  getListRef(): VirtualizedList {
+    return this._listRef;
+  }
+
   _keyExtractor = (item: Item, index: number) => {
     const info = this._subExtractor(index);
     return (info && info.key) || String(index);
@@ -257,8 +261,11 @@ class VirtualizedSectionList<SectionT: SectionBase>
   }
 
   render() {
-    return <VirtualizedList {...this.state.childProps} />;
+    return <VirtualizedList {...this.state.childProps} ref={this._captureRef} />;
   }
+
+  _listRef: VirtualizedList;
+  _captureRef = (ref) => { this._listRef = ref; };
 }
 
 function getItem(sections: ?Array<Item>, index: number): ?Item {

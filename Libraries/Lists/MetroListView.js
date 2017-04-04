@@ -67,6 +67,9 @@ class MetroListView extends React.Component {
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated}
     );
   }
+  getListRef() {
+    return this._listRef;
+  }
   static defaultProps: DefaultProps = {
     keyExtractor: (item, index) => item.key || index,
     renderScrollComponent: (props: Props) => {
