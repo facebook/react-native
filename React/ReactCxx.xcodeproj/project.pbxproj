@@ -910,6 +910,10 @@
 		3DC159E41E83E1AE007B1282 /* RCTRootContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59A7B9FC1E577DBF0068EDBF /* RCTRootContentView.m */; };
 		3DC159E51E83E1E9007B1282 /* JSBigString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27B958731E57587D0096647A /* JSBigString.cpp */; };
 		3DC159E61E83E1FA007B1282 /* JSBigString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27B958731E57587D0096647A /* JSBigString.cpp */; };
+		3DCC92B91E94456500EF89A8 /* YGNodeList.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77061DF767AF001F9587 /* YGNodeList.h */; };
+		3DCC92BC1E94459100EF89A8 /* YGEnums.c in Sources */ = {isa = PBXBuildFile; fileRef = 3DCC92BA1E94458B00EF89A8 /* YGEnums.c */; };
+		3DCC92BD1E94459100EF89A8 /* YGEnums.c in Sources */ = {isa = PBXBuildFile; fileRef = 3DCC92BA1E94458B00EF89A8 /* YGEnums.c */; };
+		3DCC92BE1E9445B100EF89A8 /* YGNodeList.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77061DF767AF001F9587 /* YGNodeList.h */; };
 		3DCD185D1DF978E7007FE5A1 /* RCTReloadCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */; };
 		3DDEC1521DDCE0CA0020BBDF /* JSCSamplingProfiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 369123E01DDC75850095B341 /* JSCSamplingProfiler.m */; };
 		3DE4F8681DF85D8E00B9E5A0 /* YGEnums.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77031DF767AF001F9587 /* YGEnums.h */; };
@@ -1179,6 +1183,7 @@
 			dstPath = include/yoga;
 			dstSubfolderSpec = 16;
 			files = (
+				3DCC92BE1E9445B100EF89A8 /* YGNodeList.h in Copy Headers */,
 				3DFE0D1A1DF8575800459392 /* YGEnums.h in Copy Headers */,
 				3DFE0D1B1DF8575800459392 /* YGMacros.h in Copy Headers */,
 				3DFE0D1C1DF8575800459392 /* Yoga.h in Copy Headers */,
@@ -1371,6 +1376,7 @@
 			dstPath = include/yoga;
 			dstSubfolderSpec = 16;
 			files = (
+				3DCC92B91E94456500EF89A8 /* YGNodeList.h in Copy Headers */,
 				3DE4F8681DF85D8E00B9E5A0 /* YGEnums.h in Copy Headers */,
 				3DE4F8691DF85D8E00B9E5A0 /* YGMacros.h in Copy Headers */,
 				3DE4F86A1DF85D8E00B9E5A0 /* Yoga.h in Copy Headers */,
@@ -1752,6 +1758,7 @@
 		3D92B10C1E0369AD0018521A /* Value.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Value.cpp; sourceTree = "<group>"; };
 		3D92B10D1E0369AD0018521A /* Value.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Value.h; sourceTree = "<group>"; };
 		3DB910701C74B21600838BBE /* RCTWebSocketObserverProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketObserverProtocol.h; sourceTree = "<group>"; };
+		3DCC92BA1E94458B00EF89A8 /* YGEnums.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = YGEnums.c; sourceTree = "<group>"; };
 		3EDCA8A21D3591E700450C31 /* RCTErrorCustomizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTErrorCustomizer.h; sourceTree = "<group>"; };
 		3EDCA8A31D3591E700450C31 /* RCTErrorInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTErrorInfo.h; sourceTree = "<group>"; };
 		3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTErrorInfo.m; sourceTree = "<group>"; };
@@ -1875,6 +1882,7 @@
 		130A77021DF767AF001F9587 /* yoga */ = {
 			isa = PBXGroup;
 			children = (
+				3DCC92BA1E94458B00EF89A8 /* YGEnums.c */,
 				130A77031DF767AF001F9587 /* YGEnums.h */,
 				130A77041DF767AF001F9587 /* YGMacros.h */,
 				130A77051DF767AF001F9587 /* YGNodeList.c */,
@@ -3327,6 +3335,7 @@
 			files = (
 				13AB5E011DF777F2001A8C30 /* YGNodeList.c in Sources */,
 				13AB5E021DF777F2001A8C30 /* Yoga.c in Sources */,
+				3DCC92BC1E94459100EF89A8 /* YGEnums.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3336,6 +3345,7 @@
 			files = (
 				3DFE0D1D1DF857FF00459392 /* YGNodeList.c in Sources */,
 				3DFE0D1E1DF857FF00459392 /* Yoga.c in Sources */,
+				3DCC92BD1E94459100EF89A8 /* YGEnums.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
