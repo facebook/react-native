@@ -12,8 +12,6 @@ package com.facebook.react.uimanager;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.react.views.view.ReactViewManager;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,7 +35,7 @@ public class ViewGroupDrawingOrderHelper {
    * @param view The view that is being added
    */
   public void handleAddView(View view) {
-    if (ReactViewManager.getViewZIndex(view) != null) {
+    if (ViewGroupManager.getViewZIndex(view) != null) {
       mNumberOfChildrenWithZIndex++;
     }
 
@@ -50,7 +48,7 @@ public class ViewGroupDrawingOrderHelper {
    * @param view The view that is being removed.
    */
   public void handleRemoveView(View view) {
-    if (ReactViewManager.getViewZIndex(view) != null) {
+    if (ViewGroupManager.getViewZIndex(view) != null) {
       mNumberOfChildrenWithZIndex--;
     }
 
