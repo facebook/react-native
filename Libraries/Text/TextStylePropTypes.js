@@ -49,7 +49,16 @@ const TextStylePropTypes = {
   textShadowRadius: ReactPropTypes.number,
   textShadowColor: ColorPropType,
   /**
-   * @platform ios
+   * Increase or decrease the spacing between characters. Based on the platform specific
+   * rendering this style annotation will be rendered slightly differently on Android and iOS.
+   * Default is no letter spacing.
+   *
+   * Android: Only supported since Android 5+, older versions will will ignore this attribute.
+   * Please notice that additional space will be added *around* the characters and the space
+   * is calculated based on your font size and the font family. To left-align a text similar
+   * to iOS (or in different font sizes) you should add a Platform-specific negative layout attribute.
+   *
+   * iOS: The additional space will be added behind the character and is defined in points.
    */
   letterSpacing: ReactPropTypes.number,
   lineHeight: ReactPropTypes.number,
