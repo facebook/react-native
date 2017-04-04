@@ -17,14 +17,13 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 @ReactModule(name = SettingsModule.NAME)
@@ -72,36 +71,57 @@ public class SettingsModule extends ReactContextBaseJavaModule  implements Share
   }
 
   @ReactMethod
-  public void setValues(ReadableMap map) {
-    ReadableNativeMap nativeMap = (ReadableNativeMap) map;
-
+  public void setValues(ReadableMap values) {
     this.ignoringUpdates = true;
-    this.setValuesToPreference(nativeMap.toHashMap(), getPreferences());
+
+    ReadableMapKeySetIterator iterator = values.keySetIterator();
+
+    while (iterator.hasNextKey()) {
+      String key = iterator.nextKey();
+      ReadableType type = values.getType(key);
+
+      switch (type) {
+        case Null:
+          mPreferences.edit().remove(key).apply();
+          break;
+
+        case Boolean:
+          mPreferences.edit().putBoolean(key, values.getBoolean(key)).apply();
+          break;
+
+        case Number:
+          mPreferences.edit().putFloat(key, (float) values.getDouble(key)).apply();
+          break;
+
+        case String:
+          mPreferences.edit().putString(key, values.getString(key)).apply();
+          break;
+
+        case Map: // Not supported
+          throw new IllegalArgumentException("Could not store Map in Settings");
+
+        case Array: // Not supported
+          throw new IllegalArgumentException("Could not store Array in Settings");
+      }
+    }
+
     this.ignoringUpdates = false;
   }
 
-  @SuppressWarnings("unchecked")
   public Map<String, Object> getConstants() {
-    Map<String, Object> map;
+    Map<String, Object> exportedValuePairs = new HashMap<String, Object>();
+    Map<String, ?> prefsMap = getPreferences().getAll();
 
-    try {
-      map = (Map<String, Object>) getPreferences().getAll();
-
-      for (String key : map.keySet()) {
-        Object value = map.get(key);
-        if (value instanceof HashSet) {
-          ArrayList<Object> list = new ArrayList<>((HashSet<Object>) value);
-          map.put(key, list);
-        }
-
+    for (String key : prefsMap.keySet()) {
+      Object value = prefsMap.get(key);
+      if (value instanceof String || value.getClass().isPrimitive()) {
+        exportedValuePairs.put(key, value);
       }
-    } catch (ClassCastException ex) {
-      map = new HashMap<>();
     }
 
     HashMap<String, Object> constants = new HashMap<>();
 
-    constants.put("settings", map);
+    constants.put("settings", exportedValuePairs);
     return constants;
   }
 
@@ -137,31 +157,5 @@ public class SettingsModule extends ReactContextBaseJavaModule  implements Share
       getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
         .emit("settingsUpdated", map);
     }
-  }
-
-  private void setValuesToPreference(HashMap<String, Object> sourceMap, SharedPreferences pref) {
-    SharedPreferences.Editor editor = pref.edit();
-
-    for (HashMap.Entry<String, Object> entry : sourceMap.entrySet()) {
-      String key = entry.getKey();
-      Object value = entry.getValue();
-
-      if (value != null && !value.getClass().isPrimitive() && !(value instanceof String)) {
-        continue;
-      }
-
-      if (value == null) {
-        editor.remove(key);
-      } else if (value instanceof String) {
-        editor.putString(key, (String) sourceMap.get(key));
-      } else if (value instanceof Number) {
-        Float valueF = ((Number) value).floatValue();
-        editor.putFloat(key, valueF);
-      } if (value instanceof Boolean) {
-        editor.putBoolean(key, (Boolean) sourceMap.get(key));
-      }
-
-    }
-    editor.apply();
   }
 }
