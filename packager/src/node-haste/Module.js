@@ -226,7 +226,8 @@ class Module {
     if (hasteImpl !== undefined) {
       const {enforceHasteNameMatches} = hasteImpl;
       if (enforceHasteNameMatches) {
-        /* $FlowFixMe: this rely on the above if being executed, that is fragile. Rework the algo. */
+        /* $FlowFixMe: this rely on the above if being executed, that is fragile.
+         * Rework the algo. */
         enforceHasteNameMatches(this.path, this._hasteNameCache.hasteName);
       }
       this._hasteNameCache = {hasteName: hasteImpl.getHasteName(this.path)};

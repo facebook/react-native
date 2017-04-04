@@ -62,7 +62,7 @@ class FlatListExample extends React.PureComponent {
   static description = 'Performant, scrollable list of data.';
 
   state = {
-    data: genItemData(1000),
+    data: genItemData(100),
     debug: false,
     horizontal: false,
     filterText: '',
@@ -142,6 +142,7 @@ class FlatListExample extends React.PureComponent {
           }
           legacyImplementation={false}
           numColumns={1}
+          onEndReached={this._onEndReached}
           onRefresh={this._onRefresh}
           onScroll={this.state.horizontal ? this._scrollSinkX : this._scrollSinkY}
           onViewableItemsChanged={this._onViewableItemsChanged}
@@ -156,6 +157,11 @@ class FlatListExample extends React.PureComponent {
   _captureRef = (ref) => { this._listRef = ref; };
   _getItemLayout = (data: any, index: number) => {
     return getItemLayout(data, index, this.state.horizontal);
+  };
+  _onEndReached = () => {
+    this.setState((state) => ({
+      data: state.data.concat(genItemData(100, state.data.length)),
+    }));
   };
   _onRefresh = () => alert('onRefresh: nothing to refresh :P');
   _renderItemComponent = ({item}) => {
