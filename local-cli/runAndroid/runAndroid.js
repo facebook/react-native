@@ -90,52 +90,25 @@ function buildAndRun(args) {
       'utf8'
     ).match(/package="(.+?)"/)[1];
 
-  const adbPath = getAdbPath();
-  if (args.deviceId) {
-    if (isString(args.deviceId)) {
-        runOnSpecificDevice(args, cmd, packageName, adbPath);
-    } else {
-      console.log(chalk.red('Argument missing for parameter --deviceId'));
-    }
-  } else {
-    runOnAllDevices(args, cmd, packageName, adbPath);
-  }
-}
-
-function runOnSpecificDevice(args, gradlew, packageName, adbPath) {
-  let devices = adb.getDevices();
-  if (devices && devices.length > 0) {
-    if (devices.indexOf(args.deviceId) !== -1) {
-      buildApk(gradlew);
-      installAndLaunchOnDevice(args, args.deviceId, packageName, adbPath);
-    } else {
-      console.log('Could not find device with the id: "' + args.deviceId + '".');
-      console.log('Choose one of the following:');
-      console.log(devices);
-    }
-  } else {
-    console.log('No Android devices connected.');
-  }
-}
-
-function buildApk(gradlew) {
-  try {
-    console.log(chalk.bold('Building the app...'));
-
-    // using '-x lint' in order to ignore linting errors while building the apk
-    child_process.execFileSync(gradlew, ['build', '-x', 'lint'], {
-      stdio: [process.stdin, process.stdout, process.stderr],
-    });
-  } catch (e) {
-    console.log(chalk.red('Could not build the app, read the error above for details.\n'));
-  }
+  runOnDevices(args, cmd, packageName, getAdbPath());
 }
 
 function tryInstallAppOnDevice(args, device) {
+  var variant = '';
+
+  // Flavor is deprecated, but we keep the support.
+  if (args.flavor) {
+    variant = `-${args.variant}`;
+  }
+
+  if (args.variant) {
+    variant = `-${args.variant}`;
+  }
+
   try {
-    const pathToApk = 'app/build/outputs/apk/app-debug.apk';
+    const pathToApk = `app/build/outputs/apk/app${variant}-${args.configuration.toLowerCase()}.apk`;
     const adbPath = getAdbPath();
-    const adbArgs = ['-s', device, 'install', pathToApk];
+    const adbArgs = ['-s', device, 'install', '-r', pathToApk];
     console.log(chalk.bold(
       `Installing the app on the device (cd android && adb -s ${device} install ${pathToApk}`
     ));
@@ -164,32 +137,49 @@ function tryLaunchAppOnDevice(device, packageName, adbPath, mainActivity) {
   }
 }
 
-function installAndLaunchOnDevice(args, selectedDevice, packageName, adbPath) {
-  tryRunAdbReverse(selectedDevice);
-  tryInstallAppOnDevice(args, selectedDevice);
-  tryLaunchAppOnDevice(selectedDevice, packageName, adbPath, args.mainActivity);
-}
-
-function runOnAllDevices(args, cmd, packageName, adbPath){
+function runOnDevices(args, cmd, packageName, adbPath){
   try {
     const gradleArgs = [];
+
     if (args.variant) {
-      gradleArgs.push('install' +
+      gradleArgs.push('assemble' +
         args.variant[0].toUpperCase() + args.variant.slice(1)
       );
     } else if (args.flavor) {
       console.warn(chalk.yellow(
         '--flavor has been deprecated. Use --variant instead'
       ));
-      gradleArgs.push('install' +
+      gradleArgs.push('assemble' +
         args.flavor[0].toUpperCase() + args.flavor.slice(1)
       );
     } else {
-      gradleArgs.push('installDebug');
+      gradleArgs.push('assemble');
     }
 
-    if (args.installDebug) {
-      gradleArgs.push(args.installDebug);
+    // Append the build type to the current gradle install configuration.
+    // By default it will generate `installDebug`.
+    gradleArgs[0] = gradleArgs[0] + args.configuration[0].toUpperCase() + args.configuration.slice(1);
+
+    // Get the gradle binary for the current platform.
+    const cmd = process.platform.startsWith('win') ? 'gradlew.bat' : './gradlew';
+
+    if (args.configuration.toUpperCase() === 'RELEASE') {
+      console.log(chalk.bold(
+        'Generating the bundle for the release build...'
+      ));
+
+      // Generate the release files.
+      child_process.execSync(
+        'react-native bundle ' +
+        '--platform android ' +
+        '--dev false ' +
+        '--entry-file index.android.js ' +
+        `--bundle-output app/src/main/assets/index.android.bundle ` +
+        `--assets-dest app/src/main/res/`,
+        {
+          stdio: [process.stdin, process.stdout, process.stderr],
+        }
+      );
     }
 
     console.log(chalk.bold(
@@ -206,38 +196,55 @@ function runOnAllDevices(args, cmd, packageName, adbPath){
       'set up your Android development environment:\n' +
       'https://facebook.github.io/react-native/docs/android-setup.html'
     ));
+
     // stderr is automatically piped from the gradle process, so the user
     // should see the error already, there is no need to do
     // `console.log(e.stderr)`
     return Promise.reject();
   }
-    const devices = adb.getDevices();
-    if (devices && devices.length > 0) {
-      devices.forEach((device) => {
-        tryRunAdbReverse(device);
-        tryLaunchAppOnDevice(device, packageName, adbPath, args.mainActivity);
-      });
+
+  // Check if it is to launch only on a specific device.
+  if (args.deviceId) {
+    if (isString(args.deviceId)) {
+      tryRunAdbReverse(args.deviceId);
+      tryInstallAppOnDevice(args, args.deviceId);
+      tryLaunchAppOnDevice(args.deviceId, packageName, adbPath, args.mainActivity);
     } else {
-      try {
-        // If we cannot execute based on adb devices output, fall back to
-        // shell am start
-        const fallbackAdbArgs = [
-          'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
-        ];
-        console.log(chalk.bold(
-          `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
-        ));
-        child_process.spawnSync(adbPath, fallbackAdbArgs, {stdio: 'inherit'});
-      } catch (e) {
-        console.log(chalk.red(
-          'adb invocation failed. Do you have adb in your PATH?'
-        ));
-        // stderr is automatically piped from the gradle process, so the user
-        // should see the error already, there is no need to do
-        // `console.log(e.stderr)`
-        return Promise.reject();
-      }
+      console.log(chalk.red('Argument missing for parameter --deviceId'));
     }
+
+    return;
+  }
+
+  // Launch the app on all the devices connected.
+  const devices = adb.getDevices();
+  if (devices && devices.length > 0) {
+    devices.forEach((device) => {
+      tryRunAdbReverse(device);
+      tryInstallAppOnDevice(args, device);
+      tryLaunchAppOnDevice(device, packageName, adbPath, args.mainActivity);
+    });
+  } else {
+    try {
+      // If we cannot execute based on adb devices output, fall back to
+      // shell am start
+      const fallbackAdbArgs = [
+        'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
+      ];
+      console.log(chalk.bold(
+        `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
+      ));
+      child_process.spawnSync(adbPath, fallbackAdbArgs, {stdio: 'inherit'});
+    } catch (e) {
+      console.log(chalk.red(
+        'adb invocation failed. Do you have adb in your PATH?'
+      ));
+      // stderr is automatically piped from the gradle process, so the user
+      // should see the error already, there is no need to do
+      // `console.log(e.stderr)`
+      return Promise.reject();
+    }
+  }
 }
 
 function startServerInNewWindow() {
@@ -275,8 +282,14 @@ module.exports = {
   name: 'run-android',
   description: 'builds your app and starts it on a connected Android emulator or device',
   func: runAndroid,
-  options: [{
-    command: '--install-debug',
+  options: [ {
+    command: '--configuration [string]',
+    description:
+      'You can use `Release` or `Debug`. ' +
+      'This creates a build based on the selected configuration. ' +
+      'If you want to use the `Release` configuration make sure you have the ' +
+      '`signingConfig` configured at `app/build.gradle`.',
+    default: 'Debug'
   }, {
     command: '--root [string]',
     description: 'Override the root directory for the android build (which contains the android directory)',
@@ -286,6 +299,7 @@ module.exports = {
     description: '--flavor has been deprecated. Use --variant instead',
   }, {
     command: '--variant [string]',
+    description: 'The variant you want to generate. For instance: sandbox, production...',
   }, {
     command: '--main-activity [string]',
     description: 'Name of the activity to start',
