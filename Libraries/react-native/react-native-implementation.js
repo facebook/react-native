@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const invariant = require('fbjs/lib/invariant');
 const warning = require('fbjs/lib/warning');
 
 if (__DEV__) {
@@ -41,7 +42,6 @@ const ReactNative = {
   get KeyboardAvoidingView() { return require('KeyboardAvoidingView'); },
   get ListView() { return require('ListView'); },
   get Modal() { return require('Modal'); },
-  get Navigator() { return require('Navigator'); },
   get NavigatorIOS() { return require('NavigatorIOS'); },
   get Picker() { return require('Picker'); },
   get PickerIOS() { return require('PickerIOS'); },
@@ -124,6 +124,17 @@ const ReactNative = {
   get EdgeInsetsPropType() { return require('EdgeInsetsPropType'); },
   get PointPropType() { return require('PointPropType'); },
   get ViewPropTypes() { return require('ViewPropTypes'); },
+
+  // Deprecated
+  get Navigator() {
+    invariant(
+      false,
+      'Navigator is deprecated and has been removed from this package. It can now be installed ' +
+      'and imported from `react-native-deprecated-custom-components` instead of `react-native`. ' +
+      'Learn about alternative navigation solutions at http://facebook.github.io/react-native/docs/navigation.html'
+    );
+    return null;
+  },
 };
 
 // Better error messages when accessing React APIs on ReactNative
