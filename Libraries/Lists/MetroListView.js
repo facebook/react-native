@@ -61,6 +61,9 @@ class MetroListView extends React.Component {
   scrollToItem(params: {animated?: ?boolean, item: Item, viewPosition?: number}) {
     throw new Error('scrollToItem not supported in legacy ListView.');
   }
+  scrollToLocation() {
+    throw new Error('scrollToLocation not supported in legacy ListView.');
+  }
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     const {animated, offset} = params;
     this._listRef.scrollTo(

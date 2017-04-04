@@ -231,7 +231,8 @@ type DefaultProps = typeof defaultProps;
  *     }
  *
  * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist.html),
- * and thus inherits it's props that aren't explicitly listed here along with the following caveats:
+ * and thus inherits it's props (as well as those of `ScrollView`) that aren't explicitly listed
+ * here, along with the following caveats:
  *
  * - Internal state is not preserved when content scrolls out of the render window. Make sure all
  *   your data is captured in the item data or external stores like Flux, Redux, or Relay.
@@ -264,17 +265,22 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
   /**
    * Scrolls to the item at a the specified index such that it is positioned in the viewable area
    * such that `viewPosition` 0 places it at the top, 1 at the bottom, and 0.5 centered in the
-   * middle.
+   * middle. `viewOffset` is a fixed number of pixels to offset the final target position.
    *
-   * May be janky without `getItemLayout` prop.
+   * Note: cannot scroll to locations outside the render window without specifying the
+   * `getItemLayout` prop.
    */
-  scrollToIndex(params: {animated?: ?boolean, index: number, viewPosition?: number}) {
+  scrollToIndex(params: {
+    animated?: ?boolean, index: number, viewOffset?: number, viewPosition?: number,
+  }) {
     this._listRef.scrollToIndex(params);
   }
 
   /**
-   * Requires linear scan through data - use `scrollToIndex` instead if possible. May be janky
-   * without `getItemLayout` prop.
+   * Requires linear scan through data - use `scrollToIndex` instead if possible.
+   *
+   * Note: cannot scroll to locations outside the render window without specifying the
+   * `getItemLayout` prop.
    */
   scrollToItem(params: {animated?: ?boolean, item: ItemT, viewPosition?: number}) {
     this._listRef.scrollToItem(params);

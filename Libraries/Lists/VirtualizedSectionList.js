@@ -119,6 +119,20 @@ class VirtualizedSectionList<SectionT: SectionBase>
     data: [],
   };
 
+  scrollToLocation(params: {
+    animated?: ?boolean, itemIndex: number, sectionIndex: number, viewPosition?: number
+  }) {
+    let index = params.itemIndex + 1;
+    for (let ii = 0; ii < params.sectionIndex; ii++) {
+      index += this.props.sections[ii].data.length + 1;
+    }
+    const toIndexParams = {
+      ...params,
+      index,
+    };
+    this._listRef.scrollToIndex(toIndexParams);
+  }
+
   getListRef(): VirtualizedList {
     return this._listRef;
   }
@@ -194,8 +208,7 @@ class VirtualizedSectionList<SectionT: SectionBase>
       const {renderSectionHeader} = this.props;
       return renderSectionHeader ? renderSectionHeader({section: info.section}) : null;
     } else {
-      const renderItem = info.section.renderItem ||
-        this.props.renderItem;
+      const renderItem = info.section.renderItem || this.props.renderItem;
       const SeparatorComponent = this._getSeparatorComponent(index, info);
       invariant(renderItem, 'no renderItem!');
       return (

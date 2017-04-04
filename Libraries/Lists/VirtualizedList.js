@@ -178,9 +178,11 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   // scrollToIndex may be janky without getItemLayout prop
-  scrollToIndex(params: {animated?: ?boolean, index: number, viewPosition?: number}) {
+  scrollToIndex(params: {
+    animated?: ?boolean, index: number, viewOffset?: number, viewPosition?: number
+  }) {
     const {data, horizontal, getItemCount, getItemLayout} = this.props;
-    const {animated, index, viewPosition} = params;
+    const {animated, index, viewOffset, viewPosition} = params;
     invariant(
       index >= 0 && index < getItemCount(data),
       `scrollToIndex out of range: ${index} vs ${getItemCount(data) - 1}`,
@@ -194,7 +196,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const offset = Math.max(
       0,
       frame.offset - (viewPosition || 0) * (this._scrollMetrics.visibleLength - frame.length),
-    );
+    ) - (viewOffset || 0);
     this._scrollRef.scrollTo(horizontal ? {x: offset, animated} : {y: offset, animated});
   }
 
