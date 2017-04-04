@@ -160,6 +160,7 @@
 		2D7FEB891E734B5700D3238C /* systemJSCWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65F3E41D1E73031C009375BD /* systemJSCWrapper.cpp */; };
 		2D8C2E331DA40441000EE098 /* RCTMultipartStreamReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 001BFCCF1D8381DE008E587E /* RCTMultipartStreamReader.m */; };
 		2DD0EFE11DA84F2800B0C975 /* RCTStatusBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13723B4F1A82FD3C00F88898 /* RCTStatusBarManager.m */; };
+		2DDD72161E931C25007C55D1 /* YGEnums.c in Sources */ = {isa = PBXBuildFile; fileRef = 138FDE6A1E92EA4F005FEEDD /* YGEnums.c */; };
 		352DCFF01D19F4C20056D623 /* RCTI18nUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 352DCFEF1D19F4C20056D623 /* RCTI18nUtil.m */; };
 		369123E11DDC75850095B341 /* JSCSamplingProfiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 369123E01DDC75850095B341 /* JSCSamplingProfiler.m */; };
 		391E86A41C623EC800009732 /* RCTTouchEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 391E86A21C623EC800009732 /* RCTTouchEvent.m */; };
@@ -2542,6 +2543,7 @@
 			files = (
 				3DFE0D1D1DF857FF00459392 /* YGNodeList.c in Sources */,
 				3DFE0D1E1DF857FF00459392 /* Yoga.c in Sources */,
+				2DDD72161E931C25007C55D1 /* YGEnums.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
