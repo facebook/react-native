@@ -1077,10 +1077,7 @@ RCT_EXPORT_METHOD(focus:(nonnull NSNumber *)reactTag)
 {
   [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     UIView *newResponder = viewRegistry[reactTag];
-    [newResponder reactWillMakeFirstResponder];
-    if ([newResponder becomeFirstResponder]) {
-      [newResponder reactDidMakeFirstResponder];
-    }
+    [newResponder reactFocus];
   }];
 }
 
@@ -1088,7 +1085,7 @@ RCT_EXPORT_METHOD(blur:(nonnull NSNumber *)reactTag)
 {
   [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
     UIView *currentResponder = viewRegistry[reactTag];
-    [currentResponder resignFirstResponder];
+    [currentResponder reactBlur];
   }];
 }
 
