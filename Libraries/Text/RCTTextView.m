@@ -332,7 +332,7 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
                                          text:self.text
                                           key:nil
                                    eventCount:_nativeEventCount];
-      [self resignFirstResponder];
+      [_textView resignFirstResponder];
       return NO;
     }
   }
@@ -541,40 +541,24 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
                                eventCount:_nativeEventCount];
 }
 
-#pragma mark - UIResponder
+#pragma mark - Focus control deledation
 
-- (BOOL)isFirstResponder
+- (void)reactFocus
 {
-  return [_textView isFirstResponder];
+  [_textView reactFocus];
 }
 
-- (BOOL)canBecomeFirstResponder
+- (void)reactBlur
 {
-  return [_textView canBecomeFirstResponder];
+  [_textView reactBlur];
 }
 
-- (void)reactWillMakeFirstResponder
+- (void)didMoveToWindow
 {
-  [_textView reactWillMakeFirstResponder];
+  [_textView reactFocusIfNeeded];
 }
 
-- (BOOL)becomeFirstResponder
-{
-  return [_textView becomeFirstResponder];
-}
-
-- (void)reactDidMakeFirstResponder
-{
-  [_textView reactDidMakeFirstResponder];
-}
-
-- (BOOL)resignFirstResponder
-{
-  [super resignFirstResponder];
-  return [_textView resignFirstResponder];
-}
-
-#pragma mark - Content Size
+#pragma mark - Content size
 
 - (CGSize)contentSize
 {
