@@ -322,12 +322,12 @@ class Bundler {
     moduleSystemDeps?: Array<Module>,
     onProgress?: () => void,
     platform?: ?string,
-    resolutionResponse?: ResolutionResponse,
+    resolutionResponse?: ResolutionResponse<Module>,
     runBeforeMainModule?: boolean,
     runModule?: boolean,
     unbundle?: boolean,
   }) {
-    const onResolutionResponse = (response: ResolutionResponse) => {
+    const onResolutionResponse = (response: ResolutionResponse<Module>) => {
       /* $FlowFixMe: looks like ResolutionResponse is monkey-patched
        * with `getModuleId`. */
       bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
@@ -342,7 +342,7 @@ class Bundler {
     const finalizeBundle = ({bundle: finalBundle, transformedModules, response, modulesByName}: {
       bundle: Bundle,
       transformedModules: Array<{module: Module, transformed: ModuleTransport}>,
-      response: ResolutionResponse,
+      response: ResolutionResponse<Module>,
       modulesByName: {[name: string]: Module},
     }) =>
       this._resolverPromise.then(resolver => Promise.all(

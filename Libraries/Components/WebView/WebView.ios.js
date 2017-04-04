@@ -19,6 +19,7 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var UIManager = require('UIManager');
 var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 var ScrollView = require('ScrollView');
 
 var deprecatedPropType = require('deprecatedPropType');
@@ -117,7 +118,7 @@ class WebView extends React.Component {
   static NavigationType = NavigationType;
 
   static propTypes = {
-    ...View.propTypes,
+    ...ViewPropTypes,
 
     html: deprecatedPropType(
       PropTypes.string,
@@ -253,7 +254,7 @@ class WebView extends React.Component {
     /**
      * The style to apply to the `WebView`.
      */
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
 
     /**
      * Determines the types of data converted to clickable URLs in the web view’s content.

@@ -17,7 +17,79 @@
 		13E501EE1D07A6C9005F35D8 /* RCTStyleAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501E31D07A6C9005F35D8 /* RCTStyleAnimatedNode.m */; };
 		13E501EF1D07A6C9005F35D8 /* RCTTransformAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501E51D07A6C9005F35D8 /* RCTTransformAnimatedNode.m */; };
 		13E501F01D07A6C9005F35D8 /* RCTValueAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501E71D07A6C9005F35D8 /* RCTValueAnimatedNode.m */; };
+		192F69811E823F4A008692C7 /* RCTAnimationUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501B71D07A644005F35D8 /* RCTAnimationUtils.h */; };
+		192F69821E823F4A008692C7 /* RCTNativeAnimatedModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501BD1D07A644005F35D8 /* RCTNativeAnimatedModule.h */; };
+		192F69831E823F4A008692C7 /* RCTNativeAnimatedNodesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 94DA09161DC7971C00AEA8C9 /* RCTNativeAnimatedNodesManager.h */; };
+		192F69841E823F4A008692C7 /* RCTAnimationDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = 94C1294A1D4069170025F25C /* RCTAnimationDriver.h */; };
+		192F69851E823F4A008692C7 /* RCTEventAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 19F00F201DC8847500113FEE /* RCTEventAnimation.h */; };
+		192F69861E823F4A008692C7 /* RCTFrameAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 94C1294C1D4069170025F25C /* RCTFrameAnimation.h */; };
+		192F69871E823F4A008692C7 /* RCTSpringAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 94C1294E1D4069170025F25C /* RCTSpringAnimation.h */; };
+		192F69881E823F4A008692C7 /* RCTDivisionAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9894931D999639008027DB /* RCTDivisionAnimatedNode.h */; };
+		192F69891E823F4A008692C7 /* RCTDiffClampAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 193F64F21D776EC6004D1CAA /* RCTDiffClampAnimatedNode.h */; };
+		192F698A1E823F4A008692C7 /* RCTAdditionAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501D61D07A6C9005F35D8 /* RCTAdditionAnimatedNode.h */; };
+		192F698B1E823F4A008692C7 /* RCTAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501D81D07A6C9005F35D8 /* RCTAnimatedNode.h */; };
+		192F698C1E823F4A008692C7 /* RCTInterpolationAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501DC1D07A6C9005F35D8 /* RCTInterpolationAnimatedNode.h */; };
+		192F698D1E823F4A008692C7 /* RCTModuloAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 94DAE3F71D7334A70059942F /* RCTModuloAnimatedNode.h */; };
+		192F698E1E823F4A008692C7 /* RCTMultiplicationAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501DE1D07A6C9005F35D8 /* RCTMultiplicationAnimatedNode.h */; };
+		192F698F1E823F4A008692C7 /* RCTPropsAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E01D07A6C9005F35D8 /* RCTPropsAnimatedNode.h */; };
+		192F69901E823F4A008692C7 /* RCTStyleAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E21D07A6C9005F35D8 /* RCTStyleAnimatedNode.h */; };
+		192F69911E823F4A008692C7 /* RCTTransformAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E41D07A6C9005F35D8 /* RCTTransformAnimatedNode.h */; };
+		192F69921E823F4A008692C7 /* RCTValueAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E61D07A6C9005F35D8 /* RCTValueAnimatedNode.h */; };
+		192F69941E823F78008692C7 /* RCTAnimationUtils.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501B71D07A644005F35D8 /* RCTAnimationUtils.h */; };
+		192F69951E823F78008692C7 /* RCTNativeAnimatedModule.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501BD1D07A644005F35D8 /* RCTNativeAnimatedModule.h */; };
+		192F69961E823F78008692C7 /* RCTNativeAnimatedNodesManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94DA09161DC7971C00AEA8C9 /* RCTNativeAnimatedNodesManager.h */; };
+		192F69971E823F78008692C7 /* RCTAnimationDriver.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94C1294A1D4069170025F25C /* RCTAnimationDriver.h */; };
+		192F69981E823F78008692C7 /* RCTEventAnimation.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 19F00F201DC8847500113FEE /* RCTEventAnimation.h */; };
+		192F69991E823F78008692C7 /* RCTFrameAnimation.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94C1294C1D4069170025F25C /* RCTFrameAnimation.h */; };
+		192F699A1E823F78008692C7 /* RCTSpringAnimation.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94C1294E1D4069170025F25C /* RCTSpringAnimation.h */; };
+		192F699B1E823F78008692C7 /* RCTDivisionAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5C9894931D999639008027DB /* RCTDivisionAnimatedNode.h */; };
+		192F699C1E823F78008692C7 /* RCTDiffClampAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 193F64F21D776EC6004D1CAA /* RCTDiffClampAnimatedNode.h */; };
+		192F699D1E823F78008692C7 /* RCTAdditionAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501D61D07A6C9005F35D8 /* RCTAdditionAnimatedNode.h */; };
+		192F699E1E823F78008692C7 /* RCTAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501D81D07A6C9005F35D8 /* RCTAnimatedNode.h */; };
+		192F699F1E823F78008692C7 /* RCTInterpolationAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501DC1D07A6C9005F35D8 /* RCTInterpolationAnimatedNode.h */; };
+		192F69A01E823F78008692C7 /* RCTModuloAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94DAE3F71D7334A70059942F /* RCTModuloAnimatedNode.h */; };
+		192F69A11E823F78008692C7 /* RCTMultiplicationAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501DE1D07A6C9005F35D8 /* RCTMultiplicationAnimatedNode.h */; };
+		192F69A21E823F78008692C7 /* RCTPropsAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501E01D07A6C9005F35D8 /* RCTPropsAnimatedNode.h */; };
+		192F69A31E823F78008692C7 /* RCTStyleAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501E21D07A6C9005F35D8 /* RCTStyleAnimatedNode.h */; };
+		192F69A41E823F78008692C7 /* RCTTransformAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501E41D07A6C9005F35D8 /* RCTTransformAnimatedNode.h */; };
+		192F69A51E823F78008692C7 /* RCTValueAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501E61D07A6C9005F35D8 /* RCTValueAnimatedNode.h */; };
 		193F64F41D776EC6004D1CAA /* RCTDiffClampAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 193F64F31D776EC6004D1CAA /* RCTDiffClampAnimatedNode.m */; };
+		1980B70E1E80D1C4004DC789 /* RCTAnimationUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501B71D07A644005F35D8 /* RCTAnimationUtils.h */; };
+		1980B7101E80D1C4004DC789 /* RCTNativeAnimatedModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501BD1D07A644005F35D8 /* RCTNativeAnimatedModule.h */; };
+		1980B7121E80D1C4004DC789 /* RCTNativeAnimatedNodesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 94DA09161DC7971C00AEA8C9 /* RCTNativeAnimatedNodesManager.h */; };
+		1980B7141E80D1C4004DC789 /* RCTAnimationDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = 94C1294A1D4069170025F25C /* RCTAnimationDriver.h */; };
+		1980B7151E80D1C4004DC789 /* RCTEventAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 19F00F201DC8847500113FEE /* RCTEventAnimation.h */; };
+		1980B7171E80D1C4004DC789 /* RCTFrameAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 94C1294C1D4069170025F25C /* RCTFrameAnimation.h */; };
+		1980B7191E80D1C4004DC789 /* RCTSpringAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 94C1294E1D4069170025F25C /* RCTSpringAnimation.h */; };
+		1980B71B1E80D1C4004DC789 /* RCTDivisionAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9894931D999639008027DB /* RCTDivisionAnimatedNode.h */; };
+		1980B71D1E80D1C4004DC789 /* RCTDiffClampAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 193F64F21D776EC6004D1CAA /* RCTDiffClampAnimatedNode.h */; };
+		1980B71F1E80D1C4004DC789 /* RCTAdditionAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501D61D07A6C9005F35D8 /* RCTAdditionAnimatedNode.h */; };
+		1980B7211E80D1C4004DC789 /* RCTAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501D81D07A6C9005F35D8 /* RCTAnimatedNode.h */; };
+		1980B7231E80D1C4004DC789 /* RCTInterpolationAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501DC1D07A6C9005F35D8 /* RCTInterpolationAnimatedNode.h */; };
+		1980B7251E80D1C4004DC789 /* RCTModuloAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 94DAE3F71D7334A70059942F /* RCTModuloAnimatedNode.h */; };
+		1980B7271E80D1C4004DC789 /* RCTMultiplicationAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501DE1D07A6C9005F35D8 /* RCTMultiplicationAnimatedNode.h */; };
+		1980B7291E80D1C4004DC789 /* RCTPropsAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E01D07A6C9005F35D8 /* RCTPropsAnimatedNode.h */; };
+		1980B72B1E80D1C4004DC789 /* RCTStyleAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E21D07A6C9005F35D8 /* RCTStyleAnimatedNode.h */; };
+		1980B72D1E80D1C4004DC789 /* RCTTransformAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E41D07A6C9005F35D8 /* RCTTransformAnimatedNode.h */; };
+		1980B72F1E80D1C4004DC789 /* RCTValueAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501E61D07A6C9005F35D8 /* RCTValueAnimatedNode.h */; };
+		1980B7321E80D259004DC789 /* RCTAnimationUtils.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501B71D07A644005F35D8 /* RCTAnimationUtils.h */; };
+		1980B7351E80DD6F004DC789 /* RCTNativeAnimatedModule.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501BD1D07A644005F35D8 /* RCTNativeAnimatedModule.h */; };
+		1980B7361E80DD6F004DC789 /* RCTNativeAnimatedNodesManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94DA09161DC7971C00AEA8C9 /* RCTNativeAnimatedNodesManager.h */; };
+		1980B7371E80DD6F004DC789 /* RCTAnimationDriver.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94C1294A1D4069170025F25C /* RCTAnimationDriver.h */; };
+		1980B7381E80DD6F004DC789 /* RCTEventAnimation.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 19F00F201DC8847500113FEE /* RCTEventAnimation.h */; };
+		1980B7391E80DD6F004DC789 /* RCTFrameAnimation.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94C1294C1D4069170025F25C /* RCTFrameAnimation.h */; };
+		1980B73A1E80DD6F004DC789 /* RCTSpringAnimation.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94C1294E1D4069170025F25C /* RCTSpringAnimation.h */; };
+		1980B73B1E80DD6F004DC789 /* RCTDivisionAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5C9894931D999639008027DB /* RCTDivisionAnimatedNode.h */; };
+		1980B73C1E80DD6F004DC789 /* RCTDiffClampAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 193F64F21D776EC6004D1CAA /* RCTDiffClampAnimatedNode.h */; };
+		1980B73D1E80DD6F004DC789 /* RCTAdditionAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501D61D07A6C9005F35D8 /* RCTAdditionAnimatedNode.h */; };
+		1980B73E1E80DD6F004DC789 /* RCTAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501D81D07A6C9005F35D8 /* RCTAnimatedNode.h */; };
+		1980B73F1E80DD6F004DC789 /* RCTInterpolationAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501DC1D07A6C9005F35D8 /* RCTInterpolationAnimatedNode.h */; };
+		1980B7401E80DD6F004DC789 /* RCTModuloAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 94DAE3F71D7334A70059942F /* RCTModuloAnimatedNode.h */; };
+		1980B7411E80DD6F004DC789 /* RCTMultiplicationAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501DE1D07A6C9005F35D8 /* RCTMultiplicationAnimatedNode.h */; };
+		1980B7421E80DD6F004DC789 /* RCTPropsAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501E01D07A6C9005F35D8 /* RCTPropsAnimatedNode.h */; };
+		1980B7431E80DD6F004DC789 /* RCTStyleAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501E21D07A6C9005F35D8 /* RCTStyleAnimatedNode.h */; };
+		1980B7441E80DD6F004DC789 /* RCTTransformAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501E41D07A6C9005F35D8 /* RCTTransformAnimatedNode.h */; };
+		1980B7451E80DD6F004DC789 /* RCTValueAnimatedNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13E501E61D07A6C9005F35D8 /* RCTValueAnimatedNode.h */; };
 		19F00F221DC8847500113FEE /* RCTEventAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 19F00F211DC8847500113FEE /* RCTEventAnimation.m */; };
 		19F00F231DC8848E00113FEE /* RCTEventAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 19F00F211DC8847500113FEE /* RCTEventAnimation.m */; };
 		2D3B5EF21D9B0B3100451313 /* RCTAnimationUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501B81D07A644005F35D8 /* RCTAnimationUtils.m */; };
@@ -42,6 +114,63 @@
 		94DA09181DC7971C00AEA8C9 /* RCTNativeAnimatedNodesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DA09171DC7971C00AEA8C9 /* RCTNativeAnimatedNodesManager.m */; };
 		94DAE3F91D7334A70059942F /* RCTModuloAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DAE3F81D7334A70059942F /* RCTModuloAnimatedNode.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		192F69931E823F4F008692C7 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/RCTAnimation;
+			dstSubfolderSpec = 16;
+			files = (
+				192F69941E823F78008692C7 /* RCTAnimationUtils.h in CopyFiles */,
+				192F69951E823F78008692C7 /* RCTNativeAnimatedModule.h in CopyFiles */,
+				192F69961E823F78008692C7 /* RCTNativeAnimatedNodesManager.h in CopyFiles */,
+				192F69971E823F78008692C7 /* RCTAnimationDriver.h in CopyFiles */,
+				192F69981E823F78008692C7 /* RCTEventAnimation.h in CopyFiles */,
+				192F69991E823F78008692C7 /* RCTFrameAnimation.h in CopyFiles */,
+				192F699A1E823F78008692C7 /* RCTSpringAnimation.h in CopyFiles */,
+				192F699B1E823F78008692C7 /* RCTDivisionAnimatedNode.h in CopyFiles */,
+				192F699C1E823F78008692C7 /* RCTDiffClampAnimatedNode.h in CopyFiles */,
+				192F699D1E823F78008692C7 /* RCTAdditionAnimatedNode.h in CopyFiles */,
+				192F699E1E823F78008692C7 /* RCTAnimatedNode.h in CopyFiles */,
+				192F699F1E823F78008692C7 /* RCTInterpolationAnimatedNode.h in CopyFiles */,
+				192F69A01E823F78008692C7 /* RCTModuloAnimatedNode.h in CopyFiles */,
+				192F69A11E823F78008692C7 /* RCTMultiplicationAnimatedNode.h in CopyFiles */,
+				192F69A21E823F78008692C7 /* RCTPropsAnimatedNode.h in CopyFiles */,
+				192F69A31E823F78008692C7 /* RCTStyleAnimatedNode.h in CopyFiles */,
+				192F69A41E823F78008692C7 /* RCTTransformAnimatedNode.h in CopyFiles */,
+				192F69A51E823F78008692C7 /* RCTValueAnimatedNode.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1980B7311E80D21C004DC789 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/RCTAnimation;
+			dstSubfolderSpec = 16;
+			files = (
+				1980B7351E80DD6F004DC789 /* RCTNativeAnimatedModule.h in CopyFiles */,
+				1980B7361E80DD6F004DC789 /* RCTNativeAnimatedNodesManager.h in CopyFiles */,
+				1980B7371E80DD6F004DC789 /* RCTAnimationDriver.h in CopyFiles */,
+				1980B7381E80DD6F004DC789 /* RCTEventAnimation.h in CopyFiles */,
+				1980B7391E80DD6F004DC789 /* RCTFrameAnimation.h in CopyFiles */,
+				1980B73A1E80DD6F004DC789 /* RCTSpringAnimation.h in CopyFiles */,
+				1980B73B1E80DD6F004DC789 /* RCTDivisionAnimatedNode.h in CopyFiles */,
+				1980B73C1E80DD6F004DC789 /* RCTDiffClampAnimatedNode.h in CopyFiles */,
+				1980B73D1E80DD6F004DC789 /* RCTAdditionAnimatedNode.h in CopyFiles */,
+				1980B73E1E80DD6F004DC789 /* RCTAnimatedNode.h in CopyFiles */,
+				1980B73F1E80DD6F004DC789 /* RCTInterpolationAnimatedNode.h in CopyFiles */,
+				1980B7401E80DD6F004DC789 /* RCTModuloAnimatedNode.h in CopyFiles */,
+				1980B7411E80DD6F004DC789 /* RCTMultiplicationAnimatedNode.h in CopyFiles */,
+				1980B7421E80DD6F004DC789 /* RCTPropsAnimatedNode.h in CopyFiles */,
+				1980B7431E80DD6F004DC789 /* RCTStyleAnimatedNode.h in CopyFiles */,
+				1980B7441E80DD6F004DC789 /* RCTTransformAnimatedNode.h in CopyFiles */,
+				1980B7451E80DD6F004DC789 /* RCTValueAnimatedNode.h in CopyFiles */,
+				1980B7321E80D259004DC789 /* RCTAnimationUtils.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRCTAnimation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTAnimation.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -69,7 +198,7 @@
 		193F64F31D776EC6004D1CAA /* RCTDiffClampAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDiffClampAnimatedNode.m; sourceTree = "<group>"; };
 		19F00F201DC8847500113FEE /* RCTEventAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTEventAnimation.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		19F00F211DC8847500113FEE /* RCTEventAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTEventAnimation.m; sourceTree = "<group>"; };
-		2D2A28201D9B03D100D4039D /* libRCTAnimation-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTAnimation-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D2A28201D9B03D100D4039D /* libRCTAnimation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTAnimation.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C9894931D999639008027DB /* RCTDivisionAnimatedNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTDivisionAnimatedNode.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		5C9894941D999639008027DB /* RCTDivisionAnimatedNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDivisionAnimatedNode.m; sourceTree = "<group>"; };
 		94C1294A1D4069170025F25C /* RCTAnimationDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTAnimationDriver.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -133,7 +262,7 @@
 				94C129491D4069170025F25C /* Drivers */,
 				13E501D51D07A6C9005F35D8 /* Nodes */,
 				134814211AA4EA7D00B7C361 /* Products */,
-				2D2A28201D9B03D100D4039D /* libRCTAnimation-tvOS.a */,
+				2D2A28201D9B03D100D4039D /* libRCTAnimation.a */,
 			);
 			sourceTree = "<group>";
 		};
@@ -153,12 +282,67 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		192F69801E823F2E008692C7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				192F69811E823F4A008692C7 /* RCTAnimationUtils.h in Headers */,
+				192F69821E823F4A008692C7 /* RCTNativeAnimatedModule.h in Headers */,
+				192F69831E823F4A008692C7 /* RCTNativeAnimatedNodesManager.h in Headers */,
+				192F69841E823F4A008692C7 /* RCTAnimationDriver.h in Headers */,
+				192F69851E823F4A008692C7 /* RCTEventAnimation.h in Headers */,
+				192F69861E823F4A008692C7 /* RCTFrameAnimation.h in Headers */,
+				192F69871E823F4A008692C7 /* RCTSpringAnimation.h in Headers */,
+				192F69881E823F4A008692C7 /* RCTDivisionAnimatedNode.h in Headers */,
+				192F69891E823F4A008692C7 /* RCTDiffClampAnimatedNode.h in Headers */,
+				192F698A1E823F4A008692C7 /* RCTAdditionAnimatedNode.h in Headers */,
+				192F698B1E823F4A008692C7 /* RCTAnimatedNode.h in Headers */,
+				192F698C1E823F4A008692C7 /* RCTInterpolationAnimatedNode.h in Headers */,
+				192F698D1E823F4A008692C7 /* RCTModuloAnimatedNode.h in Headers */,
+				192F698E1E823F4A008692C7 /* RCTMultiplicationAnimatedNode.h in Headers */,
+				192F698F1E823F4A008692C7 /* RCTPropsAnimatedNode.h in Headers */,
+				192F69901E823F4A008692C7 /* RCTStyleAnimatedNode.h in Headers */,
+				192F69911E823F4A008692C7 /* RCTTransformAnimatedNode.h in Headers */,
+				192F69921E823F4A008692C7 /* RCTValueAnimatedNode.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1980B70D1E80D1B5004DC789 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1980B70E1E80D1C4004DC789 /* RCTAnimationUtils.h in Headers */,
+				1980B7101E80D1C4004DC789 /* RCTNativeAnimatedModule.h in Headers */,
+				1980B7121E80D1C4004DC789 /* RCTNativeAnimatedNodesManager.h in Headers */,
+				1980B7141E80D1C4004DC789 /* RCTAnimationDriver.h in Headers */,
+				1980B7151E80D1C4004DC789 /* RCTEventAnimation.h in Headers */,
+				1980B7171E80D1C4004DC789 /* RCTFrameAnimation.h in Headers */,
+				1980B7191E80D1C4004DC789 /* RCTSpringAnimation.h in Headers */,
+				1980B71B1E80D1C4004DC789 /* RCTDivisionAnimatedNode.h in Headers */,
+				1980B71D1E80D1C4004DC789 /* RCTDiffClampAnimatedNode.h in Headers */,
+				1980B71F1E80D1C4004DC789 /* RCTAdditionAnimatedNode.h in Headers */,
+				1980B7211E80D1C4004DC789 /* RCTAnimatedNode.h in Headers */,
+				1980B7231E80D1C4004DC789 /* RCTInterpolationAnimatedNode.h in Headers */,
+				1980B7251E80D1C4004DC789 /* RCTModuloAnimatedNode.h in Headers */,
+				1980B7271E80D1C4004DC789 /* RCTMultiplicationAnimatedNode.h in Headers */,
+				1980B7291E80D1C4004DC789 /* RCTPropsAnimatedNode.h in Headers */,
+				1980B72B1E80D1C4004DC789 /* RCTStyleAnimatedNode.h in Headers */,
+				1980B72D1E80D1C4004DC789 /* RCTTransformAnimatedNode.h in Headers */,
+				1980B72F1E80D1C4004DC789 /* RCTValueAnimatedNode.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		2D2A281F1D9B03D100D4039D /* RCTAnimation-tvOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D2A28281D9B03D100D4039D /* Build configuration list for PBXNativeTarget "RCTAnimation-tvOS" */;
 			buildPhases = (
 				2D2A281C1D9B03D100D4039D /* Sources */,
+				192F69801E823F2E008692C7 /* Headers */,
+				192F69931E823F4F008692C7 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -166,7 +350,7 @@
 			);
 			name = "RCTAnimation-tvOS";
 			productName = "RCTAnimation-tvOS";
-			productReference = 2D2A28201D9B03D100D4039D /* libRCTAnimation-tvOS.a */;
+			productReference = 2D2A28201D9B03D100D4039D /* libRCTAnimation.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		58B511DA1A9E6C8500147676 /* RCTAnimation */ = {
@@ -174,6 +358,8 @@
 			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTAnimation" */;
 			buildPhases = (
 				58B511D71A9E6C8500147676 /* Sources */,
+				1980B70D1E80D1B5004DC789 /* Headers */,
+				1980B7311E80D21C004DC789 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -276,15 +462,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_NO_COMMON_BLOCKS = YES;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RCTAnimation;
 				SDKROOT = appletvos;
-				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Debug;
 		};
@@ -292,16 +476,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RCTAnimation;
 				SDKROOT = appletvos;
-				TVOS_DEPLOYMENT_TARGET = 9.2;
 			};
 			name = Release;
 		};
@@ -319,6 +501,7 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -346,6 +529,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
 				WARNING_CFLAGS = (
 					"-Werror",
 					"-Wall",
@@ -367,6 +551,7 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -386,6 +571,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.2;
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
 					"-Werror",

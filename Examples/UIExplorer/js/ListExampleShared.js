@@ -26,6 +26,7 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  Animated,
   Image,
   Platform,
   TouchableHighlight,
@@ -38,9 +39,9 @@ const {
 
 type Item = {title: string, text: string, key: number, pressed: boolean, noImage?: ?boolean};
 
-function genItemData(count: number): Array<Item> {
+function genItemData(count: number, start: number = 0): Array<Item> {
   const dataBlob = [];
-  for (let ii = 0; ii < count; ii++) {
+  for (let ii = start; ii < count + start; ii++) {
     const itemHash = Math.abs(hashCode('Item ' + ii));
     dataBlob.push({
       title: 'Item ' + ii,
@@ -126,6 +127,22 @@ class HeaderComponent extends React.PureComponent {
 class SeparatorComponent extends React.PureComponent {
   render() {
     return <View style={styles.separator} />;
+  }
+}
+
+class Spindicator extends React.PureComponent {
+  render() {
+    return (
+      <Animated.View style={[styles.spindicator, {
+        transform: [
+          {rotate: this.props.value.interpolate({
+            inputRange: [0, 5000],
+            outputRange: ['0deg', '360deg'],
+            extrapolate: 'extend',
+          })}
+        ]
+      }]} />
+    );
   }
 }
 
@@ -266,6 +283,13 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
   },
+  spindicator: {
+    marginLeft: 'auto',
+    marginTop: 8,
+    width: 2,
+    height: 16,
+    backgroundColor: 'darkgray',
+  },
   stackedText: {
     padding: 4,
     fontSize: 18,
@@ -281,6 +305,7 @@ module.exports = {
   ItemComponent,
   PlainInput,
   SeparatorComponent,
+  Spindicator,
   genItemData,
   getItemLayout,
   pressItem,

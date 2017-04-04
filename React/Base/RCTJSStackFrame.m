@@ -70,8 +70,8 @@ static NSRegularExpression *RCTJSStackFrameRegex()
 {
   return [[self alloc] initWithMethodName:dict[@"methodName"]
                                      file:dict[@"file"]
-                               lineNumber:[dict[@"lineNumber"] integerValue]
-                                   column:[dict[@"column"] integerValue]];
+                               lineNumber:[RCTNilIfNull(dict[@"lineNumber"]) integerValue]
+                                   column:[RCTNilIfNull(dict[@"column"]) integerValue]];
 }
 
 + (NSArray<RCTJSStackFrame *> *)stackFramesWithLines:(NSString *)lines

@@ -17,6 +17,8 @@ var { TestModule } = require('NativeModules');
 var UIManager = require('UIManager');
 var View = require('View');
 
+const ViewPropTypes = require('ViewPropTypes');
+
 var requireNativeComponent = require('requireNativeComponent');
 
 class SnapshotViewIOS extends React.Component {
@@ -27,7 +29,7 @@ class SnapshotViewIOS extends React.Component {
 
   // $FlowFixMe(>=0.41.0)
   static propTypes = {
-    ...View.propTypes,
+    ...ViewPropTypes,
     // A callback when the Snapshot view is ready to be compared
     onSnapshotReady : React.PropTypes.func,
     // A name to identify the individual instance to the SnapshotView

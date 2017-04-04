@@ -42,6 +42,7 @@ const {
   ItemComponent,
   PlainInput,
   SeparatorComponent,
+  Spindicator,
   genItemData,
   getItemLayout,
   pressItem,
@@ -61,7 +62,7 @@ class FlatListExample extends React.PureComponent {
   static description = 'Performant, scrollable list of data.';
 
   state = {
-    data: genItemData(1000),
+    data: genItemData(100),
     debug: false,
     horizontal: false,
     filterText: '',
@@ -120,15 +121,7 @@ class FlatListExample extends React.PureComponent {
             {renderSmallSwitchOption(this, 'fixedHeight')}
             {renderSmallSwitchOption(this, 'logViewable')}
             {renderSmallSwitchOption(this, 'debug')}
-            <Animated.View style={[styles.spindicator, {
-              transform: [
-                {rotate: this._scrollPos.interpolate({
-                  inputRange: [0, 5000],
-                  outputRange: ['0deg', '360deg'],
-                  extrapolate: 'extend',
-                })}
-              ]
-            }]} />
+            <Spindicator value={this._scrollPos} />
           </View>
         </View>
         <SeparatorComponent />
@@ -149,13 +142,13 @@ class FlatListExample extends React.PureComponent {
           }
           legacyImplementation={false}
           numColumns={1}
+          onEndReached={this._onEndReached}
           onRefresh={this._onRefresh}
           onScroll={this.state.horizontal ? this._scrollSinkX : this._scrollSinkY}
           onViewableItemsChanged={this._onViewableItemsChanged}
           ref={this._captureRef}
           refreshing={false}
           renderItem={this._renderItemComponent}
-          shouldItemUpdate={this._shouldItemUpdate}
           viewabilityConfig={VIEWABILITY_CONFIG}
         />
       </UIExplorerPage>
@@ -164,6 +157,11 @@ class FlatListExample extends React.PureComponent {
   _captureRef = (ref) => { this._listRef = ref; };
   _getItemLayout = (data: any, index: number) => {
     return getItemLayout(data, index, this.state.horizontal);
+  };
+  _onEndReached = () => {
+    this.setState((state) => ({
+      data: state.data.concat(genItemData(100, state.data.length)),
+    }));
   };
   _onRefresh = () => alert('onRefresh: nothing to refresh :P');
   _renderItemComponent = ({item}) => {
@@ -176,15 +174,6 @@ class FlatListExample extends React.PureComponent {
       />
     );
   };
-  _shouldItemUpdate(prev, next) {
-    /**
-     * Note that this does not check state.horizontal or state.fixedheight
-     * because we blow away the whole list by changing the key in those cases.
-     * Make sure that you do the same in your code, or incorporate all relevant
-     * data into the item data, or skip this optimization entirely.
-     */
-    return prev.item !== next.item;
-  }
   // This is called when items change viewability by scrolling into or out of
   // the viewable area.
   _onViewableItemsChanged = (info: {
@@ -221,12 +210,6 @@ const styles = StyleSheet.create({
   },
   searchRow: {
     paddingHorizontal: 10,
-  },
-  spindicator: {
-    marginLeft: 'auto',
-    width: 2,
-    height: 16,
-    backgroundColor: 'darkgray',
   },
 });
 

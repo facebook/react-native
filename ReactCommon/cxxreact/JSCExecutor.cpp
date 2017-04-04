@@ -361,7 +361,6 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 
       evaluateSourceCode(m_context, bcSourceCode, jsSourceURL);
 
-      bindBridge();
       flush();
 
       ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
@@ -412,7 +411,6 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
     evaluateScript(m_context, jsScript, jsSourceURL);
   }
 
-  bindBridge();
   flush();
 
   ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
@@ -428,24 +426,32 @@ void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbund
 
 void JSCExecutor::bindBridge() throw(JSException) {
   SystraceSection s("JSCExecutor::bindBridge");
-  if (!m_delegate || !m_delegate->getModuleRegistry()) {
-    return;
-  }
-  auto global = Object::getGlobalObject(m_context);
-  auto batchedBridgeValue = global.getProperty("__fbBatchedBridge");
-  if (batchedBridgeValue.isUndefined()) {
-    throwJSExecutionException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
-  }
+  std::call_once(m_bindFlag, [this] {
+    auto global = Object::getGlobalObject(m_context);
+    auto batchedBridgeValue = global.getProperty("__fbBatchedBridge");
+    if (batchedBridgeValue.isUndefined()) {
+      auto requireBatchedBridge = global.getProperty("__fbRequireBatchedBridge");
+      if (!requireBatchedBridge.isUndefined()) {
+        batchedBridgeValue = requireBatchedBridge.asObject().callAsFunction({});
+      }
+      if (batchedBridgeValue.isUndefined()) {
+        throwJSExecutionException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
+      }
+    }
 
-  auto batchedBridge = batchedBridgeValue.asObject();
-  m_callFunctionReturnFlushedQueueJS = batchedBridge.getProperty("callFunctionReturnFlushedQueue").asObject();
-  m_invokeCallbackAndReturnFlushedQueueJS = batchedBridge.getProperty("invokeCallbackAndReturnFlushedQueue").asObject();
-  m_flushedQueueJS = batchedBridge.getProperty("flushedQueue").asObject();
-  m_callFunctionReturnResultAndFlushedQueueJS = batchedBridge.getProperty("callFunctionReturnResultAndFlushedQueue").asObject();
+    auto batchedBridge = batchedBridgeValue.asObject();
+    m_callFunctionReturnFlushedQueueJS = batchedBridge.getProperty("callFunctionReturnFlushedQueue").asObject();
+    m_invokeCallbackAndReturnFlushedQueueJS = batchedBridge.getProperty("invokeCallbackAndReturnFlushedQueue").asObject();
+    m_flushedQueueJS = batchedBridge.getProperty("flushedQueue").asObject();
+    m_callFunctionReturnResultAndFlushedQueueJS = batchedBridge.getProperty("callFunctionReturnResultAndFlushedQueue").asObject();
+  });
 }
 
 void JSCExecutor::callNativeModules(Value&& value) {
   SystraceSection s("JSCExecutor::callNativeModules");
+  // If this fails, you need to pass a fully functional delegate with a
+  // module registry to the factory/ctor.
+  CHECK(m_delegate) << "Attempting to use native modules without a delegate";
   try {
     auto calls = value.toJSONString();
     m_delegate->callNativeModules(*this, folly::parseJson(calls), true);
@@ -462,17 +468,31 @@ void JSCExecutor::callNativeModules(Value&& value) {
 
 void JSCExecutor::flush() {
   SystraceSection s("JSCExecutor::flush");
-  if (!m_delegate) {
-    // do nothing
-  } else if (!m_delegate->getModuleRegistry()) {
-    callNativeModules(Value::makeNull(m_context));
-  } else {
-    // If this is failing, chances are you have provided a delegate with a
-    // module registry, but haven't loaded the JS which enables native function
-    // queueing.  Add BatchedBridge.js to your bundle, pass a nullptr delegate,
-    // or make delegate->getModuleRegistry() return nullptr.
-    CHECK(m_flushedQueueJS) << "Attempting to use native methods without loading BatchedBridge.js";
+
+  if (m_flushedQueueJS) {
     callNativeModules(m_flushedQueueJS->callAsFunction({}));
+    return;
+  }
+
+  // When a native module is called from JS, BatchedBridge.enqueueNativeCall()
+  // is invoked.  For that to work, require('BatchedBridge') has to be called,
+  // and when that happens, __fbBatchedBridge is set as a side effect.
+  auto global = Object::getGlobalObject(m_context);
+  auto batchedBridgeValue = global.getProperty("__fbBatchedBridge");
+  // So here, if __fbBatchedBridge doesn't exist, then we know no native calls
+  // have happened, and we were able to determine this without forcing
+  // BatchedBridge to be loaded as a side effect.
+  if (!batchedBridgeValue.isUndefined()) {
+    // If calls were made, we bind to the JS bridge methods, and use them to
+    // get the pending queue of native calls.
+    bindBridge();
+    callNativeModules(m_flushedQueueJS->callAsFunction({}));
+  } else if (m_delegate) {
+    // If we have a delegate, we need to call it; we pass a null list to
+    // callNativeModules, since we know there are no native calls, without
+    // calling into JS again.  If no calls were made and there's no delegate,
+    // nothing happens, which is correct.
+    callNativeModules(Value::makeNull(m_context));
   }
 }
 
@@ -483,9 +503,9 @@ void JSCExecutor::callFunction(const std::string& moduleId, const std::string& m
 
   auto result = [&] {
     try {
-      // See flush()
-      CHECK(m_callFunctionReturnFlushedQueueJS)
-        << "Attempting to call native methods without loading BatchedBridge.js";
+      if (!m_callFunctionReturnResultAndFlushedQueueJS) {
+        bindBridge();
+      }
       return m_callFunctionReturnFlushedQueueJS->callAsFunction({
         Value(m_context, String::createExpectingAscii(m_context, moduleId)),
         Value(m_context, String::createExpectingAscii(m_context, methodId)),
@@ -504,6 +524,9 @@ void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& 
   SystraceSection s("JSCExecutor::invokeCallback");
   auto result = [&] {
     try {
+      if (!m_invokeCallbackAndReturnFlushedQueueJS) {
+        bindBridge();
+      }
       return m_invokeCallbackAndReturnFlushedQueueJS->callAsFunction({
         Value::makeNumber(m_context, callbackId),
         Value::fromDynamic(m_context, std::move(arguments))
@@ -521,8 +544,9 @@ Value JSCExecutor::callFunctionSyncWithValue(
     const std::string& module, const std::string& method, Value args) {
   SystraceSection s("JSCExecutor::callFunction");
 
-  // See flush()
-  CHECK(m_callFunctionReturnResultAndFlushedQueueJS);
+  if (!m_callFunctionReturnResultAndFlushedQueueJS) {
+    bindBridge();
+  }
   Object result = m_callFunctionReturnResultAndFlushedQueueJS->callAsFunction({
     Value(m_context, String::createExpectingAscii(m_context, module)),
     Value(m_context, String::createExpectingAscii(m_context, method)),

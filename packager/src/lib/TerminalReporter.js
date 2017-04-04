@@ -11,11 +11,13 @@
 
 'use strict';
 
+const chalk = require('chalk');
 const path = require('path');
 const reporting = require('./reporting');
 const terminal = require('./terminal');
 const throttle = require('lodash/throttle');
 const util = require('util');
+const formatBanner = require('../../../local-cli/server/formatBanner');
 
 import type {ReportableEvent, GlobalCacheDisabledReason} from './reporting';
 
@@ -133,12 +135,70 @@ class TerminalReporter {
     }
   }
 
+
+  _logPackagerInitializing(port: number, projectRoots: Array<string>) {
+    terminal.log(
+      formatBanner(
+        'Running packager on port ' +
+          port +
+          '.\n\n' +
+          'Keep this packager running while developing on any JS projects. ' +
+          'Feel free to close this tab and run your own packager instance if you ' +
+          'prefer.\n\n' +
+          'https://github.com/facebook/react-native',
+        {
+          marginLeft: 1,
+          marginRight: 1,
+          paddingBottom: 1,
+        }
+      )
+    );
+
+    terminal.log(
+      'Looking for JS files in\n  ',
+      chalk.dim(projectRoots.join('\n   ')),
+      '\n'
+    );
+  }
+
+  _logPackagerInitializingFailed(port: number, error: Error) {
+    if (error.code === 'EADDRINUSE') {
+      terminal.log(
+        chalk.bgRed.bold(' ERROR '),
+        chalk.red("Packager can't listen on port", chalk.bold(port))
+      );
+      terminal.log('Most likely another process is already using this port');
+      terminal.log('Run the following command to find out which process:');
+      terminal.log('\n  ', chalk.bold('lsof -i :' + port), '\n');
+      terminal.log('Then, you can either shut down the other process:');
+      terminal.log('\n  ', chalk.bold('kill -9 <PID>'), '\n');
+      terminal.log('or run packager on different port.');
+    } else {
+      terminal.log(chalk.bgRed.bold(' ERROR '), chalk.red(error.message));
+      const errorAttributes = JSON.stringify(error);
+      if (errorAttributes !== '{}') {
+        terminal.log(chalk.red(errorAttributes));
+      }
+      terminal.log(chalk.red(error.stack));
+    }
+  }
+
+
   /**
    * This function is only concerned with logging and should not do state
    * or terminal status updates.
    */
   _log(event: TerminalReportableEvent): void {
     switch (event.type) {
+      case 'initialize_packager_started':
+        this._logPackagerInitializing(event.port, event.projectRoots);
+        break;
+      case 'initialize_packager_done':
+        terminal.log('\nReact packager ready.\n');
+        break;
+      case 'initialize_packager_failed':
+        this._logPackagerInitializingFailed(event.port, event.error);
+        break;
       case 'bundle_build_done':
         this._logBundleBuildDone(event.entryFilePath);
         break;
@@ -147,10 +207,6 @@ class TerminalReporter {
         break;
       case 'dep_graph_loaded':
         terminal.log(`${DEP_GRAPH_MESSAGE}, done.`);
-        break;
-      case 'global_cache_error':
-        const message = JSON.stringify(event.error.message);
-        reporting.logWarning(terminal, 'the global cache failed: %s', message);
         break;
       case 'global_cache_disabled':
         this._logCacheDisabled(event.reason);

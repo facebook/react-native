@@ -2,7 +2,13 @@ include_defs("//ReactAndroid/DEFS")
 
 android_library(
     name = "testing",
-    srcs = glob(["**/*.java"]),
+    srcs = glob(
+        ["**/*.java"],
+        excludes = [
+            "idledetection/**/*.java",
+            "network/**/*.java",
+        ],
+    ),
     visibility = [
         "PUBLIC",
     ],
@@ -20,10 +26,13 @@ android_library(
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/cxxbridge:bridge"),
         react_native_target("java/com/facebook/react/devsupport:interfaces"),
+        react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/module/model:model"),
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/modules/debug:interfaces"),
         react_native_target("java/com/facebook/react/shell:shell"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
+        react_native_integration_tests_target("java/com/facebook/react/testing/idledetection:idledetection"),
+        react_native_integration_tests_target("java/com/facebook/react/testing/network:network"),
     ],
 )
