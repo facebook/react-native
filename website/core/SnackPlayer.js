@@ -52,7 +52,7 @@ var SnackPlayer = React.createClass({
     var platform = params.platform ? params.platform : 'ios';
     var name = params.name ? decodeURIComponent(params.name) : 'Example';
     var description = params.description
-      ? decoreURIComponent(params.description)
+      ? decodeURIComponent(params.description)
       : 'Example usage';
 
     var optionalProps = {};
