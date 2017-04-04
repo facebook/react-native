@@ -351,7 +351,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         />
       );
       if (ItemSeparatorComponent && ii < end) {
-        cells.push(<ItemSeparatorComponent key={'sep' + ii}/>);
+        cells.push(<ItemSeparatorComponent key={'sep' + key}/>);
       }
     }
   }
