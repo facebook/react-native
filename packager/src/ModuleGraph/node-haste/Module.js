@@ -44,6 +44,10 @@ module.exports = class Module {
   isHaste() {
     return this.hasteID.then(Boolean);
   }
+
+  hash() {
+    throw new Error('not implemented');
+  }
 };
 
 function getName(path) {
