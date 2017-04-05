@@ -379,10 +379,10 @@ We will, for debugging purposes, log that the event handler was invoked. Then, w
 
 <block class="objc" />
 
-First `import` the `RCTRootView` library.
+First `import` the `RCTRootView` header.
 
 ```
-#import "RCTRootView.h"
+#import <React/RCTRootView.h>
 ```
 
 > The `initialProperties` are here for illustration purposes so we have some data for our high score screen. In our React Native component, we will use `this.props` to get access to that data.
