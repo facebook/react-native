@@ -211,7 +211,7 @@ class DependencyGraph extends EventEmitter {
     transformOptions: TransformOptions,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     recursive: boolean,
-  }): Promise<ResolutionResponse> {
+  }): Promise<ResolutionResponse<Module>> {
     platform = this._getRequestPlatform(entryPath, platform);
     const absPath = this._getAbsolutePath(entryPath);
     const dirExists = filePath => {

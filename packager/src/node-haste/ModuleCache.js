@@ -114,7 +114,7 @@ class ModuleCache {
     return this._moduleCache[filePath];
   }
 
-  getPackage(filePath: string) {
+  getPackage(filePath: string): Package {
     if (!this._packageCache[filePath]) {
       this._packageCache[filePath] = new Package({
         file: filePath,

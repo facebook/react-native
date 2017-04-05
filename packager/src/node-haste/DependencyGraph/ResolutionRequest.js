@@ -23,8 +23,6 @@ const getAssetDataFromName = require('../lib/getAssetDataFromName');
 
 import type {HasteFS} from '../types';
 import type DependencyGraphHelpers from './DependencyGraphHelpers';
-import type Module from '../Module';
-import type ModuleCache from '../ModuleCache';
 import type ResolutionResponse from './ResolutionResponse';
 
 type DirExistsFn = (filePath: string) => boolean;
@@ -37,14 +35,31 @@ export type ModuleMap = {
   getPackage(name: string, platform: string, supportsNativePlatform: boolean): ?string,
 };
 
-type Options = {
+type Packageish = {
+  redirectRequire(toModuleName: string): string | false,
+  getMain(): string,
+  +root: string,
+};
+
+type Moduleish = {
+  +path: string,
+  getPackage(): ?Packageish,
+  hash(): string,
+};
+
+type ModuleishCache<TModule, TPackage> = {
+  getPackage(name: string, platform?: string, supportsNativePlatform?: boolean): TPackage,
+  getModule(path: string): TModule,
+  getAssetModule(path: string): TModule,
+};
+
+type Options<TModule, TPackage> = {
   dirExists: DirExistsFn,
   entryPath: string,
   extraNodeModules: ?Object,
   hasteFS: HasteFS,
   helpers: DependencyGraphHelpers,
-  // TODO(cpojer): Remove 'any' type. This is used for ModuleGraph/node-haste
-  moduleCache: ModuleCache | any,
+  moduleCache: ModuleishCache<TModule, TPackage>,
   moduleMap: ModuleMap,
   platform: string,
   platforms: Set<string>,
@@ -67,14 +82,14 @@ function tryResolveSync<T>(action: () => T, secondaryAction: () => T): T {
   }
 }
 
-class ResolutionRequest {
+class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
   _dirExists: DirExistsFn;
   _entryPath: string;
   _extraNodeModules: ?Object;
   _hasteFS: HasteFS;
   _helpers: DependencyGraphHelpers;
-  _immediateResolutionCache: {[key: string]: Module};
-  _moduleCache: ModuleCache;
+  _immediateResolutionCache: {[key: string]: TModule};
+  _moduleCache: ModuleishCache<TModule, TPackage>;
   _moduleMap: ModuleMap;
   _platform: string;
   _platforms: Set<string>;
@@ -92,7 +107,7 @@ class ResolutionRequest {
     platform,
     platforms,
     preferNativePlatform,
-  }: Options) {
+  }: Options<TModule, TPackage>) {
     this._dirExists = dirExists;
     this._entryPath = entryPath;
     this._extraNodeModules = extraNodeModules;
@@ -115,8 +130,7 @@ class ResolutionRequest {
     });
   }
 
-  // TODO(cpojer): Remove 'any' type. This is used for ModuleGraph/node-haste
-  resolveDependency(fromModule: Module | any, toModuleName: string): Module {
+  resolveDependency(fromModule: TModule, toModuleName: string): TModule {
     const resHash = resolutionHash(fromModule.path, toModuleName);
 
     const immediateResolution = this._immediateResolutionCache[resHash];
@@ -141,7 +155,10 @@ class ResolutionRequest {
     return cacheResult(this._resolveNodeDependency(fromModule, toModuleName));
   }
 
-  resolveModuleDependencies(module: Module, dependencyNames: Array<string>): [Array<string>, Array<Module>] {
+  resolveModuleDependencies(
+    module: TModule,
+    dependencyNames: Array<string>,
+  ): [Array<string>, Array<TModule>] {
     const dependencies = dependencyNames.map(name => this.resolveDependency(module, name));
     return [dependencyNames, dependencies];
   }
@@ -152,7 +169,7 @@ class ResolutionRequest {
     onProgress,
     recursive = true,
   }: {
-    response: ResolutionResponse,
+    response: ResolutionResponse<TModule>,
     transformOptions: Object,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     recursive: boolean,
@@ -250,13 +267,14 @@ class ResolutionRequest {
     });
   }
 
-  _resolveHasteDependency(fromModule: Module, toModuleName: string): Module {
+  _resolveHasteDependency(fromModule: TModule, toModuleName: string): TModule {
     toModuleName = normalizePath(toModuleName);
 
     const pck = fromModule.getPackage();
     let realModuleName;
     if (pck) {
-      realModuleName = pck.redirectRequire(toModuleName);
+      /* $FlowFixMe: redirectRequire can actually return `false` for exclusions */
+      realModuleName = (pck.redirectRequire(toModuleName): string);
     } else {
       realModuleName = toModuleName;
     }
@@ -308,7 +326,7 @@ class ResolutionRequest {
     );
   }
 
-  _redirectRequire(fromModule: Module, modulePath: string): string | false {
+  _redirectRequire(fromModule: TModule, modulePath: string): string | false {
     const pck = fromModule.getPackage();
     if (pck) {
       return pck.redirectRequire(modulePath);
@@ -316,7 +334,7 @@ class ResolutionRequest {
     return modulePath;
   }
 
-  _resolveFileOrDir(fromModule: Module, toModuleName: string): Module {
+  _resolveFileOrDir(fromModule: TModule, toModuleName: string): TModule {
     const potentialModulePath = isAbsolutePath(toModuleName) ?
       resolveWindowsPath(toModuleName) :
       path.join(path.dirname(fromModule.path), toModuleName);
@@ -336,7 +354,7 @@ class ResolutionRequest {
     );
   }
 
-  _resolveNodeDependency(fromModule: Module, toModuleName: string): Module {
+  _resolveNodeDependency(fromModule: TModule, toModuleName: string): TModule {
     if (isRelativeImport(toModuleName) || isAbsolutePath(toModuleName)) {
       return this._resolveFileOrDir(fromModule, toModuleName);
     }
@@ -408,7 +426,7 @@ class ResolutionRequest {
    * This is written as a separate function because "try..catch" blocks cause
    * the entire surrounding function to be deoptimized.
    */
-  _tryResolveNodeDep(searchPath: string, fromModule: Module, toModuleName: string): ?Module {
+  _tryResolveNodeDep(searchPath: string, fromModule: TModule, toModuleName: string): ?TModule {
     try {
       return tryResolveSync(
         () => this._loadAsFile(searchPath, fromModule, toModuleName),
@@ -422,7 +440,7 @@ class ResolutionRequest {
     }
   }
 
-  _loadAsFile(potentialModulePath: string, fromModule: Module, toModule: string): Module {
+  _loadAsFile(potentialModulePath: string, fromModule: TModule, toModule: string): TModule {
     if (this._helpers.isAssetFile(potentialModulePath)) {
       let dirname = path.dirname(potentialModulePath);
       if (!this._dirExists(dirname)) {
@@ -480,7 +498,7 @@ class ResolutionRequest {
     return this._moduleCache.getModule(file);
   }
 
-  _loadAsDir(potentialDirPath: string, fromModule: Module, toModule: string): Module {
+  _loadAsDir(potentialDirPath: string, fromModule: TModule, toModule: string): TModule {
     if (!this._dirExists(potentialDirPath)) {
       throw new UnableToResolveError(
         fromModule,
