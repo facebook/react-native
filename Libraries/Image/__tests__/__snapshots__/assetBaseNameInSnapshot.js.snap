@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders assets based on basename 1`] = `
+<View>
+  <Image
+    source="img1.png"
+  />
+  <Image
+    source="img2.png"
+  />
+</View>
+`;
