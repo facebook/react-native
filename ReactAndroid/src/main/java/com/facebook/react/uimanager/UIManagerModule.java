@@ -413,9 +413,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    */
   @ReactMethod
   public void viewIsDescendantOf(
-          final int reactTag,
-          final int ancestorReactTag,
-          final Callback callback) {
+      final int reactTag,
+      final int ancestorReactTag,
+      final Callback callback) {
     mUIImplementation.viewIsDescendantOf(reactTag, ancestorReactTag, callback);
   }
 

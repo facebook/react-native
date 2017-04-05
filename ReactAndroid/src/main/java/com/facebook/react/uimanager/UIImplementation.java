@@ -473,9 +473,9 @@ public class UIImplementation {
    *  Check if the first shadow node is the descendant of the second shadow node
    */
   public void viewIsDescendantOf(
-          final int reactTag,
-          final int ancestorReactTag,
-          final Callback callback) {
+      final int reactTag,
+      final int ancestorReactTag,
+      final Callback callback) {
     ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
     ReactShadowNode ancestorNode = mShadowNodeRegistry.getNode(ancestorReactTag);
     if (node == null || ancestorNode == null) {
