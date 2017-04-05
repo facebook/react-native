@@ -101,7 +101,7 @@ class Resolver {
     transformOptions: TransformOptions,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     getModuleId: mixed,
-  ): Promise<ResolutionResponse> {
+  ): Promise<ResolutionResponse<Module>> {
     const {platform, recursive = true} = options;
     return this._depGraph.getDependencies({
       entryPath,
@@ -151,7 +151,7 @@ class Resolver {
   }
 
   resolveRequires(
-    resolutionResponse: ResolutionResponse,
+    resolutionResponse: ResolutionResponse<Module>,
     module: Module,
     code: string,
     dependencyOffsets: Array<number> = [],
@@ -195,7 +195,7 @@ class Resolver {
     dev = true,
     minify = false,
   }: {
-    resolutionResponse: ResolutionResponse,
+    resolutionResponse: ResolutionResponse<Module>,
     module: Module,
     name: string,
     map: SourceMap,
