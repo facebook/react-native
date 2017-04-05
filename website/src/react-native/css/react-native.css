@@ -1048,7 +1048,7 @@ h2 {
   display: table-cell; }
 
 p {
-  margin: 10px 0; }
+  margin: 16px 0; }
 
 .highlight {
   padding: 10px;
@@ -1668,6 +1668,14 @@ input#algolia-doc-search:focus {
   font-size: 24px;
   text-align: center; }
 
+@media only screen and (max-width: 680px) {
+  .hero .text {
+    font-size: 200%;
+    text-align: center; }
+  .hero .minitext {
+    font-size: 18px;
+    text-align: center; } }
+
 .buttons-unit {
   margin-top: 40px;
   text-align: center; }
@@ -1676,9 +1684,13 @@ input#algolia-doc-search:focus {
   color: #FA6900; }
 
 .buttons-unit .button {
-  font-size: 24px;
   background: #05A5D1;
   color: #fafafa; }
+
+@media screen and (min-width: 600px) {
+  .buttons-unit .button {
+    font-size: 24px; }
+}
 
 .buttons-unit .button:active {
   background: #0485A9; }
@@ -1712,14 +1724,10 @@ input#algolia-doc-search:focus {
 
 .showcase {
   margin: 30px auto 30px auto;
-  width: 100%;
+  width: 50%;
   display: inline-block;
   text-align: center;
   vertical-align: top; }
-
-@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
-  .showcase {
-    width: 50%; } }
 
 @media only screen and (min-device-width: 1024px) {
   .showcase {
@@ -1832,6 +1840,10 @@ input#algolia-doc-search:focus {
   display: block;
   text-align: left; }
 
+@media screen and (max-width: 768px) {
+  .entry-share {
+    display: none; } }
+
 .entry-excerpt {
   min-width: 320px;
   max-width: 640px;
@@ -1903,7 +1915,7 @@ article li {
 
 .posted-on {
   font-size: 12px;
-  color: rgba(102, 99, 122, 0.29);
+  color: #9d9b9b;
   margin-bottom: 0;
   margin-top: 15px; }
 
@@ -1918,7 +1930,7 @@ article li {
   color: #5A6B77; }
 
 .name-title .title {
-  color: rgba(102, 99, 122, 0.44); }
+  color: #9d9b9b; }
 
 .btn {
   background: 0 0;

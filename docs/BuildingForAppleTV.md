@@ -33,6 +33,7 @@ var running_on_apple_tv = Platform.isTVOS;
 - *Common codebase*:  Since tvOS and iOS share most Objective-C and JavaScript code in common, most documentation for iOS applies equally to tvOS.
 
 - *Access to touchable controls*: When running on Apple TV, the native view class is `RCTTVView`, which has additional methods to make use of the tvOS focus engine.  The `Touchable` mixin has code added to detect focus changes and use existing methods to style the components properly and initiate the proper actions when the view is selected using the TV remote, so `TouchableHighlight` and `TouchableOpacity` will "just work".  In particular:
+
   - `touchableHandleActivePressIn` will be executed when the touchable view goes into focus
   - `touchableHandleActivePressOut` will be executed when the touchable view goes out of focus
   - `touchableHandlePress` will be executed when the touchable view is actually selected by pressing the "select" button on the TV remote.
@@ -86,4 +87,9 @@ class Game2048 extends React.Component {
 - *TV remote animations*: `RCTTVView` native code implements Apple-recommended parallax animations to help guide the eye as the user navigates through views.  The animations can be disabled or adjusted with new optional view properties. 
 
 - *Back navigation with the TV remote menu button*: The `BackHandler` component, originally written to support the Android back button, now also supports back navigation on the Apple TV using the menu button on the TV remote.
+
+- *Known issues*:
+
+  - [ListView scrolling](https://github.com/facebook/react-native/issues/12793).  The issue can be easily worked around by setting `removeClippedSubviews` to false in ListView and similar components.  For more discussion of this issue, see [this PR](https://github.com/facebook/react-native/pull/12944).
+
 
