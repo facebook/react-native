@@ -10,6 +10,9 @@ machine:
     TERM: "dumb"
     ADB_INSTALL_TIMEOUT: 10
     GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
+    NDK_VERSION: "10e"
+    NDK_PATH: "/opt/ndk"
+    ANDROID_NDK: "/opt/ndk/android-ndk-r$NDK_VERSION"
   java:
     version: 'oraclejdk8'
 
@@ -19,7 +22,7 @@ dependencies:
     - if [[ ! -e /home/ubuntu/buck ]]; then git clone https://github.com/facebook/buck.git /home/ubuntu/buck; fi
     - cd /home/ubuntu/buck && ant
     - buck --version
-    - source scripts/circle-ci-android-setup.sh && getAndroidSDK
+    - source scripts/circle-ci-android-setup.sh && getAndroidSDKandNDK
     - buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
     - buck fetch ReactAndroid/src/main/java/com/facebook/react
     - buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
@@ -47,7 +50,7 @@ dependencies:
 test:
   pre:
     # starting emulator in advance because it takes very long to boot
-    - $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window:
+    - $ANDROID_HOME/emulator/emulator -avd testAVD -no-skin -no-audio -no-window:
             background: true
     - source scripts/circle-ci-android-setup.sh && waitForAVD
 
