@@ -39,9 +39,9 @@ const {
 
 type Item = {title: string, text: string, key: number, pressed: boolean, noImage?: ?boolean};
 
-function genItemData(count: number): Array<Item> {
+function genItemData(count: number, start: number = 0): Array<Item> {
   const dataBlob = [];
-  for (let ii = 0; ii < count; ii++) {
+  for (let ii = start; ii < count + start; ii++) {
     const itemHash = Math.abs(hashCode('Item ' + ii));
     dataBlob.push({
       title: 'Item ' + ii,
