@@ -2,43 +2,31 @@
 
 #pragma once
 
-#include <memory>
-#include <string>
-#include <vector>
-
-#include <cxxreact/CxxModule.h>
-#include <fb/fbjni.h>
+#include "CxxModuleWrapperBase.h"
 
 namespace facebook {
 namespace react {
 
-struct JNativeModule : jni::JavaClass<JNativeModule> {
-  constexpr static const char *const kJavaDescriptor =
-    "Lcom/facebook/react/bridge/NativeModule;";
-};
-
-class CxxModuleWrapper :
-    public jni::HybridClass<CxxModuleWrapper, JNativeModule> {
+class CxxModuleWrapper : public jni::HybridClass<CxxModuleWrapper, CxxModuleWrapperBase> {
 public:
   constexpr static const char *const kJavaDescriptor =
     "Lcom/facebook/react/cxxbridge/CxxModuleWrapper;";
 
-  static void registerNatives();
-
-  CxxModuleWrapper(const std::string& soPath, const std::string& fname);
-
-  static jni::local_ref<jhybriddata> initHybrid(
-      jni::alias_ref<jhybridobject>, const std::string& soPath, const std::string& fname) {
-    return makeCxxInstance(soPath, fname);
+  static void registerNatives() {
+    registerHybrid({
+      makeNativeMethod("makeDsoNative", CxxModuleWrapper::makeDsoNative)
+    });
   }
 
-  // JNI methods
-  std::string getName();
+  static jni::local_ref<CxxModuleWrapper::javaobject> makeDsoNative(
+    jni::alias_ref<jclass>, const std::string& soPath, const std::string& fname);
+
+  std::string getName() override {
+    return module_->getName();
+  }
 
   // This steals ownership of the underlying module for use by the C++ bridge
-  std::unique_ptr<xplat::module::CxxModule> getModule() {
-    // TODO mhorowitz: remove this (and a lot of other code) once the java
-    // bridge is dead.
+  std::unique_ptr<xplat::module::CxxModule> getModule() override {
     return std::move(module_);
   }
 
