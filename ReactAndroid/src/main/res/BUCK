@@ -26,3 +26,5 @@ android_resource(
         "PUBLIC",
     ],
 )
+
+# New resource directories must be added to react-native-github/ReactAndroid/build.gradle
