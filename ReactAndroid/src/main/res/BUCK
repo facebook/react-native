@@ -27,4 +27,13 @@ android_resource(
     ],
 )
 
+android_resource(
+    name = "uimanager",
+    package = "com.facebook.react",
+    res = "views/uimanager",
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
 # New resource directories must be added to react-native-github/ReactAndroid/build.gradle
