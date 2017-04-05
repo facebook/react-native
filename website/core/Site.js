@@ -47,10 +47,6 @@ var Site = React.createClass({
         content: title,
       },
       {
-        property: 'og:url',
-        content: 'https://facebook.github.io/react-native/' + (this.props.path ? this.props.path : 'index.html'),
-      },
-      {
         property: 'og:image',
         content: this.props.image ? this.props.image : 'https://facebook.github.io/react-native/img/opengraph.png',
       },
