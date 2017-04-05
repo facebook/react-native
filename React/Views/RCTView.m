@@ -106,6 +106,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 }
 
 @synthesize reactZIndex = _reactZIndex;
+@synthesize maskLayer = _maskLayer;
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -479,6 +480,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   }
 
   RCTUpdateShadowPathForView(self);
+  RCTUpdateMaskBoundsForView(self);
 
   const RCTCornerRadii cornerRadii = [self cornerRadii];
   const UIEdgeInsets borderInsets = [self bordersAsInsets];
@@ -508,7 +510,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     layer.backgroundColor = _backgroundColor.CGColor;
     layer.contents = nil;
     layer.needsDisplayOnBoundsChange = NO;
-    layer.mask = nil;
+    layer.mask = _maskLayer;
     return;
   }
 
@@ -601,9 +603,17 @@ static void RCTUpdateShadowPathForView(RCTView *view)
   }
 }
 
+static void RCTUpdateMaskBoundsForView(RCTView *view)
+{
+  // A gradient mask needs its bounds to be in sync with the view's layer
+  if (view.maskLayer) {
+    view.maskLayer.bounds = view.layer.bounds;
+  }
+}
+
 - (void)updateClippingForLayer:(CALayer *)layer
 {
-  CALayer *mask = nil;
+  CALayer *mask = _maskLayer;
   CGFloat cornerRadius = 0;
 
   if (self.clipsToBounds) {
