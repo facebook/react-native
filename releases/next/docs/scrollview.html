@@ -161,7 +161,7 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
   description<span class="token punctuation">:</span> <span class="token string">&#x27;You can display &lt;ScrollView&gt;\&#x27;s child components horizontally rather than vertically&#x27;</span><span class="token punctuation">,</span>
   render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 
-    <span class="token keyword">function</span> <span class="token function">renderScrollView<span class="token punctuation">(</span></span>title<span class="token punctuation">:</span> string<span class="token punctuation">,</span> addtionalStyles<span class="token punctuation">:</span> StyleSheet<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">function</span> <span class="token function">renderScrollView<span class="token punctuation">(</span></span>title<span class="token punctuation">:</span> string<span class="token punctuation">,</span> addtionalStyles<span class="token punctuation">:</span> <span class="token keyword">typeof</span> StyleSheet<span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">var</span> _scrollView<span class="token punctuation">:</span> ScrollView<span class="token punctuation">;</span>
       <span class="token keyword">return</span> <span class="token punctuation">(</span>
         &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>addtionalStyles<span class="token punctuation">}</span><span class="token operator">&gt;</span>
