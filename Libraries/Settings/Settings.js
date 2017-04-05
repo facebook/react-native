@@ -38,7 +38,7 @@ const Settings = {
    * Note that on android the only allowed value types are number, string and boolean
    */
   set(settings: Object): void {
-    this._settings = Object.assign(this._settings, settings);
+    Object.assign(this._settings, settings);
     RCTSettingsManager.setValues(settings);
   },
 

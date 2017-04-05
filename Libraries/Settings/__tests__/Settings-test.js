@@ -38,9 +38,9 @@ describe('Settings', () => {
       const twoValue = Settings.get('twoKey');
       const threeValue = Settings.get('threeKey');
 
-      expect(oneValue === 1).toEqual(true);
-      expect(twoValue === 2.0).toEqual(true);
-      expect(threeValue === 'three').toEqual(true);
+      expect(oneValue === 1).toBe(true);
+      expect(twoValue === 2.0).toBe(true);
+      expect(threeValue === 'three').toBe(true);
     });
   });
 });

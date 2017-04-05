@@ -13,7 +13,6 @@
 
 var EventEmitter = require('EventEmitter');
 var Image = require('Image');
-var NavigationContext = require('NavigationContext');
 var RCTNavigatorManager = require('NativeModules').NavigatorManager;
 var React = require('React');
 var ReactNative = require('ReactNative');
@@ -499,7 +498,6 @@ var NavigatorIOS = React.createClass({
   },
 
   navigator: (undefined: ?Object),
-  navigationContext: new NavigationContext(),
 
   componentWillMount: function() {
     // Precompute a pack of callbacks that's frequently generated and passed to
@@ -515,19 +513,14 @@ var NavigatorIOS = React.createClass({
       resetTo: this.resetTo,
       popToRoute: this.popToRoute,
       popToTop: this.popToTop,
-      navigationContext: this.navigationContext,
     };
-    this._emitWillFocus(this.state.routeStack[this.state.observedTopOfStack]);
   },
 
   componentDidMount: function() {
-    this._emitDidFocus(this.state.routeStack[this.state.observedTopOfStack]);
     this._enableTVEventHandler();
   },
 
   componentWillUnmount: function() {
-    this.navigationContext.dispose();
-    this.navigationContext = new NavigationContext();
     this._disableTVEventHandler();
   },
 
@@ -608,7 +601,6 @@ var NavigatorIOS = React.createClass({
 
   _handleNavigatorStackChanged: function(e: Event) {
     var newObservedTopOfStack = e.nativeEvent.stackLength - 1;
-    this._emitDidFocus(this.state.routeStack[newObservedTopOfStack]);
 
     invariant(
       newObservedTopOfStack <= this.state.requestedTopOfStack,
@@ -661,14 +653,6 @@ var NavigatorIOS = React.createClass({
     });
   },
 
-  _emitDidFocus: function(route: Route) {
-    this.navigationContext.emit('didfocus', {route: route});
-  },
-
-  _emitWillFocus: function(route: Route) {
-    this.navigationContext.emit('willfocus', {route: route});
-  },
-
   /**
    * Navigate forward to a new route.
    * @param route The new route to navigate to.
@@ -678,7 +662,6 @@ var NavigatorIOS = React.createClass({
     // Make sure all previous requests are caught up first. Otherwise reject.
     if (this.state.requestedTopOfStack === this.state.observedTopOfStack) {
       this._tryLockNavigator(() => {
-        this._emitWillFocus(route);
 
         var nextStack = this.state.routeStack.concat([route]);
         var nextIDStack = this.state.idStack.concat([getuid()]);
@@ -709,7 +692,6 @@ var NavigatorIOS = React.createClass({
         this._tryLockNavigator(() => {
           var newRequestedTopOfStack = this.state.requestedTopOfStack - n;
           invariant(newRequestedTopOfStack >= 0, 'Cannot pop below 0');
-          this._emitWillFocus(this.state.routeStack[newRequestedTopOfStack]);
           this.setState({
             requestedTopOfStack: newRequestedTopOfStack,
             makingNavigatorRequest: true,
@@ -758,8 +740,6 @@ var NavigatorIOS = React.createClass({
       updatingAllIndicesAtOrBeyond: index,
     });
 
-    this._emitWillFocus(route);
-    this._emitDidFocus(route);
   },
 
   /**
