@@ -708,6 +708,29 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
   @"keyboard": @(RCTAnimationTypeKeyboard),
 }), RCTAnimationTypeEaseInEaseOut, integerValue)
 
++ (CAGradientLayer *)CAGradientLayer:(id)json
+{
+  if (!json || ![json isKindOfClass:[NSDictionary class]]) {
+    return nil;
+  }
+  
+  CAGradientLayer *maskLayer = [CAGradientLayer layer];
+  
+  maskLayer.colors = [RCTConvert CGColorArray:json[@"colors"]];
+  maskLayer.locations = [RCTConvert NSNumberArray:json[@"locations"]];
+  
+  if (json[@"start"]) {
+    maskLayer.startPoint = [RCTConvert CGPoint:json[@"start"]];
+  }
+  if (json[@"end"]) {
+    maskLayer.endPoint = [RCTConvert CGPoint:json[@"end"]];
+  }
+
+  maskLayer.anchorPoint = CGPointZero;
+  
+  return maskLayer;
+}
+
 @end
 
 @interface RCTImageSource (Packager)

@@ -126,6 +126,8 @@ typedef BOOL css_backface_visibility_t;
 + (RCTBorderStyle)RCTBorderStyle:(id)json;
 + (RCTTextDecorationLineType)RCTTextDecorationLineType:(id)json;
 
++ (CAGradientLayer *)CAGradientLayer:(id)json;
+
 @end
 
 @interface RCTConvert (Deprecated)

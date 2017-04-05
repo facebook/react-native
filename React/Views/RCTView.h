@@ -108,4 +108,9 @@
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
 
+/**
+ * Optional layer set by a "mask" style prop.
+ */
+@property (nonatomic, strong) CALayer *maskLayer;
+
 @end

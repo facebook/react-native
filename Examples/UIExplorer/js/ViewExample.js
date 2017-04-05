@@ -249,5 +249,22 @@ exports.examples = [
     render: function() {
       return <ZIndexExample />;
     },
+  }, {
+    title: 'Mask',
+    render: function() {
+      var fadeMask = {
+        colors: ['transparent', '#000f', '#000f', 'transparent'],
+        locations: [0, 0.1, 0.6, 1.0],
+        sideOrCorner: 'to bottom',
+      };
+
+      return (
+        <View style={{height: 200, mask: fadeMask}}>
+          <View style={{height: 200, justifyContent: 'center', backgroundColor: 'red'}}>
+            <Text style={{padding: 5, color: 'white'}}>This mask creates a fade effect along the top and bottom of the view</Text>
+          </View>
+        </View>
+      );
+    }
   },
 ];

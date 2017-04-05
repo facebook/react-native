@@ -18,6 +18,7 @@ var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var keyMirror = require('fbjs/lib/keyMirror');
 var processColor = require('processColor');
+var processMask = require('processMask');
 var processTransform = require('processTransform');
 var sizesDiffer = require('sizesDiffer');
 
@@ -27,6 +28,7 @@ var ReactNativeStyleAttributes = {
   ...keyMirror(ImageStylePropTypes),
 };
 
+ReactNativeStyleAttributes.mask = { process: processMask };
 ReactNativeStyleAttributes.transform = { process: processTransform };
 ReactNativeStyleAttributes.shadowOffset = { diff: sizesDiffer };
 

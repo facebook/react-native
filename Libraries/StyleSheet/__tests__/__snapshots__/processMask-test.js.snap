@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`processMask validation should require colors 1`] = `"The mask must have at least one color. Passed properties: {\\"colors\\":[]}"`;
+
+exports[`processMask validation should validate colors and locations 1`] = `"The mask must have one location per color. Passed properties: {\\"colors\\":[\\"#0000\\",\\"white\\"],\\"locations\\":[0,0.5,1]}"`;
+
+exports[`processMask validation should validate sideOrCorner 1`] = `"Mask \\"sideOrCorner\\" must start with \\"to \\": \\"bottom\\""`;
+
+exports[`processMask validation should validate sideOrCorner values 1`] = `"Mask \\"sideOrCorner\\" must contain only \\"left\\", \\"right\\", \\"top\\", \\"bottom\\": \\"to left botttom\\""`;
