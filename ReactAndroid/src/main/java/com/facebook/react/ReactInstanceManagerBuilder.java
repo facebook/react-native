@@ -42,6 +42,7 @@ public class ReactInstanceManagerBuilder {
   protected @Nullable RedBoxHandler mRedBoxHandler;
   protected boolean mLazyNativeModulesEnabled;
   protected boolean mLazyViewManagersEnabled;
+  protected boolean mUseStartupThread;
 
   /* package protected */ ReactInstanceManagerBuilder() {
   }
@@ -186,6 +187,11 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setUseStartupThread(boolean useStartupThread) {
+    mUseStartupThread = useStartupThread;
+    return this;
+  }
+
   /**
    * Instantiates a new {@link ReactInstanceManager}.
    * Before calling {@code build}, the following must be called:
@@ -230,6 +236,7 @@ public class ReactInstanceManagerBuilder {
       mJSCConfig,
       mRedBoxHandler,
       mLazyNativeModulesEnabled,
-      mLazyViewManagersEnabled);
+      mLazyViewManagersEnabled,
+      mUseStartupThread);
   }
 }

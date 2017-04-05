@@ -125,7 +125,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
 
-    FLog.w(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
+    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
     initializeBridge(
       new BridgeCallback(this),
       jsExecutor,
@@ -133,7 +133,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       mNativeModulesQueueThread,
       mJavaRegistry.getJavaModules(this),
       mJavaRegistry.getCxxModules());
-    FLog.w(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
+    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
     mMainExecutorToken = getMainExecutorToken();
   }
 

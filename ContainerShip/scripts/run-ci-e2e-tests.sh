@@ -11,7 +11,7 @@ RUN_CLI_INSTALL=1
 RUN_IOS=0
 RUN_JS=0
 
-RETRY_COUNT=${RETRY_COUNT:-3}
+RETRY_COUNT=${RETRY_COUNT:-1}
 AVD_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 
 ANDROID_NPM_DEPS="appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3 pretty-data2@0.40.1"

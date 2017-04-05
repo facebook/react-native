@@ -50,6 +50,12 @@ type OptionalProps = {
    */
   disableVirtualization: boolean,
   /**
+   * A marker property for telling the list to re-render (since it implements `PureComponent`). If
+   * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
+   * `data` prop, stick it here and treat it immutably.
+   */
+  extraData?: any,
+  /**
    * A generic accessor for extracting an item from any sort of data blob.
    */
   getItem: (data: any, index: number) => ?Item,
@@ -62,7 +68,8 @@ type OptionalProps = {
   horizontal?: ?boolean,
   /**
    * How many items to render in the initial batch. This should be enough to fill the screen but not
-   * much more.
+   * much more. Note these items will never be unmounted as part of the windowed rendering in order
+   * to improve perceived performance of scroll-to-top actions.
    */
   initialNumToRender: number,
   keyExtractor: (item: Item, index: number) => string,
@@ -140,9 +147,9 @@ type State = {first: number, last: number};
  * - Internal state is not preserved when content scrolls out of the render window. Make sure all
  *   your data is captured in the item data or external stores like Flux, Redux, or Relay.
  * - This is a `PureComponent` which means that it will not re-render if `props` remain shallow-
- *   equal. Make sure that everything your `renderItem` function depends on is passed as a prop that
- *   is not `===` after updates, otherwise your UI may not update on changes. This includes the
- *   `data` prop and parent component state.
+ *   equal. Make sure that everything your `renderItem` function depends on is passed as a prop
+ *   (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on
+ *   changes. This includes the `data` prop and parent component state.
  * - In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
  *   offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
  *   blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
@@ -150,11 +157,10 @@ type State = {first: number, last: number};
  * - By default, the list looks for a `key` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
- * NOTE: `LayoutAnimation` and sticky section headers both have bugs when used with this and are
- * therefore not officially supported yet.
- *
  * NOTE: `removeClippedSubviews` might not be necessary and may cause bugs. If you see issues with
- * content not rendering, try disabling it, and we may change the default there.
+ * content not rendering, e.g when using `LayoutAnimation`, try setting
+ * `removeClippedSubviews={false}`, and we may change the default in the future after more
+ * experimentation in production apps.
  */
 class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   props: Props;
@@ -172,9 +178,11 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   // scrollToIndex may be janky without getItemLayout prop
-  scrollToIndex(params: {animated?: ?boolean, index: number, viewPosition?: number}) {
+  scrollToIndex(params: {
+    animated?: ?boolean, index: number, viewOffset?: number, viewPosition?: number
+  }) {
     const {data, horizontal, getItemCount, getItemLayout} = this.props;
-    const {animated, index, viewPosition} = params;
+    const {animated, index, viewOffset, viewPosition} = params;
     invariant(
       index >= 0 && index < getItemCount(data),
       `scrollToIndex out of range: ${index} vs ${getItemCount(data) - 1}`,
@@ -188,7 +196,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const offset = Math.max(
       0,
       frame.offset - (viewPosition || 0) * (this._scrollMetrics.visibleLength - frame.length),
-    );
+    ) - (viewOffset || 0);
     this._scrollRef.scrollTo(horizontal ? {x: offset, animated} : {y: offset, animated});
   }
 
@@ -218,6 +226,17 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this._updateViewableItems(this.props.data);
   }
 
+  /**
+   * Provides a handle to the underlying scroll responder.
+   * Note that `this._scrollRef` might not be a `ScrollView`, so we
+   * need to check that it responds to `getScrollResponder` before calling it.
+   */
+  getScrollResponder() {
+    if (this._scrollRef && this._scrollRef.getScrollResponder) {
+      return this._scrollRef.getScrollResponder();
+    }
+  }
+
   getScrollableNode() {
     if (this._scrollRef && this._scrollRef.getScrollableNode) {
       return this._scrollRef.getScrollableNode();
@@ -240,7 +259,6 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       return String(index);
     },
     maxToRenderPerBatch: 10,
-    onEndReached: () => {},
     onEndReachedThreshold: 2, // multiples of length
     removeClippedSubviews: true,
     renderScrollComponent: (props: Props) => {
@@ -265,6 +283,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         return <ScrollView {...props} />;
       }
     },
+    scrollEventThrottle: 50,
     updateCellsBatchingPeriod: 50,
     windowSize: 21, // multiples of length
   };
@@ -300,13 +319,16 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   componentWillReceiveProps(newProps: Props) {
-    const {data, getItemCount, maxToRenderPerBatch} = newProps;
+    const {data, extraData, getItemCount, maxToRenderPerBatch} = newProps;
     // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
     // sure we're rendering a reasonable range here.
     this.setState({
       first: Math.max(0, Math.min(this.state.first, getItemCount(data) - 1 - maxToRenderPerBatch)),
       last: Math.max(0, Math.min(this.state.last, getItemCount(data) - 1)),
     });
+    if (data !== this.props.data || extraData !== this.props.extraData) {
+      this._hasDataChangedSinceEndReached = true;
+    }
     this._updateCellsToRenderBatcher.schedule();
   }
 
@@ -340,7 +362,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         />
       );
       if (ItemSeparatorComponent && ii < end) {
-        cells.push(<ItemSeparatorComponent key={'sep' + ii}/>);
+        cells.push(<ItemSeparatorComponent key={'sep' + key}/>);
       }
     }
   }
@@ -438,7 +460,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         onScroll: this._onScroll,
         onScrollBeginDrag: this._onScrollBeginDrag,
         ref: this._captureScrollRef,
-        scrollEventThrottle: 50, // TODO: Android support
+        scrollEventThrottle: this.props.scrollEventThrottle, // TODO: Android support
         stickyHeaderIndices,
       },
       cells,
@@ -455,6 +477,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   _averageCellLength = 0;
+  _hasDataChangedSinceEndReached = true;
   _hasWarned = {};
   _highestMeasuredFrameIndex = 0;
   _headerLength = 0;
@@ -612,10 +635,13 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     }
     const distanceFromEnd = contentLength - visibleLength - offset;
     const itemCount = getItemCount(data);
-    if (distanceFromEnd < onEndReachedThreshold * visibleLength &&
-        this._scrollMetrics.contentLength !== this._sentEndForContentLength &&
-        this.state.last === itemCount - 1) {
-      // Only call onEndReached for a given content length once.
+    if (onEndReached &&
+        this.state.last === itemCount - 1 &&
+        distanceFromEnd < onEndReachedThreshold * visibleLength &&
+        (this._hasDataChangedSinceEndReached ||
+         this._scrollMetrics.contentLength !== this._sentEndForContentLength)) {
+      // Only call onEndReached once for a given dataset + content length.
+      this._hasDataChangedSinceEndReached = false;
       this._sentEndForContentLength = this._scrollMetrics.contentLength;
       onEndReached({distanceFromEnd});
     }

@@ -87,6 +87,8 @@ class Modal extends React.Component {
      * - `slide` slides in from the bottom
      * - `fade` fades into view
      * - `none` appears without an animation
+     *
+     * Default is set to `none`.
      */
     animationType: PropTypes.oneOf(['none', 'slide', 'fade']),
     /**
