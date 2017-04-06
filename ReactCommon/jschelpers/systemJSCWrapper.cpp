@@ -28,9 +28,6 @@ UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSStringCreateWithUTF8CStringExpectAscii)
 #endif
 UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSPokeSamplingProfiler)
 UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSStartSamplingProfilingOnMainJSCThread)
-
-UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSInspectorGetInstance)
-
 UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(configureJSCForIOS)
 
 bool JSSamplingProfilerEnabled() {
@@ -121,10 +118,6 @@ const JSCWrapper* systemJSCWrapper() {
       .JSStartSamplingProfilingOnMainJSCThread =
         (decltype(&JSStartSamplingProfilingOnMainJSCThread))
         Unimplemented_JSStartSamplingProfilingOnMainJSCThread,
-
-      .JSInspectorGetInstance =
-        (decltype(&JSInspectorGetInstance))
-        Unimplemented_JSInspectorGetInstance,
 
       .configureJSCForIOS =
         (decltype(&configureJSCForIOS))Unimplemented_configureJSCForIOS,

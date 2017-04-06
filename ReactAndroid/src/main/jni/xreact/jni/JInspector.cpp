@@ -1,25 +1,24 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "JInspector.h"
-#include <jschelpers/JavaScriptCore.h>
 
-#ifdef WITH_FBJSCEXTENSIONS
+#ifdef WITH_INSPECTOR
 
 namespace facebook {
 namespace react {
 
 namespace {
 
-class RemoteConnection : public IRemoteConnection {
+class RemoteConnection : public Inspector::RemoteConnection {
 public:
   RemoteConnection(jni::alias_ref<JRemoteConnection::javaobject> connection)
       : connection_(jni::make_global(connection)) {}
 
-  virtual void onMessage(std::string message) override {
+  void onMessage(std::string message) override {
     connection_->onMessage(message);
   }
 
-  virtual void onDisconnect() override {
+  void onDisconnect() override {
     connection_->onDisconnect();
   }
 private:
@@ -43,7 +42,7 @@ void JRemoteConnection::onDisconnect() const {
   method(self());
 }
 
-JLocalConnection::JLocalConnection(std::unique_ptr<ILocalConnection> connection)
+JLocalConnection::JLocalConnection(std::unique_ptr<Inspector::LocalConnection> connection)
   : connection_(std::move(connection)) {}
 
 void JLocalConnection::sendMessage(std::string message) {
@@ -61,17 +60,13 @@ void JLocalConnection::registerNatives() {
   });
 }
 
-static IInspector* getInspectorInstance() {
-  return JSC_JSInspectorGetInstance(true /*useCustomJSC*/);
-}
-
 jni::global_ref<JInspector::javaobject> JInspector::instance(jni::alias_ref<jclass>) {
-  static auto instance = jni::make_global(newObjectCxxArgs(getInspectorInstance()/*&Inspector::instance()*/));
+  static auto instance = jni::make_global(newObjectCxxArgs(&Inspector::instance()));
   return instance;
 }
 
 jni::local_ref<jni::JArrayClass<JPage::javaobject>> JInspector::getPages() {
-  std::vector<InspectorPage> pages = inspector_->getPages();
+  std::vector<Inspector::Page> pages = inspector_->getPages();
   auto array = jni::JArrayClass<JPage::javaobject>::newArray(pages.size());
   for (size_t i = 0; i < pages.size(); i++) {
     (*array)[i] = JPage::create(pages[i].id, pages[i].title);
