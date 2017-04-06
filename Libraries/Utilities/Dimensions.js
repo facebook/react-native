@@ -19,7 +19,6 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var invariant = require('fbjs/lib/invariant');
 
 var eventEmitter = new EventEmitter();
-var dimensionsInitialized = false;
 var dimensions = {};
 class Dimensions {
   /**
@@ -63,15 +62,11 @@ class Dimensions {
     }
 
     Object.assign(dimensions, dims);
-    if (dimensionsInitialized) {
-      // Don't fire 'change' the first time the dimensions are set.
-      eventEmitter.emit('change', {
-        window: dimensions.window,
-        screen: dimensions.screen
-      });
-    } else {
-      dimensionsInitialized = true;
-    }
+
+    eventEmitter.emit('change', {
+      window: dimensions.window,
+      screen: dimensions.screen
+    });
   }
 
   /**
