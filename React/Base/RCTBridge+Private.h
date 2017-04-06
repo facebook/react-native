@@ -82,6 +82,12 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
 /**
  * Used by RCTModuleData
  */
+
+@property (nonatomic, weak, readonly) RCTBridge *parentBridge;
+
+/**
+ * Used by RCTModuleData
+ */
 @property (nonatomic, assign, readonly) BOOL moduleSetupComplete;
 
 /**
