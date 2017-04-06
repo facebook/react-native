@@ -130,10 +130,9 @@ class LoopExample extends React.Component {
 
   componentDidMount() {
     Animated.loop(
-      Animated.spring(this.state.value, {
+      Animated.timing(this.state.value, {
         toValue: 1,
-        tension: 10,
-        // duration: 5000,
+        duration: 5000,
         useNativeDriver: true,
       }),
     ).start();
