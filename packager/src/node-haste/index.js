@@ -38,7 +38,7 @@ const {
 const {EventEmitter} = require('events');
 
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
 import type {ModuleMap} from './DependencyGraph/ResolutionRequest';

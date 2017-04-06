@@ -23,7 +23,7 @@ const jsonStableStringify = require('json-stable-stringify');
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
 import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {SourceMap} from '../lib/SourceMap';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {ReadTransformProps} from '../lib/TransformCache';
