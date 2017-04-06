@@ -28,8 +28,8 @@ var ReactNative = require('react-native');
 var {
   ActionSheetIOS,
   StyleSheet,
+  takeSnapshot,
   Text,
-  UIManager,
   View,
 } = ReactNative;
 
@@ -164,7 +164,7 @@ class ShareScreenshotExample extends React.Component {
 
   showShareActionSheet = () => {
     // Take the snapshot (returns a temp file uri)
-    UIManager.takeSnapshot('window').then((uri) => {
+    takeSnapshot('window').then((uri) => {
       // Share image data
       ActionSheetIOS.showShareActionSheetWithOptions({
         url: uri,

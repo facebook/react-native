@@ -36,15 +36,19 @@ type Transformer = {
 };
 
 export type TransformOptions = {
+  +dev: boolean,
   generateSourceMaps: boolean,
+  +hot: boolean,
+  +inlineRequires: {+blacklist: {[string]: true}} | boolean,
   platform: string,
-  preloadedModules?: Array<string>,
+  preloadedModules?: Array<string> | false,
   projectRoots: Array<string>,
   ramGroups?: Array<string>,
 } & BabelTransformOptions;
 
 export type Options = {
   +dev: boolean,
+  +extern?: boolean,
   +minify: boolean,
   platform: string,
   transform: TransformOptions,

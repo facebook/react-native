@@ -190,8 +190,6 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
     _launchOptions = [launchOptions copy];
 
     [self setUp];
-
-    RCTExecuteOnMainQueue(^{ [self bindKeys]; });
   }
   return self;
 }
@@ -205,15 +203,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
    * RCTAssertMainQueue();
    */
   [self invalidate];
-}
-
-- (void)bindKeys
-{
-  RCTAssertMainQueue();
-
-#if TARGET_IPHONE_SIMULATOR
-  RCTRegisterReloadCommandListener(self);
-#endif
 }
 
 - (void)didReceiveReloadCommand
@@ -301,27 +290,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   RCTAssert(implClass != nil, @"No bridge implementation is available, giving up.");
-
-#ifdef WITH_FBSYSTRACE
-  if (implClass == cxxBridgeClass) {
-    [RCTFBSystrace registerCallbacks];
-  } else {
-    [RCTFBSystrace unregisterCallbacks];
-  }
-#endif
-
   return implClass;
 }
 
 - (void)setUp
 {
-  Class bridgeClass = self.bridgeClass;
-
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBridge setUp]", nil);
 
   _performanceLogger = [RCTPerformanceLogger new];
   [_performanceLogger markStartForTag:RCTPLBridgeStartup];
   [_performanceLogger markStartForTag:RCTPLTTI];
+
+  Class bridgeClass = self.bridgeClass;
+
+  #if RCT_DEV
+  RCTExecuteOnMainQueue(^{
+    RCTRegisterReloadCommandListener(self);
+  });
+  #endif
 
   // Only update bundleURL from delegate if delegate bundleURL has changed
   NSURL *previousDelegateURL = _delegateBundleURL;

@@ -5,7 +5,7 @@ layout: docs
 category: Guides (iOS)
 permalink: docs/communication-ios.html
 banner: ejected
-next: native-modules-android
+next: building-for-apple-tv
 previous: linking-libraries-ios
 ---
 

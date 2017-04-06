@@ -684,6 +684,9 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
         return null;
       }
     }
+
+    // Without this explicit null return Flow complains of invalid return type
+    return null;
   }
 
   function performUnitOfWork(workInProgress: Fiber): Fiber | null {

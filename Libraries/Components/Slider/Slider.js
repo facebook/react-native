@@ -18,7 +18,7 @@ var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var Platform = require('Platform');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
-var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -34,13 +34,13 @@ var Slider = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
 
     /**
      * Used to style and layout the `Slider`.  See `StyleSheet.js` and
      * `ViewStylePropTypes.js` for more info.
      */
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
 
     /**
      * Initial value of the slider. The value should be between minimumValue
@@ -126,8 +126,9 @@ var Slider = React.createClass({
     onValueChange: PropTypes.func,
 
     /**
-     * Callback called when the user finishes changing the value (e.g. when
-     * the slider is released).
+     * Callback that is called when the user releases the slider,
+     * regardless if the value has changed. The current value is passed
+     * as an argument to the callback handler.
      */
     onSlidingComplete: PropTypes.func,
 

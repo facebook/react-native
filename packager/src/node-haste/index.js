@@ -13,6 +13,7 @@
 
 const Cache = require('./Cache');
 const DependencyGraphHelpers = require('./DependencyGraph/DependencyGraphHelpers');
+const FilesByDirNameIndex = require('./FilesByDirNameIndex');
 const JestHasteMap = require('jest-haste-map');
 const Module = require('./Module');
 const ModuleCache = require('./ModuleCache');
@@ -38,7 +39,7 @@ const {
 const {EventEmitter} = require('events');
 
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
 import type {ModuleMap} from './DependencyGraph/ResolutionRequest';
@@ -76,6 +77,7 @@ const JEST_HASTE_MAP_CACHE_BREAKER = 1;
 class DependencyGraph extends EventEmitter {
 
   _opts: Options;
+  _filesByDirNameIndex: FilesByDirNameIndex;
   _haste: JestHasteMap;
   _helpers: DependencyGraphHelpers;
   _moduleCache: ModuleCache;
@@ -91,12 +93,14 @@ class DependencyGraph extends EventEmitter {
     super();
     invariant(config.opts.maxWorkerCount >= 1, 'worker count must be greater or equal to 1');
     this._opts = config.opts;
+    this._filesByDirNameIndex = new FilesByDirNameIndex(config.initialHasteFS.getAllFiles());
     this._haste = config.haste;
     this._hasteFS = config.initialHasteFS;
     this._moduleMap = config.initialModuleMap;
     this._helpers = new DependencyGraphHelpers(this._opts);
     this._haste.on('change', this._onHasteChange.bind(this));
     this._moduleCache = this._createModuleCache();
+    (this: any)._matchFilesByDirAndPattern = this._matchFilesByDirAndPattern.bind(this);
   }
 
   static _createHaste(opts: Options): JestHasteMap {
@@ -149,6 +153,7 @@ class DependencyGraph extends EventEmitter {
 
   _onHasteChange({eventsQueue, hasteFS, moduleMap}) {
     this._hasteFS = hasteFS;
+    this._filesByDirNameIndex = new FilesByDirNameIndex(hasteFS.getAllFiles());
     this._moduleMap = moduleMap;
     eventsQueue.forEach(({type, filePath, stat}) =>
       this._moduleCache.processFileChange(type, filePath, stat)
@@ -211,7 +216,7 @@ class DependencyGraph extends EventEmitter {
     transformOptions: TransformOptions,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     recursive: boolean,
-  }): Promise<ResolutionResponse> {
+  }): Promise<ResolutionResponse<Module>> {
     platform = this._getRequestPlatform(entryPath, platform);
     const absPath = this._getAbsolutePath(entryPath);
     const dirExists = filePath => {
@@ -226,6 +231,7 @@ class DependencyGraph extends EventEmitter {
       extraNodeModules: this._opts.extraNodeModules,
       hasteFS: this._hasteFS,
       helpers: this._helpers,
+      matchFiles: this._matchFilesByDirAndPattern,
       moduleCache: this._moduleCache,
       moduleMap: this._moduleMap,
       platform,
@@ -241,6 +247,10 @@ class DependencyGraph extends EventEmitter {
       onProgress,
       recursive,
     }).then(() => response);
+  }
+
+  _matchFilesByDirAndPattern(dirName: string, pattern: RegExp) {
+    return this._filesByDirNameIndex.match(dirName, pattern);
   }
 
   matchFilesByPattern(pattern: RegExp) {
