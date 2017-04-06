@@ -106,15 +106,22 @@ function createFromBuiltInTemplate(templateName, destPath, newProjectName, yarnV
 /**
  * The following formats are supported for the template:
  * - 'demo' -> Fetch the package react-native-template-demo from npm
+ * - '@scoped-name/demo' -> Fetch the package @scoped-name/react-native-template-demo from npm
  * - git://..., http://..., file://... or any other URL supported by npm
  */
 function createFromRemoteTemplate(template, destPath, newProjectName, yarnVersion) {
   let installPackage;
   let templateName;
+  const socpedRegex = /^(@[a-z0-9][\w-.]+\/)([a-z0-9][\w-.]*)$/i;
   if (template.includes('://')) {
      // URL, e.g. git://, file://
      installPackage = template;
      templateName = template.substr(template.lastIndexOf('/') + 1);
+  } else if (socpedRegex.test(template)) {
+    // Scoped name, e.g. '@scoped-name/demo'
+    const [, scopeName, moduleName] = template.match(socpedRegex);
+    installPackage = scopeName + 'react-native-template-' + moduleName;
+    templateName = installPackage;
   } else {
     // e.g 'demo'
     installPackage = 'react-native-template-' + template;
