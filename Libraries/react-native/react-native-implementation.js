@@ -150,6 +150,14 @@ function applyForwarding(key) {
     );
     return;
   }
+    if (ReactNative.hasOwnProperty(key)) {
+      // WARNING! ReactNative has read-only keys. So, if ReactNativeInternal
+      // has any duplicate key that ReactNative already has, this assignment
+      // would fail with "Attempted to assign to readonly property."
+      // So, if the key already exists on ReactNative, we assume that it's the
+      // correct module and skip re-assigning it.
+      return;
+    }
   ReactNative[key] = ReactNativeInternal[key];
 }
 for (const key in ReactNativeInternal) {
