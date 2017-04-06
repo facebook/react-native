@@ -2,9 +2,9 @@
 
 #pragma once
 
-#ifdef WITH_INSPECTOR
+#ifdef WITH_FBJSCEXTENSIONS
 
-#include <inspector/Inspector.h>
+#include <jschelpers/InspectorInterfaces.h>
 
 #include <fb/fbjni.h>
 #include <folly/Memory.h>
@@ -31,14 +31,14 @@ class JLocalConnection : public jni::HybridClass<JLocalConnection> {
 public:
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/Inspector$LocalConnection;";
 
-  JLocalConnection(std::unique_ptr<Inspector::LocalConnection> connection);
+  JLocalConnection(std::unique_ptr<ILocalConnection> connection);
 
   void sendMessage(std::string message);
   void disconnect();
 
   static void registerNatives();
 private:
-  std::unique_ptr<Inspector::LocalConnection> connection_;
+  std::unique_ptr<ILocalConnection> connection_;
 };
 
 class JInspector : public jni::HybridClass<JInspector> {
@@ -54,9 +54,9 @@ public:
 private:
   friend HybridBase;
 
-  JInspector(Inspector* inspector) : inspector_(inspector) {}
+  JInspector(IInspector* inspector) : inspector_(inspector) {}
 
-  Inspector* inspector_;
+  IInspector* inspector_;
 };
 
 }

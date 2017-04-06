@@ -12,10 +12,12 @@
 
 'use strict';
 
+const ReactFiberErrorLogger = require('ReactFiberErrorLogger');
 const ReactFiberReconciler = require('ReactFiberReconciler');
 const ReactGenericBatching = require('ReactGenericBatching');
 const ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 const ReactNativeComponentTree = require('ReactNativeComponentTree');
+const ReactNativeFiberErrorDialog = require('ReactNativeFiberErrorDialog');
 const ReactNativeFiberHostComponent = require('ReactNativeFiberHostComponent');
 const ReactNativeInjection = require('ReactNativeInjection');
 const ReactNativeTagHandles = require('ReactNativeTagHandles');
@@ -70,11 +72,16 @@ const NativeRenderer = ReactFiberReconciler({
     parentInstance: Instance | Container,
     child: Instance | TextInstance,
   ): void {
+
+    const childTag = typeof child === 'number'
+      ? child
+      : child._nativeTag;
+
     if (typeof parentInstance === 'number') {
       // Root container
       UIManager.setChildren(
         parentInstance, // containerTag
-        [(child: any)._nativeTag], // reactTags
+        [childTag], // reactTags
       );
     } else {
       const children = parentInstance._children;
@@ -85,7 +92,7 @@ const NativeRenderer = ReactFiberReconciler({
         parentInstance._nativeTag, // containerTag
         [], // moveFromIndices
         [], // moveToIndices
-        [(child: any)._nativeTag], // addChildReactTags
+        [childTag], // addChildReactTags
         [children.length - 1], // addAtIndices
         [], // removeAtIndices
       );
@@ -139,7 +146,7 @@ const NativeRenderer = ReactFiberReconciler({
     );
 
     UIManager.updateView(
-      (instance: any)._nativeTag, // reactTag
+      instance._nativeTag, // reactTag
       viewConfig.uiViewClassName, // viewName
       updatePayload, // props
     );
@@ -280,11 +287,15 @@ const NativeRenderer = ReactFiberReconciler({
     } else {
       children.splice(beforeChildIndex, 0, child);
 
+      const childTag = typeof child === 'number'
+        ? child
+        : child._nativeTag;
+
       UIManager.manageChildren(
         (parentInstance: any)._nativeTag, // containerID
         [], // moveFromIndices
         [], // moveToIndices
-        [(child: any)._nativeTag], // addChildReactTags
+        [childTag], // addChildReactTags
         [beforeChildIndex], // addAtIndices
         [], // removeAtIndices
       );
@@ -376,6 +387,13 @@ const roots = new Map();
 findNodeHandle.injection.injectFindNode((fiber: Fiber) =>
   NativeRenderer.findHostInstance(fiber));
 findNodeHandle.injection.injectFindRootNodeID(instance => instance);
+
+
+// Intercept lifecycle errors and ensure they are shown with the correct stack
+// trace within the native redbox component.
+ReactFiberErrorLogger.injection.injectDialog(
+  ReactNativeFiberErrorDialog.showDialog,
+);
 
 const ReactNative = {
   // External users of findNodeHandle() expect the host tag number return type.

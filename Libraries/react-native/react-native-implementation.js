@@ -7,23 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule react-native-implementation
- * @noflow - get/set properties not yet supported by flow. also `...require(x)` is broken #6560135
+ * @flow
  */
 'use strict';
 
-const warning = require('fbjs/lib/warning');
-
-if (__DEV__) {
-  var warningDedupe = {};
-  var addonWarn = function(prevName, newPackageName) {
-    warning(
-      warningDedupe[prevName],
-      'React.addons.' + prevName + ' is deprecated. Please import the "' +
-      newPackageName + '" package instead.'
-    );
-    warningDedupe[prevName] = true;
-  };
-}
+const invariant = require('fbjs/lib/invariant');
 
 // Export React, plus some native additions.
 const ReactNative = {
@@ -41,7 +29,6 @@ const ReactNative = {
   get KeyboardAvoidingView() { return require('KeyboardAvoidingView'); },
   get ListView() { return require('ListView'); },
   get Modal() { return require('Modal'); },
-  get Navigator() { return require('Navigator'); },
   get NavigatorIOS() { return require('NavigatorIOS'); },
   get Picker() { return require('Picker'); },
   get PickerIOS() { return require('PickerIOS'); },
@@ -118,12 +105,23 @@ const ReactNative = {
   get Platform() { return require('Platform'); },
   get processColor() { return require('processColor'); },
   get requireNativeComponent() { return require('requireNativeComponent'); },
+  get takeSnapshot() { return require('takeSnapshot'); },
 
   // Prop Types
   get ColorPropType() { return require('ColorPropType'); },
   get EdgeInsetsPropType() { return require('EdgeInsetsPropType'); },
   get PointPropType() { return require('PointPropType'); },
   get ViewPropTypes() { return require('ViewPropTypes'); },
+
+  // Deprecated
+  get Navigator() {
+    invariant(
+      false,
+      'Navigator is deprecated and has been removed from this package. It can now be installed ' +
+      'and imported from `react-native-deprecated-custom-components` instead of `react-native`. ' +
+      'Learn about alternative navigation solutions at http://facebook.github.io/react-native/docs/navigation.html'
+    );
+  },
 };
 
 // Better error messages when accessing React APIs on ReactNative

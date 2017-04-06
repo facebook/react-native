@@ -212,10 +212,39 @@
 }
 
 /**
+ * Focus manipulation.
+ */
+- (BOOL)reactIsFocusNeeded
+{
+  return [(NSNumber *)objc_getAssociatedObject(self, @selector(reactIsFocusNeeded)) boolValue];
+}
+
+- (void)setReactIsFocusNeeded:(BOOL)isFocusNeeded
+{
+  objc_setAssociatedObject(self, @selector(reactIsFocusNeeded), @(isFocusNeeded), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (void)reactFocus {
+  if (![self becomeFirstResponder]) {
+    self.reactIsFocusNeeded = YES;
+  }
+}
+
+- (void)reactFocusIfNeeded {
+  if (self.reactIsFocusNeeded) {
+    if ([self becomeFirstResponder]) {
+      self.reactIsFocusNeeded = NO;
+    }
+  }
+}
+
+- (void)reactBlur {
+  [self resignFirstResponder];
+}
+
+/**
  * Responder overrides - to be deprecated.
  */
-- (void)reactWillMakeFirstResponder {};
-- (void)reactDidMakeFirstResponder {};
 - (BOOL)reactRespondsToTouch:(__unused UITouch *)touch
 {
   return YES;

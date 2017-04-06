@@ -24,6 +24,7 @@
 #import "RCTRootView.h"
 #import "RCTUIManager.h"
 #import "RCTBridge+Private.h"
+#import "RCTUtils.h"
 
 #if __has_include("RCTDevMenu.h")
 #import "RCTDevMenu.h"
@@ -321,7 +322,7 @@ RCT_EXPORT_MODULE()
 
   [self updateStats];
 
-  UIWindow *window = [UIApplication sharedApplication].delegate.window;
+  UIWindow *window = RCTSharedApplication().delegate.window;
   [window addSubview:self.container];
 
 

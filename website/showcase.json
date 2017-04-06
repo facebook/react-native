@@ -190,5 +190,12 @@
     "infoLink": "http://x.co/FlareNews",
     "infoTitle": "Social network that connects entrepreneurs to fellow entrepreneurs, consumers, investors and experts",
     "pinned": false
+  },
+  {
+    "name": "UberEATS",
+    "icon": "http://is5.mzstatic.com/image/thumb/Purple111/v4/5f/e9/00/5fe90072-c9ce-87c3-bdfe-8611f9325f0e/source/175x175bb.jpg",
+    "infoLink": "https://eng.uber.com/ubereats-react-native/",
+    "infoTitle": "Powering UberEATS with React Native and Uber Engineering",
+    "pinned": false
   }
 ]

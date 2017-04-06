@@ -18,10 +18,7 @@
 
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
-
-#ifdef WITH_INSPECTOR
-#include <inspector/Inspector.h>
-#endif
+#include <jschelpers/InspectorInterfaces.h>
 
 #include "JSBundleType.h"
 #include "Platform.h"
@@ -220,6 +217,16 @@ void JSCExecutor::setContextName(const std::string& name) {
   JSC_JSGlobalContextSetName(m_context, jsName);
 }
 
+static bool canUseInspector(JSContextRef context) {
+#if defined(__APPLE__)
+  return isCustomJSCPtr(context);
+#elif defined(WITH_FBJSCEXTENSIONS)
+  return true;
+#else
+  return false;
+#endif
+}
+
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
   SystraceSection s("JSCExecutor.initOnJSVMThread");
 
@@ -253,9 +260,10 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   // Add a pointer to ourselves so we can retrieve it later in our hooks
   Object::getGlobalObject(m_context).setPrivate(this);
 
-  #ifdef WITH_INSPECTOR
-  Inspector::instance().registerGlobalContext("main", m_context);
-  #endif
+  if (canUseInspector(m_context)) {
+    IInspector* pInspector = JSC_JSInspectorGetInstance(true);
+    pInspector->registerGlobalContext("main", m_context);
+  }
 
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
@@ -311,9 +319,10 @@ void JSCExecutor::terminateOnJSVMThread() {
 
   m_nativeModules.reset();
 
-  #ifdef WITH_INSPECTOR
-  Inspector::instance().unregisterGlobalContext(m_context);
-  #endif
+  if (canUseInspector(m_context)) {
+    IInspector* pInspector = JSC_JSInspectorGetInstance(true);
+    pInspector->unregisterGlobalContext(m_context);
+  }
 
   JSC_JSGlobalContextRelease(m_context);
   m_context = nullptr;

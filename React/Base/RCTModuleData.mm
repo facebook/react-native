@@ -163,7 +163,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     [_bridge registerModuleForFrameUpdates:_instance withModuleData:self];
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
                                                         object:_bridge
-                                                      userInfo:@{@"module": _instance}];
+                                                      userInfo:@{@"module": _instance, @"bridge": RCTNullIfNil(_bridge.parentBridge)}];
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
 }
