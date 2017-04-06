@@ -124,35 +124,4 @@ const ReactNative = {
   },
 };
 
-// Better error messages when accessing React APIs on ReactNative
-if (__DEV__) {
-  const throwOnWrongReactAPI = require('throwOnWrongReactAPI');
-  const reactAPIs = [ 'createClass', 'Component' ];
-
-  for (const key of reactAPIs) {
-    Object.defineProperty(ReactNative, key, {
-      get() { throwOnWrongReactAPI(key); },
-      enumerable: false,
-      configurable: false,
-    });
-  }
-}
-
-// Preserve getters with warnings on the internal ReactNative copy without
-// invoking them.
-const ReactNativeInternal = require('ReactNative');
-function applyForwarding(key) {
-  if (__DEV__) {
-    Object.defineProperty(
-      ReactNative,
-      key,
-      Object.getOwnPropertyDescriptor(ReactNativeInternal, key)
-    );
-    return;
-  }
-  ReactNative[key] = ReactNativeInternal[key];
-}
-for (const key in ReactNativeInternal) {
-  applyForwarding(key);
-}
 module.exports = ReactNative;
