@@ -58,6 +58,17 @@ export type PushNotificationEventName = $Enum<{
 }>;
 
 /**
+ * <div class="banner-crna-ejected">
+ *   <h3>Native Builds Only</h3>
+ *   <p>
+ *     This API only works in apps made with <code>react-native init</code>
+ *     or in those made with Create React Native App which have since ejected. For
+ *     more information about ejecting, please see
+ *     the <a href="https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md" target="_blank">guide</a> on
+ *     the Create React Native App repository.
+ *   </p>
+ * </div>
+ *
  * Handle push notifications for your app, including permission handling and
  * icon badge number.
  *
