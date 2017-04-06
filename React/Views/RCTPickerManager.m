@@ -19,7 +19,9 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [RCTPicker new];
+  RCTPicker *picker = [RCTPicker new];
+  [picker selectRow:0 inComponent:0 animated:YES];
+  return picker;
 }
 
 RCT_EXPORT_VIEW_PROPERTY(items, NSArray<NSDictionary *>)
