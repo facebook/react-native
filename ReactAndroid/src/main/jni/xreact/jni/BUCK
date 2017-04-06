@@ -39,7 +39,6 @@ cxx_library(
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNativeJNI\"",
         "-DWITH_FBSYSTRACE=1",
-        "-DWITH_INSPECTOR=1",
     ],
     soname = "libreactnativejnifb.$(ext)",
     visibility = [

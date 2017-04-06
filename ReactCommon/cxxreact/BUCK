@@ -39,7 +39,6 @@ if THIS_IS_FBANDROID:
           '-DWITH_JSC_MEMORY_PRESSURE=1',
           '-DWITH_REACT_INTERNAL_SETTINGS=1',
           '-DWITH_FB_MEMORY_PROFILING=1',
-          '-DWITH_INSPECTOR=1',
         ],
         deps = JSC_DEPS,
         visibility = [
