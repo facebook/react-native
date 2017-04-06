@@ -9,6 +9,7 @@
 #include <cxxreact/Platform.h>
 #include <jschelpers/Value.h>
 #include "CatalystInstanceImpl.h"
+#include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JSCPerfLogging.h"
 #include "JSLoader.h"
@@ -167,6 +168,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     JSCJavaScriptExecutorHolder::registerNatives();
     ProxyJavaScriptExecutorHolder::registerNatives();
     CatalystInstanceImpl::registerNatives();
+    CxxModuleWrapperBase::registerNatives();
     CxxModuleWrapper::registerNatives();
     JCallbackImpl::registerNatives();
     #ifdef WITH_INSPECTOR
