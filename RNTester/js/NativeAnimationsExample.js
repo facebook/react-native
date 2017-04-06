@@ -82,7 +82,7 @@ class ValueListenerExample extends React.Component {
   _current = 0;
 
   componentDidMount() {
-    this.state.anim.addListener(e => this.setState({ progress: e.value }));
+    this.state.anim.addListener(e => this.setState({progress: e.value}));
   }
 
   componentWillUnmount() {
@@ -161,7 +161,7 @@ class LoopExample extends React.Component {
 const RNTesterSettingSwitchRow = require('RNTesterSettingSwitchRow');
 class InternalSettings extends React.Component {
   _stallInterval: ?number;
-  state: { busyTime: number | string, filteredStall: number };
+  state: {busyTime: number | string, filteredStall: number};
   render() {
     return (
       <View>
@@ -187,10 +187,10 @@ class InternalSettings extends React.Component {
           initialValue={false}
           label="Track JS Stalls"
           onEnable={() => {
-            require('JSEventLoopWatchdog').install({ thresholdMS: 25 });
-            this.setState({ busyTime: '<none>' });
+            require('JSEventLoopWatchdog').install({thresholdMS: 25});
+            this.setState({busyTime: '<none>'});
             require('JSEventLoopWatchdog').addHandler({
-              onStall: ({ busyTime }) =>
+              onStall: ({busyTime}) =>
                 this.setState(state => ({
                   busyTime,
                   filteredStall: (state.filteredStall || 0) * 0.97 +
@@ -238,26 +238,24 @@ class EventExample extends React.Component {
         />
         <Animated.ScrollView
           horizontal
-          style={{ height: 100, marginTop: 16 }}
+          style={{height: 100, marginTop: 16}}
           scrollEventThrottle={16}
           onScroll={Animated.event(
             [
               {
-                nativeEvent: { contentOffset: { x: this.state.scrollX } },
+                nativeEvent: {contentOffset: {x: this.state.scrollX}},
               },
             ],
             {
               useNativeDriver: true,
             },
-          )}
-        >
+          )}>
           <View
             style={{
               width: 600,
               backgroundColor: '#eee',
               justifyContent: 'center',
-            }}
-          >
+            }}>
             <Text>Scroll me!</Text>
           </View>
         </Animated.ScrollView>
@@ -287,7 +285,7 @@ exports.examples = [
     title: 'Multistage With Multiply and rotation',
     render: function() {
       return (
-        <Tester type="timing" config={{ duration: 1000 }}>
+        <Tester type="timing" config={{duration: 1000}}>
           {anim => (
             <Animated.View
               style={[
@@ -335,7 +333,7 @@ exports.examples = [
     title: 'Multistage With Multiply',
     render: function() {
       return (
-        <Tester type="timing" config={{ duration: 1000 }}>
+        <Tester type="timing" config={{duration: 1000}}>
           {anim => (
             <Animated.View
               style={[
@@ -377,7 +375,7 @@ exports.examples = [
     title: 'Scale interpolation with clamping',
     render: function() {
       return (
-        <Tester type="timing" config={{ duration: 1000 }}>
+        <Tester type="timing" config={{duration: 1000}}>
           {anim => (
             <Animated.View
               style={[
@@ -404,7 +402,7 @@ exports.examples = [
     title: 'Opacity with delay',
     render: function() {
       return (
-        <Tester type="timing" config={{ duration: 1000, delay: 1000 }}>
+        <Tester type="timing" config={{duration: 1000, delay: 1000}}>
           {anim => (
             <Animated.View
               style={[
@@ -423,7 +421,7 @@ exports.examples = [
     title: 'Rotate interpolation',
     render: function() {
       return (
-        <Tester type="timing" config={{ duration: 1000 }}>
+        <Tester type="timing" config={{duration: 1000}}>
           {anim => (
             <Animated.View
               style={[
@@ -449,7 +447,7 @@ exports.examples = [
     title: 'translateX => Animated.spring',
     render: function() {
       return (
-        <Tester type="spring" config={{ bounciness: 0 }}>
+        <Tester type="spring" config={{bounciness: 0}}>
           {anim => (
             <Animated.View
               style={[
@@ -477,9 +475,8 @@ exports.examples = [
       return (
         <Tester
           type="decay"
-          config={{ velocity: 0.5 }}
-          reverseConfig={{ velocity: -0.5 }}
-        >
+          config={{velocity: 0.5}}
+          reverseConfig={{velocity: -0.5}}>
           {anim => (
             <Animated.View
               style={[
@@ -502,7 +499,7 @@ exports.examples = [
     title: 'Drive custom property',
     render: function() {
       return (
-        <Tester type="timing" config={{ duration: 1000 }}>
+        <Tester type="timing" config={{duration: 1000}}>
           {anim => <AnimatedSlider style={{}} value={anim} />}
         </Tester>
       );
