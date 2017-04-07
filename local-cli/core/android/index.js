@@ -38,6 +38,11 @@ exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
   const manifest = readManifest(manifestPath);
 
   const packageName = userConfig.packageName || getPackageName(manifest);
+
+  if (!packageName) {
+    throw new Error(`Package name not found in ${manifestPath}`);
+  }
+
   const packageFolder = userConfig.packageFolder ||
     packageName.replace(/\./g, path.sep);
 
