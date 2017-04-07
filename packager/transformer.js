@@ -29,12 +29,14 @@ const {compactMapping} = require('./src/Bundler/source-map');
  */
 const getBabelRC = (function() {
   let babelRC = null;
+  let pr = null;
 
   return function _getBabelRC(projectRoots) {
-    if (babelRC !== null) {
+    if (babelRC !== null && pr === projectRoots) {
       return babelRC;
     }
 
+    pr = projectRoots;
     babelRC = {plugins: []}; // empty babelrc
 
     // Let's look for the .babelrc in the first project root.
