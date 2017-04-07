@@ -326,10 +326,6 @@ static inline BOOL isRectInvalid(CGRect rect) {
   uint16_t _coalescingKey;
   NSString *_lastEmittedEventName;
   NSHashTable *_scrollListeners;
-  // The last non-zero value of translationAlongAxis from scrollViewWillEndDragging.
-  // Tells if user was scrolling forward or backward and is used to determine a correct
-  // snap index when the user stops scrolling with a tap on the scroll view.
-  CGFloat _lastNonZeroTranslationAlongAxis;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -667,32 +663,27 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
     BOOL isHorizontal = [self isHorizontal:scrollView];
 
     // What is the current offset?
+    CGFloat velocityAlongAxis = isHorizontal ? velocity.x : velocity.y;
     CGFloat targetContentOffsetAlongAxis = isHorizontal ? targetContentOffset->x : targetContentOffset->y;
-
-    // Which direction is the scroll travelling?
-    CGPoint translation = [scrollView.panGestureRecognizer translationInView:scrollView];
-    CGFloat translationAlongAxis = isHorizontal ? translation.x : translation.y;
 
     // Offset based on desired alignment
     CGFloat frameLength = isHorizontal ? self.frame.size.width : self.frame.size.height;
     CGFloat alignmentOffset = 0.0f;
-    if ([self.snapToAlignment  isEqualToString: @"center"]) {
+    if ([self.snapToAlignment isEqualToString: @"center"]) {
       alignmentOffset = (frameLength * 0.5f) + (snapToIntervalF * 0.5f);
-    } else if ([self.snapToAlignment  isEqualToString: @"end"]) {
+    } else if ([self.snapToAlignment isEqualToString: @"end"]) {
       alignmentOffset = frameLength;
     }
 
     // Pick snap point based on direction and proximity
-    NSInteger snapIndex = floor((targetContentOffsetAlongAxis + alignmentOffset) / snapToIntervalF);
-    BOOL isScrollingForward = translationAlongAxis < 0;
-    BOOL wasScrollingForward = translationAlongAxis == 0 && _lastNonZeroTranslationAlongAxis < 0;
-    if (isScrollingForward || wasScrollingForward) {
-      snapIndex = snapIndex + 1;
-    }
-    if (translationAlongAxis != 0) {
-      _lastNonZeroTranslationAlongAxis = translationAlongAxis;
-    }
-    CGFloat newTargetContentOffset = ( snapIndex * snapToIntervalF ) - alignmentOffset;
+    CGFloat fractionalIndex = (targetContentOffsetAlongAxis + alignmentOffset) / snapToIntervalF;
+    NSInteger snapIndex =
+      velocityAlongAxis > 0.0 ?
+        ceil(fractionalIndex) :
+      velocityAlongAxis < 0.0 ?
+        floor(fractionalIndex) :
+        round(fractionalIndex);
+    CGFloat newTargetContentOffset = (snapIndex * snapToIntervalF) - alignmentOffset;
 
     // Set new targetContentOffset
     if (isHorizontal) {

@@ -49,7 +49,7 @@ class Tester extends React.Component {
       this.current && this.props.reverseConfig ? this.props.reverseConfig : this.props.config
     );
     this.current = this.current ? 0 : 1;
-    const config = {
+    const config: Object = {
       ...animConfig,
       toValue: this.current,
     };
@@ -352,12 +352,12 @@ exports.examples = [
     },
   },
   {
-    title: 'Opacity without interpolation',
+    title: 'Opacity with delay',
     render: function() {
       return (
         <Tester
           type="timing"
-          config={{ duration: 1000 }}>
+          config={{ duration: 1000, delay: 1000 }}>
           {anim => (
             <Animated.View
               style={[

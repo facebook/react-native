@@ -59,7 +59,7 @@ const VIEWABILITY_CONFIG = {
 };
 
 const renderSectionHeader = ({section}) => (
-  <View>
+  <View style={styles.header}>
     <Text style={styles.headerText}>SECTION HEADER: {section.key}</Text>
     <SeparatorComponent />
   </View>
@@ -144,6 +144,7 @@ class SectionListExample extends React.PureComponent {
           refreshing={false}
           renderItem={this._renderItemComponent}
           renderSectionHeader={renderSectionHeader}
+          stickySectionHeadersEnabled
           sections={[
             {renderItem: renderStackedItem, key: 's1', data: [
               {title: 'Item In Header Section', text: 'Section s1', key: '0'},
@@ -186,6 +187,9 @@ class SectionListExample extends React.PureComponent {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    backgroundColor: '#e9eaed',
+  },
   headerText: {
     padding: 4,
   },

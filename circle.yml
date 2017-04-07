@@ -73,7 +73,7 @@ test:
     # build test APK
     - buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
     # run installed apk with tests
-    - node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
+    # - node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
 
     # Android e2e test
     - source scripts/circle-ci-android-setup.sh && retry3 node ./scripts/run-ci-e2e-tests.js --android --js --retries 2

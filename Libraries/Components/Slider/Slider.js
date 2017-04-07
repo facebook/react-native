@@ -126,8 +126,9 @@ var Slider = React.createClass({
     onValueChange: PropTypes.func,
 
     /**
-     * Callback called when the user finishes changing the value (e.g. when
-     * the slider is released).
+     * Callback that is called when the user releases the slider,
+     * regardless if the value has changed. The current value is passed
+     * as an argument to the callback handler.
      */
     onSlidingComplete: PropTypes.func,
 

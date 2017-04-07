@@ -14,8 +14,8 @@ Explain what you did, what you expected to happen, and what actually happens.
 
 ### Reproduction Steps and Sample Code
 
-Try to reproduce your bug on https://sketch.expo.io/ and provide a link. 
-If you can't reproduce the bug on Sketch, provide a sample project. At the very least, provide an example of your code.
+Try to reproduce your bug on https://snack.expo.io/ and provide a link. 
+If you can't reproduce the bug on Snack, provide a sample project. At the very least, provide an example of your code.
 
 ### Solution
 

@@ -46,13 +46,19 @@ import type {
   TransformOptions,
 } from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
+
+export type ExtraTransformOptions = {
+  +inlineRequires?: {+blacklist: {[string]: true}} | boolean,
+  +preloadedModules?: Array<string> | false,
+  +ramGroups?: Array<string>,
+};
 
 export type GetTransformOptions = (
   mainModuleName: string,
   options: {},
   getDependencies: string => Promise<Array<string>>,
-) => {} | Promise<{}>;
+) => ExtraTransformOptions | Promise<ExtraTransformOptions>;
 
 type Asset = {
   __packager_asset: boolean,
@@ -322,12 +328,12 @@ class Bundler {
     moduleSystemDeps?: Array<Module>,
     onProgress?: () => void,
     platform?: ?string,
-    resolutionResponse?: ResolutionResponse,
+    resolutionResponse?: ResolutionResponse<Module>,
     runBeforeMainModule?: boolean,
     runModule?: boolean,
     unbundle?: boolean,
   }) {
-    const onResolutionResponse = (response: ResolutionResponse) => {
+    const onResolutionResponse = (response: ResolutionResponse<Module>) => {
       /* $FlowFixMe: looks like ResolutionResponse is monkey-patched
        * with `getModuleId`. */
       bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
@@ -342,7 +348,7 @@ class Bundler {
     const finalizeBundle = ({bundle: finalBundle, transformedModules, response, modulesByName}: {
       bundle: Bundle,
       transformedModules: Array<{module: Module, transformed: ModuleTransport}>,
-      response: ResolutionResponse,
+      response: ResolutionResponse<Module>,
       modulesByName: {[name: string]: Module},
     }) =>
       this._resolverPromise.then(resolver => Promise.all(

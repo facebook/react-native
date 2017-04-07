@@ -44,7 +44,7 @@ class Package {
     this._content = null;
   }
 
-  getMain() {
+  getMain(): string {
     const json = this.read();
     var replacements = getReplacements(json);
     if (typeof replacements === 'string') {

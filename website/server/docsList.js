@@ -103,9 +103,12 @@ const stylesForEmbed = [
   '../Libraries/Image/ImageStylePropTypes.js',
 ];
 
+const viewPropTypes = '../Libraries/Components/View/ViewPropTypes.js';
+
 module.exports = {
   components,
   apis,
   stylesWithPermalink,
   stylesForEmbed,
+  viewPropTypes,
 };
