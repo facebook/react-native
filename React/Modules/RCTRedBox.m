@@ -185,8 +185,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (NSString *)formatFrameSource:(RCTJSStackFrame *)stackFrame
 {
+  NSString *fileName = RCTNilIfNull(stackFrame.file) ? [stackFrame.file lastPathComponent] : @"<unknown file>";
   NSString *lineInfo = [NSString stringWithFormat:@"%@:%zd",
-                        [stackFrame.file lastPathComponent],
+                        fileName,
                         stackFrame.lineNumber];
 
   if (stackFrame.column != 0) {
