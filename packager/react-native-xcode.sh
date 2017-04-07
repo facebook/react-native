@@ -76,7 +76,7 @@ if [[ "$CONFIGURATION" = "Debug" && ! "$PLATFORM_NAME" == *simulator ]]; then
   PLIST=$TARGET_BUILD_DIR/$INFOPLIST_PATH
   IP=$(ipconfig getifaddr en0)
   if [ -z "$IP" ]; then
-    IP=$(ifconfig | grep 'inet ' | grep -v '^127' | cut -d\   -f2  | awk 'NR==1{print $1}')
+    IP=$(ifconfig | grep 'inet ' | grep -v ' 127.' | cut -d\   -f2 | awk 'NR==1{print $1}')
   fi
   $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
   $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:$IP.xip.io:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
