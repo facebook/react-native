@@ -48,7 +48,7 @@ class MainScreen extends React.Component {
       <Button
         title="Go to Jane's profile"
         onPress={() =>
-          navigate('Profile', { name: 'Jane' });
+          navigate('Profile', { name: 'Jane' })
         }
       />
     );
