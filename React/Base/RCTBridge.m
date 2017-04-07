@@ -169,7 +169,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
 }
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
-                   moduleProvider:(RCTBridgeModuleProviderBlock)block
+                   moduleProvider:(RCTBridgeModuleListProvider)block
                     launchOptions:(NSDictionary *)launchOptions
 {
   return [self initWithDelegate:nil
@@ -180,7 +180,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
 
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
                        bundleURL:(NSURL *)bundleURL
-                  moduleProvider:(RCTBridgeModuleProviderBlock)block
+                  moduleProvider:(RCTBridgeModuleListProvider)block
                    launchOptions:(NSDictionary *)launchOptions
 {
   if (self = [super init]) {

@@ -89,10 +89,14 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
-                                           bundleURL:(NSURL *)bundleURL
-                                      moduleProvider:(RCTBridgeModuleProviderBlock)block
-                                       launchOptions:(NSDictionary *)launchOptions)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(__unused id<RCTBridgeDelegate>)delegate
+                                           bundleURL:(__unused NSURL *)bundleURL
+                                      moduleProvider:(__unused RCTBridgeModuleListProvider)block
+                                       launchOptions:(__unused NSDictionary *)launchOptions)
+
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleURL
+                                       moduleProvider:(__unused RCTBridgeModuleListProvider)block
+                                        launchOptions:(__unused NSDictionary *)launchOptions)
 
 - (void)start
 {
@@ -587,10 +591,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
   }
   RCTFatal(error);
 }
-
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleURL
-                    moduleProvider:(__unused RCTBridgeModuleProviderBlock)block
-                    launchOptions:(__unused NSDictionary *)launchOptions)
 
 /**
  * Prevent super from calling setUp (that'd create another batchedBridge)
