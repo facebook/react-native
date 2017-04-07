@@ -330,6 +330,7 @@ Use the React Native command line interface to generate a new React Native proje
 ```
 react-native init AwesomeProject
 cd AwesomeProject
+react-native start
 react-native run-android
 ```
 
