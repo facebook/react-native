@@ -21,9 +21,9 @@ const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 const Touchable = require('Touchable');
 
-const processColor = require('processColor');
 const createReactNativeComponentClass = require('createReactNativeComponentClass');
 const mergeFast = require('mergeFast');
+const processColor = require('processColor');
 
 const { PropTypes } = React;
 
@@ -177,6 +177,11 @@ const Text = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
+    /**
+     * Used to locate this view from native code.
+     * @platform android
+     */
+    nativeID: PropTypes.string,
     /**
      * Specifies whether fonts should scale to respect Text Size accessibility settings. The
      * default is `true`.
