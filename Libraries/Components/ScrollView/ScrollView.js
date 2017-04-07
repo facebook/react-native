@@ -56,7 +56,7 @@ const requireNativeComponent = require('requireNativeComponent');
  *
  * On the other hand, this has a performance downside. Imagine you have a very
  * long list of items you want to display, maybe several screens worth of
- * content. Creating JS components and native views for everythign all at once,
+ * content. Creating JS components and native views for everything all at once,
  * much of which may not even be shown, will contribute to slow rendering and
  * increased memory usage.
  *
