@@ -59,6 +59,7 @@
 		194804EF1E975DB500623005 /* RCTDecayAnimation.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 194804EB1E975D8E00623005 /* RCTDecayAnimation.h */; };
 		194804F01E975DCF00623005 /* RCTDecayAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 194804EB1E975D8E00623005 /* RCTDecayAnimation.h */; };
 		194804F11E975DD700623005 /* RCTDecayAnimation.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 194804EB1E975D8E00623005 /* RCTDecayAnimation.h */; };
+		194804F21E977DDB00623005 /* RCTDecayAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 194804EC1E975D8E00623005 /* RCTDecayAnimation.m */; };
 		1980B70E1E80D1C4004DC789 /* RCTAnimationUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501B71D07A644005F35D8 /* RCTAnimationUtils.h */; };
 		1980B7101E80D1C4004DC789 /* RCTNativeAnimatedModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E501BD1D07A644005F35D8 /* RCTNativeAnimatedModule.h */; };
 		1980B7121E80D1C4004DC789 /* RCTNativeAnimatedNodesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 94DA09161DC7971C00AEA8C9 /* RCTNativeAnimatedNodesManager.h */; };
@@ -441,6 +442,7 @@
 				944244D01DB962DA0032A02B /* RCTFrameAnimation.m in Sources */,
 				944244D11DB962DC0032A02B /* RCTSpringAnimation.m in Sources */,
 				9476E8EC1DC9232D005D5CD1 /* RCTNativeAnimatedNodesManager.m in Sources */,
+				194804F21E977DDB00623005 /* RCTDecayAnimation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
