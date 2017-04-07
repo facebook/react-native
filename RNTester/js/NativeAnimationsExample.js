@@ -203,12 +203,8 @@ class InternalSettings extends React.Component {
         />
         {this.state &&
           <Text>
-            JS Stall filtered:
-            {' '}
-            {Math.round(this.state.filteredStall)}
-            , last:
-            {' '}
-            {this.state.busyTime}
+            {`JS Stall filtered: ${Math.round(this.state.filteredStall)}, `}
+            {`last: ${this.state.busyTime}`}
           </Text>}
       </View>
     );
@@ -240,14 +236,8 @@ class EventExample extends React.Component {
           style={{height: 100, marginTop: 16}}
           scrollEventThrottle={16}
           onScroll={Animated.event(
-            [
-              {
-                nativeEvent: {contentOffset: {x: this.state.scrollX}},
-              },
-            ],
-            {
-              useNativeDriver: true,
-            },
+            [{nativeEvent: {contentOffset: {x: this.state.scrollX}}}],
+            {useNativeDriver: true},
           )}>
           <View
             style={{
