@@ -27,11 +27,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ReactModule(name = SettingsModule.NAME)
-public class SettingsModule extends ReactContextBaseJavaModule  implements SharedPreferences.OnSharedPreferenceChangeListener{
+public class SettingsModule extends ReactContextBaseJavaModule implements SharedPreferences.OnSharedPreferenceChangeListener{
 
   @SuppressWarnings("WeakerAccess")
   static final String NAME = "SettingsManager";
   static final String DEFAULT_FILE_NAME = "ReactNative";
+  static final String TAG = "SettingsMmodule";
+
+  static boolean sSettingsModuleInstantiated = false;
 
   static private String sFilename = "";
   private Boolean ignoringUpdates = false;
@@ -39,6 +42,7 @@ public class SettingsModule extends ReactContextBaseJavaModule  implements Share
 
   public SettingsModule(ReactApplicationContext context) {
     super(context);
+
   }
 
   @Override
@@ -46,7 +50,7 @@ public class SettingsModule extends ReactContextBaseJavaModule  implements Share
     return SettingsModule.NAME;
   }
 
-  private SharedPreferences getPreferences() {
+  private SharedPreferences ensurePreferences() {
     if (mPreferences == null) {
       if (SettingsModule.sFilename.length() > 0) {
         mPreferences = getReactApplicationContext().getSharedPreferences(SettingsModule.sFilename, Context.MODE_PRIVATE);
@@ -55,19 +59,33 @@ public class SettingsModule extends ReactContextBaseJavaModule  implements Share
       } else {
         mPreferences = getReactApplicationContext().getSharedPreferences(DEFAULT_FILE_NAME, Context.MODE_PRIVATE);
       }
+      sSettingsModuleInstantiated = true;
       mPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
     return mPreferences;
   }
 
-  static public void setFilename(String filename) {
+  /***
+   * Configure the Settings Module to use a SharedPreferences file with a specific name as its backing store.
+   * Useful if the Settings Module needs to use an existing SharedPreferences file or to ensure that Settings Modules
+   * belonging to different ReactPackages will all share the same SharedPreferences file for their backing store.
+   * <p></p>
+   * <b>Note:</b>this method may only be called before a Settings Module initialization (i.e. before a ReactMainPackage is instantiated)
+   * An app would typically invoke this function in the app's main activity before setting up the React Native environment
+   * @param filename the name of the SharedPreferences file to use or create for the backing store
+   * @throws IllegalStateException if called after instantiation of a Settings module
+   */
+  static public void setSharedPreferencesFilename(String filename) {
+    if (sSettingsModuleInstantiated) {
+      throw new IllegalStateException("Attempt to set Settings Module SharedPreferences file name after a Settings Module instantiation");
+    }
     sFilename = filename;
   }
 
   @Override
   public void onCatalystInstanceDestroy() {
-    getPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    ensurePreferences().unregisterOnSharedPreferenceChangeListener(this);
   }
 
   @ReactMethod
@@ -98,10 +116,10 @@ public class SettingsModule extends ReactContextBaseJavaModule  implements Share
           break;
 
         case Map: // Not supported
-          throw new IllegalArgumentException("Could not store Map in Settings");
+          throw new IllegalArgumentException(TAG + ": Cannot not store Map as value in Settings");
 
         case Array: // Not supported
-          throw new IllegalArgumentException("Could not store Array in Settings");
+          throw new IllegalArgumentException(TAG + ": Cannot not store Array as value in Settings");
       }
     }
 
@@ -110,7 +128,7 @@ public class SettingsModule extends ReactContextBaseJavaModule  implements Share
 
   public Map<String, Object> getConstants() {
     Map<String, Object> exportedValuePairs = new HashMap<String, Object>();
-    Map<String, ?> prefsMap = getPreferences().getAll();
+    Map<String, ?> prefsMap = ensurePreferences().getAll();
 
     for (String key : prefsMap.keySet()) {
       Object value = prefsMap.get(key);
@@ -130,7 +148,7 @@ public class SettingsModule extends ReactContextBaseJavaModule  implements Share
     if (ignoringUpdates) {
       return;
     }
-    Map<String, ?> prefsMap = getPreferences().getAll();
+    Map<String, ?> prefsMap = ensurePreferences().getAll();
 
     WritableMap map = Arguments.createMap();
 
