@@ -48,11 +48,11 @@ type OptionalProps<SectionT: SectionBase> = {
   /**
    * Rendered after the last item in the last section.
    */
-  ListFooterComponent?: ?ReactClass<*>,
+  ListFooterComponent?: ?(ReactClass<*> | React.Element<*>),
   /**
    * Rendered at the very beginning of the list.
    */
-  ListHeaderComponent?: ?ReactClass<*>,
+  ListHeaderComponent?: ?(ReactClass<*> | React.Element<*>),
   /**
    * Default renderer for every item in every section.
    */

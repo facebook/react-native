@@ -49,13 +49,15 @@ type OptionalProps<ItemT> = {
    */
   ItemSeparatorComponent?: ?ReactClass<any>,
   /**
-   * Rendered at the bottom of all the items.
+   * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
+   * a rendered element.
    */
-  ListFooterComponent?: ?ReactClass<any>,
+  ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
-   * Rendered at the top of all the items.
+   * Rendered at the top of all the items. Can be a React Component Class, a render function, or
+   * a rendered element.
    */
-  ListHeaderComponent?: ?ReactClass<any>,
+  ListHeaderComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
    * Optional custom style for multi-item rows generated when numColumns > 1.
    */

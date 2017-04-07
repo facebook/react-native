@@ -202,12 +202,18 @@ const Text = React.createClass({
      * @platform ios
      */
     minimumFontScale: PropTypes.number,
+    /**
+     * Specifies the disabled state of the text view for testing purposes
+     * @platform android
+     */
+    disabled: PropTypes.bool,
   },
   getDefaultProps(): Object {
     return {
       accessible: true,
       allowFontScaling: true,
       ellipsizeMode: 'tail',
+      disabled: false,
     };
   },
   getInitialState: function(): Object {

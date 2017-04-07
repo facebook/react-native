@@ -16,22 +16,53 @@ const FetchError = require('node-fetch/lib/fetch-error');
 
 const crypto = require('crypto');
 const fetch = require('node-fetch');
-const imurmurhash = require('imurmurhash');
 const jsonStableStringify = require('json-stable-stringify');
 const path = require('path');
 
-import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type {
+  Options as TransformWorkerOptions,
+  TransformOptions,
+} from '../JSTransformer/worker/worker';
 import type {CachedResult, GetTransformCacheKey} from './TransformCache';
+
+/**
+ * The API that a global transform cache must comply with. To implement a
+ * custom cache, implement this interface and pass it as argument to the
+ * application's top-level `Server` class.
+ */
+export type GlobalTransformCache = {
+  /**
+   * Synchronously determine if it is worth trying to fetch a result from the
+   * cache. This can be used, for instance, to exclude sets of options we know
+   * will never be cached.
+   */
+  shouldFetch(props: FetchProps): boolean,
+
+  /**
+   * Try to fetch a result. It doesn't actually need to fetch from a server,
+   * the global cache could be instantiated locally for example.
+   */
+  fetch(props: FetchProps): Promise<?CachedResult>,
+
+  /**
+   * Try to store a result, without waiting for the success or failure of the
+   * operation. Consequently, the actual storage operation could be done at a
+   * much later point if desired. It is recommended to actually have this
+   * function be a no-op in production, and only do the storage operation from
+   * a script running on your Continuous Integration platform.
+   */
+  store(props: FetchProps, result: CachedResult): void,
+};
 
 type FetchResultURIs = (keys: Array<string>) => Promise<Map<string, string>>;
 type FetchResultFromURI = (uri: string) => Promise<?CachedResult>;
 type StoreResults = (resultsByKey: Map<string, CachedResult>) => Promise<void>;
 
-type FetchProps = {
+export type FetchProps = {
   filePath: string,
   sourceCode: string,
   getTransformCacheKey: GetTransformCacheKey,
-  transformOptions: TransformOptions,
+  transformOptions: TransformWorkerOptions,
 };
 
 type URI = string;
@@ -98,29 +129,6 @@ class KeyResultStore {
 
 }
 
-/**
- * The transform options contain absolute paths. This can contain, for example,
- * the username if someone works their home directory (very likely). We get rid
- * of this local data for the global cache, otherwise nobody would share the
- * same cache keys. The project roots should not be needed as part of the cache
- * key as they should not affect the transformation of a single particular file.
- */
-function globalizeTransformOptions(
-  options: TransformOptions,
-): TransformOptions {
-  const {transform} = options;
-  if (transform == null) {
-    return options;
-  }
-  return {
-    ...options,
-    transform: {
-      ...transform,
-      projectRoots: [],
-    },
-  };
-}
-
 export type TransformProfile = {+dev: boolean, +minify: boolean, +platform: string};
 
 function profileKey({dev, minify, platform}: TransformProfile): string {
@@ -177,11 +185,12 @@ function validateCachedResult(cachedResult: mixed): ?CachedResult {
   return null;
 }
 
-class GlobalTransformCache {
+class URIBasedGlobalTransformCache {
 
   _fetcher: KeyURIFetcher;
   _fetchResultFromURI: FetchResultFromURI;
   _profileSet: TransformProfileSet;
+  _optionsHasher: OptionsHasher;
   _store: ?KeyResultStore;
 
   static FetchFailedError;
@@ -194,31 +203,34 @@ class GlobalTransformCache {
    * of returning the content directly allows for independent and parallel
    * fetching of each result, that may be arbitrarily large JSON blobs.
    */
-  constructor(
-    fetchResultURIs: FetchResultURIs,
+  constructor(props: {
     fetchResultFromURI: FetchResultFromURI,
-    storeResults: ?StoreResults,
+    fetchResultURIs: FetchResultURIs,
     profiles: Iterable<TransformProfile>,
-  ) {
-    this._fetcher = new KeyURIFetcher(fetchResultURIs);
-    this._profileSet = new TransformProfileSet(profiles);
-    this._fetchResultFromURI = fetchResultFromURI;
-    if (storeResults != null) {
-      this._store = new KeyResultStore(storeResults);
+    rootPath: string,
+    storeResults: StoreResults | null,
+  }) {
+    this._fetcher = new KeyURIFetcher(props.fetchResultURIs);
+    this._profileSet = new TransformProfileSet(props.profiles);
+    this._fetchResultFromURI = props.fetchResultFromURI;
+    this._optionsHasher = new OptionsHasher(props.rootPath);
+    if (props.storeResults != null) {
+      this._store = new KeyResultStore(props.storeResults);
     }
   }
 
   /**
    * Return a key for identifying uniquely a source file.
    */
-  static keyOf(props: FetchProps) {
-    const stableOptions = globalizeTransformOptions(props.transformOptions);
-    const digest = crypto.createHash('sha1').update([
-      jsonStableStringify(stableOptions),
-      props.getTransformCacheKey(props.sourceCode, props.filePath, props.transformOptions),
-      imurmurhash(props.sourceCode).result().toString(),
-    ].join('$')).digest('hex');
-    return `${digest}-${path.basename(props.filePath)}`;
+  keyOf(props: FetchProps) {
+    const hash = crypto.createHash('sha1');
+    const {sourceCode, filePath, transformOptions} = props;
+    this._optionsHasher.hashTransformWorkerOptions(hash, transformOptions);
+    const cacheKey = props.getTransformCacheKey(sourceCode, filePath, transformOptions);
+    hash.update(JSON.stringify(cacheKey));
+    hash.update(crypto.createHash('sha1').update(sourceCode).digest('hex'));
+    const digest = hash.digest('hex');
+    return `${digest}-${path.basename(filePath)}`;
   }
 
   /**
@@ -249,8 +261,8 @@ class GlobalTransformCache {
    * waiting a little time before retring if experience shows it's useful.
    */
   static fetchResultFromURI(uri: string): Promise<CachedResult> {
-    return GlobalTransformCache._fetchResultFromURI(uri).catch(error => {
-      if (!GlobalTransformCache.shouldRetryAfterThatError(error)) {
+    return URIBasedGlobalTransformCache._fetchResultFromURI(uri).catch(error => {
+      if (!URIBasedGlobalTransformCache.shouldRetryAfterThatError(error)) {
         throw error;
       }
       return this._fetchResultFromURI(uri);
@@ -284,7 +296,7 @@ class GlobalTransformCache {
    * key yet, or an error happened, processed separately.
    */
   async fetch(props: FetchProps): Promise<?CachedResult> {
-    const uri = await this._fetcher.fetch(GlobalTransformCache.keyOf(props));
+    const uri = await this._fetcher.fetch(this.keyOf(props));
     if (uri == null) {
       return null;
     }
@@ -293,12 +305,92 @@ class GlobalTransformCache {
 
   store(props: FetchProps, result: CachedResult) {
     if (this._store != null) {
-      this._store.store(GlobalTransformCache.keyOf(props), result);
+      this._store.store(this.keyOf(props), result);
     }
   }
 
 }
 
-GlobalTransformCache.FetchFailedError = FetchFailedError;
+class OptionsHasher {
+  _rootPath: string;
 
-module.exports = GlobalTransformCache;
+  constructor(rootPath: string) {
+    this._rootPath = rootPath;
+  }
+
+  /**
+   * This function is extra-conservative with how it hashes the transform
+   * options. In particular:
+   *
+   *     * we need to hash paths relative to the root, not the absolute paths,
+   *       otherwise everyone would have a different cache, defeating the
+   *       purpose of global cache;
+   *     * we need to reject any additional field we do not know of, because
+   *       they could contain absolute path, and we absolutely want to process
+   *       these.
+   *
+   * Theorically, Flow could help us prevent any other field from being here by
+   * using *exact* object type. In practice, the transform options are a mix of
+   * many different fields including the optional Babel fields, and some serious
+   * cleanup will be necessary to enable rock-solid typing.
+   */
+  hashTransformWorkerOptions(hash: crypto$Hash, options: TransformWorkerOptions): crypto$Hash {
+    const {dev, minify, platform, transform, extern, ...unknowns} = options;
+    const unknownKeys = Object.keys(unknowns);
+    if (unknownKeys.length > 0) {
+      const message = `these worker option fields are unknown: ${JSON.stringify(unknownKeys)}`;
+      throw new CannotHashOptionsError(message);
+    }
+    // eslint-disable-next-line no-undef, no-bitwise
+    hash.update(new Buffer([+dev | +minify << 1 | +!!extern << 2]));
+    hash.update(JSON.stringify(platform));
+    return this.hashTransformOptions(hash, transform);
+  }
+
+  /**
+   * The transform options contain absolute paths. This can contain, for
+   * example, the username if someone works their home directory (very likely).
+   * We get rid of this local data for the global cache, otherwise nobody would
+   * share the same cache keys. The project roots should not be needed as part
+   * of the cache key as they should not affect the transformation of a single
+   * particular file.
+   */
+  hashTransformOptions(hash: crypto$Hash, options: TransformOptions): crypto$Hash {
+    const {generateSourceMaps, dev, hot, inlineRequires, platform,
+      preloadedModules, projectRoots, ramGroups, ...unknowns} = options;
+    const unknownKeys = Object.keys(unknowns);
+    if (unknownKeys.length > 0) {
+      const message = `these transform option fields are unknown: ${JSON.stringify(unknownKeys)}`;
+      throw new CannotHashOptionsError(message);
+    }
+    // eslint-disable-next-line no-undef
+    hash.update(new Buffer([
+      // eslint-disable-next-line no-bitwise
+      +dev | +generateSourceMaps << 1 | +hot << 2 | +!!inlineRequires << 3,
+    ]));
+    hash.update(JSON.stringify(platform));
+    let relativeBlacklist = [];
+    if (typeof inlineRequires === 'object') {
+      relativeBlacklist = this.relativizeFilePaths(Object.keys(inlineRequires.blacklist));
+    }
+    const relativeProjectRoots = this.relativizeFilePaths(projectRoots);
+    const optionTuple = [relativeBlacklist, preloadedModules, relativeProjectRoots, ramGroups];
+    hash.update(JSON.stringify(optionTuple));
+    return hash;
+  }
+
+  relativizeFilePaths(filePaths: Array<string>): Array<string> {
+    return filePaths.map(filepath => path.relative(this._rootPath, filepath));
+  }
+}
+
+class CannotHashOptionsError extends Error {
+  constructor(message: string) {
+    super();
+    this.message = message;
+  }
+}
+
+URIBasedGlobalTransformCache.FetchFailedError = FetchFailedError;
+
+module.exports = {URIBasedGlobalTransformCache, CannotHashOptionsError};

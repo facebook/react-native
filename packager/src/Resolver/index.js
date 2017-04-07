@@ -24,7 +24,7 @@ import type {Reporter} from '../lib/reporting';
 import type {TransformCode} from '../node-haste/Module';
 import type Cache from '../node-haste/Cache';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 
 type MinifyCode = (filePath: string, code: string, map: SourceMap) =>
   Promise<{code: string, map: SourceMap}>;

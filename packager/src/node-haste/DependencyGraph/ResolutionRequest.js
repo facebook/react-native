@@ -53,12 +53,15 @@ type ModuleishCache<TModule, TPackage> = {
   getAssetModule(path: string): TModule,
 };
 
+type MatchFilesByDirAndPattern = (dirName: string, pattern: RegExp) => Array<string>;
+
 type Options<TModule, TPackage> = {
   dirExists: DirExistsFn,
   entryPath: string,
   extraNodeModules: ?Object,
   hasteFS: HasteFS,
   helpers: DependencyGraphHelpers,
+  matchFiles: MatchFilesByDirAndPattern,
   moduleCache: ModuleishCache<TModule, TPackage>,
   moduleMap: ModuleMap,
   platform: string,
@@ -89,6 +92,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
   _hasteFS: HasteFS;
   _helpers: DependencyGraphHelpers;
   _immediateResolutionCache: {[key: string]: TModule};
+  _matchFiles: MatchFilesByDirAndPattern;
   _moduleCache: ModuleishCache<TModule, TPackage>;
   _moduleMap: ModuleMap;
   _platform: string;
@@ -102,6 +106,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     extraNodeModules,
     hasteFS,
     helpers,
+    matchFiles,
     moduleCache,
     moduleMap,
     platform,
@@ -113,6 +118,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     this._extraNodeModules = extraNodeModules;
     this._hasteFS = hasteFS;
     this._helpers = helpers;
+    this._matchFiles = matchFiles;
     this._moduleCache = moduleCache;
     this._moduleMap = moduleMap;
     this._platform = platform;
@@ -442,7 +448,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
 
   _loadAsFile(potentialModulePath: string, fromModule: TModule, toModule: string): TModule {
     if (this._helpers.isAssetFile(potentialModulePath)) {
-      let dirname = path.dirname(potentialModulePath);
+      const dirname = path.dirname(potentialModulePath);
       if (!this._dirExists(dirname)) {
         throw new UnableToResolveError(
           fromModule,
@@ -453,22 +459,16 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
 
       const {name, type} = getAssetDataFromName(potentialModulePath, this._platforms);
 
-      let pattern = name + '(@[\\d\\.]+x)?';
+      let pattern = '^' + name + '(@[\\d\\.]+x)?';
       if (this._platform != null) {
         pattern += '(\\.' + this._platform + ')?';
       }
-      pattern += '\\.' + type;
+      pattern += '\\.' + type + '$';
 
-      // Escape backslashes in the path to be able to use it in the regex
-      if (path.sep === '\\') {
-        dirname = dirname.replace(/\\/g, '\\\\');
-      }
-
-      // We arbitrarly grab the first one, because scale selection
-      // will happen somewhere
-      const [assetFile] = this._hasteFS.matchFiles(
-        new RegExp(dirname + '(\/|\\\\)' + pattern)
-      );
+      const assetFiles = this._matchFiles(dirname, new RegExp(pattern));
+      // We arbitrarly grab the lowest, because scale selection will happen
+      // somewhere else. Always the lowest so that it's stable between builds.
+      const assetFile = getArrayLowestItem(assetFiles);
       if (assetFile) {
         return this._moduleCache.getAssetModule(assetFile);
       }
@@ -580,6 +580,19 @@ function resolveKeyWithPromise([key, promise]) {
 
 function isRelativeImport(filePath) {
   return /^[.][.]?(?:[/]|$)/.test(filePath);
+}
+
+function getArrayLowestItem(a: Array<string>): string | void {
+  if (a.length === 0) {
+    return undefined;
+  }
+  let lowest = a[0];
+  for (let i = 1; i < a.length; ++i) {
+    if (a[i] < lowest) {
+      lowest = a[i];
+    }
+  }
+  return lowest;
 }
 
 ResolutionRequest.emptyModule = require.resolve('./assets/empty-module.js');

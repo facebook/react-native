@@ -51,11 +51,11 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   /**
    * Rendered at the very beginning of the list.
    */
-  ListHeaderComponent?: ?ReactClass<any>,
+  ListHeaderComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
    * Rendered at the very end of the list.
    */
-  ListFooterComponent?: ?ReactClass<any>,
+  ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
    * Rendered in between each section.
    */

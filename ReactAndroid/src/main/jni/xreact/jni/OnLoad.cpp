@@ -18,7 +18,7 @@
 #include "JCallback.h"
 #include "JSLogging.h"
 
-#ifdef WITH_FBJSCEXTENSIONS
+#ifdef WITH_INSPECTOR
 #include "JInspector.h"
 #endif
 
@@ -171,7 +171,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     CxxModuleWrapperBase::registerNatives();
     CxxModuleWrapper::registerNatives();
     JCallbackImpl::registerNatives();
-    #ifdef WITH_FBJSCEXTENSIONS
+    #ifdef WITH_INSPECTOR
     JInspector::registerNatives();
     #endif
 

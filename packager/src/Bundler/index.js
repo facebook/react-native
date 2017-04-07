@@ -46,13 +46,19 @@ import type {
   TransformOptions,
 } from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
+
+export type ExtraTransformOptions = {
+  +inlineRequires?: {+blacklist: {[string]: true}} | boolean,
+  +preloadedModules?: Array<string> | false,
+  +ramGroups?: Array<string>,
+};
 
 export type GetTransformOptions = (
   mainModuleName: string,
   options: {},
   getDependencies: string => Promise<Array<string>>,
-) => {} | Promise<{}>;
+) => ExtraTransformOptions | Promise<ExtraTransformOptions>;
 
 type Asset = {
   __packager_asset: boolean,
