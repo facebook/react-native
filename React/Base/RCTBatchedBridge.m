@@ -1100,4 +1100,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   return _wasBatchActive;
 }
 
+#pragma mark - JavaScriptCore
+
+- (JSGlobalContextRef)jsContextRef
+{
+  return [self.jsContext JSGlobalContextRef];
+}
+
+- (JSContext *)jsContext
+{
+  if ([_javaScriptExecutor isKindOfClass:[RCTJSCExecutor class]]) {
+    return [(RCTJSCExecutor *)_javaScriptExecutor jsContext];
+  } else {
+    return nil;
+  }
+}
+
 @end

@@ -12,6 +12,7 @@
 
 #import <objc/runtime.h>
 
+#import "RCTBridge+JavaScriptCore.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
@@ -378,5 +379,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge callFunctionOnModule:module method:method arguments:arguments error:error];
 }
 
+@end
+
+@implementation RCTBridge (JavaScriptCore)
+
+- (JSContext *)jsContext
+{
+  return [self.batchedBridge jsContext];
+}
+
+- (JSGlobalContextRef)jsContextRef
+{
+  return [self.batchedBridge jsContextRef];
+}
 
 @end
