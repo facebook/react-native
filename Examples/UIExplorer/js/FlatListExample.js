@@ -127,7 +127,7 @@ class FlatListExample extends React.PureComponent {
         <SeparatorComponent />
         <AnimatedFlatList
           ItemSeparatorComponent={SeparatorComponent}
-          ListHeaderComponent={HeaderComponent}
+          ListHeaderComponent={<HeaderComponent />}
           ListFooterComponent={FooterComponent}
           data={filteredData}
           debug={this.state.debug}

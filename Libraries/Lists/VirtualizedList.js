@@ -377,9 +377,12 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
     if (ListHeaderComponent) {
+      const element = React.isValidElement(ListHeaderComponent)
+        ? ListHeaderComponent
+        : <ListHeaderComponent />;
       cells.push(
         <View key="$header" onLayout={this._onLayoutHeader}>
-          <ListHeaderComponent />
+          {element}
         </View>
       );
     }
@@ -450,9 +453,12 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       }
     }
     if (ListFooterComponent) {
+      const element = React.isValidElement(ListFooterComponent)
+        ? ListFooterComponent
+        : <ListFooterComponent />;
       cells.push(
         <View key="$footer" onLayout={this._onLayoutFooter}>
-          <ListFooterComponent />
+          {element}
         </View>
       );
     }
