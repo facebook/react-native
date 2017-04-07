@@ -281,7 +281,7 @@ class URIBasedGlobalTransformCache {
     return (
       error instanceof FetchError && error.type === 'request-timeout' || (
         error instanceof FetchFailedError &&
-        error.details.type === 'wrong_http_status' &&
+        error.details.type === 'unhandled_http_status' &&
         (error.details.statusCode === 503 || error.details.statusCode === 502)
       )
     );
