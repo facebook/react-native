@@ -12,6 +12,7 @@
 'use strict';
 
 const Batchinator = require('Batchinator');
+const FillRateHelper = require('FillRateHelper');
 const React = require('React');
 const ReactNative = require('ReactNative');
 const RefreshControl = require('RefreshControl');
@@ -27,6 +28,7 @@ const {computeWindowedRenderLimits} = require('VirtualizeUtils');
 import type {ViewabilityConfig, ViewToken} from 'ViewabilityHelper';
 
 type Item = any;
+
 type renderItemType = (info: {item: Item, index: number}) => ?React.Element<any>;
 
 type RequiredProps = {
@@ -301,6 +303,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       'to support native onScroll events with useNativeDriver',
     );
 
+    this._fillRateHelper = new FillRateHelper(this._getFrameMetrics);
     this._updateCellsToRenderBatcher = new Batchinator(
       this._updateCellsToRender,
       this.props.updateCellsBatchingPeriod,
@@ -366,6 +369,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       }
     }
   }
+
   render() {
     const {ListFooterComponent, ListHeaderComponent} = this.props;
     const {data, disableVirtualization, horizontal} = this.props;
@@ -481,6 +485,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   _hasWarned = {};
   _highestMeasuredFrameIndex = 0;
   _headerLength = 0;
+  _fillRateHelper: FillRateHelper;
   _frames = {};
   _footerLength = 0;
   _scrollMetrics = {
@@ -520,6 +525,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     } else {
       this._frames[cellKey].inLayout = true;
     }
+    this._sampleFillRate('onCellLayout');
   }
 
   _onCellUnmount = (cellKey: string) => {
@@ -606,6 +612,15 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this._updateCellsToRenderBatcher.schedule();
   };
 
+  _sampleFillRate(sampleType: string) {
+    this._fillRateHelper.computeInfoSampled(
+      sampleType,
+      this.props,
+      this.state,
+      this._scrollMetrics,
+    );
+  }
+
   _onScroll = (e: Object) => {
     if (this.props.onScroll) {
       this.props.onScroll(e);
@@ -629,6 +644,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const velocity = dOffset / dt;
     this._scrollMetrics = {contentLength, dt, offset, timestamp, velocity, visibleLength};
     const {data, getItemCount, onEndReached, onEndReachedThreshold, windowSize} = this.props;
+
+    this._sampleFillRate('onScroll');
+
     this._updateViewableItems(data);
     if (!data) {
       return;
@@ -667,6 +685,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this._viewabilityHelper.recordInteraction();
     this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
   };
+
   _updateCellsToRender = () => {
     const {data, disableVirtualization, getItemCount, onEndReachedThreshold} = this.props;
     this._updateViewableItems(data);
@@ -717,7 +736,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     }
   };
 
-  _getFrameMetrics = (index: number): ?{length: number, offset: number, index: number} => {
+  _getFrameMetrics = (
+    index: number,
+  ): ?{length: number, offset: number, index: number, inLayout?: boolean} => {
     const {data, getItem, getItemCount, getItemLayout, keyExtractor} = this.props;
     invariant(getItemCount(data) > index, 'Tried to get frame for out of range index ' + index);
     const item = getItem(data, index);
@@ -767,7 +788,9 @@ class CellRenderer extends React.Component {
     const {renderItem, getItemLayout} = parentProps;
     invariant(renderItem, 'no renderItem!');
     const element = renderItem({item, index});
-    if (getItemLayout && !parentProps.debug) {
+    if (getItemLayout &&
+        !parentProps.debug &&
+        !FillRateHelper.enabled()) {
       return element;
     }
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
