@@ -398,7 +398,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   [_performanceLogger markStartForTag:RCTPLNativeModulePrepareConfig];
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge buildModuleRegistry]", nil);
 
-  auto registry = buildModuleRegistry(_moduleDataByID, self, _reactInstance);
+  auto registry = std::make_shared<ModuleRegistry>(createNativeModules(_moduleDataByID, self, _reactInstance));
 
   [_performanceLogger markStopForTag:RCTPLNativeModulePrepareConfig];
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");

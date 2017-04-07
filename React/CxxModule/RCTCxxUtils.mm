@@ -41,7 +41,7 @@ using namespace facebook::react;
 namespace facebook {
 namespace react {
 
-std::shared_ptr<ModuleRegistry> buildModuleRegistry(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance)
+std::vector<std::unique_ptr<NativeModule>> createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance)
 {
   std::vector<std::unique_ptr<NativeModule>> nativeModules;
   for (RCTModuleData *moduleData in modules) {
@@ -61,8 +61,7 @@ std::shared_ptr<ModuleRegistry> buildModuleRegistry(NSArray<RCTModuleData *> *mo
       nativeModules.emplace_back(std::make_unique<RCTNativeModule>(bridge, moduleData));
     }
   }
-
-  return std::make_shared<ModuleRegistry>(std::move(nativeModules));
+  return nativeModules;
 }
 
 JSContext *contextForGlobalContextRef(JSGlobalContextRef contextRef)
