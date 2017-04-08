@@ -105,7 +105,7 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name)
     }
   }
 
-  if (config.size() == 1) {
+  if (config.size() == 2 && config[1].empty()) {
     // no constants or methods
     return nullptr;
   } else {
