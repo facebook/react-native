@@ -47,6 +47,11 @@ typedef id<RCTBridgeModule>(^RCTBridgeModuleProvider)(void);
 @property (nonatomic, copy, readonly) NSArray<id<RCTBridgeMethod>> *methods;
 
 /**
+ * Returns the module's constants, if it exports any
+ */
+@property (nonatomic, copy, readonly) NSDictionary<NSString *, id> *exportedConstants;
+
+/**
  * Returns YES if module instance has already been initialized; NO otherwise.
  */
 @property (nonatomic, assign, readonly) BOOL hasInstance;

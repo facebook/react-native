@@ -304,18 +304,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   }
 }
 
-- (NSArray *)config
+- (NSDictionary<NSString *, id> *)exportedConstants
 {
   [self gatherConstants];
-  __block NSDictionary<NSString *, id> *constants = _constantsToExport;
+  NSDictionary<NSString *, id> *constants = _constantsToExport;
   _constantsToExport = nil; // Not needed anymore
+  return constants;
+}
 
+// TODO 10487027: this method can go once RCTBatchedBridge is gone
+- (NSArray *)config
+{
+  NSDictionary<NSString *, id> *constants = [self exportedConstants];
   if (constants.count == 0 && self.methods.count == 0) {
     return (id)kCFNull; // Nothing to export
   }
 
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData config] %@", _moduleClass]), nil);
-
   NSMutableArray<NSString *> *methods = self.methods.count ? [NSMutableArray new] : nil;
   NSMutableArray<NSNumber *> *promiseMethods = nil;
   NSMutableArray<NSNumber *> *syncMethods = nil;
