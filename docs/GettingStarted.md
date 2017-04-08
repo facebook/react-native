@@ -293,6 +293,10 @@ changes in the filesystem. It is highly recommended you install it for better pe
 
 You can see the list of available AVDs by opening the "AVD Manager" from within Android Studio.
 
+<block class="mac android">
+
+> You may have to create a project (see below) before the AVD Manager option becomes available.
+
 Once in the "AVD Manager", select your AVD and click "Edit...". Choose "Android 6.0 - API Level 23" under Device, and "Intel Atom (x86_64)" under CPU/ABI. Click OK, then select your new AVD and click "Start...", and finally, "Launch".
 
 ![Android AVD Configuration](img/AndroidAVDConfiguration.png)
