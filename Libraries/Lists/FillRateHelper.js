@@ -108,6 +108,9 @@ class FillRateHelper {
       return null;
     }
     const start = performanceNow();
+    if (props.getItemCount(props.data) === 0) {
+      return null;
+    }
     if (!this._samplesStartTime) {
       this._samplesStartTime = start;
     }

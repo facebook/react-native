@@ -11,6 +11,7 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
+#import <React/RCTBridge+JavaScriptCore.h>
 #import <jschelpers/JavaScriptCore.h>
 
 #import "RCTLog.h"
@@ -31,8 +32,7 @@
 
 - (void)handleRequest:(__unused id)params withResponder:(RCTPackagerClientResponder *)responder
 {
-  JSContext *context = _bridge.jsContext;
-  JSGlobalContextRef globalContext = context.JSGlobalContextRef;
+  JSGlobalContextRef globalContext = [_bridge jsContextRef];
   if (!JSC_JSSamplingProfilerEnabled(globalContext)) {
     [responder respondWithError:@"The JSSamplingProfiler is disabled. See 'iOS specific setup' section here https://fburl.com/u4lw7xeq for some help"];
     return;
@@ -43,6 +43,7 @@
   if (JSC_JSValueGetType(globalContext, jsResult) == kJSTypeNull) {
     [responder respondWithResult:@"started"];
   } else {
+    JSContext *context = [_bridge jsContext];
     NSString *results = [[JSC_JSValue(globalContext) valueWithJSValueRef:jsResult inContext:context] toObject];
     [responder respondWithResult:results];
   }

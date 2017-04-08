@@ -2,6 +2,8 @@
 
 #include "ModuleRegistry.h"
 
+#include <glog/logging.h>
+
 #include "NativeModule.h"
 #include "SystraceSection.h"
 
@@ -28,6 +30,18 @@ std::string normalizeName(std::string name) {
 ModuleRegistry::ModuleRegistry(std::vector<std::unique_ptr<NativeModule>> modules)
     : modules_(std::move(modules)) {}
 
+void ModuleRegistry::registerModules(std::vector<std::unique_ptr<NativeModule>> modules) {
+  // TODO: consider relaxing this restriction
+  CHECK(modulesByName_.empty()) << "Can only register additional modules before NativeModules have been accessed";
+
+  if (modules_.empty()) {
+    modules_ = std::move(modules);
+  } else {
+    modules_.reserve(modules_.size() + modules.size());
+    std::move(modules.begin(), modules.end(), std::back_inserter(modules_));
+  }
+}
+
 std::vector<std::string> ModuleRegistry::moduleNames() {
   std::vector<std::string> names;
   for (size_t i = 0; i < modules_.size(); i++) {
@@ -40,6 +54,12 @@ std::vector<std::string> ModuleRegistry::moduleNames() {
 
 folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name) {
   SystraceSection s("getConfig", "module", name);
+
+  // Initialize modulesByName_
+  if (modulesByName_.empty() && !modules_.empty()) {
+    moduleNames();
+  }
+
   auto it = modulesByName_.find(name);
   if (it == modulesByName_.end()) {
     return nullptr;
@@ -97,8 +117,7 @@ void ModuleRegistry::callNativeMethod(ExecutorToken token, unsigned int moduleId
                                       folly::dynamic&& params, int callId) {
   if (moduleId >= modules_.size()) {
     throw std::runtime_error(
-      folly::to<std::string>("moduleId ", moduleId,
-                             " out of range [0..", modules_.size(), ")"));
+      folly::to<std::string>("moduleId ", moduleId, " out of range [0..", modules_.size(), ")"));
   }
 
 #ifdef WITH_FBSYSTRACE
@@ -113,8 +132,7 @@ void ModuleRegistry::callNativeMethod(ExecutorToken token, unsigned int moduleId
 MethodCallResult ModuleRegistry::callSerializableNativeHook(ExecutorToken token, unsigned int moduleId, unsigned int methodId, folly::dynamic&& params) {
   if (moduleId >= modules_.size()) {
     throw std::runtime_error(
-      folly::to<std::string>("moduleId ", moduleId,
-                             " out of range [0..", modules_.size(), ")"));
+      folly::to<std::string>("moduleId ", moduleId, "out of range [0..", modules_.size(), ")"));
   }
   return modules_[moduleId]->callSerializableNativeHook(token, methodId, std::move(params));
 }

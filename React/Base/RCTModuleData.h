@@ -15,9 +15,15 @@
 @protocol RCTBridgeModule;
 @class RCTBridge;
 
+typedef id<RCTBridgeModule>(^RCTBridgeModuleProvider)(void);
+
 @interface RCTModuleData : NSObject <RCTInvalidating>
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
+                             bridge:(RCTBridge *)bridge;
+
+- (instancetype)initWithModuleClass:(Class)moduleClass
+                     moduleProvider:(RCTBridgeModuleProvider)moduleProvider
                              bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance

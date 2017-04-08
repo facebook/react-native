@@ -55,6 +55,10 @@ class HasteMap extends EventEmitter {
     return Promise.all(promises).then(() => this._map);
   }
 
+  getAllFiles(): Array<string> {
+    return this._files;
+  }
+
   processFileChange(type, absPath) {
     return Promise.resolve().then(() => {
       /*eslint no-labels: 0 */
