@@ -11,6 +11,7 @@ package com.facebook.react.modules.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -34,7 +35,7 @@ public class SettingsModule extends ReactContextBaseJavaModule implements Shared
   static final String DEFAULT_FILE_NAME = "ReactNative";
   static final String TAG = "SettingsMmodule";
 
-  static boolean sSettingsModuleInstantiated = false;
+  private static boolean sSettingsModuleInstantiated = false;
 
   static private String sFilename = "";
   private Boolean ignoringUpdates = false;
@@ -98,7 +99,7 @@ public class SettingsModule extends ReactContextBaseJavaModule implements Shared
     while (iterator.hasNextKey()) {
       String key = iterator.nextKey();
       ReadableType type = values.getType(key);
-      
+
       switch (type) {
         case Null:
           editor.remove(key);
@@ -131,6 +132,9 @@ public class SettingsModule extends ReactContextBaseJavaModule implements Shared
       Object value = prefsMap.get(key);
       if (value instanceof String || value.getClass().isPrimitive()) {
         exportedValuePairs.put(key, value);
+      } else {
+        // StringSets are not exported - could be used in the future to store JSON encoded arrays and maps
+        Log.d(TAG, "unexported setting: " + key);
       }
     }
 
@@ -165,7 +169,7 @@ public class SettingsModule extends ReactContextBaseJavaModule implements Shared
       } else if (value instanceof Boolean) {
         map.putBoolean(key, (Boolean) value);
       } else {
-          throw new IllegalArgumentException("Could not convert " + value.getClass());
+        Log.d(TAG, "ignoring setting: " + key);
       }
     }
     if (getReactApplicationContext().hasActiveCatalystInstance()) {
