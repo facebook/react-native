@@ -93,35 +93,32 @@ public class SettingsModule extends ReactContextBaseJavaModule implements Shared
     this.ignoringUpdates = true;
 
     ReadableMapKeySetIterator iterator = values.keySetIterator();
+    SharedPreferences.Editor editor = mPreferences.edit();
 
     while (iterator.hasNextKey()) {
       String key = iterator.nextKey();
       ReadableType type = values.getType(key);
-
+      
       switch (type) {
         case Null:
-          mPreferences.edit().remove(key).apply();
+          editor.remove(key);
           break;
-
         case Boolean:
-          mPreferences.edit().putBoolean(key, values.getBoolean(key)).apply();
+          editor.putBoolean(key, values.getBoolean(key));
           break;
-
         case Number:
-          mPreferences.edit().putFloat(key, (float) values.getDouble(key)).apply();
+          editor.putFloat(key, (float) values.getDouble(key));
           break;
-
         case String:
-          mPreferences.edit().putString(key, values.getString(key)).apply();
+          editor.putString(key, values.getString(key));
           break;
-
         case Map: // Not supported
           throw new IllegalArgumentException(TAG + ": Cannot not store Map as value in Settings");
-
         case Array: // Not supported
           throw new IllegalArgumentException(TAG + ": Cannot not store Array as value in Settings");
       }
     }
+    editor.apply();
 
     this.ignoringUpdates = false;
   }
