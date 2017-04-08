@@ -23,12 +23,12 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
 @implementation RCTTestRunner
 {
   FBSnapshotTestController *_testController;
-  RCTBridgeModuleProviderBlock _moduleProvider;
+  RCTBridgeModuleListProvider _moduleProvider;
 }
 
 - (instancetype)initWithApp:(NSString *)app
          referenceDirectory:(NSString *)referenceDirectory
-             moduleProvider:(RCTBridgeModuleProviderBlock)block
+             moduleProvider:(RCTBridgeModuleListProvider)block
 {
   RCTAssertParam(app);
   RCTAssertParam(referenceDirectory);

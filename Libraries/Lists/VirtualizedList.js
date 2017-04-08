@@ -742,9 +742,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     }
   };
 
-  _getFrameMetrics = (
-    index: number,
-  ): ?{length: number, offset: number, index: number, inLayout?: boolean} => {
+  _getFrameMetrics = (index: number): ?{
+    length: number, offset: number, index: number, inLayout?: boolean,
+  } => {
     const {data, getItem, getItemCount, getItemLayout, keyExtractor} = this.props;
     invariant(getItemCount(data) > index, 'Tried to get frame for out of range index ' + index);
     const item = getItem(data, index);
