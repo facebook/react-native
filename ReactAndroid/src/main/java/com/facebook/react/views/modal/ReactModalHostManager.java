@@ -41,16 +41,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
   }
 
   @Override
-  public LayoutShadowNode createShadowNodeInstance() {
-    return new ModalHostShadowNode();
-  }
-
-  @Override
-  public Class<? extends LayoutShadowNode> getShadowNodeClass() {
-    return ModalHostShadowNode.class;
-  }
-
-  @Override
   public void onDropViewInstance(ReactModalHostView view) {
     super.onDropViewInstance(view);
     view.onDropInstance();
