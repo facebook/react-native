@@ -21,9 +21,9 @@ xplat::module::CxxModule::Provider ModuleHolder::getProvider() const {
     // This is the call which uses the lazy Java Provider to instantiate the
     // Java CxxModuleWrapper which contains the CxxModule.
     auto module = method(self);
-    CHECK(module->isInstanceOf(CxxModuleWrapper::javaClassStatic()))
+    CHECK(module->isInstanceOf(CxxModuleWrapperBase::javaClassStatic()))
       << "module isn't a C++ module";
-    auto cxxModule = jni::static_ref_cast<CxxModuleWrapper::javaobject>(module);
+    auto cxxModule = jni::static_ref_cast<CxxModuleWrapperBase::javaobject>(module);
     // Then, we grab the CxxModule from the wrapper, which is no longer needed.
     return cxxModule->cthis()->getModule();
   };

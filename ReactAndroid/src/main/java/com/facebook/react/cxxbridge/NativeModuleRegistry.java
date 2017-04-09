@@ -46,7 +46,7 @@ public class NativeModuleRegistry {
     ArrayList<JavaModuleWrapper> javaModules = new ArrayList<>();
     for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
       Class<?> type = entry.getKey();
-      if (!CxxModuleWrapper.class.isAssignableFrom(type)) {
+      if (!CxxModuleWrapperBase.class.isAssignableFrom(type)) {
         javaModules.add(new JavaModuleWrapper(jsInstance, entry.getValue()));
       }
     }
@@ -57,7 +57,7 @@ public class NativeModuleRegistry {
     ArrayList<ModuleHolder> cxxModules = new ArrayList<>();
     for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
       Class<?> type = entry.getKey();
-      if (CxxModuleWrapper.class.isAssignableFrom(type)) {
+      if (CxxModuleWrapperBase.class.isAssignableFrom(type)) {
         cxxModules.add(entry.getValue());
       }
     }

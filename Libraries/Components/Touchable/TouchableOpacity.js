@@ -165,7 +165,7 @@ var TouchableOpacity = React.createClass({
   _opacityFocused: function() {
     this.setOpacityTo(this.props.focusedOpacity);
   },
-  
+
   _getChildStyleOpacityWithDefault: function() {
    var childStyle = flattenStyle(this.props.style) || {};
    return childStyle.opacity == undefined ? 1 : childStyle.opacity;
@@ -179,6 +179,7 @@ var TouchableOpacity = React.createClass({
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
         style={[this.props.style, {opacity: this.state.anim}]}
+        nativeID={this.props.nativeID}
         testID={this.props.testID}
         onLayout={this.props.onLayout}
         isTVSelectable={true}

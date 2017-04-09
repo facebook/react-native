@@ -23,7 +23,7 @@ const jsonStableStringify = require('json-stable-stringify');
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
 import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {SourceMap} from '../lib/SourceMap';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {ReadTransformProps} from '../lib/TransformCache';
@@ -226,7 +226,8 @@ class Module {
     if (hasteImpl !== undefined) {
       const {enforceHasteNameMatches} = hasteImpl;
       if (enforceHasteNameMatches) {
-        /* $FlowFixMe: this rely on the above if being executed, that is fragile. Rework the algo. */
+        /* $FlowFixMe: this rely on the above if being executed, that is fragile.
+         * Rework the algo. */
         enforceHasteNameMatches(this.path, this._hasteNameCache.hasteName);
       }
       this._hasteNameCache = {hasteName: hasteImpl.getHasteName(this.path)};

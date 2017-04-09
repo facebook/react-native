@@ -47,6 +47,7 @@ one to start with, since the setup is a bit different.
   <span>Mobile OS:</span>
   <a href="javascript:void(0);" class="button-ios" onclick="display('platform', 'ios')">iOS</a>
   <a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
+  <br />
   <span>Development OS:</span>
   <a href="javascript:void(0);" class="button-mac" onclick="display('os', 'mac')">macOS</a>
   <a href="javascript:void(0);" class="button-linux" onclick="display('os', 'linux')">Linux</a>

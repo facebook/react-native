@@ -174,6 +174,15 @@ module.exports = {
   testID: PropTypes.string,
 
   /**
+   * Used to locate this view from native classes.
+   *
+   * > This disables the 'layout-only view removal' optimization for this view!
+   *
+   * @platform android
+   */
+  nativeID: PropTypes.string,
+
+  /**
    * For most touch interactions, you'll simply want to wrap your component in
    * `TouchableHighlight` or `TouchableOpacity`. Check out `Touchable.js`,
    * `ScrollResponder.js` and `ResponderEventPlugin.js` for more discussion.

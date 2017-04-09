@@ -772,11 +772,14 @@ void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *data)
        if (message.length) {
 #if !TARGET_OS_TV
          dispatch_async(dispatch_get_main_queue(), ^{
-           [[[UIAlertView alloc] initWithTitle:@"Profile"
-                                       message:message
-                                      delegate:nil
-                             cancelButtonTitle:@"OK"
-                             otherButtonTitles:nil] show];
+            UIAlertController *alertController = [UIAlertController
+                alertControllerWithTitle:@"Profile"
+                message:message
+                preferredStyle:UIAlertControllerStyleAlert];
+            [alertController addAction:[UIAlertAction actionWithTitle:@"OK"
+                                                      style:UIAlertActionStyleCancel
+                                                      handler:nil]];
+            [RCTPresentedViewController() presentViewController:alertController animated:YES completion:nil];
          });
 #endif
        }
