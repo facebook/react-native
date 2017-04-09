@@ -17,9 +17,10 @@
  * @param Object simulators a parsed list from `xcrun simctl list --json devices` command
  * @param String|null simulatorName the string with the name of desired simulator. If null, it will use the currently
  *        booted simulator, or if none are booted, the first in the list.
+ * @param String simulatorType 'iOS' or 'tvOS', depending on whether this is iOS or Apple TV
  * @returns {Object} {udid, name, version}
  */
-function findMatchingSimulator(simulators, simulatorName) {
+function findMatchingSimulator(simulators, simulatorName, simulatorType) {
   if (!simulators.devices) {
     return null;
   }
@@ -27,7 +28,7 @@ function findMatchingSimulator(simulators, simulatorName) {
   var match;
   for (let version in devices) {
     // Making sure the version of the simulator is an iOS (Removes Apple Watch, etc)
-    if (version.indexOf('iOS') !== 0) {
+    if (version.indexOf(simulatorType) !== 0) {
       continue;
     }
     for (let i in devices[version]) {

@@ -38,6 +38,7 @@ export type CommandT = {
 const documentedCommands = [
   require('./server/server'),
   require('./runIOS/runIOS'),
+  require('./runIOS/runTVOS'),
   require('./runAndroid/runAndroid'),
   require('./library/library'),
   require('./bundle/bundle'),

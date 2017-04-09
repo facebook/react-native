@@ -30,6 +30,7 @@ one to start with, since the setup is a bit different.
     .display-os-linux .toggler .button-linux,
     .display-os-windows .toggler .button-windows,
     .display-platform-ios .toggler .button-ios,
+    .display-platform-tvos .toggler .button-tvos,
     .display-platform-android .toggler .button-android {
       background-color: #05A5D1;
       color: white;
@@ -38,6 +39,9 @@ one to start with, since the setup is a bit different.
     .display-platform-ios.display-os-mac .ios.mac,
     .display-platform-ios.display-os-linux .ios.linux,
     .display-platform-ios.display-os-windows .ios.windows,
+    .display-platform-tvos.display-os-mac .tvos.mac,
+    .display-platform-tvos.display-os-linux .tvos.linux,
+    .display-platform-tvos.display-os-windows .tvos.windows,
     .display-platform-android.display-os-mac .android.mac,
     .display-platform-android.display-os-linux .android.linux,
     .display-platform-android.display-os-windows .android.windows {
@@ -46,6 +50,7 @@ one to start with, since the setup is a bit different.
   </style>
   <span>Mobile OS:</span>
   <a href="javascript:void(0);" class="button-ios" onclick="display('platform', 'ios')">iOS</a>
+  <a href="javascript:void(0);" class="button-tvos" onclick="display('platform', 'tvos')">Apple TV</a>
   <a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
   <br />
   <span>Development OS:</span>
@@ -54,15 +59,15 @@ one to start with, since the setup is a bit different.
   <a href="javascript:void(0);" class="button-windows" onclick="display('os', 'windows')">Windows</a>
 </div>
 
-<block class="linux windows ios" />
+<block class="linux windows ios tvos" />
 
 ## Unsupported
 
-<div>Unfortunately, Apple only lets you develop for iOS on a Mac. If you want to build an iOS app but you don't have a Mac yet, you can try starting with the <a href="" onclick="display('platform', 'android')">Android</a> instructions instead.</div>
+<div>Unfortunately, Apple only lets you develop for iOS or Apple TV on a Mac. If you want to build an iOS or Apple TV app but you don't have a Mac yet, you can try starting with the <a href="" onclick="display('platform', 'android')">Android</a> instructions instead.</div>
 
 <center><img src="img/react-native-sorry-not-supported.png" width="150"></img></center>
 
-<block class="mac ios" />
+<block class="mac ios tvos" />
 
 ## Installing Dependencies
 
@@ -86,7 +91,7 @@ You will need Node, the React Native command line interface, a JDK, and Android 
 
 You will need Node, the React Native command line interface, Python2, a JDK, and Android Studio.
 
-<block class="mac ios android" />
+<block class="mac ios tvos android" />
 
 ### Node, Watchman
 
@@ -127,7 +132,7 @@ If you have already installed Node on your system, make sure it is version 4 or 
 
 > You can find additional installation options on [Node.js's Downloads page](https://nodejs.org/en/download/).
 
-<block class="mac ios android" />
+<block class="mac ios tvos android" />
 
 ### The React Native CLI
 
@@ -155,7 +160,7 @@ npm install -g react-native-cli
 
 > If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
 
-<block class="mac ios" />
+<block class="mac ios tvos" />
 
 ### Xcode
 
@@ -303,7 +308,7 @@ Once in the "AVD Manager", select your AVD and click "Edit...". Choose "Android 
 
 If you have a physical Android device, you can use it for development in place of an AVD. Plug it in to your computer using a USB cable and [enable USB debugging](https://developer.android.com/training/basics/firstapp/running-app.html) before proceeding to the next step.
 
-<block class="mac ios android" />
+<block class="mac ios tvos android" />
 
 ## Testing your React Native Installation
 
@@ -323,6 +328,22 @@ You should see your new app running in the iOS Simulator shortly.
 
 `react-native run-ios` is just one way to run your app. You can also run it directly from within Xcode or [Nuclide](https://nuclide.io/).
 
+<block class="mac tvos" />
+
+Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-tvos` inside the newly created folder.
+
+```
+react-native init AwesomeProject
+cd AwesomeProject
+react-native run-tvos
+```
+
+You should see your new app running in the tvOS Simulator shortly.
+
+![AwesomeProject on iOS](img/tvOSSuccess.png)
+
+`react-native run-ios` is just one way to run your app. You can also run it directly from within Xcode or [Nuclide](https://nuclide.io/).
+
 <block class="mac android" />
 
 Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder:
@@ -339,23 +360,23 @@ If everything is set up correctly, you should see your new app running in your A
 
 `react-native run-android` is just one way to run your app - you can also run it directly from within Android Studio or [Nuclide](https://nuclide.io/).
 
-<block class="mac ios android" />
+<block class="mac ios tvos android" />
 
 ### Modifying your app
 
 Now that you have successfully run the app, let's modify it.
 
-<block class="mac ios" />
+<block class="mac ios tvos" />
 
 - Open `index.ios.js` in your text editor of choice and edit some lines.
-- Hit `Command⌘ + R` in your iOS Simulator to reload the app and see your change!
+- Hit `Command⌘ + R` in your iOS or Apple TV Simulator to reload the app and see your change!
 
 <block class="mac android" />
 
 - Open `index.android.js` in your text editor of choice and edit some lines.
 - Press the `R` key twice or select `Reload` from the Developer Menu to see your change!
 
-<block class="mac ios android" />
+<block class="mac ios tvos android" />
 
 ### That's it!
 
@@ -485,6 +506,8 @@ if (window.location.hash !== '' && window.location.hash !== 'content') { // cont
           // Target Platform
           if (parent.className.indexOf('ios') > -1) {
             targetPlatform = 'ios';
+          } else if (parent.className.indexOf('tvos') > -1) {
+            targetPlatform = 'tvos';
           } else if (parent.className.indexOf('android') > -1) {
             targetPlatform = 'android';
           } else {
