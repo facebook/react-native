@@ -308,6 +308,7 @@ static inline float YGResolveValueMargin(const YGValue *const value, const float
 }
 
 int32_t gNodeInstanceCount = 0;
+int32_t gConfigInstanceCount = 0;
 
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
   const YGNodeRef node = gYGMalloc(sizeof(YGNode));
@@ -373,15 +374,21 @@ int32_t YGNodeGetInstanceCount(void) {
   return gNodeInstanceCount;
 }
 
+int32_t YGConfigGetInstanceCount(void) {
+  return gConfigInstanceCount;
+}
+
 YGConfigRef YGConfigNew(void) {
   const YGConfigRef config = gYGMalloc(sizeof(YGConfig));
   YG_ASSERT(config, "Could not allocate memory for config");
+  gConfigInstanceCount++;
   memcpy(config, &gYGConfigDefaults, sizeof(YGConfig));
   return config;
 }
 
 void YGConfigFree(const YGConfigRef config) {
   gYGFree(config);
+  gConfigInstanceCount--;
 }
 
 static void YGNodeMarkDirtyInternal(const YGNodeRef node) {
@@ -3426,7 +3433,8 @@ bool YGConfigGetUseWebDefaults(const YGConfigRef config) {
 }
 
 void YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree) {
-  YG_ASSERT(gNodeInstanceCount == 0, "Cannot set memory functions: all node must be freed first");
+  YG_ASSERT(gNodeInstanceCount == 0 && gConfigInstanceCount == 0,
+            "Cannot set memory functions: all node must be freed first");
   YG_ASSERT((ygmalloc == NULL && yccalloc == NULL && ygrealloc == NULL && ygfree == NULL) ||
                 (ygmalloc != NULL && yccalloc != NULL && ygrealloc != NULL && ygfree != NULL),
             "Cannot set memory functions: functions must be all NULL or Non-NULL");
