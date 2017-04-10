@@ -21,6 +21,7 @@ const terminal = require('../lib/terminal');
 const writeFileAtomicSync = require('write-file-atomic').sync;
 
 const CACHE_NAME = 'react-native-packager-cache';
+const FILENAME_MAX = 143;
 
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {SourceMap} from './SourceMap';
@@ -81,10 +82,19 @@ function getCacheFilePaths(props: {
   const hasher = crypto.createHash('sha1')
     .update(props.filePath)
     .update(props.transformOptionsKey);
-  const hash = hasher.digest('hex');
-  const prefix = hash.substr(0, 2);
-  const fileName = `${hash.substr(2)}${path.basename(props.filePath)}`;
-  const base = path.join(getCacheDirPath(), prefix, fileName);
+  let hash = hasher.digest('hex');
+  const prefixDirs = [ hash.substr(0, 2) ];
+  hash = hash.substr(2);
+  const filePathBasenameLength = path.basename(props.filePath).length;
+
+  while (hash.length + filePathBasenameLength > FILENAME_MAX) {
+    prefixDirs.push(hash.substr(0, FILENAME_MAX));
+    hash = hash.substr(FILENAME_MAX);
+  }
+
+  const fileName = `${hash}${path.basename(props.filePath)}`;
+
+  const base = path.join(getCacheDirPath(), ...prefixDirs, fileName);
   return {transformedCode: base, metadata: base + '.meta'};
 }
 
