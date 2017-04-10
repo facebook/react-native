@@ -18,7 +18,8 @@ const {getInverseDependencies} = require('../../../packager/src//node-haste');
 
 import type HMRBundle from '../../../packager/src/Bundler/HMRBundle';
 import type Server from '../../../packager/src/Server';
-import type ResolutionResponse from '../../../packager/src/node-haste/DependencyGraph/ResolutionResponse';
+import type ResolutionResponse
+  from '../../../packager/src/node-haste/DependencyGraph/ResolutionResponse';
 import type Module from '../../../packager/src/node-haste/Module';
 import type {Server as HTTPServer} from 'http';
 
@@ -53,7 +54,7 @@ function attachHMRServer({httpServer, path, packagerServer}: HMROptions) {
     dependenciesModulesCache: {[mixed]: Module},
     shallowDependencies: {[string]: Array<Module>},
     inverseDependenciesCache: mixed,
-    resolutionResponse: ResolutionResponse,
+    resolutionResponse: ResolutionResponse<Module>,
   }> {
     return packagerServer.getDependencies({
       platform: platform,

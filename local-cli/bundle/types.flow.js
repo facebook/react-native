@@ -37,6 +37,7 @@ export type OutputOptions = {
   platform: string,
   sourcemapOutput?: string,
   sourcemapSourcesRoot?: string,
+  sourcemapUseAbsolutePath?: boolean,
 };
 
 export type RequestOptions = {|

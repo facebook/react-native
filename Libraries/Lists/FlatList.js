@@ -13,7 +13,6 @@
 
 const MetroListView = require('MetroListView'); // Used as a fallback legacy option
 const React = require('React');
-const ReactNative = require('ReactNative');
 const View = require('View');
 const VirtualizedList = require('VirtualizedList');
 
@@ -50,13 +49,15 @@ type OptionalProps<ItemT> = {
    */
   ItemSeparatorComponent?: ?ReactClass<any>,
   /**
-   * Rendered at the bottom of all the items.
+   * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
+   * a rendered element.
    */
-  ListFooterComponent?: ?ReactClass<any>,
+  ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
-   * Rendered at the top of all the items.
+   * Rendered at the top of all the items. Can be a React Component Class, a render function, or
+   * a rendered element.
    */
-  ListHeaderComponent?: ?ReactClass<any>,
+  ListHeaderComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
    * Optional custom style for multi-item rows generated when numColumns > 1.
    */
@@ -232,20 +233,26 @@ type DefaultProps = typeof defaultProps;
  *     }
  *
  * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist.html),
- * and thus inherits it's props that aren't explicitly listed here along with the following caveats:
+ * and thus inherits it's props (as well as those of `ScrollView`) that aren't explicitly listed
+ * here, along with the following caveats:
  *
  * - Internal state is not preserved when content scrolls out of the render window. Make sure all
  *   your data is captured in the item data or external stores like Flux, Redux, or Relay.
  * - This is a `PureComponent` which means that it will not re-render if `props` remain shallow-
- *   equal. Make sure that everything your `renderItem` function depends on is passed as a prop that
- *   is not `===` after updates, otherwise your UI may not update on changes. This includes the
- *   `data` prop and parent component state.
+ *   equal. Make sure that everything your `renderItem` function depends on is passed as a prop
+ *   (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on
+ *   changes. This includes the `data` prop and parent component state.
  * - In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
  *   offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
  *   blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
  *   and we are working on improving it behind the scenes.
  * - By default, the list looks for a `key` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
+ *
+ * NOTE: `removeClippedSubviews` might not be necessary and may cause bugs. If you see issues with
+ * content not rendering, e.g when using `LayoutAnimation`, try setting
+ * `removeClippedSubviews={false}`, and we may change the default in the future after more
+ * experimentation in production apps.
  */
 class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, void> {
   static defaultProps: DefaultProps = defaultProps;
@@ -260,17 +267,22 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
   /**
    * Scrolls to the item at a the specified index such that it is positioned in the viewable area
    * such that `viewPosition` 0 places it at the top, 1 at the bottom, and 0.5 centered in the
-   * middle.
+   * middle. `viewOffset` is a fixed number of pixels to offset the final target position.
    *
-   * May be janky without `getItemLayout` prop.
+   * Note: cannot scroll to locations outside the render window without specifying the
+   * `getItemLayout` prop.
    */
-  scrollToIndex(params: {animated?: ?boolean, index: number, viewPosition?: number}) {
+  scrollToIndex(params: {
+    animated?: ?boolean, index: number, viewOffset?: number, viewPosition?: number,
+  }) {
     this._listRef.scrollToIndex(params);
   }
 
   /**
-   * Requires linear scan through data - use `scrollToIndex` instead if possible. May be janky
-   * without `getItemLayout` prop.
+   * Requires linear scan through data - use `scrollToIndex` instead if possible.
+   *
+   * Note: cannot scroll to locations outside the render window without specifying the
+   * `getItemLayout` prop.
    */
   scrollToItem(params: {animated?: ?boolean, item: ItemT, viewPosition?: number}) {
     this._listRef.scrollToItem(params);
@@ -292,11 +304,18 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     this._listRef.recordInteraction();
   }
 
+  /**
+   * Provides a handle to the underlying scroll responder.
+   */
+  getScrollResponder() {
+    if (this._listRef) {
+      return this._listRef.getScrollResponder();
+    }
+  }
+
   getScrollableNode() {
-    if (this._listRef && this._listRef.getScrollableNode) {
+    if (this._listRef) {
       return this._listRef.getScrollableNode();
-    } else {
-      return ReactNative.findNodeHandle(this._listRef);
     }
   }
 

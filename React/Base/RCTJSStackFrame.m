@@ -8,6 +8,7 @@
  */
 
 #import "RCTJSStackFrame.h"
+
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
@@ -96,6 +97,16 @@ static NSRegularExpression *RCTJSStackFrameRegex()
     }
   }
   return stack;
+}
+
+- (NSString *)description {
+  return [NSString stringWithFormat:@"<%@: %p method name: %@; file name: %@; line: %ld; column: %ld>",
+          self.class,
+          self,
+          self.methodName,
+          self.file,
+          (long)self.lineNumber,
+          (long)self.column];
 }
 
 @end

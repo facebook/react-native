@@ -15,8 +15,9 @@ jest.useRealTimers();
 const fetchMock = jest.fn();
 jest.mock('node-fetch', () => fetchMock);
 
-const GlobalTransformCache = require('../GlobalTransformCache');
+const {URIBasedGlobalTransformCache} = require('../GlobalTransformCache');
 const FetchError = require('node-fetch/lib/fetch-error');
+const path = require('path');
 
 async function fetchResultURIs(keys: Array<string>): Promise<Map<string, string>> {
   return new Map(keys.map(key => [key, `http://globalcache.com/${key}`]));
@@ -33,14 +34,27 @@ async function fetchResultFromURI(uri: string): Promise<?CachedResult> {
 describe('GlobalTransformCache', () => {
 
   it('fetches results', async () => {
-    const cache = new GlobalTransformCache(fetchResultURIs, fetchResultFromURI, null, [
-      {dev: true, minify: false, platform: 'ios'},
-    ]);
+    const cache = new URIBasedGlobalTransformCache({
+      fetchResultFromURI,
+      fetchResultURIs,
+      profiles: [{dev: true, minify: false, platform: 'ios'}],
+      rootPath: __dirname,
+      storeResults: null,
+    });
     const transformOptions = {
       dev: true,
       minify: false,
       platform: 'ios',
-      transform: {},
+      transform: {
+        generateSourceMaps: false,
+        dev: false,
+        hot: false,
+        inlineRequires: false,
+        platform: 'ios',
+        preloadedModules: [],
+        projectRoots: [path.join(__dirname, 'root')],
+        ramGroups: [],
+      },
     };
     const result = await Promise.all([cache.fetch({
       filePath: 'foo.js',
@@ -73,7 +87,8 @@ describe('GlobalTransformCache', () => {
 
     it('fetches result', async () => {
       fetchMock.mockImplementation(defaultFetchMockImpl);
-      const result = await GlobalTransformCache.fetchResultFromURI('http://globalcache.com/foo');
+      const result = await URIBasedGlobalTransformCache
+        .fetchResultFromURI('http://globalcache.com/foo');
       expect(result).toMatchSnapshot();
     });
 
@@ -82,7 +97,8 @@ describe('GlobalTransformCache', () => {
         fetchMock.mockImplementation(defaultFetchMockImpl);
         throw new FetchError('timeout!', 'request-timeout');
       });
-      const result = await GlobalTransformCache.fetchResultFromURI('http://globalcache.com/foo');
+      const result = await URIBasedGlobalTransformCache
+        .fetchResultFromURI('http://globalcache.com/foo');
       expect(result).toMatchSnapshot();
     });
 

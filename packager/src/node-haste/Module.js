@@ -23,7 +23,7 @@ const jsonStableStringify = require('json-stable-stringify');
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
 import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {SourceMap} from '../lib/SourceMap';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {ReadTransformProps} from '../lib/TransformCache';
@@ -226,7 +226,8 @@ class Module {
     if (hasteImpl !== undefined) {
       const {enforceHasteNameMatches} = hasteImpl;
       if (enforceHasteNameMatches) {
-        /* $FlowFixMe: this rely on the above if being executed, that is fragile. Rework the algo. */
+        /* $FlowFixMe: this rely on the above if being executed, that is fragile.
+         * Rework the algo. */
         enforceHasteNameMatches(this.path, this._hasteNameCache.hasteName);
       }
       this._hasteNameCache = {hasteName: hasteImpl.getHasteName(this.path)};
@@ -360,7 +361,7 @@ class Module {
     if (this._readResultsByOptionsKey.has(key)) {
       return this._readResultsByOptionsKey.get(key);
     }
-    const result = this._readFromTransformCache(transformOptions);
+    const result = this._readFromTransformCache(transformOptions, key);
     this._readResultsByOptionsKey.set(key, result);
     return result;
   }
@@ -369,8 +370,11 @@ class Module {
    * Read again from the TransformCache, on disk. `readCached` should be favored
    * so it's faster in case the results are already in memory.
    */
-  _readFromTransformCache(transformOptions: TransformOptions): ?ReadResult {
-    const cacheProps = this._getCacheProps(transformOptions);
+  _readFromTransformCache(
+    transformOptions: TransformOptions,
+    transformOptionsKey: string,
+  ): ?ReadResult {
+    const cacheProps = this._getCacheProps(transformOptions, transformOptionsKey);
     const cachedResult = TransformCache.readSync(cacheProps);
     if (cachedResult) {
       return this._finalizeReadResult(cacheProps.sourceCode, cachedResult);
@@ -391,7 +395,7 @@ class Module {
       return promise;
     }
     const freshPromise = Promise.resolve().then(() => {
-      const cacheProps = this._getCacheProps(transformOptions);
+      const cacheProps = this._getCacheProps(transformOptions, key);
       return new Promise((resolve, reject) => {
         this._getAndCacheTransformedCode(
           cacheProps,
@@ -413,7 +417,7 @@ class Module {
     return freshPromise;
   }
 
-  _getCacheProps(transformOptions: TransformOptions) {
+  _getCacheProps(transformOptions: TransformOptions, transformOptionsKey: string) {
     const sourceCode = this._readSourceCode();
     const moduleDocBlock = this._readDocBlock();
     const getTransformCacheKey = this._getTransformCacheKey;
@@ -428,6 +432,7 @@ class Module {
       sourceCode,
       getTransformCacheKey,
       transformOptions,
+      transformOptionsKey,
       cacheOptions: {
         resetCache: this._options.resetCache,
         reporter: this._reporter,
