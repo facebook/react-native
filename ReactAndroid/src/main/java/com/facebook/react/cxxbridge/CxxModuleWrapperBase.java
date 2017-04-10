@@ -29,11 +29,6 @@ public class CxxModuleWrapperBase implements NativeModule
   public native String getName();
 
   @Override
-  public Map<String, NativeMethod> getMethods() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public void initialize() {
     // do nothing
   }
