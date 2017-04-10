@@ -29,7 +29,6 @@ const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationI
 const emptyObject = require('fbjs/lib/emptyObject');
 const findNodeHandle = require('findNodeHandle');
 const invariant = require('fbjs/lib/invariant');
-const takeSnapshot = require('takeSnapshot');
 
 const {injectInternals} = require('ReactFiberDevToolsHook');
 
@@ -72,10 +71,7 @@ const NativeRenderer = ReactFiberReconciler({
     parentInstance: Instance | Container,
     child: Instance | TextInstance,
   ): void {
-
-    const childTag = typeof child === 'number'
-      ? child
-      : child._nativeTag;
+    const childTag = typeof child === 'number' ? child : child._nativeTag;
 
     if (typeof parentInstance === 'number') {
       // Root container
@@ -287,9 +283,7 @@ const NativeRenderer = ReactFiberReconciler({
     } else {
       children.splice(beforeChildIndex, 0, child);
 
-      const childTag = typeof child === 'number'
-        ? child
-        : child._nativeTag;
+      const childTag = typeof child === 'number' ? child : child._nativeTag;
 
       UIManager.manageChildren(
         (parentInstance: any)._nativeTag, // containerID
@@ -388,7 +382,6 @@ findNodeHandle.injection.injectFindNode((fiber: Fiber) =>
   NativeRenderer.findHostInstance(fiber));
 findNodeHandle.injection.injectFindRootNodeID(instance => instance);
 
-
 // Intercept lifecycle errors and ensure they are shown with the correct stack
 // trace within the native redbox component.
 ReactFiberErrorLogger.injection.injectDialog(
@@ -420,8 +413,6 @@ const ReactNative = {
 
     return NativeRenderer.getPublicRootInstance(root);
   },
-
-  takeSnapshot,
 
   unmountComponentAtNode(containerTag: number) {
     const root = roots.get(containerTag);
