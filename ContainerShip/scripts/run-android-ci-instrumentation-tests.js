@@ -28,6 +28,12 @@ const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+// Flaky tests ignored on Circle CI. They still run internally at fb.
+const ignoredTests = [
+  'ReactScrollViewTestCase',
+  'ReactHorizontalScrollViewTestCase'
+];
+
 const colors = {
     GREEN: '\x1b[32m',
     RED: '\x1b[31m',
@@ -53,6 +59,8 @@ let testClasses = fs.readdirSync(path.resolve(process.cwd(), test_opts.PATH))
         return file.endsWith('.java');
     }).map((clazz) => {
         return path.basename(clazz, '.java');
+    }).filter(className => {
+        return ignoredTests.indexOf(className) === -1;
     }).map((clazz) => {
         return test_opts.PACKAGE + '.' + clazz;
     }).filter((clazz) => {
@@ -112,7 +120,7 @@ return async.mapSeries(testClasses, (clazz, callback) => {
     print_test_suite_results(results);
 
     const failures = results.filter((test) => {
-        test.status === 'failure';
+        return test.status === 'failure';
     });
 
     return failures.length === 0 ? process.exit(0) : process.exit(1);

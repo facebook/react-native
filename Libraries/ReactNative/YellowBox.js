@@ -403,7 +403,9 @@ const elevation = Platform.OS === 'android' ? Number.MAX_SAFE_INTEGER : undefine
 var styles = StyleSheet.create({
   fullScreen: {
     height: '100%',
-    elevation: elevation
+    width: '100%',
+    elevation: elevation,
+    position: 'absolute',
   },
   inspector: {
     backgroundColor: backgroundColor(0.95),

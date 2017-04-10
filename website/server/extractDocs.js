@@ -18,6 +18,7 @@ const fs = require('fs');
 const jsDocs = require('../jsdocs/jsdocs.js');
 const jsdocApi = require('jsdoc-api');
 const path = require('path');
+const recast = require('recast');
 const slugify = require('../core/slugify');
 
 const ANDROID_SUFFIX = 'android';
@@ -260,19 +261,80 @@ function getTypedef(filepath, fileContent, json) {
   return typedef;
 }
 
+/**
+ * Load and parse ViewPropTypes data.
+ * This method returns a Documentation object that's empty except for 'props'.
+ * It should be merged with a component Documentation object.
+ */
+function getViewPropTypes() {
+  // Finds default export of ViewPropTypes (the propTypes object expression).
+  function viewPropTypesResolver(ast, recast) {
+    let definition;
+    recast.visit(ast, {
+      visitAssignmentExpression: function(astPath) {
+        if (!definition && docgen.utils.isExportsOrModuleAssignment(astPath)) {
+          definition = docgen.utils.resolveToValue(astPath.get('right'));
+        }
+        return false;
+      }
+    });
+    return definition;
+  }
+
+  // Wrap ViewPropTypes export in a propTypes property inside of a fake class.
+  // This way the default docgen handlers will parse the properties and docs.
+  // The alternative would be to duplicate more of the parsing logic here.
+  function viewPropTypesConversionHandler(documentation, astPath) {
+    const builders = recast.types.builders;
+    const FauxView = builders.classDeclaration(
+      builders.identifier('View'),
+      builders.classBody(
+        [builders.classProperty(
+          builders.identifier('propTypes'),
+          builders.objectExpression(
+            astPath.get('properties').value
+          ),
+          null, // TypeAnnotation
+          true // static
+        )]
+      )
+    );
+    astPath.replace(FauxView);
+  }
+
+  return docgen.parse(
+    fs.readFileSync(docsList.viewPropTypes),
+    viewPropTypesResolver,
+    [
+      viewPropTypesConversionHandler,
+      ...docgen.defaultHandlers,
+    ]
+  );
+}
+
 function renderComponent(filepath) {
   try {
     const fileContent = fs.readFileSync(filepath);
+    const handlers = docgen.defaultHandlers.concat([
+      docgenHelpers.stylePropTypeHandler,
+      docgenHelpers.deprecatedPropTypeHandler,
+      docgenHelpers.jsDocFormatHandler,
+    ]);
+
     const json = docgen.parse(
       fileContent,
       docgenHelpers.findExportedOrFirst,
-      docgen.defaultHandlers.concat([
-        docgenHelpers.stylePropTypeHandler,
-        docgenHelpers.deprecatedPropTypeHandler,
-        docgenHelpers.jsDocFormatHandler,
-      ])
+      handlers
     );
     json.typedef = getTypedef(filepath, fileContent);
+
+    // ReactNative View component imports its propTypes from ViewPropTypes.
+    // This trips up docgen though since it expects them to be defined on View.
+    // We need to wire them up by manually importing and parsing ViewPropTypes.
+    if (filepath.match(/View\/View\.js/)) {
+      const viewPropTypesJSON = getViewPropTypes();
+      json.props = viewPropTypesJSON.props;
+    }
 
     return componentsToMarkdown('component', json, filepath, componentCount++, styleDocs);
   } catch (e) {

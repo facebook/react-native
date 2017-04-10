@@ -74,6 +74,7 @@ public class NativeModuleRegistryBuilder {
             reactModuleInfo.canOverrideExistingModule(),
             reactModuleInfo.supportsWebWorkers(),
             reactModuleInfo.needsEagerInit(),
+            reactModuleInfo.hasConstants(),
             moduleSpec.getProvider());
         }
 

@@ -23,7 +23,7 @@ import com.facebook.react.module.annotations.ReactModule;
 
 // This module is being called only by Java via the static method "poke" that
 // requires it to alreay be initialized, thus we eagerly initialize this module
-@ReactModule(name = "JSCSamplingProfiler", needsEagerInit = true)
+@ReactModule(name = "JSCSamplingProfiler", needsEagerInit = true, hasConstants = false)
 public class JSCSamplingProfiler extends ReactContextBaseJavaModule {
   public interface SamplingProfiler extends JavaScriptModule {
     void poke(int token);

@@ -12,7 +12,6 @@
 #import <React/RCTConvert.h>
 #include <JavaScriptCore/JavaScriptCore.h>
 #include <cxxreact/JSCExecutor.h>
-#include <cxxreact/ModuleRegistry.h>
 #include <folly/dynamic.h>
 #include <jschelpers/JavaScriptCore.h>
 
@@ -30,7 +29,7 @@ namespace react {
 
 class Instance;
 
-std::shared_ptr<ModuleRegistry> buildModuleRegistry(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance);
+std::vector<std::unique_ptr<NativeModule>> createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance);
 
 JSContext *contextForGlobalContextRef(JSGlobalContextRef contextRef);
 

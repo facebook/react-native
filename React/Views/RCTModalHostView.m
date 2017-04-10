@@ -16,6 +16,7 @@
 #import "RCTModalHostViewController.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
+#import "RCTUtils.h"
 #import "UIView+React.h"
 
 @implementation RCTModalHostView
@@ -68,7 +69,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     return;
   }
 
-  UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+  UIInterfaceOrientation currentOrientation = [RCTSharedApplication() statusBarOrientation];
   if (currentOrientation == _lastKnownOrientation) {
     return;
   }

@@ -44,6 +44,7 @@ import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.JSPackagerClient;
+import com.facebook.react.packagerconnection.Responder;
 
 import java.io.File;
 import java.io.IOException;
@@ -674,7 +675,7 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void onCaptureHeapCommand(final JSPackagerClient.Responder responder) {
+  public void onCaptureHeapCommand(final Responder responder) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -684,7 +685,7 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void onPokeSamplingProfilerCommand(@Nullable final JSPackagerClient.Responder responder) {
+  public void onPokeSamplingProfilerCommand(@Nullable final Responder responder) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -693,7 +694,7 @@ public class DevSupportManagerImpl implements
     });
   }
 
-  private void handleCaptureHeap(final JSPackagerClient.Responder responder) {
+  private void handleCaptureHeap(final Responder responder) {
     if (mCurrentContext == null) {
       return;
     }
@@ -713,7 +714,7 @@ public class DevSupportManagerImpl implements
       });
   }
 
-  private void handlePokeSamplingProfiler(@Nullable final JSPackagerClient.Responder responder) {
+  private void handlePokeSamplingProfiler(@Nullable final Responder responder) {
     try {
       List<String> pokeResults = JSCSamplingProfiler.poke(60000);
       for (String result : pokeResults) {

@@ -6,6 +6,7 @@ android_library(
     exported_deps = [
         react_native_dep("java/com/facebook/jni:jni"),
         react_native_dep("java/com/facebook/proguard/annotations:annotations"),
+        react_native_target("java/com/facebook/react/bridge:bridge"),
     ],
     proguard_config = "bridge.pro",
     visibility = [
@@ -26,7 +27,6 @@ android_library(
         #    '//native/react/jni:jni-internal',
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
-        react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/devsupport:devsupport"),
         react_native_target("java/com/facebook/react/module/model:model"),

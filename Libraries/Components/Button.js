@@ -124,7 +124,7 @@ class Button extends React.Component {
         disabled={disabled}
         onPress={onPress}>
         <View style={buttonStyles}>
-          <Text style={textStyles}>{formattedTitle}</Text>
+          <Text style={textStyles} disabled={disabled}>{formattedTitle}</Text>
         </View>
       </Touchable>
     );
