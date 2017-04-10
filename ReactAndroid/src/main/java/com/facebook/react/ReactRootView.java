@@ -68,7 +68,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable String mJSModuleName;
-  private @Nullable Bundle mLaunchOptions;
+  private @Nullable Bundle mAppProperties;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
   private int mRootViewTag;
@@ -197,7 +197,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   public void startReactApplication(
       ReactInstanceManager reactInstanceManager,
       String moduleName,
-      @Nullable Bundle launchOptions) {
+      @Nullable Bundle initialProperties) {
     UiThreadUtil.assertOnUiThread();
 
     // TODO(6788889): Use POJO instead of bundle here, apparently we can't just use WritableMap
@@ -209,7 +209,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
     mReactInstanceManager = reactInstanceManager;
     mJSModuleName = moduleName;
-    mLaunchOptions = launchOptions;
+    mAppProperties = initialProperties;
 
     if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
       mReactInstanceManager.createReactContextInBackground();
@@ -249,8 +249,33 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     return Assertions.assertNotNull(mJSModuleName);
   }
 
-  /* package */ @Nullable Bundle getLaunchOptions() {
-    return mLaunchOptions;
+  public @Nullable Bundle getAppProperties() {
+    return mAppProperties;
+  }
+
+  public void setAppProperties(@Nullable Bundle appProperties) {
+    mAppProperties = appProperties;
+
+    if (mReactInstanceManager == null || !mIsAttachedToInstance ||
+      mReactInstanceManager.getCurrentReactContext() == null) {
+        return;
+    }
+
+    this.runApplication(mReactInstanceManager);
+  }
+
+  /* package */ void runApplication(final ReactInstanceManager reactInstanceManager) {
+    ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
+    CatalystInstance catalystInstance = reactContext.getCatalystInstance();
+    int rootTag = this.getRootViewTag();
+    @Nullable Bundle appProperties = this.getAppProperties();
+    WritableMap initialProps = com.facebook.react.cxxbridge.Arguments.makeNativeMap(appProperties);
+    String jsAppModuleName = this.getJSModuleName();
+
+    WritableNativeMap appParams = new WritableNativeMap();
+    appParams.putDouble("rootTag", rootTag);
+    appParams.putMap("initialProps", initialProps);
+    catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
   }
 
   /**
