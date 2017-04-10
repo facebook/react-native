@@ -233,6 +233,9 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     if (mArgumentsProcessed) {
       return;
     }
+    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "processArguments")
+      .arg("method", mModuleWrapper.getName() + "." + mMethod.getName())
+      .flush();
     mArgumentsProcessed = true;
     mArgumentExtractors = buildArgumentExtractors(mParameterTypes);
     mSignature = buildSignature(mMethod, mParameterTypes, (mType.equals(BaseJavaModule.METHOD_TYPE_SYNC)));
@@ -240,6 +243,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     // safe to allocate only one arguments object per method that can be reused across calls
     mArguments = new Object[mParameterTypes.length];
     mJSArgumentsNeeded = calculateJSArgumentsNeeded();
+    com.facebook.systrace.Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
   public Method getMethod() {

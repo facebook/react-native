@@ -160,7 +160,8 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
           .append("\"").append(reactModule.name()).append("\"").append(", ")
           .append(reactModule.canOverrideExistingModule()).append(", ")
           .append(reactModule.supportsWebWorkers()).append(", ")
-          .append(reactModule.needsEagerInit())
+          .append(reactModule.needsEagerInit()).append(", ")
+          .append(reactModule.hasConstants())
           .append(")")
           .toString();
 

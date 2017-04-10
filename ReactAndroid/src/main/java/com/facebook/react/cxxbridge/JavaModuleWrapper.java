@@ -9,6 +9,8 @@
 
 package com.facebook.react.cxxbridge;
 
+import javax.annotation.Nullable;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -123,7 +125,10 @@ public class JavaModuleWrapper {
   // TODO mhorowitz: make this return NativeMap, which requires moving
   // NativeMap out of OnLoad.
   @DoNotStrip
-  public NativeArray getConstants() {
+  public @Nullable NativeArray getConstants() {
+    if (!mModuleHolder.getHasConstants()) {
+      return null;
+    }
     BaseJavaModule baseJavaModule = getModule();
     ReactMarker.logMarker(GET_CONSTANTS_START, getName());
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "Map constants")
