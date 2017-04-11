@@ -102,7 +102,7 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
   const hasteMapBuilt = hasteMap.build();
   const resolutionRequests = {};
   const filesByDirNameIndex = new FilesByDirNameIndex(hasteMap.getAllFiles());
-  return (id, source: ?string, platform, _, callback) => {
+  return (id, source, platform, _, callback) => {
     let resolutionRequest = resolutionRequests[platform];
     if (!resolutionRequest) {
       resolutionRequest = resolutionRequests[platform] = new ResolutionRequest({

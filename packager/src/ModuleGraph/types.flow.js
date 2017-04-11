@@ -40,7 +40,6 @@ export type GraphFn = (
 ) => void;
 
 type GraphOptions = {|
-  cwd?: string,
   log?: Console,
   optimize?: boolean,
   skip?: Set<string>,
@@ -90,7 +89,7 @@ export type PackageData = {|
 
 export type ResolveFn = (
   id: string,
-  source: string,
+  source: ?string,
   platform: string,
   options?: ResolveOptions,
   callback: Callback<string>,
