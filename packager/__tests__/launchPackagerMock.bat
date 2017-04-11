@@ -7,6 +7,6 @@
 
 @echo off
 title React Packager
-node "%~dp0..\local-cli\cli.js" start %*
+node "$THIS_DIR/launchPackagerCLIMock.js.mock" start %*
 pause
 exit
