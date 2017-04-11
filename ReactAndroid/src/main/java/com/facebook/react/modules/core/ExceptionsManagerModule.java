@@ -22,6 +22,8 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.common.JavascriptException;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
+import com.meiyou.sdk.core.LogUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 @ReactModule(name = ExceptionsManagerModule.NAME)
 public class ExceptionsManagerModule extends BaseJavaModule {
@@ -95,8 +97,8 @@ public class ExceptionsManagerModule extends BaseJavaModule {
   private void showOrThrowError(String title, ReadableArray details, int exceptionId) {
     if (mDevSupportManager.getDevSupportEnabled()) {
       mDevSupportManager.showNewJSError(title, details, exceptionId);
-    } else {
-      throw new JavascriptException(stackTraceToString(title, details));
+      LogUtils.d("meetyou react-native crash",stackTraceToString(title, details));
+      CrashReport.postCatchedException(new JavascriptException(stackTraceToString(title, details)));
     }
   }
 

@@ -21,6 +21,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionListener;
+import com.meiyou.framework.biz.ui.LinganActivity;
 
 import javax.annotation.Nullable;
 
@@ -222,7 +223,7 @@ public class ReactActivityDelegate {
     return Assertions.assertNotNull(mFragmentActivity);
   }
 
-  private Activity getPlainActivity() {
-    return ((Activity) getContext());
+  private LinganActivity getPlainActivity() {
+    return ((LinganActivity) getContext());
   }
 }
