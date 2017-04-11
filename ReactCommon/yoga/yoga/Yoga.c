@@ -308,6 +308,7 @@ static inline float YGResolveValueMargin(const YGValue *const value, const float
 }
 
 int32_t gNodeInstanceCount = 0;
+int32_t gConfigInstanceCount = 0;
 
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
   const YGNodeRef node = gYGMalloc(sizeof(YGNode));
@@ -373,15 +374,21 @@ int32_t YGNodeGetInstanceCount(void) {
   return gNodeInstanceCount;
 }
 
+int32_t YGConfigGetInstanceCount(void) {
+  return gConfigInstanceCount;
+}
+
 YGConfigRef YGConfigNew(void) {
   const YGConfigRef config = gYGMalloc(sizeof(YGConfig));
   YG_ASSERT(config, "Could not allocate memory for config");
+  gConfigInstanceCount++;
   memcpy(config, &gYGConfigDefaults, sizeof(YGConfig));
   return config;
 }
 
 void YGConfigFree(const YGConfigRef config) {
   gYGFree(config);
+  gConfigInstanceCount--;
 }
 
 static void YGNodeMarkDirtyInternal(const YGNodeRef node) {
@@ -1317,8 +1324,12 @@ static void YGNodeSetPosition(const YGNodeRef node,
                               const float mainSize,
                               const float crossSize,
                               const float parentWidth) {
-  const YGFlexDirection mainAxis = YGResolveFlexDirection(node->style.flexDirection, direction);
-  const YGFlexDirection crossAxis = YGFlexDirectionCross(mainAxis, direction);
+  /* Root nodes should be always layouted as LTR, so we don't return negative values. */
+  const YGDirection directionRespectingRoot = node->parent != NULL ? direction : YGDirectionLTR;
+  const YGFlexDirection mainAxis =
+      YGResolveFlexDirection(node->style.flexDirection, directionRespectingRoot);
+  const YGFlexDirection crossAxis = YGFlexDirectionCross(mainAxis, directionRespectingRoot);
+
   const float relativePositionMain = YGNodeRelativePosition(node, mainAxis, mainSize);
   const float relativePositionCross = YGNodeRelativePosition(node, crossAxis, crossSize);
 
@@ -2111,6 +2122,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     // either set the dimensions of the node if none already exist or to compute
     // the remaining space left for the flexible children.
     float sizeConsumedOnCurrentLine = 0;
+    float sizeConsumedOnCurrentLineIncludingMinConstraint = 0;
 
     float totalFlexGrowFactors = 0;
     float totalFlexShrinkScaledFactors = 0;
@@ -2128,21 +2140,24 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       child->lineIndex = lineCount;
 
       if (child->style.positionType != YGPositionTypeAbsolute) {
+        const float childMarginMainAxis = YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
         const float outerFlexBasis =
             fmaxf(YGResolveValue(&child->style.minDimensions[dim[mainAxis]], mainAxisParentSize),
                   child->layout.computedFlexBasis) +
-            YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
+            childMarginMainAxis;
 
         // If this is a multi-line flow and this item pushes us over the
         // available size, we've
         // hit the end of the current line. Break out of the loop and lay out
         // the current line.
-        if (sizeConsumedOnCurrentLine + outerFlexBasis > availableInnerMainDim && isNodeFlexWrap &&
-            itemsOnLine > 0) {
+        if (sizeConsumedOnCurrentLineIncludingMinConstraint + outerFlexBasis >
+                availableInnerMainDim &&
+            isNodeFlexWrap && itemsOnLine > 0) {
           break;
         }
 
-        sizeConsumedOnCurrentLine += outerFlexBasis;
+        sizeConsumedOnCurrentLineIncludingMinConstraint += outerFlexBasis;
+        sizeConsumedOnCurrentLine += child->layout.computedFlexBasis + childMarginMainAxis;
         itemsOnLine++;
 
         if (YGNodeIsFlex(child)) {
@@ -3426,7 +3441,8 @@ bool YGConfigGetUseWebDefaults(const YGConfigRef config) {
 }
 
 void YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree) {
-  YG_ASSERT(gNodeInstanceCount == 0, "Cannot set memory functions: all node must be freed first");
+  YG_ASSERT(gNodeInstanceCount == 0 && gConfigInstanceCount == 0,
+            "Cannot set memory functions: all node must be freed first");
   YG_ASSERT((ygmalloc == NULL && yccalloc == NULL && ygrealloc == NULL && ygfree == NULL) ||
                 (ygmalloc != NULL && yccalloc != NULL && ygrealloc != NULL && ygfree != NULL),
             "Cannot set memory functions: functions must be all NULL or Non-NULL");

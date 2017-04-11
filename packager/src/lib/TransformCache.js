@@ -83,7 +83,7 @@ function getCacheFilePaths(props: {
     .update(props.transformOptionsKey);
   const hash = hasher.digest('hex');
   const prefix = hash.substr(0, 2);
-  const fileName = `${hash.substr(2)}${path.basename(props.filePath)}`;
+  const fileName = `${hash.substr(2)}`;
   const base = path.join(getCacheDirPath(), prefix, fileName);
   return {transformedCode: base, metadata: base + '.meta'};
 }

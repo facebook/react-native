@@ -40,16 +40,15 @@ export type GraphFn = (
 ) => void;
 
 type GraphOptions = {|
-  cwd?: string,
   log?: Console,
   optimize?: boolean,
   skip?: Set<string>,
 |};
 
-export type GraphResult = {
+export type GraphResult = {|
   entryModules: Array<Module>,
   modules: Array<Module>,
-};
+|};
 
 export type IdForPathFn = {path: string} => number;
 
@@ -76,10 +75,10 @@ export type OutputFn = (
   idForPath: IdForPathFn,
 ) => OutputResult;
 
-type OutputResult = {
+type OutputResult = {|
   code: string,
   map: SourceMap,
-};
+|};
 
 export type PackageData = {|
   browser?: Object | string,
@@ -90,7 +89,7 @@ export type PackageData = {|
 
 export type ResolveFn = (
   id: string,
-  source: string,
+  source: ?string,
   platform: string,
   options?: ResolveOptions,
   callback: Callback<string>,
@@ -100,11 +99,11 @@ type ResolveOptions = {
   log?: Console,
 };
 
-export type TransformerResult = {
+export type TransformerResult = {|
   ast: ?Ast,
   code: string,
   map: ?SourceMap,
-};
+|};
 
 export type Transformer = {
   transform: (

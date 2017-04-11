@@ -286,6 +286,15 @@ function getViewPropTypes() {
   // The alternative would be to duplicate more of the parsing logic here.
   function viewPropTypesConversionHandler(documentation, astPath) {
     const builders = recast.types.builders;
+
+    // This is broken because babylon@7 and estree introduced SpreadElement, and ast-types has not been updated to support it
+    // (we are broken by react-docgen broken by recast broken by ast-types)
+    astPath.get('properties').value.forEach(n => {
+      if (n.type === 'SpreadElement') {
+        n.type = 'SpreadProperty';
+      }
+    });
+
     const FauxView = builders.classDeclaration(
       builders.identifier('View'),
       builders.classBody(

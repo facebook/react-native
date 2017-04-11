@@ -54,7 +54,7 @@ let _sampleRate = null;
 class FillRateHelper {
   _getFrameMetrics: (index: number) => ?FrameMetrics;
   _anyBlankCount = 0;
-  _anyBlankMinSpeed = Infinity;
+  _anyBlankMinSpeed = Number.MAX_SAFE_INTEGER;
   _anyBlankSpeedSum = 0;
   _sampleCounts = {};
   _fractionBlankSum = 0;

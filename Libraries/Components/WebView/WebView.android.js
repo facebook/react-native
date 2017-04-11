@@ -184,11 +184,18 @@ class WebView extends React.Component {
       'always',
       'compatibility'
     ]),
+
+    /**
+     * Used on Android only, controls whether form autocomplete data should be saved
+     * @platform android
+     */
+    saveFormDataDisabled: PropTypes.bool,
   };
 
   static defaultProps = {
     javaScriptEnabled : true,
     scalesPageToFit: true,
+    saveFormDataDisabled: false
   };
 
   state = {
@@ -261,6 +268,7 @@ class WebView extends React.Component {
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
         allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
         mixedContentMode={this.props.mixedContentMode}
+        saveFormDataDisabled={this.props.saveFormDataDisabled}
       />;
 
     return (
