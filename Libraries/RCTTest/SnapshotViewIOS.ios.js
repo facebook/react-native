@@ -25,6 +25,7 @@ class SnapshotViewIOS extends React.Component {
   props: {
     onSnapshotReady?: Function,
     testIdentifier?: string,
+    snapshotDelay?: number
   };
 
   // $FlowFixMe(>=0.41.0)
@@ -34,20 +35,29 @@ class SnapshotViewIOS extends React.Component {
     onSnapshotReady : React.PropTypes.func,
     // A name to identify the individual instance to the SnapshotView
     testIdentifier : React.PropTypes.string,
+    snapshotDelay : React.PropTypes.number
   };
 
   onDefaultAction = (event: Object) => {
     TestModule.verifySnapshot(TestModule.markTestPassed);
   };
 
+  createDelay = () => {
+    var onSnapshotReady = this.props.onSnapshotReady || this.onDefaultAction;
+    if (!this.props.snapshotDelay || this.props.snapshotDelay === 0){
+      onSnapshotReady();
+      return;
+    }
+    setTimeout(onSnapshotReady, this.props.snapshotDelay * 1000);
+  }
+
   render() {
     var testIdentifier = this.props.testIdentifier || 'test';
-    var onSnapshotReady = this.props.onSnapshotReady || this.onDefaultAction;
     return (
       <RCTSnapshot
         style={style.snapshot}
         {...this.props}
-        onSnapshotReady={onSnapshotReady}
+        onSnapshotReady={this.createDelay}
         testIdentifier={testIdentifier}
       />
     );
