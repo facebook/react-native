@@ -315,6 +315,7 @@ describe('Module', () => {
         arbitrary: 'arbitrary',
         dependencies: ['foo', 'bar'],
         dependencyOffsets: [12, 764],
+        id: null,
         map: {version: 3},
         subObject: {foo: 'bar'},
       };
