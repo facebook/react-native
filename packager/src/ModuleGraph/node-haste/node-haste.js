@@ -57,6 +57,14 @@ function getFakeModuleMap(hasteMap: HasteMap) {
   };
 }
 
+const nullModule = {
+  path: '/',
+  getPackage() {},
+  hash() {
+    throw new Error('not implemented');
+  },
+};
+
 exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
   const {
     assetExts,
@@ -94,7 +102,7 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
   const hasteMapBuilt = hasteMap.build();
   const resolutionRequests = {};
   const filesByDirNameIndex = new FilesByDirNameIndex(hasteMap.getAllFiles());
-  return (id, source, platform, _, callback) => {
+  return (id, source: ?string, platform, _, callback) => {
     let resolutionRequest = resolutionRequests[platform];
     if (!resolutionRequest) {
       resolutionRequest = resolutionRequests[platform] = new ResolutionRequest({
@@ -113,7 +121,9 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
       });
     }
 
-    const from = new Module(source, moduleCache, getTransformedFile(source));
+    const from = source != null
+      ? new Module(source, moduleCache, getTransformedFile(source))
+      : nullModule;
     hasteMapBuilt
       .then(() => resolutionRequest.resolveDependency(from, id))
       .then(
