@@ -421,14 +421,7 @@ class Module {
 
   _getCacheProps(transformOptions: TransformOptions, transformOptionsKey: string) {
     const sourceCode = this._readSourceCode();
-    const moduleDocBlock = this._readDocBlock();
     const getTransformCacheKey = this._getTransformCacheKey;
-    // Ignore requires in JSON files or generated code. An example of this
-    // is prebuilt files like the SourceMap library.
-    const extern = this.isJSON() || 'extern' in moduleDocBlock;
-    if (extern) {
-      transformOptions = {...transformOptions, extern};
-    }
     return {
       filePath: this.path,
       sourceCode,

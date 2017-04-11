@@ -213,40 +213,11 @@ describe('Module', () => {
         );
     });
 
-    it('passes module and file contents if the file is annotated with @extern', () => {
-      const module = createModule({transformCode});
-      const customFileContents = `
-        /**
-         * @extern
-         */
-      `;
-      mockIndexFile(customFileContents);
-      return module.read().then(() => {
-        expect(transformCode).toBeCalledWith(module, customFileContents, {extern: true});
-      });
-    });
-
     it('passes the module and file contents to the transform for JSON files', () => {
       mockPackageFile();
       const module = createJSONModule({transformCode});
       return module.read().then(() => {
-        expect(transformCode).toBeCalledWith(module, packageJson, {extern: true});
-      });
-    });
-
-    it('does not extend the passed options object if the file is annotated with @extern', () => {
-      const module = createModule({transformCode});
-      const customFileContents = `
-        /**
-         * @extern
-         */
-      `;
-      mockIndexFile(customFileContents);
-      const options = {arbitrary: 'foo'};
-      return module.read(options).then(() => {
-        expect(options).not.toEqual(jasmine.objectContaining({extern: true}));
-        expect(transformCode)
-          .toBeCalledWith(module, customFileContents, {...options, extern: true});
+        expect(transformCode).toBeCalledWith(module, packageJson, undefined);
       });
     });
 
@@ -255,9 +226,7 @@ describe('Module', () => {
       const module = createJSONModule({transformCode});
       const options = {arbitrary: 'foo'};
       return module.read(options).then(() => {
-        expect(options).not.toEqual(jasmine.objectContaining({extern: true}));
-        expect(transformCode)
-          .toBeCalledWith(module, packageJson, {...options, extern: true});
+        expect(transformCode).toBeCalledWith(module, packageJson, options);
       });
     });
 
