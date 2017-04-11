@@ -45,10 +45,10 @@ type GraphOptions = {|
   skip?: Set<string>,
 |};
 
-export type GraphResult = {
+export type GraphResult = {|
   entryModules: Array<Module>,
   modules: Array<Module>,
-};
+|};
 
 export type IdForPathFn = {path: string} => number;
 
@@ -75,10 +75,10 @@ export type OutputFn = (
   idForPath: IdForPathFn,
 ) => OutputResult;
 
-type OutputResult = {
+type OutputResult = {|
   code: string,
   map: SourceMap,
-};
+|};
 
 export type PackageData = {|
   browser?: Object | string,
@@ -99,11 +99,11 @@ type ResolveOptions = {
   log?: Console,
 };
 
-export type TransformerResult = {
+export type TransformerResult = {|
   ast: ?Ast,
   code: string,
   map: ?SourceMap,
-};
+|};
 
 export type Transformer = {
   transform: (
