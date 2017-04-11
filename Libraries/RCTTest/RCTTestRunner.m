@@ -23,12 +23,12 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
 @implementation RCTTestRunner
 {
   FBSnapshotTestController *_testController;
-  RCTBridgeModuleProviderBlock _moduleProvider;
+  RCTBridgeModuleListProvider _moduleProvider;
 }
 
 - (instancetype)initWithApp:(NSString *)app
          referenceDirectory:(NSString *)referenceDirectory
-             moduleProvider:(RCTBridgeModuleProviderBlock)block
+             moduleProvider:(RCTBridgeModuleListProvider)block
 {
   RCTAssertParam(app);
   RCTAssertParam(referenceDirectory);
@@ -121,7 +121,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     testModule.testSuffix = _testSuffix;
     testModule.view = rootView;
 
-    UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
+    UIViewController *vc = RCTSharedApplication().delegate.window.rootViewController;
     vc.view = [UIView new];
     [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
 

@@ -176,6 +176,8 @@ const TouchableWithoutFeedback = React.createClass({
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
       // $FlowFixMe(>=0.41.0)
+      nativeID: this.props.nativeID,
+      // $FlowFixMe(>=0.41.0)
       testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,

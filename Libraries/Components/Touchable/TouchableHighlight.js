@@ -22,7 +22,6 @@ var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
-
 const ViewPropTypes = require('ViewPropTypes');
 
 var ensureComponentIsNative = require('ensureComponentIsNative');
@@ -267,6 +266,7 @@ var TouchableHighlight = React.createClass({
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}
+        nativeID={this.props.nativeID}
         testID={this.props.testID}>
         {React.cloneElement(
           React.Children.only(this.props.children),

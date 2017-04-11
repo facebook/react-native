@@ -33,7 +33,7 @@ import static com.facebook.react.modules.storage.ReactDatabaseSupplier.KEY_COLUM
 import static com.facebook.react.modules.storage.ReactDatabaseSupplier.TABLE_CATALYST;
 import static com.facebook.react.modules.storage.ReactDatabaseSupplier.VALUE_COLUMN;
 
-@ReactModule(name = AsyncStorageModule.NAME)
+@ReactModule(name = AsyncStorageModule.NAME, hasConstants = false)
 public final class AsyncStorageModule
     extends ReactContextBaseJavaModule implements ModuleDataCleaner.Cleanable {
 

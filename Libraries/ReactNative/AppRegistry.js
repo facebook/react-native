@@ -16,6 +16,7 @@ const BugReporting = require('BugReporting');
 const FrameRateLogger = require('FrameRateLogger');
 const NativeModules = require('NativeModules');
 const ReactNative = require('ReactNative');
+const SceneTracker = require('SceneTracker');
 
 const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
@@ -56,6 +57,8 @@ const sections: Runnables = {};
 const tasks: Map<string, TaskProvider> = new Map();
 let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
   (component: ComponentProvider) => component();
+let _frameRateLoggerSceneListener = null;
+
 
 /**
  * `AppRegistry` is the JS entry point to running all React Native apps.  App
@@ -173,7 +176,12 @@ const AppRegistry = {
       'This error can also happen due to a require() error during ' +
       'initialization or failure to call AppRegistry.registerComponent.\n\n'
     );
-    FrameRateLogger.setContext(appKey);
+    if (!_frameRateLoggerSceneListener) {
+      _frameRateLoggerSceneListener = SceneTracker.addActiveSceneChangedListener(
+        (scene) => FrameRateLogger.setContext(scene.name)
+      );
+    }
+    SceneTracker.setActiveScene({name: appKey});
     runnables[appKey].run(appParameters);
   },
 

@@ -698,6 +698,7 @@ const TextInput = React.createClass({
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityTraits={props.accessibilityTraits}
+        nativeID={this.props.nativeID}
         testID={props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
@@ -748,6 +749,7 @@ const TextInput = React.createClass({
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
+        nativeID={this.props.nativeID}
         testID={this.props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>

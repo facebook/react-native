@@ -12,7 +12,14 @@
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridgeModule.h>
-#import <cxxreact/CxxModule.h>
+
+namespace facebook {
+namespace xplat {
+namespace module {
+class CxxModule;
+}
+}
+}
 
 /**
  * Subclass RCTCxxModule to use cross-platform CxxModule on iOS.

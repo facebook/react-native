@@ -31,6 +31,7 @@ public class ModuleHolder {
   private final String mName;
   private final boolean mCanOverrideExistingModule;
   private final boolean mSupportsWebWorkers;
+  private final boolean mHasConstants;
 
   private @Nullable Provider<? extends NativeModule> mProvider;
   private @Nullable NativeModule mModule;
@@ -41,10 +42,12 @@ public class ModuleHolder {
     boolean canOverrideExistingModule,
     boolean supportsWebWorkers,
     boolean needsEagerInit,
+    boolean hasConstants,
     Provider<? extends NativeModule> provider) {
     mName = name;
     mCanOverrideExistingModule = canOverrideExistingModule;
     mSupportsWebWorkers = supportsWebWorkers;
+    mHasConstants = hasConstants;
     mProvider = provider;
     if (needsEagerInit) {
       mModule = create();
@@ -55,6 +58,7 @@ public class ModuleHolder {
     mName = nativeModule.getName();
     mCanOverrideExistingModule = nativeModule.canOverrideExistingModule();
     mSupportsWebWorkers = nativeModule.supportsWebWorkers();
+    mHasConstants = true;
     mModule = nativeModule;
   }
 
@@ -87,6 +91,10 @@ public class ModuleHolder {
 
   public boolean getSupportsWebWorkers() {
     return mSupportsWebWorkers;
+  }
+
+  public boolean getHasConstants() {
+    return mHasConstants;
   }
 
   @DoNotStrip

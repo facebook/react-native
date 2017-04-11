@@ -282,11 +282,9 @@ static NSThread *newJavaScriptThread(void)
 
 - (RCTJavaScriptContext *)context
 {
-  RCTAssertThread(_javaScriptThread, @"Must be called on JS thread.");
   if (!self.isValid) {
     return nil;
   }
-  RCTAssert(_context != nil, @"Fetching context while valid, but before it is created");
   return _context;
 }
 

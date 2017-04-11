@@ -71,7 +71,7 @@ exports.examples = [
   description: 'You can display <ScrollView>\'s child components horizontally rather than vertically',
   render: function() {
 
-    function renderScrollView(title: string, addtionalStyles: StyleSheet) {
+    function renderScrollView(title: string, addtionalStyles: typeof StyleSheet) {
       var _scrollView: ScrollView;
       return (
         <View style={addtionalStyles}>

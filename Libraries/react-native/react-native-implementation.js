@@ -7,24 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule react-native-implementation
- * @noflow - get/set properties not yet supported by flow. also `...require(x)` is broken #6560135
+ * @flow
  */
 'use strict';
 
 const invariant = require('fbjs/lib/invariant');
-const warning = require('fbjs/lib/warning');
-
-if (__DEV__) {
-  var warningDedupe = {};
-  var addonWarn = function(prevName, newPackageName) {
-    warning(
-      warningDedupe[prevName],
-      'React.addons.' + prevName + ' is deprecated. Please import the "' +
-      newPackageName + '" package instead.'
-    );
-    warningDedupe[prevName] = true;
-  };
-}
 
 // Export React, plus some native additions.
 const ReactNative = {
@@ -118,6 +105,7 @@ const ReactNative = {
   get Platform() { return require('Platform'); },
   get processColor() { return require('processColor'); },
   get requireNativeComponent() { return require('requireNativeComponent'); },
+  get takeSnapshot() { return require('takeSnapshot'); },
 
   // Prop Types
   get ColorPropType() { return require('ColorPropType'); },
@@ -133,7 +121,6 @@ const ReactNative = {
       'and imported from `react-native-deprecated-custom-components` instead of `react-native`. ' +
       'Learn about alternative navigation solutions at http://facebook.github.io/react-native/docs/navigation.html'
     );
-    return null;
   },
 };
 
@@ -163,6 +150,14 @@ function applyForwarding(key) {
     );
     return;
   }
+    if (ReactNative.hasOwnProperty(key)) {
+      // WARNING! ReactNative has read-only keys. So, if ReactNativeInternal
+      // has any duplicate key that ReactNative already has, this assignment
+      // would fail with "Attempted to assign to readonly property."
+      // So, if the key already exists on ReactNative, we assume that it's the
+      // correct module and skip re-assigning it.
+      return;
+    }
   ReactNative[key] = ReactNativeInternal[key];
 }
 for (const key in ReactNativeInternal) {
