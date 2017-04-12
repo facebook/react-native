@@ -49,28 +49,28 @@ import type {
 } from './Module';
 import type {HasteFS} from './types';
 
-type Options = {
-  assetDependencies: Array<string>,
-  assetExts: Array<string>,
-  cache: Cache,
-  extensions: Array<string>,
-  extraNodeModules: ?{},
-  forceNodeFilesystemAPI: boolean,
-  getTransformCacheKey: GetTransformCacheKey,
-  globalTransformCache: ?GlobalTransformCache,
-  ignoreFilePath: (filePath: string) => boolean,
-  maxWorkerCount: number,
-  moduleOptions: ModuleOptions,
-  platforms: Set<string>,
-  preferNativePlatform: boolean,
-  providesModuleNodeModules: Array<string>,
-  reporter: Reporter,
-  resetCache: boolean,
-  roots: Array<string>,
-  transformCode: TransformCode,
-  useWatchman: boolean,
-  watch: boolean,
-};
+type Options = {|
+  +assetDependencies: Array<string>,
+  +assetExts: Array<string>,
+  +cache: Cache,
+  +extensions: Array<string>,
+  +extraNodeModules: ?{},
+  +forceNodeFilesystemAPI: boolean,
+  +getTransformCacheKey: GetTransformCacheKey,
+  +globalTransformCache: ?GlobalTransformCache,
+  +ignoreFilePath: (filePath: string) => boolean,
+  +maxWorkerCount: number,
+  +moduleOptions: ModuleOptions,
+  +platforms: Set<string>,
+  +preferNativePlatform: boolean,
+  +providesModuleNodeModules: Array<string>,
+  +reporter: Reporter,
+  +resetCache: boolean,
+  +roots: Array<string>,
+  +transformCode: TransformCode,
+  +useWatchman: boolean,
+  +watch: boolean,
+|};
 
 const JEST_HASTE_MAP_CACHE_BREAKER = 1;
 
@@ -84,12 +84,12 @@ class DependencyGraph extends EventEmitter {
   _hasteFS: HasteFS;
   _moduleMap: ModuleMap;
 
-  constructor(config: {
-    opts: Options,
-    haste: JestHasteMap,
-    initialHasteFS: HasteFS,
-    initialModuleMap: ModuleMap,
-  }) {
+  constructor(config: {|
+    +opts: Options,
+    +haste: JestHasteMap,
+    +initialHasteFS: HasteFS,
+    +initialModuleMap: ModuleMap,
+  |}) {
     super();
     invariant(config.opts.maxWorkerCount >= 1, 'worker count must be greater or equal to 1');
     this._opts = config.opts;
