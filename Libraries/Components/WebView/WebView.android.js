@@ -55,6 +55,10 @@ class WebView extends React.Component {
     onLoadEnd: PropTypes.func,
     onLoadStart: PropTypes.func,
     onError: PropTypes.func,
+    /**
+     * Function that is invoked when the `WebView` load fails due to an SSL error.
+     * @platform android
+     */
     onSslError: PropTypes.func,
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
