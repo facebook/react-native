@@ -54,6 +54,7 @@ function genItemData(count: number, start: number = 0): Array<Item> {
 }
 
 const HORIZ_WIDTH = 200;
+const ITEM_HEIGHT = 72;
 
 class ItemComponent extends React.PureComponent {
   props: {
@@ -61,6 +62,8 @@ class ItemComponent extends React.PureComponent {
     horizontal?: ?boolean,
     item: Item,
     onPress: (key: number) => void,
+    onShowUnderlay?: () => void,
+    onHideUnderlay?: () => void,
   };
   _onPress = () => {
     this.props.onPress(this.props.item.key);
@@ -72,9 +75,11 @@ class ItemComponent extends React.PureComponent {
     return (
       <TouchableHighlight
         onPress={this._onPress}
+        onShowUnderlay={this.props.onShowUnderlay}
+        onHideUnderlay={this.props.onHideUnderlay}
         style={horizontal ? styles.horizItem : styles.item}>
         <View style={[
-          styles.row, horizontal && {width: HORIZ_WIDTH}]}>
+          styles.row, horizontal && {width: HORIZ_WIDTH}, fixedHeight && {height: ITEM_HEIGHT}]}>
           {!item.noImage && <Image style={styles.thumb} source={imgSource} />}
           <Text
             style={styles.text}
@@ -101,7 +106,7 @@ const renderStackedItem = ({item}: {item: Item}) => {
 class FooterComponent extends React.PureComponent {
   render() {
     return (
-      <View>
+      <View style={styles.headerFooterContainer}>
         <SeparatorComponent />
         <View style={styles.headerFooter}>
           <Text>LIST FOOTER</Text>
@@ -114,7 +119,7 @@ class FooterComponent extends React.PureComponent {
 class HeaderComponent extends React.PureComponent {
   render() {
     return (
-      <View>
+      <View style={styles.headerFooterContainer}>
         <View style={styles.headerFooter}>
           <Text>LIST HEADER</Text>
         </View>
@@ -127,6 +132,15 @@ class HeaderComponent extends React.PureComponent {
 class SeparatorComponent extends React.PureComponent {
   render() {
     return <View style={styles.separator} />;
+  }
+}
+
+class ItemSeparatorComponent extends React.PureComponent {
+  render() {
+    const style = this.props.highlighted
+      ? [styles.itemSeparator, {marginLeft: 0, backgroundColor: 'rgb(217, 217, 217)'}]
+      : styles.itemSeparator;
+    return <View style={style} />;
   }
 }
 
@@ -181,7 +195,7 @@ const SEPARATOR_HEIGHT = StyleSheet.hairlineWidth;
 
 function getItemLayout(data: any, index: number, horizontal?: boolean) {
   const [length, separator, header] = horizontal ?
-    [HORIZ_WIDTH, 0, HEADER.width] : [84, SEPARATOR_HEIGHT, HEADER.height];
+    [HORIZ_WIDTH, 0, HEADER.width] : [ITEM_HEIGHT, SEPARATOR_HEIGHT, HEADER.height];
   return {length, offset: (length + separator) * index + header, index};
 }
 
@@ -231,11 +245,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  headerFooterContainer: {
+    backgroundColor: 'rgb(239, 239, 244)',
+  },
   horizItem: {
     alignSelf: 'flex-start', // Necessary for touch highlight
   },
   item: {
     flex: 1,
+  },
+  itemSeparator: {
+    height: SEPARATOR_HEIGHT,
+    backgroundColor: 'rgb(200, 199, 204)',
+    marginLeft: 60,
   },
   option: {
     flexDirection: 'row',
@@ -245,7 +267,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     padding: 10,
-    backgroundColor: '#F6F6F6',
+    backgroundColor: 'white',
   },
   searchTextInput: {
     backgroundColor: 'white',
@@ -260,7 +282,7 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: SEPARATOR_HEIGHT,
-    backgroundColor: 'gray',
+    backgroundColor: 'rgb(200, 199, 204)',
   },
   smallSwitch: Platform.select({
     android: {
@@ -276,12 +298,13 @@ const styles = StyleSheet.create({
   }),
   stacked: {
     alignItems: 'center',
-    backgroundColor: '#F6F6F6',
+    backgroundColor: 'white',
     padding: 10,
   },
   thumb: {
-    width: 64,
-    height: 64,
+    width: 50,
+    height: 50,
+    left: -5,
   },
   spindicator: {
     marginLeft: 'auto',
@@ -303,6 +326,7 @@ module.exports = {
   FooterComponent,
   HeaderComponent,
   ItemComponent,
+  ItemSeparatorComponent,
   PlainInput,
   SeparatorComponent,
   Spindicator,
