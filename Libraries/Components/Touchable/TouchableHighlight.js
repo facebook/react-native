@@ -16,6 +16,7 @@
 var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
+const PropTypes = require('prop-types');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var TimerMixin = require('react-timer-mixin');
@@ -74,7 +75,7 @@ var TouchableHighlight = React.createClass({
      * Determines what the opacity of the wrapped view should be when touch is
      * active.
      */
-    activeOpacity: React.PropTypes.number,
+    activeOpacity: PropTypes.number,
     /**
      * The color of the underlay that will show through when the touch is
      * active.
@@ -84,17 +85,17 @@ var TouchableHighlight = React.createClass({
     /**
      * Called immediately after the underlay is shown
      */
-    onShowUnderlay: React.PropTypes.func,
+    onShowUnderlay: PropTypes.func,
     /**
      * Called immediately after the underlay is hidden
      */
-    onHideUnderlay: React.PropTypes.func,
+    onHideUnderlay: PropTypes.func,
     /**
      * *(Apple TV only)* TV preferred focus (see documentation for the View component).
      *
      * @platform ios
      */
-    hasTVPreferredFocus: React.PropTypes.bool,
+    hasTVPreferredFocus: PropTypes.bool,
     /**
      * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
      *
@@ -106,7 +107,7 @@ var TouchableHighlight = React.createClass({
      *
      * @platform ios
      */
-    tvParallaxProperties: React.PropTypes.object,
+    tvParallaxProperties: PropTypes.object,
 
   },
 

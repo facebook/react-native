@@ -12,6 +12,7 @@
 'use strict';
 
 const React = require('React');
+const PropTypes = require('prop-types');
 const ColorPropType = require('ColorPropType');
 const Platform = require('Platform');
 
@@ -253,12 +254,12 @@ class StatusBar extends React.Component {
     /**
      * If the status bar is hidden.
      */
-    hidden: React.PropTypes.bool,
+    hidden: PropTypes.bool,
     /**
      * If the transition between status bar property changes should be animated.
      * Supported for backgroundColor, barStyle and hidden.
      */
-    animated: React.PropTypes.bool,
+    animated: PropTypes.bool,
     /**
      * The background color of the status bar.
      * @platform android
@@ -271,11 +272,11 @@ class StatusBar extends React.Component {
      *
      * @platform android
      */
-    translucent: React.PropTypes.bool,
+    translucent: PropTypes.bool,
     /**
      * Sets the color of the status bar text.
      */
-    barStyle: React.PropTypes.oneOf([
+    barStyle: PropTypes.oneOf([
       'default',
       'light-content',
       'dark-content',
@@ -285,14 +286,14 @@ class StatusBar extends React.Component {
      *
      * @platform ios
      */
-    networkActivityIndicatorVisible: React.PropTypes.bool,
+    networkActivityIndicatorVisible: PropTypes.bool,
     /**
      * The transition effect when showing and hiding the status bar using the `hidden`
      * prop. Defaults to 'fade'.
      *
      * @platform ios
      */
-    showHideTransition: React.PropTypes.oneOf([
+    showHideTransition: PropTypes.oneOf([
       'fade',
       'slide',
     ]),

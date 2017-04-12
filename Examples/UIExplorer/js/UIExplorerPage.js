@@ -24,6 +24,7 @@
 'use strict';
 
 var React = require('react');
+var PropTypes = require('prop-types');
 var ReactNative = require('react-native');
 var {
   ScrollView,
@@ -40,8 +41,8 @@ class UIExplorerPage extends React.Component {
   };
 
   static propTypes = {
-    noScroll: React.PropTypes.bool,
-    noSpacer: React.PropTypes.bool,
+    noScroll: PropTypes.bool,
+    noSpacer: PropTypes.bool,
   };
 
   render() {
