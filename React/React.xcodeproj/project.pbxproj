@@ -742,6 +742,10 @@
 		B50558421E43E14000F71A00 /* RCTDevSettings.mm in Sources */ = {isa = PBXBuildFile; fileRef = B505583D1E43DFB900F71A00 /* RCTDevSettings.mm */; };
 		B50558431E43E64600F71A00 /* RCTDevSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = B505583C1E43DFB900F71A00 /* RCTDevSettings.h */; };
 		B95154321D1B34B200FE7B80 /* RCTActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B95154311D1B34B200FE7B80 /* RCTActivityIndicatorView.m */; };
+		CE09FE231E9EA46700E16611 /* RCTReconnectingWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = CE09FE211E9EA46700E16611 /* RCTReconnectingWebSocket.m */; };
+		CE09FE241E9EA46700E16611 /* RCTSRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = CE09FE221E9EA46700E16611 /* RCTSRWebSocket.m */; };
+		CE09FE251E9EA46A00E16611 /* RCTReconnectingWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = CE09FE211E9EA46700E16611 /* RCTReconnectingWebSocket.m */; };
+		CE09FE261E9EA46F00E16611 /* RCTSRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = CE09FE221E9EA46700E16611 /* RCTSRWebSocket.m */; };
 		CF85BC321E79EC6B00F1EF3B /* RCTDeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CF85BC301E79EC6B00F1EF3B /* RCTDeviceInfo.h */; };
 		CF85BC331E79EC6B00F1EF3B /* RCTDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CF85BC311E79EC6B00F1EF3B /* RCTDeviceInfo.m */; };
 		CF85BC341E79EC7A00F1EF3B /* RCTDeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CF85BC301E79EC6B00F1EF3B /* RCTDeviceInfo.h */; };
@@ -1391,6 +1395,8 @@
 		B505583D1E43DFB900F71A00 /* RCTDevSettings.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTDevSettings.mm; sourceTree = "<group>"; };
 		B95154301D1B34B200FE7B80 /* RCTActivityIndicatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTActivityIndicatorView.h; sourceTree = "<group>"; };
 		B95154311D1B34B200FE7B80 /* RCTActivityIndicatorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTActivityIndicatorView.m; sourceTree = "<group>"; };
+		CE09FE211E9EA46700E16611 /* RCTReconnectingWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTReconnectingWebSocket.m; path = WebSocket/RCTReconnectingWebSocket.m; sourceTree = "<group>"; };
+		CE09FE221E9EA46700E16611 /* RCTSRWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTSRWebSocket.m; path = WebSocket/RCTSRWebSocket.m; sourceTree = "<group>"; };
 		CF85BC301E79EC6B00F1EF3B /* RCTDeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDeviceInfo.h; sourceTree = "<group>"; };
 		CF85BC311E79EC6B00F1EF3B /* RCTDeviceInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDeviceInfo.m; sourceTree = "<group>"; };
 		E3BBC8EB1ADE6F47001BBD81 /* RCTTextDecorationLineType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTTextDecorationLineType.h; sourceTree = "<group>"; };
@@ -1825,6 +1831,8 @@
 		A12E9E271E5DEB600029001B /* WebSocket */ = {
 			isa = PBXGroup;
 			children = (
+				CE09FE211E9EA46700E16611 /* RCTReconnectingWebSocket.m */,
+				CE09FE221E9EA46700E16611 /* RCTSRWebSocket.m */,
 				A12E9E281E5DEB860029001B /* RCTReconnectingWebSocket.h */,
 				A12E9E291E5DEB860029001B /* RCTSRWebSocket.h */,
 			);
@@ -2443,6 +2451,7 @@
 				3D80D91B1DF6F8200028D040 /* RCTPlatform.m in Sources */,
 				2DD0EFE11DA84F2800B0C975 /* RCTStatusBarManager.m in Sources */,
 				2D3B5EC91D9B095C00451313 /* RCTBorderDrawing.m in Sources */,
+				CE09FE251E9EA46A00E16611 /* RCTReconnectingWebSocket.m in Sources */,
 				B50558411E43E13D00F71A00 /* RCTDevMenu.m in Sources */,
 				2D3B5E991D9B089A00451313 /* RCTDisplayLink.m in Sources */,
 				2D3B5EBF1D9B093300451313 /* RCTJSCProfiler.m in Sources */,
@@ -2450,6 +2459,7 @@
 				2D3B5EEA1D9B09CD00451313 /* RCTTabBar.m in Sources */,
 				2D3B5EAE1D9B08F800451313 /* RCTEventEmitter.m in Sources */,
 				A12E9E901E5DFA6E0029001B /* RCTSamplingProfilerPackagerMethod.mm in Sources */,
+				CE09FE261E9EA46F00E16611 /* RCTSRWebSocket.m in Sources */,
 				2D3B5ECA1D9B095F00451313 /* RCTComponentData.m in Sources */,
 				2D3B5EA31D9B08BE00451313 /* RCTParserUtils.m in Sources */,
 				2D3B5EA01D9B08B200451313 /* RCTLog.mm in Sources */,
@@ -2647,6 +2657,7 @@
 				139324FF1E70B069009FD7E0 /* RCTJSCErrorHandling.mm in Sources */,
 				13B07FF21A69327A00A75B9A /* RCTTiming.m in Sources */,
 				1372B70A1AB030C200659ED6 /* RCTAppState.m in Sources */,
+				CE09FE231E9EA46700E16611 /* RCTReconnectingWebSocket.m in Sources */,
 				134FCB3D1A6E7F0800051CC8 /* RCTJSCExecutor.mm in Sources */,
 				14C2CA781B3ACB0400E6CBB2 /* RCTBatchedBridge.m in Sources */,
 				B50558401E43DFB900F71A00 /* RCTDevSettings.mm in Sources */,
@@ -2678,6 +2689,7 @@
 				137327E81AA5CF210034F82E /* RCTTabBarItem.m in Sources */,
 				83A1FE8C1B62640A00BE0E65 /* RCTModalHostView.m in Sources */,
 				13E067551A70F44B002CDEE1 /* RCTShadowView.m in Sources */,
+				CE09FE241E9EA46700E16611 /* RCTSRWebSocket.m in Sources */,
 				1450FF871BCFF28A00208362 /* RCTProfileTrampoline-arm.S in Sources */,
 				131B6AF51AF1093D00FFC3E0 /* RCTSegmentedControlManager.m in Sources */,
 				58114A171AAE854800E7D092 /* RCTPickerManager.m in Sources */,
