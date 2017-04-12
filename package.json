@@ -227,7 +227,6 @@
     "jest-runtime": "19.0.2",
     "mock-fs": "^3.11.0",
     "react": "16.0.0-alpha.6",
-    "react-dom": "16.0.0-alpha.6",
     "react-test-renderer": "16.0.0-alpha.6",
     "shelljs": "0.6.0",
     "sinon": "^2.0.0-pre.2"
