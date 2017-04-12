@@ -139,7 +139,7 @@ class MultiColumnExample extends React.PureComponent {
       infoLog('onViewableItemsChanged: ', info.changed.map((v) => ({...v, item: '...'})));
     }
   };
-  _pressItem = (key: number) => {
+  _pressItem = (key: string) => {
     pressItem(this, key);
   };
 }

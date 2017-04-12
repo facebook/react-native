@@ -205,7 +205,7 @@ class FlatListExample extends React.PureComponent {
       );
     }
   };
-  _pressItem = (key: number) => {
+  _pressItem = (key: string) => {
     this._listRef.getNode().recordInteraction();
     pressItem(this, key);
   };

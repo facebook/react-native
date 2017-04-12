@@ -37,7 +37,7 @@ const {
   View,
 } = ReactNative;
 
-type Item = {title: string, text: string, key: number, pressed: boolean, noImage?: ?boolean};
+type Item = {title: string, text: string, key: string, pressed: boolean, noImage?: ?boolean};
 
 function genItemData(count: number, start: number = 0): Array<Item> {
   const dataBlob = [];
@@ -46,7 +46,7 @@ function genItemData(count: number, start: number = 0): Array<Item> {
     dataBlob.push({
       title: 'Item ' + ii,
       text: LOREM_IPSUM.substr(0, itemHash % 301 + 20),
-      key: ii,
+      key: String(ii),
       pressed: false,
     });
   }
@@ -61,7 +61,7 @@ class ItemComponent extends React.PureComponent {
     fixedHeight?: ?boolean,
     horizontal?: ?boolean,
     item: Item,
-    onPress: (key: number) => void,
+    onPress: (key: string) => void,
     onShowUnderlay?: () => void,
     onHideUnderlay?: () => void,
   };
@@ -199,12 +199,13 @@ function getItemLayout(data: any, index: number, horizontal?: boolean) {
   return {length, offset: (length + separator) * index + header, index};
 }
 
-function pressItem(context: Object, key: number) {
-  const pressed = !context.state.data[key].pressed;
+function pressItem(context: Object, key: string) {
+  const index = Number(key);
+  const pressed = !context.state.data[index].pressed;
   context.setState((state) => {
     const newData = [...state.data];
-    newData[key] = {
-      ...state.data[key],
+    newData[index] = {
+      ...state.data[index],
       pressed,
       title: 'Item ' + key + (pressed ? ' (pressed)' : ''),
     };
