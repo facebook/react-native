@@ -6,13 +6,13 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule traverseAllChildren
+ * @providesModule traverseStackChildren
  */
 
 'use strict';
 
-var ReactCurrentOwner = require('react/lib/ReactCurrentOwner');
 var REACT_ELEMENT_TYPE = require('ReactElementSymbol');
+var {ReactCurrentOwner} = require('ReactGlobalSharedState');
 
 var getIteratorFn = require('getIteratorFn');
 var invariant = require('fbjs/lib/invariant');
@@ -61,7 +61,7 @@ function getComponentKey(component, index) {
  * process.
  * @return {!number} The number of children in this subtree.
  */
-function traverseAllChildrenImpl(
+function traverseStackChildrenImpl(
   children,
   nameSoFar,
   callback,
@@ -101,7 +101,7 @@ function traverseAllChildrenImpl(
     for (var i = 0; i < children.length; i++) {
       child = children[i];
       nextName = nextNamePrefix + getComponentKey(child, i);
-      subtreeCount += traverseAllChildrenImpl(
+      subtreeCount += traverseStackChildrenImpl(
         child,
         nextName,
         callback,
@@ -140,7 +140,7 @@ function traverseAllChildrenImpl(
       while (!(step = iterator.next()).done) {
         child = step.value;
         nextName = nextNamePrefix + getComponentKey(child, ii++);
-        subtreeCount += traverseAllChildrenImpl(
+        subtreeCount += traverseStackChildrenImpl(
           child,
           nextName,
           callback,
@@ -178,8 +178,8 @@ function traverseAllChildrenImpl(
  * Traverses children that are typically specified as `props.children`, but
  * might also be specified through attributes:
  *
- * - `traverseAllChildren(this.props.children, ...)`
- * - `traverseAllChildren(this.props.leftPanelChildren, ...)`
+ * - `traverseStackChildren(this.props.children, ...)`
+ * - `traverseStackChildren(this.props.leftPanelChildren, ...)`
  *
  * The `traverseContext` is an optional argument that is passed through the
  * entire traversal. It can be used to store accumulations or anything else that
@@ -190,12 +190,12 @@ function traverseAllChildrenImpl(
  * @param {?*} traverseContext Context for traversal.
  * @return {!number} The number of children in this subtree.
  */
-function traverseAllChildren(children, callback, traverseContext) {
+function traverseStackChildren(children, callback, traverseContext) {
   if (children == null) {
     return 0;
   }
 
-  return traverseAllChildrenImpl(children, '', callback, traverseContext);
+  return traverseStackChildrenImpl(children, '', callback, traverseContext);
 }
 
-module.exports = traverseAllChildren;
+module.exports = traverseStackChildren;
