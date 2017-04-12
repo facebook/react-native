@@ -52,11 +52,13 @@ def getParallelInstrumentationTests(testDir, parallelCount, imageName) {
     def testCount = sh(script: "ls ${testDir} | wc -l", returnStdout: true).trim().toInteger()
     def testPerParallel = testCount.intdiv(parallelCount) + 1
 
+    def ignoredTests = 'CatalystNativeJavaToJSReturnValuesTestCase|CatalystUIManagerTestCase|CatalystMeasureLayoutTest|CatalystNativeJavaToJSArgumentsTestCase|CatalystNativeJSToJavaParametersTestCase|ReactScrollViewTestCase|ReactHorizontalScrollViewTestCase|ViewRenderingTestCase';
+
     for (def x = 0; (x*testPerParallel) < testCount; x++) {
         def offset = x
         integrationTests["android integration tests: ${offset}"] = {
             run: {
-                runCmdOnDockerImage(imageName, "bash /app/ContainerShip/scripts/run-android-docker-instrumentation-tests.sh --offset=${offset} --count=${testPerParallel}", '--privileged --rm')
+                runCmdOnDockerImage(imageName, "bash /app/ContainerShip/scripts/run-android-docker-instrumentation-tests.sh --offset=${offset} --count=${testPerParallel} --ignore=\"${ignoredTests}\"", '--privileged --rm')
             }
         }
     }
@@ -106,7 +108,7 @@ def runStages() {
                 jsImageName = "${buildInfo.image.name}-js:${jsTag}"
                 androidImageName = "${buildInfo.image.name}-android:${androidTag}"
 
-                parallelInstrumentationTests = getParallelInstrumentationTests('./ReactAndroid/src/androidTest/java/com/facebook/react/tests', 1, androidImageName)
+                parallelInstrumentationTests = getParallelInstrumentationTests('./ReactAndroid/src/androidTest/java/com/facebook/react/tests', 3, androidImageName)
 
                 parallel(
                     'javascript build': {
@@ -148,9 +150,7 @@ def runStages() {
                             runCmdOnDockerImage(androidImageName, 'bash /app/ContainerShip/scripts/run-android-docker-unit-tests.sh', '--privileged --rm')
                         },
                         'android e2e tests': {
-                            // temporarily disable e2e tests, they have a high transient failure rate
-                            // runCmdOnDockerImage(androidImageName, 'bash /app/ContainerShip/scripts/run-ci-e2e-tests.sh --android --js', '--rm')
-                            echo "Android E2E tests have been temporarily disabled"
+                            runCmdOnDockerImage(androidImageName, 'bash /app/ContainerShip/scripts/run-ci-e2e-tests.sh --android --js', '--privileged --rm')
                         }
                     )
                 } catch(e) {
