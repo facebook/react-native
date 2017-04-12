@@ -21,14 +21,14 @@ const imurmurhash = require('imurmurhash');
 const crypto = require('crypto');
 const jsonStableStringify = require('json-stable-stringify');
 
-const memoryFS = new Map();
+const mockFS = new Map();
 
 jest.mock('fs', () => ({
   readFileSync(filePath) {
-    return memoryFS.get(filePath);
+    return mockFS.get(filePath);
   },
   unlinkSync(filePath) {
-    memoryFS.delete(filePath);
+    mockFS.delete(filePath);
   },
   readdirSync(dirPath) {
     // Not required for it to work.
@@ -38,7 +38,7 @@ jest.mock('fs', () => ({
 
 jest.mock('write-file-atomic', () => ({
   sync(filePath, data) {
-    memoryFS.set(filePath, data.toString());
+    mockFS.set(filePath, data.toString());
   },
 }));
 
@@ -56,7 +56,7 @@ describe('TransformCache', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    memoryFS.clear();
+    mockFS.clear();
     TransformCache = require('../TransformCache');
   });
 
