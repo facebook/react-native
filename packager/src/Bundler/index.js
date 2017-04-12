@@ -89,27 +89,26 @@ const assetPropertyBlacklist = new Set([
   'path',
 ]);
 
-type Options = {
-  allowBundleUpdates: boolean,
-  assetExts: Array<string>,
-  assetServer: AssetServer,
-  blacklistRE?: RegExp,
-  cacheVersion: string,
-  extraNodeModules: {},
-  getTransformOptions?: GetTransformOptions,
-  globalTransformCache: ?GlobalTransformCache,
-  hasteImpl?: HasteImpl,
-  moduleFormat: string,
-  platforms: Array<string>,
-  polyfillModuleNames: Array<string>,
-  projectRoots: Array<string>,
-  providesModuleNodeModules?: Array<string>,
-  reporter: Reporter,
-  resetCache: boolean,
-  transformModulePath?: string,
-  transformTimeoutInterval: ?number,
-  watch: boolean,
-};
+type Options = {|
+  +allowBundleUpdates: boolean,
+  +assetExts: Array<string>,
+  +assetServer: AssetServer,
+  +blacklistRE?: RegExp,
+  +cacheVersion: string,
+  +extraNodeModules: {},
+  +getTransformOptions?: GetTransformOptions,
+  +globalTransformCache: ?GlobalTransformCache,
+  +hasteImpl?: HasteImpl,
+  +platforms: Array<string>,
+  +polyfillModuleNames: Array<string>,
+  +projectRoots: Array<string>,
+  +providesModuleNodeModules?: Array<string>,
+  +reporter: Reporter,
+  +resetCache: boolean,
+  +transformModulePath?: string,
+  +transformTimeoutInterval: ?number,
+  +watch: boolean,
+|};
 
 class Bundler {
 
@@ -190,7 +189,6 @@ class Bundler {
       hasteImpl: opts.hasteImpl,
       maxWorkerCount,
       minifyCode: this._transformer.minify,
-      moduleFormat: opts.moduleFormat,
       platforms: new Set(opts.platforms),
       polyfillModuleNames: opts.polyfillModuleNames,
       projectRoots: opts.projectRoots,
