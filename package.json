@@ -187,6 +187,7 @@
     "plist": "^1.2.0",
     "pretty-format": "^4.2.1",
     "promise": "^7.1.1",
+    "prop-types": "^15.5.7",
     "react-clone-referenced-element": "^1.0.1",
     "react-devtools-core": "^2.0.8",
     "react-timer-mixin": "^0.13.2",
