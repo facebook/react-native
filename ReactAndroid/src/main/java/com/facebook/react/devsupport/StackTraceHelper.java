@@ -40,7 +40,7 @@ public class StackTraceHelper {
       mMethod = method;
       mLine = line;
       mColumn = column;
-      mFileName = new File(file).getName();
+      mFileName = file != null ? new File(file).getName() : "";
     }
 
     private StackFrameImpl(String file, String fileName, String method, int line, int column) {

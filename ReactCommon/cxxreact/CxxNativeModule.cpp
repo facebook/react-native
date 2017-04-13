@@ -64,6 +64,10 @@ std::vector<MethodDescriptor> CxxNativeModule::getMethods() {
 folly::dynamic CxxNativeModule::getConstants() {
   lazyInit();
 
+  if (!module_) {
+    return nullptr;
+  }
+
   folly::dynamic constants = folly::dynamic::object();
   for (auto& pair : module_->getConstants()) {
     constants.insert(std::move(pair.first), std::move(pair.second));
@@ -161,13 +165,17 @@ MethodCallResult CxxNativeModule::callSerializableNativeHook(
 }
 
 void CxxNativeModule::lazyInit() {
-  if (module_) {
+  if (module_ || !provider_) {
     return;
   }
 
+  // TODO 17216751: providers should never return null modules
   module_ = provider_();
-  methods_ = module_->getMethods();
-  module_->setInstance(instance_);
+  provider_ = nullptr;
+  if (module_) {
+    methods_ = module_->getMethods();
+    module_->setInstance(instance_);
+  }
 }
 
 }

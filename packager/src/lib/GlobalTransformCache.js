@@ -281,7 +281,7 @@ class URIBasedGlobalTransformCache {
     return (
       error instanceof FetchError && error.type === 'request-timeout' || (
         error instanceof FetchFailedError &&
-        error.details.type === 'wrong_http_status' &&
+        error.details.type === 'unhandled_http_status' &&
         (error.details.statusCode === 503 || error.details.statusCode === 502)
       )
     );
@@ -335,14 +335,14 @@ class OptionsHasher {
    * cleanup will be necessary to enable rock-solid typing.
    */
   hashTransformWorkerOptions(hash: crypto$Hash, options: TransformWorkerOptions): crypto$Hash {
-    const {dev, minify, platform, transform, extern, ...unknowns} = options;
+    const {dev, minify, platform, transform, ...unknowns} = options;
     const unknownKeys = Object.keys(unknowns);
     if (unknownKeys.length > 0) {
       const message = `these worker option fields are unknown: ${JSON.stringify(unknownKeys)}`;
       throw new CannotHashOptionsError(message);
     }
     // eslint-disable-next-line no-undef, no-bitwise
-    hash.update(new Buffer([+dev | +minify << 1 | +!!extern << 2]));
+    hash.update(new Buffer([+dev | +minify << 1]));
     hash.update(JSON.stringify(platform));
     return this.hashTransformOptions(hash, transform);
   }

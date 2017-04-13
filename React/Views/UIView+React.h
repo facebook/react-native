@@ -78,11 +78,6 @@
 - (void)reactFocusIfNeeded;
 - (void)reactBlur;
 
-/**
- * Responder overrides - to be deprecated.
- */
-- (BOOL)reactRespondsToTouch:(UITouch *)touch;
-
 #if RCT_DEV
 
 /**

@@ -18,6 +18,7 @@ const ImageStylePropTypes = require('ImageStylePropTypes');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
 const React = require('React');
+const PropTypes = require('prop-types');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
@@ -25,8 +26,6 @@ const StyleSheetPropType = require('StyleSheetPropType');
 const flattenStyle = require('flattenStyle');
 const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
-
-const PropTypes = React.PropTypes;
 
 const ImageViewManager = NativeModules.ImageViewManager;
 

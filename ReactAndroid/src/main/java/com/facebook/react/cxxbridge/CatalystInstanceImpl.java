@@ -111,7 +111,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final JavaScriptModuleRegistry jsModuleRegistry,
       final JSBundleLoader jsBundleLoader,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
-    FLog.w(ReactConstants.TAG, "Initializing React Xplat Bridge.");
+    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     mHybridData = initHybrid();
 
     mReactQueueConfiguration = ReactQueueConfigurationImpl.create(

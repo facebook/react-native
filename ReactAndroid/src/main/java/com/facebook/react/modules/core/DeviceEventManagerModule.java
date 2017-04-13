@@ -26,7 +26,7 @@ import com.facebook.react.module.annotations.ReactModule;
 /**
  * Native module that handles device hardware events like hardware back presses.
  */
-@ReactModule(name = "DeviceEventManager")
+@ReactModule(name = "DeviceEventManager", hasConstants = false)
 public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
 
   @SupportsWebWorkers

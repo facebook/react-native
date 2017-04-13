@@ -21,6 +21,7 @@ android_library(
         react_native_dep("java/com/facebook/proguard/annotations:annotations"),
         react_native_dep("third-party/java/jsr-330:jsr-330"),
     ],
+    proguard_config = "reactnative.pro",
     visibility = [
         "PUBLIC",
     ],

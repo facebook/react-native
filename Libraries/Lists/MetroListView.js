@@ -22,7 +22,7 @@ type Item = any;
 
 type NormalProps = {
   FooterComponent?: ReactClass<*>,
-  renderItem: ({item: Item, index: number}) => ?React.Element<*>,
+  renderItem: (info: Object) => ?React.Element<*>,
   renderSectionHeader?: ({section: Object}) => ?React.Element<*>,
   SeparatorComponent?: ?ReactClass<*>, // not supported yet
 
