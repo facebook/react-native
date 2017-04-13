@@ -13,12 +13,11 @@
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
+var PropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
-const ViewPropTypes = require('ViewPropTypes');
+var ViewPropTypes = require('ViewPropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
-
-var PropTypes = React.PropTypes;
 
 type DefaultProps = {
   values: Array<string>,

@@ -157,6 +157,7 @@
 		2D3B5EF01D9B09E300451313 /* RCTWrapperViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B080241A694A8400A75B9A /* RCTWrapperViewController.m */; };
 		2D3B5EF11D9B09E700451313 /* UIView+React.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E067541A70F44B002CDEE1 /* UIView+React.m */; };
 		2D74EAFA1DAE9590003B751B /* RCTMultipartDataTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 006FC4131D9B20820057AAAD /* RCTMultipartDataTask.m */; };
+		2D7B05391E9D82080032604E /* RCTBridge+Private.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 14A43DB81C1F849600794BC8 /* RCTBridge+Private.h */; };
 		2D7FEB891E734B5700D3238C /* systemJSCWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65F3E41D1E73031C009375BD /* systemJSCWrapper.cpp */; };
 		2D8C2E331DA40441000EE098 /* RCTMultipartStreamReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 001BFCCF1D8381DE008E587E /* RCTMultipartStreamReader.m */; };
 		2DD0EFE11DA84F2800B0C975 /* RCTStatusBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13723B4F1A82FD3C00F88898 /* RCTStatusBarManager.m */; };
@@ -808,6 +809,7 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				2D7B05391E9D82080032604E /* RCTBridge+Private.h in Copy Headers */,
 				3D0976C31E9739AE00B9C6DD /* RCTBridge+JavaScriptCore.h in Copy Headers */,
 				3D6B76D51E83DD3A008FA614 /* RCTDevSettings.h in Copy Headers */,
 				3D6B76D61E83DD3A008FA614 /* RCTConvert+Transform.h in Copy Headers */,

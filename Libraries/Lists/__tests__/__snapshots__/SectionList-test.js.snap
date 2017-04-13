@@ -67,20 +67,16 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
     <View
       onLayout={[Function]}
     >
-      <View>
-        <item
-          value="i1"
-        />
-      </View>
+      <item
+        value="i1"
+      />
     </View>
     <View
       onLayout={[Function]}
     >
-      <View>
-        <item
-          value="i2"
-        />
-      </View>
+      <item
+        value="i2"
+      />
     </View>
   </View>
 </RCTScrollView>
@@ -204,6 +200,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       onLayout={[Function]}
     >
       <View>
+        <sectionSeparator />
         <itemForSection1
           value="i1s1"
         />
@@ -231,6 +228,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
       onLayout={[Function]}
     >
       <View>
+        <sectionSeparator />
         <defaultItem
           value="i1s2"
         />
@@ -244,6 +242,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
         <defaultItem
           value="i2s2"
         />
+        <sectionSeparator />
       </View>
     </View>
     <View

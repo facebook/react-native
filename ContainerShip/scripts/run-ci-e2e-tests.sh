@@ -11,13 +11,17 @@ RUN_CLI_INSTALL=1
 RUN_IOS=0
 RUN_JS=0
 
-RETRY_COUNT=${RETRY_COUNT:-1}
+RETRY_COUNT=${RETRY_COUNT:-2}
 AVD_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 
 ANDROID_NPM_DEPS="appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3 pretty-data2@0.40.1"
 CLI_PACKAGE=$ROOT/react-native-cli/react-native-cli-*.tgz
 PACKAGE=$ROOT/react-native-*.tgz
 REACT_NATIVE_MAX_WORKERS=1
+
+# solve issue with max user watches limit
+echo 65536 | tee -a /proc/sys/fs/inotify/max_user_watches
+watchman shutdown-server
 
 # retries command on failure
 # $1 -- max attempts
@@ -177,7 +181,6 @@ function e2e_suite() {
       cd ..
       keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"
 
-      echo "Starting packager server"
       node ./node_modules/.bin/appium >> /dev/null &
       APPIUM_PID=$!
       echo "Starting appium server $APPIUM_PID"
@@ -193,6 +196,7 @@ function e2e_suite() {
         return 1
       fi
 
+      echo "Starting packager server"
       npm start >> /dev/null &
       SERVER_PID=$!
       sleep 15
