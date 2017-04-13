@@ -23,7 +23,7 @@ import com.facebook.react.common.JavascriptException;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 
-@ReactModule(name = ExceptionsManagerModule.NAME, hasConstants = false)
+@ReactModule(name = ExceptionsManagerModule.NAME)
 public class ExceptionsManagerModule extends BaseJavaModule {
 
   protected static final String NAME = "ExceptionsManager";

@@ -27,7 +27,7 @@ import com.facebook.react.module.annotations.ReactModule;
  *
  * Example returned owner hierarchy: ['RootView', 'Dialog', 'TitleView', 'Text']
  */
-@ReactModule(name = "DebugComponentOwnershipModule", hasConstants = false)
+@ReactModule(name = "DebugComponentOwnershipModule")
 public class DebugComponentOwnershipModule extends ReactContextBaseJavaModule {
 
   public interface RCTDebugComponentOwnership extends JavaScriptModule {
