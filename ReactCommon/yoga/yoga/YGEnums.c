@@ -93,8 +93,6 @@ const char *YGExperimentalFeatureToString(const YGExperimentalFeature value){
       return "rounding";
     case YGExperimentalFeatureWebFlexBasis:
       return "web-flex-basis";
-    case YGExperimentalFeatureMinFlexFix:
-      return "min-flex-fix";
   }
   return "unknown";
 }
