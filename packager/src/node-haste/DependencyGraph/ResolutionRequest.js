@@ -191,7 +191,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
       if (result != null) {
         return this.resolveModuleDependencies(module, result.dependencies);
       }
-      return module.read(transformOptions)
+      return module.readFresh(transformOptions)
         .then(({dependencies}) => this.resolveModuleDependencies(module, dependencies));
     });
 
