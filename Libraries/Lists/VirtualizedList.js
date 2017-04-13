@@ -110,9 +110,9 @@ type OptionalProps = {
    */
   refreshing?: ?boolean,
   /**
-   * A native optimization that removes clipped subviews (those outside the parent) from the view
-   * hierarchy to offload work from the native rendering system. They are still kept around so no
-   * memory is saved and state is preserved.
+   * Note: may have bugs (missing content) in some circumstances - use at your own risk.
+   *
+   * This may improve scroll performance for large lists.
    */
   removeClippedSubviews?: boolean,
   /**
@@ -167,10 +167,6 @@ type State = {first: number, last: number};
  * - By default, the list looks for a `key` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
- * NOTE: `removeClippedSubviews` might not be necessary and may cause bugs. If you see issues with
- * content not rendering, e.g when using `LayoutAnimation`, try setting
- * `removeClippedSubviews={false}`, and we may change the default in the future after more
- * experimentation in production apps.
  */
 class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   props: Props;
@@ -270,7 +266,6 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     },
     maxToRenderPerBatch: 10,
     onEndReachedThreshold: 2, // multiples of length
-    removeClippedSubviews: true,
     renderScrollComponent: (props: Props) => {
       if (props.onRefresh) {
         invariant(
