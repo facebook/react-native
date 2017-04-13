@@ -138,6 +138,11 @@ const mockNativeModules = {
     canOpenURL: jest.fn(),
     getInitialURL: jest.fn()
   },
+  LocationObserver: {
+    getCurrentPosition: jest.fn(),
+    startObserving: jest.fn(),
+    stopObserving: jest.fn(),
+  },
   ModalFullscreenViewManager: {},
   Networking: {
     sendRequest: jest.fn(),
