@@ -679,8 +679,8 @@ describe('ReactIncrementalErrorHandling', () => {
 
   it('unwinds the context stack correctly on error', () => {
     class Provider extends React.Component {
-      static childContextTypes = {message: React.PropTypes.string};
-      static contextTypes = {message: React.PropTypes.string};
+      static childContextTypes = {message: PropTypes.string};
+      static contextTypes = {message: PropTypes.string};
       getChildContext() {
         return {
           message: (this.context.message || '') + this.props.message,
@@ -696,7 +696,7 @@ describe('ReactIncrementalErrorHandling', () => {
     }
 
     Connector.contextTypes = {
-      message: React.PropTypes.string,
+      message: PropTypes.string,
     };
 
     function BadRender() {

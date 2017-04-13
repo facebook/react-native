@@ -97,9 +97,12 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 {
   @autoreleasepool {
     __block NSString *error = nil;
+    RCTLogFunction defaultLogFunction = RCTGetLogFunction();
     RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
       if (level >= RCTLogLevelError) {
         error = message;
+      } else {
+        defaultLogFunction(level, source, fileName, lineNumber, message);
       }
     });
 
@@ -137,7 +140,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 
     [rootView removeFromSuperview];
 
-    RCTSetLogFunction(RCTDefaultLogFunction);
+    RCTSetLogFunction(defaultLogFunction);
 
     NSArray<UIView *> *nonLayoutSubviews = [vc.view.subviews filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id subview, NSDictionary *bindings) {
       return ![NSStringFromClass([subview class]) isEqualToString:@"_UILayoutGuide"];

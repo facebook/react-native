@@ -24,19 +24,40 @@ import type {Props as VirtualizedListProps} from 'VirtualizedList';
 
 type RequiredProps<ItemT> = {
   /**
-   * Takes an item from `data` and renders it into the list. Typical usage:
+   * Takes an item from `data` and renders it into the list. Example usage:
    *
-   *     _renderItem = ({item}) => (
-   *       <TouchableOpacity onPress={() => this._onPress(item)}>
-   *         <Text>{item.title}}</Text>
-   *       </TouchableOpacity>
-   *     );
-   *     ...
-   *     <FlatList data={[{title: 'Title Text', key: 'item1'}]} renderItem={this._renderItem} />
+   *     <FlatList
+   *       ItemSeparatorComponent={Platform.OS !== 'android' && ({highlighted}) => (
+   *         <View style={[style.separator, highlighted && {marginLeft: 0}]} />
+   *       )}
+   *       data={[{title: 'Title Text', key: 'item1'}]}
+   *       renderItem={({item, separators}) => (
+   *         <TouchableHighlight
+   *           onPress={() => this._onPress(item)}
+   *           onShowUnderlay={separators.highlight}
+   *           onHideUnderlay={separators.unhighlight}>
+   *           <View style={{backgroundColor: 'white'}}>
+   *             <Text>{item.title}}</Text>
+   *           </View>
+   *         </TouchableHighlight>
+   *       )}
+   *     />
    *
-   * Provides additional metadata like `index` if you need it.
+   * Provides additional metadata like `index` if you need it, as well as a more generic
+   * `separators.updateProps` function which let's you set whatever props you want to change the
+   * rendering of either the leading separator or trailing separator in case the more common
+   * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
+   * your use-case.
    */
-  renderItem: (info: {item: ItemT, index: number}) => ?React.Element<any>,
+  renderItem: (info: {
+    item: ItemT,
+    index: number,
+    separators: {
+      highlight: () => void,
+      unhighlight: () => void,
+      updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+    },
+  }) => ?React.Element<any>,
   /**
    * For simplicity, data is just a plain array. If you want to use something else, like an
    * immutable list, use the underlying `VirtualizedList` directly.
@@ -45,7 +66,10 @@ type RequiredProps<ItemT> = {
 };
 type OptionalProps<ItemT> = {
   /**
-   * Rendered in between each item, but not at the top or bottom.
+   * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
+   * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`
+   * which will update the `highlighted` prop, but you can also add custom props with
+   * `separators.updateProps`.
    */
   ItemSeparatorComponent?: ?ReactClass<any>,
   /**
@@ -424,7 +448,7 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     }
   };
 
-  _renderItem = (info: {item: ItemT | Array<ItemT>, index: number}) => {
+  _renderItem = (info: Object) => {
     const {renderItem, numColumns, columnWrapperStyle} = this.props;
     if (numColumns > 1) {
       const {item, index} = info;
@@ -432,7 +456,11 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
       return (
         <View style={[{flexDirection: 'row'}, columnWrapperStyle]}>
           {item.map((it, kk) => {
-            const element = renderItem({item: it, index:  index * numColumns + kk});
+            const element = renderItem({
+              item: it,
+              index: index * numColumns + kk,
+              separators: info.separators,
+            });
             return element && React.cloneElement(element, {key: kk});
           })}
         </View>

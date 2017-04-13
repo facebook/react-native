@@ -19,6 +19,7 @@ var Marked = require('Marked');
 var Metadata = require('Metadata');
 var Prism = require('Prism');
 var React = require('React');
+const PropTypes = require('prop-types');
 var Site = require('Site');
 
 var slugify = require('slugify');
@@ -836,8 +837,8 @@ var Modal = React.createClass({
 
 var Autodocs = React.createClass({
   childContextTypes: {
-    permalink: React.PropTypes.string,
-    version: React.PropTypes.string
+    permalink: PropTypes.string,
+    version: PropTypes.string
   },
 
   getChildContext: function() {

@@ -15,11 +15,10 @@ const Animated = require('Animated');
 const I18nManager = require('I18nManager');
 const PanResponder = require('PanResponder');
 const React = require('React');
+const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
-
-const {PropTypes} = React;
 
 const emptyFunction = require('fbjs/lib/emptyFunction');
 
