@@ -131,6 +131,13 @@ const mockNativeModules = {
     addListener: jest.fn(),
     removeListeners: jest.fn(),
   },
+  Linking: {
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    openURL: jest.fn(),
+    canOpenURL: jest.fn(),
+    getInitialURL: jest.fn()
+  },
   ModalFullscreenViewManager: {},
   Networking: {
     sendRequest: jest.fn(),
