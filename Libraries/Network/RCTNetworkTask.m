@@ -11,6 +11,10 @@
 #import <React/RCTNetworkTask.h>
 #import <React/RCTUtils.h>
 
+@interface RCTNetworkTask()
+@property (atomic, assign) RCTNetworkTaskStatus status;
+@end
+
 @implementation RCTNetworkTask
 {
   NSMutableData *_data;
@@ -35,7 +39,7 @@
     _request = request;
     _handler = handler;
     _callbackQueue = callbackQueue;
-    _status = RCTNetworkTaskPending;
+    self.status = RCTNetworkTaskPending;
 
     dispatch_queue_set_specific(callbackQueue, (__bridge void *)self, (__bridge void *)self, NULL);
   }
@@ -66,7 +70,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)start
 {
-  if (_status != RCTNetworkTaskPending) {
+  if (self.status != RCTNetworkTaskPending) {
     RCTLogError(@"RCTNetworkTask was already started or completed");
     return;
   }
@@ -75,18 +79,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     id token = [_handler sendRequest:_request withDelegate:self];
     if ([self validateRequestToken:token]) {
       _selfReference = self;
-      _status = RCTNetworkTaskInProgress;
+      self.status = RCTNetworkTaskInProgress;
     }
   }
 }
 
 - (void)cancel
 {
-  if (_status == RCTNetworkTaskFinished) {
+  if (self.status == RCTNetworkTaskFinished) {
     return;
   }
 
-  _status = RCTNetworkTaskFinished;
+  self.status = RCTNetworkTaskFinished;
   id token = _requestToken;
   if (token && [_handler respondsToSelector:@selector(cancelRequest:)]) {
     [_handler cancelRequest:token];
@@ -113,7 +117,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   if (!valid) {
-    _status = RCTNetworkTaskFinished;
+    self.status = RCTNetworkTaskFinished;
     if (_completionBlock) {
       RCTURLRequestCompletionBlock completionBlock = _completionBlock;
       [self dispatchCallback:^{
@@ -189,7 +193,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return;
   }
 
-  _status = RCTNetworkTaskFinished;
+  self.status = RCTNetworkTaskFinished;
   if (_completionBlock) {
     RCTURLRequestCompletionBlock completionBlock = _completionBlock;
     [self dispatchCallback:^{
