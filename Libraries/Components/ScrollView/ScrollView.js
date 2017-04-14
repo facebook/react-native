@@ -16,6 +16,7 @@ const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Platform = require('Platform');
 const PointPropType = require('PointPropType');
+const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
 const ScrollResponder = require('ScrollResponder');
@@ -30,7 +31,6 @@ const dismissKeyboard = require('dismissKeyboard');
 const flattenStyle = require('flattenStyle');
 const invariant = require('fbjs/lib/invariant');
 const processDecelerationRate = require('processDecelerationRate');
-const PropTypes = React.PropTypes;
 const requireNativeComponent = require('requireNativeComponent');
 
 /**
