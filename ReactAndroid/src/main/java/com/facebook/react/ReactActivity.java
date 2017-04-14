@@ -19,13 +19,12 @@ import android.view.KeyEvent;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
-import com.meiyou.framework.biz.ui.LinganActivity;
 
 /**
  * Base Activity for React Native applications.
  */
-public abstract class ReactActivity extends LinganActivity
-    implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
+public abstract class ReactActivity extends Activity
+        implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
   private final ReactActivityDelegate mDelegate;
 
@@ -104,17 +103,17 @@ public abstract class ReactActivity extends LinganActivity
 
   @Override
   public void requestPermissions(
-    String[] permissions,
-    int requestCode,
-    PermissionListener listener) {
+          String[] permissions,
+          int requestCode,
+          PermissionListener listener) {
     mDelegate.requestPermissions(permissions, requestCode, listener);
   }
 
   @Override
   public void onRequestPermissionsResult(
-    int requestCode,
-    String[] permissions,
-    int[] grantResults) {
+          int requestCode,
+          String[] permissions,
+          int[] grantResults) {
     mDelegate.onRequestPermissionsResult(requestCode, permissions, grantResults);
   }
 
