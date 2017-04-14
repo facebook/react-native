@@ -887,7 +887,7 @@ public class ReactInstanceManager {
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
     int rootTag = uiManagerModule.addMeasuredRootView(rootView);
     rootView.setRootViewTag(rootTag);
-    rootView.runApplication(this);
+    rootView.runApplication();
     rootView.onAttachedToReactInstance();
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
   }

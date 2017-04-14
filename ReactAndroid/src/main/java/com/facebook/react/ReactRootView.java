@@ -258,6 +258,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   }
 
   public void setAppProperties(@Nullable Bundle appProperties) {
+    UiThreadUtil.assertOnUiThread();
     mAppProperties = appProperties;
 
     if (mReactInstanceManager == null || !mIsAttachedToInstance ||
@@ -265,15 +266,15 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         return;
     }
 
-    this.runApplication(mReactInstanceManager);
+    this.runApplication();
   }
 
-  /* package */ void runApplication(final ReactInstanceManager reactInstanceManager) {
-    ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
+  /* package */ void runApplication() {
+    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
     CatalystInstance catalystInstance = reactContext.getCatalystInstance();
     int rootTag = this.getRootViewTag();
     @Nullable Bundle appProperties = this.getAppProperties();
-    WritableMap initialProps = com.facebook.react.cxxbridge.Arguments.makeNativeMap(appProperties);
+    WritableMap initialProps = Arguments.fromBundle(appProperties);
     String jsAppModuleName = this.getJSModuleName();
 
     WritableNativeMap appParams = new WritableNativeMap();
