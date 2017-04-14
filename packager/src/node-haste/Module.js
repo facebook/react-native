@@ -33,12 +33,17 @@ import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelper
 import type ModuleCache from './ModuleCache';
 
 export type ReadResult = {
-  code: string,
-  dependencies?: ?Array<string>,
-  dependencyOffsets?: ?Array<number>,
-  map?: ?SourceMap,
-  source: string,
+  +code: string,
+  +dependencies: Array<string>,
+  +dependencyOffsets?: ?Array<number>,
+  +map?: ?SourceMap,
+  +source: string,
 };
+
+export type CachedReadResult = {|
+  +result: ?ReadResult,
+  +outdatedDependencies: $ReadOnlyArray<string>,
+|};
 
 export type TransformCode = (
   module: Module,
@@ -95,7 +100,7 @@ class Module {
   _sourceCode: ?string;
   _readPromises: Map<string, Promise<ReadResult>>;
 
-  _readResultsByOptionsKey: Map<string, ?ReadResult>;
+  _readResultsByOptionsKey: Map<string, CachedReadResult>;
 
   constructor({
     cache,
@@ -346,8 +351,8 @@ class Module {
   read(transformOptions: TransformOptions): Promise<ReadResult> {
     return Promise.resolve().then(() => {
       const cached = this.readCached(transformOptions);
-      if (cached != null) {
-        return cached;
+      if (cached.result != null) {
+        return cached.result;
       }
       return this.readFresh(transformOptions);
     });
@@ -358,12 +363,13 @@ class Module {
    * the file from source. This has the benefit of being synchronous. As a
    * result it is possible to read many cached Module in a row, synchronously.
    */
-  readCached(transformOptions: TransformOptions): ?ReadResult {
+  readCached(transformOptions: TransformOptions): CachedReadResult {
     const key = stableObjectHash(transformOptions || {});
-    if (this._readResultsByOptionsKey.has(key)) {
-      return this._readResultsByOptionsKey.get(key);
+    let result = this._readResultsByOptionsKey.get(key);
+    if (result != null) {
+      return result;
     }
-    const result = this._readFromTransformCache(transformOptions, key);
+    result = this._readFromTransformCache(transformOptions, key);
     this._readResultsByOptionsKey.set(key, result);
     return result;
   }
@@ -375,13 +381,16 @@ class Module {
   _readFromTransformCache(
     transformOptions: TransformOptions,
     transformOptionsKey: string,
-  ): ?ReadResult {
+  ): CachedReadResult {
     const cacheProps = this._getCacheProps(transformOptions, transformOptionsKey);
     const cachedResult = TransformCache.readSync(cacheProps);
-    if (cachedResult) {
-      return this._finalizeReadResult(cacheProps.sourceCode, cachedResult);
+    if (cachedResult.result == null) {
+      return {result: null, outdatedDependencies: cachedResult.outdatedDependencies};
     }
-    return null;
+    return {
+      result: this._finalizeReadResult(cacheProps.sourceCode, cachedResult.result),
+      outdatedDependencies: [],
+    };
   }
 
   /**
@@ -411,7 +420,7 @@ class Module {
           },
         );
       }).then(result => {
-        this._readResultsByOptionsKey.set(key, result);
+        this._readResultsByOptionsKey.set(key, {result, outdatedDependencies: []});
         return result;
       });
     });

@@ -92,7 +92,7 @@ describe('TransformCache', () => {
         ...args,
         cacheOptions: {resetCache: false},
       });
-      expect(cachedResult).toEqual(result);
+      expect(cachedResult.result).toEqual(result);
     });
   });
 
@@ -107,7 +107,7 @@ describe('TransformCache', () => {
         transformOptionsKey: 'boo!',
         result: {
           code: `/* result for ${key} */`,
-          dependencies: ['foo', `dep of ${key}`],
+          dependencies: ['foo', 'bar'],
           dependencyOffsets: [12, imurmurhash('dep' + key).result()],
           map: {desc: `source map for ${key}`},
         },
@@ -125,7 +125,7 @@ describe('TransformCache', () => {
         ...args,
         cacheOptions: {resetCache: false},
       });
-      expect(cachedResult).toEqual(result);
+      expect(cachedResult.result).toEqual(result);
     });
     allCases.pop();
     allCases.forEach(entry => {
@@ -133,7 +133,8 @@ describe('TransformCache', () => {
         ...argsFor(entry),
         cacheOptions: {resetCache: false},
       });
-      expect(cachedResult).toBeNull();
+      expect(cachedResult.result).toBeNull();
+      expect(cachedResult.outdatedDependencies).toEqual(['foo', 'bar']);
     });
   });
 

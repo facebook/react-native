@@ -42,7 +42,7 @@ import com.facebook.react.module.annotations.ReactModule;
 /**
  * Native module for JS timer execution. Timers fire on frame boundaries.
  */
-@ReactModule(name = Timing.NAME, supportsWebWorkers = true, hasConstants = false)
+@ReactModule(name = Timing.NAME, supportsWebWorkers = true)
 public final class Timing extends ReactContextBaseJavaModule implements LifecycleEventListener,
   OnExecutorUnregisteredListener, HeadlessJsTaskEventListener {
 

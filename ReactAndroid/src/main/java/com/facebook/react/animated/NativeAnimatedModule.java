@@ -71,7 +71,7 @@ import com.facebook.react.uimanager.UIManagerModule;
  * isolates us from the problems that may be caused by concurrent updates of animated graph while UI
  * thread is "executing" the animation loop.
  */
-@ReactModule(name = NativeAnimatedModule.NAME, hasConstants = false)
+@ReactModule(name = NativeAnimatedModule.NAME)
 public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
     OnBatchCompleteListener, LifecycleEventListener {
 

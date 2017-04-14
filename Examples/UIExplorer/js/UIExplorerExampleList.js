@@ -60,6 +60,8 @@ class RowComponent extends React.PureComponent {
     item: Object,
     onNavigate: Function,
     onPress?: Function,
+    onShowUnderlay?: Function,
+    onHideUnderlay?: Function,
   };
   _onPress = () => {
     if (this.props.onPress) {
@@ -71,19 +73,16 @@ class RowComponent extends React.PureComponent {
   render() {
     const {item} = this.props;
     return (
-      <View>
-        <TouchableHighlight onPress={this._onPress}>
-          <View style={styles.row}>
-            <Text style={styles.rowTitleText}>
-              {item.module.title}
-            </Text>
-            <Text style={styles.rowDetailText}>
-              {item.module.description}
-            </Text>
-          </View>
-        </TouchableHighlight>
-        <View style={styles.separator} />
-      </View>
+      <TouchableHighlight {...this.props} onPress={this._onPress}>
+        <View style={styles.row}>
+          <Text style={styles.rowTitleText}>
+            {item.module.title}
+          </Text>
+          <Text style={styles.rowDetailText}>
+            {item.module.description}
+          </Text>
+        </View>
+      </TouchableHighlight>
     );
   }
 }
@@ -121,6 +120,8 @@ class UIExplorerExampleList extends React.Component {
         {this._renderTitleRow()}
         {this._renderTextInput()}
         <SectionList
+          ItemSeparatorComponent={ItemSeparator}
+          contentContainerStyle={{backgroundColor: 'white'}}
           style={styles.list}
           sections={sections}
           renderItem={this._renderItem}
@@ -140,7 +141,14 @@ class UIExplorerExampleList extends React.Component {
     return curr.item !== prev.item;
   }
 
-  _renderItem = ({item}) => <RowComponent item={item} onNavigate={this.props.onNavigate} />;
+  _renderItem = ({item, separators}) => (
+    <RowComponent
+      item={item}
+      onNavigate={this.props.onNavigate}
+      onShowUnderlay={separators.highlight}
+      onHideUnderlay={separators.unhighlight}
+    />
+  );
 
   _renderTitleRow(): ?React.Element<any> {
     if (!this.props.displayTitleRow) {
@@ -188,6 +196,10 @@ class UIExplorerExampleList extends React.Component {
   }
 }
 
+const ItemSeparator = ({highlighted}) => (
+  <View style={highlighted ? styles.separatorHighlighted : styles.separator} />
+);
+
 UIExplorerExampleList = UIExplorerStatePersister.createContainer(UIExplorerExampleList, {
   cacheKeySuffix: () => 'mainList',
   getInitialState: () => ({filter: ''}),
@@ -216,6 +228,10 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     backgroundColor: '#bbbbbb',
     marginLeft: 15,
+  },
+  separatorHighlighted: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: 'rgb(217, 217, 217)',
   },
   rowTitleText: {
     fontSize: 17,
