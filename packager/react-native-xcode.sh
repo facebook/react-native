@@ -11,7 +11,7 @@
 # and relies on environment variables (including PWD) set by Xcode
 
 case "$CONFIGURATION" in
-  Debug)
+  *Debug*)
     # Speed up build times by skipping the creation of the offline package for debug
     # builds on the simulator since the packager is supposed to be running anyways.
     if [[ "$PLATFORM_NAME" == *simulator ]]; then

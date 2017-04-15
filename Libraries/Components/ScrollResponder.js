@@ -13,19 +13,19 @@
 
 var Dimensions = require('Dimensions');
 var FrameRateLogger = require('FrameRateLogger');
-var Platform = require('Platform');
 var Keyboard = require('Keyboard');
 var ReactNative = require('ReactNative');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
 var UIManager = require('UIManager');
-var warning = require('fbjs/lib/warning');
-
-var { getInstanceFromNode } = require('ReactNativeComponentTree');
-var { ScrollViewManager } = require('NativeModules');
 
 var invariant = require('fbjs/lib/invariant');
+var nullthrows = require('fbjs/lib/nullthrows');
 var performanceNow = require('fbjs/lib/performanceNow');
+var warning = require('fbjs/lib/warning');
+
+var { ScrollViewManager } = require('NativeModules');
+var { getInstanceFromNode } = require('ReactNativeComponentTree');
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
@@ -412,7 +412,7 @@ var ScrollResponderMixin = {
       ({x, y, animated} = x || {});
     }
     UIManager.dispatchViewManagerCommand(
-      this.scrollResponderGetScrollableNode(),
+      nullthrows(this.scrollResponderGetScrollableNode()),
       UIManager.RCTScrollView.Commands.scrollTo,
       [x || 0, y || 0, animated !== false],
     );
