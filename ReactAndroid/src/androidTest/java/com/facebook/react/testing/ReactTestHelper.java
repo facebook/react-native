@@ -31,6 +31,7 @@ import com.facebook.react.cxxbridge.CatalystInstanceImpl;
 import com.facebook.react.cxxbridge.JSBundleLoader;
 import com.facebook.react.cxxbridge.JSCJavaScriptExecutor;
 import com.facebook.react.cxxbridge.JavaScriptExecutor;
+import com.facebook.react.modules.core.ReactChoreographer;
 
 import com.android.internal.util.Predicate;
 
@@ -153,6 +154,7 @@ public class ReactTestHelper {
           InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
+              ReactChoreographer.initialize();
               instance.initialize();
             }
           });
