@@ -2323,7 +2323,7 @@ var event = function(
  * beyond the ranges given, but you can also have it clamp the output value.
  *
  * For example, you may want to think about your `Animated.Value` as going from
- * 0 to 1, but animate the position from 150px to 0px and the opacity from 0 to
+ * 0 to 1, but animate the position from 150px to 0 and the opacity from 0 to
  * 1. This can easily be done by modifying `style` in the example above like so:
  *
  *```javascript

@@ -1390,7 +1390,7 @@ div[data-twttr-id] iframe {
 }
 
 .showcase h3 {
-  margin-bottom: 0px;
+  margin-bottom: 0;
   line-height: 20px;
   padding-left: 5px;
   padding-right: 5px;
@@ -1596,7 +1596,7 @@ input#algolia-doc-search:focus {
 
 .params td, .params th, .props td, .props th {
   border: 1px solid #ddd;
-  margin: 0px;
+  margin: 0;
   text-align: left;
   vertical-align: top;
   padding: 4px 6px;
