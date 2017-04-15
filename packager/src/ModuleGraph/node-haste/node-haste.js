@@ -63,6 +63,8 @@ const nullModule = {
   hash() {
     throw new Error('not implemented');
   },
+  readCached() { throw new Error('not implemented'); },
+  readFresh() { return Promise.reject(new Error('not implemented')); },
 };
 
 exports.createResolveFn = function(options: ResolveOptions): ResolveFn {

@@ -95,6 +95,11 @@ export type CachedResult = {
   map?: ?SourceMap,
 };
 
+export type TransformCacheResult = {|
+  +result: ?CachedResult,
+  +outdatedDependencies: $ReadOnlyArray<string>,
+|};
+
 /**
  * We want to unlink all cache files before writing, so that it is as much
  * atomic as possible.
@@ -299,6 +304,8 @@ export type ReadTransformProps = {
   cacheOptions: CacheOptions,
 };
 
+const EMPTY_ARRAY = [];
+
 /**
  * We verify the source hash matches to ensure we always favor rebuilding when
  * source change (rather than just using fs.mtime(), a bit less robust).
@@ -312,41 +319,44 @@ export type ReadTransformProps = {
  * Meanwhile we store transforms with different options in different files so
  * that it is fast to switch between ex. minified, or not.
  */
-function readSync(props: ReadTransformProps): ?CachedResult {
+function readSync(props: ReadTransformProps): TransformCacheResult {
   GARBAGE_COLLECTOR.collectIfNecessarySync(props.cacheOptions);
   const cacheFilePaths = getCacheFilePaths(props);
   let metadata, transformedCode;
   try {
     metadata = readMetadataFileSync(cacheFilePaths.metadata);
     if (metadata == null) {
-      return null;
+      return {result: null, outdatedDependencies: EMPTY_ARRAY};
     }
     const sourceHash = hashSourceCode(props);
     if (sourceHash !== metadata.cachedSourceHash) {
-      return null;
+      return {result: null, outdatedDependencies: metadata.dependencies};
     }
     transformedCode = fs.readFileSync(cacheFilePaths.transformedCode, 'utf8');
     const codeHash = crypto.createHash('sha1').update(transformedCode).digest('hex');
     if (metadata.cachedResultHash !== codeHash) {
-      return null;
+      return {result: null, outdatedDependencies: metadata.dependencies};
     }
   } catch (error) {
     if (error.code === 'ENOENT') {
-      return null;
+      return {result: null, outdatedDependencies: EMPTY_ARRAY};
     }
     throw error;
   }
   return {
-    code: transformedCode,
-    dependencies: metadata.dependencies,
-    dependencyOffsets: metadata.dependencyOffsets,
-    map: metadata.sourceMap,
+    result: {
+      code: transformedCode,
+      dependencies: metadata.dependencies,
+      dependencyOffsets: metadata.dependencyOffsets,
+      map: metadata.sourceMap,
+    },
+    outdatedDependencies: EMPTY_ARRAY,
   };
 }
 
 module.exports = {
   writeSync,
-  readSync(props: ReadTransformProps): ?CachedResult {
+  readSync(props: ReadTransformProps): TransformCacheResult {
     const result = readSync(props);
     const msg = result ? 'Cache hit: ' : 'Cache miss: ';
     debugRead(msg + props.filePath);
