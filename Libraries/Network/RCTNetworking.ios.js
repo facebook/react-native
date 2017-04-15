@@ -14,6 +14,9 @@
 const FormData = require('FormData');
 const NativeEventEmitter = require('NativeEventEmitter');
 const RCTNetworkingNative = require('NativeModules').Networking;
+const convertRequestBody = require('convertRequestBody');
+
+import type {RequestBody} from 'convertRequestBody';
 
 class RCTNetworking extends NativeEventEmitter {
 
@@ -26,16 +29,14 @@ class RCTNetworking extends NativeEventEmitter {
     trackingName: string,
     url: string,
     headers: Object,
-    data: string | FormData | {uri: string},
+    data: RequestBody,
     responseType: 'text' | 'base64',
     incrementalUpdates: boolean,
     timeout: number,
-    callback: (requestId: number) => any
+    callback: (requestId: number) => any,
+    withCredentials: boolean
   ) {
-    const body =
-      typeof data === 'string' ? {string: data} :
-      data instanceof FormData ? {formData: data.getParts()} :
-      data;
+    const body = convertRequestBody(data);
     RCTNetworkingNative.sendRequest({
       method,
       url,
@@ -43,7 +44,8 @@ class RCTNetworking extends NativeEventEmitter {
       headers,
       responseType,
       incrementalUpdates,
-      timeout
+      timeout,
+      withCredentials
     }, callback);
   }
 

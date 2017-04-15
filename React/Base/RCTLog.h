@@ -11,6 +11,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTDefines.h>
+#import <React/RCTUtils.h>
 
 #ifndef RCTLOG_ENABLED
 #define RCTLOG_ENABLED 1
@@ -31,6 +32,7 @@
 #define RCTLog(...) _RCTLog(RCTLogLevelInfo, __VA_ARGS__)
 #define RCTLogTrace(...) _RCTLog(RCTLogLevelTrace, __VA_ARGS__)
 #define RCTLogInfo(...) _RCTLog(RCTLogLevelInfo, __VA_ARGS__)
+#define RCTLogAdvice(string, ...) RCTLogWarn([@"(ADVICE) " stringByAppendingString:(NSString *)string], __VA_ARGS__)
 #define RCTLogWarn(...) _RCTLog(RCTLogLevelWarning, __VA_ARGS__)
 #define RCTLogError(...) _RCTLog(RCTLogLevelError, __VA_ARGS__)
 

@@ -1,17 +1,16 @@
 #!/bin/bash
-
 set -ex
 
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-ROOT=$(dirname $SCRIPTS)
+ROOT=$(dirname "$SCRIPTS")
 
-cd $ROOT
+cd "$ROOT"
 
-XCODE_PROJECT="Examples/UIExplorer/UIExplorer.xcodeproj"
-XCODE_SCHEME="UIExplorer-tvOS"
-XCODE_SDK="appletvsimulator"
-if [ -z ${XCODE_DESTINATION+x} ]; then
-  XCODE_DESTINATION="platform=tvOS Simulator,name=Apple TV 1080p,OS=10.0"
-fi
+SCHEME="UIExplorer-tvOS"
+SDK="appletvsimulator"
+DESTINATION="platform=tvOS Simulator,name=Apple TV 1080p,OS=10.1"
+# Uncomment the line below to enable tvOS testing
+#TEST="test"
 
 . ./scripts/objc-test.sh
+

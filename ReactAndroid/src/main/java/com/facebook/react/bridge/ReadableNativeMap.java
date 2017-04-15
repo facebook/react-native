@@ -49,7 +49,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
   @Override
   public Dynamic getDynamic(String name) {
-    return new DynamicFromMap(this, name);
+    return DynamicFromMap.create(this, name);
   }
 
   @Override

@@ -90,7 +90,7 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
 
   @Override
   public Dynamic getDynamic(String name) {
-    return new DynamicFromMap(this, name);
+    return DynamicFromMap.create(this, name);
   }
 
   @Override

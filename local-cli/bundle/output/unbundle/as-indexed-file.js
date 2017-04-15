@@ -14,12 +14,12 @@ const MAGIC_UNBUNDLE_FILE_HEADER = require('./magic-number');
 
 const buildSourceMapWithMetaData = require('./build-unbundle-sourcemap-with-metadata');
 const fs = require('fs');
-const relativizeSourceMap = require('../../../../packager/react-packager/src/lib/relativizeSourceMap');
+const relativizeSourceMap = require('../../../../packager/src//lib/relativizeSourceMap');
 const writeSourceMap = require('./write-sourcemap');
 
 const {joinModules} = require('./util');
 
-import type ModuleTransport from '../../../../packager/react-packager/src/lib/ModuleTransport';
+import type ModuleTransport from '../../../../packager/src//lib/ModuleTransport';
 import type {Bundle, ModuleGroups, OutputOptions} from '../../types.flow';
 
 const SIZEOF_UINT32 = 4;

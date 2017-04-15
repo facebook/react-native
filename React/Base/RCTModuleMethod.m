@@ -104,13 +104,13 @@ static RCTNullability RCTParseNullabilityPostfix(const char **input)
 
 // returns YES if execution is safe to proceed (enqueue callback invocation), NO if callback has already been invoked
 static BOOL RCTCheckCallbackMultipleInvocations(BOOL *didInvoke) {
-    if (*didInvoke) {
-        RCTFatal(RCTErrorWithMessage(@"Illegal callback invocation from native module. This callback type only permits a single invocation from native code."));
-        return NO;
-    } else {
-        *didInvoke = YES;
-        return YES;
-    }
+  if (*didInvoke) {
+      RCTFatal(RCTErrorWithMessage(@"Illegal callback invocation from native module. This callback type only permits a single invocation from native code."));
+      return NO;
+  } else {
+      *didInvoke = YES;
+      return YES;
+  }
 }
 
 SEL RCTParseMethodSignature(NSString *, NSArray<RCTMethodArgument *> **);
@@ -480,10 +480,10 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
         expectedCount -= 2;
       }
 
-      RCTLogError(@"%@.%@ was called with %zd arguments, but expects %zd. \
-                  If you haven\'t changed this method yourself, this usually means that \
-                  your versions of the native code and JavaScript code are out of sync. \
-                  Updating both should make this error go away.",
+      RCTLogError(@"%@.%@ was called with %zd arguments but expects %zd arguments. "
+                  @"If you haven\'t changed this method yourself, this usually means that "
+                  @"your versions of the native code and JavaScript code are out of sync. "
+                  @"Updating both should make this error go away.",
                   RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName,
                   actualCount, expectedCount);
       return nil;

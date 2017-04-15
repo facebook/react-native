@@ -4,11 +4,10 @@
 
 #include <memory>
 
+#include <cxxreact/ModuleRegistry.h>
+#include <cxxreact/NativeModule.h>
+#include <cxxreact/NativeToJsBridge.h>
 #include <folly/dynamic.h>
-
-#include "NativeToJsBridge.h"
-#include "ModuleRegistry.h"
-#include "NativeModule.h"
 
 namespace facebook {
 namespace react {
@@ -20,7 +19,6 @@ struct InstanceCallback {
   virtual void onBatchComplete() = 0;
   virtual void incrementPendingJSCalls() = 0;
   virtual void decrementPendingJSCalls() = 0;
-  virtual void onNativeException(const std::string& what) = 0;
   virtual ExecutorToken createExecutorToken() = 0;
   virtual void onExecutorStopped(ExecutorToken) = 0;
 };
@@ -32,12 +30,13 @@ class Instance {
     std::unique_ptr<InstanceCallback> callback,
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
-    std::unique_ptr<MessageQueueThread> nativeQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry);
+
+  void setSourceURL(std::string sourceURL);
+
   void loadScriptFromString(std::unique_ptr<const JSBigString> string, std::string sourceURL);
   void loadScriptFromStringSync(std::unique_ptr<const JSBigString> string, std::string sourceURL);
   void loadScriptFromFile(const std::string& filename, const std::string& sourceURL);
-  void loadScriptFromOptimizedBundle(std::string bundlePath, std::string sourceURL, int flags);
   void loadUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle,
     std::unique_ptr<const JSBigString> startupScript,

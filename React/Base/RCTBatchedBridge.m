@@ -10,20 +10,25 @@
 #import <Foundation/Foundation.h>
 
 #import "RCTAssert.h"
+
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
 #import "RCTBridgeMethod.h"
 #import "RCTConvert.h"
-#import "RCTDevLoadingView.h"
 #import "RCTDisplayLink.h"
 #import "RCTJSCExecutor.h"
 #import "RCTJavaScriptLoader.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
-#import "RCTProfile.h"
-#import "RCTRedBox.h"
 #import "RCTUtils.h"
+
+#import <React/RCTProfile.h>
+#import <React/RCTRedBox.h>
+
+#if RCT_DEV && __has_include("RCTDevLoadingView.h")
+#import "RCTDevLoadingView.h"
+#endif
 
 #define RCTAssertJSThread() \
   RCTAssert(![NSStringFromClass([self->_javaScriptExecutor class]) isEqualToString:@"RCTJSCExecutor"] || \
@@ -84,10 +89,14 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
-                                           bundleURL:(NSURL *)bundleURL
-                                      moduleProvider:(RCTBridgeModuleProviderBlock)block
-                                       launchOptions:(NSDictionary *)launchOptions)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(__unused id<RCTBridgeDelegate>)delegate
+                                           bundleURL:(__unused NSURL *)bundleURL
+                                      moduleProvider:(__unused RCTBridgeModuleListProvider)block
+                                       launchOptions:(__unused NSDictionary *)launchOptions)
+
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleURL
+                                       moduleProvider:(__unused RCTBridgeModuleListProvider)block
+                                        launchOptions:(__unused NSDictionary *)launchOptions)
 
 - (void)start
 {
@@ -116,7 +125,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
     sourceCode = source;
     dispatch_group_leave(initModulesAndLoadSource);
   } onProgress:^(RCTLoadingProgress *progressData) {
-#ifdef RCT_DEV
+#if RCT_DEV && __has_include("RCTDevLoadingView.h")
     RCTDevLoadingView *loadingView = [weakSelf moduleForClass:[RCTDevLoadingView class]];
     [loadingView updateProgress:progressData];
 #endif
@@ -192,9 +201,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
     [self.delegate loadSourceForBridge:_parentBridge onProgress:onProgress onComplete:onSourceLoad];
   } else if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
     [self.delegate loadSourceForBridge:_parentBridge withBlock:onSourceLoad];
+  } else if (!self.bundleURL) {
+    NSError *error = RCTErrorWithMessage(@"No bundle URL present.\n\nMake sure you're running a packager " \
+                                         "server or have included a .jsbundle file in your application bundle.");
+    onSourceLoad(error, nil, 0);
   } else {
-    RCTAssert(self.bundleURL, @"bundleURL must be non-nil when not implementing loadSourceForBridge");
-
     [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:^(NSError *error, NSData *source, int64_t sourceLength) {
       if (error && [self.delegate respondsToSelector:@selector(fallbackSourceURLForBridge:)]) {
         NSURL *fallbackURL = [self.delegate fallbackSourceURLForBridge:self->_parentBridge];
@@ -581,15 +592,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
   RCTFatal(error);
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleURL
-                    moduleProvider:(__unused RCTBridgeModuleProviderBlock)block
-                    launchOptions:(__unused NSDictionary *)launchOptions)
-
 /**
  * Prevent super from calling setUp (that'd create another batchedBridge)
  */
 - (void)setUp {}
-- (void)bindKeys {}
 
 - (void)reload
 {
@@ -1092,6 +1098,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (BOOL)isBatchActive
 {
   return _wasBatchActive;
+}
+
+#pragma mark - JavaScriptCore
+
+- (JSGlobalContextRef)jsContextRef
+{
+  return [self.jsContext JSGlobalContextRef];
+}
+
+- (JSContext *)jsContext
+{
+  if ([_javaScriptExecutor isKindOfClass:[RCTJSCExecutor class]]) {
+    return [(RCTJSCExecutor *)_javaScriptExecutor jsContext];
+  } else {
+    return nil;
+  }
 }
 
 @end

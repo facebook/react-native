@@ -2,16 +2,17 @@
 
 #include <folly/dynamic.h>
 #include <fb/fbjni.h>
+#include <fb/glog_init.h>
 #include <fb/log.h>
 #include <cxxreact/Executor.h>
 #include <cxxreact/JSCExecutor.h>
 #include <cxxreact/Platform.h>
 #include <jschelpers/Value.h>
 #include "CatalystInstanceImpl.h"
+#include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JSCPerfLogging.h"
 #include "JSLoader.h"
-#include "ModuleRegistryHolder.h"
 #include "ProxyExecutor.h"
 #include "WebWorkers.h"
 #include "JCallback.h"
@@ -73,9 +74,15 @@ static JSValueRef nativePerformanceNow(
   static const int64_t NANOSECONDS_IN_SECOND = 1000000000LL;
   static const int64_t NANOSECONDS_IN_MILLISECOND = 1000000LL;
 
-  // This is equivalent to android.os.SystemClock.elapsedRealtime() in native
+  // Since SystemClock.uptimeMillis() is commonly used for performance measurement in Java
+  // and uptimeMillis() internally uses clock_gettime(CLOCK_MONOTONIC),
+  // we use the same API here.
+  // We need that to make sure we use the same time system on both JS and Java sides.
+  // Links to the source code:
+  // https://android.googlesource.com/platform/frameworks/native/+/jb-mr1-release/libs/utils/SystemClock.cpp
+  // https://android.googlesource.com/platform/system/core/+/master/libutils/Timers.cpp
   struct timespec now;
-  clock_gettime(CLOCK_MONOTONIC_RAW, &now);
+  clock_gettime(CLOCK_MONOTONIC, &now);
   int64_t nano = now.tv_sec * NANOSECONDS_IN_SECOND + now.tv_nsec;
   return Value::makeNumber(ctx, (nano / (double)NANOSECONDS_IN_MILLISECOND));
 }
@@ -87,7 +94,7 @@ class JSCJavaScriptExecutorHolder : public HybridClass<JSCJavaScriptExecutorHold
 
   static local_ref<jhybriddata> initHybrid(alias_ref<jclass>, ReadableNativeArray* jscConfigArray) {
     // See JSCJavaScriptExecutor.Factory() for the other side of this hack.
-    folly::dynamic jscConfigMap = jscConfigArray->array[0];
+    folly::dynamic jscConfigMap = jscConfigArray->consume()[0];
     jscConfigMap["PersistentDirectory"] = getApplicationPersistentDir();
     return makeCxxInstance(
       std::make_shared<JSCExecutorFactory>(getApplicationCacheDir(), std::move(jscConfigMap)));
@@ -146,6 +153,7 @@ class JReactMarker : public JavaClass<JReactMarker> {
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
+    gloginit::initialize();
     // Inject some behavior into react/
     ReactMarker::logMarker = JReactMarker::logMarker;
     WebWorkerUtil::createWebWorkerThread = WebWorkers::createWebWorkerThread;
@@ -160,13 +168,12 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     JSCJavaScriptExecutorHolder::registerNatives();
     ProxyJavaScriptExecutorHolder::registerNatives();
     CatalystInstanceImpl::registerNatives();
-    ModuleRegistryHolder::registerNatives();
+    CxxModuleWrapperBase::registerNatives();
     CxxModuleWrapper::registerNatives();
     JCallbackImpl::registerNatives();
     #ifdef WITH_INSPECTOR
     JInspector::registerNatives();
     #endif
-    registerJSLoaderNatives();
 
     NativeArray::registerNatives();
     ReadableNativeArray::registerNatives();

@@ -2,15 +2,14 @@
 set -ex
 
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-ROOT=$(dirname $SCRIPTS)
+ROOT=$(dirname "$SCRIPTS")
 
-cd $ROOT
+cd "$ROOT"
 
-XCODE_PROJECT="Examples/UIExplorer/UIExplorer.xcodeproj"
-XCODE_SCHEME="UIExplorer"
-XCODE_SDK="iphonesimulator"
-if [ -z ${XCODE_DESTINATION+x} ]; then
-  XCODE_DESTINATION="platform=iOS Simulator,name=iPhone 5s,OS=10.0"
-fi
+SCHEME="UIExplorer"
+SDK="iphonesimulator"
+DESTINATION="platform=iOS Simulator,name=iPhone 5s,OS=10.1"
+TEST="test"
 
 . ./scripts/objc-test.sh
+

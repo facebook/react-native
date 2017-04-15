@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule ScrollViewExample
  */
 'use strict';
 
@@ -33,7 +34,7 @@ var {
   Image
 } = ReactNative;
 
-exports.displayName = (undefined: ?string);
+exports.displayName = 'ScrollViewExample';
 exports.title = '<ScrollView>';
 exports.description = 'Component that enables scrolling through child components';
 exports.examples = [
@@ -50,12 +51,17 @@ exports.examples = [
           onScroll={() => { console.log('onScroll!'); }}
           scrollEventThrottle={200}
           style={styles.scrollView}>
-          {THUMBS.map(createThumbRow)}
+          {THUMB_URLS.map(createThumbRow)}
         </ScrollView>
         <TouchableOpacity
           style={styles.button}
           onPress={() => { _scrollView.scrollTo({y: 0}); }}>
           <Text>Scroll to top</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => { _scrollView.scrollToEnd({animated: true}); }}>
+          <Text>Scroll to bottom</Text>
         </TouchableOpacity>
       </View>
     );
@@ -64,21 +70,37 @@ exports.examples = [
   title: '<ScrollView> (horizontal = true)',
   description: 'You can display <ScrollView>\'s child components horizontally rather than vertically',
   render: function() {
-    var _scrollView: ScrollView;
+
+    function renderScrollView(title: string, addtionalStyles: typeof StyleSheet) {
+      var _scrollView: ScrollView;
+      return (
+        <View style={addtionalStyles}>
+          <Text style={styles.text}>{title}</Text>
+          <ScrollView
+            ref={(scrollView) => { _scrollView = scrollView; }}
+            automaticallyAdjustContentInsets={false}
+            horizontal={true}
+            style={[styles.scrollView, styles.horizontalScrollView]}>
+            {THUMB_URLS.map(createThumbRow)}
+          </ScrollView>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => { _scrollView.scrollTo({x: 0}); }}>
+            <Text>Scroll to start</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => { _scrollView.scrollToEnd({animated: true}); }}>
+            <Text>Scroll to end</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
     return (
       <View>
-        <ScrollView
-          ref={(scrollView) => { _scrollView = scrollView; }}
-          automaticallyAdjustContentInsets={false}
-          horizontal={true}
-          style={[styles.scrollView, styles.horizontalScrollView]}>
-          {THUMBS.map(createThumbRow)}
-        </ScrollView>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => { _scrollView.scrollTo({x: 0}); }}>
-          <Text>Scroll to start</Text>
-        </TouchableOpacity>
+        {renderScrollView('LTR layout', {direction: 'ltr'})}
+        {renderScrollView('RTL layout', {direction: 'rtl'})}
       </View>
     );
   }
@@ -91,49 +113,58 @@ class Thumb extends React.Component {
 
   render() {
     return (
-      <View style={styles.button}>
-        <Image style={styles.img} source={{uri:this.props.uri}} />
+      <View style={styles.thumb}>
+        <Image style={styles.img} source={this.props.source} />
       </View>
     );
   }
 }
 
-var THUMBS = ['https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-ash3/t39.1997/p128x128/851549_767334479959628_274486868_n.png', 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851561_767334496626293_1958532586_n.png', 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-ash3/t39.1997/p128x128/851579_767334503292959_179092627_n.png', 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851589_767334513292958_1747022277_n.png', 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851563_767334559959620_1193692107_n.png', 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851593_767334566626286_1953955109_n.png', 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851591_767334523292957_797560749_n.png', 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851567_767334529959623_843148472_n.png', 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851548_767334489959627_794462220_n.png', 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851575_767334539959622_441598241_n.png', 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-ash3/t39.1997/p128x128/851573_767334549959621_534583464_n.png', 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851583_767334573292952_1519550680_n.png'];
-THUMBS = THUMBS.concat(THUMBS); // double length of THUMBS
-var createThumbRow = (uri, i) => <Thumb key={i} uri={uri} />;
+var THUMB_URLS = [
+  require('./Thumbnails/like.png'),
+  require('./Thumbnails/dislike.png'),
+  require('./Thumbnails/call.png'),
+  require('./Thumbnails/fist.png'),
+  require('./Thumbnails/bandaged.png'),
+  require('./Thumbnails/flowers.png'),
+  require('./Thumbnails/heart.png'),
+  require('./Thumbnails/liking.png'),
+  require('./Thumbnails/party.png'),
+  require('./Thumbnails/poke.png'),
+  require('./Thumbnails/superlike.png'),
+  require('./Thumbnails/victory.png'),
+];
+
+THUMB_URLS = THUMB_URLS.concat(THUMB_URLS); // double length of THUMB_URLS
+
+var createThumbRow = (uri, i) => <Thumb key={i} source={uri} />;
 
 var styles = StyleSheet.create({
   scrollView: {
-    backgroundColor: '#6A85B1',
+    backgroundColor: '#eeeeee',
     height: 300,
   },
   horizontalScrollView: {
-    height: 120,
-  },
-  containerPage: {
-    height: 50,
-    width: 50,
-    backgroundColor: '#527FE4',
-    padding: 5,
+    height: 106,
   },
   text: {
-    fontSize: 20,
-    color: '#888888',
-    left: 80,
-    top: 20,
-    height: 40,
+    fontSize: 16,
+    fontWeight: 'bold',
+    margin: 5,
   },
   button: {
-    margin: 7,
+    margin: 5,
     padding: 5,
     alignItems: 'center',
-    backgroundColor: '#eaeaea',
+    backgroundColor: '#cccccc',
     borderRadius: 3,
   },
-  buttonContents: {
-    flexDirection: 'row',
-    width: 64,
-    height: 64,
+  thumb: {
+    margin: 5,
+    padding: 5,
+    backgroundColor: '#cccccc',
+    borderRadius: 3,
+    minWidth: 96,
   },
   img: {
     width: 64,
