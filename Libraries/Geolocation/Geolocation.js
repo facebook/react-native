@@ -151,27 +151,27 @@ var Geolocation = {
     if (headingUpdatesEnabled) {
       warning('Called startUpdatingHeading while currently updating heading.');
     }
-    
+
     RCTLocationObserver.startUpdatingHeading();
     headingUpdatesEnabled = true;
-    
+
     LocationEventEmitter.addListener(
       'headingDidChange',
       update
     );
   },
-  
+
   /*
    * Stops observing a location heading.
    */
   stopUpdatingHeading: function() {
     if (!headingUpdatesEnabled) {
-        warning('Called stopUpdatingHeading without currently updating heading.')
+      warning('Called stopUpdatingHeading without currently updating heading.');
     }
-    
+
     RCTLocationObserver.stopUpdatingHeading();
     headingUpdatesEnabled = false;
-    
+
     LocationEventEmitter.remove('headingDidChange');
   }
 };
