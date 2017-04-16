@@ -345,6 +345,12 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     }
   }
 
+  setNativeProps(props: Object) {
+    if (this._listRef) {
+      this._listRef.setNativeProps(props);
+    }
+  }
+
   componentWillMount() {
     this._checkProps(this.props);
   }
