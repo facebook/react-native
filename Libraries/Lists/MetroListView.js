@@ -22,7 +22,7 @@ type Item = any;
 
 type NormalProps = {
   FooterComponent?: ReactClass<*>,
-  renderItem: ({item: Item, index: number}) => ?React.Element<*>,
+  renderItem: (info: Object) => ?React.Element<*>,
   renderSectionHeader?: ({section: Object}) => ?React.Element<*>,
   SeparatorComponent?: ?ReactClass<*>, // not supported yet
 
@@ -61,11 +61,17 @@ class MetroListView extends React.Component {
   scrollToItem(params: {animated?: ?boolean, item: Item, viewPosition?: number}) {
     throw new Error('scrollToItem not supported in legacy ListView.');
   }
+  scrollToLocation() {
+    throw new Error('scrollToLocation not supported in legacy ListView.');
+  }
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     const {animated, offset} = params;
     this._listRef.scrollTo(
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated}
     );
+  }
+  getListRef() {
+    return this._listRef;
   }
   static defaultProps: DefaultProps = {
     keyExtractor: (item, index) => item.key || index,

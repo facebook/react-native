@@ -16,6 +16,7 @@ const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Platform = require('Platform');
 const PointPropType = require('PointPropType');
+const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
 const ScrollResponder = require('ScrollResponder');
@@ -30,7 +31,6 @@ const dismissKeyboard = require('dismissKeyboard');
 const flattenStyle = require('flattenStyle');
 const invariant = require('fbjs/lib/invariant');
 const processDecelerationRate = require('processDecelerationRate');
-const PropTypes = React.PropTypes;
 const requireNativeComponent = require('requireNativeComponent');
 
 /**
@@ -56,7 +56,7 @@ const requireNativeComponent = require('requireNativeComponent');
  *
  * On the other hand, this has a performance downside. Imagine you have a very
  * long list of items you want to display, maybe several screens worth of
- * content. Creating JS components and native views for everythign all at once,
+ * content. Creating JS components and native views for everything all at once,
  * much of which may not even be shown, will contribute to slow rendering and
  * increased memory usage.
  *
@@ -650,9 +650,7 @@ const ScrollView = React.createClass({
         {...contentSizeChangeProps}
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
-        removeClippedSubviews={
-          hasStickyHeaders && Platform.OS === 'android' ? false : this.props.removeClippedSubviews
-        }
+        removeClippedSubviews={this.props.removeClippedSubviews}
         collapsable={false}>
         {children}
       </ScrollContentContainerViewClass>;

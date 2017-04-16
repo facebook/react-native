@@ -30,6 +30,8 @@ class ModuleRegistry {
   // notifyCatalystInstanceDestroy: use RAII instead
 
   ModuleRegistry(std::vector<std::unique_ptr<NativeModule>> modules);
+  void registerModules(std::vector<std::unique_ptr<NativeModule>> modules);
+
   std::vector<std::string> moduleNames();
 
   folly::Optional<ModuleConfig> getConfig(const std::string& name);

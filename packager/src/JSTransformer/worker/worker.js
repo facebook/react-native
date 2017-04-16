@@ -36,18 +36,21 @@ type Transformer = {
 };
 
 export type TransformOptions = {
-  generateSourceMaps: boolean,
-  platform: string,
-  preloadedModules?: Array<string>,
-  projectRoots: Array<string>,
-  ramGroups?: Array<string>,
+  +dev: boolean,
+  +generateSourceMaps: boolean,
+  +hot: boolean,
+  +inlineRequires: {+blacklist: {[string]: true}} | boolean,
+  +platform: string,
+  +preloadedModules?: Array<string> | false,
+  +projectRoots: Array<string>,
+  +ramGroups?: Array<string>,
 } & BabelTransformOptions;
 
 export type Options = {
   +dev: boolean,
   +minify: boolean,
-  platform: string,
-  transform: TransformOptions,
+  +platform: string,
+  +transform: TransformOptions,
 };
 
 export type Data = {
@@ -115,7 +118,7 @@ function transformCode(
     code = code.replace(/^#!.*/, '');
   }
 
-  const depsResult = isJson || options.extern
+  const depsResult = isJson
     ? {dependencies: [], dependencyOffsets: []}
     : extractDependencies(code);
 
@@ -145,7 +148,7 @@ exports.transformAndExtractDependencies = (
 ) => {
   /* $FlowFixMe: impossible to type a dynamic require */
   const transformModule = require(transform);
-  transformCode(transformModule, filename, sourceCode, options || {}, callback);
+  transformCode(transformModule, filename, sourceCode, options, callback);
 };
 
 exports.minify = (

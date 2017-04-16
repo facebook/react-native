@@ -23,12 +23,12 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
 @implementation RCTTestRunner
 {
   FBSnapshotTestController *_testController;
-  RCTBridgeModuleProviderBlock _moduleProvider;
+  RCTBridgeModuleListProvider _moduleProvider;
 }
 
 - (instancetype)initWithApp:(NSString *)app
          referenceDirectory:(NSString *)referenceDirectory
-             moduleProvider:(RCTBridgeModuleProviderBlock)block
+             moduleProvider:(RCTBridgeModuleListProvider)block
 {
   RCTAssertParam(app);
   RCTAssertParam(referenceDirectory);
@@ -97,9 +97,12 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 {
   @autoreleasepool {
     __block NSString *error = nil;
+    RCTLogFunction defaultLogFunction = RCTGetLogFunction();
     RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
       if (level >= RCTLogLevelError) {
         error = message;
+      } else {
+        defaultLogFunction(level, source, fileName, lineNumber, message);
       }
     });
 
@@ -121,7 +124,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     testModule.testSuffix = _testSuffix;
     testModule.view = rootView;
 
-    UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
+    UIViewController *vc = RCTSharedApplication().delegate.window.rootViewController;
     vc.view = [UIView new];
     [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
 
@@ -137,7 +140,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 
     [rootView removeFromSuperview];
 
-    RCTSetLogFunction(RCTDefaultLogFunction);
+    RCTSetLogFunction(defaultLogFunction);
 
     NSArray<UIView *> *nonLayoutSubviews = [vc.view.subviews filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id subview, NSDictionary *bindings) {
       return ![NSStringFromClass([subview class]) isEqualToString:@"_UILayoutGuide"];

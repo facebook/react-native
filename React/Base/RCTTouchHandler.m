@@ -95,8 +95,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
     // Find closest React-managed touchable view
     UIView *targetView = touch.view;
     while (targetView) {
-      if (targetView.reactTag && targetView.userInteractionEnabled &&
-          [targetView reactRespondsToTouch:touch]) {
+      if (targetView.reactTag && targetView.userInteractionEnabled) {
         break;
       }
       targetView = targetView.superview;

@@ -22,6 +22,7 @@
 'use strict';
 
 var React = require('react');
+var PropTypes = require('prop-types');
 var ReactNative = require('react-native');
 var {
   Linking,
@@ -34,7 +35,7 @@ var UIExplorerBlock = require('./UIExplorerBlock');
 
 class OpenURLButton extends React.Component {
   static propTypes = {
-    url: React.PropTypes.string,
+    url: PropTypes.string,
   };
 
   handleClick = () => {

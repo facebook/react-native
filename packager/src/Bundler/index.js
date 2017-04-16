@@ -46,13 +46,19 @@ import type {
   TransformOptions,
 } from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
+
+export type ExtraTransformOptions = {
+  +inlineRequires?: {+blacklist: {[string]: true}} | boolean,
+  +preloadedModules?: Array<string> | false,
+  +ramGroups?: Array<string>,
+};
 
 export type GetTransformOptions = (
   mainModuleName: string,
   options: {},
   getDependencies: string => Promise<Array<string>>,
-) => {} | Promise<{}>;
+) => ExtraTransformOptions | Promise<ExtraTransformOptions>;
 
 type Asset = {
   __packager_asset: boolean,
@@ -83,27 +89,26 @@ const assetPropertyBlacklist = new Set([
   'path',
 ]);
 
-type Options = {
-  allowBundleUpdates: boolean,
-  assetExts: Array<string>,
-  assetServer: AssetServer,
-  blacklistRE?: RegExp,
-  cacheVersion: string,
-  extraNodeModules: {},
-  getTransformOptions?: GetTransformOptions,
-  globalTransformCache: ?GlobalTransformCache,
-  hasteImpl?: HasteImpl,
-  moduleFormat: string,
-  platforms: Array<string>,
-  polyfillModuleNames: Array<string>,
-  projectRoots: Array<string>,
-  providesModuleNodeModules?: Array<string>,
-  reporter: Reporter,
-  resetCache: boolean,
-  transformModulePath?: string,
-  transformTimeoutInterval: ?number,
-  watch: boolean,
-};
+type Options = {|
+  +allowBundleUpdates: boolean,
+  +assetExts: Array<string>,
+  +assetServer: AssetServer,
+  +blacklistRE?: RegExp,
+  +cacheVersion: string,
+  +extraNodeModules: {},
+  +getTransformOptions?: GetTransformOptions,
+  +globalTransformCache: ?GlobalTransformCache,
+  +hasteImpl?: HasteImpl,
+  +platforms: Array<string>,
+  +polyfillModuleNames: Array<string>,
+  +projectRoots: Array<string>,
+  +providesModuleNodeModules?: Array<string>,
+  +reporter: Reporter,
+  +resetCache: boolean,
+  +transformModulePath?: string,
+  +transformTimeoutInterval: ?number,
+  +watch: boolean,
+|};
 
 class Bundler {
 
@@ -184,7 +189,6 @@ class Bundler {
       hasteImpl: opts.hasteImpl,
       maxWorkerCount,
       minifyCode: this._transformer.minify,
-      moduleFormat: opts.moduleFormat,
       platforms: new Set(opts.platforms),
       polyfillModuleNames: opts.polyfillModuleNames,
       projectRoots: opts.projectRoots,
@@ -322,12 +326,12 @@ class Bundler {
     moduleSystemDeps?: Array<Module>,
     onProgress?: () => void,
     platform?: ?string,
-    resolutionResponse?: ResolutionResponse,
+    resolutionResponse?: ResolutionResponse<Module>,
     runBeforeMainModule?: boolean,
     runModule?: boolean,
     unbundle?: boolean,
   }) {
-    const onResolutionResponse = (response: ResolutionResponse) => {
+    const onResolutionResponse = (response: ResolutionResponse<Module>) => {
       /* $FlowFixMe: looks like ResolutionResponse is monkey-patched
        * with `getModuleId`. */
       bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
@@ -342,7 +346,7 @@ class Bundler {
     const finalizeBundle = ({bundle: finalBundle, transformedModules, response, modulesByName}: {
       bundle: Bundle,
       transformedModules: Array<{module: Module, transformed: ModuleTransport}>,
-      response: ResolutionResponse,
+      response: ResolutionResponse<Module>,
       modulesByName: {[name: string]: Module},
     }) =>
       this._resolverPromise.then(resolver => Promise.all(
