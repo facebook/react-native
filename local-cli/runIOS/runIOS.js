@@ -94,7 +94,7 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
   .then((udid) => buildProject(xcodeProject, udid, scheme, args.configuration, args.packager))
   .then((appName) => {
     if (!appName) {
-      appName = inferredSchemeName;
+      appName = scheme;
     }
     let appPath = getBuildPath(args.configuration, appName);
     console.log(`Installing ${appPath}`);
