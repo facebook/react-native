@@ -36,6 +36,11 @@ const ComponentExamples: Array<UIExplorerExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'ARTExample',
+    module: require('./ARTExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'ButtonExample',
     module: require('./ButtonExample'),
     supportsTVOS: true,
