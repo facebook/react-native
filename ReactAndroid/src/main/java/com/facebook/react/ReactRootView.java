@@ -235,6 +235,12 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     }
   }
 
+  public void showDev(){
+    if (mReactInstanceManager != null && mIsAttachedToInstance) {
+      mReactInstanceManager.showDevOptionsDialog();
+    }
+  }
+
   public void onAttachedToReactInstance() {
     if (mRootViewEventListener != null) {
       mRootViewEventListener.onAttachedToReactInstance(this);
