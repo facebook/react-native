@@ -156,6 +156,8 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    * enabled by default on iOS because that is the platform standard there.
    */
   stickySectionHeadersEnabled?: boolean,
+
+  legacyImplementation?: ?boolean,
 };
 
 type Props<SectionT> = RequiredProps<SectionT>

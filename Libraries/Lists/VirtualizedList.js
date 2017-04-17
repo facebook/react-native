@@ -134,6 +134,8 @@ type OptionalProps = {
    */
   windowSize: number,
 };
+/* $FlowFixMe - this Props seems to be missing a bunch of stuff. Remove this
+ * comment to see the errors */
 export type Props = RequiredProps & OptionalProps;
 
 let _usedIndexForKey = false;
