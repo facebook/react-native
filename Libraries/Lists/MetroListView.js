@@ -28,6 +28,7 @@ type NormalProps = {
 
   // Provide either `items` or `sections`
   items?: ?Array<Item>, // By default, an Item is assumed to be {key: string}
+  // $FlowFixMe - Something is a little off with the type Array<Item>
   sections?: ?Array<{key: string, data: Array<Item>}>,
 
   /**
@@ -39,10 +40,16 @@ type NormalProps = {
    * Set this true while waiting for new data from a refresh.
    */
   refreshing?: boolean,
+  /**
+   * If true, renders items next to each other horizontally instead of stacked vertically.
+   */
+  horizontal?: ?boolean,
 };
 type DefaultProps = {
-  keyExtractor: (item: Item) => string,
+  keyExtractor: (item: Item, index: number) => string,
 };
+/* $FlowFixMe - the renderItem passed in from SectionList is optional there but
+ * required here */
 type Props = NormalProps & DefaultProps;
 
 /**
@@ -74,7 +81,7 @@ class MetroListView extends React.Component {
     return this._listRef;
   }
   static defaultProps: DefaultProps = {
-    keyExtractor: (item, index) => item.key || index,
+    keyExtractor: (item, index) => item.key || String(index),
     renderScrollComponent: (props: Props) => {
       if (props.onRefresh) {
         return (
