@@ -59,19 +59,19 @@ type ModuleishCache<TModule, TPackage> = {
 
 type MatchFilesByDirAndPattern = (dirName: string, pattern: RegExp) => Array<string>;
 
-type Options<TModule, TPackage> = {
-  dirExists: DirExistsFn,
-  entryPath: string,
-  extraNodeModules: ?Object,
-  hasteFS: HasteFS,
-  helpers: DependencyGraphHelpers,
-  matchFiles: MatchFilesByDirAndPattern,
-  moduleCache: ModuleishCache<TModule, TPackage>,
-  moduleMap: ModuleMap,
-  platform: string,
-  platforms: Set<string>,
-  preferNativePlatform: boolean,
-};
+type Options<TModule, TPackage> = {|
+  +dirExists: DirExistsFn,
+  +entryPath: string,
+  +extraNodeModules: ?Object,
+  +hasteFS: HasteFS,
+  +helpers: DependencyGraphHelpers,
+  +matchFiles: MatchFilesByDirAndPattern,
+  +moduleCache: ModuleishCache<TModule, TPackage>,
+  +moduleMap: ModuleMap,
+  +platform: string,
+  +platforms: Set<string>,
+  +preferNativePlatform: boolean,
+|};
 
 /**
  * It may not be a great pattern to leverage exception just for "trying" things
