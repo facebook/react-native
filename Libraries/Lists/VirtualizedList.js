@@ -110,9 +110,9 @@ type OptionalProps = {
    */
   refreshing?: ?boolean,
   /**
-   * A native optimization that removes clipped subviews (those outside the parent) from the view
-   * hierarchy to offload work from the native rendering system. They are still kept around so no
-   * memory is saved and state is preserved.
+   * Note: may have bugs (missing content) in some circumstances - use at your own risk.
+   *
+   * This may improve scroll performance for large lists.
    */
   removeClippedSubviews?: boolean,
   /**
@@ -134,6 +134,8 @@ type OptionalProps = {
    */
   windowSize: number,
 };
+/* $FlowFixMe - this Props seems to be missing a bunch of stuff. Remove this
+ * comment to see the errors */
 export type Props = RequiredProps & OptionalProps;
 
 let _usedIndexForKey = false;
@@ -167,10 +169,6 @@ type State = {first: number, last: number};
  * - By default, the list looks for a `key` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
- * NOTE: `removeClippedSubviews` might not be necessary and may cause bugs. If you see issues with
- * content not rendering, e.g when using `LayoutAnimation`, try setting
- * `removeClippedSubviews={false}`, and we may change the default in the future after more
- * experimentation in production apps.
  */
 class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   props: Props;
@@ -270,7 +268,6 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     },
     maxToRenderPerBatch: 10,
     onEndReachedThreshold: 2, // multiples of length
-    removeClippedSubviews: true,
     renderScrollComponent: (props: Props) => {
       if (props.onRefresh) {
         invariant(
@@ -626,12 +623,29 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     return !this.props.horizontal ? metrics.y : metrics.x;
   }
 
+  _maybeCallOnEndReached() {
+    const {data, getItemCount, onEndReached, onEndReachedThreshold} = this.props;
+    const {contentLength, visibleLength, offset} = this._scrollMetrics;
+    const distanceFromEnd = contentLength - visibleLength - offset;
+    if (onEndReached &&
+        this.state.last === getItemCount(data) - 1 &&
+        distanceFromEnd < onEndReachedThreshold * visibleLength &&
+        (this._hasDataChangedSinceEndReached ||
+         this._scrollMetrics.contentLength !== this._sentEndForContentLength)) {
+      // Only call onEndReached once for a given dataset + content length.
+      this._hasDataChangedSinceEndReached = false;
+      this._sentEndForContentLength = this._scrollMetrics.contentLength;
+      onEndReached({distanceFromEnd});
+    }
+  }
+
   _onContentSizeChange = (width: number, height: number) => {
     if (this.props.onContentSizeChange) {
       this.props.onContentSizeChange(width, height);
     }
     this._scrollMetrics.contentLength = this._selectLength({height, width});
     this._updateCellsToRenderBatcher.schedule();
+    this._maybeCallOnEndReached();
   };
 
   _sampleFillRate(sampleType: string) {
@@ -665,7 +679,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const dOffset = offset - this._scrollMetrics.offset;
     const velocity = dOffset / dt;
     this._scrollMetrics = {contentLength, dt, offset, timestamp, velocity, visibleLength};
-    const {data, getItemCount, onEndReached, onEndReachedThreshold, windowSize} = this.props;
+    const {data, getItemCount, windowSize} = this.props;
 
     this._sampleFillRate('onScroll');
 
@@ -673,19 +687,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     if (!data) {
       return;
     }
-    const distanceFromEnd = contentLength - visibleLength - offset;
-    const itemCount = getItemCount(data);
-    if (onEndReached &&
-        this.state.last === itemCount - 1 &&
-        distanceFromEnd < onEndReachedThreshold * visibleLength &&
-        (this._hasDataChangedSinceEndReached ||
-         this._scrollMetrics.contentLength !== this._sentEndForContentLength)) {
-      // Only call onEndReached once for a given dataset + content length.
-      this._hasDataChangedSinceEndReached = false;
-      this._sentEndForContentLength = this._scrollMetrics.contentLength;
-      onEndReached({distanceFromEnd});
-    }
+    this._maybeCallOnEndReached();
+
     const {first, last} = this.state;
+    const itemCount = getItemCount(data);
     if ((first > 0 && velocity < 0) || (last < itemCount - 1 && velocity > 0)) {
       const distanceToContentEdge = Math.min(
         Math.abs(this._getFrameMetricsApprox(first).offset - offset),

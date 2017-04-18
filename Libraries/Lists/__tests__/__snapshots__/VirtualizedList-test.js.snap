@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`FlatList renders all the bells and whistles 1`] = `
+exports[`VirtualizedList renders all the bells and whistles 1`] = `
 <RCTScrollView
   ItemSeparatorComponent={[Function]}
   ListFooterComponent={[Function]}
@@ -39,7 +39,6 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   onRefresh={[Function]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
-  onViewableItemsChanged={undefined}
   refreshControl={
     <RefreshControlMock
       onRefresh={[Function]}
@@ -64,64 +63,41 @@ exports[`FlatList renders all the bells and whistles 1`] = `
     <View
       onLayout={undefined}
     >
-      <View
-        style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            undefined,
-          ]
-        }
-      >
-        <item
-          value="0"
-        />
-        <item
-          value="1"
-        />
-      </View>
+      <item
+        value="0"
+      />
       <separator />
     </View>
     <View
       onLayout={undefined}
     >
-      <View
-        style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            undefined,
-          ]
-        }
-      >
-        <item
-          value="2"
-        />
-        <item
-          value="3"
-        />
-      </View>
+      <item
+        value="1"
+      />
       <separator />
     </View>
     <View
       onLayout={undefined}
     >
-      <View
-        style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            undefined,
-          ]
-        }
-      >
-        <item
-          value="4"
-        />
-      </View>
+      <item
+        value="2"
+      />
+      <separator />
+    </View>
+    <View
+      onLayout={undefined}
+    >
+      <item
+        value="3"
+      />
+      <separator />
+    </View>
+    <View
+      onLayout={undefined}
+    >
+      <item
+        value="4"
+      />
     </View>
     <View
       onLayout={[Function]}
@@ -132,7 +108,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
 </RCTScrollView>
 `;
 
-exports[`FlatList renders empty list 1`] = `
+exports[`VirtualizedList renders empty list 1`] = `
 <RCTScrollView
   data={Array []}
   disableVirtualization={false}
@@ -142,13 +118,11 @@ exports[`FlatList renders empty list 1`] = `
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
-  numColumns={1}
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
-  onViewableItemsChanged={undefined}
   renderItem={[Function]}
   renderScrollComponent={[Function]}
   scrollEventThrottle={50}
@@ -160,7 +134,7 @@ exports[`FlatList renders empty list 1`] = `
 </RCTScrollView>
 `;
 
-exports[`FlatList renders null list 1`] = `
+exports[`VirtualizedList renders null list 1`] = `
 <RCTScrollView
   data={undefined}
   disableVirtualization={false}
@@ -170,13 +144,11 @@ exports[`FlatList renders null list 1`] = `
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
-  numColumns={1}
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
-  onViewableItemsChanged={undefined}
   renderItem={[Function]}
   renderScrollComponent={[Function]}
   scrollEventThrottle={50}
@@ -188,7 +160,7 @@ exports[`FlatList renders null list 1`] = `
 </RCTScrollView>
 `;
 
-exports[`FlatList renders simple list 1`] = `
+exports[`VirtualizedList renders simple list 1`] = `
 <RCTScrollView
   data={
     Array [
@@ -210,13 +182,11 @@ exports[`FlatList renders simple list 1`] = `
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
-  numColumns={1}
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
-  onViewableItemsChanged={undefined}
   renderItem={[Function]}
   renderScrollComponent={[Function]}
   scrollEventThrottle={50}
@@ -244,6 +214,46 @@ exports[`FlatList renders simple list 1`] = `
     >
       <item
         value="i3"
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`VirtualizedList test getItem functionality where data is not an Array 1`] = `
+<RCTScrollView
+  data={
+    Map {
+      "id_0" => Object {
+        "key": "item_0",
+      },
+    }
+  }
+  disableVirtualization={false}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  horizontal={false}
+  initialNumToRender={10}
+  keyExtractor={[Function]}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onEndReachedThreshold={2}
+  onLayout={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  renderItem={[Function]}
+  renderScrollComponent={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  updateCellsBatchingPeriod={50}
+  windowSize={21}
+>
+  <View>
+    <View
+      onLayout={[Function]}
+    >
+      <item
+        value="item_0"
       />
     </View>
   </View>

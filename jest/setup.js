@@ -131,6 +131,11 @@ const mockNativeModules = {
     addListener: jest.fn(),
     removeListeners: jest.fn(),
   },
+  LocationObserver: {
+    getCurrentPosition: jest.fn(),
+    startObserving: jest.fn(),
+    stopObserving: jest.fn(),
+  },
   ModalFullscreenViewManager: {},
   Networking: {
     sendRequest: jest.fn(),

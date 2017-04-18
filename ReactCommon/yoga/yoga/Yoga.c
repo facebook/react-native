@@ -203,6 +203,7 @@ static YGConfig gYGConfigDefaults = {
     .experimentalFeatures =
         {
                 [YGExperimentalFeatureRounding] = false,
+                [YGExperimentalFeatureMinFlexFix] = false,
                 [YGExperimentalFeatureWebFlexBasis] = false,
         },
     .useWebDefaults = false,
@@ -1654,6 +1655,13 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(const YGNodeRef node,
         node, YGFlexDirectionRow, availableWidth - marginAxisRow, parentWidth, parentWidth);
     node->layout.measuredDimensions[YGDimensionHeight] = YGNodeBoundAxis(
         node, YGFlexDirectionColumn, availableHeight - marginAxisColumn, parentHeight, parentWidth);
+  } else if (innerWidth <= 0.0f || innerHeight <= 0.0f) {
+    // Don't bother sizing the text if there's no horizontal or vertical
+    // space.
+    node->layout.measuredDimensions[YGDimensionWidth] =
+        YGNodeBoundAxis(node, YGFlexDirectionRow, 0.0f, availableWidth, availableWidth);
+    node->layout.measuredDimensions[YGDimensionHeight] =
+        YGNodeBoundAxis(node, YGFlexDirectionColumn, 0.0f, availableHeight, availableWidth);
   } else {
     // Measure the text under the current constraints.
     const YGSize measuredSize =
@@ -2189,25 +2197,21 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     // If the main dimension size isn't known, it is computed based on
     // the line length, so there's no more space left to distribute.
 
-    bool sizeBasedOnContent = false;
     // If we don't measure with exact main dimension we want to ensure we don't violate min and max
     if (measureModeMainDim != YGMeasureModeExactly) {
       if (!YGFloatIsUndefined(minInnerMainDim) && sizeConsumedOnCurrentLine < minInnerMainDim) {
         availableInnerMainDim = minInnerMainDim;
       } else if (!YGFloatIsUndefined(maxInnerMainDim) && sizeConsumedOnCurrentLine > maxInnerMainDim) {
         availableInnerMainDim = maxInnerMainDim;
-      } else if (totalFlexGrowFactors == 0 || YGResolveFlexGrow(node) == 0) {
-        // If we don't have any children to flex or we can't flex the node itself,
-        // space we've used is all space we need
+      } else if (YGConfigIsExperimentalFeatureEnabled(node->config, YGExperimentalFeatureMinFlexFix)) {
+        // TODO: this needs to be moved out of experimental feature, as this is legitimate fix
+        // If the measurement isn't exact, we want to use as little space as possible
         availableInnerMainDim = sizeConsumedOnCurrentLine;
-        sizeBasedOnContent = true;
-      } else {
-        sizeBasedOnContent = true;
       }
     }
 
     float remainingFreeSpace = 0;
-    if (!sizeBasedOnContent && !YGFloatIsUndefined(availableInnerMainDim)) {
+    if (!YGFloatIsUndefined(availableInnerMainDim)) {
       remainingFreeSpace = availableInnerMainDim - sizeConsumedOnCurrentLine;
     } else if (sizeConsumedOnCurrentLine < 0) {
       // availableInnerMainDim is indefinite which means the node is being sized

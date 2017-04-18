@@ -95,7 +95,7 @@ class KeyURIFetcher {
     this._batchProcessor = new BatchProcessor({
       maximumDelayMs: 10,
       maximumItems: 500,
-      concurrency: 25,
+      concurrency: 2,
     }, this._processKeys.bind(this));
   }
 
