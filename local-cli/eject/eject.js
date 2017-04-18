@@ -172,9 +172,9 @@ function eject() {
       const size = ICON_SIZES[0][prop].size;
       sharp(appIconAndroid)
       .resize(size, size)
-      .toFile(path), function(err) {
+      .toFile(path, function(err) {
         if (err) throw err;
-      }
+      }) 
     });
   }
 
