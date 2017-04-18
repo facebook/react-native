@@ -45,12 +45,9 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldCallID,
 };
 
-@interface RCTBatchedBridge ()
-@property (atomic, assign, getter=isBatchActive) BOOL wasBatchActive;
-@end
-
 @implementation RCTBatchedBridge
 {
+  std::atomic_bool _wasBatchActive;
   NSMutableArray<dispatch_block_t> *_pendingCalls;
   NSDictionary<NSString *, RCTModuleData *> *_moduleDataByName;
   NSArray<RCTModuleData *> *_moduleDataByID;
@@ -925,17 +922,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCTAssertJSThread();
 
   if (buffer != nil && buffer != (id)kCFNull) {
-    self.wasBatchActive = YES;
+    _wasBatchActive = YES;
     [self handleBuffer:buffer];
     [self partialBatchDidFlush];
   }
 
   if (batchEnded) {
-    if (self.wasBatchActive) {
+    if (_wasBatchActive) {
       [self batchDidComplete];
     }
 
-    self.wasBatchActive = NO;
+    _wasBatchActive = NO;
   }
 }
 
@@ -1096,6 +1093,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       callback(logData);
     });
   }];
+}
+
+- (BOOL)isBatchActive
+{
+  return _wasBatchActive;
 }
 
 #pragma mark - JavaScriptCore
