@@ -30,7 +30,7 @@ export type File = {|
   type: FileTypes,
 |};
 
-type FileTypes = 'module' | 'script';
+type FileTypes = 'module' | 'script' | 'asset';
 
 export type GraphFn = (
   entryPoints: Iterable<string>,

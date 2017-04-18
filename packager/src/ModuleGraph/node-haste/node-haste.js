@@ -112,7 +112,6 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
         entryPath: '',
         extraNodeModules,
         hasteFS,
-        hasteMap,
         helpers,
         matchFiles: filesByDirNameIndex.match.bind(filesByDirNameIndex),
         moduleCache,

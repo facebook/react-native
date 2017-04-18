@@ -22,7 +22,6 @@ import type {SourceMap} from '../lib/SourceMap';
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
 import type {TransformCode} from '../node-haste/Module';
-import type Cache from '../node-haste/Cache';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 
@@ -32,7 +31,6 @@ type MinifyCode = (filePath: string, code: string, map: SourceMap) =>
 type Options = {|
   +assetExts: Array<string>,
   +blacklistRE?: RegExp,
-  +cache: Cache,
   +extraNodeModules: ?{},
   +getTransformCacheKey: GetTransformCacheKey,
   +globalTransformCache: ?GlobalTransformCache,
@@ -71,7 +69,6 @@ class Resolver {
           (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
       },
       moduleOptions: {
-        cacheTransformResults: true,
         hasteImpl: opts.hasteImpl,
         resetCache: opts.resetCache,
       },
