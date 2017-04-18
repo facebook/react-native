@@ -244,6 +244,7 @@ function createProject(name, options) {
     scripts: {
       start: 'node node_modules/react-native/local-cli/cli.js start',
       ios: 'react-native run-ios',
+      tvos: 'react-native run-tvos',
       android: 'react-native run-android',
     }
   };
