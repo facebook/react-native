@@ -722,6 +722,10 @@ public class ReactInstanceManager {
     UiThreadUtil.assertOnUiThread();
     mAttachedRootViews.add(rootView);
 
+    // Reset view content as it's going to be populated by the application content from JS.
+    rootView.removeAllViews();
+    rootView.setId(View.NO_ID);
+
     // If react context is being created in the background, JS application will be started
     // automatically when creation completes, as root view is part of the attached root view list.
     if (mReactContextInitAsyncTask == null &&
@@ -790,6 +794,12 @@ public class ReactInstanceManager {
 
   @ThreadConfined(UI)
   private void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
+    synchronized (mAttachedRootViews) {
+      for (ReactRootView reactRootView : mAttachedRootViews) {
+        reactRootView.removeAllViews();
+        reactRootView.setId(View.NO_ID);
+      }
+    }
     recreateReactContextInBackground(
         new ProxyJavaScriptExecutor.Factory(jsExecutorFactory),
         JSBundleLoader.createRemoteDebuggerBundleLoader(
@@ -799,6 +809,12 @@ public class ReactInstanceManager {
 
   @ThreadConfined(UI)
   private void onJSBundleLoadedFromServer() {
+    synchronized (mAttachedRootViews) {
+      for (ReactRootView reactRootView : mAttachedRootViews) {
+        reactRootView.removeAllViews();
+        reactRootView.setId(View.NO_ID);
+      }
+    }
     recreateReactContextInBackground(
         new JSCJavaScriptExecutor.Factory(mJSCConfig.getConfigMap()),
         JSBundleLoader.createCachedBundleFromNetworkLoader(
@@ -912,10 +928,6 @@ public class ReactInstanceManager {
       CatalystInstance catalystInstance) {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachMeasuredRootViewToInstance");
     UiThreadUtil.assertOnUiThread();
-
-    // Reset view content as it's going to be populated by the application content from JS
-    rootView.removeAllViews();
-    rootView.setId(View.NO_ID);
 
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
     int rootTag = uiManagerModule.addMeasuredRootView(rootView);
