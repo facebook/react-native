@@ -9,6 +9,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
@@ -37,19 +38,13 @@ public class ModuleHolder {
   private @Nullable NativeModule mModule;
   private boolean mInitializeNeeded;
 
-  public ModuleHolder(
-    String name,
-    boolean canOverrideExistingModule,
-    boolean supportsWebWorkers,
-    boolean needsEagerInit,
-    boolean hasConstants,
-    Provider<? extends NativeModule> provider) {
-    mName = name;
-    mCanOverrideExistingModule = canOverrideExistingModule;
-    mSupportsWebWorkers = supportsWebWorkers;
-    mHasConstants = hasConstants;
+  public ModuleHolder(ReactModuleInfo moduleInfo, Provider<? extends NativeModule> provider) {
+    mName = moduleInfo.name();
+    mCanOverrideExistingModule = moduleInfo.canOverrideExistingModule();
+    mSupportsWebWorkers = moduleInfo.supportsWebWorkers();
+    mHasConstants = moduleInfo.hasConstants();
     mProvider = provider;
-    if (needsEagerInit) {
+    if (moduleInfo.needsEagerInit()) {
       mModule = create();
     }
   }

@@ -48,19 +48,7 @@ public class BaseJavaModuleTest {
 
   @Before
   public void setup() {
-    ModuleHolder moduleHolder = new ModuleHolder("MethodsModule",
-      false,
-      false,
-      false,
-      false,
-      new Provider<MethodsModule>() {
-        MethodsModule mModule;
-        @Override
-        public MethodsModule get() {
-          mModule = new MethodsModule();
-          return mModule;
-        }
-      });
+    ModuleHolder moduleHolder = new ModuleHolder(new MethodsModule());
     mWrapper = new JavaModuleWrapper(null, MethodsModule.class, moduleHolder);
     mMethods = mWrapper.getMethodDescriptors();
     PowerMockito.mockStatic(SoLoader.class);
