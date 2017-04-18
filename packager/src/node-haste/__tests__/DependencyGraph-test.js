@@ -76,7 +76,7 @@ describe('DependencyGraph', function() {
       useWatchman: false,
       ignoreFilePath: () => false,
       maxWorkerCount: 1,
-      moduleOptions: {cacheTransformResults: true},
+      moduleOptions: {},
       resetCache: true,
       transformCode: (module, sourceCode, transformOptions) => {
         return new Promise(resolve => {

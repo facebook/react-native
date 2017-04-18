@@ -69,7 +69,6 @@ class Resolver {
           (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
       },
       moduleOptions: {
-        cacheTransformResults: true,
         hasteImpl: opts.hasteImpl,
         resetCache: opts.resetCache,
       },

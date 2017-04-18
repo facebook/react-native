@@ -61,7 +61,6 @@ export type HasteImpl = {
 };
 
 export type Options = {
-  cacheTransformResults?: boolean,
   hasteImpl?: HasteImpl,
   resetCache?: boolean,
 };
@@ -246,17 +245,8 @@ class Module {
   /**
    * To what we read from the cache or worker, we need to add id and source.
    */
-  _finalizeReadResult(
-    source: string,
-    result: TransformedCode,
-  ): ReadResult {
-    const id = this._getHasteName();
-    if (this._options.cacheTransformResults === false) {
-      const {dependencies} = result;
-      /* $FlowFixMe: this code path is dead, remove. */
-      return {dependencies};
-    }
-    return {...result, id, source};
+  _finalizeReadResult(source: string, result: TransformedCode): ReadResult {
+    return {...result, id: this._getHasteName(), source};
   }
 
   _transformCodeForCallback(
