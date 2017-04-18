@@ -57,7 +57,7 @@ export type GetTransformOptions = (
   mainModuleName: string,
   options: {},
   getDependencies: string => Promise<Array<string>>,
-) => ExtraTransformOptions | Promise<ExtraTransformOptions>;
+) => Promise<ExtraTransformOptions>;
 
 type Asset = {
   __packager_asset: boolean,
@@ -762,13 +762,11 @@ class Bundler {
     const getDependencies = (entryFile: string) =>
       this.getDependencies({...options, entryFile})
         .then(r => r.dependencies.map(d => d.path));
-    const extraOptions = this._getTransformOptions
+
+    const extraOptions: Promise<?ExtraTransformOptions> = this._getTransformOptions
       ? this._getTransformOptions(mainModuleName, options, getDependencies)
-      : null;
-    return Promise.resolve(extraOptions)
-      .then(extraOpts => {
-        return {...options, ...extraOpts};
-      });
+      : Promise.resolve(null);
+    return extraOptions.then(extraOpts => ({...options, ...extraOpts}));
   }
 
   getResolver(): Promise<Resolver> {
