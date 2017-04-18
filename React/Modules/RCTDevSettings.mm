@@ -197,9 +197,9 @@ RCT_EXPORT_METHOD(reload)
   [_bridge reload];
 }
 
-- (void)setIsShakeToShowDevMenuEnabled:(BOOL)isShakeToShowDevMenuEnabled
+RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled:(BOOL)enabled)
 {
-  [self _updateSettingWithValue:@(isShakeToShowDevMenuEnabled) forKey:kRCTDevSettingShakeToShowDevMenu];
+  [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingShakeToShowDevMenu];
 }
 
 - (BOOL)isShakeToShowDevMenuEnabled
