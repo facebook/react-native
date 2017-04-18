@@ -623,12 +623,29 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     return !this.props.horizontal ? metrics.y : metrics.x;
   }
 
+  _maybeCallOnEndReached() {
+    const {data, getItemCount, onEndReached, onEndReachedThreshold} = this.props;
+    const {contentLength, visibleLength, offset} = this._scrollMetrics;
+    const distanceFromEnd = contentLength - visibleLength - offset;
+    if (onEndReached &&
+        this.state.last === getItemCount(data) - 1 &&
+        distanceFromEnd < onEndReachedThreshold * visibleLength &&
+        (this._hasDataChangedSinceEndReached ||
+         this._scrollMetrics.contentLength !== this._sentEndForContentLength)) {
+      // Only call onEndReached once for a given dataset + content length.
+      this._hasDataChangedSinceEndReached = false;
+      this._sentEndForContentLength = this._scrollMetrics.contentLength;
+      onEndReached({distanceFromEnd});
+    }
+  }
+
   _onContentSizeChange = (width: number, height: number) => {
     if (this.props.onContentSizeChange) {
       this.props.onContentSizeChange(width, height);
     }
     this._scrollMetrics.contentLength = this._selectLength({height, width});
     this._updateCellsToRenderBatcher.schedule();
+    this._maybeCallOnEndReached();
   };
 
   _sampleFillRate(sampleType: string) {
@@ -662,7 +679,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const dOffset = offset - this._scrollMetrics.offset;
     const velocity = dOffset / dt;
     this._scrollMetrics = {contentLength, dt, offset, timestamp, velocity, visibleLength};
-    const {data, getItemCount, onEndReached, onEndReachedThreshold, windowSize} = this.props;
+    const {data, getItemCount, windowSize} = this.props;
 
     this._sampleFillRate('onScroll');
 
@@ -670,19 +687,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     if (!data) {
       return;
     }
-    const distanceFromEnd = contentLength - visibleLength - offset;
-    const itemCount = getItemCount(data);
-    if (onEndReached &&
-        this.state.last === itemCount - 1 &&
-        distanceFromEnd < onEndReachedThreshold * visibleLength &&
-        (this._hasDataChangedSinceEndReached ||
-         this._scrollMetrics.contentLength !== this._sentEndForContentLength)) {
-      // Only call onEndReached once for a given dataset + content length.
-      this._hasDataChangedSinceEndReached = false;
-      this._sentEndForContentLength = this._scrollMetrics.contentLength;
-      onEndReached({distanceFromEnd});
-    }
+    this._maybeCallOnEndReached();
+
     const {first, last} = this.state;
+    const itemCount = getItemCount(data);
     if ((first > 0 && velocity < 0) || (last < itemCount - 1 && velocity > 0)) {
       const distanceToContentEdge = Math.min(
         Math.abs(this._getFrameMetricsApprox(first).offset - offset),
