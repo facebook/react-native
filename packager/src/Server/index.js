@@ -329,7 +329,6 @@ class Server {
 
   onFileChange(type: string, filePath: string, stat: Stats) {
     this._assetServer.onFileChange(type, filePath, stat);
-    this._bundler.invalidateFile(filePath);
 
     // If Hot Loading is enabled avoid rebuilding bundles and sending live
     // updates. Instead, send the HMR updates right away and clear the bundles

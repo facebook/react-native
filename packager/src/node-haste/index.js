@@ -11,7 +11,6 @@
 
 'use strict';
 
-const Cache = require('./Cache');
 const DependencyGraphHelpers = require('./DependencyGraph/DependencyGraphHelpers');
 const FilesByDirNameIndex = require('./FilesByDirNameIndex');
 const JestHasteMap = require('jest-haste-map');
@@ -52,7 +51,6 @@ import type {HasteFS} from './types';
 type Options = {|
   +assetDependencies: Array<string>,
   +assetExts: Array<string>,
-  +cache: Cache,
   +extensions: Array<string>,
   +extraNodeModules: ?{},
   +forceNodeFilesystemAPI: boolean,
@@ -164,7 +162,6 @@ class DependencyGraph extends EventEmitter {
   _createModuleCache() {
     const {_opts} = this;
     return new ModuleCache({
-      cache: _opts.cache,
       getTransformCacheKey: _opts.getTransformCacheKey,
       globalTransformCache: _opts.globalTransformCache,
       transformCode: _opts.transformCode,
@@ -290,7 +287,6 @@ class DependencyGraph extends EventEmitter {
     return this._moduleCache.createPolyfill(options);
   }
 
-  static Cache;
   static Module;
   static Polyfill;
   static getAssetDataFromName;
@@ -301,7 +297,6 @@ class DependencyGraph extends EventEmitter {
 }
 
 Object.assign(DependencyGraph, {
-  Cache,
   Module,
   Polyfill,
   getAssetDataFromName,

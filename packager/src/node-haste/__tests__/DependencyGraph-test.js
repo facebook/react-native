@@ -63,46 +63,8 @@ describe('DependencyGraph', function() {
     Module = require('../Module');
     ResolutionRequest = require('../DependencyGraph/ResolutionRequest');
 
-    const Cache = jest.genMockFn().mockImplementation(function() {
-      this._maps = Object.create(null);
-    });
-    Cache.prototype.has = jest.genMockFn()
-      .mockImplementation(function(filepath, field) {
-        if (!(filepath in this._maps)) {
-          return false;
-        }
-        return !field || field in this._maps[filepath];
-      });
-    Cache.prototype.get = jest.genMockFn()
-      .mockImplementation(function(filepath, field, factory) {
-        let cacheForPath  = this._maps[filepath];
-        if (this.has(filepath, field)) {
-          return field ? cacheForPath[field] : cacheForPath;
-        }
-
-        if (!cacheForPath) {
-          cacheForPath = this._maps[filepath] = Object.create(null);
-        }
-        const value = cacheForPath[field] = factory();
-        return value;
-      });
-    Cache.prototype.invalidate = jest.genMockFn()
-      .mockImplementation(function(filepath, field) {
-        if (!this.has(filepath, field)) {
-          return;
-        }
-
-        if (field) {
-          delete this._maps[filepath][field];
-        } else {
-          delete this._maps[filepath];
-        }
-      });
-    Cache.prototype.end = jest.genMockFn();
-
     defaults = {
       assetExts: ['png', 'jpg'],
-      cache: new Cache(),
       extensions: ['js', 'json'],
       forceNodeFilesystemAPI: true,
       providesModuleNodeModules: [
@@ -4970,7 +4932,7 @@ describe('DependencyGraph', function() {
           },
           {
             dependencies: [],
-            id: 'aPackage/main.js',
+            id: 'bPackage/main.js',
             isAsset: false,
             isJSON: false,
             isPolyfill: false,

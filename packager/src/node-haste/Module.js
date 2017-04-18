@@ -28,7 +28,6 @@ import type {SourceMap} from '../lib/SourceMap';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {ReadTransformProps} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
-import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
 
@@ -68,7 +67,6 @@ export type Options = {
 };
 
 export type ConstructorArgs = {
-  cache: Cache,
   depGraphHelpers: DependencyGraphHelpers,
   globalTransformCache: ?GlobalTransformCache,
   file: string,
@@ -87,7 +85,6 @@ class Module {
   type: string;
 
   _moduleCache: ModuleCache;
-  _cache: Cache;
   _transformCode: ?TransformCode;
   _getTransformCacheKey: GetTransformCacheKey;
   _depGraphHelpers: DependencyGraphHelpers;
@@ -103,7 +100,6 @@ class Module {
   _readResultsByOptionsKey: Map<string, CachedReadResult>;
 
   constructor({
-    cache,
     depGraphHelpers,
     file,
     getTransformCacheKey,
@@ -121,7 +117,6 @@ class Module {
     this.type = 'Module';
 
     this._moduleCache = moduleCache;
-    this._cache = cache;
     this._transformCode = transformCode;
     this._getTransformCacheKey = getTransformCacheKey;
     this._depGraphHelpers = depGraphHelpers;
@@ -134,11 +129,7 @@ class Module {
   }
 
   isHaste(): Promise<boolean> {
-    return this._cache.get(
-      this.path,
-      'isHaste',
-      () => Promise.resolve().then(() => this._getHasteName() != null),
-    );
+    return Promise.resolve().then(() => this._getHasteName() != null);
   }
 
   getCode(transformOptions: TransformOptions) {
@@ -150,32 +141,28 @@ class Module {
   }
 
   getName(): Promise<string> {
-    return this._cache.get(
-      this.path,
-      'name',
-      () => Promise.resolve().then(() => {
-        const name = this._getHasteName();
-        if (name != null) {
-          return name;
-        }
+    return Promise.resolve().then(() => {
+      const name = this._getHasteName();
+      if (name != null) {
+        return name;
+      }
 
-        const p = this.getPackage();
+      const p = this.getPackage();
 
-        if (!p) {
-          // Name is full path
-          return this.path;
-        }
+      if (!p) {
+        // Name is full path
+        return this.path;
+      }
 
-        return p.getName()
-          .then(packageName => {
-            if (!packageName) {
-              return this.path;
-            }
+      return p.getName()
+        .then(packageName => {
+          if (!packageName) {
+            return this.path;
+          }
 
-            return joinPath(packageName, relativePath(p.root, this.path)).replace(/\\/g, '/');
-          });
-      })
-    );
+          return joinPath(packageName, relativePath(p.root, this.path)).replace(/\\/g, '/');
+        });
+    });
   }
 
   getPackage() {
@@ -192,7 +179,6 @@ class Module {
    * code.
    */
   invalidate() {
-    this._cache.invalidate(this.path);
     this._readPromises.clear();
     this._readResultsByOptionsKey.clear();
     this._sourceCode = null;

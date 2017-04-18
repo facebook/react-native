@@ -15,8 +15,6 @@ const fs = require('fs');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
 
-import type Cache from './Cache';
-
 type PackageContent = {
   name: string,
   'react-native': mixed,
@@ -29,18 +27,15 @@ class Package {
   path: string;
   root: string;
   type: string;
-  _cache: Cache;
 
   _content: ?PackageContent;
 
-  constructor({file, cache}: {
+  constructor({file}: {
     file: string,
-    cache: Cache,
   }) {
     this.path = path.resolve(file);
     this.root = path.dirname(this.path);
     this.type = 'Package';
-    this._cache = cache;
     this._content = null;
   }
 
@@ -65,20 +60,16 @@ class Package {
     return path.join(this.root, main);
   }
 
-  isHaste() {
-    return this._cache.get(this.path, 'package-haste', () =>
-      Promise.resolve().then(() => !!this.read().name)
-    );
+  isHaste(): Promise<boolean> {
+    return Promise.resolve().then(() => !!this.read().name);
   }
 
   getName(): Promise<string> {
-    return this._cache.get(this.path, 'package-name', () =>
-      Promise.resolve().then(() => this.read().name)
-    );
+    return Promise.resolve().then(() => this.read().name);
   }
 
   invalidate() {
-    this._cache.invalidate(this.path);
+    this._content = null;
   }
 
   redirectRequire(name: string): string | false {
