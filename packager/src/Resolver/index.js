@@ -29,25 +29,25 @@ import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 type MinifyCode = (filePath: string, code: string, map: SourceMap) =>
   Promise<{code: string, map: SourceMap}>;
 
-type Options = {
-  assetExts: Array<string>,
-  blacklistRE?: RegExp,
-  cache: Cache,
-  extraNodeModules: ?{},
-  getTransformCacheKey: GetTransformCacheKey,
-  globalTransformCache: ?GlobalTransformCache,
-  hasteImpl?: HasteImpl,
-  maxWorkerCount: number,
-  minifyCode: MinifyCode,
-  platforms: Set<string>,
-  polyfillModuleNames?: Array<string>,
-  projectRoots: Array<string>,
-  providesModuleNodeModules: Array<string>,
-  reporter: Reporter,
-  resetCache: boolean,
-  transformCode: TransformCode,
-  watch: boolean,
-};
+type Options = {|
+  +assetExts: Array<string>,
+  +blacklistRE?: RegExp,
+  +cache: Cache,
+  +extraNodeModules: ?{},
+  +getTransformCacheKey: GetTransformCacheKey,
+  +globalTransformCache: ?GlobalTransformCache,
+  +hasteImpl?: HasteImpl,
+  +maxWorkerCount: number,
+  +minifyCode: MinifyCode,
+  +platforms: Set<string>,
+  +polyfillModuleNames?: Array<string>,
+  +projectRoots: Array<string>,
+  +providesModuleNodeModules: Array<string>,
+  +reporter: Reporter,
+  +resetCache: boolean,
+  +transformCode: TransformCode,
+  +watch: boolean,
+|};
 
 class Resolver {
 
@@ -70,7 +70,6 @@ class Resolver {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
       },
-      maxWorkers: null,
       moduleOptions: {
         cacheTransformResults: true,
         hasteImpl: opts.hasteImpl,

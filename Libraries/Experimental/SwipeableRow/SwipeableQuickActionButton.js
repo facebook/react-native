@@ -13,13 +13,12 @@
 
 const Image = require('Image');
 const React = require('React');
+const PropTypes = require('prop-types');
 const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight');
 const View = require('View');
 
 const ViewPropTypes = require('ViewPropTypes');
-
-const {PropTypes} = React;
 
 import type {ImageSource} from 'ImageSource';
 

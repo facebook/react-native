@@ -29,7 +29,15 @@ import type {ViewabilityConfig, ViewToken} from 'ViewabilityHelper';
 
 type Item = any;
 
-type renderItemType = (info: {item: Item, index: number}) => ?React.Element<any>;
+type renderItemType = (info: {
+  item: Item,
+  index: number,
+  separators: {
+    highlight: () => void,
+    unhighlight: () => void,
+    updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+  },
+}) => ?React.Element<any>;
 
 type RequiredProps = {
   renderItem: renderItemType,
@@ -290,13 +298,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     windowSize: 21, // multiples of length
   };
 
-  state: State = {
-    first: 0,
-    last: this.props.initialNumToRender,
-  };
+  state: State;
 
-  constructor(props: Props) {
-    super(props);
+  constructor(props: Props, context: Object) {
+    super(props, context);
     invariant(
       !props.onScroll || !props.onScroll.__isNative,
       'Components based on VirtualizedList must be wrapped with Animated.createAnimatedComponent ' +
@@ -345,6 +350,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const {ItemSeparatorComponent, data, getItem, getItemCount, keyExtractor} = this.props;
     const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
     const end = getItemCount(data) - 1;
+    let prevCellKey;
     last = Math.min(end, last);
     for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
@@ -356,19 +362,28 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       cells.push(
         <CellRenderer
           cellKey={key}
+          ItemSeparatorComponent={ii < end ? ItemSeparatorComponent : undefined}
           index={ii}
           item={item}
           key={key}
+          prevCellKey={prevCellKey}
+          onUpdateSeparators={this._onUpdateSeparators}
           onLayout={(e) => this._onCellLayout(e, key, ii)}
           onUnmount={this._onCellUnmount}
           parentProps={this.props}
+          ref={(ref) => {this._cellRefs[key] = ref;}}
         />
       );
-      if (ItemSeparatorComponent && ii < end) {
-        cells.push(<ItemSeparatorComponent key={'sep' + key}/>);
-      }
+      prevCellKey = key;
     }
   }
+
+  _onUpdateSeparators = (keys: Array<?string>, newProps: Object) => {
+    keys.forEach((key) => {
+      const ref = key != null && this._cellRefs[key];
+      ref && ref.updateSeparatorProps(newProps);
+    });
+  };
 
   render() {
     const {ListFooterComponent, ListHeaderComponent} = this.props;
@@ -487,6 +502,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   _averageCellLength = 0;
+  _cellRefs = {};
   _hasDataChangedSinceEndReached = true;
   _hasWarned = {};
   _highestMeasuredFrameIndex = 0;
@@ -776,34 +792,70 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
 
 class CellRenderer extends React.Component {
   props: {
+    ItemSeparatorComponent: ?ReactClass<*>,
     cellKey: string,
     index: number,
     item: Item,
     onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
     onUnmount: (cellKey: string) => void,
+    onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
     parentProps: {
-      renderItem: renderItemType,
       getItemLayout?: ?Function,
+      renderItem: renderItemType,
+    },
+    prevCellKey: ?string,
+  };
+
+  state = {
+    separatorProps: {
+      highlighted: false,
+      leadingItem: this.props.item,
     },
   };
+
+  // TODO: consider factoring separator stuff out of VirtualizedList into FlatList since it's not
+  // reused by SectionList and we can keep VirtualizedList simpler.
+  _separators = {
+    highlight: () => {
+      const {cellKey, prevCellKey} = this.props;
+      this.props.onUpdateSeparators([cellKey, prevCellKey], {highlighted: true});
+    },
+    unhighlight: () => {
+      const {cellKey, prevCellKey} = this.props;
+      this.props.onUpdateSeparators([cellKey, prevCellKey], {highlighted: false});
+    },
+    updateProps: (select: 'leading' | 'trailing', newProps: Object) => {
+      const {cellKey, prevCellKey} = this.props;
+      this.props.onUpdateSeparators([select === 'leading' ? cellKey : prevCellKey], newProps);
+    },
+  };
+
+  updateSeparatorProps(newProps: Object) {
+    this.setState(state => ({separatorProps: {...state.separatorProps, ...newProps}}));
+  }
+
   componentWillUnmount() {
     this.props.onUnmount(this.props.cellKey);
   }
+
   render() {
-    const {item, index, parentProps} = this.props;
+    const {ItemSeparatorComponent, item, index, parentProps} = this.props;
     const {renderItem, getItemLayout} = parentProps;
     invariant(renderItem, 'no renderItem!');
-    const element = renderItem({item, index});
-    if (getItemLayout &&
-        !parentProps.debug &&
-        !FillRateHelper.enabled()) {
-      return element;
-    }
+    const element = renderItem({
+      item,
+      index,
+      separators: this._separators,
+    });
+    const onLayout = (getItemLayout && !parentProps.debug && !FillRateHelper.enabled())
+      ? undefined
+      : this.props.onLayout;
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
     // called explicitly by `ScrollViewStickyHeader`.
     return (
-      <View onLayout={this.props.onLayout}>
+      <View onLayout={onLayout}>
         {element}
+        {ItemSeparatorComponent && <ItemSeparatorComponent {...this.state.separatorProps} />}
       </View>
     );
   }
