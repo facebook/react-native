@@ -48,6 +48,11 @@ function transformModule(
     return;
   }
 
+  if (options.filename.endsWith('.png')) {
+    transformAsset(code, options, callback);
+    return;
+  }
+
   const {filename, transformer, variants = defaultVariants} = options;
   const tasks = {};
   Object.keys(variants).forEach(name => {
@@ -114,7 +119,7 @@ function transformJSON(json, options, callback) {
     file: filename,
     hasteID: value.name,
     transformed,
-    type: 'module',
+    type: 'asset',
   };
 
   if (basename(filename) === 'package.json') {
@@ -126,6 +131,16 @@ function transformJSON(json, options, callback) {
     };
   }
   callback(null, result);
+}
+
+function transformAsset(data, options, callback) {
+  callback(null, {
+    code: data,
+    file: options.filename,
+    hasteID: null,
+    transformed: {},
+    type: 'module',
+  });
 }
 
 function makeResult(ast, filename, sourceCode, isPolyfill = false) {
