@@ -210,7 +210,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       if (error && [self.delegate respondsToSelector:@selector(fallbackSourceURLForBridge:)]) {
         NSURL *fallbackURL = [self.delegate fallbackSourceURLForBridge:self->_parentBridge];
         if (fallbackURL && ![fallbackURL isEqual:self.bundleURL]) {
-          RCTLogError(@"Failed to load bundle(%@) with error:(%@)", self.bundleURL, error.localizedDescription);
+          RCTLogError(@"Failed to load bundle(%@) with error:(%@ %@)", self.bundleURL, error.localizedDescription, error.localizedFailureReason);
           self.bundleURL = fallbackURL;
           [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:onSourceLoad];
           return;
@@ -513,7 +513,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     }
 
     if (loadError) {
-      RCTLogWarn(@"Failed to execute source code: %@", [loadError localizedDescription]);
+      RCTLogWarn(@"Failed to execute source code: %@ %@", [loadError localizedDescription], [loadError localizedFailureReason]);
       dispatch_async(dispatch_get_main_queue(), ^{
         [self stopLoadingWithError:loadError];
       });
