@@ -436,7 +436,7 @@ const ScrollView = React.createClass({
    *
    * Example:
    *
-   * `scrollTo({x: 0; y: 0; animated: true})`
+   * `scrollTo({x: 0, y: 0, animated: true})`
    *
    * Note: The weird function signature is due to the fact that, for historical reasons,
    * the function also accepts separate arguments as an alternative to the options object.
