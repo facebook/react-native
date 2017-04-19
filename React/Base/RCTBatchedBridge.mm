@@ -47,7 +47,7 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 
 @implementation RCTBatchedBridge
 {
-  BOOL _wasBatchActive;
+  std::atomic_bool _wasBatchActive;
   NSMutableArray<dispatch_block_t> *_pendingCalls;
   NSDictionary<NSString *, RCTModuleData *> *_moduleDataByName;
   NSArray<RCTModuleData *> *_moduleDataByID;
