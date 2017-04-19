@@ -10,7 +10,6 @@
 #import "RCTTestRunner.h"
 
 #import <React/RCTAssert.h>
-#import <React/RCTBridge+Private.h>
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
