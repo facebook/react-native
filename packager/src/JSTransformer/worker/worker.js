@@ -18,7 +18,7 @@ const invariant = require('fbjs/lib/invariant');
 const minify = require('./minify');
 
 import type {LogEntry} from '../../Logger/Types';
-import type {Ast, SourceMap, TransformOptions as BabelTransformOptions} from 'babel-core';
+import type {Ast, SourceMap} from 'babel-core';
 
 export type TransformedCode = {
   code: string,
@@ -35,23 +35,23 @@ type Transformer = {
   ) => {ast: ?Ast, code: string, map: ?SourceMap}
 };
 
-export type TransformOptions = {
+export type TransformOptions = {|
   +dev: boolean,
   +generateSourceMaps: boolean,
   +hot: boolean,
   +inlineRequires: {+blacklist: {[string]: true}} | boolean,
   +platform: string,
-  +preloadedModules?: Array<string> | false,
+  +preloadedModules: ?Array<string> | false,
   +projectRoots: Array<string>,
-  +ramGroups?: Array<string>,
-} & BabelTransformOptions;
+  +ramGroups: ?Array<string>,
+|};
 
-export type Options = {
+export type Options = {|
   +dev: boolean,
   +minify: boolean,
   +platform: string,
   +transform: TransformOptions,
-};
+|};
 
 export type Data = {
   result: TransformedCode,
