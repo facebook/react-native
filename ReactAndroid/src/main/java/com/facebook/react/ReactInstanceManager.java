@@ -22,9 +22,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Process;
 import android.view.View;
 
 import com.facebook.common.logging.FLog;
@@ -130,7 +128,6 @@ public class ReactInstanceManager {
 
   private volatile LifecycleState mLifecycleState;
   private @Nullable @ThreadConfined(UI) ReactContextInitParams mPendingReactContextInitParams;
-  private @Nullable @ThreadConfined(UI) ReactContextInitAsyncTask mReactContextInitAsyncTask;
   private @Nullable @ThreadConfined(UI) Thread mCreateReactContextThread;
 
   /* accessed from any thread */
@@ -153,7 +150,7 @@ public class ReactInstanceManager {
   private final JSCConfig mJSCConfig;
   private final boolean mLazyNativeModulesEnabled;
   private final boolean mLazyViewManagersEnabled;
-  private final boolean mUseStartupThread;
+  private final boolean mSetupReactContextInBackgroundEnabled;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -202,105 +199,6 @@ public class ReactInstanceManager {
     }
   }
 
-  /*
-   * Task class responsible for (re)creating react context in the background. These tasks can only
-   * be executing one at time, see {@link #recreateReactContextInBackground()}.
-   */
-  private final class ReactContextInitAsyncTask extends
-    AsyncTask<ReactContextInitParams, Void, Result<ReactApplicationContext>> {
-    @Override
-    protected void onPreExecute() {
-      if (mCurrentReactContext != null) {
-        tearDownReactContext(mCurrentReactContext);
-        mCurrentReactContext = null;
-      }
-    }
-
-    @Override
-    protected Result<ReactApplicationContext> doInBackground(ReactContextInitParams... params) {
-      // TODO(t11687218): Look over all threading
-      // Default priority is Process.THREAD_PRIORITY_BACKGROUND which means we'll be put in a cgroup
-      // that only has access to a small fraction of CPU time. The priority will be reset after
-      // this task finishes: https://android.googlesource.com/platform/frameworks/base/+/d630f105e8bc0021541aacb4dc6498a49048ecea/core/java/android/os/AsyncTask.java#256
-      Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
-
-      Assertions.assertCondition(params != null && params.length > 0 && params[0] != null);
-      try {
-        JavaScriptExecutor jsExecutor = params[0].getJsExecutorFactory().create();
-        ReactApplicationContext reactApplicationContext =
-          createReactContext(jsExecutor, params[0].getJsBundleLoader());
-        ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_START);
-        return Result.of(reactApplicationContext);
-      } catch (Exception e) {
-        // Pass exception to onPostExecute() so it can be handled on the main thread
-        return Result.of(e);
-      }
-    }
-
-    @Override
-    protected void onPostExecute(Result<ReactApplicationContext> result) {
-      try {
-        setupReactContext(result.get());
-      } catch (Exception e) {
-        mDevSupportManager.handleException(e);
-      } finally {
-        mReactContextInitAsyncTask = null;
-      }
-
-      // Handle enqueued request to re-initialize react context.
-      if (mPendingReactContextInitParams != null) {
-        recreateReactContextInBackground(
-          mPendingReactContextInitParams.getJsExecutorFactory(),
-          mPendingReactContextInitParams.getJsBundleLoader());
-        mPendingReactContextInitParams = null;
-      }
-    }
-
-    @Override
-    protected void onCancelled(Result<ReactApplicationContext> reactApplicationContextResult) {
-      try {
-        mMemoryPressureRouter.destroy(reactApplicationContextResult.get());
-      } catch (Exception e) {
-        FLog.w(ReactConstants.TAG, "Caught exception after cancelling react context init", e);
-      } finally {
-        mReactContextInitAsyncTask = null;
-      }
-    }
-  }
-
-  private static class Result<T> {
-    @Nullable private final T mResult;
-    @Nullable private final Exception mException;
-
-    public static <T, U extends T> Result<T> of(U result) {
-      return new Result<T>(result);
-    }
-
-    public static <T> Result<T> of(Exception exception) {
-      return new Result<>(exception);
-    }
-
-    private Result(T result) {
-      mException = null;
-      mResult = result;
-    }
-
-    private Result(Exception exception) {
-      mException = exception;
-      mResult = null;
-    }
-
-    public T get() throws Exception {
-      if (mException != null) {
-        throw mException;
-      }
-
-      Assertions.assertNotNull(mResult);
-
-      return mResult;
-    }
-  }
-
   /**
    * Creates a builder that is capable of creating an instance of {@link ReactInstanceManager}.
    */
@@ -324,7 +222,7 @@ public class ReactInstanceManager {
     @Nullable RedBoxHandler redBoxHandler,
     boolean lazyNativeModulesEnabled,
     boolean lazyViewManagersEnabled,
-    boolean useStartupThread) {
+    boolean setupReactContextInBackgroundEnabled) {
 
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -353,7 +251,7 @@ public class ReactInstanceManager {
     mJSCConfig = jscConfig;
     mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
     mLazyViewManagersEnabled = lazyViewManagersEnabled;
-    mUseStartupThread = useStartupThread;
+    mSetupReactContextInBackgroundEnabled = setupReactContextInBackgroundEnabled;
 
     // Instantiate ReactChoreographer in UI thread.
     ReactChoreographer.initialize();
@@ -632,10 +530,6 @@ public class ReactInstanceManager {
 
     moveToBeforeCreateLifecycleState();
 
-    if (mReactContextInitAsyncTask != null) {
-      mReactContextInitAsyncTask.cancel(true);
-    }
-
     if (mCreateReactContextThread != null) {
       mCreateReactContextThread.interrupt();
       mCreateReactContextThread = null;
@@ -728,9 +622,7 @@ public class ReactInstanceManager {
 
     // If react context is being created in the background, JS application will be started
     // automatically when creation completes, as root view is part of the attached root view list.
-    if (mReactContextInitAsyncTask == null &&
-      mCreateReactContextThread == null &&
-      mCurrentReactContext != null) {
+    if (mCreateReactContextThread == null && mCurrentReactContext != null) {
       attachMeasuredRootViewToInstance(rootView, mCurrentReactContext.getCatalystInstance());
     }
   }
@@ -824,29 +716,17 @@ public class ReactInstanceManager {
 
   @ThreadConfined(UI)
   private void recreateReactContextInBackground(
-      JavaScriptExecutor.Factory jsExecutorFactory,
-      JSBundleLoader jsBundleLoader) {
+    JavaScriptExecutor.Factory jsExecutorFactory,
+    JSBundleLoader jsBundleLoader) {
     UiThreadUtil.assertOnUiThread();
 
     final ReactContextInitParams initParams = new ReactContextInitParams(
       jsExecutorFactory,
       jsBundleLoader);
-    if (mUseStartupThread) {
-      if (mCreateReactContextThread == null) {
-        runCreateReactContextOnNewThread(initParams);
-      } else {
-        mPendingReactContextInitParams = initParams;
-      }
+    if (mCreateReactContextThread == null) {
+      runCreateReactContextOnNewThread(initParams);
     } else {
-      if (mReactContextInitAsyncTask == null) {
-        // No background task to create react context is currently running, create and execute one.
-        mReactContextInitAsyncTask = new ReactContextInitAsyncTask();
-        mReactContextInitAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, initParams);
-      } else {
-        // Background task is currently running, queue up most recent init params to recreate
-        // context once task completes.
-        mPendingReactContextInitParams = initParams;
-      }
+      mPendingReactContextInitParams = initParams;
     }
   }
 
