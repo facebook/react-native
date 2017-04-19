@@ -142,11 +142,6 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(handleRemoteNotificationReceived:)
                                                name:RCTRemoteNotificationReceived
                                              object:nil];
-  [self startObservingRegistrationNotifications];
-}
-
-- (void)startObservingRegistrationNotifications
-{
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleRegisterUserNotificationSettings:)
                                                name:RCTRegisterUserNotificationSettings
@@ -281,6 +276,8 @@ RCT_EXPORT_MODULE()
   };
 
   _requestPermissionsResolveBlock(notificationTypes);
+  // Clean up listener added in requestPermissions
+  [self removeListeners:1];
   _requestPermissionsResolveBlock = nil;
 }
 
@@ -324,7 +321,8 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions
     return;
   }
 
-  [self startObservingRegistrationNotifications];
+  // Add a listener to make sure that startObserving has been called
+  [self addListener:@"remoteNotificationsRegistered"];
   _requestPermissionsResolveBlock = resolve;
 
   UIUserNotificationType types = UIUserNotificationTypeNone;

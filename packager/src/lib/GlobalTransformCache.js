@@ -18,6 +18,7 @@ const crypto = require('crypto');
 const fetch = require('node-fetch');
 const jsonStableStringify = require('json-stable-stringify');
 const path = require('path');
+const throat = require('throat');
 
 import type {
   Options as TransformWorkerOptions,
@@ -260,7 +261,7 @@ class URIBasedGlobalTransformCache {
    * a second time if we expect them to be transient. We might even consider
    * waiting a little time before retring if experience shows it's useful.
    */
-  static fetchResultFromURI(uri: string): Promise<CachedResult> {
+  static _fetchResultFromURIWithRetry(uri: string): Promise<CachedResult> {
     return URIBasedGlobalTransformCache._fetchResultFromURI(uri).catch(error => {
       if (!URIBasedGlobalTransformCache.shouldRetryAfterThatError(error)) {
         throw error;
@@ -268,6 +269,12 @@ class URIBasedGlobalTransformCache {
       return this._fetchResultFromURI(uri);
     });
   }
+
+  /**
+   * The exposed version uses throat() to limit concurrency, as making too many parallel requests
+   * is more likely to trigger server-side throttling and cause timeouts.
+   */
+  static fetchResultFromURI: (uri: string) => Promise<CachedResult>;
 
   /**
    * We want to retry timeouts as they're likely temporary. We retry 503
@@ -310,6 +317,9 @@ class URIBasedGlobalTransformCache {
   }
 
 }
+
+URIBasedGlobalTransformCache.fetchResultFromURI =
+  throat(500, URIBasedGlobalTransformCache._fetchResultFromURIWithRetry);
 
 class OptionsHasher {
   _rootPath: string;

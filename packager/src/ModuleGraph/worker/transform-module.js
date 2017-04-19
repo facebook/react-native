@@ -119,7 +119,7 @@ function transformJSON(json, options, callback) {
     file: filename,
     hasteID: value.name,
     transformed,
-    type: 'asset',
+    type: 'module',
   };
 
   if (basename(filename) === 'package.json') {
@@ -139,7 +139,7 @@ function transformAsset(data, options, callback) {
     file: options.filename,
     hasteID: null,
     transformed: {},
-    type: 'module',
+    type: 'asset',
   });
 }
 
