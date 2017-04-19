@@ -751,22 +751,31 @@ class Bundler {
 
   getTransformOptions(
     mainModuleName: string,
-    options: {
-      dev?: boolean,
-      generateSourceMaps?: boolean,
-      hot?: boolean,
+    options: {|
+      dev: boolean,
+      generateSourceMaps: boolean,
+      hot: boolean,
       platform: string,
       projectRoots: Array<string>,
-    },
+    |},
   ): Promise<TransformOptions> {
     const getDependencies = (entryFile: string) =>
       this.getDependencies({...options, entryFile})
         .then(r => r.dependencies.map(d => d.path));
 
-    const extraOptions: Promise<?ExtraTransformOptions> = this._getTransformOptions
+    const extraOptions: Promise<ExtraTransformOptions> = this._getTransformOptions
       ? this._getTransformOptions(mainModuleName, options, getDependencies)
-      : Promise.resolve(null);
-    return extraOptions.then(extraOpts => ({...options, ...extraOpts}));
+      : Promise.resolve({});
+    return extraOptions.then(extraOpts => ({
+      dev: options.dev,
+      generateSourceMaps: options.generateSourceMaps,
+      hot: options.hot,
+      inlineRequires: extraOpts.inlineRequires || false,
+      platform: options.platform,
+      preloadedModules: extraOpts.preloadedModules,
+      projectRoots: options.projectRoots,
+      ramGroups: extraOpts.ramGroups,
+    }));
   }
 
   getResolver(): Promise<Resolver> {
