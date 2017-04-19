@@ -199,5 +199,14 @@
     "infoLink": "https://eng.uber.com/ubereats-react-native/",
     "infoTitle": "Powering UberEATS with React Native and Uber Engineering",
     "pinned": false
+  },
+  {
+    "name": "Yeti Smart Home",
+    "icon": "https://res.cloudinary.com/netbeast/image/upload/v1484303676/Android_192_loykto.png",
+    "linkAppStore": "http://m.onelink.me/4f57799e",
+    "linkPlayStore": "http://m.onelink.me/541e9dc0",
+    "infoLink": "https://medium.com/@jesusdario/developing-beyond-the-screen-9af812b96724#.ozx0xy4lv",
+    "infoTitle": "How React Native is helping us to reinvent the wheel",
+    "pinned": false
   }
 ]
