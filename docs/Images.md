@@ -95,6 +95,22 @@ Many of the images you will display in your app will not be available at compile
 <Image source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}} />
 ```
 
+### Network Requests for Images
+  
+  If you would like to set such things as the HTTP-Verb, Headers or a Body along with the image request, you may do this by defining these properties on the source object:
+  
+  ```javascript
+  <Image source={{
+      uri: 'https://facebook.github.io/react/img/logo_og.png',
+      method: 'POST',
+      headers: {
+        Pragma: 'no-cache'
+      },
+      body: 'Your Body goes here'
+    }}
+    style={{width: 400, height: 400}} />
+  ```
+
 ### Cache Control (iOS Only)
 
 In some cases you might only want to display an image if it is already in the local cache, i.e. a low resolution placeholder until a higher resolution is available. In other cases you do not care if the image is outdated and are willing to display an outdated image to save bandwidth. The `cache` source property gives you control over how the network layer interacts with the cache.
