@@ -45,10 +45,6 @@ folly::Optional<Object> JSCNativeModules::createModule(const std::string& name, 
     auto global = Object::getGlobalObject(context);
     m_genNativeModuleJS = global.getProperty("__fbGenNativeModule").asObject();
     m_genNativeModuleJS->makeProtected();
-
-    // Initialize the module name list, otherwise getModuleConfig won't work
-    // TODO (pieterdb): fix this in ModuleRegistry
-    m_moduleRegistry->moduleNames();
   }
 
   auto result = m_moduleRegistry->getConfig(name);

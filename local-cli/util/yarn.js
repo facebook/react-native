@@ -21,11 +21,9 @@ function getYarnVersionIfAvailable() {
   let yarnVersion;
   try {
     // execSync returns a Buffer -> convert to string
-    if (process.platform.startsWith('win')) {
-      yarnVersion = (execSync('yarn --version').toString() || '').trim();
-    } else {
-      yarnVersion = (execSync('yarn --version 2>/dev/null').toString() || '').trim();
-    }
+    yarnVersion = (execSync('yarn --version', {
+      stdio: [ 0, 'pipe', 'ignore', ]
+    }).toString() || '').trim();
   } catch (error) {
     return null;
   }

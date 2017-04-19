@@ -22,6 +22,7 @@ import type {
 } from '../types.flow';
 
 const DependencyGraphHelpers = require('../../node-haste/DependencyGraph/DependencyGraphHelpers');
+const FilesByDirNameIndex = require('../../node-haste/FilesByDirNameIndex');
 const HasteFS = require('./HasteFS');
 const HasteMap = require('../../node-haste/DependencyGraph/HasteMap');
 const Module = require('./Module');
@@ -55,6 +56,16 @@ function getFakeModuleMap(hasteMap: HasteMap) {
     },
   };
 }
+
+const nullModule = {
+  path: '/',
+  getPackage() {},
+  hash() {
+    throw new Error('not implemented');
+  },
+  readCached() { throw new Error('not implemented'); },
+  readFresh() { return Promise.reject(new Error('not implemented')); },
+};
 
 exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
   const {
@@ -92,6 +103,7 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
 
   const hasteMapBuilt = hasteMap.build();
   const resolutionRequests = {};
+  const filesByDirNameIndex = new FilesByDirNameIndex(hasteMap.getAllFiles());
   return (id, source, platform, _, callback) => {
     let resolutionRequest = resolutionRequests[platform];
     if (!resolutionRequest) {
@@ -100,8 +112,8 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
         entryPath: '',
         extraNodeModules,
         hasteFS,
-        hasteMap,
         helpers,
+        matchFiles: filesByDirNameIndex.match.bind(filesByDirNameIndex),
         moduleCache,
         moduleMap: getFakeModuleMap(hasteMap),
         platform,
@@ -110,7 +122,9 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
       });
     }
 
-    const from = new Module(source, moduleCache, getTransformedFile(source));
+    const from = source != null
+      ? new Module(source, moduleCache, getTransformedFile(source))
+      : nullModule;
     hasteMapBuilt
       .then(() => resolutionRequest.resolveDependency(from, id))
       .then(

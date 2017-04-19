@@ -100,6 +100,8 @@ public class ReactAppTestActivity extends FragmentActivity implements
     if (mReactInstanceManager != null) {
       mReactInstanceManager.destroy();
     }
+
+    mScreenshotingFrameLayout.clean();
   }
 
   public void waitForDestroy(long timeoutMs) throws InterruptedException {
@@ -129,6 +131,7 @@ public class ReactAppTestActivity extends FragmentActivity implements
     }
     mReactRootView = new ReactRootView(this);
     mScreenshotingFrameLayout.removeAllViews();
+    mScreenshotingFrameLayout.clean();
     mScreenshotingFrameLayout.addView(mReactRootView);
   }
 

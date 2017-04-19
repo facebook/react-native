@@ -142,6 +142,15 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(handleRemoteNotificationReceived:)
                                                name:RCTRemoteNotificationReceived
                                              object:nil];
+  [self startObservingRegistrationNotifications];
+}
+
+- (void)startObservingRegistrationNotifications
+{
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleRegisterUserNotificationSettings:)
+                                               name:RCTRegisterUserNotificationSettings
+                                             object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleRemoteNotificationsRegistered:)
                                                name:RCTRemoteNotificationsRegistered
@@ -149,10 +158,6 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleRemoteNotificationRegistrationError:)
                                                name:RCTErrorRemoteNotificationRegistrationFailed
-                                             object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(handleRegisterUserNotificationSettings:)
-                                               name:RCTRegisterUserNotificationSettings
                                              object:nil];
 }
 
@@ -319,6 +324,7 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions
     return;
   }
 
+  [self startObservingRegistrationNotifications];
   _requestPermissionsResolveBlock = resolve;
 
   UIUserNotificationType types = UIUserNotificationTypeNone;

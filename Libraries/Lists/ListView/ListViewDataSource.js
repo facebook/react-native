@@ -139,10 +139,10 @@ class ListViewDataSource {
    * this function as the `dataBlob`.
    */
    cloneWithRows(
-       dataBlob: Array<any> | {[key: string]: any},
-       rowIdentities: ?Array<string>
+       dataBlob: $ReadOnlyArray<any> | {+[key: string]: any},
+       rowIdentities: ?$ReadOnlyArray<string>
    ): ListViewDataSource {
-    var rowIds = rowIdentities ? [rowIdentities] : null;
+    var rowIds = rowIdentities ? [[...rowIdentities]] : null;
     if (!this._sectionHeaderHasChanged) {
       this._sectionHeaderHasChanged = () => false;
     }

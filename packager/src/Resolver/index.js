@@ -22,32 +22,30 @@ import type {SourceMap} from '../lib/SourceMap';
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
 import type {TransformCode} from '../node-haste/Module';
-import type Cache from '../node-haste/Cache';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 
 type MinifyCode = (filePath: string, code: string, map: SourceMap) =>
   Promise<{code: string, map: SourceMap}>;
 
-type Options = {
-  assetExts: Array<string>,
-  blacklistRE?: RegExp,
-  cache: Cache,
-  extraNodeModules: ?{},
-  getTransformCacheKey: GetTransformCacheKey,
-  globalTransformCache: ?GlobalTransformCache,
-  hasteImpl?: HasteImpl,
-  maxWorkerCount: number,
-  minifyCode: MinifyCode,
-  platforms: Set<string>,
-  polyfillModuleNames?: Array<string>,
-  projectRoots: Array<string>,
-  providesModuleNodeModules: Array<string>,
-  reporter: Reporter,
-  resetCache: boolean,
-  transformCode: TransformCode,
-  watch: boolean,
-};
+type Options = {|
+  +assetExts: Array<string>,
+  +blacklistRE?: RegExp,
+  +extraNodeModules: ?{},
+  +getTransformCacheKey: GetTransformCacheKey,
+  +globalTransformCache: ?GlobalTransformCache,
+  +hasteImpl?: HasteImpl,
+  +maxWorkerCount: number,
+  +minifyCode: MinifyCode,
+  +platforms: Set<string>,
+  +polyfillModuleNames?: Array<string>,
+  +projectRoots: Array<string>,
+  +providesModuleNodeModules: Array<string>,
+  +reporter: Reporter,
+  +resetCache: boolean,
+  +transformCode: TransformCode,
+  +watch: boolean,
+|};
 
 class Resolver {
 
@@ -70,9 +68,7 @@ class Resolver {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
       },
-      maxWorkers: null,
       moduleOptions: {
-        cacheTransformResults: true,
         hasteImpl: opts.hasteImpl,
         resetCache: opts.resetCache,
       },
@@ -101,7 +97,7 @@ class Resolver {
     transformOptions: TransformOptions,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     getModuleId: mixed,
-  ): Promise<ResolutionResponse> {
+  ): Promise<ResolutionResponse<Module>> {
     const {platform, recursive = true} = options;
     return this._depGraph.getDependencies({
       entryPath,
@@ -151,7 +147,7 @@ class Resolver {
   }
 
   resolveRequires(
-    resolutionResponse: ResolutionResponse,
+    resolutionResponse: ResolutionResponse<Module>,
     module: Module,
     code: string,
     dependencyOffsets: Array<number> = [],
@@ -195,7 +191,7 @@ class Resolver {
     dev = true,
     minify = false,
   }: {
-    resolutionResponse: ResolutionResponse,
+    resolutionResponse: ResolutionResponse<Module>,
     module: Module,
     name: string,
     map: SourceMap,

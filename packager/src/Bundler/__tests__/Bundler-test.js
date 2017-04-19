@@ -270,14 +270,20 @@ describe('Bundler', function() {
       // jest calledWith does not support jasmine.any
       expect(getDependencies.mock.calls[0].slice(0, -2)).toEqual([
         '/root/foo.js',
-        {dev: true, recursive: true},
-        {minify: false,
+        {dev: true, platform: undefined, recursive: true},
+        {
           dev: true,
+          minify: false,
+          platform: undefined,
           transform: {
             dev: true,
-            hot: false,
             generateSourceMaps: false,
+            hot: false,
+            inlineRequires: false,
+            platform: undefined,
+            preloadedModules: undefined,
             projectRoots,
+            ramGroups: undefined,
           },
         },
       ])

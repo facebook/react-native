@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.react.NativeModuleRegistryBuilder;
+import com.facebook.react.R;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.bridge.CatalystInstance;
@@ -30,6 +31,7 @@ import com.facebook.react.cxxbridge.CatalystInstanceImpl;
 import com.facebook.react.cxxbridge.JSBundleLoader;
 import com.facebook.react.cxxbridge.JSCJavaScriptExecutor;
 import com.facebook.react.cxxbridge.JavaScriptExecutor;
+import com.facebook.react.modules.core.ReactChoreographer;
 
 import com.android.internal.util.Predicate;
 
@@ -152,6 +154,7 @@ public class ReactTestHelper {
           InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
+              ReactChoreographer.initialize();
               instance.initialize();
             }
           });
@@ -187,7 +190,9 @@ public class ReactTestHelper {
   }
 
   public static String getTestId(View view) {
-    return view.getTag() instanceof String ? (String) view.getTag() : null;
+    return view.getTag(R.id.react_test_id) instanceof String
+      ? (String) view.getTag(R.id.react_test_id)
+      : null;
   }
 
   private static View findChild(View root, Predicate<View> predicate) {
@@ -211,7 +216,7 @@ public class ReactTestHelper {
     return new Predicate<View>() {
       @Override
       public boolean apply(View view) {
-        Object tag = view.getTag();
+        Object tag = getTestId(view);
         return tag != null && tag.equals(tagValue);
       }
     };

@@ -656,7 +656,7 @@ exports.examples = [
         <View style={{flexDirection: 'row'}}>
           <Image
             source={{
-              url: 'ImageInBundle',
+              uri: 'ImageInBundle',
               bundle: 'UIExplorerBundle',
               width: 100,
               height: 100,
@@ -665,7 +665,7 @@ exports.examples = [
           />
           <Image
             source={{
-              url: 'ImageInAssetCatalog',
+              uri: 'ImageInAssetCatalog',
               bundle: 'UIExplorerBundle',
               width: 100,
               height: 100,

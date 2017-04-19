@@ -15,10 +15,11 @@
 
 #import <jschelpers/JavaScriptCore.h>
 
-#import "JSCSamplingProfiler.h"
+#import "RCTBridge+JavaScriptCore.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
+#import "RCTJSCSamplingProfiler.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
@@ -188,7 +189,7 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)isJSCSamplingProfilerAvailable
 {
-  return JSC_JSSamplingProfilerEnabled(_bridge.jsContext.JSGlobalContextRef);
+  return JSC_JSSamplingProfilerEnabled(_bridge.jsContextRef);
 }
 
 RCT_EXPORT_METHOD(reload)
@@ -320,7 +321,7 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 
   if (JSC_JSValueGetType(globalContext, jsResult) != kJSTypeNull) {
     NSString *results = [[JSC_JSValue(globalContext) valueWithJSValueRef:jsResult inContext:context] toObject];
-    JSCSamplingProfiler *profilerModule = [_bridge moduleForClass:[JSCSamplingProfiler class]];
+    RCTJSCSamplingProfiler *profilerModule = [_bridge moduleForClass:[RCTJSCSamplingProfiler class]];
     [profilerModule operationCompletedWithResults:results];
   }
 }

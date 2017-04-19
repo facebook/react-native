@@ -22,12 +22,13 @@ type Item = any;
 
 type NormalProps = {
   FooterComponent?: ReactClass<*>,
-  renderItem: ({item: Item, index: number}) => ?React.Element<*>,
+  renderItem: (info: Object) => ?React.Element<*>,
   renderSectionHeader?: ({section: Object}) => ?React.Element<*>,
   SeparatorComponent?: ?ReactClass<*>, // not supported yet
 
   // Provide either `items` or `sections`
   items?: ?Array<Item>, // By default, an Item is assumed to be {key: string}
+  // $FlowFixMe - Something is a little off with the type Array<Item>
   sections?: ?Array<{key: string, data: Array<Item>}>,
 
   /**
@@ -39,10 +40,16 @@ type NormalProps = {
    * Set this true while waiting for new data from a refresh.
    */
   refreshing?: boolean,
+  /**
+   * If true, renders items next to each other horizontally instead of stacked vertically.
+   */
+  horizontal?: ?boolean,
 };
 type DefaultProps = {
-  keyExtractor: (item: Item) => string,
+  keyExtractor: (item: Item, index: number) => string,
 };
+/* $FlowFixMe - the renderItem passed in from SectionList is optional there but
+ * required here */
 type Props = NormalProps & DefaultProps;
 
 /**
@@ -61,14 +68,20 @@ class MetroListView extends React.Component {
   scrollToItem(params: {animated?: ?boolean, item: Item, viewPosition?: number}) {
     throw new Error('scrollToItem not supported in legacy ListView.');
   }
+  scrollToLocation() {
+    throw new Error('scrollToLocation not supported in legacy ListView.');
+  }
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     const {animated, offset} = params;
     this._listRef.scrollTo(
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated}
     );
   }
+  getListRef() {
+    return this._listRef;
+  }
   static defaultProps: DefaultProps = {
-    keyExtractor: (item, index) => item.key || index,
+    keyExtractor: (item, index) => item.key || String(index),
     renderScrollComponent: (props: Props) => {
       if (props.onRefresh) {
         return (

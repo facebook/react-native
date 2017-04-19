@@ -35,7 +35,7 @@ import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -225,7 +225,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       new YogaMeasureFunction() {
         @Override
         public long measure(
-            YogaNodeAPI node,
+            YogaNode node,
             float width,
             YogaMeasureMode widthMode,
             float height,

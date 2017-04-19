@@ -19,7 +19,6 @@
 
 #import <cxxreact/JSBundleType.h>
 #import <jschelpers/JavaScriptCore.h>
-#import <React/JSCSamplingProfiler.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTDefines.h>
@@ -282,11 +281,9 @@ static NSThread *newJavaScriptThread(void)
 
 - (RCTJavaScriptContext *)context
 {
-  RCTAssertThread(_javaScriptThread, @"Must be called on JS thread.");
   if (!self.isValid) {
     return nil;
   }
-  RCTAssert(_context != nil, @"Fetching context while valid, but before it is created");
   return _context;
 }
 

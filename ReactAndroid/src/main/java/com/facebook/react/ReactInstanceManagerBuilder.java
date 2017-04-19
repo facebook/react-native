@@ -42,7 +42,7 @@ public class ReactInstanceManagerBuilder {
   protected @Nullable RedBoxHandler mRedBoxHandler;
   protected boolean mLazyNativeModulesEnabled;
   protected boolean mLazyViewManagersEnabled;
-  protected boolean mUseStartupThread;
+  protected boolean mSetupReactContextInBackground;
 
   /* package protected */ ReactInstanceManagerBuilder() {
   }
@@ -187,8 +187,9 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
-  public ReactInstanceManagerBuilder setUseStartupThread(boolean useStartupThread) {
-    mUseStartupThread = useStartupThread;
+  public ReactInstanceManagerBuilder setSetupReactContextInBackgroundEnabled(
+    boolean setupReactContextInBackground) {
+    mSetupReactContextInBackground = setupReactContextInBackground;
     return this;
   }
 
@@ -237,6 +238,6 @@ public class ReactInstanceManagerBuilder {
       mRedBoxHandler,
       mLazyNativeModulesEnabled,
       mLazyViewManagersEnabled,
-      mUseStartupThread);
+      mSetupReactContextInBackground);
   }
 }

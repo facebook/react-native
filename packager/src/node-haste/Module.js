@@ -23,22 +23,26 @@ const jsonStableStringify = require('json-stable-stringify');
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
 import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {SourceMap} from '../lib/SourceMap';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {ReadTransformProps} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
-import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
 
 export type ReadResult = {
-  code: string,
-  dependencies?: ?Array<string>,
-  dependencyOffsets?: ?Array<number>,
-  map?: ?SourceMap,
-  source: string,
+  +code: string,
+  +dependencies: Array<string>,
+  +dependencyOffsets?: ?Array<number>,
+  +map?: ?SourceMap,
+  +source: string,
 };
+
+export type CachedReadResult = {|
+  +result: ?ReadResult,
+  +outdatedDependencies: $ReadOnlyArray<string>,
+|};
 
 export type TransformCode = (
   module: Module,
@@ -57,13 +61,11 @@ export type HasteImpl = {
 };
 
 export type Options = {
-  cacheTransformResults?: boolean,
   hasteImpl?: HasteImpl,
   resetCache?: boolean,
 };
 
 export type ConstructorArgs = {
-  cache: Cache,
   depGraphHelpers: DependencyGraphHelpers,
   globalTransformCache: ?GlobalTransformCache,
   file: string,
@@ -82,7 +84,6 @@ class Module {
   type: string;
 
   _moduleCache: ModuleCache;
-  _cache: Cache;
   _transformCode: ?TransformCode;
   _getTransformCacheKey: GetTransformCacheKey;
   _depGraphHelpers: DependencyGraphHelpers;
@@ -95,10 +96,9 @@ class Module {
   _sourceCode: ?string;
   _readPromises: Map<string, Promise<ReadResult>>;
 
-  _readResultsByOptionsKey: Map<string, ?ReadResult>;
+  _readResultsByOptionsKey: Map<string, CachedReadResult>;
 
   constructor({
-    cache,
     depGraphHelpers,
     file,
     getTransformCacheKey,
@@ -116,7 +116,6 @@ class Module {
     this.type = 'Module';
 
     this._moduleCache = moduleCache;
-    this._cache = cache;
     this._transformCode = transformCode;
     this._getTransformCacheKey = getTransformCacheKey;
     this._depGraphHelpers = depGraphHelpers;
@@ -129,11 +128,7 @@ class Module {
   }
 
   isHaste(): Promise<boolean> {
-    return this._cache.get(
-      this.path,
-      'isHaste',
-      () => Promise.resolve().then(() => this._getHasteName() != null),
-    );
+    return Promise.resolve().then(() => this._getHasteName() != null);
   }
 
   getCode(transformOptions: TransformOptions) {
@@ -145,32 +140,28 @@ class Module {
   }
 
   getName(): Promise<string> {
-    return this._cache.get(
-      this.path,
-      'name',
-      () => Promise.resolve().then(() => {
-        const name = this._getHasteName();
-        if (name != null) {
-          return name;
-        }
+    return Promise.resolve().then(() => {
+      const name = this._getHasteName();
+      if (name != null) {
+        return name;
+      }
 
-        const p = this.getPackage();
+      const p = this.getPackage();
 
-        if (!p) {
-          // Name is full path
-          return this.path;
-        }
+      if (!p) {
+        // Name is full path
+        return this.path;
+      }
 
-        return p.getName()
-          .then(packageName => {
-            if (!packageName) {
-              return this.path;
-            }
+      return p.getName()
+        .then(packageName => {
+          if (!packageName) {
+            return this.path;
+          }
 
-            return joinPath(packageName, relativePath(p.root, this.path)).replace(/\\/g, '/');
-          });
-      })
-    );
+          return joinPath(packageName, relativePath(p.root, this.path)).replace(/\\/g, '/');
+        });
+    });
   }
 
   getPackage() {
@@ -187,7 +178,6 @@ class Module {
    * code.
    */
   invalidate() {
-    this._cache.invalidate(this.path);
     this._readPromises.clear();
     this._readResultsByOptionsKey.clear();
     this._sourceCode = null;
@@ -210,59 +200,53 @@ class Module {
   }
 
   _getHasteName(): ?string {
-    if (this._hasteNameCache != null) {
-      return this._hasteNameCache.hasteName;
-    }
-    const hasteImpl = this._options.hasteImpl;
-    if (hasteImpl === undefined || hasteImpl.enforceHasteNameMatches) {
-      const moduleDocBlock = this._readDocBlock();
-      const {providesModule} = moduleDocBlock;
-      this._hasteNameCache = {
-        hasteName: providesModule && !this._depGraphHelpers.isNodeModulesDir(this.path)
-          ? /^\S+/.exec(providesModule)[0]
-          : undefined,
-      };
-    }
-    if (hasteImpl !== undefined) {
-      const {enforceHasteNameMatches} = hasteImpl;
-      if (enforceHasteNameMatches) {
-        /* $FlowFixMe: this rely on the above if being executed, that is fragile. Rework the algo. */
-        enforceHasteNameMatches(this.path, this._hasteNameCache.hasteName);
-      }
-      this._hasteNameCache = {hasteName: hasteImpl.getHasteName(this.path)};
-    } else {
-      // Extract an id for the module if it's using @providesModule syntax
-      // and if it's NOT in node_modules (and not a whitelisted node_module).
-      // This handles the case where a project may have a dep that has @providesModule
-      // docblock comments, but doesn't want it to conflict with whitelisted @providesModule
-      // modules, such as react-haste, fbjs-haste, or react-native or with non-dependency,
-      // project-specific code that is using @providesModule.
-      const moduleDocBlock = this._readDocBlock();
-      const {providesModule} = moduleDocBlock;
-      this._hasteNameCache = {
-        hasteName:
-          providesModule && !this._depGraphHelpers.isNodeModulesDir(this.path)
-            ? /^\S+/.exec(providesModule)[0]
-            : undefined,
-      };
+    if (this._hasteNameCache == null) {
+      this._hasteNameCache = {hasteName: this._readHasteName()};
     }
     return this._hasteNameCache.hasteName;
   }
 
   /**
+   * If a custom Haste implementation is provided, then we use it to determine
+   * the actual Haste name instead of "@providesModule".
+   * `enforceHasteNameMatches` has been added to that it is easier to
+   * transition from a system using "@providesModule" to a system using another
+   * custom system, by throwing if inconsistencies are detected. For example,
+   * we could verify that the file's basename (ex. "bar/foo.js") is the same as
+   * the "@providesModule" name (ex. "foo").
+   */
+  _readHasteName(): ?string {
+    const hasteImpl = this._options.hasteImpl;
+    if (hasteImpl == null) {
+      return this._readHasteNameFromDocBlock();
+    }
+    const {enforceHasteNameMatches} = hasteImpl;
+    if (enforceHasteNameMatches != null) {
+      const name = this._readHasteNameFromDocBlock();
+      enforceHasteNameMatches(this.path, name || undefined);
+    }
+    return hasteImpl.getHasteName(this.path);
+  }
+
+  /**
+   * We extract the Haste name from the `@providesModule` docbloc field. This is
+   * not allowed for modules living in `node_modules`, except if they are
+   * whitelisted.
+   */
+  _readHasteNameFromDocBlock(): ?string {
+    const moduleDocBlock = this._readDocBlock();
+    const {providesModule} = moduleDocBlock;
+    if (providesModule && !this._depGraphHelpers.isNodeModulesDir(this.path)) {
+      return /^\S+/.exec(providesModule)[0];
+    }
+    return null;
+  }
+
+  /**
    * To what we read from the cache or worker, we need to add id and source.
    */
-  _finalizeReadResult(
-    source: string,
-    result: TransformedCode,
-  ): ReadResult {
-    const id = this._getHasteName();
-    if (this._options.cacheTransformResults === false) {
-      const {dependencies} = result;
-      /* $FlowFixMe: this code path is dead, remove. */
-      return {dependencies};
-    }
-    return {...result, id, source};
+  _finalizeReadResult(source: string, result: TransformedCode): ReadResult {
+    return {...result, id: this._getHasteName(), source};
   }
 
   _transformCodeForCallback(
@@ -343,8 +327,8 @@ class Module {
   read(transformOptions: TransformOptions): Promise<ReadResult> {
     return Promise.resolve().then(() => {
       const cached = this.readCached(transformOptions);
-      if (cached != null) {
-        return cached;
+      if (cached.result != null) {
+        return cached.result;
       }
       return this.readFresh(transformOptions);
     });
@@ -355,12 +339,13 @@ class Module {
    * the file from source. This has the benefit of being synchronous. As a
    * result it is possible to read many cached Module in a row, synchronously.
    */
-  readCached(transformOptions: TransformOptions): ?ReadResult {
+  readCached(transformOptions: TransformOptions): CachedReadResult {
     const key = stableObjectHash(transformOptions || {});
-    if (this._readResultsByOptionsKey.has(key)) {
-      return this._readResultsByOptionsKey.get(key);
+    let result = this._readResultsByOptionsKey.get(key);
+    if (result != null) {
+      return result;
     }
-    const result = this._readFromTransformCache(transformOptions, key);
+    result = this._readFromTransformCache(transformOptions, key);
     this._readResultsByOptionsKey.set(key, result);
     return result;
   }
@@ -372,13 +357,16 @@ class Module {
   _readFromTransformCache(
     transformOptions: TransformOptions,
     transformOptionsKey: string,
-  ): ?ReadResult {
+  ): CachedReadResult {
     const cacheProps = this._getCacheProps(transformOptions, transformOptionsKey);
     const cachedResult = TransformCache.readSync(cacheProps);
-    if (cachedResult) {
-      return this._finalizeReadResult(cacheProps.sourceCode, cachedResult);
+    if (cachedResult.result == null) {
+      return {result: null, outdatedDependencies: cachedResult.outdatedDependencies};
     }
-    return null;
+    return {
+      result: this._finalizeReadResult(cacheProps.sourceCode, cachedResult.result),
+      outdatedDependencies: [],
+    };
   }
 
   /**
@@ -408,7 +396,7 @@ class Module {
           },
         );
       }).then(result => {
-        this._readResultsByOptionsKey.set(key, result);
+        this._readResultsByOptionsKey.set(key, {result, outdatedDependencies: []});
         return result;
       });
     });
@@ -418,14 +406,7 @@ class Module {
 
   _getCacheProps(transformOptions: TransformOptions, transformOptionsKey: string) {
     const sourceCode = this._readSourceCode();
-    const moduleDocBlock = this._readDocBlock();
     const getTransformCacheKey = this._getTransformCacheKey;
-    // Ignore requires in JSON files or generated code. An example of this
-    // is prebuilt files like the SourceMap library.
-    const extern = this.isJSON() || 'extern' in moduleDocBlock;
-    if (extern) {
-      transformOptions = {...transformOptions, extern};
-    }
     return {
       filePath: this.path,
       sourceCode,

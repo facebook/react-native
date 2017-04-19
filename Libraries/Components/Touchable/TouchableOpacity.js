@@ -17,6 +17,7 @@ var Animated = require('Animated');
 var Easing = require('Easing');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
+var PropTypes = require('prop-types');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
@@ -59,12 +60,12 @@ var TouchableOpacity = React.createClass({
      * Determines what the opacity of the wrapped view should be when touch is
      * active. Defaults to 0.2.
      */
-    activeOpacity: React.PropTypes.number,
-    focusedOpacity: React.PropTypes.number,
+    activeOpacity: PropTypes.number,
+    focusedOpacity: PropTypes.number,
     /**
      * Apple TV parallax effects
      */
-    tvParallaxProperties: React.PropTypes.object,
+    tvParallaxProperties: PropTypes.object,
   },
 
   getDefaultProps: function() {
@@ -165,7 +166,7 @@ var TouchableOpacity = React.createClass({
   _opacityFocused: function() {
     this.setOpacityTo(this.props.focusedOpacity);
   },
-  
+
   _getChildStyleOpacityWithDefault: function() {
    var childStyle = flattenStyle(this.props.style) || {};
    return childStyle.opacity == undefined ? 1 : childStyle.opacity;
@@ -179,6 +180,7 @@ var TouchableOpacity = React.createClass({
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
         style={[this.props.style, {opacity: this.state.anim}]}
+        nativeID={this.props.nativeID}
         testID={this.props.testID}
         onLayout={this.props.onLayout}
         isTVSelectable={true}

@@ -15,12 +15,10 @@ const Keyboard = require('Keyboard');
 const LayoutAnimation = require('LayoutAnimation');
 const Platform = require('Platform');
 const React = require('React');
+const PropTypes = require('prop-types');
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
-
 const ViewPropTypes = require('ViewPropTypes');
-
-const PropTypes = React.PropTypes;
 
 import type EmitterSubscription from 'EmitterSubscription';
 

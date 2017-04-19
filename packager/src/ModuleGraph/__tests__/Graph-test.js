@@ -46,7 +46,7 @@ describe('Graph:', () => {
     const entryPoint = '/arbitrary/path';
     graph([entryPoint], anyPlatform, noOpts, () => {
       expect(resolve).toBeCalledWith(
-        entryPoint, '', any(String), any(Object), any(Function));
+        entryPoint, null, any(String), any(Object), any(Function));
       done();
     });
   });
@@ -55,9 +55,9 @@ describe('Graph:', () => {
     const entryPoints = ['Arbitrary', '../entry.js'];
     graph(entryPoints, anyPlatform, noOpts, () => {
       expect(resolve).toBeCalledWith(
-        entryPoints[0], '', any(String), any(Object), any(Function));
+        entryPoints[0], null, any(String), any(Object), any(Function));
       expect(resolve).toBeCalledWith(
-        entryPoints[1], '', any(String), any(Object), any(Function));
+        entryPoints[1], null, any(String), any(Object), any(Function));
       done();
     });
 
@@ -74,7 +74,7 @@ describe('Graph:', () => {
     const platform = 'any';
     graph(anyEntry, platform, noOpts, () => {
       expect(resolve).toBeCalledWith(
-        any(String), '', platform, any(Object), any(Function));
+        any(String), null, platform, any(Object), any(Function));
       done();
     });
   });
@@ -83,7 +83,7 @@ describe('Graph:', () => {
     const log = new Console();
     graph(anyEntry, anyPlatform, {log}, () => {
       expect(resolve).toBeCalledWith(
-        any(String), '', any(String), objectContaining({log}), any(Function));
+        any(String), null, any(String), objectContaining({log}), any(Function));
       done();
     });
   });

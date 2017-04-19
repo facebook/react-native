@@ -34,7 +34,7 @@ import type Bundle from '../Bundler/Bundle';
 import type HMRBundle from '../Bundler/HMRBundle';
 import type {Reporter} from '../lib/reporting';
 import type {GetTransformOptions} from '../Bundler';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {SourceMap, Symbolicate} from './symbolicate';
 
 const {
@@ -309,7 +309,7 @@ class Server {
   getDependencies(options: {
     entryFile: string,
     platform: ?string,
-  }): Promise<ResolutionResponse> {
+  }): Promise<ResolutionResponse<Module>> {
     return Promise.resolve().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
@@ -329,7 +329,6 @@ class Server {
 
   onFileChange(type: string, filePath: string, stat: Stats) {
     this._assetServer.onFileChange(type, filePath, stat);
-    this._bundler.invalidateFile(filePath);
 
     // If Hot Loading is enabled avoid rebuilding bundles and sending live
     // updates. Instead, send the HMR updates right away and clear the bundles
