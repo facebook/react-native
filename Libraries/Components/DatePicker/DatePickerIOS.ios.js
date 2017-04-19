@@ -23,7 +23,7 @@ const ViewPropTypes = require('ViewPropTypes');
 const requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
-  mode: 'date' | 'time' | 'datetime',
+  mode: 'date' | 'time' | 'datetime' | 'countdown',
 };
 
 type Event = Object;
@@ -75,7 +75,7 @@ const DatePickerIOS = React.createClass({
     /**
      * The date picker mode.
      */
-    mode: PropTypes.oneOf(['date', 'time', 'datetime']),
+    mode: PropTypes.oneOf(['date', 'time', 'datetime', 'countdown']),
 
     /**
      * The interval at which minutes can be selected.
