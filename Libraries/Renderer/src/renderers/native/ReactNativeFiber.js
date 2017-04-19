@@ -71,10 +71,7 @@ const NativeRenderer = ReactFiberReconciler({
     parentInstance: Instance | Container,
     child: Instance | TextInstance,
   ): void {
-
-    const childTag = typeof child === 'number'
-      ? child
-      : child._nativeTag;
+    const childTag = typeof child === 'number' ? child : child._nativeTag;
 
     if (typeof parentInstance === 'number') {
       // Root container
@@ -85,16 +82,32 @@ const NativeRenderer = ReactFiberReconciler({
     } else {
       const children = parentInstance._children;
 
-      children.push(child);
+      const index = children.indexOf(child);
 
-      UIManager.manageChildren(
-        parentInstance._nativeTag, // containerTag
-        [], // moveFromIndices
-        [], // moveToIndices
-        [childTag], // addChildReactTags
-        [children.length - 1], // addAtIndices
-        [], // removeAtIndices
-      );
+      if (index >= 0) {
+        children.splice(index, 1);
+        children.push(child);
+
+        UIManager.manageChildren(
+          parentInstance._nativeTag, // containerTag
+          [index], // moveFromIndices
+          [children.length - 1], // moveToIndices
+          [], // addChildReactTags
+          [], // addAtIndices
+          [], // removeAtIndices
+        );
+      } else {
+        children.push(child);
+
+        UIManager.manageChildren(
+          parentInstance._nativeTag, // containerTag
+          [], // moveFromIndices
+          [], // moveToIndices
+          [childTag], // addChildReactTags
+          [children.length - 1], // addAtIndices
+          [], // removeAtIndices
+        );
+      }
     }
   },
 
@@ -267,12 +280,12 @@ const NativeRenderer = ReactFiberReconciler({
 
     const children = (parentInstance: any)._children;
 
-    const beforeChildIndex = children.indexOf(beforeChild);
     const index = children.indexOf(child);
 
     // Move existing child or add new child?
     if (index >= 0) {
       children.splice(index, 1);
+      const beforeChildIndex = children.indexOf(beforeChild);
       children.splice(beforeChildIndex, 0, child);
 
       UIManager.manageChildren(
@@ -284,11 +297,10 @@ const NativeRenderer = ReactFiberReconciler({
         [], // removeAtIndices
       );
     } else {
+      const beforeChildIndex = children.indexOf(beforeChild);
       children.splice(beforeChildIndex, 0, child);
 
-      const childTag = typeof child === 'number'
-        ? child
-        : child._nativeTag;
+      const childTag = typeof child === 'number' ? child : child._nativeTag;
 
       UIManager.manageChildren(
         (parentInstance: any)._nativeTag, // containerID
@@ -386,7 +398,6 @@ const roots = new Map();
 findNodeHandle.injection.injectFindNode((fiber: Fiber) =>
   NativeRenderer.findHostInstance(fiber));
 findNodeHandle.injection.injectFindRootNodeID(instance => instance);
-
 
 // Intercept lifecycle errors and ensure they are shown with the correct stack
 // trace within the native redbox component.
