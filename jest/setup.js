@@ -132,11 +132,13 @@ const mockNativeModules = {
     removeListeners: jest.fn(),
   },
   Linking: {
+    openURL: jest.fn(),
+    canOpenURL: jest.fn(
+      () => new Promise((resolve) => resolve(true))
+    ),
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
-    openURL: jest.fn(),
-    canOpenURL: jest.fn(),
-    getInitialURL: jest.fn()
+    getInitialURL: jest.fn(),
   },
   LocationObserver: {
     getCurrentPosition: jest.fn(),
