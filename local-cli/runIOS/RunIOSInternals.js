@@ -62,7 +62,7 @@ RunIOSInternals.prototype.runIOS = function(argv, config, args) {
   } else if (args.udid) {
     return this.runOnDeviceByUdid(args, scheme, xcodeProject, devices);
   } else {
-    return this.runOnSimulator(xcodeProject, args, inferredSchemeName, scheme);
+    return this.runOnSimulator(xcodeProject, args, scheme);
   }
 };
 
@@ -81,7 +81,7 @@ RunIOSInternals.prototype.runOnDeviceByUdid = function(args, scheme, xcodeProjec
   }
 };
 
-RunIOSInternals.prototype.runOnSimulator = function(xcodeProject, args, inferredSchemeName, scheme){
+RunIOSInternals.prototype.runOnSimulator = function(xcodeProject, args, scheme){
   return new Promise((resolve) => {
     try {
       var simulators = JSON.parse(
@@ -109,7 +109,7 @@ RunIOSInternals.prototype.runOnSimulator = function(xcodeProject, args, inferred
   .then((udid) => this.buildProject(xcodeProject, udid, scheme, args.configuration, args.packager))
   .then((appName) => {
     if (!appName) {
-      appName = inferredSchemeName;
+      appName = scheme;
     }
     let appPath = this.getBuildPath(args.configuration, appName);
     console.log(`Installing ${appPath}`);
