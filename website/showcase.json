@@ -27,6 +27,15 @@
     "pinned": true
   },
   {
+    "name": "F8",
+    "icon": "http://is2.mzstatic.com/image/thumb/Purple122/v4/86/ed/10/86ed1086-1e89-ff43-06b2-9cfb9641d79f/source/175x175bb.jpg",
+    "linkAppStore": "https://itunes.apple.com/it/app/f8/id853467066?l=en&mt=8",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.facebook.f8&hl=en",
+    "infoLink": "http://makeitopen.com/tutorials/building-the-f8-app/planning/",
+    "infoTitle": "Tutorial: Building the F8 conference app",
+    "pinned": true
+  },
+  {
     "name": "Airbnb",
     "icon": "https://a2.muscache.com/airbnb/static/icons/apple-touch-icon-180x180-bcbe0e3960cd084eb8eaf1353cf3c730.png",
     "linkAppStore": "https://itunes.apple.com/us/app/airbnb/id401626263?mt=8&bev=1472279725_4ITWKWGX6KrmU6pT&utm_medium=web&utm_source=airbnb&_branch_match_id=307510898795870823",
@@ -116,13 +125,6 @@
     "infoLink": "https://hackernoon.com/townske-app-in-react-native-6ad557de7a7c",
     "infoTitle": "The experience of a web developer building an app using React Native",
     "pinned": true
-  },
-  {
-    "name": "F8",
-    "icon": "https://raw.githubusercontent.com/fbsamples/f8app/master/ios/F8v2/Images.xcassets/AppIcon.appiconset/AppIcon%402x.png",
-    "infoLink": "http://makeitopen.com/tutorials/building-the-f8-app/planning/",
-    "infoTitle": "Tutorial: Building the F8 2016 conference app",
-    "pinned": false
   },
   {
     "name": "SoundCloud Pulse",
