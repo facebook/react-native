@@ -225,7 +225,7 @@ class URIBasedGlobalTransformCache {
   keyOf(props: FetchProps) {
     const hash = crypto.createHash('sha1');
     const {sourceCode, filePath, transformOptions} = props;
-    this._optionsHasher.hashTransformWorkerOptions(hash, transformOptions);
+    hash.update(this._optionsHasher.getTransformWorkerOptionsDigest(transformOptions));
     const cacheKey = props.getTransformCacheKey(sourceCode, filePath, transformOptions);
     hash.update(JSON.stringify(cacheKey));
     hash.update(crypto.createHash('sha1').update(sourceCode).digest('hex'));
@@ -313,9 +313,23 @@ class URIBasedGlobalTransformCache {
 
 class OptionsHasher {
   _rootPath: string;
+  _cache: WeakMap<TransformWorkerOptions, string>;
 
   constructor(rootPath: string) {
     this._rootPath = rootPath;
+    this._cache = new WeakMap();
+  }
+
+  getTransformWorkerOptionsDigest(options: TransformWorkerOptions): string {
+    const digest = this._cache.get(options);
+    if (digest != null) {
+      return digest;
+    }
+    const hash = crypto.createHash('sha1');
+    this.hashTransformWorkerOptions(hash, options);
+    const newDigest = hash.digest('hex');
+    this._cache.set(options, newDigest);
+    return newDigest;
   }
 
   /**
