@@ -101,6 +101,9 @@ RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
 // Convert NaN or infinite values to zero, as these aren't JSON-safe
 RCT_EXTERN double RCTZeroIfNaN(double value);
 
+// Returns TRUE if url is data URL
+RCT_EXTERN BOOL RCTIsDataURL(NSURL *url);
+
 // Convert data to a Base64-encoded data URL
 RCT_EXTERN NSURL *RCTDataURL(NSString *mimeType, NSData *data);
 

@@ -87,6 +87,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
   }
 
+  if (RCTIsDataURL(scriptURL)) {
+    NSError *loadError;
+    NSData *data = [NSData dataWithContentsOfURL:scriptURL
+                                         options:0
+                                           error:&loadError];
+    
+    if (loadError) {
+      if (error) {
+        *error = [NSError errorWithDomain:RCTJavaScriptLoaderErrorDomain
+                                     code:RCTJavaScriptLoaderErrorCannotBeLoadedSynchronously
+                                 userInfo:@{NSLocalizedDescriptionKey: @"Cannot load 'data' URL synchronously",
+                                            NSUnderlyingErrorKey: loadError}];
+      }
+      return nil;
+    }
+    if (sourceLength) {
+      *sourceLength = data.length;
+    }
+    return data;
+  }
+  
   // Load local script file
   if (!scriptURL.fileURL) {
     if (error) {
