@@ -46,12 +46,12 @@ const platforms = new Set(defaults.platforms);
  */
 function getFakeModuleMap(hasteMap: HasteMap) {
   return {
-    getModule(name: string, platform_: string): ?string {
-      const module = hasteMap.getModule(name, platform_);
+    getModule(name: string, platform: ?string): ?string {
+      const module = hasteMap.getModule(name, platform);
       return module && module.type === 'Module' ? module.path : null;
     },
-    getPackage(name: string, platform_: string): ?string {
-      const module = hasteMap.getModule(name, platform_);
+    getPackage(name: string, platform: ?string): ?string {
+      const module = hasteMap.getModule(name, platform);
       return module && module.type === 'Package' ? module.path : null;
     },
   };

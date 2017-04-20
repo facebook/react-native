@@ -19,7 +19,6 @@
 
 #import <cxxreact/JSBundleType.h>
 #import <jschelpers/JavaScriptCore.h>
-#import <React/JSCSamplingProfiler.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTDefines.h>
@@ -39,8 +38,6 @@
 
 NSString *const RCTJSCThreadName = @"com.facebook.react.JavaScript";
 NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
-RCT_EXTERN NSString *const RCTFBJSContextClassKey = @"_RCTFBJSContextClassKey";
-RCT_EXTERN NSString *const RCTFBJSValueClassKey = @"_RCTFBJSValueClassKey";
 
 struct __attribute__((packed)) ModuleData {
   uint32_t offset;
@@ -330,12 +327,6 @@ static NSThread *newJavaScriptThread(void)
                                                           object:context];
 
       installBasicSynchronousHooksOnContext(context);
-    }
-
-    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
-    if (!threadDictionary[RCTFBJSContextClassKey] || !threadDictionary[RCTFBJSValueClassKey]) {
-      threadDictionary[RCTFBJSContextClassKey] = JSC_JSContext(contextRef);
-      threadDictionary[RCTFBJSValueClassKey] = JSC_JSValue(contextRef);
     }
 
     RCTFBQuickPerformanceLoggerConfigureHooks(context.JSGlobalContextRef);

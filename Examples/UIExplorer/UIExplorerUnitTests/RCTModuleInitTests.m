@@ -179,9 +179,7 @@ RCT_EXPORT_MODULE()
 
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTDidInitializeModuleNotification object:nil];
 
-  id<RCTJavaScriptExecutor> jsExecutor = _bridge.batchedBridge.javaScriptExecutor;
   [_bridge invalidate];
-  RUN_RUNLOOP_WHILE(jsExecutor.isValid);
   _bridge = nil;
 }
 

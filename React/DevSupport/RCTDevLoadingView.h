@@ -7,16 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <React/RCTPackagerClient.h>
+#import <React/RCTBridgeModule.h>
 
-#if RCT_DEV // Only supported in dev mode
+@class RCTLoadingProgress;
 
-@class RCTBridge;
+@interface RCTDevLoadingView : NSObject <RCTBridgeModule>
 
-@interface RCTReloadPackagerMethod : NSObject <RCTPackagerClientMethod>
-
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
++ (void)setEnabled:(BOOL)enabled;
+- (void)updateProgress:(RCTLoadingProgress *)progress;
 
 @end
-
-#endif

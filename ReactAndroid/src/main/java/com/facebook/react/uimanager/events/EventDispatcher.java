@@ -154,11 +154,10 @@ public class EventDispatcher implements LifecycleEventListener {
 
   @Override
   public void onHostResume() {
-    UiThreadUtil.assertOnUiThread();
     if (mRCTEventEmitter == null) {
       mRCTEventEmitter = mReactContext.getJSModule(RCTEventEmitter.class);
     }
-    mCurrentFrameCallback.maybePost();
+    mCurrentFrameCallback.maybePostFromNonUI();
   }
 
   @Override
