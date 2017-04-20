@@ -209,7 +209,7 @@ class DependencyGraph extends EventEmitter {
     recursive = true,
   }: {
     entryPath: string,
-    platform: string,
+    platform: ?string,
     transformOptions: TransformOptions,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     recursive: boolean,
@@ -254,7 +254,7 @@ class DependencyGraph extends EventEmitter {
     return Promise.resolve(this._hasteFS.matchFiles(pattern));
   }
 
-  _getRequestPlatform(entryPath: string, platform: string) {
+  _getRequestPlatform(entryPath: string, platform: ?string): ?string {
     if (platform == null) {
       platform = getPlatformExtension(entryPath, this._opts.platforms);
     } else if (!this._opts.platforms.has(platform)) {
