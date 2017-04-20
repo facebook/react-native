@@ -152,6 +152,7 @@ public class ReactInstanceManager {
   private final boolean mLazyNativeModulesEnabled;
   private final boolean mLazyViewManagersEnabled;
   private final boolean mSetupReactContextInBackgroundEnabled;
+  private final boolean mUseSeparateUIBackgroundThread;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -223,7 +224,8 @@ public class ReactInstanceManager {
     @Nullable RedBoxHandler redBoxHandler,
     boolean lazyNativeModulesEnabled,
     boolean lazyViewManagersEnabled,
-    boolean setupReactContextInBackgroundEnabled) {
+    boolean setupReactContextInBackgroundEnabled,
+    boolean useSeparateUIBackgroundThread) {
 
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -253,6 +255,7 @@ public class ReactInstanceManager {
     mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
     mLazyViewManagersEnabled = lazyViewManagersEnabled;
     mSetupReactContextInBackgroundEnabled = setupReactContextInBackgroundEnabled;
+    mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
 
     // Instantiate ReactChoreographer in UI thread.
     ReactChoreographer.initialize();
