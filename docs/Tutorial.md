@@ -43,11 +43,13 @@ First of all, ES2015 (also known as ES6) is a set of improvements to JavaScript 
 The other unusual thing in this code example is `<Text>Hello world!</Text>`. This is JSX - a syntax for embedding XML within JavaScript. Many frameworks use a special templating language which lets you embed code inside markup language. In React, this is reversed. JSX lets you write your markup language inside code. It looks like HTML on the web, except instead of web things like `<div>` or `<span>`, you use React components. In this case, `<Text>`
 is a built-in component that just displays some text.
 
-## Component and AppRegistry
+## Component
 
 So this code is defining `HelloWorldApp`, a new `Component`, and it's registering it with the `AppRegistry`. When you're building a React Native app, you'll be making new components a lot. Anything you see on the screen is some sort of component. A component can be pretty simple - the only thing that's required is a `render` function which returns some JSX to render.
 
-The `AppRegistry` just tells React Native which component is the root one for the whole application. You won't be thinking about `AppRegistry` a lot - there will probably just be one call to `AppRegistry.registerComponent` in your whole app. It's included in these examples so you can paste the whole thing into your `index.ios.js` or `index.android.js` file and get it running.
+## AppRegistry
+
+The call to `AppRegistry` is needed to register the root component for the whole application. You only need to call `AppRegistry.registerComponent` once in your whole app. Notice in the example above that the first argument has to be the name of your project, in our case `HelloWorldApp`. You won't be thinking about `AppRegistry` a lot. It's included in these examples so you can paste the whole thing into your `index.ios.js` or `index.android.js` file and get it running.
 
 ## This App Doesn't Do Very Much
 
