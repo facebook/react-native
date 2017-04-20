@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Process;
 import android.view.View;
 
 import com.facebook.common.logging.FLog;
@@ -742,6 +743,7 @@ public class ReactInstanceManager {
       @Override
       public void run() {
         try {
+          Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
           final ReactApplicationContext reactApplicationContext = createReactContext(
             initParams.getJsExecutorFactory().create(),
             initParams.getJsBundleLoader());
@@ -789,7 +791,6 @@ public class ReactInstanceManager {
         }
       }
     });
-    mCreateReactContextThread.setPriority(Thread.MAX_PRIORITY);
     mCreateReactContextThread.start();
   }
 
