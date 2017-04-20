@@ -128,7 +128,7 @@ public class ReactInstanceManager {
 
   private volatile LifecycleState mLifecycleState;
   private @Nullable @ThreadConfined(UI) ReactContextInitParams mPendingReactContextInitParams;
-  private @Nullable @ThreadConfined(UI) Thread mCreateReactContextThread;
+  private volatile @Nullable Thread mCreateReactContextThread;
 
   /* accessed from any thread */
   private final @Nullable JSBundleLoader mBundleLoader; /* path to JS bundle on file system */
@@ -745,23 +745,45 @@ public class ReactInstanceManager {
           final ReactApplicationContext reactApplicationContext = createReactContext(
             initParams.getJsExecutorFactory().create(),
             initParams.getJsBundleLoader());
+
+          if (mSetupReactContextInBackgroundEnabled) {
+            mCreateReactContextThread = null;
+          }
           ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_START);
-          UiThreadUtil.runOnUiThread(new Runnable() {
+          final Runnable maybeRecreateReactContextRunnable = new Runnable() {
             @Override
             public void run() {
-              mCreateReactContextThread = null;
-              try {
-                setupReactContext(reactApplicationContext);
-              } catch (Exception e) {
-                mDevSupportManager.handleException(e);
-              }
-
               if (mPendingReactContextInitParams != null) {
                 runCreateReactContextOnNewThread(mPendingReactContextInitParams);
                 mPendingReactContextInitParams = null;
               }
             }
-          });
+          };
+          Runnable setupReactContextRunnable = new Runnable() {
+            @Override
+            public void run() {
+              if (!mSetupReactContextInBackgroundEnabled) {
+                mCreateReactContextThread = null;
+              }
+
+              try {
+                setupReactContext(reactApplicationContext);
+
+                if (!mSetupReactContextInBackgroundEnabled) {
+                  maybeRecreateReactContextRunnable.run();
+                }
+              } catch (Exception e) {
+                mDevSupportManager.handleException(e);
+              }
+            }
+          };
+
+          if (mSetupReactContextInBackgroundEnabled) {
+            reactApplicationContext.runOnNativeModulesQueueThread(setupReactContextRunnable);
+            UiThreadUtil.runOnUiThread(maybeRecreateReactContextRunnable);
+          } else {
+            UiThreadUtil.runOnUiThread(setupReactContextRunnable);
+          }
         } catch (Exception e) {
           mDevSupportManager.handleException(e);
         }
@@ -775,11 +797,13 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_END);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_START);
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "setupReactContext");
-    UiThreadUtil.assertOnUiThread();
+    if (!mSetupReactContextInBackgroundEnabled) {
+      UiThreadUtil.assertOnUiThread();
+    }
     Assertions.assertCondition(mCurrentReactContext == null);
     mCurrentReactContext = Assertions.assertNotNull(reactContext);
     CatalystInstance catalystInstance =
-        Assertions.assertNotNull(reactContext.getCatalystInstance());
+      Assertions.assertNotNull(reactContext.getCatalystInstance());
 
     catalystInstance.initialize();
     mDevSupportManager.onNewReactContextCreated(reactContext);
@@ -804,10 +828,12 @@ public class ReactInstanceManager {
   }
 
   private void attachMeasuredRootViewToInstance(
-      ReactRootView rootView,
+      final ReactRootView rootView,
       CatalystInstance catalystInstance) {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachMeasuredRootViewToInstance");
-    UiThreadUtil.assertOnUiThread();
+    if (!mSetupReactContextInBackgroundEnabled) {
+      UiThreadUtil.assertOnUiThread();
+    }
 
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
     int rootTag = uiManagerModule.addMeasuredRootView(rootView);
@@ -820,7 +846,12 @@ public class ReactInstanceManager {
     appParams.putDouble("rootTag", rootTag);
     appParams.putMap("initialProps", initialProps);
     catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
-    rootView.onAttachedToReactInstance();
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        rootView.onAttachedToReactInstance();
+      }
+    });
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
