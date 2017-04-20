@@ -15,7 +15,6 @@ const assert = require('assert');
 const crypto = require('crypto');
 const debug = require('debug')('RNP:Bundler');
 const fs = require('fs');
-const Cache = require('../node-haste').Cache;
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
@@ -58,7 +57,7 @@ export type GetTransformOptions = (
   mainModuleName: string,
   options: {},
   getDependencies: string => Promise<Array<string>>,
-) => ExtraTransformOptions | Promise<ExtraTransformOptions>;
+) => Promise<ExtraTransformOptions>;
 
 type Asset = {
   __packager_asset: boolean,
@@ -89,33 +88,31 @@ const assetPropertyBlacklist = new Set([
   'path',
 ]);
 
-type Options = {
-  allowBundleUpdates: boolean,
-  assetExts: Array<string>,
-  assetServer: AssetServer,
-  blacklistRE?: RegExp,
-  cacheVersion: string,
-  extraNodeModules: {},
-  getTransformOptions?: GetTransformOptions,
-  globalTransformCache: ?GlobalTransformCache,
-  hasteImpl?: HasteImpl,
-  moduleFormat: string,
-  platforms: Array<string>,
-  polyfillModuleNames: Array<string>,
-  projectRoots: Array<string>,
-  providesModuleNodeModules?: Array<string>,
-  reporter: Reporter,
-  resetCache: boolean,
-  transformModulePath?: string,
-  transformTimeoutInterval: ?number,
-  watch: boolean,
-};
+type Options = {|
+  +allowBundleUpdates: boolean,
+  +assetExts: Array<string>,
+  +assetServer: AssetServer,
+  +blacklistRE?: RegExp,
+  +cacheVersion: string,
+  +extraNodeModules: {},
+  +getTransformOptions?: GetTransformOptions,
+  +globalTransformCache: ?GlobalTransformCache,
+  +hasteImpl?: HasteImpl,
+  +platforms: Array<string>,
+  +polyfillModuleNames: Array<string>,
+  +projectRoots: Array<string>,
+  +providesModuleNodeModules?: Array<string>,
+  +reporter: Reporter,
+  +resetCache: boolean,
+  +transformModulePath?: string,
+  +transformTimeoutInterval: ?number,
+  +watch: boolean,
+|};
 
 class Bundler {
 
   _opts: Options;
   _getModuleId: (opts: Module) => number;
-  _cache: Cache;
   _transformer: Transformer;
   _resolverPromise: Promise<Resolver>;
   _projectRoots: Array<string>;
@@ -166,11 +163,6 @@ class Bundler {
 
     debug(`Using transform cache key "${transformCacheKey}"`);
 
-    this._cache = new Cache({
-      resetCache: opts.resetCache,
-      cacheKey: transformCacheKey,
-    });
-
     const maxWorkerCount = Bundler.getMaxWorkerCount();
 
     /* $FlowFixMe: in practice it's always here. */
@@ -183,14 +175,12 @@ class Bundler {
     this._resolverPromise = Resolver.load({
       assetExts: opts.assetExts,
       blacklistRE: opts.blacklistRE,
-      cache: this._cache,
       extraNodeModules: opts.extraNodeModules,
       getTransformCacheKey,
       globalTransformCache: opts.globalTransformCache,
       hasteImpl: opts.hasteImpl,
       maxWorkerCount,
       minifyCode: this._transformer.minify,
-      moduleFormat: opts.moduleFormat,
       platforms: new Set(opts.platforms),
       polyfillModuleNames: opts.polyfillModuleNames,
       projectRoots: opts.projectRoots,
@@ -215,12 +205,9 @@ class Bundler {
 
   end() {
     this._transformer.kill();
-    return Promise.all([
-      this._cache.end(),
-      this._resolverPromise.then(
-        resolver => resolver.getDependencyGraph().getWatcher().end(),
-      ),
-    ]);
+    return this._resolverPromise.then(
+      resolver => resolver.getDependencyGraph().getWatcher().end(),
+    );
   }
 
   bundle(options: {
@@ -478,10 +465,6 @@ class Bundler {
           ).then(() => bundle)
         );
     });
-  }
-
-  invalidateFile(filePath: string) {
-    this._cache.invalidate(filePath);
   }
 
   getShallowDependencies({
@@ -768,24 +751,31 @@ class Bundler {
 
   getTransformOptions(
     mainModuleName: string,
-    options: {
-      dev?: boolean,
-      generateSourceMaps?: boolean,
-      hot?: boolean,
+    options: {|
+      dev: boolean,
+      generateSourceMaps: boolean,
+      hot: boolean,
       platform: string,
       projectRoots: Array<string>,
-    },
+    |},
   ): Promise<TransformOptions> {
     const getDependencies = (entryFile: string) =>
       this.getDependencies({...options, entryFile})
         .then(r => r.dependencies.map(d => d.path));
-    const extraOptions = this._getTransformOptions
+
+    const extraOptions: Promise<ExtraTransformOptions> = this._getTransformOptions
       ? this._getTransformOptions(mainModuleName, options, getDependencies)
-      : null;
-    return Promise.resolve(extraOptions)
-      .then(extraOpts => {
-        return {...options, ...extraOpts};
-      });
+      : Promise.resolve({});
+    return extraOptions.then(extraOpts => ({
+      dev: options.dev,
+      generateSourceMaps: options.generateSourceMaps,
+      hot: options.hot,
+      inlineRequires: extraOpts.inlineRequires || false,
+      platform: options.platform,
+      preloadedModules: extraOpts.preloadedModules,
+      projectRoots: options.projectRoots,
+      ramGroups: extraOpts.ramGroups,
+    }));
   }
 
   getResolver(): Promise<Resolver> {

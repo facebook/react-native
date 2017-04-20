@@ -130,4 +130,4 @@ ws.onclose = (e) => {
 };
 ```
 
-Your app can now display all sorts of data and you may soon need to organize this content into several screens. To manage the transition between these screens, you will need to learn about [navigators](docs/using-navigators.html).
+Your app can now display all sorts of data and you may soon need to organize this content into several screens. To manage the transition between these screens, you will need to learn about [navigators](docs/navigation.html).

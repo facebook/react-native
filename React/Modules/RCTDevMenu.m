@@ -108,7 +108,7 @@ RCT_EXPORT_MODULE()
                                                object:nil];
     _extraMenuItems = [NSMutableArray new];
 
-#if TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_SIMULATOR
     RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
     __weak __typeof(self) weakSelf = self;
 

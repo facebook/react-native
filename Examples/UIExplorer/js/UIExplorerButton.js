@@ -24,6 +24,7 @@
 'use strict';
 
 var React = require('react');
+var PropTypes = require('prop-types');
 var ReactNative = require('react-native');
 var {
   StyleSheet,
@@ -35,7 +36,7 @@ class UIExplorerButton extends React.Component {
   props: {onPress?: Function};
 
   static propTypes = {
-    onPress: React.PropTypes.func,
+    onPress: PropTypes.func,
   };
 
   render() {

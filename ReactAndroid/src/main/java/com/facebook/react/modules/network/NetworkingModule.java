@@ -36,6 +36,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEm
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.CookieJar;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.JavaNetCookieJar;
@@ -167,7 +168,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       ReadableMap data,
       final String responseType,
       final boolean useIncrementalUpdates,
-      int timeout) {
+      int timeout,
+      boolean withCredentials) {
     Request.Builder requestBuilder = new Request.Builder().url(url);
 
     if (requestId != 0) {
@@ -176,6 +178,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
     final RCTDeviceEventEmitter eventEmitter = getEventEmitter(executorToken);
     OkHttpClient.Builder clientBuilder = mClient.newBuilder();
+
+    if (!withCredentials) {
+      clientBuilder.cookieJar(CookieJar.NO_COOKIES);
+    }
 
     // If JS is listening for progress updates, install a ProgressResponseBody that intercepts the
     // response and counts bytes received.

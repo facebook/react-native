@@ -29,7 +29,15 @@ import type {ViewabilityConfig, ViewToken} from 'ViewabilityHelper';
 
 type Item = any;
 
-type renderItemType = (info: {item: Item, index: number}) => ?React.Element<any>;
+type renderItemType = (info: {
+  item: Item,
+  index: number,
+  separators: {
+    highlight: () => void,
+    unhighlight: () => void,
+    updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+  },
+}) => ?React.Element<any>;
 
 type RequiredProps = {
   renderItem: renderItemType,
@@ -102,9 +110,9 @@ type OptionalProps = {
    */
   refreshing?: ?boolean,
   /**
-   * A native optimization that removes clipped subviews (those outside the parent) from the view
-   * hierarchy to offload work from the native rendering system. They are still kept around so no
-   * memory is saved and state is preserved.
+   * Note: may have bugs (missing content) in some circumstances - use at your own risk.
+   *
+   * This may improve scroll performance for large lists.
    */
   removeClippedSubviews?: boolean,
   /**
@@ -126,6 +134,8 @@ type OptionalProps = {
    */
   windowSize: number,
 };
+/* $FlowFixMe - this Props seems to be missing a bunch of stuff. Remove this
+ * comment to see the errors */
 export type Props = RequiredProps & OptionalProps;
 
 let _usedIndexForKey = false;
@@ -159,10 +169,6 @@ type State = {first: number, last: number};
  * - By default, the list looks for a `key` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
- * NOTE: `removeClippedSubviews` might not be necessary and may cause bugs. If you see issues with
- * content not rendering, e.g when using `LayoutAnimation`, try setting
- * `removeClippedSubviews={false}`, and we may change the default in the future after more
- * experimentation in production apps.
  */
 class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   props: Props;
@@ -262,7 +268,6 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     },
     maxToRenderPerBatch: 10,
     onEndReachedThreshold: 2, // multiples of length
-    removeClippedSubviews: true,
     renderScrollComponent: (props: Props) => {
       if (props.onRefresh) {
         invariant(
@@ -290,13 +295,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     windowSize: 21, // multiples of length
   };
 
-  state: State = {
-    first: 0,
-    last: this.props.initialNumToRender,
-  };
+  state: State;
 
-  constructor(props: Props) {
-    super(props);
+  constructor(props: Props, context: Object) {
+    super(props, context);
     invariant(
       !props.onScroll || !props.onScroll.__isNative,
       'Components based on VirtualizedList must be wrapped with Animated.createAnimatedComponent ' +
@@ -345,6 +347,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const {ItemSeparatorComponent, data, getItem, getItemCount, keyExtractor} = this.props;
     const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
     const end = getItemCount(data) - 1;
+    let prevCellKey;
     last = Math.min(end, last);
     for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
@@ -356,19 +359,28 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       cells.push(
         <CellRenderer
           cellKey={key}
+          ItemSeparatorComponent={ii < end ? ItemSeparatorComponent : undefined}
           index={ii}
           item={item}
           key={key}
+          prevCellKey={prevCellKey}
+          onUpdateSeparators={this._onUpdateSeparators}
           onLayout={(e) => this._onCellLayout(e, key, ii)}
           onUnmount={this._onCellUnmount}
           parentProps={this.props}
+          ref={(ref) => {this._cellRefs[key] = ref;}}
         />
       );
-      if (ItemSeparatorComponent && ii < end) {
-        cells.push(<ItemSeparatorComponent key={'sep' + key}/>);
-      }
+      prevCellKey = key;
     }
   }
+
+  _onUpdateSeparators = (keys: Array<?string>, newProps: Object) => {
+    keys.forEach((key) => {
+      const ref = key != null && this._cellRefs[key];
+      ref && ref.updateSeparatorProps(newProps);
+    });
+  };
 
   render() {
     const {ListFooterComponent, ListHeaderComponent} = this.props;
@@ -487,6 +499,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   _averageCellLength = 0;
+  _cellRefs = {};
   _hasDataChangedSinceEndReached = true;
   _hasWarned = {};
   _highestMeasuredFrameIndex = 0;
@@ -610,12 +623,29 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     return !this.props.horizontal ? metrics.y : metrics.x;
   }
 
+  _maybeCallOnEndReached() {
+    const {data, getItemCount, onEndReached, onEndReachedThreshold} = this.props;
+    const {contentLength, visibleLength, offset} = this._scrollMetrics;
+    const distanceFromEnd = contentLength - visibleLength - offset;
+    if (onEndReached &&
+        this.state.last === getItemCount(data) - 1 &&
+        distanceFromEnd < onEndReachedThreshold * visibleLength &&
+        (this._hasDataChangedSinceEndReached ||
+         this._scrollMetrics.contentLength !== this._sentEndForContentLength)) {
+      // Only call onEndReached once for a given dataset + content length.
+      this._hasDataChangedSinceEndReached = false;
+      this._sentEndForContentLength = this._scrollMetrics.contentLength;
+      onEndReached({distanceFromEnd});
+    }
+  }
+
   _onContentSizeChange = (width: number, height: number) => {
     if (this.props.onContentSizeChange) {
       this.props.onContentSizeChange(width, height);
     }
     this._scrollMetrics.contentLength = this._selectLength({height, width});
     this._updateCellsToRenderBatcher.schedule();
+    this._maybeCallOnEndReached();
   };
 
   _sampleFillRate(sampleType: string) {
@@ -649,7 +679,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const dOffset = offset - this._scrollMetrics.offset;
     const velocity = dOffset / dt;
     this._scrollMetrics = {contentLength, dt, offset, timestamp, velocity, visibleLength};
-    const {data, getItemCount, onEndReached, onEndReachedThreshold, windowSize} = this.props;
+    const {data, getItemCount, windowSize} = this.props;
 
     this._sampleFillRate('onScroll');
 
@@ -657,19 +687,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     if (!data) {
       return;
     }
-    const distanceFromEnd = contentLength - visibleLength - offset;
-    const itemCount = getItemCount(data);
-    if (onEndReached &&
-        this.state.last === itemCount - 1 &&
-        distanceFromEnd < onEndReachedThreshold * visibleLength &&
-        (this._hasDataChangedSinceEndReached ||
-         this._scrollMetrics.contentLength !== this._sentEndForContentLength)) {
-      // Only call onEndReached once for a given dataset + content length.
-      this._hasDataChangedSinceEndReached = false;
-      this._sentEndForContentLength = this._scrollMetrics.contentLength;
-      onEndReached({distanceFromEnd});
-    }
+    this._maybeCallOnEndReached();
+
     const {first, last} = this.state;
+    const itemCount = getItemCount(data);
     if ((first > 0 && velocity < 0) || (last < itemCount - 1 && velocity > 0)) {
       const distanceToContentEdge = Math.min(
         Math.abs(this._getFrameMetricsApprox(first).offset - offset),
@@ -776,34 +797,70 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
 
 class CellRenderer extends React.Component {
   props: {
+    ItemSeparatorComponent: ?ReactClass<*>,
     cellKey: string,
     index: number,
     item: Item,
     onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
     onUnmount: (cellKey: string) => void,
+    onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
     parentProps: {
-      renderItem: renderItemType,
       getItemLayout?: ?Function,
+      renderItem: renderItemType,
+    },
+    prevCellKey: ?string,
+  };
+
+  state = {
+    separatorProps: {
+      highlighted: false,
+      leadingItem: this.props.item,
     },
   };
+
+  // TODO: consider factoring separator stuff out of VirtualizedList into FlatList since it's not
+  // reused by SectionList and we can keep VirtualizedList simpler.
+  _separators = {
+    highlight: () => {
+      const {cellKey, prevCellKey} = this.props;
+      this.props.onUpdateSeparators([cellKey, prevCellKey], {highlighted: true});
+    },
+    unhighlight: () => {
+      const {cellKey, prevCellKey} = this.props;
+      this.props.onUpdateSeparators([cellKey, prevCellKey], {highlighted: false});
+    },
+    updateProps: (select: 'leading' | 'trailing', newProps: Object) => {
+      const {cellKey, prevCellKey} = this.props;
+      this.props.onUpdateSeparators([select === 'leading' ? cellKey : prevCellKey], newProps);
+    },
+  };
+
+  updateSeparatorProps(newProps: Object) {
+    this.setState(state => ({separatorProps: {...state.separatorProps, ...newProps}}));
+  }
+
   componentWillUnmount() {
     this.props.onUnmount(this.props.cellKey);
   }
+
   render() {
-    const {item, index, parentProps} = this.props;
+    const {ItemSeparatorComponent, item, index, parentProps} = this.props;
     const {renderItem, getItemLayout} = parentProps;
     invariant(renderItem, 'no renderItem!');
-    const element = renderItem({item, index});
-    if (getItemLayout &&
-        !parentProps.debug &&
-        !FillRateHelper.enabled()) {
-      return element;
-    }
+    const element = renderItem({
+      item,
+      index,
+      separators: this._separators,
+    });
+    const onLayout = (getItemLayout && !parentProps.debug && !FillRateHelper.enabled())
+      ? undefined
+      : this.props.onLayout;
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
     // called explicitly by `ScrollViewStickyHeader`.
     return (
-      <View onLayout={this.props.onLayout}>
+      <View onLayout={onLayout}>
         {element}
+        {ItemSeparatorComponent && <ItemSeparatorComponent {...this.state.separatorProps} />}
       </View>
     );
   }

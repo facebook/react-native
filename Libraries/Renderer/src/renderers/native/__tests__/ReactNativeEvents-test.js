@@ -97,7 +97,7 @@ it('handles events on text nodes', () => {
   });
 
   class ContextHack extends React.Component {
-    static childContextTypes = {isInAParentText: React.PropTypes.bool};
+    static childContextTypes = {isInAParentText: PropTypes.bool};
     getChildContext() {
       return {isInAParentText: true};
     }

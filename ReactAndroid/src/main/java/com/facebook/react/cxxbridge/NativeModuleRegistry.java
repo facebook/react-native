@@ -45,9 +45,9 @@ public class NativeModuleRegistry {
       JSInstance jsInstance) {
     ArrayList<JavaModuleWrapper> javaModules = new ArrayList<>();
     for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
-      Class<?> type = entry.getKey();
+      Class<? extends NativeModule> type = entry.getKey();
       if (!CxxModuleWrapperBase.class.isAssignableFrom(type)) {
-        javaModules.add(new JavaModuleWrapper(jsInstance, entry.getValue()));
+        javaModules.add(new JavaModuleWrapper(jsInstance, type, entry.getValue()));
       }
     }
     return javaModules;

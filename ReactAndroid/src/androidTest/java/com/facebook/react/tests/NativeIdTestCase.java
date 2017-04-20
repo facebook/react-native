@@ -37,14 +37,57 @@ public class NativeIdTestCase extends ReactAppInstrumentationTestCase {
     "TextInput",
     "View");
 
+  private boolean mViewFound;
+
+  @Override
+  protected void setUp() throws Exception {
+    mViewFound = false;
+    ReactFindViewUtil.addViewListener(new ReactFindViewUtil.OnViewFoundListener() {
+      @Override
+      public String getNativeId() {
+        return viewTags.get(0);
+      }
+
+      @Override
+      public void onViewFound(View view) {
+        mViewFound = true;
+      }
+    });
+    super.setUp();
+  }
+
   public void testPropertyIsSetForViews() {
     for (String nativeId : viewTags) {
-      View viewWithTag = ReactFindViewUtil.findViewByNativeId(
+      View viewWithTag = ReactFindViewUtil.findView(
         getActivity().getRootView(),
         nativeId);
       assertNotNull(
         "View with nativeID " + nativeId + " was not found. Check NativeIdTestModule.js.",
         viewWithTag);
     }
+  }
+
+  public void testViewListener() {
+    assertTrue("OnViewFound callback was never invoked", mViewFound);
+  }
+
+  public void testFindView() {
+    mViewFound = false;
+    ReactFindViewUtil.findView(
+      getActivity().getRootView(),
+      new ReactFindViewUtil.OnViewFoundListener() {
+        @Override
+        public String getNativeId() {
+          return viewTags.get(0);
+        }
+
+        @Override
+        public void onViewFound(View view) {
+          mViewFound = true;
+        }
+      });
+    assertTrue(
+      "OnViewFound callback should have successfully been invoked synchronously",
+      mViewFound);
   }
 }

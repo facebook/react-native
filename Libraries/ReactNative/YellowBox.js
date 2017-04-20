@@ -191,8 +191,13 @@ const StackRow = ({frame}: StackRowProps) => {
   const Text = require('Text');
   const TouchableHighlight = require('TouchableHighlight');
   const {file, lineNumber} = frame;
-  const fileParts = file.split('/');
-  const fileName = fileParts[fileParts.length - 1];
+  let fileName;
+  if (file) {
+    const fileParts = file.split('/');
+    fileName = fileParts[fileParts.length - 1];
+  } else {
+    fileName = '<unknown file>';
+  }
 
   return (
     <TouchableHighlight

@@ -5,9 +5,11 @@ package com.facebook.react.uimanager;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
+
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 /**
  * Base class that should be suitable for the majority of subclasses of {@link ViewManager}.
@@ -96,6 +98,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = PROP_NATIVE_ID)
   public void setNativeId(T view, String nativeId) {
     view.setTag(R.id.view_tag_native_id, nativeId);
+    ReactFindViewUtil.notifyViewRendered(view);
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_LABEL)

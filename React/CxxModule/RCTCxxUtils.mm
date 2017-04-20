@@ -46,12 +46,6 @@ std::vector<std::unique_ptr<NativeModule>> createNativeModules(NSArray<RCTModule
   std::vector<std::unique_ptr<NativeModule>> nativeModules;
   for (RCTModuleData *moduleData in modules) {
     if ([moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
-      // If a module does not support automatic instantiation, and
-      // wasn't provided as an extra module, it may not have an
-      // instance.  If so, skip it.
-      if (![moduleData hasInstance]) {
-        continue;
-      }
       nativeModules.emplace_back(std::make_unique<CxxNativeModule>(
         instance,
         [moduleData.name UTF8String],
