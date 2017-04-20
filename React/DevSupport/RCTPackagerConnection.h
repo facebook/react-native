@@ -7,15 +7,21 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <React/RCTPackagerClient.h>
+#import <Foundation/Foundation.h>
 
-#if RCT_DEV // Only supported in dev mode
+#import <React/RCTDefines.h>
+
+#if RCT_DEV
 
 @class RCTBridge;
 
-@interface RCTReloadPackagerMethod : NSObject <RCTPackagerClientMethod>
+/**
+ * Encapsulates connection to React Native packager
+ */
+@interface RCTPackagerConnection : NSObject
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
+- (void)connect;
 
 @end
 
