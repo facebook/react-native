@@ -18,6 +18,7 @@ const crypto = require('crypto');
 const fetch = require('node-fetch');
 const jsonStableStringify = require('json-stable-stringify');
 const path = require('path');
+const throat = require('throat');
 
 import type {
   Options as TransformWorkerOptions,
@@ -225,7 +226,7 @@ class URIBasedGlobalTransformCache {
   keyOf(props: FetchProps) {
     const hash = crypto.createHash('sha1');
     const {sourceCode, filePath, transformOptions} = props;
-    this._optionsHasher.hashTransformWorkerOptions(hash, transformOptions);
+    hash.update(this._optionsHasher.getTransformWorkerOptionsDigest(transformOptions));
     const cacheKey = props.getTransformCacheKey(sourceCode, filePath, transformOptions);
     hash.update(JSON.stringify(cacheKey));
     hash.update(crypto.createHash('sha1').update(sourceCode).digest('hex'));
@@ -260,7 +261,7 @@ class URIBasedGlobalTransformCache {
    * a second time if we expect them to be transient. We might even consider
    * waiting a little time before retring if experience shows it's useful.
    */
-  static fetchResultFromURI(uri: string): Promise<CachedResult> {
+  static _fetchResultFromURIWithRetry(uri: string): Promise<CachedResult> {
     return URIBasedGlobalTransformCache._fetchResultFromURI(uri).catch(error => {
       if (!URIBasedGlobalTransformCache.shouldRetryAfterThatError(error)) {
         throw error;
@@ -268,6 +269,12 @@ class URIBasedGlobalTransformCache {
       return this._fetchResultFromURI(uri);
     });
   }
+
+  /**
+   * The exposed version uses throat() to limit concurrency, as making too many parallel requests
+   * is more likely to trigger server-side throttling and cause timeouts.
+   */
+  static fetchResultFromURI: (uri: string) => Promise<CachedResult>;
 
   /**
    * We want to retry timeouts as they're likely temporary. We retry 503
@@ -311,11 +318,28 @@ class URIBasedGlobalTransformCache {
 
 }
 
+URIBasedGlobalTransformCache.fetchResultFromURI =
+  throat(500, URIBasedGlobalTransformCache._fetchResultFromURIWithRetry);
+
 class OptionsHasher {
   _rootPath: string;
+  _cache: WeakMap<TransformWorkerOptions, string>;
 
   constructor(rootPath: string) {
     this._rootPath = rootPath;
+    this._cache = new WeakMap();
+  }
+
+  getTransformWorkerOptionsDigest(options: TransformWorkerOptions): string {
+    const digest = this._cache.get(options);
+    if (digest != null) {
+      return digest;
+    }
+    const hash = crypto.createHash('sha1');
+    this.hashTransformWorkerOptions(hash, options);
+    const newDigest = hash.digest('hex');
+    this._cache.set(options, newDigest);
+    return newDigest;
   }
 
   /**

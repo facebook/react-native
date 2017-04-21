@@ -30,7 +30,7 @@ export type File = {|
   type: FileTypes,
 |};
 
-type FileTypes = 'module' | 'script';
+type FileTypes = 'module' | 'script' | 'asset';
 
 export type GraphFn = (
   entryPoints: Iterable<string>,
@@ -126,6 +126,7 @@ export type TransformResults = {[string]: TransformResult};
 export type TransformVariants = {[key: string]: Object};
 
 export type TransformedFile = {
+  assetContent: ?string,
   code: string,
   file: string,
   hasteID: ?string,

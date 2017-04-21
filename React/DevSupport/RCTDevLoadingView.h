@@ -6,15 +6,14 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-'use strict';
 
-class Cache {
-  get(filepath, field, cb) {
-    return cb(filepath);
-  }
+#import <React/RCTBridgeModule.h>
 
-  invalidate(filepath) { }
-  end() { }
-}
+@class RCTLoadingProgress;
 
-module.exports = Cache;
+@interface RCTDevLoadingView : NSObject <RCTBridgeModule>
+
++ (void)setEnabled:(BOOL)enabled;
+- (void)updateProgress:(RCTLoadingProgress *)progress;
+
+@end

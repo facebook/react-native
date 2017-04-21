@@ -11,7 +11,7 @@
 
 #import <React/RCTBridgeModule.h>
 
-@interface JSCSamplingProfiler : NSObject <RCTBridgeModule>
+@interface RCTJSCSamplingProfiler : NSObject <RCTBridgeModule>
 
 /**
  * Receives a JSON string containing the result of a JSC CPU Profiling run,

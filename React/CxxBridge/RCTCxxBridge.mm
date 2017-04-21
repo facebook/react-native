@@ -356,7 +356,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       if (error && [self.delegate respondsToSelector:@selector(fallbackSourceURLForBridge:)]) {
         NSURL *fallbackURL = [self.delegate fallbackSourceURLForBridge:self->_parentBridge];
         if (fallbackURL && ![fallbackURL isEqual:self.bundleURL]) {
-          RCTLogError(@"Failed to load bundle(%@) with error:(%@)", self.bundleURL, error.localizedDescription);
+          RCTLogError(@"Failed to load bundle(%@) with error:(%@ %@)", self.bundleURL, error.localizedDescription, error.localizedFailureReason);
           self.bundleURL = fallbackURL;
           [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:onSourceLoad];
           return;

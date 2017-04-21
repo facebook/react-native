@@ -60,9 +60,7 @@ describe('Module', () => {
   let transformCacheKey;
   const createModule = options =>
     new Module({
-      options: {
-        cacheTransformResults: true,
-      },
+      options: {},
       transformCode: (module, sourceCode, transformOptions) => {
         return Promise.resolve({code: sourceCode});
       },
@@ -255,26 +253,6 @@ describe('Module', () => {
 
       return module.read().then(result => {
         expect(result).toEqual(jasmine.objectContaining(transformResult));
-      });
-    });
-
-    it('only stores dependencies if `cacheTransformResults` option is disabled', () => {
-      transformResult = {
-        code: exampleCode,
-        arbitrary: 'arbitrary',
-        dependencies: ['foo', 'bar'],
-        dependencyOffsets: [12, 764],
-        map: {version: 3},
-        subObject: {foo: 'bar'},
-      };
-      const module = createModule({transformCode, options: {
-        cacheTransformResults: false,
-      }});
-
-      return module.read().then(result => {
-        expect(result).toEqual({
-          dependencies: ['foo', 'bar'],
-        });
       });
     });
 
