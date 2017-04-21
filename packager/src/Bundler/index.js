@@ -47,16 +47,22 @@ import type {
 import type {Reporter} from '../lib/reporting';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 
-export type ExtraTransformOptions = {
+export type ExtraTransformOptions = {|
   +inlineRequires?: {+blacklist: {[string]: true}} | boolean,
-  +preloadedModules?: Array<string> | false,
+  +preloadedModules?: {[path: string]: true} | false,
   +ramGroups?: Array<string>,
-};
+|};
+
+export type GetTransformOptionsOpts = {|
+  dev: boolean,
+  hot: boolean,
+  platform: string,
+|};
 
 export type GetTransformOptions = (
   mainModuleName: string,
-  options: {},
-  getDependencies: string => Promise<Array<string>>,
+  options: GetTransformOptionsOpts,
+  getDependenciesOf: string => Promise<Array<string>>,
 ) => Promise<ExtraTransformOptions>;
 
 type Asset = {|
@@ -749,7 +755,7 @@ class Bundler {
     });
   }
 
-  getTransformOptions(
+  async getTransformOptions(
     mainModuleName: string,
     options: {|
       dev: boolean,
@@ -758,24 +764,25 @@ class Bundler {
       platform: string,
       projectRoots: Array<string>,
     |},
-  ): Promise<TransformOptions> {
+    ): Promise<TransformOptions> {
     const getDependencies = (entryFile: string) =>
       this.getDependencies({...options, entryFile})
         .then(r => r.dependencies.map(d => d.path));
 
-    const extraOptions: Promise<ExtraTransformOptions> = this._getTransformOptions
-      ? this._getTransformOptions(mainModuleName, options, getDependencies)
-      : Promise.resolve({});
-    return extraOptions.then(extraOpts => ({
-      dev: options.dev,
+    const {dev, hot, platform} = options;
+    const extraOptions = this._getTransformOptions
+      ? await this._getTransformOptions(mainModuleName, {dev, hot, platform}, getDependencies)
+      : {};
+    return {
+      dev,
       generateSourceMaps: options.generateSourceMaps,
-      hot: options.hot,
-      inlineRequires: extraOpts.inlineRequires || false,
-      platform: options.platform,
-      preloadedModules: extraOpts.preloadedModules,
+      hot,
+      inlineRequires: extraOptions.inlineRequires || false,
+      platform,
+      preloadedModules: extraOptions.preloadedModules,
       projectRoots: options.projectRoots,
-      ramGroups: extraOpts.ramGroups,
-    }));
+      ramGroups: extraOptions.ramGroups,
+    };
   }
 
   getResolver(): Promise<Resolver> {
