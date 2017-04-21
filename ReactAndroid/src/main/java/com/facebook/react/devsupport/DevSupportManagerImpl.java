@@ -235,16 +235,21 @@ public class DevSupportManagerImpl implements
   @Override
   public void handleException(Exception e) {
     if (mIsDevSupportEnabled) {
+      String message = e.getMessage();
+      Throwable cause = e.getCause();
+      while (cause != null) {
+        message += "\n\n" + cause.getMessage();
+        cause = cause.getCause();
+      }
+
       if (e instanceof JSException) {
         FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
+        message += "\n\n" + ((JSException) e).getStack();
+
         // TODO #11638796: convert the stack into something useful
-        showNewError(
-            e.getMessage() + "\n\n" + ((JSException) e).getStack(),
-            new StackFrame[] {},
-            JSEXCEPTION_ERROR_COOKIE,
-            ErrorType.JS);
+        showNewError(message, new StackFrame[] {}, JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
       } else {
-        showNewJavaError(e.getMessage(), e);
+        showNewJavaError(message, e);
       }
     } else {
       mDefaultNativeModuleCallExceptionHandler.handleException(e);
