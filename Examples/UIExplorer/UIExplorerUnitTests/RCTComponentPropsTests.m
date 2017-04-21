@@ -99,6 +99,7 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
   _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"UIExplorerUnitTestsBundle" withExtension:@"js"]
                                   moduleProvider:nil
                                    launchOptions:nil];
+  RUN_RUNLOOP_WHILE(_bridge.isLoading);
 }
 
 - (void)testSetProps
