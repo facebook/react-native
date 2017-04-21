@@ -27,6 +27,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  *
  * Lifecycle events via a {@link LifecycleEventListener} will still always happen on the UI thread.
  */
+@DoNotStrip
 public class ModuleHolder {
 
   private final String mName;

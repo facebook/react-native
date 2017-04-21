@@ -323,7 +323,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @VisibleForTesting
   @Override
   public void initialize() {
-    UiThreadUtil.assertOnUiThread();
     Assertions.assertCondition(
         !mInitialized,
         "This catalyst instance has already been initialized");
