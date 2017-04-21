@@ -64,8 +64,6 @@ var RCTRenderingPerf = {
     }
 
     ReactPerf.stop();
-    ReactPerf.printInclusive();
-    ReactPerf.printWasted();
     ReactDebugTool.removeHook(RCTRenderingPerfDevtool);
 
     console.log(`Total time spent in render(): ${totalRenderDuration.toFixed(2)} ms`);
@@ -73,6 +71,30 @@ var RCTRenderingPerf = {
     totalRenderDuration = 0;
 
     perfModules.forEach((module) => module.stop());
+  },
+
+  printInclusive: function() {
+    if (!enabled) {
+      return;
+    }
+
+    ReactPerf.printInclusive();
+  },
+
+  printWasted: function() {
+    if (!enabled) {
+      return;
+    }
+
+    ReactPerf.printWasted();
+  },
+
+  printExclusive: function() {
+    if (!enabled) {
+      return;
+    }
+
+    ReactPerf.printExclusive();
   },
 
   register: function(module: perfModule) {
