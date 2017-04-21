@@ -13,7 +13,6 @@
 
 const MetroListView = require('MetroListView'); // Used as a fallback legacy option
 const React = require('React');
-const ReactNative = require('ReactNative');
 const View = require('View');
 const VirtualizedList = require('VirtualizedList');
 
@@ -25,19 +24,40 @@ import type {Props as VirtualizedListProps} from 'VirtualizedList';
 
 type RequiredProps<ItemT> = {
   /**
-   * Takes an item from `data` and renders it into the list. Typical usage:
+   * Takes an item from `data` and renders it into the list. Example usage:
    *
-   *     _renderItem = ({item}) => (
-   *       <TouchableOpacity onPress={() => this._onPress(item)}>
-   *         <Text>{item.title}}</Text>
-   *       </TouchableOpacity>
-   *     );
-   *     ...
-   *     <FlatList data={[{title: 'Title Text', key: 'item1'}]} renderItem={this._renderItem} />
+   *     <FlatList
+   *       ItemSeparatorComponent={Platform.OS !== 'android' && ({highlighted}) => (
+   *         <View style={[style.separator, highlighted && {marginLeft: 0}]} />
+   *       )}
+   *       data={[{title: 'Title Text', key: 'item1'}]}
+   *       renderItem={({item, separators}) => (
+   *         <TouchableHighlight
+   *           onPress={() => this._onPress(item)}
+   *           onShowUnderlay={separators.highlight}
+   *           onHideUnderlay={separators.unhighlight}>
+   *           <View style={{backgroundColor: 'white'}}>
+   *             <Text>{item.title}}</Text>
+   *           </View>
+   *         </TouchableHighlight>
+   *       )}
+   *     />
    *
-   * Provides additional metadata like `index` if you need it.
+   * Provides additional metadata like `index` if you need it, as well as a more generic
+   * `separators.updateProps` function which let's you set whatever props you want to change the
+   * rendering of either the leading separator or trailing separator in case the more common
+   * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
+   * your use-case.
    */
-  renderItem: (info: {item: ItemT, index: number}) => ?React.Element<any>,
+  renderItem: (info: {
+    item: ItemT,
+    index: number,
+    separators: {
+      highlight: () => void,
+      unhighlight: () => void,
+      updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+    },
+  }) => ?React.Element<any>,
   /**
    * For simplicity, data is just a plain array. If you want to use something else, like an
    * immutable list, use the underlying `VirtualizedList` directly.
@@ -46,17 +66,22 @@ type RequiredProps<ItemT> = {
 };
 type OptionalProps<ItemT> = {
   /**
-   * Rendered in between each item, but not at the top or bottom.
+   * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
+   * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`
+   * which will update the `highlighted` prop, but you can also add custom props with
+   * `separators.updateProps`.
    */
   ItemSeparatorComponent?: ?ReactClass<any>,
   /**
-   * Rendered at the bottom of all the items.
+   * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
+   * a rendered element.
    */
-  ListFooterComponent?: ?ReactClass<any>,
+  ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
-   * Rendered at the top of all the items.
+   * Rendered at the top of all the items. Can be a React Component Class, a render function, or
+   * a rendered element.
    */
-  ListHeaderComponent?: ?ReactClass<any>,
+  ListHeaderComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
    * Optional custom style for multi-item rows generated when numColumns > 1.
    */
@@ -131,6 +156,12 @@ type OptionalProps<ItemT> = {
    * Set this true while waiting for new data from a refresh.
    */
   refreshing?: ?boolean,
+  /**
+   * Note: may have bugs (missing content) in some circumstances - use at your own risk.
+   *
+   * This may improve scroll performance for large lists.
+   */
+  removeClippedSubviews?: boolean,
   /**
    * See `ViewabilityHelper` for flow type and further documentation.
    */
@@ -232,20 +263,22 @@ type DefaultProps = typeof defaultProps;
  *     }
  *
  * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist.html),
- * and thus inherits it's props that aren't explicitly listed here along with the following caveats:
+ * and thus inherits it's props (as well as those of `ScrollView`) that aren't explicitly listed
+ * here, along with the following caveats:
  *
  * - Internal state is not preserved when content scrolls out of the render window. Make sure all
  *   your data is captured in the item data or external stores like Flux, Redux, or Relay.
  * - This is a `PureComponent` which means that it will not re-render if `props` remain shallow-
- *   equal. Make sure that everything your `renderItem` function depends on is passed as a prop that
- *   is not `===` after updates, otherwise your UI may not update on changes. This includes the
- *   `data` prop and parent component state.
+ *   equal. Make sure that everything your `renderItem` function depends on is passed as a prop
+ *   (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on
+ *   changes. This includes the `data` prop and parent component state.
  * - In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
  *   offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
  *   blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
  *   and we are working on improving it behind the scenes.
  * - By default, the list looks for a `key` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
+ *
  */
 class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, void> {
   static defaultProps: DefaultProps = defaultProps;
@@ -260,17 +293,22 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
   /**
    * Scrolls to the item at a the specified index such that it is positioned in the viewable area
    * such that `viewPosition` 0 places it at the top, 1 at the bottom, and 0.5 centered in the
-   * middle.
+   * middle. `viewOffset` is a fixed number of pixels to offset the final target position.
    *
-   * May be janky without `getItemLayout` prop.
+   * Note: cannot scroll to locations outside the render window without specifying the
+   * `getItemLayout` prop.
    */
-  scrollToIndex(params: {animated?: ?boolean, index: number, viewPosition?: number}) {
+  scrollToIndex(params: {
+    animated?: ?boolean, index: number, viewOffset?: number, viewPosition?: number,
+  }) {
     this._listRef.scrollToIndex(params);
   }
 
   /**
-   * Requires linear scan through data - use `scrollToIndex` instead if possible. May be janky
-   * without `getItemLayout` prop.
+   * Requires linear scan through data - use `scrollToIndex` instead if possible.
+   *
+   * Note: cannot scroll to locations outside the render window without specifying the
+   * `getItemLayout` prop.
    */
   scrollToItem(params: {animated?: ?boolean, item: ItemT, viewPosition?: number}) {
     this._listRef.scrollToItem(params);
@@ -292,11 +330,18 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     this._listRef.recordInteraction();
   }
 
+  /**
+   * Provides a handle to the underlying scroll responder.
+   */
+  getScrollResponder() {
+    if (this._listRef) {
+      return this._listRef.getScrollResponder();
+    }
+  }
+
   getScrollableNode() {
-    if (this._listRef && this._listRef.getScrollableNode) {
+    if (this._listRef) {
       return this._listRef.getScrollableNode();
-    } else {
-      return ReactNative.findNodeHandle(this._listRef);
     }
   }
 
@@ -405,7 +450,7 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
     }
   };
 
-  _renderItem = (info: {item: ItemT | Array<ItemT>, index: number}) => {
+  _renderItem = (info: Object) => {
     const {renderItem, numColumns, columnWrapperStyle} = this.props;
     if (numColumns > 1) {
       const {item, index} = info;
@@ -413,7 +458,11 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
       return (
         <View style={[{flexDirection: 'row'}, columnWrapperStyle]}>
           {item.map((it, kk) => {
-            const element = renderItem({item: it, index:  index * numColumns + kk});
+            const element = renderItem({
+              item: it,
+              index: index * numColumns + kk,
+              separators: info.separators,
+            });
             return element && React.cloneElement(element, {key: kk});
           })}
         </View>

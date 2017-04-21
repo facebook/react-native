@@ -121,9 +121,7 @@ RCT_EXPORT_MODULE()
   [super tearDown];
 
   _notificationObserver = nil;
-  id<RCTJavaScriptExecutor> jsExecutor = _bridge.batchedBridge.javaScriptExecutor;
   [_bridge invalidate];
-  RUN_RUNLOOP_WHILE(jsExecutor.isValid);
   _bridge = nil;
 }
 

@@ -9,6 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <React/RCTBridge.h>
+
 #ifndef FB_REFERENCE_IMAGE_DIR
 #define FB_REFERENCE_IMAGE_DIR ""
 #endif
@@ -49,7 +51,7 @@
  */
 - (instancetype)initWithApp:(NSString *)app
          referenceDirectory:(NSString *)referenceDirectory
-             moduleProvider:(NSArray<id<RCTBridgeModule>> *(^)(void))block NS_DESIGNATED_INITIALIZER;
+             moduleProvider:(RCTBridgeModuleListProvider)block NS_DESIGNATED_INITIALIZER;
 
 /**
  * Simplest runTest function simply mounts the specified JS module with no

@@ -15,7 +15,6 @@ var UIManager = require('UIManager');
 
 var keyMirror = require('fbjs/lib/keyMirror');
 
-// $FlowFixMe checkPropTypes not yet landed to Flow
 var {checkPropTypes, PropTypes} = require('react');
 
 var TypesEnum = {

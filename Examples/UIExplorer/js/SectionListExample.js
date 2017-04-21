@@ -59,17 +59,15 @@ const VIEWABILITY_CONFIG = {
 };
 
 const renderSectionHeader = ({section}) => (
-  <View>
+  <View style={styles.header}>
     <Text style={styles.headerText}>SECTION HEADER: {section.key}</Text>
     <SeparatorComponent />
   </View>
 );
 
-const CustomSeparatorComponent = ({text}) => (
-  <View>
-    <SeparatorComponent />
+const CustomSeparatorComponent = ({text, highlighted}) => (
+  <View style={[styles.customSeparator, highlighted && {backgroundColor: 'rgb(217, 217, 217)'}]}>
     <Text style={styles.separatorText}>{text}</Text>
-    <SeparatorComponent />
   </View>
 );
 
@@ -130,11 +128,11 @@ class SectionListExample extends React.PureComponent {
         <AnimatedSectionList
           ListHeaderComponent={HeaderComponent}
           ListFooterComponent={FooterComponent}
-          SectionSeparatorComponent={() =>
-            <CustomSeparatorComponent text="SECTION SEPARATOR" />
+          SectionSeparatorComponent={({highlighted}) =>
+            <CustomSeparatorComponent highlighted={highlighted} text="SECTION SEPARATOR" />
           }
-          ItemSeparatorComponent={() =>
-            <CustomSeparatorComponent text="ITEM SEPARATOR" />
+          ItemSeparatorComponent={({highlighted}) =>
+            <CustomSeparatorComponent highlighted={highlighted} text="ITEM SEPARATOR" />
           }
           debug={this.state.debug}
           enableVirtualization={this.state.virtualized}
@@ -144,24 +142,33 @@ class SectionListExample extends React.PureComponent {
           refreshing={false}
           renderItem={this._renderItemComponent}
           renderSectionHeader={renderSectionHeader}
+          stickySectionHeadersEnabled
           sections={[
             {renderItem: renderStackedItem, key: 's1', data: [
-              {title: 'Item In Header Section', text: 'Section s1', key: '0'},
+              {title: 'Item In Header Section', text: 'Section s1', key: 'header item'},
             ]},
             {key: 's2', data: [
-              {noImage: true, title: '1st item', text: 'Section s2', key: '0'},
-              {noImage: true, title: '2nd item', text: 'Section s2', key: '1'},
+              {noImage: true, title: '1st item', text: 'Section s2', key: 'noimage0'},
+              {noImage: true, title: '2nd item', text: 'Section s2', key: 'noimage1'},
             ]},
             ...filteredSectionData,
           ]}
+          style={styles.list}
           viewabilityConfig={VIEWABILITY_CONFIG}
         />
       </UIExplorerPage>
     );
   }
-  _renderItemComponent = ({item}) => (
-    <ItemComponent item={item} onPress={this._pressItem} />
+
+  _renderItemComponent = ({item, separators}) => (
+    <ItemComponent
+      item={item}
+      onPress={this._pressItem}
+      onHideUnderlay={separators.unhighlight}
+      onShowUnderlay={separators.highlight}
+    />
   );
+
   // This is called when items change viewability by scrolling into our out of
   // the viewable area.
   _onViewableItemsChanged = (info: {
@@ -180,14 +187,25 @@ class SectionListExample extends React.PureComponent {
       )));
     }
   };
-  _pressItem = (index: number) => {
-    pressItem(this, index);
+
+  _pressItem = (key: string) => {
+    !isNaN(key) && pressItem(this, key);
   };
 }
 
 const styles = StyleSheet.create({
+  customSeparator: {
+    backgroundColor: 'rgb(200, 199, 204)',
+  },
+  header: {
+    backgroundColor: '#e9eaed',
+  },
   headerText: {
     padding: 4,
+    fontWeight: '600',
+  },
+  list: {
+    backgroundColor: 'white',
   },
   optionSection: {
     flexDirection: 'row',
@@ -198,8 +216,7 @@ const styles = StyleSheet.create({
   separatorText: {
     color: 'gray',
     alignSelf: 'center',
-    padding: 4,
-    fontSize: 9,
+    fontSize: 7,
   },
 });
 

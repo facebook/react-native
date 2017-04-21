@@ -138,7 +138,12 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (JSContext *)jsContext
 {
-  return contextForGlobalContextRef((JSGlobalContextRef) self->_reactInstance->getJavaScriptContext());
+  return contextForGlobalContextRef([self jsContextRef]);
+}
+
+- (JSGlobalContextRef)jsContextRef
+{
+  return (JSGlobalContextRef)self->_reactInstance->getJavaScriptContext();
 }
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
@@ -351,7 +356,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       if (error && [self.delegate respondsToSelector:@selector(fallbackSourceURLForBridge:)]) {
         NSURL *fallbackURL = [self.delegate fallbackSourceURLForBridge:self->_parentBridge];
         if (fallbackURL && ![fallbackURL isEqual:self.bundleURL]) {
-          RCTLogError(@"Failed to load bundle(%@) with error:(%@)", self.bundleURL, error.localizedDescription);
+          RCTLogError(@"Failed to load bundle(%@) with error:(%@ %@)", self.bundleURL, error.localizedDescription, error.localizedFailureReason);
           self.bundleURL = fallbackURL;
           [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:onSourceLoad];
           return;
@@ -398,7 +403,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   [_performanceLogger markStartForTag:RCTPLNativeModulePrepareConfig];
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge buildModuleRegistry]", nil);
 
-  auto registry = buildModuleRegistry(_moduleDataByID, self, _reactInstance);
+  auto registry = std::make_shared<ModuleRegistry>(createNativeModules(_moduleDataByID, self, _reactInstance));
 
   [_performanceLogger markStopForTag:RCTPLNativeModulePrepareConfig];
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -758,15 +763,19 @@ struct RCTInstanceCallback : public InstanceCallback {
   });
 }
 
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(__unused id<RCTBridgeDelegate>)delegate
+                                           bundleURL:(__unused NSURL *)bundleURL
+                                      moduleProvider:(__unused RCTBridgeModuleListProvider)block
+                                       launchOptions:(__unused NSDictionary *)launchOptions)
+
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleURL
-                    moduleProvider:(__unused RCTBridgeModuleProviderBlock)block
-                    launchOptions:(__unused NSDictionary *)launchOptions)
+                                       moduleProvider:(__unused RCTBridgeModuleListProvider)block
+                                        launchOptions:(__unused NSDictionary *)launchOptions)
 
 /**
  * Prevent super from calling setUp (that'd create another batchedBridge)
  */
 - (void)setUp {}
-- (void)bindKeys {}
 
 - (void)reload
 {
@@ -1139,6 +1148,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCTAssertMainQueue();
 
   [self executeBlockOnJavaScriptThread:^{
+    #if WITH_FBSYSTRACE
+    [RCTFBSystrace registerCallbacks];
+    #endif
     RCTProfileInit(self);
   }];
 }
@@ -1151,6 +1163,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     RCTProfileEnd(self, ^(NSString *log) {
       NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
       callback(logData);
+      #if WITH_FBSYSTRACE
+      [RCTFBSystrace unregisterCallbacks];
+      #endif
     });
   }];
 }
