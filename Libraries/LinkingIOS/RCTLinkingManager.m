@@ -42,6 +42,16 @@ RCT_EXPORT_MODULE()
   return @[@"url"];
 }
 
++ (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)URL
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    NSDictionary<NSString *, id> *payload = @{@"url": URL.absoluteString};
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
+                                                        object:self
+                                                      userInfo:payload];
+    return YES;
+}
+
 + (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)URL
   sourceApplication:(NSString *)sourceApplication
