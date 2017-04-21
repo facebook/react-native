@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Process;
 import android.view.View;
 
 import com.facebook.common.logging.FLog;
@@ -128,7 +129,7 @@ public class ReactInstanceManager {
 
   private volatile LifecycleState mLifecycleState;
   private @Nullable @ThreadConfined(UI) ReactContextInitParams mPendingReactContextInitParams;
-  private @Nullable @ThreadConfined(UI) Thread mCreateReactContextThread;
+  private volatile @Nullable Thread mCreateReactContextThread;
 
   /* accessed from any thread */
   private final @Nullable JSBundleLoader mBundleLoader; /* path to JS bundle on file system */
@@ -151,6 +152,7 @@ public class ReactInstanceManager {
   private final boolean mLazyNativeModulesEnabled;
   private final boolean mLazyViewManagersEnabled;
   private final boolean mSetupReactContextInBackgroundEnabled;
+  private final boolean mUseSeparateUIBackgroundThread;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -222,7 +224,8 @@ public class ReactInstanceManager {
     @Nullable RedBoxHandler redBoxHandler,
     boolean lazyNativeModulesEnabled,
     boolean lazyViewManagersEnabled,
-    boolean setupReactContextInBackgroundEnabled) {
+    boolean setupReactContextInBackgroundEnabled,
+    boolean useSeparateUIBackgroundThread) {
 
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -252,6 +255,7 @@ public class ReactInstanceManager {
     mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
     mLazyViewManagersEnabled = lazyViewManagersEnabled;
     mSetupReactContextInBackgroundEnabled = setupReactContextInBackgroundEnabled;
+    mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
 
     // Instantiate ReactChoreographer in UI thread.
     ReactChoreographer.initialize();
@@ -742,32 +746,54 @@ public class ReactInstanceManager {
       @Override
       public void run() {
         try {
+          Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
           final ReactApplicationContext reactApplicationContext = createReactContext(
             initParams.getJsExecutorFactory().create(),
             initParams.getJsBundleLoader());
+
+          if (mSetupReactContextInBackgroundEnabled) {
+            mCreateReactContextThread = null;
+          }
           ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_START);
-          UiThreadUtil.runOnUiThread(new Runnable() {
+          final Runnable maybeRecreateReactContextRunnable = new Runnable() {
             @Override
             public void run() {
-              mCreateReactContextThread = null;
-              try {
-                setupReactContext(reactApplicationContext);
-              } catch (Exception e) {
-                mDevSupportManager.handleException(e);
-              }
-
               if (mPendingReactContextInitParams != null) {
                 runCreateReactContextOnNewThread(mPendingReactContextInitParams);
                 mPendingReactContextInitParams = null;
               }
             }
-          });
+          };
+          Runnable setupReactContextRunnable = new Runnable() {
+            @Override
+            public void run() {
+              if (!mSetupReactContextInBackgroundEnabled) {
+                mCreateReactContextThread = null;
+              }
+
+              try {
+                setupReactContext(reactApplicationContext);
+
+                if (!mSetupReactContextInBackgroundEnabled) {
+                  maybeRecreateReactContextRunnable.run();
+                }
+              } catch (Exception e) {
+                mDevSupportManager.handleException(e);
+              }
+            }
+          };
+
+          if (mSetupReactContextInBackgroundEnabled) {
+            reactApplicationContext.runOnNativeModulesQueueThread(setupReactContextRunnable);
+            UiThreadUtil.runOnUiThread(maybeRecreateReactContextRunnable);
+          } else {
+            UiThreadUtil.runOnUiThread(setupReactContextRunnable);
+          }
         } catch (Exception e) {
           mDevSupportManager.handleException(e);
         }
       }
     });
-    mCreateReactContextThread.setPriority(Thread.MAX_PRIORITY);
     mCreateReactContextThread.start();
   }
 
@@ -775,11 +801,13 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_END);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_START);
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "setupReactContext");
-    UiThreadUtil.assertOnUiThread();
+    if (!mSetupReactContextInBackgroundEnabled) {
+      UiThreadUtil.assertOnUiThread();
+    }
     Assertions.assertCondition(mCurrentReactContext == null);
     mCurrentReactContext = Assertions.assertNotNull(reactContext);
     CatalystInstance catalystInstance =
-        Assertions.assertNotNull(reactContext.getCatalystInstance());
+      Assertions.assertNotNull(reactContext.getCatalystInstance());
 
     catalystInstance.initialize();
     mDevSupportManager.onNewReactContextCreated(reactContext);
@@ -804,10 +832,12 @@ public class ReactInstanceManager {
   }
 
   private void attachMeasuredRootViewToInstance(
-      ReactRootView rootView,
+      final ReactRootView rootView,
       CatalystInstance catalystInstance) {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachMeasuredRootViewToInstance");
-    UiThreadUtil.assertOnUiThread();
+    if (!mSetupReactContextInBackgroundEnabled) {
+      UiThreadUtil.assertOnUiThread();
+    }
 
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
     int rootTag = uiManagerModule.addMeasuredRootView(rootView);
@@ -820,7 +850,12 @@ public class ReactInstanceManager {
     appParams.putDouble("rootTag", rootTag);
     appParams.putMap("initialProps", initialProps);
     catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
-    rootView.onAttachedToReactInstance();
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        rootView.onAttachedToReactInstance();
+      }
+    });
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 

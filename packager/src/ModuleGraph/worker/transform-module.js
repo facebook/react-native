@@ -39,17 +39,18 @@ const moduleFactoryParameters = ['global', 'require', 'module', 'exports'];
 const polyfillFactoryParameters = ['global'];
 
 function transformModule(
-  code: string,
+  content: Buffer,
   options: TransformOptions,
   callback: Callback<TransformedFile>,
 ): void {
-  if (options.filename.endsWith('.json')) {
-    transformJSON(code, options, callback);
+  if (options.filename.endsWith('.png')) {
+    transformAsset(content, options, callback);
     return;
   }
 
-  if (options.filename.endsWith('.png')) {
-    transformAsset(code, options, callback);
+  const code = content.toString('utf8');
+  if (options.filename.endsWith('.json')) {
+    transformJSON(code, options, callback);
     return;
   }
 
@@ -85,6 +86,7 @@ function transformModule(
     const annotations = docblock.parseAsObject(docblock.extract(code));
 
     callback(null, {
+      assetContent: null,
       code,
       file: filename,
       hasteID: annotations.providesModule || null,
@@ -115,6 +117,7 @@ function transformJSON(json, options, callback) {
     .forEach(key => (transformed[key] = moduleData));
 
   const result: TransformedFile = {
+    assetContent: null,
     code: json,
     file: filename,
     hasteID: value.name,
@@ -133,9 +136,14 @@ function transformJSON(json, options, callback) {
   callback(null, result);
 }
 
-function transformAsset(data, options, callback) {
+function transformAsset(
+  content: Buffer,
+  options: TransformOptions,
+  callback: Callback<TransformedFile>,
+) {
   callback(null, {
-    code: data,
+    assetContent: content.toString('base64'),
+    code: '',
     file: options.filename,
     hasteID: null,
     transformed: {},

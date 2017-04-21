@@ -126,6 +126,7 @@ export type TransformResults = {[string]: TransformResult};
 export type TransformVariants = {[key: string]: Object};
 
 export type TransformedFile = {
+  assetContent: ?string,
   code: string,
   file: string,
   hasteID: ?string,

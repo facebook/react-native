@@ -34,7 +34,7 @@ namespace react {
 
 namespace {
 
-static std::string getApplicationDir(const char* methodName) {
+static std::string getApplicationCacheDir(void) {
   // Get the Application Context object
   auto getApplicationClass = findClassLocal(
                               "com/facebook/react/common/ApplicationHolder");
@@ -46,7 +46,7 @@ static std::string getApplicationDir(const char* methodName) {
 
   // Get getCacheDir() from the context
   auto getDirMethod = findClassLocal("android/app/Application")
-                       ->getMethod<jobject()>(methodName,
+                       ->getMethod<jobject()>("getCacheDir",
                                               "()Ljava/io/File;"
                                                   );
   auto dirObj = getDirMethod(application);
@@ -55,14 +55,6 @@ static std::string getApplicationDir(const char* methodName) {
   auto getAbsolutePathMethod = findClassLocal("java/io/File")
                                 ->getMethod<jstring()>("getAbsolutePath");
   return getAbsolutePathMethod(dirObj)->toStdString();
-}
-
-static std::string getApplicationCacheDir() {
-  return getApplicationDir("getCacheDir");
-}
-
-static std::string getApplicationPersistentDir() {
-  return getApplicationDir("getFilesDir");
 }
 
 static JSValueRef nativePerformanceNow(
@@ -95,7 +87,6 @@ class JSCJavaScriptExecutorHolder : public HybridClass<JSCJavaScriptExecutorHold
   static local_ref<jhybriddata> initHybrid(alias_ref<jclass>, ReadableNativeArray* jscConfigArray) {
     // See JSCJavaScriptExecutor.Factory() for the other side of this hack.
     folly::dynamic jscConfigMap = jscConfigArray->consume()[0];
-    jscConfigMap["PersistentDirectory"] = getApplicationPersistentDir();
     return makeCxxInstance(
       std::make_shared<JSCExecutorFactory>(getApplicationCacheDir(), std::move(jscConfigMap)));
   }

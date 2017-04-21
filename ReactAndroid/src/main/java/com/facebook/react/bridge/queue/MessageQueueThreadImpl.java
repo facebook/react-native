@@ -200,6 +200,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
         new Runnable() {
           @Override
           public void run() {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
             Looper.prepare();
 
             looperFuture.set(Looper.myLooper());

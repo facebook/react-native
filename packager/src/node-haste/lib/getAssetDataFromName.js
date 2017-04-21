@@ -5,13 +5,22 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const getPlatformExtension = require('./getPlatformExtension');
 const path = require('path');
 
-function getAssetDataFromName(filename, platforms) {
+function getAssetDataFromName(filename: string, platforms: Set<string>): {|
+  assetName: string,
+  name: string,
+  platform: ?string,
+  resolution: number,
+  type: string,
+|} {
   const ext = path.extname(filename);
   const platformExt = getPlatformExtension(filename, platforms);
 
@@ -45,11 +54,11 @@ function getAssetDataFromName(filename, platforms) {
   assetName = decodeURIComponent(assetName);
 
   return {
-    resolution,
     assetName,
-    type: ext.slice(1),
     name: path.basename(assetName, ext),
     platform: platformExt,
+    resolution,
+    type: ext.slice(1),
   };
 }
 

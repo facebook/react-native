@@ -17,7 +17,6 @@
 
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
-#import <React/RCTJSCExecutor.h>
 #import <React/RCTModuleMethod.h>
 #import <React/RCTRootView.h>
 
@@ -78,9 +77,10 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
 
   NSString *bundleContents =
   @"var __fbBatchedBridge = {"
-   "  callFunctionReturnFlushedQueue: function() {},"
-   "  invokeCallbackAndReturnFlushedQueue: function() {},"
-   "  flushedQueue: function() {},"
+   "  callFunctionReturnFlushedQueue: function() { return null; },"
+   "  invokeCallbackAndReturnFlushedQueue: function() { return null; },"
+   "  flushedQueue: function() { return null; },"
+   "  callFunctionReturnResultAndFlushedQueue: function() { return null; },"
    "};";
 
   NSURL *tempDir = [NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES];
@@ -165,39 +165,6 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
 
   RUN_RUNLOOP_WHILE(weakMethod)
   XCTAssertNil(weakMethod, @"RCTModuleMethod should have been deallocated");
-}
-
-- (void)testJavaScriptExecutorIsDeallocated
-{
-  __weak id<RCTJavaScriptExecutor> weakExecutor;
-  @autoreleasepool {
-    RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL
-                                              moduleProvider:nil
-                                               launchOptions:nil];
-    weakExecutor = [bridge.batchedBridge valueForKey:@"javaScriptExecutor"];
-    XCTAssertNotNil(weakExecutor, @"JavaScriptExecutor should have been created");
-    (void)bridge;
-  }
-
-  RUN_RUNLOOP_WHILE(weakExecutor);
-  XCTAssertNil(weakExecutor, @"JavaScriptExecutor should have been released");
-}
-
-- (void)testJavaScriptContextIsDeallocated
-{
-  __weak id weakContext;
-  @autoreleasepool {
-    RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL
-                                              moduleProvider:nil
-                                               launchOptions:nil];
-    id executor = [bridge.batchedBridge valueForKey:@"javaScriptExecutor"];
-    RUN_RUNLOOP_WHILE(!(weakContext = [executor valueForKey:@"_context"]));
-    XCTAssertNotNil(weakContext, @"RCTJavaScriptContext should have been created");
-    (void)bridge;
-  }
-
-  RUN_RUNLOOP_WHILE(weakContext);
-  XCTAssertNil(weakContext, @"RCTJavaScriptContext should have been deallocated");
 }
 
 - (void)testContentViewIsInvalidated

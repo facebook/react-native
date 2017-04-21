@@ -33,8 +33,8 @@ type DirExistsFn = (filePath: string) => boolean;
  * `jest-haste-map`'s interface for ModuleMap.
  */
 export type ModuleMap = {
-  getModule(name: string, platform: string, supportsNativePlatform: boolean): ?string,
-  getPackage(name: string, platform: string, supportsNativePlatform: boolean): ?string,
+  getModule(name: string, platform: ?string, supportsNativePlatform: boolean): ?string,
+  getPackage(name: string, platform: ?string, supportsNativePlatform: boolean): ?string,
 };
 
 type Packageish = {
@@ -68,7 +68,7 @@ type Options<TModule, TPackage> = {|
   +matchFiles: MatchFilesByDirAndPattern,
   +moduleCache: ModuleishCache<TModule, TPackage>,
   +moduleMap: ModuleMap,
-  +platform: string,
+  +platform: ?string,
   +platforms: Set<string>,
   +preferNativePlatform: boolean,
 |};
@@ -99,7 +99,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
   _matchFiles: MatchFilesByDirAndPattern;
   _moduleCache: ModuleishCache<TModule, TPackage>;
   _moduleMap: ModuleMap;
-  _platform: string;
+  _platform: ?string;
   _platforms: Set<string>;
   _preferNativePlatform: boolean;
   static emptyModule: string;
