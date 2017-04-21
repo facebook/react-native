@@ -20,6 +20,10 @@ const Platform = {
     const constants = NativeModules.PlatformConstants;
     return constants && constants.Version;
   },
+  get isTablet() {
+    const constants = NativeModules.PlatformConstants;
+    return constants && constants.isTablet;
+  },
   get isTesting(): boolean {
     const constants = NativeModules.PlatformConstants;
     return constants && constants.isTesting;

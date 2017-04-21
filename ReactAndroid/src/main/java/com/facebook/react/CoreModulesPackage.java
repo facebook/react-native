@@ -99,7 +99,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
       new ModuleSpec(AndroidInfoModule.class, new Provider<NativeModule>() {
         @Override
         public NativeModule get() {
-          return new AndroidInfoModule();
+          return new AndroidInfoModule(reactContext);
         }
       }));
     moduleSpecList.add(
