@@ -428,7 +428,7 @@ class Server {
   _rangeRequestMiddleware(
     req: IncomingMessage,
     res: ServerResponse,
-    data: string,
+    data: string | Buffer,
     assetPath: string,
   ) {
     if (req.headers && req.headers.range) {

@@ -15,24 +15,13 @@
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
 
+#import <RCTTest/RCTTestRunner.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTJavaScriptExecutor.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTViewManager.h>
-
-#define RUN_RUNLOOP_WHILE(CONDITION) \
-{ \
-  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5]; \
-  while ((CONDITION)) { \
-    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; \
-    if ([timeout timeIntervalSinceNow] <= 0) { \
-      XCTFail(@"Runloop timed out before condition was met"); \
-      break; \
-    } \
-  } \
-}
 
 @interface RCTTestViewManager : RCTViewManager
 @end
@@ -127,7 +116,7 @@ RCT_EXPORT_MODULE()
 
 - (void)testViewManagerNotInitializedBeforeSetBridgeModule
 {
-  RUN_RUNLOOP_WHILE(!_notificationObserver.didDetectViewManagerInit);
+  RCT_RUN_RUNLOOP_WHILE(!_notificationObserver.didDetectViewManagerInit);
 }
 
 @end

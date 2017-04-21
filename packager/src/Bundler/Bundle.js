@@ -41,7 +41,7 @@ class Bundle extends BundleBase {
   _minify: boolean | void;
   _numRequireCalls: number;
   _ramBundle: Unbundle | null;
-  _ramGroups: Array<string> | void;
+  _ramGroups: ?Array<string>;
   _sourceMap: string | null;
   _sourceMapFormat: SourceMapFormat;
   _sourceMapUrl: ?string;
@@ -309,7 +309,7 @@ class Bundle extends BundleBase {
     ].join('\n');
   }
 
-  setRamGroups(ramGroups: Array<string>) {
+  setRamGroups(ramGroups: ?Array<string>) {
     this._ramGroups = ramGroups;
   }
 }
