@@ -276,6 +276,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     return mCustomGlobalLayoutListener;
   }
 
+  protected ReactInstanceManager getReactInstanceManager(){
+    return mReactInstanceManager;
+  }
+
   private void attachToReactInstanceManager() {
     if (mIsAttachedToInstance) {
       return;
