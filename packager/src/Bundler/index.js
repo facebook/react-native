@@ -59,18 +59,18 @@ export type GetTransformOptions = (
   getDependencies: string => Promise<Array<string>>,
 ) => Promise<ExtraTransformOptions>;
 
-type Asset = {
-  __packager_asset: boolean,
-  fileSystemLocation: string,
-  httpServerLocation: string,
-  width: ?number,
-  height: ?number,
-  scales: number,
-  files: Array<string>,
-  hash: string,
-  name: string,
-  type: string,
-};
+type Asset = {|
+  +__packager_asset: boolean,
+  +fileSystemLocation: string,
+  +httpServerLocation: string,
+  +width: ?number,
+  +height: ?number,
+  +scales: Array<number>,
+  +files: Array<string>,
+  +hash: string,
+  +name: string,
+  +type: string,
+|};
 
 const sizeOf = denodeify(imageSize);
 
@@ -696,7 +696,7 @@ class Bundler {
       return {
         asset,
         code,
-        meta: {dependencies, dependencyOffsets},
+        meta: {dependencies, dependencyOffsets, preloaded: null},
       };
     });
   }
