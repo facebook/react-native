@@ -42,6 +42,7 @@
 }
 
 RCT_TEST(ViewExample)
+RCT_TEST(LayoutExample)
 RCT_TEST(ARTExample)
 RCT_TEST(ScrollViewExample)
 RCT_TEST(TextExample)
