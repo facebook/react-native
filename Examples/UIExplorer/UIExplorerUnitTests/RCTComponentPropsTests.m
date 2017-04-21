@@ -14,21 +14,10 @@
 
 #import <XCTest/XCTest.h>
 
+#import <RCTTest/RCTTestRunner.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTView.h>
 #import <React/RCTViewManager.h>
-
-#define RUN_RUNLOOP_WHILE(CONDITION) \
-{ \
-  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5]; \
-  while ((CONDITION)) { \
-    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; \
-    if ([timeout timeIntervalSinceNow] <= 0) { \
-      XCTFail(@"Runloop timed out before condition was met"); \
-      break; \
-    } \
-  } \
-}
 
 @interface RCTUIManager ()
 
@@ -99,7 +88,7 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
   _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"UIExplorerUnitTestsBundle" withExtension:@"js"]
                                   moduleProvider:nil
                                    launchOptions:nil];
-  RUN_RUNLOOP_WHILE(_bridge.isLoading);
+  RCT_RUN_RUNLOOP_WHILE(_bridge.isLoading);
 }
 
 - (void)testSetProps
@@ -123,7 +112,7 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
     [uiManager setNeedsLayout];
   });
 
-  RUN_RUNLOOP_WHILE(view == nil);
+  RCT_RUN_RUNLOOP_WHILE(view == nil);
 }
 
 - (void)testResetProps
@@ -153,7 +142,7 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
     [uiManager setNeedsLayout];
   });
 
-  RUN_RUNLOOP_WHILE(view == nil);
+  RCT_RUN_RUNLOOP_WHILE(view == nil);
 }
 
 - (void)testResetBackgroundColor
@@ -177,7 +166,7 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
     [uiManager setNeedsLayout];
   });
 
-  RUN_RUNLOOP_WHILE(view == nil);
+  RCT_RUN_RUNLOOP_WHILE(view == nil);
 }
 
 @end

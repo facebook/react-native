@@ -15,24 +15,12 @@
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
 
+#import <RCTTest/RCTTestRunner.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTJavaScriptExecutor.h>
 #import <React/RCTUtils.h>
-
-#define RUN_RUNLOOP_WHILE(CONDITION) \
-{ \
-  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5]; \
-  while ((CONDITION)) { \
-    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; \
-    if ([timeout timeIntervalSinceNow] <= 0) { \
-      XCTFail(@"Runloop timed out before condition was met"); \
-      break; \
-    } \
-  } \
-}
-
 
 @interface RCTTestInjectedModule : NSObject <RCTBridgeModule>
 @end
@@ -205,13 +193,13 @@ RCT_EXPORT_MODULE()
   XCTAssertEqual(_injectedModule, [_bridge moduleForClass:[RCTTestInjectedModule class]]);
   XCTAssertEqual(_injectedModule.bridge, _bridge.batchedBridge);
   XCTAssertNotNil(_injectedModule.methodQueue);
-  RUN_RUNLOOP_WHILE(!_injectedModuleInitNotificationSent);
+  RCT_RUN_RUNLOOP_WHILE(!_injectedModuleInitNotificationSent);
   XCTAssertTrue(_injectedModuleInitNotificationSent);
 }
 
 - (void)testCustomInitModuleInitializedAtBridgeStartup
 {
-  RUN_RUNLOOP_WHILE(!_customInitModuleNotificationSent);
+  RCT_RUN_RUNLOOP_WHILE(!_customInitModuleNotificationSent);
   XCTAssertTrue(_customInitModuleNotificationSent);
   RCTTestCustomInitModule *module = [_bridge moduleForClass:[RCTTestCustomInitModule class]];
   XCTAssertTrue(module.initializedOnMainQueue);
@@ -228,7 +216,7 @@ RCT_EXPORT_MODULE()
     module = [self->_bridge moduleForClass:[RCTTestCustomSetBridgeModule class]];
   });
 
-  RUN_RUNLOOP_WHILE(!module);
+  RCT_RUN_RUNLOOP_WHILE(!module);
   XCTAssertTrue(_customSetBridgeModuleNotificationSent);
   XCTAssertFalse(module.setBridgeOnMainQueue);
   XCTAssertEqual(module.bridge, _bridge.batchedBridge);
@@ -237,10 +225,10 @@ RCT_EXPORT_MODULE()
 
 - (void)testExportConstantsModuleInitializedAtBridgeStartup
 {
-  RUN_RUNLOOP_WHILE(!_exportConstantsModuleNotificationSent);
+  RCT_RUN_RUNLOOP_WHILE(!_exportConstantsModuleNotificationSent);
   XCTAssertTrue(_exportConstantsModuleNotificationSent);
   RCTTestExportConstantsModule *module = [_bridge moduleForClass:[RCTTestExportConstantsModule class]];
-  RUN_RUNLOOP_WHILE(!module.exportedConstants);
+  RCT_RUN_RUNLOOP_WHILE(!module.exportedConstants);
   XCTAssertTrue(module.exportedConstants);
   XCTAssertTrue(module.exportedConstantsOnMainQueue);
   XCTAssertEqual(module.bridge, _bridge.batchedBridge);
@@ -256,7 +244,7 @@ RCT_EXPORT_MODULE()
     module = [self->_bridge moduleForClass:[RCTLazyInitModule class]];
   });
 
-  RUN_RUNLOOP_WHILE(!module);
+  RCT_RUN_RUNLOOP_WHILE(!module);
   XCTAssertTrue(_lazyInitModuleNotificationSent);
   XCTAssertFalse(_lazyInitModuleNotificationSentOnMainQueue);
   XCTAssertNotNil(module);
