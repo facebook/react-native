@@ -35,7 +35,6 @@ const {
   Surface,
   Path,
   Group,
-  Text,
   Transform,
   Shape,
 } = ART;
@@ -46,29 +45,45 @@ var scale = Platform.isTVOS ? 4 : 1;
 class ARTExample extends React.Component{
     render(){
         const pathRect = new Path()
-            .moveTo(scale*1,scale*1)
-            .lineTo(scale*1,scale*99)
-            .lineTo(scale*99,scale*99)
-            .lineTo(scale*99,scale*1)
+            .moveTo(scale*0,scale*0)
+            .lineTo(scale*0,scale*110)
+            .lineTo(scale*110,scale*110)
+            .lineTo(scale*110,scale*0)
             .close();
 
-        const pathCircle = new Path()
-            .moveTo(scale*50,scale*1)
-            .arc(scale*0,scale*99,scale*25)
-            .arc(scale*0,-scale*99,scale*25)
+        const pathCircle0 = new Path()
+            .moveTo(scale*30,scale*5)
+            .arc(scale*0,scale*50,scale*25)
+            .arc(scale*0,-scale*50,scale*25)
             .close();
 
-        const pathText = new Path()
-            .moveTo(scale*75,scale*200)
-            .lineTo(scale*75,scale*200);
+        const pathCircle1 = new Path()
+            .moveTo(scale*30,scale*55)
+            .arc(scale*0,scale*50,scale*25)
+            .arc(scale*0,-scale*50,scale*25)
+            .close();
+
+        const pathCircle2 = new Path()
+            .moveTo(scale*55,scale*30)
+            .arc(scale*50,scale*0,scale*25)
+            .arc(-scale*50,scale*0,scale*25)
+            .close();
+
+        const pathCircle3 = new Path()
+            .moveTo(scale*55,scale*80)
+            .arc(scale*50,scale*0,scale*25)
+            .arc(-scale*50,scale*0,scale*25)
+            .close();
 
         return(
             <View>
-                <Surface width={scale*150} height={scale*200}>
+                <Surface width={scale*200} height={scale*200}>
                     <Group>
                         <Shape d={pathRect} stroke="#000080" fill="#000080" strokeWidth={scale*1}/>
-                        <Shape d={pathCircle} stroke="#FFFFFF" fill="#FFFFFF" strokeWidth={scale*1}/>
-                        <Text strokeWidth={scale*1} stroke="#080" fill="#080" font={"" + scale*30 + "px Helvetica"} path={pathText} >RN Art</Text>
+                        <Shape d={pathCircle0} stroke="#FF0000" fill="#FF0000" strokeWidth={scale*1}/>
+                        <Shape d={pathCircle1} stroke="#00FF00" fill="#00FF00" strokeWidth={scale*1}/>
+                        <Shape d={pathCircle2} stroke="#00FFFF" fill="#00FFFF" strokeWidth={scale*1}/>
+                        <Shape d={pathCircle3} stroke="#FFFFFF" fill="#FFFFFF" strokeWidth={scale*1}/>
                     </Group>
                 </Surface>
             </View>
