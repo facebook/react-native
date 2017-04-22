@@ -54,17 +54,8 @@ RCT_EXPORT_MODULE()
 - (void)setUp
 {
   if (!_url) {
-    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
-
-    NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"];
-    if (!port) {
-      port = [[[_bridge bundleURL] port] integerValue] ?: 8081;
-    }
-
-    NSString *host = [[_bridge bundleURL] host];
-    if (!host) {
-      host = @"localhost";
-    }
+    NSInteger port = [[[_bridge bundleURL] port] integerValue] ?: 8081;
+    NSString *host = [[_bridge bundleURL] host] ?: @"localhost";
     NSString *URLString = [NSString stringWithFormat:@"http://%@:%zd/debugger-proxy?role=client", host, port];
     _url = [RCTConvert NSURL:URLString];
   }
@@ -141,6 +132,7 @@ RCT_EXPORT_MODULE()
   RCTWSMessageCallback callback = _callbacks[messageID];
   if (callback) {
     callback(error, reply);
+    [_callbacks removeObjectForKey:messageID];
   }
 }
 

@@ -25,6 +25,10 @@ static JSValueRef nativeGetHeapStats(
   result.setProperty("extra_size", {ctx, Value::makeNumber(ctx, heapStats.extraSize)});
   result.setProperty("capacity", {ctx, Value::makeNumber(ctx, heapStats.capacity)});
   result.setProperty("object_count", {ctx, Value::makeNumber(ctx, heapStats.objectCount)});
+  result.setProperty("object_size", {ctx, Value::makeNumber(ctx, heapStats.objectSizeAfterLastCollect)});
+  result.setProperty("object_capacity", {ctx, Value::makeNumber(ctx, heapStats.objectCapacityAfterLastCollect)});
+  result.setProperty("block_size", {ctx, Value::makeNumber(ctx, heapStats.blockSize)});
+  result.setProperty("malloc_size", {ctx, Value::makeNumber(ctx, heapStats.mallocSize)});
 
   return (JSObjectRef) result;
 }

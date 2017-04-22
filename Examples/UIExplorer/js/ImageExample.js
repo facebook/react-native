@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule ImageExample
  */
 'use strict';
 
@@ -300,6 +301,35 @@ exports.examples = [
           source={{uri: 'https://facebook.github.io/origami/public/images/birds.jpg'}}
           style={styles.base}
         />
+      );
+    },
+    platform: 'ios',
+  },
+  {
+    title: 'Cache Policy',
+    description: 'First image has never been loaded before and is instructed not to load unless in cache.' +
+    'Placeholder image from above will stay. Second image is the same but forced to load regardless of' +
+    ' local cache state.',
+    render: function () {
+      return (
+        <View style={styles.horizontal}>
+          <Image
+            defaultSource={require('./bunny.png')}
+            source={{
+              uri: smallImage.uri + '?cacheBust=notinCache' + Date.now(),
+              cache: 'only-if-cached'
+            }}
+            style={styles.base}
+          />
+          <Image
+            defaultSource={require('./bunny.png')}
+            source={{
+              uri: smallImage.uri + '?cacheBust=notinCache' + Date.now(),
+              cache: 'reload'
+            }}
+            style={styles.base}
+          />
+        </View>
       );
     },
     platform: 'ios',
@@ -626,7 +656,7 @@ exports.examples = [
         <View style={{flexDirection: 'row'}}>
           <Image
             source={{
-              url: 'ImageInBundle',
+              uri: 'ImageInBundle',
               bundle: 'UIExplorerBundle',
               width: 100,
               height: 100,
@@ -635,7 +665,7 @@ exports.examples = [
           />
           <Image
             source={{
-              url: 'ImageInAssetCatalog',
+              uri: 'ImageInAssetCatalog',
               bundle: 'UIExplorerBundle',
               width: 100,
               height: 100,
@@ -646,6 +676,45 @@ exports.examples = [
       );
     },
     platform: 'ios',
+  },
+  {
+    title: 'Blur Radius',
+    render: function() {
+      return (
+        <View style={styles.horizontal}>
+          <Image
+            style={[styles.base,]}
+            source={fullImage}
+            blurRadius={0}
+          />
+          <Image
+            style={[styles.base, styles.leftMargin]}
+            source={fullImage}
+            blurRadius={5}
+          />
+          <Image
+            style={[styles.base, styles.leftMargin]}
+            source={fullImage}
+            blurRadius={10}
+          />
+          <Image
+            style={[styles.base, styles.leftMargin]}
+            source={fullImage}
+            blurRadius={15}
+          />
+          <Image
+            style={[styles.base, styles.leftMargin]}
+            source={fullImage}
+            blurRadius={20}
+          />
+          <Image
+            style={[styles.base, styles.leftMargin]}
+            source={fullImage}
+            blurRadius={25}
+          />
+        </View>
+      );
+    },
   },
 ];
 

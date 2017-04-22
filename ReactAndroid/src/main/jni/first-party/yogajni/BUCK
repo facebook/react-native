@@ -1,4 +1,4 @@
-include_defs('//ReactAndroid/DEFS')
+include_defs("//ReactAndroid/DEFS")
 
 # This target is only used in open source
 if IS_OSS_BUILD:

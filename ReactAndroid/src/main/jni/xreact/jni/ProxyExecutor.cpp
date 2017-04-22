@@ -39,13 +39,22 @@ std::unique_ptr<JSExecutor> ProxyExecutorOneTimeFactory::createJSExecutor(
 ProxyExecutor::ProxyExecutor(jni::global_ref<jobject>&& executorInstance,
                              std::shared_ptr<ExecutorDelegate> delegate)
     : m_executor(std::move(executorInstance))
-    , m_delegate(delegate) {
+    , m_delegate(delegate)
+{}
+
+ProxyExecutor::~ProxyExecutor() {
+  m_executor.reset();
+}
+
+void ProxyExecutor::loadApplicationScript(
+    std::unique_ptr<const JSBigString>,
+    std::string sourceURL) {
 
   folly::dynamic nativeModuleConfig = folly::dynamic::array;
 
   {
     SystraceSection s("collectNativeModuleDescriptions");
-    auto moduleRegistry = delegate->getModuleRegistry();
+    auto moduleRegistry = m_delegate->getModuleRegistry();
     for (const auto& name : moduleRegistry->moduleNames()) {
       auto config = moduleRegistry->getConfig(name);
       nativeModuleConfig.push_back(config ? config->config : nullptr);
@@ -56,19 +65,13 @@ ProxyExecutor::ProxyExecutor(jni::global_ref<jobject>&& executorInstance,
     folly::dynamic::object
     ("remoteModuleConfig", std::move(nativeModuleConfig));
 
-  SystraceSection t("setGlobalVariable");
-  setGlobalVariable(
-    "__fbBatchedBridgeConfig",
-    folly::make_unique<JSBigStdString>(folly::toJson(config)));
-}
+  {
+    SystraceSection t("setGlobalVariable");
+    setGlobalVariable(
+      "__fbBatchedBridgeConfig",
+      folly::make_unique<JSBigStdString>(folly::toJson(config)));
+  }
 
-ProxyExecutor::~ProxyExecutor() {
-  m_executor.reset();
-}
-
-void ProxyExecutor::loadApplicationScript(
-    std::unique_ptr<const JSBigString>,
-    std::string sourceURL) {
   static auto loadApplicationScript =
     jni::findClassStatic(EXECUTOR_BASECLASS)->getMethod<void(jstring)>("loadApplicationScript");
 

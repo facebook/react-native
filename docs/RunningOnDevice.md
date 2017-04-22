@@ -4,8 +4,9 @@ title: Running On Device
 layout: docs
 category: Guides
 permalink: docs/running-on-device.html
-next: javascript-environment
-previous: testing
+banner: ejected
+next: upgrading
+previous: integration-with-existing-apps
 ---
 
 It's always a good idea to test your app on an actual device before releasing it to your users. This document will guide you through the necessary steps to run your React Native app on a device.
@@ -47,26 +48,29 @@ It's always a good idea to test your app on an actual device before releasing it
   <a href="javascript:void(0);" class="button-windows" onclick="display('os', 'windows')">Windows</a>
 </div>
 
-<block class="mac linux windows ios" />
+<block class="linux windows ios" />
 
-## Setting up an iOS device
-
-Installing an app on an iOS device requires a Mac, an Apple ID, and a USB cable.
+A Mac is required in order to build your app for iOS devices.
 
 <block class="mac ios" />
 
-Connect your device to your Mac via USB, then open Xcode. In the project navigator, choose your device from the Scheme toolbar menu. Xcode will then register your device for development.
+## Running your app on iOS devices
 
-> If you run into any issues, please take a look at Apple's [Launching Your App on a Device docs](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/LaunchingYourApponDevices/LaunchingYourApponDevices.html#//apple_ref/doc/uid/TP40012582-CH27-SW4).
+Register for a [Apple developer account](https://developer.apple.com/) if you don't have one yet.
 
-Finally, select your phone as the build target and press **Build and run**.
+Connect your device to your Mac using a USB to Lightning cable. Navigate to the `ios` folder in your project, then open the `.xcodeproj` file within it using Xcode.
 
+Select your app in the Project Navigator and look for the "General" tab. Go to "Signing" and make sure your Apple developer account is selected.
+
+Open the "Product" menu from Xcode's menubar, then go to "Destination". Look for and select your device from the list. Xcode will then register your device for development.
+
+If everything is set up correctly, your device will be listed as the build target in the Xcode toolbar. You can now press the **Build and run** button or select "Run" from the "Product" menu. Your app will launch on your device shortly.
+
+> If you run into any issues, please take a look at Apple's [Launching Your App on a Device](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/LaunchingYourApponDevices/LaunchingYourApponDevices.html#//apple_ref/doc/uid/TP40012582-CH27-SW4) docs.
 
 <block class="mac windows linux android" />
 
-## Setting up an Android device
-
-Running an Android app on a device requires a Mac or PC and a USB cable.
+## Running your app on Android devices
 
 ### 1. Enable Debugging over USB
 
@@ -146,13 +150,23 @@ Type the following in your command prompt to install and launch your app on the 
 $ react-native run-android
 ```
 
-> If you get a "bridge configuration isn't available" error, see [Using adb reverse](#using-adb-reverse).
+> If you get a "bridge configuration isn't available" error, see [Using adb reverse](docs/running-on-device.html#method-1-using-adb-reverse-recommended).
 
 > Hint
 >
-> You can also use the `React Native CLI` to generate and run a `Release` build (e.g. `react-native run-android --configuration Release`).
+> You can also use the `React Native CLI` to generate and run a `Release` build (e.g. `react-native run-android --variant=release`).
 
 <block class="mac windows linux android ios" />
+
+<block class="mac ios" />
+
+## Connecting to the development server
+
+You can also iterate quickly on a device using the development server. You only have to be on the same Wi-Fi network as your computer. Enable Live reloading from the [Developer menu](docs/debugging.html#accessing-the-in-app-developer-menu) and your app will reload whenever your JavaScript code has changed.
+
+> If you have any issues, ensure that your Mac and device are on the same network and can reach each other. Many open wireless networks with captive portals are configured to prevent devices from reaching other devices on the network. You may use your device's Personal Hotspot feature in this case.
+
+<block class="mac windows linux android" />
 
 ## Connecting to the development server
 
@@ -164,7 +178,7 @@ You can also iterate quickly on a device by connecting to the development server
 
 You can use this method if your device is running Android 5.0 (Lollipop), it has USB debugging enabled, and it is connected via USB to your development machine.
 
-<block class="mac windows linux android ios" />
+<block class="mac windows linux android" />
 
 Run the following in a command prompt:
 
@@ -172,33 +186,35 @@ Run the following in a command prompt:
 $ adb reverse tcp:8081 tcp:8081
 ```
 
-You can now use `Reload JS` from the React Native in-app Developer menu without any additional configuration.
+You can now enable Live reloading from the [Developer menu](docs/debugging.html#accessing-the-in-app-developer-menu). Your app will reload whenever your JavaScript code has changed.
 
 ### Method 2: Connect via Wi-Fi
 
 You can also connect to the development server over Wi-Fi. You'll first need to install the app on your device using a USB cable, but once that has been done you can debug wirelessly by following these instructions. You'll need your development machine's current IP address before proceeding.
 
-<block class="mac android ios" />
+<block class="mac android" />
 
 You can find the IP address in **System Preferences** → **Network**.
 
-<block class="windows android ios" />
+<block class="windows android" />
 
 Open the command prompt and type `ipconfig` to find your machine's IP address ([more info](http://windows.microsoft.com/en-us/windows/using-command-line-tools-networking-information)).
 
-<block class="linux android ios" />
+<block class="linux android" />
 
 Open a terminal and type `/sbin/ifconfig` to find your machine's IP address.
 
-<block class="mac windows linux android ios" />
+<block class="mac windows linux android" />
 
 1. Make sure your laptop and your phone are on the **same** Wi-Fi network.
 2. Open your React Native app on your device.
-3. You'll see a [red screen with an error](/react-native/docs/debugging.html#in-app-errors-and-warnings). This is OK. The following steps will fix that.
-4. Open the in-app [Developer menu](/react-native/docs/debugging.html#accessing-the-in-app-developer-menu).
+3. You'll see a [red screen with an error](docs/debugging.html#in-app-errors-and-warnings). This is OK. The following steps will fix that.
+4. Open the in-app [Developer menu](docs/debugging.html#accessing-the-in-app-developer-menu).
 5. Go to **Dev Settings** → **Debug server host for device**.
 6. Type in your machine's IP address and the port of the local dev server (e.g. 10.0.1.1:8081).
 7. Go back to the **Developer menu** and select **Reload JS**.
+
+You can now enable Live reloading from the [Developer menu](docs/debugging.html#accessing-the-in-app-developer-menu). Your app will reload whenever your JavaScript code has changed.
 
 <block class="mac ios" />
 

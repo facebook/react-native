@@ -2,6 +2,8 @@
 
 #include "JInspector.h"
 
+#ifdef WITH_INSPECTOR
+
 namespace facebook {
 namespace react {
 
@@ -88,3 +90,5 @@ void JInspector::registerNatives() {
 
 }
 }
+
+#endif

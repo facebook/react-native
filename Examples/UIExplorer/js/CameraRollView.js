@@ -24,12 +24,15 @@
 'use strict';
 
 var React = require('react');
+const PropTypes = require('prop-types');
 var ReactNative = require('react-native');
 var {
   ActivityIndicator,
+  Alert,
   CameraRoll,
   Image,
   ListView,
+  PermissionsAndroid,
   Platform,
   StyleSheet,
   View,
@@ -44,7 +47,7 @@ var propTypes = {
    * values are 'Album', 'All', 'Event', 'Faces', 'Library', 'PhotoStream'
    * and SavedPhotos.
    */
-  groupTypes: React.PropTypes.oneOf([
+  groupTypes: PropTypes.oneOf([
     'Album',
     'All',
     'Event',
@@ -57,22 +60,22 @@ var propTypes = {
   /**
    * Number of images that will be fetched in one page.
    */
-  batchSize: React.PropTypes.number,
+  batchSize: PropTypes.number,
 
   /**
    * A function that takes a single image as a parameter and renders it.
    */
-  renderImage: React.PropTypes.func,
+  renderImage: PropTypes.func,
 
   /**
    * imagesPerRow: Number of images to be shown in each row.
    */
-  imagesPerRow: React.PropTypes.number,
+  imagesPerRow: PropTypes.number,
 
    /**
    * The asset type, one of 'Photos', 'Videos' or 'All'
    */
-  assetType: React.PropTypes.oneOf([
+  assetType: PropTypes.oneOf([
     'Photos',
     'Videos',
     'All',
@@ -81,6 +84,7 @@ var propTypes = {
 };
 
 var CameraRollView = React.createClass({
+  // $FlowFixMe(>=0.41.0)
   propTypes: propTypes,
 
   getDefaultProps: function(): Object {
@@ -123,6 +127,7 @@ var CameraRollView = React.createClass({
   rendererChanged: function() {
     var ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
     this.state.dataSource = ds.cloneWithRows(
+      // $FlowFixMe(>=0.41.0)
       groupByEveryN(this.state.assets, this.props.imagesPerRow)
     );
   },
@@ -137,13 +142,27 @@ var CameraRollView = React.createClass({
     }
   },
 
-  _fetch: function(clear?: boolean) {
+  _fetch: async function(clear?: boolean) {
     if (clear) {
       this.setState(this.getInitialState(), this.fetch);
       return;
     }
 
-    var fetchParams: Object = {
+    if (Platform.OS === 'android') {
+      const result = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          title: 'Permission Explanation',
+          message: 'UIExplorer would like to access your pictures.',
+        },
+      );
+      if (result !== 'granted') {
+        Alert.alert('Access to pictures was denied.');
+        return;
+      }
+    }
+
+    const fetchParams: Object = {
       first: this.props.batchSize,
       groupTypes: this.props.groupTypes,
       assetType: this.props.assetType,
@@ -156,8 +175,12 @@ var CameraRollView = React.createClass({
       fetchParams.after = this.state.lastCursor;
     }
 
-    CameraRoll.getPhotos(fetchParams)
-      .then((data) => this._appendAssets(data), (e) => logError(e));
+    try {
+      const data = await CameraRoll.getPhotos(fetchParams);
+      this._appendAssets(data);
+    } catch (e) {
+      logError(e);
+    }
   },
 
   /**
@@ -178,6 +201,7 @@ var CameraRollView = React.createClass({
         onEndReached={this._onEndReached}
         style={styles.container}
         dataSource={this.state.dataSource}
+        enableEmptySections
       />
     );
   },
@@ -209,6 +233,7 @@ var CameraRollView = React.createClass({
       if (image === null) {
         return null;
       }
+      // $FlowFixMe(>=0.41.0)
       return this.props.renderImage(image);
     });
 
@@ -231,6 +256,7 @@ var CameraRollView = React.createClass({
       newState.lastCursor = data.page_info.end_cursor;
       newState.assets = this.state.assets.concat(assets);
       newState.dataSource = this.state.dataSource.cloneWithRows(
+        // $FlowFixMe(>=0.41.0)
         groupByEveryN(newState.assets, this.props.imagesPerRow)
       );
     }

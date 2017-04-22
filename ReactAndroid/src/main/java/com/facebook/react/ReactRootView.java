@@ -15,7 +15,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -32,6 +31,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
@@ -56,10 +56,21 @@ import com.facebook.react.uimanager.events.EventDispatcher;
  */
 public class ReactRootView extends SizeMonitoringFrameLayout implements RootView {
 
+  /**
+   * Listener interface for react root view events
+   */
+  public interface ReactRootViewEventListener {
+    /**
+     * Called when the react context is attached to a ReactRootView.
+     */
+    void onAttachedToReactInstance(ReactRootView rootView);
+  }
+
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable String mJSModuleName;
   private @Nullable Bundle mLaunchOptions;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
+  private @Nullable ReactRootViewEventListener mRootViewEventListener;
   private int mRootViewTag;
   private boolean mWasMeasured = false;
   private boolean mIsAttachedToInstance = false;
@@ -224,6 +235,16 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     }
   }
 
+  public void onAttachedToReactInstance() {
+    if (mRootViewEventListener != null) {
+      mRootViewEventListener.onAttachedToReactInstance(this);
+    }
+  }
+
+  public void setEventListener(ReactRootViewEventListener eventListener) {
+    mRootViewEventListener = eventListener;
+  }
+
   /* package */ String getJSModuleName() {
     return Assertions.assertNotNull(mJSModuleName);
   }
@@ -373,27 +394,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     }
 
     private void emitUpdateDimensionsEvent() {
-      DisplayMetrics windowDisplayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics();
-      DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
-
-      WritableMap windowDisplayMetricsMap = Arguments.createMap();
-      windowDisplayMetricsMap.putInt("width", windowDisplayMetrics.widthPixels);
-      windowDisplayMetricsMap.putInt("height", windowDisplayMetrics.heightPixels);
-      windowDisplayMetricsMap.putDouble("scale", windowDisplayMetrics.density);
-      windowDisplayMetricsMap.putDouble("fontScale", windowDisplayMetrics.scaledDensity);
-      windowDisplayMetricsMap.putDouble("densityDpi", windowDisplayMetrics.densityDpi);
-
-      WritableMap screenDisplayMetricsMap = Arguments.createMap();
-      screenDisplayMetricsMap.putInt("width", screenDisplayMetrics.widthPixels);
-      screenDisplayMetricsMap.putInt("height", screenDisplayMetrics.heightPixels);
-      screenDisplayMetricsMap.putDouble("scale", screenDisplayMetrics.density);
-      screenDisplayMetricsMap.putDouble("fontScale", screenDisplayMetrics.scaledDensity);
-      screenDisplayMetricsMap.putDouble("densityDpi", screenDisplayMetrics.densityDpi);
-
-      WritableMap dimensionsMap = Arguments.createMap();
-      dimensionsMap.putMap("windowPhysicalPixels", windowDisplayMetricsMap);
-      dimensionsMap.putMap("screenPhysicalPixels", screenDisplayMetricsMap);
-      sendEvent("didUpdateDimensions", dimensionsMap);
+      mReactInstanceManager
+          .getCurrentReactContext()
+          .getNativeModule(DeviceInfoModule.class)
+          .emitUpdateDimensionsEvent();
     }
 
     private void sendEvent(String eventName, @Nullable WritableMap params) {

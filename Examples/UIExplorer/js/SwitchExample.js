@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule SwitchExample
  */
 'use strict';
 
@@ -147,15 +148,12 @@ var examples = [
   {
     title: 'Switches are controlled components',
     render(): React.Element<any> { return <Switch />; }
-  }
-];
-
-if (Platform.OS === 'ios') {
-  examples.push({
+  },
+  {
     title: 'Custom colors can be provided',
     render(): React.Element<any> { return <ColorSwitchExample />; }
-  });
-}
+  }
+];
 
 exports.title = '<Switch>';
 exports.displayName = 'SwitchExample';

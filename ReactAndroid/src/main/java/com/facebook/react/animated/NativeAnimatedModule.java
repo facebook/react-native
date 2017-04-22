@@ -11,6 +11,8 @@ package com.facebook.react.animated;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
+
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -23,11 +25,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.uimanager.GuardedChoreographerFrameCallback;
-import com.facebook.react.uimanager.ReactChoreographer;
+import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.uimanager.GuardedFrameCallback;
 import com.facebook.react.uimanager.UIManagerModule;
-
-import java.util.ArrayList;
 
 /**
  * Module that exposes interface for creating and managing animated nodes on the "native" side.
@@ -70,36 +70,36 @@ import java.util.ArrayList;
  * isolates us from the problems that may be caused by concurrent updates of animated graph while UI
  * thread is "executing" the animation loop.
  */
-@ReactModule(name = "NativeAnimatedModule")
+@ReactModule(name = NativeAnimatedModule.NAME)
 public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
     OnBatchCompleteListener, LifecycleEventListener {
+
+  protected static final String NAME = "NativeAnimatedModule";
 
   private interface UIThreadOperation {
     void execute(NativeAnimatedNodesManager animatedNodesManager);
   }
 
   private final Object mOperationsCopyLock = new Object();
-  private @Nullable GuardedChoreographerFrameCallback mAnimatedFrameCallback;
-  private @Nullable ReactChoreographer mReactChoreographer;
+  private final GuardedFrameCallback mAnimatedFrameCallback;
+  private final ReactChoreographer mReactChoreographer;
   private ArrayList<UIThreadOperation> mOperations = new ArrayList<>();
   private volatile @Nullable ArrayList<UIThreadOperation> mReadyOperations = null;
 
+  private @Nullable NativeAnimatedNodesManager mNodesManager;
+
   public NativeAnimatedModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
 
-  @Override
-  public void initialize() {
-    // Safe to acquire choreographer here, as initialize() is invoked from UI thread.
     mReactChoreographer = ReactChoreographer.getInstance();
-
-    ReactApplicationContext reactCtx = getReactApplicationContext();
-    UIManagerModule uiManager = reactCtx.getNativeModule(UIManagerModule.class);
-
-    final NativeAnimatedNodesManager nodesManager = new NativeAnimatedNodesManager(uiManager);
-    mAnimatedFrameCallback = new GuardedChoreographerFrameCallback(reactCtx) {
+    mAnimatedFrameCallback = new GuardedFrameCallback(reactContext) {
       @Override
       protected void doFrameGuarded(final long frameTimeNanos) {
+        if (mNodesManager == null) {
+          UIManagerModule uiManager = getReactApplicationContext()
+            .getNativeModule(UIManagerModule.class);
+          mNodesManager = new NativeAnimatedNodesManager(uiManager);
+        }
 
         ArrayList<UIThreadOperation> operations;
         synchronized (mOperationsCopyLock) {
@@ -109,12 +109,12 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
 
         if (operations != null) {
           for (int i = 0, size = operations.size(); i < size; i++) {
-            operations.get(i).execute(nodesManager);
+            operations.get(i).execute(mNodesManager);
           }
         }
 
-        if (nodesManager.hasActiveAnimations()) {
-          nodesManager.runUpdates(frameTimeNanos);
+        if (mNodesManager.hasActiveAnimations()) {
+          mNodesManager.runUpdates(frameTimeNanos);
         }
 
         // TODO: Would be great to avoid adding this callback in case there are no active animations
@@ -126,7 +126,16 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
           mAnimatedFrameCallback);
       }
     };
-    reactCtx.addLifecycleEventListener(this);
+  }
+
+  @Override
+  public void initialize() {
+    getReactApplicationContext().addLifecycleEventListener(this);
+  }
+
+  @Override
+  public void onHostResume() {
+    enqueueFrameCallback();
   }
 
   @Override
@@ -151,11 +160,6 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
   }
 
   @Override
-  public void onHostResume() {
-    enqueueFrameCallback();
-  }
-
-  @Override
   public void onHostPause() {
     clearFrameCallback();
   }
@@ -167,7 +171,7 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
 
   @Override
   public String getName() {
-    return "NativeAnimatedModule";
+    return NAME;
   }
 
   private void clearFrameCallback() {
@@ -351,11 +355,11 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
   }
 
   @ReactMethod
-  public void removeAnimatedEventFromView(final int viewTag, final String eventName) {
+  public void removeAnimatedEventFromView(final int viewTag, final String eventName, final int animatedValueTag) {
     mOperations.add(new UIThreadOperation() {
       @Override
       public void execute(NativeAnimatedNodesManager animatedNodesManager) {
-        animatedNodesManager.removeAnimatedEventFromView(viewTag, eventName);
+        animatedNodesManager.removeAnimatedEventFromView(viewTag, eventName, animatedValueTag);
       }
     });
   }

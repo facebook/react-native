@@ -34,7 +34,7 @@ describe('TaskQueue', () => {
     });
   }
   beforeEach(() => {
-    jest.resetModuleRegistry();
+    jest.resetModules();
     onMoreTasks = jest.fn();
     const TaskQueue = require('TaskQueue');
     taskQueue = new TaskQueue({onMoreTasks});

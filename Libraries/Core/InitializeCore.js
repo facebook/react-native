@@ -104,12 +104,23 @@ Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
 const ExceptionsManager = require('ExceptionsManager');
 ExceptionsManager.installConsoleErrorReporter();
 
+// TODO: Move these around to solve the cycle in a cleaner way
+const BatchedBridge = require('BatchedBridge');
+BatchedBridge.registerCallableModule('Systrace', require('Systrace'));
+BatchedBridge.registerCallableModule('JSTimersExecution', require('JSTimersExecution'));
+BatchedBridge.registerCallableModule('HeapCapture', require('HeapCapture'));
+BatchedBridge.registerCallableModule('SamplingProfiler', require('SamplingProfiler'));
+
+if (__DEV__) {
+  BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));
+}
+
 // RCTLog needs to register with BatchedBridge
 require('RCTLog');
 
 // Set up error handler
 if (!global.__fbDisableExceptionsManager) {
-  function handleError(e, isFatal) {
+  const handleError = (e, isFatal) => {
     try {
       ExceptionsManager.handleException(e, isFatal);
     } catch (ee) {
@@ -118,7 +129,7 @@ if (!global.__fbDisableExceptionsManager) {
       /* eslint-enable no-console-disallow */
       throw e;
     }
-  }
+  };
 
   const ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
@@ -195,8 +206,7 @@ if (__DEV__) {
   // not when debugging in chrome
   // TODO(t12832058) This check is broken
   if (!window.document) {
-    const setupDevtools = require('setupDevtools');
-    setupDevtools();
+    require('setupDevtools');
   }
 
   require('RCTDebugComponentOwnership');

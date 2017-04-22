@@ -165,6 +165,40 @@ class PushNotificationIOS {
   }
 
   /**
+   * Remove all delivered notifications from Notification Center
+   */
+  static removeAllDeliveredNotifications(): void {
+    RCTPushNotificationManager.removeAllDeliveredNotifications();
+  }
+
+  /**
+   * Provides you with a list of the app’s notifications that are still displayed in Notification Center
+   *
+   * @param callback Function which receive an array of delivered notifications
+   *
+   *  A delivered notification is an object containing:
+   *
+   * - `identifier`  : The identifier of this notification.
+   * - `title`  : The title of this notification.
+   * - `body`  : The body of this notification.
+   * - `category`  : The category of this notification, if has one.
+   * - `userInfo`  : An optional object containing additional notification data.
+   * - `thread-id`  : The thread identifier of this notification, if has one.
+   */
+  static getDeliveredNotifications(callback: (notifications: [Object]) => void): void {
+    RCTPushNotificationManager.getDeliveredNotifications(callback);
+  }
+
+  /**
+   * Removes the specified notifications from Notification Center
+   *
+   * @param identifiers Array of notification identifiers
+   */
+  static removeDeliveredNotifications(identifiers: [string]): void {
+    RCTPushNotificationManager.removeDeliveredNotifications(identifiers);
+  }
+
+  /**
    * Sets the badge number for the app icon on the home screen
    */
   static setApplicationIconBadgeNumber(number: number) {

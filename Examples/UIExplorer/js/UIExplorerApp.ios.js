@@ -24,64 +24,53 @@
 'use strict';
 
 const AsyncStorage = require('AsyncStorage');
+const BackHandler = require('BackHandler');
 const Linking = require('Linking');
 const React = require('react');
 const ReactNative = require('react-native');
-const UIExplorerList = require('./UIExplorerList.ios');
+const UIExplorerActions = require('./UIExplorerActions');
 const UIExplorerExampleContainer = require('./UIExplorerExampleContainer');
 const UIExplorerExampleList = require('./UIExplorerExampleList');
+const UIExplorerList = require('./UIExplorerList.ios');
 const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
-const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
 const URIActionMap = require('./URIActionMap');
 
 const {
+  Button,
   AppRegistry,
-  NavigationExperimental,
   SnapshotViewIOS,
   StyleSheet,
+  Text,
   View,
 } = ReactNative;
 
-const {
-  CardStack: NavigationCardStack,
-  Header: NavigationHeader,
-} = NavigationExperimental;
-
-import type { NavigationSceneRendererProps } from 'NavigationTypeDefinition';
-
-import type { UIExplorerNavigationState } from './UIExplorerNavigationReducer';
-
 import type { UIExplorerExample } from './UIExplorerList.ios';
+import type { UIExplorerAction } from './UIExplorerActions';
+import type { UIExplorerNavigationState } from './UIExplorerNavigationReducer';
 
 type Props = {
   exampleFromAppetizeParams: string,
 };
 
-type State = UIExplorerNavigationState & {
-  externalExample?: string,
-};
+const APP_STATE_KEY = 'UIExplorerAppState.v2';
 
-const APP_STATE_KEY = 'UIExplorerAppState.v1';
+const Header = ({ onBack, title}) => (
+  <View style={styles.header}>
+    <View style={styles.headerCenter}>
+      <Text style={styles.title}>{title}</Text>
+    </View>
+    {onBack && <View style={styles.headerLeft}>
+      <Button title="Back" onPress={onBack} />
+    </View>}
+  </View>
+);
 
 class UIExplorerApp extends React.Component {
-  _handleBack: Function;
-  _handleAction: Function;
-  _renderCard: Function;
-  _renderHeader: Function;
-  _renderScene: Function;
-  _renderTitleComponent: Function;
-  state: State;
-
-  constructor(props: Props) {
-    super(props);
-  }
+  props: Props;
+  state: UIExplorerNavigationState;
 
   componentWillMount() {
-    this._handleAction = this._handleAction.bind(this);
-    this._handleBack = this._handleAction.bind(this, {type: 'back'});
-    this._renderHeader = this._renderHeader.bind(this);
-    this._renderScene = this._renderScene.bind(this);
-    this._renderTitleComponent = this._renderTitleComponent.bind(this);
+    BackHandler.addEventListener('hardwareBackPress', this._handleBack);
   }
 
   componentDidMount() {
@@ -92,7 +81,7 @@ class UIExplorerApp extends React.Component {
         const launchAction = exampleAction || urlAction;
         if (err || !storedString) {
           const initialAction = launchAction || {type: 'InitialAction'};
-          this.setState(UIExplorerNavigationReducer(null, initialAction));
+          this.setState(UIExplorerNavigationReducer(undefined, initialAction));
           return;
         }
         const storedState = JSON.parse(storedString);
@@ -109,14 +98,20 @@ class UIExplorerApp extends React.Component {
     });
   }
 
-  _handleAction(action: Object) {
+  _handleBack = () => {
+    this._handleAction(UIExplorerActions.Back());
+  }
+
+  _handleAction = (action: ?UIExplorerAction) => {
     if (!action) {
       return;
     }
     const newState = UIExplorerNavigationReducer(this.state, action);
     if (this.state !== newState) {
-      this.setState(newState);
-      AsyncStorage.setItem(APP_STATE_KEY, JSON.stringify(this.state));
+      this.setState(
+        newState,
+        () => AsyncStorage.setItem(APP_STATE_KEY, JSON.stringify(this.state))
+      );
     }
   }
 
@@ -124,73 +119,58 @@ class UIExplorerApp extends React.Component {
     if (!this.state) {
       return null;
     }
-    if (this.state.externalExample) {
-      const Component = UIExplorerList.Modules[this.state.externalExample];
-      return (
-        <Component
-          onExampleExit={() => {
-            this._handleAction({ type: 'BackAction' });
-          }}
-        />
-      );
+    if (this.state.openExample) {
+      const Component = UIExplorerList.Modules[this.state.openExample];
+      if (Component.external) {
+        return (
+          <Component
+            onExampleExit={this._handleBack}
+          />
+        );
+      } else {
+        return (
+          <View style={styles.exampleContainer}>
+            <Header onBack={this._handleBack} title={Component.title} />
+            <UIExplorerExampleContainer module={Component} />
+          </View>
+        );
+      }
+
     }
     return (
-      <NavigationCardStack
-        navigationState={this.state.stack}
-        style={styles.container}
-        renderHeader={this._renderHeader}
-        renderScene={this._renderScene}
-        onNavigateBack={this._handleBack}
-      />
-    );
-  }
-
-  _renderHeader(props: NavigationSceneRendererProps): React.Element<any> {
-    return (
-      <NavigationHeader
-        {...props}
-        onNavigateBack={this._handleBack}
-        renderTitleComponent={this._renderTitleComponent}
-      />
-    );
-  }
-
-  _renderTitleComponent(props: NavigationSceneRendererProps): React.Element<any> {
-    return (
-      <NavigationHeader.Title>
-        {UIExplorerStateTitleMap(props.scene.route)}
-      </NavigationHeader.Title>
-    );
-  }
-
-  _renderScene(props: NavigationSceneRendererProps): ?React.Element<any> {
-    const state = props.scene.route;
-    if (state.key === 'AppList') {
-      return (
+      <View style={styles.exampleContainer}>
+        <Header title="UIExplorer" />
         <UIExplorerExampleList
           onNavigate={this._handleAction}
           list={UIExplorerList}
-          style={styles.exampleContainer}
-          {...state}
         />
-      );
-    }
-
-    const Example = UIExplorerList.Modules[state.key];
-    if (Example) {
-      return (
-        <View style={styles.exampleContainer}>
-          <UIExplorerExampleContainer module={Example} />
-        </View>
-      );
-    }
-    return null;
+      </View>
+    );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
+  header: {
+    height: 60,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#96969A',
+    backgroundColor: '#F5F5F6',
+    flexDirection: 'row',
+    paddingTop: 20,
+  },
+  headerLeft: {
+  },
+  headerCenter: {
     flex: 1,
+    position: 'absolute',
+    top: 27,
+    left: 0,
+    right: 0,
+  },
+  title: {
+    fontSize: 19,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   exampleContainer: {
     flex: 1,

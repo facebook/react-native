@@ -5,11 +5,10 @@
 #include <memory>
 #include <vector>
 
-#include <folly/dynamic.h>
+#include <cxxreact/ExecutorToken.h>
+#include <cxxreact/NativeModule.h>
 #include <folly/Optional.h>
-
-#include "ExecutorToken.h"
-#include "NativeModule.h"
+#include <folly/dynamic.h>
 
 namespace facebook {
 namespace react {
@@ -31,6 +30,8 @@ class ModuleRegistry {
   // notifyCatalystInstanceDestroy: use RAII instead
 
   ModuleRegistry(std::vector<std::unique_ptr<NativeModule>> modules);
+  void registerModules(std::vector<std::unique_ptr<NativeModule>> modules);
+
   std::vector<std::string> moduleNames();
 
   folly::Optional<ModuleConfig> getConfig(const std::string& name);
