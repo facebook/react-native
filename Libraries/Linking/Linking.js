@@ -72,24 +72,22 @@ const LinkingManager = Platform.OS === 'android' ?
  * execution, you'll need to add the following lines to your `*AppDelegate.m`:
  *
  * ```
- * // iOS 10
+ * // iOS 9.x or newer
  * #import <React/RCTLinkingManager.h>
  * - (BOOL)application:(UIApplication *)application
  *    openURL:(NSURL *)url
  *    options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
  * {
- *
  *  return [RCTLinkingManager application:application openURL:url
  *  sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
  *             annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
- *
  * }
  * ```
  * 
- * If you're targeting iOS 9 or older, you can use the following code instead:
+ * If you're targeting iOS 8.x or older, you can use the following code instead:
  *
  * ```
- * // iOS 9 or older
+ * // iOS 8.x or older
  * #import <React/RCTLinkingManager.h>
  *
  * - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
@@ -98,12 +96,8 @@ const LinkingManager = Platform.OS === 'android' ?
  *   return [RCTLinkingManager application:application openURL:url
  *          sourceApplication:sourceApplication annotation:annotation];
  * }
- * ```
- * 
- * If your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html),
- * you'll need to add the following code as well:
- * 
- * ```
+ *
+ * // Only if your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
  * - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
  *  restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
  * {
