@@ -14,13 +14,15 @@
 const getPlatformExtension = require('./getPlatformExtension');
 const path = require('path');
 
-function getAssetDataFromName(filename: string, platforms: Set<string>): {|
+export type AssetData = {|
   assetName: string,
   name: string,
   platform: ?string,
   resolution: number,
   type: string,
-|} {
+|};
+
+function getAssetDataFromName(filename: string, platforms: Set<string>): AssetData {
   const ext = path.extname(filename);
   const platformExt = getPlatformExtension(filename, platforms);
 
