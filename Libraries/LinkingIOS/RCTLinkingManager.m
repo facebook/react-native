@@ -44,11 +44,9 @@ RCT_EXPORT_MODULE()
 
 + (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)URL
-            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-    NSDictionary<NSString *, id> *payload = @{@"url": URL.absoluteString};
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
-                                                        object:self
-                                                      userInfo:payload];
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+    [self postNotificationWithURL:URL];
     return YES;
 }
 
@@ -57,11 +55,16 @@ RCT_EXPORT_MODULE()
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation
 {
-  NSDictionary<NSString *, id> *payload = @{@"url": URL.absoluteString};
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
-                                                      object:self
-                                                    userInfo:payload];
+  [self postNotificationWithURL:URL];
   return YES;
+}
+
++ (void)postNotificationWithURL:(NSURL *)URL
+{
+    NSDictionary<NSString *, id> *payload = @{@"url": URL.absoluteString};
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
+                                                        object:self
+                                                      userInfo:payload];
 }
 
 + (BOOL)application:(UIApplication *)application
