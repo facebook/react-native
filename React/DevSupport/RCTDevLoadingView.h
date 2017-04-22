@@ -9,6 +9,8 @@
 
 #import <React/RCTBridgeModule.h>
 
+@class RCTLoadingProgress;
+
 @interface RCTDevLoadingView : NSObject <RCTBridgeModule>
 
 + (void)setEnabled:(BOOL)enabled;

@@ -513,6 +513,16 @@ double RCTZeroIfNaN(double value)
   return isnan(value) || isinf(value) ? 0 : value;
 }
 
+double RCTSanitizeNaNValue(double value, NSString *property)
+{
+  if (!isnan(value) && !isinf(value)) {
+    return value;
+  }
+
+  RCTLogWarn(@"The value `%@` equals NaN or INF and will be replaced by `0`.", property);
+  return 0;
+}
+
 NSURL *RCTDataURL(NSString *mimeType, NSData *data)
 {
   return [NSURL URLWithString:

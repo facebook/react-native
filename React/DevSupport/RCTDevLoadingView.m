@@ -7,13 +7,14 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import "RCTDevLoadingView.h"
+
 #import <QuartzCore/QuartzCore.h>
 
 #import "RCTBridge.h"
-#import "RCTDevLoadingView.h"
 #import "RCTDefines.h"
-#import "RCTUtils.h"
 #import "RCTModalHostViewController.h"
+#import "RCTUtils.h"
 
 #if RCT_DEV
 

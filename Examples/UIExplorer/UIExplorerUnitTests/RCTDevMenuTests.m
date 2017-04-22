@@ -14,21 +14,10 @@
 
 #import <XCTest/XCTest.h>
 
+#import <RCTTest/RCTTestRunner.h>
 #import <React/RCTBridge+JavaScriptCore.h>
 #import <React/RCTBridge.h>
 #import <React/RCTDevMenu.h>
-
-#define RUN_RUNLOOP_WHILE(CONDITION) \
-{ \
-  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5]; \
-  while ((CONDITION)) { \
-    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; \
-    if ([timeout timeIntervalSinceNow] <= 0) { \
-      XCTFail(@"Runloop timed out before condition was met"); \
-      break; \
-    } \
-  } \
-}
 
 typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
@@ -56,7 +45,7 @@ typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
                                   moduleProvider:nil
                                    launchOptions:nil];
 
-  RUN_RUNLOOP_WHILE(_bridge.isLoading);
+  RCT_RUN_RUNLOOP_WHILE(_bridge.isLoading);
 }
 
 - (void)testShowCreatingActionSheet
