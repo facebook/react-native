@@ -79,11 +79,11 @@ class ARTExample extends React.Component{
             <View>
                 <Surface width={scale*200} height={scale*200}>
                     <Group>
-                        <Shape d={pathRect} stroke="#000080" fill="#000080" strokeWidth={scale*1}/>
-                        <Shape d={pathCircle0} stroke="#FF0000" fill="#FF0000" strokeWidth={scale*1}/>
-                        <Shape d={pathCircle1} stroke="#00FF00" fill="#00FF00" strokeWidth={scale*1}/>
-                        <Shape d={pathCircle2} stroke="#00FFFF" fill="#00FFFF" strokeWidth={scale*1}/>
-                        <Shape d={pathCircle3} stroke="#FFFFFF" fill="#FFFFFF" strokeWidth={scale*1}/>
+                        <Shape d={pathRect} stroke="#000080" fill="#000080" strokeWidth={scale}/>
+                        <Shape d={pathCircle0} stroke="#FF0000" fill="#FF0000" strokeWidth={scale}/>
+                        <Shape d={pathCircle1} stroke="#00FF00" fill="#00FF00" strokeWidth={scale}/>
+                        <Shape d={pathCircle2} stroke="#00FFFF" fill="#00FFFF" strokeWidth={scale}/>
+                        <Shape d={pathCircle3} stroke="#FFFFFF" fill="#FFFFFF" strokeWidth={scale}/>
                     </Group>
                 </Surface>
             </View>
