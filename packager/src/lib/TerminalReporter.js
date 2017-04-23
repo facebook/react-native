@@ -12,12 +12,12 @@
 'use strict';
 
 const chalk = require('chalk');
+const formatBanner = require('./formatBanner');
 const path = require('path');
 const reporting = require('./reporting');
 const terminal = require('./terminal');
 const throttle = require('lodash/throttle');
 const util = require('util');
-const formatBanner = require('../../../local-cli/server/formatBanner');
 
 import type {ReportableEvent, GlobalCacheDisabledReason} from './reporting';
 

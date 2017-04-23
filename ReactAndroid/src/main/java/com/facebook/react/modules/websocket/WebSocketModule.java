@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit;
 import okio.Buffer;
 import okio.ByteString;
 
-@ReactModule(name = "WebSocketModule")
+@ReactModule(name = "WebSocketModule", hasConstants = false)
 public class WebSocketModule extends ReactContextBaseJavaModule {
 
   private final Map<Integer, WebSocket> mWebSocketConnections = new HashMap<>();
@@ -296,7 +296,6 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       }
 
       return defaultOrigin;
-
     } catch (URISyntaxException e) {
       throw new IllegalArgumentException("Unable to set " + uri + " as default origin header");
     }

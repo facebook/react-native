@@ -15,19 +15,11 @@
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
 
+#import <RCTTest/RCTTestRunner.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
-#import <React/RCTJSCExecutor.h>
 #import <React/RCTModuleMethod.h>
 #import <React/RCTRootView.h>
-
-#define RUN_RUNLOOP_WHILE(CONDITION) \
-{ \
-  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5]; \
-  while ((CONDITION) && [timeout timeIntervalSinceNow] > 0) { \
-    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; \
-  } \
-}
 
 @interface RCTJavaScriptContext : NSObject
 
@@ -78,9 +70,10 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
 
   NSString *bundleContents =
   @"var __fbBatchedBridge = {"
-   "  callFunctionReturnFlushedQueue: function() {},"
-   "  invokeCallbackAndReturnFlushedQueue: function() {},"
-   "  flushedQueue: function() {},"
+   "  callFunctionReturnFlushedQueue: function() { return null; },"
+   "  invokeCallbackAndReturnFlushedQueue: function() { return null; },"
+   "  flushedQueue: function() { return null; },"
+   "  callFunctionReturnResultAndFlushedQueue: function() { return null; },"
    "};";
 
   NSURL *tempDir = [NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES];
@@ -131,7 +124,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
     (void)bridge;
   }
 
-  RUN_RUNLOOP_WHILE(module.isValid)
+  RCT_RUN_RUNLOOP_WHILE(module.isValid)
   XCTAssertFalse(module.isValid, @"AllocationTestModule should have been invalidated by the bridge");
 }
 
@@ -150,7 +143,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
     (void)bridge;
   }
 
-  RUN_RUNLOOP_WHILE(weakModule)
+  RCT_RUN_RUNLOOP_WHILE(weakModule)
   XCTAssertNil(weakModule, @"AllocationTestModule should have been deallocated");
 }
 
@@ -163,41 +156,8 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
     XCTAssertNotNil(method, @"RCTModuleMethod should have been created");
   }
 
-  RUN_RUNLOOP_WHILE(weakMethod)
+  RCT_RUN_RUNLOOP_WHILE(weakMethod)
   XCTAssertNil(weakMethod, @"RCTModuleMethod should have been deallocated");
-}
-
-- (void)testJavaScriptExecutorIsDeallocated
-{
-  __weak id<RCTJavaScriptExecutor> weakExecutor;
-  @autoreleasepool {
-    RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL
-                                              moduleProvider:nil
-                                               launchOptions:nil];
-    weakExecutor = [bridge.batchedBridge valueForKey:@"javaScriptExecutor"];
-    XCTAssertNotNil(weakExecutor, @"JavaScriptExecutor should have been created");
-    (void)bridge;
-  }
-
-  RUN_RUNLOOP_WHILE(weakExecutor);
-  XCTAssertNil(weakExecutor, @"JavaScriptExecutor should have been released");
-}
-
-- (void)testJavaScriptContextIsDeallocated
-{
-  __weak id weakContext;
-  @autoreleasepool {
-    RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL
-                                              moduleProvider:nil
-                                               launchOptions:nil];
-    id executor = [bridge.batchedBridge valueForKey:@"javaScriptExecutor"];
-    RUN_RUNLOOP_WHILE(!(weakContext = [executor valueForKey:@"_context"]));
-    XCTAssertNotNil(weakContext, @"RCTJavaScriptContext should have been created");
-    (void)bridge;
-  }
-
-  RUN_RUNLOOP_WHILE(weakContext);
-  XCTAssertNil(weakContext, @"RCTJavaScriptContext should have been deallocated");
 }
 
 - (void)testContentViewIsInvalidated
@@ -208,7 +168,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   __weak UIView *rootContentView;
   @autoreleasepool {
     RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"" initialProperties:nil];
-    RUN_RUNLOOP_WHILE(!(rootContentView = [rootView valueForKey:@"contentView"]))
+    RCT_RUN_RUNLOOP_WHILE(!(rootContentView = [rootView valueForKey:@"contentView"]))
     XCTAssertTrue(rootContentView.userInteractionEnabled, @"RCTContentView should be valid");
     (void)rootView;
   }
@@ -230,7 +190,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
     [bridge reload];
   }
 
-  RUN_RUNLOOP_WHILE(batchedBridge != nil)
+  RCT_RUN_RUNLOOP_WHILE(batchedBridge != nil)
 
   XCTAssertNotNil(bridge, @"RCTBridge should not have been deallocated");
   XCTAssertNil(batchedBridge, @"RCTBatchedBridge should have been deallocated");
@@ -242,7 +202,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
     bridge = nil;
   }
 
-  RUN_RUNLOOP_WHILE(batchedBridge != nil);
+  RCT_RUN_RUNLOOP_WHILE(batchedBridge != nil);
   XCTAssertNil(batchedBridge);
 }
 

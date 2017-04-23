@@ -6,15 +6,23 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-'use strict';
 
-class Cache {
-  get(filepath, field, cb) {
-    return cb(filepath);
-  }
+#import <Foundation/Foundation.h>
 
-  invalidate(filepath) { }
-  end() { }
-}
+#import <React/RCTDefines.h>
 
-module.exports = Cache;
+#if RCT_DEV
+
+@class RCTBridge;
+
+/**
+ * Encapsulates connection to React Native packager
+ */
+@interface RCTPackagerConnection : NSObject
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge;
+- (void)connect;
+
+@end
+
+#endif

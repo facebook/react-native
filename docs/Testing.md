@@ -97,7 +97,7 @@ See the following for example usage and integration points:
 You can run integration tests locally with cmd+U in the IntegrationTest and UIExplorer apps in Xcode, or by running the following in the command line on macOS:
 
     $ cd react-native
-    $ ./scripts/objc-test-ios.sh test
+    $ ./scripts/objc-test-ios.sh
 
 > Your Xcode install will come with a variety of Simulators running the latest OS. You may need to manually create a new Simulator to match what the `XCODE_DESTINATION` param in the test script.
 
@@ -106,6 +106,15 @@ You can run integration tests locally with cmd+U in the IntegrationTest and UIEx
 A common type of integration test is the snapshot test.  These tests render a component, and verify snapshots of the screen against reference images using `TestModule.verifySnapshot()`, using the [`FBSnapshotTestCase`](https://github.com/facebook/ios-snapshot-test-case) library behind the scenes.  Reference images are recorded by setting `recordMode = YES` on the `RCTTestRunner`, then running the tests.  Snapshots will differ slightly between 32 and 64 bit, and various OS versions, so it's recommended that you enforce tests are run with the correct configuration.  It's also highly recommended that all network data be mocked out, along with other potentially troublesome dependencies.  See [`SimpleSnapshotTest`](https://github.com/facebook/react-native/blob/master/IntegrationTests/SimpleSnapshotTest.js) for a basic example.
 
 If you make a change that affects a snapshot test in a PR, such as adding a new example case to one of the examples that is snapshotted, you'll need to re-record the snapshot reference image.  To do this, simply change to `_runner.recordMode = YES;` in [UIExplorer/UIExplorerSnapshotTests.m](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/UIExplorerIntegrationTests/UIExplorerSnapshotTests.m#L42), re-run the failing tests, then flip record back to `NO` and submit/update your PR and wait to see if the Travis build passes.
+
+## Apple TV
+
+The same tests discussed above for iOS will also run on tvOS.  In the UIExplorer Xcode project, select the UIExplorer-tvOS target, and you can follow the same steps above to run the tests in Xcode.
+
+You can run Apple TV unit and integration tests locally by running the following in the command line on macOS:
+
+    $ cd react-native
+    $ ./scripts/objc-test-tvos.sh (make sure the line `TEST="test"` is uncommented)
 
 ## End-to-end tests
 

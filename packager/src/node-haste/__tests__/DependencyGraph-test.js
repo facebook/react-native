@@ -19,9 +19,10 @@ jest
   ;
 
 // This doesn't have state, and it's huge (Babel) so it's much faster to
-// require it only once.
-const extractDependencies = require('../../JSTransformer/worker/extract-dependencies');
-jest.mock('../../JSTransformer/worker/extract-dependencies', () => extractDependencies);
+// require it only once. The variable name is prefixed with "mock" as an escape-hatch
+// for babel-plugin-jest-hoist.
+const mockExtractDependencies = require('../../JSTransformer/worker/extract-dependencies');
+jest.mock('../../JSTransformer/worker/extract-dependencies', () => mockExtractDependencies);
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
@@ -62,46 +63,8 @@ describe('DependencyGraph', function() {
     Module = require('../Module');
     ResolutionRequest = require('../DependencyGraph/ResolutionRequest');
 
-    const Cache = jest.genMockFn().mockImplementation(function() {
-      this._maps = Object.create(null);
-    });
-    Cache.prototype.has = jest.genMockFn()
-      .mockImplementation(function(filepath, field) {
-        if (!(filepath in this._maps)) {
-          return false;
-        }
-        return !field || field in this._maps[filepath];
-      });
-    Cache.prototype.get = jest.genMockFn()
-      .mockImplementation(function(filepath, field, factory) {
-        let cacheForPath  = this._maps[filepath];
-        if (this.has(filepath, field)) {
-          return field ? cacheForPath[field] : cacheForPath;
-        }
-
-        if (!cacheForPath) {
-          cacheForPath = this._maps[filepath] = Object.create(null);
-        }
-        const value = cacheForPath[field] = factory();
-        return value;
-      });
-    Cache.prototype.invalidate = jest.genMockFn()
-      .mockImplementation(function(filepath, field) {
-        if (!this.has(filepath, field)) {
-          return;
-        }
-
-        if (field) {
-          delete this._maps[filepath][field];
-        } else {
-          delete this._maps[filepath];
-        }
-      });
-    Cache.prototype.end = jest.genMockFn();
-
     defaults = {
       assetExts: ['png', 'jpg'],
-      cache: new Cache(),
       extensions: ['js', 'json'],
       forceNodeFilesystemAPI: true,
       providesModuleNodeModules: [
@@ -113,13 +76,13 @@ describe('DependencyGraph', function() {
       useWatchman: false,
       ignoreFilePath: () => false,
       maxWorkerCount: 1,
-      moduleOptions: {cacheTransformResults: true},
+      moduleOptions: {},
       resetCache: true,
       transformCode: (module, sourceCode, transformOptions) => {
         return new Promise(resolve => {
           let deps = {dependencies: [], dependencyOffsets: []};
           if (!module.path.endsWith('.json')) {
-            deps = extractDependencies(sourceCode);
+            deps = mockExtractDependencies(sourceCode);
           }
           resolve({...deps, code: sourceCode});
         });
@@ -4969,7 +4932,7 @@ describe('DependencyGraph', function() {
           },
           {
             dependencies: [],
-            id: 'aPackage/main.js',
+            id: 'bPackage/main.js',
             isAsset: false,
             isJSON: false,
             isPolyfill: false,

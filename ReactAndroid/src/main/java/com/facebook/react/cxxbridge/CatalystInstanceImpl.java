@@ -111,7 +111,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final JavaScriptModuleRegistry jsModuleRegistry,
       final JSBundleLoader jsBundleLoader,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
-    FLog.w(ReactConstants.TAG, "Initializing React Xplat Bridge.");
+    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     mHybridData = initHybrid();
 
     mReactQueueConfiguration = ReactQueueConfigurationImpl.create(
@@ -125,7 +125,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
 
-    FLog.w(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
+    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
     initializeBridge(
       new BridgeCallback(this),
       jsExecutor,
@@ -133,7 +133,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       mNativeModulesQueueThread,
       mJavaRegistry.getJavaModules(this),
       mJavaRegistry.getCxxModules());
-    FLog.w(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
+    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
     mMainExecutorToken = getMainExecutorToken();
   }
 
@@ -323,7 +323,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @VisibleForTesting
   @Override
   public void initialize() {
-    UiThreadUtil.assertOnUiThread();
     Assertions.assertCondition(
         !mInitialized,
         "This catalyst instance has already been initialized");

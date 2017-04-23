@@ -15,7 +15,6 @@ const assert = require('assert');
 const crypto = require('crypto');
 const debug = require('debug')('RNP:Bundler');
 const fs = require('fs');
-const Cache = require('../node-haste').Cache;
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
@@ -46,26 +45,38 @@ import type {
   TransformOptions,
 } from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
+
+export type ExtraTransformOptions = {|
+  +inlineRequires?: {+blacklist: {[string]: true}} | boolean,
+  +preloadedModules?: {[path: string]: true} | false,
+  +ramGroups?: Array<string>,
+|};
+
+export type GetTransformOptionsOpts = {|
+  dev: boolean,
+  hot: boolean,
+  platform: string,
+|};
 
 export type GetTransformOptions = (
   mainModuleName: string,
-  options: {},
-  getDependencies: string => Promise<Array<string>>,
-) => {} | Promise<{}>;
+  options: GetTransformOptionsOpts,
+  getDependenciesOf: string => Promise<Array<string>>,
+) => Promise<ExtraTransformOptions>;
 
-type Asset = {
-  __packager_asset: boolean,
-  fileSystemLocation: string,
-  httpServerLocation: string,
-  width: ?number,
-  height: ?number,
-  scales: number,
-  files: Array<string>,
-  hash: string,
-  name: string,
-  type: string,
-};
+type Asset = {|
+  +__packager_asset: boolean,
+  +fileSystemLocation: string,
+  +httpServerLocation: string,
+  +width: ?number,
+  +height: ?number,
+  +scales: Array<number>,
+  +files: Array<string>,
+  +hash: string,
+  +name: string,
+  +type: string,
+|};
 
 const sizeOf = denodeify(imageSize);
 
@@ -83,33 +94,31 @@ const assetPropertyBlacklist = new Set([
   'path',
 ]);
 
-type Options = {
-  allowBundleUpdates: boolean,
-  assetExts: Array<string>,
-  assetServer: AssetServer,
-  blacklistRE?: RegExp,
-  cacheVersion: string,
-  extraNodeModules: {},
-  getTransformOptions?: GetTransformOptions,
-  globalTransformCache: ?GlobalTransformCache,
-  hasteImpl?: HasteImpl,
-  moduleFormat: string,
-  platforms: Array<string>,
-  polyfillModuleNames: Array<string>,
-  projectRoots: Array<string>,
-  providesModuleNodeModules?: Array<string>,
-  reporter: Reporter,
-  resetCache: boolean,
-  transformModulePath?: string,
-  transformTimeoutInterval: ?number,
-  watch: boolean,
-};
+type Options = {|
+  +allowBundleUpdates: boolean,
+  +assetExts: Array<string>,
+  +assetServer: AssetServer,
+  +blacklistRE?: RegExp,
+  +cacheVersion: string,
+  +extraNodeModules: {},
+  +getTransformOptions?: GetTransformOptions,
+  +globalTransformCache: ?GlobalTransformCache,
+  +hasteImpl?: HasteImpl,
+  +platforms: Array<string>,
+  +polyfillModuleNames: Array<string>,
+  +projectRoots: Array<string>,
+  +providesModuleNodeModules?: Array<string>,
+  +reporter: Reporter,
+  +resetCache: boolean,
+  +transformModulePath?: string,
+  +transformTimeoutInterval: ?number,
+  +watch: boolean,
+|};
 
 class Bundler {
 
   _opts: Options;
   _getModuleId: (opts: Module) => number;
-  _cache: Cache;
   _transformer: Transformer;
   _resolverPromise: Promise<Resolver>;
   _projectRoots: Array<string>;
@@ -160,11 +169,6 @@ class Bundler {
 
     debug(`Using transform cache key "${transformCacheKey}"`);
 
-    this._cache = new Cache({
-      resetCache: opts.resetCache,
-      cacheKey: transformCacheKey,
-    });
-
     const maxWorkerCount = Bundler.getMaxWorkerCount();
 
     /* $FlowFixMe: in practice it's always here. */
@@ -177,14 +181,12 @@ class Bundler {
     this._resolverPromise = Resolver.load({
       assetExts: opts.assetExts,
       blacklistRE: opts.blacklistRE,
-      cache: this._cache,
       extraNodeModules: opts.extraNodeModules,
       getTransformCacheKey,
       globalTransformCache: opts.globalTransformCache,
       hasteImpl: opts.hasteImpl,
       maxWorkerCount,
       minifyCode: this._transformer.minify,
-      moduleFormat: opts.moduleFormat,
       platforms: new Set(opts.platforms),
       polyfillModuleNames: opts.polyfillModuleNames,
       projectRoots: opts.projectRoots,
@@ -209,12 +211,9 @@ class Bundler {
 
   end() {
     this._transformer.kill();
-    return Promise.all([
-      this._cache.end(),
-      this._resolverPromise.then(
-        resolver => resolver.getDependencyGraph().getWatcher().end(),
-      ),
-    ]);
+    return this._resolverPromise.then(
+      resolver => resolver.getDependencyGraph().getWatcher().end(),
+    );
   }
 
   bundle(options: {
@@ -322,12 +321,12 @@ class Bundler {
     moduleSystemDeps?: Array<Module>,
     onProgress?: () => void,
     platform?: ?string,
-    resolutionResponse?: ResolutionResponse,
+    resolutionResponse?: ResolutionResponse<Module>,
     runBeforeMainModule?: boolean,
     runModule?: boolean,
     unbundle?: boolean,
   }) {
-    const onResolutionResponse = (response: ResolutionResponse) => {
+    const onResolutionResponse = (response: ResolutionResponse<Module>) => {
       /* $FlowFixMe: looks like ResolutionResponse is monkey-patched
        * with `getModuleId`. */
       bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
@@ -342,7 +341,7 @@ class Bundler {
     const finalizeBundle = ({bundle: finalBundle, transformedModules, response, modulesByName}: {
       bundle: Bundle,
       transformedModules: Array<{module: Module, transformed: ModuleTransport}>,
-      response: ResolutionResponse,
+      response: ResolutionResponse<Module>,
       modulesByName: {[name: string]: Module},
     }) =>
       this._resolverPromise.then(resolver => Promise.all(
@@ -472,10 +471,6 @@ class Bundler {
           ).then(() => bundle)
         );
     });
-  }
-
-  invalidateFile(filePath: string) {
-    this._cache.invalidate(filePath);
   }
 
   getShallowDependencies({
@@ -707,7 +702,7 @@ class Bundler {
       return {
         asset,
         code,
-        meta: {dependencies, dependencyOffsets},
+        meta: {dependencies, dependencyOffsets, preloaded: null},
       };
     });
   }
@@ -760,26 +755,34 @@ class Bundler {
     });
   }
 
-  getTransformOptions(
+  async getTransformOptions(
     mainModuleName: string,
-    options: {
-      dev?: boolean,
-      generateSourceMaps?: boolean,
-      hot?: boolean,
+    options: {|
+      dev: boolean,
+      generateSourceMaps: boolean,
+      hot: boolean,
       platform: string,
       projectRoots: Array<string>,
-    },
-  ): Promise<TransformOptions> {
+    |},
+    ): Promise<TransformOptions> {
     const getDependencies = (entryFile: string) =>
       this.getDependencies({...options, entryFile})
         .then(r => r.dependencies.map(d => d.path));
+
+    const {dev, hot, platform} = options;
     const extraOptions = this._getTransformOptions
-      ? this._getTransformOptions(mainModuleName, options, getDependencies)
-      : null;
-    return Promise.resolve(extraOptions)
-      .then(extraOpts => {
-        return {...options, ...extraOpts};
-      });
+      ? await this._getTransformOptions(mainModuleName, {dev, hot, platform}, getDependencies)
+      : {};
+    return {
+      dev,
+      generateSourceMaps: options.generateSourceMaps,
+      hot,
+      inlineRequires: extraOptions.inlineRequires || false,
+      platform,
+      preloadedModules: extraOptions.preloadedModules,
+      projectRoots: options.projectRoots,
+      ramGroups: extraOptions.ramGroups,
+    };
   }
 
   getResolver(): Promise<Resolver> {
