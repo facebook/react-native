@@ -288,6 +288,99 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   [_uiManager verify];
 }
 
+- (void)testDecayAnimation
+{
+  [self createSimpleAnimatedView:@1000 withOpacity:0];
+  [_nodesManager startAnimatingNode:@1
+                            nodeTag:@1
+                             config:@{@"type": @"decay",
+                                      @"velocity": @0.5,
+                                      @"deceleration": @0.998}
+                        endCallback:nil];
+
+
+  __block CGFloat previousValue;
+  __block CGFloat currentValue;
+  CGFloat previousDiff = CGFLOAT_MAX;
+
+  [_nodesManager stepAnimations:_displayLink];
+
+  [[[_uiManager stub] andDo:^(NSInvocation *invocation) {
+    __unsafe_unretained NSDictionary<NSString *, NSNumber *> *props;
+    [invocation getArgument:&props atIndex:4];
+    currentValue = props[@"opacity"].doubleValue;
+  }] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
+
+  // Run 3 secs of animation.
+  for (NSUInteger i = 0; i < 3 * 60; i++) {
+    [_nodesManager stepAnimations:_displayLink];
+    CGFloat currentDiff = currentValue - previousValue;
+    // Verify monotonicity.
+    // Greater *or equal* because the animation stops during these 3 seconds.
+    XCTAssertGreaterThanOrEqual(currentValue, previousValue);
+    // Verify decay.
+    XCTAssertLessThanOrEqual(currentDiff, previousDiff);
+    previousValue = currentValue;
+    previousDiff = currentDiff;
+  }
+
+  // Should be done in 3 secs.
+  [[_uiManager reject] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
+  [_nodesManager stepAnimations:_displayLink];
+  [_uiManager verify];
+}
+
+- (void)testDecayAnimationLoop
+{
+  [self createSimpleAnimatedView:@1000 withOpacity:0];
+  [_nodesManager startAnimatingNode:@1
+                            nodeTag:@1
+                             config:@{@"type": @"decay",
+                                      @"velocity": @0.5,
+                                      @"deceleration": @0.998,
+                                      @"iterations": @5}
+                        endCallback:nil];
+
+
+  __block CGFloat previousValue;
+  __block CGFloat currentValue;
+  BOOL didComeToRest = NO;
+  NSUInteger numberOfResets = 0;
+
+  [[[_uiManager stub] andDo:^(NSInvocation *invocation) {
+    __unsafe_unretained NSDictionary<NSString *, NSNumber *> *props;
+    [invocation getArgument:&props atIndex:4];
+    currentValue = props[@"opacity"].doubleValue;
+  }] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
+
+  // Run 3 secs of animation five times.
+  for (NSUInteger i = 0; i < 3 * 60 * 5; i++) {
+    [_nodesManager stepAnimations:_displayLink];
+
+    // Verify monotonicity when not resetting the animation.
+    // Greater *or equal* because the animation stops during these 3 seconds.
+    if (!didComeToRest) {
+      XCTAssertGreaterThanOrEqual(currentValue, previousValue);
+    }
+
+    if (didComeToRest && currentValue != previousValue) {
+      numberOfResets++;
+      didComeToRest = NO;
+    }
+
+    // Test if animation has come to rest using the 0.1 threshold from DecayAnimation.m.
+    didComeToRest = fabs(currentValue - previousValue) < 0.1;
+    previousValue = currentValue;
+  }
+
+  // The animation should have reset 4 times.
+  XCTAssertEqual(numberOfResets, 4u);
+
+  [[_uiManager reject] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
+  [_nodesManager stepAnimations:_displayLink];
+  [_uiManager verify];
+}
+
 - (void)testAnimationCallbackFinish
 {
   [self createSimpleAnimatedView:@1000 withOpacity:0];
