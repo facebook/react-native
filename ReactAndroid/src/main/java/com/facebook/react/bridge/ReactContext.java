@@ -12,8 +12,6 @@ package com.facebook.react.bridge;
 import javax.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import android.app.Activity;
@@ -27,10 +25,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
-
-import static com.facebook.react.common.LifecycleState.BEFORE_CREATE;
-import static com.facebook.react.common.LifecycleState.BEFORE_RESUME;
-import static com.facebook.react.common.LifecycleState.RESUMED;
 
 /**
  * Abstract ContextWrapper for Android application or activity {@link Context} and
@@ -53,6 +47,7 @@ public class ReactContext extends ContextWrapper {
   private @Nullable CatalystInstance mCatalystInstance;
   private @Nullable LayoutInflater mInflater;
   private @Nullable MessageQueueThread mUiMessageQueueThread;
+  private @Nullable MessageQueueThread mUiBackgroundMessageQueueThread;
   private @Nullable MessageQueueThread mNativeModulesMessageQueueThread;
   private @Nullable MessageQueueThread mJSMessageQueueThread;
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
@@ -77,6 +72,7 @@ public class ReactContext extends ContextWrapper {
 
     ReactQueueConfiguration queueConfig = catalystInstance.getReactQueueConfiguration();
     mUiMessageQueueThread = queueConfig.getUIQueueThread();
+    mUiBackgroundMessageQueueThread = queueConfig.getUIBackgroundQueueThread();
     mNativeModulesMessageQueueThread = queueConfig.getNativeModulesQueueThread();
     mJSMessageQueueThread = queueConfig.getJSQueueThread();
   }
@@ -180,20 +176,6 @@ public class ReactContext extends ContextWrapper {
     mLifecycleEventListeners.remove(listener);
   }
 
-  public Map<String, Map<String,Double>> getAllPerformanceCounters() {
-    Map<String, Map<String,Double>> totalPerfMap =
-      new HashMap<>();
-    if (mCatalystInstance != null) {
-      for (NativeModule nativeModule : mCatalystInstance.getNativeModules()) {
-        if (nativeModule instanceof PerformanceCounter) {
-          PerformanceCounter perfCounterModule = (PerformanceCounter) nativeModule;
-          totalPerfMap.put(nativeModule.getName(), perfCounterModule.getPerformanceCounters());
-        }
-      }
-    }
-    return totalPerfMap;
-  }
-
   public void addActivityEventListener(ActivityEventListener listener) {
     mActivityEventListeners.add(listener);
   }
@@ -206,9 +188,9 @@ public class ReactContext extends ContextWrapper {
    * Should be called by the hosting Fragment in {@link Fragment#onResume}
    */
   public void onHostResume(@Nullable Activity activity) {
-    UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.RESUMED;
     mCurrentActivity = new WeakReference(activity);
+    ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_START);
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       try {
         listener.onHostResume();
@@ -216,6 +198,7 @@ public class ReactContext extends ContextWrapper {
         handleException(e);
       }
     }
+    ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_END);
   }
 
   public void onNewIntent(@Nullable Activity activity, Intent intent) {
@@ -234,8 +217,8 @@ public class ReactContext extends ContextWrapper {
    * Should be called by the hosting Fragment in {@link Fragment#onPause}
    */
   public void onHostPause() {
-    UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_RESUME;
+    ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_START);
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       try {
         listener.onHostPause();
@@ -243,6 +226,7 @@ public class ReactContext extends ContextWrapper {
         handleException(e);
       }
     }
+    ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_END);
   }
 
   /**
@@ -297,8 +281,20 @@ public class ReactContext extends ContextWrapper {
     Assertions.assertNotNull(mUiMessageQueueThread).runOnQueue(runnable);
   }
 
+  public void assertOnUiBackgroundQueueThread() {
+    Assertions.assertNotNull(mUiBackgroundMessageQueueThread).assertIsOnThread();
+  }
+
+  public void runOnUiBackgroundQueueThread(Runnable runnable) {
+    Assertions.assertNotNull(mUiBackgroundMessageQueueThread).runOnQueue(runnable);
+  }
+
   public void assertOnNativeModulesQueueThread() {
     Assertions.assertNotNull(mNativeModulesMessageQueueThread).assertIsOnThread();
+  }
+
+  public void assertOnNativeModulesQueueThread(String message) {
+    Assertions.assertNotNull(mNativeModulesMessageQueueThread).assertIsOnThread(message);
   }
 
   public boolean isOnNativeModulesQueueThread() {
@@ -319,6 +315,14 @@ public class ReactContext extends ContextWrapper {
 
   public void runOnJSQueueThread(Runnable runnable) {
     Assertions.assertNotNull(mJSMessageQueueThread).runOnQueue(runnable);
+  }
+
+  public void runUIBackgroundRunnable(Runnable runnable) {
+    if (mUiBackgroundMessageQueueThread == null) {
+      runOnNativeModulesQueueThread(runnable);
+    } else {
+      runOnUiBackgroundQueueThread(runnable);
+    }
   }
 
   /**

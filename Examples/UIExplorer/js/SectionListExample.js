@@ -19,18 +19,20 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule SectionListExample
  */
 'use strict';
 
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  Animated,
+  SectionList,
   StyleSheet,
   Text,
   View,
 } = ReactNative;
 
-const SectionList = require('SectionList');
 const UIExplorerPage = require('./UIExplorerPage');
 
 const infoLog = require('infoLog');
@@ -41,24 +43,31 @@ const {
   ItemComponent,
   PlainInput,
   SeparatorComponent,
-  StackedItemComponent,
+  Spindicator,
   genItemData,
   pressItem,
   renderSmallSwitchOption,
+  renderStackedItem,
 } = require('./ListExampleShared');
 
-const SectionHeaderComponent = ({section}) => (
-  <View>
+const AnimatedSectionList = Animated.createAnimatedComponent(SectionList);
+
+const VIEWABILITY_CONFIG = {
+  minimumViewTime: 3000,
+  viewAreaCoveragePercentThreshold: 100,
+  waitForInteraction: true,
+};
+
+const renderSectionHeader = ({section}) => (
+  <View style={styles.header}>
     <Text style={styles.headerText}>SECTION HEADER: {section.key}</Text>
     <SeparatorComponent />
   </View>
 );
 
-const CustomSeparatorComponent = ({text}) => (
-  <View>
-    <SeparatorComponent />
+const CustomSeparatorComponent = ({text, highlighted}) => (
+  <View style={[styles.customSeparator, highlighted && {backgroundColor: 'rgb(217, 217, 217)'}]}>
     <Text style={styles.separatorText}>{text}</Text>
-    <SeparatorComponent />
   </View>
 );
 
@@ -68,14 +77,34 @@ class SectionListExample extends React.PureComponent {
 
   state = {
     data: genItemData(1000),
+    debug: false,
     filterText: '',
     logViewable: false,
     virtualized: true,
   };
+
+  _scrollPos = new Animated.Value(0);
+  _scrollSinkY = Animated.event(
+    [{nativeEvent: { contentOffset: { y: this._scrollPos } }}],
+    {useNativeDriver: true},
+  );
+
   render() {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
-    const filter = (item) => (filterRegex.test(item.text) || filterRegex.test(item.title));
+    const filter = (item) => (
+      filterRegex.test(item.text) || filterRegex.test(item.title)
+    );
     const filteredData = this.state.data.filter(filter);
+    const filteredSectionData = [];
+    let startIndex = 0;
+    const endIndex = filteredData.length - 1;
+    for (let ii = 10; ii <= endIndex + 10; ii += 10) {
+      filteredSectionData.push({
+        key: `${filteredData[startIndex].key} - ${filteredData[Math.min(ii - 1, endIndex)].key}`,
+        data: filteredData.slice(startIndex, ii),
+      });
+      startIndex = ii;
+    }
     return (
       <UIExplorerPage
         noSpacer={true}
@@ -91,40 +120,64 @@ class SectionListExample extends React.PureComponent {
           <View style={styles.optionSection}>
             {renderSmallSwitchOption(this, 'virtualized')}
             {renderSmallSwitchOption(this, 'logViewable')}
+            {renderSmallSwitchOption(this, 'debug')}
+            <Spindicator value={this._scrollPos} />
           </View>
         </View>
         <SeparatorComponent />
-        <SectionList
+        <AnimatedSectionList
           ListHeaderComponent={HeaderComponent}
           ListFooterComponent={FooterComponent}
-          ItemComponent={this._renderItemComponent}
-          SectionHeaderComponent={SectionHeaderComponent}
-          SectionSeparatorComponent={() => <CustomSeparatorComponent text="SECTION SEPARATOR" />}
-          ItemSeparatorComponent={() => <CustomSeparatorComponent text="ITEM SEPARATOR" />}
+          SectionSeparatorComponent={({highlighted}) =>
+            <CustomSeparatorComponent highlighted={highlighted} text="SECTION SEPARATOR" />
+          }
+          ItemSeparatorComponent={({highlighted}) =>
+            <CustomSeparatorComponent highlighted={highlighted} text="ITEM SEPARATOR" />
+          }
+          debug={this.state.debug}
           enableVirtualization={this.state.virtualized}
           onRefresh={() => alert('onRefresh: nothing to refresh :P')}
+          onScroll={this._scrollSinkY}
           onViewableItemsChanged={this._onViewableItemsChanged}
           refreshing={false}
+          renderItem={this._renderItemComponent}
+          renderSectionHeader={renderSectionHeader}
+          stickySectionHeadersEnabled
           sections={[
-            {ItemComponent: StackedItemComponent, key: 's1', data: [
-              {title: 'Item In Header Section', text: 'Section s1', key: '0'},
+            {renderItem: renderStackedItem, key: 's1', data: [
+              {title: 'Item In Header Section', text: 'Section s1', key: 'header item'},
             ]},
             {key: 's2', data: [
-              {noImage: true, title: 'First item', text: 'Section s2', key: '0'},
-              {noImage: true, title: 'Second item', text: 'Section s2', key: '1'},
+              {noImage: true, title: '1st item', text: 'Section s2', key: 'noimage0'},
+              {noImage: true, title: '2nd item', text: 'Section s2', key: 'noimage1'},
             ]},
-            {key: 'Filtered Items', data: filteredData},
+            ...filteredSectionData,
           ]}
-          viewablePercentThreshold={100}
+          style={styles.list}
+          viewabilityConfig={VIEWABILITY_CONFIG}
         />
       </UIExplorerPage>
     );
   }
-  _renderItemComponent = ({item}) => <ItemComponent item={item} onPress={this._pressItem} />;
-  // This is called when items change viewability by scrolling into our out of the viewable area.
+
+  _renderItemComponent = ({item, separators}) => (
+    <ItemComponent
+      item={item}
+      onPress={this._pressItem}
+      onHideUnderlay={separators.unhighlight}
+      onShowUnderlay={separators.highlight}
+    />
+  );
+
+  // This is called when items change viewability by scrolling into our out of
+  // the viewable area.
   _onViewableItemsChanged = (info: {
     changed: Array<{
-      key: string, isViewable: boolean, item: {columns: Array<*>}, index: ?number, section?: any
+      key: string,
+      isViewable: boolean,
+      item: {columns: Array<*>},
+      index: ?number,
+      section?: any
     }>},
   ) => {
     // Impressions can be logged here
@@ -134,14 +187,25 @@ class SectionListExample extends React.PureComponent {
       )));
     }
   };
-  _pressItem = (index: number) => {
-    pressItem(this, index);
+
+  _pressItem = (key: string) => {
+    !isNaN(key) && pressItem(this, key);
   };
 }
 
 const styles = StyleSheet.create({
+  customSeparator: {
+    backgroundColor: 'rgb(200, 199, 204)',
+  },
+  header: {
+    backgroundColor: '#e9eaed',
+  },
   headerText: {
     padding: 4,
+    fontWeight: '600',
+  },
+  list: {
+    backgroundColor: 'white',
   },
   optionSection: {
     flexDirection: 'row',
@@ -152,8 +216,7 @@ const styles = StyleSheet.create({
   separatorText: {
     color: 'gray',
     alignSelf: 'center',
-    padding: 4,
-    fontSize: 9,
+    fontSize: 7,
   },
 });
 

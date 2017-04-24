@@ -23,6 +23,14 @@
 #define WIN_EXPORT
 #endif
 
+#ifdef WINARMDLL
+#define WIN_STRUCT(type) type*
+#define WIN_STRUCT_REF(value) &value
+#else
+#define WIN_STRUCT(type) type
+#define WIN_STRUCT_REF(value) value
+#endif
+
 #ifndef FB_ASSERTIONS_ENABLED
 #define FB_ASSERTIONS_ENABLED 1
 #endif

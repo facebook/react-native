@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule GeolocationExample
  */
 /* eslint no-console: 0 */
 'use strict';

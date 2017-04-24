@@ -4,8 +4,9 @@ title: Integration With Existing Apps
 layout: docs
 category: Guides
 permalink: docs/integration-with-existing-apps.html
-next: colors
-previous: more-resources
+banner: ejected
+next: running-on-device
+previous: testing
 ---
 
 <div class="integration-toggler">
@@ -217,6 +218,8 @@ target 'NumberTileGame' do
     'RCTWebSocket', # needed for debugging
     # Add any other subspecs you want to use in your project
   ]
+  # Explicitly include Yoga if you are using RN >= 0.42.0
+  pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
 
 end
 ```
@@ -242,6 +245,8 @@ target 'swift-2048' do
     'RCTWebSocket', # needed for debugging
     # Add any other subspecs you want to use in your project
   ]
+  # Explicitly include Yoga if you are using RN >= 0.42.0
+  pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
 
 end
 ```
@@ -374,10 +379,10 @@ We will, for debugging purposes, log that the event handler was invoked. Then, w
 
 <block class="objc" />
 
-First `import` the `RCTRootView` library.
+First `import` the `RCTRootView` header.
 
 ```
-#import "RCTRootView.h"
+#import <React/RCTRootView.h>
 ```
 
 > The `initialProperties` are here for illustration purposes so we have some data for our high score screen. In our React Native component, we will use `this.props` to get access to that data.
@@ -588,7 +593,7 @@ dependencies {
 
 > If you want to ensure that you are always using a specific React Native version in your native build, replace `+` with an actual React Native version you've downloaded from `npm`.
 
-In your project's `build.gradle` file add an entry for the local React Native maven directory:
+In your project's `build.gradle` file add an entry for the local React Native maven directory. Be sure to add it to the "allprojects" block:
 
 ```
 allprojects {
@@ -730,7 +735,7 @@ Now your activity is ready to run some JavaScript code.
 
 ### Configure permissions for development error overlay
 
-If your app is targeting the Android `API level 23` or greater, make sure you have the `overlay` permission enabled for the development build. You can check it with `Settings.canDrawOverlays(this);`. This is required in dev builds because react native development errors must be displayed above all the other windows. Due to the new permissions system introduced in the API level 23, the user needs to approve it. This can be acheived by adding the following code to the Activity file in the onCreate() method. OVERLAY_PERMISSION_REQ_CODE is a field of the class which would be responsible for passing the result back to the Activity.
+If your app is targeting the Android `API level 23` or greater, make sure you have the `overlay` permission enabled for the development build. You can check it with `Settings.canDrawOverlays(this);`. This is required in dev builds because react native development errors must be displayed above all the other windows. Due to the new permissions system introduced in the API level 23, the user needs to approve it. This can be achieved by adding the following code to the Activity file in the onCreate() method. OVERLAY_PERMISSION_REQ_CODE is a field of the class which would be responsible for passing the result back to the Activity.
 
 ```java
 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

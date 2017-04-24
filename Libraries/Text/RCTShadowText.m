@@ -73,7 +73,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
     _writingDirection = NSWritingDirectionNatural;
     _cachedEffectiveLayoutDirection = UIUserInterfaceLayoutDirectionLeftToRight;
 
-    YGNodeSetMeasureFunc(self.cssNode, RCTMeasure);
+    YGNodeSetMeasureFunc(self.yogaNode, RCTMeasure);
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(contentSizeMultiplierDidChange:)
@@ -94,14 +94,14 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   return [[superDescription substringToIndex:superDescription.length - 1] stringByAppendingFormat:@"; text: %@>", [self attributedString].string];
 }
 
-- (BOOL)isCSSLeafNode
+- (BOOL)isYogaLeafNode
 {
   return YES;
 }
 
 - (void)contentSizeMultiplierDidChange:(NSNotification *)note
 {
-  YGNodeMarkDirty(self.cssNode);
+  YGNodeMarkDirty(self.yogaNode);
   [self dirtyText];
 }
 
@@ -166,7 +166,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
   [layoutManager.textStorage enumerateAttribute:RCTShadowViewAttributeName inRange:characterRange options:0 usingBlock:^(RCTShadowView *child, NSRange range, BOOL *_) {
     if (child) {
-      YGNodeRef childNode = child.cssNode;
+      YGNodeRef childNode = child.yogaNode;
       float width = YGNodeStyleGetWidth(childNode).value;
       float height = YGNodeStyleGetHeight(childNode).value;
       if (YGFloatIsUndefined(width) || YGFloatIsUndefined(height)) {
@@ -324,8 +324,8 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
       [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:shadowRawText.text ?: @""]];
       [child setTextComputed];
     } else {
-      float width = YGNodeStyleGetWidth(child.cssNode).value;
-      float height = YGNodeStyleGetHeight(child.cssNode).value;
+      float width = YGNodeStyleGetWidth(child.yogaNode).value;
+      float height = YGNodeStyleGetHeight(child.yogaNode).value;
       if (YGFloatIsUndefined(width) || YGFloatIsUndefined(height)) {
         RCTLogError(@"Views nested within a <Text> must have a width and height");
       }
@@ -365,7 +365,7 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
 
   // create a non-mutable attributedString for use by the Text system which avoids copies down the line
   _cachedAttributedString = [[NSAttributedString alloc] initWithAttributedString:attributedString];
-  YGNodeMarkDirty(self.cssNode);
+  YGNodeMarkDirty(self.yogaNode);
 
   return _cachedAttributedString;
 }

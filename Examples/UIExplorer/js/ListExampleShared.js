@@ -19,12 +19,14 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule ListExampleShared
  */
 'use strict';
 
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  Animated,
   Image,
   Platform,
   TouchableHighlight,
@@ -35,16 +37,16 @@ const {
   View,
 } = ReactNative;
 
-type Item = {title: string, text: string, key: number, pressed: boolean, noImage?: ?boolean};
+type Item = {title: string, text: string, key: string, pressed: boolean, noImage?: ?boolean};
 
-function genItemData(count: number): Array<Item> {
+function genItemData(count: number, start: number = 0): Array<Item> {
   const dataBlob = [];
-  for (let ii = 0; ii < count; ii++) {
+  for (let ii = start; ii < count + start; ii++) {
     const itemHash = Math.abs(hashCode('Item ' + ii));
     dataBlob.push({
       title: 'Item ' + ii,
       text: LOREM_IPSUM.substr(0, itemHash % 301 + 20),
-      key: ii,
+      key: String(ii),
       pressed: false,
     });
   }
@@ -52,13 +54,16 @@ function genItemData(count: number): Array<Item> {
 }
 
 const HORIZ_WIDTH = 200;
+const ITEM_HEIGHT = 72;
 
 class ItemComponent extends React.PureComponent {
   props: {
     fixedHeight?: ?boolean,
     horizontal?: ?boolean,
     item: Item,
-    onPress: (key: number) => void,
+    onPress: (key: string) => void,
+    onShowUnderlay?: () => void,
+    onHideUnderlay?: () => void,
   };
   _onPress = () => {
     this.props.onPress(this.props.item.key);
@@ -70,9 +75,11 @@ class ItemComponent extends React.PureComponent {
     return (
       <TouchableHighlight
         onPress={this._onPress}
+        onShowUnderlay={this.props.onShowUnderlay}
+        onHideUnderlay={this.props.onHideUnderlay}
         style={horizontal ? styles.horizItem : styles.item}>
         <View style={[
-          styles.row, horizontal && {width: HORIZ_WIDTH}]}>
+          styles.row, horizontal && {width: HORIZ_WIDTH}, fixedHeight && {height: ITEM_HEIGHT}]}>
           {!item.noImage && <Image style={styles.thumb} source={imgSource} />}
           <Text
             style={styles.text}
@@ -85,27 +92,21 @@ class ItemComponent extends React.PureComponent {
   }
 }
 
-class StackedItemComponent extends React.PureComponent {
-  props: {
-    item: Item,
-  };
-  render() {
-    const {item} = this.props;
-    const itemHash = Math.abs(hashCode(item.title));
-    const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
-    return (
-      <View style={styles.stacked}>
-        <Text style={styles.stackedText}>{item.title} - {item.text}</Text>
-        <Image style={styles.thumb} source={imgSource} />
-      </View>
-    );
-  }
-}
+const renderStackedItem = ({item}: {item: Item}) => {
+  const itemHash = Math.abs(hashCode(item.title));
+  const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
+  return (
+    <View style={styles.stacked}>
+      <Text style={styles.stackedText}>{item.title} - {item.text}</Text>
+      <Image style={styles.thumb} source={imgSource} />
+    </View>
+  );
+};
 
 class FooterComponent extends React.PureComponent {
   render() {
     return (
-      <View>
+      <View style={styles.headerFooterContainer}>
         <SeparatorComponent />
         <View style={styles.headerFooter}>
           <Text>LIST FOOTER</Text>
@@ -118,7 +119,7 @@ class FooterComponent extends React.PureComponent {
 class HeaderComponent extends React.PureComponent {
   render() {
     return (
-      <View>
+      <View style={styles.headerFooterContainer}>
         <View style={styles.headerFooter}>
           <Text>LIST HEADER</Text>
         </View>
@@ -131,6 +132,31 @@ class HeaderComponent extends React.PureComponent {
 class SeparatorComponent extends React.PureComponent {
   render() {
     return <View style={styles.separator} />;
+  }
+}
+
+class ItemSeparatorComponent extends React.PureComponent {
+  render() {
+    const style = this.props.highlighted
+      ? [styles.itemSeparator, {marginLeft: 0, backgroundColor: 'rgb(217, 217, 217)'}]
+      : styles.itemSeparator;
+    return <View style={style} />;
+  }
+}
+
+class Spindicator extends React.PureComponent {
+  render() {
+    return (
+      <Animated.View style={[styles.spindicator, {
+        transform: [
+          {rotate: this.props.value.interpolate({
+            inputRange: [0, 5000],
+            outputRange: ['0deg', '360deg'],
+            extrapolate: 'extend',
+          })}
+        ]
+      }]} />
+    );
   }
 }
 
@@ -169,16 +195,17 @@ const SEPARATOR_HEIGHT = StyleSheet.hairlineWidth;
 
 function getItemLayout(data: any, index: number, horizontal?: boolean) {
   const [length, separator, header] = horizontal ?
-    [HORIZ_WIDTH, 0, HEADER.width] : [84, SEPARATOR_HEIGHT, HEADER.height];
+    [HORIZ_WIDTH, 0, HEADER.width] : [ITEM_HEIGHT, SEPARATOR_HEIGHT, HEADER.height];
   return {length, offset: (length + separator) * index + header, index};
 }
 
-function pressItem(context: Object, key: number) {
-  const pressed = !context.state.data[key].pressed;
+function pressItem(context: Object, key: string) {
+  const index = Number(key);
+  const pressed = !context.state.data[index].pressed;
   context.setState((state) => {
     const newData = [...state.data];
-    newData[key] = {
-      ...state.data[key],
+    newData[index] = {
+      ...state.data[index],
       pressed,
       title: 'Item ' + key + (pressed ? ' (pressed)' : ''),
     };
@@ -219,11 +246,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  headerFooterContainer: {
+    backgroundColor: 'rgb(239, 239, 244)',
+  },
   horizItem: {
     alignSelf: 'flex-start', // Necessary for touch highlight
   },
   item: {
     flex: 1,
+  },
+  itemSeparator: {
+    height: SEPARATOR_HEIGHT,
+    backgroundColor: 'rgb(200, 199, 204)',
+    marginLeft: 60,
   },
   option: {
     flexDirection: 'row',
@@ -233,7 +268,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     padding: 10,
-    backgroundColor: '#F6F6F6',
+    backgroundColor: 'white',
   },
   searchTextInput: {
     backgroundColor: 'white',
@@ -248,7 +283,7 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: SEPARATOR_HEIGHT,
-    backgroundColor: 'gray',
+    backgroundColor: 'rgb(200, 199, 204)',
   },
   smallSwitch: Platform.select({
     android: {
@@ -264,12 +299,20 @@ const styles = StyleSheet.create({
   }),
   stacked: {
     alignItems: 'center',
-    backgroundColor: '#F6F6F6',
+    backgroundColor: 'white',
     padding: 10,
   },
   thumb: {
-    width: 64,
-    height: 64,
+    width: 50,
+    height: 50,
+    left: -5,
+  },
+  spindicator: {
+    marginLeft: 'auto',
+    marginTop: 8,
+    width: 2,
+    height: 16,
+    backgroundColor: 'darkgray',
   },
   stackedText: {
     padding: 4,
@@ -284,11 +327,13 @@ module.exports = {
   FooterComponent,
   HeaderComponent,
   ItemComponent,
+  ItemSeparatorComponent,
   PlainInput,
   SeparatorComponent,
-  StackedItemComponent,
+  Spindicator,
   genItemData,
   getItemLayout,
   pressItem,
   renderSmallSwitchOption,
+  renderStackedItem,
 };

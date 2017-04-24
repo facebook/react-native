@@ -56,7 +56,8 @@ class RCTNetworking extends NativeEventEmitter {
     responseType: 'text' | 'base64',
     incrementalUpdates: boolean,
     timeout: number,
-    callback: (requestId: number) => any
+    callback: (requestId: number) => any,
+    withCredentials: boolean
   ) {
     const body = convertRequestBody(data);
     if (body && body.formData) {
@@ -74,7 +75,8 @@ class RCTNetworking extends NativeEventEmitter {
       {...body, trackingName},
       responseType,
       incrementalUpdates,
-      timeout
+      timeout,
+      withCredentials
     );
     callback(requestId);
   }

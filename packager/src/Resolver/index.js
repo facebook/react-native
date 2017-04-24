@@ -17,35 +17,35 @@ const defaults = require('../../defaults');
 const pathJoin = require('path').join;
 
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
-import type Module from '../node-haste/Module';
+import type Module, {HasteImpl} from '../node-haste/Module';
 import type {SourceMap} from '../lib/SourceMap';
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
 import type {TransformCode} from '../node-haste/Module';
-import type Cache from '../node-haste/Cache';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 
 type MinifyCode = (filePath: string, code: string, map: SourceMap) =>
   Promise<{code: string, map: SourceMap}>;
 
-type Options = {
-  assetExts: Array<string>,
-  blacklistRE?: RegExp,
-  cache: Cache,
-  extraNodeModules?: {},
-  getTransformCacheKey: GetTransformCacheKey,
-  globalTransformCache: ?GlobalTransformCache,
-  minifyCode: MinifyCode,
-  platforms: Array<string>,
-  polyfillModuleNames?: Array<string>,
-  projectRoots: Array<string>,
-  providesModuleNodeModules?: Array<string>,
-  reporter: Reporter,
-  resetCache: boolean,
-  transformCode: TransformCode,
-  watch?: boolean,
-};
+type Options = {|
+  +assetExts: Array<string>,
+  +blacklistRE?: RegExp,
+  +extraNodeModules: ?{},
+  +getTransformCacheKey: GetTransformCacheKey,
+  +globalTransformCache: ?GlobalTransformCache,
+  +hasteImpl?: HasteImpl,
+  +maxWorkerCount: number,
+  +minifyCode: MinifyCode,
+  +platforms: Set<string>,
+  +polyfillModuleNames?: Array<string>,
+  +projectRoots: Array<string>,
+  +providesModuleNodeModules: Array<string>,
+  +reporter: Reporter,
+  +resetCache: boolean,
+  +transformCode: TransformCode,
+  +watch: boolean,
+|};
 
 class Resolver {
 
@@ -53,45 +53,37 @@ class Resolver {
   _minifyCode: MinifyCode;
   _polyfillModuleNames: Array<string>;
 
-  constructor(opts: Options) {
-    this._depGraph = new DependencyGraph({
+  constructor(opts: Options, depGraph: DependencyGraph) {
+    this._minifyCode = opts.minifyCode;
+    this._polyfillModuleNames = opts.polyfillModuleNames || [];
+    this._depGraph = depGraph;
+  }
+
+  static async load(opts: Options): Promise<Resolver> {
+    const depGraphOpts = Object.assign(Object.create(opts), {
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
-      assetExts: opts.assetExts,
-      cache: opts.cache,
-      extraNodeModules: opts.extraNodeModules,
-      getTransformCacheKey: opts.getTransformCacheKey,
-      globalTransformCache: opts.globalTransformCache,
-      ignoreFilePath: function(filepath) {
+      extensions: ['js', 'json'],
+      forceNodeFilesystemAPI: false,
+      ignoreFilePath(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
       },
       moduleOptions: {
-        cacheTransformResults: true,
+        hasteImpl: opts.hasteImpl,
         resetCache: opts.resetCache,
       },
-      platforms: opts.platforms,
       preferNativePlatform: true,
-      providesModuleNodeModules: opts.providesModuleNodeModules || defaults.providesModuleNodeModules,
-      reporter: opts.reporter,
-      resetCache: opts.resetCache,
       roots: opts.projectRoots,
-      transformCode: opts.transformCode,
-      watch: opts.watch || false,
+      useWatchman: true,
     });
-
-    this._minifyCode = opts.minifyCode;
-    this._polyfillModuleNames = opts.polyfillModuleNames || [];
-
-    this._depGraph.load().catch(err => {
-      console.error(err.message + '\n' + err.stack);
-      process.exit(1);
-    });
+    const depGraph = await DependencyGraph.load(depGraphOpts);
+    return new Resolver(opts, depGraph);
   }
 
   getShallowDependencies(
     entryFile: string,
     transformOptions: TransformOptions,
-  ): Array<string> {
+  ): Promise<Array<Module>> {
     return this._depGraph.getShallowDependencies(entryFile, transformOptions);
   }
 
@@ -105,7 +97,7 @@ class Resolver {
     transformOptions: TransformOptions,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     getModuleId: mixed,
-  ): Promise<ResolutionResponse> {
+  ): Promise<ResolutionResponse<Module>> {
     const {platform, recursive = true} = options;
     return this._depGraph.getDependencies({
       entryPath,
@@ -118,6 +110,7 @@ class Resolver {
         polyfill => resolutionResponse.prependDependency(polyfill)
       );
 
+      /* $FlowFixMe: monkey patching */
       resolutionResponse.getModuleId = getModuleId;
       return resolutionResponse.finalize();
     });
@@ -154,7 +147,7 @@ class Resolver {
   }
 
   resolveRequires(
-    resolutionResponse: ResolutionResponse,
+    resolutionResponse: ResolutionResponse<Module>,
     module: Module,
     code: string,
     dependencyOffsets: Array<number> = [],
@@ -198,7 +191,7 @@ class Resolver {
     dev = true,
     minify = false,
   }: {
-    resolutionResponse: ResolutionResponse,
+    resolutionResponse: ResolutionResponse<Module>,
     module: Module,
     name: string,
     map: SourceMap,
@@ -247,7 +240,7 @@ function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   return [
     `__d(/* ${verboseName} */`,
     'function(global, require, module, exports) {', // module factory
-      code,
+    code,
     '\n}, ',
     `${JSON.stringify(moduleName)}`, // module id, null = id map. used in ModuleGraph
     dev ? `, null, ${JSON.stringify(verboseName)}` : '',
@@ -255,7 +248,7 @@ function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   ].join('');
 }
 
-function definePolyfillCode(code,) {
+function definePolyfillCode(code) {
   return [
     '(function(global) {',
     code,

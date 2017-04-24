@@ -32,7 +32,11 @@ public:
   virtual ~JSBigString() {}
 
   virtual bool isAscii() const = 0;
+
+  // This needs to be a \0 terminated string
   virtual const char* c_str() const = 0;
+
+  // Length of the c_str without the NULL byte.
   virtual size_t size() const = 0;
 };
 

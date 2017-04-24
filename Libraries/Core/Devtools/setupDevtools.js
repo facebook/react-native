@@ -12,10 +12,9 @@
 'use strict';
 
 if (__DEV__) {
-  var AppState = require('AppState');
-  var NativeModules = require('NativeModules');
-  var Platform = require('Platform');
-  var {connectToDevTools} = require('react-devtools-core');
+  const AppState = require('AppState');
+  const {PlatformConstants} = require('NativeModules');
+  const {connectToDevTools} = require('react-devtools-core');
 
   connectToDevTools({
     isAppActive() {
@@ -26,8 +25,8 @@ if (__DEV__) {
       return AppState.currentState !== 'background';
     },
     // Special case: Genymotion is running on a different host.
-    host: (Platform.OS === 'android' && NativeModules.AndroidConstants) ?
-      NativeModules.AndroidConstants.ServerHost.split(':')[0] :
+    host: PlatformConstants && PlatformConstants.ServerHost ?
+      PlatformConstants.ServerHost.split(':')[0] :
       'localhost',
     // Read the optional global variable for backward compatibility.
     // It was added in https://github.com/facebook/react-native/commit/bf2b435322e89d0aeee8792b1c6e04656c2719a0.

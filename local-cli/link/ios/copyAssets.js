@@ -2,15 +2,14 @@ const fs = require('fs-extra');
 const path = require('path');
 const xcode = require('xcode');
 const log = require('npmlog');
-const plistParser = require('plist');
 const groupFilesByType = require('../groupFilesByType');
 const createGroupWithMessage = require('./createGroupWithMessage');
 const getPlist = require('./getPlist');
-const getPlistPath = require('./getPlistPath');
+const writePlist = require('./writePlist');
 
 /**
  * This function works in a similar manner to its Android version,
- * except it does not copy fonts but creates XCode Group references
+ * except it does not copy fonts but creates Xcode Group references
  */
 module.exports = function linkAssetsIOS(files, projectConfig) {
   const project = xcode.project(projectConfig.pbxprojPath).parseSync();
@@ -38,8 +37,5 @@ module.exports = function linkAssetsIOS(files, projectConfig) {
     project.writeSync()
   );
 
-  fs.writeFileSync(
-    getPlistPath(project, projectConfig.sourceDir),
-    plistParser.build(plist)
-  );
+  writePlist(project, projectConfig.sourceDir, plist);
 };

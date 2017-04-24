@@ -9,6 +9,9 @@
 
 package com.facebook.react.bridge;
 
+import javax.annotation.Nullable;
+
+import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -20,7 +23,7 @@ import java.util.Map;
  */
 public interface NativeModule {
   interface NativeMethod {
-    void invoke(CatalystInstance catalystInstance, ExecutorToken executorToken, ReadableNativeArray parameters);
+    void invoke(JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray parameters);
     String getType();
   }
 
@@ -29,11 +32,6 @@ public interface NativeModule {
    * from javascript.
    */
   String getName();
-
-  /**
-   * @return methods callable from JS on this module
-   */
-  Map<String, NativeMethod> getMethods();
 
   /**
    * This is called at the end of {@link CatalystApplicationFragment#createCatalystInstance()}

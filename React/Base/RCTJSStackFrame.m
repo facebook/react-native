@@ -8,6 +8,7 @@
  */
 
 #import "RCTJSStackFrame.h"
+
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
@@ -70,8 +71,8 @@ static NSRegularExpression *RCTJSStackFrameRegex()
 {
   return [[self alloc] initWithMethodName:dict[@"methodName"]
                                      file:dict[@"file"]
-                               lineNumber:[dict[@"lineNumber"] integerValue]
-                                   column:[dict[@"column"] integerValue]];
+                               lineNumber:[RCTNilIfNull(dict[@"lineNumber"]) integerValue]
+                                   column:[RCTNilIfNull(dict[@"column"]) integerValue]];
 }
 
 + (NSArray<RCTJSStackFrame *> *)stackFramesWithLines:(NSString *)lines
@@ -96,6 +97,16 @@ static NSRegularExpression *RCTJSStackFrameRegex()
     }
   }
   return stack;
+}
+
+- (NSString *)description {
+  return [NSString stringWithFormat:@"<%@: %p method name: %@; file name: %@; line: %ld; column: %ld>",
+          self.class,
+          self,
+          self.methodName,
+          self.file,
+          (long)self.lineNumber,
+          (long)self.column];
 }
 
 @end

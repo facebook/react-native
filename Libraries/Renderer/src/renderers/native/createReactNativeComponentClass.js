@@ -13,8 +13,8 @@
 'use strict';
 
 const ReactNativeBaseComponent = require('ReactNativeBaseComponent');
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeFeatureFlags = require('ReactNativeFeatureFlags');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 // See also ReactNativeBaseComponent
 type ReactNativeBaseComponentViewConfig = {
@@ -28,11 +28,9 @@ type ReactNativeBaseComponentViewConfig = {
  * @private
  */
 const createReactNativeFiberComponentClass = function(
-  viewConfig: ReactNativeBaseComponentViewConfig
-): ReactClass<any> {
-  // TODO(sema): This actually returns a string. Need to fix this before
-  // we deploy Fiber.
-  return (ReactNativeViewConfigRegistry.register(viewConfig) : any);
+  viewConfig: ReactNativeBaseComponentViewConfig,
+): string {
+  return ReactNativeViewConfigRegistry.register(viewConfig);
 };
 
 /**
@@ -40,7 +38,7 @@ const createReactNativeFiberComponentClass = function(
  * @private
  */
 const createReactNativeComponentClass = function(
-  viewConfig: ReactNativeBaseComponentViewConfig
+  viewConfig: ReactNativeBaseComponentViewConfig,
 ): ReactClass<any> {
   const Constructor = function(element) {
     this._currentElement = element;
@@ -59,6 +57,6 @@ const createReactNativeComponentClass = function(
   return ((Constructor: any): ReactClass<any>);
 };
 
-module.exports = (ReactNativeFeatureFlags.useFiber
+module.exports = ReactNativeFeatureFlags.useFiber
   ? createReactNativeFiberComponentClass
-  : createReactNativeComponentClass);
+  : createReactNativeComponentClass;

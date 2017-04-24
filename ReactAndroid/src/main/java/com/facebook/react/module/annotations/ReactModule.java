@@ -65,4 +65,10 @@ public @interface ReactModule {
    * Whether this module needs to be loaded immediately.
    */
   boolean needsEagerInit() default false;
+
+  /**
+   *  Whether this module has constants to add, defaults to true as that is safer for when a
+   *  correct annotation is not included
+   */
+  boolean hasConstants() default true;
 }
