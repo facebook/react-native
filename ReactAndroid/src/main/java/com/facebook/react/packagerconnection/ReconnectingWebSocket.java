@@ -41,17 +41,27 @@ final public class ReconnectingWebSocket implements WebSocketListener {
     void onMessage(ResponseBody message);
   }
 
+  public interface ConnectionCallback {
+    void onConnected();
+    void onDisconnected();
+  }
+
   private final String mUrl;
   private final Handler mHandler;
   private boolean mClosed = false;
   private boolean mSuppressConnectionErrors;
   private @Nullable WebSocket mWebSocket;
-  private @Nullable MessageCallback mCallback;
+  private @Nullable MessageCallback mMessageCallback;
+  private @Nullable ConnectionCallback mConnectionCallback;
 
-  public ReconnectingWebSocket(String url, MessageCallback callback) {
+  public ReconnectingWebSocket(
+      String url,
+      MessageCallback messageCallback,
+      ConnectionCallback connectionCallback) {
     super();
     mUrl = url;
-    mCallback = callback;
+    mMessageCallback = messageCallback;
+    mConnectionCallback = connectionCallback;
     mHandler = new Handler(Looper.getMainLooper());
   }
 
@@ -101,7 +111,11 @@ final public class ReconnectingWebSocket implements WebSocketListener {
   public void closeQuietly() {
     mClosed = true;
     closeWebSocketQuietly();
-    mCallback = null;
+    mMessageCallback = null;
+
+    if (mConnectionCallback != null) {
+      mConnectionCallback.onConnected();
+    }
   }
 
   private void closeWebSocketQuietly() {
@@ -124,6 +138,10 @@ final public class ReconnectingWebSocket implements WebSocketListener {
   public synchronized void onOpen(WebSocket webSocket, Response response) {
     mWebSocket = webSocket;
     mSuppressConnectionErrors = false;
+
+    if (mConnectionCallback != null) {
+      mConnectionCallback.onConnected();
+    }
   }
 
   @Override
@@ -132,14 +150,17 @@ final public class ReconnectingWebSocket implements WebSocketListener {
       abort("Websocket exception", e);
     }
     if (!mClosed) {
+      if (mConnectionCallback != null) {
+        mConnectionCallback.onDisconnected();
+      }
       reconnect();
     }
   }
 
   @Override
   public synchronized void onMessage(ResponseBody message) {
-    if (mCallback != null) {
-      mCallback.onMessage(message);
+    if (mMessageCallback != null) {
+      mMessageCallback.onMessage(message);
     }
   }
 
@@ -150,6 +171,9 @@ final public class ReconnectingWebSocket implements WebSocketListener {
   public synchronized void onClose(int code, String reason) {
     mWebSocket = null;
     if (!mClosed) {
+      if (mConnectionCallback != null) {
+        mConnectionCallback.onDisconnected();
+      }
       reconnect();
     }
   }
