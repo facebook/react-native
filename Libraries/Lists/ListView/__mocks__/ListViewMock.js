@@ -34,7 +34,7 @@ class ListViewMock extends React.Component {
         const rowID = rowIDs[rowIdx];
         rows.push(
           <StaticRenderer
-            key={rowID}
+            key={'r_' + sectionID + '_' + rowID}
             shouldUpdate={true}
             render={this.props.renderRow.bind(
               null,
