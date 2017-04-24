@@ -134,3 +134,9 @@ export type TransformedFile = {
   transformed: TransformResults,
   type: FileTypes,
 };
+
+export type LibraryOptions = {|
+  dependencies?: Array<string>,
+  platform?: string,
+  root: string,
+|};
