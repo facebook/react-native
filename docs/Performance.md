@@ -73,6 +73,12 @@ This is unavoidable: a lot more work needs to be done at runtime to provide you 
 When running a bundled app, these statements can cause a big bottleneck in the JavaScript thread.
 This includes calls from debugging libraries such as [redux-logger](https://github.com/evgenyrodionov/redux-logger),
 so make sure to remove them before bundling.
+One solution can be to conditionally override the `console.log` method at the entry point of your app. Like this:
+```js
+if (!__DEV__) {
+  console.log = () => {};
+}
+```
 
 ### `ListView` initial rendering is too slow or scroll performance is bad for large lists
 
