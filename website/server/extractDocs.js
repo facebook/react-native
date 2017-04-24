@@ -90,15 +90,13 @@ function getExamples(componentName, componentPlatform) {
   if (paths) {
     const examples = [];
     paths.map((p) => {
+      const title = p.match(/(\w+)Example\./)[1];
       const platform = p.match(/Example\.(.*)\.js$/);
-      let title = '';
-      if ((componentPlatform === CROSS_SUFFIX) && (platform !== null)) {
-        title = platform[1].toUpperCase();
-      }
       examples.push(
         {
           path: p.replace(/^\.\.\//, ''),
           title: title,
+          platform: componentPlatform === CROSS_SUFFIX ? null : componentPlatform,
           content: fs.readFileSync(p).toString(),
         }
       );
