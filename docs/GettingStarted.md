@@ -27,7 +27,7 @@ npm start
 
 This will start a development server for you, and print a QR code in your terminal.
 
-Install the [Expo](https://expo.io) client app on your iOS or Android phone, make sure your phone is on the same network as your computer, and scan the QR code in your terminal to open your project. The QR scanner is available under the "Projects" tab of the app. Create React Native App also has a [user guide](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md) you can reference if you have questions specific to the tool.
+Install the [Expo](https://expo.io) client app on your iOS or Android phone, make sure your phone is on the same network as your computer, and scan the QR code in your terminal to open your project. Create React Native App also has a [user guide](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md) you can reference if you have questions specific to the tool.
 
 Once you've created your project and opened it in the Expo client app, you can proceed to the [Tutorial](docs/tutorial.html).
 
