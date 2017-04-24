@@ -880,7 +880,6 @@ var Autodocs = React.createClass({
           <Prism>
            {example.content.replace(/^[\s\S]*?\*\//, '').trim()}
           </Prism>
-          <EmbeddedSimulator shouldRender={metadata.runnable} metadata={metadata} />
         </div>
       </div>
     );
