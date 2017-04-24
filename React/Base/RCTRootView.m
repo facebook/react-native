@@ -92,11 +92,10 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     }
 #endif
 
-    if (!_bridge.loading) {
-      [self bundleFinishedLoading:([_bridge batchedBridge] ?: _bridge)];
-    }
-
     [self showLoadingView];
+
+    // Immediately schedule the application to be started
+    [self bundleFinishedLoading:[_bridge batchedBridge]];
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -259,11 +258,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // Use the (batched) bridge that's sent in the notification payload, so the
   // RCTRootContentView is scoped to the right bridge
   RCTBridge *bridge = notification.userInfo[@"bridge"];
-  [self bundleFinishedLoading:bridge];
+  if (bridge != _contentView.bridge) {
+    [self bundleFinishedLoading:bridge];
+  }
 }
 
 - (void)bundleFinishedLoading:(RCTBridge *)bridge
 {
+  RCTAssert(bridge != nil, @"Bridge cannot be nil");
   if (!bridge.valid) {
     return;
   }

@@ -12,8 +12,8 @@
 jest.disableAutomock();
 jest.useRealTimers();
 
-const fetchMock = jest.fn();
-jest.mock('node-fetch', () => fetchMock);
+const mockFetch = jest.fn();
+jest.mock('node-fetch', () => mockFetch);
 
 const {URIBasedGlobalTransformCache} = require('../GlobalTransformCache');
 const FetchError = require('node-fetch/lib/fetch-error');
@@ -82,19 +82,19 @@ describe('GlobalTransformCache', () => {
     });
 
     beforeEach(() => {
-      fetchMock.mockReset();
+      mockFetch.mockReset();
     });
 
     it('fetches result', async () => {
-      fetchMock.mockImplementation(defaultFetchMockImpl);
+      mockFetch.mockImplementation(defaultFetchMockImpl);
       const result = await URIBasedGlobalTransformCache
         .fetchResultFromURI('http://globalcache.com/foo');
       expect(result).toMatchSnapshot();
     });
 
     it('retries once on timeout', async () => {
-      fetchMock.mockImplementation(async uri => {
-        fetchMock.mockImplementation(defaultFetchMockImpl);
+      mockFetch.mockImplementation(async uri => {
+        mockFetch.mockImplementation(defaultFetchMockImpl);
         throw new FetchError('timeout!', 'request-timeout');
       });
       const result = await URIBasedGlobalTransformCache

@@ -47,7 +47,7 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 
 @implementation RCTBatchedBridge
 {
-  BOOL _wasBatchActive;
+  std::atomic_bool _wasBatchActive;
   NSMutableArray<dispatch_block_t> *_pendingCalls;
   NSDictionary<NSString *, RCTModuleData *> *_moduleDataByName;
   NSArray<RCTModuleData *> *_moduleDataByID;
@@ -89,10 +89,14 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
-                                           bundleURL:(NSURL *)bundleURL
-                                      moduleProvider:(RCTBridgeModuleProviderBlock)block
-                                       launchOptions:(NSDictionary *)launchOptions)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(__unused id<RCTBridgeDelegate>)delegate
+                                           bundleURL:(__unused NSURL *)bundleURL
+                                      moduleProvider:(__unused RCTBridgeModuleListProvider)block
+                                       launchOptions:(__unused NSDictionary *)launchOptions)
+
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleURL
+                                       moduleProvider:(__unused RCTBridgeModuleListProvider)block
+                                        launchOptions:(__unused NSDictionary *)launchOptions)
 
 - (void)start
 {
@@ -206,7 +210,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
       if (error && [self.delegate respondsToSelector:@selector(fallbackSourceURLForBridge:)]) {
         NSURL *fallbackURL = [self.delegate fallbackSourceURLForBridge:self->_parentBridge];
         if (fallbackURL && ![fallbackURL isEqual:self.bundleURL]) {
-          RCTLogError(@"Failed to load bundle(%@) with error:(%@)", self.bundleURL, error.localizedDescription);
+          RCTLogError(@"Failed to load bundle(%@) with error:(%@ %@)", self.bundleURL, error.localizedDescription, error.localizedFailureReason);
           self.bundleURL = fallbackURL;
           [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:onSourceLoad];
           return;
@@ -509,7 +513,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
     }
 
     if (loadError) {
-      RCTLogWarn(@"Failed to execute source code: %@", [loadError localizedDescription]);
+      RCTLogWarn(@"Failed to execute source code: %@ %@", [loadError localizedDescription], [loadError localizedFailureReason]);
       dispatch_async(dispatch_get_main_queue(), ^{
         [self stopLoadingWithError:loadError];
       });
@@ -587,10 +591,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)dele
   }
   RCTFatal(error);
 }
-
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleURL
-                    moduleProvider:(__unused RCTBridgeModuleProviderBlock)block
-                    launchOptions:(__unused NSDictionary *)launchOptions)
 
 /**
  * Prevent super from calling setUp (that'd create another batchedBridge)
@@ -1098,6 +1098,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (BOOL)isBatchActive
 {
   return _wasBatchActive;
+}
+
+#pragma mark - JavaScriptCore
+
+- (JSGlobalContextRef)jsContextRef
+{
+  return [self.jsContext JSGlobalContextRef];
+}
+
+- (JSContext *)jsContext
+{
+  if ([_javaScriptExecutor isKindOfClass:[RCTJSCExecutor class]]) {
+    return [(RCTJSCExecutor *)_javaScriptExecutor jsContext];
+  } else {
+    return nil;
+  }
 }
 
 @end

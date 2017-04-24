@@ -242,12 +242,4 @@
   [self resignFirstResponder];
 }
 
-/**
- * Responder overrides - to be deprecated.
- */
-- (BOOL)reactRespondsToTouch:(__unused UITouch *)touch
-{
-  return YES;
-}
-
 @end

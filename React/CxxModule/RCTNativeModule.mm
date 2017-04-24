@@ -42,23 +42,9 @@ std::vector<MethodDescriptor> RCTNativeModule::getMethods() {
 }
 
 folly::dynamic RCTNativeModule::getConstants() {
-  // TODO mhorowitz #10487027: This does unnecessary work since it
-  // only needs constants.  Think about refactoring RCTModuleData or
-  // NativeModule to make this more natural.
-
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
-                          @"[RCTNativeModule getConstants] moduleData.config", nil);
-  NSArray *config = m_moduleData.config;
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-  if (!config || config == (id)kCFNull) {
-    return nullptr;
-  }
-  id constants = config[1];
-  if (![constants isKindOfClass:[NSDictionary class]]) {
-      return nullptr;
-  }
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
-                          @"[RCTNativeModule getConstants] convert", nil);
+    @"[RCTNativeModule getConstants] moduleData.exportedConstants", nil);
+  NSDictionary *constants = m_moduleData.exportedConstants;
   folly::dynamic ret = [RCTConvert folly_dynamic:constants];
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   return ret;

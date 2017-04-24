@@ -46,16 +46,26 @@ const platforms = new Set(defaults.platforms);
  */
 function getFakeModuleMap(hasteMap: HasteMap) {
   return {
-    getModule(name: string, platform_: string): ?string {
-      const module = hasteMap.getModule(name, platform_);
+    getModule(name: string, platform: ?string): ?string {
+      const module = hasteMap.getModule(name, platform);
       return module && module.type === 'Module' ? module.path : null;
     },
-    getPackage(name: string, platform_: string): ?string {
-      const module = hasteMap.getModule(name, platform_);
+    getPackage(name: string, platform: ?string): ?string {
+      const module = hasteMap.getModule(name, platform);
       return module && module.type === 'Package' ? module.path : null;
     },
   };
 }
+
+const nullModule = {
+  path: '/',
+  getPackage() {},
+  hash() {
+    throw new Error('not implemented');
+  },
+  readCached() { throw new Error('not implemented'); },
+  readFresh() { return Promise.reject(new Error('not implemented')); },
+};
 
 exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
   const {
@@ -102,7 +112,6 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
         entryPath: '',
         extraNodeModules,
         hasteFS,
-        hasteMap,
         helpers,
         matchFiles: filesByDirNameIndex.match.bind(filesByDirNameIndex),
         moduleCache,
@@ -113,7 +122,9 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
       });
     }
 
-    const from = new Module(source, moduleCache, getTransformedFile(source));
+    const from = source != null
+      ? new Module(source, moduleCache, getTransformedFile(source))
+      : nullModule;
     hasteMapBuilt
       .then(() => resolutionRequest.resolveDependency(from, id))
       .then(

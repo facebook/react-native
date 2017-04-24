@@ -100,7 +100,8 @@ public class NetworkingModuleTest {
       /* body */ null,
       /* responseType */ "text",
       /* useIncrementalUpdates*/ true,
-      /* timeout */ 0);
+      /* timeout */ 0,
+      /* withCredentials */ false);
 
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
     verify(httpClient).newCall(argumentCaptor.capture());
@@ -135,7 +136,8 @@ public class NetworkingModuleTest {
       /* body */ null,
       /* responseType */ "text",
       /* useIncrementalUpdates*/ true,
-      /* timeout */ 0);
+      /* timeout */ 0,
+      /* withCredentials */ false);
 
     verifyErrorEmit(emitter, 0);
   }
@@ -166,7 +168,8 @@ public class NetworkingModuleTest {
       body,
       /* responseType */ "text",
       /* useIncrementalUpdates*/ true,
-      /* timeout */ 0);
+      /* timeout */ 0,
+      /* withCredentials */ false);
 
     verifyErrorEmit(emitter, 0);
   }
@@ -227,7 +230,8 @@ public class NetworkingModuleTest {
       body,
       /* responseType */ "text",
       /* useIncrementalUpdates*/ true,
-      /* timeout */ 0);
+      /* timeout */ 0,
+      /* withCredentials */ false);
 
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
     verify(httpClient).newCall(argumentCaptor.capture());
@@ -270,7 +274,8 @@ public class NetworkingModuleTest {
       null,
       /* responseType */ "text",
       /* useIncrementalUpdates*/ true,
-      /* timeout */ 0);
+      /* timeout */ 0,
+      /* withCredentials */ false);
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
     verify(httpClient).newCall(argumentCaptor.capture());
     Headers requestHeaders = argumentCaptor.getValue().headers();
@@ -324,7 +329,8 @@ public class NetworkingModuleTest {
       body,
       /* responseType */ "text",
       /* useIncrementalUpdates*/ true,
-      /* timeout */ 0);
+      /* timeout */ 0,
+      /* withCredentials */ false);
 
     // verify url, method, headers
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
@@ -389,7 +395,8 @@ public class NetworkingModuleTest {
       body,
       /* responseType */ "text",
       /* useIncrementalUpdates*/ true,
-      /* timeout */ 0);
+      /* timeout */ 0,
+      /* withCredentials */ false);
 
     // verify url, method, headers
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
@@ -492,7 +499,8 @@ public class NetworkingModuleTest {
       body,
       /* responseType */ "text",
       /* useIncrementalUpdates*/ true,
-      /* timeout */ 0);
+      /* timeout */ 0,
+      /* withCredentials */ false);
 
     // verify RequestBodyPart for image
     PowerMockito.verifyStatic(times(1));
@@ -556,7 +564,8 @@ public class NetworkingModuleTest {
         null,
         /* responseType */ "text",
         /* useIncrementalUpdates*/ true,
-        0);
+        /* timeout */ 0,
+        /* withCredentials */ false);
     }
     verify(httpClient, times(3)).newCall(any(Request.class));
 
@@ -606,7 +615,8 @@ public class NetworkingModuleTest {
         null,
         /* responseType */ "text",
         /* useIncrementalUpdates*/ true,
-        0);
+        /* timeout */ 0,
+        /* withCredentials */ false);
     }
     verify(httpClient, times(3)).newCall(any(Request.class));
 

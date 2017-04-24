@@ -1207,7 +1207,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
 {
   // If there is an active batch layout will happen when batch finished, so we will wait for that.
   // Otherwise we immidiately trigger layout.
-  if (![_bridge isBatchActive]) {
+  if (![_bridge isBatchActive] && ![_bridge isLoading]) {
     [self _layoutAndMount];
   }
 }

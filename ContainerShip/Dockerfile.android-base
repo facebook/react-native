@@ -86,10 +86,16 @@ RUN echo "y" | android update sdk -u -a -t $(android list sdk -a | grep "Intel x
 RUN echo "y" | android update sdk -u -a -t $(android list sdk -a | grep "Google APIs, Android API 23, revision 1" | awk '{ print $1 }' | sed 's/.$//')
 
 # Android Support Repository, revision 45
-RUN echo "y" | android update sdk -u -a -t $(android list sdk -a | grep "Android Support Repository, revision 45" | awk '{ print $1 }' | sed 's/.$//')
+RUN echo "y" | android update sdk -u -a -t $(android list sdk -a | grep "Android Support Repository" | awk '{ print $1 }' | sed 's/.$//')
 
 # Link adb executable
 RUN ln -s /opt/android/platform-tools/adb /usr/bin/adb
+
+# Install google-chrome
+RUN curl -fsSL https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+     && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+     && apt-get update \
+     && apt-get install -y google-chrome-stable
 
 # clean up unnecessary directories
 RUN rm -rf /opt/android/system-images/android-19/default/x86

@@ -111,7 +111,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final JavaScriptModuleRegistry jsModuleRegistry,
       final JSBundleLoader jsBundleLoader,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
-    FLog.w(ReactConstants.TAG, "Initializing React Xplat Bridge.");
+    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     mHybridData = initHybrid();
 
     mReactQueueConfiguration = ReactQueueConfigurationImpl.create(
@@ -323,7 +323,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @VisibleForTesting
   @Override
   public void initialize() {
-    UiThreadUtil.assertOnUiThread();
     Assertions.assertCondition(
         !mInitialized,
         "This catalyst instance has already been initialized");
