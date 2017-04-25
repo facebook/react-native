@@ -42,33 +42,15 @@ std::vector<MethodDescriptor> RCTNativeModule::getMethods() {
 }
 
 folly::dynamic RCTNativeModule::getConstants() {
-  // TODO mhorowitz #10487027: This does unnecessary work since it
-  // only needs constants.  Think about refactoring RCTModuleData or
-  // NativeModule to make this more natural.
-
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
-                          @"[RCTNativeModule getConstants] moduleData.config", nil);
-  NSArray *config = m_moduleData.config;
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-  if (!config || config == (id)kCFNull) {
-    return nullptr;
-  }
-  id constants = config[1];
-  if (![constants isKindOfClass:[NSDictionary class]]) {
-      return nullptr;
-  }
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
-                          @"[RCTNativeModule getConstants] convert", nil);
+    @"[RCTNativeModule getConstants] moduleData.exportedConstants", nil);
+  NSDictionary *constants = m_moduleData.exportedConstants;
   folly::dynamic ret = [RCTConvert folly_dynamic:constants];
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   return ret;
 }
 
-bool RCTNativeModule::supportsWebWorkers() {
-  return false;
-}
-
-void RCTNativeModule::invoke(ExecutorToken token, unsigned int methodId, folly::dynamic &&params) {
+void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params) {
   // The BatchedBridge version of this buckets all the callbacks by thread, and
   // queues one block on each.  This is much simpler; we'll see how it goes and
   // iterate.
@@ -117,8 +99,7 @@ void RCTNativeModule::invoke(ExecutorToken token, unsigned int methodId, folly::
   }
 }
 
-MethodCallResult RCTNativeModule::callSerializableNativeHook(
-    ExecutorToken token, unsigned int reactMethodId, folly::dynamic &&params) {
+MethodCallResult RCTNativeModule::callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic &&params) {
   RCTFatal(RCTErrorWithMessage(@"callSerializableNativeHook is not yet supported on iOS"));
   return folly::none;
 }

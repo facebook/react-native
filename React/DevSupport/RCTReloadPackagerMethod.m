@@ -11,6 +11,8 @@
 
 #import <objc/runtime.h>
 
+#import "RCTBridge.h"
+
 #if RCT_DEV // Only supported in dev mode
 
 @implementation RCTReloadPackagerMethod {

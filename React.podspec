@@ -43,7 +43,7 @@ Pod::Spec.new do |s|
     ss.dependency             "Yoga", "#{package["version"]}.React"
     ss.dependency             "React/cxxreact"
     ss.source_files         = "React/**/*.{c,h,m,mm,S}"
-    ss.exclude_files        = "**/__tests__/*", "IntegrationTests/*", "React/DevSupport/*", "React/Modules/RCTDev{LoadingView,Menu}.*", "React/**/RCTTVView.*", "ReactCommon/yoga/*", "React/Cxx*/*"
+    ss.exclude_files        = "**/__tests__/*", "IntegrationTests/*", "React/DevSupport/*", "React/**/RCTTVView.*", "ReactCommon/yoga/*", "React/Cxx*/*"
     ss.framework            = "JavaScriptCore"
     ss.libraries            = "stdc++"
   end
@@ -51,7 +51,7 @@ Pod::Spec.new do |s|
   s.subspec "DevSupport" do |ss|
     ss.dependency             "React/Core"
     ss.dependency             "React/RCTWebSocket"
-    ss.source_files         = "React/DevSupport/*", "React/Modules/RCTDev{LoadingView,Menu}.*"
+    ss.source_files         = "React/DevSupport/*"
   end
 
   s.subspec "tvOS" do |ss|

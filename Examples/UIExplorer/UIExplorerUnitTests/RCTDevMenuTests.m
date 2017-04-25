@@ -14,6 +14,8 @@
 
 #import <XCTest/XCTest.h>
 
+#import <RCTTest/RCTTestRunner.h>
+#import <React/RCTBridge+JavaScriptCore.h>
 #import <React/RCTBridge.h>
 #import <React/RCTDevMenu.h>
 
@@ -42,6 +44,8 @@ typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
   _bridge = [[RCTBridge alloc] initWithBundleURL:[bundle URLForResource:@"UIExplorerUnitTestsBundle" withExtension:@"js"]
                                   moduleProvider:nil
                                    launchOptions:nil];
+
+  RCT_RUN_RUNLOOP_WHILE(_bridge.isLoading);
 }
 
 - (void)testShowCreatingActionSheet
@@ -50,7 +54,6 @@ typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
   [_bridge.devMenu show];
   XCTAssertTrue([_bridge.devMenu isActionSheetShown]);
 }
-
 
 - (void)testClosingActionSheetAfterAction
 {

@@ -58,7 +58,7 @@ const LinkingManager = Platform.OS === 'android' ?
  * NOTE: On iOS you'll need to link `RCTLinking` to your project by following
  * the steps described [here](docs/linking-libraries-ios.html#manual-linking).
  * In case you also want to listen to incoming app links during your app's
- * execution you'll need to add the following lines to you `*AppDelegate.m`:
+ * execution you'll need to add the following lines to your `*AppDelegate.m`:
  *
  * ```
  * #import <React/RCTLinkingManager.h>
@@ -138,7 +138,8 @@ class Linking extends NativeEventEmitter {
   /**
    * Try to open the given `url` with any of the installed apps.
    *
-   * You can use other URLs, like a location (e.g. "geo:37.484847,-122.148386"), a contact,
+   * You can use other URLs, like a location (e.g. "geo:37.484847,-122.148386" on Android
+   * or "http://maps.apple.com/?ll=37.484847,-122.148386" on iOS), a contact,
    * or any other URL that can be opened with the installed apps.
    *
    * NOTE: This method will fail if the system doesn't know how to open the specified URL.

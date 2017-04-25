@@ -14,16 +14,9 @@
 
 #import <XCTest/XCTest.h>
 
+#import <RCTTest/RCTTestRunner.h>
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
-
-#define RUN_RUNLOOP_WHILE(CONDITION) \
-{ \
-  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5]; \
-  while ((CONDITION) && [timeout timeIntervalSinceNow] > 0) { \
-    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; \
-  } \
-}
 
 extern BOOL RCTIsGzippedData(NSData *data);
 
@@ -83,7 +76,7 @@ extern BOOL RCTIsGzippedData(NSData *data);
     request = _request;
   }];
 
-  RUN_RUNLOOP_WHILE(request == nil);
+  RCT_RUN_RUNLOOP_WHILE(request == nil);
 
   XCTAssertNotNil(request);
   XCTAssertNotNil(request.HTTPBody);

@@ -5,7 +5,10 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
 const SUPPORTED_PLATFORM_EXTS = new Set([
@@ -15,7 +18,10 @@ const SUPPORTED_PLATFORM_EXTS = new Set([
 ]);
 
 // Extract platform extension: index.ios.js -> ios
-function getPlatformExtension(file, platforms = SUPPORTED_PLATFORM_EXTS) {
+function getPlatformExtension(
+  file: string,
+  platforms: Set<string> = SUPPORTED_PLATFORM_EXTS,
+): ?string {
   const last = file.lastIndexOf('.');
   const secondToLast = file.lastIndexOf('.', last - 1);
   if (secondToLast === -1) {

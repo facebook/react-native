@@ -12,6 +12,7 @@
 'use strict';
 
 describe('ReactDebugFiberPerf', () => {
+  let PropTypes;
   let React;
   let ReactCoroutine;
   let ReactFeatureFlags;
@@ -113,6 +114,7 @@ describe('ReactDebugFiberPerf', () => {
     global.performance = createUserTimingPolyfill();
 
     // Import after the polyfill is set up:
+    PropTypes = require('prop-types');
     React = require('React');
     ReactCoroutine = require('ReactCoroutine');
     ReactFeatureFlags = require('ReactFeatureFlags');
@@ -245,7 +247,7 @@ describe('ReactDebugFiberPerf', () => {
   it('captures all lifecycles', () => {
     class AllLifecycles extends React.Component {
       static childContextTypes = {
-        foo: React.PropTypes.any,
+        foo: PropTypes.any,
       };
       shouldComponentUpdate() {
         return true;

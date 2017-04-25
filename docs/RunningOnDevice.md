@@ -48,15 +48,21 @@ It's always a good idea to test your app on an actual device before releasing it
   <a href="javascript:void(0);" class="button-windows" onclick="display('os', 'windows')">Windows</a>
 </div>
 
-<block class="mac linux windows ios" />
+<block class="linux windows ios" />
 
-## Setting up an iOS device
-
-Installing an app on an iOS device requires a Mac, an Apple ID, and a USB cable.
+A Mac is required in order to build your app for iOS devices.
 
 <block class="mac ios" />
 
-Connect your device to your Mac using a USB cable. Navigate to the `ios` folder in your project, then open the `.xcodeproj` file within it using Xcode. Open the "Product" menu from the menubar, then go to "Destination". Look for and select your device from the list. Xcode will then register your device for development.
+## Running your app on iOS devices
+
+Register for a [Apple developer account](https://developer.apple.com/) if you don't have one yet.
+
+Connect your device to your Mac using a USB to Lightning cable. Navigate to the `ios` folder in your project, then open the `.xcodeproj` file within it using Xcode.
+
+Select your app in the Project Navigator and look for the "General" tab. Go to "Signing" and make sure your Apple developer account is selected.
+
+Open the "Product" menu from Xcode's menubar, then go to "Destination". Look for and select your device from the list. Xcode will then register your device for development.
 
 If everything is set up correctly, your device will be listed as the build target in the Xcode toolbar. You can now press the **Build and run** button or select "Run" from the "Product" menu. Your app will launch on your device shortly.
 
@@ -64,9 +70,7 @@ If everything is set up correctly, your device will be listed as the build targe
 
 <block class="mac windows linux android" />
 
-## Setting up an Android device
-
-Running an Android app on a device requires a Mac or PC and a USB cable.
+## Running your app on Android devices
 
 ### 1. Enable Debugging over USB
 
@@ -154,16 +158,19 @@ $ react-native run-android
 
 <block class="mac windows linux android ios" />
 
-## Connecting to the development server
-
 <block class="mac ios" />
 
-You can also iterate quickly on a device using the development server. You only have to be on the same Wi-Fi network as your computer. Shake the device to open the [Developer menu](docs/debugging.html#accessing-the-in-app-developer-menu).
+## Connecting to the development server
+
+You can also iterate quickly on a device using the development server. You only have to be on the same Wi-Fi network as your computer. Enable Live reloading from the [Developer menu](docs/debugging.html#accessing-the-in-app-developer-menu) and your app will reload whenever your JavaScript code has changed.
+
+> If you have any issues, ensure that your Mac and device are on the same network and can reach each other. Many open wireless networks with captive portals are configured to prevent devices from reaching other devices on the network. You may use your device's Personal Hotspot feature in this case.
 
 <block class="mac windows linux android" />
 
-You can also iterate quickly on a device by connecting to the development server running on your development machine. There are several ways of accomplishing this, depending on whether you have access to a USB cable or a Wi-Fi network.
+## Connecting to the development server
 
+You can also iterate quickly on a device by connecting to the development server running on your development machine. There are several ways of accomplishing this, depending on whether you have access to a USB cable or a Wi-Fi network.
 
 ### Method 1: Using adb reverse (recommended)
 
@@ -179,7 +186,7 @@ Run the following in a command prompt:
 $ adb reverse tcp:8081 tcp:8081
 ```
 
-You can now use `Reload JS` from the React Native in-app Developer menu without any additional configuration.
+You can now enable Live reloading from the [Developer menu](docs/debugging.html#accessing-the-in-app-developer-menu). Your app will reload whenever your JavaScript code has changed.
 
 ### Method 2: Connect via Wi-Fi
 
@@ -206,6 +213,8 @@ Open a terminal and type `/sbin/ifconfig` to find your machine's IP address.
 5. Go to **Dev Settings** → **Debug server host for device**.
 6. Type in your machine's IP address and the port of the local dev server (e.g. 10.0.1.1:8081).
 7. Go back to the **Developer menu** and select **Reload JS**.
+
+You can now enable Live reloading from the [Developer menu](docs/debugging.html#accessing-the-in-app-developer-menu). Your app will reload whenever your JavaScript code has changed.
 
 <block class="mac ios" />
 

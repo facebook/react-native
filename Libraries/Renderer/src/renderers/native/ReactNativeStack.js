@@ -45,6 +45,7 @@ var ReactNative = {
   },
 
   render: render,
+
   unmountComponentAtNode: ReactNativeMount.unmountComponentAtNode,
 
   /* eslint-disable camelcase */
