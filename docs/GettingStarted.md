@@ -369,7 +369,7 @@ Now that you have successfully run the app, let's modify it.
 <block class="mac ios tvos" />
 
 - Open `index.ios.js` in your text editor of choice and edit some lines.
-- Hit `Command⌘ + R` in your iOS or Apple TV Simulator to reload the app and see your change!
+- Hit `Command⌘ + R` in the Simulator to reload the app and see your change!
 
 <block class="mac android" />
 
