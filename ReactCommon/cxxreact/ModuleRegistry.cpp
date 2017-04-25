@@ -113,8 +113,7 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name)
   }
 }
 
-void ModuleRegistry::callNativeMethod(ExecutorToken token, unsigned int moduleId, unsigned int methodId,
-                                      folly::dynamic&& params, int callId) {
+void ModuleRegistry::callNativeMethod(unsigned int moduleId, unsigned int methodId, folly::dynamic&& params, int callId) {
   if (moduleId >= modules_.size()) {
     throw std::runtime_error(
       folly::to<std::string>("moduleId ", moduleId, " out of range [0..", modules_.size(), ")"));
@@ -126,15 +125,15 @@ void ModuleRegistry::callNativeMethod(ExecutorToken token, unsigned int moduleId
   }
 #endif
 
-  modules_[moduleId]->invoke(token, methodId, std::move(params));
+  modules_[moduleId]->invoke(methodId, std::move(params));
 }
 
-MethodCallResult ModuleRegistry::callSerializableNativeHook(ExecutorToken token, unsigned int moduleId, unsigned int methodId, folly::dynamic&& params) {
+MethodCallResult ModuleRegistry::callSerializableNativeHook(unsigned int moduleId, unsigned int methodId, folly::dynamic&& params) {
   if (moduleId >= modules_.size()) {
     throw std::runtime_error(
       folly::to<std::string>("moduleId ", moduleId, "out of range [0..", modules_.size(), ")"));
   }
-  return modules_[moduleId]->callSerializableNativeHook(token, methodId, std::move(params));
+  return modules_[moduleId]->callSerializableNativeHook(methodId, std::move(params));
 }
 
 }}

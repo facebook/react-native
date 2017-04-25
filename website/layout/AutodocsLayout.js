@@ -785,56 +785,6 @@ var TypeDef = React.createClass({
   },
 });
 
-var EmbeddedSimulator = React.createClass({
-  render: function() {
-    if (!this.props.shouldRender) {
-      return null;
-    }
-
-    var metadata = this.props.metadata;
-
-    var imagePreview = metadata.platform === 'android'
-      ? <img alt="Run example in simulator" width="170" height="338" src="img/uiexplorer_main_android.png" />
-      : <img alt="Run example in simulator" width="170" height="356" src="img/uiexplorer_main_ios.png" />;
-
-    return (
-      <div className="embedded-simulator">
-        <p><a className="modal-button-open"><strong>Run this example</strong></a></p>
-        <div className="modal-button-open modal-button-open-img">
-          {imagePreview}
-        </div>
-        <Modal metadata={metadata} />
-      </div>
-    );
-  }
-});
-
-var Modal = React.createClass({
-  render: function() {
-    var metadata = this.props.metadata;
-    var appParams = {route: metadata.title};
-    var encodedParams = encodeURIComponent(JSON.stringify(appParams));
-    var url = metadata.platform === 'android'
-      ? `https://appetize.io/embed/q7wkvt42v6bkr0pzt1n0gmbwfr?device=nexus5&scale=65&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`
-      : `https://appetize.io/embed/7vdfm9h3e6vuf4gfdm7r5rgc48?device=iphone6s&scale=60&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`;
-
-    return (
-      <div>
-        <div className="modal">
-          <div className="modal-content">
-            <button className="modal-button-close">&times;</button>
-            <div className="center">
-              <iframe className="simulator" src={url} width="256" height="550" frameborder="0" scrolling="no" />
-              <p>Powered by <a target="_blank" href="https://appetize.io">appetize.io</a></p>
-            </div>
-          </div>
-        </div>
-        <div className="modal-backdrop" />
-      </div>
-    );
-  }
-});
-
 var Autodocs = React.createClass({
   childContextTypes: {
     permalink: PropTypes.string,
@@ -880,7 +830,6 @@ var Autodocs = React.createClass({
           <Prism>
            {example.content.replace(/^[\s\S]*?\*\//, '').trim()}
           </Prism>
-          <EmbeddedSimulator shouldRender={metadata.runnable} metadata={metadata} />
         </div>
       </div>
     );

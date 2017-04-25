@@ -2,7 +2,6 @@
 
 package com.facebook.react.cxxbridge;
 
-
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeModule;
@@ -34,11 +33,6 @@ public class CxxModuleWrapperBase implements NativeModule
 
   @Override
   public boolean canOverrideExistingModule() {
-    return false;
-  }
-
-  @Override
-  public boolean supportsWebWorkers() {
     return false;
   }
 

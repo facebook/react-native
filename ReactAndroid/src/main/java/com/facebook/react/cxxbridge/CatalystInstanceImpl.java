@@ -24,7 +24,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.JavaScriptModuleRegistry;
 import com.facebook.react.bridge.MemoryPressure;
@@ -60,17 +59,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private static class PendingJSCall {
 
-    public ExecutorToken mExecutorToken;
     public String mModule;
     public String mMethod;
     public NativeArray mArguments;
 
     public PendingJSCall(
-        ExecutorToken executorToken,
         String module,
         String method,
         NativeArray arguments) {
-      mExecutorToken = executorToken;
       mModule = module;
       mMethod = method;
       mArguments = arguments;
@@ -89,7 +85,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final JSBundleLoader mJSBundleLoader;
   private final ArrayList<PendingJSCall> mJSCallsPendingInit = new ArrayList<PendingJSCall>();
   private final Object mJSCallsPendingInitLock = new Object();
-  private ExecutorToken mMainExecutorToken;
 
   private final NativeModuleRegistry mJavaRegistry;
   private final NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
@@ -134,7 +129,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
       mJavaRegistry.getJavaModules(this),
       mJavaRegistry.getCxxModules());
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
-    mMainExecutorToken = getMainExecutorToken();
   }
 
   private static class BridgeCallback implements ReactCallback {
@@ -224,7 +218,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       mAcceptCalls = true;
 
       for (PendingJSCall call : mJSCallsPendingInit) {
-        jniCallJSFunction(call.mExecutorToken, call.mModule, call.mMethod, call.mArguments);
+        jniCallJSFunction(call.mModule, call.mMethod, call.mArguments);
       }
       mJSCallsPendingInit.clear();
     }
@@ -239,14 +233,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   private native void jniCallJSFunction(
-    ExecutorToken token,
     String module,
     String method,
     NativeArray arguments);
 
   @Override
   public void callFunction(
-      ExecutorToken executorToken,
       final String module,
       final String method,
       final NativeArray arguments) {
@@ -258,25 +250,25 @@ public class CatalystInstanceImpl implements CatalystInstance {
       // Most of the time the instance is initialized and we don't need to acquire the lock
       synchronized (mJSCallsPendingInitLock) {
         if (!mAcceptCalls) {
-          mJSCallsPendingInit.add(new PendingJSCall(executorToken, module, method, arguments));
+          mJSCallsPendingInit.add(new PendingJSCall(module, method, arguments));
           return;
         }
       }
     }
 
-    jniCallJSFunction(executorToken, module, method, arguments);
+    jniCallJSFunction(module, method, arguments);
   }
 
-  private native void jniCallJSCallback(ExecutorToken executorToken, int callbackID, NativeArray arguments);
+  private native void jniCallJSCallback(int callbackID, NativeArray arguments);
 
   @Override
-  public void invokeCallback(ExecutorToken executorToken, final int callbackID, final NativeArray arguments) {
+  public void invokeCallback(final int callbackID, final NativeArray arguments) {
     if (mDestroyed) {
       FLog.w(ReactConstants.TAG, "Invoking JS callback after bridge has been destroyed.");
       return;
     }
 
-    jniCallJSCallback(executorToken, callbackID, arguments);
+    jniCallJSCallback(callbackID, arguments);
   }
 
   /**
@@ -348,16 +340,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface) {
-    return getJSModule(mMainExecutorToken, jsInterface);
+    return mJSModuleRegistry.getJavaScriptModule(this, jsInterface);
   }
-
-  @Override
-  public <T extends JavaScriptModule> T getJSModule(ExecutorToken executorToken, Class<T> jsInterface) {
-    return Assertions.assertNotNull(mJSModuleRegistry)
-        .getJavaScriptModule(this, executorToken, jsInterface);
-  }
-
-  private native ExecutorToken getMainExecutorToken();
 
   @Override
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
