@@ -2,6 +2,7 @@
 
 #include "JSLoader.h"
 
+#include <folly/Conv.h>
 #include <folly/Memory.h>
 #include <android/asset_manager_jni.h>
 #include <fb/fbjni.h>
@@ -77,8 +78,9 @@ std::unique_ptr<const JSBigString> loadScriptFromAssets(
       }
     }
   }
-  FBLOGE("Unable to load script from assets: %s", assetName.c_str());
-  return folly::make_unique<JSBigStdString>("");
+
+  throw std::runtime_error(folly::to<std::string>("Unable to load script from assets '", assetName,
+    "'. Make sure your bundle is packaged correctly or you're running a packager server."));
 }
 
 std::string loadScriptFromFile(const std::string& fileName) {
@@ -98,8 +100,8 @@ std::string loadScriptFromFile(const std::string& fileName) {
     return output;
   }
 
-  FBLOGE("Unable to load script from file: %s", fileName.c_str());
-  return "";
+  throw std::runtime_error(folly::to<std::string>("Unable to load script from file: '", fileName,
+    "'. Make sure your bundle is packaged correctly or you're running a packager server."));
 }
 
 } }

@@ -65,18 +65,21 @@ export type GetTransformOptions = (
   getDependenciesOf: string => Promise<Array<string>>,
 ) => Promise<ExtraTransformOptions>;
 
-type Asset = {|
+type AssetDescriptor = {
   +__packager_asset: boolean,
-  +fileSystemLocation: string,
   +httpServerLocation: string,
   +width: ?number,
   +height: ?number,
   +scales: Array<number>,
-  +files: Array<string>,
   +hash: string,
   +name: string,
   +type: string,
-|};
+};
+
+type ExtendedAssetDescriptor = AssetDescriptor & {
+  +fileSystemLocation: string,
+  +files: Array<string>,
+};
 
 const sizeOf = denodeify(imageSize);
 
@@ -665,11 +668,7 @@ class Bundler {
       assetUrlPath = assetUrlPath.replace(/\\/g, '/');
     }
 
-    // Test extension against all types supported by image-size module.
-    // If it's not one of these, we won't treat it as an image.
-    const isImage = [
-      'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff',
-    ].indexOf(extname(module.path).slice(1)) !== -1;
+    const isImage = Bundler.isAssetTypeAnImage(extname(module.path).slice(1));
 
     return this._assetServer.getAssetData(relPath, platform).then(assetData => {
       return Promise.all([isImage ? sizeOf(assetData.files[0]) : null, assetData]);
@@ -692,13 +691,7 @@ class Bundler {
 
       return this._applyAssetPlugins(assetPlugins, asset);
     }).then(asset => {
-      const json =  JSON.stringify(filterObject(asset, assetPropertyBlacklist));
-      const assetRegistryPath = 'react-native/Libraries/Image/AssetRegistry';
-      const code =
-        `module.exports = require(${JSON.stringify(assetRegistryPath)}).registerAsset(${json});`;
-      const dependencies = [assetRegistryPath];
-      const dependencyOffsets = [code.indexOf(assetRegistryPath) - 1];
-
+      const {code, dependencies, dependencyOffsets} = Bundler.generateAssetTransformResult(asset);
       return {
         asset,
         code,
@@ -707,9 +700,32 @@ class Bundler {
     });
   }
 
+  // Test extension against all types supported by image-size module.
+  // If it's not one of these, we won't treat it as an image.
+  static isAssetTypeAnImage(type: string): boolean {
+    return [
+      'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff',
+    ].indexOf(type) !== -1;
+  }
+
+  static generateAssetTransformResult(assetDescriptor: AssetDescriptor): {|
+    code: string,
+    dependencies: Array<string>,
+    dependencyOffsets: Array<number>,
+  |} {
+    const properDescriptor = filterObject(assetDescriptor, assetPropertyBlacklist);
+    const json = JSON.stringify(properDescriptor);
+    const assetRegistryPath = 'react-native/Libraries/Image/AssetRegistry';
+    const code =
+      `module.exports = require(${JSON.stringify(assetRegistryPath)}).registerAsset(${json});`;
+    const dependencies = [assetRegistryPath];
+    const dependencyOffsets = [code.indexOf(assetRegistryPath) - 1];
+    return {code, dependencies, dependencyOffsets};
+  }
+
   _applyAssetPlugins(
     assetPlugins: Array<string>,
-    asset: Asset,
+    asset: ExtendedAssetDescriptor,
   ) {
     if (!assetPlugins.length) {
       return asset;
