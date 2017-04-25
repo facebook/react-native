@@ -30,6 +30,7 @@ type SectionBase<SectionItemT> = {
   renderItem?: ?(info: {
     item: SectionItemT,
     index: number,
+    section: SectionBase<SectionItemT>,
     separators: {
       highlight: () => void,
       unhighlight: () => void,
@@ -66,6 +67,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   renderItem: (info: {
     item: Item,
     index: number,
+    section: SectionT,
     separators: {
       highlight: () => void,
       unhighlight: () => void,
@@ -73,10 +75,10 @@ type OptionalProps<SectionT: SectionBase<any>> = {
     },
   }) => ?React.Element<any>,
   /**
-   * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
-   * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`
-   * which will update the `highlighted` prop, but you can also add custom props with
-   * `separators.updateProps`.
+   * Rendered in between each item, but not at the top or bottom. By default, `highlighted`,
+   * `section`, and `[leading/trailing][Item/Separator]` props are provided. `renderItem` provides
+   * `separators.highlight`/`unhighlight` which will update the `highlighted` prop, but you can also
+   * add custom props with `separators.updateProps`.
    */
   ItemSeparatorComponent?: ?ReactClass<any>,
   /**
@@ -88,8 +90,11 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    */
   ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
-   * Rendered in between each section. Also receives `highlighted`, `leadingItem`, and any custom
-   * props from `separators.updateProps`.
+   * Rendered at the top and bottom of each section (note this is different from
+   * `ItemSeparatorComponent` which is only rendered between items). These are intended to separate
+   * sections from the headers above and below and typically have the same highlight response as
+   * `ItemSeparatorComponent`. Also receives `highlighted`, `[leading/trailing][Item/Separator]`,
+   * and any custom props from `separators.updateProps`.
    */
   SectionSeparatorComponent?: ?ReactClass<any>,
   /**
@@ -151,6 +156,10 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    * iOS. See `stickySectionHeadersEnabled`.
    */
   renderSectionHeader?: ?(info: {section: SectionT}) => ?React.Element<any>,
+  /**
+   * Rendered at the bottom of each section.
+   */
+  renderSectionFooter?: ?(info: {section: SectionT}) => ?React.Element<any>,
   /**
    * Makes section headers stick to the top of the screen until the next one pushes it off. Only
    * enabled by default on iOS because that is the platform standard there.
