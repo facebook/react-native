@@ -20,7 +20,6 @@ import java.util.Set;
 
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.JSInstance;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeModule;
@@ -155,16 +154,11 @@ public class JavaModuleWrapper {
   }
 
   @DoNotStrip
-  public boolean supportsWebWorkers() {
-    return mModuleHolder.getSupportsWebWorkers();
-  }
-
-  @DoNotStrip
-  public void invoke(ExecutorToken token, int methodId, ReadableNativeArray parameters) {
+  public void invoke(int methodId, ReadableNativeArray parameters) {
     if (mMethods == null || methodId >= mMethods.size()) {
       return;
     }
 
-    mMethods.get(methodId).invoke(mJSInstance, token, parameters);
+    mMethods.get(methodId).invoke(mJSInstance, parameters);
   }
 }

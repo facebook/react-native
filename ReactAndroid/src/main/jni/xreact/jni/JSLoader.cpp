@@ -21,31 +21,6 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-struct JApplication : JavaClass<JApplication> {
-  static constexpr auto kJavaDescriptor = "Landroid/app/Application;";
-
-  local_ref<JAssetManager::javaobject> getAssets() {
-    static auto method = javaClassStatic()->getMethod<JAssetManager::javaobject()>("getAssets");
-    return method(self());
-  }
-};
-
-struct JApplicationHolder : JavaClass<JApplicationHolder> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/common/ApplicationHolder;";
-
-  static local_ref<JApplication::javaobject> getApplication() {
-    static auto method = javaClassStatic()
-      ->getStaticMethod<JApplication::javaobject()>("getApplication");
-    return method(javaClassStatic());
-  }
-};
-
-std::unique_ptr<const JSBigString> loadScriptFromAssets(const std::string& assetName) {
-  auto env = Environment::current();
-  auto assetManager = JApplicationHolder::getApplication()->getAssets();
-  return loadScriptFromAssets(AAssetManager_fromJava(env, assetManager.get()), assetName);
-}
-
 __attribute__((visibility("default")))
 AAssetManager *extractAssetManager(alias_ref<JAssetManager::javaobject> assetManager) {
   auto env = Environment::current();

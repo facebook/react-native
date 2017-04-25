@@ -40,12 +40,15 @@ const VERSION = require('../../package.json').version;
 import type AssetServer from '../AssetServer';
 import type Module, {HasteImpl} from '../node-haste/Module';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
-import type {
-  Options as JSTransformerOptions,
-  TransformOptions,
-} from '../JSTransformer/worker/worker';
+import type {Options as JSTransformerOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
+
+export type BundlingOptions = {|
+  +preloadedModules: ?{[string]: true} | false,
+  +ramGroups: ?Array<string>,
+  +transformer: JSTransformerOptions,
+|};
 
 export type ExtraTransformOptions = {|
   +inlineRequires?: {+blacklist: {[string]: true}} | boolean,
@@ -324,12 +327,12 @@ class Bundler {
     moduleSystemDeps?: Array<Module>,
     onProgress?: () => void,
     platform?: ?string,
-    resolutionResponse?: ResolutionResponse<Module>,
+    resolutionResponse?: ResolutionResponse<Module, BundlingOptions>,
     runBeforeMainModule?: boolean,
     runModule?: boolean,
     unbundle?: boolean,
   }) {
-    const onResolutionResponse = (response: ResolutionResponse<Module>) => {
+    const onResolutionResponse = (response: ResolutionResponse<Module, BundlingOptions>) => {
       /* $FlowFixMe: looks like ResolutionResponse is monkey-patched
        * with `getModuleId`. */
       bundle.setMainModuleId(response.getModuleId(getMainModule(response)));
@@ -344,7 +347,7 @@ class Bundler {
     const finalizeBundle = ({bundle: finalBundle, transformedModules, response, modulesByName}: {
       bundle: Bundle,
       transformedModules: Array<{module: Module, transformed: ModuleTransport}>,
-      response: ResolutionResponse<Module>,
+      response: ResolutionResponse<Module, BundlingOptions>,
       modulesByName: {[name: string]: Module},
     }) =>
       this._resolverPromise.then(resolver => Promise.all(
@@ -427,7 +430,7 @@ class Bundler {
     return Promise.all(
       [this._resolverPromise, resolutionResponse],
     ).then(([resolver, response]) => {
-      bundle.setRamGroups(response.transformOptions.transform.ramGroups);
+      bundle.setRamGroups(response.options.ramGroups);
 
       log(createActionEndEntry(transformingFilesLogEntry));
       onResolutionResponse(response);
@@ -452,7 +455,7 @@ class Bundler {
           bundle,
           entryFilePath,
           assetPlugins,
-          transformOptions: response.transformOptions,
+          options: response.options,
           /* $FlowFixMe: `getModuleId` is monkey-patched */
           getModuleId: (response.getModuleId: () => number),
           dependencyPairs: response.getResolvedDependencyPairs(module),
@@ -495,30 +498,24 @@ class Bundler {
       entryFile,
       {
         dev,
-        platform,
-        hot,
         generateSourceMaps,
+        hot,
+        minify,
+        platform,
         projectRoots: this._projectRoots,
       },
-    ).then(transformSpecificOptions => {
-      const transformOptions = {
-        minify,
-        dev,
-        platform,
-        transform: transformSpecificOptions,
-      };
-
-      return this._resolverPromise.then(
-        resolver => resolver.getShallowDependencies(entryFile, transformOptions),
-      );
-    });
+    ).then(bundlingOptions =>
+      this._resolverPromise.then(resolver =>
+        resolver.getShallowDependencies(entryFile, bundlingOptions.transformer),
+      )
+    );
   }
 
   getModuleForPath(entryFile: string): Promise<Module> {
     return this._resolverPromise.then(resolver => resolver.getModuleForPath(entryFile));
   }
 
-  getDependencies({
+  async getDependencies({
     entryFile,
     platform,
     dev = true,
@@ -538,32 +535,28 @@ class Bundler {
     generateSourceMaps?: boolean,
     isolateModuleIDs?: boolean,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
-  }) {
-    return this.getTransformOptions(
+  }): Promise<ResolutionResponse<Module, BundlingOptions>> {
+    const bundlingOptions: BundlingOptions = await this.getTransformOptions(
       entryFile,
       {
         dev,
         platform,
         hot,
         generateSourceMaps,
+        minify,
         projectRoots: this._projectRoots,
       },
-    ).then(transformSpecificOptions => {
-      const transformOptions = {
-        minify,
-        dev,
-        platform,
-        transform: transformSpecificOptions,
-      };
+    );
 
-      return this._resolverPromise.then(resolver => resolver.getDependencies(
-        entryFile,
-        {dev, platform, recursive},
-        transformOptions,
-        onProgress,
-        isolateModuleIDs ? createModuleIdFactory() : this._getModuleId,
-      ));
-    });
+    const resolver = await this._resolverPromise;
+    const response = await resolver.getDependencies(
+      entryFile,
+      {dev, platform, recursive},
+      bundlingOptions,
+      onProgress,
+      isolateModuleIDs ? createModuleIdFactory() : this._getModuleId,
+    );
+    return response;
   }
 
   getOrderedDependencyPaths({entryFile, dev, platform}: {
@@ -606,7 +599,7 @@ class Bundler {
     module,
     bundle,
     entryFilePath,
-    transformOptions,
+    options,
     getModuleId,
     dependencyPairs,
     assetPlugins,
@@ -614,13 +607,14 @@ class Bundler {
     module: Module,
     bundle: Bundle,
     entryFilePath: string,
-    transformOptions: JSTransformerOptions,
+    options: BundlingOptions,
     getModuleId: () => number,
     dependencyPairs: Array<[mixed, {path: string}]>,
     assetPlugins: Array<string>,
   }): Promise<ModuleTransport> {
     let moduleTransport;
     const moduleId = getModuleId(module);
+    const transformOptions = options.transformer;
 
     if (module.isAsset()) {
       moduleTransport = this._generateAssetModule(
@@ -637,7 +631,7 @@ class Bundler {
     ]).then((
       [name, {code, dependencies, dependencyOffsets, map, source}]
     ) => {
-      const {preloadedModules} = transformOptions.transform;
+      const {preloadedModules} = options;
       const preloaded =
         module.path === entryFilePath ||
         module.isPolyfill() ||
@@ -777,10 +771,11 @@ class Bundler {
       dev: boolean,
       generateSourceMaps: boolean,
       hot: boolean,
+      minify: boolean,
       platform: string,
       projectRoots: Array<string>,
     |},
-    ): Promise<TransformOptions> {
+    ): Promise<BundlingOptions> {
     const getDependencies = (entryFile: string) =>
       this.getDependencies({...options, entryFile})
         .then(r => r.dependencies.map(d => d.path));
@@ -790,13 +785,20 @@ class Bundler {
       ? await this._getTransformOptions(mainModuleName, {dev, hot, platform}, getDependencies)
       : {};
     return {
-      dev,
-      generateSourceMaps: options.generateSourceMaps,
-      hot,
-      inlineRequires: extraOptions.inlineRequires || false,
-      platform,
+      transformer: {
+        dev,
+        minify: options.minify,
+        platform,
+        transform: {
+          dev,
+          generateSourceMaps: options.generateSourceMaps,
+          hot,
+          inlineRequires: extraOptions.inlineRequires || false,
+          platform,
+          projectRoots: options.projectRoots,
+        }
+      },
       preloadedModules: extraOptions.preloadedModules,
-      projectRoots: options.projectRoots,
       ramGroups: extraOptions.ramGroups,
     };
   }

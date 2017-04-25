@@ -16,7 +16,6 @@ package com.facebook.react.bridge;
  */
 public interface JSInstance {
   void invokeCallback(
-      ExecutorToken executorToken,
       int callbackID,
       NativeArray arguments);
   // TODO if this interface survives refactoring, think about adding
