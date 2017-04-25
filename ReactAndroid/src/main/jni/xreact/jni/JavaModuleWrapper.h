@@ -34,6 +34,11 @@ struct JavaModuleWrapper : jni::JavaClass<JavaModuleWrapper> {
     return getModule(self());
   }
 
+  std::string getName() const {
+    static auto getName = javaClassStatic()->getMethod<jstring()>("getName");
+    return getName(self())->toStdString();
+  }
+
   jni::local_ref<jni::JList<JMethodDescriptor::javaobject>::javaobject> getMethodDescriptors() {
     static auto getMethods = getClass()
       ->getMethod<jni::JList<JMethodDescriptor::javaobject>::javaobject()>("getMethodDescriptors");

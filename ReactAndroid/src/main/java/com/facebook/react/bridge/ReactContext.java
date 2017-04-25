@@ -308,6 +308,10 @@ public class ReactContext extends ContextWrapper {
     Assertions.assertNotNull(mJSMessageQueueThread).runOnQueue(runnable);
   }
 
+  public boolean hasUIBackgroundRunnableThread() {
+    return mUiBackgroundMessageQueueThread != null;
+  }
+
   public void runUIBackgroundRunnable(Runnable runnable) {
     if (mUiBackgroundMessageQueueThread == null) {
       runOnNativeModulesQueueThread(runnable);
