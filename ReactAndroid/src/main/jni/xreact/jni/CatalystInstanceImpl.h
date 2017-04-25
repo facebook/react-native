@@ -6,10 +6,9 @@
 #include <folly/Memory.h>
 
 #include "CxxModuleWrapper.h"
-#include "JExecutorToken.h"
+#include "JavaModuleWrapper.h"
 #include "JMessageQueueThread.h"
 #include "JSLoader.h"
-#include "JavaModuleWrapper.h"
 #include "ModuleRegistryBuilder.h"
 
 namespace facebook {
@@ -59,9 +58,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
 
   void jniLoadScriptFromAssets(jni::alias_ref<JAssetManager::javaobject> assetManager, const std::string& assetURL);
   void jniLoadScriptFromFile(const std::string& fileName, const std::string& sourceURL);
-  void jniCallJSFunction(JExecutorToken* token, std::string module, std::string method, NativeArray* arguments);
-  void jniCallJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments);
-  local_ref<JExecutorToken::JavaPart> getMainExecutorToken();
+  void jniCallJSFunction(std::string module, std::string method, NativeArray* arguments);
+  void jniCallJSCallback(jint callbackId, NativeArray* arguments);
   void setGlobalVariable(std::string propName,
                          std::string&& jsonValue);
   jlong getJavaScriptContext();

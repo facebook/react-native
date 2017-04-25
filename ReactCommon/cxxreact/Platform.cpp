@@ -9,12 +9,6 @@ namespace ReactMarker {
 LogMarker logMarker;
 };
 
-namespace WebWorkerUtil {
-WebWorkerQueueFactory createWebWorkerThread;
-LoadScriptFromAssets loadScriptFromAssets;
-LoadScriptFromNetworkSync loadScriptFromNetworkSync;
-};
-
 namespace PerfLogging {
 InstallNativeHooks installNativeHooks;
 };

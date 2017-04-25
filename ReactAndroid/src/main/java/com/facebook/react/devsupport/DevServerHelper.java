@@ -13,7 +13,10 @@ import javax.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -27,9 +30,11 @@ import android.os.Handler;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.FileIoHandler;
 import com.facebook.react.packagerconnection.JSPackagerClient;
@@ -38,14 +43,17 @@ import com.facebook.react.packagerconnection.NotificationOnlyHandler;
 import com.facebook.react.packagerconnection.RequestOnlyHandler;
 import com.facebook.react.packagerconnection.Responder;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.ConnectionPool;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Buffer;
@@ -79,6 +87,7 @@ public class DevServerHelper {
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
   private static final String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
   private static final String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s";
+  private static final String SYMBOLICATE_URL_FORMAT = "http://%s/symbolicate";
 
   private static final String PACKAGER_OK_STATUS = "packager-status:running";
 
@@ -100,6 +109,10 @@ public class DevServerHelper {
     void onPackagerReloadCommand();
     void onCaptureHeapCommand(@Nullable final Responder responder);
     void onPokeSamplingProfilerCommand(@Nullable final Responder responder);
+  }
+
+  public interface SymbolicationListener {
+    void onSymbolicationComplete(@Nullable Iterable<StackFrame> stackFrames);
   }
 
   private final DevInternalSettings mSettings;
@@ -154,7 +167,10 @@ public class DevServerHelper {
         });
         handlers.putAll(new FileIoHandler().handlers());
 
-        mPackagerClient = new JSPackagerClient("devserverhelper", mSettings.getPackagerConnectionSettings(), handlers);
+        mPackagerClient = new JSPackagerClient(
+            "devserverhelper",
+            mSettings.getPackagerConnectionSettings(),
+            handlers);
         mPackagerClient.init();
 
         return null;
@@ -209,17 +225,72 @@ public class DevServerHelper {
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
+  public void symbolicateStackTrace(
+      Iterable<StackFrame> stackFrames,
+      final SymbolicationListener listener) {
+    try {
+      final String symbolicateURL = createSymbolicateURL(
+          mSettings.getPackagerConnectionSettings().getDebugServerHost());
+      final JSONArray jsonStackFrames = new JSONArray();
+      for (final StackFrame stackFrame : stackFrames) {
+        jsonStackFrames.put(new JSONObject(
+            MapBuilder.of(
+                "file", stackFrame.getFile(),
+                "methodName", stackFrame.getMethod(),
+                "lineNumber", stackFrame.getLine(),
+                "column", stackFrame.getColumn())));
+      }
+      final Request request = new Request.Builder()
+          .url(symbolicateURL)
+          .post(RequestBody.create(
+              MediaType.parse("application/json"),
+              new JSONObject().put("stack", jsonStackFrames).toString()))
+          .build();
+      Call symbolicateCall = Assertions.assertNotNull(mClient.newCall(request));
+      symbolicateCall.enqueue(new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+          FLog.w(
+              ReactConstants.TAG,
+              "Got IOException when attempting symbolicate stack trace: " + e.getMessage());
+          listener.onSymbolicationComplete(null);
+        }
+
+        @Override
+        public void onResponse(Call call, final Response response) throws IOException {
+          try {
+            listener.onSymbolicationComplete(Arrays.asList(
+                StackTraceHelper.convertJsStackTrace(new JSONObject(
+                    response.body().string()).getJSONArray("stack"))));
+          } catch (JSONException exception) {
+            listener.onSymbolicationComplete(null);
+          }
+        }
+      });
+    } catch (JSONException e) {
+      FLog.w(
+          ReactConstants.TAG,
+          "Got JSONException when attempting symbolicate stack trace: " + e.getMessage());
+    }
+  }
+
     /** Intent action for reloading the JS */
   public static String getReloadAppAction(Context context) {
     return context.getPackageName() + RELOAD_APP_ACTION_SUFFIX;
   }
 
   public String getWebsocketProxyURL() {
-    return String.format(Locale.US, WEBSOCKET_PROXY_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
+    return String.format(
+        Locale.US,
+        WEBSOCKET_PROXY_URL_FORMAT,
+        mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
   public String getHeapCaptureUploadUrl() {
-    return String.format(Locale.US, HEAP_CAPTURE_UPLOAD_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
+    return String.format(
+        Locale.US,
+        HEAP_CAPTURE_UPLOAD_URL_FORMAT,
+        mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
   public String getInspectorDeviceUrl() {
@@ -258,12 +329,21 @@ public class DevServerHelper {
     return mSettings.isHotModuleReplacementEnabled();
   }
 
-  private static String createBundleURL(String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {
+  private static String createBundleURL(
+      String host,
+      String jsModulePath,
+      boolean devMode,
+      boolean hmr,
+      boolean jsMinify) {
     return String.format(Locale.US, BUNDLE_URL_FORMAT, host, jsModulePath, devMode, hmr, jsMinify);
   }
 
   private static String createResourceURL(String host, String resourcePath) {
     return String.format(Locale.US, RESOURCE_URL_FORMAT, host, resourcePath);
+  }
+
+  private static String createSymbolicateURL(String host) {
+    return String.format(Locale.US, SYMBOLICATE_URL_FORMAT, host);
   }
 
   public String getDevServerBundleURL(final String jsModulePath) {
@@ -317,10 +397,15 @@ public class DevServerHelper {
         Matcher match = regex.matcher(contentType);
         if (match.find()) {
           String boundary = match.group(1);
-          MultipartStreamReader bodyReader = new MultipartStreamReader(response.body().source(), boundary);
+          MultipartStreamReader bodyReader = new MultipartStreamReader(
+              response.body().source(),
+              boundary);
           boolean completed = bodyReader.readAllParts(new MultipartStreamReader.ChunkCallback() {
             @Override
-            public void execute(Map<String, String> headers, Buffer body, boolean finished) throws IOException {
+            public void execute(
+                Map<String, String> headers,
+                Buffer body,
+                boolean finished) throws IOException {
               // This will get executed for every chunk of the multipart response. The last chunk
               // (finished = true) will be the JS bundle, the other ones will be progress events
               // encoded as JSON.
@@ -332,7 +417,8 @@ public class DevServerHelper {
                 }
                 processBundleResult(url, status, body, outputFile, callback);
               } else {
-                if (!headers.containsKey("Content-Type") || !headers.get("Content-Type").equals("application/json")) {
+                if (!headers.containsKey("Content-Type") ||
+                    !headers.get("Content-Type").equals("application/json")) {
                   return;
                 }
                 try {
@@ -358,12 +444,21 @@ public class DevServerHelper {
           });
           if (!completed) {
             callback.onFailure(new DebugServerException(
-                "Error while reading multipart response.\n\nResponse code: " + response.code() + "\n\n" +
-                "URL: " + call.request().url().toString() + "\n\n"));
+                "Error while reading multipart response.\n\nResponse code: " +
+                response.code() + "\n\n" + "URL: " + call.request().url().toString() +
+                "\n\n"));
           }
         } else {
-          // In case the server doesn't support multipart/mixed responses, fallback to normal download.
-          processBundleResult(url, response.code(), Okio.buffer(response.body().source()), outputFile, callback);
+          /**
+           * In case the server doesn't support multipart/mixed responses,
+           * fallback to normal download.
+           */
+          processBundleResult(
+              url,
+              response.code(),
+              Okio.buffer(response.body().source()),
+              outputFile,
+              callback);
         }
       }
     });
@@ -383,8 +478,12 @@ public class DevServerHelper {
         callback.onFailure(debugServerException);
       } else {
         StringBuilder sb = new StringBuilder();
-        sb.append("The development server returned response error code: ").append(statusCode).append("\n\n")
-          .append("URL: ").append(url).append("\n\n")
+        sb.append("The development server returned response error code: ")
+          .append(statusCode)
+          .append("\n\n")
+          .append("URL: ")
+          .append(url)
+          .append("\n\n")
           .append("Body:\n")
           .append(bodyString);
         callback.onFailure(new DebugServerException(sb.toString()));
@@ -412,7 +511,8 @@ public class DevServerHelper {
   }
 
   public void isPackagerRunning(final PackagerStatusCallback callback) {
-    String statusURL = createPackagerStatusURL(mSettings.getPackagerConnectionSettings().getDebugServerHost());
+    String statusURL = createPackagerStatusURL(
+        mSettings.getPackagerConnectionSettings().getDebugServerHost());
     Request request = new Request.Builder()
         .url(statusURL)
         .build();
@@ -532,11 +632,17 @@ public class DevServerHelper {
   }
 
   private String createOnChangeEndpointUrl() {
-    return String.format(Locale.US, ONCHANGE_ENDPOINT_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
+    return String.format(
+        Locale.US,
+        ONCHANGE_ENDPOINT_URL_FORMAT,
+        mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
   private String createLaunchJSDevtoolsCommandUrl() {
-    return String.format(Locale.US, LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost());
+    return String.format(
+        Locale.US,
+        LAUNCH_JS_DEVTOOLS_COMMAND_URL_FORMAT,
+        mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
   public void launchJSDevtools() {
@@ -558,18 +664,37 @@ public class DevServerHelper {
   }
 
   public String getSourceMapUrl(String mainModuleName) {
-    return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
+    return String.format(
+        Locale.US,
+        SOURCE_MAP_URL_FORMAT,
+        mSettings.getPackagerConnectionSettings().getDebugServerHost(),
+        mainModuleName,
+        getDevMode(),
+        getHMR(),
+        getJSMinifyMode());
   }
 
   public String getSourceUrl(String mainModuleName) {
-    return String.format(Locale.US, BUNDLE_URL_FORMAT, mSettings.getPackagerConnectionSettings().getDebugServerHost(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
+    return String.format(
+        Locale.US,
+        BUNDLE_URL_FORMAT,
+        mSettings.getPackagerConnectionSettings().getDebugServerHost(),
+        mainModuleName,
+        getDevMode(),
+        getHMR(),
+        getJSMinifyMode());
   }
 
   public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
     // The host IP we use when connecting to the JS bundle server from the emulator is not the
     // same as the one needed to connect to the same server from the JavaScript proxy running on the
     // host itself.
-    return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getHMR(), getJSMinifyMode());
+    return createBundleURL(
+        getHostForJSProxy(),
+        mainModuleName,
+        getDevMode(),
+        getHMR(),
+        getJSMinifyMode());
   }
 
   /**
@@ -581,7 +706,9 @@ public class DevServerHelper {
   public @Nullable File downloadBundleResourceFromUrlSync(
       final String resourcePath,
       final File outputFile) {
-    final String resourceURL = createResourceURL(mSettings.getPackagerConnectionSettings().getDebugServerHost(), resourcePath);
+    final String resourceURL = createResourceURL(
+        mSettings.getPackagerConnectionSettings().getDebugServerHost(),
+        resourcePath);
     final Request request = new Request.Builder()
         .url(resourceURL)
         .build();
