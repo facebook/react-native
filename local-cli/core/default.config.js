@@ -104,6 +104,9 @@ const config: ConfigT = {
   getAssetExts() {
     return [];
   },
+  getSourceExts() {
+    return [];
+  },
   getPlatforms() {
     return [];
   },

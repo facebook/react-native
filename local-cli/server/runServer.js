@@ -16,6 +16,7 @@ const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
+const defaultSourceExts = require('../../packager/defaults').sourceExts;
 const defaultPlatforms = require('../../packager/defaults').platforms;
 const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
@@ -114,6 +115,7 @@ function getPackagerServer(args, config) {
     providesModuleNodeModules: providesModuleNodeModules,
     reporter: new LogReporter(),
     resetCache: args.resetCache,
+    sourceExts: defaultSourceExts.concat(args.sourceExts),
     transformModulePath: transformModulePath,
     verbose: args.verbose,
     watch: !args.nonPersistent,
