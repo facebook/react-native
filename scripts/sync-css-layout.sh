@@ -59,7 +59,8 @@ echo "Copying fbobjc src files over..."
 cp $C_SRC/Layout.{c,h} $FBO_SRC
 
 echo "Patching files..."
-for sourcefile in $FBA_SRC/*.java; do
+for sourcefile in $FBA_SRC/*.java; 
+do
   patchfile $sourcefile
 done
 for testfile in $FBA_TESTS/*.java; do
