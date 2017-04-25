@@ -14,7 +14,7 @@ have React Native installed, you can skip ahead to the
 
 ## Quick Start
 
-[Create React Native App](https://github.com/react-community/create-react-native-app) is the easiest way to start building a new React Native application. It allows you to start a project without installing or configuring any native build tools.
+[Create React Native App](https://github.com/react-community/create-react-native-app) is the easiest way to start building a new React Native application. It allows you to start a project without installing or configuring any tools to build native code.
 
 No Xcode or Android Studio installation is required. Assuming that you have Node installed, you can run the following commands to create a new React Native project called "AwesomeProject":
 
@@ -43,7 +43,7 @@ If you're integrating React Native into an existing project, you'll want to skip
 
 ## Building Projects with Native Code
 
-Follow these instructions if you need your own native build configuration. For example, if you "ejected" from Create React Native app, or if you are integrating React Native into an existing application, you'll need this section.
+Follow these instructions if you need to build native code in your project. For example, if you "ejected" from Create React Native app, or if you are integrating React Native into an existing application, you'll need this section.
 
 The instructions are a bit different depending on your development operating system, and whether you want to start developing for iOS or Android. If you want to develop for both iOS and Android, that's fine - you just have to pick
 one to start with, since the setup is a bit different.

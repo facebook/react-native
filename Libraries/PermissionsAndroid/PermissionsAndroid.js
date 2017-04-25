@@ -21,9 +21,9 @@ type Rationale = {
 type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
 /**
  * <div class="banner-crna-ejected">
- *   <h3>Native Builds Only</h3>
+ *   <h3>Project with Native Code Required</h3>
  *   <p>
- *     This API only works in apps made with <code>react-native init</code>
+ *     This API only works in projects made with <code>react-native init</code>
  *     or in those made with Create React Native App which have since ejected. For
  *     more information about ejecting, please see
  *     the <a href="https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md" target="_blank">guide</a> on
