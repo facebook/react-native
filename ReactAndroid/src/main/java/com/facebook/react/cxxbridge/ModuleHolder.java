@@ -9,6 +9,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
@@ -26,27 +27,23 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  *
  * Lifecycle events via a {@link LifecycleEventListener} will still always happen on the UI thread.
  */
+@DoNotStrip
 public class ModuleHolder {
 
   private final String mName;
   private final boolean mCanOverrideExistingModule;
-  private final boolean mSupportsWebWorkers;
+  private final boolean mHasConstants;
 
   private @Nullable Provider<? extends NativeModule> mProvider;
   private @Nullable NativeModule mModule;
   private boolean mInitializeNeeded;
 
-  public ModuleHolder(
-    String name,
-    boolean canOverrideExistingModule,
-    boolean supportsWebWorkers,
-    boolean needsEagerInit,
-    Provider<? extends NativeModule> provider) {
-    mName = name;
-    mCanOverrideExistingModule = canOverrideExistingModule;
-    mSupportsWebWorkers = supportsWebWorkers;
+  public ModuleHolder(ReactModuleInfo moduleInfo, Provider<? extends NativeModule> provider) {
+    mName = moduleInfo.name();
+    mCanOverrideExistingModule = moduleInfo.canOverrideExistingModule();
+    mHasConstants = moduleInfo.hasConstants();
     mProvider = provider;
-    if (needsEagerInit) {
+    if (moduleInfo.needsEagerInit()) {
       mModule = create();
     }
   }
@@ -54,7 +51,7 @@ public class ModuleHolder {
   public ModuleHolder(NativeModule nativeModule) {
     mName = nativeModule.getName();
     mCanOverrideExistingModule = nativeModule.canOverrideExistingModule();
-    mSupportsWebWorkers = nativeModule.supportsWebWorkers();
+    mHasConstants = true;
     mModule = nativeModule;
   }
 
@@ -85,8 +82,8 @@ public class ModuleHolder {
     return mCanOverrideExistingModule;
   }
 
-  public boolean getSupportsWebWorkers() {
-    return mSupportsWebWorkers;
+  public boolean getHasConstants() {
+    return mHasConstants;
   }
 
   @DoNotStrip

@@ -22,6 +22,7 @@ rn_robolectric_test(
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/devsupport:devsupport"),
+        react_native_target("java/com/facebook/react/devsupport:interfaces"),
         react_native_tests_target("java/com/facebook/react/bridge:testhelpers"),
     ],
 )

@@ -18,6 +18,7 @@
 #import "RCTDivisionAnimatedNode.h"
 #import "RCTEventAnimation.h"
 #import "RCTFrameAnimation.h"
+#import "RCTDecayAnimation.h"
 #import "RCTInterpolationAnimatedNode.h"
 #import "RCTModuloAnimatedNode.h"
 #import "RCTMultiplicationAnimatedNode.h"
@@ -221,6 +222,11 @@
                                                      forNode:valueNode
                                                     callBack:callBack];
 
+  } else if ([type isEqual:@"decay"]) {
+    animationDriver = [[RCTDecayAnimation alloc] initWithId:animationId
+                                                     config:config
+                                                    forNode:valueNode
+                                                   callBack:callBack];
   } else {
     RCTLogError(@"Unsupported animation type: %@", config[@"type"]);
     return;
@@ -235,7 +241,7 @@
 {
   for (id<RCTAnimationDriver> driver in _activeAnimations) {
     if ([driver.animationId isEqual:animationId]) {
-      [driver removeAnimation];
+      [driver stopAnimation];
       [_activeAnimations removeObject:driver];
       break;
     }
@@ -325,11 +331,10 @@
 }
 
 - (void)stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag
-                           valueObserver:(id<RCTValueAnimatedNodeObserver>)valueObserver
 {
   RCTAnimatedNode *node = _animationNodes[tag];
   if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
-    ((RCTValueAnimatedNode *)node).valueObserver = valueObserver;
+    ((RCTValueAnimatedNode *)node).valueObserver = nil;
   }
 }
 
@@ -339,7 +344,7 @@
 - (void)startAnimationLoopIfNeeded
 {
   if (!_displayLink && _activeAnimations.count > 0) {
-    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(stepAnimations)];
+    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(stepAnimations:)];
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
   }
 }
@@ -359,17 +364,18 @@
   }
 }
 
-- (void)stepAnimations
+- (void)stepAnimations:(CADisplayLink *)displaylink
 {
+  NSTimeInterval time = displaylink.timestamp;
   for (id<RCTAnimationDriver> animationDriver in _activeAnimations) {
-    [animationDriver stepAnimation];
+    [animationDriver stepAnimationWithTime:time];
   }
 
   [self updateAnimations];
 
   for (id<RCTAnimationDriver> animationDriver in [_activeAnimations copy]) {
     if (animationDriver.animationHasFinished) {
-      [animationDriver removeAnimation];
+      [animationDriver stopAnimation];
       [_activeAnimations removeObject:animationDriver];
     }
   }

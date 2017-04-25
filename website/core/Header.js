@@ -12,11 +12,13 @@
 
 var React = require('React');
 
+var PropTypes = require('prop-types');
+
 var slugify = require('slugify');
 
 var Header = React.createClass({
   contextTypes: {
-    permalink: React.PropTypes.string
+    permalink: PropTypes.string
   },
 
   render: function() {

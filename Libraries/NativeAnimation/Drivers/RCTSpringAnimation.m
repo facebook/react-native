@@ -71,19 +71,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)startAnimation
 {
-  _animationStartTime = CACurrentMediaTime();
-  _animationCurrentTime = _animationStartTime;
+  _animationStartTime = _animationCurrentTime = -1;
   _animationHasBegun = YES;
 }
 
 - (void)stopAnimation
 {
-  _animationHasFinished = YES;
-}
-
-- (void)removeAnimation
-{
-  [self stopAnimation];
   _valueNode = nil;
   if (_callback) {
     _callback(@[@{
@@ -92,11 +85,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
-- (void)stepAnimation
+- (void)stepAnimationWithTime:(NSTimeInterval)currentTime
 {
   if (!_animationHasBegun || _animationHasFinished) {
     // Animation has not begun or animation has already finished.
     return;
+  }
+
+  if (_animationStartTime == -1) {
+    _animationStartTime = _animationCurrentTime = currentTime;
   }
 
   // We are using a fixed time step and a maximum number of iterations.
@@ -106,7 +103,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Velocity is based on seconds instead of milliseconds
   CGFloat step = TIMESTEP_MSEC / 1000;
 
-  NSTimeInterval currentTime = CACurrentMediaTime();
   NSInteger numSteps = floorf((currentTime - _animationCurrentTime) / step);
   _animationCurrentTime = currentTime;
   if (numSteps == 0) {
@@ -182,7 +178,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       [self onUpdate:_toValue];
     }
 
-    [self stopAnimation];
+    _animationHasFinished = YES;
   }
 }
 

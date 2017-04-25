@@ -47,6 +47,7 @@ one to start with, since the setup is a bit different.
   <span>Mobile OS:</span>
   <a href="javascript:void(0);" class="button-ios" onclick="display('platform', 'ios')">iOS</a>
   <a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
+  <br />
   <span>Development OS:</span>
   <a href="javascript:void(0);" class="button-mac" onclick="display('os', 'mac')">macOS</a>
   <a href="javascript:void(0);" class="button-linux" onclick="display('os', 'linux')">Linux</a>
@@ -195,7 +196,7 @@ Android Virtual Devices allow you to run Android apps on your computer without t
 
 Then, click "Next" to install all of these components.
 
-> If you've already installed Android Studio before, you can still [install HAXM](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-windows) without performing a custom installation.
+> If you've already installed Android Studio before, you can still install HAXM ([Windows](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-windows)|[Mac](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-mac-os-x)) without performing a custom installation.
 
 <block class="linux android" />
 
@@ -290,11 +291,7 @@ changes in the filesystem. It is highly recommended you install it for better pe
 
 ![Android Studio AVD Manager](img/react-native-tools-avd.png)
 
-You can see the list of available AVDs by opening the "AVD Manager" from within Android Studio. You can also run the following command in a terminal:
-
-```
-android avd
-```
+You can see the list of available AVDs by opening the "AVD Manager" from within Android Studio.
 
 Once in the "AVD Manager", select your AVD and click "Edit...". Choose "Android 6.0 - API Level 23" under Device, and "Intel Atom (x86_64)" under CPU/ABI. Click OK, then select your new AVD and click "Start...", and finally, "Launch".
 
@@ -370,17 +367,11 @@ Congratulations! You've successfully run and modified your first React Native ap
 
 ## Testing your React Native Installation
 
-Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native start` inside the newly created folder to start the packager.
+Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder:
 
 ```
 react-native init AwesomeProject
 cd AwesomeProject
-react-native start
-```
-
-Open a new command prompt and run `react-native run-android` inside the same folder to launch the app on your Android emulator.
-
-```
 react-native run-android
 ```
 

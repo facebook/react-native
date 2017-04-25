@@ -12,6 +12,8 @@
 namespace facebook {
 namespace react {
 
+class MessageQueueThread;
+
 class ModuleHolder : public jni::JavaClass<ModuleHolder> {
  public:
   static auto constexpr kJavaDescriptor =
@@ -24,7 +26,8 @@ class ModuleHolder : public jni::JavaClass<ModuleHolder> {
 std::unique_ptr<ModuleRegistry> buildModuleRegistry(
   std::weak_ptr<Instance> winstance,
   jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
-  jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules);
+  jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules,
+  std::shared_ptr<MessageQueueThread> moduleMessageQueue);
 
 }
 }

@@ -134,7 +134,7 @@ describe('Bundler', function() {
       Promise.resolve({
         mainModuleId: 'foo',
         dependencies: modules,
-        transformOptions,
+        options: transformOptions,
         getModuleId: () => 123,
         getResolvedDependencyPairs: () => [],
       })
@@ -270,14 +270,22 @@ describe('Bundler', function() {
       // jest calledWith does not support jasmine.any
       expect(getDependencies.mock.calls[0].slice(0, -2)).toEqual([
         '/root/foo.js',
-        {dev: true, recursive: true},
-        {minify: false,
-          dev: true,
-          transform: {
+        {dev: true, platform: undefined, recursive: true},
+        {
+          preloadedModules: undefined,
+          ramGroups: undefined,
+          transformer: {
             dev: true,
-            hot: false,
-            generateSourceMaps: false,
-            projectRoots,
+            minify: false,
+            platform: undefined,
+            transform: {
+              dev: true,
+              generateSourceMaps: false,
+              hot: false,
+              inlineRequires: false,
+              platform: undefined,
+              projectRoots,
+            },
           },
         },
       ])
@@ -353,15 +361,25 @@ describe('Bundler', function() {
         ]));
     });
 
-    it('return correct number of workers', () => {
-      os.cpus.mockReturnValue({length: 1});
-      expect(Bundler.getMaxWorkerCount()).toBe(1);
-      os.cpus.mockReturnValue({length: 8});
-      expect(Bundler.getMaxWorkerCount()).toBe(6);
-      os.cpus.mockReturnValue({length: 24});
-      expect(Bundler.getMaxWorkerCount()).toBe(14);
-      process.env.REACT_NATIVE_MAX_WORKERS = 5;
-      expect(Bundler.getMaxWorkerCount()).toBe(5);
+    describe('number of workers', () => {
+      beforeEach(() => {
+        delete process.env.REACT_NATIVE_MAX_WORKERS;
+      });
+
+      afterEach(() => {
+        delete process.env.REACT_NATIVE_MAX_WORKERS;
+      });
+
+      it('return correct number of workers', () => {
+        os.cpus.mockReturnValue({length: 1});
+        expect(Bundler.getMaxWorkerCount()).toBe(1);
+        os.cpus.mockReturnValue({length: 8});
+        expect(Bundler.getMaxWorkerCount()).toBe(6);
+        os.cpus.mockReturnValue({length: 24});
+        expect(Bundler.getMaxWorkerCount()).toBe(14);
+        process.env.REACT_NATIVE_MAX_WORKERS = 5;
+        expect(Bundler.getMaxWorkerCount()).toBe(5);
+      });
     });
   });
 });

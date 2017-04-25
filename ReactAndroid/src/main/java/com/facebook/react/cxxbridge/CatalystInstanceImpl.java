@@ -24,7 +24,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.JavaScriptModuleRegistry;
 import com.facebook.react.bridge.MemoryPressure;
@@ -60,17 +59,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private static class PendingJSCall {
 
-    public ExecutorToken mExecutorToken;
     public String mModule;
     public String mMethod;
     public NativeArray mArguments;
 
     public PendingJSCall(
-        ExecutorToken executorToken,
         String module,
         String method,
         NativeArray arguments) {
-      mExecutorToken = executorToken;
       mModule = module;
       mMethod = method;
       mArguments = arguments;
@@ -89,10 +85,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final JSBundleLoader mJSBundleLoader;
   private final ArrayList<PendingJSCall> mJSCallsPendingInit = new ArrayList<PendingJSCall>();
   private final Object mJSCallsPendingInitLock = new Object();
-  private ExecutorToken mMainExecutorToken;
 
   private final NativeModuleRegistry mJavaRegistry;
   private final NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
+  private final MessageQueueThread mNativeModulesQueueThread;
   private boolean mInitialized = false;
   private volatile boolean mAcceptCalls = false;
 
@@ -110,7 +106,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final JavaScriptModuleRegistry jsModuleRegistry,
       final JSBundleLoader jsBundleLoader,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
-    FLog.w(ReactConstants.TAG, "Initializing React Xplat Bridge.");
+    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     mHybridData = initHybrid();
 
     mReactQueueConfiguration = ReactQueueConfigurationImpl.create(
@@ -121,18 +117,18 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mJSModuleRegistry = jsModuleRegistry;
     mJSBundleLoader = jsBundleLoader;
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
+    mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
 
-    FLog.w(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
+    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
     initializeBridge(
       new BridgeCallback(this),
       jsExecutor,
       mReactQueueConfiguration.getJSQueueThread(),
-      mReactQueueConfiguration.getNativeModulesQueueThread(),
+      mNativeModulesQueueThread,
       mJavaRegistry.getJavaModules(this),
       mJavaRegistry.getCxxModules());
-    FLog.w(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
-    mMainExecutorToken = getMainExecutorToken();
+    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
   }
 
   private static class BridgeCallback implements ReactCallback {
@@ -166,14 +162,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
       CatalystInstanceImpl impl = mOuter.get();
       if (impl != null) {
         impl.decrementPendingJSCalls();
-      }
-    }
-
-    @Override
-    public void onNativeException(Exception e) {
-      CatalystInstanceImpl impl = mOuter.get();
-      if (impl != null) {
-        impl.onNativeException(e);
       }
     }
   }
@@ -230,7 +218,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       mAcceptCalls = true;
 
       for (PendingJSCall call : mJSCallsPendingInit) {
-        jniCallJSFunction(call.mExecutorToken, call.mModule, call.mMethod, call.mArguments);
+        jniCallJSFunction(call.mModule, call.mMethod, call.mArguments);
       }
       mJSCallsPendingInit.clear();
     }
@@ -245,14 +233,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   private native void jniCallJSFunction(
-    ExecutorToken token,
     String module,
     String method,
     NativeArray arguments);
 
   @Override
   public void callFunction(
-      ExecutorToken executorToken,
       final String module,
       final String method,
       final NativeArray arguments) {
@@ -264,25 +250,25 @@ public class CatalystInstanceImpl implements CatalystInstance {
       // Most of the time the instance is initialized and we don't need to acquire the lock
       synchronized (mJSCallsPendingInitLock) {
         if (!mAcceptCalls) {
-          mJSCallsPendingInit.add(new PendingJSCall(executorToken, module, method, arguments));
+          mJSCallsPendingInit.add(new PendingJSCall(module, method, arguments));
           return;
         }
       }
     }
 
-    jniCallJSFunction(executorToken, module, method, arguments);
+    jniCallJSFunction(module, method, arguments);
   }
 
-  private native void jniCallJSCallback(ExecutorToken executorToken, int callbackID, NativeArray arguments);
+  private native void jniCallJSCallback(int callbackID, NativeArray arguments);
 
   @Override
-  public void invokeCallback(ExecutorToken executorToken, final int callbackID, final NativeArray arguments) {
+  public void invokeCallback(final int callbackID, final NativeArray arguments) {
     if (mDestroyed) {
       FLog.w(ReactConstants.TAG, "Invoking JS callback after bridge has been destroyed.");
       return;
     }
 
-    jniCallJSCallback(executorToken, callbackID, arguments);
+    jniCallJSCallback(callbackID, arguments);
   }
 
   /**
@@ -300,19 +286,19 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     // TODO: tell all APIs to shut down
     mDestroyed = true;
-    mHybridData.resetNative();
-    mReactQueueConfiguration.getNativeModulesQueueThread().runOnQueue(new Runnable() {
+    mNativeModulesQueueThread.runOnQueue(new Runnable() {
       @Override
       public void run() {
         mJavaRegistry.notifyJSInstanceDestroy();
+        boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
+        if (!wasIdle && !mBridgeIdleListeners.isEmpty()) {
+          for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
+            listener.onTransitionToBridgeIdle();
+          }
+        }
+        mHybridData.resetNative();
       }
     });
-    boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
-    if (!wasIdle && !mBridgeIdleListeners.isEmpty()) {
-      for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
-        listener.onTransitionToBridgeIdle();
-      }
-    }
 
     // This is a noop if the listener was not yet registered.
     Systrace.unregisterListener(mTraceListener);
@@ -329,7 +315,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @VisibleForTesting
   @Override
   public void initialize() {
-    UiThreadUtil.assertOnUiThread();
     Assertions.assertCondition(
         !mInitialized,
         "This catalyst instance has already been initialized");
@@ -340,7 +325,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
         mAcceptCalls,
         "RunJSBundle hasn't completed.");
     mInitialized = true;
-    mReactQueueConfiguration.getNativeModulesQueueThread().runOnQueue(new Runnable() {
+    mNativeModulesQueueThread.runOnQueue(new Runnable() {
       @Override
       public void run() {
         mJavaRegistry.notifyJSInstanceInitialized();
@@ -355,16 +340,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface) {
-    return getJSModule(mMainExecutorToken, jsInterface);
+    return mJSModuleRegistry.getJavaScriptModule(this, jsInterface);
   }
-
-  @Override
-  public <T extends JavaScriptModule> T getJSModule(ExecutorToken executorToken, Class<T> jsInterface) {
-    return Assertions.assertNotNull(mJSModuleRegistry)
-        .getJavaScriptModule(this, executorToken, jsInterface);
-  }
-
-  private native ExecutorToken getMainExecutorToken();
 
   @Override
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
@@ -450,9 +427,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
         mJsPendingCallsTitleForTrace,
         oldPendingCalls + 1);
     if (wasIdle && !mBridgeIdleListeners.isEmpty()) {
-      for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
-        listener.onTransitionToBridgeBusy();
-      }
+      mNativeModulesQueueThread.runOnQueue(new Runnable() {
+        @Override
+        public void run() {
+          for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
+            listener.onTransitionToBridgeBusy();
+          }
+        }
+      });
     }
   }
 
@@ -467,9 +449,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
         newPendingCalls);
 
     if (isNowIdle && !mBridgeIdleListeners.isEmpty()) {
-      for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
-        listener.onTransitionToBridgeIdle();
-      }
+      mNativeModulesQueueThread.runOnQueue(new Runnable() {
+        @Override
+        public void run() {
+          for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
+            listener.onTransitionToBridgeIdle();
+          }
+        }
+      });
     }
   }
 

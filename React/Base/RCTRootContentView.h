@@ -18,11 +18,13 @@
 
 @interface RCTRootContentView : RCTView <RCTInvalidating>
 
-@property (nonatomic, readonly) BOOL contentHasAppeared;
+@property (nonatomic, readonly, weak) RCTBridge *bridge;
+@property (nonatomic, readonly, assign) BOOL contentHasAppeared;
 @property (nonatomic, readonly, strong) RCTTouchHandler *touchHandler;
+@property (nonatomic, readonly, assign) CGSize availableSize;
+
 @property (nonatomic, assign) BOOL passThroughTouches;
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
-@property (nonatomic, readonly) CGSize availableSize;
 
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
