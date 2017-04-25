@@ -121,10 +121,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
   void incrementPendingJSCalls() override {}
   void decrementPendingJSCalls() override {}
-  ExecutorToken createExecutorToken() override {
-    return ExecutorToken(std::make_shared<PlatformExecutorToken>());
-  }
-  void onExecutorStopped(ExecutorToken) override {}
 };
 
 @implementation RCTCxxBridge
@@ -289,7 +285,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       [self.delegate respondsToSelector:@selector(shouldBridgeUseCustomJSC:)] &&
       [self.delegate shouldBridgeUseCustomJSC:self];
     // The arg is a cache dir.  It's not used with standard JSC.
-    executorFactory.reset(new JSCExecutorFactory("", folly::dynamic::object
+    executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
       ("UseCustomJSC", (bool)useCustomJSC)
 #if RCT_PROFILE
       ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
@@ -1000,8 +996,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     RCTProfileEndFlowEvent();
 
     if (self->_reactInstance) {
-      self->_reactInstance->callJSFunction(self->_reactInstance->getMainExecutorToken(),
-                                           [module UTF8String], [method UTF8String],
+      self->_reactInstance->callJSFunction([module UTF8String], [method UTF8String],
                                            [RCTConvert folly_dynamic:args ?: @[]]);
 
       if (completion) {
@@ -1033,7 +1028,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
     if (self->_reactInstance)
       self->_reactInstance->callJSCallback(
-        self->_reactInstance->getMainExecutorToken(), [cbID unsignedLongLongValue],
+        [cbID unsignedLongLongValue],
         [RCTConvert folly_dynamic:args ?: @[]]);
   }];
 }
@@ -1046,8 +1041,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCTAssertJSThread();
 
   if (_reactInstance)
-    _reactInstance->callJSFunction(_reactInstance->getMainExecutorToken(),
-                                   "JSTimersExecution", "callTimers",
+    _reactInstance->callJSFunction("JSTimersExecution", "callTimers",
                                    folly::dynamic::array(folly::dynamic::array([timer doubleValue])));
 }
 

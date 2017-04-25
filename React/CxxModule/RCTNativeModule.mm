@@ -50,11 +50,7 @@ folly::dynamic RCTNativeModule::getConstants() {
   return ret;
 }
 
-bool RCTNativeModule::supportsWebWorkers() {
-  return false;
-}
-
-void RCTNativeModule::invoke(ExecutorToken token, unsigned int methodId, folly::dynamic &&params) {
+void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params) {
   // The BatchedBridge version of this buckets all the callbacks by thread, and
   // queues one block on each.  This is much simpler; we'll see how it goes and
   // iterate.
@@ -103,8 +99,7 @@ void RCTNativeModule::invoke(ExecutorToken token, unsigned int methodId, folly::
   }
 }
 
-MethodCallResult RCTNativeModule::callSerializableNativeHook(
-    ExecutorToken token, unsigned int reactMethodId, folly::dynamic &&params) {
+MethodCallResult RCTNativeModule::callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic &&params) {
   RCTFatal(RCTErrorWithMessage(@"callSerializableNativeHook is not yet supported on iOS"));
   return folly::none;
 }
