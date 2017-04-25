@@ -68,7 +68,7 @@ export type GetTransformOptions = (
   getDependenciesOf: string => Promise<Array<string>>,
 ) => Promise<ExtraTransformOptions>;
 
-type AssetDescriptor = {
+export type AssetDescriptor = {
   +__packager_asset: boolean,
   +httpServerLocation: string,
   +width: ?number,
@@ -79,7 +79,7 @@ type AssetDescriptor = {
   +type: string,
 };
 
-type ExtendedAssetDescriptor = AssetDescriptor & {
+export type ExtendedAssetDescriptor = AssetDescriptor & {
   +fileSystemLocation: string,
   +files: Array<string>,
 };
