@@ -41,7 +41,7 @@ If you're integrating React Native into an existing project, you'll want to skip
 
 <hr style="margin-top:25px"/>
 
-## Native Builds
+## Building Projects with Native Code
 
 Follow these instructions if you need your own native build configuration. For example, if you "ejected" from Create React Native app, or if you are integrating React Native into an existing application, you'll need this section.
 
