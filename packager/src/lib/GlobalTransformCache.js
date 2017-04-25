@@ -11,6 +11,8 @@
 
 'use strict';
 
+/* global Buffer: true */
+
 const BatchProcessor = require('./BatchProcessor');
 const FetchError = require('node-fetch/lib/fetch-error');
 
@@ -380,14 +382,16 @@ class OptionsHasher {
    * particular file.
    */
   hashTransformOptions(hash: crypto$Hash, options: TransformOptions): crypto$Hash {
-    const {generateSourceMaps, dev, hot, inlineRequires, platform,
-      preloadedModules, projectRoots, ramGroups, ...unknowns} = options;
+    const {
+      generateSourceMaps, dev, hot, inlineRequires, platform, projectRoots,
+      ...unknowns,
+    } = options;
     const unknownKeys = Object.keys(unknowns);
     if (unknownKeys.length > 0) {
       const message = `these transform option fields are unknown: ${JSON.stringify(unknownKeys)}`;
       throw new CannotHashOptionsError(message);
     }
-    // eslint-disable-next-line no-undef
+
     hash.update(new Buffer([
       // eslint-disable-next-line no-bitwise
       +dev | +generateSourceMaps << 1 | +hot << 2 | +!!inlineRequires << 3,
@@ -398,7 +402,7 @@ class OptionsHasher {
       relativeBlacklist = this.relativizeFilePaths(Object.keys(inlineRequires.blacklist));
     }
     const relativeProjectRoots = this.relativizeFilePaths(projectRoots);
-    const optionTuple = [relativeBlacklist, preloadedModules, relativeProjectRoots, ramGroups];
+    const optionTuple = [relativeBlacklist, relativeProjectRoots];
     hash.update(JSON.stringify(optionTuple));
     return hash;
   }

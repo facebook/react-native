@@ -37,10 +37,16 @@ describe('DependencyGraph', function() {
   let Module;
   let ResolutionRequest;
   let defaults;
+  let emptyTransformOptions;
 
   function getOrderedDependenciesAsJSON(dgraphPromise, entryPath, platform, recursive = true) {
     return dgraphPromise
-      .then(dgraph => dgraph.getDependencies({entryPath, platform, recursive}))
+      .then(dgraph => dgraph.getDependencies({
+        entryPath,
+        options: emptyTransformOptions,
+        platform,
+        recursive,
+      }))
       .then(response => response.finalize())
       .then(({dependencies}) => Promise.all(dependencies.map(dep => Promise.all([
         dep.getName(),
@@ -63,6 +69,7 @@ describe('DependencyGraph', function() {
     Module = require('../Module');
     ResolutionRequest = require('../DependencyGraph/ResolutionRequest');
 
+    emptyTransformOptions = {transformer: {transform: {}}};
     defaults = {
       assetExts: ['png', 'jpg'],
       extensions: ['js', 'json'],
@@ -5294,6 +5301,7 @@ describe('DependencyGraph', function() {
       return dependencyGraph.getDependencies({
         entryPath: '/root/index.js',
         onProgress,
+        options: emptyTransformOptions,
       });
     }
 

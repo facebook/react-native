@@ -37,7 +37,7 @@ const {
 } = require('../Logger');
 const {EventEmitter} = require('events');
 
-import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type {Options as JSTransformerOptions} from '../JSTransformer/worker/worker';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
@@ -179,7 +179,7 @@ class DependencyGraph extends EventEmitter {
    */
   getShallowDependencies(
     entryPath: string,
-    transformOptions: TransformOptions,
+    transformOptions: JSTransformerOptions,
   ): Promise<Array<Module>> {
     return this._moduleCache
       .getModule(entryPath)
@@ -201,19 +201,19 @@ class DependencyGraph extends EventEmitter {
     return Promise.resolve(this._moduleCache.getAllModules());
   }
 
-  getDependencies({
+  getDependencies<T: {+transformer: JSTransformerOptions}>({
     entryPath,
+    options,
     platform,
-    transformOptions,
     onProgress,
     recursive = true,
   }: {
     entryPath: string,
+    options: T,
     platform: ?string,
-    transformOptions: TransformOptions,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     recursive: boolean,
-  }): Promise<ResolutionResponse<Module>> {
+  }): Promise<ResolutionResponse<Module, T>> {
     platform = this._getRequestPlatform(entryPath, platform);
     const absPath = this._getAbsolutePath(entryPath);
     const dirExists = filePath => {
@@ -236,11 +236,11 @@ class DependencyGraph extends EventEmitter {
       preferNativePlatform: this._opts.preferNativePlatform,
     });
 
-    const response = new ResolutionResponse({transformOptions});
+    const response = new ResolutionResponse(options);
 
     return req.getOrderedDependencies({
       response,
-      transformOptions,
+      transformOptions: options.transformer,
       onProgress,
       recursive,
     }).then(() => response);

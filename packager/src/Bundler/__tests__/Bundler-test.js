@@ -134,7 +134,7 @@ describe('Bundler', function() {
       Promise.resolve({
         mainModuleId: 'foo',
         dependencies: modules,
-        transformOptions,
+        options: transformOptions,
         getModuleId: () => 123,
         getResolvedDependencyPairs: () => [],
       })
@@ -272,18 +272,20 @@ describe('Bundler', function() {
         '/root/foo.js',
         {dev: true, platform: undefined, recursive: true},
         {
-          dev: true,
-          minify: false,
-          platform: undefined,
-          transform: {
+          preloadedModules: undefined,
+          ramGroups: undefined,
+          transformer: {
             dev: true,
-            generateSourceMaps: false,
-            hot: false,
-            inlineRequires: false,
+            minify: false,
             platform: undefined,
-            preloadedModules: undefined,
-            projectRoots,
-            ramGroups: undefined,
+            transform: {
+              dev: true,
+              generateSourceMaps: false,
+              hot: false,
+              inlineRequires: false,
+              platform: undefined,
+              projectRoots,
+            },
           },
         },
       ])
