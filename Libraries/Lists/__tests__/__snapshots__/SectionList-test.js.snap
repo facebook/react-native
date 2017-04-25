@@ -28,8 +28,10 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
+  onMomentumScrollEnd={[Function]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
   onViewableItemsChanged={undefined}
   renderItem={[Function]}
   renderScrollComponent={[Function]}
@@ -67,14 +69,14 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
       onLayout={[Function]}
     >
       <item
-        value="i1"
+        v="i1"
       />
     </View>
     <View
       onLayout={[Function]}
     >
       <item
-        value="i2"
+        v="i2"
       />
     </View>
   </View>
@@ -99,7 +101,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
             "id": "i2s1",
           },
         ],
-        "key": "1st Section",
+        "key": "s1",
         "keyExtractor": [Function],
         "renderItem": [Function],
       },
@@ -112,7 +114,18 @@ exports[`SectionList renders all the bells and whistles 1`] = `
             "key": "i2s2",
           },
         ],
-        "key": "2nd Section",
+        "key": "s2",
+      },
+      Object {
+        "data": Array [
+          Object {
+            "key": "i1s3",
+          },
+          Object {
+            "key": "i2s3",
+          },
+        ],
+        "key": "s3",
       },
     ]
   }
@@ -126,9 +139,11 @@ exports[`SectionList renders all the bells and whistles 1`] = `
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
+  onMomentumScrollEnd={[Function]}
   onRefresh={[Function]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
   onViewableItemsChanged={undefined}
   refreshControl={
     <RefreshControlMock
@@ -139,6 +154,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
   refreshing={false}
   renderItem={[Function]}
   renderScrollComponent={[Function]}
+  renderSectionFooter={[Function]}
   renderSectionHeader={[Function]}
   scrollEventThrottle={50}
   sections={
@@ -153,7 +169,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
             "id": "i2s1",
           },
         ],
-        "key": "1st Section",
+        "key": "s1",
         "keyExtractor": [Function],
         "renderItem": [Function],
       },
@@ -166,7 +182,18 @@ exports[`SectionList renders all the bells and whistles 1`] = `
             "key": "i2s2",
           },
         ],
-        "key": "2nd Section",
+        "key": "s2",
+      },
+      Object {
+        "data": Array [
+          Object {
+            "key": "i1s3",
+          },
+          Object {
+            "key": "i2s3",
+          },
+        ],
+        "key": "s3",
       },
     ]
   }
@@ -174,6 +201,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     Array [
       1,
       4,
+      7,
     ]
   }
   stickySectionHeadersEnabled={true}
@@ -185,24 +213,30 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     <View
       onLayout={[Function]}
     >
-      <header />
+      <header
+        v=""
+      />
     </View>
     <View
       onLayout={[Function]}
     >
       <sectionHeader
-        value="1st Section"
+        v="section:s1"
       />
     </View>
     <View
       onLayout={[Function]}
     >
       <View>
-        <sectionSeparator />
-        <itemForSection1
-          value="i1s1"
+        <sectionSeparator
+          v="highlighted:false,leadingItem:undefined,leadingSection:undefined,section:s1,trailingItem:i1s1,trailingSection:s2"
         />
-        <itemSeparatorForSection1 />
+        <itemForSection1
+          v="item:i1s1,index:0,section:s1,separators:[object Object]"
+        />
+        <itemSeparatorForSection1
+          v="highlighted:false,leadingItem:i1s1,leadingSection:undefined,section:s1,trailingItem:i2s1,trailingSection:s2"
+        />
       </View>
     </View>
     <View
@@ -210,27 +244,36 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     >
       <View>
         <itemForSection1
-          value="i2s1"
+          v="item:i2s1,index:1,section:s1,separators:[object Object]"
         />
-        <sectionSeparator />
+        <sectionSeparator
+          v="highlighted:false,leadingItem:i2s1,leadingSection:undefined,section:s1,trailingItem:undefined,trailingSection:s2"
+        />
+        <sectionFooter
+          v="section:s1"
+        />
       </View>
     </View>
     <View
       onLayout={[Function]}
     >
       <sectionHeader
-        value="2nd Section"
+        v="section:s2"
       />
     </View>
     <View
       onLayout={[Function]}
     >
       <View>
-        <sectionSeparator />
-        <defaultItem
-          value="i1s2"
+        <sectionSeparator
+          v="highlighted:false,leadingItem:undefined,leadingSection:s1,section:s2,trailingItem:i1s2,trailingSection:s3"
         />
-        <defaultItemSeparator />
+        <defaultItem
+          v="item:i1s2,index:0,section:s2,separators:[object Object]"
+        />
+        <defaultItemSeparator
+          v="highlighted:false,leadingItem:i1s2,leadingSection:s1,section:s2,trailingItem:i2s2,trailingSection:s3"
+        />
       </View>
     </View>
     <View
@@ -238,15 +281,59 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     >
       <View>
         <defaultItem
-          value="i2s2"
+          v="item:i2s2,index:1,section:s2,separators:[object Object]"
         />
-        <sectionSeparator />
+        <sectionSeparator
+          v="highlighted:false,leadingItem:i2s2,leadingSection:s1,section:s2,trailingItem:undefined,trailingSection:s3"
+        />
+        <sectionFooter
+          v="section:s2"
+        />
       </View>
     </View>
     <View
       onLayout={[Function]}
     >
-      <footer />
+      <sectionHeader
+        v="section:s3"
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+    >
+      <View>
+        <sectionSeparator
+          v="highlighted:false,leadingItem:undefined,leadingSection:s2,section:s3,trailingItem:i1s3,trailingSection:undefined"
+        />
+        <defaultItem
+          v="item:i1s3,index:0,section:s3,separators:[object Object]"
+        />
+        <defaultItemSeparator
+          v="highlighted:false,leadingItem:i1s3,leadingSection:s2,section:s3,trailingItem:i2s3,trailingSection:undefined"
+        />
+      </View>
+    </View>
+    <View
+      onLayout={[Function]}
+    >
+      <View>
+        <defaultItem
+          v="item:i2s3,index:1,section:s3,separators:[object Object]"
+        />
+        <sectionSeparator
+          v="highlighted:false,leadingItem:i2s3,leadingSection:s2,section:s3,trailingItem:undefined,trailingSection:undefined"
+        />
+        <sectionFooter
+          v="section:s3"
+        />
+      </View>
+    </View>
+    <View
+      onLayout={[Function]}
+    >
+      <footer
+        v=""
+      />
     </View>
   </View>
 </RCTScrollView>
@@ -266,8 +353,10 @@ exports[`SectionList renders empty list 1`] = `
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
+  onMomentumScrollEnd={[Function]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
   onViewableItemsChanged={undefined}
   renderItem={[Function]}
   renderScrollComponent={[Function]}
