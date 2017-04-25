@@ -42,7 +42,6 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
-import com.facebook.react.common.ApplicationHolder;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -229,8 +228,6 @@ public class ReactInstanceManager {
 
     initializeSoLoaderIfNecessary(applicationContext);
 
-    // TODO(9577825): remove this
-    ApplicationHolder.setApplication((Application) applicationContext.getApplicationContext());
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(applicationContext);
 
     mApplicationContext = applicationContext;

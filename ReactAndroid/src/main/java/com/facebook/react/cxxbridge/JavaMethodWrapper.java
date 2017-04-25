@@ -14,11 +14,22 @@ import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.facebook.react.bridge.*;
-
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.cxxbridge.JavaModuleWrapper;
-import com.facebook.systrace.Systrace;
+import com.facebook.react.bridge.BaseJavaModule;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.DynamicFromArray;
+import com.facebook.react.bridge.JSInstance;
+import com.facebook.react.bridge.NativeArgumentsParseException;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.PromiseImpl;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeArray;
+import com.facebook.react.bridge.UnexpectedNativeTypeException;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
@@ -32,14 +43,14 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     }
 
     public abstract @Nullable T extractArgument(
-      JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex);
+      JSInstance jsInstance, ReadableNativeArray jsArguments, int atIndex);
   }
 
   static final private ArgumentExtractor<Boolean> ARGUMENT_EXTRACTOR_BOOLEAN =
     new ArgumentExtractor<Boolean>() {
       @Override
       public Boolean extractArgument(
-        JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+        JSInstance jsInstance, ReadableNativeArray jsArguments, int atIndex) {
         return jsArguments.getBoolean(atIndex);
       }
     };
@@ -48,7 +59,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     new ArgumentExtractor<Double>() {
       @Override
       public Double extractArgument(
-        JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+        JSInstance jsInstance, ReadableNativeArray jsArguments, int atIndex) {
         return jsArguments.getDouble(atIndex);
       }
     };
@@ -57,7 +68,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     new ArgumentExtractor<Float>() {
       @Override
       public Float extractArgument(
-        JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+        JSInstance jsInstance, ReadableNativeArray jsArguments, int atIndex) {
         return (float) jsArguments.getDouble(atIndex);
       }
     };
@@ -66,7 +77,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     new ArgumentExtractor<Integer>() {
       @Override
       public Integer extractArgument(
-        JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+        JSInstance jsInstance, ReadableNativeArray jsArguments, int atIndex) {
         return (int) jsArguments.getDouble(atIndex);
       }
     };
@@ -75,7 +86,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     new ArgumentExtractor<String>() {
       @Override
       public String extractArgument(
-        JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+        JSInstance jsInstance, ReadableNativeArray jsArguments, int atIndex) {
         return jsArguments.getString(atIndex);
       }
     };
@@ -84,7 +95,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     new ArgumentExtractor<ReadableNativeArray>() {
       @Override
       public ReadableNativeArray extractArgument(
-        JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+        JSInstance jsInstance, ReadableNativeArray jsArguments, int atIndex) {
         return jsArguments.getArray(atIndex);
       }
     };
@@ -93,7 +104,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     new ArgumentExtractor<Dynamic>() {
       @Override
       public Dynamic extractArgument(
-        JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+        JSInstance jsInstance, ReadableNativeArray jsArguments, int atIndex) {
         return DynamicFromArray.create(jsArguments, atIndex);
       }
     };
@@ -102,7 +113,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     new ArgumentExtractor<ReadableMap>() {
       @Override
       public ReadableMap extractArgument(
-        JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+        JSInstance jsInstance, ReadableNativeArray jsArguments, int atIndex) {
         return jsArguments.getMap(atIndex);
       }
     };
@@ -111,12 +122,12 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     new ArgumentExtractor<Callback>() {
       @Override
       public @Nullable Callback extractArgument(
-        JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+        JSInstance jsInstance, ReadableNativeArray jsArguments, int atIndex) {
         if (jsArguments.isNull(atIndex)) {
           return null;
         } else {
           int id = (int) jsArguments.getDouble(atIndex);
-          return new com.facebook.react.bridge.CallbackImpl(jsInstance, executorToken, id);
+          return new com.facebook.react.bridge.CallbackImpl(jsInstance, id);
         }
       }
     };
@@ -130,11 +141,11 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
 
       @Override
       public Promise extractArgument(
-        JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray jsArguments, int atIndex) {
+        JSInstance jsInstance, ReadableNativeArray jsArguments, int atIndex) {
         Callback resolve = ARGUMENT_EXTRACTOR_CALLBACK
-          .extractArgument(jsInstance, executorToken, jsArguments, atIndex);
+          .extractArgument(jsInstance, jsArguments, atIndex);
         Callback reject = ARGUMENT_EXTRACTOR_CALLBACK
-          .extractArgument(jsInstance, executorToken, jsArguments, atIndex + 1);
+          .extractArgument(jsInstance, jsArguments, atIndex + 1);
         return new PromiseImpl(resolve, reject);
       }
     };
@@ -144,9 +155,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     if (tryCommon != '\0') {
       return tryCommon;
     }
-    if (paramClass == ExecutorToken.class) {
-      return 'T';
-    } else if (paramClass == Callback.class) {
+    if (paramClass == Callback.class) {
       return 'X';
     } else if (paramClass == Promise.class) {
       return 'P';
@@ -269,50 +278,20 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
 
     for (int i = 0; i < paramTypes.length; i++) {
       Class paramClass = paramTypes[i];
-      if (paramClass == ExecutorToken.class) {
-        if (!mModuleWrapper.supportsWebWorkers()) {
-          throw new RuntimeException(
-            "Module " + mModuleWrapper.getName() + " doesn't support web workers, but " +
-              mMethod.getName() +
-              " takes an ExecutorToken.");
-        }
-      } else if (paramClass == Promise.class) {
+      if (paramClass == Promise.class) {
         Assertions.assertCondition(
           i == paramTypes.length - 1, "Promise must be used as last parameter only");
       }
       builder.append(paramTypeToChar(paramClass));
     }
 
-    // Modules that support web workers are expected to take an ExecutorToken as the first
-    // parameter to all their @ReactMethod-annotated methods.
-    if (mModuleWrapper.supportsWebWorkers()) {
-      if (builder.charAt(2) != 'T') {
-        throw new RuntimeException(
-          "Module " + mModuleWrapper.getName() + " supports web workers, but " + mMethod.getName() +
-            "does not take an ExecutorToken as its first parameter.");
-      }
-    }
-
     return builder.toString();
   }
 
   private ArgumentExtractor[] buildArgumentExtractors(Class[] paramTypes) {
-    // Modules that support web workers are expected to take an ExecutorToken as the first
-    // parameter to all their @ReactMethod-annotated methods. We compensate for that here.
-    int executorTokenOffset = 0;
-    if (mModuleWrapper.supportsWebWorkers()) {
-      if (paramTypes[0] != ExecutorToken.class) {
-        throw new RuntimeException(
-          "Module " + mModuleWrapper.getName() + " supports web workers, but " + mMethod.getName() +
-            "does not take an ExecutorToken as its first parameter.");
-      }
-      executorTokenOffset = 1;
-    }
-
-    ArgumentExtractor[] argumentExtractors = new ArgumentExtractor[paramTypes.length - executorTokenOffset];
-    for (int i = 0; i < paramTypes.length - executorTokenOffset; i += argumentExtractors[i].getJSArgumentsNeeded()) {
-      int paramIndex = i + executorTokenOffset;
-      Class argumentClass = paramTypes[paramIndex];
+    ArgumentExtractor[] argumentExtractors = new ArgumentExtractor[paramTypes.length];
+    for (int i = 0; i < paramTypes.length; i += argumentExtractors[i].getJSArgumentsNeeded()) {
+      Class argumentClass = paramTypes[i];
       if (argumentClass == Boolean.class || argumentClass == boolean.class) {
         argumentExtractors[i] = ARGUMENT_EXTRACTOR_BOOLEAN;
       } else if (argumentClass == Integer.class || argumentClass == int.class) {
@@ -328,7 +307,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
       } else if (argumentClass == Promise.class) {
         argumentExtractors[i] = ARGUMENT_EXTRACTOR_PROMISE;
         Assertions.assertCondition(
-          paramIndex == paramTypes.length - 1, "Promise must be used as last parameter only");
+          i == paramTypes.length - 1, "Promise must be used as last parameter only");
       } else if (argumentClass == ReadableMap.class) {
         argumentExtractors[i] = ARGUMENT_EXTRACTOR_MAP;
       } else if (argumentClass == ReadableArray.class) {
@@ -357,7 +336,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
   }
 
   @Override
-  public void invoke(JSInstance jsInstance, ExecutorToken executorToken, ReadableNativeArray parameters) {
+  public void invoke(JSInstance jsInstance, ReadableNativeArray parameters) {
     String traceName = mModuleWrapper.getName() + "." + mMethod.getName();
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "callJavaModuleMethod")
       .arg("method", traceName)
@@ -374,18 +353,11 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
           traceName + " got " + parameters.size() + " arguments, expected " + mJSArgumentsNeeded);
       }
 
-      // Modules that support web workers are expected to take an ExecutorToken as the first
-      // parameter to all their @ReactMethod-annotated methods. We compensate for that here.
       int i = 0, jsArgumentsConsumed = 0;
-      int executorTokenOffset = 0;
-      if (mModuleWrapper.supportsWebWorkers()) {
-        mArguments[0] = executorToken;
-        executorTokenOffset = 1;
-      }
       try {
         for (; i < mArgumentExtractors.length; i++) {
-          mArguments[i + executorTokenOffset] = mArgumentExtractors[i].extractArgument(
-            jsInstance, executorToken, parameters, jsArgumentsConsumed);
+          mArguments[i] = mArgumentExtractors[i].extractArgument(
+            jsInstance, parameters, jsArgumentsConsumed);
           jsArgumentsConsumed += mArgumentExtractors[i].getJSArgumentsNeeded();
         }
       } catch (UnexpectedNativeTypeException e) {

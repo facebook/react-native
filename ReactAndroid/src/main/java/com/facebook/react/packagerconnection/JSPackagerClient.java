@@ -76,7 +76,7 @@ final public class JSPackagerClient implements ReconnectingWebSocket.MessageCall
       .appendQueryParameter("clientid", clientId);
     String url = builder.build().toString();
 
-    mWebSocket = new ReconnectingWebSocket(url, this);
+    mWebSocket = new ReconnectingWebSocket(url, this, null);
     mRequestHandlers = requestHandlers;
   }
 

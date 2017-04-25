@@ -31,10 +31,8 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -212,7 +210,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       new SizeMonitoringFrameLayout.OnSizeChangedListener() {
         @Override
         public void onSizeChanged(final int width, final int height, int oldW, int oldH) {
-          reactApplicationContext.runOnNativeModulesQueueThread(
+          reactApplicationContext.runUIBackgroundRunnable(
             new GuardedRunnable(reactApplicationContext) {
               @Override
               public void runGuarded() {

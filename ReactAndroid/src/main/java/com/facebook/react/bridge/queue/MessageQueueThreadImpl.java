@@ -61,7 +61,6 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     mHandler.post(runnable);
   }
 
-
   @DoNotStrip
   @Override
   public <T> Future<T> callOnQueue(final Callable<T> callable) {
@@ -143,6 +142,8 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     switch (spec.getThreadType()) {
       case MAIN_UI:
         return createForMainThread(spec.getName(), exceptionHandler);
+      case BACKGROUND_UI:
+        return startUIBackgroundThread(spec.getName(), spec.getStackSize(), exceptionHandler);
       case NEW_BACKGROUND:
         return startNewBackgroundThread(spec.getName(), spec.getStackSize(), exceptionHandler);
       default:
@@ -176,13 +177,27 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     return mqt;
   }
 
+  public static MessageQueueThreadImpl startUIBackgroundThread(
+    final String name,
+    long stackSize,
+    QueueThreadExceptionHandler exceptionHandler) {
+    return startNewBackgroundThread(name, stackSize, exceptionHandler, true);
+  }
+
   public static MessageQueueThreadImpl startNewBackgroundThread(
-      final String name,
-      QueueThreadExceptionHandler exceptionHandler) {
+    final String name,
+    QueueThreadExceptionHandler exceptionHandler) {
     return startNewBackgroundThread(
-        name,
-        MessageQueueThreadSpec.DEFAULT_STACK_SIZE_BYTES,
-        exceptionHandler);
+      name,
+      MessageQueueThreadSpec.DEFAULT_STACK_SIZE_BYTES,
+      exceptionHandler);
+  }
+
+  public static MessageQueueThreadImpl startNewBackgroundThread(
+    final String name,
+    long stackSize,
+    QueueThreadExceptionHandler exceptionHandler) {
+    return startNewBackgroundThread(name, stackSize, exceptionHandler, false);
   }
 
   /**
@@ -190,17 +205,20 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
    * running on it. Give it a name for easier debugging and optionally a suggested stack size.
    * When this method exits, the new MessageQueueThreadImpl is ready to receive events.
    */
-  public static MessageQueueThreadImpl startNewBackgroundThread(
-      final String name,
-      long stackSize,
-      QueueThreadExceptionHandler exceptionHandler) {
+  private static MessageQueueThreadImpl startNewBackgroundThread(
+    final String name,
+    long stackSize,
+    QueueThreadExceptionHandler exceptionHandler,
+    final boolean forUIManagerModule) {
     final SimpleSettableFuture<Looper> looperFuture = new SimpleSettableFuture<>();
     final SimpleSettableFuture<MessageQueueThread> mqtFuture = new SimpleSettableFuture<>();
     Thread bgThread = new Thread(null,
         new Runnable() {
           @Override
           public void run() {
-            Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+            Process.setThreadPriority(forUIManagerModule ?
+              Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_MORE_FAVORABLE :
+              Process.THREAD_PRIORITY_DEFAULT);
             Looper.prepare();
 
             looperFuture.set(Looper.myLooper());

@@ -309,7 +309,7 @@ class Server {
   getDependencies(options: {
     entryFile: string,
     platform: ?string,
-  }): Promise<ResolutionResponse<Module>> {
+  }): Promise<ResolutionResponse<Module, *>> {
     return Promise.resolve().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
@@ -428,7 +428,7 @@ class Server {
   _rangeRequestMiddleware(
     req: IncomingMessage,
     res: ServerResponse,
-    data: string,
+    data: string | Buffer,
     assetPath: string,
   ) {
     if (req.headers && req.headers.range) {

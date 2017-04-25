@@ -54,7 +54,7 @@ function attachHMRServer({httpServer, path, packagerServer}: HMROptions) {
     dependenciesModulesCache: {[mixed]: Module},
     shallowDependencies: {[string]: Array<Module>},
     inverseDependenciesCache: mixed,
-    resolutionResponse: ResolutionResponse<Module>,
+    resolutionResponse: ResolutionResponse<Module, *>,
   }> {
     return packagerServer.getDependencies({
       platform: platform,

@@ -37,12 +37,10 @@ public interface CatalystInstance
   // which this prevents.
   @Override @DoNotStrip
   void invokeCallback(
-      ExecutorToken executorToken,
       int callbackID,
       NativeArray arguments);
   @DoNotStrip
   void callFunction(
-      ExecutorToken executorToken,
       String module,
       String method,
       NativeArray arguments);
@@ -63,7 +61,6 @@ public interface CatalystInstance
   ReactQueueConfiguration getReactQueueConfiguration();
 
   <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface);
-  <T extends JavaScriptModule> T getJSModule(ExecutorToken executorToken, Class<T> jsInterface);
   <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface);
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
   Collection<NativeModule> getNativeModules();

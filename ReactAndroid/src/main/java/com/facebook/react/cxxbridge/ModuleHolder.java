@@ -32,7 +32,6 @@ public class ModuleHolder {
 
   private final String mName;
   private final boolean mCanOverrideExistingModule;
-  private final boolean mSupportsWebWorkers;
   private final boolean mHasConstants;
 
   private @Nullable Provider<? extends NativeModule> mProvider;
@@ -42,7 +41,6 @@ public class ModuleHolder {
   public ModuleHolder(ReactModuleInfo moduleInfo, Provider<? extends NativeModule> provider) {
     mName = moduleInfo.name();
     mCanOverrideExistingModule = moduleInfo.canOverrideExistingModule();
-    mSupportsWebWorkers = moduleInfo.supportsWebWorkers();
     mHasConstants = moduleInfo.hasConstants();
     mProvider = provider;
     if (moduleInfo.needsEagerInit()) {
@@ -53,7 +51,6 @@ public class ModuleHolder {
   public ModuleHolder(NativeModule nativeModule) {
     mName = nativeModule.getName();
     mCanOverrideExistingModule = nativeModule.canOverrideExistingModule();
-    mSupportsWebWorkers = nativeModule.supportsWebWorkers();
     mHasConstants = true;
     mModule = nativeModule;
   }
@@ -83,10 +80,6 @@ public class ModuleHolder {
 
   public boolean getCanOverrideExistingModule() {
     return mCanOverrideExistingModule;
-  }
-
-  public boolean getSupportsWebWorkers() {
-    return mSupportsWebWorkers;
   }
 
   public boolean getHasConstants() {
