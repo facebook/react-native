@@ -343,6 +343,7 @@ If you have a physical Android device, you can use it for development in place o
 Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-ios` inside the newly created folder.
 
 ```
+# skip this first command if you ejected from Create React Native App
 react-native init AwesomeProject
 cd AwesomeProject
 react-native run-ios
@@ -359,6 +360,7 @@ You should see your new app running in the iOS Simulator shortly.
 Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder:
 
 ```
+# skip this first command if you ejected from Create React Native App
 react-native init AwesomeProject
 cd AwesomeProject
 react-native run-android
@@ -401,6 +403,7 @@ Congratulations! You've successfully run and modified your first React Native ap
 Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder:
 
 ```
+# skip this first command if you ejected from Create React Native App
 react-native init AwesomeProject
 cd AwesomeProject
 react-native run-android
@@ -413,6 +416,7 @@ react-native run-android
 Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder.
 
 ```
+# skip this first command if you ejected from Create React Native App
 react-native init AwesomeProject
 cd AwesomeProject
 react-native run-android
