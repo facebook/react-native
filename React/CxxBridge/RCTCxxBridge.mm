@@ -74,6 +74,32 @@ static bool isRAMBundle(NSData *script) {
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
+static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger) {
+  __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
+  ReactMarker::logMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId) {
+    switch (markerId) {
+      case ReactMarker::RUN_JS_BUNDLE_START:
+        [weakPerformanceLogger markStartForTag:RCTPLScriptExecution];
+        break;
+      case ReactMarker::RUN_JS_BUNDLE_STOP:
+        [weakPerformanceLogger markStopForTag:RCTPLScriptExecution];
+        break;
+      case ReactMarker::NATIVE_REQUIRE_START:
+        [weakPerformanceLogger appendStartForTag:RCTPLRAMNativeRequires];
+        break;
+      case ReactMarker::NATIVE_REQUIRE_STOP:
+        [weakPerformanceLogger appendStopForTag:RCTPLRAMNativeRequires];
+        [weakPerformanceLogger addValue:1 forTag:RCTPLRAMNativeRequiresCount];
+        break;
+      case ReactMarker::CREATE_REACT_CONTEXT_STOP:
+      case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:
+      case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
+        // These are not used on iOS.
+        break;
+    }
+  };
+}
+
 @interface RCTCxxBridge ()
 
 @property (nonatomic, weak, readonly) RCTBridge *parentBridge;
@@ -156,6 +182,8 @@ struct RCTInstanceCallback : public InstanceCallback {
                         launchOptions:bridge.launchOptions])) {
     _parentBridge = bridge;
     _performanceLogger = [bridge performanceLogger];
+
+    registerPerformanceLoggerHooks(_performanceLogger);
 
     RCTLogInfo(@"Initializing %@ (parent: %@, executor: %@)", self, bridge, [self executorClass]);
 
@@ -931,6 +959,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (void)_flushPendingCalls
 {
+  // Log metrics about native requires during the bridge startup.
+  uint64_t nativeRequiresCount = [self->_performanceLogger valueForTag:RCTPLRAMNativeRequiresCount];
+  [_performanceLogger setValue:nativeRequiresCount forTag:RCTPLRAMStartupNativeRequiresCount];
+  uint64_t nativeRequires = [self->_performanceLogger valueForTag:RCTPLRAMNativeRequires];
+  [_performanceLogger setValue:nativeRequires forTag:RCTPLRAMStartupNativeRequires];
+
   [_performanceLogger markStopForTag:RCTPLBridgeStartup];
 
   RCT_PROFILE_BEGIN_EVENT(0, @"Processing pendingCalls", @{ @"count": @(_pendingCalls.count) });
@@ -1028,8 +1062,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   [self _tryAndHandleError:^{
     if (isRAMBundle(script)) {
+      [self->_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
       auto ramBundle = std::make_unique<JSIndexedRAMBundle>(url.path.UTF8String);
       std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();
+      [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
+      [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance)
         self->_reactInstance->loadUnbundle(std::move(ramBundle), std::move(scriptStr),
                                            [[url absoluteString] UTF8String]);
@@ -1051,8 +1088,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   [self _tryAndHandleError:^{
     if (isRAMBundle(script)) {
+      [self->_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
       auto ramBundle = std::make_unique<JSIndexedRAMBundle>(url.path.UTF8String);
       std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();
+      [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
+      [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
         self->_reactInstance->loadUnbundleSync(std::move(ramBundle), std::move(scriptStr),
                                                [[url absoluteString] UTF8String]);

@@ -146,7 +146,29 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
     gloginit::initialize();
     // Inject some behavior into react/
-    ReactMarker::logMarker = JReactMarker::logMarker;
+    ReactMarker::logMarker = [](const ReactMarker::ReactMarkerId markerId) {
+      switch (markerId) {
+        case ReactMarker::RUN_JS_BUNDLE_START:
+          JReactMarker::logMarker("RUN_JS_BUNDLE_START");
+          break;
+        case ReactMarker::RUN_JS_BUNDLE_STOP:
+          JReactMarker::logMarker("RUN_JS_BUNDLE_END");
+          break;
+        case ReactMarker::CREATE_REACT_CONTEXT_STOP:
+          JReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
+          break;
+        case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:
+          JReactMarker::logMarker("loadApplicationScript_startStringConvert");
+          break;
+        case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
+          JReactMarker::logMarker("loadApplicationScript_endStringConvert");
+          break;
+        case ReactMarker::NATIVE_REQUIRE_START:
+        case ReactMarker::NATIVE_REQUIRE_STOP:
+          // These are not used on Android.
+          break;
+      }
+    };
     WebWorkerUtil::createWebWorkerThread = WebWorkers::createWebWorkerThread;
     WebWorkerUtil::loadScriptFromAssets =
       [] (const std::string& assetName) {

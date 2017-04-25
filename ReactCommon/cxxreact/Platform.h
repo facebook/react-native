@@ -14,7 +14,16 @@ namespace facebook {
 namespace react {
 
 namespace ReactMarker {
-using LogMarker = std::function<void(const std::string&)>;
+enum ReactMarkerId {
+  NATIVE_REQUIRE_START,
+  NATIVE_REQUIRE_STOP,
+  RUN_JS_BUNDLE_START,
+  RUN_JS_BUNDLE_STOP,
+  CREATE_REACT_CONTEXT_STOP,
+  JS_BUNDLE_STRING_CONVERT_START,
+  JS_BUNDLE_STRING_CONVERT_STOP,
+};
+using LogMarker = std::function<void(const ReactMarkerId)>;
 extern LogMarker logMarker;
 };
 

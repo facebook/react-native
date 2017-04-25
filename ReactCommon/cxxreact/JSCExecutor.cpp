@@ -344,7 +344,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
 
-  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
+  ReactMarker::logMarker(ReactMarker::RUN_JS_BUNDLE_START);
   String jsSourceURL(m_context, sourceURL.c_str());
 
   // TODO t15069155: reduce the number of overrides here
@@ -363,8 +363,8 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 
       flush();
 
-      ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
-      ReactMarker::logMarker("RUN_JS_BUNDLE_END");
+      ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
+      ReactMarker::logMarker(ReactMarker::RUN_JS_BUNDLE_STOP);
       return;
 
     case JSLoadSourceErrorVersionMismatch:
@@ -400,9 +400,9 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
       "JSCExecutor::loadApplicationScript-createExpectingAscii");
     #endif
 
-    ReactMarker::logMarker("loadApplicationScript_startStringConvert");
+    ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_START);
     String jsScript = jsStringFromBigString(m_context, *script);
-    ReactMarker::logMarker("loadApplicationScript_endStringConvert");
+    ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP);
 
     #ifdef WITH_FBSYSTRACE
     fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
@@ -413,8 +413,8 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 
   flush();
 
-  ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
-  ReactMarker::logMarker("RUN_JS_BUNDLE_END");
+  ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
+  ReactMarker::logMarker(ReactMarker::RUN_JS_BUNDLE_STOP);
 }
 
 void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle) {
@@ -784,7 +784,9 @@ JSValueRef JSCExecutor::nativeRequire(
       Value(m_context, arguments[0]).toString().str()));
   }
 
+  ReactMarker::logMarker(ReactMarker::NATIVE_REQUIRE_START);
   loadModule(moduleId);
+  ReactMarker::logMarker(ReactMarker::NATIVE_REQUIRE_STOP);
   return Value::makeUndefined(m_context);
 }
 
