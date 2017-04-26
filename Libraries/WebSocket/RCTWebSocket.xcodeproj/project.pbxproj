@@ -235,7 +235,6 @@
 				SKIP_INSTALL = YES;
 				WARNING_CFLAGS = (
 					"-Werror",
-					"-Wall",
 				);
 			};
 			name = Debug;
@@ -279,7 +278,6 @@
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
 					"-Werror",
-					"-Wall",
 				);
 			};
 			name = Release;
