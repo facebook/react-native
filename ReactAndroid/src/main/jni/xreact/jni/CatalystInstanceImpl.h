@@ -48,6 +48,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       JavaScriptExecutorHolder* jseh,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
       jni::alias_ref<JavaMessageQueueThread::javaobject> moduleQueue,
+      jni::alias_ref<JavaMessageQueueThread::javaobject> uiBackgroundQueue,
       jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
       jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules);
 
@@ -74,6 +75,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   // will have a weak reference.
   std::shared_ptr<Instance> instance_;
   std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
+  std::shared_ptr<JMessageQueueThread> uiBackgroundMessageQueue_;
 };
 
 }}
