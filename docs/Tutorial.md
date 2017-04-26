@@ -32,7 +32,7 @@ class HelloWorldApp extends Component {
 AppRegistry.registerComponent('HelloWorldApp', () => HelloWorldApp);
 ```
 
-If you are feeling curious, you can play around with sample code directly in the web simulators. You can also paste it into your `index.ios.js` or `index.android.js` file to create a real app on your local machine.
+If you are feeling curious, you can play around with sample code directly in the web simulators. If you are using AwesomeProject from the Getting Started tutorial, you can also paste the sample code into your `index.ios.js` or `index.android.js` file to create a real app on your local machine. Change the appKey from `'HelloWorldApp'` to `'AwesomeProject'` in line 32.
 
 ## What's going on here?
 
