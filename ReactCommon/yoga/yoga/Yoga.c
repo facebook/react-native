@@ -2141,23 +2141,29 @@ static void YGNodelayoutImpl(const YGNodeRef node,
 
       if (child->style.positionType != YGPositionTypeAbsolute) {
         const float childMarginMainAxis = YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
-        const float outerFlexBasis =
+        const float flexBasisWithMaxConstraints =
+            fminf(YGResolveValue(&child->style.maxDimensions[dim[mainAxis]], mainAxisParentSize),
+                  fmaxf(YGResolveValue(&child->style.minDimensions[dim[mainAxis]],
+                                       mainAxisParentSize),
+                        child->layout.computedFlexBasis));
+        const float flexBasisWithMinAndMaxConstraints =
             fmaxf(YGResolveValue(&child->style.minDimensions[dim[mainAxis]], mainAxisParentSize),
-                  child->layout.computedFlexBasis) +
-            childMarginMainAxis;
+                  flexBasisWithMaxConstraints);
 
         // If this is a multi-line flow and this item pushes us over the
         // available size, we've
         // hit the end of the current line. Break out of the loop and lay out
         // the current line.
-        if (sizeConsumedOnCurrentLineIncludingMinConstraint + outerFlexBasis >
+        if (sizeConsumedOnCurrentLineIncludingMinConstraint + flexBasisWithMinAndMaxConstraints +
+                    childMarginMainAxis >
                 availableInnerMainDim &&
             isNodeFlexWrap && itemsOnLine > 0) {
           break;
         }
 
-        sizeConsumedOnCurrentLineIncludingMinConstraint += outerFlexBasis;
-        sizeConsumedOnCurrentLine += child->layout.computedFlexBasis + childMarginMainAxis;
+        sizeConsumedOnCurrentLineIncludingMinConstraint +=
+            flexBasisWithMinAndMaxConstraints + childMarginMainAxis;
+        sizeConsumedOnCurrentLine += flexBasisWithMaxConstraints + childMarginMainAxis;
         itemsOnLine++;
 
         if (YGNodeIsFlex(child)) {
