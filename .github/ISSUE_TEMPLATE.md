@@ -28,6 +28,10 @@ List all the steps required to reproduce the issue you're reporting. These steps
 
 What needs to be done to address this issue? Ideally, provide a pull request with a fix.
 
+### Solution
+
+[FILL THIS OUT: What needs to be done to address this issue? Ideally, provide a pull request with a fix.]
+
 ### Additional Information
 
 * React Native version: [FILL THIS OUT: Be specific, filling out "latest" here is not enough.]
