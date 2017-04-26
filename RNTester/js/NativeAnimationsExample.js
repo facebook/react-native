@@ -168,15 +168,12 @@ class InternalSettings extends React.Component {
           initialValue={false}
           label="Force JS Stalls"
           onEnable={() => {
-            this._stallInterval = setInterval(
-              () => {
-                const start = Date.now();
-                console.warn('burn CPU');
-                while (Date.now() - start < 100) {
-                }
-              },
-              300,
-            );
+            this._stallInterval = setInterval(() => {
+              const start = Date.now();
+              console.warn('burn CPU');
+              while (Date.now() - start < 100) {
+              }
+            }, 300);
           }}
           onDisable={() => {
             clearInterval(this._stallInterval || 0);
