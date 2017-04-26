@@ -224,7 +224,7 @@
     "flow-bin": "^0.44.2",
     "jest": "19.0.2",
     "jest-repl": "19.0.2",
-    "jest-runtime": "19.0.2",
+    "jest-runtime": "^19.0.3",
     "mock-fs": "^3.11.0",
     "react": "16.0.0-alpha.6",
     "react-test-renderer": "16.0.0-alpha.6",
