@@ -86,11 +86,15 @@ The [Android Getting Started guide](docs/getting-started.html) will install the 
 
 > To ensure a smooth experience, make sure your `android` project is under `$root/android`.
 
+> To ensure a smooth experience, make sure your `android` project is under `$root/android`.
+
 <block class="objc swift" />
 
 ### General
 
 First, follow the [Getting Started guide](docs/getting-started.html) for your development environment and the iOS target platform to install the prerequisites for React Native.
+
+> To ensure a smooth experience, make sure your `iOS` project is under `$root/ios`.
 
 > To ensure a smooth experience, make sure your `iOS` project is under `$root/ios`.
 
