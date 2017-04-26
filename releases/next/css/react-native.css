@@ -1355,6 +1355,7 @@ div[data-twttr-id] iframe {
   margin-left: 20px; }
 
 .prop {
+  word-wrap: break-word;
   padding: 5px 10px; }
 
 .compactProps .prop {
