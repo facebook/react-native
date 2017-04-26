@@ -391,6 +391,10 @@ void YGConfigFree(const YGConfigRef config) {
   gConfigInstanceCount--;
 }
 
+void YGConfigCopy(const YGConfigRef dest, const YGConfigRef src) {
+  memcpy(dest, src, sizeof(YGConfig));
+}
+
 static void YGNodeMarkDirtyInternal(const YGNodeRef node) {
   if (!node->isDirty) {
     node->isDirty = true;
