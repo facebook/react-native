@@ -5335,6 +5335,32 @@ describe('DependencyGraph', function() {
         });
     });
 
+    it('does not support custom extensious without sourceExts', (done) => {
+      var root = '/root';
+      setMockFileSystem({
+        'root': {
+          'index.jsx': [
+            'require("./a")',
+          ].join('\n'),
+          'a.coffee': [
+          ].join('\n'),
+          'X.js': '',
+        },
+      });
+
+      var dgraph = DependencyGraph.load({
+        ...defaults,
+        roots: [root],
+      });
+
+      dgraph
+        .then(dg => dg.matchFilesByPattern('.*'))
+        .then(files => {
+          expect(files).toEqual(['/root/X.js']);
+        })
+        .then(() => getOrderedDependenciesAsJSON(dgraph, '/root/index.jsx'))
+        .catch(done);
+    });
   });
 
   describe('Progress updates', () => {
