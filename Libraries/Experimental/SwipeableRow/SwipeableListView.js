@@ -61,7 +61,7 @@ class SwipeableListView extends React.Component<DefaultProps, Props, State> {
   _listViewRef: ?React.Element<any> = null;
   _shouldBounceFirstRowOnMount: boolean = false;
 
-  static getNewDataSource(params: Object): Object {
+  static getNewDataSource(params: ?Object): Object {
     return new SwipeableListViewDataSource({
       getRowData: (
         params && params.getRowData
