@@ -15,7 +15,7 @@ const Module = require('./Module');
 
 const getAssetDataFromName = require('./lib/getAssetDataFromName');
 
-import type {ConstructorArgs, ReadResult} from './Module';
+import type {CachedReadResult, ConstructorArgs, ReadResult} from './Module';
 
 class AssetModule extends Module {
 
@@ -37,14 +37,15 @@ class AssetModule extends Module {
     return Promise.resolve(false);
   }
 
-  getDependencies() {
-    return Promise.resolve(this._dependencies);
-  }
-
-  read(): Promise<ReadResult> {
+  readCached(): CachedReadResult {
     /** $FlowFixMe: improper OOP design. AssetModule, being different from a
      * normal Module, shouldn't inherit it in the first place. */
-    return Promise.resolve({});
+    return {result: {dependencies: this._dependencies}, outdatedDependencies: []};
+  }
+
+  /** $FlowFixMe: improper OOP design. */
+  readFresh(): Promise<ReadResult> {
+    return Promise.resolve({dependencies: this._dependencies});
   }
 
   getName() {

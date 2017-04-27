@@ -46,9 +46,14 @@ function buildBundle(
   // have other choice than defining it as an env variable here.
   process.env.NODE_ENV = args.dev ? 'development' : 'production';
 
+  let sourceMapUrl = args.sourcemapOutput;
+  if (sourceMapUrl && !args.sourcemapUseAbsolutePath) {
+    sourceMapUrl = path.basename(sourceMapUrl);
+  }
+
   const requestOpts: RequestOptions = {
     entryFile: args.entryFile,
-    sourceMapUrl: args.sourcemapOutput && path.basename(args.sourcemapOutput),
+    sourceMapUrl,
     dev: args.dev,
     minify: !args.dev,
     platform: args.platform,

@@ -7,12 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <React/RCTBridge.h>
 #import <React/RCTPackagerClient.h>
+
+@class RCTBridge;
 
 #if RCT_DEV // Only supported in dev mode
 
-@interface RCTSamplingProfilerPackagerMethod : NSObject<RCTPackagerClientMethod>
+@interface RCTSamplingProfilerPackagerMethod : NSObject <RCTPackagerClientMethod>
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 

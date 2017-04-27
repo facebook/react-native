@@ -12,7 +12,6 @@ jest.disableAutomock();
 
 const Bundle = require('../Bundle');
 const ModuleTransport = require('../../lib/ModuleTransport');
-const SourceMapGenerator = require('source-map').SourceMapGenerator;
 const crypto = require('crypto');
 
 describe('Bundle', () => {
@@ -107,33 +106,37 @@ describe('Bundle', () => {
       });
     });
 
-    it('should insert modules in a deterministic order, independent from timing of the wrapping process', () => {
-      const moduleTransports = [
-        createModuleTransport({name: 'module1'}),
-        createModuleTransport({name: 'module2'}),
-        createModuleTransport({name: 'module3'}),
-      ];
+    it('inserts modules in a deterministic order, independent of timing of the wrapper process',
+      () => {
+        const moduleTransports = [
+          createModuleTransport({name: 'module1'}),
+          createModuleTransport({name: 'module2'}),
+          createModuleTransport({name: 'module3'}),
+        ];
 
-      const resolves = {};
-      const resolver = {
-        wrapModule({name}) {
-          return new Promise(resolve => resolves[name] = resolve);
-        },
-      };
+        const resolves = {};
+        const resolver = {
+          wrapModule({name}) {
+            return new Promise(resolve => {
+              resolves[name] = resolve;
+            });
+          },
+        };
 
-      const promise = Promise.all(
-        moduleTransports.map(m => bundle.addModule(resolver, null, {isPolyfill: () => false}, m)))
-      .then(() => {
-        expect(bundle.getModules())
-          .toEqual(moduleTransports);
-      });
+        const promise = Promise.all(moduleTransports.map(
+          m => bundle.addModule(resolver, null, {isPolyfill: () => false}, m)
+        )).then(() => {
+          expect(bundle.getModules())
+            .toEqual(moduleTransports);
+        });
 
-      resolves.module2({code: ''});
-      resolves.module3({code: ''});
-      resolves.module1({code: ''});
+        resolves.module2({code: ''});
+        resolves.module3({code: ''});
+        resolves.module1({code: ''});
 
-      return promise;
-    });
+        return promise;
+      },
+    );
   });
 
   describe('sourcemap bundle', () => {
@@ -268,7 +271,6 @@ describe('Bundle', () => {
 
   describe('getEtag()', function() {
     it('should return an etag', function() {
-      var bundle = new Bundle({sourceMapUrl: 'test_url'});
       bundle.finalize({});
       var eTag = crypto.createHash('md5').update(bundle.getSource()).digest('hex');
       expect(bundle.getEtag()).toEqual(eTag);
@@ -328,13 +330,10 @@ describe('Bundle', () => {
 
     it('omits modules that are contained by more than one group', () => {
       bundle = createBundle([fsLocation('React'), fsLocation('OtherFramework')]);
-      const {groups} = bundle.getUnbundle();
-      expect(groups).toEqual(new Map([
-        [idFor('React'),
-          new Set(['ReactFoo', 'ReactBar', 'cx'].map(idFor))],
-        [idFor('OtherFramework'),
-          new Set(['OtherFrameworkFoo', 'OtherFrameworkBar', 'crc32'].map(idFor))],
-      ]));
+      expect(() => {
+        const {groups} = bundle.getUnbundle(); //eslint-disable-line no-unused-vars
+      }).toThrow(new Error(`Module ${fsLocation('invariant')} belongs to groups ${fsLocation('React')}` +
+        `, and ${fsLocation('OtherFramework')}. Removing it from all groups.`));
     });
 
     it('ignores missing dependencies', () => {
