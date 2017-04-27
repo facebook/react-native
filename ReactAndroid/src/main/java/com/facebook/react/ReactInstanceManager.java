@@ -409,7 +409,8 @@ public class ReactInstanceManager {
 
       if (Intent.ACTION_VIEW.equals(action) && uri != null) {
         DeviceEventManagerModule deviceEventManagerModule =
-                Assertions.assertNotNull(mCurrentReactContext).getNativeModule(DeviceEventManagerModule.class);
+          Assertions.assertNotNull(mCurrentReactContext)
+            .getNativeModule(DeviceEventManagerModule.class);
         deviceEventManagerModule.emitNewIntentReceived(uri);
       }
 
