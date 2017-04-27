@@ -477,7 +477,6 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
 {
   for (id<RCTComponent> child in children) {
     RCTTraverseViewNodes(registry[child.reactTag], ^(id<RCTComponent> subview) {
-      RCTAssert(![subview isReactRootView], @"Root views should not be unregistered");
       if ([subview conformsToProtocol:@protocol(RCTInvalidating)]) {
         [(id<RCTInvalidating>)subview invalidate];
       }
