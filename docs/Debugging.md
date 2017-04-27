@@ -96,26 +96,22 @@ The debugger will receive a list of all project roots, separated by a space. For
 
 ### Debugging with [Stetho](http://facebook.github.io/stetho/) on Android
 
-Following this guide to enable Stetho only for Debug mode:
+Follow this guide to enable Stetho for Debug mode:
 
 1. In ```android/app/build.gradle```, add these lines in the `dependencies` section:
 
    ```gradle
-    debugCompile 'com.facebook.stetho:stetho:1.x.x'
-    debugCompile 'com.facebook.stetho:stetho-okhttp3:1.x.x'
+    debugCompile 'com.facebook.stetho:stetho:1.5.0'
+    debugCompile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
    ```
 
-Go to http://facebook.github.io/stetho/ and replace 1.x.x with the latest version.
+> The above will configure Stetho v1.5.0. You can check at http://facebook.github.io/stetho/ if a newer version is available.
 
-2. From project root, create 2 Java class that will wrap the Stetho call, one for release and one for debug. With the terminal, these cmds should get it done:
+2. Create the following Java classes to wrap the Stetho call, one for release and one for debug:
    
-   ```bash
-   touch android/app/src/debug/java/com/{yourAppName}/StethoWrapper.java
-   touch android/app/src/release/java/com/{yourAppName}/StethoWrapper.java
-   ```
-
-For release:
     ```java
+    // android/app/src/release/java/com/{yourAppName}/StethoWrapper.java
+    
     public class StethoWrapper {
 
         public static void initialize(Context context) {
@@ -128,8 +124,9 @@ For release:
     }
     ```
 
-For debug:
     ```java
+    // android/app/src/debug/java/com/{yourAppName}/StethoWrapper.java
+
     public class StethoWrapper {
         public static void initialize(Context context) {
           Stetho.initializeWithDefaults(context);
@@ -146,16 +143,14 @@ For debug:
     }
     ```
 
-3. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java```, replace the original onCreate function with:
+3. Open `android/app/src/main/java/com/{yourAppName}/MainApplication.java` and replace the original `onCreate` function:
 
 ```java
   public void onCreate() {
       super.onCreate();
 
-      if (BuildConfig.DEBUG) {
-      
+      if (BuildConfig.DEBUG) {      
           StethoWrapper.initialize(this);
-      
           StethoWrapper.addInterceptor();
       }
 
@@ -163,11 +158,11 @@ For debug:
     }
 ```
 
-4. Open the android project in Android Studio and resolve all dependency issue. (Hover over the red marked lines and play around with the IDE so that it import all the correct library for you!)
+4. Open the project in Android Studio and resolve any dependency issues. The IDE should guide you through this steps after hovering your pointer over the red lines.
 
-5. Run  ```react-native run-android ```
+5. Run `react-native run-android`.
 
-6. In a new chrome tab, open : ```chrome://inspect```, click on 'Inspect device' (the one followed by "Powered by Stetho")
+6. In a new Chrome tab, open: `chrome://inspect`, then click on the 'Inspect device' item next to "Powered by Stetho".
 
 ## Debugging native code
 
