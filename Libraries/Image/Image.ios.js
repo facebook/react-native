@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule Image
+ * @providesModule Image5
  * @flow
  */
 'use strict';
@@ -235,7 +235,7 @@ const Image = React.createClass({
     resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch', 'repeat', 'center']),
     /**
      * A unique identifier for this element to be used in UI Automation
-     * testing scripts.
+     * testing scripts 5.
      */
     testID: PropTypes.string,
     /**
