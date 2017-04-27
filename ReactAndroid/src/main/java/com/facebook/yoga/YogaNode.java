@@ -139,6 +139,7 @@ public class YogaNode {
     mLayoutDirection = 0;
 
     mMeasureFunction = null;
+    mBaselineFunction = null;
     mData = null;
 
     jni_YGNodeReset(mNativePointer);

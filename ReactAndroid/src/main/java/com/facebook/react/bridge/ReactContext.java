@@ -107,15 +107,6 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance.getJSModule(jsInterface);
   }
 
-  public <T extends JavaScriptModule> T getJSModule(
-    ExecutorToken executorToken,
-    Class<T> jsInterface) {
-    if (mCatalystInstance == null) {
-      throw new RuntimeException(EARLY_JS_ACCESS_EXCEPTION_MESSAGE);
-    }
-    return mCatalystInstance.getJSModule(executorToken, jsInterface);
-  }
-
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
       throw new RuntimeException(
@@ -315,6 +306,10 @@ public class ReactContext extends ContextWrapper {
 
   public void runOnJSQueueThread(Runnable runnable) {
     Assertions.assertNotNull(mJSMessageQueueThread).runOnQueue(runnable);
+  }
+
+  public boolean hasUIBackgroundRunnableThread() {
+    return mUiBackgroundMessageQueueThread != null;
   }
 
   public void runUIBackgroundRunnable(Runnable runnable) {

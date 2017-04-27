@@ -25,11 +25,14 @@ import android.view.WindowManager;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -68,7 +71,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable String mJSModuleName;
-  private @Nullable Bundle mLaunchOptions;
+  private @Nullable Bundle mAppProperties;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
   private int mRootViewTag;
@@ -197,7 +200,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   public void startReactApplication(
       ReactInstanceManager reactInstanceManager,
       String moduleName,
-      @Nullable Bundle launchOptions) {
+      @Nullable Bundle initialProperties) {
     UiThreadUtil.assertOnUiThread();
 
     // TODO(6788889): Use POJO instead of bundle here, apparently we can't just use WritableMap
@@ -209,7 +212,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
     mReactInstanceManager = reactInstanceManager;
     mJSModuleName = moduleName;
-    mLaunchOptions = launchOptions;
+    mAppProperties = initialProperties;
 
     if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
       mReactInstanceManager.createReactContextInBackground();
@@ -249,8 +252,41 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     return Assertions.assertNotNull(mJSModuleName);
   }
 
-  /* package */ @Nullable Bundle getLaunchOptions() {
-    return mLaunchOptions;
+  public @Nullable Bundle getAppProperties() {
+    return mAppProperties;
+  }
+
+  public void setAppProperties(@Nullable Bundle appProperties) {
+    UiThreadUtil.assertOnUiThread();
+    mAppProperties = appProperties;
+    runApplication();
+  }
+
+  /**
+   * Calls into JS to start the React application. Can be called multiple times with the
+   * same rootTag, which will re-render the application from the root.
+   */
+  /* package */ void runApplication() {
+    if (mReactInstanceManager == null || !mIsAttachedToInstance) {
+      return;
+    }
+
+    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+    if (reactContext == null) {
+      return;
+    }
+
+    CatalystInstance catalystInstance = reactContext.getCatalystInstance();
+
+    WritableNativeMap appParams = new WritableNativeMap();
+    appParams.putDouble("rootTag", getRootViewTag());
+    @Nullable Bundle appProperties = getAppProperties();
+    if (appProperties != null) {
+      appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
+    }
+
+    String jsAppModuleName = getJSModuleName();
+    catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
   }
 
   /**

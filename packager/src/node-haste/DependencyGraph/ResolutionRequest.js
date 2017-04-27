@@ -173,13 +173,13 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     return [dependencyNames, dependencies];
   }
 
-  getOrderedDependencies({
+  getOrderedDependencies<T>({
     response,
     transformOptions,
     onProgress,
     recursive = true,
   }: {
-    response: ResolutionResponse<TModule>,
+    response: ResolutionResponse<TModule, T>,
     transformOptions: TransformWorkerOptions,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     recursive: boolean,

@@ -42,7 +42,6 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
-import com.facebook.react.common.ApplicationHolder;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -229,8 +228,6 @@ public class ReactInstanceManager {
 
     initializeSoLoaderIfNecessary(applicationContext);
 
-    // TODO(9577825): remove this
-    ApplicationHolder.setApplication((Application) applicationContext.getApplicationContext());
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(applicationContext);
 
     mApplicationContext = applicationContext;
@@ -412,7 +409,8 @@ public class ReactInstanceManager {
 
       if (Intent.ACTION_VIEW.equals(action) && uri != null) {
         DeviceEventManagerModule deviceEventManagerModule =
-                Assertions.assertNotNull(mCurrentReactContext).getNativeModule(DeviceEventManagerModule.class);
+          Assertions.assertNotNull(mCurrentReactContext)
+            .getNativeModule(DeviceEventManagerModule.class);
         deviceEventManagerModule.emitNewIntentReceived(uri);
       }
 
@@ -842,14 +840,7 @@ public class ReactInstanceManager {
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
     int rootTag = uiManagerModule.addMeasuredRootView(rootView);
     rootView.setRootViewTag(rootTag);
-    @Nullable Bundle launchOptions = rootView.getLaunchOptions();
-    WritableMap initialProps = Arguments.makeNativeMap(launchOptions);
-    String jsAppModuleName = rootView.getJSModuleName();
-
-    WritableNativeMap appParams = new WritableNativeMap();
-    appParams.putDouble("rootTag", rootTag);
-    appParams.putMap("initialProps", initialProps);
-    catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
+    rootView.runApplication();
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -943,12 +934,14 @@ public class ReactInstanceManager {
         ? mNativeModuleCallExceptionHandler
         : mDevSupportManager;
     CatalystInstanceImpl.Builder catalystInstanceBuilder = new CatalystInstanceImpl.Builder()
-        .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
-        .setJSExecutor(jsExecutor)
-        .setRegistry(nativeModuleRegistry)
-        .setJSModuleRegistry(jsModulesBuilder.build())
-        .setJSBundleLoader(jsBundleLoader)
-        .setNativeModuleCallExceptionHandler(exceptionHandler);
+      .setReactQueueConfigurationSpec(mUseSeparateUIBackgroundThread ?
+        ReactQueueConfigurationSpec.createWithSeparateUIBackgroundThread() :
+        ReactQueueConfigurationSpec.createDefault())
+      .setJSExecutor(jsExecutor)
+      .setRegistry(nativeModuleRegistry)
+      .setJSModuleRegistry(jsModulesBuilder.build())
+      .setJSBundleLoader(jsBundleLoader)
+      .setNativeModuleCallExceptionHandler(exceptionHandler);
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp

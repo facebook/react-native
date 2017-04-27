@@ -309,7 +309,7 @@ class Server {
   getDependencies(options: {
     entryFile: string,
     platform: ?string,
-  }): Promise<ResolutionResponse<Module>> {
+  }): Promise<ResolutionResponse<Module, *>> {
     return Promise.resolve().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
