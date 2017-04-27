@@ -26,6 +26,7 @@ class RCTNativeModule : public NativeModule {
  private:
   __weak RCTBridge *m_bridge;
   RCTModuleData *m_moduleData;
+  MethodCallResult invokeInner(unsigned int methodId, const folly::dynamic &&params);
 };
 
 }
