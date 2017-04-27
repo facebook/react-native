@@ -23,24 +23,34 @@ export type GlobalCacheDisabledReason = 'too_many_errors' | 'too_many_misses';
  * report to the tool user.
  */
 export type ReportableEvent = {
+  port: number,
+  projectRoots: Array<string>,
+  type: 'initialize_packager_started',
+} | {
+  type: 'initialize_packager_done',
+} | {
+  type: 'initialize_packager_failed',
+  port: number,
+  error: Error,
+} | {
+  entryFilePath: string,
+  type: 'bundle_build_done',
+} | {
+  entryFilePath: string,
+  error: Error,
+  type: 'bundle_build_failed',
+} | {
+  entryFilePath: string,
+  type: 'bundle_build_started',
+} | {
   type: 'dep_graph_loading',
 } | {
   type: 'dep_graph_loaded',
-} | {
-  type: 'bundle_requested',
-  entryFilePath: string,
 } | {
   type: 'bundle_transform_progressed',
   entryFilePath: string,
   transformedFileCount: number,
   totalFileCount: number,
-} | {
-  entryFilePath: string,
-  outdatedModuleCount: number,
-  type: 'bundle_update_existing',
-} | {
-  type: 'bundle_built',
-  entryFilePath: string,
 } | {
   type: 'global_cache_error',
   error: Error,

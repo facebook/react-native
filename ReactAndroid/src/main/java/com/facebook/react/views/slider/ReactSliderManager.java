@@ -30,7 +30,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
-import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaNode;
 
 import java.util.Map;
 
@@ -58,7 +58,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
     @Override
     public long measure(
-        YogaNodeAPI node,
+        YogaNode node,
         float width,
         YogaMeasureMode widthMode,
         float height,

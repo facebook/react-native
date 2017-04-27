@@ -17,8 +17,9 @@ import type {MixedSourceMap} from './SourceMap';
 type SourceMapOrMappings = MixedSourceMap | Array<RawMapping>;
 
 type Metadata = {
+  dependencies?: ?Array<string>,
   dependencyPairs?: Array<[mixed, {path: string}]>,
-  preloaded?: boolean,
+  preloaded: ?boolean,
 };
 
 class ModuleTransport {

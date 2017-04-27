@@ -13,8 +13,8 @@ import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
 public enum YogaExperimentalFeature {
-  ROUNDING(0),
-  WEB_FLEX_BASIS(1);
+  WEB_FLEX_BASIS(0),
+  MIN_FLEX_FIX(1);
 
   private int mIntValue;
 
@@ -28,8 +28,8 @@ public enum YogaExperimentalFeature {
 
   public static YogaExperimentalFeature fromInt(int value) {
     switch (value) {
-      case 0: return ROUNDING;
-      case 1: return WEB_FLEX_BASIS;
+      case 0: return WEB_FLEX_BASIS;
+      case 1: return MIN_FLEX_FIX;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }

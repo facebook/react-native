@@ -1,6 +1,9 @@
+'use strict';
+
 /* @flow */
 
-import React, { PropTypes, Component } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   Platform,
   View,
@@ -10,7 +13,7 @@ import {
 } from 'react-native';
 
 type Props = {
-  offset?: number;
+  offset?: number,
 }
 
 type State = {
@@ -41,7 +44,7 @@ type State = {
  */
 const KeyboardSpacer = () => (
   Platform.OS === 'ios' ? <KeyboardSpacerIOS /> : null
-)
+);
 
 class KeyboardSpacerIOS extends Component<Props, Props, State> {
   static propTypes = {

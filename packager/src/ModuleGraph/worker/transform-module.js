@@ -21,8 +21,8 @@ const {basename} = require('path');
 import type {
   Callback,
   TransformedFile,
-  TransformFn,
-  TransformFnResult,
+  Transformer,
+  TransformerResult,
   TransformResult,
   TransformVariants,
 } from '../types.flow';
@@ -30,7 +30,7 @@ import type {
 export type TransformOptions = {|
   filename: string,
   polyfill?: boolean,
-  transform: TransformFn,
+  transformer: Transformer,
   variants?: TransformVariants,
 |};
 
@@ -39,25 +39,38 @@ const moduleFactoryParameters = ['global', 'require', 'module', 'exports'];
 const polyfillFactoryParameters = ['global'];
 
 function transformModule(
-  code: string,
+  content: Buffer,
   options: TransformOptions,
   callback: Callback<TransformedFile>,
 ): void {
-  if (options.filename.endsWith('.json')) {
-    return transformJSON(code, options, callback);
+  if (options.filename.endsWith('.png')) {
+    transformAsset(content, options, callback);
+    return;
   }
 
-  const {filename, transform, variants = defaultVariants} = options;
+  const code = content.toString('utf8');
+  if (options.filename.endsWith('.json')) {
+    transformJSON(code, options, callback);
+    return;
+  }
+
+  const {filename, transformer, variants = defaultVariants} = options;
   const tasks = {};
   Object.keys(variants).forEach(name => {
-    tasks[name] = cb => transform({
-      filename,
-      sourceCode: code,
-      options: variants[name],
-    }, cb);
+    tasks[name] = cb => {
+      try {
+        cb(null, transformer.transform(
+          code,
+          filename,
+          variants[name],
+        ));
+      } catch (error) {
+        cb(error, null);
+      }
+    };
   });
 
-  series(tasks, (error, results: {[key: string]: TransformFnResult}) => {
+  series(tasks, (error, results: {[key: string]: TransformerResult}) => {
     if (error) {
       callback(error);
       return;
@@ -73,13 +86,15 @@ function transformModule(
     const annotations = docblock.parseAsObject(docblock.extract(code));
 
     callback(null, {
+      assetContent: null,
       code,
       file: filename,
-      hasteID: annotations.providesModule || annotations.provide || null,
+      hasteID: annotations.providesModule || null,
       transformed,
       type: options.polyfill ? 'script' : 'module',
     });
   });
+  return;
 }
 
 function transformJSON(json, options, callback) {
@@ -102,6 +117,7 @@ function transformJSON(json, options, callback) {
     .forEach(key => (transformed[key] = moduleData));
 
   const result: TransformedFile = {
+    assetContent: null,
     code: json,
     file: filename,
     hasteID: value.name,
@@ -118,6 +134,21 @@ function transformJSON(json, options, callback) {
     };
   }
   callback(null, result);
+}
+
+function transformAsset(
+  content: Buffer,
+  options: TransformOptions,
+  callback: Callback<TransformedFile>,
+) {
+  callback(null, {
+    assetContent: content.toString('base64'),
+    code: '',
+    file: options.filename,
+    hasteID: null,
+    transformed: {},
+    type: 'asset',
+  });
 }
 
 function makeResult(ast, filename, sourceCode, isPolyfill = false) {

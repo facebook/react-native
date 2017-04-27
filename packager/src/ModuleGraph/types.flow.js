@@ -11,6 +11,7 @@
 'use strict';
 
 import type {SourceMap} from './output/source-map';
+import type {Ast} from 'babel-core';
 import type {Console} from 'console';
 
 export type Callback<A = void, B = void>
@@ -29,7 +30,7 @@ export type File = {|
   type: FileTypes,
 |};
 
-type FileTypes = 'module' | 'script';
+type FileTypes = 'module' | 'script' | 'asset';
 
 export type GraphFn = (
   entryPoints: Iterable<string>,
@@ -39,16 +40,15 @@ export type GraphFn = (
 ) => void;
 
 type GraphOptions = {|
-  cwd?: string,
   log?: Console,
   optimize?: boolean,
   skip?: Set<string>,
 |};
 
-export type GraphResult = {
+export type GraphResult = {|
   entryModules: Array<Module>,
   modules: Array<Module>,
-};
+|};
 
 export type IdForPathFn = {path: string} => number;
 
@@ -75,10 +75,10 @@ export type OutputFn = (
   idForPath: IdForPathFn,
 ) => OutputResult;
 
-type OutputResult = {
+type OutputResult = {|
   code: string,
   map: SourceMap,
-};
+|};
 
 export type PackageData = {|
   browser?: Object | string,
@@ -89,7 +89,7 @@ export type PackageData = {|
 
 export type ResolveFn = (
   id: string,
-  source: string,
+  source: ?string,
   platform: string,
   options?: ResolveOptions,
   callback: Callback<string>,
@@ -99,18 +99,19 @@ type ResolveOptions = {
   log?: Console,
 };
 
-export type TransformFn = (
-  data: {|
-    filename: string,
-    options?: Object,
-    plugins?: Array<string | Object | [string | Object, any]>,
-    sourceCode: string,
-  |},
-  callback: Callback<TransformFnResult>
-) => void;
+export type TransformerResult = {|
+  ast: ?Ast,
+  code: string,
+  map: ?SourceMap,
+|};
 
-export type TransformFnResult = {
-  ast: Object,
+export type Transformer = {
+  transform: (
+    sourceCode: string,
+    filename: string,
+    options: ?{},
+    plugins?: Array<string | Object | [string | Object, any]>,
+  ) => {ast: ?Ast, code: string, map: ?SourceMap}
 };
 
 export type TransformResult = {|
@@ -125,6 +126,7 @@ export type TransformResults = {[string]: TransformResult};
 export type TransformVariants = {[key: string]: Object};
 
 export type TransformedFile = {
+  assetContent: ?string,
   code: string,
   file: string,
   hasteID: ?string,
@@ -132,3 +134,17 @@ export type TransformedFile = {
   transformed: TransformResults,
   type: FileTypes,
 };
+
+export type LibraryOptions = {|
+  dependencies?: Array<string>,
+  platform?: string,
+  root: string,
+|};
+
+export type Base64Content = string;
+
+export type Library = {|
+  files: Array<TransformedFile>,
+  /* cannot be a Map because it's JSONified later on */
+  assets: {[destFilePath: string]: Base64Content},
+|};

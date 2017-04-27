@@ -32,7 +32,7 @@
 #import <React/RCTRootViewDelegate.h>
 
 #define RCT_TEST_DATA_CONFIGURATION_BLOCK(appName, testType, input, block) \
-- (void)test##appName##_##testType##_##input                               \
+- (void)DISABLED_test##appName##_##testType##_##input                      \
 {                                                                          \
   [_runner runTest:_cmd                                                    \
             module:@#appName                                               \
@@ -41,7 +41,7 @@ configurationBlock:block];                                                 \
 }
 
 #define RCT_TEST_CONFIGURATION_BLOCK(appName, block)  \
-- (void)test##appName                                 \
+- (void)DISABLED_test##appName                        \
 {                                                     \
   [_runner runTest:_cmd                               \
             module:@#appName                          \
@@ -121,13 +121,6 @@ static ControlBlock reactContentSizeUpdateBlock(RCTRootViewSizeFlexibility sizeF
   };
 }
 
-static ControlBlock propertiesUpdateBlock()
-{
-  return ^(RCTRootView *rootView){
-    rootView.appProperties = @{@"markTestPassed":@YES};
-  };
-}
-
 @interface RCTRootViewIntegrationTests : XCTestCase
 
 @end
@@ -144,7 +137,7 @@ static ControlBlock propertiesUpdateBlock()
 
 #pragma mark Logic Tests
 
-// This list should be kept in sync with RCTRootViewIntegrationTestApp.js
+// This list should be kept in sync with RCTRootViewIntegrationTestsApp.js
 
 // Simple size flexibility tests - test if the content is measured properly
 RCT_TEST_DATA_CONFIGURATION_BLOCK(SizeFlexibilityUpdateTest, SingleUpdate, none, simpleSizeFlexibilityBlock(RCTNone));
@@ -162,6 +155,8 @@ RCT_TEST_DATA_CONFIGURATION_BLOCK(SizeFlexibilityUpdateTest, MultipleUpdates, bo
 RCT_TEST_CONFIGURATION_BLOCK(ReactContentSizeUpdateTest, reactContentSizeUpdateBlock(RCTBoth))
 
 // Test if setting 'appProperties' property updates the RN app
-RCT_TEST_CONFIGURATION_BLOCK(PropertiesUpdateTest, propertiesUpdateBlock())
+RCT_TEST_CONFIGURATION_BLOCK(PropertiesUpdateTest, ^(RCTRootView *rootView) {
+  rootView.appProperties = @{@"markTestPassed":@YES};
+})
 
 @end

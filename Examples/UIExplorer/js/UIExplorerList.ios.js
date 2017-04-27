@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule UIExplorerList
  */
 'use strict';
 
@@ -43,6 +44,11 @@ const ComponentExamples: Array<UIExplorerExample> = [
     key: 'DatePickerIOSExample',
     module: require('./DatePickerIOSExample'),
     supportsTVOS: false,
+  },
+  {
+    key: 'FlatListExample',
+    module: require('./FlatListExample'),
+    supportsTVOS: true,
   },
   {
     key: 'ImageExample',
@@ -75,18 +81,13 @@ const ComponentExamples: Array<UIExplorerExample> = [
     supportsTVOS: true,
   },
   {
-     key: 'MapViewExample',
-     module: require('./MapViewExample'),
-    supportsTVOS: true,
-  },
-  {
     key: 'ModalExample',
     module: require('./ModalExample'),
     supportsTVOS: true,
   },
   {
-    key: 'NavigatorExample',
-    module: require('./Navigator/NavigatorExample'),
+    key: 'MultiColumnExample',
+    module: require('./MultiColumnExample'),
     supportsTVOS: true,
   },
   {
@@ -122,6 +123,11 @@ const ComponentExamples: Array<UIExplorerExample> = [
   {
     key: 'ScrollViewExample',
     module: require('./ScrollViewExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'SectionListExample',
+    module: require('./SectionListExample'),
     supportsTVOS: true,
   },
   {
@@ -280,11 +286,6 @@ const APIExamples: Array<UIExplorerExample> = [
   {
     key: 'NativeAnimationsExample',
     module: require('./NativeAnimationsExample'),
-    supportsTVOS: true,
-  },
-  {
-    key: 'NavigationExperimentalExample',
-    module: require('./NavigationExperimental/NavigationExperimentalExample'),
     supportsTVOS: true,
   },
   {

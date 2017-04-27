@@ -15,10 +15,10 @@ var ReactPropTypes = require('React').PropTypes;
 
 /**
  * React Native's layout system is based on Flexbox and is powered both
- * on iOS and Android by an open source project called css-layout:
- * https://github.com/facebook/css-layout
+ * on iOS and Android by an open source project called `Yoga`:
+ * https://github.com/facebook/yoga
  *
- * The implementation in css-layout is slightly different from what the
+ * The implementation in Yoga is slightly different from what the
  * Flexbox spec defines - for example, we chose more sensible default
  * values. Since our layout docs are generated from the comments in this
  * file, please keep a brief comment describing each prop type.
@@ -27,6 +27,13 @@ var ReactPropTypes = require('React').PropTypes;
  * algorithm and affect the positioning and sizing of views.
  */
 var LayoutPropTypes = {
+  /** `display` sets the display type of this component.
+   *
+   *  It works similarly to `display` in CSS, but only support 'flex' and 'none'.
+   *  'flex' is the default.
+   */
+  display: ReactPropTypes.string,
+
   /** `width` sets the width of this component.
    *
    *  It works similarly to `width` in CSS, but in React Native you
@@ -323,7 +330,7 @@ var LayoutPropTypes = {
    *  that is not its parent, just don't use styles for that. Use the
    *  component tree.
    *
-   *  See https://github.com/facebook/css-layout
+   *  See https://github.com/facebook/yoga
    *  for more details on how `position` differs between React Native
    *  and CSS.
    */
@@ -402,6 +409,20 @@ var LayoutPropTypes = {
     'baseline'
   ]),
 
+  /** `alignContent` controls how rows align in the cross direction,
+   *  overriding the `alignContent` of the parent.
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/align-content
+   *  for more details.
+   */
+  alignContent: ReactPropTypes.oneOf([
+    'flex-start',
+    'flex-end',
+    'center',
+    'stretch',
+    'space-between',
+    'space-around'
+  ]),
+
   /** `overflow` controls how a children are measured and displayed.
    *  `overflow: hidden` causes views to be clipped while `overflow: scroll`
    *  causes views to be measured independently of their parents main axis.`
@@ -417,8 +438,8 @@ var LayoutPropTypes = {
 
   /** In React Native `flex` does not work the same way that it does in CSS.
    *  `flex` is a number rather than a string, and it works
-   *  according to the `css-layout` library
-   *  at https://github.com/facebook/css-layout.
+   *  according to the `Yoga` library
+   *  at https://github.com/facebook/yoga
    *
    *  When `flex` is a positive number, it makes the component flexible
    *  and it will be sized proportional to its flex value. So a
@@ -470,6 +491,19 @@ var LayoutPropTypes = {
    *  more details.
    */
   zIndex: ReactPropTypes.number,
+
+  /** `direction` specifies the directional flow of the user interface.
+   *  The default is `inherit`, except for root node which will have
+   *  value based on the current locale.
+   *  See https://facebook.github.io/yoga/docs/rtl/
+   *  for more details.
+   *  @platform ios
+   */
+  direction: ReactPropTypes.oneOf([
+    'inherit',
+    'ltr',
+    'rtl',
+  ]),
 };
 
 module.exports = LayoutPropTypes;
