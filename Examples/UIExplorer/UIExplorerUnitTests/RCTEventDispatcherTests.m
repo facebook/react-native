@@ -65,6 +65,17 @@
 
 @end
 
+@interface RCTDummyBridge : RCTBridge
+- (void)dispatchBlock:(dispatch_block_t)block
+                queue:(dispatch_queue_t)queue;
+@end
+
+@implementation RCTDummyBridge
+- (void)dispatchBlock:(dispatch_block_t)block
+                queue:(dispatch_queue_t)queue
+{}
+@end
+
 @interface RCTEventDispatcherTests : XCTestCase
 @end
 
@@ -84,7 +95,7 @@
 {
   [super setUp];
 
-  _bridge = [OCMockObject mockForClass:[RCTBatchedBridge class]];
+  _bridge = [OCMockObject mockForClass:[RCTDummyBridge class]];
 
   _eventDispatcher = [RCTEventDispatcher new];
   [_eventDispatcher setValue:_bridge forKey:@"bridge"];

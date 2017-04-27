@@ -46,4 +46,14 @@ public class YogaConfig {
   public void setExperimentalFeatureEnabled(YogaExperimentalFeature feature, boolean enabled) {
     jni_YGConfigSetExperimentalFeatureEnabled(mNativePointer, feature.intValue(), enabled);
   }
+
+  private native void jni_YGConfigSetUseWebDefaults(long nativePointer, boolean useWebDefaults);
+  public void setUseWebDefaults(boolean useWebDefaults) {
+    jni_YGConfigSetUseWebDefaults(mNativePointer, useWebDefaults);
+  }
+
+  private native void jni_YGConfigSetPointScaleFactor(long nativePointer, float pixelsInPoint);
+  public void setPointScaleFactor(float pixelsInPoint) {
+    jni_YGConfigSetPointScaleFactor(mNativePointer, pixelsInPoint);
+  }
 }

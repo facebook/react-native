@@ -16,7 +16,3 @@ android_library(
         react_native_target("java/com/facebook/react/modules/core:core"),
     ],
 )
-
-project_config(
-    src_target = ":accessibilityinfo",
-)

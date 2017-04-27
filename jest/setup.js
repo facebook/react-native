@@ -72,10 +72,12 @@ const mockNativeModules = {
     addEventListener: jest.fn(),
   },
   AsyncLocalStorage: {
-    clear: jest.fn(),
-    getItem: jest.fn(),
-    removeItem: jest.fn(),
-    setItem: jest.fn(),
+    multiGet: jest.fn((keys, callback) => process.nextTick(() => callback(null, []))),
+    multiSet: jest.fn((entries, callback) => process.nextTick(() => callback(null))),
+    multiRemove: jest.fn((keys, callback) => process.nextTick(() => callback(null))),
+    multiMerge: jest.fn((entries, callback) => process.nextTick(() => callback(null))),
+    clear: jest.fn(callback => process.nextTick(() => callback(null))),
+    getAllKeys: jest.fn(callback => process.nextTick(() => callback(null, []))),
   },
   BuildInfo: {
     appVersion: '0',
@@ -86,6 +88,16 @@ const mockNativeModules = {
   },
   DataManager: {
     queryData: jest.fn(),
+  },
+  DeviceInfo: {
+    Dimensions: {
+      window: {
+        fontScale: 2,
+        height: 1334,
+        scale: 2,
+        width: 750,
+      },
+    },
   },
   FacebookSDK: {
     login: jest.fn(),
@@ -119,6 +131,17 @@ const mockNativeModules = {
     addListener: jest.fn(),
     removeListeners: jest.fn(),
   },
+  Linking: {
+    openURL: jest.fn(),
+    canOpenURL: jest.fn(
+      () => new Promise((resolve) => resolve(true))
+    ),
+  },
+  LocationObserver: {
+    getCurrentPosition: jest.fn(),
+    startObserving: jest.fn(),
+    stopObserving: jest.fn(),
+  },
   ModalFullscreenViewManager: {},
   Networking: {
     sendRequest: jest.fn(),
@@ -142,7 +165,10 @@ const mockNativeModules = {
     deleteTimer: jest.fn(),
   },
   UIManager: {
+    blur: jest.fn(),
     createView: jest.fn(),
+    dispatchViewManagerCommand: jest.fn(),
+    focus: jest.fn(),
     setChildren: jest.fn(),
     manageChildren: jest.fn(),
     updateView: jest.fn(),
@@ -150,13 +176,8 @@ const mockNativeModules = {
     replaceExistingNonRootView: jest.fn(),
     customBubblingEventTypes: {},
     customDirectEventTypes: {},
-    Dimensions: {
-      window: {
-        fontScale: 2,
-        height: 1334,
-        scale: 2,
-        width: 750,
-      },
+    AndroidTextInput: {
+      Commands: {},
     },
     ModalFullscreenView: {
       Constants: {},

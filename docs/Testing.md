@@ -107,6 +107,15 @@ A common type of integration test is the snapshot test.  These tests render a co
 
 If you make a change that affects a snapshot test in a PR, such as adding a new example case to one of the examples that is snapshotted, you'll need to re-record the snapshot reference image.  To do this, simply change to `_runner.recordMode = YES;` in [UIExplorer/UIExplorerSnapshotTests.m](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/UIExplorerIntegrationTests/UIExplorerSnapshotTests.m#L42), re-run the failing tests, then flip record back to `NO` and submit/update your PR and wait to see if the Travis build passes.
 
+## Apple TV
+
+The same tests discussed above for iOS will also run on tvOS.  In the UIExplorer Xcode project, select the UIExplorer-tvOS target, and you can follow the same steps above to run the tests in Xcode.
+
+You can run Apple TV unit and integration tests locally by running the following in the command line on macOS:
+
+    $ cd react-native
+    $ ./scripts/objc-test-tvos.sh (make sure the line `TEST="test"` is uncommented)
+
 ## End-to-end tests
 
 Finally, make sure end-to-end tests run successfully by executing the following script:

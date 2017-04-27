@@ -15,23 +15,12 @@
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
 
+#import <RCTTest/RCTTestRunner.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTJavaScriptExecutor.h>
 #import <React/RCTUtils.h>
-
-#define RUN_RUNLOOP_WHILE(CONDITION) \
-{ \
-  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5]; \
-  while ((CONDITION)) { \
-    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; \
-    if ([timeout timeIntervalSinceNow] <= 0) { \
-      XCTFail(@"Runloop timed out before condition was met"); \
-      break; \
-    } \
-  } \
-}
 
 static const NSUInteger kNameIndex = 0;
 static const NSUInteger kConstantsIndex = 1;
@@ -183,14 +172,14 @@ RCT_EXPORT_MODULE(TestModule)
   _testMethodCalled = NO;
 
   [_bridge invalidate];
-  RUN_RUNLOOP_WHILE(_jsExecutor.isValid);
+  RCT_RUN_RUNLOOP_WHILE(_jsExecutor.isValid);
   _bridge = nil;
 }
 
 - (void)testHookRegistration
 {
   NSString *injectedStuff;
-  RUN_RUNLOOP_WHILE(!(injectedStuff = _jsExecutor.injectedStuff[@"__fbBatchedBridgeConfig"]));
+  RCT_RUN_RUNLOOP_WHILE(!(injectedStuff = _jsExecutor.injectedStuff[@"__fbBatchedBridgeConfig"]));
   XCTAssertNotNil(injectedStuff);
 
   __block NSNumber *testModuleID = nil;
@@ -217,7 +206,7 @@ RCT_EXPORT_MODULE(TestModule)
 - (void)testCallNativeMethod
 {
   NSString *injectedStuff;
-  RUN_RUNLOOP_WHILE(!(injectedStuff = _jsExecutor.injectedStuff[@"__fbBatchedBridgeConfig"]));
+  RCT_RUN_RUNLOOP_WHILE(!(injectedStuff = _jsExecutor.injectedStuff[@"__fbBatchedBridgeConfig"]));
   XCTAssertNotNil(injectedStuff);
 
   __block NSNumber *testModuleID = nil;
@@ -249,7 +238,7 @@ RCT_EXPORT_MODULE(TestModule)
 - (void)testCallUnregisteredModuleMethod
 {
   NSString *injectedStuff;
-  RUN_RUNLOOP_WHILE(!(injectedStuff = _jsExecutor.injectedStuff[@"__fbBatchedBridgeConfig"]));
+  RCT_RUN_RUNLOOP_WHILE(!(injectedStuff = _jsExecutor.injectedStuff[@"__fbBatchedBridgeConfig"]));
   XCTAssertNotNil(injectedStuff);
 
   __block NSNumber *testModuleID = nil;

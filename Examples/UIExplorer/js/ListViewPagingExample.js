@@ -195,6 +195,7 @@ class ListViewPagingExample extends React.Component {
         initialListSize={10}
         pageSize={4}
         scrollRenderAheadDistance={500}
+        stickySectionHeadersEnabled
       />
     );
   }

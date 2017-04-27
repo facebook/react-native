@@ -78,6 +78,7 @@ public class Inspector {
           '}';
     }
 
+    @DoNotStrip
     private Page(int id, String title) {
       mId = id;
       mTitle = title;

@@ -44,7 +44,7 @@ push() {
   local SPEC_DIR="$SPEC_REPO_DIR/$POD_NAME/$(version $SPEC_NAME)"
   local SPEC_PATH="$SPEC_DIR/$SPEC_NAME.json"
   mkdir -p $SPEC_DIR
-  env INSTALL_YOGA_WITHOUT_PATH_OPTION=1 pod ipc spec $SPEC_NAME > $SPEC_PATH
+  env INSTALL_YOGA_WITHOUT_PATH_OPTION=1 INSTALL_YOGA_FROM_LOCATION="$ROOT" pod ipc spec $SPEC_NAME > $SPEC_PATH
 }
 
 # Perform linting and publishing of podspec in cwd.
