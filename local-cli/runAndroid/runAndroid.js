@@ -22,6 +22,11 @@ function checkAndroid(root) {
   return fs.existsSync(path.join(root, 'android/gradlew'));
 }
 
+// Verifies this is an Android project
+function checkAndroid(root) {
+  return fs.existsSync(path.join(root, 'android/gradlew'));
+}
+
 /**
  * Starts the app on a connected Android emulator or device.
  */
