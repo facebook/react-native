@@ -18,6 +18,7 @@ const ImageStylePropTypes = require('ImageStylePropTypes');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
 const React = require('React');
+const PropTypes = require('prop-types');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
@@ -25,8 +26,6 @@ const StyleSheetPropType = require('StyleSheetPropType');
 const flattenStyle = require('flattenStyle');
 const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
-
-const PropTypes = React.PropTypes;
 
 const ImageViewManager = NativeModules.ImageViewManager;
 
@@ -104,17 +103,17 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * ```
  * dependencies {
  *   // If your app supports Android versions before Ice Cream Sandwich (API level 14)
- *   compile 'com.facebook.fresco:animated-base-support:0.11.0'
+ *   compile 'com.facebook.fresco:animated-base-support:1.0.1'
  *
  *   // For animated GIF support
- *   compile 'com.facebook.fresco:animated-gif:0.11.0'
+ *   compile 'com.facebook.fresco:animated-gif:1.0.1'
  *
  *   // For WebP support, including animated WebP
- *   compile 'com.facebook.fresco:animated-webp:0.11.0'
- *   compile 'com.facebook.fresco:webpsupport:0.11.0'
+ *   compile 'com.facebook.fresco:animated-webp:1.0.1'
+ *   compile 'com.facebook.fresco:webpsupport:1.0.1'
  *
  *   // For WebP support, without animations
- *   compile 'com.facebook.fresco:webpsupport:0.11.0'
+ *   compile 'com.facebook.fresco:webpsupport:1.0.1'
  * }
  * ```
  *
@@ -304,7 +303,7 @@ const Image = React.createClass({
     getSize: function(
       uri: string,
       success: (width: number, height: number) => void,
-      failure: (error: any) => void,
+      failure?: (error: any) => void,
     ) {
       ImageViewManager.getSize(uri, success, failure || function() {
         console.warn('Failed to get size for image: ' + uri);

@@ -16,16 +16,15 @@ const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
+const PropTypes = require('prop-types');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 const Touchable = require('Touchable');
 
-const processColor = require('processColor');
 const createReactNativeComponentClass = require('createReactNativeComponentClass');
 const mergeFast = require('mergeFast');
-
-const { PropTypes } = React;
+const processColor = require('processColor');
 
 const stylePropType = StyleSheetPropType(TextStylePropTypes);
 
@@ -35,6 +34,7 @@ const viewConfig = {
     numberOfLines: true,
     ellipsizeMode: true,
     allowFontScaling: true,
+    disabled: true,
     selectable: true,
     selectionColor: true,
     adjustsFontSizeToFit: true,
@@ -178,6 +178,11 @@ const Text = React.createClass({
      */
     testID: PropTypes.string,
     /**
+     * Used to locate this view from native code.
+     * @platform android
+     */
+    nativeID: PropTypes.string,
+    /**
      * Specifies whether fonts should scale to respect Text Size accessibility settings. The
      * default is `true`.
      */
@@ -202,12 +207,18 @@ const Text = React.createClass({
      * @platform ios
      */
     minimumFontScale: PropTypes.number,
+    /**
+     * Specifies the disabled state of the text view for testing purposes
+     * @platform android
+     */
+    disabled: PropTypes.bool,
   },
   getDefaultProps(): Object {
     return {
       accessible: true,
       allowFontScaling: true,
       ellipsizeMode: 'tail',
+      disabled: false,
     };
   },
   getInitialState: function(): Object {

@@ -2,27 +2,18 @@
 
 #include "CxxModuleWrapper.h"
 
-#include <fb/fbjni.h>
-#include <fb/Environment.h>
-
 #include <folly/ScopeGuard.h>
-
-#include <cxxreact/CxxModule.h>
 
 #include <dlfcn.h>
 
 using namespace facebook::jni;
 using namespace facebook::xplat::module;
-using namespace facebook::react;
 
-void CxxModuleWrapper::registerNatives() {
-  registerHybrid({
-    makeNativeMethod("initHybrid", CxxModuleWrapper::initHybrid),
-    makeNativeMethod("getName", CxxModuleWrapper::getName)
-  });
-}
+namespace facebook {
+namespace react {
 
-CxxModuleWrapper::CxxModuleWrapper(const std::string& soPath, const std::string& fname) {
+jni::local_ref<CxxModuleWrapper::javaobject> CxxModuleWrapper::makeDsoNative(
+    jni::alias_ref<jclass>, const std::string& soPath, const std::string& fname) {
   // soPath is the path of a library which has already been loaded by
   // java SoLoader.loadLibrary().  So this returns the same handle,
   // and increments the reference counter.  We can't just use
@@ -46,9 +37,9 @@ CxxModuleWrapper::CxxModuleWrapper(const std::string& soPath, const std::string&
                           fname.c_str(), soPath.c_str());
   }
   auto factory = reinterpret_cast<CxxModule* (*)()>(sym);
-  module_.reset((*factory)());
+
+  return CxxModuleWrapper::newObjectCxxArgs(std::unique_ptr<CxxModule>((*factory)()));
 }
 
-std::string CxxModuleWrapper::getName() {
-  return module_->getName();
+}
 }

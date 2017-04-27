@@ -16,10 +16,9 @@ const Module = require('./Module');
 const Package = require('./Package');
 const Polyfill = require('./Polyfill');
 
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
-import type Cache from './Cache';
 import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
 import type {TransformCode, Options as ModuleOptions} from './Module';
 
@@ -28,7 +27,6 @@ type GetClosestPackageFn = (filePath: string) => ?string;
 class ModuleCache {
 
   _assetDependencies: Array<string>;
-  _cache: Cache;
   _depGraphHelpers: DependencyGraphHelpers;
   _getClosestPackage: GetClosestPackageFn;
   _getTransformCacheKey: GetTransformCacheKey;
@@ -43,7 +41,6 @@ class ModuleCache {
 
   constructor({
     assetDependencies,
-    cache,
     depGraphHelpers,
     extractRequires,
     getClosestPackage,
@@ -54,7 +51,6 @@ class ModuleCache {
     transformCode,
   }: {
     assetDependencies: Array<string>,
-    cache: Cache,
     depGraphHelpers: DependencyGraphHelpers,
     getClosestPackage: GetClosestPackageFn,
     getTransformCacheKey: GetTransformCacheKey,
@@ -67,7 +63,6 @@ class ModuleCache {
     this._getClosestPackage = getClosestPackage;
     this._getTransformCacheKey = getTransformCacheKey;
     this._globalTransformCache = globalTransformCache;
-    this._cache = cache;
     this._depGraphHelpers = depGraphHelpers;
     this._moduleCache = Object.create(null);
     this._moduleOptions = moduleOptions;
@@ -81,7 +76,6 @@ class ModuleCache {
   getModule(filePath: string): Module {
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new Module({
-        cache: this._cache,
         depGraphHelpers: this._depGraphHelpers,
         file: filePath,
         getTransformCacheKey: this._getTransformCacheKey,
@@ -107,18 +101,16 @@ class ModuleCache {
       this._moduleCache[filePath] = new AssetModule({
         file: filePath,
         moduleCache: this,
-        cache: this._cache,
         dependencies: this._assetDependencies,
       }, this._platforms);
     }
     return this._moduleCache[filePath];
   }
 
-  getPackage(filePath: string) {
+  getPackage(filePath: string): Package {
     if (!this._packageCache[filePath]) {
       this._packageCache[filePath] = new Package({
         file: filePath,
-        cache: this._cache,
       });
     }
     return this._packageCache[filePath];
@@ -148,7 +140,6 @@ class ModuleCache {
     /* $FlowFixMe: there are missing arguments. */
     return new Polyfill({
       file,
-      cache: this._cache,
       depGraphHelpers: this._depGraphHelpers,
       getTransformCacheKey: this._getTransformCacheKey,
       moduleCache: this,

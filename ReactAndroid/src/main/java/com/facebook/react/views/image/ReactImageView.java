@@ -449,6 +449,10 @@ public class ReactImageView extends GenericDraweeView {
 
     setController(mDraweeControllerBuilder.build());
     mIsDirty = false;
+
+    // Reset again so the DraweeControllerBuilder clears all it's references. Otherwise, this causes
+    // a memory leak.
+    mDraweeControllerBuilder.reset();
   }
 
   // VisibleForTesting

@@ -13,10 +13,10 @@
 
 // Note that the module JSTimers is split into two in order to solve a cycle
 // in dependencies. NativeModules > BatchedBridge > MessageQueue > JSTimersExecution
-const RCTTiming = require('NativeModules').Timing;
 const JSTimersExecution = require('JSTimersExecution');
+const Platform = require('Platform');
 
-const parseErrorStack = require('parseErrorStack');
+const {Timing} = require('NativeModules');
 
 import type {JSTimerType} from 'JSTimersExecution';
 
@@ -36,6 +36,7 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
   JSTimersExecution.callbacks[freeIndex] = func;
   JSTimersExecution.types[freeIndex] = type;
   if (__DEV__) {
+    const parseErrorStack = require('parseErrorStack');
     const e = (new Error() : any);
     e.framesToPop = 1;
     const stack = parseErrorStack(e);
@@ -59,10 +60,18 @@ function _freeCallback(timerID: number) {
     JSTimersExecution._clearIndex(index);
     const type = JSTimersExecution.types[index];
     if (type !== 'setImmediate' && type !== 'requestIdleCallback') {
-      RCTTiming.deleteTimer(timerID);
+      Timing.deleteTimer(timerID);
     }
   }
 }
+
+const MAX_TIMER_DURATION_MS = 60 * 1000;
+const IS_ANDROID = Platform.OS === 'android';
+const ANDROID_LONG_TIMER_MESSAGE =
+  'Setting a timer for a long period of time, i.e. multiple minutes, is a ' +
+  'performance and correctness issue on Android as it keeps the timer ' +
+  'module awake, and timers can only be called when the app is in the foreground. ' +
+  'See https://github.com/facebook/react-native/issues/12981 for more info.';
 
 /**
  * JS implementation of timer functions. Must be completely driven by an
@@ -75,8 +84,13 @@ const JSTimers = {
    * @param {number} duration Number of milliseconds.
    */
   setTimeout: function(func: Function, duration: number, ...args?: any): number {
+    if (__DEV__ && IS_ANDROID && duration > MAX_TIMER_DURATION_MS) {
+      console.warn(
+          ANDROID_LONG_TIMER_MESSAGE + '\n' + '(Saw setTimeout with duration ' +
+          duration + 'ms)');
+    }
     const id = _allocateCallback(() => func.apply(undefined, args), 'setTimeout');
-    RCTTiming.createTimer(id, duration || 0, Date.now(), /* recurring */ false);
+    Timing.createTimer(id, duration || 0, Date.now(), /* recurring */ false);
     return id;
   },
 
@@ -85,8 +99,13 @@ const JSTimers = {
    * @param {number} duration Number of milliseconds.
    */
   setInterval: function(func: Function, duration: number, ...args?: any): number {
+    if (__DEV__ && IS_ANDROID && duration > MAX_TIMER_DURATION_MS) {
+      console.warn(
+          ANDROID_LONG_TIMER_MESSAGE + '\n' + '(Saw setInterval with duration ' +
+          duration + 'ms)');
+    }
     const id = _allocateCallback(() => func.apply(undefined, args), 'setInterval');
-    RCTTiming.createTimer(id, duration || 0, Date.now(), /* recurring */ true);
+    Timing.createTimer(id, duration || 0, Date.now(), /* recurring */ true);
     return id;
   },
 
@@ -105,7 +124,7 @@ const JSTimers = {
    */
   requestAnimationFrame: function(func : Function) {
     const id = _allocateCallback(func, 'requestAnimationFrame');
-    RCTTiming.createTimer(id, 1, Date.now(), /* recurring */ false);
+    Timing.createTimer(id, 1, Date.now(), /* recurring */ false);
     return id;
   },
 
@@ -115,7 +134,7 @@ const JSTimers = {
    */
   requestIdleCallback: function(func : Function) {
     if (JSTimersExecution.requestIdleCallbacks.length === 0) {
-      RCTTiming.setSendIdleEvents(true);
+      Timing.setSendIdleEvents(true);
     }
 
     const id = _allocateCallback(func, 'requestIdleCallback');
@@ -131,7 +150,7 @@ const JSTimers = {
     }
 
     if (JSTimersExecution.requestIdleCallbacks.length === 0) {
-      RCTTiming.setSendIdleEvents(false);
+      Timing.setSendIdleEvents(false);
     }
   },
 

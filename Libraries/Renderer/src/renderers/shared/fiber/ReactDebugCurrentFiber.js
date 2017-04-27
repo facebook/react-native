@@ -12,14 +12,18 @@
 
 'use strict';
 
-import type { Fiber } from 'ReactFiber';
+import type {Fiber} from 'ReactFiber';
+
+type LifeCyclePhase = 'render' | 'getChildContext';
 
 if (__DEV__) {
   var getComponentName = require('getComponentName');
-  var { getStackAddendumByWorkInProgressFiber } = require('react/lib/ReactComponentTreeHook');
+  var {
+    getStackAddendumByWorkInProgressFiber,
+  } = require('ReactFiberComponentTreeHook');
 }
 
-function getCurrentFiberOwnerName() : string | null {
+function getCurrentFiberOwnerName(): string | null {
   if (__DEV__) {
     const fiber = ReactDebugCurrentFiber.current;
     if (fiber === null) {
@@ -32,7 +36,7 @@ function getCurrentFiberOwnerName() : string | null {
   return null;
 }
 
-function getCurrentFiberStackAddendum() : string | null {
+function getCurrentFiberStackAddendum(): string | null {
   if (__DEV__) {
     const fiber = ReactDebugCurrentFiber.current;
     if (fiber === null) {
@@ -46,7 +50,9 @@ function getCurrentFiberStackAddendum() : string | null {
 }
 
 var ReactDebugCurrentFiber = {
-  current: (null : Fiber | null),
+  current: (null: Fiber | null),
+  phase: (null: LifeCyclePhase | null),
+
   getCurrentFiberOwnerName,
   getCurrentFiberStackAddendum,
 };

@@ -5,7 +5,6 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := libreactnativefb
 
 LOCAL_SRC_FILES := \
-  CxxMessageQueue.cpp \
   CxxNativeModule.cpp \
   Instance.cpp \
   JSCExecutor.cpp \
@@ -17,7 +16,6 @@ LOCAL_SRC_FILES := \
   JSCNativeModules.cpp \
   JSCPerfStats.cpp \
   JSCTracing.cpp \
-  JSCWebWorker.cpp \
   JSIndexedRAMBundle.cpp \
   MethodCall.cpp \
   ModuleRegistry.cpp \

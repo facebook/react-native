@@ -308,6 +308,7 @@ static inline float YGResolveValueMargin(const YGValue *const value, const float
 }
 
 int32_t gNodeInstanceCount = 0;
+int32_t gConfigInstanceCount = 0;
 
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
   const YGNodeRef node = gYGMalloc(sizeof(YGNode));
@@ -362,6 +363,10 @@ void YGNodeReset(const YGNodeRef node) {
 
   const YGConfigRef config = node->config;
   memcpy(node, &gYGNodeDefaults, sizeof(YGNode));
+  if (config->useWebDefaults) {
+    node->style.flexDirection = YGFlexDirectionRow;
+    node->style.alignContent = YGAlignStretch;
+  }
   node->config = config;
 }
 
@@ -369,15 +374,25 @@ int32_t YGNodeGetInstanceCount(void) {
   return gNodeInstanceCount;
 }
 
+int32_t YGConfigGetInstanceCount(void) {
+  return gConfigInstanceCount;
+}
+
 YGConfigRef YGConfigNew(void) {
   const YGConfigRef config = gYGMalloc(sizeof(YGConfig));
   YG_ASSERT(config, "Could not allocate memory for config");
+  gConfigInstanceCount++;
   memcpy(config, &gYGConfigDefaults, sizeof(YGConfig));
   return config;
 }
 
 void YGConfigFree(const YGConfigRef config) {
   gYGFree(config);
+  gConfigInstanceCount--;
+}
+
+void YGConfigCopy(const YGConfigRef dest, const YGConfigRef src) {
+  memcpy(dest, src, sizeof(YGConfig));
 }
 
 static void YGNodeMarkDirtyInternal(const YGNodeRef node) {
@@ -423,6 +438,7 @@ void YGNodeInsertChild(const YGNodeRef node, const YGNodeRef child, const uint32
 
 void YGNodeRemoveChild(const YGNodeRef node, const YGNodeRef child) {
   if (YGNodeListDelete(node->children, child) != NULL) {
+    child->layout = gYGNodeDefaults.layout; // layout is no longer valid
     child->parent = NULL;
     YGNodeMarkDirtyInternal(node);
   }
@@ -763,29 +779,36 @@ static void YGIndent(const uint32_t n) {
   }
 }
 
-static void YGPrintNumberIfNotZero(const char *str, const YGValue *const number) {
-  if (!YGFloatsEqual(number->value, 0)) {
-    YGLog(YGLogLevelDebug,
-          "%s: %g%s, ",
-          str,
-          number->value,
-          number->unit == YGUnitPoint ? "pt" : "%");
-  }
-}
-
 static void YGPrintNumberIfNotUndefinedf(const char *str, const float number) {
   if (!YGFloatIsUndefined(number)) {
-    YGLog(YGLogLevelDebug, "%s: %g, ", str, number);
+    YGLog(YGLogLevelDebug, "%s: %g; ", str, number);
   }
 }
 
 static void YGPrintNumberIfNotUndefined(const char *str, const YGValue *const number) {
   if (number->unit != YGUnitUndefined) {
-    YGLog(YGLogLevelDebug,
-          "%s: %g%s, ",
-          str,
-          number->value,
-          number->unit == YGUnitPoint ? "pt" : "%");
+    if (number->unit == YGUnitAuto) {
+      YGLog(YGLogLevelDebug, "%s: auto; ", str);
+    } else {
+      const char *unit = number->unit == YGUnitPoint ? "px" : "%";
+      YGLog(YGLogLevelDebug, "%s: %g%s; ", str, number->value, unit);
+    }
+  }
+}
+
+static void YGPrintNumberIfNotAuto(const char *str, const YGValue *const number) {
+  if (number->unit != YGUnitAuto) {
+    YGPrintNumberIfNotUndefined(str, number);
+  }
+}
+
+static void YGPrintEdgeIfNotUndefined(const char *str, const YGValue *edges, const YGEdge edge) {
+  YGPrintNumberIfNotUndefined(str, YGComputedEdgeValue(edges, YGEdgeLeft, &YGValueUndefined));
+}
+
+static void YGPrintNumberIfNotZero(const char *str, const YGValue *const number) {
+  if (!YGFloatsEqual(number->value, 0)) {
+    YGPrintNumberIfNotUndefined(str, number);
   }
 }
 
@@ -794,170 +817,113 @@ static bool YGFourValuesEqual(const YGValue four[4]) {
          YGValueEqual(four[0], four[3]);
 }
 
+static void YGPrintEdges(const char *str, const YGValue *edges) {
+  if (YGFourValuesEqual(edges)) {
+    YGPrintNumberIfNotZero(str, &edges[YGEdgeLeft]);
+  } else {
+    for (YGEdge edge = YGEdgeLeft; edge < YGEdgeCount; edge++) {
+      char buf[30];
+      snprintf(buf, sizeof(buf), "%s-%s", str, YGEdgeToString(edge));
+      YGPrintNumberIfNotZero(buf, &edges[edge]);
+    }
+  }
+}
+
 static void YGNodePrintInternal(const YGNodeRef node,
                                 const YGPrintOptions options,
                                 const uint32_t level) {
   YGIndent(level);
-  YGLog(YGLogLevelDebug, "{");
+  YGLog(YGLogLevelDebug, "<div ");
 
   if (node->print) {
     node->print(node);
   }
 
   if (options & YGPrintOptionsLayout) {
-    YGLog(YGLogLevelDebug, "layout: {");
-    YGLog(YGLogLevelDebug, "width: %g, ", node->layout.dimensions[YGDimensionWidth]);
-    YGLog(YGLogLevelDebug, "height: %g, ", node->layout.dimensions[YGDimensionHeight]);
-    YGLog(YGLogLevelDebug, "top: %g, ", node->layout.position[YGEdgeTop]);
-    YGLog(YGLogLevelDebug, "left: %g", node->layout.position[YGEdgeLeft]);
-    YGLog(YGLogLevelDebug, "}, ");
+    YGLog(YGLogLevelDebug, "layout=\"");
+    YGLog(YGLogLevelDebug, "width: %g; ", node->layout.dimensions[YGDimensionWidth]);
+    YGLog(YGLogLevelDebug, "height: %g; ", node->layout.dimensions[YGDimensionHeight]);
+    YGLog(YGLogLevelDebug, "top: %g; ", node->layout.position[YGEdgeTop]);
+    YGLog(YGLogLevelDebug, "left: %g;", node->layout.position[YGEdgeLeft]);
+    YGLog(YGLogLevelDebug, "\" ");
   }
 
   if (options & YGPrintOptionsStyle) {
-    if (node->style.flexDirection == YGFlexDirectionColumn) {
-      YGLog(YGLogLevelDebug, "flexDirection: 'column', ");
-    } else if (node->style.flexDirection == YGFlexDirectionColumnReverse) {
-      YGLog(YGLogLevelDebug, "flexDirection: 'column-reverse', ");
-    } else if (node->style.flexDirection == YGFlexDirectionRow) {
-      YGLog(YGLogLevelDebug, "flexDirection: 'row', ");
-    } else if (node->style.flexDirection == YGFlexDirectionRowReverse) {
-      YGLog(YGLogLevelDebug, "flexDirection: 'row-reverse', ");
+    YGLog(YGLogLevelDebug, "style=\"");
+    if (node->style.flexDirection != gYGNodeDefaults.style.flexDirection) {
+      YGLog(YGLogLevelDebug,
+            "flex-direction: %s; ",
+            YGFlexDirectionToString(node->style.flexDirection));
+    }
+    if (node->style.justifyContent != gYGNodeDefaults.style.justifyContent) {
+      YGLog(YGLogLevelDebug,
+            "justify-content: %s; ",
+            YGJustifyToString(node->style.justifyContent));
+    }
+    if (node->style.alignItems != gYGNodeDefaults.style.alignItems) {
+      YGLog(YGLogLevelDebug, "align-items: %s; ", YGAlignToString(node->style.alignItems));
+    }
+    if (node->style.alignContent != gYGNodeDefaults.style.alignContent) {
+      YGLog(YGLogLevelDebug, "align-content: %s; ", YGAlignToString(node->style.alignContent));
+    }
+    if (node->style.alignSelf != gYGNodeDefaults.style.alignSelf) {
+      YGLog(YGLogLevelDebug, "align-self: %s; ", YGAlignToString(node->style.alignSelf));
     }
 
-    if (node->style.justifyContent == YGJustifyCenter) {
-      YGLog(YGLogLevelDebug, "justifyContent: 'center', ");
-    } else if (node->style.justifyContent == YGJustifyFlexEnd) {
-      YGLog(YGLogLevelDebug, "justifyContent: 'flex-end', ");
-    } else if (node->style.justifyContent == YGJustifySpaceAround) {
-      YGLog(YGLogLevelDebug, "justifyContent: 'space-around', ");
-    } else if (node->style.justifyContent == YGJustifySpaceBetween) {
-      YGLog(YGLogLevelDebug, "justifyContent: 'space-between', ");
+    YGPrintNumberIfNotUndefinedf("flex-grow", node->style.flexGrow);
+    YGPrintNumberIfNotUndefinedf("flex-shrink", node->style.flexShrink);
+    YGPrintNumberIfNotAuto("flex-basis", &node->style.flexBasis);
+    YGPrintNumberIfNotUndefinedf("flex", node->style.flex);
+
+    if (node->style.flexWrap != gYGNodeDefaults.style.flexWrap) {
+      YGLog(YGLogLevelDebug, "flexWrap: %s; ", YGWrapToString(node->style.flexWrap));
     }
 
-    if (node->style.alignItems == YGAlignCenter) {
-      YGLog(YGLogLevelDebug, "alignItems: 'center', ");
-    } else if (node->style.alignItems == YGAlignFlexEnd) {
-      YGLog(YGLogLevelDebug, "alignItems: 'flex-end', ");
-    } else if (node->style.alignItems == YGAlignStretch) {
-      YGLog(YGLogLevelDebug, "alignItems: 'stretch', ");
+    if (node->style.overflow != gYGNodeDefaults.style.overflow) {
+      YGLog(YGLogLevelDebug, "overflow: %s; ", YGOverflowToString(node->style.overflow));
     }
 
-    if (node->style.alignContent == YGAlignCenter) {
-      YGLog(YGLogLevelDebug, "alignContent: 'center', ");
-    } else if (node->style.alignContent == YGAlignFlexEnd) {
-      YGLog(YGLogLevelDebug, "alignContent: 'flex-end', ");
-    } else if (node->style.alignContent == YGAlignStretch) {
-      YGLog(YGLogLevelDebug, "alignContent: 'stretch', ");
+    if (node->style.display != gYGNodeDefaults.style.display) {
+      YGLog(YGLogLevelDebug, "display: %s; ", YGDisplayToString(node->style.display));
     }
 
-    if (node->style.alignSelf == YGAlignFlexStart) {
-      YGLog(YGLogLevelDebug, "alignSelf: 'flex-start', ");
-    } else if (node->style.alignSelf == YGAlignCenter) {
-      YGLog(YGLogLevelDebug, "alignSelf: 'center', ");
-    } else if (node->style.alignSelf == YGAlignFlexEnd) {
-      YGLog(YGLogLevelDebug, "alignSelf: 'flex-end', ");
-    } else if (node->style.alignSelf == YGAlignStretch) {
-      YGLog(YGLogLevelDebug, "alignSelf: 'stretch', ");
+    YGPrintEdges("margin", node->style.margin);
+    YGPrintEdges("padding", node->style.padding);
+    YGPrintEdges("border", node->style.border);
+
+    YGPrintNumberIfNotAuto("width", &node->style.dimensions[YGDimensionWidth]);
+    YGPrintNumberIfNotAuto("height", &node->style.dimensions[YGDimensionHeight]);
+    YGPrintNumberIfNotAuto("max-width", &node->style.maxDimensions[YGDimensionWidth]);
+    YGPrintNumberIfNotAuto("max-height", &node->style.maxDimensions[YGDimensionHeight]);
+    YGPrintNumberIfNotAuto("min-width", &node->style.minDimensions[YGDimensionWidth]);
+    YGPrintNumberIfNotAuto("min-height", &node->style.minDimensions[YGDimensionHeight]);
+
+    if (node->style.positionType != gYGNodeDefaults.style.positionType) {
+      YGLog(YGLogLevelDebug, "position: %s; ", YGPositionTypeToString(node->style.positionType));
     }
 
-    YGPrintNumberIfNotUndefinedf("flexGrow", YGResolveFlexGrow(node));
-    YGPrintNumberIfNotUndefinedf("flexShrink", YGNodeResolveFlexShrink(node));
-    YGPrintNumberIfNotUndefined("flexBasis", YGNodeResolveFlexBasisPtr(node));
+    YGPrintEdgeIfNotUndefined("left", node->style.position, YGEdgeLeft);
+    YGPrintEdgeIfNotUndefined("right", node->style.position, YGEdgeRight);
+    YGPrintEdgeIfNotUndefined("top", node->style.position, YGEdgeTop);
+    YGPrintEdgeIfNotUndefined("bottom", node->style.position, YGEdgeBottom);
+    YGLog(YGLogLevelDebug, "\" ");
 
-    if (node->style.overflow == YGOverflowHidden) {
-      YGLog(YGLogLevelDebug, "overflow: 'hidden', ");
-    } else if (node->style.overflow == YGOverflowVisible) {
-      YGLog(YGLogLevelDebug, "overflow: 'visible', ");
-    } else if (node->style.overflow == YGOverflowScroll) {
-      YGLog(YGLogLevelDebug, "overflow: 'scroll', ");
+    if (node->measure != NULL) {
+      YGLog(YGLogLevelDebug, "has-custom-measure=\"true\"");
     }
-
-    if (YGFourValuesEqual(node->style.margin)) {
-      YGPrintNumberIfNotZero("margin",
-                             YGComputedEdgeValue(node->style.margin, YGEdgeLeft, &YGValueZero));
-    } else {
-      YGPrintNumberIfNotZero("marginLeft",
-                             YGComputedEdgeValue(node->style.margin, YGEdgeLeft, &YGValueZero));
-      YGPrintNumberIfNotZero("marginRight",
-                             YGComputedEdgeValue(node->style.margin, YGEdgeRight, &YGValueZero));
-      YGPrintNumberIfNotZero("marginTop",
-                             YGComputedEdgeValue(node->style.margin, YGEdgeTop, &YGValueZero));
-      YGPrintNumberIfNotZero("marginBottom",
-                             YGComputedEdgeValue(node->style.margin, YGEdgeBottom, &YGValueZero));
-      YGPrintNumberIfNotZero("marginStart",
-                             YGComputedEdgeValue(node->style.margin, YGEdgeStart, &YGValueZero));
-      YGPrintNumberIfNotZero("marginEnd",
-                             YGComputedEdgeValue(node->style.margin, YGEdgeEnd, &YGValueZero));
-    }
-
-    if (YGFourValuesEqual(node->style.padding)) {
-      YGPrintNumberIfNotZero("padding",
-                             YGComputedEdgeValue(node->style.padding, YGEdgeLeft, &YGValueZero));
-    } else {
-      YGPrintNumberIfNotZero("paddingLeft",
-                             YGComputedEdgeValue(node->style.padding, YGEdgeLeft, &YGValueZero));
-      YGPrintNumberIfNotZero("paddingRight",
-                             YGComputedEdgeValue(node->style.padding, YGEdgeRight, &YGValueZero));
-      YGPrintNumberIfNotZero("paddingTop",
-                             YGComputedEdgeValue(node->style.padding, YGEdgeTop, &YGValueZero));
-      YGPrintNumberIfNotZero("paddingBottom",
-                             YGComputedEdgeValue(node->style.padding, YGEdgeBottom, &YGValueZero));
-      YGPrintNumberIfNotZero("paddingStart",
-                             YGComputedEdgeValue(node->style.padding, YGEdgeStart, &YGValueZero));
-      YGPrintNumberIfNotZero("paddingEnd",
-                             YGComputedEdgeValue(node->style.padding, YGEdgeEnd, &YGValueZero));
-    }
-
-    if (YGFourValuesEqual(node->style.border)) {
-      YGPrintNumberIfNotZero("borderWidth",
-                             YGComputedEdgeValue(node->style.border, YGEdgeLeft, &YGValueZero));
-    } else {
-      YGPrintNumberIfNotZero("borderLeftWidth",
-                             YGComputedEdgeValue(node->style.border, YGEdgeLeft, &YGValueZero));
-      YGPrintNumberIfNotZero("borderRightWidth",
-                             YGComputedEdgeValue(node->style.border, YGEdgeRight, &YGValueZero));
-      YGPrintNumberIfNotZero("borderTopWidth",
-                             YGComputedEdgeValue(node->style.border, YGEdgeTop, &YGValueZero));
-      YGPrintNumberIfNotZero("borderBottomWidth",
-                             YGComputedEdgeValue(node->style.border, YGEdgeBottom, &YGValueZero));
-      YGPrintNumberIfNotZero("borderStartWidth",
-                             YGComputedEdgeValue(node->style.border, YGEdgeStart, &YGValueZero));
-      YGPrintNumberIfNotZero("borderEndWidth",
-                             YGComputedEdgeValue(node->style.border, YGEdgeEnd, &YGValueZero));
-    }
-
-    YGPrintNumberIfNotUndefined("width", &node->style.dimensions[YGDimensionWidth]);
-    YGPrintNumberIfNotUndefined("height", &node->style.dimensions[YGDimensionHeight]);
-    YGPrintNumberIfNotUndefined("maxWidth", &node->style.maxDimensions[YGDimensionWidth]);
-    YGPrintNumberIfNotUndefined("maxHeight", &node->style.maxDimensions[YGDimensionHeight]);
-    YGPrintNumberIfNotUndefined("minWidth", &node->style.minDimensions[YGDimensionWidth]);
-    YGPrintNumberIfNotUndefined("minHeight", &node->style.minDimensions[YGDimensionHeight]);
-
-    if (node->style.positionType == YGPositionTypeAbsolute) {
-      YGLog(YGLogLevelDebug, "position: 'absolute', ");
-    }
-
-    YGPrintNumberIfNotUndefined(
-        "left", YGComputedEdgeValue(node->style.position, YGEdgeLeft, &YGValueUndefined));
-    YGPrintNumberIfNotUndefined(
-        "right", YGComputedEdgeValue(node->style.position, YGEdgeRight, &YGValueUndefined));
-    YGPrintNumberIfNotUndefined(
-        "top", YGComputedEdgeValue(node->style.position, YGEdgeTop, &YGValueUndefined));
-    YGPrintNumberIfNotUndefined(
-        "bottom", YGComputedEdgeValue(node->style.position, YGEdgeBottom, &YGValueUndefined));
   }
+  YGLog(YGLogLevelDebug, ">");
 
   const uint32_t childCount = YGNodeListCount(node->children);
   if (options & YGPrintOptionsChildren && childCount > 0) {
-    YGLog(YGLogLevelDebug, "children: [\n");
     for (uint32_t i = 0; i < childCount; i++) {
+      YGLog(YGLogLevelDebug, "\n");
       YGNodePrintInternal(YGNodeGetChild(node, i), options, level + 1);
     }
     YGIndent(level);
-    YGLog(YGLogLevelDebug, "]},\n");
-  } else {
-    YGLog(YGLogLevelDebug, "},\n");
+    YGLog(YGLogLevelDebug, "\n");
   }
+  YGLog(YGLogLevelDebug, "</div>");
 }
 
 void YGNodePrint(const YGNodeRef node, const YGPrintOptions options) {
@@ -1362,8 +1328,12 @@ static void YGNodeSetPosition(const YGNodeRef node,
                               const float mainSize,
                               const float crossSize,
                               const float parentWidth) {
-  const YGFlexDirection mainAxis = YGResolveFlexDirection(node->style.flexDirection, direction);
-  const YGFlexDirection crossAxis = YGFlexDirectionCross(mainAxis, direction);
+  /* Root nodes should be always layouted as LTR, so we don't return negative values. */
+  const YGDirection directionRespectingRoot = node->parent != NULL ? direction : YGDirectionLTR;
+  const YGFlexDirection mainAxis =
+      YGResolveFlexDirection(node->style.flexDirection, directionRespectingRoot);
+  const YGFlexDirection crossAxis = YGFlexDirectionCross(mainAxis, directionRespectingRoot);
+
   const float relativePositionMain = YGNodeRelativePosition(node, mainAxis, mainSize);
   const float relativePositionCross = YGNodeRelativePosition(node, crossAxis, crossSize);
 
@@ -1810,6 +1780,7 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
   node->layout.cachedLayout.widthMeasureMode = YGMeasureModeExactly;
   node->layout.cachedLayout.computedWidth = 0;
   node->layout.cachedLayout.computedHeight = 0;
+  node->hasNewLayout = true;
   const uint32_t childCount = YGNodeGetChildCount(node);
   for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef child = YGNodeListGet(node->children, i);
@@ -2155,6 +2126,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     // either set the dimensions of the node if none already exist or to compute
     // the remaining space left for the flexible children.
     float sizeConsumedOnCurrentLine = 0;
+    float sizeConsumedOnCurrentLineIncludingMinConstraint = 0;
 
     float totalFlexGrowFactors = 0;
     float totalFlexShrinkScaledFactors = 0;
@@ -2172,21 +2144,30 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       child->lineIndex = lineCount;
 
       if (child->style.positionType != YGPositionTypeAbsolute) {
-        const float outerFlexBasis =
+        const float childMarginMainAxis = YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
+        const float flexBasisWithMaxConstraints =
+            fminf(YGResolveValue(&child->style.maxDimensions[dim[mainAxis]], mainAxisParentSize),
+                  fmaxf(YGResolveValue(&child->style.minDimensions[dim[mainAxis]],
+                                       mainAxisParentSize),
+                        child->layout.computedFlexBasis));
+        const float flexBasisWithMinAndMaxConstraints =
             fmaxf(YGResolveValue(&child->style.minDimensions[dim[mainAxis]], mainAxisParentSize),
-                  child->layout.computedFlexBasis) +
-            YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
+                  flexBasisWithMaxConstraints);
 
         // If this is a multi-line flow and this item pushes us over the
         // available size, we've
         // hit the end of the current line. Break out of the loop and lay out
         // the current line.
-        if (sizeConsumedOnCurrentLine + outerFlexBasis > availableInnerMainDim && isNodeFlexWrap &&
-            itemsOnLine > 0) {
+        if (sizeConsumedOnCurrentLineIncludingMinConstraint + flexBasisWithMinAndMaxConstraints +
+                    childMarginMainAxis >
+                availableInnerMainDim &&
+            isNodeFlexWrap && itemsOnLine > 0) {
           break;
         }
 
-        sizeConsumedOnCurrentLine += outerFlexBasis;
+        sizeConsumedOnCurrentLineIncludingMinConstraint +=
+            flexBasisWithMinAndMaxConstraints + childMarginMainAxis;
+        sizeConsumedOnCurrentLine += flexBasisWithMaxConstraints + childMarginMainAxis;
         itemsOnLine++;
 
         if (YGNodeIsFlex(child)) {
@@ -2232,9 +2213,11 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         availableInnerMainDim = minInnerMainDim;
       } else if (!YGFloatIsUndefined(maxInnerMainDim) && sizeConsumedOnCurrentLine > maxInnerMainDim) {
         availableInnerMainDim = maxInnerMainDim;
-      } else if (YGConfigIsExperimentalFeatureEnabled(node->config, YGExperimentalFeatureMinFlexFix)) {
+      } else if (YGConfigIsExperimentalFeatureEnabled(node->config, YGExperimentalFeatureMinFlexFix) &&
+                 (totalFlexGrowFactors == 0 || YGResolveFlexGrow(node) == 0)) {
         // TODO: this needs to be moved out of experimental feature, as this is legitimate fix
-        // If the measurement isn't exact, we want to use as little space as possible
+        // If we don't have any children to flex or we can't flex the node itself,
+        // space we've used is all space we need
         availableInnerMainDim = sizeConsumedOnCurrentLine;
       }
     }
@@ -3320,49 +3303,39 @@ void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInP
   }
 }
 
-static void YGRoundToPixelGrid(const YGNodeRef node, const float pointScaleFactor) {
+static float YGRoundValueToPixelGrid(const float value, const float pointScaleFactor) {
+  float fractial = fmodf(value, pointScaleFactor);
+  return value - fractial + (fractial >= pointScaleFactor / 2.0f ? pointScaleFactor : 0);
+}
+
+static void YGRoundToPixelGrid(const YGNodeRef node, const float pointScaleFactor, const float absoluteLeft, const float absoluteTop) {
   if (pointScaleFactor == 0.0f) {
     return;
   }
+
   const float nodeLeft = node->layout.position[YGEdgeLeft];
   const float nodeTop = node->layout.position[YGEdgeTop];
 
-  // To round correctly to the pixel grid, first we calculate left and top coordinates
-  float fractialLeft = fmodf(nodeLeft, pointScaleFactor);
-  float fractialTop = fmodf(nodeTop, pointScaleFactor);
-  float roundedLeft = nodeLeft - fractialLeft;
-  float roundedTop = nodeTop - fractialTop;
+  const float nodeWidth = node->layout.dimensions[YGDimensionWidth];
+  const float nodeHeight = node->layout.dimensions[YGDimensionHeight];
 
-  // To do the actual rounding we check if leftover fraction is bigger or equal than half of the grid step
-  if (fractialLeft >= pointScaleFactor / 2.0f) {
-    roundedLeft += pointScaleFactor;
-    fractialLeft -= pointScaleFactor;
-  }
-  if (fractialTop >= pointScaleFactor / 2.0f) {
-    roundedTop += pointScaleFactor;
-    fractialTop -= pointScaleFactor;
-  }
-  node->layout.position[YGEdgeLeft] = roundedLeft;
-  node->layout.position[YGEdgeTop] = roundedTop;
+  const float absoluteNodeLeft = absoluteLeft + nodeLeft;
+  const float absoluteNodeTop = absoluteTop + nodeTop;
 
-  // Now we round width and height in the same way accounting for fractial leftovers from rounding position
-  const float adjustedWidth = fractialLeft + node->layout.dimensions[YGDimensionWidth];
-  const float adjustedHeight = fractialTop + node->layout.dimensions[YGDimensionHeight];
-  float roundedWidth = adjustedWidth - fmodf(adjustedWidth, pointScaleFactor);
-  float roundedHeight = adjustedHeight - fmodf(adjustedHeight, pointScaleFactor);
+  const float absoluteNodeRight = absoluteNodeLeft + nodeWidth;
+  const float absoluteNodeBottom = absoluteNodeTop + nodeHeight;
 
-  if (adjustedWidth - roundedWidth >= pointScaleFactor / 2.0f) {
-    roundedWidth += pointScaleFactor;
-  }
-  if (adjustedHeight - roundedHeight >= pointScaleFactor / 2.0f) {
-    roundedHeight += pointScaleFactor;
-  }
-  node->layout.dimensions[YGDimensionWidth] = roundedWidth;
-  node->layout.dimensions[YGDimensionHeight] = roundedHeight;
+  node->layout.position[YGEdgeLeft] = YGRoundValueToPixelGrid(nodeLeft, pointScaleFactor);
+  node->layout.position[YGEdgeTop] = YGRoundValueToPixelGrid(nodeTop, pointScaleFactor);
+
+  node->layout.dimensions[YGDimensionWidth] =
+    YGRoundValueToPixelGrid(absoluteNodeRight, pointScaleFactor) - YGRoundValueToPixelGrid(absoluteNodeLeft, pointScaleFactor);
+  node->layout.dimensions[YGDimensionHeight] =
+    YGRoundValueToPixelGrid(absoluteNodeBottom, pointScaleFactor) - YGRoundValueToPixelGrid(absoluteNodeTop, pointScaleFactor);
 
   const uint32_t childCount = YGNodeListCount(node->children);
   for (uint32_t i = 0; i < childCount; i++) {
-    YGRoundToPixelGrid(YGNodeGetChild(node, i), pointScaleFactor);
+    YGRoundToPixelGrid(YGNodeGetChild(node, i), pointScaleFactor, absoluteNodeLeft, absoluteNodeTop);
   }
 }
 
@@ -3422,7 +3395,7 @@ void YGNodeCalculateLayout(const YGNodeRef node,
     YGNodeSetPosition(node, node->layout.direction, parentWidth, parentHeight, parentWidth);
 
     if (YGConfigIsExperimentalFeatureEnabled(node->config, YGExperimentalFeatureRounding)) {
-      YGRoundToPixelGrid(node, node->config->pointScaleFactor);
+      YGRoundToPixelGrid(node, node->config->pointScaleFactor, 0.0f, 0.0f);
     }
 
     if (gPrintTree) {
@@ -3432,7 +3405,15 @@ void YGNodeCalculateLayout(const YGNodeRef node,
 }
 
 void YGSetLogger(YGLogger logger) {
-  gLogger = logger;
+  if (logger != NULL) {
+    gLogger = logger;
+  } else {
+#ifdef ANDROID
+    gLogger = &YGAndroidLog;
+#else
+    gLogger = &YGDefaultLog;
+#endif
+  }
 }
 
 void YGLog(YGLogLevel level, const char *format, ...) {
@@ -3462,7 +3443,8 @@ bool YGConfigGetUseWebDefaults(const YGConfigRef config) {
 }
 
 void YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree) {
-  YG_ASSERT(gNodeInstanceCount == 0, "Cannot set memory functions: all node must be freed first");
+  YG_ASSERT(gNodeInstanceCount == 0 && gConfigInstanceCount == 0,
+            "Cannot set memory functions: all node must be freed first");
   YG_ASSERT((ygmalloc == NULL && yccalloc == NULL && ygrealloc == NULL && ygfree == NULL) ||
                 (ygmalloc != NULL && yccalloc != NULL && ygrealloc != NULL && ygfree != NULL),
             "Cannot set memory functions: functions must be all NULL or Non-NULL");

@@ -98,7 +98,7 @@ numberOfRowsInComponent:(__unused NSInteger)component
       didSelectRow:(NSInteger)row inComponent:(__unused NSInteger)component
 {
   _selectedIndex = row;
-  if (_onChange && _items.count > row) {
+  if (_onChange && _items.count > (NSUInteger)row) {
     _onChange(@{
       @"newIndex": @(row),
       @"newValue": RCTNullIfNil(_items[row][@"value"]),

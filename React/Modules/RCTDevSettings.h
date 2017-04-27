@@ -42,12 +42,6 @@
  */
 @property (nonatomic, assign) BOOL isDebuggingRemotely;
 
-/**
- * Alternate name for the websocket executor, if not the generic term "remote".
- * TODO t16297016: this seems to be unused, remove?
- */
-@property (nonatomic, copy) NSString *websocketExecutorName;
-
 /*
  * Whether shaking will show RCTDevMenu. The menu is enabled by default if RCT_DEV=1, but
  * you may wish to disable it so that you can provide your own shake handler.

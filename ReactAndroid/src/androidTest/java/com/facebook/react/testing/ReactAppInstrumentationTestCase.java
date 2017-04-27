@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.testing.idledetection.IdleWaiter;
 
 /**
  * Base class for instrumentation tests that runs React based react application in UI mode
@@ -122,7 +123,6 @@ public abstract class ReactAppInstrumentationTestCase extends
         latch.countDown();
       }
     };
-
 
     getActivity().runOnUiThread(getScreenshotRunnable);
     try {
