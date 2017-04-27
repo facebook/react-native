@@ -408,7 +408,7 @@ class PushNotificationIOS {
       this._notificationId = nativeNotif.notificationId;
     }
 
-    if (nativeNotif.remote) {
+    if (nativeNotif['aps']) {
       // Extract data from Apple's `aps` dict as defined:
       // https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
       Object.keys(nativeNotif).forEach((notifKey) => {
