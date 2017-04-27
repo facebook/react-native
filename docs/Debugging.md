@@ -98,7 +98,7 @@ The debugger will receive a list of all project roots, separated by a space. For
 
 Follow this guide to enable Stetho for Debug mode:
 
-1. In ```android/app/build.gradle```, add these lines in the `dependencies` section:
+1. In `android/app/build.gradle`, add these lines in the `dependencies` section:
 
    ```gradle
     debugCompile 'com.facebook.stetho:stetho:1.5.0'
