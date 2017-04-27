@@ -187,6 +187,8 @@ npm install -g react-native-cli
 
 > If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
 
+If you get error `Cannot find module 'npmlog'`, try this before: `curl -0 -L http://npmjs.org/install.sh | sudo sh`.
+
 <block class="mac ios" />
 
 ### Xcode
