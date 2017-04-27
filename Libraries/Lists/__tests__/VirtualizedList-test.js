@@ -57,7 +57,6 @@ describe('VirtualizedList', () => {
         data={new Array(5).fill().map((_, ii) => ({id: String(ii)}))}
         keyExtractor={(item, index) => item.id}
         getItemLayout={({index}) => ({length: 50, offset: index * 50})}
-        numColumns={2}
         refreshing={false}
         onRefresh={jest.fn()}
         renderItem={({item}) => <item value={item.id} />}
@@ -76,5 +75,25 @@ describe('VirtualizedList', () => {
       />
     );
     expect(component).toMatchSnapshot();
+  });
+
+  it('handles separators correctly', () => {
+    const infos = [];
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        ItemSeparatorComponent={(props) => <separator {...props} />}
+        data={[{key: 'i0'}, {key: 'i1'}, {key: 'i2'}]}
+        renderItem={(info) => {
+          infos.push(info);
+          return <item title={info.item.key} />;
+        }}
+      />
+    );
+    expect(component).toMatchSnapshot();
+    infos[1].separators.highlight();
+    expect(component).toMatchSnapshot();
+    infos[2].separators.updateProps('leading', {press: true});
+    expect(component).toMatchSnapshot();
+    infos[1].separators.unhighlight();
   });
 });

@@ -867,7 +867,7 @@ class CellRenderer extends React.Component {
     },
     updateProps: (select: 'leading' | 'trailing', newProps: Object) => {
       const {cellKey, prevCellKey} = this.props;
-      this.props.onUpdateSeparators([select === 'leading' ? cellKey : prevCellKey], newProps);
+      this.props.onUpdateSeparators([select === 'leading' ? prevCellKey : cellKey], newProps);
     },
   };
 

@@ -1,5 +1,243 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`VirtualizedList handles separators correctly 1`] = `
+<RCTScrollView
+  ItemSeparatorComponent={[Function]}
+  data={
+    Array [
+      Object {
+        "key": "i0",
+      },
+      Object {
+        "key": "i1",
+      },
+      Object {
+        "key": "i2",
+      },
+    ]
+  }
+  disableVirtualization={false}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  horizontal={false}
+  initialNumToRender={10}
+  keyExtractor={[Function]}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onEndReachedThreshold={2}
+  onLayout={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  renderScrollComponent={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  updateCellsBatchingPeriod={50}
+  windowSize={21}
+>
+  <View>
+    <View
+      onLayout={[Function]}
+    >
+      <item
+        title="i0"
+      />
+      <separator
+        highlighted={false}
+        leadingItem={
+          Object {
+            "key": "i0",
+          }
+        }
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+    >
+      <item
+        title="i1"
+      />
+      <separator
+        highlighted={false}
+        leadingItem={
+          Object {
+            "key": "i1",
+          }
+        }
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+    >
+      <item
+        title="i2"
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`VirtualizedList handles separators correctly 2`] = `
+<RCTScrollView
+  ItemSeparatorComponent={[Function]}
+  data={
+    Array [
+      Object {
+        "key": "i0",
+      },
+      Object {
+        "key": "i1",
+      },
+      Object {
+        "key": "i2",
+      },
+    ]
+  }
+  disableVirtualization={false}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  horizontal={false}
+  initialNumToRender={10}
+  keyExtractor={[Function]}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onEndReachedThreshold={2}
+  onLayout={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  renderScrollComponent={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  updateCellsBatchingPeriod={50}
+  windowSize={21}
+>
+  <View>
+    <View
+      onLayout={[Function]}
+    >
+      <item
+        title="i0"
+      />
+      <separator
+        highlighted={true}
+        leadingItem={
+          Object {
+            "key": "i0",
+          }
+        }
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+    >
+      <item
+        title="i1"
+      />
+      <separator
+        highlighted={true}
+        leadingItem={
+          Object {
+            "key": "i1",
+          }
+        }
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+    >
+      <item
+        title="i2"
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`VirtualizedList handles separators correctly 3`] = `
+<RCTScrollView
+  ItemSeparatorComponent={[Function]}
+  data={
+    Array [
+      Object {
+        "key": "i0",
+      },
+      Object {
+        "key": "i1",
+      },
+      Object {
+        "key": "i2",
+      },
+    ]
+  }
+  disableVirtualization={false}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  horizontal={false}
+  initialNumToRender={10}
+  keyExtractor={[Function]}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onEndReachedThreshold={2}
+  onLayout={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  renderScrollComponent={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  updateCellsBatchingPeriod={50}
+  windowSize={21}
+>
+  <View>
+    <View
+      onLayout={[Function]}
+    >
+      <item
+        title="i0"
+      />
+      <separator
+        highlighted={true}
+        leadingItem={
+          Object {
+            "key": "i0",
+          }
+        }
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+    >
+      <item
+        title="i1"
+      />
+      <separator
+        highlighted={true}
+        leadingItem={
+          Object {
+            "key": "i1",
+          }
+        }
+        press={true}
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+    >
+      <item
+        title="i2"
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
 exports[`VirtualizedList renders all the bells and whistles 1`] = `
 <RCTScrollView
   ItemSeparatorComponent={[Function]}
@@ -32,7 +270,6 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
   initialNumToRender={10}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
-  numColumns={2}
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
