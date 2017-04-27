@@ -1,6 +1,14 @@
 #!/bin/bash
 set -ex
 
+# Script used to run iOS and tvOS tests.
+# Environment variables are used to configure what test to run.
+# If not arguments are passed to the script, it will only compile
+# the UIExplorer.
+# If the script is called with a single argument "test", we'll
+# also run the UIExplorer integration test (needs JS and packager).
+# ./objc-test.sh test
+
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname $SCRIPTS)
 
@@ -26,8 +34,7 @@ trap cleanup EXIT
 # If first argument is "test", actually start the packager and run tests.
 # Otherwise, just build UIExplorer for tvOS and exit
 
-if [ "$TEST" = "test" ];
-then
+if [ "$1" = "test" ]; then
 
 # Start the packager 
 open "./packager/launchPackager.command" || echo "Can't start packager automatically"
@@ -45,12 +52,7 @@ rm temp.bundle
 curl 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o temp.bundle
 rm temp.bundle
 
-else
-
-TEST=""
-
-fi
- 
+# Run tests
 # TODO: We use xcodebuild because xctool would stall when collecting info about
 # the tests before running them. Switch back when this issue with xctool has
 # been resolved.
@@ -59,4 +61,18 @@ xcodebuild \
   -scheme $SCHEME \
   -sdk $SDK \
   -destination "$DESTINATION" \
-  build $TEST
+  build test
+
+else
+
+# Don't run tests. No need to pass -destination to xcodebuild.
+# TODO: We use xcodebuild because xctool would stall when collecting info about
+# the tests before running them. Switch back when this issue with xctool has
+# been resolved.
+xcodebuild \
+  -project "Examples/UIExplorer/UIExplorer.xcodeproj" \
+  -scheme $SCHEME \
+  -sdk $SDK \
+  build 
+
+fi
