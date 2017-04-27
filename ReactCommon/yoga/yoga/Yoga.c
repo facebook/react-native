@@ -202,7 +202,6 @@ static YGNode gYGNodeDefaults = {
 static YGConfig gYGConfigDefaults = {
     .experimentalFeatures =
         {
-                [YGExperimentalFeatureRounding] = false,
                 [YGExperimentalFeatureMinFlexFix] = false,
                 [YGExperimentalFeatureWebFlexBasis] = false,
         },
@@ -3386,10 +3385,7 @@ void YGNodeCalculateLayout(const YGNodeRef node,
                            "initial",
                            node->config)) {
     YGNodeSetPosition(node, node->layout.direction, parentWidth, parentHeight, parentWidth);
-
-    if (YGConfigIsExperimentalFeatureEnabled(node->config, YGExperimentalFeatureRounding)) {
-      YGRoundToPixelGrid(node, node->config->pointScaleFactor, 0.0f, 0.0f);
-    }
+    YGRoundToPixelGrid(node, node->config->pointScaleFactor, 0.0f, 0.0f);
 
     if (gPrintTree) {
       YGNodePrint(node, YGPrintOptionsLayout | YGPrintOptionsChildren | YGPrintOptionsStyle);
