@@ -5284,6 +5284,57 @@ describe('DependencyGraph', function() {
           ]);
         });
     });
+    it('supports custom file extensions with relative paths', () => {
+      var root = '/root';
+      setMockFileSystem({
+        'root': {
+          'index.jsx': [
+            'require("./a")',
+          ].join('\n'),
+          'a.coffee': [
+          ].join('\n'),
+          'X.js': '',
+        },
+      });
+
+      var dgraph = DependencyGraph.load({
+        ...defaults,
+        roots: [root],
+        extensions: ['jsx', 'coffee'],
+      });
+
+      return dgraph
+        .then(dg => dg.matchFilesByPattern('.*'))
+        .then(files => {
+          expect(files).toEqual([
+            '/root/index.jsx', '/root/a.coffee',
+          ]);
+        })
+        .then(() => getOrderedDependenciesAsJSON(dgraph, '/root/index.jsx'))
+        .then(deps => {
+          expect(deps).toEqual([
+            {
+              dependencies: ['./a'],
+              id: '/root/index.jsx',
+              isAsset: false,
+              isJSON: false,
+              isPolyfill: false,
+              path: '/root/index.jsx',
+              resolution: undefined,
+            },
+            {
+              dependencies: [],
+              id: '/root/a.coffee',
+              isAsset: false,
+              isJSON: false,
+              isPolyfill: false,
+              path: '/root/a.coffee',
+              resolution: undefined,
+            },
+          ]);
+        });
+    });
+
   });
 
   describe('Progress updates', () => {
