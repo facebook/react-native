@@ -5264,8 +5264,8 @@ describe('DependencyGraph', function() {
         .then(deps => {
           expect(deps).toEqual([
             {
-              dependencies: ['./a'],
-              id: '/root/index.jsx',
+              dependencies: ['a'],
+              id: 'index',
               isAsset: false,
               isJSON: false,
               isPolyfill: false,
@@ -5274,7 +5274,7 @@ describe('DependencyGraph', function() {
             },
             {
               dependencies: [],
-              id: '/root/a.coffee',
+              id: 'a',
               isAsset: false,
               isJSON: false,
               isPolyfill: false,
