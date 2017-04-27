@@ -13,6 +13,7 @@
 
 const BoxInspector = require('BoxInspector');
 const React = require('React');
+const PropTypes = require('prop-types');
 const StyleInspector = require('StyleInspector');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
@@ -23,8 +24,6 @@ const View = require('View');
 const flattenStyle = require('flattenStyle');
 const mapWithSeparator = require('mapWithSeparator');
 const openFileInEditor = require('openFileInEditor');
-
-const PropTypes = React.PropTypes;
 
 class ElementProperties extends React.Component {
   props: {

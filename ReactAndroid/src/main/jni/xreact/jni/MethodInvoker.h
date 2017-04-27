@@ -4,9 +4,9 @@
 
 #include <vector>
 
-#include <cxxreact/ExecutorToken.h>
 #include <fb/fbjni.h>
 #include <folly/dynamic.h>
+#include <cxxreact/Executor.h>
 
 namespace facebook {
 namespace react {
@@ -31,15 +31,15 @@ class MethodInvoker {
 public:
   MethodInvoker(jni::alias_ref<JReflectMethod::javaobject> method, std::string signature, std::string traceName, bool isSync);
 
-  MethodCallResult invoke(std::weak_ptr<Instance>& instance, jni::alias_ref<JBaseJavaModule::javaobject> module, ExecutorToken token, const folly::dynamic& params);
+  MethodCallResult invoke(std::weak_ptr<Instance>& instance, jni::alias_ref<JBaseJavaModule::javaobject> module, const folly::dynamic& params);
 
   bool isSyncHook() const {
     return isSync_;
   }
 private:
   jmethodID method_;
-  std::size_t jsArgCount_;
   std::string signature_;
+  std::size_t jsArgCount_;
   std::string traceName_;
   bool isSync_;
 };

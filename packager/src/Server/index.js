@@ -31,9 +31,10 @@ import type {Stats} from 'fs';
 import type {IncomingMessage, ServerResponse} from 'http';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 import type Bundle from '../Bundler/Bundle';
+import type HMRBundle from '../Bundler/HMRBundle';
 import type {Reporter} from '../lib/reporting';
 import type {GetTransformOptions} from '../Bundler';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {SourceMap, Symbolicate} from './symbolicate';
 
 const {
@@ -157,7 +158,7 @@ class Server {
   _assetServer: AssetServer;
   _bundler: Bundler;
   _debouncedFileChangeHandler: (filePath: string) => mixed;
-  _hmrFileChangeListener: (type: string, filePath: string) => mixed;
+  _hmrFileChangeListener: ?(type: string, filePath: string) => mixed;
   _reporter: Reporter;
   _symbolicateInWorker: Symbolicate;
 
@@ -244,9 +245,7 @@ class Server {
     return this._bundler.end();
   }
 
-  setHMRFileChangeListener(
-    listener: (type: string, filePath: string) => mixed,
-  ) {
+  setHMRFileChangeListener(listener: ?(type: string, filePath: string) => mixed) {
     this._hmrFileChangeListener = listener;
   }
 
@@ -276,7 +275,7 @@ class Server {
     return bundle;
   }
 
-  buildBundleFromUrl(reqUrl: string): Promise<mixed> {
+  buildBundleFromUrl(reqUrl: string): Promise<Bundle> {
     const options = this._getOptionsFromUrl(reqUrl);
     return this.buildBundle(options);
   }
@@ -285,14 +284,14 @@ class Server {
     options: {platform: ?string},
     host: string,
     port: number,
-  ): Promise<string> {
+  ): Promise<HMRBundle> {
     return this._bundler.hmrBundle(options, host, port);
   }
 
   getShallowDependencies(options: {
     entryFile: string,
     platform?: string,
-  }): Promise<mixed> {
+  }): Promise<Array<Module>> {
     return Promise.resolve().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
@@ -310,7 +309,7 @@ class Server {
   getDependencies(options: {
     entryFile: string,
     platform: ?string,
-  }): Promise<ResolutionResponse> {
+  }): Promise<ResolutionResponse<Module, *>> {
     return Promise.resolve().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
@@ -330,15 +329,15 @@ class Server {
 
   onFileChange(type: string, filePath: string, stat: Stats) {
     this._assetServer.onFileChange(type, filePath, stat);
-    this._bundler.invalidateFile(filePath);
 
     // If Hot Loading is enabled avoid rebuilding bundles and sending live
     // updates. Instead, send the HMR updates right away and clear the bundles
     // cache so that if the user reloads we send them a fresh bundle
-    if (this._hmrFileChangeListener) {
+    const {_hmrFileChangeListener} = this;
+    if (_hmrFileChangeListener) {
       // Clear cached bundles in case user reloads
       this._clearBundles();
-      this._hmrFileChangeListener(type, filePath);
+      _hmrFileChangeListener(type, filePath);
       return;
     } else if (type !== 'change' && filePath.indexOf(NODE_MODULES) !== -1) {
       // node module resolution can be affected by added or removed files
@@ -429,7 +428,7 @@ class Server {
   _rangeRequestMiddleware(
     req: IncomingMessage,
     res: ServerResponse,
-    data: string,
+    data: string | Buffer,
     assetPath: string,
   ) {
     if (req.headers && req.headers.range) {
@@ -518,7 +517,7 @@ class Server {
     });
   }
 
-  _useCachedOrUpdateOrCreateBundle(options: BundleOptions): Promise<Bundle> {
+  useCachedOrUpdateOrCreateBundle(options: BundleOptions): Promise<Bundle> {
     const optionsJson = this.optionsHash(options);
     const bundleFromScratch = () => {
       const building = this.buildBundle(options);
@@ -683,7 +682,7 @@ class Server {
     };
 
     debug('Getting bundle for request');
-    const building = this._useCachedOrUpdateOrCreateBundle(options);
+    const building = this.useCachedOrUpdateOrCreateBundle(options);
     building.then(
       p => {
         if (requestType === 'bundle') {
@@ -784,7 +783,7 @@ class Server {
 
   _sourceMapForURL(reqUrl: string): Promise<SourceMap> {
     const options = this._getOptionsFromUrl(reqUrl);
-    const building = this._useCachedOrUpdateOrCreateBundle(options);
+    const building = this.useCachedOrUpdateOrCreateBundle(options);
     return building.then(p => p.getSourceMap({
       minify: options.minify,
       dev: options.dev,

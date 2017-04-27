@@ -12,6 +12,7 @@ namespace facebook {
 namespace react {
 
 class Instance;
+class MessageQueueThread;
 
 struct JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
   static constexpr auto kJavaDescriptor =
@@ -33,6 +34,11 @@ struct JavaModuleWrapper : jni::JavaClass<JavaModuleWrapper> {
     return getModule(self());
   }
 
+  std::string getName() const {
+    static auto getName = javaClassStatic()->getMethod<jstring()>("getName");
+    return getName(self())->toStdString();
+  }
+
   jni::local_ref<jni::JList<JMethodDescriptor::javaobject>::javaobject> getMethodDescriptors() {
     static auto getMethods = getClass()
       ->getMethod<jni::JList<JMethodDescriptor::javaobject>::javaobject()>("getMethodDescriptors");
@@ -44,19 +50,22 @@ class JavaNativeModule : public NativeModule {
  public:
   JavaNativeModule(
     std::weak_ptr<Instance> instance,
-    jni::alias_ref<JavaModuleWrapper::javaobject> wrapper)
-  : instance_(std::move(instance)), wrapper_(make_global(wrapper)) {}
+    jni::alias_ref<JavaModuleWrapper::javaobject> wrapper,
+    std::shared_ptr<MessageQueueThread> messageQueueThread)
+  : instance_(std::move(instance))
+  , wrapper_(make_global(wrapper))
+  , messageQueueThread_(std::move(messageQueueThread)) {}
 
   std::string getName() override;
   folly::dynamic getConstants() override;
   std::vector<MethodDescriptor> getMethods() override;
-  bool supportsWebWorkers() override;
-  void invoke(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) override;
-  MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) override;
+  void invoke(unsigned int reactMethodId, folly::dynamic&& params) override;
+  MethodCallResult callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic&& params) override;
 
  private:
   std::weak_ptr<Instance> instance_;
   jni::global_ref<JavaModuleWrapper::javaobject> wrapper_;
+  std::shared_ptr<MessageQueueThread> messageQueueThread_;
   std::vector<folly::Optional<MethodInvoker>> syncMethods_;
 };
 
@@ -65,23 +74,24 @@ class NewJavaNativeModule : public NativeModule {
  public:
   NewJavaNativeModule(
     std::weak_ptr<Instance> instance,
-    jni::alias_ref<JavaModuleWrapper::javaobject> wrapper);
+    jni::alias_ref<JavaModuleWrapper::javaobject> wrapper,
+    std::shared_ptr<MessageQueueThread> messageQueueThread);
 
   std::string getName() override;
   std::vector<MethodDescriptor> getMethods() override;
   folly::dynamic getConstants() override;
-  bool supportsWebWorkers() override;
-  void invoke(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) override;
-  MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) override;
+  void invoke(unsigned int reactMethodId, folly::dynamic&& params) override;
+  MethodCallResult callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic&& params) override;
 
  private:
   std::weak_ptr<Instance> instance_;
   jni::global_ref<JavaModuleWrapper::javaobject> wrapper_;
   jni::global_ref<JBaseJavaModule::javaobject> module_;
+  std::shared_ptr<MessageQueueThread> messageQueueThread_;
   std::vector<MethodInvoker> methods_;
   std::vector<MethodDescriptor> methodDescriptors_;
 
-  MethodCallResult invokeInner(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params);
+  MethodCallResult invokeInner(unsigned int reactMethodId, folly::dynamic&& params);
 };
 
 }}

@@ -129,4 +129,3 @@ ws.onclose = (e) => {
   console.log(e.code, e.reason);
 };
 ```
-

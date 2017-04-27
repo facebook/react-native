@@ -34,7 +34,7 @@ function writeSync(props) {
 }
 
 function readSync(props) {
-  return transformCache.get(transformCacheKeyOf(props));
+  return {result: transformCache.get(transformCacheKeyOf(props)), outdatedDependencies: []};
 }
 
 module.exports = {

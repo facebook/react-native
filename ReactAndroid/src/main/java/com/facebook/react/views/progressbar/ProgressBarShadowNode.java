@@ -21,7 +21,7 @@ import android.widget.ProgressBar;
 
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -54,7 +54,7 @@ public class ProgressBarShadowNode extends LayoutShadowNode implements YogaMeasu
 
   @Override
   public long measure(
-      YogaNodeAPI node,
+      YogaNode node,
       float width,
       YogaMeasureMode widthMode,
       float height,

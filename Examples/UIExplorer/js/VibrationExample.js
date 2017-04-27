@@ -55,7 +55,7 @@ vibration length on iOS is fixed.
 pattern controls durations BETWEEN each vibration only.
 
 arg 0: duration to wait before turning the vibrator on.
-subsequent args: duration to wait before next vibrattion.
+subsequent args: duration to wait before next vibration.
 `;
 }
 

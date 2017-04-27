@@ -13,17 +13,17 @@
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var ActivityIndicator = require('ActivityIndicator');
 var React = require('React');
+var PropTypes = require('prop-types');
 var ReactNative = require('ReactNative');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
 var View = require('View');
+var ViewPropTypes = require('ViewPropTypes');
 
 var deprecatedPropType = require('deprecatedPropType');
 var keyMirror = require('fbjs/lib/keyMirror');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
-
-var PropTypes = React.PropTypes;
 
 var RCT_WEBVIEW_REF = 'webview';
 
@@ -46,7 +46,7 @@ var defaultRenderLoading = () => (
  */
 class WebView extends React.Component {
   static propTypes = {
-    ...View.propTypes,
+    ...ViewPropTypes,
     renderError: PropTypes.func,
     renderLoading: PropTypes.func,
     onLoad: PropTypes.func,
@@ -59,7 +59,7 @@ class WebView extends React.Component {
     onMessage: PropTypes.func,
     onContentSizeChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
 
     html: deprecatedPropType(
       PropTypes.string,
@@ -182,11 +182,18 @@ class WebView extends React.Component {
       'always',
       'compatibility'
     ]),
+
+    /**
+     * Used on Android only, controls whether form autocomplete data should be saved
+     * @platform android
+     */
+    saveFormDataDisabled: PropTypes.bool,
   };
 
   static defaultProps = {
     javaScriptEnabled : true,
     scalesPageToFit: true,
+    saveFormDataDisabled: false
   };
 
   state = {
@@ -259,6 +266,7 @@ class WebView extends React.Component {
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
         allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
         mixedContentMode={this.props.mixedContentMode}
+        saveFormDataDisabled={this.props.saveFormDataDisabled}
       />;
 
     return (

@@ -19,7 +19,7 @@ import type {Callback} from '../types.flow';
 
 type Path = string;
 type WorkerFn<Options> = (
-  fileContents: string,
+  fileContents: Buffer,
   options: Options,
   callback: Callback<Object>,
 ) => void;
@@ -39,7 +39,7 @@ function wrapWorkerFn<Options>(
     options: Options,
     callback: Callback<>,
   ) => {
-    const contents = fs.readFileSync(infile, 'utf8');
+    const contents = fs.readFileSync(infile);
     workerFunction(contents, options, (error, result) => {
       if (error) {
         callback(error);
