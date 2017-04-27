@@ -13,6 +13,8 @@
 var Prism = require('Prism');
 var React = require('React');
 
+const PropTypes = require('prop-types');
+
 const LatestSDKVersion = '15.0.0';
 var ReactNativeToExpoSDKVersionMap = {
   '0.42': '15.0.0',
@@ -39,7 +41,7 @@ var ReactNativeToExpoSDKVersionMap = {
  */
 var SnackPlayer = React.createClass({
   contextTypes: {
-    version: React.PropTypes.number.isRequired,
+    version: PropTypes.number.isRequired,
   },
 
   componentDidMount() {

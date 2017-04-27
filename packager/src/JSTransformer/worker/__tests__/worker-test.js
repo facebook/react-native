@@ -140,18 +140,6 @@ describe('code transformation worker:', () => {
       }
     );
 
-    it('does not extract requires if files are marked as "extern"', done => {
-      const opts = {extern: true};
-      transformCode(transformer, 'filename', 'code', opts, (error, data) => {
-        expect(error).toBeNull();
-        const {dependencies, dependencyOffsets} = data.result;
-        expect(extractDependencies).not.toBeCalled();
-        expect(dependencies).toEqual([]);
-        expect(dependencyOffsets).toEqual([]);
-        done();
-      });
-    });
-
     it('does not extract requires of JSON files', done => {
       const jsonStr = '{"arbitrary":"json"}';
       transformCode(transformer, 'arbitrary.json', jsonStr, {}, (error, data) => {

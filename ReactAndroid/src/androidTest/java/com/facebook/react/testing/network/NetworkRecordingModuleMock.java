@@ -87,7 +87,8 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
       ReadableMap data,
       final String responseType,
       boolean incrementalUpdates,
-      int timeout) {
+      int timeout,
+      boolean withCredentials) {
     mLastRequestId = requestId;
     mRequestCount++;
     mRequestMethod = method;

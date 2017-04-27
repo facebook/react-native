@@ -29,7 +29,7 @@ import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
  * Module that records debug information during transitions (animated navigation events such as
  * going from one screen to another).
  */
-@ReactModule(name = AnimationsDebugModule.NAME, hasConstants = false)
+@ReactModule(name = AnimationsDebugModule.NAME)
 public class AnimationsDebugModule extends ReactContextBaseJavaModule {
 
   protected static final String NAME = "AnimationsDebugModule";

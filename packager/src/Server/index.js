@@ -309,7 +309,7 @@ class Server {
   getDependencies(options: {
     entryFile: string,
     platform: ?string,
-  }): Promise<ResolutionResponse<Module>> {
+  }): Promise<ResolutionResponse<Module, *>> {
     return Promise.resolve().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
@@ -329,7 +329,6 @@ class Server {
 
   onFileChange(type: string, filePath: string, stat: Stats) {
     this._assetServer.onFileChange(type, filePath, stat);
-    this._bundler.invalidateFile(filePath);
 
     // If Hot Loading is enabled avoid rebuilding bundles and sending live
     // updates. Instead, send the HMR updates right away and clear the bundles
@@ -429,7 +428,7 @@ class Server {
   _rangeRequestMiddleware(
     req: IncomingMessage,
     res: ServerResponse,
-    data: string,
+    data: string | Buffer,
     assetPath: string,
   ) {
     if (req.headers && req.headers.range) {

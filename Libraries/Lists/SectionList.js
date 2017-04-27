@@ -27,7 +27,16 @@ type SectionBase<SectionItemT> = {
   key: string,
 
   // Optional props will override list-wide props just for this section.
-  renderItem?: ?(info: {item: SectionItemT, index: number}) => ?React.Element<any>,
+  renderItem?: ?(info: {
+    item: SectionItemT,
+    index: number,
+    section: SectionBase<SectionItemT>,
+    separators: {
+      highlight: () => void,
+      unhighlight: () => void,
+      updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+    },
+  }) => ?React.Element<any>,
   ItemSeparatorComponent?: ?ReactClass<any>,
   keyExtractor?: (item: SectionItemT) => string,
 
@@ -36,6 +45,18 @@ type SectionBase<SectionItemT> = {
 };
 
 type RequiredProps<SectionT: SectionBase<any>> = {
+  /**
+   * The actual data to render, akin to the `data` prop in [`<FlatList>`](/react-native/docs/flatlist.html).
+   *
+   * General shape:
+   *
+   *     sections: Array<{
+   *       data: Array<SectionItem>,
+   *       key: string,
+   *       renderItem?: ({item: SectionItem, ...}) => ?React.Element<*>,
+   *       ItemSeparatorComponent?: ?ReactClass<{highlighted: boolean, ...}>,
+   *     }>
+   */
   sections: Array<SectionT>,
 };
 
@@ -43,9 +64,21 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   /**
    * Default renderer for every item in every section. Can be over-ridden on a per-section basis.
    */
-  renderItem: (info: {item: Item, index: number}) => ?React.Element<any>,
+  renderItem: (info: {
+    item: Item,
+    index: number,
+    section: SectionT,
+    separators: {
+      highlight: () => void,
+      unhighlight: () => void,
+      updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+    },
+  }) => ?React.Element<any>,
   /**
-   * Rendered in between adjacent Items within each section.
+   * Rendered in between each item, but not at the top or bottom. By default, `highlighted`,
+   * `section`, and `[leading/trailing][Item/Separator]` props are provided. `renderItem` provides
+   * `separators.highlight`/`unhighlight` which will update the `highlighted` prop, but you can also
+   * add custom props with `separators.updateProps`.
    */
   ItemSeparatorComponent?: ?ReactClass<any>,
   /**
@@ -57,7 +90,11 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    */
   ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
-   * Rendered in between each section.
+   * Rendered at the top and bottom of each section (note this is different from
+   * `ItemSeparatorComponent` which is only rendered between items). These are intended to separate
+   * sections from the headers above and below and typically have the same highlight response as
+   * `ItemSeparatorComponent`. Also receives `highlighted`, `[leading/trailing][Item/Separator]`,
+   * and any custom props from `separators.updateProps`.
    */
   SectionSeparatorComponent?: ?ReactClass<any>,
   /**
@@ -109,15 +146,27 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    */
   refreshing?: ?boolean,
   /**
+   * Note: may have bugs (missing content) in some circumstances - use at your own risk.
+   *
+   * This may improve scroll performance for large lists.
+   */
+  removeClippedSubviews?: boolean,
+  /**
    * Rendered at the top of each section. These stick to the top of the `ScrollView` by default on
    * iOS. See `stickySectionHeadersEnabled`.
    */
   renderSectionHeader?: ?(info: {section: SectionT}) => ?React.Element<any>,
   /**
+   * Rendered at the bottom of each section.
+   */
+  renderSectionFooter?: ?(info: {section: SectionT}) => ?React.Element<any>,
+  /**
    * Makes section headers stick to the top of the screen until the next one pushes it off. Only
    * enabled by default on iOS because that is the platform standard there.
    */
   stickySectionHeadersEnabled?: boolean,
+
+  legacyImplementation?: ?boolean,
 };
 
 type Props<SectionT> = RequiredProps<SectionT>
@@ -151,7 +200,7 @@ type DefaultProps = typeof defaultProps;
  * Simple Examples:
  *
  *     <SectionList
- *       renderItem={({item}) => <ListItem title={item.title}}
+ *       renderItem={({item}) => <ListItem title={item.title} />}
  *       renderSectionHeader={({section}) => <H1 title={section.key} />}
  *       sections={[ // homogenous rendering between sections
  *         {data: [...], key: ...},
@@ -185,10 +234,6 @@ type DefaultProps = typeof defaultProps;
  * - By default, the list looks for a `key` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
- * NOTE: `removeClippedSubviews` might not be necessary and may cause bugs. If you see issues with
- * content not rendering, e.g when using `LayoutAnimation`, try setting
- * `removeClippedSubviews={false}`, and we may change the default in the future after more
- * experimentation in production apps.
  */
 class SectionList<SectionT: SectionBase<any>>
   extends React.PureComponent<DefaultProps, Props<SectionT>, void>

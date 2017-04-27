@@ -69,13 +69,7 @@ public class NativeModuleRegistryBuilder {
           ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_END);
           moduleHolder = new ModuleHolder(module);
         } else {
-          moduleHolder = new ModuleHolder(
-            reactModuleInfo.name(),
-            reactModuleInfo.canOverrideExistingModule(),
-            reactModuleInfo.supportsWebWorkers(),
-            reactModuleInfo.needsEagerInit(),
-            reactModuleInfo.hasConstants(),
-            moduleSpec.getProvider());
+          moduleHolder = new ModuleHolder(reactModuleInfo, moduleSpec.getProvider());
         }
 
         String name = moduleHolder.getName();

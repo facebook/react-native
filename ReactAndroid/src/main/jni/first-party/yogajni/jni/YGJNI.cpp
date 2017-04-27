@@ -398,6 +398,11 @@ void jni_YGConfigSetUseWebDefaults(alias_ref<jobject>, jlong nativePointer, jboo
   YGConfigSetUseWebDefaults(config, useWebDefaults);
 }
 
+void jni_YGConfigSetPointScaleFactor(alias_ref<jobject>, jlong nativePointer, jfloat pixelsInPoint) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetPointScaleFactor(config, pixelsInPoint);
+}
+
 jint jni_YGNodeGetInstanceCount(alias_ref<jclass> clazz) {
   return YGNodeGetInstanceCount();
 }
@@ -492,6 +497,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGConfigFree),
                         YGMakeNativeMethod(jni_YGConfigSetExperimentalFeatureEnabled),
                         YGMakeNativeMethod(jni_YGConfigSetUseWebDefaults),
+                        YGMakeNativeMethod(jni_YGConfigSetPointScaleFactor),
                     });
   });
 }

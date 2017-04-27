@@ -124,43 +124,4 @@ const ReactNative = {
   },
 };
 
-// Better error messages when accessing React APIs on ReactNative
-if (__DEV__) {
-  const throwOnWrongReactAPI = require('throwOnWrongReactAPI');
-  const reactAPIs = [ 'createClass', 'Component' ];
-
-  for (const key of reactAPIs) {
-    Object.defineProperty(ReactNative, key, {
-      get() { throwOnWrongReactAPI(key); },
-      enumerable: false,
-      configurable: false,
-    });
-  }
-}
-
-// Preserve getters with warnings on the internal ReactNative copy without
-// invoking them.
-const ReactNativeInternal = require('ReactNative');
-function applyForwarding(key) {
-  if (__DEV__) {
-    Object.defineProperty(
-      ReactNative,
-      key,
-      Object.getOwnPropertyDescriptor(ReactNativeInternal, key)
-    );
-    return;
-  }
-    if (ReactNative.hasOwnProperty(key)) {
-      // WARNING! ReactNative has read-only keys. So, if ReactNativeInternal
-      // has any duplicate key that ReactNative already has, this assignment
-      // would fail with "Attempted to assign to readonly property."
-      // So, if the key already exists on ReactNative, we assume that it's the
-      // correct module and skip re-assigning it.
-      return;
-    }
-  ReactNative[key] = ReactNativeInternal[key];
-}
-for (const key in ReactNativeInternal) {
-  applyForwarding(key);
-}
 module.exports = ReactNative;

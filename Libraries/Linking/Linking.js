@@ -21,6 +21,17 @@ const LinkingManager = Platform.OS === 'android' ?
   NativeModules.IntentAndroid : NativeModules.LinkingManager;
 
 /**
+ * <div class="banner-crna-ejected">
+ *   <h3>Projects with Native Code Only</h3>
+ *   <p>
+ *     This section only applies to projects made with <code>react-native init</code>
+ *     or to those made with Create React Native App which have since ejected. For
+ *     more information about ejecting, please see
+ *     the <a href="https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md" target="_blank">guide</a> on
+ *     the Create React Native App repository.
+ *   </p>
+ * </div>
+ *
  * `Linking` gives you a general interface to interact with both incoming
  * and outgoing app links.
  *
@@ -58,7 +69,7 @@ const LinkingManager = Platform.OS === 'android' ?
  * NOTE: On iOS you'll need to link `RCTLinking` to your project by following
  * the steps described [here](docs/linking-libraries-ios.html#manual-linking).
  * In case you also want to listen to incoming app links during your app's
- * execution you'll need to add the following lines to you `*AppDelegate.m`:
+ * execution you'll need to add the following lines to your `*AppDelegate.m`:
  *
  * ```
  * #import <React/RCTLinkingManager.h>

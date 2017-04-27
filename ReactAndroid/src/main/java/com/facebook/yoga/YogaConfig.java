@@ -51,4 +51,9 @@ public class YogaConfig {
   public void setUseWebDefaults(boolean useWebDefaults) {
     jni_YGConfigSetUseWebDefaults(mNativePointer, useWebDefaults);
   }
+
+  private native void jni_YGConfigSetPointScaleFactor(long nativePointer, float pixelsInPoint);
+  public void setPointScaleFactor(float pixelsInPoint) {
+    jni_YGConfigSetPointScaleFactor(mNativePointer, pixelsInPoint);
+  }
 }

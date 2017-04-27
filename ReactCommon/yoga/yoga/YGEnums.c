@@ -89,8 +89,6 @@ const char *YGEdgeToString(const YGEdge value){
 
 const char *YGExperimentalFeatureToString(const YGExperimentalFeature value){
   switch(value){
-    case YGExperimentalFeatureRounding:
-      return "rounding";
     case YGExperimentalFeatureWebFlexBasis:
       return "web-flex-basis";
     case YGExperimentalFeatureMinFlexFix:

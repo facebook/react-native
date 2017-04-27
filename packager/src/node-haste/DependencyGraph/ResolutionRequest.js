@@ -24,6 +24,8 @@ const getAssetDataFromName = require('../lib/getAssetDataFromName');
 import type {HasteFS} from '../types';
 import type DependencyGraphHelpers from './DependencyGraphHelpers';
 import type ResolutionResponse from './ResolutionResponse';
+import type {Options as TransformWorkerOptions} from '../../JSTransformer/worker/worker';
+import type {ReadResult, CachedReadResult} from '../Module';
 
 type DirExistsFn = (filePath: string) => boolean;
 
@@ -31,8 +33,8 @@ type DirExistsFn = (filePath: string) => boolean;
  * `jest-haste-map`'s interface for ModuleMap.
  */
 export type ModuleMap = {
-  getModule(name: string, platform: string, supportsNativePlatform: boolean): ?string,
-  getPackage(name: string, platform: string, supportsNativePlatform: boolean): ?string,
+  getModule(name: string, platform: ?string, supportsNativePlatform: boolean): ?string,
+  getPackage(name: string, platform: ?string, supportsNativePlatform: boolean): ?string,
 };
 
 type Packageish = {
@@ -45,6 +47,8 @@ type Moduleish = {
   +path: string,
   getPackage(): ?Packageish,
   hash(): string,
+  readCached(transformOptions: TransformWorkerOptions): CachedReadResult,
+  readFresh(transformOptions: TransformWorkerOptions): Promise<ReadResult>,
 };
 
 type ModuleishCache<TModule, TPackage> = {
@@ -55,19 +59,19 @@ type ModuleishCache<TModule, TPackage> = {
 
 type MatchFilesByDirAndPattern = (dirName: string, pattern: RegExp) => Array<string>;
 
-type Options<TModule, TPackage> = {
-  dirExists: DirExistsFn,
-  entryPath: string,
-  extraNodeModules: ?Object,
-  hasteFS: HasteFS,
-  helpers: DependencyGraphHelpers,
-  matchFiles: MatchFilesByDirAndPattern,
-  moduleCache: ModuleishCache<TModule, TPackage>,
-  moduleMap: ModuleMap,
-  platform: string,
-  platforms: Set<string>,
-  preferNativePlatform: boolean,
-};
+type Options<TModule, TPackage> = {|
+  +dirExists: DirExistsFn,
+  +entryPath: string,
+  +extraNodeModules: ?Object,
+  +hasteFS: HasteFS,
+  +helpers: DependencyGraphHelpers,
+  +matchFiles: MatchFilesByDirAndPattern,
+  +moduleCache: ModuleishCache<TModule, TPackage>,
+  +moduleMap: ModuleMap,
+  +platform: ?string,
+  +platforms: Set<string>,
+  +preferNativePlatform: boolean,
+|};
 
 /**
  * It may not be a great pattern to leverage exception just for "trying" things
@@ -95,7 +99,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
   _matchFiles: MatchFilesByDirAndPattern;
   _moduleCache: ModuleishCache<TModule, TPackage>;
   _moduleMap: ModuleMap;
-  _platform: string;
+  _platform: ?string;
   _platforms: Set<string>;
   _preferNativePlatform: boolean;
   static emptyModule: string;
@@ -163,20 +167,20 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
 
   resolveModuleDependencies(
     module: TModule,
-    dependencyNames: Array<string>,
-  ): [Array<string>, Array<TModule>] {
+    dependencyNames: $ReadOnlyArray<string>,
+  ): [$ReadOnlyArray<string>, $ReadOnlyArray<TModule>] {
     const dependencies = dependencyNames.map(name => this.resolveDependency(module, name));
     return [dependencyNames, dependencies];
   }
 
-  getOrderedDependencies({
+  getOrderedDependencies<T>({
     response,
     transformOptions,
     onProgress,
     recursive = true,
   }: {
-    response: ResolutionResponse<TModule>,
-    transformOptions: Object,
+    response: ResolutionResponse<TModule, T>,
+    transformOptions: TransformWorkerOptions,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     recursive: boolean,
   }) {
@@ -186,12 +190,25 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     let totalModules = 1;
     let finishedModules = 0;
 
-    const resolveDependencies = module => Promise.resolve().then(() => {
-      const result = module.readCached(transformOptions);
-      if (result != null) {
-        return this.resolveModuleDependencies(module, result.dependencies);
+    let preprocessedModuleCount = 1;
+    if (recursive) {
+      this._preprocessPotentialDependencies(transformOptions, entry, count => {
+        if (count + 1 <= preprocessedModuleCount) {
+          return;
+        }
+        preprocessedModuleCount = count + 1;
+        if (onProgress != null) {
+          onProgress(finishedModules, preprocessedModuleCount);
+        }
+      });
+    }
+
+    const resolveDependencies = (module: TModule) => Promise.resolve().then(() => {
+      const cached = module.readCached(transformOptions);
+      if (cached.result != null) {
+        return this.resolveModuleDependencies(module, cached.result.dependencies);
       }
-      return module.read(transformOptions)
+      return module.readFresh(transformOptions)
         .then(({dependencies}) => this.resolveModuleDependencies(module, dependencies));
     });
 
@@ -221,7 +238,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
       if (onProgress) {
         finishedModules += 1;
         totalModules += newDependencies.length;
-        onProgress(finishedModules, totalModules);
+        onProgress(finishedModules, Math.max(totalModules, preprocessedModuleCount));
       }
 
       if (recursive) {
@@ -271,6 +288,71 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
 
       traverse(rootDependencies);
     });
+  }
+
+  /**
+   * This synchronously look at all the specified modules and recursively kicks off global cache
+   * fetching or transforming (via `readFresh`). This is a hack that workaround the current
+   * structure, because we could do better. First off, the algorithm that resolves dependencies
+   * recursively should be synchronous itself until it cannot progress anymore (and needs to
+   * call `readFresh`), so that this algo would be integrated into it.
+   */
+  _preprocessPotentialDependencies(
+    transformOptions: TransformWorkerOptions,
+    module: TModule,
+    onProgress: (moduleCount: number) => mixed,
+  ): void {
+    const visitedModulePaths = new Set();
+    const pendingBatches = [this.preprocessModule(transformOptions, module, visitedModulePaths)];
+    onProgress(visitedModulePaths.size);
+    while (pendingBatches.length > 0) {
+      const dependencyModules = pendingBatches.pop();
+      while (dependencyModules.length > 0) {
+        const dependencyModule = dependencyModules.pop();
+        const deps = this.preprocessModule(transformOptions, dependencyModule, visitedModulePaths);
+        pendingBatches.push(deps);
+        onProgress(visitedModulePaths.size);
+      }
+    }
+  }
+
+  preprocessModule(
+    transformOptions: TransformWorkerOptions,
+    module: TModule,
+    visitedModulePaths: Set<string>,
+  ): Array<TModule> {
+    const cached = module.readCached(transformOptions);
+    if (cached.result == null) {
+      module.readFresh(transformOptions).catch(error => {
+        /* ignore errors, they'll be handled later if the dependency is actually
+         * not obsolete, and required from somewhere */
+      });
+    }
+    const dependencies = cached.result != null
+      ? cached.result.dependencies : cached.outdatedDependencies;
+    return this.tryResolveModuleDependencies(module, dependencies, visitedModulePaths);
+  }
+
+  tryResolveModuleDependencies(
+    module: TModule,
+    dependencyNames: $ReadOnlyArray<string>,
+    visitedModulePaths: Set<string>,
+  ): Array<TModule> {
+    const result = [];
+    for (let i = 0; i < dependencyNames.length; ++i) {
+      try {
+        const depModule = this.resolveDependency(module, dependencyNames[i]);
+        if (!visitedModulePaths.has(depModule.path)) {
+          visitedModulePaths.add(depModule.path);
+          result.push(depModule);
+        }
+      } catch (error) {
+        if (!(error instanceof UnableToResolveError)) {
+          throw error;
+        }
+      }
+    }
+    return result;
   }
 
   _resolveHasteDependency(fromModule: TModule, toModuleName: string): TModule {

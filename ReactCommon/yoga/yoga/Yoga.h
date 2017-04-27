@@ -228,6 +228,7 @@ WIN_EXPORT void YGConfigSetPointScaleFactor(const YGConfigRef config, const floa
 // YGConfig
 WIN_EXPORT YGConfigRef YGConfigNew(void);
 WIN_EXPORT void YGConfigFree(const YGConfigRef config);
+WIN_EXPORT void YGConfigCopy(const YGConfigRef dest, const YGConfigRef src);
 WIN_EXPORT int32_t YGConfigGetInstanceCount(void);
 
 WIN_EXPORT void YGConfigSetExperimentalFeatureEnabled(const YGConfigRef config,

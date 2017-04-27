@@ -109,7 +109,7 @@ describe('Resolver', function() {
           expect(DependencyGraph.prototype.getDependencies).toBeCalledWith({
             entryPath: entry,
             platform,
-            transformOptions,
+            options: transformOptions,
             recursive: true,
           });
         });

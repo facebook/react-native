@@ -11,6 +11,8 @@
 
 'use strict';
 
+/* global Buffer: true */
+
 const BatchProcessor = require('./BatchProcessor');
 const FetchError = require('node-fetch/lib/fetch-error');
 
@@ -18,6 +20,7 @@ const crypto = require('crypto');
 const fetch = require('node-fetch');
 const jsonStableStringify = require('json-stable-stringify');
 const path = require('path');
+const throat = require('throat');
 
 import type {
   Options as TransformWorkerOptions,
@@ -95,7 +98,7 @@ class KeyURIFetcher {
     this._batchProcessor = new BatchProcessor({
       maximumDelayMs: 10,
       maximumItems: 500,
-      concurrency: 25,
+      concurrency: 2,
     }, this._processKeys.bind(this));
   }
 
@@ -225,7 +228,7 @@ class URIBasedGlobalTransformCache {
   keyOf(props: FetchProps) {
     const hash = crypto.createHash('sha1');
     const {sourceCode, filePath, transformOptions} = props;
-    this._optionsHasher.hashTransformWorkerOptions(hash, transformOptions);
+    hash.update(this._optionsHasher.getTransformWorkerOptionsDigest(transformOptions));
     const cacheKey = props.getTransformCacheKey(sourceCode, filePath, transformOptions);
     hash.update(JSON.stringify(cacheKey));
     hash.update(crypto.createHash('sha1').update(sourceCode).digest('hex'));
@@ -260,7 +263,7 @@ class URIBasedGlobalTransformCache {
    * a second time if we expect them to be transient. We might even consider
    * waiting a little time before retring if experience shows it's useful.
    */
-  static fetchResultFromURI(uri: string): Promise<CachedResult> {
+  static _fetchResultFromURIWithRetry(uri: string): Promise<CachedResult> {
     return URIBasedGlobalTransformCache._fetchResultFromURI(uri).catch(error => {
       if (!URIBasedGlobalTransformCache.shouldRetryAfterThatError(error)) {
         throw error;
@@ -268,6 +271,12 @@ class URIBasedGlobalTransformCache {
       return this._fetchResultFromURI(uri);
     });
   }
+
+  /**
+   * The exposed version uses throat() to limit concurrency, as making too many parallel requests
+   * is more likely to trigger server-side throttling and cause timeouts.
+   */
+  static fetchResultFromURI: (uri: string) => Promise<CachedResult>;
 
   /**
    * We want to retry timeouts as they're likely temporary. We retry 503
@@ -311,11 +320,28 @@ class URIBasedGlobalTransformCache {
 
 }
 
+URIBasedGlobalTransformCache.fetchResultFromURI =
+  throat(500, URIBasedGlobalTransformCache._fetchResultFromURIWithRetry);
+
 class OptionsHasher {
   _rootPath: string;
+  _cache: WeakMap<TransformWorkerOptions, string>;
 
   constructor(rootPath: string) {
     this._rootPath = rootPath;
+    this._cache = new WeakMap();
+  }
+
+  getTransformWorkerOptionsDigest(options: TransformWorkerOptions): string {
+    const digest = this._cache.get(options);
+    if (digest != null) {
+      return digest;
+    }
+    const hash = crypto.createHash('sha1');
+    this.hashTransformWorkerOptions(hash, options);
+    const newDigest = hash.digest('hex');
+    this._cache.set(options, newDigest);
+    return newDigest;
   }
 
   /**
@@ -335,14 +361,14 @@ class OptionsHasher {
    * cleanup will be necessary to enable rock-solid typing.
    */
   hashTransformWorkerOptions(hash: crypto$Hash, options: TransformWorkerOptions): crypto$Hash {
-    const {dev, minify, platform, transform, extern, ...unknowns} = options;
+    const {dev, minify, platform, transform, ...unknowns} = options;
     const unknownKeys = Object.keys(unknowns);
     if (unknownKeys.length > 0) {
       const message = `these worker option fields are unknown: ${JSON.stringify(unknownKeys)}`;
       throw new CannotHashOptionsError(message);
     }
     // eslint-disable-next-line no-undef, no-bitwise
-    hash.update(new Buffer([+dev | +minify << 1 | +!!extern << 2]));
+    hash.update(new Buffer([+dev | +minify << 1]));
     hash.update(JSON.stringify(platform));
     return this.hashTransformOptions(hash, transform);
   }
@@ -356,14 +382,16 @@ class OptionsHasher {
    * particular file.
    */
   hashTransformOptions(hash: crypto$Hash, options: TransformOptions): crypto$Hash {
-    const {generateSourceMaps, dev, hot, inlineRequires, platform,
-      preloadedModules, projectRoots, ramGroups, ...unknowns} = options;
+    const {
+      generateSourceMaps, dev, hot, inlineRequires, platform, projectRoots,
+      ...unknowns,
+    } = options;
     const unknownKeys = Object.keys(unknowns);
     if (unknownKeys.length > 0) {
       const message = `these transform option fields are unknown: ${JSON.stringify(unknownKeys)}`;
       throw new CannotHashOptionsError(message);
     }
-    // eslint-disable-next-line no-undef
+
     hash.update(new Buffer([
       // eslint-disable-next-line no-bitwise
       +dev | +generateSourceMaps << 1 | +hot << 2 | +!!inlineRequires << 3,
@@ -374,7 +402,7 @@ class OptionsHasher {
       relativeBlacklist = this.relativizeFilePaths(Object.keys(inlineRequires.blacklist));
     }
     const relativeProjectRoots = this.relativizeFilePaths(projectRoots);
-    const optionTuple = [relativeBlacklist, preloadedModules, relativeProjectRoots, ramGroups];
+    const optionTuple = [relativeBlacklist, relativeProjectRoots];
     hash.update(JSON.stringify(optionTuple));
     return hash;
   }

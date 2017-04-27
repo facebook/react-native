@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -92,7 +91,6 @@ public class NetworkingModuleTest {
       new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
 
     networkingModule.sendRequest(
-      mock(ExecutorToken.class),
       "GET",
       "http://somedomain/foo",
       /* requestId */ 0,
@@ -115,7 +113,7 @@ public class NetworkingModuleTest {
   public void testFailGetWithInvalidHeadersStruct() throws Exception {
     RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
     ReactApplicationContext context = mock(ReactApplicationContext.class);
-    when(context.getJSModule(any(ExecutorToken.class), any(Class.class))).thenReturn(emitter);
+    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
 
     OkHttpClient httpClient = mock(OkHttpClient.class);
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
@@ -128,7 +126,6 @@ public class NetworkingModuleTest {
     mockEvents();
 
     networkingModule.sendRequest(
-      mock(ExecutorToken.class),
       "GET",
       "http://somedoman/foo",
       /* requestId */ 0,
@@ -146,7 +143,7 @@ public class NetworkingModuleTest {
   public void testFailPostWithoutContentType() throws Exception {
     RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
     ReactApplicationContext context = mock(ReactApplicationContext.class);
-    when(context.getJSModule(any(ExecutorToken.class), any(Class.class))).thenReturn(emitter);
+    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
 
     OkHttpClient httpClient = mock(OkHttpClient.class);
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
@@ -160,7 +157,6 @@ public class NetworkingModuleTest {
     mockEvents();
 
     networkingModule.sendRequest(
-      mock(ExecutorToken.class),
       "POST",
       "http://somedomain/bar",
       0,
@@ -222,7 +218,6 @@ public class NetworkingModuleTest {
     body.putString("string", "This is request body");
 
     networkingModule.sendRequest(
-      mock(ExecutorToken.class),
       "POST",
       "http://somedomain/bar",
       0,
@@ -266,7 +261,6 @@ public class NetworkingModuleTest {
         JavaOnlyArray.of("User-Agent", "React test agent/1.0"));
 
     networkingModule.sendRequest(
-      mock(ExecutorToken.class),
       "GET",
       "http://someurl/baz",
       0,
@@ -321,7 +315,6 @@ public class NetworkingModuleTest {
     NetworkingModule networkingModule =
       new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
     networkingModule.sendRequest(
-      mock(ExecutorToken.class),
       "POST",
       "http://someurl/uploadFoo",
       0,
@@ -387,7 +380,6 @@ public class NetworkingModuleTest {
     NetworkingModule networkingModule =
       new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
     networkingModule.sendRequest(
-      mock(ExecutorToken.class),
       "POST",
       "http://someurl/uploadFoo",
       0,
@@ -491,7 +483,6 @@ public class NetworkingModuleTest {
     NetworkingModule networkingModule =
       new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
     networkingModule.sendRequest(
-      mock(ExecutorToken.class),
       "POST",
       "http://someurl/uploadFoo",
       0,
@@ -556,7 +547,6 @@ public class NetworkingModuleTest {
 
     for (int idx = 0; idx < requests; idx++) {
       networkingModule.sendRequest(
-        mock(ExecutorToken.class),
         "GET",
         "http://somedomain/foo",
         idx + 1,
@@ -607,7 +597,6 @@ public class NetworkingModuleTest {
 
     for (int idx = 0; idx < requests; idx++) {
       networkingModule.sendRequest(
-        mock(ExecutorToken.class),
         "GET",
         "http://somedomain/foo",
         idx + 1,
@@ -620,7 +609,7 @@ public class NetworkingModuleTest {
     }
     verify(httpClient, times(3)).newCall(any(Request.class));
 
-    networkingModule.abortRequest(mock(ExecutorToken.class), requests);
+    networkingModule.abortRequest(requests);
     PowerMockito.verifyStatic(times(1));
     ArgumentCaptor<OkHttpClient> clientArguments = ArgumentCaptor.forClass(OkHttpClient.class);
     ArgumentCaptor<Integer> requestIdArguments = ArgumentCaptor.forClass(Integer.class);

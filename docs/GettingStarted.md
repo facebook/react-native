@@ -12,8 +12,40 @@ your system, so that you can build apps with it right away. If you already
 have React Native installed, you can skip ahead to the
 [Tutorial](docs/tutorial.html).
 
-The instructions are a bit different depending on your development operating system, and whether you want to start developing for iOS or Android. If you
-want to develop for both iOS and Android, that's fine - you just have to pick
+## Quick Start
+
+[Create React Native App](https://github.com/react-community/create-react-native-app) is the easiest way to start building a new React Native application. It allows you to start a project without installing or configuring any tools to build native code.
+
+No Xcode or Android Studio installation is required. Assuming that you have Node installed, you can run the following commands to create a new React Native project called "AwesomeProject":
+
+```
+npm install -g create-react-native-app
+create-react-native-app AwesomeProject
+cd AwesomeProject
+npm start
+```
+
+This will start a development server for you, and print a QR code in your terminal.
+
+Install the [Expo](https://expo.io) client app on your iOS or Android phone, make sure your phone is on the same network as your computer, and scan the QR code in your terminal to open your project. Create React Native App also has a [user guide](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md) you can reference if you have questions specific to the tool.
+
+Once you've created your project and opened it in the Expo client app, you can proceed to the [Tutorial](docs/tutorial.html).
+
+### Caveats
+
+Because you don't build any native code with Create React Native App, it's not possible to include custom native modules beyond the React Native APIs and components that are available in the Expo client app.
+
+If you know that you'll eventually need to include your own native code, Create React Native App is still a good way to get started. In that case you'll just need to "[eject](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#ejecting-from-create-react-native-app)" eventually to create your own native builds. If you do eject, the native build instructions below will be required to continue working on your project.
+
+If you're integrating React Native into an existing project, you'll want to skip Create React Native App and go directly to setting up the native build environment. See below for instructions on configuring a native build environment for React Native.
+
+<hr style="margin-top:25px"/>
+
+## Building Projects with Native Code
+
+Follow these instructions if you need to build native code in your project. For example, if you "ejected" from Create React Native app, or if you are integrating React Native into an existing application, you'll need this section.
+
+The instructions are a bit different depending on your development operating system, and whether you want to start developing for iOS or Android. If you want to develop for both iOS and Android, that's fine - you just have to pick
 one to start with, since the setup is a bit different.
 
 <div class="toggler">
@@ -312,6 +344,7 @@ If you have a physical Android device, you can use it for development in place o
 Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-ios` inside the newly created folder.
 
 ```
+# skip this first command if you ejected from Create React Native App
 react-native init AwesomeProject
 cd AwesomeProject
 react-native run-ios
@@ -328,6 +361,7 @@ You should see your new app running in the iOS Simulator shortly.
 Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder:
 
 ```
+# skip this first command if you ejected from Create React Native App
 react-native init AwesomeProject
 cd AwesomeProject
 react-native run-android
@@ -370,6 +404,7 @@ Congratulations! You've successfully run and modified your first React Native ap
 Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder:
 
 ```
+# skip this first command if you ejected from Create React Native App
 react-native init AwesomeProject
 cd AwesomeProject
 react-native run-android
@@ -382,6 +417,7 @@ react-native run-android
 Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder.
 
 ```
+# skip this first command if you ejected from Create React Native App
 react-native init AwesomeProject
 cd AwesomeProject
 react-native run-android

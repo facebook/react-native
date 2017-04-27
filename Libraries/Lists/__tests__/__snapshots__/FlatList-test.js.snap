@@ -36,9 +36,11 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
+  onMomentumScrollEnd={[Function]}
   onRefresh={[Function]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
   onViewableItemsChanged={undefined}
   refreshControl={
     <RefreshControlMock
@@ -47,7 +49,6 @@ exports[`FlatList renders all the bells and whistles 1`] = `
     />
   }
   refreshing={false}
-  removeClippedSubviews={true}
   renderItem={[Function]}
   renderScrollComponent={[Function]}
   scrollEventThrottle={50}
@@ -63,54 +64,66 @@ exports[`FlatList renders all the bells and whistles 1`] = `
       <header />
     </View>
     <View
-      style={
-        Array [
-          Object {
-            "flexDirection": "row",
-          },
-          undefined,
-        ]
-      }
+      onLayout={undefined}
     >
-      <item
-        value="0"
-      />
-      <item
-        value="1"
-      />
+      <View
+        style={
+          Array [
+            Object {
+              "flexDirection": "row",
+            },
+            undefined,
+          ]
+        }
+      >
+        <item
+          value="0"
+        />
+        <item
+          value="1"
+        />
+      </View>
+      <separator />
     </View>
-    <separator />
     <View
-      style={
-        Array [
-          Object {
-            "flexDirection": "row",
-          },
-          undefined,
-        ]
-      }
+      onLayout={undefined}
     >
-      <item
-        value="2"
-      />
-      <item
-        value="3"
-      />
+      <View
+        style={
+          Array [
+            Object {
+              "flexDirection": "row",
+            },
+            undefined,
+          ]
+        }
+      >
+        <item
+          value="2"
+        />
+        <item
+          value="3"
+        />
+      </View>
+      <separator />
     </View>
-    <separator />
     <View
-      style={
-        Array [
-          Object {
-            "flexDirection": "row",
-          },
-          undefined,
-        ]
-      }
+      onLayout={undefined}
     >
-      <item
-        value="4"
-      />
+      <View
+        style={
+          Array [
+            Object {
+              "flexDirection": "row",
+            },
+            undefined,
+          ]
+        }
+      >
+        <item
+          value="4"
+        />
+      </View>
     </View>
     <View
       onLayout={[Function]}
@@ -135,10 +148,11 @@ exports[`FlatList renders empty list 1`] = `
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
+  onMomentumScrollEnd={[Function]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
   onViewableItemsChanged={undefined}
-  removeClippedSubviews={true}
   renderItem={[Function]}
   renderScrollComponent={[Function]}
   scrollEventThrottle={50}
@@ -164,10 +178,11 @@ exports[`FlatList renders null list 1`] = `
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
+  onMomentumScrollEnd={[Function]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
   onViewableItemsChanged={undefined}
-  removeClippedSubviews={true}
   renderItem={[Function]}
   renderScrollComponent={[Function]}
   scrollEventThrottle={50}
@@ -205,10 +220,11 @@ exports[`FlatList renders simple list 1`] = `
   onContentSizeChange={[Function]}
   onEndReachedThreshold={2}
   onLayout={[Function]}
+  onMomentumScrollEnd={[Function]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
   onViewableItemsChanged={undefined}
-  removeClippedSubviews={true}
   renderItem={[Function]}
   renderScrollComponent={[Function]}
   scrollEventThrottle={50}

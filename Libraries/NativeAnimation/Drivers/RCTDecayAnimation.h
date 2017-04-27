@@ -7,11 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <React/RCTBridgeModule.h>
+#import "RCTAnimationDriver.h"
 
-@interface RCTDevLoadingView : NSObject <RCTBridgeModule>
-
-+ (void)setEnabled:(BOOL)enabled;
-- (void)updateProgress:(RCTLoadingProgress *)progress;
+@interface RCTDecayAnimation : NSObject<RCTAnimationDriver>
 
 @end

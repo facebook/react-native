@@ -86,7 +86,7 @@ function buildAndRun(args) {
     : './gradlew';
 
   const packageName = fs.readFileSync(
-      'app/src/main/AndroidManifest.xml',
+      `${args.appFolder}/src/main/AndroidManifest.xml`,
       'utf8'
     ).match(/package="(.+?)"/)[1];
 
@@ -135,7 +135,7 @@ function buildApk(gradlew) {
 
 function tryInstallAppOnDevice(args, device) {
   try {
-    const pathToApk = 'app/build/outputs/apk/app-debug.apk';
+    const pathToApk = `${args.appFolder}/build/outputs/apk/${args.appFolder}-debug.apk`;
     const adbPath = getAdbPath();
     const adbArgs = ['-s', device, 'install', pathToApk];
     console.log(chalk.bold(
@@ -288,6 +288,10 @@ module.exports = {
     description: '--flavor has been deprecated. Use --variant instead',
   }, {
     command: '--variant [string]',
+  }, {
+    command: '--appFolder [string]',
+    description: 'Specify a different application folder name for the android source.',
+    default: 'app',
   }, {
     command: '--appIdSuffix [string]',
     description: 'Specify an applicationIdSuffix to launch after build.',

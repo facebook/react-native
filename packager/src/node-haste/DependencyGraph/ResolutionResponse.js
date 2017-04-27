@@ -11,18 +11,17 @@
 
 'use strict';
 
-import type {Options as TransformOptions} from '../../JSTransformer/worker/worker';
 import type Module from '../Module';
 
 const NO_OPTIONS = {};
 
-class ResolutionResponse<TModule: {hash(): string}> {
+class ResolutionResponse<TModule: {hash(): string}, TOptions> {
 
-  transformOptions: TransformOptions;
   dependencies: Array<TModule>;
   mainModuleId: ?(number | string);
   mocks: mixed;
   numPrependedDependencies: number;
+  options: TOptions;
 
   // This is monkey-patched from Resolver.
   getModuleId: ?() => number;
@@ -31,12 +30,12 @@ class ResolutionResponse<TModule: {hash(): string}> {
   _finalized: boolean;
   _mainModule: ?TModule;
 
-  constructor({transformOptions}: {transformOptions: TransformOptions}) {
-    this.transformOptions = transformOptions;
+  constructor(options: TOptions) {
     this.dependencies = [];
     this.mainModuleId = null;
     this.mocks = null;
     this.numPrependedDependencies = 0;
+    this.options = options;
     this._mappings = Object.create(null);
     this._finalized = false;
   }
@@ -45,7 +44,7 @@ class ResolutionResponse<TModule: {hash(): string}> {
     dependencies?: Array<TModule>,
     mainModuleId?: number,
     mocks?: mixed,
-  }): ResolutionResponse<TModule> {
+  }): ResolutionResponse<TModule, TOptions> {
     const {
       dependencies = this.dependencies,
       mainModuleId = this.mainModuleId,
@@ -57,7 +56,7 @@ class ResolutionResponse<TModule: {hash(): string}> {
 
     /* $FlowFixMe: Flow doesn't like Object.assign on class-made objects. */
     return Object.assign(
-      new this.constructor({transformOptions: this.transformOptions}),
+      new this.constructor(this.options),
       this,
       {
         dependencies,
@@ -80,7 +79,7 @@ class ResolutionResponse<TModule: {hash(): string}> {
     }
   }
 
-  finalize(): ResolutionResponse<TModule> {
+  finalize(): Promise<this> {
     /* $FlowFixMe: _mainModule is not initialized in the constructor. */
     return this._mainModule.getName().then(id => {
       this.mainModuleId = id;

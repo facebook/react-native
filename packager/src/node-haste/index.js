@@ -11,7 +11,6 @@
 
 'use strict';
 
-const Cache = require('./Cache');
 const DependencyGraphHelpers = require('./DependencyGraph/DependencyGraphHelpers');
 const FilesByDirNameIndex = require('./FilesByDirNameIndex');
 const JestHasteMap = require('jest-haste-map');
@@ -38,7 +37,7 @@ const {
 } = require('../Logger');
 const {EventEmitter} = require('events');
 
-import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type {Options as JSTransformerOptions} from '../JSTransformer/worker/worker';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
@@ -49,28 +48,27 @@ import type {
 } from './Module';
 import type {HasteFS} from './types';
 
-type Options = {
-  assetDependencies: Array<string>,
-  assetExts: Array<string>,
-  cache: Cache,
-  extensions: Array<string>,
-  extraNodeModules: ?{},
-  forceNodeFilesystemAPI: boolean,
-  getTransformCacheKey: GetTransformCacheKey,
-  globalTransformCache: ?GlobalTransformCache,
-  ignoreFilePath: (filePath: string) => boolean,
-  maxWorkerCount: number,
-  moduleOptions: ModuleOptions,
-  platforms: Set<string>,
-  preferNativePlatform: boolean,
-  providesModuleNodeModules: Array<string>,
-  reporter: Reporter,
-  resetCache: boolean,
-  roots: Array<string>,
-  transformCode: TransformCode,
-  useWatchman: boolean,
-  watch: boolean,
-};
+type Options = {|
+  +assetDependencies: Array<string>,
+  +assetExts: Array<string>,
+  +extensions: Array<string>,
+  +extraNodeModules: ?{},
+  +forceNodeFilesystemAPI: boolean,
+  +getTransformCacheKey: GetTransformCacheKey,
+  +globalTransformCache: ?GlobalTransformCache,
+  +ignoreFilePath: (filePath: string) => boolean,
+  +maxWorkerCount: number,
+  +moduleOptions: ModuleOptions,
+  +platforms: Set<string>,
+  +preferNativePlatform: boolean,
+  +providesModuleNodeModules: Array<string>,
+  +reporter: Reporter,
+  +resetCache: boolean,
+  +roots: Array<string>,
+  +transformCode: TransformCode,
+  +useWatchman: boolean,
+  +watch: boolean,
+|};
 
 const JEST_HASTE_MAP_CACHE_BREAKER = 1;
 
@@ -84,12 +82,12 @@ class DependencyGraph extends EventEmitter {
   _hasteFS: HasteFS;
   _moduleMap: ModuleMap;
 
-  constructor(config: {
-    opts: Options,
-    haste: JestHasteMap,
-    initialHasteFS: HasteFS,
-    initialModuleMap: ModuleMap,
-  }) {
+  constructor(config: {|
+    +opts: Options,
+    +haste: JestHasteMap,
+    +initialHasteFS: HasteFS,
+    +initialModuleMap: ModuleMap,
+  |}) {
     super();
     invariant(config.opts.maxWorkerCount >= 1, 'worker count must be greater or equal to 1');
     this._opts = config.opts;
@@ -164,7 +162,6 @@ class DependencyGraph extends EventEmitter {
   _createModuleCache() {
     const {_opts} = this;
     return new ModuleCache({
-      cache: _opts.cache,
       getTransformCacheKey: _opts.getTransformCacheKey,
       globalTransformCache: _opts.globalTransformCache,
       transformCode: _opts.transformCode,
@@ -182,7 +179,7 @@ class DependencyGraph extends EventEmitter {
    */
   getShallowDependencies(
     entryPath: string,
-    transformOptions: TransformOptions,
+    transformOptions: JSTransformerOptions,
   ): Promise<Array<Module>> {
     return this._moduleCache
       .getModule(entryPath)
@@ -204,19 +201,19 @@ class DependencyGraph extends EventEmitter {
     return Promise.resolve(this._moduleCache.getAllModules());
   }
 
-  getDependencies({
+  getDependencies<T: {+transformer: JSTransformerOptions}>({
     entryPath,
+    options,
     platform,
-    transformOptions,
     onProgress,
     recursive = true,
   }: {
     entryPath: string,
-    platform: string,
-    transformOptions: TransformOptions,
+    options: T,
+    platform: ?string,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     recursive: boolean,
-  }): Promise<ResolutionResponse<Module>> {
+  }): Promise<ResolutionResponse<Module, T>> {
     platform = this._getRequestPlatform(entryPath, platform);
     const absPath = this._getAbsolutePath(entryPath);
     const dirExists = filePath => {
@@ -239,11 +236,11 @@ class DependencyGraph extends EventEmitter {
       preferNativePlatform: this._opts.preferNativePlatform,
     });
 
-    const response = new ResolutionResponse({transformOptions});
+    const response = new ResolutionResponse(options);
 
     return req.getOrderedDependencies({
       response,
-      transformOptions,
+      transformOptions: options.transformer,
       onProgress,
       recursive,
     }).then(() => response);
@@ -257,7 +254,7 @@ class DependencyGraph extends EventEmitter {
     return Promise.resolve(this._hasteFS.matchFiles(pattern));
   }
 
-  _getRequestPlatform(entryPath: string, platform: string) {
+  _getRequestPlatform(entryPath: string, platform: ?string): ?string {
     if (platform == null) {
       platform = getPlatformExtension(entryPath, this._opts.platforms);
     } else if (!this._opts.platforms.has(platform)) {
@@ -290,7 +287,6 @@ class DependencyGraph extends EventEmitter {
     return this._moduleCache.createPolyfill(options);
   }
 
-  static Cache;
   static Module;
   static Polyfill;
   static getAssetDataFromName;
@@ -301,7 +297,6 @@ class DependencyGraph extends EventEmitter {
 }
 
 Object.assign(DependencyGraph, {
-  Cache,
   Module,
   Polyfill,
   getAssetDataFromName,
