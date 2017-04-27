@@ -223,6 +223,11 @@ void jni_YGNodeReset(alias_ref<jobject> thiz, jlong nativePointer) {
   YGNodeSetPrintFunc(node, YGPrint);
 }
 
+void jni_YGNodePrint(alias_ref<jobject> thiz, jlong nativePointer) {
+  const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
+  YGNodePrint(node, (YGPrintOptions) (YGPrintOptionsStyle | YGPrintOptionsLayout | YGPrintOptionsChildren));
+}
+
 void jni_YGNodeInsertChild(alias_ref<jobject>, jlong nativePointer, jlong childPointer, jint index) {
   YGNodeInsertChild(_jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer), index);
 }
@@ -490,6 +495,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGNodeGetInstanceCount),
                         YGMakeNativeMethod(jni_YGSetLogger),
                         YGMakeNativeMethod(jni_YGLog),
+                        YGMakeNativeMethod(jni_YGNodePrint),
                     });
     registerNatives("com/facebook/yoga/YogaConfig",
                     {
