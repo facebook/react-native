@@ -3116,71 +3116,45 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
     layout->cachedLayout.computedHeight = -1;
   }
 
-  YGCachedMeasurement *cachedResults = NULL;
-
   // Determine whether the results are already cached. We maintain a separate
   // cache for layouts and measurements. A layout operation modifies the
-  // positions
-  // and dimensions for nodes in the subtree. The algorithm assumes that each
-  // node
-  // gets layed out a maximum of one time per tree layout, but multiple
-  // measurements
-  // may be required to resolve all of the flex dimensions.
-  // We handle nodes with measure functions specially here because they are the
-  // most
-  // expensive to measure, so it's worth avoiding redundant measurements if at
-  // all possible.
-  if (node->measure) {
-    const float marginAxisRow = YGNodeMarginForAxis(node, YGFlexDirectionRow, parentWidth);
-    const float marginAxisColumn = YGNodeMarginForAxis(node, YGFlexDirectionColumn, parentWidth);
+  // positions and dimensions for nodes in the subtree. The algorithm assumes that each
+  // node gets layed out a maximum of one time per tree layout, but multiple
+  // measurements may be required to resolve all of the flex dimensions.
 
-    // First, try to use the layout cache.
-    if (YGNodeCanUseCachedMeasurement(widthMeasureMode,
-                                      availableWidth,
-                                      heightMeasureMode,
-                                      availableHeight,
-                                      layout->cachedLayout.widthMeasureMode,
-                                      layout->cachedLayout.availableWidth,
-                                      layout->cachedLayout.heightMeasureMode,
-                                      layout->cachedLayout.availableHeight,
-                                      layout->cachedLayout.computedWidth,
-                                      layout->cachedLayout.computedHeight,
-                                      marginAxisRow,
-                                      marginAxisColumn)) {
-      cachedResults = &layout->cachedLayout;
-    } else {
-      // Try to use the measurement cache.
-      for (uint32_t i = 0; i < layout->nextCachedMeasurementsIndex; i++) {
-        if (YGNodeCanUseCachedMeasurement(widthMeasureMode,
-                                          availableWidth,
-                                          heightMeasureMode,
-                                          availableHeight,
-                                          layout->cachedMeasurements[i].widthMeasureMode,
-                                          layout->cachedMeasurements[i].availableWidth,
-                                          layout->cachedMeasurements[i].heightMeasureMode,
-                                          layout->cachedMeasurements[i].availableHeight,
-                                          layout->cachedMeasurements[i].computedWidth,
-                                          layout->cachedMeasurements[i].computedHeight,
-                                          marginAxisRow,
-                                          marginAxisColumn)) {
-          cachedResults = &layout->cachedMeasurements[i];
-          break;
-        }
-      }
-    }
-  } else if (performLayout) {
-    if (YGFloatsEqual(layout->cachedLayout.availableWidth, availableWidth) &&
-        YGFloatsEqual(layout->cachedLayout.availableHeight, availableHeight) &&
-        layout->cachedLayout.widthMeasureMode == widthMeasureMode &&
-        layout->cachedLayout.heightMeasureMode == heightMeasureMode) {
-      cachedResults = &layout->cachedLayout;
-    }
-  } else {
+  YGCachedMeasurement *cachedResults = NULL;
+  const float marginAxisRow = YGNodeMarginForAxis(node, YGFlexDirectionRow, parentWidth);
+  const float marginAxisColumn = YGNodeMarginForAxis(node, YGFlexDirectionColumn, parentWidth);
+
+  // First, try to use the layout cache.
+  if ((node->measure || performLayout) && YGNodeCanUseCachedMeasurement(widthMeasureMode,
+                                    availableWidth,
+                                    heightMeasureMode,
+                                    availableHeight,
+                                    layout->cachedLayout.widthMeasureMode,
+                                    layout->cachedLayout.availableWidth,
+                                    layout->cachedLayout.heightMeasureMode,
+                                    layout->cachedLayout.availableHeight,
+                                    layout->cachedLayout.computedWidth,
+                                    layout->cachedLayout.computedHeight,
+                                    marginAxisRow,
+                                    marginAxisColumn)) {
+    cachedResults = &layout->cachedLayout;
+  } else if (node->measure || !performLayout) {
+    // Try to use the measurement cache.
     for (uint32_t i = 0; i < layout->nextCachedMeasurementsIndex; i++) {
-      if (YGFloatsEqual(layout->cachedMeasurements[i].availableWidth, availableWidth) &&
-          YGFloatsEqual(layout->cachedMeasurements[i].availableHeight, availableHeight) &&
-          layout->cachedMeasurements[i].widthMeasureMode == widthMeasureMode &&
-          layout->cachedMeasurements[i].heightMeasureMode == heightMeasureMode) {
+      if (YGNodeCanUseCachedMeasurement(widthMeasureMode,
+                                        availableWidth,
+                                        heightMeasureMode,
+                                        availableHeight,
+                                        layout->cachedMeasurements[i].widthMeasureMode,
+                                        layout->cachedMeasurements[i].availableWidth,
+                                        layout->cachedMeasurements[i].heightMeasureMode,
+                                        layout->cachedMeasurements[i].availableHeight,
+                                        layout->cachedMeasurements[i].computedWidth,
+                                        layout->cachedMeasurements[i].computedHeight,
+                                        marginAxisRow,
+                                        marginAxisColumn)) {
         cachedResults = &layout->cachedMeasurements[i];
         break;
       }
