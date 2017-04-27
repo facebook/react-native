@@ -15,6 +15,7 @@ var PixelRatio = require('PixelRatio');
 var ReactNativePropRegistry = require('ReactNativePropRegistry');
 var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var StyleSheetValidation = require('StyleSheetValidation');
+var StyleSheetInheritance = require('StyleSheetInheritance');
 
 var flatten = require('flattenStyle');
 
@@ -197,6 +198,7 @@ module.exports = {
   create<S: Styles>(obj: S): StyleSheet<S> {
     const result: StyleSheet<S> = {};
     for (var key in obj) {
+      obj[key] = StyleSheetInheritance.resolve( key, obj );
       StyleSheetValidation.validateStyle(key, obj);
       result[key] = ReactNativePropRegistry.register(obj[key]);
     }
