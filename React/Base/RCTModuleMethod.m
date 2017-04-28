@@ -460,7 +460,7 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
 - (RCTFunctionType)functionType
 {
   if ([_methodSignature rangeOfString:@"RCTPromise"].length) {
-    RCTAssert(_isSync == NO, @"Promises cannot be used in sync functions");
+    RCTAssert(!_isSync, @"Promises cannot be used in sync functions");
 
     return RCTFunctionTypePromise;
   } else if (_isSync) {
@@ -540,7 +540,6 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
   }
 
   id result = nil;
-
   if (_isSync) {
     void *pointer;
     [_invocation getReturnValue:&pointer];
@@ -561,10 +560,8 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
 
 - (NSString *)description
 {
-  NSString *descriptor = [NSString stringWithCString:RCTFunctionDescriptorFromType(self.functionType)
-                                            encoding:NSString.defaultCStringEncoding];
-  return [NSString stringWithFormat:@"<%@: %p; exports %@ as %@(); type: %@>",
-          [self class], self, [self methodName], self.JSMethodName, descriptor];
+  return [NSString stringWithFormat:@"<%@: %p; exports %@ as %@(); type: %s>",
+          [self class], self, [self methodName], self.JSMethodName, RCTFunctionDescriptorFromType(self.functionType)];
 }
 
 @end

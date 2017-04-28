@@ -172,7 +172,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * { ... }
  */
 #define RCT_REMAP_METHOD(js_name, method) \
-  RCT_EXTERN_REMAP_METHOD(js_name, method, NO) \
+  _RCT_EXTERN_REMAP_METHOD(js_name, method, NO) \
   - (void)method;
 
 /**
@@ -184,7 +184,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * { ... }
  */
 #define RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(js_name, method) \
-  RCT_EXTERN_REMAP_METHOD(js_name, method, YES) \
+  _RCT_EXTERN_REMAP_METHOD(js_name, method, YES) \
   - (id)method;
 
 /**
@@ -234,20 +234,20 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * of an external module.
  */
 #define RCT_EXTERN_METHOD(method) \
-  RCT_EXTERN_REMAP_METHOD(, method, NO)
+  _RCT_EXTERN_REMAP_METHOD(, method, NO)
 
 /**
  * Use this macro in accordance with RCT_EXTERN_MODULE to export methods
  * of an external module that should be invoked synchronously.
  */
 #define RCT_EXTERN__BLOCKING_SYNCHRONOUS_METHOD(method) \
-  RCT_EXTERN_REMAP_METHOD(, method, YES)
+  _RCT_EXTERN_REMAP_METHOD(, method, YES)
 
 /**
  * Like RCT_EXTERN_REMAP_METHOD, but allows setting a custom JavaScript name
  * and also whether this method is synchronous.
  */
-#define RCT_EXTERN_REMAP_METHOD(js_name, method, is_blocking_synchronous_method) \
+#define _RCT_EXTERN_REMAP_METHOD(js_name, method, is_blocking_synchronous_method) \
   + (NSArray *)RCT_CONCAT(__rct_export__, \
     RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
     return @[@#js_name, @#method, @is_blocking_synchronous_method]; \
