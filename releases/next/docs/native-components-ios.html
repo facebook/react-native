@@ -190,13 +190,14 @@ MapView<span class="token punctuation">.</span>propTypes <span class="token oper
 </span>
 class <span class="token class-name">MapView</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
   <span class="token function">constructor<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">super<span class="token punctuation">(</span></span>props<span class="token punctuation">)</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>_onChange <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_onChange<span class="token punctuation">.</span><span class="token function">bind<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
   <span class="token function">_onChange<span class="token punctuation">(</span></span>event<span class="token punctuation">:</span> Event<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>onRegionChange<span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">return</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span><span class="token function">onRegionChange<span class="token punctuation">(</span></span>event<span class="token punctuation">.</span>nativeEvent<span class="token punctuation">.</span>region<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span><span class="token function">onRegionChange<span class="token punctuation">(</span></span>event<span class="token punctuation">.</span>nativeEvent<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
   <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> &lt;RNTMap <span class="token punctuation">{</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">}</span> onChange<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onChange<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
@@ -206,9 +207,31 @@ MapView<span class="token punctuation">.</span>propTypes <span class="token oper
   <span class="token comment" spellcheck="true">/**
    * Callback that is called continuously when the user is dragging the map.
    */</span>
-  onRegionChange<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>func<span class="token punctuation">,</span>
+  onChange<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>func<span class="token punctuation">,</span>
   <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span></div><h2><a class="anchor" name="styles"></a>Styles <a class="hash-link" href="docs/native-components-ios.html#styles">#</a></h2><p>Since all our native react views are subclasses of <code>UIView</code>, most style attributes will work like you would expect out of the box.  Some components will want a default style, however, for example <code>UIDatePicker</code> which is a fixed size.  This default style is important for the layout algorithm to work as expected, but we also want to be able to override the default style when using the component.  <code>DatePickerIOS</code> does this by wrapping the native component in an extra view, which has flexible styling, and using a fixed style (which is generated with constants passed in from native) on the inner native component:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// DatePickerIOS.ios.js
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+class <span class="token class-name">MapViewExample</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  <span class="token function">onRegionChange<span class="token punctuation">(</span></span>event<span class="token punctuation">:</span> Event<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   <span class="token comment" spellcheck="true"> // Do stuff with event.region.latitude, etc.
+</span>  <span class="token punctuation">}</span>
+
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> region <span class="token operator">=</span> <span class="token punctuation">{</span>
+      latitude<span class="token punctuation">:</span> <span class="token number">37.48</span><span class="token punctuation">,</span>
+      longitude<span class="token punctuation">:</span> <span class="token operator">-</span><span class="token number">122.16</span><span class="token punctuation">,</span>
+      latitudeDelta<span class="token punctuation">:</span> <span class="token number">0.1</span><span class="token punctuation">,</span>
+      longitudeDelta<span class="token punctuation">:</span> <span class="token number">0.1</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      &lt;MapView region<span class="token operator">=</span><span class="token punctuation">{</span>region<span class="token punctuation">}</span> pitchEnabled<span class="token operator">=</span><span class="token punctuation">{</span><span class="token boolean">false</span><span class="token punctuation">}</span> style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">}</span> onChange<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>onRegionChange<span class="token punctuation">}</span><span class="token operator">/</span><span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>  
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">
+// Module name
+</span>AppRegistry<span class="token punctuation">.</span><span class="token function">registerComponent<span class="token punctuation">(</span></span><span class="token string">&#x27;MapViewExample&#x27;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> MapViewExample<span class="token punctuation">)</span><span class="token punctuation">;</span></div><h2><a class="anchor" name="styles"></a>Styles <a class="hash-link" href="docs/native-components-ios.html#styles">#</a></h2><p>Since all our native react views are subclasses of <code>UIView</code>, most style attributes will work like you would expect out of the box.  Some components will want a default style, however, for example <code>UIDatePicker</code> which is a fixed size.  This default style is important for the layout algorithm to work as expected, but we also want to be able to override the default style when using the component.  <code>DatePickerIOS</code> does this by wrapping the native component in an extra view, which has flexible styling, and using a fixed style (which is generated with constants passed in from native) on the inner native component:</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// DatePickerIOS.ios.js
 </span>
 import <span class="token punctuation">{</span> UIManager <span class="token punctuation">}</span> from <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> RCTDatePickerIOSConsts <span class="token operator">=</span> UIManager<span class="token punctuation">.</span>RCTDatePicker<span class="token punctuation">.</span>Constants<span class="token punctuation">;</span>
