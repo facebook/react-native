@@ -821,7 +821,7 @@ class Bundler {
           hot,
           inlineRequires: extraOptions.inlineRequires || false,
           platform,
-          projectRoots: options.projectRoots,
+          projectRoot: options.projectRoots[0],
         }
       },
       preloadedModules: extraOptions.preloadedModules,

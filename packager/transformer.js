@@ -30,19 +30,19 @@ const {compactMapping} = require('./src/Bundler/source-map');
 const getBabelRC = (function() {
   let babelRC = null;
 
-  return function _getBabelRC(projectRoots) {
+  return function _getBabelRC(projectRoot) {
     if (babelRC !== null) {
       return babelRC;
     }
 
     babelRC = {plugins: []}; // empty babelrc
 
-    // Let's look for the .babelrc in the first project root.
+    // Let's look for the .babelrc in the project root.
     // In the future let's look into adding a command line option to specify
     // this location.
     let projectBabelRCPath;
-    if (projectRoots && projectRoots.length > 0) {
-      projectBabelRCPath = path.resolve(projectRoots[0], '.babelrc');
+    if (projectRoot) {
+      projectBabelRCPath = path.resolve(projectRoot, '.babelrc');
     }
 
     // If a .babelrc file doesn't exist in the project,
@@ -70,7 +70,7 @@ const getBabelRC = (function() {
  * config object with the appropriate plugins.
  */
 function buildBabelConfig(filename, options) {
-  const babelRC = getBabelRC(options.projectRoots);
+  const babelRC = getBabelRC(options.projectRoot);
 
   const extraConfig = {
     code: false,

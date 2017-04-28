@@ -41,7 +41,7 @@ export type TransformOptions = {|
   +hot: boolean,
   +inlineRequires: {+blacklist: {[string]: true}} | boolean,
   +platform: string,
-  +projectRoots: Array<string>,
+  +projectRoot: string,
 |};
 
 export type Options = {|

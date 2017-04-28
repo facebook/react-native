@@ -383,7 +383,7 @@ class OptionsHasher {
    */
   hashTransformOptions(hash: crypto$Hash, options: TransformOptions): crypto$Hash {
     const {
-      generateSourceMaps, dev, hot, inlineRequires, platform, projectRoots,
+      generateSourceMaps, dev, hot, inlineRequires, platform, projectRoot,
       ...unknowns,
     } = options;
     const unknownKeys = Object.keys(unknowns);
@@ -401,14 +401,17 @@ class OptionsHasher {
     if (typeof inlineRequires === 'object') {
       relativeBlacklist = this.relativizeFilePaths(Object.keys(inlineRequires.blacklist));
     }
-    const relativeProjectRoots = this.relativizeFilePaths(projectRoots);
-    const optionTuple = [relativeBlacklist, relativeProjectRoots];
+    const relativeProjectRoot = this.relativizeFilePath(projectRoot);
+    const optionTuple = [relativeBlacklist, relativeProjectRoot];
     hash.update(JSON.stringify(optionTuple));
     return hash;
   }
 
   relativizeFilePaths(filePaths: Array<string>): Array<string> {
-    return filePaths.map(filepath => path.relative(this._rootPath, filepath));
+    return filePaths.map(this.relativizeFilePath);
+  }
+  relativizeFilePath(filePath: string): string {
+    return path.relative(this._rootPath, filePath);
   }
 }
 

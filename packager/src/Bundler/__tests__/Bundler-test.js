@@ -171,7 +171,7 @@ describe('Bundler', function() {
               hot: false,
               inlineRequires: false,
               platform: undefined,
-              projectRoots,
+              projectRoot: projectRoots[0],
             },
           },
         },
