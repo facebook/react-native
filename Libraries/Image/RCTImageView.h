@@ -25,4 +25,36 @@
 @property (nonatomic, assign) CGFloat blurRadius;
 @property (nonatomic, assign) RCTResizeMode resizeMode;
 
+/**
+ * Border radii.
+ */
+@property (nonatomic, assign) CGFloat borderRadius;
+@property (nonatomic, assign) CGFloat borderTopLeftRadius;
+@property (nonatomic, assign) CGFloat borderTopRightRadius;
+@property (nonatomic, assign) CGFloat borderBottomLeftRadius;
+@property (nonatomic, assign) CGFloat borderBottomRightRadius;
+
+/**
+ * Border colors (actually retained).
+ */
+@property (nonatomic, assign) CGColorRef borderTopColor;
+@property (nonatomic, assign) CGColorRef borderRightColor;
+@property (nonatomic, assign) CGColorRef borderBottomColor;
+@property (nonatomic, assign) CGColorRef borderLeftColor;
+@property (nonatomic, assign) CGColorRef borderColor;
+
+/**
+ * Border widths.
+ */
+@property (nonatomic, assign) CGFloat borderTopWidth;
+@property (nonatomic, assign) CGFloat borderRightWidth;
+@property (nonatomic, assign) CGFloat borderBottomWidth;
+@property (nonatomic, assign) CGFloat borderLeftWidth;
+@property (nonatomic, assign) CGFloat borderWidth;
+
+/**
+ * Border styles.
+ */
+@property (nonatomic, assign) RCTBorderStyle borderStyle;
+
 @end
