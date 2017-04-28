@@ -112,6 +112,7 @@ type Options = {|
   +hasteImpl?: HasteImpl,
   +platforms: Array<string>,
   +polyfillModuleNames: Array<string>,
+  +postProcessModules?: (modules: Array<Module>, entryFile: string) => Array<Module>,
   +projectRoots: Array<string>,
   +providesModuleNodeModules?: Array<string>,
   +reporter: Reporter,
@@ -470,12 +471,14 @@ class Bundler {
           return {module, transformed};
         });
 
-      return Promise.all(response.dependencies.map(toModuleTransport))
+      const deps = this._opts.postProcessModules == null
+        ? response.dependencies
+        : this._opts.postProcessModules(response.dependencies, entryFile);
+
+      return Promise.all(deps.map(toModuleTransport))
         .then(transformedModules =>
-          Promise.resolve(
-            finalizeBundle({bundle, transformedModules, response, modulesByName})
-          ).then(() => bundle)
-        );
+          finalizeBundle({bundle, transformedModules, response, modulesByName})
+        ).then(() => bundle);
     });
   }
 

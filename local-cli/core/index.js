@@ -16,7 +16,7 @@ const defaultConfig = require('./default.config');
 const minimist = require('minimist');
 
 import type {GetTransformOptions} from '../../packager/src/Bundler';
-import type {HasteImpl} from '../../packager/src/node-haste/Module';
+import type Module, {HasteImpl} from '../../packager/src/node-haste/Module';
 import type {CommandT} from '../commands';
 
 /**
@@ -67,6 +67,12 @@ export type ConfigT = {
    * Returns dependency config from <node_modules>/packageName
    */
   getDependencyConfig(pkgName: string): Object,
+
+  /**
+   * An optional function that can modify the module array before the bundle is
+   * finalized.
+   */
+  postProcessModules?: (modules: Array<Module>, entryFile: string) => Array<Module>,
 
   /**
    * A module that exports:
