@@ -39,16 +39,17 @@ const CACHE_SUB_DIR = 'cache';
 const getCacheDirPath = (function() {
   let dirPath;
   return function() {
-    if (dirPath == null) {
-      dirPath = path.join(
-        require('os').tmpdir(),
-        CACHE_NAME + '-' + crypto.createHash('sha1')
-          .update(__dirname).digest('base64'),
-      );
-      require('debug')('RNP:TransformCache:Dir')(
-        `transform cache directory: ${dirPath}`
-      );
+    if (dirPath != null) {
+      return dirPath;
     }
+    const hash = crypto.createHash('sha1').update(__dirname);
+    if (process.getuid != null) {
+      hash.update(process.getuid().toString());
+    }
+    dirPath = path.join(require('os').tmpdir(), CACHE_NAME + '-' + hash.digest('hex'));
+    require('debug')('RNP:TransformCache:Dir')(
+      `transform cache directory: ${dirPath}`
+    );
     return dirPath;
   };
 })();
