@@ -100,6 +100,18 @@ const assetPropertyBlacklist = new Set([
   'path',
 ]);
 
+export type PostProcessModulesOptions = {|
+  dev: boolean,
+  minify: boolean,
+  platform: string,
+|};
+
+export type PostProcessModules = (
+  modules: Array<ModuleTransport>,
+  entryFile: string,
+  options: PostProcessModulesOptions,
+) => Array<ModuleTransport>;
+
 type Options = {|
   +allowBundleUpdates: boolean,
   +assetExts: Array<string>,
@@ -112,7 +124,7 @@ type Options = {|
   +hasteImpl?: HasteImpl,
   +platforms: Array<string>,
   +polyfillModuleNames: Array<string>,
-  +postProcessModules?: (modules: Array<Module>, entryFile: string) => Array<Module>,
+  +postProcessModules?: PostProcessModules,
   +projectRoots: Array<string>,
   +providesModuleNodeModules?: Array<string>,
   +reporter: Reporter,
@@ -450,35 +462,44 @@ class Bundler {
         }
       }
 
-      const toModuleTransport = module =>
-        this._toModuleTransport({
-          module,
-          bundle,
-          entryFilePath,
-          assetPlugins,
-          options: response.options,
-          /* $FlowFixMe: `getModuleId` is monkey-patched */
-          getModuleId: (response.getModuleId: () => number),
-          dependencyPairs: response.getResolvedDependencyPairs(module),
-        }).then(transformed => {
-          modulesByName[transformed.name] = module;
-          onModuleTransformed({
+      const modulesByTransport: Map<ModuleTransport, Module> = new Map();
+      const toModuleTransport: Module => Promise<ModuleTransport> =
+        module =>
+          this._toModuleTransport({
             module,
-            response,
             bundle,
-            transformed,
+            entryFilePath,
+            assetPlugins,
+            options: response.options,
+            /* $FlowFixMe: `getModuleId` is monkey-patched */
+            getModuleId: (response.getModuleId: () => number),
+            dependencyPairs: response.getResolvedDependencyPairs(module),
+          }).then(transformed => {
+            modulesByTransport.set(transformed, module);
+            modulesByName[transformed.name] = module;
+            onModuleTransformed({
+              module,
+              response,
+              bundle,
+              transformed,
+            });
+            return transformed;
           });
-          return {module, transformed};
-        });
 
-      const deps = this._opts.postProcessModules == null
-        ? response.dependencies
-        : this._opts.postProcessModules(response.dependencies, entryFile);
+      const p = this._opts.postProcessModules;
+      const postProcess = p
+        ? modules => p(modules, entryFile, {dev, minify, platform})
+        : null;
 
-      return Promise.all(deps.map(toModuleTransport))
-        .then(transformedModules =>
-          finalizeBundle({bundle, transformedModules, response, modulesByName})
-        ).then(() => bundle);
+      return Promise.all(response.dependencies.map(toModuleTransport))
+        .then(postProcess)
+        .then(moduleTransports => {
+          const transformedModules = moduleTransports.map(transformed => ({
+            module: modulesByTransport.get(transformed),
+            transformed,
+          }));
+          return finalizeBundle({bundle, transformedModules, response, modulesByName});
+        }).then(() => bundle);
     });
   }
 
@@ -635,9 +656,10 @@ class Bundler {
       [name, {code, dependencies, dependencyOffsets, map, source}]
     ) => {
       const {preloadedModules} = options;
+      const isPolyfill = module.isPolyfill();
       const preloaded =
         module.path === entryFilePath ||
-        module.isPolyfill() ||
+        isPolyfill ||
         preloadedModules && preloadedModules.hasOwnProperty(module.path);
 
       return new ModuleTransport({
@@ -646,6 +668,7 @@ class Bundler {
         code,
         map,
         meta: {dependencies, dependencyOffsets, preloaded, dependencyPairs},
+        polyfill: isPolyfill,
         sourceCode: source,
         sourcePath: module.path,
       });

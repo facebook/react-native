@@ -34,6 +34,8 @@ var sizeOf = require('image-size');
 var fs = require('fs');
 const os = require('os');
 
+const {any, objectContaining} = expect;
+
 var commonOptions = {
   allowBundleUpdates: false,
   assetExts: defaults.assetExts,
@@ -304,14 +306,34 @@ describe('Bundler', function() {
         assetServer,
       });
 
+      const dev = false;
+      const minify = true;
+      const platform = 'arbitrary';
+
       const entryFile = '/root/foo.js';
       return b.bundle({
+        dev,
         entryFile,
+        minify,
+        platform,
         runBeforeMainModule: [],
         runModule: true,
         sourceMapUrl: 'source_map_url',
       }).then(() => {
-        expect(postProcessModules).toBeCalledWith(modules, entryFile);
+        expect(postProcessModules)
+          .toBeCalledWith(
+            modules.map(x => objectContaining({
+              name: any(String),
+              id: any(Number),
+              code: any(String),
+              sourceCode: any(String),
+              sourcePath: x.path,
+              meta: any(Object),
+              polyfill: !!x.isPolyfill(),
+            })),
+            entryFile,
+            {dev, minify, platform},
+          );
       });
     });
 

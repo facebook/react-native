@@ -29,9 +29,9 @@ class ModuleTransport {
   code: string;
   sourceCode: string;
   sourcePath: string;
-  virtual: ?boolean;
+  virtual: boolean;
   meta: ?Metadata;
-  polyfill: ?boolean;
+  polyfill: boolean;
   map: ?SourceMapOrMappings;
 
   constructor(data: {
@@ -40,9 +40,9 @@ class ModuleTransport {
     code: string,
     sourceCode: string,
     sourcePath: string,
-    virtual?: ?boolean,
+    virtual?: boolean,
     meta?: ?Metadata,
-    polyfill?: ?boolean,
+    polyfill?: boolean,
     map?: ?SourceMapOrMappings,
   }) {
     this.name = data.name;
@@ -59,9 +59,9 @@ class ModuleTransport {
     assertExists(data, 'sourcePath');
     this.sourcePath = data.sourcePath;
 
-    this.virtual = data.virtual;
+    this.virtual = !!data.virtual;
     this.meta = data.meta;
-    this.polyfill = data.polyfill;
+    this.polyfill = !!data.polyfill;
     this.map = data.map;
 
     Object.freeze(this);
