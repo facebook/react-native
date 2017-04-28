@@ -69,7 +69,6 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     _loadingViewFadeDelay = 0.25;
     _loadingViewFadeDuration = 0.25;
     _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
-    self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeDidReload)
@@ -93,11 +92,10 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     }
 #endif
 
-    if (!_bridge.loading) {
-      [self bundleFinishedLoading:([_bridge batchedBridge] ?: _bridge)];
-    }
-
     [self showLoadingView];
+
+    // Immediately schedule the application to be started
+    [self bundleFinishedLoading:[_bridge batchedBridge]];
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -153,10 +151,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-  return CGSizeMake(
-    _sizeFlexibility & RCTRootViewSizeFlexibilityWidth ? MIN(_intrinsicContentSize.width, size.width) : size.width,
-    _sizeFlexibility & RCTRootViewSizeFlexibilityHeight ? MIN(_intrinsicContentSize.height, size.height) : size.height
-  );
+  CGSize fitSize = _intrinsicContentSize;
+  CGSize currentSize = self.bounds.size;
+
+  // Following the current `size` and current `sizeFlexibility` policy.
+  fitSize = CGSizeMake(
+      _sizeFlexibility & RCTRootViewSizeFlexibilityWidth ? fitSize.width : currentSize.width,
+      _sizeFlexibility & RCTRootViewSizeFlexibilityHeight ? fitSize.height : currentSize.height
+    );
+
+  // Following the given size constraints.
+  fitSize = CGSizeMake(
+      MIN(size.width, fitSize.width),
+      MIN(size.height, fitSize.height)
+    );
+
+  return fitSize;
 }
 
 - (void)layoutSubviews
@@ -248,11 +258,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // Use the (batched) bridge that's sent in the notification payload, so the
   // RCTRootContentView is scoped to the right bridge
   RCTBridge *bridge = notification.userInfo[@"bridge"];
-  [self bundleFinishedLoading:bridge];
+  if (bridge != _contentView.bridge) {
+    [self bundleFinishedLoading:bridge];
+  }
 }
 
 - (void)bundleFinishedLoading:(RCTBridge *)bridge
 {
+  RCTAssert(bridge != nil, @"Bridge cannot be nil");
   if (!bridge.valid) {
     return;
   }

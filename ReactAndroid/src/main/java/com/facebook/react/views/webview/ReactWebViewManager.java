@@ -31,6 +31,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
+import android.webkit.WebSettings;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
@@ -396,6 +397,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public void setAllowUniversalAccessFromFileURLs(WebView view, boolean allow) {
     view.getSettings().setAllowUniversalAccessFromFileURLs(allow);
   }
+  
+  @ReactProp(name = "saveFormDataDisabled")
+  public void setSaveFormDataDisabled(WebView view, boolean disable) {
+    view.getSettings().setSaveFormData(!disable);
+  }
 
   @ReactProp(name = "injectedJavaScript")
   public void setInjectedJavaScript(WebView view, @Nullable String injectedJavaScript) {
@@ -473,6 +479,19 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       view.setPictureListener(getPictureListener());
     } else {
       view.setPictureListener(null);
+    }
+  }
+
+  @ReactProp(name = "mixedContentMode")
+  public void setMixedContentMode(WebView view, @Nullable String mixedContentMode) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (mixedContentMode == null || "never".equals(mixedContentMode)) {
+        view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
+      } else if ("always".equals(mixedContentMode)) {
+        view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+      } else if ("compatibility".equals(mixedContentMode)) {
+        view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+      } 
     }
   }
 

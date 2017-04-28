@@ -33,7 +33,8 @@ class RCTNetworking extends NativeEventEmitter {
     responseType: 'text' | 'base64',
     incrementalUpdates: boolean,
     timeout: number,
-    callback: (requestId: number) => any
+    callback: (requestId: number) => any,
+    withCredentials: boolean
   ) {
     const body = convertRequestBody(data);
     RCTNetworkingNative.sendRequest({
@@ -43,7 +44,8 @@ class RCTNetworking extends NativeEventEmitter {
       headers,
       responseType,
       incrementalUpdates,
-      timeout
+      timeout,
+      withCredentials
     }, callback);
   }
 

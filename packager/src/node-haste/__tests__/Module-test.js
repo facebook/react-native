@@ -60,9 +60,7 @@ describe('Module', () => {
   let transformCacheKey;
   const createModule = options =>
     new Module({
-      options: {
-        cacheTransformResults: true,
-      },
+      options: {},
       transformCode: (module, sourceCode, transformOptions) => {
         return Promise.resolve({code: sourceCode});
       },
@@ -213,40 +211,11 @@ describe('Module', () => {
         );
     });
 
-    it('passes module and file contents if the file is annotated with @extern', () => {
-      const module = createModule({transformCode});
-      const customFileContents = `
-        /**
-         * @extern
-         */
-      `;
-      mockIndexFile(customFileContents);
-      return module.read().then(() => {
-        expect(transformCode).toBeCalledWith(module, customFileContents, {extern: true});
-      });
-    });
-
     it('passes the module and file contents to the transform for JSON files', () => {
       mockPackageFile();
       const module = createJSONModule({transformCode});
       return module.read().then(() => {
-        expect(transformCode).toBeCalledWith(module, packageJson, {extern: true});
-      });
-    });
-
-    it('does not extend the passed options object if the file is annotated with @extern', () => {
-      const module = createModule({transformCode});
-      const customFileContents = `
-        /**
-         * @extern
-         */
-      `;
-      mockIndexFile(customFileContents);
-      const options = {arbitrary: 'foo'};
-      return module.read(options).then(() => {
-        expect(options).not.toEqual(jasmine.objectContaining({extern: true}));
-        expect(transformCode)
-          .toBeCalledWith(module, customFileContents, {...options, extern: true});
+        expect(transformCode).toBeCalledWith(module, packageJson, undefined);
       });
     });
 
@@ -255,9 +224,7 @@ describe('Module', () => {
       const module = createJSONModule({transformCode});
       const options = {arbitrary: 'foo'};
       return module.read(options).then(() => {
-        expect(options).not.toEqual(jasmine.objectContaining({extern: true}));
-        expect(transformCode)
-          .toBeCalledWith(module, packageJson, {...options, extern: true});
+        expect(transformCode).toBeCalledWith(module, packageJson, options);
       });
     });
 
@@ -289,32 +256,13 @@ describe('Module', () => {
       });
     });
 
-    it('only stores dependencies if `cacheTransformResults` option is disabled', () => {
-      transformResult = {
-        code: exampleCode,
-        arbitrary: 'arbitrary',
-        dependencies: ['foo', 'bar'],
-        dependencyOffsets: [12, 764],
-        map: {version: 3},
-        subObject: {foo: 'bar'},
-      };
-      const module = createModule({transformCode, options: {
-        cacheTransformResults: false,
-      }});
-
-      return module.read().then(result => {
-        expect(result).toEqual({
-          dependencies: ['foo', 'bar'],
-        });
-      });
-    });
-
     it('stores all things if options is undefined', () => {
       transformResult = {
         code: exampleCode,
         arbitrary: 'arbitrary',
         dependencies: ['foo', 'bar'],
         dependencyOffsets: [12, 764],
+        id: null,
         map: {version: 3},
         subObject: {foo: 'bar'},
       };

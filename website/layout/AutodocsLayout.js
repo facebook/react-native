@@ -19,6 +19,7 @@ var Marked = require('Marked');
 var Metadata = require('Metadata');
 var Prism = require('Prism');
 var React = require('React');
+const PropTypes = require('prop-types');
 var Site = require('Site');
 
 var slugify = require('slugify');
@@ -34,7 +35,15 @@ function renderEnumValue(value) {
 }
 
 function renderType(type) {
-  return <code>{(type.nullable ? '?' : '') + renderBaseType(type)}</code>;
+  const baseType = renderBaseType(type);
+  return type.nullable ? <span>?{baseType}</span> : baseType;
+}
+
+function spanJoinMapper(elements, callback, separator) {
+  return <span>{elements.map((rawElement, ii) => {
+    const el = callback(rawElement);
+    return (ii + 1 < elements.length) ? <span>{el}{separator}</span> : el;
+  })}</span>;
 }
 
 function renderBaseType(type) {
@@ -53,14 +62,18 @@ function renderBaseType(type) {
   }
 
   if (type.name === 'shape') {
-    return '{' + Object.keys(type.value).map((key => key + ': ' + renderType(type.value[key]))).join(', ') + '}';
+    return <span>{'{'}{spanJoinMapper(
+      Object.keys(type.value),
+      (key) => <span>{key + ': '}{renderType(type.value[key])}</span>,
+      ', '
+    )}{'}'}</span>;
   }
 
   if (type.name === 'union') {
     if (type.value) {
-      return type.value.map(renderType).join(', ');
+      return spanJoinMapper(type.value, renderType, ', ');
     }
-    return type.elements.map(renderType).join(' | ');
+    return spanJoinMapper(type.elements, renderType, ' | ');
   }
 
   if (type.name === 'arrayOf') {
@@ -772,60 +785,10 @@ var TypeDef = React.createClass({
   },
 });
 
-var EmbeddedSimulator = React.createClass({
-  render: function() {
-    if (!this.props.shouldRender) {
-      return null;
-    }
-
-    var metadata = this.props.metadata;
-
-    var imagePreview = metadata.platform === 'android'
-      ? <img alt="Run example in simulator" width="170" height="338" src="img/uiexplorer_main_android.png" />
-      : <img alt="Run example in simulator" width="170" height="356" src="img/uiexplorer_main_ios.png" />;
-
-    return (
-      <div className="embedded-simulator">
-        <p><a className="modal-button-open"><strong>Run this example</strong></a></p>
-        <div className="modal-button-open modal-button-open-img">
-          {imagePreview}
-        </div>
-        <Modal metadata={metadata} />
-      </div>
-    );
-  }
-});
-
-var Modal = React.createClass({
-  render: function() {
-    var metadata = this.props.metadata;
-    var appParams = {route: metadata.title};
-    var encodedParams = encodeURIComponent(JSON.stringify(appParams));
-    var url = metadata.platform === 'android'
-      ? `https://appetize.io/embed/q7wkvt42v6bkr0pzt1n0gmbwfr?device=nexus5&scale=65&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`
-      : `https://appetize.io/embed/7vdfm9h3e6vuf4gfdm7r5rgc48?device=iphone6s&scale=60&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`;
-
-    return (
-      <div>
-        <div className="modal">
-          <div className="modal-content">
-            <button className="modal-button-close">&times;</button>
-            <div className="center">
-              <iframe className="simulator" src={url} width="256" height="550" frameborder="0" scrolling="no" />
-              <p>Powered by <a target="_blank" href="https://appetize.io">appetize.io</a></p>
-            </div>
-          </div>
-        </div>
-        <div className="modal-backdrop" />
-      </div>
-    );
-  }
-});
-
 var Autodocs = React.createClass({
   childContextTypes: {
-    permalink: React.PropTypes.string,
-    version: React.PropTypes.string
+    permalink: PropTypes.string,
+    version: PropTypes.string
   },
 
   getChildContext: function() {
@@ -850,42 +813,6 @@ var Autodocs = React.createClass({
     );
   },
 
-  renderExample: function(example, metadata) {
-    if (!example) {
-      return;
-    }
-
-    return (
-      <div>
-        <HeaderWithGithub
-          title={example.title || 'Examples'}
-          level={example.title ? 4 : 3}
-          path={example.path}
-          metadata={metadata}
-        />
-        <div className="example-container">
-          <Prism>
-           {example.content.replace(/^[\s\S]*?\*\//, '').trim()}
-          </Prism>
-          <EmbeddedSimulator shouldRender={metadata.runnable} metadata={metadata} />
-        </div>
-      </div>
-    );
-  },
-
-  renderExamples: function(docs, metadata) {
-    if (!docs.examples || !docs.examples.length) {
-      return;
-    }
-
-    return (
-      <div>
-        {(docs.examples.length > 1) ? <Header level={3}>Examples</Header> : null}
-        {docs.examples.map(example => this.renderExample(example, metadata))}
-      </div>
-    );
-  },
-
   render: function() {
     var metadata = this.props.metadata;
     var docs = JSON.parse(this.props.children);
@@ -905,7 +832,6 @@ var Autodocs = React.createClass({
             {content}
             <Footer path={metadata.path} />
             {this.renderFullDescription(docs)}
-            {this.renderExamples(docs, metadata)}
             <div className="docs-prevnext">
               {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
               {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}

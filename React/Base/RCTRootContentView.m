@@ -19,7 +19,6 @@
 
 @implementation RCTRootContentView
 {
-  __weak RCTBridge *_bridge;
   UIColor *_backgroundColor;
 }
 
@@ -72,20 +71,22 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
   [self setNeedsLayout];
 }
 
+- (CGSize)availableSize
+{
+  CGSize size = self.bounds.size;
+  return CGSizeMake(
+      _sizeFlexibility & RCTRootViewSizeFlexibilityWidth ? INFINITY : size.width,
+      _sizeFlexibility & RCTRootViewSizeFlexibilityHeight ? INFINITY : size.height
+    );
+}
+
 - (void)updateAvailableSize
 {
   if (!self.reactTag || !_bridge.isValid) {
     return;
   }
 
-  CGSize size = self.bounds.size;
-  CGSize availableSize =
-    CGSizeMake(
-      _sizeFlexibility & RCTRootViewSizeFlexibilityWidth ? INFINITY : size.width,
-      _sizeFlexibility & RCTRootViewSizeFlexibilityHeight ? INFINITY : size.height
-    );
-
-  [_bridge.uiManager setAvailableSize:availableSize forRootView:self];
+  [_bridge.uiManager setAvailableSize:self.availableSize forRootView:self];
 }
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor

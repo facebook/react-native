@@ -95,7 +95,7 @@ public:
    */
   std::string str() const {
     const JSChar* utf16 = JSC_JSStringGetCharactersPtr(m_context, m_string);
-    int stringLength = JSC_JSStringGetLength(m_context, m_string);
+    size_t stringLength = JSC_JSStringGetLength(m_context, m_string);
     return unicode::utf16toUTF8(utf16, stringLength);
   }
 
@@ -237,6 +237,13 @@ public:
   Value(JSContextRef context, JSStringRef value);
   Value(Value&&);
 
+  Value& operator=(Value&& other) {
+    m_context = other.m_context;
+    m_value = other.m_value;
+    other.m_value = NULL;
+    return *this;
+  };
+
   operator JSValueRef() const {
     return m_value;
   }
@@ -303,6 +310,10 @@ public:
 
   static Value makeUndefined(JSContextRef ctx) {
     return Value(ctx, JSC_JSValueMakeUndefined(ctx));
+  }
+
+  static Value makeNull(JSContextRef ctx) {
+    return Value(ctx, JSC_JSValueMakeNull(ctx));
   }
 
   std::string toJSONString(unsigned indent = 0) const;

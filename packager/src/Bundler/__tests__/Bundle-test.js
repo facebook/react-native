@@ -330,13 +330,10 @@ describe('Bundle', () => {
 
     it('omits modules that are contained by more than one group', () => {
       bundle = createBundle([fsLocation('React'), fsLocation('OtherFramework')]);
-      const {groups} = bundle.getUnbundle();
-      expect(groups).toEqual(new Map([
-        [idFor('React'),
-          new Set(['ReactFoo', 'ReactBar', 'cx'].map(idFor))],
-        [idFor('OtherFramework'),
-          new Set(['OtherFrameworkFoo', 'OtherFrameworkBar', 'crc32'].map(idFor))],
-      ]));
+      expect(() => {
+        const {groups} = bundle.getUnbundle(); //eslint-disable-line no-unused-vars
+      }).toThrow(new Error(`Module ${fsLocation('invariant')} belongs to groups ${fsLocation('React')}` +
+        `, and ${fsLocation('OtherFramework')}. Removing it from all groups.`));
     });
 
     it('ignores missing dependencies', () => {

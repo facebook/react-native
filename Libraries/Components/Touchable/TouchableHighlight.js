@@ -16,12 +16,14 @@
 var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
+const PropTypes = require('prop-types');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
 var ensureComponentIsNative = require('ensureComponentIsNative');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
@@ -73,27 +75,27 @@ var TouchableHighlight = React.createClass({
      * Determines what the opacity of the wrapped view should be when touch is
      * active.
      */
-    activeOpacity: React.PropTypes.number,
+    activeOpacity: PropTypes.number,
     /**
      * The color of the underlay that will show through when the touch is
      * active.
      */
     underlayColor: ColorPropType,
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
     /**
      * Called immediately after the underlay is shown
      */
-    onShowUnderlay: React.PropTypes.func,
+    onShowUnderlay: PropTypes.func,
     /**
      * Called immediately after the underlay is hidden
      */
-    onHideUnderlay: React.PropTypes.func,
+    onHideUnderlay: PropTypes.func,
     /**
      * *(Apple TV only)* TV preferred focus (see documentation for the View component).
      *
      * @platform ios
      */
-    hasTVPreferredFocus: React.PropTypes.bool,
+    hasTVPreferredFocus: PropTypes.bool,
     /**
      * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
      *
@@ -105,7 +107,7 @@ var TouchableHighlight = React.createClass({
      *
      * @platform ios
      */
-    tvParallaxProperties: React.PropTypes.object,
+    tvParallaxProperties: PropTypes.object,
 
   },
 
@@ -265,6 +267,7 @@ var TouchableHighlight = React.createClass({
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}
+        nativeID={this.props.nativeID}
         testID={this.props.testID}>
         {React.cloneElement(
           React.Children.only(this.props.children),

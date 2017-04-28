@@ -11,41 +11,40 @@
 
 'use strict';
 
-import type {Options as TransformOptions} from '../../JSTransformer/worker/worker';
 import type Module from '../Module';
 
 const NO_OPTIONS = {};
 
-class ResolutionResponse {
+class ResolutionResponse<TModule: {hash(): string}, TOptions> {
 
-  transformOptions: TransformOptions;
-  dependencies: Array<Module>;
+  dependencies: Array<TModule>;
   mainModuleId: ?(number | string);
   mocks: mixed;
   numPrependedDependencies: number;
+  options: TOptions;
 
   // This is monkey-patched from Resolver.
   getModuleId: ?() => number;
 
   _mappings: {};
   _finalized: boolean;
-  _mainModule: ?Module;
+  _mainModule: ?TModule;
 
-  constructor({transformOptions}: {transformOptions: TransformOptions}) {
-    this.transformOptions = transformOptions;
+  constructor(options: TOptions) {
     this.dependencies = [];
     this.mainModuleId = null;
     this.mocks = null;
     this.numPrependedDependencies = 0;
+    this.options = options;
     this._mappings = Object.create(null);
     this._finalized = false;
   }
 
   copy(properties: {
-    dependencies?: Array<Module>,
+    dependencies?: Array<TModule>,
     mainModuleId?: number,
     mocks?: mixed,
-  }): ResolutionResponse {
+  }): ResolutionResponse<TModule, TOptions> {
     const {
       dependencies = this.dependencies,
       mainModuleId = this.mainModuleId,
@@ -57,7 +56,7 @@ class ResolutionResponse {
 
     /* $FlowFixMe: Flow doesn't like Object.assign on class-made objects. */
     return Object.assign(
-      new this.constructor({transformOptions: this.transformOptions}),
+      new this.constructor(this.options),
       this,
       {
         dependencies,
@@ -80,7 +79,7 @@ class ResolutionResponse {
     }
   }
 
-  finalize(): ResolutionResponse {
+  finalize(): Promise<this> {
     /* $FlowFixMe: _mainModule is not initialized in the constructor. */
     return this._mainModule.getName().then(id => {
       this.mainModuleId = id;
@@ -89,7 +88,7 @@ class ResolutionResponse {
     });
   }
 
-  pushDependency(module: Module) {
+  pushDependency(module: TModule) {
     this._assertNotFinalized();
     if (this.dependencies.length === 0) {
       this._mainModule = module;
@@ -98,7 +97,7 @@ class ResolutionResponse {
     this.dependencies.push(module);
   }
 
-  prependDependency(module: Module) {
+  prependDependency(module: TModule) {
     this._assertNotFinalized();
     this.dependencies.unshift(module);
     this.numPrependedDependencies += 1;
@@ -122,7 +121,7 @@ class ResolutionResponse {
     this.mocks = mocks;
   }
 
-  getResolvedDependencyPairs(module: Module) {
+  getResolvedDependencyPairs(module: TModule) {
     this._assertFinalized();
     return this._mappings[module.hash()];
   }

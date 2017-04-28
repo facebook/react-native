@@ -26,5 +26,7 @@ android_library(
         react_native_target("java/com/facebook/react/modules/i18nmanager:i18nmanager"),
         react_native_target("java/com/facebook/react/touch:touch"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
+        react_native_target("java/com/facebook/react/uimanager/util:util"),
+        react_native_target("res:uimanager"),
     ],
 )

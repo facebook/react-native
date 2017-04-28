@@ -46,6 +46,18 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   YGValue _borderMetaProps[META_PROP_COUNT];
 }
 
++ (YGConfigRef)yogaConfig
+{
+  static YGConfigRef yogaConfig;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    yogaConfig = YGConfigNew();
+    // Turnig off pixel rounding.
+    YGConfigSetPointScaleFactor(yogaConfig, 0.0);
+  });
+  return yogaConfig;
+}
+
 @synthesize reactTag = _reactTag;
 
 // YogaNode API
@@ -318,7 +330,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 - (instancetype)init
 {
   if ((self = [super init])) {
-
     _frame = CGRectMake(0, 0, YGUndefined, YGUndefined);
 
     for (unsigned int ii = 0; ii < META_PROP_COUNT; ii++) {
@@ -335,7 +346,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 
     _reactSubviews = [NSMutableArray array];
 
-    _yogaNode = YGNodeNew();
+    _yogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
+
     YGNodeSetContext(_yogaNode, (__bridge void *)self);
     YGNodeSetPrintFunc(_yogaNode, RCTPrint);
   }
@@ -669,11 +681,6 @@ static inline YGSize RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasure
 
 // Flex
 
-- (void)setFlex:(float)value
-{
-  YGNodeStyleSetFlex(_yogaNode, value);
-}
-
 - (void)setFlexBasis:(YGValue)value
 {
   RCT_SET_YGVALUE_AUTO(value, YGNodeStyleSetFlexBasis, _yogaNode);
@@ -694,6 +701,7 @@ static inline YGSize RCTShadowViewMeasure(YGNodeRef node, float width, YGMeasure
   return YGNodeStyleGet##cssProp(_yogaNode);                \
 }
 
+RCT_STYLE_PROPERTY(Flex, flex, Flex, float)
 RCT_STYLE_PROPERTY(FlexGrow, flexGrow, FlexGrow, float)
 RCT_STYLE_PROPERTY(FlexShrink, flexShrink, FlexShrink, float)
 RCT_STYLE_PROPERTY(FlexDirection, flexDirection, FlexDirection, YGFlexDirection)

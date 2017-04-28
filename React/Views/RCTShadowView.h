@@ -36,6 +36,13 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @interface RCTShadowView : NSObject <RCTComponent>
 
 /**
+ * Yoga Config which will be used to create `yogaNode` property.
+ * Override in subclass to enable special Yoga features.
+ * Defaults to suitable to current device configuration.
+ */
++ (YGConfigRef)yogaConfig;
+
+/**
  * RCTComponent interface.
  */
 - (NSArray<RCTShadowView *> *)reactSubviews NS_REQUIRES_SUPER;
@@ -135,13 +142,12 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGWrap flexWrap;
 @property (nonatomic, assign) YGDisplay display;
 
+@property (nonatomic, assign) float flex;
 @property (nonatomic, assign) float flexGrow;
 @property (nonatomic, assign) float flexShrink;
 @property (nonatomic, assign) YGValue flexBasis;
 
 @property (nonatomic, assign) float aspectRatio;
-
-- (void)setFlex:(float)flex;
 
 /**
  * z-index, used to override sibling order in the view
