@@ -10,7 +10,7 @@
  */
 'use strict';
 
-import type {SourceMap} from './output/source-map';
+import type {MappingsMap, SourceMap} from '../lib/SourceMap';
 import type {Ast} from 'babel-core';
 import type {Console} from 'console';
 
@@ -102,7 +102,7 @@ type ResolveOptions = {
 export type TransformerResult = {|
   ast: ?Ast,
   code: string,
-  map: ?SourceMap,
+  map: ?MappingsMap,
 |};
 
 export type Transformer = {
@@ -111,7 +111,7 @@ export type Transformer = {
     filename: string,
     options: ?{},
     plugins?: Array<string | Object | [string | Object, any]>,
-  ) => {ast: ?Ast, code: string, map: ?SourceMap}
+  ) => {ast: ?Ast, code: string, map: ?MappingsMap}
 };
 
 export type TransformResult = {|

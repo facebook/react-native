@@ -21,7 +21,7 @@ const terminal = require('../lib/terminal');
 const writeFileAtomicSync = require('write-file-atomic').sync;
 
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
-import type {SourceMap} from './SourceMap';
+import type {MappingsMap} from './SourceMap';
 import type {Reporter} from './reporting';
 
 type CacheFilePaths = {transformedCode: string, metadata: string};
@@ -94,7 +94,7 @@ export type CachedResult = {
   code: string,
   dependencies: Array<string>,
   dependencyOffsets: Array<number>,
-  map?: ?SourceMap,
+  map?: ?MappingsMap,
 };
 
 export type TransformCacheResult = {|
@@ -281,7 +281,7 @@ function readMetadataFileSync(
   cachedSourceHash: string,
   dependencies: Array<string>,
   dependencyOffsets: Array<number>,
-  sourceMap: ?SourceMap,
+  sourceMap: ?MappingsMap,
 } {
   const metadataStr = fs.readFileSync(metadataFilePath, 'utf8');
   let metadata;

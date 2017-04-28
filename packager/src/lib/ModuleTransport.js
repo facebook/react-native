@@ -12,9 +12,9 @@
 'use strict';
 
 import type {RawMapping} from '../Bundler/source-map';
-import type {MixedSourceMap} from './SourceMap';
+import type {SourceMap} from './SourceMap';
 
-type SourceMapOrMappings = MixedSourceMap | Array<RawMapping>;
+type SourceMapOrMappings = SourceMap | Array<RawMapping>;
 
 type Metadata = {
   dependencies?: ?Array<string>,

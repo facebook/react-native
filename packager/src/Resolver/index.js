@@ -18,14 +18,14 @@ const pathJoin = require('path').join;
 
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 import type Module, {HasteImpl, TransformCode} from '../node-haste/Module';
-import type {SourceMap} from '../lib/SourceMap';
+import type {MappingsMap} from '../lib/SourceMap';
 import type {Options as JSTransformerOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 
-type MinifyCode = (filePath: string, code: string, map: SourceMap) =>
-  Promise<{code: string, map: SourceMap}>;
+type MinifyCode = (filePath: string, code: string, map: MappingsMap) =>
+  Promise<{code: string, map: MappingsMap}>;
 
 type ContainsTransformerOptions = {+transformer: JSTransformerOptions}
 
@@ -195,7 +195,7 @@ class Resolver {
     resolutionResponse: ResolutionResponse<Module, T>,
     module: Module,
     name: string,
-    map: SourceMap,
+    map: MappingsMap,
     code: string,
     meta?: {
       dependencyOffsets?: Array<number>,
@@ -227,8 +227,8 @@ class Resolver {
   }
 
   minifyModule(
-    {path, code, map}: {path: string, code: string, map: SourceMap},
-  ): Promise<{code: string, map: SourceMap}> {
+    {path, code, map}: {path: string, code: string, map: MappingsMap},
+  ): Promise<{code: string, map: MappingsMap}> {
     return this._minifyCode(path, code, map);
   }
 
