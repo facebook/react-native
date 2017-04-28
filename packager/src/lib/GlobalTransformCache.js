@@ -408,8 +408,9 @@ class OptionsHasher {
   }
 
   relativizeFilePaths(filePaths: Array<string>): Array<string> {
-    return filePaths.map(this.relativizeFilePath);
+    return filePaths.map(this.relativizeFilePath.bind(this));
   }
+
   relativizeFilePath(filePath: string): string {
     return path.relative(this._rootPath, filePath);
   }
