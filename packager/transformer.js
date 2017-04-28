@@ -11,6 +11,7 @@
 'use strict';
 
 const babel = require('babel-core');
+const crypto = require('crypto');
 const externalHelpersPlugin = require('babel-plugin-external-helpers');
 const fs = require('fs');
 const generate = require('babel-generator').default;
@@ -21,6 +22,13 @@ const path = require('path');
 const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
 
 const {compactMapping} = require('./src/Bundler/source-map');
+
+const cacheKeyParts = [
+  fs.readFileSync(__filename),
+  require('babel-plugin-external-helpers/package.json').version,
+  require('babel-preset-fbjs/package.json').version,
+  require('babel-preset-react-native/package.json').version,
+];
 
 /**
  * Return a memoized function that checks for the existence of a
@@ -126,4 +134,13 @@ function transform(src, filename, options) {
   }
 }
 
-module.exports.transform = transform;
+function getCacheKey(options) {
+  var key = crypto.createHash('md5');
+  cacheKeyParts.forEach(part => key.update(part));
+  return key.digest('hex');
+}
+
+module.exports = {
+  transform,
+  getCacheKey,
+};

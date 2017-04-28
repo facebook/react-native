@@ -193,8 +193,8 @@ class Bundler {
     /* $FlowFixMe: in practice it's always here. */
     this._transformer = new Transformer(opts.transformModulePath, maxWorkerCount);
 
-    const getTransformCacheKey = (src, filename, options) => {
-      return transformCacheKey + getCacheKey(src, filename, options);
+    const getTransformCacheKey = (options) => {
+      return transformCacheKey + getCacheKey(options);
     };
 
     this._resolverPromise = Resolver.load({

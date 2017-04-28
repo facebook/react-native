@@ -25,7 +25,7 @@ import type {MappingsMap} from './SourceMap';
 import type {Reporter} from './reporting';
 
 type CacheFilePaths = {transformedCode: string, metadata: string};
-export type GetTransformCacheKey = (sourceCode: string, filename: string, options: {}) => string;
+export type GetTransformCacheKey = (options: {}) => string;
 
 const CACHE_NAME = 'react-native-packager-cache';
 const CACHE_SUB_DIR = 'cache';
@@ -62,11 +62,7 @@ function hashSourceCode(props: {
   transformOptionsKey: string,
 }): string {
   return crypto.createHash('sha1')
-    .update(props.getTransformCacheKey(
-      props.sourceCode,
-      props.filePath,
-      props.transformOptions,
-    ))
+    .update(props.getTransformCacheKey(props.transformOptions))
     .update(props.sourceCode)
     .digest('hex');
 }
