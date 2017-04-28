@@ -38,6 +38,10 @@ module.exports = [
     command: '--sourcemap-sources-root [string]',
     description: 'Path to make sourcemap\'s sources entries relative to, ex. /root/dir',
   }, {
+    command: '--sourcemap-use-absolute-path',
+    description: 'Report SourceMapURL using its full path',
+    default: false,
+  }, {
     command: '--assets-dest [string]',
     description: 'Directory name where to store assets referenced in the bundle',
   }, {

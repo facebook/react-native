@@ -58,11 +58,9 @@ describe('Module', () => {
   });
 
   let transformCacheKey;
-  const createModule = (options) =>
+  const createModule = options =>
     new Module({
-      options: {
-        cacheTransformResults: true,
-      },
+      options: {},
       transformCode: (module, sourceCode, transformOptions) => {
         return Promise.resolve({code: sourceCode});
       },
@@ -75,7 +73,7 @@ describe('Module', () => {
     });
 
   const createJSONModule =
-    (options) => createModule({...options, file: '/root/package.json'});
+    options => createModule({...options, file: '/root/package.json'});
 
   beforeEach(function() {
     process.platform = 'linux';
@@ -213,40 +211,11 @@ describe('Module', () => {
         );
     });
 
-    it('passes module and file contents if the file is annotated with @extern', () => {
-      const module = createModule({transformCode});
-      const customFileContents = `
-        /**
-         * @extern
-         */
-      `;
-      mockIndexFile(customFileContents);
-      return module.read().then(() => {
-        expect(transformCode).toBeCalledWith(module, customFileContents, {extern: true});
-      });
-    });
-
     it('passes the module and file contents to the transform for JSON files', () => {
       mockPackageFile();
       const module = createJSONModule({transformCode});
       return module.read().then(() => {
-        expect(transformCode).toBeCalledWith(module, packageJson, {extern: true});
-      });
-    });
-
-    it('does not extend the passed options object if the file is annotated with @extern', () => {
-      const module = createModule({transformCode});
-      const customFileContents = `
-        /**
-         * @extern
-         */
-      `;
-      mockIndexFile(customFileContents);
-      const options = {arbitrary: 'foo'};
-      return module.read(options).then(() => {
-        expect(options).not.toEqual(jasmine.objectContaining({extern: true}));
-        expect(transformCode)
-          .toBeCalledWith(module, customFileContents, {...options, extern: true});
+        expect(transformCode).toBeCalledWith(module, packageJson, undefined);
       });
     });
 
@@ -255,9 +224,7 @@ describe('Module', () => {
       const module = createJSONModule({transformCode});
       const options = {arbitrary: 'foo'};
       return module.read(options).then(() => {
-        expect(options).not.toEqual(jasmine.objectContaining({extern: true}));
-        expect(transformCode)
-          .toBeCalledWith(module, packageJson, {...options, extern: true});
+        expect(transformCode).toBeCalledWith(module, packageJson, options);
       });
     });
 
@@ -284,28 +251,8 @@ describe('Module', () => {
       };
       const module = createModule({transformCode});
 
-      return module.read().then((result) => {
+      return module.read().then(result => {
         expect(result).toEqual(jasmine.objectContaining(transformResult));
-      });
-    });
-
-    it('only stores dependencies if `cacheTransformResults` option is disabled', () => {
-      transformResult = {
-        code: exampleCode,
-        arbitrary: 'arbitrary',
-        dependencies: ['foo', 'bar'],
-        dependencyOffsets: [12, 764],
-        map: {version: 3},
-        subObject: {foo: 'bar'},
-      };
-      const module = createModule({transformCode, options: {
-        cacheTransformResults: false,
-      }});
-
-      return module.read().then((result) => {
-        expect(result).toEqual({
-          dependencies: ['foo', 'bar'],
-        });
       });
     });
 
@@ -315,13 +262,14 @@ describe('Module', () => {
         arbitrary: 'arbitrary',
         dependencies: ['foo', 'bar'],
         dependencyOffsets: [12, 764],
+        id: null,
         map: {version: 3},
         subObject: {foo: 'bar'},
       };
       const module = createModule({transformCode, options: undefined});
 
-      return module.read().then((result) => {
-        expect(result).toEqual({ ...transformResult, source: 'arbitrary(code);'});
+      return module.read().then(result => {
+        expect(result).toEqual({...transformResult, source: 'arbitrary(code);'});
       });
     });
 

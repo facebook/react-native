@@ -29,6 +29,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -721,8 +722,7 @@ public class UIViewOperationQueue {
       final int reactTag,
       final Callback callback) {
     mOperations.add(
-        new MeasureInWindowOperation(reactTag, callback)
-    );
+        new MeasureInWindowOperation(reactTag, callback));
   }
 
   public void enqueueFindTargetForTouch(
@@ -861,7 +861,7 @@ public class UIViewOperationQueue {
    * Using a Choreographer callback (which runs immediately before traversals), we guarantee we run
    * before the next traversal.
    */
-  private class DispatchUIFrameCallback extends GuardedChoreographerFrameCallback {
+  private class DispatchUIFrameCallback extends GuardedFrameCallback {
 
     private static final int MIN_TIME_LEFT_IN_FRAME_TO_SCHEDULE_MORE_WORK_MS = 8;
     private static final int FRAME_TIME_MS = 16;

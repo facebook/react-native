@@ -5,11 +5,13 @@ layout: docs
 category: Guides
 permalink: docs/accessibility.html
 next: timers
-previous: animations
+previous: debugging
 ---
 
 ## Native App Accessibility (iOS and Android)
 Both iOS and Android provide APIs for making apps accessible to people with disabilities. In addition, both platforms provide bundled assistive technologies, like the screen readers VoiceOver (iOS) and TalkBack (Android) for the visually impaired. Similarly, in React Native we have included APIs designed to provide developers with support for making apps more accessible. Take note, iOS and Android differ slightly in their approaches, and thus the React Native implementations may vary by platform.
+
+In addition to this documentation, you might find [this blog post](https://code.facebook.com/posts/435862739941212/making-react-native-apps-accessible/) about React Native accessibility to be useful.
 
 ## Making Apps Accessible
 
@@ -71,6 +73,13 @@ To use, set the `accessibilityTraits` property to one of (or an array of) access
 * **adjustable** Used when an element can be "adjusted" (e.g. a slider).
 * **allowsDirectInteraction** Used when an element allows direct touch interaction for VoiceOver users (for example, a view representing a piano keyboard).
 * **pageTurn** Informs VoiceOver that it should scroll to the next page when it finishes reading the contents of the element.
+
+#### accessibilityViewIsModal (iOS)
+
+A Boolean value indicating whether VoiceOver should ignore the elements within views that are siblings of the receiver.
+
+For example, in a window that contains sibling views `A` and `B`, setting `accessibilityViewIsModal` to `true` on view `B` causes VoiceOver to ignore the elements in the view `A`.
+On the other hand, if view `B` contains a child view `C` and you set `accessibilityViewIsModal` to `true` on view `C`, VoiceOver does not ignore the elements in view `A`.
 
 #### onAccessibilityTap (iOS)
 
@@ -135,7 +144,9 @@ In the case of two overlapping UI components with the same parent, default acces
 
 In the above example, the yellow layout and its descendants are completely invisible to TalkBack and all other accessibility services. So we can easily use overlapping views with the same parent without confusing TalkBack.
 
+### Checking if a Screen Reader is Enabled
 
+The `AccessibilityInfo` API allows you to determine whether or not a screen reader is currently active. See the [AccessibilityInfo documentation](docs/accessibilityinfo.html) for details.
 
 ### Sending Accessibility Events (Android)
 

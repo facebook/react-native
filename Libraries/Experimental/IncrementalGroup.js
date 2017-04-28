@@ -14,6 +14,8 @@
 const Incremental = require('Incremental');
 const React = require('React');
 
+const PropTypes = require('prop-types');
+
 const infoLog = require('infoLog');
 
 let _groupCounter = -1;
@@ -75,8 +77,8 @@ class IncrementalGroup extends React.Component {
   }
 }
 IncrementalGroup.contextTypes = {
-  incrementalGroup: React.PropTypes.object,
-  incrementalGroupEnabled: React.PropTypes.bool,
+  incrementalGroup: PropTypes.object,
+  incrementalGroupEnabled: PropTypes.bool,
 };
 IncrementalGroup.childContextTypes = IncrementalGroup.contextTypes;
 

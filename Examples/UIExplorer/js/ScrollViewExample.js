@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule ScrollViewExample
  */
 'use strict';
 
@@ -70,7 +71,7 @@ exports.examples = [
   description: 'You can display <ScrollView>\'s child components horizontally rather than vertically',
   render: function() {
 
-    function renderScrollView(title: string, addtionalStyles: StyleSheet) {
+    function renderScrollView(title: string, addtionalStyles: typeof StyleSheet) {
       var _scrollView: ScrollView;
       return (
         <View style={addtionalStyles}>
@@ -150,7 +151,6 @@ var styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     margin: 5,
-    textAlign: 'left',
   },
   button: {
     margin: 5,

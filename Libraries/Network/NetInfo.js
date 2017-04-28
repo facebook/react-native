@@ -79,7 +79,7 @@ const _isConnectedSubscriptions = new Map();
  * NetInfo exposes info about online/offline status
  *
  * ```
- * NetInfo.fetch().done((reach) => {
+ * NetInfo.fetch().then((reach) => {
  *   console.log('Initial: ' + reach);
  * });
  * function handleFirstConnectivityChange(reach) {

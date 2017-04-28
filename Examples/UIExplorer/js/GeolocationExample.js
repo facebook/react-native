@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule GeolocationExample
  */
 /* eslint no-console: 0 */
 'use strict';
@@ -69,7 +70,7 @@ class GeolocationExample extends React.Component {
   }
 
   componentWillUnmount() {
-    navigator.geolocation.clearWatch(this.watchID);
+    this.watchID != null && navigator.geolocation.clearWatch(this.watchID);
   }
 
   render() {

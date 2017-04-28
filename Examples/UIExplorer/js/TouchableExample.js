@@ -19,6 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule TouchableExample
  */
 'use strict';
 
@@ -35,6 +36,11 @@ var {
   TouchableNativeFeedback,
   View,
 } = ReactNative;
+
+const NativeModules = require('NativeModules');
+
+const forceTouchAvailable = (NativeModules.PlatformConstants &&
+  NativeModules.PlatformConstants.forceTouchAvailable) || false;
 
 exports.displayName = (undefined: ?string);
 exports.description = 'Touchable and onPress examples.';
@@ -262,7 +268,7 @@ class ForceTouchExample extends React.Component {
   };
 
   _renderConsoleText = () => {
-    return View.forceTouchAvailable ?
+    return forceTouchAvailable ?
       'Force: ' + this.state.force.toFixed(3) :
       '3D Touch is not available on this device';
   };

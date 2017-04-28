@@ -29,9 +29,9 @@
   [super setUp];
 
   self.parentView = [RCTRootShadowView new];
-  YGNodeStyleSetFlexDirection(self.parentView.cssNode, YGFlexDirectionColumn);
-  YGNodeStyleSetWidth(self.parentView.cssNode, 440);
-  YGNodeStyleSetHeight(self.parentView.cssNode, 440);
+  YGNodeStyleSetFlexDirection(self.parentView.yogaNode, YGFlexDirectionColumn);
+  YGNodeStyleSetWidth(self.parentView.yogaNode, 440);
+  YGNodeStyleSetHeight(self.parentView.yogaNode, 440);
   self.parentView.reactTag = @1; // must be valid rootView tag
 }
 
@@ -82,10 +82,10 @@
     YGNodeStyleSetFlex(node, 1);
   }];
 
-  YGNodeStyleSetPadding(self.parentView.cssNode, YGEdgeLeft, 10);
-  YGNodeStyleSetPadding(self.parentView.cssNode, YGEdgeTop, 10);
-  YGNodeStyleSetPadding(self.parentView.cssNode, YGEdgeRight, 10);
-  YGNodeStyleSetPadding(self.parentView.cssNode, YGEdgeBottom, 10);
+  YGNodeStyleSetPadding(self.parentView.yogaNode, YGEdgeLeft, 10);
+  YGNodeStyleSetPadding(self.parentView.yogaNode, YGEdgeTop, 10);
+  YGNodeStyleSetPadding(self.parentView.yogaNode, YGEdgeRight, 10);
+  YGNodeStyleSetPadding(self.parentView.yogaNode, YGEdgeBottom, 10);
 
   [self.parentView insertReactSubview:headerView atIndex:0];
   [self.parentView insertReactSubview:mainView atIndex:1];
@@ -167,8 +167,8 @@
 
 - (void)testDoesNotAssignSuggestedDimensionsWhenStyledWithFlexAttribute
 {
-  float parentWidth = YGNodeStyleGetWidth(self.parentView.cssNode).value;
-  float parentHeight = YGNodeStyleGetHeight(self.parentView.cssNode).value;
+  float parentWidth = YGNodeStyleGetWidth(self.parentView.yogaNode).value;
+  float parentHeight = YGNodeStyleGetHeight(self.parentView.yogaNode).value;
   [self _withShadowViewWithStyle:^(YGNodeRef node) {
                                    YGNodeStyleSetFlex(node, 1);
                                  }
@@ -194,7 +194,7 @@
 - (RCTShadowView *)_shadowViewWithConfig:(void(^)(YGNodeRef node))configBlock
 {
   RCTShadowView *shadowView = [RCTShadowView new];
-  configBlock(shadowView.cssNode);
+  configBlock(shadowView.yogaNode);
   return shadowView;
 }
 

@@ -9,7 +9,7 @@
  * @flow
  */
 
- 'use strict';
+'use strict';
 
 import type { // eslint-disable-line sort-requires
   Extensions,
@@ -22,6 +22,7 @@ import type {
 } from '../types.flow';
 
 const DependencyGraphHelpers = require('../../node-haste/DependencyGraph/DependencyGraphHelpers');
+const FilesByDirNameIndex = require('../../node-haste/FilesByDirNameIndex');
 const HasteFS = require('./HasteFS');
 const HasteMap = require('../../node-haste/DependencyGraph/HasteMap');
 const Module = require('./Module');
@@ -38,6 +39,34 @@ type ResolveOptions = {|
 
 const platforms = new Set(defaults.platforms);
 
+/**
+ * We don't need to crawl the filesystem all over again so we just mock
+ * a jest-haste-map's ModuleMap instance. Eventually, though, we'll
+ * want to figure out how to reunify and get rid of `HasteMap`.
+ */
+function getFakeModuleMap(hasteMap: HasteMap) {
+  return {
+    getModule(name: string, platform: ?string): ?string {
+      const module = hasteMap.getModule(name, platform);
+      return module && module.type === 'Module' ? module.path : null;
+    },
+    getPackage(name: string, platform: ?string): ?string {
+      const module = hasteMap.getModule(name, platform);
+      return module && module.type === 'Package' ? module.path : null;
+    },
+  };
+}
+
+const nullModule = {
+  path: '/',
+  getPackage() {},
+  hash() {
+    throw new Error('not implemented');
+  },
+  readCached() { throw new Error('not implemented'); },
+  readFresh() { return Promise.reject(new Error('not implemented')); },
+};
+
 exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
   const {
     assetExts,
@@ -45,10 +74,13 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
     transformedFiles,
   } = options;
   const files = Object.keys(transformedFiles);
-  const getTransformedFile =
-    path => Promise.resolve(
-      transformedFiles[path] || Promise.reject(new Error(`"${path} does not exist`))
-    );
+  function getTransformedFile(path) {
+    const result = transformedFiles[path];
+    if (!result) {
+      throw new Error(`"${path} does not exist`);
+    }
+    return result;
+  }
 
   const helpers = new DependencyGraphHelpers({
     assetExts,
@@ -71,6 +103,7 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
 
   const hasteMapBuilt = hasteMap.build();
   const resolutionRequests = {};
+  const filesByDirNameIndex = new FilesByDirNameIndex(hasteMap.getAllFiles());
   return (id, source, platform, _, callback) => {
     let resolutionRequest = resolutionRequests[platform];
     if (!resolutionRequest) {
@@ -78,18 +111,20 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
         dirExists: filePath => hasteFS.dirExists(filePath),
         entryPath: '',
         extraNodeModules,
-        /* $FlowFixMe: object is missing matchFiles method */
         hasteFS,
-        hasteMap,
         helpers,
+        matchFiles: filesByDirNameIndex.match.bind(filesByDirNameIndex),
         moduleCache,
+        moduleMap: getFakeModuleMap(hasteMap),
         platform,
         platforms,
         preferNativePlatform: true,
       });
     }
 
-    const from = new Module(source, moduleCache, getTransformedFile(source));
+    const from = source != null
+      ? new Module(source, moduleCache, getTransformedFile(source))
+      : nullModule;
     hasteMapBuilt
       .then(() => resolutionRequest.resolveDependency(from, id))
       .then(

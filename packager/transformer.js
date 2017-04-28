@@ -35,7 +35,7 @@ const getBabelRC = (function() {
       return babelRC;
     }
 
-    babelRC = { plugins: [] }; // empty babelrc
+    babelRC = {plugins: []}; // empty babelrc
 
     // Let's look for the .babelrc in the first project root.
     // In the future let's look into adding a command line option to specify
@@ -54,7 +54,7 @@ const getBabelRC = (function() {
         );
 
       // Require the babel-preset's listed in the default babel config
-      babelRC.presets = babelRC.presets.map((preset) => require('babel-preset-' + preset));
+      babelRC.presets = babelRC.presets.map(preset => require('babel-preset-' + preset));
       babelRC.plugins = resolvePlugins(babelRC.plugins);
     } else {
       // if we find a .babelrc file we tell babel to use it

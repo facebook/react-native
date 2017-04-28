@@ -19,18 +19,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule MultiColumnExample
  */
 'use strict';
 
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  FlatList,
   StyleSheet,
   Text,
   View,
 } = ReactNative;
 
-const FlatList = require('FlatList');
 const UIExplorerPage = require('./UIExplorerPage');
 
 const infoLog = require('infoLog');
@@ -96,17 +97,15 @@ class MultiColumnExample extends React.PureComponent {
         </View>
         <SeparatorComponent />
         <FlatList
-          FooterComponent={FooterComponent}
-          HeaderComponent={HeaderComponent}
-          ItemComponent={this._renderItemComponent}
-          SeparatorComponent={SeparatorComponent}
+          ListFooterComponent={FooterComponent}
+          ListHeaderComponent={HeaderComponent}
           getItemLayout={this.state.fixedHeight ? this._getItemLayout : undefined}
           data={filteredData}
           key={this.state.numColumns + (this.state.fixedHeight ? 'f' : 'v')}
           numColumns={this.state.numColumns || 1}
           onRefresh={() => alert('onRefresh: nothing to refresh :P')}
           refreshing={false}
-          shouldItemUpdate={this._shouldItemUpdate}
+          renderItem={this._renderItemComponent}
           disableVirtualization={!this.state.virtualized}
           onViewableItemsChanged={this._onViewableItemsChanged}
           legacyImplementation={false}
@@ -114,23 +113,21 @@ class MultiColumnExample extends React.PureComponent {
       </UIExplorerPage>
     );
   }
-  _getItemLayout(data: any, index: number): {length: number, offset: number} {
-    return getItemLayout(data, index);
+  _getItemLayout(data: any, index: number): {length: number, offset: number, index: number} {
+    const length = getItemLayout(data, index).length + 2 * (CARD_MARGIN + BORDER_WIDTH);
+    return {length, offset: length * index, index};
   }
   _renderItemComponent = ({item}) => {
     return (
-      <ItemComponent
-        item={item}
-        fixedHeight={this.state.fixedHeight}
-        onPress={this._pressItem}
-      />
+      <View style={styles.card}>
+        <ItemComponent
+          item={item}
+          fixedHeight={this.state.fixedHeight}
+          onPress={this._pressItem}
+        />
+      </View>
     );
   };
-  _shouldItemUpdate(prev, next) {
-    // Note that this does not check state.fixedHeight because we blow away the whole list by
-    // changing the key anyway.
-    return prev.item !== next.item;
-  }
   // This is called when items change viewability by scrolling into or out of the viewable area.
   _onViewableItemsChanged = (info: {
     changed: Array<{
@@ -142,12 +139,23 @@ class MultiColumnExample extends React.PureComponent {
       infoLog('onViewableItemsChanged: ', info.changed.map((v) => ({...v, item: '...'})));
     }
   };
-  _pressItem = (key: number) => {
+  _pressItem = (key: string) => {
     pressItem(this, key);
   };
 }
 
+const CARD_MARGIN = 4;
+const BORDER_WIDTH = 1;
+
 const styles = StyleSheet.create({
+  card: {
+    margin: CARD_MARGIN,
+    borderRadius: 10,
+    flex: 1,
+    overflow: 'hidden',
+    borderColor: 'lightgray',
+    borderWidth: BORDER_WIDTH,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
