@@ -481,9 +481,10 @@ UIViewController *__nullable RCTPresentedViewController(void)
   }
 
   UIViewController *controller = RCTKeyWindow().rootViewController;
-
-  while (controller.presentedViewController) {
-    controller = controller.presentedViewController;
+  UIViewController *presentedController = controller.presentedViewController;
+  while (presentedController && ![presentedController isBeingDismissed]) {
+    controller = presentedController;
+    presentedController = controller.presentedViewController;
   }
 
   return controller;
