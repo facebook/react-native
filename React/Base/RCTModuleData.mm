@@ -268,11 +268,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         SEL selector = method_getName(method);
         if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
           IMP imp = method_getImplementation(method);
-          NSArray<NSString *> *entries =
-            ((NSArray<NSString *> *(*)(id, SEL))imp)(_moduleClass, selector);
+          NSArray *entries =
+            ((NSArray *(*)(id, SEL))imp)(_moduleClass, selector);
           id<RCTBridgeMethod> moduleMethod =
             [[RCTModuleMethod alloc] initWithMethodSignature:entries[1]
                                                 JSMethodName:entries[0]
+                                                      isSync:((NSNumber *)entries[2]).boolValue
                                                  moduleClass:_moduleClass];
 
           [moduleMethods addObject:moduleMethod];

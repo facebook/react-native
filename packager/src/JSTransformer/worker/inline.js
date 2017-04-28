@@ -170,7 +170,7 @@ type AstResult = {
 function inline(
   filename: string,
   transformResult: {ast?: ?Ast, code: string, map: ?SourceMap},
-  options: {},
+  options: {+dev: boolean, +platform: string},
 ): AstResult {
   const code = transformResult.code;
   const babelOptions = {

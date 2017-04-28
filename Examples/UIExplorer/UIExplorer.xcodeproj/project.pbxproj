@@ -122,6 +122,8 @@
 		8385CEF51B873B5C00C6273E /* RCTImageLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */; };
 		8385CF041B87479200C6273E /* RCTImageLoaderHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */; };
 		BC9C03401DC9F1D600B1C635 /* RCTDevMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BC9C033F1DC9F1D600B1C635 /* RCTDevMenuTests.m */; };
+		C654F0B31EB34A73000B7A9A /* UIExplorerTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = C654F0B21EB34A73000B7A9A /* UIExplorerTestModule.m */; };
+		C654F17E1EB34D24000B7A9A /* UIExplorerTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = C654F0B21EB34A73000B7A9A /* UIExplorerTestModule.m */; };
 		D85B829E1AB6D5D7003F4FE2 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D85B829C1AB6D5CE003F4FE2 /* libRCTVibration.a */; };
 /* End PBXBuildFile section */
 
@@ -455,6 +457,7 @@
 		8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderHelpers.m; sourceTree = "<group>"; };
 		8385CF051B8747A000C6273E /* RCTImageLoaderHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTImageLoaderHelpers.h; sourceTree = "<group>"; };
 		BC9C033F1DC9F1D600B1C635 /* RCTDevMenuTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDevMenuTests.m; sourceTree = "<group>"; };
+		C654F0B21EB34A73000B7A9A /* UIExplorerTestModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIExplorerTestModule.m; sourceTree = "<group>"; };
 		D85B82911AB6D5CE003F4FE2 /* RCTVibration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTVibration.xcodeproj; path = ../../Libraries/Vibration/RCTVibration.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -710,6 +713,7 @@
 				27B885551BED29AF00008352 /* RCTRootViewIntegrationTests.m */,
 				3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */,
 				143BC5A01B21E45C00462512 /* UIExplorerSnapshotTests.m */,
+				C654F0B21EB34A73000B7A9A /* UIExplorerTestModule.m */,
 				83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */,
 				143BC5971B21E3E100462512 /* Supporting Files */,
 			);
@@ -1480,6 +1484,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C654F0B31EB34A73000B7A9A /* UIExplorerTestModule.m in Sources */,
 				3DB99D0C1BA0340600302749 /* UIExplorerIntegrationTests.m in Sources */,
 				83636F8F1B53F22C009F943E /* RCTUIManagerScenarioTests.m in Sources */,
 				3D299BAF1D33EBFA00FA1057 /* RCTLoggingTests.m in Sources */,
@@ -1492,6 +1497,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C654F17E1EB34D24000B7A9A /* UIExplorerTestModule.m in Sources */,
 				2D4624FC1DA2EAC300C74D09 /* UIExplorerIntegrationTests.m in Sources */,
 				2D4624FA1DA2EAC300C74D09 /* RCTLoggingTests.m in Sources */,
 				2D4624FE1DA2EAC300C74D09 /* RCTUIManagerScenarioTests.m in Sources */,

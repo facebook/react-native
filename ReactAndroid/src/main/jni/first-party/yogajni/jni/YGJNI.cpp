@@ -223,6 +223,11 @@ void jni_YGNodeReset(alias_ref<jobject> thiz, jlong nativePointer) {
   YGNodeSetPrintFunc(node, YGPrint);
 }
 
+void jni_YGNodePrint(alias_ref<jobject> thiz, jlong nativePointer) {
+  const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
+  YGNodePrint(node, (YGPrintOptions) (YGPrintOptionsStyle | YGPrintOptionsLayout | YGPrintOptionsChildren));
+}
+
 void jni_YGNodeInsertChild(alias_ref<jobject>, jlong nativePointer, jlong childPointer, jint index) {
   YGNodeInsertChild(_jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer), index);
 }
@@ -398,6 +403,16 @@ void jni_YGConfigSetUseWebDefaults(alias_ref<jobject>, jlong nativePointer, jboo
   YGConfigSetUseWebDefaults(config, useWebDefaults);
 }
 
+void jni_YGConfigSetPointScaleFactor(alias_ref<jobject>, jlong nativePointer, jfloat pixelsInPoint) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetPointScaleFactor(config, pixelsInPoint);
+}
+
+void jni_YGConfigSetUseLegacyStretchBehaviour(alias_ref<jobject>, jlong nativePointer, jboolean useLegacyStretchBehaviour) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetUseLegacyStretchBehaviour(config, useLegacyStretchBehaviour);
+}
+
 jint jni_YGNodeGetInstanceCount(alias_ref<jclass> clazz) {
   return YGNodeGetInstanceCount();
 }
@@ -485,6 +500,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGNodeGetInstanceCount),
                         YGMakeNativeMethod(jni_YGSetLogger),
                         YGMakeNativeMethod(jni_YGLog),
+                        YGMakeNativeMethod(jni_YGNodePrint),
                     });
     registerNatives("com/facebook/yoga/YogaConfig",
                     {
@@ -492,6 +508,8 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGConfigFree),
                         YGMakeNativeMethod(jni_YGConfigSetExperimentalFeatureEnabled),
                         YGMakeNativeMethod(jni_YGConfigSetUseWebDefaults),
+                        YGMakeNativeMethod(jni_YGConfigSetPointScaleFactor),
+                        YGMakeNativeMethod(jni_YGConfigSetUseLegacyStretchBehaviour),
                     });
   });
 }
