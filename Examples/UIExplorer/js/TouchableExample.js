@@ -37,6 +37,11 @@ var {
   View,
 } = ReactNative;
 
+const NativeModules = require('NativeModules');
+
+const forceTouchAvailable = (NativeModules.PlatformConstants &&
+  NativeModules.PlatformConstants.forceTouchAvailable) || false;
+
 exports.displayName = (undefined: ?string);
 exports.description = 'Touchable and onPress examples.';
 exports.title = '<Touchable*> and onPress';
@@ -263,7 +268,7 @@ class ForceTouchExample extends React.Component {
   };
 
   _renderConsoleText = () => {
-    return View.forceTouchAvailable ?
+    return forceTouchAvailable ?
       'Force: ' + this.state.force.toFixed(3) :
       '3D Touch is not available on this device';
   };

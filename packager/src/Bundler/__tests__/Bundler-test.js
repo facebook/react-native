@@ -15,6 +15,7 @@ jest
   .setMock('uglify-js')
   .mock('image-size')
   .mock('fs')
+  .mock('os')
   .mock('assert')
   .mock('progress')
   .mock('../../node-haste')
@@ -31,6 +32,7 @@ var Resolver = require('../../Resolver');
 var defaults = require('../../../defaults');
 var sizeOf = require('image-size');
 var fs = require('fs');
+const os = require('os');
 
 var commonOptions = {
   allowBundleUpdates: false,
@@ -76,6 +78,8 @@ describe('Bundler', function() {
   var projectRoots;
 
   beforeEach(function() {
+    os.cpus.mockReturnValue({length: 1});
+
     getDependencies = jest.fn();
     getModuleSystemDependencies = jest.fn();
     projectRoots = ['/root'];
@@ -86,6 +90,7 @@ describe('Bundler', function() {
         getModuleSystemDependencies,
       };
     });
+    Resolver.load = jest.fn().mockImplementation(opts => Promise.resolve(new Resolver(opts)));
 
     fs.statSync.mockImplementation(function() {
       return {
@@ -129,7 +134,7 @@ describe('Bundler', function() {
       Promise.resolve({
         mainModuleId: 'foo',
         dependencies: modules,
-        transformOptions,
+        options: transformOptions,
         getModuleId: () => 123,
         getResolvedDependencyPairs: () => [],
       })
@@ -144,135 +149,28 @@ describe('Bundler', function() {
     });
   });
 
-  it('create a bundle', function() {
-    assetServer.getAssetData.mockImplementation(() => {
-      return Promise.resolve({
-        scales: [1, 2, 3],
-        files: [
-          '/root/img/img.png',
-          '/root/img/img@2x.png',
-          '/root/img/img@3x.png',
-        ],
-        hash: 'i am a hash',
-        name: 'img',
-        type: 'png',
-      });
-    });
-
-    return bundler.bundle({
-      entryFile: '/root/foo.js',
-      runBeforeMainModule: [],
-      runModule: true,
-      sourceMapUrl: 'source_map_url',
-    }).then(bundle => {
-      const ithAddedModule = i => bundle.addModule.mock.calls[i][2].path;
-
-      expect(ithAddedModule(0)).toEqual('/root/foo.js');
-      expect(ithAddedModule(1)).toEqual('/root/bar.js');
-      expect(ithAddedModule(2)).toEqual('/root/img/new_image.png');
-      expect(ithAddedModule(3)).toEqual('/root/file.json');
-
-      expect(bundle.finalize.mock.calls[0]).toEqual([{
-        runModule: true,
-        runBeforeMainModule: [],
-        allowUpdates: false,
-      }]);
-
-      expect(bundle.addAsset.mock.calls[0]).toEqual([{
-        __packager_asset: true,
-        fileSystemLocation: '/root/img',
-        httpServerLocation: '/assets/img',
-        width: 50,
-        height: 100,
-        scales: [1, 2, 3],
-        files: [
-          '/root/img/img.png',
-          '/root/img/img@2x.png',
-          '/root/img/img@3x.png',
-        ],
-        hash: 'i am a hash',
-        name: 'img',
-        type: 'png',
-      }]);
-
-        // TODO(amasad) This fails with 0 != 5 in OSS
-        //expect(ProgressBar.prototype.tick.mock.calls.length).toEqual(modules.length);
-    });
-  });
-
-  it('loads and runs asset plugins', function() {
-    jest.mock('mockPlugin1', () => {
-      return asset => {
-        asset.extraReverseHash = asset.hash.split('').reverse().join('');
-        return asset;
-      };
-    }, {virtual: true});
-
-    jest.mock('asyncMockPlugin2', () => {
-      return asset => {
-        expect(asset.extraReverseHash).toBeDefined();
-        return new Promise(resolve => {
-          asset.extraPixelCount = asset.width * asset.height;
-          resolve(asset);
-        });
-      };
-    }, {virtual: true});
-
-    const mockAsset = {
-      scales: [1, 2, 3],
-      files: [
-        '/root/img/img.png',
-        '/root/img/img@2x.png',
-        '/root/img/img@3x.png',
-      ],
-      hash: 'i am a hash',
-      name: 'img',
-      type: 'png',
-    };
-    assetServer.getAssetData.mockImplementation(() => Promise.resolve(mockAsset));
-
-    return bundler.bundle({
-      entryFile: '/root/foo.js',
-      runBeforeMainModule: [],
-      runModule: true,
-      sourceMapUrl: 'source_map_url',
-      assetPlugins: ['mockPlugin1', 'asyncMockPlugin2'],
-    }).then(bundle => {
-      expect(bundle.addAsset.mock.calls[0]).toEqual([{
-        __packager_asset: true,
-        fileSystemLocation: '/root/img',
-        httpServerLocation: '/assets/img',
-        width: 50,
-        height: 100,
-        scales: [1, 2, 3],
-        files: [
-          '/root/img/img.png',
-          '/root/img/img@2x.png',
-          '/root/img/img@3x.png',
-        ],
-        hash: 'i am a hash',
-        name: 'img',
-        type: 'png',
-        extraReverseHash: 'hsah a ma i',
-        extraPixelCount: 5000,
-      }]);
-    });
-  });
-
   it('gets the list of dependencies from the resolver', function() {
     const entryFile = '/root/foo.js';
     return bundler.getDependencies({entryFile, recursive: true}).then(() =>
       // jest calledWith does not support jasmine.any
       expect(getDependencies.mock.calls[0].slice(0, -2)).toEqual([
         '/root/foo.js',
-        {dev: true, recursive: true},
-        {minify: false,
-          dev: true,
-          transform: {
+        {dev: true, platform: undefined, recursive: true},
+        {
+          preloadedModules: undefined,
+          ramGroups: undefined,
+          transformer: {
             dev: true,
-            hot: false,
-            generateSourceMaps: false,
-            projectRoots,
+            minify: false,
+            platform: undefined,
+            transform: {
+              dev: true,
+              generateSourceMaps: false,
+              hot: false,
+              inlineRequires: false,
+              platform: undefined,
+              projectRoots,
+            },
           },
         },
       ])
@@ -290,7 +188,163 @@ describe('Bundler', function() {
     expect(b._opts.platforms).toEqual(['android', 'vr']);
   });
 
-  describe('getOrderedDependencyPaths', () => {
+  describe('.bundle', () => {
+    const mockAsset = {
+      scales: [1, 2, 3],
+      files: [
+        '/root/img/img.png',
+        '/root/img/img@2x.png',
+        '/root/img/img@3x.png',
+      ],
+      hash: 'i am a hash',
+      name: 'img',
+      type: 'png',
+    };
+
+    beforeEach(() => {
+      assetServer.getAssetData
+        .mockImplementation(() => Promise.resolve(mockAsset));
+    });
+
+    it('creates a bundle', function() {
+      return bundler.bundle({
+        entryFile: '/root/foo.js',
+        runBeforeMainModule: [],
+        runModule: true,
+        sourceMapUrl: 'source_map_url',
+      }).then(bundle => {
+        const ithAddedModule = i => bundle.addModule.mock.calls[i][2].path;
+
+        expect(ithAddedModule(0)).toEqual('/root/foo.js');
+        expect(ithAddedModule(1)).toEqual('/root/bar.js');
+        expect(ithAddedModule(2)).toEqual('/root/img/new_image.png');
+        expect(ithAddedModule(3)).toEqual('/root/file.json');
+
+        expect(bundle.finalize.mock.calls[0]).toEqual([{
+          runModule: true,
+          runBeforeMainModule: [],
+          allowUpdates: false,
+        }]);
+
+        expect(bundle.addAsset.mock.calls[0]).toEqual([{
+          __packager_asset: true,
+          fileSystemLocation: '/root/img',
+          httpServerLocation: '/assets/img',
+          width: 50,
+          height: 100,
+          scales: [1, 2, 3],
+          files: [
+            '/root/img/img.png',
+            '/root/img/img@2x.png',
+            '/root/img/img@3x.png',
+          ],
+          hash: 'i am a hash',
+          name: 'img',
+          type: 'png',
+        }]);
+
+        // TODO(amasad) This fails with 0 != 5 in OSS
+        //expect(ProgressBar.prototype.tick.mock.calls.length).toEqual(modules.length);
+      });
+    });
+
+    it('loads and runs asset plugins', function() {
+      jest.mock('mockPlugin1', () => {
+        return asset => {
+          asset.extraReverseHash = asset.hash.split('').reverse().join('');
+          return asset;
+        };
+      }, {virtual: true});
+
+      jest.mock('asyncMockPlugin2', () => {
+        return asset => {
+          expect(asset.extraReverseHash).toBeDefined();
+          return new Promise(resolve => {
+            asset.extraPixelCount = asset.width * asset.height;
+            resolve(asset);
+          });
+        };
+      }, {virtual: true});
+
+      return bundler.bundle({
+        entryFile: '/root/foo.js',
+        runBeforeMainModule: [],
+        runModule: true,
+        sourceMapUrl: 'source_map_url',
+        assetPlugins: ['mockPlugin1', 'asyncMockPlugin2'],
+      }).then(bundle => {
+        expect(bundle.addAsset.mock.calls[0]).toEqual([{
+          __packager_asset: true,
+          fileSystemLocation: '/root/img',
+          httpServerLocation: '/assets/img',
+          width: 50,
+          height: 100,
+          scales: [1, 2, 3],
+          files: [
+            '/root/img/img.png',
+            '/root/img/img@2x.png',
+            '/root/img/img@3x.png',
+          ],
+          hash: 'i am a hash',
+          name: 'img',
+          type: 'png',
+          extraReverseHash: 'hsah a ma i',
+          extraPixelCount: 5000,
+        }]);
+      });
+    });
+
+    it('calls the module post-processing function', () => {
+      const postProcessModules = jest.fn().mockImplementation((ms, e) => ms);
+
+      const b = new Bundler({
+        ...commonOptions,
+        postProcessModules,
+        projectRoots,
+        assetServer,
+      });
+
+      const entryFile = '/root/foo.js';
+      return b.bundle({
+        entryFile,
+        runBeforeMainModule: [],
+        runModule: true,
+        sourceMapUrl: 'source_map_url',
+      }).then(() => {
+        expect(postProcessModules).toBeCalledWith(modules, entryFile);
+      });
+    });
+
+    it('respects the order of modules returned by the post-processing function', () => {
+      const postProcessModules = jest.fn().mockImplementation((ms, e) => ms.reverse());
+
+      const b = new Bundler({
+        ...commonOptions,
+        postProcessModules,
+        projectRoots,
+        assetServer,
+      });
+
+      const entryFile = '/root/foo.js';
+      return b.bundle({
+        entryFile,
+        runBeforeMainModule: [],
+        runModule: true,
+        sourceMapUrl: 'source_map_url',
+      }).then(bundle => {
+        const ithAddedModule = i => bundle.addModule.mock.calls[i][2].path;
+
+        [
+          '/root/file.json',
+          '/root/img/new_image.png',
+          '/root/bar.js',
+          '/root/foo.js',
+        ].forEach((path, ix) => expect(ithAddedModule(ix)).toEqual(path));
+      });
+    });
+  });
+
+  describe('.getOrderedDependencyPaths', () => {
     beforeEach(() => {
       assetServer.getAssetData.mockImplementation(function(relPath) {
         if (relPath === 'img/new_image.png') {
@@ -346,6 +400,27 @@ describe('Bundler', function() {
           '/root/img/new_image2@2x.png',
           '/root/img/new_image2@3x.png',
         ]));
+    });
+
+    describe('number of workers', () => {
+      beforeEach(() => {
+        delete process.env.REACT_NATIVE_MAX_WORKERS;
+      });
+
+      afterEach(() => {
+        delete process.env.REACT_NATIVE_MAX_WORKERS;
+      });
+
+      it('return correct number of workers', () => {
+        os.cpus.mockReturnValue({length: 1});
+        expect(Bundler.getMaxWorkerCount()).toBe(1);
+        os.cpus.mockReturnValue({length: 8});
+        expect(Bundler.getMaxWorkerCount()).toBe(6);
+        os.cpus.mockReturnValue({length: 24});
+        expect(Bundler.getMaxWorkerCount()).toBe(14);
+        process.env.REACT_NATIVE_MAX_WORKERS = 5;
+        expect(Bundler.getMaxWorkerCount()).toBe(5);
+      });
     });
   });
 });

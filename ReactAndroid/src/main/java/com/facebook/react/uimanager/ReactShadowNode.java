@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 
 import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaDisplay;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaConstants;
@@ -78,12 +79,17 @@ public class ReactShadowNode {
   private final float[] mPadding = new float[Spacing.ALL + 1];
   private final boolean[] mPaddingIsPercent = new boolean[Spacing.ALL + 1];
   private final YogaNode mYogaNode;
+  private static YogaConfig sYogaConfig;
 
   public ReactShadowNode() {
     if (!isVirtual()) {
       YogaNode node = YogaNodePool.get().acquire();
+      if (sYogaConfig == null) {
+        sYogaConfig = new YogaConfig();
+        sYogaConfig.setPointScaleFactor(0f);
+      }
       if (node == null) {
-        node = new YogaNode();
+        node = new YogaNode(sYogaConfig);
       }
       mYogaNode = node;
       Arrays.fill(mPadding, YogaConstants.UNDEFINED);
@@ -372,7 +378,7 @@ public class ReactShadowNode {
   }
 
   public final boolean hasNewLayout() {
-    return mYogaNode == null ? false : mYogaNode.hasNewLayout();
+    return mYogaNode != null && mYogaNode.hasNewLayout();
   }
 
   public final void markLayoutSeen() {
@@ -770,7 +776,11 @@ public class ReactShadowNode {
 
   @Override
   public String toString() {
-    return mYogaNode.toString();
+    if (mYogaNode != null) {
+      return mYogaNode.toString();
+    }
+
+    return getClass().getSimpleName() + " (virtual node)";
   }
 
   public void dispose() {

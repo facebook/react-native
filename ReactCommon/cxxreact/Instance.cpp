@@ -32,15 +32,13 @@ void Instance::initializeBridge(
     std::unique_ptr<InstanceCallback> callback,
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
-    std::unique_ptr<MessageQueueThread> nativeQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry) {
   callback_ = std::move(callback);
 
   jsQueue->runOnQueueSync(
-    [this, &jsef, moduleRegistry, jsQueue,
-     nativeQueue=folly::makeMoveWrapper(std::move(nativeQueue))] () mutable {
+    [this, &jsef, moduleRegistry, jsQueue] () mutable {
       nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
-          jsef.get(), moduleRegistry, jsQueue, nativeQueue.move(), callback_);
+          jsef.get(), moduleRegistry, jsQueue, callback_);
 
       std::lock_guard<std::mutex> lock(m_syncMutex);
       m_syncReady = true;
@@ -130,20 +128,15 @@ void *Instance::getJavaScriptContext() {
   return nativeToJsBridge_->getJavaScriptContext();
 }
 
-void Instance::callJSFunction(ExecutorToken token, std::string&& module, std::string&& method,
-                              folly::dynamic&& params) {
+void Instance::callJSFunction(std::string&& module, std::string&& method, folly::dynamic&& params) {
   callback_->incrementPendingJSCalls();
-  nativeToJsBridge_->callFunction(token, std::move(module), std::move(method), std::move(params));
+  nativeToJsBridge_->callFunction(std::move(module), std::move(method), std::move(params));
 }
 
-void Instance::callJSCallback(ExecutorToken token, uint64_t callbackId, folly::dynamic&& params) {
+void Instance::callJSCallback(uint64_t callbackId, folly::dynamic&& params) {
   SystraceSection s("<callback>");
   callback_->incrementPendingJSCalls();
-  nativeToJsBridge_->invokeCallback(token, (double) callbackId, std::move(params));
-}
-
-ExecutorToken Instance::getMainExecutorToken() {
-  return nativeToJsBridge_->getMainExecutorToken();
+  nativeToJsBridge_->invokeCallback((double) callbackId, std::move(params));
 }
 
 void Instance::handleMemoryPressureUiHidden() {

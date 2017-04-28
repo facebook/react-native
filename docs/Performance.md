@@ -66,21 +66,30 @@ The scroll events are dispatched to the JS thread, but their receipt is not nece
 ### Running in development mode (`dev=true`)
 
 JavaScript thread performance suffers greatly when running in dev mode.
-This is unavoidable: a lot more work needs to be done at runtime to provide you with good warnings and error messages, such as validating propTypes and various other assertions.
+This is unavoidable: a lot more work needs to be done at runtime to provide you with good warnings and error messages, such as validating propTypes and various other assertions. Always make sure to test performance in [release builds](docs/running-on-device.html#building-your-app-for-production).
 
 ### Using `console.log` statements
 
 When running a bundled app, these statements can cause a big bottleneck in the JavaScript thread.
 This includes calls from debugging libraries such as [redux-logger](https://github.com/evgenyrodionov/redux-logger),
 so make sure to remove them before bundling.
+You can also use this [babel plugin](https://babeljs.io/docs/plugins/transform-remove-console/) that removes all the `console.*` calls. You need to install it first with `npm i babel-plugin-transform-remove-console --save`, and then edit the `.babelrc` file under your project directory like this:
+```json
+{
+  "env": {
+    "production": {
+      "plugins": ["transform-remove-console"]
+    }
+  }
+}
+```
+This will automatically remove all `console.*` calls in the release (production) versions of your project.
 
 ### `ListView` initial rendering is too slow or scroll performance is bad for large lists
 
 Use the new [`FlatList`](docs/flatlist.html) or [`SectionList`](docs/sectionlist.html) component instead.
 Besides simplifying the API, the new list components also have significant performance enhancements,
 the main one being nearly constant memory usage for any number of rows.
-
-TODO: Link to blog post
 
 ### JS FPS plunges when re-rendering a view that hardly changes
 
