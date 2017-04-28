@@ -225,6 +225,11 @@ WIN_EXPORT void YGLog(YGLogLevel level, const char *message, ...);
 // If you want to avoid rounding - set PointScaleFactor to 0
 WIN_EXPORT void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInPoint);
 
+// Yoga previously had an error where containers would take the maximum space possible instead of the minimum
+// like they are supposed to. In practice this resulted in implicit behaviour similar to align-self: stretch;
+// Because this was such a long-standing bug we must allow legacy users to switch back to this behaviour.
+WIN_EXPORT void YGConfigSetUseLegacyStretchBehaviour(const YGConfigRef config, const bool useLegacyStretchBehaviour);
+
 // YGConfig
 WIN_EXPORT YGConfigRef YGConfigNew(void);
 WIN_EXPORT void YGConfigFree(const YGConfigRef config);

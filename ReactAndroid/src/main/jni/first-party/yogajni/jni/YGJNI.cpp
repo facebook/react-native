@@ -408,6 +408,11 @@ void jni_YGConfigSetPointScaleFactor(alias_ref<jobject>, jlong nativePointer, jf
   YGConfigSetPointScaleFactor(config, pixelsInPoint);
 }
 
+void jni_YGConfigSetUseLegacyStretchBehaviour(alias_ref<jobject>, jlong nativePointer, jboolean useLegacyStretchBehaviour) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetUseLegacyStretchBehaviour(config, useLegacyStretchBehaviour);
+}
+
 jint jni_YGNodeGetInstanceCount(alias_ref<jclass> clazz) {
   return YGNodeGetInstanceCount();
 }
@@ -504,6 +509,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
                         YGMakeNativeMethod(jni_YGConfigSetExperimentalFeatureEnabled),
                         YGMakeNativeMethod(jni_YGConfigSetUseWebDefaults),
                         YGMakeNativeMethod(jni_YGConfigSetPointScaleFactor),
+                        YGMakeNativeMethod(jni_YGConfigSetUseLegacyStretchBehaviour),
                     });
   });
 }

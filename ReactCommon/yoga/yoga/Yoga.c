@@ -97,6 +97,7 @@ typedef struct YGStyle {
 typedef struct YGConfig {
   bool experimentalFeatures[YGExperimentalFeatureCount + 1];
   bool useWebDefaults;
+  bool useLegacyStretchBehaviour;
   float pointScaleFactor;
 } YGConfig;
 
@@ -202,7 +203,6 @@ static YGNode gYGNodeDefaults = {
 static YGConfig gYGConfigDefaults = {
     .experimentalFeatures =
         {
-                [YGExperimentalFeatureMinFlexFix] = false,
                 [YGExperimentalFeatureWebFlexBasis] = false,
         },
     .useWebDefaults = false,
@@ -2199,23 +2199,25 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     // If the main dimension size isn't known, it is computed based on
     // the line length, so there's no more space left to distribute.
 
+    bool sizeBasedOnContent = false;
     // If we don't measure with exact main dimension we want to ensure we don't violate min and max
     if (measureModeMainDim != YGMeasureModeExactly) {
       if (!YGFloatIsUndefined(minInnerMainDim) && sizeConsumedOnCurrentLine < minInnerMainDim) {
         availableInnerMainDim = minInnerMainDim;
       } else if (!YGFloatIsUndefined(maxInnerMainDim) && sizeConsumedOnCurrentLine > maxInnerMainDim) {
         availableInnerMainDim = maxInnerMainDim;
-      } else if (YGConfigIsExperimentalFeatureEnabled(node->config, YGExperimentalFeatureMinFlexFix) &&
-                 (totalFlexGrowFactors == 0 || YGResolveFlexGrow(node) == 0)) {
-        // TODO: this needs to be moved out of experimental feature, as this is legitimate fix
-        // If we don't have any children to flex or we can't flex the node itself,
-        // space we've used is all space we need
-        availableInnerMainDim = sizeConsumedOnCurrentLine;
+      } else {
+        if (!node->config->useLegacyStretchBehaviour && (totalFlexGrowFactors == 0 || YGResolveFlexGrow(node) == 0)) {
+          // If we don't have any children to flex or we can't flex the node itself,
+          // space we've used is all space we need
+          availableInnerMainDim = sizeConsumedOnCurrentLine;
+        }
+        sizeBasedOnContent = true;
       }
     }
 
     float remainingFreeSpace = 0;
-    if (!YGFloatIsUndefined(availableInnerMainDim)) {
+    if ((!sizeBasedOnContent || node->config->useLegacyStretchBehaviour) && !YGFloatIsUndefined(availableInnerMainDim)) {
       remainingFreeSpace = availableInnerMainDim - sizeConsumedOnCurrentLine;
     } else if (sizeConsumedOnCurrentLine < 0) {
       // availableInnerMainDim is indefinite which means the node is being sized
@@ -3425,6 +3427,10 @@ inline bool YGConfigIsExperimentalFeatureEnabled(const YGConfigRef config,
 
 void YGConfigSetUseWebDefaults(const YGConfigRef config, const bool enabled) {
   config->useWebDefaults = enabled;
+}
+
+void YGConfigSetUseLegacyStretchBehaviour(const YGConfigRef config, const bool useLegacyStretchBehaviour) {
+  config->useLegacyStretchBehaviour = useLegacyStretchBehaviour;
 }
 
 bool YGConfigGetUseWebDefaults(const YGConfigRef config) {
