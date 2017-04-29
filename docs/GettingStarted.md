@@ -345,7 +345,7 @@ Use the React Native command line interface to generate a new React Native proje
 
 ```
 # skip this first command if you ejected from Create React Native App
-react-native init AwesomeProject
+react-native init AwesomeProject (On a MAC in Terminal, this command worked better: sudo react-native init AwesomeProject)
 cd AwesomeProject
 react-native run-ios
 ```
