@@ -63,6 +63,8 @@ To debug the JavaScript code in Chrome, select "Debug JS Remotely" from the Deve
 
 Select `Tools → Developer Tools` from the Chrome Menu to open the [Developer Tools](https://developer.chrome.com/devtools). You may also access the DevTools using keyboard shortcuts (**`Command`**`⌘` + **`Option`**`⌥` + **`I`** on Mac, **`Ctrl`** + **`Shift`** + **`I`** on Windows). You may also want to enable [Pause On Caught Exceptions](http://stackoverflow.com/questions/2233339/javascript-is-there-a-way-to-get-chrome-to-break-on-all-errors/17324511#17324511) for a better debugging experience.
 
+>Note: the React Developer Tools Chrome extension does not work with React Native, but you can use its standalone version instead. Read the [next section](#react-developer-tools) to learn how.
+
 ### Debugging using a custom JavaScript debugger
 
 To use a custom JavaScript debugger in place of Chrome Developer Tools, set the `REACT_DEBUGGER` environment variable to a command that will start your custom debugger. You can then select "Debug JS Remotely" from the Developer Menu to start debugging.
@@ -70,6 +72,20 @@ To use a custom JavaScript debugger in place of Chrome Developer Tools, set the 
 The debugger will receive a list of all project roots, separated by a space. For example, if you set `REACT_DEBUGGER="node /path/to/launchDebugger.js --port 2345 --type ReactNative"`, then the command `node /path/to/launchDebugger.js --port 2345 --type ReactNative /path/to/reactNative/app` will be used to start your debugger.
 
 > Custom debugger commands executed this way should be short-lived processes, and they shouldn't produce more than 200 kilobytes of output.
+
+## React Developer Tools
+
+With React Native 0.43 or higher, you can use [the standalone version of React Developer Tools](https://github.com/facebook/react-devtools/tree/master/packages/react-devtools) to debug the React component hierarchy. To use it, install the `react-devtools` package globally:
+
+```js
+npm install -g react-devtools
+```
+
+Now run `react-devtools` from the terminal to launch the standalone DevTools app.
+
+It should connect to your simulator within a few seconds.
+
+> Note: if you prefer to avoid global installations, alternatively you can run `npm install --save-dev react-devtools` and add `"react-devtools": "react-devtools"` to the `scripts` section in your `package.json`. Then you could run `npm run react-devtools` from your project folder.
 
 ## Performance Monitor
 
