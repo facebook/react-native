@@ -63,7 +63,7 @@ To debug the JavaScript code in Chrome, select "Debug JS Remotely" from the Deve
 
 Select `Tools → Developer Tools` from the Chrome Menu to open the [Developer Tools](https://developer.chrome.com/devtools). You may also access the DevTools using keyboard shortcuts (**`Command`**`⌘` + **`Option`**`⌥` + **`I`** on Mac, **`Ctrl`** + **`Shift`** + **`I`** on Windows). You may also want to enable [Pause On Caught Exceptions](http://stackoverflow.com/questions/2233339/javascript-is-there-a-way-to-get-chrome-to-break-on-all-errors/17324511#17324511) for a better debugging experience.
 
->Note: the React Developer Tools Chrome extension does not work with React Native, but you can use its standalone version instead. Read the [next section](#react-developer-tools) to learn how.
+> Note: the React Developer Tools Chrome extension does not work with React Native, but you can use its standalone version instead. Read the [next section](#react-developer-tools) to learn how.
 
 ### Debugging using a custom JavaScript debugger
 
@@ -85,7 +85,7 @@ Now run `react-devtools` from the terminal to launch the standalone DevTools app
 
 It should connect to your simulator within a few seconds.
 
-> Note: if you prefer to avoid global installations, alternatively you can run `npm install --save-dev react-devtools` and add `"react-devtools": "react-devtools"` to the `scripts` section in your `package.json`. Then you could run `npm run react-devtools` from your project folder.
+> Note: if prefer to avoid global installations, you can add `react-devtools` as a project dependency. If you use Yarn, you can run `yarn add react-devtools` and then run `yarn react-devtools` from your project folder to open them. If you use npm, you can run `npm install --save react-devtools`, add `"react-devtools": "react-devtools"` to the `scripts` section in your `package.json`, and then run `npm run react-devtools` from your project folder.
 
 ## Performance Monitor
 
