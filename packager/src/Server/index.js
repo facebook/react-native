@@ -33,7 +33,7 @@ import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionRes
 import type Bundle from '../Bundler/Bundle';
 import type HMRBundle from '../Bundler/HMRBundle';
 import type {Reporter} from '../lib/reporting';
-import type {GetTransformOptions} from '../Bundler';
+import type {GetTransformOptions, PostProcessModules} from '../Bundler';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {SourceMap, Symbolicate} from './symbolicate';
 
@@ -68,6 +68,7 @@ type Options = {
   moduleFormat?: string,
   platforms?: Array<string>,
   polyfillModuleNames?: Array<string>,
+  postProcessModules?: PostProcessModules,
   projectRoots: Array<string>,
   providesModuleNodeModules?: Array<string>,
   reporter: Reporter,
@@ -139,6 +140,7 @@ class Server {
     moduleFormat: string,
     platforms: Array<string>,
     polyfillModuleNames: Array<string>,
+    postProcessModules?: PostProcessModules,
     projectRoots: Array<string>,
     providesModuleNodeModules?: Array<string>,
     reporter: Reporter,
@@ -174,6 +176,7 @@ class Server {
       moduleFormat: options.moduleFormat != null ? options.moduleFormat : 'haste',
       platforms: options.platforms || defaults.platforms,
       polyfillModuleNames: options.polyfillModuleNames || [],
+      postProcessModules: options.postProcessModules,
       projectRoots: options.projectRoots,
       providesModuleNodeModules: options.providesModuleNodeModules,
       reporter: options.reporter,
@@ -309,7 +312,7 @@ class Server {
   getDependencies(options: {
     entryFile: string,
     platform: ?string,
-  }): Promise<ResolutionResponse<Module>> {
+  }): Promise<ResolutionResponse<Module, *>> {
     return Promise.resolve().then(() => {
       if (!options.platform) {
         options.platform = getPlatformExtension(options.entryFile);
@@ -428,7 +431,7 @@ class Server {
   _rangeRequestMiddleware(
     req: IncomingMessage,
     res: ServerResponse,
-    data: string,
+    data: string | Buffer,
     assetPath: string,
   ) {
     if (req.headers && req.headers.range) {

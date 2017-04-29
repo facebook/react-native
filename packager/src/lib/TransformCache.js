@@ -20,14 +20,15 @@ const rimraf = require('rimraf');
 const terminal = require('../lib/terminal');
 const writeFileAtomicSync = require('write-file-atomic').sync;
 
-const CACHE_NAME = 'react-native-packager-cache';
-
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
-import type {SourceMap} from './SourceMap';
+import type {MappingsMap} from './SourceMap';
 import type {Reporter} from './reporting';
 
 type CacheFilePaths = {transformedCode: string, metadata: string};
-export type GetTransformCacheKey = (sourceCode: string, filename: string, options: {}) => string;
+export type GetTransformCacheKey = (options: {}) => string;
+
+const CACHE_NAME = 'react-native-packager-cache';
+const CACHE_SUB_DIR = 'cache';
 
 /**
  * If packager is running for two different directories, we don't want the
@@ -38,16 +39,17 @@ export type GetTransformCacheKey = (sourceCode: string, filename: string, option
 const getCacheDirPath = (function() {
   let dirPath;
   return function() {
-    if (dirPath == null) {
-      dirPath = path.join(
-        require('os').tmpdir(),
-        CACHE_NAME + '-' + crypto.createHash('sha1')
-          .update(__dirname).digest('base64'),
-      );
-      require('debug')('RNP:TransformCache:Dir')(
-        `transform cache directory: ${dirPath}`
-      );
+    if (dirPath != null) {
+      return dirPath;
     }
+    const hash = crypto.createHash('sha1').update(__dirname);
+    if (process.getuid != null) {
+      hash.update(process.getuid().toString());
+    }
+    dirPath = path.join(require('os').tmpdir(), CACHE_NAME + '-' + hash.digest('hex'));
+    require('debug')('RNP:TransformCache:Dir')(
+      `transform cache directory: ${dirPath}`
+    );
     return dirPath;
   };
 })();
@@ -60,11 +62,7 @@ function hashSourceCode(props: {
   transformOptionsKey: string,
 }): string {
   return crypto.createHash('sha1')
-    .update(props.getTransformCacheKey(
-      props.sourceCode,
-      props.filePath,
-      props.transformOptions,
-    ))
+    .update(props.getTransformCacheKey(props.transformOptions))
     .update(props.sourceCode)
     .digest('hex');
 }
@@ -84,7 +82,7 @@ function getCacheFilePaths(props: {
   const hash = hasher.digest('hex');
   const prefix = hash.substr(0, 2);
   const fileName = `${hash.substr(2)}`;
-  const base = path.join(getCacheDirPath(), prefix, fileName);
+  const base = path.join(getCacheDirPath(), CACHE_SUB_DIR, prefix, fileName);
   return {transformedCode: base, metadata: base + '.meta'};
 }
 
@@ -92,7 +90,7 @@ export type CachedResult = {
   code: string,
   dependencies: Array<string>,
   dependencyOffsets: Array<number>,
-  map?: ?SourceMap,
+  map?: ?MappingsMap,
 };
 
 export type TransformCacheResult = {|
@@ -181,34 +179,13 @@ const GARBAGE_COLLECTOR = new (class GarbageCollector {
     this._cacheWasReset = false;
   }
 
-  _collectSync() {
-    const cacheDirPath = getCacheDirPath();
-    mkdirp.sync(cacheDirPath);
-    const prefixDirs = fs.readdirSync(cacheDirPath);
-    for (let i = 0; i < prefixDirs.length; ++i) {
-      const prefixDir = path.join(cacheDirPath, prefixDirs[i]);
-      const cacheFileNames = fs.readdirSync(prefixDir);
-      for (let j = 0; j < cacheFileNames.length; ++j) {
-        const cacheFilePath = path.join(prefixDir, cacheFileNames[j]);
-        const stats = fs.lstatSync(cacheFilePath);
-        const timeSinceLastAccess = Date.now() - stats.atime.getTime();
-        if (
-          stats.isFile() &&
-          timeSinceLastAccess > CACHE_FILE_MAX_LAST_ACCESS_TIME
-        ) {
-          fs.unlinkSync(cacheFilePath);
-        }
-      }
-    }
-  }
-
   /**
    * We want to avoid preventing tool use if the cleanup fails for some reason,
    * but still provide some chance for people to report/fix things.
    */
   _collectSyncNoThrow() {
     try {
-      this._collectSync();
+      collectCacheIfOldSync();
     } catch (error) {
       terminal.log(error.stack);
       terminal.log(
@@ -242,6 +219,57 @@ const GARBAGE_COLLECTOR = new (class GarbageCollector {
 
 })();
 
+/**
+ * When restarting packager we want to avoid running the collection over again, so we store
+ * the last collection time in a file and we check that first.
+ */
+function collectCacheIfOldSync() {
+  const cacheDirPath = getCacheDirPath();
+  mkdirp.sync(cacheDirPath);
+  const cacheCollectionFilePath = path.join(cacheDirPath, 'last_collected');
+  const lastCollected = Number.parseInt(tryReadFileSync(cacheCollectionFilePath, 'utf8'), 10);
+  if (Number.isInteger(lastCollected) && Date.now() - lastCollected > GARBAGE_COLLECTION_PERIOD) {
+    return;
+  }
+  const effectiveCacheDirPath = path.join(cacheDirPath, CACHE_SUB_DIR);
+  mkdirp.sync(effectiveCacheDirPath);
+  collectCacheSync(effectiveCacheDirPath);
+  fs.writeFileSync(cacheCollectionFilePath, Date.now().toString());
+}
+
+/**
+ * Remove all the cache files from the specified folder that are older than a certain duration.
+ */
+function collectCacheSync(dirPath: string) {
+  const prefixDirs = fs.readdirSync(dirPath);
+  for (let i = 0; i < prefixDirs.length; ++i) {
+    const prefixDir = path.join(dirPath, prefixDirs[i]);
+    const cacheFileNames = fs.readdirSync(prefixDir);
+    for (let j = 0; j < cacheFileNames.length; ++j) {
+      const cacheFilePath = path.join(prefixDir, cacheFileNames[j]);
+      const stats = fs.lstatSync(cacheFilePath);
+      const timeSinceLastAccess = Date.now() - stats.atime.getTime();
+      if (
+        stats.isFile() &&
+        timeSinceLastAccess > CACHE_FILE_MAX_LAST_ACCESS_TIME
+      ) {
+        fs.unlinkSync(cacheFilePath);
+      }
+    }
+  }
+}
+
+function tryReadFileSync(filePath: string): string {
+  try {
+    return fs.readFileSync(filePath, 'utf8');
+  } catch (error) {
+    if (error.code !== 'ENOENT') {
+      throw error;
+    }
+    return '';
+  }
+}
+
 function readMetadataFileSync(
   metadataFilePath: string,
 ): ?{
@@ -249,7 +277,7 @@ function readMetadataFileSync(
   cachedSourceHash: string,
   dependencies: Array<string>,
   dependencyOffsets: Array<number>,
-  sourceMap: ?SourceMap,
+  sourceMap: ?MappingsMap,
 } {
   const metadataStr = fs.readFileSync(metadataFilePath, 'utf8');
   let metadata;

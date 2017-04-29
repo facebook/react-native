@@ -11,6 +11,7 @@
 'use strict';
 
 const babel = require('babel-core');
+const crypto = require('crypto');
 const externalHelpersPlugin = require('babel-plugin-external-helpers');
 const fs = require('fs');
 const generate = require('babel-generator').default;
@@ -22,6 +23,13 @@ const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
 
 const {compactMapping} = require('./src/Bundler/source-map');
 
+const cacheKeyParts = [
+  fs.readFileSync(__filename),
+  require('babel-plugin-external-helpers/package.json').version,
+  require('babel-preset-fbjs/package.json').version,
+  require('babel-preset-react-native/package.json').version,
+];
+
 /**
  * Return a memoized function that checks for the existence of a
  * project level .babelrc file, and if it doesn't exist, reads the
@@ -30,19 +38,19 @@ const {compactMapping} = require('./src/Bundler/source-map');
 const getBabelRC = (function() {
   let babelRC = null;
 
-  return function _getBabelRC(projectRoots) {
+  return function _getBabelRC(projectRoot) {
     if (babelRC !== null) {
       return babelRC;
     }
 
     babelRC = {plugins: []}; // empty babelrc
 
-    // Let's look for the .babelrc in the first project root.
+    // Let's look for the .babelrc in the project root.
     // In the future let's look into adding a command line option to specify
     // this location.
     let projectBabelRCPath;
-    if (projectRoots && projectRoots.length > 0) {
-      projectBabelRCPath = path.resolve(projectRoots[0], '.babelrc');
+    if (projectRoot) {
+      projectBabelRCPath = path.resolve(projectRoot, '.babelrc');
     }
 
     // If a .babelrc file doesn't exist in the project,
@@ -70,7 +78,7 @@ const getBabelRC = (function() {
  * config object with the appropriate plugins.
  */
 function buildBabelConfig(filename, options) {
-  const babelRC = getBabelRC(options.projectRoots);
+  const babelRC = getBabelRC(options.projectRoot);
 
   const extraConfig = {
     code: false,
@@ -126,4 +134,13 @@ function transform(src, filename, options) {
   }
 }
 
-module.exports.transform = transform;
+function getCacheKey(options) {
+  var key = crypto.createHash('md5');
+  cacheKeyParts.forEach(part => key.update(part));
+  return key.digest('hex');
+}
+
+module.exports = {
+  transform,
+  getCacheKey,
+};

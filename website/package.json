@@ -23,7 +23,7 @@
     "memory-cache": "^0.1.6",
     "mkdirp": "^0.5.1",
     "optimist": "0.6.0",
-    "prop-types": "^15.5.7",
+    "prop-types": "^15.5.8",
     "react": "~0.13.0",
     "react-docgen": "3.0.0-beta2",
     "react-page-middleware": "0.4.1",

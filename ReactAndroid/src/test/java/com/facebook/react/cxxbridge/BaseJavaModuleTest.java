@@ -71,14 +71,14 @@ public class BaseJavaModuleTest {
   public void testCallMethodWithoutEnoughArgs() throws Exception {
     int methodId = findMethod("regularMethod",mMethods);
     Mockito.stub(mArguments.size()).toReturn(1);
-    mWrapper.invoke(null, methodId, mArguments);
+    mWrapper.invoke(methodId, mArguments);
   }
 
   @Test
   public void testCallMethodWithEnoughArgs() {
     int methodId = findMethod("regularMethod", mMethods);
     Mockito.stub(mArguments.size()).toReturn(2);
-    mWrapper.invoke(null, methodId, mArguments);
+    mWrapper.invoke(methodId, mArguments);
   }
 
   @Test
@@ -86,14 +86,14 @@ public class BaseJavaModuleTest {
     // Promise block evaluates to 2 args needing to be passed from JS
     int methodId = findMethod("asyncMethod", mMethods);
     Mockito.stub(mArguments.size()).toReturn(3);
-    mWrapper.invoke(null, methodId, mArguments);
+    mWrapper.invoke(methodId, mArguments);
   }
 
   @Test
   public void testCallSyncMethod() {
     int methodId = findMethod("syncMethod", mMethods);
     Mockito.stub(mArguments.size()).toReturn(2);
-    mWrapper.invoke(null, methodId, mArguments);
+    mWrapper.invoke(methodId, mArguments);
   }
 
   private static class MethodsModule extends BaseJavaModule {

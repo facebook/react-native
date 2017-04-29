@@ -11,6 +11,8 @@
 
 'use strict';
 
+/* global Buffer: true */
+
 const BatchProcessor = require('./BatchProcessor');
 const FetchError = require('node-fetch/lib/fetch-error');
 
@@ -227,7 +229,7 @@ class URIBasedGlobalTransformCache {
     const hash = crypto.createHash('sha1');
     const {sourceCode, filePath, transformOptions} = props;
     hash.update(this._optionsHasher.getTransformWorkerOptionsDigest(transformOptions));
-    const cacheKey = props.getTransformCacheKey(sourceCode, filePath, transformOptions);
+    const cacheKey = props.getTransformCacheKey(transformOptions);
     hash.update(JSON.stringify(cacheKey));
     hash.update(crypto.createHash('sha1').update(sourceCode).digest('hex'));
     const digest = hash.digest('hex');
@@ -380,14 +382,16 @@ class OptionsHasher {
    * particular file.
    */
   hashTransformOptions(hash: crypto$Hash, options: TransformOptions): crypto$Hash {
-    const {generateSourceMaps, dev, hot, inlineRequires, platform,
-      preloadedModules, projectRoots, ramGroups, ...unknowns} = options;
+    const {
+      generateSourceMaps, dev, hot, inlineRequires, platform, projectRoot,
+      ...unknowns,
+    } = options;
     const unknownKeys = Object.keys(unknowns);
     if (unknownKeys.length > 0) {
       const message = `these transform option fields are unknown: ${JSON.stringify(unknownKeys)}`;
       throw new CannotHashOptionsError(message);
     }
-    // eslint-disable-next-line no-undef
+
     hash.update(new Buffer([
       // eslint-disable-next-line no-bitwise
       +dev | +generateSourceMaps << 1 | +hot << 2 | +!!inlineRequires << 3,
@@ -397,14 +401,18 @@ class OptionsHasher {
     if (typeof inlineRequires === 'object') {
       relativeBlacklist = this.relativizeFilePaths(Object.keys(inlineRequires.blacklist));
     }
-    const relativeProjectRoots = this.relativizeFilePaths(projectRoots);
-    const optionTuple = [relativeBlacklist, preloadedModules, relativeProjectRoots, ramGroups];
+    const relativeProjectRoot = this.relativizeFilePath(projectRoot);
+    const optionTuple = [relativeBlacklist, relativeProjectRoot];
     hash.update(JSON.stringify(optionTuple));
     return hash;
   }
 
   relativizeFilePaths(filePaths: Array<string>): Array<string> {
-    return filePaths.map(filepath => path.relative(this._rootPath, filepath));
+    return filePaths.map(this.relativizeFilePath.bind(this));
+  }
+
+  relativizeFilePath(filePath: string): string {
+    return path.relative(this._rootPath, filePath);
   }
 }
 

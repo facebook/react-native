@@ -306,13 +306,14 @@ You can see we're adding an event handler property to the view by subclassing `M
 
 class MapView extends React.Component {
   constructor() {
+    super(props)
     this._onChange = this._onChange.bind(this);
   }
   _onChange(event: Event) {
     if (!this.props.onRegionChange) {
       return;
     }
-    this.props.onRegionChange(event.nativeEvent.region);
+    this.props.onRegionChange(event.nativeEvent);
   }
   render() {
     return <RNTMap {...this.props} onChange={this._onChange} />;
@@ -322,9 +323,31 @@ MapView.propTypes = {
   /**
    * Callback that is called continuously when the user is dragging the map.
    */
-  onRegionChange: React.PropTypes.func,
+  onChange: React.PropTypes.func,
   ...
 };
+
+class MapViewExample extends React.Component {
+  onRegionChange(event: Event) {
+    // Do stuff with event.region.latitude, etc.
+  }
+
+  render() {
+    var region = {
+      latitude: 37.48,
+      longitude: -122.16,
+      latitudeDelta: 0.1,
+      longitudeDelta: 0.1,
+    };
+
+    return (
+      <MapView region={region} pitchEnabled={false} style={{flex: 1}} onChange={this.onRegionChange}/>
+    );
+  }  
+}
+
+// Module name
+AppRegistry.registerComponent('MapViewExample', () => MapViewExample);
 ```
 
 ## Styles

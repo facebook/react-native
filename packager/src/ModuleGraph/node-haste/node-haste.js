@@ -51,8 +51,8 @@ function getFakeModuleMap(hasteMap: HasteMap) {
       return module && module.type === 'Module' ? module.path : null;
     },
     getPackage(name: string, platform: ?string): ?string {
-      const module = hasteMap.getModule(name, platform);
-      return module && module.type === 'Package' ? module.path : null;
+      const pkg = hasteMap.getPackage(name);
+      return pkg && pkg.path;
     },
   };
 }
