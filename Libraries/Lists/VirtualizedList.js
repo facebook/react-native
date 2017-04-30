@@ -397,7 +397,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   };
 
   render() {
-    const {ListFooterComponent, ListHeaderComponent} = this.props;
+    const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} = this.props;
     const {data, disableVirtualization, horizontal} = this.props;
     const cells = [];
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
@@ -479,6 +479,15 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           <View key="$tail_spacer" style={{[spacerKey]: tailSpacerLength}} />
         );
       }
+    } else if (ListEmptyComponent) {
+      const element = React.isValidElement(ListEmptyComponent)
+        ? ListEmptyComponent
+        : <ListEmptyComponent />;
+      cells.push(
+        <View key="$empty" onLayout={this._onLayoutEmpty}>
+          {element}
+        </View>
+      );
     }
     if (ListFooterComponent) {
       const element = React.isValidElement(ListFooterComponent)
@@ -585,6 +594,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this._scrollMetrics.visibleLength = this._selectLength(e.nativeEvent.layout);
     this.props.onLayout && this.props.onLayout(e);
     this._updateCellsToRenderBatcher.schedule();
+  };
+
+  _onLayoutEmpty = (e) => {
+    this.props.onLayout && this.props.onLayout(e);
   };
 
   _onLayoutFooter = (e) => {
