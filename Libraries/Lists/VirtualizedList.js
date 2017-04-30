@@ -419,7 +419,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const stickyHeaderIndices = [];
     if (ListHeaderComponent) {
       const element = React.isValidElement(ListHeaderComponent)
-        ? ListHeaderComponent
+        ? ListHeaderComponent // $FlowFixMe
         : <ListHeaderComponent />;
       cells.push(
         <View key="$header" onLayout={this._onLayoutHeader}>
@@ -496,7 +496,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       }
     } else if (ListEmptyComponent) {
       const element = React.isValidElement(ListEmptyComponent)
-        ? ListEmptyComponent
+        ? ListEmptyComponent // $FlowFixMe
         : <ListEmptyComponent />;
       cells.push(
         <View key="$empty" onLayout={this._onLayoutEmpty}>
@@ -506,7 +506,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     }
     if (ListFooterComponent) {
       const element = React.isValidElement(ListFooterComponent)
-        ? ListFooterComponent
+        ? ListFooterComponent // $FlowFixMe
         : <ListFooterComponent />;
       cells.push(
         <View key="$footer" onLayout={this._onLayoutFooter}>
