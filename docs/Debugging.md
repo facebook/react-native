@@ -77,11 +77,15 @@ The debugger will receive a list of all project roots, separated by a space. For
 
 With React Native 0.43 or higher, you can use [the standalone version of React Developer Tools](https://github.com/facebook/react-devtools/tree/master/packages/react-devtools) to debug the React component hierarchy. To use it, install the `react-devtools` package globally:
 
-```js
+```
 npm install -g react-devtools
 ```
 
-Now run `react-devtools` from the terminal to launch the standalone DevTools app.
+Now run `react-devtools` from the terminal to launch the standalone DevTools app:
+
+```
+react-devtools
+```
 
 It should connect to your simulator within a few seconds.
 
