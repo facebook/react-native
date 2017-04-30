@@ -12,13 +12,14 @@
 'use strict';
 
 const log = require('../util/log').out('bundle');
-const Server = require('../../packager/react-packager/src/Server');
-const TerminalReporter = require('../../packager/react-packager/src/lib/TerminalReporter');
+const Server = require('../../packager/src/Server');
+const TerminalReporter = require('../../packager/src/lib/TerminalReporter');
 
 const outputBundle = require('./output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
+const defaultPlatforms = require('../../packager/defaults').platforms;
 const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
 
 import type {RequestOptions, OutputOptions} from './types.flow';
@@ -45,9 +46,14 @@ function buildBundle(
   // have other choice than defining it as an env variable here.
   process.env.NODE_ENV = args.dev ? 'development' : 'production';
 
+  let sourceMapUrl = args.sourcemapOutput;
+  if (sourceMapUrl && !args.sourcemapUseAbsolutePath) {
+    sourceMapUrl = path.basename(sourceMapUrl);
+  }
+
   const requestOpts: RequestOptions = {
     entryFile: args.entryFile,
-    sourceMapUrl: args.sourcemapOutput && path.basename(args.sourcemapOutput),
+    sourceMapUrl,
     dev: args.dev,
     minify: !args.dev,
     platform: args.platform,
@@ -58,6 +64,7 @@ function buildBundle(
   var shouldClosePackager = false;
   if (!packagerInstance) {
     const assetExts = (config.getAssetExts && config.getAssetExts()) || [];
+    const platforms = (config.getPlatforms && config.getPlatforms()) || [];
 
     const transformModulePath =
       args.transformer ? path.resolve(args.transformer) :
@@ -73,6 +80,10 @@ function buildBundle(
       blacklistRE: config.getBlacklistRE(),
       extraNodeModules: config.extraNodeModules,
       getTransformOptions: config.getTransformOptions,
+      globalTransformCache: null,
+      hasteImpl: config.hasteImpl,
+      platforms: defaultPlatforms.concat(platforms),
+      postProcessModules: config.postProcessModules,
       projectRoots: config.getProjectRoots(),
       providesModuleNodeModules: providesModuleNodeModules,
       resetCache: args.resetCache,

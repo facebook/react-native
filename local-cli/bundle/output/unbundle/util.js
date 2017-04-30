@@ -12,14 +12,15 @@
 
 const invariant = require('fbjs/lib/invariant');
 
-import type {ModuleGroups, ModuleTransportLike, SourceMap} from '../../types.flow';
+import type {IndexMap, MappingsMap, SourceMap} from '../../../../packager/src/lib/SourceMap';
+import type {ModuleGroups, ModuleTransportLike} from '../../types.flow';
 
 const newline = /\r\n?|\n|\u2028|\u2029/g;
 // fastest implementation
 const countLines = (string: string) => (string.match(newline) || []).length + 1;
 
 
-function lineToLineSourceMap(source: string, filename: string = ''): SourceMap {
+function lineToLineSourceMap(source: string, filename: string = ''): MappingsMap {
   // The first line mapping in our package is the base64vlq code for zeros (A).
   const firstLine = 'AAAA;';
 
@@ -52,19 +53,12 @@ function combineSourceMaps({
   moduleGroups,
   modules,
   withCustomOffsets,
-}: CombineSourceMapsOptions): SourceMap {
-  let offsets;
+}: CombineSourceMapsOptions): IndexMap {
+  const offsets = [];
   const sections = [];
-  const sourceMap: Object = {
-    file: '',
-    sections,
-    version: 3,
-  };
-
-
-  if (withCustomOffsets) {
-    offsets = sourceMap.x_facebook_offsets = [];
-  }
+  const sourceMap: IndexMap = withCustomOffsets
+    ? {sections, version: 3, x_facebook_offsets: offsets}
+    : {sections, version: 3};
 
   let line = 0;
   modules.forEach(moduleTransport => {

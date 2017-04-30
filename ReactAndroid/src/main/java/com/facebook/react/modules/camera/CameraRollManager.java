@@ -56,8 +56,10 @@ import com.facebook.react.module.annotations.ReactModule;
  * {@link NativeModule} that allows JS to interact with the photos on the device (i.e.
  * {@link MediaStore.Images}).
  */
-@ReactModule(name = "RKCameraRollManager")
+@ReactModule(name = CameraRollManager.NAME)
 public class CameraRollManager extends ReactContextBaseJavaModule {
+
+  protected static final String NAME = "CameraRollManager";
 
   private static final String ERROR_UNABLE_TO_LOAD = "E_UNABLE_TO_LOAD";
   private static final String ERROR_UNABLE_TO_LOAD_PERMISSION = "E_UNABLE_TO_LOAD_PERMISSION";
@@ -102,7 +104,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "RKCameraRollManager";
+    return NAME;
   }
 
   /**
@@ -115,25 +117,21 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void saveToCameraRoll(String uri, String type, Promise promise) {
-    MediaType parsedType = type.equals("video") ? MediaType.VIDEO : MediaType.PHOTO;
-    new SaveToCameraRoll(getReactApplicationContext(), Uri.parse(uri), parsedType, promise)
+    new SaveToCameraRoll(getReactApplicationContext(), Uri.parse(uri), promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  private enum MediaType { PHOTO, VIDEO };
   private static class SaveToCameraRoll extends GuardedAsyncTask<Void, Void> {
 
     private final Context mContext;
     private final Uri mUri;
     private final Promise mPromise;
-    private final MediaType mType;
 
-    public SaveToCameraRoll(ReactContext context, Uri uri, MediaType type, Promise promise) {
+    public SaveToCameraRoll(ReactContext context, Uri uri, Promise promise) {
       super(context);
       mContext = context;
       mUri = uri;
       mPromise = promise;
-      mType = type;
     }
 
     @Override
@@ -141,9 +139,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       File source = new File(mUri.getPath());
       FileChannel input = null, output = null;
       try {
-        File exportDir = (mType == MediaType.PHOTO)
-          ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-          : Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+        File exportDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
         exportDir.mkdirs();
         if (!exportDir.isDirectory()) {
           mPromise.reject(ERROR_UNABLE_TO_LOAD, "External media storage directory not available");

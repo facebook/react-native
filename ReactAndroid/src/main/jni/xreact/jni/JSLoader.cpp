@@ -2,9 +2,10 @@
 
 #include "JSLoader.h"
 
+#include <folly/Conv.h>
 #include <folly/Memory.h>
 #include <android/asset_manager_jni.h>
-#include <fb/Environment.h>
+#include <fb/fbjni.h>
 #include <fstream>
 #include <sstream>
 #include <streambuf>
@@ -15,26 +16,15 @@
 using fbsystrace::FbSystraceSection;
 #endif
 
+using namespace facebook::jni;
+
 namespace facebook {
 namespace react {
 
-static jclass gApplicationHolderClass;
-static jmethodID gGetApplicationMethod;
-static jmethodID gGetAssetManagerMethod;
-
-std::unique_ptr<const JSBigString> loadScriptFromAssets(const std::string& assetName) {
-  JNIEnv *env = jni::Environment::current();
-  jobject application = env->CallStaticObjectMethod(
-    gApplicationHolderClass,
-    gGetApplicationMethod);
-  jobject assetManager = env->CallObjectMethod(application, gGetAssetManagerMethod);
-  return loadScriptFromAssets(AAssetManager_fromJava(env, assetManager), assetName);
-}
-
 __attribute__((visibility("default")))
-AAssetManager *extractAssetManager(jobject jassetManager) {
-  auto env = jni::Environment::current();
-  return AAssetManager_fromJava(env, jassetManager);
+AAssetManager *extractAssetManager(alias_ref<JAssetManager::javaobject> assetManager) {
+  auto env = Environment::current();
+  return AAssetManager_fromJava(env, assetManager.get());
 }
 
 __attribute__((visibility("default")))
@@ -63,8 +53,9 @@ std::unique_ptr<const JSBigString> loadScriptFromAssets(
       }
     }
   }
-  FBLOGE("Unable to load script from assets: %s", assetName.c_str());
-  return folly::make_unique<JSBigStdString>("");
+
+  throw std::runtime_error(folly::to<std::string>("Unable to load script from assets '", assetName,
+    "'. Make sure your bundle is packaged correctly or you're running a packager server."));
 }
 
 std::string loadScriptFromFile(const std::string& fileName) {
@@ -84,18 +75,8 @@ std::string loadScriptFromFile(const std::string& fileName) {
     return output;
   }
 
-  FBLOGE("Unable to load script from file: %s", fileName.c_str());
-  return "";
-}
-
-void registerJSLoaderNatives() {
-  JNIEnv *env = jni::Environment::current();
-  jclass applicationHolderClass = env->FindClass("com/facebook/react/common/ApplicationHolder");
-  gApplicationHolderClass = (jclass)env->NewGlobalRef(applicationHolderClass);
-  gGetApplicationMethod = env->GetStaticMethodID(applicationHolderClass, "getApplication", "()Landroid/app/Application;");
-
-  jclass appClass = env->FindClass("android/app/Application");
-  gGetAssetManagerMethod = env->GetMethodID(appClass, "getAssets", "()Landroid/content/res/AssetManager;");
+  throw std::runtime_error(folly::to<std::string>("Unable to load script from file: '", fileName,
+    "'. Make sure your bundle is packaged correctly or you're running a packager server."));
 }
 
 } }

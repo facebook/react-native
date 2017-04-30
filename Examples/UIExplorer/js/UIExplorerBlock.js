@@ -24,6 +24,7 @@
 'use strict';
 
 var React = require('react');
+var PropTypes = require('prop-types');
 var ReactNative = require('react-native');
 var {
   StyleSheet,
@@ -38,8 +39,8 @@ class UIExplorerBlock extends React.Component {
   };
 
   static propTypes = {
-    title: React.PropTypes.string,
-    description: React.PropTypes.string,
+    title: PropTypes.string,
+    description: PropTypes.string,
   };
 
   state = {description: (null: ?string)};

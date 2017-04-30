@@ -23,19 +23,19 @@ void ReadableNativeArray::mapException(const std::exception& ex) {
 }
 
 jint ReadableNativeArray::getSize() {
-  return array.size();
+  return array_.size();
 }
 
 jboolean ReadableNativeArray::isNull(jint index) {
-  return array.at(index).isNull() ? JNI_TRUE : JNI_FALSE;
+  return array_.at(index).isNull() ? JNI_TRUE : JNI_FALSE;
 }
 
 jboolean ReadableNativeArray::getBoolean(jint index) {
-  return array.at(index).getBool() ? JNI_TRUE : JNI_FALSE;
+  return array_.at(index).getBool() ? JNI_TRUE : JNI_FALSE;
 }
 
 jdouble ReadableNativeArray::getDouble(jint index) {
-  const folly::dynamic& val = array.at(index);
+  const folly::dynamic& val = array_.at(index);
   if (val.isInt()) {
     return val.getInt();
   }
@@ -43,7 +43,7 @@ jdouble ReadableNativeArray::getDouble(jint index) {
 }
 
 jint ReadableNativeArray::getInt(jint index) {
-  auto integer = array.at(index).getInt();
+  auto integer = array_.at(index).getInt();
   static_assert(std::is_same<decltype(integer), int64_t>::value,
                 "folly::dynamic int is not int64_t");
   jint javaint = static_cast<jint>(integer);
@@ -56,7 +56,7 @@ jint ReadableNativeArray::getInt(jint index) {
 }
 
 const char* ReadableNativeArray::getString(jint index) {
-  const folly::dynamic& dyn = array.at(index);
+  const folly::dynamic& dyn = array_.at(index);
   if (dyn.isNull()) {
     return nullptr;
   }
@@ -64,7 +64,7 @@ const char* ReadableNativeArray::getString(jint index) {
 }
 
 local_ref<ReadableNativeArray::jhybridobject> ReadableNativeArray::getArray(jint index) {
-  auto& elem = array.at(index);
+  auto& elem = array_.at(index);
   if (elem.isNull()) {
     return local_ref<ReadableNativeArray::jhybridobject>(nullptr);
   } else {
@@ -73,11 +73,11 @@ local_ref<ReadableNativeArray::jhybridobject> ReadableNativeArray::getArray(jint
 }
 
 local_ref<ReadableType> ReadableNativeArray::getType(jint index) {
-  return ReadableType::getType(array.at(index).type());
+  return ReadableType::getType(array_.at(index).type());
 }
 
 local_ref<NativeMap::jhybridobject> ReadableNativeArray::getMap(jint index) {
-  auto& elem = array.at(index);
+  auto& elem = array_.at(index);
   return ReadableNativeMap::createWithContents(folly::dynamic(elem));
 }
 

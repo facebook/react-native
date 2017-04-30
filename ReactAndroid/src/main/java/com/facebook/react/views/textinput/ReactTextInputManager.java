@@ -11,11 +11,14 @@ package com.facebook.react.views.textinput;
 
 import javax.annotation.Nullable;
 
+import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Map;
 
+import android.graphics.drawable.Drawable;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -25,6 +28,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
@@ -48,7 +52,10 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
+import com.facebook.react.views.scroll.ScrollEvent;
+import com.facebook.react.views.scroll.ScrollEventType;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
+import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTextView;
 import com.facebook.react.views.text.TextInlineImageSpan;
@@ -85,13 +92,23 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @Override
   public ReactEditText createViewInstance(ThemedReactContext context) {
-    ReactEditText editText = new ReactEditText(context);
+    final ReactEditText editText = new ReactEditText(context);
     int inputType = editText.getInputType();
     editText.setInputType(inputType & (~InputType.TYPE_TEXT_FLAG_MULTI_LINE));
     editText.setReturnKeyType("done");
     editText.setTextSize(
         TypedValue.COMPLEX_UNIT_PX,
         (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)));
+    // Fixes an issue where the EditText is not selectable if nested within a
+    // ViewPagerAndroid on some versions of Android (API 16, 23)
+    editText.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+      @Override
+      public boolean onPreDraw() {
+        editText.getViewTreeObserver().removeOnPreDrawListener(this);
+        editText.setTextIsSelectable(true);
+        return true;
+      }
+    });
     return editText;
   }
 
@@ -190,7 +207,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (view.getTypeface() != null) {
       style = view.getTypeface().getStyle();
     }
-    Typeface newTypeface = Typeface.create(fontFamily, style);
+    Typeface newTypeface = ReactFontManager.getInstance().getTypeface(
+        fontFamily,
+        style,
+        view.getContext().getAssets());
     view.setTypeface(newTypeface);
   }
 
@@ -274,6 +294,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  @ReactProp(name = "onScroll", defaultBoolean = false)
+  public void setOnScroll(final ReactEditText view, boolean onScroll) {
+    if (onScroll) {
+      view.setScrollWatcher(new ReactScrollWatcher(view));
+    } else {
+      view.setScrollWatcher(null);
+    }
+  }
+
   @ReactProp(name = "placeholder")
   public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
     view.setHint(placeholder);
@@ -295,6 +324,42 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else {
       view.setHighlightColor(color);
     }
+
+    setCursorColor(view, color);
+  }
+
+  private void setCursorColor(ReactEditText view, @Nullable Integer color) {
+    // Evil method that uses reflection because there is no public API to changes
+    // the cursor color programmatically.
+    // Based on http://stackoverflow.com/questions/25996032/how-to-change-programatically-edittext-cursor-color-in-android.
+    try {
+      // Get the original cursor drawable resource.
+      Field cursorDrawableResField = TextView.class.getDeclaredField("mCursorDrawableRes");
+      cursorDrawableResField.setAccessible(true);
+      int drawableResId = cursorDrawableResField.getInt(view);
+
+      Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
+      if (color != null) {
+        drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      }
+      Drawable[] drawables = {drawable, drawable};
+
+      // Update the current cursor drawable with the new one.
+      Field editorField = TextView.class.getDeclaredField("mEditor");
+      editorField.setAccessible(true);
+      Object editor = editorField.get(view);
+      Field cursorDrawableField = editor.getClass().getDeclaredField("mCursorDrawable");
+      cursorDrawableField.setAccessible(true);
+      cursorDrawableField.set(editor, drawables);
+    } catch (NoSuchFieldException ex) {
+      // Ignore errors to avoid crashing if these private fields don't exist on modified
+      // or future android versions.
+    } catch (IllegalAccessException ex) {}
+  }
+
+  @ReactProp(name = "caretHidden", defaultBoolean = false)
+  public void setCaretHidden(ReactEditText view, boolean caretHidden) {
+    view.setCursorVisible(!caretHidden);
   }
 
   @ReactProp(name = "selectTextOnFocus", defaultBoolean = false)
@@ -313,10 +378,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "underlineColorAndroid", customType = "Color")
   public void setUnderlineColor(ReactEditText view, @Nullable Integer underlineColor) {
+    // Drawable.mutate() can sometimes crash due to an AOSP bug:
+    // See https://code.google.com/p/android/issues/detail?id=191754 for more info
+    Drawable background = view.getBackground();
+    Drawable drawableToMutate = background.getConstantState() != null ?
+      background.mutate() :
+      background;
+
     if (underlineColor == null) {
-      view.getBackground().clearColorFilter();
+      drawableToMutate.clearColorFilter();
     } else {
-      view.getBackground().setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+      drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
     }
   }
 
@@ -688,14 +760,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                       editText.getId(),
                       editText.getText().toString()));
             }
-            if (actionId == EditorInfo.IME_ACTION_NEXT ||
-              actionId == EditorInfo.IME_ACTION_PREVIOUS) {
-              if (editText.getBlurOnSubmit()) {
-                editText.clearFocus();
-              }
-              return true;
+
+            if (editText.getBlurOnSubmit()) {
+              editText.clearFocus();
             }
-            return !editText.getBlurOnSubmit();
+
+            return true;
           }
         });
   }
@@ -766,6 +836,41 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         mPreviousSelectionStart = start;
         mPreviousSelectionEnd = end;
+      }
+    }
+  }
+
+  private class ReactScrollWatcher implements ScrollWatcher {
+
+    private ReactEditText mReactEditText;
+    private EventDispatcher mEventDispatcher;
+    private int mPreviousHoriz;
+    private int mPreviousVert;
+
+    public ReactScrollWatcher(ReactEditText editText) {
+      mReactEditText = editText;
+      ReactContext reactContext = (ReactContext) editText.getContext();
+      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    }
+
+    @Override
+    public void onScrollChanged(int horiz, int vert, int oldHoriz, int oldVert) {
+      if (mPreviousHoriz != horiz || mPreviousVert != vert) {
+        ScrollEvent event = ScrollEvent.obtain(
+          mReactEditText.getId(),
+          ScrollEventType.SCROLL,
+          horiz,
+          vert,
+          0, // can't get content width
+          0, // can't get content height
+          mReactEditText.getWidth(),
+          mReactEditText.getHeight()
+        );
+
+        mEventDispatcher.dispatchEvent(event);
+
+        mPreviousHoriz = horiz;
+        mPreviousVert = vert;
       }
     }
   }

@@ -25,6 +25,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextInlineImageShadowNode;
 import com.facebook.react.views.text.TextInlineImageSpan;
@@ -36,6 +37,7 @@ import com.facebook.react.views.text.TextInlineImageSpan;
 public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShadowNode {
 
   private @Nullable Uri mUri;
+  private ReadableMap mHeaders;
   private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
   private float mWidth = YogaConstants.UNDEFINED;
@@ -73,6 +75,11 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
     mUri = uri;
   }
 
+  @ReactProp(name = "headers")
+  public void setHeaders(ReadableMap headers) {
+    mHeaders = headers;
+  }
+
   /**
    * Besides width/height, all other layout props on inline images are ignored
    */
@@ -100,6 +107,10 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
     return mUri;
   }
 
+  public ReadableMap getHeaders() {
+    return mHeaders;
+  }
+
   // TODO: t9053573 is tracking that this code should be shared
   private static @Nullable Uri getResourceDrawableUri(Context context, @Nullable String name) {
     if (name == null || name.isEmpty()) {
@@ -124,13 +135,14 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
   @Override
   public TextInlineImageSpan buildInlineImageSpan() {
     Resources resources = getThemedContext().getResources();
-    int height = (int) Math.ceil(mWidth);
-    int width = (int) Math.ceil(mHeight);
+    int width = (int) Math.ceil(mWidth);
+    int height = (int) Math.ceil(mHeight);
     return new FrescoBasedReactTextInlineImageSpan(
       resources,
       height,
       width,
       getUri(),
+      getHeaders(),
       getDraweeControllerBuilder(),
       getCallerContext());
   }

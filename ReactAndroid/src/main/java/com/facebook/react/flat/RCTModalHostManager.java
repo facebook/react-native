@@ -12,7 +12,9 @@ package com.facebook.react.flat;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.views.modal.ReactModalHostManager;
 
-/* package */ class RCTModalHostManager extends ReactModalHostManager {
+public class RCTModalHostManager extends ReactModalHostManager {
+
+  /* package */ static final String REACT_CLASS = ReactModalHostManager.REACT_CLASS;
 
   @Override
   public LayoutShadowNode createShadowNodeInstance() {

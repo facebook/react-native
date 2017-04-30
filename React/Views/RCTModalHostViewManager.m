@@ -25,8 +25,7 @@
 {
   [super insertReactSubview:subview atIndex:atIndex];
   if ([subview isKindOfClass:[RCTShadowView class]]) {
-    CGRect frame = {.origin = CGPointZero, .size = RCTScreenSize()};
-    [(RCTShadowView *)subview setFrame:frame];
+    ((RCTShadowView *)subview).size = RCTScreenSize();
   }
 }
 

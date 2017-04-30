@@ -53,10 +53,12 @@
     _reactTouches = [NSMutableArray new];
     _touchViews = [NSMutableArray new];
 
-    // `cancelsTouchesInView` is needed in order to be used as a top level
+    // `cancelsTouchesInView` and `delaysTouches*` are needed in order to be used as a top level
     // event delegated recognizer. Otherwise, lower-level components not built
     // using RCT, will fail to recognize gestures.
     self.cancelsTouchesInView = NO;
+    self.delaysTouchesBegan = NO; // This is default value.
+    self.delaysTouchesEnded = NO;
 
     self.delegate = self;
   }
@@ -93,8 +95,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
     // Find closest React-managed touchable view
     UIView *targetView = touch.view;
     while (targetView) {
-      if (targetView.reactTag && targetView.userInteractionEnabled &&
-          [targetView reactRespondsToTouch:touch]) {
+      if (targetView.reactTag && targetView.userInteractionEnabled) {
         break;
       }
       targetView = targetView.superview;
@@ -155,10 +156,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   CGPoint touchViewLocation = [nativeTouch.window convertPoint:windowLocation toView:touchView];
 
   NSMutableDictionary *reactTouch = _reactTouches[touchIndex];
-  reactTouch[@"pageX"] = @(rootViewLocation.x);
-  reactTouch[@"pageY"] = @(rootViewLocation.y);
-  reactTouch[@"locationX"] = @(touchViewLocation.x);
-  reactTouch[@"locationY"] = @(touchViewLocation.y);
+  reactTouch[@"pageX"] = @(RCTSanitizeNaNValue(rootViewLocation.x, @"touchEvent.pageX"));
+  reactTouch[@"pageY"] = @(RCTSanitizeNaNValue(rootViewLocation.y, @"touchEvent.pageY"));
+  reactTouch[@"locationX"] = @(RCTSanitizeNaNValue(touchViewLocation.x, @"touchEvent.locationX"));
+  reactTouch[@"locationY"] = @(RCTSanitizeNaNValue(touchViewLocation.y, @"touchEvent.locationY"));
   reactTouch[@"timestamp"] =  @(nativeTouch.timestamp * 1000); // in ms, for JS
 
   // TODO: force for a 'normal' touch is usually 1.0;
@@ -345,7 +346,7 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 
 #pragma mark - UIGestureRecognizerDelegate
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+- (BOOL)gestureRecognizer:(__unused UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
   // Same condition for `failure of` as for `be prevented by`.
   return [self canBePreventedByGestureRecognizer:otherGestureRecognizer];

@@ -32,15 +32,13 @@ void Instance::initializeBridge(
     std::unique_ptr<InstanceCallback> callback,
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
-    std::unique_ptr<MessageQueueThread> nativeQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry) {
   callback_ = std::move(callback);
 
   jsQueue->runOnQueueSync(
-    [this, &jsef, moduleRegistry, jsQueue,
-     nativeQueue=folly::makeMoveWrapper(std::move(nativeQueue))] () mutable {
+    [this, &jsef, moduleRegistry, jsQueue] () mutable {
       nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
-          jsef.get(), moduleRegistry, jsQueue, nativeQueue.move(), callback_);
+          jsef.get(), moduleRegistry, jsQueue, callback_);
 
       std::lock_guard<std::mutex> lock(m_syncMutex);
       m_syncReady = true;
@@ -48,6 +46,14 @@ void Instance::initializeBridge(
     });
 
   CHECK(nativeToJsBridge_);
+}
+
+void Instance::setSourceURL(std::string sourceURL) {
+  callback_->incrementPendingJSCalls();
+  SystraceSection s("reactbridge_xplat_setSourceURL",
+                    "sourceURL", sourceURL);
+
+  nativeToJsBridge_->loadApplication(nullptr, nullptr, std::move(sourceURL));
 }
 
 void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
@@ -74,27 +80,12 @@ void Instance::loadScriptFromFile(const std::string& filename,
 
   std::unique_ptr<const JSBigFileString> script;
 
-  // This function can be called in order to change the Bridge's Source URL.
-  // In that case, the filename will be empty, and we should not attempt to
-  // load it.
-  if (!filename.empty()) {
-    RecoverableError::runRethrowingAsRecoverable<std::system_error>(
-      [&filename, &script]() {
-        script = JSBigFileString::fromPath(filename);
-      });
-  }
+  RecoverableError::runRethrowingAsRecoverable<std::system_error>(
+    [&filename, &script]() {
+      script = JSBigFileString::fromPath(filename);
+    });
 
   nativeToJsBridge_->loadApplication(nullptr, std::move(script), sourceURL);
-}
-
-void Instance::loadScriptFromOptimizedBundle(std::string bundlePath,
-                                             std::string sourceURL,
-                                             int flags) {
-  SystraceSection s("reactbridge_xplat_loadScriptFromOptimizedBundle",
-                    "bundlePath", bundlePath);
-  nativeToJsBridge_->loadOptimizedApplicationScript(std::move(bundlePath),
-                                                    std::move(sourceURL),
-                                                    flags);
 }
 
 void Instance::loadUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle,
@@ -137,20 +128,15 @@ void *Instance::getJavaScriptContext() {
   return nativeToJsBridge_->getJavaScriptContext();
 }
 
-void Instance::callJSFunction(ExecutorToken token, std::string&& module, std::string&& method,
-                              folly::dynamic&& params) {
+void Instance::callJSFunction(std::string&& module, std::string&& method, folly::dynamic&& params) {
   callback_->incrementPendingJSCalls();
-  nativeToJsBridge_->callFunction(token, std::move(module), std::move(method), std::move(params));
+  nativeToJsBridge_->callFunction(std::move(module), std::move(method), std::move(params));
 }
 
-void Instance::callJSCallback(ExecutorToken token, uint64_t callbackId, folly::dynamic&& params) {
+void Instance::callJSCallback(uint64_t callbackId, folly::dynamic&& params) {
   SystraceSection s("<callback>");
   callback_->incrementPendingJSCalls();
-  nativeToJsBridge_->invokeCallback(token, (double) callbackId, std::move(params));
-}
-
-ExecutorToken Instance::getMainExecutorToken() {
-  return nativeToJsBridge_->getMainExecutorToken();
+  nativeToJsBridge_->invokeCallback((double) callbackId, std::move(params));
 }
 
 void Instance::handleMemoryPressureUiHidden() {

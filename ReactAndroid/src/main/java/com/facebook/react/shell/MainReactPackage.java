@@ -9,19 +9,26 @@
 
 package com.facebook.react.shell;
 
-import javax.inject.Provider;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import com.facebook.react.LazyReactPackage;
 import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.flat.FlatARTSurfaceViewManager;
+import com.facebook.react.flat.RCTImageViewManager;
+import com.facebook.react.flat.RCTModalHostManager;
+import com.facebook.react.flat.RCTRawTextManager;
+import com.facebook.react.flat.RCTTextInlineImageManager;
+import com.facebook.react.flat.RCTTextInputManager;
+import com.facebook.react.flat.RCTTextManager;
+import com.facebook.react.flat.RCTViewManager;
+import com.facebook.react.flat.RCTViewPagerManager;
+import com.facebook.react.flat.RCTVirtualTextManager;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
+import com.facebook.react.modules.accessibilityinfo.AccessibilityInfoModule;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.camera.CameraRollManager;
 import com.facebook.react.modules.camera.ImageEditingManager;
@@ -53,7 +60,6 @@ import com.facebook.react.views.modal.ReactModalHostManager;
 import com.facebook.react.views.picker.ReactDialogPickerManager;
 import com.facebook.react.views.picker.ReactDropdownPickerManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
-import com.facebook.react.views.recyclerview.RecyclerViewBackedScrollViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
 import com.facebook.react.views.scroll.ReactScrollViewManager;
 import com.facebook.react.views.slider.ReactSliderManager;
@@ -68,6 +74,12 @@ import com.facebook.react.views.toolbar.ReactToolbarManager;
 import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
 import com.facebook.react.views.webview.ReactWebViewManager;
+
+import javax.inject.Provider;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Package defining basic modules and view managers.
@@ -89,6 +101,12 @@ public class MainReactPackage extends LazyReactPackage {
   @Override
   public List<ModuleSpec> getNativeModules(final ReactApplicationContext context) {
     return Arrays.asList(
+      new ModuleSpec(AccessibilityInfoModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new AccessibilityInfoModule(context);
+        }
+      }),
       new ModuleSpec(AppStateModule.class, new Provider<NativeModule>() {
         @Override
         public NativeModule get() {
@@ -128,7 +146,7 @@ public class MainReactPackage extends LazyReactPackage {
       new ModuleSpec(FrescoModule.class, new Provider<NativeModule>() {
         @Override
         public NativeModule get() {
-          return new FrescoModule(context, mConfig != null ? mConfig.getFrescoConfig() : null);
+          return new FrescoModule(context, true, mConfig != null ? mConfig.getFrescoConfig() : null);
         }
       }),
       new ModuleSpec(I18nManagerModule.class, new Provider<NativeModule>() {
@@ -236,32 +254,52 @@ public class MainReactPackage extends LazyReactPackage {
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return Arrays.<ViewManager>asList(
-      ARTRenderableViewManager.createARTGroupViewManager(),
-      ARTRenderableViewManager.createARTShapeViewManager(),
-      ARTRenderableViewManager.createARTTextViewManager(),
-      new ARTSurfaceViewManager(),
-      new ReactDialogPickerManager(),
-      new ReactDrawerLayoutManager(),
-      new ReactDropdownPickerManager(),
-      new ReactHorizontalScrollViewManager(),
-      new ReactImageManager(),
-      new ReactModalHostManager(),
-      new ReactProgressBarViewManager(),
-      new ReactRawTextManager(),
-      new ReactScrollViewManager(),
-      new ReactSliderManager(),
-      new ReactSwitchManager(),
-      new FrescoBasedReactTextInlineImageViewManager(),
-      new ReactTextInputManager(),
-      new ReactTextViewManager(),
-      new ReactToolbarManager(),
-      new ReactViewManager(),
-      new ReactViewPagerManager(),
-      new ReactVirtualTextViewManager(),
-      new ReactWebViewManager(),
-      new RecyclerViewBackedScrollViewManager(),
-      new SwipeRefreshLayoutManager());
+    List<ViewManager> viewManagers = new ArrayList<>();
+
+    viewManagers.add(ARTRenderableViewManager.createARTGroupViewManager());
+    viewManagers.add(ARTRenderableViewManager.createARTShapeViewManager());
+    viewManagers.add(ARTRenderableViewManager.createARTTextViewManager());
+    viewManagers.add(new ReactDialogPickerManager());
+    viewManagers.add(new ReactDrawerLayoutManager());
+    viewManagers.add(new ReactDropdownPickerManager());
+    viewManagers.add(new ReactHorizontalScrollViewManager());
+    viewManagers.add(new ReactProgressBarViewManager());
+    viewManagers.add(new ReactScrollViewManager());
+    viewManagers.add(new ReactSliderManager());
+    viewManagers.add(new ReactSwitchManager());
+    viewManagers.add(new ReactToolbarManager());
+    viewManagers.add(new ReactWebViewManager());
+    viewManagers.add(new SwipeRefreshLayoutManager());
+
+    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(reactContext);
+    boolean useFlatUi = preferences.getBoolean("flat_uiimplementation", false);
+    if (useFlatUi) {
+      // Flat managers
+      viewManagers.add(new FlatARTSurfaceViewManager());
+      viewManagers.add(new RCTTextInlineImageManager());
+      viewManagers.add(new RCTImageViewManager());
+      viewManagers.add(new RCTModalHostManager());
+      viewManagers.add(new RCTRawTextManager());
+      viewManagers.add(new RCTTextInputManager());
+      viewManagers.add(new RCTTextManager());
+      viewManagers.add(new RCTViewManager());
+      viewManagers.add(new RCTViewPagerManager());
+      viewManagers.add(new RCTVirtualTextManager());
+    } else {
+      // Native equivalents
+      viewManagers.add(new ARTSurfaceViewManager());
+      viewManagers.add(new FrescoBasedReactTextInlineImageViewManager());
+      viewManagers.add(new ReactImageManager());
+      viewManagers.add(new ReactModalHostManager());
+      viewManagers.add(new ReactRawTextManager());
+      viewManagers.add(new ReactTextInputManager());
+      viewManagers.add(new ReactTextViewManager());
+      viewManagers.add(new ReactViewManager());
+      viewManagers.add(new ReactViewPagerManager());
+      viewManagers.add(new ReactVirtualTextViewManager());
+    }
+
+    return viewManagers;
   }
 
   @Override

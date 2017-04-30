@@ -11,6 +11,7 @@
 'use strict';
 
 const babel = require('babel-core');
+const crypto = require('crypto');
 const externalHelpersPlugin = require('babel-plugin-external-helpers');
 const fs = require('fs');
 const generate = require('babel-generator').default;
@@ -20,7 +21,14 @@ const makeHMRConfig = require('babel-preset-react-native/configs/hmr');
 const path = require('path');
 const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
 
-const {compactMapping} = require('./react-packager/src/Bundler/source-map');
+const {compactMapping} = require('./src/Bundler/source-map');
+
+const cacheKeyParts = [
+  fs.readFileSync(__filename),
+  require('babel-plugin-external-helpers/package.json').version,
+  require('babel-preset-fbjs/package.json').version,
+  require('babel-preset-react-native/package.json').version,
+];
 
 /**
  * Return a memoized function that checks for the existence of a
@@ -30,19 +38,19 @@ const {compactMapping} = require('./react-packager/src/Bundler/source-map');
 const getBabelRC = (function() {
   let babelRC = null;
 
-  return function _getBabelRC(projectRoots) {
+  return function _getBabelRC(projectRoot) {
     if (babelRC !== null) {
       return babelRC;
     }
 
-    babelRC = { plugins: [] }; // empty babelrc
+    babelRC = {plugins: []}; // empty babelrc
 
-    // Let's look for the .babelrc in the first project root.
+    // Let's look for the .babelrc in the project root.
     // In the future let's look into adding a command line option to specify
     // this location.
     let projectBabelRCPath;
-    if (projectRoots && projectRoots.length > 0) {
-      projectBabelRCPath = path.resolve(projectRoots[0], '.babelrc');
+    if (projectRoot) {
+      projectBabelRCPath = path.resolve(projectRoot, '.babelrc');
     }
 
     // If a .babelrc file doesn't exist in the project,
@@ -50,11 +58,11 @@ const getBabelRC = (function() {
     if (!projectBabelRCPath || !fs.existsSync(projectBabelRCPath)) {
       babelRC = json5.parse(
         fs.readFileSync(
-          path.resolve(__dirname, 'react-packager', 'rn-babelrc.json'))
+          path.resolve(__dirname, 'rn-babelrc.json'))
         );
 
       // Require the babel-preset's listed in the default babel config
-      babelRC.presets = babelRC.presets.map((preset) => require('babel-preset-' + preset));
+      babelRC.presets = babelRC.presets.map(preset => require('babel-preset-' + preset));
       babelRC.plugins = resolvePlugins(babelRC.plugins);
     } else {
       // if we find a .babelrc file we tell babel to use it
@@ -70,7 +78,7 @@ const getBabelRC = (function() {
  * config object with the appropriate plugins.
  */
 function buildBabelConfig(filename, options) {
-  const babelRC = getBabelRC(options.projectRoots);
+  const babelRC = getBabelRC(options.projectRoot);
 
   const extraConfig = {
     code: false,
@@ -126,17 +134,13 @@ function transform(src, filename, options) {
   }
 }
 
-module.exports = function(data, callback) {
-  let result;
-  try {
-    result = transform(data.sourceCode, data.filename, data.options);
-  } catch (e) {
-    callback(e);
-    return;
-  }
+function getCacheKey(options) {
+  var key = crypto.createHash('md5');
+  cacheKeyParts.forEach(part => key.update(part));
+  return key.digest('hex');
+}
 
-  callback(null, result);
+module.exports = {
+  transform,
+  getCacheKey,
 };
-
-// export for use in jest
-module.exports.transform = transform;
