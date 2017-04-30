@@ -73,6 +73,11 @@ type OptionalProps<ItemT> = {
    */
   ItemSeparatorComponent?: ?ReactClass<any>,
   /**
+   * Rendered when the list is empty. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListEmptyComponent?: ?(ReactClass<any> | React.Element<any>),
+  /**
    * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
    * a rendered element.
    */

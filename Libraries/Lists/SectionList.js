@@ -86,6 +86,11 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    */
   ListHeaderComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
+   * Rendered when the list is empty. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListEmptyComponent?: ?(ReactClass<any> | React.Element<any>),
+  /**
    * Rendered at the very end of the list.
    */
   ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
