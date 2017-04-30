@@ -26,6 +26,16 @@ describe('SectionList', () => {
     );
     expect(component).toMatchSnapshot();
   });
+  it('renders empty list with empty component', () => {
+    const component = ReactTestRenderer.create(
+      <SectionList
+        sections={[]}
+        ListEmptyComponent={() => <empty />}
+        renderItem={({item}) => <item v={item.key} />}
+      />
+    );
+    expect(component).toMatchSnapshot();
+  });
   it('rendering empty section headers is fine', () => {
     const component = ReactTestRenderer.create(
       <SectionList
@@ -40,6 +50,7 @@ describe('SectionList', () => {
     const component = ReactTestRenderer.create(
       <SectionList
         ItemSeparatorComponent={(props) => <defaultItemSeparator v={propStr(props)} />}
+        ListEmptyComponent={(props) => <empty v={propStr(props)} />}
         ListFooterComponent={(props) => <footer v={propStr(props)} />}
         ListHeaderComponent={(props) => <header v={propStr(props)} />}
         SectionSeparatorComponent={(props) => <sectionSeparator v={propStr(props)} />}
