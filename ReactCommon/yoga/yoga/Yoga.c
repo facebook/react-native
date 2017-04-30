@@ -3297,9 +3297,20 @@ void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInP
   }
 }
 
-static float YGRoundValueToPixelGrid(const float value, const float pointScaleFactor) {
+static float YGRoundValueToPixelGrid(const float value, const float pointScaleFactor, const bool forceCeil, const bool forceFloor) {
   float fractial = fmodf(value, pointScaleFactor);
-  return value - fractial + (fractial >= pointScaleFactor / 2.0f ? pointScaleFactor : 0);
+  if (YGFloatsEqual(fractial, 0)) {
+    // Still remove fractial as fractial could be  extremely small.
+    return value - fractial;
+  }
+
+  if (forceCeil) {
+    return value - fractial + pointScaleFactor;
+  } else if (forceFloor) {
+    return value - fractial;
+  } else {
+    return value - fractial + (fractial >= pointScaleFactor / 2.0f ? pointScaleFactor : 0);
+  }
 }
 
 static void YGRoundToPixelGrid(const YGNodeRef node, const float pointScaleFactor, const float absoluteLeft, const float absoluteTop) {
@@ -3319,13 +3330,17 @@ static void YGRoundToPixelGrid(const YGNodeRef node, const float pointScaleFacto
   const float absoluteNodeRight = absoluteNodeLeft + nodeWidth;
   const float absoluteNodeBottom = absoluteNodeTop + nodeHeight;
 
-  node->layout.position[YGEdgeLeft] = YGRoundValueToPixelGrid(nodeLeft, pointScaleFactor);
-  node->layout.position[YGEdgeTop] = YGRoundValueToPixelGrid(nodeTop, pointScaleFactor);
+  // If a node has a custom measure function we never want to round down its size as this could
+  // lead to unwanted text truncation.
+  const bool hasMeasure = node->measure != NULL;
+
+  node->layout.position[YGEdgeLeft] = YGRoundValueToPixelGrid(nodeLeft, pointScaleFactor, false, hasMeasure);
+  node->layout.position[YGEdgeTop] = YGRoundValueToPixelGrid(nodeTop, pointScaleFactor, false, hasMeasure);
 
   node->layout.dimensions[YGDimensionWidth] =
-    YGRoundValueToPixelGrid(absoluteNodeRight, pointScaleFactor) - YGRoundValueToPixelGrid(absoluteNodeLeft, pointScaleFactor);
+    YGRoundValueToPixelGrid(absoluteNodeRight, pointScaleFactor, hasMeasure, false) - YGRoundValueToPixelGrid(absoluteNodeLeft, pointScaleFactor, false, hasMeasure);
   node->layout.dimensions[YGDimensionHeight] =
-    YGRoundValueToPixelGrid(absoluteNodeBottom, pointScaleFactor) - YGRoundValueToPixelGrid(absoluteNodeTop, pointScaleFactor);
+    YGRoundValueToPixelGrid(absoluteNodeBottom, pointScaleFactor, hasMeasure, false) - YGRoundValueToPixelGrid(absoluteNodeTop, pointScaleFactor, false, hasMeasure);
 
   const uint32_t childCount = YGNodeListCount(node->children);
   for (uint32_t i = 0; i < childCount; i++) {
