@@ -88,6 +88,16 @@ type OptionalProps = {
    */
   ListEmptyComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
+   * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
+  /**
+   * Rendered at the top of all the items. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListHeaderComponent?: ?(ReactClass<any> | React.Element<any>),
+  /**
    * The maximum number of items to render in each incremental render batch. The more rendered at
    * once, the better the fill rate, but responsiveness my suffer because rendering content may
    * interfere with responding to button taps or other interactions.
