@@ -31,6 +31,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
+import android.provider.MediaStore.MediaColumns;
 import android.text.TextUtils;
 
 import com.facebook.common.logging.FLog;
@@ -82,8 +83,8 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
           Images.Media.MIME_TYPE,
           Images.Media.BUCKET_DISPLAY_NAME,
           Images.Media.DATE_TAKEN,
-          Images.Media.WIDTH,
-          Images.Media.HEIGHT,
+          MediaStore.MediaColumns.WIDTH,
+          MediaStore.MediaColumns.HEIGHT,
           Images.Media.LONGITUDE,
           Images.Media.LATITUDE,
           MediaStore.MediaColumns.DATA
@@ -373,8 +374,8 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     int mimeTypeIndex = medias.getColumnIndex(Images.Media.MIME_TYPE);
     int groupNameIndex = medias.getColumnIndex(Images.Media.BUCKET_DISPLAY_NAME);
     int dateTakenIndex = medias.getColumnIndex(Images.Media.DATE_TAKEN);
-    int widthIndex = IS_JELLY_BEAN_OR_LATER ? medias.getColumnIndex(Images.Media.WIDTH) : -1;
-    int heightIndex = IS_JELLY_BEAN_OR_LATER ? medias.getColumnIndex(Images.Media.HEIGHT) : -1;
+    int widthIndex = IS_JELLY_BEAN_OR_LATER ? medias.getColumnIndex(MediaStore.MediaColumns.WIDTH) : -1;
+    int heightIndex = IS_JELLY_BEAN_OR_LATER ? medias.getColumnIndex(MediaStore.MediaColumns.HEIGHT) : -1;
     int longitudeIndex = medias.getColumnIndex(Images.Media.LONGITUDE);
     int latitudeIndex = medias.getColumnIndex(Images.Media.LATITUDE);
     int dataIndex = medias.getColumnIndex(MediaStore.MediaColumns.DATA);
@@ -428,6 +429,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       width = medias.getInt(widthIndex);
       height = medias.getInt(heightIndex);
     }
+
     if (width <= 0 || height <= 0) {
       try {
         AssetFileDescriptor photoDescriptor = resolver.openAssetFileDescriptor(photoUri, "r");
@@ -448,6 +450,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     image.putDouble("width", width);
     image.putDouble("height", height);
     node.putMap("image", image);
+
     return true;
   }
 
