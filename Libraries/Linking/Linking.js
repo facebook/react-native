@@ -79,7 +79,7 @@ const LinkingManager = Platform.OS === 'android' ?
  *    options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
  * {
  *  return [RCTLinkingManager application:application openURL:url
- *  sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
+ *             sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
  *             annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
  * }
  * ```
@@ -94,7 +94,16 @@ const LinkingManager = Platform.OS === 'android' ?
  *   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
  * {
  *   return [RCTLinkingManager application:application openURL:url
- *          sourceApplication:sourceApplication annotation:annotation];
+ *                       sourceApplication:sourceApplication annotation:annotation];
+ * }
+ *
+ * // For iOS versions supporting 9.x or greater
+ *
+ * - (BOOL)application:(UIApplication *)app
+ *             openURL:(NSURL *)url
+ *             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+ * {
+ *   return [RCTLinkingManager application:app openURL:url options:options];
  * }
  *
  * // Only if your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
