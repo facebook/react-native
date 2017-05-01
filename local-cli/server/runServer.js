@@ -110,6 +110,7 @@ function getPackagerServer(args, config) {
     getTransformOptions: config.getTransformOptions,
     hasteImpl: config.hasteImpl,
     platforms: defaultPlatforms.concat(args.platforms),
+    polyfillModuleNames: config.polyfillModuleNames,
     postProcessModules: config.postProcessModules,
     projectRoots: args.projectRoots,
     providesModuleNodeModules: providesModuleNodeModules,
