@@ -87,9 +87,11 @@ Now run `react-devtools` from the terminal to launch the standalone DevTools app
 react-devtools
 ```
 
+<img src="https://camo.githubusercontent.com/3226d81c8d40f07f10c1f78876905a1bfc2d6d82/687474703a2f2f692e696d6775722e636f6d2f49586548695a442e706e67" width="700" alt="React DevTools">
+
 It should connect to your simulator within a few seconds.
 
-> Note: if you prefer to avoid global installations, you can add `react-devtools` as a project dependency. With Yarn, you can run `yarn add react-devtools`, and then run `yarn react-devtools` from your project folder to open the DevTools. With npm, you can run `npm install --save react-devtools`, add `"react-devtools": "react-devtools"` to the `scripts` section in your `package.json`, and then run `npm run react-devtools` from your project folder to open the DevTools.
+> Note: if you prefer to avoid global installations, you can add `react-devtools` as a project dependency. With Yarn, you can run `yarn add --dev react-devtools`, and then run `yarn react-devtools` from your project folder to open the DevTools. With npm, you can run `npm install --save-dev react-devtools`, add `"react-devtools": "react-devtools"` to the `scripts` section in your `package.json`, and then run `npm run react-devtools` from your project folder to open the DevTools.
 
 ## Performance Monitor
 
