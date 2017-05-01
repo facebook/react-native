@@ -14,6 +14,7 @@
 #import <React/RCTUtils.h>
 
 NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
+id class;
 
 @implementation RCTLinkingManager
 
@@ -21,6 +22,7 @@ RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
 {
+  class = self;
   return dispatch_get_main_queue();
 }
 
@@ -46,8 +48,8 @@ RCT_EXPORT_MODULE()
             openURL:(NSURL *)URL
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
-    [self postNotificationWithURL:URL];
-    return YES;
+  postNotificationWithURL(URL);
+  return YES;
 }
 
 + (BOOL)application:(UIApplication *)application
@@ -55,16 +57,16 @@ RCT_EXPORT_MODULE()
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation
 {
-  [self postNotificationWithURL:URL];
+  postNotificationWithURL(URL);
   return YES;
 }
 
-+ (void)postNotificationWithURL:(NSURL *)URL
+void postNotificationWithURL(NSURL *URL)
 {
-    NSDictionary<NSString *, id> *payload = @{@"url": URL.absoluteString};
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
-                                                        object:self
-                                                      userInfo:payload];
+  NSDictionary<NSString *, id> *payload = @{@"url": URL.absoluteString};
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
+                                                      object:class
+                                                    userInfo:payload];
 }
 
 + (BOOL)application:(UIApplication *)application
