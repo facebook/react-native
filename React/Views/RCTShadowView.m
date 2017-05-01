@@ -167,6 +167,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   }
   YGNodeSetHasNewLayout(node, false);
 
+  RCTAssert(!YGNodeIsDirty(node), @"Attempt to get layout metrics from dirtied Yoga node.");
+
 #if RCT_DEBUG
   // This works around a breaking change in Yoga layout where setting flexBasis needs to be set explicitly, instead of relying on flex to propagate.
   // We check for it by seeing if a width/height is provided along with a flexBasis of 0 and the width/height is laid out as 0.
