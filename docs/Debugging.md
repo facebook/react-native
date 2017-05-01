@@ -93,6 +93,18 @@ It should connect to your simulator within a few seconds.
 
 > Note: if you prefer to avoid global installations, you can add `react-devtools` as a project dependency. With Yarn, you can run `yarn add --dev react-devtools`, and then run `yarn react-devtools` from your project folder to open the DevTools. With npm, you can run `npm install --save-dev react-devtools`, add `"react-devtools": "react-devtools"` to the `scripts` section in your `package.json`, and then run `npm run react-devtools` from your project folder to open the DevTools.
 
+### Integration with React Native Inspector
+
+You can open the [in-app developer menu](#accessing-the-in-app-developer-menu) and choose "Show Inspector". It will bring up an overlay that lets you tap on any UI element and see information about it:
+
+<img src="https://d2ppvlu71ri8gs.cloudfront.net/items/1R1d2x0O3M0C1t071Q0F/Screen%20Recording%202017-05-01%20at%2020.14.gif?v=45691135" alt="Show Inspector" width="300">
+
+However, when `react-devtools` is running, Inspector will enter a special collapsed mode, and instead use the DevTools as primary UI. In this mode, clicking on something in the simulator will bring up the relevant components in the DevTools:
+
+<img src="https://d2ppvlu71ri8gs.cloudfront.net/items/1v031W3O1W322z3G1k15/Screen%20Recording%202017-05-01%20at%2020.16.gif?v=a87eb3f4" alt="Show Inspector with React DevTools" width="700">
+
+You can choose "Hide Inspector" in the same menu to exit this mode.
+
 ## Performance Monitor
 
 You can enable a performance overlay to help you debug performance problems by selecting "Perf Monitor" in the Developer Menu.
