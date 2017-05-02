@@ -81,7 +81,6 @@ function buildBabelConfig(filename, options) {
   const babelRC = getBabelRC(options.projectRoot);
 
   const extraConfig = {
-    code: false,
     filename,
   };
 
@@ -114,21 +113,27 @@ function transform(src, filename, options) {
 
   try {
     const babelConfig = buildBabelConfig(filename, options);
-    const {ast} = babel.transform(src, babelConfig);
-    const result = generate(ast, {
-      comments: false,
-      compact: false,
+    const transformed = babel.transform(src, babelConfig);
+    const result = {
+      ast: transformed.ast,
+      code: transformed.code,
       filename,
-      sourceFileName: filename,
-      sourceMaps: true,
-    }, src);
-
-    return {
-      ast,
-      code: result.code,
-      filename,
-      map: options.generateSourceMaps ? result.map : result.rawMappings.map(compactMapping),
+      map: transformed.map,
     };
+
+    if (transformed.ast) {
+      const generated = generate(transformed.ast, {
+        comments: false,
+        compact: false,
+        filename,
+        sourceFileName: filename,
+        sourceMaps: true,
+      }, src);
+      result.code = generated.code;
+      result.map = options.generateSourceMaps ? generated.map : generated.rawMappings.map(compactMapping);
+    }
+
+    return result;
   } finally {
     process.env.BABEL_ENV = OLD_BABEL_ENV;
   }
