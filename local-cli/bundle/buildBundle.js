@@ -83,6 +83,7 @@ function buildBundle(
       globalTransformCache: null,
       hasteImpl: config.hasteImpl,
       platforms: defaultPlatforms.concat(platforms),
+      postProcessModules: config.postProcessModules,
       projectRoots: config.getProjectRoots(),
       providesModuleNodeModules: providesModuleNodeModules,
       resetCache: args.resetCache,

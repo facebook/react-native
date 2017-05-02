@@ -109,7 +109,7 @@ function guessEditor() {
     return [process.env.EDITOR];
   }
 
-  return null;
+  return [null];
 }
 
 function printInstructions(title) {

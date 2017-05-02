@@ -20,7 +20,7 @@ const {LazyPromise, LockingPromise} = require('./util');
 const {fork} = require('child_process');
 
 export type {SourceMap as SourceMap};
-import type {MixedSourceMap as SourceMap} from '../../lib/SourceMap';
+import type {SourceMap} from '../../lib/SourceMap';
 
 export type Stack = Array<{file: string, lineNumber: number, column: number}>;
 export type Symbolicate =

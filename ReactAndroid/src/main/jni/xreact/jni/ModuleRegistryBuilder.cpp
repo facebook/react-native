@@ -33,12 +33,25 @@ std::unique_ptr<ModuleRegistry> buildModuleRegistry(
     std::weak_ptr<Instance> winstance,
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
     jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules,
-    std::shared_ptr<MessageQueueThread> moduleMessageQueue) {
+    std::shared_ptr<MessageQueueThread> moduleMessageQueue,
+    std::shared_ptr<MessageQueueThread> uiBackgroundMessageQueue) {
   std::vector<std::unique_ptr<NativeModule>> modules;
   if (javaModules) {
     for (const auto& jm : *javaModules) {
-      modules.emplace_back(folly::make_unique<JavaNativeModule>(
+      std::string name = jm->getName();
+      if (uiBackgroundMessageQueue != NULL &&
+        // This is techinically a hack. Perhaps we should bind the specific queue to the module
+        // in the module holder or wrapper.
+        // TODO expose as module configuration option
+        (name == "UIManager" ||
+          name == "NativeAnimatedModule" ||
+          name == "FBFacebookReactNavigator")) {
+        modules.emplace_back(folly::make_unique<JavaNativeModule>(
+                             winstance, jm, uiBackgroundMessageQueue));
+      } else {
+        modules.emplace_back(folly::make_unique<JavaNativeModule>(
                              winstance, jm, moduleMessageQueue));
+      }
     }
   }
   if (cxxModules) {

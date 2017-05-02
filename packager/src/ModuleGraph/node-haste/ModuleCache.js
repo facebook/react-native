@@ -14,19 +14,19 @@
 const Module = require('./Module');
 const Package = require('./Package');
 
-import type {PackageData, TransformedFile} from '../types.flow';
+import type {PackageData, TransformedCodeFile} from '../types.flow';
 
 type GetClosestPackageFn = (filePath: string) => ?string;
 
 module.exports = class ModuleCache {
   _getClosestPackage: GetClosestPackageFn;
-  getTransformedFile: string => TransformedFile;
+  getTransformedFile: string => TransformedCodeFile;
   modules: Map<string, Module>;
   packages: Map<string, Package>;
 
   constructor(
     getClosestPackage: GetClosestPackageFn,
-    getTransformedFile: string => TransformedFile,
+    getTransformedFile: string => TransformedCodeFile,
   ) {
     this._getClosestPackage = getClosestPackage;
     this.getTransformedFile = getTransformedFile;

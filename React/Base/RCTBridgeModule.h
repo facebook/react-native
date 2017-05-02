@@ -145,6 +145,25 @@ RCT_EXTERN void RCTRegisterModule(Class); \
   RCT_REMAP_METHOD(, method)
 
 /**
+ * Same as RCT_EXPORT_METHOD but the method is called from JS
+ * synchronously **on the JS thread**, possibly returning a result.
+ *
+ * WARNING: in the vast majority of cases, you should use RCT_EXPORT_METHOD which
+ * allows your native module methods to be called asynchronously: calling
+ * methods synchronously can have strong performance penalties and introduce
+ * threading-related bugs to your native modules.
+ *
+ * The return type must be of object type (id) and should be serializable
+ * to JSON. This means that the hook can only return nil or JSON values
+ * (e.g. NSNumber, NSString, NSArray, NSDictionary).
+ *
+ * Calling these methods when running under the websocket executor
+ * is currently not supported.
+ */
+#define RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(method) \
+  RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(, method)
+
+/**
  * Similar to RCT_EXPORT_METHOD but lets you set the JS name of the exported
  * method. Example usage:
  *
@@ -153,8 +172,20 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * { ... }
  */
 #define RCT_REMAP_METHOD(js_name, method) \
-  RCT_EXTERN_REMAP_METHOD(js_name, method) \
+  _RCT_EXTERN_REMAP_METHOD(js_name, method, NO) \
   - (void)method;
+
+/**
+ * Similar to RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD but lets you set
+ * the JS name of the exported method. Example usage:
+ *
+ * RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(executeQueryWithParameters,
+ *   executeQuery:(NSString *)query parameters:(NSDictionary *)parameters)
+ * { ... }
+ */
+#define RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(js_name, method) \
+  _RCT_EXTERN_REMAP_METHOD(js_name, method, YES) \
+  - (id)method;
 
 /**
  * Use this macro in a private Objective-C implementation file to automatically
@@ -203,15 +234,23 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * of an external module.
  */
 #define RCT_EXTERN_METHOD(method) \
-  RCT_EXTERN_REMAP_METHOD(, method)
+  _RCT_EXTERN_REMAP_METHOD(, method, NO)
 
 /**
- * Like RCT_EXTERN_REMAP_METHOD, but allows setting a custom JavaScript name.
+ * Use this macro in accordance with RCT_EXTERN_MODULE to export methods
+ * of an external module that should be invoked synchronously.
  */
-#define RCT_EXTERN_REMAP_METHOD(js_name, method) \
-  + (NSArray<NSString *> *)RCT_CONCAT(__rct_export__, \
+#define RCT_EXTERN__BLOCKING_SYNCHRONOUS_METHOD(method) \
+  _RCT_EXTERN_REMAP_METHOD(, method, YES)
+
+/**
+ * Like RCT_EXTERN_REMAP_METHOD, but allows setting a custom JavaScript name
+ * and also whether this method is synchronous.
+ */
+#define _RCT_EXTERN_REMAP_METHOD(js_name, method, is_blocking_synchronous_method) \
+  + (NSArray *)RCT_CONCAT(__rct_export__, \
     RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
-    return @[@#js_name, @#method]; \
+    return @[@#js_name, @#method, @is_blocking_synchronous_method]; \
   }
 
 /**

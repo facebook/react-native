@@ -17,6 +17,7 @@ const debug = require('debug');
 const invariant = require('fbjs/lib/invariant');
 
 import type Server from './src/Server';
+import type {PostProcessModules} from './src/Bundler';
 import type {GlobalTransformCache} from './src/lib/GlobalTransformCache';
 import type {Reporter} from './src/lib/reporting';
 import type {HasteImpl} from './src/node-haste/Module';
@@ -28,19 +29,13 @@ type Options = {
   hasteImpl?: HasteImpl,
   globalTransformCache: ?GlobalTransformCache,
   nonPersistent?: boolean,
+  postProcessModules?: PostProcessModules,
   projectRoots: Array<string>,
   reporter?: Reporter,
   watch?: boolean,
 };
 
-type StrictOptions = {
-  hasteImpl?: HasteImpl,
-  globalTransformCache: ?GlobalTransformCache,
-  nonPersistent?: boolean,
-  projectRoots: Array<string>,
-  reporter: Reporter,
-  watch?: boolean,
-};
+type StrictOptions = {...Options, reporter: Reporter};
 
 type PublicBundleOptions = {
   +dev?: boolean,

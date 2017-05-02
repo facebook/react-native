@@ -151,7 +151,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
 {
   __weak RCTModuleMethod *weakMethod;
   @autoreleasepool {
-    __autoreleasing RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithMethodSignature:@"test:(NSString *)a :(nonnull NSNumber *)b :(RCTResponseSenderBlock)c :(RCTResponseErrorBlock)d" JSMethodName:@"" moduleClass:[AllocationTestModule class]];
+    __autoreleasing RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithMethodSignature:@"test:(NSString *)a :(nonnull NSNumber *)b :(RCTResponseSenderBlock)c :(RCTResponseErrorBlock)d" JSMethodName:@"" isSync:NO moduleClass:[AllocationTestModule class]];
     weakMethod = method;
     XCTAssertNotNil(method, @"RCTModuleMethod should have been created");
   }

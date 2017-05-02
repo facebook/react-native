@@ -36,7 +36,7 @@ describe('optimizing JS modules', () => {
       if (error) {
         throw error;
       }
-      transformResult = JSON.stringify(result);
+      transformResult = JSON.stringify(result.details);
       done();
     });
   });

@@ -34,7 +34,7 @@ std::vector<MethodDescriptor> RCTNativeModule::getMethods() {
   for (id<RCTBridgeMethod> method in m_moduleData.methods) {
     descs.emplace_back(
       method.JSMethodName.UTF8String,
-      method.functionType == RCTFunctionTypePromise ? "promise" : "async"
+      RCTFunctionDescriptorFromType(method.functionType)
     );
   }
 
@@ -50,48 +50,16 @@ folly::dynamic RCTNativeModule::getConstants() {
   return ret;
 }
 
-bool RCTNativeModule::supportsWebWorkers() {
-  return false;
-}
-
-void RCTNativeModule::invoke(ExecutorToken token, unsigned int methodId, folly::dynamic &&params) {
+void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params) {
   // The BatchedBridge version of this buckets all the callbacks by thread, and
   // queues one block on each.  This is much simpler; we'll see how it goes and
   // iterate.
-
-  // There is no flow event handling here until I can understand it.
-
-  auto sparams = std::make_shared<folly::dynamic>(std::move(params));
-
-  __weak RCTBridge *bridge = m_bridge;
-
-  dispatch_block_t block = ^{
-    if (!bridge || !bridge.valid) {
+  dispatch_block_t block = [this, methodId, params=std::move(params)] {
+    if (!m_bridge.valid) {
       return;
     }
 
-    id<RCTBridgeMethod> method = m_moduleData.methods[methodId];
-    if (RCT_DEBUG && !method) {
-      RCTLogError(@"Unknown methodID: %ud for module: %@",
-                  methodId, m_moduleData.name);
-    }
-
-    NSArray *objcParams = convertFollyDynamicToId(*sparams);
-
-    @try {
-      [method invokeWithBridge:bridge module:m_moduleData.instance arguments:objcParams];
-    }
-    @catch (NSException *exception) {
-      // Pass on JS exceptions
-      if ([exception.name hasPrefix:RCTFatalExceptionName]) {
-        @throw exception;
-      }
-
-      NSString *message = [NSString stringWithFormat:
-                           @"Exception '%@' was thrown while invoking %@ on target %@ with params %@",
-                           exception, method.JSMethodName, m_moduleData.name, objcParams];
-      RCTFatal(RCTErrorWithMessage(message));
-    }
+    invokeInner(methodId, std::move(params));
   };
 
   dispatch_queue_t queue = m_moduleData.methodQueue;
@@ -103,12 +71,36 @@ void RCTNativeModule::invoke(ExecutorToken token, unsigned int methodId, folly::
   }
 }
 
-MethodCallResult RCTNativeModule::callSerializableNativeHook(
-    ExecutorToken token, unsigned int reactMethodId, folly::dynamic &&params) {
-  RCTFatal(RCTErrorWithMessage(@"callSerializableNativeHook is not yet supported on iOS"));
-  return folly::none;
+MethodCallResult RCTNativeModule::callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic &&params) {
+  return invokeInner(reactMethodId, std::move(params));
 }
 
+MethodCallResult RCTNativeModule::invokeInner(unsigned int methodId, const folly::dynamic &&params) {
+  id<RCTBridgeMethod> method = m_moduleData.methods[methodId];
+  if (RCT_DEBUG && !method) {
+    RCTLogError(@"Unknown methodID: %ud for module: %@",
+                methodId, m_moduleData.name);
+  }
+
+  NSArray *objcParams = convertFollyDynamicToId(params);
+
+  @try {
+    id result = [method invokeWithBridge:m_bridge module:m_moduleData.instance arguments:objcParams];
+    return convertIdToFollyDynamic(result);
+  }
+  @catch (NSException *exception) {
+    // Pass on JS exceptions
+    if ([exception.name hasPrefix:RCTFatalExceptionName]) {
+      @throw exception;
+    }
+
+    NSString *message = [NSString stringWithFormat:
+                         @"Exception '%@' was thrown while invoking %@ on target %@ with params %@",
+                         exception, method.JSMethodName, m_moduleData.name, objcParams];
+    RCTFatal(RCTErrorWithMessage(message));
+  }
+
+}
 
 }
 }
