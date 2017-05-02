@@ -143,7 +143,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.20.2",
     "babel-polyfill": "^6.20.0",
     "babel-preset-es2015-node": "^6.1.1",
-    "babel-preset-fbjs": "^2.1.0",
+    "babel-preset-fbjs": "^2.1.2",
     "babel-preset-react-native": "^1.9.1",
     "babel-register": "^6.24.1",
     "babel-runtime": "^6.23.0",
