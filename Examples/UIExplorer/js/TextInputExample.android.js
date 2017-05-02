@@ -729,4 +729,22 @@ exports.examples = [
       );
     }
   },
+  {
+    title: 'Text selection & cursor placement',
+    render: function() {
+      return (
+        <View>
+          <SelectionExample
+            style={styles.default}
+            value="text selection can be changed"
+          />
+          <SelectionExample
+            multiline
+            style={styles.multiline}
+            value={"multiline text selection\ncan also be changed"}
+          />
+        </View>
+      );
+    }
+  },
 ];
