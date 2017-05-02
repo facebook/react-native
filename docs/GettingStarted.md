@@ -33,6 +33,8 @@ Once you've created your project and opened it in the Expo client app, you can p
 
 ### Caveats
 
+The Expo client app usually releases about 1 week after any given React Native release, and Create React Native App always provides the latest version of React Native which is supported by the Expo client. You can check [this document](https://github.com/react-community/create-react-native-app/blob/master/VERSIONS.md) to find out what versions are supported.
+
 Because you don't build any native code with Create React Native App, it's not possible to include custom native modules beyond the React Native APIs and components that are available in the Expo client app.
 
 If you know that you'll eventually need to include your own native code, Create React Native App is still a good way to get started. In that case you'll just need to "[eject](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#ejecting-from-create-react-native-app)" eventually to create your own native builds. If you do eject, the native build instructions below will be required to continue working on your project.
