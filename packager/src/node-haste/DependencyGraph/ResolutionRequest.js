@@ -15,6 +15,7 @@ const MapWithDefaults = require('../lib/MapWithDefaults');
 
 const debug = require('debug')('RNP:DependencyGraph');
 const util = require('util');
+const fs = require('fs');
 const path = require('path');
 const realPath = require('path');
 const invariant = require('fbjs/lib/invariant');
@@ -581,6 +582,13 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
   }
 
   _loadAsDir(potentialDirPath: string, fromModule: TModule, toModule: string): TModule {
+    while (fs.existsSync(potentialDirPath) && fs.lstatSync(potentialDirPath).isSymbolicLink()) {
+      potentialDirPath = path.resolve(
+        path.dirname(potentialDirPath),
+        fs.readlinkSync(potentialDirPath)
+      );
+    }
+
     if (!this._dirExists(potentialDirPath)) {
       throw new UnableToResolveError(
         fromModule,

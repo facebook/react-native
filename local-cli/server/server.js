@@ -10,12 +10,16 @@
 
 const path = require('path');
 const runServer = require('./runServer');
+const findSymlinksPaths = require('../util/findSymlinksPaths');
 
 /**
  * Starts the React Native Packager Server.
  */
 function server(argv, config, args) {
-  args.projectRoots = args.projectRoots.concat(args.root);
+  Array.prototype.push.apply(args.projectRoots, args.root.reduce((roots, src) => roots.concat(
+    findSymlinksPaths(path.join(src, 'node_modules'), args.projectRoots),
+    src
+  ), []));
 
   const startedCallback = logReporter => {
     logReporter.update({
