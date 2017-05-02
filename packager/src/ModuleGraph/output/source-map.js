@@ -10,36 +10,14 @@
  */
 'use strict';
 
+import type {FBSourceMap, IndexMapSection, IndexMap} from '../../lib/SourceMap';
+
+export type {FBSourceMap};
+
 type CreateIndexMapOptions = {|
   file?: string,
   sections?: Array<IndexMapSection>
 |};
-
-type IndexMap = MapBase & {
-  sections: Array<IndexMapSection>,
-};
-
-type IndexMapSection = {
-  map: IndexMap | MappingsMap,
-  offset: {line: number, column: number},
-};
-
-type MapBase = {
-  // always the first entry in the source map entry object per
-  // https://fburl.com/source-map-spec#heading=h.qz3o9nc69um5
-  version: 3,
-  file?: string,
-};
-
-type MappingsMap = MapBase & {
-  mappings: string,
-  names: Array<string>,
-  sourceRoot?: string,
-  sources: Array<string>,
-  sourcesContent?: Array<?string>,
-};
-
-export type SourceMap = IndexMap | MappingsMap;
 
 exports.createIndexMap = (opts?: CreateIndexMapOptions): IndexMap => ({
   version: 3,

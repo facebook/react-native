@@ -667,4 +667,14 @@ public class YogaNode {
   public Object getData() {
     return mData;
   }
+
+  private native void jni_YGNodePrint(long nativePointer);
+
+  /**
+   * Use the set logger (defaults to adb log) to print out the styles, children, and computed
+   * layout of the tree rooted at this node.
+   */
+  public void print() {
+    jni_YGNodePrint(mNativePointer);
+  }
 }

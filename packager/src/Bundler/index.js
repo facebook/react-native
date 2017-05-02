@@ -68,7 +68,7 @@ export type GetTransformOptions = (
   getDependenciesOf: string => Promise<Array<string>>,
 ) => Promise<ExtraTransformOptions>;
 
-type AssetDescriptor = {
+export type AssetDescriptor = {
   +__packager_asset: boolean,
   +httpServerLocation: string,
   +width: ?number,
@@ -79,7 +79,7 @@ type AssetDescriptor = {
   +type: string,
 };
 
-type ExtendedAssetDescriptor = AssetDescriptor & {
+export type ExtendedAssetDescriptor = AssetDescriptor & {
   +fileSystemLocation: string,
   +files: Array<string>,
 };
@@ -100,6 +100,18 @@ const assetPropertyBlacklist = new Set([
   'path',
 ]);
 
+export type PostProcessModulesOptions = {|
+  dev: boolean,
+  minify: boolean,
+  platform: string,
+|};
+
+export type PostProcessModules = (
+  modules: Array<ModuleTransport>,
+  entryFile: string,
+  options: PostProcessModulesOptions,
+) => Array<ModuleTransport>;
+
 type Options = {|
   +allowBundleUpdates: boolean,
   +assetExts: Array<string>,
@@ -112,6 +124,7 @@ type Options = {|
   +hasteImpl?: HasteImpl,
   +platforms: Array<string>,
   +polyfillModuleNames: Array<string>,
+  +postProcessModules?: PostProcessModules,
   +projectRoots: Array<string>,
   +providesModuleNodeModules?: Array<string>,
   +reporter: Reporter,
@@ -180,8 +193,8 @@ class Bundler {
     /* $FlowFixMe: in practice it's always here. */
     this._transformer = new Transformer(opts.transformModulePath, maxWorkerCount);
 
-    const getTransformCacheKey = (src, filename, options) => {
-      return transformCacheKey + getCacheKey(src, filename, options);
+    const getTransformCacheKey = (options) => {
+      return transformCacheKey + getCacheKey(options);
     };
 
     this._resolverPromise = Resolver.load({
@@ -449,33 +462,44 @@ class Bundler {
         }
       }
 
-      const toModuleTransport = module =>
-        this._toModuleTransport({
-          module,
-          bundle,
-          entryFilePath,
-          assetPlugins,
-          options: response.options,
-          /* $FlowFixMe: `getModuleId` is monkey-patched */
-          getModuleId: (response.getModuleId: () => number),
-          dependencyPairs: response.getResolvedDependencyPairs(module),
-        }).then(transformed => {
-          modulesByName[transformed.name] = module;
-          onModuleTransformed({
+      const modulesByTransport: Map<ModuleTransport, Module> = new Map();
+      const toModuleTransport: Module => Promise<ModuleTransport> =
+        module =>
+          this._toModuleTransport({
             module,
-            response,
             bundle,
-            transformed,
+            entryFilePath,
+            assetPlugins,
+            options: response.options,
+            /* $FlowFixMe: `getModuleId` is monkey-patched */
+            getModuleId: (response.getModuleId: () => number),
+            dependencyPairs: response.getResolvedDependencyPairs(module),
+          }).then(transformed => {
+            modulesByTransport.set(transformed, module);
+            modulesByName[transformed.name] = module;
+            onModuleTransformed({
+              module,
+              response,
+              bundle,
+              transformed,
+            });
+            return transformed;
           });
-          return {module, transformed};
-        });
+
+      const p = this._opts.postProcessModules;
+      const postProcess = p
+        ? modules => p(modules, entryFile, {dev, minify, platform})
+        : null;
 
       return Promise.all(response.dependencies.map(toModuleTransport))
-        .then(transformedModules =>
-          Promise.resolve(
-            finalizeBundle({bundle, transformedModules, response, modulesByName})
-          ).then(() => bundle)
-        );
+        .then(postProcess)
+        .then(moduleTransports => {
+          const transformedModules = moduleTransports.map(transformed => ({
+            module: modulesByTransport.get(transformed),
+            transformed,
+          }));
+          return finalizeBundle({bundle, transformedModules, response, modulesByName});
+        }).then(() => bundle);
     });
   }
 
@@ -632,9 +656,10 @@ class Bundler {
       [name, {code, dependencies, dependencyOffsets, map, source}]
     ) => {
       const {preloadedModules} = options;
+      const isPolyfill = module.isPolyfill();
       const preloaded =
         module.path === entryFilePath ||
-        module.isPolyfill() ||
+        isPolyfill ||
         preloadedModules && preloadedModules.hasOwnProperty(module.path);
 
       return new ModuleTransport({
@@ -643,6 +668,7 @@ class Bundler {
         code,
         map,
         meta: {dependencies, dependencyOffsets, preloaded, dependencyPairs},
+        polyfill: isPolyfill,
         sourceCode: source,
         sourcePath: module.path,
       });
@@ -795,7 +821,7 @@ class Bundler {
           hot,
           inlineRequires: extraOptions.inlineRequires || false,
           platform,
-          projectRoots: options.projectRoots,
+          projectRoot: options.projectRoots[0],
         }
       },
       preloadedModules: extraOptions.preloadedModules,

@@ -51,7 +51,7 @@ describe('GlobalTransformCache', () => {
         hot: false,
         inlineRequires: false,
         platform: 'ios',
-        projectRoots: [path.join(__dirname, 'root')],
+        projectRoot: path.join(__dirname, 'root'),
       },
     };
     const result = await Promise.all([cache.fetch({

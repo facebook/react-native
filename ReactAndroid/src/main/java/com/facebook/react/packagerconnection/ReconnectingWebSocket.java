@@ -114,7 +114,7 @@ final public class ReconnectingWebSocket implements WebSocketListener {
     mMessageCallback = null;
 
     if (mConnectionCallback != null) {
-      mConnectionCallback.onConnected();
+      mConnectionCallback.onDisconnected();
     }
   }
 

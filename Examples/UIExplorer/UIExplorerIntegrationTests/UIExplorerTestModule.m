@@ -7,15 +7,26 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <Foundation/Foundation.h>
+
 #import <React/RCTBridgeModule.h>
 
-@class RCTLoadingProgress;
+@interface UIExplorerTestModule : NSObject <RCTBridgeModule>
 
-@interface RCTDevLoadingView : NSObject <RCTBridgeModule>
+@end
 
-+ (void)setEnabled:(BOOL)enabled;
-- (void)showWithURL:(NSURL *)URL;
-- (void)updateProgress:(RCTLoadingProgress *)progress;
-- (void)hide;
+@implementation UIExplorerTestModule
+
+RCT_EXPORT_MODULE(UIExplorerTestModule)
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(echoString:(NSString *)input)
+{
+  return input;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(methodThatReturnsNil)
+{
+  return nil;
+}
 
 @end

@@ -34,6 +34,8 @@ var sizeOf = require('image-size');
 var fs = require('fs');
 const os = require('os');
 
+const {any, objectContaining} = expect;
+
 var commonOptions = {
   allowBundleUpdates: false,
   assetExts: defaults.assetExts,
@@ -149,121 +151,6 @@ describe('Bundler', function() {
     });
   });
 
-  it('create a bundle', function() {
-    assetServer.getAssetData.mockImplementation(() => {
-      return Promise.resolve({
-        scales: [1, 2, 3],
-        files: [
-          '/root/img/img.png',
-          '/root/img/img@2x.png',
-          '/root/img/img@3x.png',
-        ],
-        hash: 'i am a hash',
-        name: 'img',
-        type: 'png',
-      });
-    });
-
-    return bundler.bundle({
-      entryFile: '/root/foo.js',
-      runBeforeMainModule: [],
-      runModule: true,
-      sourceMapUrl: 'source_map_url',
-    }).then(bundle => {
-      const ithAddedModule = i => bundle.addModule.mock.calls[i][2].path;
-
-      expect(ithAddedModule(0)).toEqual('/root/foo.js');
-      expect(ithAddedModule(1)).toEqual('/root/bar.js');
-      expect(ithAddedModule(2)).toEqual('/root/img/new_image.png');
-      expect(ithAddedModule(3)).toEqual('/root/file.json');
-
-      expect(bundle.finalize.mock.calls[0]).toEqual([{
-        runModule: true,
-        runBeforeMainModule: [],
-        allowUpdates: false,
-      }]);
-
-      expect(bundle.addAsset.mock.calls[0]).toEqual([{
-        __packager_asset: true,
-        fileSystemLocation: '/root/img',
-        httpServerLocation: '/assets/img',
-        width: 50,
-        height: 100,
-        scales: [1, 2, 3],
-        files: [
-          '/root/img/img.png',
-          '/root/img/img@2x.png',
-          '/root/img/img@3x.png',
-        ],
-        hash: 'i am a hash',
-        name: 'img',
-        type: 'png',
-      }]);
-
-        // TODO(amasad) This fails with 0 != 5 in OSS
-        //expect(ProgressBar.prototype.tick.mock.calls.length).toEqual(modules.length);
-    });
-  });
-
-  it('loads and runs asset plugins', function() {
-    jest.mock('mockPlugin1', () => {
-      return asset => {
-        asset.extraReverseHash = asset.hash.split('').reverse().join('');
-        return asset;
-      };
-    }, {virtual: true});
-
-    jest.mock('asyncMockPlugin2', () => {
-      return asset => {
-        expect(asset.extraReverseHash).toBeDefined();
-        return new Promise(resolve => {
-          asset.extraPixelCount = asset.width * asset.height;
-          resolve(asset);
-        });
-      };
-    }, {virtual: true});
-
-    const mockAsset = {
-      scales: [1, 2, 3],
-      files: [
-        '/root/img/img.png',
-        '/root/img/img@2x.png',
-        '/root/img/img@3x.png',
-      ],
-      hash: 'i am a hash',
-      name: 'img',
-      type: 'png',
-    };
-    assetServer.getAssetData.mockImplementation(() => Promise.resolve(mockAsset));
-
-    return bundler.bundle({
-      entryFile: '/root/foo.js',
-      runBeforeMainModule: [],
-      runModule: true,
-      sourceMapUrl: 'source_map_url',
-      assetPlugins: ['mockPlugin1', 'asyncMockPlugin2'],
-    }).then(bundle => {
-      expect(bundle.addAsset.mock.calls[0]).toEqual([{
-        __packager_asset: true,
-        fileSystemLocation: '/root/img',
-        httpServerLocation: '/assets/img',
-        width: 50,
-        height: 100,
-        scales: [1, 2, 3],
-        files: [
-          '/root/img/img.png',
-          '/root/img/img@2x.png',
-          '/root/img/img@3x.png',
-        ],
-        hash: 'i am a hash',
-        name: 'img',
-        type: 'png',
-        extraReverseHash: 'hsah a ma i',
-        extraPixelCount: 5000,
-      }]);
-    });
-  });
-
   it('gets the list of dependencies from the resolver', function() {
     const entryFile = '/root/foo.js';
     return bundler.getDependencies({entryFile, recursive: true}).then(() =>
@@ -284,7 +171,7 @@ describe('Bundler', function() {
               hot: false,
               inlineRequires: false,
               platform: undefined,
-              projectRoots,
+              projectRoot: projectRoots[0],
             },
           },
         },
@@ -303,7 +190,183 @@ describe('Bundler', function() {
     expect(b._opts.platforms).toEqual(['android', 'vr']);
   });
 
-  describe('getOrderedDependencyPaths', () => {
+  describe('.bundle', () => {
+    const mockAsset = {
+      scales: [1, 2, 3],
+      files: [
+        '/root/img/img.png',
+        '/root/img/img@2x.png',
+        '/root/img/img@3x.png',
+      ],
+      hash: 'i am a hash',
+      name: 'img',
+      type: 'png',
+    };
+
+    beforeEach(() => {
+      assetServer.getAssetData
+        .mockImplementation(() => Promise.resolve(mockAsset));
+    });
+
+    it('creates a bundle', function() {
+      return bundler.bundle({
+        entryFile: '/root/foo.js',
+        runBeforeMainModule: [],
+        runModule: true,
+        sourceMapUrl: 'source_map_url',
+      }).then(bundle => {
+        const ithAddedModule = i => bundle.addModule.mock.calls[i][2].path;
+
+        expect(ithAddedModule(0)).toEqual('/root/foo.js');
+        expect(ithAddedModule(1)).toEqual('/root/bar.js');
+        expect(ithAddedModule(2)).toEqual('/root/img/new_image.png');
+        expect(ithAddedModule(3)).toEqual('/root/file.json');
+
+        expect(bundle.finalize.mock.calls[0]).toEqual([{
+          runModule: true,
+          runBeforeMainModule: [],
+          allowUpdates: false,
+        }]);
+
+        expect(bundle.addAsset.mock.calls[0]).toEqual([{
+          __packager_asset: true,
+          fileSystemLocation: '/root/img',
+          httpServerLocation: '/assets/img',
+          width: 50,
+          height: 100,
+          scales: [1, 2, 3],
+          files: [
+            '/root/img/img.png',
+            '/root/img/img@2x.png',
+            '/root/img/img@3x.png',
+          ],
+          hash: 'i am a hash',
+          name: 'img',
+          type: 'png',
+        }]);
+
+        // TODO(amasad) This fails with 0 != 5 in OSS
+        //expect(ProgressBar.prototype.tick.mock.calls.length).toEqual(modules.length);
+      });
+    });
+
+    it('loads and runs asset plugins', function() {
+      jest.mock('mockPlugin1', () => {
+        return asset => {
+          asset.extraReverseHash = asset.hash.split('').reverse().join('');
+          return asset;
+        };
+      }, {virtual: true});
+
+      jest.mock('asyncMockPlugin2', () => {
+        return asset => {
+          expect(asset.extraReverseHash).toBeDefined();
+          return new Promise(resolve => {
+            asset.extraPixelCount = asset.width * asset.height;
+            resolve(asset);
+          });
+        };
+      }, {virtual: true});
+
+      return bundler.bundle({
+        entryFile: '/root/foo.js',
+        runBeforeMainModule: [],
+        runModule: true,
+        sourceMapUrl: 'source_map_url',
+        assetPlugins: ['mockPlugin1', 'asyncMockPlugin2'],
+      }).then(bundle => {
+        expect(bundle.addAsset.mock.calls[0]).toEqual([{
+          __packager_asset: true,
+          fileSystemLocation: '/root/img',
+          httpServerLocation: '/assets/img',
+          width: 50,
+          height: 100,
+          scales: [1, 2, 3],
+          files: [
+            '/root/img/img.png',
+            '/root/img/img@2x.png',
+            '/root/img/img@3x.png',
+          ],
+          hash: 'i am a hash',
+          name: 'img',
+          type: 'png',
+          extraReverseHash: 'hsah a ma i',
+          extraPixelCount: 5000,
+        }]);
+      });
+    });
+
+    it('calls the module post-processing function', () => {
+      const postProcessModules = jest.fn().mockImplementation((ms, e) => ms);
+
+      const b = new Bundler({
+        ...commonOptions,
+        postProcessModules,
+        projectRoots,
+        assetServer,
+      });
+
+      const dev = false;
+      const minify = true;
+      const platform = 'arbitrary';
+
+      const entryFile = '/root/foo.js';
+      return b.bundle({
+        dev,
+        entryFile,
+        minify,
+        platform,
+        runBeforeMainModule: [],
+        runModule: true,
+        sourceMapUrl: 'source_map_url',
+      }).then(() => {
+        expect(postProcessModules)
+          .toBeCalledWith(
+            modules.map(x => objectContaining({
+              name: any(String),
+              id: any(Number),
+              code: any(String),
+              sourceCode: any(String),
+              sourcePath: x.path,
+              meta: any(Object),
+              polyfill: !!x.isPolyfill(),
+            })),
+            entryFile,
+            {dev, minify, platform},
+          );
+      });
+    });
+
+    it('respects the order of modules returned by the post-processing function', () => {
+      const postProcessModules = jest.fn().mockImplementation((ms, e) => ms.reverse());
+
+      const b = new Bundler({
+        ...commonOptions,
+        postProcessModules,
+        projectRoots,
+        assetServer,
+      });
+
+      const entryFile = '/root/foo.js';
+      return b.bundle({
+        entryFile,
+        runBeforeMainModule: [],
+        runModule: true,
+        sourceMapUrl: 'source_map_url',
+      }).then(bundle => {
+        const ithAddedModule = i => bundle.addModule.mock.calls[i][2].path;
+
+        [
+          '/root/file.json',
+          '/root/img/new_image.png',
+          '/root/bar.js',
+          '/root/foo.js',
+        ].forEach((path, ix) => expect(ithAddedModule(ix)).toEqual(path));
+      });
+    });
+  });
+
+  describe('.getOrderedDependencyPaths', () => {
     beforeEach(() => {
       assetServer.getAssetData.mockImplementation(function(relPath) {
         if (relPath === 'img/new_image.png') {

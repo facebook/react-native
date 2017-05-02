@@ -20,7 +20,8 @@ const {basename} = require('path');
 
 import type {
   Callback,
-  TransformedFile,
+  TransformedCodeFile,
+  TransformedSourceFile,
   Transformer,
   TransformerResult,
   TransformResult,
@@ -41,7 +42,7 @@ const polyfillFactoryParameters = ['global'];
 function transformModule(
   content: Buffer,
   options: TransformOptions,
-  callback: Callback<TransformedFile>,
+  callback: Callback<TransformedSourceFile>,
 ): void {
   if (options.filename.endsWith('.png')) {
     transformAsset(content, options, callback);
@@ -86,12 +87,15 @@ function transformModule(
     const annotations = docblock.parseAsObject(docblock.extract(code));
 
     callback(null, {
-      assetContent: null,
-      code,
-      file: filename,
-      hasteID: annotations.providesModule || null,
-      transformed,
-      type: options.polyfill ? 'script' : 'module',
+      type: 'code',
+      details: {
+        assetContent: null,
+        code,
+        file: filename,
+        hasteID: annotations.providesModule || null,
+        transformed,
+        type: options.polyfill ? 'script' : 'module',
+      },
     });
   });
   return;
@@ -116,7 +120,7 @@ function transformJSON(json, options, callback) {
     .keys(options.variants || defaultVariants)
     .forEach(key => (transformed[key] = moduleData));
 
-  const result: TransformedFile = {
+  const result: TransformedCodeFile = {
     assetContent: null,
     code: json,
     file: filename,
@@ -133,20 +137,19 @@ function transformJSON(json, options, callback) {
       'react-native': value['react-native'],
     };
   }
-  callback(null, result);
+  callback(null, {type: 'code', details: result});
 }
 
 function transformAsset(
   content: Buffer,
   options: TransformOptions,
-  callback: Callback<TransformedFile>,
+  callback: Callback<TransformedSourceFile>,
 ) {
   callback(null, {
-    assetContent: content.toString('base64'),
-    code: '',
-    file: options.filename,
-    hasteID: null,
-    transformed: {},
+    details: {
+      assetContentBase64: content.toString('base64'),
+      filePath: options.filename,
+    },
     type: 'asset',
   });
 }

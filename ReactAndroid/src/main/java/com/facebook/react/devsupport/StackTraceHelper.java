@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 
 import org.json.JSONArray;
@@ -99,6 +100,18 @@ public class StackTraceHelper {
      */
     public String getFileName() {
       return mFileName;
+    }
+
+    /**
+     * Convert the stack frame to a JSON representation.
+     */
+    public JSONObject toJSON() {
+      return new JSONObject(
+          MapBuilder.of(
+              "file", getFile(),
+              "methodName", getMethod(),
+              "lineNumber", getLine(),
+              "column", getColumn()));
     }
   }
 

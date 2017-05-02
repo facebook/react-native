@@ -88,6 +88,7 @@ public class DevServerHelper {
   private static final String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
   private static final String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s";
   private static final String SYMBOLICATE_URL_FORMAT = "http://%s/symbolicate";
+  private static final String OPEN_STACK_FRAME_URL_FORMAT = "http://%s/open-stack-frame";
 
   private static final String PACKAGER_OK_STATUS = "packager-status:running";
 
@@ -233,12 +234,7 @@ public class DevServerHelper {
           mSettings.getPackagerConnectionSettings().getDebugServerHost());
       final JSONArray jsonStackFrames = new JSONArray();
       for (final StackFrame stackFrame : stackFrames) {
-        jsonStackFrames.put(new JSONObject(
-            MapBuilder.of(
-                "file", stackFrame.getFile(),
-                "methodName", stackFrame.getMethod(),
-                "lineNumber", stackFrame.getLine(),
-                "column", stackFrame.getColumn())));
+        jsonStackFrames.put(stackFrame.toJSON());
       }
       final Request request = new Request.Builder()
           .url(symbolicateURL)
@@ -272,6 +268,31 @@ public class DevServerHelper {
           ReactConstants.TAG,
           "Got JSONException when attempting symbolicate stack trace: " + e.getMessage());
     }
+  }
+
+  public void openStackFrameCall(StackFrame stackFrame) {
+    final String openStackFrameURL = createOpenStackFrameURL(
+        mSettings.getPackagerConnectionSettings().getDebugServerHost());
+    final Request request = new Request.Builder()
+        .url(openStackFrameURL)
+        .post(RequestBody.create(
+            MediaType.parse("application/json"),
+            stackFrame.toJSON().toString()))
+        .build();
+    Call symbolicateCall = Assertions.assertNotNull(mClient.newCall(request));
+    symbolicateCall.enqueue(new Callback() {
+      @Override
+      public void onFailure(Call call, IOException e) {
+        FLog.w(
+            ReactConstants.TAG,
+            "Got IOException when attempting to open stack frame: " + e.getMessage());
+      }
+
+      @Override
+      public void onResponse(Call call, final Response response) throws IOException {
+        // We don't have a listener for this.
+      }
+    });
   }
 
     /** Intent action for reloading the JS */
@@ -344,6 +365,10 @@ public class DevServerHelper {
 
   private static String createSymbolicateURL(String host) {
     return String.format(Locale.US, SYMBOLICATE_URL_FORMAT, host);
+  }
+
+  private static String createOpenStackFrameURL(String host) {
+    return String.format(Locale.US, OPEN_STACK_FRAME_URL_FORMAT, host);
   }
 
   public String getDevServerBundleURL(final String jsModulePath) {
