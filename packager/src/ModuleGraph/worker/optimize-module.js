@@ -18,7 +18,7 @@ const inline = require('../../JSTransformer/worker/inline').plugin;
 const minify = require('../../JSTransformer/worker/minify');
 const sourceMap = require('source-map');
 
-import type {TransformedFile, TransformResult} from '../types.flow';
+import type {TransformedCodeFile, TransformResult} from '../types.flow';
 
 export type OptimizationOptions = {|
   dev: boolean,
@@ -27,9 +27,9 @@ export type OptimizationOptions = {|
 |};
 
 function optimizeModule(
-  data: string | TransformedFile,
+  data: string | TransformedCodeFile,
   optimizationOptions: OptimizationOptions,
-): TransformedFile {
+): TransformedCodeFile {
   if (typeof data === 'string') {
     data = JSON.parse(data);
   }

@@ -45,7 +45,8 @@ describe('transforming JS modules:', () => {
 
   it('passes through file name and code', done => {
     transformModule(sourceCode, options(), (error, result) => {
-      expect(result).toEqual(expect.objectContaining({
+      expect(result.type).toBe('code');
+      expect(result.details).toEqual(expect.objectContaining({
         code: sourceCode,
         file: filename,
       }));
@@ -57,21 +58,24 @@ describe('transforming JS modules:', () => {
     const hasteID = 'TheModule';
     const codeWithHasteID = `/** @providesModule ${hasteID} */`;
     transformModule(codeWithHasteID, options(), (error, result) => {
-      expect(result).toEqual(expect.objectContaining({hasteID}));
+      expect(result.type).toBe('code');
+      expect(result.details).toEqual(expect.objectContaining({hasteID}));
       done();
     });
   });
 
   it('sets `type` to `"module"` by default', done => {
     transformModule(sourceCode, options(), (error, result) => {
-      expect(result).toEqual(expect.objectContaining({type: 'module'}));
+      expect(result.type).toBe('code');
+      expect(result.details).toEqual(expect.objectContaining({type: 'module'}));
       done();
     });
   });
 
   it('sets `type` to `"script"` if the input is a polyfill', done => {
     transformModule(sourceCode, {...options(), polyfill: true}, (error, result) => {
-      expect(result).toEqual(expect.objectContaining({type: 'script'}));
+      expect(result.type).toBe('code');
+      expect(result.details).toEqual(expect.objectContaining({type: 'script'}));
       done();
     });
   });
@@ -105,7 +109,7 @@ describe('transforming JS modules:', () => {
     transformModule(sourceCode, options(), (error, result) => {
       expect(error).toEqual(null);
 
-      const {code, dependencyMapName} = result.transformed.default;
+      const {code, dependencyMapName} = result.details.transformed.default;
       expect(code.replace(/\s+/g, ''))
         .toEqual(
           `__d(function(global,require,module,exports,${
@@ -119,7 +123,7 @@ describe('transforming JS modules:', () => {
     transformModule(sourceCode, {...options(), polyfill: true}, (error, result) => {
       expect(error).toEqual(null);
 
-      const {code} = result.transformed.default;
+      const {code} = result.details.transformed.default;
       expect(code.replace(/\s+/g, ''))
         .toEqual(`(function(global){${transformedCode}})(this);`);
       done();
@@ -128,7 +132,7 @@ describe('transforming JS modules:', () => {
 
   it('creates source maps', done => {
     transformModule(sourceCode, options(), (error, result) => {
-      const {code, map} = result.transformed.default;
+      const {code, map} = result.details.transformed.default;
       const column = code.indexOf('code');
       const consumer = new SourceMapConsumer(map);
       expect(consumer.originalPositionFor({line: 1, column}))
@@ -145,7 +149,7 @@ describe('transforming JS modules:', () => {
     transformer.transform.stub.returns(transformResult(body));
 
     transformModule(code, options(), (error, result) => {
-      expect(result.transformed.default)
+      expect(result.details.transformed.default)
         .toEqual(expect.objectContaining({dependencies: [dep1, dep2]}));
       done();
     });
@@ -160,7 +164,7 @@ describe('transforming JS modules:', () => {
         .returns(transformResult([]));
 
     transformModule(sourceCode, options(variants), (error, result) => {
-      const {dev, prod} = result.transformed;
+      const {dev, prod} = result.details.transformed;
       expect(dev.code.replace(/\s+/g, ''))
         .toEqual(
           `__d(function(global,require,module,exports,${
@@ -179,7 +183,7 @@ describe('transforming JS modules:', () => {
     const json = '{"foo":"bar"}';
 
     transformModule(json, {...options(), filename: 'some.json'}, (error, result) => {
-      const {code} = result.transformed.default;
+      const {code} = result.details.transformed.default;
       expect(code.replace(/\s+/g, ''))
         .toEqual(
           '__d(function(global,require,module,exports){' +
@@ -191,7 +195,7 @@ describe('transforming JS modules:', () => {
 
   it('does not create source maps for JSON files', done => {
     transformModule('{}', {...options(), filename: 'some.json'}, (error, result) => {
-      expect(result.transformed.default)
+      expect(result.details.transformed.default)
         .toEqual(expect.objectContaining({map: null}));
       done();
     });
@@ -209,7 +213,7 @@ describe('transforming JS modules:', () => {
       JSON.stringify(pkg),
       {...options(), filename: 'arbitrary/package.json'},
       (error, result) => {
-        expect(result.package).toEqual(pkg);
+        expect(result.details.package).toEqual(pkg);
         done();
       },
     );

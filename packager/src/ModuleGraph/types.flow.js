@@ -27,10 +27,10 @@ export type File = {|
   code: string,
   map?: ?Object,
   path: string,
-  type: FileTypes,
+  type: CodeFileTypes,
 |};
 
-type FileTypes = 'module' | 'script' | 'asset';
+type CodeFileTypes = 'module' | 'script';
 
 export type GraphFn = (
   entryPoints: Iterable<string>,
@@ -125,15 +125,30 @@ export type TransformResults = {[string]: TransformResult};
 
 export type TransformVariants = {[key: string]: Object};
 
-export type TransformedFile = {
-  assetContent: ?string,
-  code: string,
-  file: string,
-  hasteID: ?string,
+export type TransformedCodeFile = {
+  +code: string,
+  +file: string,
+  +hasteID: ?string,
   package?: PackageData,
-  transformed: TransformResults,
-  type: FileTypes,
+  +transformed: TransformResults,
+  +type: CodeFileTypes,
 };
+
+export type AssetFile = {|
+  +assetContentBase64: string,
+  +filePath: string,
+|};
+
+export type TransformedSourceFile =
+  | {|
+    +type: 'code',
+    +details: TransformedCodeFile,
+  |}
+  | {|
+    +type: 'asset',
+    +details: AssetFile,
+  |}
+  ;
 
 export type LibraryOptions = {|
   dependencies?: Array<string>,
@@ -145,7 +160,7 @@ export type Base64Content = string;
 export type AssetContentsByPath = {[destFilePath: string]: Base64Content};
 
 export type Library = {|
-  files: Array<TransformedFile>,
+  +files: Array<TransformedCodeFile>,
   /* cannot be a Map because it's JSONified later on */
-  assets: AssetContentsByPath,
+  +assets: AssetContentsByPath,
 |};
