@@ -142,9 +142,10 @@ export type LibraryOptions = {|
 |};
 
 export type Base64Content = string;
+export type AssetContentsByPath = {[destFilePath: string]: Base64Content};
 
 export type Library = {|
   files: Array<TransformedFile>,
   /* cannot be a Map because it's JSONified later on */
-  assets: {[destFilePath: string]: Base64Content},
+  assets: AssetContentsByPath,
 |};
