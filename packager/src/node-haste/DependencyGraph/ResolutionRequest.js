@@ -71,6 +71,7 @@ type Options<TModule, TPackage> = {|
   +platform: ?string,
   +platforms: Set<string>,
   +preferNativePlatform: boolean,
+  +sourceExts: Array<string>,
 |};
 
 /**
@@ -102,6 +103,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
   _platform: ?string;
   _platforms: Set<string>;
   _preferNativePlatform: boolean;
+  _sourceExts: Array<string>;
   static emptyModule: string;
 
   constructor({
@@ -116,6 +118,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     platform,
     platforms,
     preferNativePlatform,
+    sourceExts,
   }: Options<TModule, TPackage>) {
     this._dirExists = dirExists;
     this._entryPath = entryPath;
@@ -128,6 +131,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     this._platform = platform;
     this._platforms = platforms;
     this._preferNativePlatform = preferNativePlatform;
+    this._sourceExts = sourceExts;
     this._resetResolutionCache();
   }
 
@@ -559,22 +563,32 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     let file;
     if (this._hasteFS.exists(potentialModulePath)) {
       file = potentialModulePath;
-    } else if (this._platform != null &&
-               this._hasteFS.exists(potentialModulePath + '.' + this._platform + '.js')) {
-      file = potentialModulePath + '.' + this._platform + '.js';
-    } else if (this._preferNativePlatform &&
-               this._hasteFS.exists(potentialModulePath + '.native.js')) {
-      file = potentialModulePath + '.native.js';
-    } else if (this._hasteFS.exists(potentialModulePath + '.js')) {
-      file = potentialModulePath + '.js';
     } else if (this._hasteFS.exists(potentialModulePath + '.json')) {
       file = potentialModulePath + '.json';
     } else {
-      throw new UnableToResolveError(
-        fromModule,
-        toModule,
-        `File ${potentialModulePath} doesn't exist`,
-      );
+      for (let i = 0; i < this._sourceExts.length; i++) {
+        const ext = this._sourceExts[i];
+        if (this._platform != null &&
+                  this._hasteFS.exists(potentialModulePath + '.' + this._platform + '.' + ext)) {
+          file = potentialModulePath + '.' + this._platform + '.' + ext;
+          break;
+        } else if (this._preferNativePlatform &&
+                  this._hasteFS.exists(potentialModulePath + '.native.' + ext)) {
+          file = potentialModulePath + '.native.' + ext;
+          break;
+        } else if (this._hasteFS.exists(potentialModulePath + '.' + ext)) {
+          file = potentialModulePath + '.' + ext;
+          break;
+        }
+      }
+
+      if (file === undefined) {
+        throw new UnableToResolveError(
+          fromModule,
+          toModule,
+          `File ${potentialModulePath} doesn't exist`,
+        );
+      }
     }
 
     return this._moduleCache.getModule(file);

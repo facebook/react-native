@@ -31,6 +31,13 @@ export type ConfigT = {
    */
   getAssetExts?: () => Array<string>,
   /**
+   * Specify any additional source file extentions to be used by the packager.
+   * For example, if you want to include a .ts file, you would return ['ts']
+   * from here and use `require('./module/example')` to require the file with
+   * path 'module/example.ts' inside your app.
+   */
+  getSourceExts?: () => Array<string>,
+  /**
    * Specify any additional platforms to be used by the packager.
    * For example, if you want to add a "custom" platform, and use modules
    * ending in .custom.js, you would return ['custom'] here.
@@ -55,6 +62,7 @@ export type ConfigT = {
   getBlacklistRE(): RegExp,
   getProjectRoots(): Array<string>,
   getAssetExts(): Array<string>,
+  getSourceExts(): Array<string>,
   /**
    * Returns an array of project commands used by the CLI to load
    */

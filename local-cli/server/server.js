@@ -71,6 +71,11 @@ module.exports = {
     parse: (val) => val.split(','),
     default: (config) => config.getAssetExts(),
   }, {
+    command: '--sourceExts [list]',
+    description: 'Specify any additional source extentions to be used by the packager',
+    parse: (val) => val.split(','),
+    default: (config) => config.getSourceExts(),
+  }, {
     command: '--platforms [list]',
     description: 'Specify any additional platforms to be used by the packager',
     parse: (val) => val.split(','),

@@ -43,6 +43,7 @@ var commonOptions = {
   extraNodeModules: {},
   platforms: defaults.platforms,
   resetCache: false,
+  sourceExts: defaults.sourceExts,
   watch: false,
 };
 
