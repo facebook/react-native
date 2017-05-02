@@ -23,14 +23,20 @@ public class ReactTextChangedEvent extends Event<ReactTextChangedEvent> {
   public static final String EVENT_NAME = "topChange";
 
   private String mText;
+  private float mContentWidth;
+  private float mContentHeight;
   private int mEventCount;
 
   public ReactTextChangedEvent(
       int viewId,
       String text,
+      float contentSizeWidth,
+      float contentSizeHeight,
       int eventCount) {
     super(viewId);
     mText = text;
+    mContentWidth = contentSizeWidth;
+    mContentHeight = contentSizeHeight;
     mEventCount = eventCount;
   }
 
@@ -47,7 +53,13 @@ public class ReactTextChangedEvent extends Event<ReactTextChangedEvent> {
   private WritableMap serializeEventData() {
     WritableMap eventData = Arguments.createMap();
     eventData.putString("text", mText);
+
+    WritableMap contentSize = Arguments.createMap();
+    contentSize.putDouble("width", mContentWidth);
+    contentSize.putDouble("height", mContentHeight);
+    eventData.putMap("contentSize", contentSize);
     eventData.putInt("eventCount", mEventCount);
+
     eventData.putInt("target", getViewTag());
     return eventData;
   }
