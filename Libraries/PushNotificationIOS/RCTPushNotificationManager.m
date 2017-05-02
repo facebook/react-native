@@ -54,12 +54,14 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
   notification.fireDate = [RCTConvert NSDate:details[@"fireDate"]] ?: [NSDate date];
   notification.alertBody = [RCTConvert NSString:details[@"alertBody"]];
   notification.alertAction = [RCTConvert NSString:details[@"alertAction"]];
-  notification.soundName = [RCTConvert NSString:details[@"soundName"]] ?: UILocalNotificationDefaultSoundName;
   notification.userInfo = [RCTConvert NSDictionary:details[@"userInfo"]];
   notification.category = [RCTConvert NSString:details[@"category"]];
   notification.repeatInterval = [RCTConvert NSCalendarUnit:details[@"repeatInterval"]];
   if (details[@"applicationIconBadgeNumber"]) {
     notification.applicationIconBadgeNumber = [RCTConvert NSInteger:details[@"applicationIconBadgeNumber"]];
+  }
+  if (details[@"soundName"]) {
+    notification.soundName = [RCTConvert NSString:details[@"soundName"]];
   }
   return notification;
 }
