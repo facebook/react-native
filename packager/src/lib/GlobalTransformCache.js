@@ -229,7 +229,7 @@ class URIBasedGlobalTransformCache {
     const hash = crypto.createHash('sha1');
     const {sourceCode, filePath, transformOptions} = props;
     hash.update(this._optionsHasher.getTransformWorkerOptionsDigest(transformOptions));
-    const cacheKey = props.getTransformCacheKey(sourceCode, filePath, transformOptions);
+    const cacheKey = props.getTransformCacheKey(transformOptions);
     hash.update(JSON.stringify(cacheKey));
     hash.update(crypto.createHash('sha1').update(sourceCode).digest('hex'));
     const digest = hash.digest('hex');
@@ -383,7 +383,7 @@ class OptionsHasher {
    */
   hashTransformOptions(hash: crypto$Hash, options: TransformOptions): crypto$Hash {
     const {
-      generateSourceMaps, dev, hot, inlineRequires, platform, projectRoots,
+      generateSourceMaps, dev, hot, inlineRequires, platform, projectRoot,
       ...unknowns,
     } = options;
     const unknownKeys = Object.keys(unknowns);
@@ -401,14 +401,18 @@ class OptionsHasher {
     if (typeof inlineRequires === 'object') {
       relativeBlacklist = this.relativizeFilePaths(Object.keys(inlineRequires.blacklist));
     }
-    const relativeProjectRoots = this.relativizeFilePaths(projectRoots);
-    const optionTuple = [relativeBlacklist, relativeProjectRoots];
+    const relativeProjectRoot = this.relativizeFilePath(projectRoot);
+    const optionTuple = [relativeBlacklist, relativeProjectRoot];
     hash.update(JSON.stringify(optionTuple));
     return hash;
   }
 
   relativizeFilePaths(filePaths: Array<string>): Array<string> {
-    return filePaths.map(filepath => path.relative(this._rootPath, filepath));
+    return filePaths.map(this.relativizeFilePath.bind(this));
+  }
+
+  relativizeFilePath(filePath: string): string {
+    return path.relative(this._rootPath, filePath);
   }
 }
 

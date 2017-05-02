@@ -41,6 +41,7 @@ class HasteMap extends EventEmitter {
 
   build() {
     this._map = Object.create(null);
+    this._packages = Object.create(null);
     const promises = [];
     this._files.forEach(filePath => {
       if (!this._helpers.isNodeModulesDir(filePath)) {
@@ -116,6 +117,10 @@ class HasteMap extends EventEmitter {
     return module;
   }
 
+  getPackage(name): Package {
+    return this._packages[name];
+  }
+
   _processHasteModule(file, previousName) {
     const module = this._moduleCache.getModule(file);
     return module.isHaste().then(
@@ -151,13 +156,20 @@ class HasteMap extends EventEmitter {
   }
 
   _updateHasteMap(name, mod) {
-    if (this._map[name] == null) {
-      this._map[name] = Object.create(null);
-    }
+    let existingModule;
 
-    const moduleMap = this._map[name];
-    const modulePlatform = getPlatformExtension(mod.path, this._platforms) || GENERIC_PLATFORM;
-    const existingModule = moduleMap[modulePlatform];
+    if (mod.type === 'Package') {
+      existingModule = this._packages[name];
+      this._packages[name] = mod;
+    } else {
+      if (this._map[name] == null) {
+        this._map[name] = Object.create(null);
+      }
+      const moduleMap = this._map[name];
+      const modulePlatform = getPlatformExtension(mod.path, this._platforms) || GENERIC_PLATFORM;
+      existingModule = moduleMap[modulePlatform];
+      moduleMap[modulePlatform] = mod;
+    }
 
     if (existingModule && existingModule.path !== mod.path) {
       throw new Error(
@@ -168,8 +180,6 @@ class HasteMap extends EventEmitter {
         'with the same name across two different files.'
       );
     }
-
-    moduleMap[modulePlatform] = mod;
   }
 }
 

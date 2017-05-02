@@ -54,6 +54,7 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
     yogaConfig = YGConfigNew();
     // Turnig off pixel rounding.
     YGConfigSetPointScaleFactor(yogaConfig, 0.0);
+    YGConfigSetUseLegacyStretchBehaviour(yogaConfig, true);
   });
   return yogaConfig;
 }
@@ -165,6 +166,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     return;
   }
   YGNodeSetHasNewLayout(node, false);
+
+  RCTAssert(!YGNodeIsDirty(node), @"Attempt to get layout metrics from dirtied Yoga node.");
 
 #if RCT_DEBUG
   // This works around a breaking change in Yoga layout where setting flexBasis needs to be set explicitly, instead of relying on flex to propagate.
@@ -347,7 +350,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     _reactSubviews = [NSMutableArray array];
 
     _yogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
-
     YGNodeSetContext(_yogaNode, (__bridge void *)self);
     YGNodeSetPrintFunc(_yogaNode, RCTPrint);
   }

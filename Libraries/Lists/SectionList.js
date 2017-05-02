@@ -22,9 +22,15 @@ import type {Props as VirtualizedSectionListProps} from 'VirtualizedSectionList'
 type Item = any;
 
 type SectionBase<SectionItemT> = {
-  // Must be provided directly on each section.
+  /**
+   * The data for rendering items in this section.
+   */
   data: Array<SectionItemT>,
-  key: string,
+  /**
+   * Optional key to keep track of section re-ordering. If you don't plan on re-ordering sections,
+   * the array index will be used by default.
+   */
+  key?: string,
 
   // Optional props will override list-wide props just for this section.
   renderItem?: ?(info: {
@@ -52,7 +58,6 @@ type RequiredProps<SectionT: SectionBase<any>> = {
    *
    *     sections: Array<{
    *       data: Array<SectionItem>,
-   *       key: string,
    *       renderItem?: ({item: SectionItem, ...}) => ?React.Element<*>,
    *       ItemSeparatorComponent?: ?ReactClass<{highlighted: boolean, ...}>,
    *     }>
@@ -201,19 +206,19 @@ type DefaultProps = typeof defaultProps;
  *
  *     <SectionList
  *       renderItem={({item}) => <ListItem title={item.title} />}
- *       renderSectionHeader={({section}) => <H1 title={section.key} />}
+ *       renderSectionHeader={({section}) => <H1 title={section.title} />}
  *       sections={[ // homogenous rendering between sections
- *         {data: [...], key: ...},
- *         {data: [...], key: ...},
- *         {data: [...], key: ...},
+ *         {data: [...], title: ...},
+ *         {data: [...], title: ...},
+ *         {data: [...], title: ...},
  *       ]}
  *     />
  *
  *     <SectionList
  *       sections={[ // heterogeneous rendering between sections
- *         {data: [...], key: ..., renderItem: ...},
- *         {data: [...], key: ..., renderItem: ...},
- *         {data: [...], key: ..., renderItem: ...},
+ *         {data: [...], title: ..., renderItem: ...},
+ *         {data: [...], title: ..., renderItem: ...},
+ *         {data: [...], title: ..., renderItem: ...},
  *       ]}
  *     />
  *

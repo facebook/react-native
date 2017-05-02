@@ -8,12 +8,13 @@
  */
 
 type _SourceMap = {
-  version: number,
   file?: string,
-  sources: Array<string>,
-  names: Array<string>,
   mappings: string,
-  sourcesContent?: Array<string>,
+  names: Array<string>,
+  sourceRoot?: string,
+  sources: Array<string>,
+  sourcesContent?: Array<?string>,
+  version: number,
 };
 
 // based on babylon v6.13.1

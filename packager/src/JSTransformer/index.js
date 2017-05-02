@@ -21,7 +21,7 @@ const util = require('util');
 const workerFarm = require('worker-farm');
 
 import type {Data as TransformData, Options as TransformOptions} from './worker/worker';
-import type {SourceMap} from '../lib/SourceMap';
+import type {MappingsMap} from '../lib/SourceMap';
 
 // Avoid memory leaks caused in workers. This number seems to be a good enough number
 // to avoid any memory leak while not slowing down initial builds.
@@ -62,8 +62,8 @@ class Transformer {
   minify: (
     filename: string,
     code: string,
-    sourceMap: SourceMap,
-  ) => Promise<{code: string, map: SourceMap}>;
+    sourceMap: MappingsMap,
+  ) => Promise<{code: string, map: MappingsMap}>;
 
   constructor(transformModulePath: string, maxWorkerCount: number) {
     invariant(path.isAbsolute(transformModulePath), 'transform module path should be absolute');

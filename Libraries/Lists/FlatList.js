@@ -62,7 +62,7 @@ type RequiredProps<ItemT> = {
    * For simplicity, data is just a plain array. If you want to use something else, like an
    * immutable list, use the underlying `VirtualizedList` directly.
    */
-  data: ?Array<ItemT>,
+  data: ?$ReadOnlyArray<ItemT>,
 };
 type OptionalProps<ItemT> = {
   /**

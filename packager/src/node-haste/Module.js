@@ -24,7 +24,7 @@ const {join: joinPath, relative: relativePath, extname} = require('path');
 
 import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
-import type {SourceMap} from '../lib/SourceMap';
+import type {MappingsMap} from '../lib/SourceMap';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {ReadTransformProps} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
@@ -35,7 +35,7 @@ export type ReadResult = {
   +code: string,
   +dependencies: Array<string>,
   +dependencyOffsets?: ?Array<number>,
-  +map?: ?SourceMap,
+  +map?: ?MappingsMap,
   +source: string,
 };
 

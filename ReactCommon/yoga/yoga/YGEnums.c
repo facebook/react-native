@@ -91,8 +91,6 @@ const char *YGExperimentalFeatureToString(const YGExperimentalFeature value){
   switch(value){
     case YGExperimentalFeatureWebFlexBasis:
       return "web-flex-basis";
-    case YGExperimentalFeatureMinFlexFix:
-      return "min-flex-fix";
   }
   return "unknown";
 }

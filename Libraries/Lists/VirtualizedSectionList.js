@@ -16,7 +16,6 @@ const View = require('View');
 const VirtualizedList = require('VirtualizedList');
 
 const invariant = require('fbjs/lib/invariant');
-const warning = require('fbjs/lib/warning');
 
 import type {ViewToken} from 'ViewabilityHelper';
 import type {Props as VirtualizedListProps} from 'VirtualizedList';
@@ -27,7 +26,7 @@ type SectionItem = any;
 type SectionBase = {
   // Must be provided directly on each section.
   data: Array<SectionItem>,
-  key: string,
+  key?: string,
 
   // Optional props will override list-wide props just for this section.
   renderItem?: ?({
@@ -179,11 +178,7 @@ class VirtualizedSectionList<SectionT: SectionBase>
     const defaultKeyExtractor = this.props.keyExtractor;
     for (let ii = 0; ii < this.props.sections.length; ii++) {
       const section = this.props.sections[ii];
-      const key = section.key;
-      warning(
-        key != null,
-        'VirtualizedSectionList: A `section` you supplied is missing the `key` property.'
-      );
+      const key = section.key || String(ii);
       itemIndex -= 1; // The section itself is an item
       if (itemIndex >= section.data.length) {
         itemIndex -= section.data.length;

@@ -62,10 +62,9 @@ typedef YG_ENUM_BEGIN(YGEdge) {
 } YG_ENUM_END(YGEdge);
 WIN_EXPORT const char *YGEdgeToString(const YGEdge value);
 
-#define YGExperimentalFeatureCount 2
+#define YGExperimentalFeatureCount 1
 typedef YG_ENUM_BEGIN(YGExperimentalFeature) {
   YGExperimentalFeatureWebFlexBasis,
-  YGExperimentalFeatureMinFlexFix,
 } YG_ENUM_END(YGExperimentalFeature);
 WIN_EXPORT const char *YGExperimentalFeatureToString(const YGExperimentalFeature value);
 

@@ -14,7 +14,7 @@
 const babel = require('babel-core');
 const invariant = require('fbjs/lib/invariant');
 
-import type {Ast, SourceMap} from 'babel-core';
+import type {Ast, SourceMap as MappingsMap} from 'babel-core';
 const t = babel.types;
 
 const React = {name: 'React'};
@@ -164,12 +164,12 @@ function checkRequireArgs(args, dependencyId) {
 type AstResult = {
   ast: Ast,
   code: ?string,
-  map: ?SourceMap,
+  map: ?MappingsMap,
 };
 
 function inline(
   filename: string,
-  transformResult: {ast?: ?Ast, code: string, map: ?SourceMap},
+  transformResult: {ast?: ?Ast, code: string, map: ?MappingsMap},
   options: {+dev: boolean, +platform: string},
 ): AstResult {
   const code = transformResult.code;

@@ -87,6 +87,7 @@ public class ReactShadowNode {
       if (sYogaConfig == null) {
         sYogaConfig = new YogaConfig();
         sYogaConfig.setPointScaleFactor(0f);
+        sYogaConfig.setUseLegacyStretchBehaviour(true);
       }
       if (node == null) {
         node = new YogaNode(sYogaConfig);

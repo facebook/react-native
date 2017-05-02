@@ -79,14 +79,12 @@ export type PushNotificationEventName = $Enum<{
  *
  * - Add the following to your Project: `node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj`
  * - Add the following to `Link Binary With Libraries`: `libRCTPushNotification.a`
- * - Add the following to your `Header Search Paths`:
- * `$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS` and set the search to `recursive`
  *
  * Finally, to enable support for `notification` and `register` events you need to augment your AppDelegate.
  *
  * At the top of your `AppDelegate.m`:
  *
- *   `#import "RCTPushNotificationManager.h"`
+ *   `#import <React/RCTPushNotificationManager.h>`
  *
  * And then in your AppDelegate implementation add the following:
  *

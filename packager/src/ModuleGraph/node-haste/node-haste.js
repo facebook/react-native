@@ -18,7 +18,7 @@ import type { // eslint-disable-line sort-requires
 
 import type {
   ResolveFn,
-  TransformedFile,
+  TransformedCodeFile,
 } from '../types.flow';
 
 const DependencyGraphHelpers = require('../../node-haste/DependencyGraph/DependencyGraphHelpers');
@@ -34,7 +34,7 @@ const defaults = require('../../../defaults');
 type ResolveOptions = {|
   assetExts: Extensions,
   extraNodeModules: {[id: string]: string},
-  transformedFiles: {[path: Path]: TransformedFile},
+  transformedFiles: {[path: Path]: TransformedCodeFile},
 |};
 
 const platforms = new Set(defaults.platforms);
@@ -51,8 +51,8 @@ function getFakeModuleMap(hasteMap: HasteMap) {
       return module && module.type === 'Module' ? module.path : null;
     },
     getPackage(name: string, platform: ?string): ?string {
-      const module = hasteMap.getModule(name, platform);
-      return module && module.type === 'Package' ? module.path : null;
+      const pkg = hasteMap.getPackage(name);
+      return pkg && pkg.path;
     },
   };
 }
