@@ -153,7 +153,7 @@ export type TransformedSourceFile =
 export type LibraryOptions = {|
   dependencies?: Array<string>,
   platform?: string,
-  root: string,
+  rebasePath: string => string,
 |};
 
 export type Base64Content = string;
