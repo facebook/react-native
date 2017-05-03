@@ -113,10 +113,10 @@ const AppRegistry = {
     section?: boolean,
   ): string {
     runnables[appKey] = {
-      component,
+      getComponentFunc,
       run: (appParameters) =>
         renderApplication(
-          componentProviderInstrumentationHook(component),
+          componentProviderInstrumentationHook(getComponentFunc),
           appParameters.initialProps,
           appParameters.rootTag
         )
