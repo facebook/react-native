@@ -19,13 +19,14 @@
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
+#import "RCTPerformanceLogger.h"
+#import "RCTProfile.h"
+#import "RCTRootContentView.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
-#import "RCTRootContentView.h"
 #import "UIView+React.h"
-#import "RCTProfile.h"
 
 #if TARGET_OS_TV
 #import "RCTTVRemoteHandler.h"
@@ -59,6 +60,9 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   RCTAssert(moduleName, @"A moduleName is required to create an RCTRootView");
 
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTRootView init]", nil);
+  if (!bridge.isLoading) {
+    [bridge.performanceLogger markStartForTag:RCTPLTTI];
+  }
 
   if (self = [super initWithFrame:CGRectZero]) {
     self.backgroundColor = [UIColor whiteColor];
