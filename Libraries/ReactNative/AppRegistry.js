@@ -109,14 +109,14 @@ const AppRegistry = {
 
   registerComponent(
     appKey: string,
-    getComponentFunc: ComponentProvider,
+    componentProvider: ComponentProvider,
     section?: boolean,
   ): string {
     runnables[appKey] = {
-      getComponentFunc,
+      componentProvider,
       run: (appParameters) =>
         renderApplication(
-          componentProviderInstrumentationHook(getComponentFunc),
+          componentProviderInstrumentationHook(componentProvider),
           appParameters.initialProps,
           appParameters.rootTag
         )
