@@ -122,15 +122,9 @@ const Config = {
       : {...defaultConfig};
   },
 
-  loadFile(
-    pathToConfig: string,
-    cwd: string,
-  ): ConfigT {
-    const config: {} = path.isAbsolute(pathToConfig) ?
-      // $FlowFixMe nope
-      require(pathToConfig) :
-      // $FlowFixMe nope
-      require(path.join(cwd, pathToConfig));
+  loadFile(pathToConfig: string): ConfigT {
+    //$FlowFixMe: necessary dynamic require
+    const config: {} = require(pathToConfig);
     return {...defaultConfig, ...config};
   },
 };
