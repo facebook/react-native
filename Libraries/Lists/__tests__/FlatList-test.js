@@ -44,16 +44,6 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders empty list with empty component', () => {
-    const component = ReactTestRenderer.create(
-      <FlatList
-        data={[]}
-        ListEmptyComponent={() => <empty />}
-        renderItem={({item}) => <item value={item.key} />}
-      />
-    );
-    expect(component).toMatchSnapshot();
-  });
   it('renders all the bells and whistles', () => {
     const component = ReactTestRenderer.create(
       <FlatList
