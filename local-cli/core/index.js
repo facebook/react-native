@@ -15,7 +15,7 @@ const Config = require('../util/Config');
 const defaultConfig = require('./default.config');
 const minimist = require('minimist');
 
-import type {GetTransformOptions, PostProcessModules} from '../../packager/src/Bundler';
+import type {GetTransformOptions, PostProcessModules, PostMinifyProcess} from '../../packager/src/Bundler';
 import type {HasteImpl} from '../../packager/src/node-haste/Module';
 import type {CommandT} from '../commands';
 
@@ -73,6 +73,12 @@ export type ConfigT = {
    * finalized.
    */
   postProcessModules?: PostProcessModules,
+
+  /**
+   * An optional function that can modify the code and source map of bundle
+   * after the minifaction took place.
+   */
+  postMinifyProcess?: PostMinifyProcess,
 
   /**
    * A module that exports:

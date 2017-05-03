@@ -111,6 +111,7 @@ function getPackagerServer(args, config) {
     hasteImpl: config.hasteImpl,
     platforms: defaultPlatforms.concat(args.platforms),
     postProcessModules: config.postProcessModules,
+    postMinifyProcess: config.postMinifyProcess,
     projectRoots: args.projectRoots,
     providesModuleNodeModules: providesModuleNodeModules,
     reporter: new LogReporter(),

@@ -19,6 +19,7 @@ const pathJoin = require('path').join;
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 import type Module, {HasteImpl, TransformCode} from '../node-haste/Module';
 import type {MappingsMap} from '../lib/SourceMap';
+import type {PostMinifyProcess} from '../Bundler';
 import type {Options as JSTransformerOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
@@ -38,6 +39,7 @@ type Options = {|
   +hasteImpl?: HasteImpl,
   +maxWorkerCount: number,
   +minifyCode: MinifyCode,
+  +postMinifyProcess?: PostMinifyProcess,
   +platforms: Set<string>,
   +polyfillModuleNames?: Array<string>,
   +projectRoots: Array<string>,
@@ -52,10 +54,12 @@ class Resolver {
 
   _depGraph: DependencyGraph;
   _minifyCode: MinifyCode;
+  _postMinifyProcess: ?PostMinifyProcess;
   _polyfillModuleNames: Array<string>;
 
   constructor(opts: Options, depGraph: DependencyGraph) {
     this._minifyCode = opts.minifyCode;
+    this._postMinifyProcess = opts.postMinifyProcess;
     this._polyfillModuleNames = opts.polyfillModuleNames || [];
     this._depGraph = depGraph;
   }
@@ -222,7 +226,7 @@ class Resolver {
     }
 
     return minify
-      ? this._minifyCode(module.path, code, map)
+      ? this._minifyCode(module.path, code, map).then(this._postMinifyProcess)
       : Promise.resolve({code, map});
   }
 

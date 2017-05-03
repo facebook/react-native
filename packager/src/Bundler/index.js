@@ -40,6 +40,7 @@ const VERSION = require('../../package.json').version;
 import type AssetServer from '../AssetServer';
 import type Module, {HasteImpl} from '../node-haste/Module';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
+import type {MappingsMap} from '../lib/SourceMap';
 import type {Options as JSTransformerOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
@@ -112,6 +113,11 @@ export type PostProcessModules = (
   options: PostProcessModulesOptions,
 ) => Array<ModuleTransport>;
 
+export type PostMinifyProcess = ({
+  code: string,
+  map: MappingsMap,
+}) => {code: string, map: MappingsMap};
+
 type Options = {|
   +allowBundleUpdates: boolean,
   +assetExts: Array<string>,
@@ -125,6 +131,7 @@ type Options = {|
   +platforms: Array<string>,
   +polyfillModuleNames: Array<string>,
   +postProcessModules?: PostProcessModules,
+  +postMinifyProcess?: PostMinifyProcess,
   +projectRoots: Array<string>,
   +providesModuleNodeModules?: Array<string>,
   +reporter: Reporter,
@@ -206,6 +213,7 @@ class Bundler {
       hasteImpl: opts.hasteImpl,
       maxWorkerCount,
       minifyCode: this._transformer.minify,
+      postMinifyProcess: this._opts.postMinifyProcess,
       platforms: new Set(opts.platforms),
       polyfillModuleNames: opts.polyfillModuleNames,
       projectRoots: opts.projectRoots,

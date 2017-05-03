@@ -32,7 +32,7 @@ import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionRes
 import type Bundle from '../Bundler/Bundle';
 import type HMRBundle from '../Bundler/HMRBundle';
 import type {Reporter} from '../lib/reporting';
-import type {GetTransformOptions, PostProcessModules} from '../Bundler';
+import type {GetTransformOptions, PostProcessModules, PostMinifyProcess} from '../Bundler';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {SourceMap, Symbolicate} from './symbolicate';
 
@@ -68,6 +68,7 @@ type Options = {
   platforms?: Array<string>,
   polyfillModuleNames?: Array<string>,
   postProcessModules?: PostProcessModules,
+  postMinifyProcess?: PostMinifyProcess,
   projectRoots: Array<string>,
   providesModuleNodeModules?: Array<string>,
   reporter: Reporter,
@@ -122,6 +123,7 @@ class Server {
     platforms: Array<string>,
     polyfillModuleNames: Array<string>,
     postProcessModules?: PostProcessModules,
+    postMinifyProcess?: PostMinifyProcess,
     projectRoots: Array<string>,
     providesModuleNodeModules?: Array<string>,
     reporter: Reporter,
@@ -158,6 +160,7 @@ class Server {
       platforms: options.platforms || defaults.platforms,
       polyfillModuleNames: options.polyfillModuleNames || [],
       postProcessModules: options.postProcessModules,
+      postMinifyProcess: options.postMinifyProcess,
       projectRoots: options.projectRoots,
       providesModuleNodeModules: options.providesModuleNodeModules,
       reporter: options.reporter,
