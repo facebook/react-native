@@ -87,13 +87,14 @@ typedef YG_ENUM_BEGIN(YGJustify) {
 } YG_ENUM_END(YGJustify);
 WIN_EXPORT const char *YGJustifyToString(const YGJustify value);
 
-#define YGLogLevelCount 5
+#define YGLogLevelCount 6
 typedef YG_ENUM_BEGIN(YGLogLevel) {
   YGLogLevelError,
   YGLogLevelWarn,
   YGLogLevelInfo,
   YGLogLevelDebug,
   YGLogLevelVerbose,
+  YGLogLevelFatal,
 } YG_ENUM_END(YGLogLevel);
 WIN_EXPORT const char *YGLogLevelToString(const YGLogLevel value);
 
