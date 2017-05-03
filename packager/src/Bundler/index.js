@@ -27,6 +27,8 @@ const defaults = require('../../defaults');
 const os = require('os');
 const invariant = require('fbjs/lib/invariant');
 
+const {generateAssetTransformResult, isAssetTypeAnImage} = require('./util');
+
 const {
   sep: pathSeparator,
   join: joinPath,
@@ -94,12 +96,6 @@ const {
   createActionEndEntry,
   log,
 } = require('../Logger');
-
-const assetPropertyBlacklist = new Set([
-  'files',
-  'fileSystemLocation',
-  'path',
-]);
 
 export type PostProcessModulesOptions = {|
   dev: boolean,
@@ -696,7 +692,7 @@ class Bundler {
       assetUrlPath = assetUrlPath.replace(/\\/g, '/');
     }
 
-    const isImage = Bundler.isAssetTypeAnImage(extname(module.path).slice(1));
+    const isImage = isAssetTypeAnImage(extname(module.path).slice(1));
 
     return this._assetServer.getAssetData(relPath, platform).then(assetData => {
       return Promise.all([isImage ? sizeOf(assetData.files[0]) : null, assetData]);
@@ -719,36 +715,13 @@ class Bundler {
 
       return this._applyAssetPlugins(assetPlugins, asset);
     }).then(asset => {
-      const {code, dependencies, dependencyOffsets} = Bundler.generateAssetTransformResult(asset);
+      const {code, dependencies, dependencyOffsets} = generateAssetTransformResult(asset);
       return {
         asset,
         code,
         meta: {dependencies, dependencyOffsets, preloaded: null},
       };
     });
-  }
-
-  // Test extension against all types supported by image-size module.
-  // If it's not one of these, we won't treat it as an image.
-  static isAssetTypeAnImage(type: string): boolean {
-    return [
-      'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff',
-    ].indexOf(type) !== -1;
-  }
-
-  static generateAssetTransformResult(assetDescriptor: AssetDescriptor): {|
-    code: string,
-    dependencies: Array<string>,
-    dependencyOffsets: Array<number>,
-  |} {
-    const properDescriptor = filterObject(assetDescriptor, assetPropertyBlacklist);
-    const json = JSON.stringify(properDescriptor);
-    const assetRegistryPath = 'react-native/Libraries/Image/AssetRegistry';
-    const code =
-      `module.exports = require(${JSON.stringify(assetRegistryPath)}).registerAsset(${json});`;
-    const dependencies = [assetRegistryPath];
-    const dependencyOffsets = [code.indexOf(assetRegistryPath) - 1];
-    return {code, dependencies, dependencyOffsets};
   }
 
   _applyAssetPlugins(
@@ -894,14 +867,6 @@ function createModuleIdFactory() {
 
 function getMainModule({dependencies, numPrependedDependencies = 0}) {
   return dependencies[numPrependedDependencies];
-}
-
-function filterObject(object, blacklist) {
-  const copied = Object.assign({}, object);
-  for (const key of blacklist) {
-    delete copied[key];
-  }
-  return copied;
 }
 
 module.exports = Bundler;
