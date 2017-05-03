@@ -18,7 +18,7 @@ const denodeify = require('denodeify');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 const util = require('util');
-const workerFarm = require('worker-farm');
+const workerFarm = require('../worker-farm');
 
 import type {Data as TransformData, Options as TransformOptions} from './worker/worker';
 import type {MappingsMap} from '../lib/SourceMap';

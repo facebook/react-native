@@ -12,6 +12,7 @@ jest.disableAutomock();
 
 jest
   .setMock('worker-farm', () => () => undefined)
+  .setMock('../../worker-farm', () => () => undefined)
   .setMock('uglify-js')
   .mock('image-size')
   .mock('fs')

@@ -160,6 +160,7 @@
     "create-react-class": "^15.5.2",
     "debug": "^2.2.0",
     "denodeify": "^1.2.1",
+    "errno": ">=0.1.1 <0.2.0-0",
     "event-target-shim": "^1.0.5",
     "fbjs": "~0.8.9",
     "fbjs-scripts": "^0.7.0",
@@ -206,12 +207,12 @@
     "uglify-js": "2.7.5",
     "whatwg-fetch": "^1.0.0",
     "wordwrap": "^1.0.0",
-    "worker-farm": "^1.3.1",
     "write-file-atomic": "^1.2.0",
     "ws": "^1.1.0",
     "xcode": "^0.9.1",
     "xmldoc": "^0.4.0",
     "xpipe": "^1.0.5",
+    "xtend": ">=4.0.0 <4.1.0-0",
     "yargs": "^6.4.0"
   },
   "devDependencies": {
