@@ -347,7 +347,6 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     if (data !== this.props.data || extraData !== this.props.extraData) {
       this._hasDataChangedSinceEndReached = true;
     }
-    this._updateCellsToRenderBatcher.schedule();
   }
 
   _pushCells(
@@ -513,7 +512,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   componentDidUpdate() {
-    this._updateCellsToRenderBatcher.schedule();
+    this._scheduleCellsToRenderUpdate();
   }
 
   _averageCellLength = 0;
@@ -567,7 +566,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       this._averageCellLength = this._totalCellLength / this._totalCellsMeasured;
       this._frames[cellKey] = next;
       this._highestMeasuredFrameIndex = Math.max(this._highestMeasuredFrameIndex, index);
-      this._updateCellsToRenderBatcher.schedule();
+      this._scheduleCellsToRenderUpdate();
     } else {
       this._frames[cellKey].inLayout = true;
     }
@@ -584,7 +583,8 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   _onLayout = (e: Object) => {
     this._scrollMetrics.visibleLength = this._selectLength(e.nativeEvent.layout);
     this.props.onLayout && this.props.onLayout(e);
-    this._updateCellsToRenderBatcher.schedule();
+    this._scheduleCellsToRenderUpdate();
+    this._maybeCallOnEndReached();
   };
 
   _onLayoutFooter = (e) => {
@@ -671,7 +671,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       this.props.onContentSizeChange(width, height);
     }
     this._scrollMetrics.contentLength = this._selectLength({height, width});
-    this._updateCellsToRenderBatcher.schedule();
+    this._scheduleCellsToRenderUpdate();
     this._maybeCallOnEndReached();
   };
 
@@ -697,36 +697,43 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const dOffset = offset - this._scrollMetrics.offset;
     const velocity = dOffset / dt;
     this._scrollMetrics = {contentLength, dt, dOffset, offset, timestamp, velocity, visibleLength};
-    const {data, getItemCount, windowSize} = this.props;
-
-    this._updateViewableItems(data);
-    if (!data) {
+    this._updateViewableItems(this.props);
+    if (!this.props) {
       return;
     }
     this._maybeCallOnEndReached();
-
-    const {first, last} = this.state;
     if (velocity !== 0) {
       this._fillRateHelper.activate();
     }
     this._computeBlankness();
-    const itemCount = getItemCount(data);
-    if ((first > 0 && velocity < 0) || (last < itemCount - 1 && velocity > 0)) {
-      const distanceToContentEdge = Math.min(
-        Math.abs(this._getFrameMetricsApprox(first).offset - offset),
-        Math.abs(this._getFrameMetricsApprox(last).offset - (offset + visibleLength)),
-      );
-      const hiPri = distanceToContentEdge < (windowSize * visibleLength / 4);
-      if (hiPri) {
-        // Don't worry about interactions when scrolling quickly; focus on filling content as fast
-        // as possible.
-        this._updateCellsToRenderBatcher.dispose({abort: true});
-        this._updateCellsToRender();
-        return;
-      }
-    }
-    this._updateCellsToRenderBatcher.schedule();
+    this._scheduleCellsToRenderUpdate();
   };
+
+  _scheduleCellsToRenderUpdate() {
+    const {first, last} = this.state;
+    const {offset, visibleLength, velocity} = this._scrollMetrics;
+    const itemCount = this.props.getItemCount(this.props.data);
+    let hiPri = false;
+    if (first > 0 || last < itemCount - 1) {
+      const distTop = offset - this._getFrameMetricsApprox(first).offset;
+      const distBottom = this._getFrameMetricsApprox(last).offset - (offset + visibleLength);
+      const scrollingThreshold = this.props.onEndReachedThreshold * visibleLength / 2;
+      hiPri = (
+        Math.min(distTop, distBottom) < 0 ||
+        (velocity < -2 && distTop < scrollingThreshold) ||
+        (velocity > 2 && distBottom < scrollingThreshold)
+      );
+    }
+    if (hiPri) {
+      // Don't worry about interactions when scrolling quickly; focus on filling content as fast
+      // as possible.
+      this._updateCellsToRenderBatcher.dispose({abort: true});
+      this._updateCellsToRender();
+      return;
+    } else {
+      this._updateCellsToRenderBatcher.schedule();
+    }
+  }
 
   _onScrollBeginDrag = (e): void => {
     this._viewabilityHelper.recordInteraction();
