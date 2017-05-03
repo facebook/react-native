@@ -38,6 +38,14 @@ type RequiredProps = {
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
    */
   data?: any,
+  /**
+   * A generic accessor for extracting an item from any sort of data blob.
+   */
+  getItem: (data: any, index: number) => ?Item,
+  /**
+   * Determines how many items are in the data blob.
+   */
+  getItemCount: (data: any) => number,
 };
 type OptionalProps = {
   /**
@@ -57,14 +65,6 @@ type OptionalProps = {
    * `data` prop, stick it here and treat it immutably.
    */
   extraData?: any,
-  /**
-   * A generic accessor for extracting an item from any sort of data blob.
-   */
-  getItem: (data: any, index: number) => ?Item,
-  /**
-   * Determines how many items are in the data blob.
-   */
-  getItemCount: (data: any) => number,
   getItemLayout?: (data: any, index: number) =>
     {length: number, offset: number, index: number}, // e.g. height, y
   horizontal?: ?boolean,
@@ -254,8 +254,6 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
 
   static defaultProps = {
     disableVirtualization: false,
-    getItem: (data: any, index: number) => data[index],
-    getItemCount: (data: any) => data ? data.length : 0,
     horizontal: false,
     initialNumToRender: 10,
     keyExtractor: (item: Item, index: number) => {

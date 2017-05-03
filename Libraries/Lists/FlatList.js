@@ -178,8 +178,6 @@ type Props<ItemT> = RequiredProps<ItemT> & OptionalProps<ItemT> & VirtualizedLis
 
 const defaultProps = {
   ...VirtualizedList.defaultProps,
-  getItem: undefined,
-  getItemCount: undefined,
   numColumns: 1,
 };
 type DefaultProps = typeof defaultProps;
