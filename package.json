@@ -133,7 +133,7 @@
   "dependencies": {
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
-    "async": "^2.0.1",
+    "async": "^2.4.0",
     "babel-core": "^6.24.1",
     "babel-generator": "^6.24.1",
     "babel-plugin-external-helpers": "^6.18.0",
