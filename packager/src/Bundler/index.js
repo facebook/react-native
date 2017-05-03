@@ -584,9 +584,9 @@ class Bundler {
   }
 
   getOrderedDependencyPaths({entryFile, dev, platform}: {
-    entryFile: string,
-    dev: boolean,
-    platform: string,
+    +entryFile: string,
+    +dev: boolean,
+    +platform: string,
   }) {
     return this.getDependencies({entryFile, dev, platform}).then(
       ({dependencies}) => {

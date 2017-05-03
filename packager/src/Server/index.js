@@ -16,7 +16,6 @@ const getPlatformExtension = require('../node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const MultipartResponse = require('./MultipartResponse');
 
-const declareOpts = require('../lib/declareOpts');
 const defaults = require('../../defaults');
 const mime = require('mime-types');
 const path = require('path');
@@ -98,32 +97,14 @@ export type BundleOptions = {
   unbundle: boolean,
 };
 
-const dependencyOpts = declareOpts({
-  platform: {
-    type: 'string',
-    required: true,
-  },
-  dev: {
-    type: 'boolean',
-    default: true,
-  },
-  entryFile: {
-    type: 'string',
-    required: true,
-  },
-  recursive: {
-    type: 'boolean',
-    default: true,
-  },
-  hot: {
-    type: 'boolean',
-    default: false,
-  },
-  minify: {
-    type: 'boolean',
-    default: undefined,
-  },
-});
+type DependencyOptions = {|
+  +dev: boolean,
+  +entryFile: string,
+  +hot: boolean,
+  +minify: boolean,
+  +platform: ?string,
+  +recursive: boolean,
+|};
 
 const bundleDeps = new WeakMap();
 const NODE_MODULES = `${path.sep}node_modules${path.sep}`;
@@ -291,17 +272,14 @@ class Server {
     return this._bundler.hmrBundle(options, host, port);
   }
 
-  getShallowDependencies(options: {
-    entryFile: string,
-    platform?: string,
-  }): Promise<Array<Module>> {
+  getShallowDependencies(options: DependencyOptions): Promise<Array<Module>> {
     return Promise.resolve().then(() => {
-      if (!options.platform) {
-        options.platform = getPlatformExtension(options.entryFile);
-      }
-
-      const opts = dependencyOpts(options);
-      return this._bundler.getShallowDependencies(opts);
+      const platform = options.platform != null
+        ? options.platform : getPlatformExtension(options.entryFile);
+      const {entryFile, dev, minify, hot} = options;
+      return this._bundler.getShallowDependencies(
+        {entryFile, platform, dev, minify, hot, generateSourceMaps: false},
+      );
     });
   }
 
@@ -309,24 +287,24 @@ class Server {
     return this._bundler.getModuleForPath(entryFile);
   }
 
-  getDependencies(options: {
-    entryFile: string,
-    platform: ?string,
-  }): Promise<ResolutionResponse<Module, *>> {
+  getDependencies(options: DependencyOptions): Promise<ResolutionResponse<Module, *>> {
     return Promise.resolve().then(() => {
-      if (!options.platform) {
-        options.platform = getPlatformExtension(options.entryFile);
-      }
-
-      const opts = dependencyOpts(options);
-      return this._bundler.getDependencies(opts);
+      const platform = options.platform != null
+        ? options.platform : getPlatformExtension(options.entryFile);
+      const {entryFile, dev, minify, hot} = options;
+      return this._bundler.getDependencies(
+        {entryFile, platform, dev, minify, hot, generateSourceMaps: false},
+      );
     });
   }
 
-  getOrderedDependencyPaths(options: {}): Promise<mixed> {
+  getOrderedDependencyPaths(options: {
+    +entryFile: string,
+    +dev: boolean,
+    +platform: string,
+  }): Promise<mixed> {
     return Promise.resolve().then(() => {
-      const opts = dependencyOpts(options);
-      return this._bundler.getOrderedDependencyPaths(opts);
+      return this._bundler.getOrderedDependencyPaths(options);
     });
   }
 

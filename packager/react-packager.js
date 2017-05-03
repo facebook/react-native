@@ -79,9 +79,13 @@ exports.buildBundle = function(options: Options, bundleOptions: PublicBundleOpti
   });
 };
 
-exports.getOrderedDependencyPaths = function(options: Options, bundleOptions: {}) {
+exports.getOrderedDependencyPaths = function(options: Options, depOptions: {
+  +entryFile: string,
+  +dev: boolean,
+  +platform: string,
+}) {
   var server = createNonPersistentServer(options);
-  return server.getOrderedDependencyPaths(bundleOptions)
+  return server.getOrderedDependencyPaths(depOptions)
     .then(function(paths) {
       server.end();
       return paths;
