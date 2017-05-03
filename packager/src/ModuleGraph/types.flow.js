@@ -46,8 +46,8 @@ type GraphOptions = {|
 |};
 
 export type GraphResult = {|
-  entryModules: Array<Module>,
-  modules: Array<Module>,
+  entryModules: Iterable<Module>,
+  modules: Iterable<Module>,
 |};
 
 export type IdForPathFn = {path: string} => number;

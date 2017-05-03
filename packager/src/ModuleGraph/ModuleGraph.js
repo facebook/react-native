@@ -27,7 +27,7 @@ import type {
 type BuildFn = (
   entryPoints: Iterable<string>,
   options: BuildOptions,
-  callback: Callback<{modules: Iterable<Module>, entryModules: Iterable<Module>}>,
+  callback: Callback<GraphResult>,
 ) => void;
 
 type BuildOptions = {|
