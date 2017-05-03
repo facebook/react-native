@@ -25,7 +25,7 @@ type SectionBase<SectionItemT> = {
   /**
    * The data for rendering items in this section.
    */
-  data: Array<SectionItemT>,
+  data: $ReadOnlyArray<SectionItemT>,
   /**
    * Optional key to keep track of section re-ordering. If you don't plan on re-ordering sections,
    * the array index will be used by default.
@@ -56,13 +56,13 @@ type RequiredProps<SectionT: SectionBase<any>> = {
    *
    * General shape:
    *
-   *     sections: Array<{
-   *       data: Array<SectionItem>,
+   *     sections: $ReadOnlyArray<{
+   *       data: $ReadOnlyArray<SectionItem>,
    *       renderItem?: ({item: SectionItem, ...}) => ?React.Element<*>,
    *       ItemSeparatorComponent?: ?ReactClass<{highlighted: boolean, ...}>,
    *     }>
    */
-  sections: Array<SectionT>,
+  sections: $ReadOnlyArray<SectionT>,
 };
 
 type OptionalProps<SectionT: SectionBase<any>> = {
