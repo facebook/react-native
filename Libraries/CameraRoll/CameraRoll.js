@@ -116,8 +116,8 @@ var getPhotosReturnChecker = createStrictShapeTypeChecker({
  *
  * ### Permissions
  * The user's permission is required in order to access the Camera Roll on devices running iOS 10 or later.
- * Fill out the `NSCameraUsageDescription` key in your `Info.plist` with a string that describes how your
- * app will use this data. This key will appear as `Privacy - Camera Usage Description` in Xcode.
+ * Add the `NSPhotoLibraryUsageDescription` key in your `Info.plist` with a string that describes how your
+ * app will use this data. This key will appear as `Privacy - Photo Library Usage Description` in Xcode.
  *
  */
 class CameraRoll {
