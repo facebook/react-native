@@ -39,6 +39,8 @@ var backgroundPropType = PropTypes.oneOfType([
 
 type Event = Object;
 
+type Event = Object;
+
 var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
