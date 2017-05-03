@@ -87,19 +87,11 @@ export type ConfigT = {
  */
 function getCliConfig(): ConfigT {
   const cliArgs = minimist(process.argv.slice(2));
+  const config = cliArgs.config != null
+    ? Config.loadFile(cliArgs.config, __dirname)
+    : Config.findOptional(__dirname);
 
-  let cwd;
-  let configPath;
-
-  if (cliArgs.config != null) {
-    cwd = process.cwd();
-    configPath = cliArgs.config;
-  } else {
-    cwd = __dirname;
-    configPath = Config.findConfigPath(cwd);
-  }
-
-  return Config.get(cwd, defaultConfig, configPath);
+  return {...defaultConfig, ...config};
 }
 
 module.exports = getCliConfig();
