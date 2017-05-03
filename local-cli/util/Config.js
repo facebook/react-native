@@ -119,7 +119,7 @@ const Config = {
     const configPath = findConfigPath(startDir);
     return configPath
       ? this.loadFile(configPath, startDir)
-      : {...defaultConfig, cwd: startDir};
+      : {...defaultConfig};
   },
 
   loadFile(
@@ -131,7 +131,7 @@ const Config = {
       require(pathToConfig) :
       // $FlowFixMe nope
       require(path.join(cwd, pathToConfig));
-    return {...defaultConfig, ...config, cwd};
+    return {...defaultConfig, ...config};
   },
 };
 
