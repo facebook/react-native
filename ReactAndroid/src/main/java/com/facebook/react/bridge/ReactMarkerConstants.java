@@ -63,4 +63,5 @@ public enum ReactMarkerConstants {
   loadApplicationScript_endStringConvert,
   PRE_SETUP_REACT_CONTEXT_START,
   PRE_SETUP_REACT_CONTEXT_END,
+  PRE_RUN_JS_BUNDLE_START,
 }
