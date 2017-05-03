@@ -109,7 +109,7 @@ const AppRegistry = {
 
   registerComponent(
     appKey: string,
-    component: ComponentProvider,
+    getComponentFunc: ComponentProvider,
     section?: boolean,
   ): string {
     runnables[appKey] = {
