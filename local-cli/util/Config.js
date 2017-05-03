@@ -10,15 +10,92 @@
  */
 'use strict';
 
+const blacklist = require('../../packager/blacklist');
 const fs = require('fs');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 
+const {providesModuleNodeModules} = require('../../packager/defaults');
+
 const RN_CLI_CONFIG = 'rn-cli.config.js';
 
-// TODO: @bestander & @grabbou - get rid when internal tests are fixed
-import type {ConfigT} from '../core';
-export type {ConfigT};
+import type {GetTransformOptions, PostMinifyProcess, PostProcessModules} from '../../packager/src/Bundler';
+import type {HasteImpl} from '../../packager/src/node-haste/Module';
+
+/**
+ * Configuration file of the CLI.
+ */
+export type ConfigT = {
+  extraNodeModules: {[id: string]: string},
+  /**
+   * Specify any additional asset extentions to be used by the packager.
+   * For example, if you want to include a .ttf file, you would return ['ttf']
+   * from here and use `require('./fonts/example.ttf')` inside your app.
+   */
+  getAssetExts: () => Array<string>,
+
+  /**
+   * Returns a regular expression for modules that should be ignored by the
+   * packager on a given platform.
+   */
+  getBlacklistRE(): RegExp,
+
+  /**
+   * Specify any additional platforms to be used by the packager.
+   * For example, if you want to add a "custom" platform, and use modules
+   * ending in .custom.js, you would return ['custom'] here.
+   */
+  getPlatforms: () => Array<string>,
+
+  getProjectRoots(): Array<string>,
+
+  /**
+   * Specify any additional node modules that should be processed for
+   * providesModule declarations.
+   */
+  getProvidesModuleNodeModules?: () => Array<string>,
+  /**
+   * Returns the path to a custom transformer. This can also be overridden
+   * with the --transformer commandline argument.
+   */
+  getTransformModulePath: () => string,
+  getTransformOptions: GetTransformOptions,
+
+  /**
+   * An optional function that can modify the code and source map of bundle
+   * after the minifaction took place.
+   */
+  postMinifyProcess: PostMinifyProcess,
+
+  /**
+   * An optional function that can modify the module array before the bundle is
+   * finalized.
+   */
+  postProcessModules: PostProcessModules,
+
+  /**
+   * A module that exports:
+   * - a `getHasteName(filePath)` method that returns `hasteName` for module at
+   *  `filePath`, or undefined if `filePath` is not a haste module.
+   */
+  hasteImpl?: HasteImpl,
+
+  transformVariants: () => {[name: string]: Object},
+};
+
+const defaultConfig: ConfigT = {
+  extraNodeModules: Object.create(null),
+  getAssetExts: () => [],
+  getBlacklistRE: () => blacklist(),
+  getPlatforms: () => [],
+  getProjectRoots: () => [process.cwd()],
+  getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
+  getTransformModulePath: () => path.resolve(__dirname, '../../packager/transformer'),
+  getTransformOptions: async () => ({}),
+  postMinifyProcess: x => x,
+  postProcessModules: modules => modules,
+  transformVariants: () => ({default: {}}),
+};
 
 /**
  * Module capable of getting the configuration out of a given file.
@@ -29,7 +106,7 @@ export type {ConfigT};
  * hierarchy, an error will be thrown.
  */
 const Config = {
-  find(startDir: string) {
+  find(startDir: string): ConfigT {
     const configPath = findConfigPath(startDir);
     invariant(
       configPath,
@@ -38,23 +115,23 @@ const Config = {
     return this.loadFile(configPath, startDir);
   },
 
-  findOptional(startDir: string) {
+  findOptional(startDir: string): ConfigT {
     const configPath = findConfigPath(startDir);
     return configPath
       ? this.loadFile(configPath, startDir)
-      : {cwd: startDir};
+      : {...defaultConfig, cwd: startDir};
   },
 
   loadFile(
     pathToConfig: string,
     cwd: string,
-  ) {
-    const config = path.isAbsolute(pathToConfig) ?
+  ): ConfigT {
+    const config: {} = path.isAbsolute(pathToConfig) ?
       // $FlowFixMe nope
       require(pathToConfig) :
       // $FlowFixMe nope
       require(path.join(cwd, pathToConfig));
-    return {...config, cwd};
+    return {...defaultConfig, ...config, cwd};
   },
 };
 

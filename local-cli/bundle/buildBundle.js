@@ -23,7 +23,7 @@ const defaultPlatforms = require('../../packager/defaults').platforms;
 const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
 
 import type {RequestOptions, OutputOptions} from './types.flow';
-import type {ConfigT} from '../core';
+import type {ConfigT} from '../util/Config';
 
 function saveBundle(output, bundle, args) {
   return Promise.resolve(

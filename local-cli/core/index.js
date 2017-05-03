@@ -15,46 +15,11 @@ const Config = require('../util/Config');
 const defaultConfig = require('./default.config');
 const minimist = require('minimist');
 
-import type {GetTransformOptions, PostProcessModules, PostMinifyProcess} from '../../packager/src/Bundler';
-import type {HasteImpl} from '../../packager/src/node-haste/Module';
 import type {CommandT} from '../commands';
+import type {ConfigT} from '../util/Config';
 
-/**
- * Configuration file of the CLI.
- */
-export type ConfigT = {
-  extraNodeModules?: { [id: string]: string },
-  /**
-   * Specify any additional asset extentions to be used by the packager.
-   * For example, if you want to include a .ttf file, you would return ['ttf']
-   * from here and use `require('./fonts/example.ttf')` inside your app.
-   */
-  getAssetExts?: () => Array<string>,
-  /**
-   * Specify any additional platforms to be used by the packager.
-   * For example, if you want to add a "custom" platform, and use modules
-   * ending in .custom.js, you would return ['custom'] here.
-   */
-  getPlatforms: () => Array<string>,
-  /**
-   * Specify any additional node modules that should be processed for
-   * providesModule declarations.
-   */
-  getProvidesModuleNodeModules?: () => Array<string>,
-  /**
-   * Returns the path to a custom transformer. This can also be overridden
-   * with the --transformer commandline argument.
-   */
-  getTransformModulePath?: () => string,
-  getTransformOptions?: GetTransformOptions,
-  transformVariants?: () => {[name: string]: Object},
-  /**
-   * Returns a regular expression for modules that should be ignored by the
-   * packager on a given platform.
-   */
-  getBlacklistRE(): RegExp,
-  getProjectRoots(): Array<string>,
-  getAssetExts(): Array<string>,
+export type RNConfig = {
+  ...ConfigT,
   /**
    * Returns an array of project commands used by the CLI to load
    */
@@ -67,31 +32,12 @@ export type ConfigT = {
    * Returns dependency config from <node_modules>/packageName
    */
   getDependencyConfig(pkgName: string): Object,
-
-  /**
-   * An optional function that can modify the module array before the bundle is
-   * finalized.
-   */
-  postProcessModules?: PostProcessModules,
-
-  /**
-   * An optional function that can modify the code and source map of bundle
-   * after the minifaction took place.
-   */
-  postMinifyProcess?: PostMinifyProcess,
-
-  /**
-   * A module that exports:
-   * - a `getHasteName(filePath)` method that returns `hasteName` for module at
-   *  `filePath`, or undefined if `filePath` is not a haste module.
-   */
-  hasteImpl?: HasteImpl,
 };
 
 /**
  * Loads the CLI configuration
  */
-function getCliConfig(): ConfigT {
+function getCliConfig(): RNConfig {
   const cliArgs = minimist(process.argv.slice(2));
   const config = cliArgs.config != null
     ? Config.loadFile(cliArgs.config, __dirname)
