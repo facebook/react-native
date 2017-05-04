@@ -15,9 +15,11 @@
 var ReactInstanceMap = require('ReactInstanceMap');
 var {ReactCurrentOwner} = require('ReactGlobalSharedState');
 
+var getComponentName = require('getComponentName');
 var invariant = require('fbjs/lib/invariant');
 var warning = require('fbjs/lib/warning');
 
+import type {Fiber} from 'ReactFiber';
 import type {ReactInstance} from 'ReactInstanceType';
 
 /**
@@ -58,20 +60,29 @@ let injectedFindRootNodeID;
 // accidentally deep-requiring this version.
 function findNodeHandle(componentOrHandle: any): any {
   if (__DEV__) {
-    // TODO: fix this unsafe cast to work with Fiber.
-    var owner = ((ReactCurrentOwner.current: any): ReactInstance | null);
+    var owner =
+      ((ReactCurrentOwner.current: any): ReactInstance | Fiber | null);
     if (owner !== null) {
+      const isFiber = typeof (owner: any).tag === 'number';
+      const warnedAboutRefsInRender = isFiber
+        ? ((owner: any): Fiber).stateNode._warnedAboutRefsInRender
+        : ((owner: any): ReactInstance)._warnedAboutRefsInRender;
+
       warning(
-        owner._warnedAboutRefsInRender,
+        warnedAboutRefsInRender,
         '%s is accessing findNodeHandle inside its render(). ' +
           'render() should be a pure function of props and state. It should ' +
           'never access something that requires stale data from the previous ' +
           'render, such as refs. Move this logic to componentDidMount and ' +
           'componentDidUpdate instead.',
-        owner.getName() || 'A component',
+        getComponentName(owner) || 'A component',
       );
 
-      owner._warnedAboutRefsInRender = true;
+      if (isFiber) {
+        ((owner: any): Fiber).stateNode._warnedAboutRefsInRender = true;
+      } else {
+        ((owner: any): ReactInstance)._warnedAboutRefsInRender = true;
+      }
     }
   }
   if (componentOrHandle == null) {
