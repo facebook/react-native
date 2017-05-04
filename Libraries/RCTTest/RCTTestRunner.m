@@ -145,7 +145,8 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
       return ![NSStringFromClass([subview class]) isEqualToString:@"_UILayoutGuide"];
     }]];
     RCTAssert(nonLayoutSubviews.count == 0, @"There shouldn't be any other views: %@", nonLayoutSubviews);
-
+#pragma unused(nonLayoutSubviews)
+    
     if (expectErrorBlock) {
       RCTAssert(expectErrorBlock(error), @"Expected an error but nothing matched.");
     } else {
