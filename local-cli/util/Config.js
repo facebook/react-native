@@ -28,7 +28,7 @@ import type {HasteImpl} from '../../packager/src/node-haste/Module';
 export type ConfigT = {
   extraNodeModules: {[id: string]: string},
   /**
-   * Specify any additional asset extentions to be used by the packager.
+   * Specify any additional asset file extensions to be used by the packager.
    * For example, if you want to include a .ttf file, you would return ['ttf']
    * from here and use `require('./fonts/example.ttf')` inside your app.
    */
@@ -54,6 +54,15 @@ export type ConfigT = {
    * providesModule declarations.
    */
   getProvidesModuleNodeModules?: () => Array<string>,
+
+  /**
+   * Specify any additional source file extensions to be used by the packager.
+   * For example, if you want to include a .ts file, you would return ['ts']
+   * from here and use `require('./module/example')` to require the file with
+   * path 'module/example.ts' inside your app.
+   */
+  getSourceExts: () => Array<string>,
+
   /**
    * Returns the path to a custom transformer. This can also be overridden
    * with the --transformer commandline argument.
@@ -90,6 +99,7 @@ const defaultConfig: ConfigT = {
   getPlatforms: () => [],
   getProjectRoots: () => [process.cwd()],
   getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
+  getSourceExts: () => [],
   getTransformModulePath: () => path.resolve(__dirname, '../../packager/transformer'),
   getTransformOptions: async () => ({}),
   postMinifyProcess: x => x,

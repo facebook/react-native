@@ -16,8 +16,8 @@ const Logger = require('./src/Logger');
 const debug = require('debug');
 const invariant = require('fbjs/lib/invariant');
 
-import type Server from './src/Server';
 import type {PostProcessModules, PostMinifyProcess} from './src/Bundler';
+import type Server from './src/Server';
 import type {GlobalTransformCache} from './src/lib/GlobalTransformCache';
 import type {Reporter} from './src/lib/reporting';
 import type {HasteImpl} from './src/node-haste/Module';
@@ -33,6 +33,7 @@ type Options = {
   postMinifyProcess?: PostMinifyProcess,
   projectRoots: Array<string>,
   reporter?: Reporter,
+  +sourceExts: ?Array<string>,
   watch?: boolean,
 };
 
