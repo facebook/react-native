@@ -14,7 +14,11 @@ const Farm = require('./farm')
 
 var farms = [] // keep record of farms so we can end() them if required
 
-function farm(options: {}, path: string, methods: Array<string>): {[name: string]: Function} {
+function farm(
+  options: {+execArgv: Array<string>},
+  path: string,
+  methods: Array<string>,
+): {[name: string]: Function} {
   var f   = new Farm(options, path)
     , api = f.setup(methods)
 

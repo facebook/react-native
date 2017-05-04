@@ -27,7 +27,7 @@ const extend                  = require('xtend')
     , ProcessTerminatedError  = require('errno').create('ProcessTerminatedError')
     , MaxConcurrentCallsError = require('errno').create('MaxConcurrentCallsError')
 
-function Farm (options: {}, path: string) {
+function Farm (options: {+execArgv: Array<string>}, path: string) {
   this.options     = extend(DEFAULT_OPTIONS, options)
   this.path        = path
   this.activeCalls = 0
@@ -108,7 +108,7 @@ Farm.prototype.onExit = function (childId) {
 Farm.prototype.startChild = function () {
   this.childId++
 
-  var forked = fork(this.path)
+  var forked = fork(this.path, {execArgv: this.options.execArgv})
     , id     = this.childId
     , c      = {
           send        : forked.send

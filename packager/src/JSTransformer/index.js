@@ -38,6 +38,7 @@ function makeFarm(worker, methods, timeout, maxConcurrentWorkers) {
   return workerFarm(
     {
       autoStart: true,
+      execArgv: [],
       maxConcurrentCallsPerWorker: 1,
       maxConcurrentWorkers,
       maxCallsPerWorker: MAX_CALLS_PER_WORKER,

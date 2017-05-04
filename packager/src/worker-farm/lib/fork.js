@@ -14,10 +14,11 @@
 const childProcess = require('child_process');
 const childModule = require.resolve('./child/index');
 
-function fork(forkModule: string) {
+function fork(forkModule: string, options: {|+execArgv: Array<string>|}) {
   const child = childProcess.fork(childModule, {
     env: process.env,
     cwd: process.cwd(),
+    execArgv: options.execArgv,
   });
 
   child.send({module: forkModule});
