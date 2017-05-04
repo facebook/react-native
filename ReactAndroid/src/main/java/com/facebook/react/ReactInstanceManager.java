@@ -18,11 +18,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Process;
 import android.view.View;
 
@@ -40,13 +38,10 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.cxxbridge.Arguments;
 import com.facebook.react.cxxbridge.CatalystInstanceImpl;
 import com.facebook.react.cxxbridge.JSBundleLoader;
 import com.facebook.react.cxxbridge.JSCJavaScriptExecutor;
@@ -839,12 +834,20 @@ public class ReactInstanceManager {
     }
 
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
-    int rootTag = uiManagerModule.addMeasuredRootView(rootView);
+    final int rootTag = uiManagerModule.addMeasuredRootView(rootView);
     rootView.setRootViewTag(rootTag);
     rootView.runApplication();
+    Systrace.beginAsyncSection(
+      TRACE_TAG_REACT_JAVA_BRIDGE,
+      "pre_rootView.onAttachedToReactInstance",
+      rootTag);
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
+        Systrace.endAsyncSection(
+          TRACE_TAG_REACT_JAVA_BRIDGE,
+          "pre_rootView.onAttachedToReactInstance",
+          rootTag);
         rootView.onAttachedToReactInstance();
       }
     });
