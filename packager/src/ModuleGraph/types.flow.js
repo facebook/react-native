@@ -123,7 +123,7 @@ export type TransformResult = {|
 
 export type TransformResults = {[string]: TransformResult};
 
-export type TransformVariants = {[key: string]: Object};
+export type TransformVariants = {+[name: string]: {}, +default: {}};
 
 export type TransformedCodeFile = {
   +code: string,

@@ -21,6 +21,7 @@ const RN_CLI_CONFIG = 'rn-cli.config.js';
 
 import type {GetTransformOptions, PostMinifyProcess, PostProcessModules} from '../../packager/src/Bundler';
 import type {HasteImpl} from '../../packager/src/node-haste/Module';
+import type {TransformVariants} from '../../packager/src/ModuleGraph/types.flow';
 
 /**
  * Configuration file of the CLI.
@@ -89,7 +90,7 @@ export type ConfigT = {
    */
   hasteImpl?: HasteImpl,
 
-  transformVariants: () => {[name: string]: Object},
+  transformVariants: () => TransformVariants,
 };
 
 const defaultConfig: ConfigT = {
