@@ -36,23 +36,24 @@ describe('optimizing JS modules', () => {
       if (error) {
         throw error;
       }
-      transformResult = JSON.stringify(result.details);
+      transformResult = JSON.stringify({type: 'code', details: result.details});
       done();
     });
   });
 
   it('copies everything from the transformed file, except for transform results', () => {
     const result = optimizeModule(transformResult, optimizationOptions);
-    const expected = JSON.parse(transformResult);
+    const expected = JSON.parse(transformResult).details;
     delete expected.transformed;
-    expect(result).toEqual(objectContaining(expected));
+    expect(result.type).toBe('code');
+    expect(result.details).toEqual(objectContaining(expected));
   });
 
   describe('code optimization', () => {
     let dependencyMapName, injectedVars, optimized, requireName;
     beforeAll(() => {
       const result = optimizeModule(transformResult, optimizationOptions);
-      optimized = result.transformed.default;
+      optimized = result.details.transformed.default;
       injectedVars = optimized.code.match(/function\(([^)]*)/)[1].split(',');
       [, requireName,,, dependencyMapName] = injectedVars;
     });
@@ -79,9 +80,15 @@ describe('optimizing JS modules', () => {
       const result = optimizeModule(
         transformResult,
         {...optimizationOptions, isPolyfill: true},
-      );
+      ).details;
       expect(result.transformed.default.dependencies).toEqual([]);
     });
+  });
+
+  it('passes through non-code data unmodified', () => {
+    const data = {type: 'asset', details: {arbitrary: 'data'}};
+    expect(optimizeModule(JSON.stringify(data), {dev: true, platform: ''}))
+      .toEqual(data);
   });
 });
 

@@ -31,8 +31,8 @@ type BuildFn = (
 ) => void;
 
 type BuildOptions = {|
-  optimize?: boolean,
-  platform?: string,
+  optimize: boolean,
+  platform: string,
 |};
 
 exports.createBuildSetup = (
@@ -96,6 +96,7 @@ function* concat<T>(...iterables: Array<Iterable<T>>): Iterable<T> {
 
 function prelude(optimize) {
   return virtualModule(
-    `var __DEV__=${String(!optimize)},__BUNDLE_START_TIME__=Date.now();`
+    `var __DEV__=${String(!optimize)},` +
+    '__BUNDLE_START_TIME__=global.nativePerformanceNow?global.nativePerformanceNow():Date.now();'
   );
 }

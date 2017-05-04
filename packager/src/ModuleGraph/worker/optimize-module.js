@@ -18,7 +18,7 @@ const inline = require('../../JSTransformer/worker/inline').plugin;
 const minify = require('../../JSTransformer/worker/minify');
 const sourceMap = require('source-map');
 
-import type {TransformedCodeFile, TransformResult} from '../types.flow';
+import type {TransformedSourceFile, TransformResult} from '../types.flow';
 
 export type OptimizationOptions = {|
   dev: boolean,
@@ -27,21 +27,25 @@ export type OptimizationOptions = {|
 |};
 
 function optimizeModule(
-  data: string | TransformedCodeFile,
+  content: Buffer,
   optimizationOptions: OptimizationOptions,
-): TransformedCodeFile {
-  if (typeof data === 'string') {
-    data = JSON.parse(data);
+): TransformedSourceFile {
+  const data: TransformedSourceFile = JSON.parse(content.toString('utf8'));
+
+  if (data.type !== 'code') {
+    return data;
   }
-  const {code, file, transformed} = data;
-  const result = {...data, transformed: {}};
+
+  const {details} = data;
+  const {code, file, transformed} = details;
+  const result = {...details, transformed: {}};
 
   //$FlowIssue #14545724
   Object.entries(transformed).forEach(([k, t: TransformResult]: [*, TransformResult]) => {
     result.transformed[k] = optimize(t, file, code, optimizationOptions);
   });
 
-  return result;
+  return {type: 'code', details: result};
 }
 
 function optimize(transformed, file, originalCode, options): TransformResult {
