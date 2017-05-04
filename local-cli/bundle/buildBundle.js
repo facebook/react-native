@@ -34,6 +34,7 @@ function saveBundle(output, bundle, args) {
 function buildBundle(
   args: OutputOptions & {
     assetsDest: mixed,
+    assetExts: string[],
     entryFile: string,
     resetCache: boolean,
     transformer: string,
@@ -63,7 +64,7 @@ function buildBundle(
   // bundle command and close it down afterwards.
   var shouldClosePackager = false;
   if (!packagerInstance) {
-    const assetExts = (config.getAssetExts && config.getAssetExts()) || [];
+    const assetExts = ((config.getAssetExts && config.getAssetExts()) || []).concat(args.assetExts);
     const platforms = (config.getPlatforms && config.getPlatforms()) || [];
 
     const transformModulePath =
