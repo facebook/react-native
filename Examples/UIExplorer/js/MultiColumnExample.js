@@ -19,18 +19,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule MultiColumnExample
  */
 'use strict';
 
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  FlatList,
   StyleSheet,
   Text,
   View,
 } = ReactNative;
 
-const FlatList = require('FlatList');
 const UIExplorerPage = require('./UIExplorerPage');
 
 const infoLog = require('infoLog');
@@ -96,17 +97,16 @@ class MultiColumnExample extends React.PureComponent {
         </View>
         <SeparatorComponent />
         <FlatList
-          FooterComponent={FooterComponent}
-          HeaderComponent={HeaderComponent}
-          ItemComponent={this._renderItemComponent}
-          SeparatorComponent={SeparatorComponent}
+          ItemSeparatorComponent={SeparatorComponent}
+          ListFooterComponent={FooterComponent}
+          ListHeaderComponent={HeaderComponent}
           getItemLayout={this.state.fixedHeight ? this._getItemLayout : undefined}
           data={filteredData}
           key={this.state.numColumns + (this.state.fixedHeight ? 'f' : 'v')}
           numColumns={this.state.numColumns || 1}
           onRefresh={() => alert('onRefresh: nothing to refresh :P')}
           refreshing={false}
-          shouldItemUpdate={this._shouldItemUpdate}
+          renderItem={this._renderItemComponent}
           disableVirtualization={!this.state.virtualized}
           onViewableItemsChanged={this._onViewableItemsChanged}
           legacyImplementation={false}
@@ -126,11 +126,6 @@ class MultiColumnExample extends React.PureComponent {
       />
     );
   };
-  _shouldItemUpdate(prev, next) {
-    // Note that this does not check state.fixedHeight because we blow away the whole list by
-    // changing the key anyway.
-    return prev.item !== next.item;
-  }
   // This is called when items change viewability by scrolling into or out of the viewable area.
   _onViewableItemsChanged = (info: {
     changed: Array<{

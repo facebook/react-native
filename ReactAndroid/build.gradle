@@ -35,16 +35,16 @@ task createNativeDepsDirectories {
 }
 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/react-native-community/boost-for-react-native/releases/download/v1.57.0-1/boost_1_57_0.tar.gz'
+    src 'https://github.com/react-native-community/boost-for-react-native/releases/download/v1.63.0-0/boost_1_63_0.tar.gz'
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'boost_1_57_0.tar.gz')
+    dest new File(downloadsDir, 'boost_1_63_0.tar.gz')
 }
 
 task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
     from boostPath ?: tarTree(resources.gzip(downloadBoost.dest))
     from 'src/main/jni/third-party/boost/Android.mk'
-    include 'boost_1_57_0/boost/**/*.hpp', 'Android.mk'
+    include 'Android.mk', 'boost_1_63_0/boost/**/*.hpp'
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/boost"
 }
@@ -275,7 +275,6 @@ dependencies {
     compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
     compile 'javax.inject:javax.inject:1'
     compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.android.support:recyclerview-v7:23.4.0'
     compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
     compile 'com.facebook.fresco:fresco:1.0.1'
     compile 'com.facebook.fresco:imagepipeline-okhttp3:1.0.1'

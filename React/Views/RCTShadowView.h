@@ -130,16 +130,17 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGJustify justifyContent;
 @property (nonatomic, assign) YGAlign alignSelf;
 @property (nonatomic, assign) YGAlign alignItems;
+@property (nonatomic, assign) YGAlign alignContent;
 @property (nonatomic, assign) YGPositionType position;
 @property (nonatomic, assign) YGWrap flexWrap;
+@property (nonatomic, assign) YGDisplay display;
 
+@property (nonatomic, assign) float flex;
 @property (nonatomic, assign) float flexGrow;
 @property (nonatomic, assign) float flexShrink;
 @property (nonatomic, assign) YGValue flexBasis;
 
 @property (nonatomic, assign) float aspectRatio;
-
-- (void)setFlex:(float)flex;
 
 /**
  * z-index, used to override sibling order in the view

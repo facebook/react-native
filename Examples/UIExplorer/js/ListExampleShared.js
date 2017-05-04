@@ -19,12 +19,14 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @flow
+ * @providesModule ListExampleShared
  */
 'use strict';
 
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  Animated,
   Image,
   Platform,
   TouchableHighlight,
@@ -85,22 +87,16 @@ class ItemComponent extends React.PureComponent {
   }
 }
 
-class StackedItemComponent extends React.PureComponent {
-  props: {
-    item: Item,
-  };
-  render() {
-    const {item} = this.props;
-    const itemHash = Math.abs(hashCode(item.title));
-    const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
-    return (
-      <View style={styles.stacked}>
-        <Text style={styles.stackedText}>{item.title} - {item.text}</Text>
-        <Image style={styles.thumb} source={imgSource} />
-      </View>
-    );
-  }
-}
+const renderStackedItem = ({item}: {item: Item}) => {
+  const itemHash = Math.abs(hashCode(item.title));
+  const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
+  return (
+    <View style={styles.stacked}>
+      <Text style={styles.stackedText}>{item.title} - {item.text}</Text>
+      <Image style={styles.thumb} source={imgSource} />
+    </View>
+  );
+};
 
 class FooterComponent extends React.PureComponent {
   render() {
@@ -131,6 +127,22 @@ class HeaderComponent extends React.PureComponent {
 class SeparatorComponent extends React.PureComponent {
   render() {
     return <View style={styles.separator} />;
+  }
+}
+
+class Spindicator extends React.PureComponent {
+  render() {
+    return (
+      <Animated.View style={[styles.spindicator, {
+        transform: [
+          {rotate: this.props.value.interpolate({
+            inputRange: [0, 5000],
+            outputRange: ['0deg', '360deg'],
+            extrapolate: 'extend',
+          })}
+        ]
+      }]} />
+    );
   }
 }
 
@@ -271,6 +283,13 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
   },
+  spindicator: {
+    marginLeft: 'auto',
+    marginTop: 8,
+    width: 2,
+    height: 16,
+    backgroundColor: 'darkgray',
+  },
   stackedText: {
     padding: 4,
     fontSize: 18,
@@ -286,9 +305,10 @@ module.exports = {
   ItemComponent,
   PlainInput,
   SeparatorComponent,
-  StackedItemComponent,
+  Spindicator,
   genItemData,
   getItemLayout,
   pressItem,
   renderSmallSwitchOption,
+  renderStackedItem,
 };

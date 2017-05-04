@@ -15,6 +15,7 @@ LOCAL_SRC_FILES := \
   JSLogging.cpp \
   JniJSModulesUnbundle.cpp \
   MethodInvoker.cpp \
+  ModuleRegistryBuilder.cpp \
   NativeArray.cpp \
   NativeCommon.cpp \
   NativeMap.cpp \

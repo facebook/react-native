@@ -24,6 +24,7 @@
  * - two custom examples for RTL design
  *
  * @flow
+ * @providesModule RTLExample
  */
 'use strict';
 

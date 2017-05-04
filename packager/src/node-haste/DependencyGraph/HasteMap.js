@@ -87,10 +87,11 @@ class HasteMap extends EventEmitter {
           return this._processHasteModule(absPath, invalidated);
         }
       }
+      return null;
     });
   }
 
-  getModule(name, platform = null) {
+  getModule(name, platform = null): Module {
     const modulesMap = this._map[name];
     if (modulesMap == null) {
       return null;

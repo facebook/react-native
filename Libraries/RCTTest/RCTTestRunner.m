@@ -11,7 +11,6 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
-#import <React/RCTJSCExecutor.h>
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
@@ -20,7 +19,6 @@
 #import "RCTTestModule.h"
 
 static const NSTimeInterval kTestTimeoutSeconds = 120;
-static const NSTimeInterval kTestTeardownTimeoutSeconds = 30;
 
 @implementation RCTTestRunner
 {
@@ -97,8 +95,6 @@ expectErrorRegex:(NSString *)errorRegex
 configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock
 expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 {
-  __weak id weakJSContext;
-
   @autoreleasepool {
     __block NSString *error = nil;
     RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
@@ -125,7 +121,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     testModule.testSuffix = _testSuffix;
     testModule.view = rootView;
 
-    UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
+    UIViewController *vc = RCTSharedApplication().delegate.window.rootViewController;
     vc.view = [UIView new];
     [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
 
@@ -139,12 +135,6 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
       [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     }
 
-    // Take a weak reference to the JS context, so we track its deallocation later
-    // (we can only do this now, since it's been lazily initialized)
-    id jsExecutor = [bridge.batchedBridge valueForKey:@"javaScriptExecutor"];
-    if ([jsExecutor isKindOfClass:[RCTJSCExecutor class]]) {
-      weakJSContext = [jsExecutor valueForKey:@"_context"];
-    }
     [rootView removeFromSuperview];
 
     RCTSetLogFunction(RCTDefaultLogFunction);
@@ -163,14 +153,6 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     }
     [bridge invalidate];
   }
-
-  // Wait for the executor to have shut down completely before returning
-  NSDate *teardownTimeout = [NSDate dateWithTimeIntervalSinceNow:kTestTeardownTimeoutSeconds];
-  while (teardownTimeout.timeIntervalSinceNow > 0 && weakJSContext) {
-    [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-    [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-  }
-  RCTAssert(!weakJSContext, @"JS context was not deallocated after being invalidated");
 }
 
 @end
