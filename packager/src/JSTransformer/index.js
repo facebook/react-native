@@ -51,7 +51,7 @@ function makeFarm(worker, methods, timeout, maxConcurrentWorkers) {
 
 class Transformer {
 
-  _workers: {[name: string]: mixed};
+  _workers: {[name: string]: Function};
   _transformModulePath: string;
   _transform: (
     transform: string,
