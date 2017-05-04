@@ -415,7 +415,7 @@ YGConfigRef YGConfigGetDefault() {
 
 YGConfigRef YGConfigNew(void) {
   const YGConfigRef config = gYGMalloc(sizeof(YGConfig));
-  YGLog(NULL, config != NULL, "Could not allocate memory for config");
+  YGAssert(config != NULL, "Could not allocate memory for config");
 
   gConfigInstanceCount++;
   memcpy(config, &gYGConfigDefaults, sizeof(YGConfig));
