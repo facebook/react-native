@@ -6,9 +6,15 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ReactVersion
+ * @providesModule ReactTypeOfInternalContext
+ * @flow
  */
 
 'use strict';
 
-module.exports = '16.0.0-alpha.12';
+export type TypeOfInternalContext = number;
+
+module.exports = {
+  NoContext: 0,
+  AsyncUpdates: 1,
+};
