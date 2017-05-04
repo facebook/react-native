@@ -40,6 +40,7 @@ describe('SectionList', () => {
     const component = ReactTestRenderer.create(
       <SectionList
         ItemSeparatorComponent={(props) => <defaultItemSeparator v={propStr(props)} />}
+        ListEmptyComponent={(props) => <empty v={propStr(props)} />}
         ListFooterComponent={(props) => <footer v={propStr(props)} />}
         ListHeaderComponent={(props) => <header v={propStr(props)} />}
         SectionSeparatorComponent={(props) => <sectionSeparator v={propStr(props)} />}

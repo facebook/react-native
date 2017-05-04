@@ -83,6 +83,21 @@ type OptionalProps = {
   initialScrollIndex?: ?number,
   keyExtractor: (item: Item, index: number) => string,
   /**
+   * Rendered when the list is empty. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListEmptyComponent?: ?(ReactClass<any> | React.Element<any>),
+  /**
+   * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
+  /**
+   * Rendered at the top of all the items. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListHeaderComponent?: ?(ReactClass<any> | React.Element<any>),
+  /**
    * The maximum number of items to render in each incremental render batch. The more rendered at
    * once, the better the fill rate, but responsiveness my suffer because rendering content may
    * interfere with responding to button taps or other interactions.
@@ -394,14 +409,14 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   };
 
   render() {
-    const {ListFooterComponent, ListHeaderComponent} = this.props;
+    const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} = this.props;
     const {data, disableVirtualization, horizontal} = this.props;
     const cells = [];
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
     if (ListHeaderComponent) {
       const element = React.isValidElement(ListHeaderComponent)
-        ? ListHeaderComponent
+        ? ListHeaderComponent // $FlowFixMe
         : <ListHeaderComponent />;
       cells.push(
         <View key="$header" onLayout={this._onLayoutHeader}>
@@ -476,10 +491,19 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           <View key="$tail_spacer" style={{[spacerKey]: tailSpacerLength}} />
         );
       }
+    } else if (ListEmptyComponent) {
+      const element = React.isValidElement(ListEmptyComponent)
+        ? ListEmptyComponent // $FlowFixMe
+        : <ListEmptyComponent />;
+      cells.push(
+        <View key="$empty" onLayout={this._onLayoutEmpty}>
+          {element}
+        </View>
+      );
     }
     if (ListFooterComponent) {
       const element = React.isValidElement(ListFooterComponent)
-        ? ListFooterComponent
+        ? ListFooterComponent // $FlowFixMe
         : <ListFooterComponent />;
       cells.push(
         <View key="$footer" onLayout={this._onLayoutFooter}>
@@ -583,6 +607,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this.props.onLayout && this.props.onLayout(e);
     this._scheduleCellsToRenderUpdate();
     this._maybeCallOnEndReached();
+  };
+
+  _onLayoutEmpty = (e) => {
+    this.props.onLayout && this.props.onLayout(e);
   };
 
   _onLayoutFooter = (e) => {
