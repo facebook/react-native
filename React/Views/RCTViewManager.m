@@ -139,7 +139,14 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
   view.layer.shouldRasterize = json ? [RCTConvert BOOL:json] : defaultView.layer.shouldRasterize;
   view.layer.rasterizationScale = view.layer.shouldRasterize ? [UIScreen mainScreen].scale : defaultView.layer.rasterizationScale;
 }
-
+RCT_CUSTOM_VIEW_PROPERTY(mask, NSDictionary, RCTView)
+{
+  if (json) {
+    view.maskLayer = [RCTConvert CAGradientLayer:json];
+  } else {
+    view.maskLayer = defaultView.maskLayer;
+  }
+}
 RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 {
   view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
