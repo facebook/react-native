@@ -12,7 +12,7 @@
 'use strict';
 
 import type {CachedReadResult, ReadResult} from '../../node-haste/Module';
-import type {TransformedFile} from '../types.flow';
+import type {TransformedCodeFile} from '../types.flow';
 import type {ModuleCache} from './node-haste.flow';
 
 module.exports = class Module {
@@ -25,7 +25,7 @@ module.exports = class Module {
   constructor(
     path: string,
     moduleCache: ModuleCache,
-    info: TransformedFile,
+    info: TransformedCodeFile,
   ) {
     this.hasteID = Promise.resolve(info.hasteID);
     this.moduleCache = moduleCache;

@@ -19,11 +19,12 @@ const outputBundle = require('./output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
+const defaultSourceExts = require('../../packager/defaults').sourceExts;
 const defaultPlatforms = require('../../packager/defaults').platforms;
 const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
 
 import type {RequestOptions, OutputOptions} from './types.flow';
-import type {ConfigT} from '../core';
+import type {ConfigT} from '../util/Config';
 
 function saveBundle(output, bundle, args) {
   return Promise.resolve(
@@ -64,6 +65,7 @@ function buildBundle(
   var shouldClosePackager = false;
   if (!packagerInstance) {
     const assetExts = (config.getAssetExts && config.getAssetExts()) || [];
+    const sourceExts = (config.getSourceExts && config.getSourceExts()) || [];
     const platforms = (config.getPlatforms && config.getPlatforms()) || [];
 
     const transformModulePath =
@@ -88,6 +90,7 @@ function buildBundle(
       providesModuleNodeModules: providesModuleNodeModules,
       resetCache: args.resetCache,
       reporter: new TerminalReporter(),
+      sourceExts: defaultSourceExts.concat(sourceExts),
       transformModulePath: transformModulePath,
       watch: false,
     };

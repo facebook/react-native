@@ -39,7 +39,7 @@ function getAssetDataFromName(filename: string, platforms: Set<string>): AssetDa
   if (!(match && match[1])) {
     resolution = 1;
   } else {
-    resolution = parseFloat(match[1], 10);
+    resolution = parseFloat(match[1]);
     if (isNaN(resolution)) {
       resolution = 1;
     }

@@ -9,24 +9,39 @@
 
 #pragma once
 
+#include <string>
 #include <JavaScriptCore/JavaScript.h>
 
 #if WITH_FBJSCEXTENSIONS
 #include <jsc_stringref.h>
 #endif
 
+#if defined(JSCINTERNAL) || (!defined(__APPLE__))
+#define JSC_IMPORT extern "C"
+#else
+#define JSC_IMPORT extern
+#endif
+
+namespace facebook {
+namespace react {
+  class IInspector;
+}
+}
+
+JSC_IMPORT facebook::react::IInspector* JSInspectorGetInstance();
+
+// This is used to substitute an alternate JSC implementation for
+// testing. These calls must all be ABI compatible with the standard JSC.
+JSC_IMPORT void configureJSCForIOS(std::string); // TODO: replace with folly::dynamic once supported
+JSC_IMPORT JSValueRef JSEvaluateBytecodeBundle(JSContextRef, JSObjectRef, int, JSStringRef, JSValueRef*);
+JSC_IMPORT bool JSSamplingProfilerEnabled();
+JSC_IMPORT void JSStartSamplingProfilingOnMainJSCThread(JSGlobalContextRef);
+JSC_IMPORT JSValueRef JSPokeSamplingProfiler(JSContextRef);
+
 #if defined(__APPLE__)
 #import <objc/objc.h>
 #import <JavaScriptCore/JSStringRefCF.h>
 #import <string>
-
-// This is used to substitute an alternate JSC implementation for
-// testing. These calls must all be ABI compatible with the standard JSC.
-extern void configureJSCForIOS(std::string); // TODO: replace with folly::dynamic once supported
-extern JSValueRef JSEvaluateBytecodeBundle(JSContextRef, JSObjectRef, int, JSStringRef, JSValueRef*);
-extern bool JSSamplingProfilerEnabled();
-extern void JSStartSamplingProfilingOnMainJSCThread(JSGlobalContextRef);
-extern JSValueRef JSPokeSamplingProfiler(JSContextRef);
 
 /**
  * JSNoBytecodeFileFormatVersion
@@ -113,6 +128,8 @@ struct JSCWrapper {
   JSC_WRAPPER_METHOD(JSSamplingProfilerEnabled);
   JSC_WRAPPER_METHOD(JSPokeSamplingProfiler);
   JSC_WRAPPER_METHOD(JSStartSamplingProfilingOnMainJSCThread);
+
+  JSC_WRAPPER_METHOD(JSInspectorGetInstance);
 
   JSC_WRAPPER_METHOD(configureJSCForIOS);
 

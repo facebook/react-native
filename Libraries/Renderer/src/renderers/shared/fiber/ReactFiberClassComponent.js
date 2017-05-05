@@ -15,9 +15,11 @@
 import type {Fiber} from 'ReactFiber';
 import type {PriorityLevel} from 'ReactPriorityLevel';
 
-var {
-  Update,
-} = require('ReactTypeOfSideEffect');
+var {Update} = require('ReactTypeOfSideEffect');
+
+var ReactFeatureFlags = require('ReactFeatureFlags');
+var {AsyncUpdates} = require('ReactTypeOfInternalContext');
+
 var {
   cacheContext,
   getMaskedContext,
@@ -41,10 +43,7 @@ var invariant = require('fbjs/lib/invariant');
 const isArray = Array.isArray;
 
 if (__DEV__) {
-  var {
-    startPhaseTimer,
-    stopPhaseTimer,
-  } = require('ReactDebugFiberPerf');
+  var {startPhaseTimer, stopPhaseTimer} = require('ReactDebugFiberPerf');
   var warning = require('fbjs/lib/warning');
   var warnOnInvalidCallback = function(callback: mixed, callerName: string) {
     warning(
@@ -59,7 +58,7 @@ if (__DEV__) {
 
 module.exports = function(
   scheduleUpdate: (fiber: Fiber, priorityLevel: PriorityLevel) => void,
-  getPriorityContext: () => PriorityLevel,
+  getPriorityContext: (fiber: Fiber, forceAsync: boolean) => PriorityLevel,
   memoizeProps: (workInProgress: Fiber, props: any) => void,
   memoizeState: (workInProgress: Fiber, state: any) => void,
 ) {
@@ -68,7 +67,7 @@ module.exports = function(
     isMounted,
     enqueueSetState(instance, partialState, callback) {
       const fiber = ReactInstanceMap.get(instance);
-      const priorityLevel = getPriorityContext();
+      const priorityLevel = getPriorityContext(fiber, false);
       callback = callback === undefined ? null : callback;
       if (__DEV__) {
         warnOnInvalidCallback(callback, 'setState');
@@ -78,7 +77,7 @@ module.exports = function(
     },
     enqueueReplaceState(instance, state, callback) {
       const fiber = ReactInstanceMap.get(instance);
-      const priorityLevel = getPriorityContext();
+      const priorityLevel = getPriorityContext(fiber, false);
       callback = callback === undefined ? null : callback;
       if (__DEV__) {
         warnOnInvalidCallback(callback, 'replaceState');
@@ -88,7 +87,7 @@ module.exports = function(
     },
     enqueueForceUpdate(instance, callback) {
       const fiber = ReactInstanceMap.get(instance);
-      const priorityLevel = getPriorityContext();
+      const priorityLevel = getPriorityContext(fiber, false);
       callback = callback === undefined ? null : callback;
       if (__DEV__) {
         warnOnInvalidCallback(callback, 'forceUpdate');
@@ -116,6 +115,7 @@ module.exports = function(
     }
 
     const instance = workInProgress.stateNode;
+    const type = workInProgress.type;
     if (typeof instance.shouldComponentUpdate === 'function') {
       if (__DEV__) {
         startPhaseTimer(workInProgress, 'shouldComponentUpdate');
@@ -141,10 +141,10 @@ module.exports = function(
       return shouldUpdate;
     }
 
-    const type = workInProgress.type;
     if (type.prototype && type.prototype.isPureReactComponent) {
-      return !shallowEqual(oldProps, newProps) ||
-        !shallowEqual(oldState, newState);
+      return (
+        !shallowEqual(oldProps, newProps) || !shallowEqual(oldState, newState)
+      );
     }
 
     return true;
@@ -152,6 +152,7 @@ module.exports = function(
 
   function checkClassInstance(workInProgress: Fiber) {
     const instance = workInProgress.stateNode;
+    const type = workInProgress.type;
     if (__DEV__) {
       const name = getComponentName(workInProgress);
       const renderPresent = instance.render;
@@ -161,7 +162,8 @@ module.exports = function(
           'instance: you may have forgotten to define `render`.',
         name,
       );
-      const noGetInitialStateOnES6 = !instance.getInitialState ||
+      const noGetInitialStateOnES6 =
+        !instance.getInitialState ||
         instance.getInitialState.isReactClassApproved ||
         instance.state;
       warning(
@@ -171,7 +173,8 @@ module.exports = function(
           'Did you mean to define a state property instead?',
         name,
       );
-      const noGetDefaultPropsOnES6 = !instance.getDefaultProps ||
+      const noGetDefaultPropsOnES6 =
+        !instance.getDefaultProps ||
         instance.getDefaultProps.isReactClassApproved;
       warning(
         noGetDefaultPropsOnES6,
@@ -194,8 +197,8 @@ module.exports = function(
           'property to define contextTypes instead.',
         name,
       );
-      const noComponentShouldUpdate = typeof instance.componentShouldUpdate !==
-        'function';
+      const noComponentShouldUpdate =
+        typeof instance.componentShouldUpdate !== 'function';
       warning(
         noComponentShouldUpdate,
         '%s has a method called ' +
@@ -204,8 +207,21 @@ module.exports = function(
           'expected to return a value.',
         name,
       );
-      const noComponentDidUnmount = typeof instance.componentDidUnmount !==
-        'function';
+      if (
+        type.prototype &&
+        type.prototype.isPureReactComponent &&
+        typeof instance.shouldComponentUpdate !== 'undefined'
+      ) {
+        warning(
+          false,
+          '%s has a method called shouldComponentUpdate(). ' +
+            'shouldComponentUpdate should not be used when extending React.PureComponent. ' +
+            'Please extend React.Component if shouldComponentUpdate is used.',
+          getComponentName(workInProgress) || 'A pure component',
+        );
+      }
+      const noComponentDidUnmount =
+        typeof instance.componentDidUnmount !== 'function';
       warning(
         noComponentDidUnmount,
         '%s has a method called ' +
@@ -213,8 +229,8 @@ module.exports = function(
           'Did you mean componentWillUnmount()?',
         name,
       );
-      const noComponentWillRecieveProps = typeof instance.componentWillRecieveProps !==
-        'function';
+      const noComponentWillRecieveProps =
+        typeof instance.componentWillRecieveProps !== 'function';
       warning(
         noComponentWillRecieveProps,
         '%s has a method called ' +
@@ -226,6 +242,14 @@ module.exports = function(
         instance.props === undefined || !hasMutatedProps,
         '%s(...): When calling super() in `%s`, make sure to pass ' +
           "up the same props that your component's constructor was passed.",
+        name,
+        name,
+      );
+      const noInstanceDefaultProps = !instance.defaultProps;
+      warning(
+        noInstanceDefaultProps,
+        'Setting defaultProps as an instance property on %s is not supported and will be ignored.' +
+          ' Instead, define defaultProps as a static property on %s.',
         name,
         name,
       );
@@ -261,9 +285,8 @@ module.exports = function(
     ReactInstanceMap.set(instance, workInProgress);
   }
 
-  function constructClassInstance(workInProgress: Fiber): any {
+  function constructClassInstance(workInProgress: Fiber, props: any): any {
     const ctor = workInProgress.type;
-    const props = workInProgress.pendingProps;
     const unmaskedContext = getUnmaskedContext(workInProgress);
     const needsContext = isContextConsumer(workInProgress);
     const context = needsContext
@@ -271,7 +294,6 @@ module.exports = function(
       : emptyObject;
     const instance = new ctor(props, context);
     adoptClassInstance(workInProgress, instance);
-    checkClassInstance(workInProgress);
 
     // Cache unmasked context so we can avoid recreating masked context unless necessary.
     // ReactFiberContext usually updates this cache but can't for newly-created instances.
@@ -287,6 +309,10 @@ module.exports = function(
     workInProgress: Fiber,
     priorityLevel: PriorityLevel,
   ): void {
+    if (__DEV__) {
+      checkClassInstance(workInProgress);
+    }
+
     const instance = workInProgress.stateNode;
     const state = instance.state || null;
 
@@ -303,6 +329,14 @@ module.exports = function(
     instance.state = state;
     instance.refs = emptyObject;
     instance.context = getMaskedContext(workInProgress, unmaskedContext);
+
+    if (
+      ReactFeatureFlags.enableAsyncSubtreeAPI &&
+      workInProgress.type != null &&
+      workInProgress.type.unstable_asyncUpdates === true
+    ) {
+      workInProgress.internalContextTag |= AsyncUpdates;
+    }
 
     if (typeof instance.componentWillMount === 'function') {
       if (__DEV__) {
@@ -379,9 +413,9 @@ module.exports = function(
 
     // If we didn't bail out we need to construct a new instance. We don't
     // want to reuse one that failed to fully mount.
-    const newInstance = constructClassInstance(workInProgress);
+    const newInstance = constructClassInstance(workInProgress, newProps);
     newInstance.props = newProps;
-    newInstance.state = (newState = newInstance.state || null);
+    newInstance.state = newState = newInstance.state || null;
     newInstance.context = newContext;
 
     if (typeof newInstance.componentWillMount === 'function') {

@@ -55,7 +55,11 @@ typedef YGSize (*YGMeasureFunc)(YGNodeRef node,
                                 YGMeasureMode heightMode);
 typedef float (*YGBaselineFunc)(YGNodeRef node, const float width, const float height);
 typedef void (*YGPrintFunc)(YGNodeRef node);
-typedef int (*YGLogger)(YGLogLevel level, const char *format, va_list args);
+typedef int (*YGLogger)(const YGConfigRef config,
+                        const YGNodeRef node,
+                        YGLogLevel level,
+                        const char *format,
+                        va_list args);
 
 typedef void *(*YGMalloc)(size_t size);
 typedef void *(*YGCalloc)(size_t count, size_t size);
@@ -218,17 +222,27 @@ YG_NODE_LAYOUT_EDGE_PROPERTY(float, Margin);
 YG_NODE_LAYOUT_EDGE_PROPERTY(float, Border);
 YG_NODE_LAYOUT_EDGE_PROPERTY(float, Padding);
 
-WIN_EXPORT void YGSetLogger(YGLogger logger);
-WIN_EXPORT void YGLog(YGLogLevel level, const char *message, ...);
+WIN_EXPORT void YGConfigSetLogger(const YGConfigRef config, YGLogger logger);
+WIN_EXPORT void YGLog(const YGNodeRef node, YGLogLevel level, const char *message, ...);
+WIN_EXPORT void YGLogWithConfig(const YGConfigRef config, YGLogLevel level, const char *format, ...);
+WIN_EXPORT void YGAssert(const bool condition, const char *message);
+WIN_EXPORT void YGAssertWithNode(const YGNodeRef node, const bool condition, const char *message);
+WIN_EXPORT void YGAssertWithConfig(const YGConfigRef config,
+                                   const bool condition,
+                                   const char *message);
 
 // Set this to number of pixels in 1 point to round calculation results
 // If you want to avoid rounding - set PointScaleFactor to 0
 WIN_EXPORT void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInPoint);
 
-// Yoga previously had an error where containers would take the maximum space possible instead of the minimum
-// like they are supposed to. In practice this resulted in implicit behaviour similar to align-self: stretch;
-// Because this was such a long-standing bug we must allow legacy users to switch back to this behaviour.
-WIN_EXPORT void YGConfigSetUseLegacyStretchBehaviour(const YGConfigRef config, const bool useLegacyStretchBehaviour);
+// Yoga previously had an error where containers would take the maximum space possible instead of
+// the minimum
+// like they are supposed to. In practice this resulted in implicit behaviour similar to align-self:
+// stretch;
+// Because this was such a long-standing bug we must allow legacy users to switch back to this
+// behaviour.
+WIN_EXPORT void YGConfigSetUseLegacyStretchBehaviour(const YGConfigRef config,
+                                                     const bool useLegacyStretchBehaviour);
 
 // YGConfig
 WIN_EXPORT YGConfigRef YGConfigNew(void);
@@ -245,8 +259,13 @@ WIN_EXPORT bool YGConfigIsExperimentalFeatureEnabled(const YGConfigRef config,
 // Using the web defaults is the prefered configuration for new projects.
 // Usage of non web defaults should be considered as legacy.
 WIN_EXPORT void YGConfigSetUseWebDefaults(const YGConfigRef config, const bool enabled);
-
 WIN_EXPORT bool YGConfigGetUseWebDefaults(const YGConfigRef config);
+
+// Export only for C#
+WIN_EXPORT YGConfigRef YGConfigGetDefault(void);
+
+WIN_EXPORT void YGConfigSetContext(const YGConfigRef config, void *context);
+WIN_EXPORT void *YGConfigGetContext(const YGConfigRef config);
 
 WIN_EXPORT void
 YGSetMemoryFuncs(YGMalloc ygmalloc, YGCalloc yccalloc, YGRealloc ygrealloc, YGFree ygfree);

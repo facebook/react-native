@@ -11,7 +11,8 @@
 
 jest.disableAutomock();
 
-jest.mock('worker-farm', () => () => () => {})
+jest.mock('../../worker-farm', () => () => () => {})
+    .mock('worker-farm', () => () => () => {})
     .mock('timers', () => ({setImmediate: fn => setTimeout(fn, 0)}))
     .mock('uglify-js')
     .mock('crypto')

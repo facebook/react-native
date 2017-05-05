@@ -76,7 +76,7 @@ class TerminalReporter {
     this._activeBundles = new Map();
     this._scheduleUpdateBundleProgress = throttle(data => {
       this.update({...data, type: 'bundle_transform_progressed_throttled'});
-    }, 200);
+    }, 100);
   }
 
   /**
