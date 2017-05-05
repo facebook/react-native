@@ -48,7 +48,7 @@ exports.examples = [
       'mounts.',
     render: function() {
       class FadeInView extends React.Component {
-        _fadeAnim: AnimatedValue = new Animated.Value(0), // opacity 0
+        _fadeAnim: AnimatedValue = new Animated.Value(0); // opacity 0
 
         componentDidMount() {
           Animated.timing(     // Uses easing functions
