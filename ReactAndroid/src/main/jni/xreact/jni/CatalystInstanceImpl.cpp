@@ -24,7 +24,6 @@
 #include "JavaScriptExecutorHolder.h"
 #include "JniJSModulesUnbundle.h"
 #include "JNativeRunnable.h"
-#include "JSLoader.h"
 #include "NativeArray.h"
 
 using namespace facebook::jni;
@@ -71,13 +70,6 @@ class JInstanceCallback : public InstanceCallback {
     method(jobj_);
   }
 
-  ExecutorToken createExecutorToken() override {
-    auto jobj = JExecutorToken::newObjectCxxArgs();
-    return jobj->cthis()->getExecutorToken(jobj);
-  }
-
-  void onExecutorStopped(ExecutorToken) override {}
-
  private:
   global_ref<ReactCallback::javaobject> jobj_;
   std::shared_ptr<JMessageQueueThread> messageQueueThread_;
@@ -94,8 +86,10 @@ CatalystInstanceImpl::CatalystInstanceImpl()
   : instance_(folly::make_unique<Instance>()) {}
 
 CatalystInstanceImpl::~CatalystInstanceImpl() {
-  // TODO: 16669252: this prevents onCatalystInstanceDestroy from being called
   moduleMessageQueue_->quitSynchronous();
+  if (uiBackgroundMessageQueue_ != NULL) {
+    uiBackgroundMessageQueue_->quitSynchronous();
+  }
 }
 
 void CatalystInstanceImpl::registerNatives() {
@@ -107,7 +101,6 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
     makeNativeMethod("jniCallJSFunction", CatalystInstanceImpl::jniCallJSFunction),
     makeNativeMethod("jniCallJSCallback", CatalystInstanceImpl::jniCallJSCallback),
-    makeNativeMethod("getMainExecutorToken", CatalystInstanceImpl::getMainExecutorToken),
     makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
     makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
     makeNativeMethod("handleMemoryPressureUiHidden", CatalystInstanceImpl::handleMemoryPressureUiHidden),
@@ -127,11 +120,15 @@ void CatalystInstanceImpl::initializeBridge(
     JavaScriptExecutorHolder* jseh,
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
     jni::alias_ref<JavaMessageQueueThread::javaobject> nativeModulesQueue,
+    jni::alias_ref<JavaMessageQueueThread::javaobject> uiBackgroundQueue,
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
     jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules) {
   // TODO mhorowitz: how to assert here?
   // Assertions.assertCondition(mBridge == null, "initializeBridge should be called once");
   moduleMessageQueue_ = std::make_shared<JMessageQueueThread>(nativeModulesQueue);
+  if (uiBackgroundQueue.get() != nullptr) {
+    uiBackgroundMessageQueue_ = std::make_shared<JMessageQueueThread>(uiBackgroundQueue);
+  }
 
   // This used to be:
   //
@@ -150,11 +147,17 @@ void CatalystInstanceImpl::initializeBridge(
   // stack.
 
   instance_->initializeBridge(
-    folly::make_unique<JInstanceCallback>(callback, moduleMessageQueue_),
+    folly::make_unique<JInstanceCallback>(
+    callback,
+    uiBackgroundMessageQueue_ != NULL ? uiBackgroundMessageQueue_ : moduleMessageQueue_),
     jseh->getExecutorFactory(),
     folly::make_unique<JMessageQueueThread>(jsQueue),
     buildModuleRegistry(
-      std::weak_ptr<Instance>(instance_), javaModules, cxxModules, moduleMessageQueue_));
+      std::weak_ptr<Instance>(instance_),
+      javaModules,
+      cxxModules,
+      moduleMessageQueue_,
+      uiBackgroundMessageQueue_));
 }
 
 void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
@@ -167,8 +170,8 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
   const int kAssetsLength = 9;  // strlen("assets://");
   auto sourceURL = assetURL.substr(kAssetsLength);
 
-  auto manager = react::extractAssetManager(assetManager);
-  auto script = react::loadScriptFromAssets(manager, sourceURL);
+  auto manager = extractAssetManager(assetManager);
+  auto script = loadScriptFromAssets(manager, sourceURL);
   if (JniJSModulesUnbundle::isUnbundle(manager, sourceURL)) {
     instance_->loadUnbundle(
       folly::make_unique<JniJSModulesUnbundle>(manager, sourceURL),
@@ -206,8 +209,7 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
   }
 }
 
-void CatalystInstanceImpl::jniCallJSFunction(
-    JExecutorToken* token, std::string module, std::string method, NativeArray* arguments) {
+void CatalystInstanceImpl::jniCallJSFunction(std::string module, std::string method, NativeArray* arguments) {
   // We want to share the C++ code, and on iOS, modules pass module/method
   // names as strings all the way through to JS, and there's no way to do
   // string -> id mapping on the objc side.  So on Android, we convert the
@@ -215,18 +217,13 @@ void CatalystInstanceImpl::jniCallJSFunction(
   // used as ids if isFinite(), which handles this case, and looked up as
   // strings otherwise.  Eventually, we'll probably want to modify the stack
   // from the JS proxy through here to use strings, too.
-  instance_->callJSFunction(token->getExecutorToken(nullptr),
-                            std::move(module),
+  instance_->callJSFunction(std::move(module),
                             std::move(method),
                             arguments->consume());
 }
 
-void CatalystInstanceImpl::jniCallJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments) {
-  instance_->callJSCallback(token->getExecutorToken(nullptr), callbackId, arguments->consume());
-}
-
-local_ref<JExecutorToken::JavaPart> CatalystInstanceImpl::getMainExecutorToken() {
-  return JExecutorToken::extractJavaPartFromToken(instance_->getMainExecutorToken());
+void CatalystInstanceImpl::jniCallJSCallback(jint callbackId, NativeArray* arguments) {
+  instance_->callJSCallback(callbackId, arguments->consume());
 }
 
 void CatalystInstanceImpl::setGlobalVariable(std::string propName,

@@ -19,13 +19,14 @@
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
+#import "RCTPerformanceLogger.h"
+#import "RCTProfile.h"
+#import "RCTRootContentView.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
-#import "RCTRootContentView.h"
 #import "UIView+React.h"
-#import "RCTProfile.h"
 
 #if TARGET_OS_TV
 #import "RCTTVRemoteHandler.h"
@@ -59,6 +60,9 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   RCTAssert(moduleName, @"A moduleName is required to create an RCTRootView");
 
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTRootView init]", nil);
+  if (!bridge.isLoading) {
+    [bridge.performanceLogger markStartForTag:RCTPLTTI];
+  }
 
   if (self = [super initWithFrame:CGRectZero]) {
     self.backgroundColor = [UIColor whiteColor];
@@ -92,11 +96,11 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     }
 #endif
 
-    if (!_bridge.loading) {
-      [self bundleFinishedLoading:([_bridge batchedBridge] ?: _bridge)];
-    }
-
     [self showLoadingView];
+
+    // Immediately schedule the application to be started.
+    // (Sometimes actual `_bridge` is already batched bridge here.)
+    [self bundleFinishedLoading:([_bridge batchedBridge] ?: _bridge)];
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -259,11 +263,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // Use the (batched) bridge that's sent in the notification payload, so the
   // RCTRootContentView is scoped to the right bridge
   RCTBridge *bridge = notification.userInfo[@"bridge"];
-  [self bundleFinishedLoading:bridge];
+  if (bridge != _contentView.bridge) {
+    [self bundleFinishedLoading:bridge];
+  }
 }
 
 - (void)bundleFinishedLoading:(RCTBridge *)bridge
 {
+  RCTAssert(bridge != nil, @"Bridge cannot be nil");
   if (!bridge.valid) {
     return;
   }

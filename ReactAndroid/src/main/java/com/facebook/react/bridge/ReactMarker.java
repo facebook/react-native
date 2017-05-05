@@ -5,6 +5,7 @@ package com.facebook.react.bridge;
 import javax.annotation.Nullable;
 
 import com.facebook.proguard.annotations.DoNotStrip;
+
 /**
  * Static class that allows markers to be placed in React code and responded to in a
  * configurable way
@@ -13,16 +14,20 @@ import com.facebook.proguard.annotations.DoNotStrip;
 public class ReactMarker {
 
   public interface MarkerListener {
-    void logMarker(String name, @Nullable String tag);
+    void logMarker(ReactMarkerConstants name, @Nullable String tag);
   };
 
   private static @Nullable MarkerListener sMarkerListener = null;
 
-  public static void setMarkerListener(MarkerListener listener) {
-    SoftAssertions.assertCondition(
-      sMarkerListener == null,
-      "MarkerListener is being overwritten.");
-    sMarkerListener = listener;
+  public static void initialize(MarkerListener listener) {
+    if (sMarkerListener == null) {
+      sMarkerListener = listener;
+    }
+  }
+
+  @DoNotStrip
+  public static void clearMarkerListener() {
+    sMarkerListener = null;
   }
 
   @DoNotStrip
@@ -31,7 +36,19 @@ public class ReactMarker {
   }
 
   @DoNotStrip
-  public static void logMarker(String name, String tag) {
+  public static void logMarker(String name, @Nullable String tag) {
+    if (sMarkerListener != null) {
+      sMarkerListener.logMarker(ReactMarkerConstants.valueOf(name), tag);
+    }
+  }
+
+  @DoNotStrip
+  public static void logMarker(ReactMarkerConstants name) {
+    logMarker(name, null);
+  }
+
+  @DoNotStrip
+  public static void logMarker(ReactMarkerConstants name, @Nullable String tag) {
     if (sMarkerListener != null) {
       sMarkerListener.logMarker(name, tag);
     }

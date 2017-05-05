@@ -95,7 +95,7 @@ public:
    */
   std::string str() const {
     const JSChar* utf16 = JSC_JSStringGetCharactersPtr(m_context, m_string);
-    int stringLength = JSC_JSStringGetLength(m_context, m_string);
+    size_t stringLength = JSC_JSStringGetLength(m_context, m_string);
     return unicode::utf16toUTF8(utf16, stringLength);
   }
 

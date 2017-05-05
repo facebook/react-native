@@ -18,13 +18,13 @@ const invariant = require('fbjs/lib/invariant');
 const minify = require('./minify');
 
 import type {LogEntry} from '../../Logger/Types';
-import type {Ast, SourceMap, TransformOptions as BabelTransformOptions} from 'babel-core';
+import type {Ast, SourceMap as MappingsMap} from 'babel-core';
 
 export type TransformedCode = {
   code: string,
   dependencies: Array<string>,
   dependencyOffsets: Array<number>,
-  map?: ?SourceMap,
+  map?: ?MappingsMap,
 };
 
 type Transformer = {
@@ -32,23 +32,24 @@ type Transformer = {
     filename: string,
     sourceCode: string,
     options: ?{},
-  ) => {ast: ?Ast, code: string, map: ?SourceMap}
+  ) => {ast: ?Ast, code: string, map: ?MappingsMap}
 };
 
-export type TransformOptions = {
-  generateSourceMaps: boolean,
-  platform: string,
-  preloadedModules?: Array<string>,
-  projectRoots: Array<string>,
-  ramGroups?: Array<string>,
-} & BabelTransformOptions;
+export type TransformOptions = {|
+  +dev: boolean,
+  +generateSourceMaps: boolean,
+  +hot: boolean,
+  +inlineRequires: {+blacklist: {[string]: true}} | boolean,
+  +platform: string,
+  +projectRoot: string,
+|};
 
-export type Options = {
+export type Options = {|
   +dev: boolean,
   +minify: boolean,
-  platform: string,
-  transform: TransformOptions,
-};
+  +platform: string,
+  +transform: TransformOptions,
+|};
 
 export type Data = {
   result: TransformedCode,
@@ -115,7 +116,7 @@ function transformCode(
     code = code.replace(/^#!.*/, '');
   }
 
-  const depsResult = isJson || options.extern
+  const depsResult = isJson
     ? {dependencies: [], dependencyOffsets: []}
     : extractDependencies(code);
 
@@ -145,7 +146,7 @@ exports.transformAndExtractDependencies = (
 ) => {
   /* $FlowFixMe: impossible to type a dynamic require */
   const transformModule = require(transform);
-  transformCode(transformModule, filename, sourceCode, options || {}, callback);
+  transformCode(transformModule, filename, sourceCode, options, callback);
 };
 
 exports.minify = (

@@ -45,7 +45,7 @@ JSValueRef nativePerformanceNow(
 }
 
 void RCTPrepareJSCExecutor() {
-  ReactMarker::logMarker = [](const std::string&) {};
+  ReactMarker::logMarker = [](const ReactMarker::ReactMarkerId) {};
   PerfLogging::installNativeHooks = RCTFBQuickPerformanceLoggerConfigureHooks;
   JSNativeHooks::loggingHook = nativeLoggingHook;
   JSNativeHooks::nowHook = nativePerformanceNow;

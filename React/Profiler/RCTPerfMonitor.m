@@ -24,6 +24,7 @@
 #import "RCTRootView.h"
 #import "RCTUIManager.h"
 #import "RCTBridge+Private.h"
+#import "RCTUtils.h"
 
 #if __has_include("RCTDevMenu.h")
 #import "RCTDevMenu.h"
@@ -321,7 +322,7 @@ RCT_EXPORT_MODULE()
 
   [self updateStats];
 
-  UIWindow *window = [UIApplication sharedApplication].delegate.window;
+  UIWindow *window = RCTSharedApplication().delegate.window;
   [window addSubview:self.container];
 
 
@@ -497,10 +498,12 @@ RCT_EXPORT_MODULE()
 
 - (void)tap
 {
+  [self loadPerformanceLoggerData];
   if (CGRectIsEmpty(_storedMonitorFrame)) {
     _storedMonitorFrame = CGRectMake(0, 20, self.container.window.frame.size.width, RCTPerfMonitorExpandHeight);
     [self.container addSubview:self.metrics];
-    [self loadPerformanceLoggerData];
+  } else {
+    [_metrics reloadData];
   }
 
   [UIView animateWithDuration:.25 animations:^{

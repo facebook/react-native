@@ -9,16 +9,15 @@
 
 #import "RCTUtils.h"
 
+#import <dlfcn.h>
 #import <mach/mach_time.h>
 #import <objc/message.h>
 #import <objc/runtime.h>
+#import <zlib.h>
 
 #import <UIKit/UIKit.h>
 
 #import <CommonCrypto/CommonCrypto.h>
-
-#import <zlib.h>
-#import <dlfcn.h>
 
 #import "RCTAssert.h"
 #import "RCTLog.h"
@@ -445,7 +444,9 @@ BOOL RCTRunningInTestEnvironment(void)
   static BOOL isTestEnvironment = NO;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    isTestEnvironment = objc_lookUpClass("SenTestCase") || objc_lookUpClass("XCTest");
+    NSDictionary *environment = [[NSProcessInfo processInfo] environment];
+    isTestEnvironment = objc_lookUpClass("SenTestCase") || objc_lookUpClass("XCTest") ||
+      [environment[@"IS_TESTING"] boolValue];
   });
   return isTestEnvironment;
 }
@@ -480,9 +481,10 @@ UIViewController *__nullable RCTPresentedViewController(void)
   }
 
   UIViewController *controller = RCTKeyWindow().rootViewController;
-
-  while (controller.presentedViewController) {
-    controller = controller.presentedViewController;
+  UIViewController *presentedController = controller.presentedViewController;
+  while (presentedController && ![presentedController isBeingDismissed]) {
+    controller = presentedController;
+    presentedController = controller.presentedViewController;
   }
 
   return controller;
@@ -510,6 +512,16 @@ NSError *RCTErrorWithMessage(NSString *message)
 double RCTZeroIfNaN(double value)
 {
   return isnan(value) || isinf(value) ? 0 : value;
+}
+
+double RCTSanitizeNaNValue(double value, NSString *property)
+{
+  if (!isnan(value) && !isinf(value)) {
+    return value;
+  }
+
+  RCTLogWarn(@"The value `%@` equals NaN or INF and will be replaced by `0`.", property);
+  return 0;
 }
 
 NSURL *RCTDataURL(NSString *mimeType, NSData *data)
@@ -629,7 +641,7 @@ static NSBundle *bundleForPath(NSString *key)
   return bundleCache[key];
 }
 
-UIImage *RCTImageFromLocalAssetURL(NSURL *imageURL)
+UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
 {
   if (!RCTIsLocalAssetURL(imageURL)) {
     return nil;
@@ -657,7 +669,7 @@ UIImage *RCTImageFromLocalAssetURL(NSURL *imageURL)
     // We did not find the image in the mainBundle, check in other shipped frameworks.
     NSArray<NSURL *> *possibleFrameworks = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:[[NSBundle mainBundle] privateFrameworksURL]
                                                                         includingPropertiesForKeys:@[]
-                                                                                           options:nil
+                                                                                           options:0
                                                                                              error:nil];
     for (NSURL *frameworkURL in possibleFrameworks) {
       bundle = [NSBundle bundleWithURL:frameworkURL];

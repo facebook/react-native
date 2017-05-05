@@ -11,7 +11,8 @@
 
 jest.disableAutomock();
 
-jest.mock('worker-farm', () => () => () => {})
+jest.mock('../../worker-farm', () => () => () => {})
+    .mock('worker-farm', () => () => () => {})
     .mock('timers', () => ({setImmediate: fn => setTimeout(fn, 0)}))
     .mock('uglify-js')
     .mock('crypto')
@@ -220,15 +221,6 @@ describe('processRequest', () => {
   });
 
   describe('file changes', () => {
-    it('invalides files in bundle when file is updated', () => {
-      return makeRequest(
-        requestHandler,
-        'mybundle.bundle?runModule=true'
-      ).then(() => {
-        server.onFileChange('all', options.projectRoots[0] + '/path/file.js');
-        expect(invalidatorFunc.mock.calls[0][0]).toEqual('root/path/file.js');
-      });
-    });
 
     it('does not rebuild the bundles that contain a file when that file is changed', () => {
       const bundleFunc = jest.fn();

@@ -11,30 +11,24 @@
 
 'use strict';
 
+const crypto = require('crypto');
 const debugRead = require('debug')('RNP:TransformCache:Read');
 const fs = require('fs');
-/**
- * We get the package "for free" with "write-file-atomic". MurmurHash3 is a
- * faster hash, but non-cryptographic and insecure, that seems reasonnable for
- * this particular use case.
- */
-const imurmurhash = require('imurmurhash');
-const jsonStableStringify = require('json-stable-stringify');
 const mkdirp = require('mkdirp');
 const path = require('path');
 const rimraf = require('rimraf');
 const terminal = require('../lib/terminal');
-const toFixedHex = require('./toFixedHex');
 const writeFileAtomicSync = require('write-file-atomic').sync;
 
-const CACHE_NAME = 'react-native-packager-cache';
-
 import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
-import type {SourceMap} from './SourceMap';
+import type {MappingsMap} from './SourceMap';
 import type {Reporter} from './reporting';
 
 type CacheFilePaths = {transformedCode: string, metadata: string};
-export type GetTransformCacheKey = (sourceCode: string, filename: string, options: {}) => string;
+export type GetTransformCacheKey = (options: {}) => string;
+
+const CACHE_NAME = 'react-native-packager-cache';
+const CACHE_SUB_DIR = 'cache';
 
 /**
  * If packager is running for two different directories, we don't want the
@@ -45,16 +39,17 @@ export type GetTransformCacheKey = (sourceCode: string, filename: string, option
 const getCacheDirPath = (function() {
   let dirPath;
   return function() {
-    if (dirPath == null) {
-      dirPath = path.join(
-        require('os').tmpdir(),
-        CACHE_NAME + '-' + imurmurhash(__dirname).result().toString(16),
-      );
-
-      require('debug')('RNP:TransformCache:Dir')(
-        `transform cache directory: ${dirPath}`
-      );
+    if (dirPath != null) {
+      return dirPath;
     }
+    const hash = crypto.createHash('sha1').update(__dirname);
+    if (process.getuid != null) {
+      hash.update(process.getuid().toString());
+    }
+    dirPath = path.join(require('os').tmpdir(), CACHE_NAME + '-' + hash.digest('hex'));
+    require('debug')('RNP:TransformCache:Dir')(
+      `transform cache directory: ${dirPath}`
+    );
     return dirPath;
   };
 })();
@@ -64,12 +59,12 @@ function hashSourceCode(props: {
   sourceCode: string,
   getTransformCacheKey: GetTransformCacheKey,
   transformOptions: TransformOptions,
+  transformOptionsKey: string,
 }): string {
-  return imurmurhash(props.getTransformCacheKey(
-    props.sourceCode,
-    props.filePath,
-    props.transformOptions,
-  )).hash(props.sourceCode).result();
+  return crypto.createHash('sha1')
+    .update(props.getTransformCacheKey(props.transformOptions))
+    .update(props.sourceCode)
+    .digest('hex');
 }
 
 /**
@@ -79,15 +74,15 @@ function hashSourceCode(props: {
  */
 function getCacheFilePaths(props: {
   filePath: string,
-  transformOptions: TransformOptions,
+  transformOptionsKey: string,
 }): CacheFilePaths {
-  const hasher = imurmurhash()
-    .hash(props.filePath)
-    .hash(jsonStableStringify(props.transformOptions) || '');
-  const hash = toFixedHex(8, hasher.result());
+  const hasher = crypto.createHash('sha1')
+    .update(props.filePath)
+    .update(props.transformOptionsKey);
+  const hash = hasher.digest('hex');
   const prefix = hash.substr(0, 2);
-  const fileName = `${hash.substr(2)}${path.basename(props.filePath)}`;
-  const base = path.join(getCacheDirPath(), prefix, fileName);
+  const fileName = `${hash.substr(2)}`;
+  const base = path.join(getCacheDirPath(), CACHE_SUB_DIR, prefix, fileName);
   return {transformedCode: base, metadata: base + '.meta'};
 }
 
@@ -95,8 +90,13 @@ export type CachedResult = {
   code: string,
   dependencies: Array<string>,
   dependencyOffsets: Array<number>,
-  map?: ?SourceMap,
+  map?: ?MappingsMap,
 };
+
+export type TransformCacheResult = {|
+  +result: ?CachedResult,
+  +outdatedDependencies: $ReadOnlyArray<string>,
+|};
 
 /**
  * We want to unlink all cache files before writing, so that it is as much
@@ -135,6 +135,7 @@ function writeSync(props: {
   sourceCode: string,
   getTransformCacheKey: GetTransformCacheKey,
   transformOptions: TransformOptions,
+  transformOptionsKey: string,
   result: CachedResult,
 }): void {
   const cacheFilePath = getCacheFilePaths(props);
@@ -144,7 +145,7 @@ function writeSync(props: {
   unlinkIfExistsSync(cacheFilePath.metadata);
   writeFileAtomicSync(cacheFilePath.transformedCode, result.code);
   writeFileAtomicSync(cacheFilePath.metadata, JSON.stringify([
-    imurmurhash(result.code).result(),
+    crypto.createHash('sha1').update(result.code).digest('hex'),
     hashSourceCode(props),
     result.dependencies,
     result.dependencyOffsets,
@@ -178,34 +179,13 @@ const GARBAGE_COLLECTOR = new (class GarbageCollector {
     this._cacheWasReset = false;
   }
 
-  _collectSync() {
-    const cacheDirPath = getCacheDirPath();
-    mkdirp.sync(cacheDirPath);
-    const prefixDirs = fs.readdirSync(cacheDirPath);
-    for (let i = 0; i < prefixDirs.length; ++i) {
-      const prefixDir = path.join(cacheDirPath, prefixDirs[i]);
-      const cacheFileNames = fs.readdirSync(prefixDir);
-      for (let j = 0; j < cacheFileNames.length; ++j) {
-        const cacheFilePath = path.join(prefixDir, cacheFileNames[j]);
-        const stats = fs.lstatSync(cacheFilePath);
-        const timeSinceLastAccess = Date.now() - stats.atime.getTime();
-        if (
-          stats.isFile() &&
-          timeSinceLastAccess > CACHE_FILE_MAX_LAST_ACCESS_TIME
-        ) {
-          fs.unlinkSync(cacheFilePath);
-        }
-      }
-    }
-  }
-
   /**
    * We want to avoid preventing tool use if the cleanup fails for some reason,
    * but still provide some chance for people to report/fix things.
    */
   _collectSyncNoThrow() {
     try {
-      this._collectSync();
+      collectCacheIfOldSync();
     } catch (error) {
       terminal.log(error.stack);
       terminal.log(
@@ -239,14 +219,65 @@ const GARBAGE_COLLECTOR = new (class GarbageCollector {
 
 })();
 
+/**
+ * When restarting packager we want to avoid running the collection over again, so we store
+ * the last collection time in a file and we check that first.
+ */
+function collectCacheIfOldSync() {
+  const cacheDirPath = getCacheDirPath();
+  mkdirp.sync(cacheDirPath);
+  const cacheCollectionFilePath = path.join(cacheDirPath, 'last_collected');
+  const lastCollected = Number.parseInt(tryReadFileSync(cacheCollectionFilePath, 'utf8'), 10);
+  if (Number.isInteger(lastCollected) && Date.now() - lastCollected > GARBAGE_COLLECTION_PERIOD) {
+    return;
+  }
+  const effectiveCacheDirPath = path.join(cacheDirPath, CACHE_SUB_DIR);
+  mkdirp.sync(effectiveCacheDirPath);
+  collectCacheSync(effectiveCacheDirPath);
+  fs.writeFileSync(cacheCollectionFilePath, Date.now().toString());
+}
+
+/**
+ * Remove all the cache files from the specified folder that are older than a certain duration.
+ */
+function collectCacheSync(dirPath: string) {
+  const prefixDirs = fs.readdirSync(dirPath);
+  for (let i = 0; i < prefixDirs.length; ++i) {
+    const prefixDir = path.join(dirPath, prefixDirs[i]);
+    const cacheFileNames = fs.readdirSync(prefixDir);
+    for (let j = 0; j < cacheFileNames.length; ++j) {
+      const cacheFilePath = path.join(prefixDir, cacheFileNames[j]);
+      const stats = fs.lstatSync(cacheFilePath);
+      const timeSinceLastAccess = Date.now() - stats.atime.getTime();
+      if (
+        stats.isFile() &&
+        timeSinceLastAccess > CACHE_FILE_MAX_LAST_ACCESS_TIME
+      ) {
+        fs.unlinkSync(cacheFilePath);
+      }
+    }
+  }
+}
+
+function tryReadFileSync(filePath: string): string {
+  try {
+    return fs.readFileSync(filePath, 'utf8');
+  } catch (error) {
+    if (error.code !== 'ENOENT') {
+      throw error;
+    }
+    return '';
+  }
+}
+
 function readMetadataFileSync(
   metadataFilePath: string,
 ): ?{
-  cachedResultHash: number,
-  cachedSourceHash: number,
+  cachedResultHash: string,
+  cachedSourceHash: string,
   dependencies: Array<string>,
   dependencyOffsets: Array<number>,
-  sourceMap: ?SourceMap,
+  sourceMap: ?MappingsMap,
 } {
   const metadataStr = fs.readFileSync(metadataFilePath, 'utf8');
   let metadata;
@@ -269,8 +300,8 @@ function readMetadataFileSync(
     sourceMap,
   ] = metadata;
   if (
-    typeof cachedResultHash !== 'number' ||
-    typeof cachedSourceHash !== 'number' ||
+    typeof cachedResultHash !== 'string' ||
+    typeof cachedSourceHash !== 'string' ||
     !(
       Array.isArray(dependencies) &&
       dependencies.every(dep => typeof dep === 'string')
@@ -296,9 +327,12 @@ export type ReadTransformProps = {
   filePath: string,
   sourceCode: string,
   transformOptions: TransformOptions,
+  transformOptionsKey: string,
   getTransformCacheKey: GetTransformCacheKey,
   cacheOptions: CacheOptions,
 };
+
+const EMPTY_ARRAY = [];
 
 /**
  * We verify the source hash matches to ensure we always favor rebuilding when
@@ -313,40 +347,44 @@ export type ReadTransformProps = {
  * Meanwhile we store transforms with different options in different files so
  * that it is fast to switch between ex. minified, or not.
  */
-function readSync(props: ReadTransformProps): ?CachedResult {
+function readSync(props: ReadTransformProps): TransformCacheResult {
   GARBAGE_COLLECTOR.collectIfNecessarySync(props.cacheOptions);
   const cacheFilePaths = getCacheFilePaths(props);
   let metadata, transformedCode;
   try {
     metadata = readMetadataFileSync(cacheFilePaths.metadata);
     if (metadata == null) {
-      return null;
+      return {result: null, outdatedDependencies: EMPTY_ARRAY};
     }
     const sourceHash = hashSourceCode(props);
     if (sourceHash !== metadata.cachedSourceHash) {
-      return null;
+      return {result: null, outdatedDependencies: metadata.dependencies};
     }
     transformedCode = fs.readFileSync(cacheFilePaths.transformedCode, 'utf8');
-    if (metadata.cachedResultHash !== imurmurhash(transformedCode).result()) {
-      return null;
+    const codeHash = crypto.createHash('sha1').update(transformedCode).digest('hex');
+    if (metadata.cachedResultHash !== codeHash) {
+      return {result: null, outdatedDependencies: metadata.dependencies};
     }
   } catch (error) {
     if (error.code === 'ENOENT') {
-      return null;
+      return {result: null, outdatedDependencies: EMPTY_ARRAY};
     }
     throw error;
   }
   return {
-    code: transformedCode,
-    dependencies: metadata.dependencies,
-    dependencyOffsets: metadata.dependencyOffsets,
-    map: metadata.sourceMap,
+    result: {
+      code: transformedCode,
+      dependencies: metadata.dependencies,
+      dependencyOffsets: metadata.dependencyOffsets,
+      map: metadata.sourceMap,
+    },
+    outdatedDependencies: EMPTY_ARRAY,
   };
 }
 
 module.exports = {
   writeSync,
-  readSync(props: ReadTransformProps): ?CachedResult {
+  readSync(props: ReadTransformProps): TransformCacheResult {
     const result = readSync(props);
     const msg = result ? 'Cache hit: ' : 'Cache miss: ';
     debugRead(msg + props.filePath);

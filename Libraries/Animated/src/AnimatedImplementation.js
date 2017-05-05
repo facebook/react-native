@@ -289,7 +289,6 @@ class TimingAnimation extends Animation {
       type: 'frames',
       frames,
       toValue: this._toValue,
-      delay: this._delay,
       iterations: this.__iterations,
     };
   }
@@ -1139,12 +1138,12 @@ class AnimatedInterpolation extends AnimatedWithChildren {
         return value;
       }
       if (/deg$/.test(value)) {
-        const degrees = parseFloat(value, 10) || 0;
+        const degrees = parseFloat(value) || 0;
         const radians = degrees * Math.PI / 180.0;
         return radians;
       } else {
         // Assume radians
-        return parseFloat(value, 10) || 0;
+        return parseFloat(value) || 0;
       }
     });
   }
@@ -1328,6 +1327,7 @@ class AnimatedModulo extends AnimatedWithChildren {
 
   __detach(): void {
     this._a.__removeChild(this);
+    super.__detach();
   }
 
   __getNativeConfig(): any {
@@ -1378,6 +1378,7 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
 
   __detach(): void {
     this._a.__removeChild(this);
+    super.__detach();
   }
 
   __getNativeConfig(): any {
@@ -1461,6 +1462,7 @@ class AnimatedTransform extends AnimatedWithChildren {
         }
       }
     });
+    super.__detach();
   }
 
   __getNativeConfig(): any {
@@ -1568,6 +1570,7 @@ class AnimatedStyle extends AnimatedWithChildren {
         value.__removeChild(this);
       }
     }
+    super.__detach();
   }
 
   __makeNative() {
@@ -1855,14 +1858,24 @@ function createAnimatedComponent(Component: any): any {
       return this._component;
     }
   }
+
+  // ReactNative `View.propTypes` have been deprecated in favor of
+  // `ViewPropTypes`. In their place a temporary getter has been added with a
+  // deprecated warning message. Avoid triggering that warning here by using
+  // temporary workaround, __propTypesSecretDontUseThesePlease.
+  // TODO (bvaughn) Revert this particular change any time after April 1
+  var propTypes =
+    Component.__propTypesSecretDontUseThesePlease ||
+    Component.propTypes;
+
   AnimatedComponent.propTypes = {
     style: function(props, propName, componentName) {
-      if (!Component.propTypes) {
+      if (!propTypes) {
         return;
       }
 
       for (var key in ViewStylePropTypes) {
-        if (!Component.propTypes[key] && props[key] !== undefined) {
+        if (!propTypes[key] && props[key] !== undefined) {
           console.warn(
             'You are setting the style `{ ' + key + ': ... }` as a prop. You ' +
             'should nest it in a style object. ' +

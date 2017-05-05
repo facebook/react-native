@@ -3,6 +3,7 @@ CXX_LIBRARY_COMPILER_FLAGS = []
 REACT_LIBRARY_EXTRA_COMPILER_FLAGS = []
 
 if THIS_IS_FBOBJC:
+  include_defs("xplat//configurations/buck/apple/dependency_aggregator_defs")
   inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS
   CXX_LIBRARY_COMPILER_FLAGS = inherited_buck_flags.get_flag_value('compiler_flags')
   REACT_LIBRARY_EXTRA_COMPILER_FLAGS = ['-Wno-shadow', '-Wno-missing-prototypes', '-Wno-global-constructors']
@@ -62,6 +63,12 @@ if THIS_IS_FBANDROID:
     )
 
 if THIS_IS_FBOBJC:
+
+  if should_use_dependency_aggregation():
+    INSPECTOR_FLAGS = []
+  else:
+    INSPECTOR_FLAGS = [ '-DWITH_INSPECTOR=1', ]
+
   def react_library(**kwargs):
     fb_apple_library(
       name = 'bridge',
@@ -75,7 +82,7 @@ if THIS_IS_FBOBJC:
       ],
       **kwargs_add(
         kwargs,
-        preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS,
+        preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS + INSPECTOR_FLAGS,
         deps = [
           '//xplat/folly:molly',
         ],
@@ -129,14 +136,11 @@ cxx_library(
 CXXREACT_PUBLIC_HEADERS = [
     "CxxNativeModule.h",
     "Executor.h",
-    "ExecutorToken.h",
-    "ExecutorTokenFactory.h",
     "Instance.h",
-    "JSCExecutor.h",
-    "JSCNativeModules.h",
-    "JSCWebWorker.h",
     "JSBigString.h",
     "JSBundleType.h",
+    "JSCExecutor.h",
+    "JSCNativeModules.h",
     "JSIndexedRAMBundle.h",
     "JSModulesUnbundle.h",
     "MessageQueueThread.h",
@@ -146,6 +150,7 @@ CXXREACT_PUBLIC_HEADERS = [
     "NativeToJsBridge.h",
     "Platform.h",
     "RecoverableError.h",
+    "SharedProxyCxxModule.h",
     "SystraceSection.h",
 ]
 

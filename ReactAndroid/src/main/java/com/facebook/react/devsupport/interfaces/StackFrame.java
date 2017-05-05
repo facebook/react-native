@@ -9,6 +9,8 @@
 
 package com.facebook.react.devsupport.interfaces;
 
+import org.json.JSONObject;
+
 /**
   * Represents a generic entry in a stack trace, be it originally from JS or Java.
   */
@@ -43,4 +45,9 @@ public interface StackFrame {
     * name, not the full path. For Java traces there is no difference.
     */
   public String getFileName();
+
+  /**
+   * Convert the stack frame to a JSON representation.
+   */
+  public JSONObject toJSON();
 }

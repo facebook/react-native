@@ -70,7 +70,7 @@ class GeolocationExample extends React.Component {
   }
 
   componentWillUnmount() {
-    navigator.geolocation.clearWatch(this.watchID);
+    this.watchID != null && navigator.geolocation.clearWatch(this.watchID);
   }
 
   render() {

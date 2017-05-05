@@ -46,7 +46,7 @@ type Async$Queue<T, C> = {
 };
 
 type LoadQueue =
-  Async$Queue<{id: string, parent: string}, Callback<File, Array<string>>>;
+  Async$Queue<{id: string, parent: ?string}, Callback<File, Array<string>>>;
 
 const createParentModule =
   () => ({file: {code: '', type: 'script', path: ''}, dependencies: []});
@@ -57,7 +57,6 @@ const NO_OPTIONS = {};
 exports.create = function create(resolve: ResolveFn, load: LoadFn): GraphFn {
   function Graph(entryPoints, platform, options, callback = noop) {
     const {
-      cwd = '',
       log = (console: any),
       optimize = false,
       skip,
@@ -74,7 +73,7 @@ exports.create = function create(resolve: ResolveFn, load: LoadFn): GraphFn {
       memoize((file, cb) => load(file, {log, optimize}, cb)),
     ), Number.MAX_SAFE_INTEGER);
 
-    const {collect, loadModule} = createGraphHelpers(loadQueue, cwd, skip);
+    const {collect, loadModule} = createGraphHelpers(loadQueue, skip);
 
     loadQueue.drain = () => {
       loadQueue.kill();
@@ -101,7 +100,7 @@ exports.create = function create(resolve: ResolveFn, load: LoadFn): GraphFn {
   return Graph;
 };
 
-function createGraphHelpers(loadQueue, cwd, skip) {
+function createGraphHelpers(loadQueue, skip) {
   const modules = new Map([[null, createParentModule()]]);
 
   function collect(
@@ -132,7 +131,7 @@ function createGraphHelpers(loadQueue, cwd, skip) {
 
   function loadModule(id, parent, parentDepIndex) {
     loadQueue.push(
-      {id, parent: parent != null ? parent : cwd},
+      {id, parent},
       (error, file, dependencyIDs) =>
         onFileLoaded(error, file, dependencyIDs, id, parent, parentDepIndex),
     );

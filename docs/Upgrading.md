@@ -26,7 +26,7 @@ a minimum of conflicts. Under the hood, it consists in 2 phases:
 * Then, the patch is applied on the user's sources.
 
 ### 1. Install Git
-Your project doesn't have to be handled by the Git versioning sytem (could be Mercurial, SVN or none)
+Your project doesn't have to be handled by the Git versioning system (could be Mercurial, SVN or none)
 but Git has to be installed and available in the `PATH`. You can download Git here:
 https://git-scm.com/downloads
 

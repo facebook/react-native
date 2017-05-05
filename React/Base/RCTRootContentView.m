@@ -19,7 +19,6 @@
 
 @implementation RCTRootContentView
 {
-  __weak RCTBridge *_bridge;
   UIColor *_backgroundColor;
 }
 

@@ -41,16 +41,33 @@ static BOOL RCTLogsError(void (^block)(void))
   CGRect _s;
 }
 
+static RCTModuleMethod *buildDefaultMethodWithMethodSignature(NSString *methodSignature) {
+  return [[RCTModuleMethod alloc] initWithMethodSignature:methodSignature
+                                             JSMethodName:nil
+                                                   isSync:NO
+                                              moduleClass:[RCTModuleMethodTests class]];
+}
+
+static RCTModuleMethod *buildSyncMethodWithMethodSignature(NSString *methodSignature) {
+  return [[RCTModuleMethod alloc] initWithMethodSignature:methodSignature
+                                             JSMethodName:nil
+                                                   isSync:YES
+                                              moduleClass:[RCTModuleMethodTests class]];
+}
+
 + (NSString *)moduleName { return nil; }
 
+- (void)doFoo { }
+
 - (void)doFooWithBar:(__unused NSString *)bar { }
+
+- (id)echoString:(NSString *)input { return input; }
+- (id)methodThatReturnsNil { return nil; }
 
 - (void)testNonnull
 {
   NSString *methodSignature = @"doFooWithBar:(nonnull NSString *)bar";
-  RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithMethodSignature:methodSignature
-                                                                JSMethodName:nil
-                                                                 moduleClass:[self class]];
+  RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
   XCTAssertFalse(RCTLogsError(^{
     [method invokeWithBridge:nil module:self arguments:@[@"Hello World"]];
   }));
@@ -73,9 +90,7 @@ static BOOL RCTLogsError(void (^block)(void))
     // Specifying an NSNumber param without nonnull isn't allowed
     XCTAssertTrue(RCTLogsError(^{
       NSString *methodSignature = @"doFooWithNumber:(NSNumber *)n";
-      RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithMethodSignature:methodSignature
-                                                                    JSMethodName:nil
-                                                                     moduleClass:[self class]];
+      RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
       // Invoke method to trigger parsing
       [method invokeWithBridge:nil module:self arguments:@[@1]];
     }));
@@ -83,9 +98,7 @@ static BOOL RCTLogsError(void (^block)(void))
 
   {
     NSString *methodSignature = @"doFooWithNumber:(nonnull NSNumber *)n";
-    RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithMethodSignature:methodSignature
-                                                                  JSMethodName:nil
-                                                                   moduleClass:[self class]];
+    RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(RCTLogsError(^{
       [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
     }));
@@ -93,9 +106,7 @@ static BOOL RCTLogsError(void (^block)(void))
 
   {
     NSString *methodSignature = @"doFooWithDouble:(double)n";
-    RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithMethodSignature:methodSignature
-                                                                  JSMethodName:nil
-                                                                   moduleClass:[self class]];
+    RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(RCTLogsError(^{
       [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
     }));
@@ -103,9 +114,7 @@ static BOOL RCTLogsError(void (^block)(void))
 
   {
     NSString *methodSignature = @"doFooWithInteger:(NSInteger)n";
-    RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithMethodSignature:methodSignature
-                                                                  JSMethodName:nil
-                                                                   moduleClass:[self class]];
+    RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(RCTLogsError(^{
       [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
     }));
@@ -115,9 +124,7 @@ static BOOL RCTLogsError(void (^block)(void))
 - (void)testStructArgument
 {
   NSString *methodSignature = @"doFooWithCGRect:(CGRect)s";
-  RCTModuleMethod *method = [[RCTModuleMethod alloc] initWithMethodSignature:methodSignature
-                                                                JSMethodName:nil
-                                                                 moduleClass:[self class]];
+  RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
 
   CGRect r = CGRectMake(10, 20, 30, 40);
   [method invokeWithBridge:nil module:self arguments:@[@[@10, @20, @30, @40]]];
@@ -130,9 +137,7 @@ static BOOL RCTLogsError(void (^block)(void))
 
   __block RCTModuleMethod *method;
   XCTAssertFalse(RCTLogsError(^{
-    method = [[RCTModuleMethod alloc] initWithMethodSignature:methodSignature
-                                                 JSMethodName:nil
-                                                  moduleClass:[self class]];
+    method = buildDefaultMethodWithMethodSignature(methodSignature);
   }));
 
   XCTAssertEqualObjects(method.JSMethodName, @"doFoo");
@@ -140,6 +145,73 @@ static BOOL RCTLogsError(void (^block)(void))
   XCTAssertFalse(RCTLogsError(^{
     [method invokeWithBridge:nil module:self arguments:@[@"bar"]];
   }));
+}
+
+- (void)testFunctionType
+{
+  {
+    NSString *methodSignature = @"doFoo";
+    RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
+    XCTAssertTrue(method.functionType == RCTFunctionTypeNormal);
+  }
+
+  {
+    NSString *methodSignature = @"openURL:(NSURL *)URL resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject";
+    RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
+    XCTAssertTrue(method.functionType == RCTFunctionTypePromise);
+  }
+
+  {
+    NSString *methodSignature = @"echoString:(NSString *)input";
+    RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
+    XCTAssertTrue(method.functionType == RCTFunctionTypeSync);
+  }
+}
+
+- (void)testReturnsValueForSyncFunction
+{
+  {
+    NSString *methodSignature = @"echoString:(NSString *)input";
+    RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
+    id result = [method invokeWithBridge:nil module:self arguments:@[@"Test String Value"]];
+    XCTAssertEqualObjects(result, @"Test String Value");
+  }
+
+  {
+    NSString *methodSignature = @"methodThatReturnsNil";
+    RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
+    id result = [method invokeWithBridge:nil module:self arguments:@[]];
+    XCTAssertNil(result);
+  }
+}
+
+- (void)testReturnsNilForDefaultFunction
+{
+  NSString *methodSignature = @"doFoo";
+  RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
+  id result = [method invokeWithBridge:nil module:self arguments:@[]];
+  XCTAssertNil(result);
+}
+
+- (void)testReturnTypeForSyncFunction
+{
+  {
+    NSString *methodSignature = @"methodThatReturnsNil";
+    RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
+    XCTAssertFalse(RCTLogsError(^{
+      // Invoke method to trigger parsing
+      __unused SEL selector = method.selector;
+    }), @"Unexpected error when parsing sync function with (id) return type");
+  }
+
+  {
+    NSString *methodSignature = @"doFoo";
+    RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
+    XCTAssertTrue(RCTLogsError(^{
+      // Invoke method to trigger parsing
+      __unused SEL selector = method.selector;
+    }), @"Failed to trigger an error when parsing sync function with non-(id) return type");
+  }
 }
 
 @end
