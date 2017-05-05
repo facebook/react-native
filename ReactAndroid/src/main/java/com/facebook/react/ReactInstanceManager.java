@@ -69,6 +69,8 @@ import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
+import static com.facebook.react.bridge.ReactMarkerConstants.ATTACH_MEASURED_ROOT_VIEWS_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.ATTACH_MEASURED_ROOT_VIEWS_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_CATALYST_INSTANCE_END;
@@ -808,11 +810,13 @@ public class ReactInstanceManager {
     mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
     moveReactContextToCurrentLifecycleState();
 
+    ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
     synchronized (mAttachedRootViews) {
       for (ReactRootView rootView : mAttachedRootViews) {
         attachMeasuredRootViewToInstance(rootView, catalystInstance);
       }
     }
+    ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
 
     ReactInstanceEventListener[] listeners =
       new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
