@@ -126,7 +126,6 @@ const RefreshControl = React.createClass({
     size: PropTypes.oneOf([RefreshLayoutConsts.SIZE.DEFAULT, RefreshLayoutConsts.SIZE.LARGE]),
     /**
      * Progress view top offset
-     * @platform android
      */
     progressViewOffset: PropTypes.number,
   },
