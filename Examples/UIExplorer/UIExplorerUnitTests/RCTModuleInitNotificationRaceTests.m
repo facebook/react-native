@@ -16,7 +16,6 @@
 #import <XCTest/XCTest.h>
 
 #import <RCTTest/RCTTestRunner.h>
-#import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTJavaScriptExecutor.h>
