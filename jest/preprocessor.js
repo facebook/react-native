@@ -12,12 +12,10 @@ const babel = require('babel-core');
 const babelRegisterOnly = require('../packager/babelRegisterOnly');
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
 const path = require('path');
+const setupBabel = require('../setupBabel');
 
-const nodeFiles = RegExp([
-  '/local-cli/',
-  '/packager/(?!src/Resolver/polyfills/)',
-].join('|'));
-const nodeOptions = babelRegisterOnly.config([nodeFiles]);
+const nodeFiles = setupBabel.getOnlyList();
+const nodeOptions = babelRegisterOnly.config(nodeFiles);
 
 babelRegisterOnly([]);
 // has to be required after setting up babelRegisterOnly
@@ -25,7 +23,7 @@ const transformer = require('../packager/transformer.js');
 
 module.exports = {
   process(src, file) {
-    if (nodeFiles.test(file)) { // node specific transforms only
+    if (nodeFiles.some(regExp => regExp.test(file))) { // node specific transforms only
       return babel.transform(
         src,
         Object.assign({filename: file}, nodeOptions)
