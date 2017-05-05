@@ -127,6 +127,7 @@ class NotificationExample extends React.Component {
   }
 
   _onRemoteNotification(notification) {
+    notification.finish(PushNotificationIOS.FetchResult.NewData);
     AlertIOS.alert(
       'Push Notification Received',
       'Alert message: ' + notification.getMessage(),
