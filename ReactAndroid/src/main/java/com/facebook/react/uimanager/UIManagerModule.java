@@ -233,7 +233,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
-    getReactApplicationContext().assertOnNativeModulesQueueThread();
+    getReactApplicationContext().assertOnUIBackgroundOrNativeModulesThread();
 
     mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight);
   }
