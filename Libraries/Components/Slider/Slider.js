@@ -114,6 +114,12 @@ var Slider = React.createClass({
     thumbImage: Image.propTypes.source,
 
     /**
+     * Sets the height for the track image.
+     * @platform ios
+     */
+    trackHeight: PropTypes.number,
+
+    /**
      * Color of the foreground switch grip.
      * @platform android
      */

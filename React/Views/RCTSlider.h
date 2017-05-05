@@ -25,5 +25,7 @@
 
 @property (nonatomic, strong) UIImage *thumbImage;
 
+@property (nonatomic, strong) NSNumber *trackHeight;
+
 
 @end
