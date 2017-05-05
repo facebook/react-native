@@ -83,13 +83,13 @@ class CameraRollExample extends React.Component {
     }
   };
 
-  _renderImage = (asset) => {
+  _renderImage = (asset: Image) => {
     const imageSize = this.state.bigImages ? 150 : 75;
     const imageStyle = [styles.image, {width: imageSize, height: imageSize}];
     const {location} = asset.node;
     const locationStr = location ? JSON.stringify(location) : 'Unknown location';
     return (
-      <TouchableOpacity key={asset} onPress={ this.loadAsset.bind( this, asset ) }>
+      <TouchableOpacity key={asset.node.image.uri} onPress={ this.loadAsset.bind( this, asset ) }>
         <View style={styles.row}>
           <Image
             source={asset.node.image}
