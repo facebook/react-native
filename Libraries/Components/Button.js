@@ -56,7 +56,7 @@ class Button extends React.Component {
     accessibilityLabel?: ?string,
     disabled?: ?boolean,
     testID?: ?string,
-      textSizeIos?:?int,
+      textSizeIos?:?string,
   };
 
   static propTypes = {
@@ -87,7 +87,7 @@ class Button extends React.Component {
       /**
        * Size to change button's textSize (only in IOS)
        */
-      textSizeIos: React.PropTypes.int,
+      textSizeIos: React.PropTypes.string,
   };
 
   render() {
@@ -108,8 +108,8 @@ class Button extends React.Component {
     } else if (color) {
       buttonStyles.push({backgroundColor: color});
     }
-    if(textSizeIos&&Platform.OS=='ios'){
-        textStyles.push({fontSize:textSizeIos});
+    if (textSizeIos&&Platform.OS==='ios') {
+        textStyles.push({fontSize:parseInt(textSizeIos)});
     }
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
