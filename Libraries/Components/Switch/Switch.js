@@ -21,6 +21,8 @@ const ViewPropTypes = require('ViewPropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
 
+var { PropTypes } = React;
+
 type DefaultProps = {
   value: boolean,
   disabled: boolean,
