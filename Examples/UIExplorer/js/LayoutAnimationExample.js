@@ -31,12 +31,22 @@ const {
   Text,
   View,
   TouchableOpacity,
+  Platform,
+  UIManager
 } = ReactNative;
 
 class AddRemoveExample extends React.Component {
-  state = {
-    views: [],
-  };
+  state: any;
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      views: [],
+    };
+    if (Platform.OS === 'android') {
+      UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+  }
 
   componentWillUpdate() {
     LayoutAnimation.easeInEaseOut();
