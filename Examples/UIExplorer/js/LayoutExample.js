@@ -29,7 +29,14 @@ var {
   StyleSheet,
   Text,
   View,
+  Platform,
+  UIManager,
 } = ReactNative;
+
+if (Platform.OS === 'android') {
+  UIManager.setLayoutAnimationEnabledExperimental &&
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');
