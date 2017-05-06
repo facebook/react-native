@@ -16,7 +16,6 @@ const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
-const PropTypes = require('prop-types');
 const TouchableNativeFeedback = require('TouchableNativeFeedback');
 const TouchableOpacity = require('TouchableOpacity');
 const View = require('View');
