@@ -114,21 +114,31 @@ function transform(src, filename, options) {
 
   try {
     const babelConfig = buildBabelConfig(filename, options);
-    const {ast} = babel.transform(src, babelConfig);
-    const result = generate(ast, {
-      comments: false,
-      compact: false,
-      filename,
-      sourceFileName: filename,
-      sourceMaps: true,
-    }, src);
+    const {ast, ignored} = babel.transform(src, babelConfig);
 
-    return {
-      ast,
-      code: result.code,
-      filename,
-      map: options.generateSourceMaps ? result.map : result.rawMappings.map(compactMapping),
-    };
+    if (ignored) {
+      return {
+        ast: null,
+        code: src,
+        filename,
+        map: null
+      };
+    } else {
+      const result = generate(ast, {
+        comments: false,
+        compact: false,
+        filename,
+        sourceFileName: filename,
+        sourceMaps: true,
+      }, src);
+
+      return {
+        ast,
+        code: result.code,
+        filename,
+        map: options.generateSourceMaps ? result.map : result.rawMappings.map(compactMapping),
+      };
+    }
   } finally {
     process.env.BABEL_ENV = OLD_BABEL_ENV;
   }
