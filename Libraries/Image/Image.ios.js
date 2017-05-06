@@ -144,7 +144,7 @@ const Image = React.createClass({
      * control how networked request interacts with the local cache.
      *
      * The currently supported formats are `png`, `jpg`, `jpeg`, `bmp`, `gif`,
-     * `webp`, `psd`, `tiff`.
+     * `webp` (Android only), `psd` (iOS only).
      */
     source: ImageSourcePropType,
     /**
