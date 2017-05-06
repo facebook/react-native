@@ -159,70 +159,70 @@
 		};
 		1380DC981E70C0DD00E7C47D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactCxx.xcodeproj */;
+			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactLegacy.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 83CBBA2E1A601D0E00E9B192;
 			remoteInfo = React;
 		};
 		1380DC9A1E70C0DD00E7C47D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactCxx.xcodeproj */;
+			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactLegacy.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 2D2A28131D9B038B00D4039D;
 			remoteInfo = "React-tvOS";
 		};
 		1380DC9C1E70C0DD00E7C47D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactCxx.xcodeproj */;
+			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactLegacy.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 3D3C059A1DE3340900C268FA;
 			remoteInfo = yoga;
 		};
 		1380DC9E1E70C0DD00E7C47D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactCxx.xcodeproj */;
+			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactLegacy.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 3D3C06751DE3340C00C268FA;
 			remoteInfo = "yoga-tvOS";
 		};
 		1380DCA01E70C0DD00E7C47D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactCxx.xcodeproj */;
+			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactLegacy.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 3D3CD9251DE5FBEC00167DC4;
 			remoteInfo = cxxreact;
 		};
 		1380DCA21E70C0DD00E7C47D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactCxx.xcodeproj */;
+			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactLegacy.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 3D3CD9321DE5FBEE00167DC4;
 			remoteInfo = "cxxreact-tvOS";
 		};
 		1380DCA41E70C0DD00E7C47D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactCxx.xcodeproj */;
+			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactLegacy.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 3D3CD90B1DE5FBD600167DC4;
 			remoteInfo = jschelpers;
 		};
 		1380DCA61E70C0DD00E7C47D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactCxx.xcodeproj */;
+			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactLegacy.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 3D3CD9181DE5FBD800167DC4;
 			remoteInfo = "jschelpers-tvOS";
 		};
 		1380DCA81E70C0DD00E7C47D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactCxx.xcodeproj */;
+			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactLegacy.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 139D7ECE1E25DB7D00323FB7;
 			remoteInfo = "third-party";
 		};
 		1380DCAA1E70C0DD00E7C47D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactCxx.xcodeproj */;
+			containerPortal = 1380DC8B1E70C0DC00E7C47D /* ReactLegacy.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 139D7E881E25C6D100323FB7;
 			remoteInfo = "double-conversion";
@@ -394,7 +394,7 @@
 		134454551AAFCAAE003F0779 /* RCTAdSupport.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAdSupport.xcodeproj; path = ../../Libraries/AdSupport/RCTAdSupport.xcodeproj; sourceTree = "<group>"; };
 		134A8A201AACED6A00945AAE /* RCTGeolocation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTGeolocation.xcodeproj; path = ../../Libraries/Geolocation/RCTGeolocation.xcodeproj; sourceTree = "<group>"; };
 		134CB9291C85A38800265FA6 /* RCTModuleInitTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuleInitTests.m; sourceTree = "<group>"; };
-		1380DC8B1E70C0DC00E7C47D /* ReactCxx.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactCxx.xcodeproj; path = ../../React/ReactCxx.xcodeproj; sourceTree = "<group>"; };
+		1380DC8B1E70C0DC00E7C47D /* ReactLegacy.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactLegacy.xcodeproj; path = ../../React/ReactLegacy.xcodeproj; sourceTree = "<group>"; };
 		138D6A161B53CD440074A87E /* RCTShadowViewTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTShadowViewTests.m; sourceTree = "<group>"; };
 		138DEE021B9EDDDB007F4EA5 /* RCTCameraRoll.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTCameraRoll.xcodeproj; path = ../../Libraries/CameraRoll/RCTCameraRoll.xcodeproj; sourceTree = "<group>"; };
 		1393D0371B68CD1300E1B601 /* RCTModuleMethodTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuleMethodTests.m; sourceTree = "<group>"; };
@@ -559,7 +559,7 @@
 		1316A21D1AA397F400C0188E /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				1380DC8B1E70C0DC00E7C47D /* ReactCxx.xcodeproj */,
+				1380DC8B1E70C0DC00E7C47D /* ReactLegacy.xcodeproj */,
 				14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */,
 				134454551AAFCAAE003F0779 /* RCTAdSupport.xcodeproj */,
 				13E5019C1D07A502005F35D8 /* RCTAnimation.xcodeproj */,
@@ -1037,7 +1037,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "UIExplorerCxx" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "UIExplorerLegacy" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -1107,7 +1107,7 @@
 				},
 				{
 					ProductGroup = 1380DC8C1E70C0DC00E7C47D /* Products */;
-					ProjectRef = 1380DC8B1E70C0DC00E7C47D /* ReactCxx.xcodeproj */;
+					ProjectRef = 1380DC8B1E70C0DC00E7C47D /* ReactLegacy.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -2074,7 +2074,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "UIExplorerCxx" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "UIExplorerLegacy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

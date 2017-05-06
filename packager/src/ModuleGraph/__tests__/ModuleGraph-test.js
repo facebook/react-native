@@ -28,7 +28,8 @@ describe('build setup', () => {
       expect(prelude).toEqual({
         dependencies: [],
         file: {
-          code: 'var __DEV__=true,__BUNDLE_START_TIME__=Date.now();',
+          code: 'var __DEV__=true,__BUNDLE_START_TIME__=' +
+            'global.nativePerformanceNow?global.nativePerformanceNow():Date.now();',
           path: '',
           type: 'script',
         },
@@ -41,7 +42,8 @@ describe('build setup', () => {
     buildSetup(noEntryPoints, {optimize: true}, (error, result) => {
       const [prelude] = result.modules;
       expect(prelude.file.code)
-        .toEqual('var __DEV__=false,__BUNDLE_START_TIME__=Date.now();');
+        .toEqual('var __DEV__=false,__BUNDLE_START_TIME__=' +
+            'global.nativePerformanceNow?global.nativePerformanceNow():Date.now();');
       done();
     });
   });

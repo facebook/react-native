@@ -51,7 +51,6 @@ import type {HasteFS} from './types';
 type Options = {|
   +assetDependencies: Array<string>,
   +assetExts: Array<string>,
-  +extensions: Array<string>,
   +extraNodeModules: ?{},
   +forceNodeFilesystemAPI: boolean,
   +getTransformCacheKey: GetTransformCacheKey,
@@ -65,6 +64,7 @@ type Options = {|
   +reporter: Reporter,
   +resetCache: boolean,
   +roots: Array<string>,
+  +sourceExts: Array<string>,
   +transformCode: TransformCode,
   +useWatchman: boolean,
   +watch: boolean,
@@ -103,7 +103,7 @@ class DependencyGraph extends EventEmitter {
 
   static _createHaste(opts: Options): JestHasteMap {
     return new JestHasteMap({
-      extensions: opts.extensions.concat(opts.assetExts),
+      extensions: opts.sourceExts.concat(opts.assetExts),
       forceNodeFilesystemAPI: opts.forceNodeFilesystemAPI,
       ignorePattern: {test: opts.ignoreFilePath},
       maxWorkers: opts.maxWorkerCount,
@@ -234,6 +234,7 @@ class DependencyGraph extends EventEmitter {
       platform,
       platforms: this._opts.platforms,
       preferNativePlatform: this._opts.preferNativePlatform,
+      sourceExts: this._opts.sourceExts,
     });
 
     const response = new ResolutionResponse(options);

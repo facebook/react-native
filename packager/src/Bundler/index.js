@@ -27,6 +27,8 @@ const defaults = require('../../defaults');
 const os = require('os');
 const invariant = require('fbjs/lib/invariant');
 
+const {generateAssetTransformResult, isAssetTypeAnImage} = require('./util');
+
 const {
   sep: pathSeparator,
   join: joinPath,
@@ -40,6 +42,7 @@ const VERSION = require('../../package.json').version;
 import type AssetServer from '../AssetServer';
 import type Module, {HasteImpl} from '../node-haste/Module';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
+import type {MappingsMap} from '../lib/SourceMap';
 import type {Options as JSTransformerOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
@@ -94,12 +97,6 @@ const {
   log,
 } = require('../Logger');
 
-const assetPropertyBlacklist = new Set([
-  'files',
-  'fileSystemLocation',
-  'path',
-]);
-
 export type PostProcessModulesOptions = {|
   dev: boolean,
   minify: boolean,
@@ -111,6 +108,11 @@ export type PostProcessModules = (
   entryFile: string,
   options: PostProcessModulesOptions,
 ) => Array<ModuleTransport>;
+
+export type PostMinifyProcess = ({
+  code: string,
+  map: MappingsMap,
+}) => {code: string, map: MappingsMap};
 
 type Options = {|
   +allowBundleUpdates: boolean,
@@ -125,10 +127,12 @@ type Options = {|
   +platforms: Array<string>,
   +polyfillModuleNames: Array<string>,
   +postProcessModules?: PostProcessModules,
+  +postMinifyProcess?: PostMinifyProcess,
   +projectRoots: Array<string>,
   +providesModuleNodeModules?: Array<string>,
   +reporter: Reporter,
   +resetCache: boolean,
+  +sourceExts: Array<string>,
   +transformModulePath?: string,
   +transformTimeoutInterval: ?number,
   +watch: boolean,
@@ -206,6 +210,7 @@ class Bundler {
       hasteImpl: opts.hasteImpl,
       maxWorkerCount,
       minifyCode: this._transformer.minify,
+      postMinifyProcess: this._opts.postMinifyProcess,
       platforms: new Set(opts.platforms),
       polyfillModuleNames: opts.polyfillModuleNames,
       projectRoots: opts.projectRoots,
@@ -213,6 +218,7 @@ class Bundler {
         opts.providesModuleNodeModules || defaults.providesModuleNodeModules,
       reporter: opts.reporter,
       resetCache: opts.resetCache,
+      sourceExts: opts.sourceExts,
       transformCode:
         (module, code, transformCodeOptions) => this._transformer.transformFile(
           module.path,
@@ -584,9 +590,9 @@ class Bundler {
   }
 
   getOrderedDependencyPaths({entryFile, dev, platform}: {
-    entryFile: string,
-    dev: boolean,
-    platform: string,
+    +entryFile: string,
+    +dev: boolean,
+    +platform: string,
   }) {
     return this.getDependencies({entryFile, dev, platform}).then(
       ({dependencies}) => {
@@ -688,7 +694,7 @@ class Bundler {
       assetUrlPath = assetUrlPath.replace(/\\/g, '/');
     }
 
-    const isImage = Bundler.isAssetTypeAnImage(extname(module.path).slice(1));
+    const isImage = isAssetTypeAnImage(extname(module.path).slice(1));
 
     return this._assetServer.getAssetData(relPath, platform).then(assetData => {
       return Promise.all([isImage ? sizeOf(assetData.files[0]) : null, assetData]);
@@ -711,36 +717,13 @@ class Bundler {
 
       return this._applyAssetPlugins(assetPlugins, asset);
     }).then(asset => {
-      const {code, dependencies, dependencyOffsets} = Bundler.generateAssetTransformResult(asset);
+      const {code, dependencies, dependencyOffsets} = generateAssetTransformResult(asset);
       return {
         asset,
         code,
         meta: {dependencies, dependencyOffsets, preloaded: null},
       };
     });
-  }
-
-  // Test extension against all types supported by image-size module.
-  // If it's not one of these, we won't treat it as an image.
-  static isAssetTypeAnImage(type: string): boolean {
-    return [
-      'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff',
-    ].indexOf(type) !== -1;
-  }
-
-  static generateAssetTransformResult(assetDescriptor: AssetDescriptor): {|
-    code: string,
-    dependencies: Array<string>,
-    dependencyOffsets: Array<number>,
-  |} {
-    const properDescriptor = filterObject(assetDescriptor, assetPropertyBlacklist);
-    const json = JSON.stringify(properDescriptor);
-    const assetRegistryPath = 'react-native/Libraries/Image/AssetRegistry';
-    const code =
-      `module.exports = require(${JSON.stringify(assetRegistryPath)}).registerAsset(${json});`;
-    const dependencies = [assetRegistryPath];
-    const dependencyOffsets = [code.indexOf(assetRegistryPath) - 1];
-    return {code, dependencies, dependencyOffsets};
   }
 
   _applyAssetPlugins(
@@ -886,14 +869,6 @@ function createModuleIdFactory() {
 
 function getMainModule({dependencies, numPrependedDependencies = 0}) {
   return dependencies[numPrependedDependencies];
-}
-
-function filterObject(object, blacklist) {
-  const copied = Object.assign({}, object);
-  for (const key of blacklist) {
-    delete copied[key];
-  }
-  return copied;
 }
 
 module.exports = Bundler;

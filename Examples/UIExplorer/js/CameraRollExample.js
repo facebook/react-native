@@ -20,6 +20,7 @@
  *
  * @flow
  * @providesModule CameraRollExample
+ * @format
  */
 'use strict';
 
@@ -33,7 +34,7 @@ const {
   Switch,
   Text,
   View,
-  TouchableOpacity
+  TouchableOpacity,
 } = ReactNative;
 
 const invariant = require('fbjs/lib/invariant');
@@ -63,7 +64,9 @@ class CameraRollExample extends React.Component {
         />
         <Text>{'Group Type: ' + this.state.groupTypes}</Text>
         <CameraRollView
-          ref={(ref) => { this._cameraRollView = ref; }}
+          ref={ref => {
+            this._cameraRollView = ref;
+          }}
           batchSize={20}
           groupTypes={this.state.groupTypes}
           renderImage={this._renderImage}
@@ -72,29 +75,28 @@ class CameraRollExample extends React.Component {
     );
   }
 
-  loadAsset = (asset) => {
+  loadAsset(asset) {
     if (this.props.navigator) {
       this.props.navigator.push({
         title: 'Camera Roll Image',
         component: AssetScaledImageExampleView,
         backButtonTitle: 'Back',
-        passProps: { asset: asset },
+        passProps: {asset: asset},
       });
     }
-  };
+  }
 
-  _renderImage = (asset) => {
+  _renderImage = asset => {
     const imageSize = this.state.bigImages ? 150 : 75;
     const imageStyle = [styles.image, {width: imageSize, height: imageSize}];
     const {location} = asset.node;
-    const locationStr = location ? JSON.stringify(location) : 'Unknown location';
+    const locationStr = location
+      ? JSON.stringify(location)
+      : 'Unknown location';
     return (
-      <TouchableOpacity key={asset} onPress={ this.loadAsset.bind( this, asset ) }>
+      <TouchableOpacity key={asset} onPress={this.loadAsset.bind(this, asset)}>
         <View style={styles.row}>
-          <Image
-            source={asset.node.image}
-            style={imageStyle}
-          />
+          <Image source={asset.node.image} style={imageStyle} />
           <View style={styles.info}>
             <Text style={styles.url}>{asset.node.image.uri}</Text>
             <Text>{locationStr}</Text>
@@ -106,8 +108,8 @@ class CameraRollExample extends React.Component {
     );
   };
 
-  _onSliderChange = (value) => {
-    const options = CameraRoll.GroupTypesOptions;
+  _onSliderChange = value => {
+    const options = Object.keys(CameraRoll.GroupTypesOptions);
     const index = Math.floor(value * options.length * 0.99);
     const groupTypes = options[index];
     if (groupTypes !== this.state.groupTypes) {
@@ -115,10 +117,10 @@ class CameraRollExample extends React.Component {
     }
   };
 
-  _onSwitchChange = (value) => {
+  _onSwitchChange = value => {
     invariant(this._cameraRollView, 'ref should be set');
     this._cameraRollView.rendererChanged();
-    this.setState({ bigImages: value });
+    this.setState({bigImages: value});
   };
 }
 
@@ -140,10 +142,13 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'Camera Roll';
-exports.description = 'Example component that uses CameraRoll to list user\'s photos';
+exports.description =
+  "Example component that uses CameraRoll to list user's photos";
 exports.examples = [
   {
     title: 'Photos',
-    render(): React.Element<any> { return <CameraRollExample />; }
-  }
+    render(): React.Element<any> {
+      return <CameraRollExample />;
+    },
+  },
 ];

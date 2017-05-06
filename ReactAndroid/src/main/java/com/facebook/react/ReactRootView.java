@@ -42,6 +42,9 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.systrace.Systrace;
+
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 /**
  * Default root view for catalyst apps. Provides the ability to listen for size changes so that a UI
@@ -267,26 +270,31 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
    * same rootTag, which will re-render the application from the root.
    */
   /* package */ void runApplication() {
-    if (mReactInstanceManager == null || !mIsAttachedToInstance) {
-      return;
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.runApplication");
+    try {
+      if (mReactInstanceManager == null || !mIsAttachedToInstance) {
+        return;
+      }
+
+      ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+      if (reactContext == null) {
+        return;
+      }
+
+      CatalystInstance catalystInstance = reactContext.getCatalystInstance();
+
+      WritableNativeMap appParams = new WritableNativeMap();
+      appParams.putDouble("rootTag", getRootViewTag());
+      @Nullable Bundle appProperties = getAppProperties();
+      if (appProperties != null) {
+        appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
+      }
+
+      String jsAppModuleName = getJSModuleName();
+      catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
+    } finally {
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
-
-    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    if (reactContext == null) {
-      return;
-    }
-
-    CatalystInstance catalystInstance = reactContext.getCatalystInstance();
-
-    WritableNativeMap appParams = new WritableNativeMap();
-    appParams.putDouble("rootTag", getRootViewTag());
-    @Nullable Bundle appProperties = getAppProperties();
-    if (appProperties != null) {
-      appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
-    }
-
-    String jsAppModuleName = getJSModuleName();
-    catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
   }
 
   /**

@@ -19,6 +19,7 @@ const workerFarm = jest.fn();
 jest.setMock('fs', fs);
 jest.setMock('temp', temp);
 jest.setMock('worker-farm', workerFarm);
+jest.setMock('../../worker-farm', workerFarm);
 
 var Transformer = require('../');
 

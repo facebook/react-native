@@ -27,12 +27,12 @@ import type {
 type BuildFn = (
   entryPoints: Iterable<string>,
   options: BuildOptions,
-  callback: Callback<{modules: Iterable<Module>, entryModules: Iterable<Module>}>,
+  callback: Callback<GraphResult>,
 ) => void;
 
 type BuildOptions = {|
-  optimize?: boolean,
-  platform?: string,
+  optimize: boolean,
+  platform: string,
 |};
 
 exports.createBuildSetup = (
@@ -96,6 +96,7 @@ function* concat<T>(...iterables: Array<Iterable<T>>): Iterable<T> {
 
 function prelude(optimize) {
   return virtualModule(
-    `var __DEV__=${String(!optimize)},__BUNDLE_START_TIME__=Date.now();`
+    `var __DEV__=${String(!optimize)},` +
+    '__BUNDLE_START_TIME__=global.nativePerformanceNow?global.nativePerformanceNow():Date.now();'
   );
 }

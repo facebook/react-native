@@ -75,6 +75,7 @@ const ReactNative = {
   get DeviceInfo() { return require('DeviceInfo'); },
   get Dimensions() { return require('Dimensions'); },
   get Easing() { return require('Easing'); },
+  get findNodeHandle() { return require('ReactNative').findNodeHandle; },
   get I18nManager() { return require('I18nManager'); },
   get ImagePickerIOS() { return require('ImagePickerIOS'); },
   get InteractionManager() { return require('InteractionManager'); },
