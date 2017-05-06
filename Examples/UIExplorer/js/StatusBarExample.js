@@ -439,11 +439,10 @@ const examples = [{
   render() {
     return (
       <View>
-        <Text>Height (Android only): {StatusBar.currentHeight} pts</Text>
+        <Text>Height: {StatusBar.currentHeight} pts</Text>
       </View>
     );
   },
-  platform: 'android',
 }];
 
 exports.examples = examples;
