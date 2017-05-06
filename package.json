@@ -112,7 +112,7 @@
   "scripts": {
     "test": "jest",
     "flow": "flow",
-    "lint": "eslint Examples/ Libraries/",
+    "lint": "eslint RNTester/ Libraries/",
     "start": "/usr/bin/env bash -c './packager/packager.sh \"$@\" || true' --",
     "test-android-setup": "docker pull containership/android-base:latest",
     "test-android-build": "docker build -t react/android -f ContainerShip/Dockerfile.android .",
