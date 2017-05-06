@@ -14,7 +14,6 @@
 const ColorPropType = require('ColorPropType');
 const Platform = require('Platform');
 const React = require('React');
-const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TouchableNativeFeedback = require('TouchableNativeFeedback');
@@ -57,17 +56,18 @@ class Button extends React.Component {
     accessibilityLabel?: ?string,
     disabled?: ?boolean,
     testID?: ?string,
+      textSizeIos?:?int,
   };
 
   static propTypes = {
     /**
      * Text to display inside the button
      */
-    title: PropTypes.string.isRequired,
+    title: React.PropTypes.string.isRequired,
     /**
      * Text to display for blindness accessibility features
      */
-    accessibilityLabel: PropTypes.string,
+    accessibilityLabel: React.PropTypes.string,
     /**
      * Color of the text (iOS), or background color of the button (Android)
      */
@@ -75,15 +75,19 @@ class Button extends React.Component {
     /**
      * If true, disable all interactions for this component.
      */
-    disabled: PropTypes.bool,
+    disabled: React.PropTypes.bool,
     /**
      * Handler to be called when the user taps the button
      */
-    onPress: PropTypes.func.isRequired,
+    onPress: React.PropTypes.func.isRequired,
     /**
      * Used to locate this view in end-to-end tests.
      */
-    testID: PropTypes.string,
+    testID: React.PropTypes.string,
+      /**
+       * Size to change button's textSize (only in IOS)
+       */
+      textSizeIos: React.PropTypes.int,
   };
 
   render() {
@@ -94,6 +98,7 @@ class Button extends React.Component {
       title,
       disabled,
       testID,
+        textSizeIos,
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
@@ -102,6 +107,9 @@ class Button extends React.Component {
       textStyles.push({color: color});
     } else if (color) {
       buttonStyles.push({backgroundColor: color});
+    }
+    if(textSizeIos&&Platform.OS=='ios'){
+        textStyles.push({fontSize:textSizeIos});
     }
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
@@ -125,7 +133,7 @@ class Button extends React.Component {
         disabled={disabled}
         onPress={onPress}>
         <View style={buttonStyles}>
-          <Text style={textStyles} disabled={disabled}>{formattedTitle}</Text>
+          <Text style={textStyles}>{formattedTitle}</Text>
         </View>
       </Touchable>
     );
