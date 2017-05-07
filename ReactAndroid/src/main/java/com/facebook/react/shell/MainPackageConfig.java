@@ -10,6 +10,7 @@
 package com.facebook.react.shell;
 
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.facebook.react.modules.network.DefaultOkHttpProvider;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 
 /**
@@ -30,7 +31,7 @@ public class MainPackageConfig {
   }
 
   public OkHttpClientProvider getOkHttpClientProvider() {
-    return okHttpClientProvider;
+    return okHttpClientProvider != null ? okHttpClientProvider : new DefaultOkHttpProvider();
   }
 
   public static class Builder {
