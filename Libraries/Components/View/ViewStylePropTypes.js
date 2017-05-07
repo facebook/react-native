@@ -14,6 +14,7 @@
 var LayoutPropTypes = require('LayoutPropTypes');
 var ReactPropTypes = require('React').PropTypes;
 var ColorPropType = require('ColorPropType');
+var MaskPropTypesIOS = require('MaskPropTypesIOS');
 var ShadowPropTypesIOS = require('ShadowPropTypesIOS');
 var TransformPropTypes = require('TransformPropTypes');
 
@@ -22,6 +23,7 @@ var TransformPropTypes = require('TransformPropTypes');
  */
 var ViewStylePropTypes = {
   ...LayoutPropTypes,
+  ...MaskPropTypesIOS,
   ...ShadowPropTypesIOS,
   ...TransformPropTypes,
   backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
