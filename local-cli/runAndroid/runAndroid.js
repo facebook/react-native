@@ -35,7 +35,7 @@ function runAndroid(argv, config, args) {
     return buildAndRun(args);
   }
 
-  return isPackagerRunning().then(result => {
+  return isPackagerRunning(args.port).then(result => {
     if (result === 'running') {
       console.log(chalk.bold('JS server already running.'));
     } else if (result === 'unrecognized') {
@@ -43,7 +43,7 @@ function runAndroid(argv, config, args) {
     } else {
       // result == 'not_running'
       console.log(chalk.bold('Starting JS server...'));
-      startServerInNewWindow();
+      startServerInNewWindow(args.port);
     }
     return buildAndRun(args);
   });
@@ -55,11 +55,12 @@ function getAdbPath() {
     : 'adb';
 }
 
-// Runs ADB reverse tcp:8081 tcp:8081 to allow loading the jsbundle from the packager
-function tryRunAdbReverse(device) {
+// Runs ADB reverse tcp:8081 tcp:<port> to allow loading the jsbundle from the packager
+function tryRunAdbReverse(device, port) {
   try {
     const adbPath = getAdbPath();
-    const adbArgs = ['reverse', 'tcp:8081', 'tcp:8081'];
+    // Device port 8081 is assumed to simplify device integration when port is overridden.
+    const adbArgs = ['reverse', 'tcp:8081', `tcp:${port}`];
 
     // If a device is specified then tell adb to use it
     if (device) {
@@ -167,7 +168,7 @@ function tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPat
 }
 
 function installAndLaunchOnDevice(args, selectedDevice, packageNameWithSuffix, packageName, adbPath) {
-  tryRunAdbReverse(selectedDevice);
+  tryRunAdbReverse(selectedDevice, args.port);
   tryInstallAppOnDevice(args, selectedDevice);
   tryLaunchAppOnDevice(selectedDevice, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
 }
@@ -216,7 +217,7 @@ function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath)
     const devices = adb.getDevices();
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
-        tryRunAdbReverse(device);
+        tryRunAdbReverse(device, args.port);
         tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
       });
     } else {
@@ -242,14 +243,14 @@ function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath)
     }
 }
 
-function startServerInNewWindow() {
+function startServerInNewWindow(port) {
   const yargV = require('yargs').argv;
   const scriptFile = /^win/.test(process.platform) ?
     'launchPackager.bat' :
     'launchPackager.command';
   const packagerDir = path.resolve(__dirname, '..', '..', 'packager');
   const launchPackagerScript = path.resolve(packagerDir, scriptFile);
-  const procConfig = {cwd: packagerDir};
+  const procConfig = {cwd: packagerDir, env: { PACKAGER_PORT: port }};
 
   if (process.platform === 'darwin') {
     if (yargV.open) {
@@ -307,5 +308,10 @@ module.exports = {
   }, {
     command: '--no-packager',
     description: 'Do not launch packager while building',
+  }, {
+    command: '--port [number]',
+    description: 'Specify the packager port',
+    default: 8081,
+    parse: (val) => Number(val)
   }],
 };
