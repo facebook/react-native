@@ -299,6 +299,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           "window.postMessage = function(data) {" +
             BRIDGE_NAME + ".postMessage(String(data));" +
           "}" +
+          "document.dispatchEvent(new MessageEvent('message:ready'));" +
         ")");
       }
     }

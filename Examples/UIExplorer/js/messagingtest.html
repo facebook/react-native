@@ -21,6 +21,11 @@
       document.getElementsByTagName('p')[1].innerHTML = e.data;
     });
 
+    document.addEventListener('message:ready', function() {
+      document.getElementsByTagName('p')[1].innerHTML = 'ready for postMessage';
+      window.postMessage('web view is ready');
+    })
+
     document.getElementsByTagName('button')[0].addEventListener('click', function() {
       window.postMessage('"Hello" from the web view');
     });
