@@ -484,10 +484,6 @@
 		3D7BFD161EA8E351008DFB7A /* RCTPackagerClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD0B1EA8E351008DFB7A /* RCTPackagerClient.h */; };
 		3D7BFD171EA8E351008DFB7A /* RCTPackagerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7BFD0C1EA8E351008DFB7A /* RCTPackagerClient.m */; };
 		3D7BFD181EA8E351008DFB7A /* RCTPackagerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7BFD0C1EA8E351008DFB7A /* RCTPackagerClient.m */; };
-		3D7BFD191EA8E351008DFB7A /* RCTPackagerClientResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD0D1EA8E351008DFB7A /* RCTPackagerClientResponder.h */; };
-		3D7BFD1A1EA8E351008DFB7A /* RCTPackagerClientResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD0D1EA8E351008DFB7A /* RCTPackagerClientResponder.h */; };
-		3D7BFD1B1EA8E351008DFB7A /* RCTPackagerClientResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7BFD0E1EA8E351008DFB7A /* RCTPackagerClientResponder.m */; };
-		3D7BFD1C1EA8E351008DFB7A /* RCTPackagerClientResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7BFD0E1EA8E351008DFB7A /* RCTPackagerClientResponder.m */; };
 		3D7BFD1D1EA8E351008DFB7A /* RCTPackagerConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD0F1EA8E351008DFB7A /* RCTPackagerConnection.h */; };
 		3D7BFD1E1EA8E351008DFB7A /* RCTPackagerConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD0F1EA8E351008DFB7A /* RCTPackagerConnection.h */; };
 		3D7BFD1F1EA8E351008DFB7A /* RCTPackagerConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7BFD101EA8E351008DFB7A /* RCTPackagerConnection.m */; };
@@ -506,9 +502,7 @@
 		3D7BFD2F1EA8E3FA008DFB7A /* RCTSRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD2C1EA8E3FA008DFB7A /* RCTSRWebSocket.h */; };
 		3D7BFD301EA8E3FA008DFB7A /* RCTSRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD2C1EA8E3FA008DFB7A /* RCTSRWebSocket.h */; };
 		3D7BFD311EA8E41F008DFB7A /* RCTPackagerClient.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD0B1EA8E351008DFB7A /* RCTPackagerClient.h */; };
-		3D7BFD321EA8E41F008DFB7A /* RCTPackagerClientResponder.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD0D1EA8E351008DFB7A /* RCTPackagerClientResponder.h */; };
 		3D7BFD331EA8E433008DFB7A /* RCTPackagerClient.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD0B1EA8E351008DFB7A /* RCTPackagerClient.h */; };
-		3D7BFD341EA8E433008DFB7A /* RCTPackagerClientResponder.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD0D1EA8E351008DFB7A /* RCTPackagerClientResponder.h */; };
 		3D7BFD351EA8E43F008DFB7A /* RCTDevSettings.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130E3D861E6A082100ACE484 /* RCTDevSettings.h */; };
 		3D80D9181DF6F7A80028D040 /* JSBundleType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */; };
 		3D80D91B1DF6F8200028D040 /* RCTPlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7749431DC1065C007EC8D8 /* RCTPlatform.m */; };
@@ -1080,7 +1074,6 @@
 			files = (
 				3D7BFD351EA8E43F008DFB7A /* RCTDevSettings.h in Copy Headers */,
 				3D7BFD331EA8E433008DFB7A /* RCTPackagerClient.h in Copy Headers */,
-				3D7BFD341EA8E433008DFB7A /* RCTPackagerClientResponder.h in Copy Headers */,
 				3D0976D71E9739FB00B9C6DD /* RCTBridge+JavaScriptCore.h in Copy Headers */,
 				3DA981E91E5B0F7F004F2374 /* RCTJSCSamplingProfiler.h in Copy Headers */,
 				3DA981EA1E5B0F7F004F2374 /* RCTAccessibilityManager.h in Copy Headers */,
@@ -1272,7 +1265,6 @@
 			dstSubfolderSpec = 16;
 			files = (
 				3D7BFD311EA8E41F008DFB7A /* RCTPackagerClient.h in Copy Headers */,
-				3D7BFD321EA8E41F008DFB7A /* RCTPackagerClientResponder.h in Copy Headers */,
 				3D7BFD291EA8E37B008DFB7A /* RCTDevSettings.h in Copy Headers */,
 				3D0976D81E973A0200B9C6DD /* RCTBridge+JavaScriptCore.h in Copy Headers */,
 				3D80D91F1DF6FA890028D040 /* RCTImageLoader.h in Copy Headers */,
@@ -1727,8 +1719,6 @@
 		3D7AA9C31E548CD5001955CF /* NSDataBigString.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NSDataBigString.mm; sourceTree = "<group>"; };
 		3D7BFD0B1EA8E351008DFB7A /* RCTPackagerClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPackagerClient.h; sourceTree = "<group>"; };
 		3D7BFD0C1EA8E351008DFB7A /* RCTPackagerClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPackagerClient.m; sourceTree = "<group>"; };
-		3D7BFD0D1EA8E351008DFB7A /* RCTPackagerClientResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPackagerClientResponder.h; sourceTree = "<group>"; };
-		3D7BFD0E1EA8E351008DFB7A /* RCTPackagerClientResponder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPackagerClientResponder.m; sourceTree = "<group>"; };
 		3D7BFD0F1EA8E351008DFB7A /* RCTPackagerConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPackagerConnection.h; sourceTree = "<group>"; };
 		3D7BFD101EA8E351008DFB7A /* RCTPackagerConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPackagerConnection.m; sourceTree = "<group>"; };
 		3D7BFD111EA8E351008DFB7A /* RCTReloadPackagerMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTReloadPackagerMethod.h; sourceTree = "<group>"; };
@@ -2289,8 +2279,6 @@
 				13A0C2881B74F71200B29F6F /* RCTDevMenu.m */,
 				3D7BFD0B1EA8E351008DFB7A /* RCTPackagerClient.h */,
 				3D7BFD0C1EA8E351008DFB7A /* RCTPackagerClient.m */,
-				3D7BFD0D1EA8E351008DFB7A /* RCTPackagerClientResponder.h */,
-				3D7BFD0E1EA8E351008DFB7A /* RCTPackagerClientResponder.m */,
 				3D7BFD0F1EA8E351008DFB7A /* RCTPackagerConnection.h */,
 				3D7BFD101EA8E351008DFB7A /* RCTPackagerConnection.m */,
 				3D7BFD111EA8E351008DFB7A /* RCTReloadPackagerMethod.h */,
@@ -2534,7 +2522,6 @@
 				59FBEFB51E46D91C0095D885 /* RCTScrollContentViewManager.h in Headers */,
 				3D302F241DF828F800D6DDAE /* RCTImageLoader.h in Headers */,
 				3D302F251DF828F800D6DDAE /* RCTImageStoreManager.h in Headers */,
-				3D7BFD1A1EA8E351008DFB7A /* RCTPackagerClientResponder.h in Headers */,
 				3D302F261DF828F800D6DDAE /* RCTResizeMode.h in Headers */,
 				3D302F271DF828F800D6DDAE /* RCTLinkingManager.h in Headers */,
 				3D7BFD161EA8E351008DFB7A /* RCTPackagerClient.h in Headers */,
@@ -2798,7 +2785,6 @@
 				3D80DA241DF820620028D040 /* RCTBridgeMethod.h in Headers */,
 				3D7BFD151EA8E351008DFB7A /* RCTPackagerClient.h in Headers */,
 				3D80DA251DF820620028D040 /* RCTBridgeModule.h in Headers */,
-				3D7BFD191EA8E351008DFB7A /* RCTPackagerClientResponder.h in Headers */,
 				3D80DA261DF820620028D040 /* RCTBundleURLProvider.h in Headers */,
 				3D80DA271DF820620028D040 /* RCTConvert.h in Headers */,
 				3D80DA281DF820620028D040 /* RCTDefines.h in Headers */,
@@ -3141,7 +3127,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "ReactCxx" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "React" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -3339,7 +3325,6 @@
 				CF2731C31E7B8DF30044CA4F /* RCTDeviceInfo.m in Sources */,
 				2D3B5EB11D9B090100451313 /* RCTAppState.m in Sources */,
 				1384E20B1E806D5B00545659 /* RCTNativeModule.mm in Sources */,
-				3D7BFD1C1EA8E351008DFB7A /* RCTPackagerClientResponder.m in Sources */,
 				2D3B5EC21D9B093B00451313 /* RCTProfile.m in Sources */,
 				2D3B5ECB1D9B096200451313 /* RCTConvert+CoreLocation.m in Sources */,
 				2D3B5EEE1D9B09DA00451313 /* RCTView.m in Sources */,
@@ -3529,7 +3514,6 @@
 				13E067561A70F44B002CDEE1 /* RCTViewManager.m in Sources */,
 				13BB3D021BECD54500932C10 /* RCTImageSource.m in Sources */,
 				13134CA21E296B2A00B9F3CB /* RCTCxxUtils.mm in Sources */,
-				3D7BFD1B1EA8E351008DFB7A /* RCTPackagerClientResponder.m in Sources */,
 				58C571C11AA56C1900CDF9C8 /* RCTDatePickerManager.m in Sources */,
 				1450FF8A1BCFF28A00208362 /* RCTProfileTrampoline-x86_64.S in Sources */,
 				13D9FEEB1CDCCECF00158BD7 /* RCTEventEmitter.m in Sources */,
@@ -4195,7 +4179,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "ReactCxx" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "React" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
