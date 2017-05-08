@@ -51,6 +51,7 @@ function validateAndUpgrade() {
       );
     return;
   }
+}
 
 function upgrade(args, config) {
   args = args || process.argv;
@@ -118,9 +119,6 @@ function upgrade(args, config) {
           );
         }
       } else {
-        
-
-
         console.warn(
           chalk.yellow(
             'react-native version in \'package.json\' doesn\'t match the installed version in \'node_modules\'.\n' +
