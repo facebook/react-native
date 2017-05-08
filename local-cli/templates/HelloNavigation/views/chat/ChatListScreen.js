@@ -16,18 +16,13 @@ export default class ChatListScreen extends Component {
 
   static navigationOptions = {
     title: 'Chats',
-    header: {
-      visible: Platform.OS === 'ios',
-    },
-    tabBar: {
-      icon: ({ tintColor }) => (
-        <Image
-          // Using react-native-vector-icons works here too
-          source={require('./chat-icon.png')}
-          style={[styles.icon, {tintColor: tintColor}]}
-        />
-      ),
-    },
+    tabBarIcon: ({ tintColor }) => (
+      <Image
+        // Using react-native-vector-icons works here too
+        source={require('./chat-icon.png')}
+        style={[styles.icon, {tintColor: tintColor}]}
+      />
+    ),
   }
 
   constructor(props) {
