@@ -63,7 +63,7 @@ To debug the JavaScript code in Chrome, select "Debug JS Remotely" from the Deve
 
 Select `Tools → Developer Tools` from the Chrome Menu to open the [Developer Tools](https://developer.chrome.com/devtools). You may also access the DevTools using keyboard shortcuts (**`Command`**`⌘` + **`Option`**`⌥` + **`I`** on Mac, **`Ctrl`** + **`Shift`** + **`I`** on Windows). You may also want to enable [Pause On Caught Exceptions](http://stackoverflow.com/questions/2233339/javascript-is-there-a-way-to-get-chrome-to-break-on-all-errors/17324511#17324511) for a better debugging experience.
 
-> Note: the React Developer Tools Chrome extension does not work with React Native, but you can use its standalone version instead. Read the [next section](#react-developer-tools) to learn how.
+> Note: the React Developer Tools Chrome extension does not work with React Native, but you can use its standalone version instead. Read [this section](docs/debugging.html#react-developer-tools) to learn how.
 
 ### Debugging using a custom JavaScript debugger
 
@@ -87,7 +87,7 @@ Now run `react-devtools` from the terminal to launch the standalone DevTools app
 react-devtools
 ```
 
-<img src="https://camo.githubusercontent.com/3226d81c8d40f07f10c1f78876905a1bfc2d6d82/687474703a2f2f692e696d6775722e636f6d2f49586548695a442e706e67" width="700" alt="React DevTools">
+![React DevTools](img/ReactDevTools.png)
 
 It should connect to your simulator within a few seconds.
 
@@ -97,11 +97,11 @@ It should connect to your simulator within a few seconds.
 
 You can open the [in-app developer menu](#accessing-the-in-app-developer-menu) and choose "Show Inspector". It will bring up an overlay that lets you tap on any UI element and see information about it:
 
-<img src="https://d2ppvlu71ri8gs.cloudfront.net/items/1R1d2x0O3M0C1t071Q0F/Screen%20Recording%202017-05-01%20at%2020.14.gif?v=45691135" alt="Show Inspector" width="300">
+![React Native Inspector](img/Inspector.gif)
 
 However, when `react-devtools` is running, Inspector will enter a special collapsed mode, and instead use the DevTools as primary UI. In this mode, clicking on something in the simulator will bring up the relevant components in the DevTools:
 
-<img src="https://d2ppvlu71ri8gs.cloudfront.net/items/1v031W3O1W322z3G1k15/Screen%20Recording%202017-05-01%20at%2020.16.gif?v=a87eb3f4" alt="Show Inspector with React DevTools" width="700">
+![React DevTools Inspector Integration](img/ReactDevToolsInspector.gif)
 
 You can choose "Hide Inspector" in the same menu to exit this mode.
 
