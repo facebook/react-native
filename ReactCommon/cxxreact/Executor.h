@@ -38,10 +38,6 @@ class ExecutorDelegate {
  public:
   virtual ~ExecutorDelegate() {}
 
-  virtual void registerExecutor(std::unique_ptr<JSExecutor> executor,
-                                std::shared_ptr<MessageQueueThread> queue) = 0;
-  virtual std::unique_ptr<JSExecutor> unregisterExecutor(JSExecutor& executor) = 0;
-
   virtual std::shared_ptr<ModuleRegistry> getModuleRegistry() = 0;
 
   virtual void callNativeModules(

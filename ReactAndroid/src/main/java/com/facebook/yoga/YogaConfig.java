@@ -20,6 +20,7 @@ public class YogaConfig {
   }
 
   long mNativePointer;
+  private YogaLogger mLogger;
 
   private native long jni_YGConfigNew();
   public YogaConfig() {
@@ -50,5 +51,31 @@ public class YogaConfig {
   private native void jni_YGConfigSetUseWebDefaults(long nativePointer, boolean useWebDefaults);
   public void setUseWebDefaults(boolean useWebDefaults) {
     jni_YGConfigSetUseWebDefaults(mNativePointer, useWebDefaults);
+  }
+
+  private native void jni_YGConfigSetPointScaleFactor(long nativePointer, float pixelsInPoint);
+  public void setPointScaleFactor(float pixelsInPoint) {
+    jni_YGConfigSetPointScaleFactor(mNativePointer, pixelsInPoint);
+  }
+
+  private native void jni_YGConfigSetUseLegacyStretchBehaviour(long nativePointer, boolean useLegacyStretchBehaviour);
+
+  /**
+   * Yoga previously had an error where containers would take the maximum space possible instead of the minimum
+   * like they are supposed to. In practice this resulted in implicit behaviour similar to align-self: stretch;
+   * Because this was such a long-standing bug we must allow legacy users to switch back to this behaviour.
+   */
+  public void setUseLegacyStretchBehaviour(boolean useLegacyStretchBehaviour) {
+    jni_YGConfigSetUseLegacyStretchBehaviour(mNativePointer, useLegacyStretchBehaviour);
+  }
+
+  private native void jni_YGConfigSetLogger(long nativePointer, Object logger);
+  public void setLogger(YogaLogger logger) {
+    mLogger = logger;
+    jni_YGConfigSetLogger(mNativePointer, logger);
+  }
+
+  public YogaLogger getLogger() {
+    return mLogger;
   }
 }

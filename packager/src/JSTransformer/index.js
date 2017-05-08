@@ -18,10 +18,10 @@ const denodeify = require('denodeify');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 const util = require('util');
-const workerFarm = require('worker-farm');
+const workerFarm = require('../worker-farm');
 
 import type {Data as TransformData, Options as TransformOptions} from './worker/worker';
-import type {SourceMap} from '../lib/SourceMap';
+import type {MappingsMap} from '../lib/SourceMap';
 
 // Avoid memory leaks caused in workers. This number seems to be a good enough number
 // to avoid any memory leak while not slowing down initial builds.
@@ -38,6 +38,7 @@ function makeFarm(worker, methods, timeout, maxConcurrentWorkers) {
   return workerFarm(
     {
       autoStart: true,
+      execArgv: [],
       maxConcurrentCallsPerWorker: 1,
       maxConcurrentWorkers,
       maxCallsPerWorker: MAX_CALLS_PER_WORKER,
@@ -49,9 +50,14 @@ function makeFarm(worker, methods, timeout, maxConcurrentWorkers) {
   );
 }
 
+type Reporters = {
+  +stdoutChunk: (chunk: string) => mixed,
+  +stderrChunk: (chunk: string) => mixed,
+};
+
 class Transformer {
 
-  _workers: {[name: string]: mixed};
+  _workers: {[name: string]: Function};
   _transformModulePath: string;
   _transform: (
     transform: string,
@@ -62,19 +68,27 @@ class Transformer {
   minify: (
     filename: string,
     code: string,
-    sourceMap: SourceMap,
-  ) => Promise<{code: string, map: SourceMap}>;
+    sourceMap: MappingsMap,
+  ) => Promise<{code: string, map: MappingsMap}>;
 
-  constructor(transformModulePath: string, maxWorkerCount: number) {
+  constructor(transformModulePath: string, maxWorkerCount: number, reporters: Reporters) {
     invariant(path.isAbsolute(transformModulePath), 'transform module path should be absolute');
     this._transformModulePath = transformModulePath;
 
-    this._workers = makeFarm(
+    const farm = makeFarm(
       require.resolve('./worker'),
       ['minify', 'transformAndExtractDependencies'],
       TRANSFORM_TIMEOUT_INTERVAL,
       maxWorkerCount,
     );
+    farm.stdout.on('data', chunk => {
+      reporters.stdoutChunk(chunk.toString('utf8'));
+    });
+    farm.stderr.on('data', chunk => {
+      reporters.stderrChunk(chunk.toString('utf8'));
+    });
+
+    this._workers = farm.methods;
     this._transform = denodeify(this._workers.transformAndExtractDependencies);
     this.minify = denodeify(this._workers.minify);
   }

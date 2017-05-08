@@ -62,11 +62,15 @@ public class NativeModuleRegistryBuilder {
             throw new IllegalStateException("Native Java module " + type.getSimpleName() +
               " should be annotated with @ReactModule and added to a @ReactModuleList.");
           }
+          NativeModule module;
           ReactMarker.logMarker(
             ReactMarkerConstants.CREATE_MODULE_START,
             moduleSpec.getType().getName());
-          NativeModule module = moduleSpec.getProvider().get();
-          ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_END);
+          try {
+            module = moduleSpec.getProvider().get();
+          } finally {
+            ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_END);
+          }
           moduleHolder = new ModuleHolder(module);
         } else {
           moduleHolder = new ModuleHolder(reactModuleInfo, moduleSpec.getProvider());

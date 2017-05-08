@@ -284,10 +284,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     } else {
       implClass = batchedBridgeClass;
     }
-  } else if (batchedBridgeClass != nil) {
-    implClass = batchedBridgeClass;
   } else if (cxxBridgeClass != nil) {
     implClass = cxxBridgeClass;
+  } else if (batchedBridgeClass != nil) {
+    implClass = batchedBridgeClass;
   }
 
   RCTAssert(implClass != nil, @"No bridge implementation is available, giving up.");

@@ -20,7 +20,7 @@
 #include <jschelpers/Value.h>
 
 #ifdef WITH_INSPECTOR
-#include <inspector/Inspector.h>
+#include <jschelpers/InspectorInterfaces.h>
 #endif
 
 #include "JSBundleType.h"
@@ -132,16 +132,13 @@ static JSValueRef nativeInjectHMRUpdate(
 
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate, std::shared_ptr<MessageQueueThread> jsQueue) {
-  return std::unique_ptr<JSExecutor>(
-    new JSCExecutor(delegate, jsQueue, m_cacheDir, m_jscConfig));
+  return folly::make_unique<JSCExecutor>(delegate, jsQueue, m_jscConfig);
 }
 
 JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
                          std::shared_ptr<MessageQueueThread> messageQueueThread,
-                         const std::string& cacheDir,
                          const folly::dynamic& jscConfig) throw(JSException) :
     m_delegate(delegate),
-    m_deviceCacheDir(cacheDir),
     m_messageQueueThread(messageQueueThread),
     m_nativeModules(delegate ? delegate->getModuleRegistry() : nullptr),
     m_jscConfig(jscConfig) {
@@ -152,52 +149,6 @@ JSCExecutor::JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
     installGlobalProxy(m_context, "nativeModuleProxy",
                        exceptionWrapMethod<&JSCExecutor::getNativeModule>());
   }
-}
-
-JSCExecutor::JSCExecutor(
-    std::shared_ptr<ExecutorDelegate> delegate,
-    std::shared_ptr<MessageQueueThread> messageQueueThread,
-    int workerId,
-    JSCExecutor *owner,
-    std::string scriptURL,
-    std::unordered_map<std::string, std::string> globalObjAsJSON,
-    const folly::dynamic& jscConfig) :
-    m_delegate(delegate),
-    m_workerId(workerId),
-    m_owner(owner),
-    m_deviceCacheDir(owner->m_deviceCacheDir),
-    m_messageQueueThread(messageQueueThread),
-    m_nativeModules(delegate->getModuleRegistry()),
-    m_jscConfig(jscConfig) {
-  // We post initOnJSVMThread here so that the owner doesn't have to wait for
-  // initialization on its own thread
-  m_messageQueueThread->runOnQueue([this, scriptURL,
-                                    globalObjAsJSON=std::move(globalObjAsJSON)] () {
-    initOnJSVMThread();
-
-    installNativeHook<&JSCExecutor::nativePostMessage>("postMessage");
-
-    for (auto& it : globalObjAsJSON) {
-      setGlobalVariable(std::move(it.first),
-                        folly::make_unique<JSBigStdString>(std::move(it.second)));
-    }
-
-    // Try to load the script from the network if script is a URL
-    // NB: For security, this will only work in debug builds
-    std::unique_ptr<const JSBigString> script;
-    if (scriptURL.find("http://") == 0 || scriptURL.find("https://") == 0) {
-      std::stringstream outfileBuilder;
-      outfileBuilder << m_deviceCacheDir << "/workerScript" << m_workerId << ".js";
-      script = folly::make_unique<JSBigStdString>(
-        WebWorkerUtil::loadScriptFromNetworkSync(scriptURL, outfileBuilder.str()));
-    } else {
-      // TODO(9604438): Protect against script does not exist
-      script = WebWorkerUtil::loadScriptFromAssets(scriptURL);
-    }
-
-    // TODO(9994180): Throw on error
-    loadApplicationScript(std::move(script), std::move(scriptURL));
-  });
 }
 
 JSCExecutor::~JSCExecutor() {
@@ -219,6 +170,16 @@ void JSCExecutor::setContextName(const std::string& name) {
   String jsName = String(m_context, name.c_str());
   JSC_JSGlobalContextSetName(m_context, jsName);
 }
+
+#ifdef WITH_INSPECTOR
+static bool canUseInspector(JSContextRef context) {
+#if defined(__APPLE__)
+  return isCustomJSCPtr(context); // WITH_INSPECTOR && Apple
+#else
+  return true; // WITH_INSPECTOR && Android
+#endif
+}
+#endif
 
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
   SystraceSection s("JSCExecutor.initOnJSVMThread");
@@ -253,17 +214,15 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   // Add a pointer to ourselves so we can retrieve it later in our hooks
   Object::getGlobalObject(m_context).setPrivate(this);
 
-  #ifdef WITH_INSPECTOR
-  Inspector::instance().registerGlobalContext("main", m_context);
-  #endif
+#ifdef WITH_INSPECTOR
+  if (canUseInspector(m_context)) {
+    IInspector* pInspector = JSC_JSInspectorGetInstance(true);
+    pInspector->registerGlobalContext("main", m_context);
+  }
+#endif
 
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
-
-  // Webworker support
-  installNativeHook<&JSCExecutor::nativeStartWorker>("nativeStartWorker");
-  installNativeHook<&JSCExecutor::nativePostMessageToWorker>("nativePostMessageToWorker");
-  installNativeHook<&JSCExecutor::nativeTerminateWorker>("nativeTerminateWorker");
 
   installGlobalFunction(m_context, "nativeLoggingHook", JSNativeHooks::loggingHook);
   installGlobalFunction(m_context, "nativePerformanceNow", JSNativeHooks::nowHook);
@@ -299,21 +258,14 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
 }
 
 void JSCExecutor::terminateOnJSVMThread() {
-  // terminateOwnedWebWorker mutates m_ownedWorkers so collect all the workers
-  // to terminate first
-  std::vector<int> workerIds;
-  for (auto& it : m_ownedWorkers) {
-    workerIds.push_back(it.first);
-  }
-  for (int workerId : workerIds) {
-    terminateOwnedWebWorker(workerId);
-  }
-
   m_nativeModules.reset();
 
-  #ifdef WITH_INSPECTOR
-  Inspector::instance().unregisterGlobalContext(m_context);
-  #endif
+#ifdef WITH_INSPECTOR
+  if (canUseInspector(m_context)) {
+    IInspector* pInspector = JSC_JSInspectorGetInstance(true);
+    pInspector->unregisterGlobalContext(m_context);
+  }
+#endif
 
   JSC_JSGlobalContextRelease(m_context);
   m_context = nullptr;
@@ -344,7 +296,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
 
-  ReactMarker::logMarker("RUN_JS_BUNDLE_START");
+  ReactMarker::logMarker(ReactMarker::RUN_JS_BUNDLE_START);
   String jsSourceURL(m_context, sourceURL.c_str());
 
   // TODO t15069155: reduce the number of overrides here
@@ -363,8 +315,8 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 
       flush();
 
-      ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
-      ReactMarker::logMarker("RUN_JS_BUNDLE_END");
+      ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
+      ReactMarker::logMarker(ReactMarker::RUN_JS_BUNDLE_STOP);
       return;
 
     case JSLoadSourceErrorVersionMismatch:
@@ -400,9 +352,9 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
       "JSCExecutor::loadApplicationScript-createExpectingAscii");
     #endif
 
-    ReactMarker::logMarker("loadApplicationScript_startStringConvert");
+    ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_START);
     String jsScript = jsStringFromBigString(m_context, *script);
-    ReactMarker::logMarker("loadApplicationScript_endStringConvert");
+    ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP);
 
     #ifdef WITH_FBSYSTRACE
     fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
@@ -413,8 +365,8 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
 
   flush();
 
-  ReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
-  ReactMarker::logMarker("RUN_JS_BUNDLE_END");
+  ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
+  ReactMarker::logMarker(ReactMarker::RUN_JS_BUNDLE_STOP);
 }
 
 void JSCExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle) {
@@ -635,115 +587,6 @@ void JSCExecutor::loadModule(uint32_t moduleId) {
   evaluateScript(m_context, source, sourceUrl);
 }
 
-int JSCExecutor::addWebWorker(
-    std::string scriptURL,
-    JSValueRef workerRef,
-    JSValueRef globalObjRef) {
-  static std::atomic_int nextWorkerId(1);
-  int workerId = nextWorkerId++;
-
-  Object globalObj = Value(m_context, globalObjRef).asObject();
-
-  auto workerJscConfig = m_jscConfig;
-  workerJscConfig["isWebWorker"] = true;
-
-  std::shared_ptr<MessageQueueThread> workerMQT =
-    WebWorkerUtil::createWebWorkerThread(workerId, m_messageQueueThread.get());
-  std::unique_ptr<JSCExecutor> worker;
-  workerMQT->runOnQueueSync([this, &worker, &workerMQT, &scriptURL, &globalObj, workerId, &workerJscConfig] () {
-    worker.reset(new JSCExecutor(m_delegate, workerMQT, workerId, this, std::move(scriptURL),
-                                 globalObj.toJSONMap(), workerJscConfig));
-  });
-
-  Object workerObj = Value(m_context, workerRef).asObject();
-  workerObj.makeProtected();
-
-  JSCExecutor *workerPtr = worker.get();
-  std::shared_ptr<MessageQueueThread> sharedMessageQueueThread = worker->m_messageQueueThread;
-  m_delegate->registerExecutor(
-      std::move(worker),
-      std::move(sharedMessageQueueThread));
-
-  m_ownedWorkers.emplace(
-      std::piecewise_construct,
-      std::forward_as_tuple(workerId),
-      std::forward_as_tuple(workerPtr, std::move(workerObj)));
-
-  return workerId;
-}
-
-void JSCExecutor::postMessageToOwnedWebWorker(int workerId, JSValueRef message) {
-  auto worker = m_ownedWorkers.at(workerId).executor;
-  std::string msgString = Value(m_context, message).toJSONString();
-
-  std::shared_ptr<bool> isWorkerDestroyed = worker->m_isDestroyed;
-  worker->m_messageQueueThread->runOnQueue([isWorkerDestroyed, worker, msgString] () {
-    if (*isWorkerDestroyed) {
-      return;
-    }
-    worker->receiveMessageFromOwner(msgString);
-  });
-}
-
-void JSCExecutor::postMessageToOwner(JSValueRef msg) {
-  std::string msgString = Value(m_context, msg).toJSONString();
-  std::shared_ptr<bool> ownerIsDestroyed = m_owner->m_isDestroyed;
-  m_owner->m_messageQueueThread->runOnQueue([workerId=m_workerId, owner=m_owner, ownerIsDestroyed, msgString] () {
-    if (*ownerIsDestroyed) {
-      return;
-    }
-    owner->receiveMessageFromOwnedWebWorker(workerId, msgString);
-  });
-}
-
-void JSCExecutor::receiveMessageFromOwnedWebWorker(int workerId, const std::string& json) {
-  Object* workerObj;
-  try {
-    workerObj = &m_ownedWorkers.at(workerId).jsObj;
-  } catch (std::out_of_range& e) {
-    // Worker was already terminated
-    return;
-  }
-
-  Value onmessageValue = workerObj->getProperty("onmessage");
-  if (onmessageValue.isUndefined()) {
-    return;
-  }
-
-  JSValueRef args[] = { createMessageObject(json) };
-  onmessageValue.asObject().callAsFunction(1, args);
-
-  flush();
-}
-
-void JSCExecutor::receiveMessageFromOwner(const std::string& msgString) {
-  CHECK(m_owner) << "Received message in a Executor that doesn't have an owner!";
-
-  JSValueRef args[] = { createMessageObject(msgString) };
-  Value onmessageValue = Object::getGlobalObject(m_context).getProperty("onmessage");
-  onmessageValue.asObject().callAsFunction(1, args);
-}
-
-void JSCExecutor::terminateOwnedWebWorker(int workerId) {
-  auto& workerRegistration = m_ownedWorkers.at(workerId);
-  std::shared_ptr<MessageQueueThread> workerMQT = workerRegistration.executor->m_messageQueueThread;
-  m_ownedWorkers.erase(workerId);
-
-  workerMQT->runOnQueueSync([this, &workerMQT] {
-    workerMQT->quitSynchronous();
-    std::unique_ptr<JSExecutor> worker = m_delegate->unregisterExecutor(*this);
-    worker->destroy();
-    worker.reset();
-  });
-}
-
-Object JSCExecutor::createMessageObject(const std::string& msgJson) {
-  Value rebornJSMsg = Value::fromJSON(m_context, String(m_context, msgJson.c_str()));
-  Object messageObject = Object::create(m_context);
-  messageObject.setProperty("data", rebornJSMsg);
-  return messageObject;
-}
-
 // Native JS hooks
 template<JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
 void JSCExecutor::installNativeHook(const char* name) {
@@ -756,18 +599,6 @@ JSValueRef JSCExecutor::getNativeModule(JSObjectRef object, JSStringRef property
   }
 
   return m_nativeModules.getModule(m_context, propertyName);
-}
-
-JSValueRef JSCExecutor::nativePostMessage(
-    size_t argumentCount,
-    const JSValueRef arguments[]) {
-  if (argumentCount != 1) {
-    throw std::invalid_argument("Got wrong number of args");
-  }
-  JSValueRef msg = arguments[0];
-  postMessageToOwner(msg);
-
-  return Value::makeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeRequire(
@@ -784,7 +615,9 @@ JSValueRef JSCExecutor::nativeRequire(
       Value(m_context, arguments[0]).toString().str()));
   }
 
+  ReactMarker::logMarker(ReactMarker::NATIVE_REQUIRE_START);
   loadModule(moduleId);
+  ReactMarker::logMarker(ReactMarker::NATIVE_REQUIRE_STOP);
   return Value::makeUndefined(m_context);
 }
 
@@ -796,57 +629,6 @@ JSValueRef JSCExecutor::nativeFlushQueueImmediate(
   }
 
   flushQueueImmediate(Value(m_context, arguments[0]));
-  return Value::makeUndefined(m_context);
-}
-
-JSValueRef JSCExecutor::nativeStartWorker(
-    size_t argumentCount,
-    const JSValueRef arguments[]) {
-  if (argumentCount != 3) {
-    throw std::invalid_argument("Got wrong number of args");
-  }
-
-  std::string scriptFile = Value(m_context, arguments[0]).toString().str();
-
-  JSValueRef worker = arguments[1];
-  JSValueRef globalObj = arguments[2];
-
-  int workerId = addWebWorker(scriptFile, worker, globalObj);
-
-  return Value::makeNumber(m_context, workerId);
-}
-
-JSValueRef JSCExecutor::nativePostMessageToWorker(
-    size_t argumentCount,
-    const JSValueRef arguments[]) {
-  if (argumentCount != 2) {
-    throw std::invalid_argument("Got wrong number of args");
-  }
-
-  double workerDouble = Value(m_context, arguments[0]).asNumber();
-  if (workerDouble != workerDouble) {
-    throw std::invalid_argument("Got invalid worker id");
-  }
-
-  postMessageToOwnedWebWorker((int) workerDouble, arguments[1]);
-
-  return Value::makeUndefined(m_context);
-}
-
-JSValueRef JSCExecutor::nativeTerminateWorker(
-    size_t argumentCount,
-    const JSValueRef arguments[]) {
-  if (argumentCount != 1) {
-    throw std::invalid_argument("Got wrong number of args");
-  }
-
-  double workerDouble = Value(m_context, arguments[0]).asNumber();
-  if (workerDouble != workerDouble) {
-    std::invalid_argument("Got invalid worker id");
-  }
-
-  terminateOwnedWebWorker((int) workerDouble);
-
   return Value::makeUndefined(m_context);
 }
 

@@ -13,15 +13,14 @@
 
 const uglify = require('uglify-js');
 
+const {UGLIFY_JS_OUTPUT_OPTIONS} = require('./JsMinification');
+
 function minify(filename: string, code: string, sourceMap: ?string) {
   const minifyResult = uglify.minify(code, {
     fromString: true,
     inSourceMap: sourceMap,
     outSourceMap: true,
-    output: {
-      ascii_only: true,
-      screw_ie8: true,
-    },
+    output: UGLIFY_JS_OUTPUT_OPTIONS,
   });
 
   minifyResult.map = JSON.parse(minifyResult.map);

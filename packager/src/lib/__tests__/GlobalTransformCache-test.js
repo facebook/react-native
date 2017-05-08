@@ -51,9 +51,7 @@ describe('GlobalTransformCache', () => {
         hot: false,
         inlineRequires: false,
         platform: 'ios',
-        preloadedModules: [],
-        projectRoots: [path.join(__dirname, 'root')],
-        ramGroups: [],
+        projectRoot: path.join(__dirname, 'root'),
       },
     };
     const result = await Promise.all([cache.fetch({

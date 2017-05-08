@@ -27,7 +27,7 @@ std::unique_ptr<ModuleRegistry> buildModuleRegistry(
   std::weak_ptr<Instance> winstance,
   jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
   jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules,
-  std::shared_ptr<MessageQueueThread> moduleMessageQueue);
-
+  std::shared_ptr<MessageQueueThread> moduleMessageQueue,
+  std::shared_ptr<MessageQueueThread> uiBackgroundMessageQueue);
 }
 }

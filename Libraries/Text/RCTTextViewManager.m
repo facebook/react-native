@@ -12,6 +12,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTFont.h>
+#import <React/RCTShadowView+Layout.h>
 #import <React/RCTShadowView.h>
 
 #import "RCTConvert+Text.h"
