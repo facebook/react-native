@@ -194,8 +194,15 @@ class Bundler {
 
     const maxWorkerCount = Bundler.getMaxWorkerCount();
 
-    /* $FlowFixMe: in practice it's always here. */
-    this._transformer = new Transformer(opts.transformModulePath, maxWorkerCount);
+    this._transformer = new Transformer(
+      /* $FlowFixMe: in practice it's always here. */
+      opts.transformModulePath,
+      maxWorkerCount,
+      {
+        stdoutChunk: chunk => opts.reporter.update({type: 'worker_stdout_chunk', chunk}),
+        stderrChunk: chunk => opts.reporter.update({type: 'worker_stderr_chunk', chunk}),
+      }
+    );
 
     const getTransformCacheKey = (options) => {
       return transformCacheKey + getCacheKey(options);

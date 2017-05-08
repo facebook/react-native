@@ -9,6 +9,7 @@
 'use strict';
 
 jest
+  .unmock('stream')
   .unmock('imurmurhash')
   .unmock('../../lib/ModuleTransport')
   .unmock('../');
@@ -24,6 +25,7 @@ jest.setMock('../../worker-farm', workerFarm);
 var Transformer = require('../');
 
 const {any} = jasmine;
+const {Readable} = require('stream');
 
 describe('Transformer', function() {
   let workers, Cache;
@@ -39,7 +41,7 @@ describe('Transformer', function() {
     workerFarm.mockImplementation((opts, path, methods) => {
       const api = workers = {};
       methods.forEach(method => {api[method] = jest.fn();});
-      return api;
+      return {methods: api, stdout: new Readable({read() {}}), stderr: new Readable({read() {}})};
     });
   });
 

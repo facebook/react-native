@@ -50,6 +50,11 @@ function makeFarm(worker, methods, timeout, maxConcurrentWorkers) {
   );
 }
 
+type Reporters = {
+  +stdoutChunk: (chunk: string) => mixed,
+  +stderrChunk: (chunk: string) => mixed,
+};
+
 class Transformer {
 
   _workers: {[name: string]: Function};
@@ -66,16 +71,24 @@ class Transformer {
     sourceMap: MappingsMap,
   ) => Promise<{code: string, map: MappingsMap}>;
 
-  constructor(transformModulePath: string, maxWorkerCount: number) {
+  constructor(transformModulePath: string, maxWorkerCount: number, reporters: Reporters) {
     invariant(path.isAbsolute(transformModulePath), 'transform module path should be absolute');
     this._transformModulePath = transformModulePath;
 
-    this._workers = makeFarm(
+    const farm = makeFarm(
       require.resolve('./worker'),
       ['minify', 'transformAndExtractDependencies'],
       TRANSFORM_TIMEOUT_INTERVAL,
       maxWorkerCount,
     );
+    farm.stdout.on('data', chunk => {
+      reporters.stdoutChunk(chunk.toString('utf8'));
+    });
+    farm.stderr.on('data', chunk => {
+      reporters.stderrChunk(chunk.toString('utf8'));
+    });
+
+    this._workers = farm.methods;
     this._transform = denodeify(this._workers.transformAndExtractDependencies);
     this.minify = denodeify(this._workers.minify);
   }

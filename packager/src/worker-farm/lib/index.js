@@ -12,20 +12,31 @@
 /* eslint-disable */
 const Farm = require('./farm')
 
+import type {Readable} from 'stream';
+
 var farms = [] // keep record of farms so we can end() them if required
+
+export type FarmAPI = {|
+  methods: {[name: string]: Function},
+  stdout: Readable,
+  stderr: Readable,
+|};
 
 function farm(
   options: {+execArgv: Array<string>},
   path: string,
   methods: Array<string>,
-): {[name: string]: Function} {
+): FarmAPI {
   var f   = new Farm(options, path)
     , api = f.setup(methods)
 
   farms.push({ farm: f, api: api })
 
+  // $FlowFixMe: gotta type the Farm class.
+  const {stdout, stderr} = f;
+
   // return the public API
-  return (api: any)
+  return {methods: (api: any), stdout, stderr};
 }
 
 function end (api, callback) {
