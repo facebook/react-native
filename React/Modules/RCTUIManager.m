@@ -345,6 +345,16 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
   return shadowQueue;
 }
 
+BOOL RCTIsUIManagerQueue()
+{
+  static void *queueKey = &queueKey;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    dispatch_queue_set_specific(RCTGetUIManagerQueue(), queueKey, queueKey, NULL);
+  });
+  return dispatch_get_specific(queueKey) == queueKey;
+}
+
 - (dispatch_queue_t)methodQueue
 {
   return RCTGetUIManagerQueue();
