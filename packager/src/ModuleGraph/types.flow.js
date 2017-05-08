@@ -46,8 +46,8 @@ type GraphOptions = {|
 |};
 
 export type GraphResult = {|
-  entryModules: Array<Module>,
-  modules: Array<Module>,
+  entryModules: Iterable<Module>,
+  modules: Iterable<Module>,
 |};
 
 export type IdForPathFn = {path: string} => number;
@@ -123,7 +123,7 @@ export type TransformResult = {|
 
 export type TransformResults = {[string]: TransformResult};
 
-export type TransformVariants = {[key: string]: Object};
+export type TransformVariants = {+[name: string]: {}, +default: {}};
 
 export type TransformedCodeFile = {
   +code: string,
@@ -153,7 +153,7 @@ export type TransformedSourceFile =
 export type LibraryOptions = {|
   dependencies?: Array<string>,
   platform?: string,
-  root: string,
+  rebasePath: string => string,
 |};
 
 export type Base64Content = string;

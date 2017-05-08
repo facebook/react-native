@@ -18,7 +18,7 @@ const denodeify = require('denodeify');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 const util = require('util');
-const workerFarm = require('worker-farm');
+const workerFarm = require('../worker-farm');
 
 import type {Data as TransformData, Options as TransformOptions} from './worker/worker';
 import type {MappingsMap} from '../lib/SourceMap';
@@ -38,6 +38,7 @@ function makeFarm(worker, methods, timeout, maxConcurrentWorkers) {
   return workerFarm(
     {
       autoStart: true,
+      execArgv: [],
       maxConcurrentCallsPerWorker: 1,
       maxConcurrentWorkers,
       maxCallsPerWorker: MAX_CALLS_PER_WORKER,
@@ -51,7 +52,7 @@ function makeFarm(worker, methods, timeout, maxConcurrentWorkers) {
 
 class Transformer {
 
-  _workers: {[name: string]: mixed};
+  _workers: {[name: string]: Function};
   _transformModulePath: string;
   _transform: (
     transform: string,

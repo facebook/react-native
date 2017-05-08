@@ -18,11 +18,11 @@ import type {ReactFragment} from 'ReactTypes';
 import type {ReactCoroutine, ReactYield} from 'ReactCoroutine';
 import type {ReactPortal} from 'ReactPortal';
 import type {TypeOfWork} from 'ReactTypeOfWork';
+import type {TypeOfInternalContext} from 'ReactTypeOfInternalContext';
 import type {TypeOfSideEffect} from 'ReactTypeOfSideEffect';
 import type {PriorityLevel} from 'ReactPriorityLevel';
 import type {UpdateQueue} from 'ReactFiberUpdateQueue';
 
-var ReactTypeOfWork = require('ReactTypeOfWork');
 var {
   IndeterminateComponent,
   ClassComponent,
@@ -33,24 +33,32 @@ var {
   CoroutineComponent,
   YieldComponent,
   Fragment,
-} = ReactTypeOfWork;
+} = require('ReactTypeOfWork');
 
-var {
-  NoWork,
-} = require('ReactPriorityLevel');
+var {NoWork} = require('ReactPriorityLevel');
 
-var {
-  NoEffect,
-} = require('ReactTypeOfSideEffect');
+var {NoContext} = require('ReactTypeOfInternalContext');
 
-var {
-  cloneUpdateQueue,
-} = require('ReactFiberUpdateQueue');
+var {NoEffect} = require('ReactTypeOfSideEffect');
+
+var {cloneUpdateQueue} = require('ReactFiberUpdateQueue');
 
 var invariant = require('fbjs/lib/invariant');
 
 if (__DEV__) {
   var getComponentName = require('getComponentName');
+
+  var hasBadMapPolyfill = false;
+  try {
+    const nonExtensibleObject = Object.preventExtensions({});
+    /* eslint-disable no-new */
+    new Map([[nonExtensibleObject, null]]);
+    new Set([nonExtensibleObject]);
+    /* eslint-enable no-new */
+  } catch (e) {
+    // TODO: Consider warning about bad polyfills
+    hasBadMapPolyfill = true;
+  }
 }
 
 // A Fiber is work on a Component that needs to be done or was done. There can
@@ -116,6 +124,14 @@ export type Fiber = {
   // The state used to create the output
   memoizedState: any,
 
+  // Bitfield that describes properties about the fiber and its subtree. E.g.
+  // the AsyncUpdates flag indicates whether the subtree should be async-by-
+  // default. When a fiber is created, it inherits the internalContextTag of its
+  // parent. Additional flags can be set at creation time, but after than the
+  // value should remain unchanged throughout the fiber's lifetime, particularly
+  // before its child fibers are created.
+  internalContextTag: TypeOfInternalContext,
+
   // Effect
   effectTag: TypeOfSideEffect,
 
@@ -176,7 +192,11 @@ if (__DEV__) {
 //    to optimize in a non-JIT environment.
 // 5) It should be easy to port this to a C struct and keep a C implementation
 //    compatible.
-var createFiber = function(tag: TypeOfWork, key: null | string): Fiber {
+var createFiber = function(
+  tag: TypeOfWork,
+  key: null | string,
+  internalContextTag: TypeOfInternalContext,
+): Fiber {
   var fiber: Fiber = {
     // Instance
 
@@ -203,6 +223,8 @@ var createFiber = function(tag: TypeOfWork, key: null | string): Fiber {
     updateQueue: null,
     memoizedState: null,
 
+    internalContextTag,
+
     effectTag: NoEffect,
     nextEffect: null,
     firstEffect: null,
@@ -222,7 +244,7 @@ var createFiber = function(tag: TypeOfWork, key: null | string): Fiber {
     fiber._debugSource = null;
     fiber._debugOwner = null;
     fiber._debugIsCurrentlyTiming = false;
-    if (typeof Object.preventExtensions === 'function') {
+    if (!hasBadMapPolyfill && typeof Object.preventExtensions === 'function') {
       Object.preventExtensions(fiber);
     }
   }
@@ -264,7 +286,7 @@ exports.cloneFiber = function(
     alt.lastEffect = null;
   } else {
     // This should not have an alternate already
-    alt = createFiber(fiber.tag, fiber.key);
+    alt = createFiber(fiber.tag, fiber.key, fiber.internalContextTag);
     alt.type = fiber.type;
 
     alt.progressedChild = fiber.progressedChild;
@@ -298,12 +320,13 @@ exports.cloneFiber = function(
 };
 
 exports.createHostRootFiber = function(): Fiber {
-  const fiber = createFiber(HostRoot, null);
+  const fiber = createFiber(HostRoot, null, NoContext);
   return fiber;
 };
 
 exports.createFiberFromElement = function(
   element: ReactElement,
+  internalContextTag: TypeOfInternalContext,
   priorityLevel: PriorityLevel,
 ): Fiber {
   let owner = null;
@@ -311,7 +334,12 @@ exports.createFiberFromElement = function(
     owner = element._owner;
   }
 
-  const fiber = createFiberFromElementType(element.type, element.key, owner);
+  const fiber = createFiberFromElementType(
+    element.type,
+    element.key,
+    internalContextTag,
+    owner,
+  );
   fiber.pendingProps = element.props;
   fiber.pendingWorkPriority = priorityLevel;
 
@@ -325,11 +353,12 @@ exports.createFiberFromElement = function(
 
 exports.createFiberFromFragment = function(
   elements: ReactFragment,
+  internalContextTag: TypeOfInternalContext,
   priorityLevel: PriorityLevel,
 ): Fiber {
   // TODO: Consider supporting keyed fragments. Technically, we accidentally
   // support that in the existing React.
-  const fiber = createFiber(Fragment, null);
+  const fiber = createFiber(Fragment, null, internalContextTag);
   fiber.pendingProps = elements;
   fiber.pendingWorkPriority = priorityLevel;
   return fiber;
@@ -337,9 +366,10 @@ exports.createFiberFromFragment = function(
 
 exports.createFiberFromText = function(
   content: string,
+  internalContextTag: TypeOfInternalContext,
   priorityLevel: PriorityLevel,
 ): Fiber {
-  const fiber = createFiber(HostText, null);
+  const fiber = createFiber(HostText, null, internalContextTag);
   fiber.pendingProps = content;
   fiber.pendingWorkPriority = priorityLevel;
   return fiber;
@@ -348,19 +378,22 @@ exports.createFiberFromText = function(
 function createFiberFromElementType(
   type: mixed,
   key: null | string,
+  internalContextTag: TypeOfInternalContext,
   debugOwner: null | Fiber | ReactInstance,
 ): Fiber {
   let fiber;
   if (typeof type === 'function') {
     fiber = shouldConstruct(type)
-      ? createFiber(ClassComponent, key)
-      : createFiber(IndeterminateComponent, key);
+      ? createFiber(ClassComponent, key, internalContextTag)
+      : createFiber(IndeterminateComponent, key, internalContextTag);
     fiber.type = type;
   } else if (typeof type === 'string') {
-    fiber = createFiber(HostComponent, key);
+    fiber = createFiber(HostComponent, key, internalContextTag);
     fiber.type = type;
   } else if (
-    typeof type === 'object' && type !== null && typeof type.tag === 'number'
+    typeof type === 'object' &&
+    type !== null &&
+    typeof type.tag === 'number'
   ) {
     // Currently assumed to be a continuation and therefore is a fiber already.
     // TODO: The yield system is currently broken for updates in some cases.
@@ -378,7 +411,8 @@ function createFiberFromElementType(
           type !== null &&
           Object.keys(type).length === 0)
       ) {
-        info += ' You likely forgot to export your component from the file ' +
+        info +=
+          ' You likely forgot to export your component from the file ' +
           "it's defined in.";
       }
       const ownerName = debugOwner ? getComponentName(debugOwner) : null;
@@ -401,9 +435,14 @@ exports.createFiberFromElementType = createFiberFromElementType;
 
 exports.createFiberFromCoroutine = function(
   coroutine: ReactCoroutine,
+  internalContextTag: TypeOfInternalContext,
   priorityLevel: PriorityLevel,
 ): Fiber {
-  const fiber = createFiber(CoroutineComponent, coroutine.key);
+  const fiber = createFiber(
+    CoroutineComponent,
+    coroutine.key,
+    internalContextTag,
+  );
   fiber.type = coroutine.handler;
   fiber.pendingProps = coroutine;
   fiber.pendingWorkPriority = priorityLevel;
@@ -412,17 +451,19 @@ exports.createFiberFromCoroutine = function(
 
 exports.createFiberFromYield = function(
   yieldNode: ReactYield,
+  internalContextTag: TypeOfInternalContext,
   priorityLevel: PriorityLevel,
 ): Fiber {
-  const fiber = createFiber(YieldComponent, null);
+  const fiber = createFiber(YieldComponent, null, internalContextTag);
   return fiber;
 };
 
 exports.createFiberFromPortal = function(
   portal: ReactPortal,
+  internalContextTag: TypeOfInternalContext,
   priorityLevel: PriorityLevel,
 ): Fiber {
-  const fiber = createFiber(HostPortal, portal.key);
+  const fiber = createFiber(HostPortal, portal.key, internalContextTag);
   fiber.pendingProps = portal.children || [];
   fiber.pendingWorkPriority = priorityLevel;
   fiber.stateNode = {

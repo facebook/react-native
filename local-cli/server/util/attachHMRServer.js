@@ -57,10 +57,12 @@ function attachHMRServer({httpServer, path, packagerServer}: HMROptions) {
     resolutionResponse: ResolutionResponse<Module, *>,
   }> {
     return packagerServer.getDependencies({
-      platform: platform,
       dev: true,
-      hot: true,
       entryFile: bundleEntry,
+      hot: true,
+      minify: false,
+      platform: platform,
+      recursive: true,
     }).then(response => {
       /* $FlowFixMe: getModuleId might be null */
       const {getModuleId}: {getModuleId: () => number} = response;
@@ -73,10 +75,12 @@ function attachHMRServer({httpServer, path, packagerServer}: HMROptions) {
             return Promise.resolve({path: dep.path, deps: []});
           }
           return packagerServer.getShallowDependencies({
-            platform: platform,
             dev: true,
+            entryFile: dep.path,
             hot: true,
-            entryFile: dep.path
+            minify: false,
+            platform: platform,
+            recursive: true,
           }).then(deps => {
             return {
               path: dep.path,
@@ -174,10 +178,12 @@ function attachHMRServer({httpServer, path, packagerServer}: HMROptions) {
           const promise = type === 'delete'
             ? Promise.resolve()
             : packagerServer.getShallowDependencies({
-                entryFile: filename,
-                platform: client.platform,
                 dev: true,
+                minify: false,
+                entryFile: filename,
                 hot: true,
+                platform: client.platform,
+                recursive: true,
               }).then(deps => {
                 if (!client) {
                   return [];
@@ -193,10 +199,11 @@ function attachHMRServer({httpServer, path, packagerServer}: HMROptions) {
                   // specific response we can compute a non recursive one which
                   // is the least we need and improve performance.
                   return packagerServer.getDependencies({
-                    platform: client.platform,
                     dev: true,
-                    hot: true,
                     entryFile: filename,
+                    hot: true,
+                    minify: false,
+                    platform: client.platform,
                     recursive: true,
                   }).then(response => {
                     return packagerServer.getModuleForPath(filename).then(module => {

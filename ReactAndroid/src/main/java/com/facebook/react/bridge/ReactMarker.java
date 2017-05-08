@@ -19,11 +19,10 @@ public class ReactMarker {
 
   private static @Nullable MarkerListener sMarkerListener = null;
 
-  public static void setMarkerListener(MarkerListener listener) {
-    SoftAssertions.assertCondition(
-      sMarkerListener == null,
-      "MarkerListener is being overwritten.");
-    sMarkerListener = listener;
+  public static void initialize(MarkerListener listener) {
+    if (sMarkerListener == null) {
+      sMarkerListener = listener;
+    }
   }
 
   @DoNotStrip

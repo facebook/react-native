@@ -6,18 +6,23 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule traverseAllChildren
+ * @providesModule traverseStackChildren
  */
 
 'use strict';
 
-var ReactCurrentOwner = require('react/lib/ReactCurrentOwner');
 var REACT_ELEMENT_TYPE = require('ReactElementSymbol');
 
 var getIteratorFn = require('getIteratorFn');
 var invariant = require('fbjs/lib/invariant');
 var KeyEscapeUtils = require('KeyEscapeUtils');
 var warning = require('fbjs/lib/warning');
+
+if (__DEV__) {
+  var {
+    getCurrentStackAddendum,
+  } = require('ReactGlobalSharedState').ReactComponentTreeHook;
+}
 
 var SEPARATOR = '.';
 var SUBSEPARATOR = ':';
@@ -61,7 +66,7 @@ function getComponentKey(component, index) {
  * process.
  * @return {!number} The number of children in this subtree.
  */
-function traverseAllChildrenImpl(
+function traverseStackChildrenImpl(
   children,
   nameSoFar,
   callback,
@@ -101,7 +106,7 @@ function traverseAllChildrenImpl(
     for (var i = 0; i < children.length; i++) {
       child = children[i];
       nextName = nextNamePrefix + getComponentKey(child, i);
-      subtreeCount += traverseAllChildrenImpl(
+      subtreeCount += traverseStackChildrenImpl(
         child,
         nextName,
         callback,
@@ -114,21 +119,12 @@ function traverseAllChildrenImpl(
       if (__DEV__) {
         // Warn about using Maps as children
         if (iteratorFn === children.entries) {
-          let mapsAsChildrenAddendum = '';
-          if (ReactCurrentOwner.current) {
-            var mapsAsChildrenOwnerName = ReactCurrentOwner.current.getName();
-            if (mapsAsChildrenOwnerName) {
-              mapsAsChildrenAddendum = '\n\nCheck the render method of `' +
-                mapsAsChildrenOwnerName +
-                '`.';
-            }
-          }
           warning(
             didWarnAboutMaps,
             'Using Maps as children is unsupported and will likely yield ' +
               'unexpected results. Convert it to a sequence/iterable of keyed ' +
               'ReactElements instead.%s',
-            mapsAsChildrenAddendum,
+            getCurrentStackAddendum(),
           );
           didWarnAboutMaps = true;
         }
@@ -140,7 +136,7 @@ function traverseAllChildrenImpl(
       while (!(step = iterator.next()).done) {
         child = step.value;
         nextName = nextNamePrefix + getComponentKey(child, ii++);
-        subtreeCount += traverseAllChildrenImpl(
+        subtreeCount += traverseStackChildrenImpl(
           child,
           nextName,
           callback,
@@ -150,14 +146,10 @@ function traverseAllChildrenImpl(
     } else if (type === 'object') {
       var addendum = '';
       if (__DEV__) {
-        addendum = ' If you meant to render a collection of children, use an array ' +
-          'instead.';
-        if (ReactCurrentOwner.current) {
-          var name = ReactCurrentOwner.current.getName();
-          if (name) {
-            addendum += '\n\nCheck the render method of `' + name + '`.';
-          }
-        }
+        addendum =
+          ' If you meant to render a collection of children, use an array ' +
+          'instead.' +
+          getCurrentStackAddendum();
       }
       var childrenString = '' + children;
       invariant(
@@ -178,8 +170,8 @@ function traverseAllChildrenImpl(
  * Traverses children that are typically specified as `props.children`, but
  * might also be specified through attributes:
  *
- * - `traverseAllChildren(this.props.children, ...)`
- * - `traverseAllChildren(this.props.leftPanelChildren, ...)`
+ * - `traverseStackChildren(this.props.children, ...)`
+ * - `traverseStackChildren(this.props.leftPanelChildren, ...)`
  *
  * The `traverseContext` is an optional argument that is passed through the
  * entire traversal. It can be used to store accumulations or anything else that
@@ -190,12 +182,12 @@ function traverseAllChildrenImpl(
  * @param {?*} traverseContext Context for traversal.
  * @return {!number} The number of children in this subtree.
  */
-function traverseAllChildren(children, callback, traverseContext) {
+function traverseStackChildren(children, callback, traverseContext) {
   if (children == null) {
     return 0;
   }
 
-  return traverseAllChildrenImpl(children, '', callback, traverseContext);
+  return traverseStackChildrenImpl(children, '', callback, traverseContext);
 }
 
-module.exports = traverseAllChildren;
+module.exports = traverseStackChildren;

@@ -16,8 +16,8 @@ const Logger = require('./src/Logger');
 const debug = require('debug');
 const invariant = require('fbjs/lib/invariant');
 
+import type {PostProcessModules, PostMinifyProcess} from './src/Bundler';
 import type Server from './src/Server';
-import type {PostProcessModules} from './src/Bundler';
 import type {GlobalTransformCache} from './src/lib/GlobalTransformCache';
 import type {Reporter} from './src/lib/reporting';
 import type {HasteImpl} from './src/node-haste/Module';
@@ -30,8 +30,10 @@ type Options = {
   globalTransformCache: ?GlobalTransformCache,
   nonPersistent?: boolean,
   postProcessModules?: PostProcessModules,
+  postMinifyProcess?: PostMinifyProcess,
   projectRoots: Array<string>,
   reporter?: Reporter,
+  +sourceExts: ?Array<string>,
   watch?: boolean,
 };
 
@@ -79,9 +81,13 @@ exports.buildBundle = function(options: Options, bundleOptions: PublicBundleOpti
   });
 };
 
-exports.getOrderedDependencyPaths = function(options: Options, bundleOptions: {}) {
+exports.getOrderedDependencyPaths = function(options: Options, depOptions: {
+  +entryFile: string,
+  +dev: boolean,
+  +platform: string,
+}) {
   var server = createNonPersistentServer(options);
-  return server.getOrderedDependencyPaths(bundleOptions)
+  return server.getOrderedDependencyPaths(depOptions)
     .then(function(paths) {
       server.end();
       return paths;

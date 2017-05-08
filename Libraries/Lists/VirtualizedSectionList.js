@@ -25,7 +25,7 @@ type SectionItem = any;
 
 type SectionBase = {
   // Must be provided directly on each section.
-  data: Array<SectionItem>,
+  data: $ReadOnlyArray<SectionItem>,
   key?: string,
 
   // Optional props will override list-wide props just for this section.
@@ -49,7 +49,7 @@ type SectionBase = {
 };
 
 type RequiredProps<SectionT: SectionBase> = {
-  sections: Array<SectionT>,
+  sections: $ReadOnlyArray<SectionT>,
 };
 
 type OptionalProps<SectionT: SectionBase> = {
@@ -120,7 +120,7 @@ export type Props<SectionT> =
   OptionalProps<SectionT> &
   VirtualizedListProps;
 
-type DefaultProps = (typeof VirtualizedList.defaultProps) & {data: Array<Item>};
+type DefaultProps = (typeof VirtualizedList.defaultProps) & {data: $ReadOnlyArray<Item>};
 type State = {childProps: VirtualizedListProps};
 
 /**
@@ -413,7 +413,7 @@ class ItemWithSeparator extends React.Component {
   }
 }
 
-function getItem(sections: ?Array<Item>, index: number): ?Item {
+function getItem(sections: ?$ReadOnlyArray<Item>, index: number): ?Item {
   if (!sections) {
     return null;
   }

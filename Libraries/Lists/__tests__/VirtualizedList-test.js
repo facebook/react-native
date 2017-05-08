@@ -23,6 +23,8 @@ describe('VirtualizedList', () => {
       <VirtualizedList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
         renderItem={({item}) => <item value={item.key} />}
+        getItem={(data, index) => data[index]}
+        getItemCount={(data) => data.length}
       />
     );
     expect(component).toMatchSnapshot();
@@ -33,6 +35,8 @@ describe('VirtualizedList', () => {
       <VirtualizedList
         data={[]}
         renderItem={({item}) => <item value={item.key} />}
+        getItem={(data, index) => data[index]}
+        getItemCount={(data) => data.length}
       />
     );
     expect(component).toMatchSnapshot();
@@ -43,6 +47,36 @@ describe('VirtualizedList', () => {
       <VirtualizedList
         data={undefined}
         renderItem={({item}) => <item value={item.key} />}
+        getItem={(data, index) => data[index]}
+        getItemCount={(data) => 0}
+      />
+    );
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders empty list with empty component', () => {
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[]}
+        ListEmptyComponent={() => <empty />}
+        ListFooterComponent={() => <footer />}
+        ListHeaderComponent={() => <header />}
+        getItem={(data, index) => data[index]}
+        getItemCount={(data) => data.length}
+        renderItem={({item}) => <item value={item.key} />}
+      />
+    );
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders list with empty component', () => {
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[{key: 'hello'}]}
+        ListEmptyComponent={() => <empty />}
+        getItem={(data, index) => data[index]}
+        getItemCount={(data) => data.length}
+        renderItem={({item}) => <item value={item.key} />}
       />
     );
     expect(component).toMatchSnapshot();
@@ -52,9 +86,12 @@ describe('VirtualizedList', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         ItemSeparatorComponent={() => <separator />}
+        ListEmptyComponent={() => <empty />}
         ListFooterComponent={() => <footer />}
         ListHeaderComponent={() => <header />}
         data={new Array(5).fill().map((_, ii) => ({id: String(ii)}))}
+        getItem={(data, index) => data[index]}
+        getItemCount={(data) => data.length}
         keyExtractor={(item, index) => item.id}
         getItemLayout={({index}) => ({length: 50, offset: index * 50})}
         refreshing={false}
@@ -87,6 +124,8 @@ describe('VirtualizedList', () => {
           infos.push(info);
           return <item title={info.item.key} />;
         }}
+        getItem={(data, index) => data[index]}
+        getItemCount={(data) => data.length}
       />
     );
     expect(component).toMatchSnapshot();

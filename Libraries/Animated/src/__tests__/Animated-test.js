@@ -111,11 +111,6 @@ describe('Animated tests', () => {
 
 
     it('stops animation when detached', () => {
-      // jest environment doesn't have cancelAnimationFrame :(
-      if (!global.cancelAnimationFrame) {
-        global.cancelAnimationFrame = jest.fn();
-      }
-
       var anim = new Animated.Value(0);
       var callback = jest.fn();
 
