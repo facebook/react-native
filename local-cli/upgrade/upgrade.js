@@ -136,7 +136,6 @@ function upgrade(args, config) {
     return;
   }
 
-  const version = packageJSON.dependencies['react-native'];
   if (!version) {
     warn(
       'Your "package.json" file doesn\'t seem to declare "react-native" as ' +
