@@ -8,7 +8,7 @@ const fs = require('fs');
  * Returns `null` if INFOPLIST_FILE is not specified or file is non-existent.
  */
 module.exports = function writePlist(project, sourceDir, plist) {
-  const plistPath = getPlistPath(project, sourceDir);
+  const plistPath = getPlistPath(project, sourceDir, project);
 
   if (!plistPath) {
     return null;
