@@ -11,6 +11,7 @@
 #import <XCTest/XCTest.h>
 
 #import <React/RCTRootShadowView.h>
+#import <React/RCTShadowView+Layout.h>
 #import <React/RCTShadowView.h>
 
 
