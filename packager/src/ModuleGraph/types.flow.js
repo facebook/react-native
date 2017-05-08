@@ -152,6 +152,7 @@ export type TransformedSourceFile =
 
 export type LibraryOptions = {|
   dependencies?: Array<string>,
+  optimize: boolean,
   platform?: string,
   rebasePath: string => string,
 |};
