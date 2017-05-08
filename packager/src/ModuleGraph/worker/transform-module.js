@@ -12,8 +12,10 @@
 
 const babel = require('babel-core');
 const collectDependencies = require('./collect-dependencies');
+const defaults = require('../../../defaults');
 const docblock = require('../../node-haste/DependencyGraph/docblock');
 const generate = require('./generate');
+const path = require('path');
 const series = require('async/series');
 
 const {basename} = require('path');
@@ -39,12 +41,14 @@ const defaultVariants = {default: {}};
 const moduleFactoryParameters = ['global', 'require', 'module', 'exports'];
 const polyfillFactoryParameters = ['global'];
 
+const ASSET_EXTENSIONS = new Set(defaults.assetExts);
+
 function transformModule(
   content: Buffer,
   options: TransformOptions,
   callback: Callback<TransformedSourceFile>,
 ): void {
-  if (options.filename.endsWith('.png')) {
+  if (ASSET_EXTENSIONS.has(path.extname(options.filename).substr(1))) {
     transformAsset(content, options, callback);
     return;
   }
