@@ -59,24 +59,7 @@ RCT_EXTERN NSString *const RCTUIManagerDidRemoveRootViewNotification;
  */
 RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 
-@class RCTUIManager;
-
-/**
- * Allows to hook into UIManager internals. This can be used to execute code at
- * specific points during the view updating process.
- */
-@protocol RCTUIManagerObserver <NSObject>
-
-/**
- * Called before flushing UI blocks at the end of a batch. Note that this won't
- * get called for partial batches when using `unsafeFlushUIChangesBeforeBatchEnds`.
- * This is called from the UIManager queue. Can be used to add UI operations in that batch.
- */
-- (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)manager;
-
-@end
-
-@protocol RCTScrollableProtocol;
+@class RCTUIManagerObserverCoordinator;
 
 /**
  * The RCTUIManager is the module responsible for updating the view hierarchy.
@@ -140,17 +123,6 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 - (void)prependUIBlock:(RCTViewManagerUIBlock)block;
 
 /**
- * Add a UIManagerObserver. See the RCTUIManagerObserver protocol for more info. This
- * method can be called safely from any queue.
- */
-- (void)addUIManagerObserver:(id<RCTUIManagerObserver>)observer;
-
-/**
- * Remove a UIManagerObserver. This method can be called safely from any queue.
- */
-- (void)removeUIManagerObserver:(id<RCTUIManagerObserver>)observer;
-
-/**
  * Used by native animated module to bypass the process of updating the values through the shadow
  * view hierarchy. This method will directly update native views, which means that updates for
  * layout-related propertied won't be handled properly.
@@ -191,6 +163,12 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  * React won't be aware of this, so we need to make sure it happens.
  */
 - (void)setNeedsLayout;
+
+/**
+ * Dedicated object for subscribing for UIManager events.
+ * See `RCTUIManagerObserver` protocol for more details.
+ */
+@property (atomic, retain, readonly) RCTUIManagerObserverCoordinator *observerCoordinator;
 
 @end
 
