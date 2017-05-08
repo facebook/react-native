@@ -14,6 +14,7 @@ export default class WelcomeScreen extends Component {
 
   static navigationOptions = {
     title: 'Welcome',
+    header: Platform.OS === 'ios' ? undefined : null,
     tabBarIcon: ({ tintColor }) => (
       <Image
         // Using react-native-vector-icons works here too

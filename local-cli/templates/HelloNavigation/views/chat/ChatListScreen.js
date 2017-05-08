@@ -16,6 +16,7 @@ export default class ChatListScreen extends Component {
 
   static navigationOptions = {
     title: 'Chats',
+    header: Platform.OS === 'ios' ? undefined : null,
     tabBarIcon: ({ tintColor }) => (
       <Image
         // Using react-native-vector-icons works here too
