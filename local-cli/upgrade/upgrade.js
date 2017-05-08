@@ -47,7 +47,10 @@ function validateAndUpgrade() {
   if (!projectName) {
     warn(
       'Your project needs to have a name, declared in package.json, ' +
-      'such as "name": "AwesomeApp". Please add a project name. Aborting.');
+      'such as "name": "AwesomeApp". Please add a project name. Aborting.'
+      );
+    return;
+  }
 
 function upgrade(args, config) {
   args = args || process.argv;
