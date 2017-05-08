@@ -30,7 +30,11 @@ const affixes = {prefix: 'metro-bundler-symbolicate', suffix: '.sock'};
 const childPath = require.resolve('./worker');
 
 exports.createWorker = (): Symbolicate => {
-  const socket = xpipe.eq(temp.path(affixes));
+  // There are issues with named sockets on windows that cause the connection to
+  // close too early so run the symbolicate server on a random localhost port.
+  const socket = process.platform === 'win32'
+    ? 34712
+    : xpipe.eq(temp.path(affixes));
   const child = new LockingPromise(new LazyPromise(() => startupChild(socket)));
 
   return (stack, sourceMaps) =>
@@ -53,6 +57,7 @@ function startupChild(socket) {
         child.removeAllListeners();
         resolve(child);
       });
+    // $FlowFixMe ChildProcess.send should accept any type.
     child.send(socket);
   });
 }
