@@ -22,9 +22,6 @@ const MainNavigator = StackNavigator({
   Chat: {
     screen: ChatScreen,
   },
-},
-{
-  headerMode: "none",
 });
 
 export default MainNavigator;
