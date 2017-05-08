@@ -7,8 +7,8 @@ const fs = require('fs');
  *
  * Returns `null` if INFOPLIST_FILE is not specified.
  */
-module.exports = function getPlist(project, sourceDir) {
-  const plistPath = getPlistPath(project, sourceDir);
+module.exports = function getPlist(project, sourceDir, projectConfig) {
+  const plistPath = getPlistPath(project, sourceDir, projectConfig);
 
   if (!plistPath || !fs.existsSync(plistPath)) {
     return null;

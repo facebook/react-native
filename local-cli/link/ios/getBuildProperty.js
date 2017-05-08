@@ -1,3 +1,5 @@
+const getTarget = require('./getTarget');
+
 /**
  * Gets build property from the main target build section
  *
@@ -9,10 +11,30 @@
  * without the property defined (e.g. CocoaPods sections appended to project
  * miss INFOPLIST_FILE), see: https://github.com/alunny/node-xcode/blob/master/lib/pbxProject.js#L1765
  */
-module.exports = function getBuildProperty(project, prop) {
-  const target = project.getFirstTarget().firstTarget;
-  const config = project.pbxXCConfigurationList()[target.buildConfigurationList];
-  const buildSection = project.pbxXCBuildConfigurationSection()[config.buildConfigurations[0].value];
+module.exports = function getBuildProperty(project, prop, projectConfig) {
+  if (projectConfig.target) {
+      // todo not sure here
 
-  return buildSection.buildSettings[prop];
+      //var secConfigs = project.pbxXCBuildConfigurationSection();
+
+      //return secConfigs
+      
+      const target = getTarget(project, projectConfig).target;
+      const config = project.pbxXCConfigurationList()[target.buildConfigurationList];
+      const buildSection = project.pbxXCBuildConfigurationSection()[config.buildConfigurations[0].value];
+      
+      return buildSection.buildSettings[prop];
+
+  } else {
+      const target = project.getFirstTarget().firstTarget;
+      const config = project.pbxXCConfigurationList()[target.buildConfigurationList];
+      const buildSection = project.pbxXCBuildConfigurationSection()[config.buildConfigurations[0].value];
+
+      console.log('\n\n', target, '\n\n');
+      console.log('\n\n', config, '\n\n');
+      console.log('\n\n', buildSection, '\n\n');
+      console.log(buildSection.buildSettings[prop]);
+
+      return buildSection.buildSettings[prop];
+  }
 };
