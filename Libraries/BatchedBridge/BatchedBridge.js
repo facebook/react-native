@@ -14,16 +14,6 @@
 const MessageQueue = require('MessageQueue');
 const BatchedBridge = new MessageQueue();
 
-// TODO: Move these around to solve the cycle in a cleaner way.
-BatchedBridge.registerCallableModule('Systrace', require('Systrace'));
-BatchedBridge.registerCallableModule('JSTimersExecution', require('JSTimersExecution'));
-BatchedBridge.registerCallableModule('HeapCapture', require('HeapCapture'));
-BatchedBridge.registerCallableModule('SamplingProfiler', require('SamplingProfiler'));
-
-if (__DEV__) {
-  BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));
-}
-
 // Wire up the batched bridge on the global object so that we can call into it.
 // Ideally, this would be the inverse relationship. I.e. the native environment
 // provides this global directly with its script embedded. Then this module

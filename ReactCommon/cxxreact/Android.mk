@@ -6,9 +6,9 @@ LOCAL_MODULE := libreactnativefb
 
 LOCAL_SRC_FILES := \
   CxxNativeModule.cpp \
-  Executor.cpp \
   Instance.cpp \
   JSCExecutor.cpp \
+  JSBigString.cpp \
   JSBundleType.cpp \
   JSCLegacyProfiler.cpp \
   JSCLegacyTracing.cpp \
@@ -16,7 +16,6 @@ LOCAL_SRC_FILES := \
   JSCNativeModules.cpp \
   JSCPerfStats.cpp \
   JSCTracing.cpp \
-  JSCWebWorker.cpp \
   JSIndexedRAMBundle.cpp \
   MethodCall.cpp \
   ModuleRegistry.cpp \

@@ -11,16 +11,16 @@
  */
 'use strict';
 
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var View = require('View');
-var ElementProperties = require('ElementProperties');
-var PerformanceOverlay = require('PerformanceOverlay');
-var TouchableHighlight = require('TouchableHighlight');
-var NetworkOverlay = require('NetworkOverlay');
-
-var PropTypes = React.PropTypes;
+const ElementProperties = require('ElementProperties');
+const NetworkOverlay = require('NetworkOverlay');
+const PerformanceOverlay = require('PerformanceOverlay');
+const React = require('React');
+const PropTypes = require('prop-types');
+const ScrollView = require('ScrollView');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const TouchableHighlight = require('TouchableHighlight');
+const View = require('View');
 
 class InspectorPanel extends React.Component {
   renderWaiting() {
@@ -35,17 +35,19 @@ class InspectorPanel extends React.Component {
   }
 
   render() {
-    var contents;
+    let contents;
     if (this.props.inspected) {
       contents = (
-        <ElementProperties
-          style={this.props.inspected.style}
-          frame={this.props.inspected.frame}
-          source={this.props.inspected.source}
-          hierarchy={this.props.hierarchy}
-          selection={this.props.selection}
-          setSelection={this.props.setSelection}
-        />
+        <ScrollView style={styles.properties}>
+          <ElementProperties
+            style={this.props.inspected.style}
+            frame={this.props.inspected.frame}
+            source={this.props.inspected.source}
+            hierarchy={this.props.hierarchy}
+            selection={this.props.selection}
+            setSelection={this.props.setSelection}
+          />
+        </ScrollView>
       );
     } else if (this.props.perfing) {
       contents = (
@@ -115,7 +117,7 @@ class Button extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
   },
@@ -136,6 +138,9 @@ var styles = StyleSheet.create({
   },
   container: {
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
+  properties: {
+    height: 200,
   },
   waiting: {
     height: 100,

@@ -31,13 +31,16 @@ import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactPointerEventsView;
+import com.facebook.react.uimanager.ReactZIndexedViewGroup;
+import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
  * initializes most of the storage needed for them.
  */
 public class ReactViewGroup extends ViewGroup implements
-    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView {
+    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView,
+    ReactZIndexedViewGroup {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
@@ -96,9 +99,12 @@ public class ReactViewGroup extends ViewGroup implements
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
   private boolean mNeedsOffscreenAlphaCompositing = false;
+  private final ViewGroupDrawingOrderHelper mDrawingOrderHelper;
 
   public ReactViewGroup(Context context) {
     super(context);
+
+    mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
   }
 
   @Override
@@ -371,6 +377,45 @@ public class ReactViewGroup extends ViewGroup implements
     super.onAttachedToWindow();
     if (mRemoveClippedSubviews) {
       updateClippingRect();
+    }
+  }
+
+  @Override
+  public void addView(View child, int index, LayoutParams params) {
+    // This will get called for every overload of addView so there is not need to override every method.
+    mDrawingOrderHelper.handleAddView(child);
+    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+
+    super.addView(child, index, params);
+  }
+
+  @Override
+  public void removeView(View view) {
+    mDrawingOrderHelper.handleRemoveView(view);
+    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+
+    super.removeView(view);
+  }
+
+  @Override
+  public void removeViewAt(int index) {
+    mDrawingOrderHelper.handleRemoveView(getChildAt(index));
+    setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
+
+    super.removeViewAt(index);
+  }
+
+  @Override
+  protected int getChildDrawingOrder(int childCount, int index) {
+    return mDrawingOrderHelper.getChildDrawingOrder(childCount, index);
+  }
+
+  @Override
+  public int getZIndexMappedChildIndex(int index) {
+    if (mDrawingOrderHelper.shouldEnableCustomDrawingOrder()) {
+      return mDrawingOrderHelper.getChildDrawingOrder(getChildCount(), index);
+    } else {
+      return index;
     }
   }
 

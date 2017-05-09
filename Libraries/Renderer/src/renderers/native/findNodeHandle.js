@@ -7,15 +7,20 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule findNodeHandle
+ * @flow
  */
 
 'use strict';
 
-var ReactCurrentOwner = require('react/lib/ReactCurrentOwner');
 var ReactInstanceMap = require('ReactInstanceMap');
+var {ReactCurrentOwner} = require('ReactGlobalSharedState');
 
+var getComponentName = require('getComponentName');
 var invariant = require('fbjs/lib/invariant');
 var warning = require('fbjs/lib/warning');
+
+import type {Fiber} from 'ReactFiber';
+import type {ReactInstance} from 'ReactInstanceType';
 
 /**
  * ReactNative vs ReactWeb
@@ -47,20 +52,37 @@ var warning = require('fbjs/lib/warning');
  * nodeHandle       N/A              rootNodeID             tag
  */
 
-function findNodeHandle(componentOrHandle: any): ?number {
+let injectedFindNode;
+let injectedFindRootNodeID;
+
+// TODO (bvaughn) Rename the findNodeHandle module to something more descriptive
+// eg findInternalHostInstance. This will reduce the likelihood of someone
+// accidentally deep-requiring this version.
+function findNodeHandle(componentOrHandle: any): any {
   if (__DEV__) {
-    var owner = ReactCurrentOwner.current;
+    var owner =
+      ((ReactCurrentOwner.current: any): ReactInstance | Fiber | null);
     if (owner !== null) {
+      const isFiber = typeof (owner: any).tag === 'number';
+      const warnedAboutRefsInRender = isFiber
+        ? ((owner: any): Fiber).stateNode._warnedAboutRefsInRender
+        : ((owner: any): ReactInstance)._warnedAboutRefsInRender;
+
       warning(
-        owner._warnedAboutRefsInRender,
+        warnedAboutRefsInRender,
         '%s is accessing findNodeHandle inside its render(). ' +
-        'render() should be a pure function of props and state. It should ' +
-        'never access something that requires stale data from the previous ' +
-        'render, such as refs. Move this logic to componentDidMount and ' +
-        'componentDidUpdate instead.',
-        owner.getName() || 'A component'
+          'render() should be a pure function of props and state. It should ' +
+          'never access something that requires stale data from the previous ' +
+          'render, such as refs. Move this logic to componentDidMount and ' +
+          'componentDidUpdate instead.',
+        getComponentName(owner) || 'A component',
       );
-      owner._warnedAboutRefsInRender = true;
+
+      if (isFiber) {
+        ((owner: any): Fiber).stateNode._warnedAboutRefsInRender = true;
+      } else {
+        ((owner: any): ReactInstance)._warnedAboutRefsInRender = true;
+      }
     }
   }
   if (componentOrHandle == null) {
@@ -77,34 +99,41 @@ function findNodeHandle(componentOrHandle: any): ?number {
   // ReactInstanceMap.get here will always succeed for mounted components
   var internalInstance = ReactInstanceMap.get(component);
   if (internalInstance) {
-    return internalInstance.getHostNode();
+    return injectedFindNode(internalInstance);
   } else {
-    var rootNodeID = component._rootNodeID;
+    var rootNodeID = injectedFindRootNodeID(component);
     if (rootNodeID) {
       return rootNodeID;
     } else {
       invariant(
-        (
-          // Native
-          typeof component === 'object' &&
-          '_rootNodeID' in component
-        ) || (
+        // Native
+        (typeof component === 'object' &&
+          ('_rootNodeID' in component || // TODO (bvaughn) Clean up once Stack is deprecated
+            '_nativeTag' in component)) ||
           // Composite
-          component.render != null &&
-          typeof component.render === 'function'
-        ),
+          (component.render != null && typeof component.render === 'function'),
         'findNodeHandle(...): Argument is not a component ' +
-        '(type: %s, keys: %s)',
+          '(type: %s, keys: %s)',
         typeof component,
-        Object.keys(component)
+        Object.keys(component),
       );
       invariant(
         false,
         'findNodeHandle(...): Unable to find node handle for unmounted ' +
-        'component.'
+          'component.',
       );
     }
   }
 }
+
+// Fiber and stack implementations differ; each must inject a strategy
+findNodeHandle.injection = {
+  injectFindNode(findNode) {
+    injectedFindNode = findNode;
+  },
+  injectFindRootNodeID(findRootNodeID) {
+    injectedFindRootNodeID = findRootNodeID;
+  },
+};
 
 module.exports = findNodeHandle;

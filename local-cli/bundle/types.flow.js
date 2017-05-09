@@ -10,12 +10,12 @@
  */
 'use strict';
 
-import type Bundle from '../../packager/react-packager/src/Bundler/Bundle';
-import type {Unbundle} from '../../packager/react-packager/src/Bundler/Bundle';
-import type ModuleTransport from '../../packager/react-packager/src/lib/ModuleTransport';
-import type {MixedSourceMap} from '../../packager/react-packager/src/lib/SourceMap';
+import type Bundle from '../../packager/src/Bundler/Bundle';
+import type {Unbundle} from '../../packager/src/Bundler/Bundle';
+import type ModuleTransport from '../../packager/src/lib/ModuleTransport';
+import type {FBSourceMap, SourceMap} from '../../packager/src/lib/SourceMap';
 
-export type {Bundle, ModuleTransport, MixedSourceMap as SourceMap, Unbundle};
+export type {Bundle, FBSourceMap, ModuleTransport, SourceMap, Unbundle};
 
 export type ModuleGroups = {|
   groups: Map<number, Set<number>>,
@@ -26,7 +26,7 @@ export type ModuleGroups = {|
 export type ModuleTransportLike = {
   code: string,
   id: number,
-  map?: ?MixedSourceMap,
+  map?: $PropertyType<ModuleTransport, 'map'>,
   +name?: string,
 };
 
@@ -36,6 +36,8 @@ export type OutputOptions = {
   dev?: boolean,
   platform: string,
   sourcemapOutput?: string,
+  sourcemapSourcesRoot?: string,
+  sourcemapUseAbsolutePath?: boolean,
 };
 
 export type RequestOptions = {|

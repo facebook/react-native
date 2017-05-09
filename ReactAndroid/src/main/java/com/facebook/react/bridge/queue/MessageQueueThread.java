@@ -47,6 +47,13 @@ public interface MessageQueueThread {
   void assertIsOnThread();
 
   /**
+   * Asserts {@link #isOnThread()}, throwing a {@link AssertionException} (NOT an
+   * {@link AssertionError}) if the assertion fails. The given message is appended to the error.
+   */
+  @DoNotStrip
+  void assertIsOnThread(String message);
+
+  /**
    * Quits this MessageQueueThread. If called from this MessageQueueThread, this will be the last
    * thing the thread runs. If called from a separate thread, this will block until the thread can
    * be quit and joined.

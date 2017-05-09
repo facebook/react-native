@@ -13,10 +13,12 @@ const babel = require('babel-core');
 const deepAssign = require('deep-assign');
 const docgen = require('react-docgen');
 const docgenHelpers = require('./docgenHelpers');
+const docsList = require('./docsList');
 const fs = require('fs');
 const jsDocs = require('../jsdocs/jsdocs.js');
 const jsdocApi = require('jsdoc-api');
 const path = require('path');
+const recast = require('recast');
 const slugify = require('../core/slugify');
 
 const ANDROID_SUFFIX = 'android';
@@ -62,50 +64,6 @@ function getPlatformFromPath(filepath) {
   return CROSS_SUFFIX;
 }
 
-function getExamplePaths(componentName, componentPlatform) {
-  const componentExample = '../Examples/UIExplorer/js/' + componentName + 'Example.';
-  const pathsToCheck = [
-    componentExample + 'js',
-    componentExample + componentPlatform + '.js',
-  ];
-  if (componentPlatform === CROSS_SUFFIX) {
-    pathsToCheck.push(
-      componentExample + IOS_SUFFIX + '.js',
-      componentExample + ANDROID_SUFFIX + '.js'
-    );
-  }
-  const paths = [];
-  pathsToCheck.map((p) => {
-    if (fs.existsSync(p)) {
-      paths.push(p);
-    }
-  });
-  return paths;
-}
-
-function getExamples(componentName, componentPlatform) {
-  const paths = getExamplePaths(componentName, componentPlatform);
-  if (paths) {
-    const examples = [];
-    paths.map((p) => {
-      const platform = p.match(/Example\.(.*)\.js$/);
-      let title = '';
-      if ((componentPlatform === CROSS_SUFFIX) && (platform !== null)) {
-        title = platform[1].toUpperCase();
-      }
-      examples.push(
-        {
-          path: p.replace(/^\.\.\//, ''),
-          title: title,
-          content: fs.readFileSync(p).toString(),
-        }
-      );
-    });
-    return examples;
-  }
-  return;
-}
-
 // Add methods that should not appear in the components documentation.
 const methodsBlacklist = [
   // Native methods mixin.
@@ -128,17 +86,6 @@ const methodsBlacklist = [
 
 function filterMethods(method) {
   return method.name[0] !== '_' && methodsBlacklist.indexOf(method.name) === -1;
-}
-
-// Determines whether a component should have a link to a runnable example
-
-function isRunnable(componentName, componentPlatform) {
-  const paths = getExamplePaths(componentName, componentPlatform);
-  if (paths && paths.length > 0) {
-    return true;
-  } else {
-    return false;
-  }
 }
 
 // Hide a component from the sidebar by making it return false from
@@ -193,14 +140,16 @@ function componentsToMarkdown(type, json, filepath, idx, styles) {
   if (styles) {
     json.styles = styles;
   }
-  json.examples = getExamples(componentName, componentPlatform);
 
   if (json.methods) {
     json.methods = json.methods.filter(filterMethods);
   }
 
+  if (type === 'api') {
+    type = 'API';
+  }
   // Put styles (e.g. Flexbox) into the API category
-  const category = (type === 'style' ? 'apis' : type + 's');
+  const category = (type === 'style' ? 'APIs' : type + 's');
   const next = getNextComponent(idx);
   const previous = getPreviousComponent(idx);
 
@@ -215,7 +164,6 @@ function componentsToMarkdown(type, json, filepath, idx, styles) {
     'next: ' + next,
     'previous: ' + previous,
     'sidebar: ' + shouldDisplayInSidebar(componentName),
-    'runnable:' + isRunnable(componentName, componentPlatform),
     'path:' + json.filepath,
     '---',
     JSON.stringify(json, null, 2),
@@ -256,19 +204,89 @@ function getTypedef(filepath, fileContent, json) {
   return typedef;
 }
 
+/**
+ * Load and parse ViewPropTypes data.
+ * This method returns a Documentation object that's empty except for 'props'.
+ * It should be merged with a component Documentation object.
+ */
+function getViewPropTypes() {
+  // Finds default export of ViewPropTypes (the propTypes object expression).
+  function viewPropTypesResolver(ast, recast) {
+    let definition;
+    recast.visit(ast, {
+      visitAssignmentExpression: function(astPath) {
+        if (!definition && docgen.utils.isExportsOrModuleAssignment(astPath)) {
+          definition = docgen.utils.resolveToValue(astPath.get('right'));
+        }
+        return false;
+      }
+    });
+    return definition;
+  }
+
+  // Wrap ViewPropTypes export in a propTypes property inside of a fake class.
+  // This way the default docgen handlers will parse the properties and docs.
+  // The alternative would be to duplicate more of the parsing logic here.
+  function viewPropTypesConversionHandler(documentation, astPath) {
+    const builders = recast.types.builders;
+
+    // This is broken because babylon@7 and estree introduced SpreadElement, and ast-types has not been updated to support it
+    // (we are broken by react-docgen broken by recast broken by ast-types)
+    astPath.get('properties').value.forEach(n => {
+      if (n.type === 'SpreadElement') {
+        n.type = 'SpreadProperty';
+      }
+    });
+
+    const FauxView = builders.classDeclaration(
+      builders.identifier('View'),
+      builders.classBody(
+        [builders.classProperty(
+          builders.identifier('propTypes'),
+          builders.objectExpression(
+            astPath.get('properties').value
+          ),
+          null, // TypeAnnotation
+          true // static
+        )]
+      )
+    );
+    astPath.replace(FauxView);
+  }
+
+  return docgen.parse(
+    fs.readFileSync(docsList.viewPropTypes),
+    viewPropTypesResolver,
+    [
+      viewPropTypesConversionHandler,
+      ...docgen.defaultHandlers,
+    ]
+  );
+}
+
 function renderComponent(filepath) {
   try {
     const fileContent = fs.readFileSync(filepath);
+    const handlers = docgen.defaultHandlers.concat([
+      docgenHelpers.stylePropTypeHandler,
+      docgenHelpers.deprecatedPropTypeHandler,
+      docgenHelpers.jsDocFormatHandler,
+    ]);
+
     const json = docgen.parse(
       fileContent,
       docgenHelpers.findExportedOrFirst,
-      docgen.defaultHandlers.concat([
-        docgenHelpers.stylePropTypeHandler,
-        docgenHelpers.deprecatedPropTypeHandler,
-        docgenHelpers.jsDocFormatHandler,
-      ])
+      handlers
     );
     json.typedef = getTypedef(filepath, fileContent);
+
+    // ReactNative View component imports its propTypes from ViewPropTypes.
+    // This trips up docgen though since it expects them to be defined on View.
+    // We need to wire them up by manually importing and parsing ViewPropTypes.
+    if (filepath.match(/View\/View\.js/)) {
+      const viewPropTypesJSON = getViewPropTypes();
+      json.props = viewPropTypesJSON.props;
+    }
 
     return componentsToMarkdown('component', json, filepath, componentCount++, styleDocs);
   } catch (e) {
@@ -483,101 +501,11 @@ function renderStyle(filepath) {
   return componentsToMarkdown('style', json, filepath, componentCount++);
 }
 
-const components = [
-  '../Libraries/Components/ActivityIndicator/ActivityIndicator.js',
-  '../Libraries/Components/Button.js',
-  '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
-  '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
-  '../Libraries/Image/Image.ios.js',
-  '../Libraries/Components/Keyboard/KeyboardAvoidingView.js',
-  '../Libraries/CustomComponents/ListView/ListView.js',
-  '../Libraries/Components/MapView/MapView.js',
-  '../Libraries/Modal/Modal.js',
-  '../Libraries/CustomComponents/Navigator/Navigator.js',
-  '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
-  '../Libraries/Components/Picker/Picker.js',
-  '../Libraries/Components/Picker/PickerIOS.ios.js',
-  '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js',
-  '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
-  '../Libraries/Components/RefreshControl/RefreshControl.js',
-  '../Libraries/Components/ScrollView/ScrollView.js',
-  '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
-  '../Libraries/Components/Slider/Slider.js',
-  '../Libraries/RCTTest/SnapshotViewIOS.ios.js',
-  '../Libraries/Components/StatusBar/StatusBar.js',
-  '../Libraries/Components/Switch/Switch.js',
-  '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
-  '../Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js',
-  '../Libraries/Text/Text.js',
-  '../Libraries/Components/TextInput/TextInput.js',
-  '../Libraries/Components/ToolbarAndroid/ToolbarAndroid.android.js',
-  '../Libraries/Components/Touchable/TouchableHighlight.js',
-  '../Libraries/Components/Touchable/TouchableNativeFeedback.android.js',
-  '../Libraries/Components/Touchable/TouchableOpacity.js',
-  '../Libraries/Components/Touchable/TouchableWithoutFeedback.js',
-  '../Libraries/Components/View/View.js',
-  '../Libraries/Components/ViewPager/ViewPagerAndroid.android.js',
-  '../Libraries/Components/WebView/WebView.ios.js',
-];
+const all = docsList.components
+  .concat(docsList.apis)
+  .concat(docsList.stylesWithPermalink);
 
-const apis = [
-  '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
-  '../Libraries/AdSupport/AdSupportIOS.js',
-  '../Libraries/Alert/Alert.js',
-  '../Libraries/Alert/AlertIOS.js',
-  '../Libraries/Animated/src/AnimatedImplementation.js',
-  '../Libraries/ReactNative/AppRegistry.js',
-  '../Libraries/AppState/AppState.js',
-  '../Libraries/Storage/AsyncStorage.js',
-  '../Libraries/Utilities/BackAndroid.android.js',
-  '../Libraries/CameraRoll/CameraRoll.js',
-  '../Libraries/Components/Clipboard/Clipboard.js',
-  '../Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js',
-  '../Libraries/Utilities/Dimensions.js',
-  '../Libraries/Animated/src/Easing.js',
-  '../Libraries/Geolocation/Geolocation.js',
-  '../Libraries/Image/ImageEditor.js',
-  '../Libraries/CameraRoll/ImagePickerIOS.js',
-  '../Libraries/Image/ImageStore.js',
-  '../Libraries/Interaction/InteractionManager.js',
-  '../Libraries/Components/Keyboard/Keyboard.js',
-  '../Libraries/LayoutAnimation/LayoutAnimation.js',
-  '../Libraries/Linking/Linking.js',
-  '../Libraries/CustomComponents/ListView/ListViewDataSource.js',
-  '../Libraries/Renderer/src/renderers/native/NativeMethodsMixin.js',
-  '../Libraries/Network/NetInfo.js',
-  '../Libraries/Interaction/PanResponder.js',
-  '../Libraries/PermissionsAndroid/PermissionsAndroid.js',
-  '../Libraries/Utilities/PixelRatio.js',
-  '../Libraries/PushNotificationIOS/PushNotificationIOS.js',
-  '../Libraries/Settings/Settings.ios.js',
-  '../Libraries/Share/Share.js',
-  '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',
-  '../Libraries/StyleSheet/StyleSheet.js',
-  '../Libraries/Performance/Systrace.js',
-  '../Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js',
-  '../Libraries/Components/ToastAndroid/ToastAndroid.android.js',
-  '../Libraries/Vibration/Vibration.js',
-  '../Libraries/Vibration/VibrationIOS.ios.js',
-];
-
-const stylesWithPermalink = [
-  '../Libraries/StyleSheet/LayoutPropTypes.js',
-  '../Libraries/StyleSheet/TransformPropTypes.js',
-  '../Libraries/Components/View/ShadowPropTypesIOS.js',
-];
-
-const stylesForEmbed = [
-  '../Libraries/Components/View/ViewStylePropTypes.js',
-  '../Libraries/Text/TextStylePropTypes.js',
-  '../Libraries/Image/ImageStylePropTypes.js',
-];
-
-const all = components
-  .concat(apis)
-  .concat(stylesWithPermalink);
-
-const styleDocs = stylesForEmbed.reduce(function(docs, filepath) {
+const styleDocs = docsList.stylesForEmbed.reduce(function(docs, filepath) {
   docs[path.basename(filepath).replace(path.extname(filepath), '')] =
     docgen.parse(
       fs.readFileSync(filepath),
@@ -594,12 +522,15 @@ const styleDocs = stylesForEmbed.reduce(function(docs, filepath) {
 
 function extractDocs() {
   componentCount = 0;
+  var components = docsList.components.map(renderComponent);
+  var apis = docsList.apis.map((filepath) => {
+    return renderAPI(filepath, 'api');
+  });
+  var styles = docsList.stylesWithPermalink.map(renderStyle);
   return [].concat(
-    components.map(renderComponent),
-    apis.map((filepath) => {
-      return renderAPI(filepath, 'api');
-    }),
-    stylesWithPermalink.map(renderStyle)
+    components,
+    apis,
+    styles
   );
 }
 
