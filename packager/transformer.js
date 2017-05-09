@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Note: This is a fork of the fb-specific transform.js
+ *
+ * @flow
  */
 'use strict';
 
@@ -23,6 +25,9 @@ const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
 
 const {compactMapping} = require('./src/Bundler/source-map');
 
+import type {Plugins as BabelPlugins} from 'babel-core';
+import type {Transformer, TransformOptions} from './src/JSTransformer/worker/worker';
+
 const cacheKeyParts = [
   fs.readFileSync(__filename),
   require('babel-plugin-external-helpers/package.json').version,
@@ -36,14 +41,14 @@ const cacheKeyParts = [
  * default RN babelrc file and uses that.
  */
 const getBabelRC = (function() {
-  let babelRC = null;
+  let babelRC: ?{extends?: string, plugins: BabelPlugins} = null;
 
   return function _getBabelRC(projectRoot) {
     if (babelRC !== null) {
       return babelRC;
     }
 
-    babelRC = {plugins: []}; // empty babelrc
+    babelRC = {plugins: []};
 
     // Let's look for the .babelrc in the project root.
     // In the future let's look into adding a command line option to specify
@@ -62,6 +67,7 @@ const getBabelRC = (function() {
         );
 
       // Require the babel-preset's listed in the default babel config
+      // $FlowFixMe: dynamic require can't be avoided
       babelRC.presets = babelRC.presets.map(preset => require('babel-preset-' + preset));
       babelRC.plugins = resolvePlugins(babelRC.plugins);
     } else {
@@ -91,7 +97,7 @@ function buildBabelConfig(filename, options) {
   const extraPlugins = [externalHelpersPlugin];
 
   var inlineRequires = options.inlineRequires;
-  var blacklist = inlineRequires && inlineRequires.blacklist;
+  var blacklist = typeof inlineRequires === 'object' ? inlineRequires.blacklist : null;
   if (inlineRequires && !(blacklist && filename in blacklist)) {
     extraPlugins.push(inlineRequiresPlugin);
   }
@@ -106,7 +112,11 @@ function buildBabelConfig(filename, options) {
   return Object.assign({}, babelRC, config);
 }
 
-function transform(src, filename, options) {
+function transform(
+  src: string,
+  filename: string,
+  options,
+) {
   options = options || {};
 
   const OLD_BABEL_ENV = process.env.BABEL_ENV;
@@ -144,13 +154,13 @@ function transform(src, filename, options) {
   }
 }
 
-function getCacheKey(options) {
+function getCacheKey(options: TransformOptions) {
   var key = crypto.createHash('md5');
   cacheKeyParts.forEach(part => key.update(part));
   return key.digest('hex');
 }
 
-module.exports = {
+module.exports = ({
   transform,
   getCacheKey,
-};
+}: Transformer<>);

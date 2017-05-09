@@ -11,6 +11,7 @@
 
 'use strict';
 
+const babelRegisterOnly = require('../../../babelRegisterOnly');
 const constantFolding = require('./constant-folding');
 const extractDependencies = require('./extract-dependencies');
 const inline = require('./inline');
@@ -18,7 +19,7 @@ const invariant = require('fbjs/lib/invariant');
 const minify = require('./minify');
 
 import type {LogEntry} from '../../Logger/Types';
-import type {Ast, SourceMap as MappingsMap} from 'babel-core';
+import type {Ast, Plugins as BabelPlugins, SourceMap as MappingsMap} from 'babel-core';
 
 export type TransformedCode = {
   code: string,
@@ -27,15 +28,18 @@ export type TransformedCode = {
   map?: ?MappingsMap,
 };
 
-type Transformer = {
+export type Transformer<ExtraOptions: {} = {}> = {
   transform: (
     filename: string,
     sourceCode: string,
-    options: ?{},
-  ) => {ast: ?Ast, code: string, map: ?MappingsMap}
+    options: ExtraOptions & TransformOptions,
+    plugins?: BabelPlugins,
+  ) => {ast: ?Ast, code: string, map: ?MappingsMap},
+  getCacheKey: TransformOptionsStrict => string,
 };
 
-export type TransformOptions = {|
+
+export type TransformOptionsStrict = {|
   +dev: boolean,
   +generateSourceMaps: boolean,
   +hot: boolean,
@@ -44,11 +48,20 @@ export type TransformOptions = {|
   +projectRoot: string,
 |};
 
+export type TransformOptions = {
+  +dev?: boolean,
+  +generateSourceMaps?: boolean,
+  +hot?: boolean,
+  +inlineRequires?: {+blacklist: {[string]: true}} | boolean,
+  +platform: string,
+  +projectRoot: string,
+};
+
 export type Options = {|
   +dev: boolean,
   +minify: boolean,
   +platform: string,
-  +transform: TransformOptions,
+  +transform: TransformOptionsStrict,
 |};
 
 export type Data = {
@@ -63,7 +76,7 @@ type Callback = (
 ) => mixed;
 
 function transformCode(
-  transformer: Transformer,
+  transformer: Transformer<*>,
   filename: string,
   sourceCode: string,
   options: Options,
@@ -144,8 +157,9 @@ exports.transformAndExtractDependencies = (
   options: Options,
   callback: Callback,
 ) => {
+  babelRegisterOnly([transform]);
   /* $FlowFixMe: impossible to type a dynamic require */
-  const transformModule = require(transform);
+  const transformModule: Transformer<*> = require(transform);
   transformCode(transformModule, filename, sourceCode, options, callback);
 };
 
