@@ -105,6 +105,18 @@ However, when `react-devtools` is running, Inspector will enter a special collap
 
 You can choose "Hide Inspector" in the same menu to exit this mode.
 
+### Inspecting Component Instances
+
+When debugging JavaScript in Chrome, you can inspect the props and state of the React components in the browser console.
+
+First, follow the [instructions for debugging in Chrome](docs/debugging.html#chrome-developer-tools) to open the Chrome console.
+
+Make sure that the dropdown in the top left corner of the Chrome console says `debuggerWorker.js`. **This step is essential.**
+
+Then select a React component in React DevTools. There is a search box at the top that helps you find one by name. As soon as you select it, it will be available as `$r` in the Chrome console, letting you inspect its props, state, and instance properties.
+
+![React DevTools Chrome Console Integration](img/ReactDevToolsDollarR.gif)
+
 ## Performance Monitor
 
 You can enable a performance overlay to help you debug performance problems by selecting "Perf Monitor" in the Developer Menu.
