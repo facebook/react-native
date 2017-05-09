@@ -20,7 +20,7 @@ const path = require('path');
 const util = require('util');
 const workerFarm = require('../worker-farm');
 
-import type {Data as TransformData, Options as TransformOptions} from './worker/worker';
+import type {Data as TransformData, Options as WorkerOptions} from './worker/worker';
 import type {MappingsMap} from '../lib/SourceMap';
 
 // Avoid memory leaks caused in workers. This number seems to be a good enough number
@@ -63,7 +63,7 @@ class Transformer {
     transform: string,
     filename: string,
     sourceCode: string,
-    options: ?TransformOptions,
+    options: ?WorkerOptions,
   ) => Promise<TransformData>;
   minify: (
     filename: string,
@@ -97,7 +97,7 @@ class Transformer {
     this._workers && workerFarm.end(this._workers);
   }
 
-  transformFile(fileName: string, code: string, options: TransformOptions) {
+  transformFile(fileName: string, code: string, options: WorkerOptions) {
     if (!this._transform) {
       return Promise.reject(new Error('No transform module'));
     }

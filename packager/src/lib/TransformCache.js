@@ -20,7 +20,7 @@ const rimraf = require('rimraf');
 const terminal = require('../lib/terminal');
 const writeFileAtomicSync = require('write-file-atomic').sync;
 
-import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type {Options as WorkerOptions} from '../JSTransformer/worker/worker';
 import type {MappingsMap} from './SourceMap';
 import type {Reporter} from './reporting';
 
@@ -58,7 +58,7 @@ function hashSourceCode(props: {
   filePath: string,
   sourceCode: string,
   getTransformCacheKey: GetTransformCacheKey,
-  transformOptions: TransformOptions,
+  transformOptions: WorkerOptions,
   transformOptionsKey: string,
 }): string {
   return crypto.createHash('sha1')
@@ -134,7 +134,7 @@ function writeSync(props: {
   filePath: string,
   sourceCode: string,
   getTransformCacheKey: GetTransformCacheKey,
-  transformOptions: TransformOptions,
+  transformOptions: WorkerOptions,
   transformOptionsKey: string,
   result: CachedResult,
 }): void {
@@ -326,7 +326,7 @@ function readMetadataFileSync(
 export type ReadTransformProps = {
   filePath: string,
   sourceCode: string,
-  transformOptions: TransformOptions,
+  transformOptions: WorkerOptions,
   transformOptionsKey: string,
   getTransformCacheKey: GetTransformCacheKey,
   cacheOptions: CacheOptions,

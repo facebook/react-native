@@ -80,6 +80,15 @@ describe('transforming JS modules:', () => {
     });
   });
 
+  const defaults = {
+    dev: false,
+    generateSourceMaps: true,
+    hot: false,
+    inlineRequires: false,
+    platform: '',
+    projectRoot: '',
+  };
+
   it('calls the passed-in transform function with code, file name, and options ' +
     'for all passed in variants',
     done => {
@@ -87,9 +96,9 @@ describe('transforming JS modules:', () => {
 
       transformModule(sourceCode, options(variants), () => {
         expect(transformer.transform)
-          .toBeCalledWith(sourceCode, filename, variants.dev);
+          .toBeCalledWith(sourceCode, filename, {...defaults, ...variants.dev});
         expect(transformer.transform)
-          .toBeCalledWith(sourceCode, filename, variants.prod);
+          .toBeCalledWith(sourceCode, filename, {...defaults, ...variants.prod});
         done();
       });
     },
