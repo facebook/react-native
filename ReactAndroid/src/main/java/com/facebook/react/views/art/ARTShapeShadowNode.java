@@ -18,6 +18,7 @@ import android.graphics.RectF;
 import android.graphics.DashPathEffect;
 import android.graphics.LinearGradient;
 import android.graphics.Shader;
+import android.graphics.Color;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -43,6 +44,13 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
   private static final int PATH_TYPE_CURVETO = 3;
   private static final int PATH_TYPE_LINETO = 2;
   private static final int PATH_TYPE_MOVETO = 0;
+
+  // For color type JS and ObjectiveC definitions counterparts
+  // refer to ReactNativeART.js and RCTConvert+ART.m
+  private static final int COLOR_TYPE_SOLID_COLOR = 0;
+  private static final int COLOR_TYPE_LINEAR_GRADIENT = 1;
+  private static final int COLOR_TYPE_RADIAL_GRADIENT = 2;
+  private static final int COLOR_TYPE_PATTERN = 3;
 
   protected @Nullable Path mPath;
   private @Nullable float[] mStrokeColor;
@@ -177,43 +185,54 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
       paint.setStyle(Paint.Style.FILL);
       int colorType = (int) mFillColor[0];
       switch (colorType) {
-        case 0:
+        case COLOR_TYPE_SOLID_COLOR:
           paint.setARGB(
               (int) (mFillColor.length > 4 ? mFillColor[4] * opacity * 255 : opacity * 255),
               (int) (mFillColor[1] * 255),
               (int) (mFillColor[2] * 255),
               (int) (mFillColor[3] * 255));
           break;
-        case 1: // linear gradient
+        case COLOR_TYPE_LINEAR_GRADIENT:
+          // For mFillColor format refer to LinearGradient and insertColorStopsIntoArray functions in ReactNativeART.js
           if (mFillColor.length < 5) {
             FLog.w(ReactConstants.TAG, 
               "[ARTShapeShadowNode setupFillPaint] expects 5 elements, received " 
               + mFillColor.length);
             return false;
           }
-          float x0 = mFillColor[1];
-          float y0 = mFillColor[2];
-          float x1 = mFillColor[3];
-          float y1 = mFillColor[4];
+          float gradientStartX = mFillColor[1];
+          float gradientStartY = mFillColor[2];
+          float gradientEndX = mFillColor[3];
+          float gradientEndY = mFillColor[4];
           int stops = (mFillColor.length - 5) / 5;
           int[] colors = null;
           float[] positions = null;
           if (stops > 0) {
             colors = new int[stops];
             positions = new float[stops];
-            for(int i=0; i<stops; i++) {
+            for (int i=0; i<stops; i++) {
               positions[i] = mFillColor[5 + 4*stops + i];
               int r = (int) (255 * mFillColor[5 + 4*i + 0]);
               int g = (int) (255 * mFillColor[5 + 4*i + 1]);
               int b = (int) (255 * mFillColor[5 + 4*i + 2]);
               int a = (int) (255 * mFillColor[5 + 4*i + 3]);
-              colors[i] = (a << 24) | (r << 16) | (g << 8) | (b << 0);
+              colors[i] = Color.argb(a, r, g, b);
             }
           }
-          paint.setShader(new LinearGradient(x0, y0, x1, y1, colors, positions, Shader.TileMode.CLAMP));
+          paint.setShader(
+            new LinearGradient(
+              gradientStartX, gradientStartY,
+              gradientEndX, gradientEndY,
+              colors, positions,
+              Shader.TileMode.CLAMP
+            )
+          );
           break;
+        case COLOR_TYPE_RADIAL_GRADIENT:
+          // TODO(6352048): Support radial gradient etc.
+        case COLOR_TYPE_PATTERN:
+          // TODO(6352048): Support patterns etc.
         default:
-          // TODO(6352048): Support gradients etc.
           FLog.w(ReactConstants.TAG, "ART: Color type " + colorType + " not supported!");
       }
       return true;
