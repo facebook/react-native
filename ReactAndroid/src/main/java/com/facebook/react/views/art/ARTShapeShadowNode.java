@@ -182,6 +182,25 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
               (int) (mFillColor[2] * 255),
               (int) (mFillColor[3] * 255));
           break;
+        case 1:
+          paint.setShader(
+                  new LinearGradient(
+                          mFillColor[3]*2,
+                          mFillColor[4]*2,
+                          mFillColor[1]*2,
+                          mFillColor[2]*2,
+                          Color.argb(
+                                  (int) (mFillColor[12] * 255),
+                                  (int) (mFillColor[9] * 255),
+                                  (int) (mFillColor[10] * 255),
+                                  (int) (mFillColor[11] * 255)),
+                          Color.argb(
+                                  (int) (mFillColor[8] * 255),
+                                  (int) (mFillColor[5] * 255),
+                                  (int) (mFillColor[6] * 255),
+                                  (int) (mFillColor[7] * 255)),
+                          Shader.TileMode.CLAMP));
+          break;
         default:
           // TODO(6352048): Support gradients etc.
           FLog.w(ReactConstants.TAG, "ART: Color type " + colorType + " not supported!");
