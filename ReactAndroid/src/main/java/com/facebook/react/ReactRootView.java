@@ -130,13 +130,28 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    dispatchJSTouchEvent(ev);
+    try {
+      dispatchJSTouchEvent(ev);
+    } catch (RuntimeException e) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Unable to dispatch JSTouch Event from native event" + ev.toString()
+      );
+    }
+
     return super.onInterceptTouchEvent(ev);
   }
 
   @Override
   public boolean onTouchEvent(MotionEvent ev) {
-    dispatchJSTouchEvent(ev);
+    try {
+      dispatchJSTouchEvent(ev);
+    } catch (RuntimeException e) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Unable to dispatch JSTouch Event from native event" + ev.toString()
+      );
+    }
     super.onTouchEvent(ev);
     // In case when there is no children interested in handling touch event, we return true from
     // the root view in order to receive subsequent events related to that gesture
