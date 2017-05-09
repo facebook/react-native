@@ -16,13 +16,12 @@ const Logger = require('../Logger');
 const debug = require('debug')('RNP:JStransformer');
 const denodeify = require('denodeify');
 const invariant = require('fbjs/lib/invariant');
-const os = require('os');
 const path = require('path');
 const util = require('util');
-const workerFarm = require('worker-farm');
+const workerFarm = require('../worker-farm');
 
 import type {Data as TransformData, Options as TransformOptions} from './worker/worker';
-import type {SourceMap} from '../lib/SourceMap';
+import type {MappingsMap} from '../lib/SourceMap';
 
 // Avoid memory leaks caused in workers. This number seems to be a good enough number
 // to avoid any memory leak while not slowing down initial builds.
@@ -35,29 +34,13 @@ const TRANSFORM_TIMEOUT_INTERVAL = 301000;
 // How may times can we tolerate failures from the worker.
 const MAX_RETRIES = 2;
 
-const maxConcurrentWorkers = ((cores, override) => {
-  if (override) {
-    return Math.min(cores, override);
-  }
-
-  if (cores < 3) {
-    return cores;
-  }
-  if (cores < 8) {
-    return Math.floor(cores * 0.75);
-  }
-  if (cores < 24) {
-    return Math.floor(3 / 8 * cores + 3); // between cores *.75 and cores / 2
-  }
-  return cores / 2;
-})(os.cpus().length, parseInt(process.env.REACT_NATIVE_MAX_WORKERS, 10));
-
-function makeFarm(worker, methods, timeout) {
+function makeFarm(worker, methods, timeout, maxConcurrentWorkers) {
   return workerFarm(
     {
       autoStart: true,
+      execArgv: [],
       maxConcurrentCallsPerWorker: 1,
-      maxConcurrentWorkers: maxConcurrentWorkers,
+      maxConcurrentWorkers,
       maxCallsPerWorker: MAX_CALLS_PER_WORKER,
       maxCallTime: timeout,
       maxRetries: MAX_RETRIES,
@@ -67,9 +50,14 @@ function makeFarm(worker, methods, timeout) {
   );
 }
 
+type Reporters = {
+  +stdoutChunk: (chunk: string) => mixed,
+  +stderrChunk: (chunk: string) => mixed,
+};
+
 class Transformer {
 
-  _workers: {[name: string]: mixed};
+  _workers: {[name: string]: Function};
   _transformModulePath: string;
   _transform: (
     transform: string,
@@ -80,18 +68,27 @@ class Transformer {
   minify: (
     filename: string,
     code: string,
-    sourceMap: SourceMap,
-  ) => Promise<{code: string, map: SourceMap}>;
+    sourceMap: MappingsMap,
+  ) => Promise<{code: string, map: MappingsMap}>;
 
-  constructor(transformModulePath: string) {
+  constructor(transformModulePath: string, maxWorkerCount: number, reporters: Reporters) {
     invariant(path.isAbsolute(transformModulePath), 'transform module path should be absolute');
     this._transformModulePath = transformModulePath;
 
-    this._workers = makeFarm(
+    const farm = makeFarm(
       require.resolve('./worker'),
       ['minify', 'transformAndExtractDependencies'],
       TRANSFORM_TIMEOUT_INTERVAL,
+      maxWorkerCount,
     );
+    farm.stdout.on('data', chunk => {
+      reporters.stdoutChunk(chunk.toString('utf8'));
+    });
+    farm.stderr.on('data', chunk => {
+      reporters.stderrChunk(chunk.toString('utf8'));
+    });
+
+    this._workers = farm.methods;
     this._transform = denodeify(this._workers.transformAndExtractDependencies);
     this.minify = denodeify(this._workers.minify);
   }
@@ -140,8 +137,6 @@ class Transformer {
   static TransformError;
 }
 
-module.exports = Transformer;
-
 Transformer.TransformError = TransformError;
 
 function TransformError() {
@@ -165,6 +160,8 @@ function formatGenericError(err, filename) {
   error.stack = stack.join('\n');
   error.message = msg;
   error.type = 'TransformError';
+  error.lineNumber = 0;
+  error.description = '';
   return error;
 }
 
@@ -180,3 +177,5 @@ function formatBabelError(err, filename) {
   error.description = err.message;
   return error;
 }
+
+module.exports = Transformer;

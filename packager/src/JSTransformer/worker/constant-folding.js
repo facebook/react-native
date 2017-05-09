@@ -13,7 +13,7 @@
 
 const babel = require('babel-core');
 
-import type {Ast, SourceMap} from 'babel-core';
+import type {Ast, SourceMap as MappingsMap} from 'babel-core';
 const t = babel.types;
 
 const Conditional = {
@@ -57,7 +57,7 @@ const plugin = {
             path.replaceWith(value ? node.right : left);
           }
         }
-      }
+      },
     },
     UnaryExpression: {
       exit(path) {
@@ -65,7 +65,7 @@ const plugin = {
         if (node.operator === '!' && t.isLiteral(node.argument)) {
           path.replaceWith(t.valueToNode(!node.argument.value));
         }
-      }
+      },
     },
   },
 };
@@ -73,7 +73,7 @@ const plugin = {
 function constantFolding(filename: string, transformResult: {
   ast: Ast,
   code?: ?string,
-  map: ?SourceMap,
+  map: ?MappingsMap,
 }) {
   return babel.transformFromAst(transformResult.ast, transformResult.code, {
     filename,

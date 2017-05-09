@@ -28,7 +28,8 @@ describe('build setup', () => {
       expect(prelude).toEqual({
         dependencies: [],
         file: {
-          code: 'var __DEV__=true,__BUNDLE_START_TIME__=Date.now();',
+          code: 'var __DEV__=true,__BUNDLE_START_TIME__=' +
+            'global.nativePerformanceNow?global.nativePerformanceNow():Date.now();',
           path: '',
           type: 'script',
         },
@@ -41,7 +42,8 @@ describe('build setup', () => {
     buildSetup(noEntryPoints, {optimize: true}, (error, result) => {
       const [prelude] = result.modules;
       expect(prelude.file.code)
-        .toEqual('var __DEV__=false,__BUNDLE_START_TIME__=Date.now();');
+        .toEqual('var __DEV__=false,__BUNDLE_START_TIME__=' +
+            'global.nativePerformanceNow?global.nativePerformanceNow():Date.now();');
       done();
     });
   });
@@ -70,30 +72,11 @@ describe('build setup', () => {
     });
   });
 
-  it('places all modules from `defaults.runBeforeMainModule` after the polyfills', done => {
-    buildSetup(noEntryPoints, noOptions, (error, result) => {
-      const additionalModules =
-        Array.from(result.modules).slice(-defaults.runBeforeMainModule.length);
-      expect(additionalModules)
-        .toEqual(defaults.runBeforeMainModule.map(moduleFromPath));
-      done();
-    });
-  });
-
   it('places all entry points at the end', done => {
     const entryPoints = ['a', 'b', 'c'];
     buildSetup(entryPoints, noOptions, (error, result) => {
       expect(Array.from(result.modules).slice(-3))
         .toEqual(entryPoints.map(moduleFromPath));
-      done();
-    });
-  });
-
-  it('concatenates `runBeforeMainModule` and entry points as `entryModules`', done => {
-    const entryPoints = ['a', 'b', 'c'];
-    buildSetup(entryPoints, noOptions, (error, result) => {
-      expect(Array.from(result.entryModules)).toEqual(
-        defaults.runBeforeMainModule.concat(entryPoints).map(moduleFromPath));
       done();
     });
   });

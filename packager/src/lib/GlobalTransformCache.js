@@ -11,37 +11,62 @@
 
 'use strict';
 
+/* global Buffer: true */
+
 const BatchProcessor = require('./BatchProcessor');
+const FetchError = require('node-fetch/lib/fetch-error');
 
 const crypto = require('crypto');
-const imurmurhash = require('imurmurhash');
+const fetch = require('node-fetch');
 const jsonStableStringify = require('json-stable-stringify');
 const path = require('path');
-const request = require('request');
+const throat = require('throat');
 
-import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
-import type {CachedResult} from './TransformCache';
-import type {Reporter} from './reporting';
+import type {
+  Options as TransformWorkerOptions,
+  TransformOptions,
+} from '../JSTransformer/worker/worker';
+import type {CachedResult, GetTransformCacheKey} from './TransformCache';
 
-type FetchResultURIs = (
-  keys: Array<string>,
-  callback: (error?: Error, results?: Map<string, string>) => void,
-) => mixed;
+/**
+ * The API that a global transform cache must comply with. To implement a
+ * custom cache, implement this interface and pass it as argument to the
+ * application's top-level `Server` class.
+ */
+export type GlobalTransformCache = {
+  /**
+   * Synchronously determine if it is worth trying to fetch a result from the
+   * cache. This can be used, for instance, to exclude sets of options we know
+   * will never be cached.
+   */
+  shouldFetch(props: FetchProps): boolean,
 
-type StoreResults = (
-  resultsByKey: Map<string, CachedResult>,
-  callback: (error?: Error) => void,
-) => mixed;
+  /**
+   * Try to fetch a result. It doesn't actually need to fetch from a server,
+   * the global cache could be instantiated locally for example.
+   */
+  fetch(props: FetchProps): Promise<?CachedResult>,
 
-type FetchProps = {
-  filePath: string,
-  sourceCode: string,
-  transformCacheKey: string,
-  transformOptions: TransformOptions,
+  /**
+   * Try to store a result, without waiting for the success or failure of the
+   * operation. Consequently, the actual storage operation could be done at a
+   * much later point if desired. It is recommended to actually have this
+   * function be a no-op in production, and only do the storage operation from
+   * a script running on your Continuous Integration platform.
+   */
+  store(props: FetchProps, result: CachedResult): void,
 };
 
-type FetchCallback = (error?: Error, result?: ?CachedResult) => mixed;
-type FetchURICallback = (error?: Error, resultURI?: ?string) => mixed;
+type FetchResultURIs = (keys: Array<string>) => Promise<Map<string, string>>;
+type FetchResultFromURI = (uri: string) => Promise<?CachedResult>;
+type StoreResults = (resultsByKey: Map<string, CachedResult>) => Promise<void>;
+
+export type FetchProps = {
+  filePath: string,
+  sourceCode: string,
+  getTransformCacheKey: GetTransformCacheKey,
+  transformOptions: TransformWorkerOptions,
+};
 
 type URI = string;
 
@@ -53,61 +78,47 @@ class KeyURIFetcher {
 
   _batchProcessor: BatchProcessor<string, ?URI>;
   _fetchResultURIs: FetchResultURIs;
-  _processError: (error: Error) => mixed;
 
   /**
    * When a batch request fails for some reason, we process the error locally
    * and we proceed as if there were no result for these keys instead. That way
    * a build will not fail just because of the cache.
    */
-  _processKeys(
-    keys: Array<string>,
-    callback: (error?: Error, keyURIs: Array<?URI>) => mixed,
-  ) {
-    this._fetchResultURIs(keys, (error, URIsByKey) => {
-      if (error != null) {
-        this._processError(error);
-      }
-      const URIs = keys.map(key => URIsByKey && URIsByKey.get(key));
-      callback(undefined, URIs);
-    });
+  async _processKeys(keys: Array<string>): Promise<Array<?URI>> {
+    const URIsByKey = await this._fetchResultURIs(keys);
+    return keys.map(key => URIsByKey.get(key));
   }
 
-  fetch(key: string, callback: FetchURICallback) {
-    this._batchProcessor.queue(key, callback);
+  async fetch(key: string): Promise<?string> {
+    return await this._batchProcessor.queue(key);
   }
 
-  constructor(fetchResultURIs: FetchResultURIs, processError: (error: Error) => mixed) {
+  constructor(fetchResultURIs: FetchResultURIs) {
     this._fetchResultURIs = fetchResultURIs;
     this._batchProcessor = new BatchProcessor({
       maximumDelayMs: 10,
       maximumItems: 500,
-      concurrency: 25,
+      concurrency: 2,
     }, this._processKeys.bind(this));
-    this._processError = processError;
   }
 
 }
 
+type KeyedResult = {key: string, result: CachedResult};
+
 class KeyResultStore {
 
   _storeResults: StoreResults;
-  _batchProcessor: BatchProcessor<{key: string, result: CachedResult}, void>;
+  _batchProcessor: BatchProcessor<KeyedResult, void>;
 
-  _processResults(
-    keyResults: Array<{key: string, result: CachedResult}>,
-    callback: (error?: Error) => mixed,
-  ) {
-    const resultsByKey = new Map(
-      keyResults.map(pair => [pair.key, pair.result]),
-    );
-    this._storeResults(resultsByKey, error => {
-      callback(error);
-    });
+  async _processResults(keyResults: Array<KeyedResult>): Promise<Array<void>> {
+    const resultsByKey = new Map(keyResults.map(pair => [pair.key, pair.result]));
+    await this._storeResults(resultsByKey);
+    return new Array(keyResults.length);
   }
 
   store(key: string, result: CachedResult) {
-    this._batchProcessor.queue({key, result}, () => {});
+    this._batchProcessor.queue({key, result});
   }
 
   constructor(storeResults: StoreResults) {
@@ -119,45 +130,6 @@ class KeyResultStore {
     }, this._processResults.bind(this));
   }
 
-}
-
-function validateCachedResult(cachedResult: mixed): ?CachedResult {
-  if (
-    cachedResult != null &&
-    typeof cachedResult === 'object' &&
-    typeof cachedResult.code === 'string' &&
-    Array.isArray(cachedResult.dependencies) &&
-    cachedResult.dependencies.every(dep => typeof dep === 'string') &&
-    Array.isArray(cachedResult.dependencyOffsets) &&
-    cachedResult.dependencyOffsets.every(offset => typeof offset === 'number')
-  ) {
-    return (cachedResult: any);
-  }
-  return undefined;
-}
-
-/**
- * The transform options contain absolute paths. This can contain, for
- * example, the username if someone works their home directory (very likely).
- * We need to get rid of this user-and-machine-dependent data for the global
- * cache, otherwise nobody  would share the same cache keys.
- */
-function globalizeTransformOptions(
-  options: TransformOptions,
-): TransformOptions {
-  const {transform} = options;
-  if (transform == null) {
-    return options;
-  }
-  return {
-    ...options,
-    transform: {
-      ...transform,
-      projectRoots: transform.projectRoots.map(p => {
-        return path.relative(path.join(__dirname, '../../../../..'), p);
-      }),
-    },
-  };
 }
 
 export type TransformProfile = {+dev: boolean, +minify: boolean, +platform: string};
@@ -183,27 +155,48 @@ class TransformProfileSet {
   }
 }
 
-class GlobalTransformCache {
+type FetchFailedDetails =
+  {+type: 'unhandled_http_status', +statusCode: number} | {+type: 'unspecified'};
+
+class FetchFailedError extends Error {
+  /** Separate object for details allows us to have a type union. */
+  +details: FetchFailedDetails;
+
+  constructor(message: string, details: FetchFailedDetails) {
+    super();
+    this.message = message;
+    (this: any).details = details;
+  }
+}
+
+/**
+ * For some reason the result stored by the server for a key might mismatch what
+ * we expect a result to be. So we need to verify carefully the data.
+ */
+function validateCachedResult(cachedResult: mixed): ?CachedResult {
+  if (
+    cachedResult != null &&
+    typeof cachedResult === 'object' &&
+    typeof cachedResult.code === 'string' &&
+    Array.isArray(cachedResult.dependencies) &&
+    cachedResult.dependencies.every(dep => typeof dep === 'string') &&
+    Array.isArray(cachedResult.dependencyOffsets) &&
+    cachedResult.dependencyOffsets.every(offset => typeof offset === 'number')
+  ) {
+    return (cachedResult: any);
+  }
+  return null;
+}
+
+class URIBasedGlobalTransformCache {
 
   _fetcher: KeyURIFetcher;
+  _fetchResultFromURI: FetchResultFromURI;
   _profileSet: TransformProfileSet;
-  _reporter: Reporter;
-  _retries: number;
+  _optionsHasher: OptionsHasher;
   _store: ?KeyResultStore;
 
-  /**
-   * If too many errors already happened, we just drop the additional errors.
-   */
-  _processError(error: Error) {
-    if (this._retries <= 0) {
-      return;
-    }
-    this._reporter.update({type: 'global_cache_error', error});
-    --this._retries;
-    if (this._retries <= 0) {
-      this._reporter.update({type: 'global_cache_disabled', reason: 'too_many_errors'});
-    }
-  }
+  static FetchFailedError;
 
   /**
    * For using the global cache one needs to have some kind of central key-value
@@ -213,32 +206,34 @@ class GlobalTransformCache {
    * of returning the content directly allows for independent and parallel
    * fetching of each result, that may be arbitrarily large JSON blobs.
    */
-  constructor(
+  constructor(props: {
+    fetchResultFromURI: FetchResultFromURI,
     fetchResultURIs: FetchResultURIs,
-    storeResults: ?StoreResults,
     profiles: Iterable<TransformProfile>,
-    reporter: Reporter,
-  ) {
-    this._fetcher = new KeyURIFetcher(fetchResultURIs, this._processError.bind(this));
-    this._profileSet = new TransformProfileSet(profiles);
-    this._reporter = reporter;
-    this._retries = 4;
-    if (storeResults != null) {
-      this._store = new KeyResultStore(storeResults);
+    rootPath: string,
+    storeResults: StoreResults | null,
+  }) {
+    this._fetcher = new KeyURIFetcher(props.fetchResultURIs);
+    this._profileSet = new TransformProfileSet(props.profiles);
+    this._fetchResultFromURI = props.fetchResultFromURI;
+    this._optionsHasher = new OptionsHasher(props.rootPath);
+    if (props.storeResults != null) {
+      this._store = new KeyResultStore(props.storeResults);
     }
   }
 
   /**
    * Return a key for identifying uniquely a source file.
    */
-  static keyOf(props: FetchProps) {
-    const stableOptions = globalizeTransformOptions(props.transformOptions);
-    const digest = crypto.createHash('sha1').update([
-      jsonStableStringify(stableOptions),
-      props.transformCacheKey,
-      imurmurhash(props.sourceCode).result().toString(),
-    ].join('$')).digest('hex');
-    return `${digest}-${path.basename(props.filePath)}`;
+  keyOf(props: FetchProps) {
+    const hash = crypto.createHash('sha1');
+    const {sourceCode, filePath, transformOptions} = props;
+    hash.update(this._optionsHasher.getTransformWorkerOptionsDigest(transformOptions));
+    const cacheKey = props.getTransformCacheKey(transformOptions);
+    hash.update(JSON.stringify(cacheKey));
+    hash.update(crypto.createHash('sha1').update(sourceCode).digest('hex'));
+    const digest = hash.digest('hex');
+    return `${digest}-${path.basename(filePath)}`;
   }
 
   /**
@@ -246,65 +241,188 @@ class GlobalTransformCache {
    * blob of transformed results. However the results are generally only a few
    * megabytes each.
    */
-  _fetchFromURI(uri: string, callback: FetchCallback) {
-    request.get({uri, json: true, timeout: 4000}, (error, response, unvalidatedResult) => {
-      if (error != null) {
-        callback(error);
-        return;
+  static async _fetchResultFromURI(uri: string): Promise<CachedResult> {
+    const response = await fetch(uri, {method: 'GET', timeout: 8000});
+    if (response.status !== 200) {
+      const msg = `Unexpected HTTP status: ${response.status} ${response.statusText} `;
+      throw new FetchFailedError(msg, {
+        type: 'unhandled_http_status',
+        statusCode: response.status,
+      });
+    }
+    const unvalidatedResult = await response.json();
+    const result = validateCachedResult(unvalidatedResult);
+    if (result == null) {
+      throw new FetchFailedError('Server returned invalid result.', {type: 'unspecified'});
+    }
+    return result;
+  }
+
+  /**
+   * It happens from time to time that a fetch fails, we want to try these again
+   * a second time if we expect them to be transient. We might even consider
+   * waiting a little time before retring if experience shows it's useful.
+   */
+  static _fetchResultFromURIWithRetry(uri: string): Promise<CachedResult> {
+    return URIBasedGlobalTransformCache._fetchResultFromURI(uri).catch(error => {
+      if (!URIBasedGlobalTransformCache.shouldRetryAfterThatError(error)) {
+        throw error;
       }
-      if (response.statusCode !== 200) {
-        callback(new Error(
-          `Unexpected HTTP status code: ${response.statusCode}`,
-        ));
-        return;
-      }
-      const result = validateCachedResult(unvalidatedResult);
-      if (result == null) {
-        callback(new Error('Invalid result returned by server.'));
-        return;
-      }
-      callback(undefined, result);
+      return this._fetchResultFromURI(uri);
     });
   }
 
   /**
-   * Wrap `_fetchFromURI` with error logging, and return an empty result instead
-   * of errors. This is because the global cache is not critical to the normal
-   * packager operation.
+   * The exposed version uses throat() to limit concurrency, as making too many parallel requests
+   * is more likely to trigger server-side throttling and cause timeouts.
    */
-  _tryFetchingFromURI(uri: string, callback: FetchCallback) {
-    this._fetchFromURI(uri, (error, result) => {
-      if (error != null) {
-        this._processError(error);
-      }
-      callback(undefined, result);
-    });
+  static fetchResultFromURI: (uri: string) => Promise<CachedResult>;
+
+  /**
+   * We want to retry timeouts as they're likely temporary. We retry 503
+   * (Service Unavailable) and 502 (Bad Gateway) because they may be caused by a
+   * some rogue server, or because of throttling.
+   *
+   * There may be other types of error we'd want to retry for, but these are
+   * the ones we experienced the most in practice.
+   */
+  static shouldRetryAfterThatError(error: Error): boolean {
+    return (
+      error instanceof FetchError && error.type === 'request-timeout' || (
+        error instanceof FetchFailedError &&
+        error.details.type === 'unhandled_http_status' &&
+        (error.details.statusCode === 503 || error.details.statusCode === 502)
+      )
+    );
   }
 
-  fetch(props: FetchProps, callback: FetchCallback) {
-    if (this._retries <= 0 || !this._profileSet.has(props.transformOptions)) {
-      process.nextTick(callback);
-      return;
+  shouldFetch(props: FetchProps): boolean {
+    return this._profileSet.has(props.transformOptions);
+  }
+
+  /**
+   * This may return `null` if either the cache doesn't have a value for that
+   * key yet, or an error happened, processed separately.
+   */
+  async fetch(props: FetchProps): Promise<?CachedResult> {
+    const uri = await this._fetcher.fetch(this.keyOf(props));
+    if (uri == null) {
+      return null;
     }
-    this._fetcher.fetch(GlobalTransformCache.keyOf(props), (error, uri) => {
-      if (error != null) {
-        callback(error);
-      } else {
-        if (uri == null) {
-          callback();
-          return;
-        }
-        this._tryFetchingFromURI(uri, callback);
-      }
-    });
+    return await this._fetchResultFromURI(uri);
   }
 
   store(props: FetchProps, result: CachedResult) {
     if (this._store != null) {
-      this._store.store(GlobalTransformCache.keyOf(props), result);
+      this._store.store(this.keyOf(props), result);
     }
   }
 
 }
 
-module.exports = GlobalTransformCache;
+URIBasedGlobalTransformCache.fetchResultFromURI =
+  throat(500, URIBasedGlobalTransformCache._fetchResultFromURIWithRetry);
+
+class OptionsHasher {
+  _rootPath: string;
+  _cache: WeakMap<TransformWorkerOptions, string>;
+
+  constructor(rootPath: string) {
+    this._rootPath = rootPath;
+    this._cache = new WeakMap();
+  }
+
+  getTransformWorkerOptionsDigest(options: TransformWorkerOptions): string {
+    const digest = this._cache.get(options);
+    if (digest != null) {
+      return digest;
+    }
+    const hash = crypto.createHash('sha1');
+    this.hashTransformWorkerOptions(hash, options);
+    const newDigest = hash.digest('hex');
+    this._cache.set(options, newDigest);
+    return newDigest;
+  }
+
+  /**
+   * This function is extra-conservative with how it hashes the transform
+   * options. In particular:
+   *
+   *     * we need to hash paths relative to the root, not the absolute paths,
+   *       otherwise everyone would have a different cache, defeating the
+   *       purpose of global cache;
+   *     * we need to reject any additional field we do not know of, because
+   *       they could contain absolute path, and we absolutely want to process
+   *       these.
+   *
+   * Theorically, Flow could help us prevent any other field from being here by
+   * using *exact* object type. In practice, the transform options are a mix of
+   * many different fields including the optional Babel fields, and some serious
+   * cleanup will be necessary to enable rock-solid typing.
+   */
+  hashTransformWorkerOptions(hash: crypto$Hash, options: TransformWorkerOptions): crypto$Hash {
+    const {dev, minify, platform, transform, ...unknowns} = options;
+    const unknownKeys = Object.keys(unknowns);
+    if (unknownKeys.length > 0) {
+      const message = `these worker option fields are unknown: ${JSON.stringify(unknownKeys)}`;
+      throw new CannotHashOptionsError(message);
+    }
+    // eslint-disable-next-line no-undef, no-bitwise
+    hash.update(new Buffer([+dev | +minify << 1]));
+    hash.update(JSON.stringify(platform));
+    return this.hashTransformOptions(hash, transform);
+  }
+
+  /**
+   * The transform options contain absolute paths. This can contain, for
+   * example, the username if someone works their home directory (very likely).
+   * We get rid of this local data for the global cache, otherwise nobody would
+   * share the same cache keys. The project roots should not be needed as part
+   * of the cache key as they should not affect the transformation of a single
+   * particular file.
+   */
+  hashTransformOptions(hash: crypto$Hash, options: TransformOptions): crypto$Hash {
+    const {
+      generateSourceMaps, dev, hot, inlineRequires, platform, projectRoot,
+      ...unknowns,
+    } = options;
+    const unknownKeys = Object.keys(unknowns);
+    if (unknownKeys.length > 0) {
+      const message = `these transform option fields are unknown: ${JSON.stringify(unknownKeys)}`;
+      throw new CannotHashOptionsError(message);
+    }
+
+    hash.update(new Buffer([
+      // eslint-disable-next-line no-bitwise
+      +dev | +generateSourceMaps << 1 | +hot << 2 | +!!inlineRequires << 3,
+    ]));
+    hash.update(JSON.stringify(platform));
+    let relativeBlacklist = [];
+    if (typeof inlineRequires === 'object') {
+      relativeBlacklist = this.relativizeFilePaths(Object.keys(inlineRequires.blacklist));
+    }
+    const relativeProjectRoot = this.relativizeFilePath(projectRoot);
+    const optionTuple = [relativeBlacklist, relativeProjectRoot];
+    hash.update(JSON.stringify(optionTuple));
+    return hash;
+  }
+
+  relativizeFilePaths(filePaths: Array<string>): Array<string> {
+    return filePaths.map(this.relativizeFilePath.bind(this));
+  }
+
+  relativizeFilePath(filePath: string): string {
+    return path.relative(this._rootPath, filePath);
+  }
+}
+
+class CannotHashOptionsError extends Error {
+  constructor(message: string) {
+    super();
+    this.message = message;
+  }
+}
+
+URIBasedGlobalTransformCache.FetchFailedError = FetchFailedError;
+
+module.exports = {URIBasedGlobalTransformCache, CannotHashOptionsError};

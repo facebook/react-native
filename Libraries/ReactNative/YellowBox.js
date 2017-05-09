@@ -33,6 +33,7 @@ type WarningInfo = {
 
 const _warningEmitter = new EventEmitter();
 const _warningMap: Map<string, WarningInfo> = new Map();
+const IGNORED_WARNINGS: Array<string> = [];
 
 /**
  * YellowBox renders warnings at the bottom of the app being developed.
@@ -47,7 +48,11 @@ const _warningMap: Map<string, WarningInfo> = new Map();
  *   console.disableYellowBox = true;
  *   console.warn('YellowBox is disabled.');
  *
- * Warnings can be ignored programmatically by setting the array:
+ * Ignore specific warnings by calling:
+ *
+ *   YellowBox.ignoreWarnings(['Warning: ...']);
+ *
+ * (DEPRECATED) Warnings can be ignored programmatically by setting the array:
  *
  *   console.ignoredYellowBox = ['Warning: ...'];
  *
@@ -153,6 +158,16 @@ function ensureSymbolicatedWarning(warning: string): void {
 }
 
 function isWarningIgnored(warning: string): boolean {
+  const isIgnored =
+    IGNORED_WARNINGS.some(
+      (ignoredWarning: string) => warning.startsWith(ignoredWarning)
+    );
+
+  if (isIgnored) {
+    return true;
+  }
+
+  // DEPRECATED
   return (
     Array.isArray(console.ignoredYellowBox) &&
     console.ignoredYellowBox.some(
@@ -191,8 +206,13 @@ const StackRow = ({frame}: StackRowProps) => {
   const Text = require('Text');
   const TouchableHighlight = require('TouchableHighlight');
   const {file, lineNumber} = frame;
-  const fileParts = file.split('/');
-  const fileName = fileParts[fileParts.length - 1];
+  let fileName;
+  if (file) {
+    const fileParts = file.split('/');
+    fileName = fileParts[fileParts.length - 1];
+  } else {
+    fileName = '<unknown file>';
+  }
 
   return (
     <TouchableHighlight
@@ -311,6 +331,14 @@ class YellowBox extends React.Component {
     };
   }
 
+  static ignoreWarnings(warnings: Array<string>): void {
+    warnings.forEach((warning: string) => {
+      if (IGNORED_WARNINGS.indexOf(warning) === -1) {
+        IGNORED_WARNINGS.push(warning);
+      }
+    });
+  }
+
   componentDidMount() {
     let scheduled = null;
     this._listener = _warningEmitter.addListener('warning', warningMap => {
@@ -394,16 +422,24 @@ const textColor = 'white';
 const rowGutter = 1;
 const rowHeight = 46;
 
+// For unknown reasons, setting elevation: Number.MAX_VALUE causes remote debugging to
+// hang on iOS (some sort of overflow maybe). Setting it to Number.MAX_SAFE_INTEGER fixes the iOS issue, but since
+// elevation is an android-only style property we might as well remove it altogether for iOS.
+// See: https://github.com/facebook/react-native/issues/12223
+const elevation = Platform.OS === 'android' ? Number.MAX_SAFE_INTEGER : undefined;
+
 var styles = StyleSheet.create({
   fullScreen: {
     height: '100%',
-    elevation: Number.MAX_VALUE
+    width: '100%',
+    elevation: elevation,
+    position: 'absolute',
   },
   inspector: {
     backgroundColor: backgroundColor(0.95),
     height: '100%',
     paddingTop: 5,
-    elevation: Number.MAX_VALUE
+    elevation:elevation
   },
   inspectorButtons: {
     flexDirection: 'row',
@@ -451,7 +487,7 @@ var styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    elevation: Number.MAX_VALUE
+    elevation: elevation
   },
   listRow: {
     backgroundColor: backgroundColor(0.95),

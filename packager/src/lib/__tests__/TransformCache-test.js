@@ -13,29 +13,32 @@ jest
   .dontMock('imurmurhash')
   .dontMock('json-stable-stringify')
   .dontMock('../TransformCache')
-  .dontMock('../toFixedHex')
-  .dontMock('left-pad');
+  .dontMock('left-pad')
+  .dontMock('lodash/throttle')
+  .dontMock('crypto');
 
 const imurmurhash = require('imurmurhash');
+const crypto = require('crypto');
+const jsonStableStringify = require('json-stable-stringify');
 
-const memoryFS = new Map();
+const mockFS = new Map();
 
 jest.mock('fs', () => ({
   readFileSync(filePath) {
-    return memoryFS.get(filePath);
+    return mockFS.get(filePath);
   },
   unlinkSync(filePath) {
-    memoryFS.delete(filePath);
+    mockFS.delete(filePath);
   },
   readdirSync(dirPath) {
     // Not required for it to work.
     return [];
-  }
+  },
 }));
 
 jest.mock('write-file-atomic', () => ({
   sync(filePath, data) {
-    memoryFS.set(filePath, data.toString());
+    mockFS.set(filePath, data.toString());
   },
 }));
 
@@ -53,19 +56,20 @@ describe('TransformCache', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    memoryFS.clear();
+    mockFS.clear();
     TransformCache = require('../TransformCache');
   });
 
   it('is caching different files and options separately', () => {
-    const transformCacheKey = 'abcdef';
     const argsFor = ([filePath, transformOptions]) => {
       const key = filePath + JSON.stringify(transformOptions);
       return {
         sourceCode: `/* source for ${key} */`,
-        transformCacheKey,
+        getTransformCacheKey: () => 'abcdef',
         filePath,
         transformOptions,
+        transformOptionsKey: crypto.createHash('md5')
+          .update(jsonStableStringify(transformOptions)).digest('hex'),
         result: {
           code: `/* result for ${key} */`,
           dependencies: ['foo', `dep of ${key}`],
@@ -88,7 +92,7 @@ describe('TransformCache', () => {
         ...args,
         cacheOptions: {resetCache: false},
       });
-      expect(cachedResult).toEqual(result);
+      expect(cachedResult.result).toEqual(result);
     });
   });
 
@@ -97,12 +101,13 @@ describe('TransformCache', () => {
       const key = sourceCode + transformCacheKey;
       return {
         sourceCode,
-        transformCacheKey,
+        getTransformCacheKey: () => transformCacheKey,
         filePath: 'test.js',
         transformOptions: {foo: 1},
+        transformOptionsKey: 'boo!',
         result: {
           code: `/* result for ${key} */`,
-          dependencies: ['foo', `dep of ${key}`],
+          dependencies: ['foo', 'bar'],
           dependencyOffsets: [12, imurmurhash('dep' + key).result()],
           map: {desc: `source map for ${key}`},
         },
@@ -120,7 +125,7 @@ describe('TransformCache', () => {
         ...args,
         cacheOptions: {resetCache: false},
       });
-      expect(cachedResult).toEqual(result);
+      expect(cachedResult.result).toEqual(result);
     });
     allCases.pop();
     allCases.forEach(entry => {
@@ -128,7 +133,8 @@ describe('TransformCache', () => {
         ...argsFor(entry),
         cacheOptions: {resetCache: false},
       });
-      expect(cachedResult).toBeNull();
+      expect(cachedResult.result).toBeNull();
+      expect(cachedResult.outdatedDependencies).toEqual(['foo', 'bar']);
     });
   });
 

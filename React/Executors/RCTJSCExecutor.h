@@ -28,45 +28,6 @@ RCT_EXTERN NSString *const RCTJSCThreadName;
 RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
 
 /**
- * A key to a reference to a JSContext class, held in the the current thread's
- *  dictionary. The reference would point to the JSContext class in the JS VM
- *  used in React (or ComponenetScript). It is recommended not to access it
- *  through the thread's dictionary, but rather to use the `FBJSCurrentContext()`
- *  accessor, which will return the current JSContext in the currently used VM.
- */
-RCT_EXTERN NSString *const RCTFBJSContextClassKey;
-
-/**
- * A key to a reference to a JSValue class, held in the the current thread's
- *  dictionary. The reference would point to the JSValue class in the JS VM
- *  used in React (or ComponenetScript). It is recommended not to access it
- *  through the thread's dictionary, but rather to use the `FBJSValue()` accessor.
- */
-RCT_EXTERN NSString *const RCTFBJSValueClassKey;
-
-/**
- * @experimental
- * May be used to pre-create the JSContext to make RCTJSCExecutor creation less costly.
- * Avoid using this; it's experimental and is not likely to be supported long-term.
- */
-@interface RCTJSContextProvider : NSObject
-
-- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
-                                tryBytecode:(BOOL)tryBytecode;
-
-/**
- * Marks whether the provider uses the custom implementation of JSC and not the system one.
- */
-@property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
-
-/**
- * Marks whether it is safe to try and run bytecode if given the choice.
- */
-@property (nonatomic, readonly) BOOL tryBytecode;
-
-@end
-
-/**
  * Uses a JavaScriptCore context as the execution engine.
  */
 @interface RCTJSCExecutor : NSObject <RCTJavaScriptExecutor>
@@ -97,23 +58,6 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
 
 /**
  * @experimental
- * Inits a new executor instance with given configuration flags. Please refer to
- * the documentation for `RCTJSContextProvider` for more information as to their
- * purpose.
- */
-- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary
-                                tryBytecode:(BOOL)tryBytecode;
-
-/**
- * @experimental
- * Pass a RCTJSContextProvider object to use an NSThread/JSContext pair that have already been created.
- * The underlying JSContext will be returned in the JSContext pointer if it is non-NULL.
- */
-+ (instancetype)initializedExecutorWithContextProvider:(RCTJSContextProvider *)JSContextProvider
-                                             JSContext:(JSContext **)JSContext;
-
-/**
- * @experimental
  * synchronouslyExecuteApplicationScript:sourceURL:JSContext:error:
  *
  * Run the provided JS Script/Bundle, blocking the caller until it finishes.
@@ -138,5 +82,28 @@ RCT_EXTERN NSString *const RCTFBJSValueClassKey;
  * Get the JavaScriptCore context associated with this executor instance.
  */
 - (JSContext *)jsContext;
+
+@end
+
+/**
+ * @experimental
+ * May be used to pre-create the JSContext to make RCTJSCExecutor creation less costly.
+ * Avoid using this; it's experimental and is not likely to be supported long-term.
+ */
+@interface RCTJSContextProvider : NSObject
+
+- (instancetype)initWithUseCustomJSCLibrary:(BOOL)useCustomJSCLibrary;
+
+/**
+ * Marks whether the provider uses the custom implementation of JSC and not the system one.
+ */
+@property (nonatomic, readonly, assign) BOOL useCustomJSCLibrary;
+
+/**
+ * @experimental
+ * Create an RCTJSCExecutor from an provider instance. This may only be called once.
+ * The underlying JSContext will be returned in the JSContext pointer if it is non-NULL.
+ */
+- (RCTJSCExecutor *)createExecutorWithContext:(JSContext **)JSContext;
 
 @end

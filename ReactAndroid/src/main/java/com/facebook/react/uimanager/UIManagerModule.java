@@ -1,4 +1,4 @@
-  /**
+/**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -21,8 +21,8 @@ import android.content.res.Configuration;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.NativeModuleLogger;
 import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.PerformanceCounter;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -40,8 +40,6 @@ import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
-import static com.facebook.react.bridge.ReactMarkerConstants.UI_MANAGER_MODULE_CONSTANTS_CONVERT_END;
-import static com.facebook.react.bridge.ReactMarkerConstants.UI_MANAGER_MODULE_CONSTANTS_CONVERT_START;
 
   /**
  * <p>Native module to allow JS to create and update native Views.</p>
@@ -74,7 +72,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.UI_MANAGER_MODULE_C
  */
 @ReactModule(name = UIManagerModule.NAME)
 public class UIManagerModule extends ReactContextBaseJavaModule implements
-    OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter, NativeModuleLogger {
+    OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter {
 
   protected static final String NAME = "UIManager";
 
@@ -186,6 +184,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * NB: this method is horribly not-thread-safe.
    */
   public int addMeasuredRootView(final SizeMonitoringFrameLayout rootView) {
+    Systrace.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+      "UIManagerModule.addMeasuredRootView");
     final int tag = mNextRootViewTag;
     mNextRootViewTag += ROOT_VIEW_TAG_INCREMENT;
 
@@ -202,8 +203,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       height = rootView.getHeight();
     }
 
+    final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     final ThemedReactContext themedRootContext =
-        new ThemedReactContext(getReactApplicationContext(), rootView.getContext());
+        new ThemedReactContext(reactApplicationContext, rootView.getContext());
 
     mUIImplementation.registerRootView(rootView, tag, width, height, themedRootContext);
 
@@ -211,16 +213,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       new SizeMonitoringFrameLayout.OnSizeChangedListener() {
         @Override
         public void onSizeChanged(final int width, final int height, int oldW, int oldH) {
-          getReactApplicationContext().runOnNativeModulesQueueThread(
-            new Runnable() {
+          reactApplicationContext.runUIBackgroundRunnable(
+            new GuardedRunnable(reactApplicationContext) {
               @Override
-              public void run() {
+              public void runGuarded() {
                 updateNodeSize(tag, width, height);
               }
             });
         }
       });
 
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return tag;
   }
 
@@ -230,7 +233,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
-    getReactApplicationContext().assertOnNativeModulesQueueThread();
+    getReactApplicationContext().assertOnUIBackgroundOrNativeModulesThread();
 
     mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight);
   }
@@ -570,16 +573,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    */
   public int resolveRootTagFromReactTag(int reactTag) {
     return mUIImplementation.resolveRootTagFromReactTag(reactTag);
-  }
-
-  @Override
-  public void startConstantsMapConversion() {
-    ReactMarker.logMarker(UI_MANAGER_MODULE_CONSTANTS_CONVERT_START);
-  }
-
-  @Override
-  public void endConstantsMapConversion() {
-    ReactMarker.logMarker(UI_MANAGER_MODULE_CONSTANTS_CONVERT_END);
   }
 
   /**

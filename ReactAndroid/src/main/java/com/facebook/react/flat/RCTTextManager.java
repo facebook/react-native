@@ -14,9 +14,11 @@ package com.facebook.react.flat;
  */
 public final class RCTTextManager extends FlatViewManager {
 
+  /* package */ static final String REACT_CLASS = "RCTText";
+
   @Override
   public String getName() {
-    return "RCTText";
+    return REACT_CLASS;
   }
 
   @Override

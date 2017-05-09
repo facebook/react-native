@@ -15,13 +15,12 @@ const ElementProperties = require('ElementProperties');
 const NetworkOverlay = require('NetworkOverlay');
 const PerformanceOverlay = require('PerformanceOverlay');
 const React = require('React');
+const PropTypes = require('prop-types');
 const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight');
 const View = require('View');
-
-const PropTypes = React.PropTypes;
 
 class InspectorPanel extends React.Component {
   renderWaiting() {

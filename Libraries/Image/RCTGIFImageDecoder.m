@@ -10,7 +10,6 @@
 #import "RCTGIFImageDecoder.h"
 
 #import <ImageIO/ImageIO.h>
-#import <MobileCoreServices/MobileCoreServices.h>
 #import <QuartzCore/QuartzCore.h>
 
 #import <React/RCTUtils.h>

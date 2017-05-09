@@ -13,6 +13,8 @@ import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.cxxbridge.ModuleHolder;
 import com.facebook.react.cxxbridge.NativeModuleRegistry;
@@ -24,6 +26,7 @@ import com.facebook.react.module.model.ReactModuleInfo;
 public class NativeModuleRegistryBuilder {
 
   private final ReactApplicationContext mReactApplicationContext;
+  private final ReactInstanceManager mReactInstanceManager;
   private final boolean mLazyNativeModulesEnabled;
 
   private final Map<Class<? extends NativeModule>, ModuleHolder> mModules = new HashMap<>();
@@ -31,8 +34,10 @@ public class NativeModuleRegistryBuilder {
 
   public NativeModuleRegistryBuilder(
     ReactApplicationContext reactApplicationContext,
+    ReactInstanceManager reactInstanceManager,
     boolean lazyNativeModulesEnabled) {
     mReactApplicationContext = reactApplicationContext;
+    mReactInstanceManager = reactInstanceManager;
     mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
   }
 
@@ -57,14 +62,18 @@ public class NativeModuleRegistryBuilder {
             throw new IllegalStateException("Native Java module " + type.getSimpleName() +
               " should be annotated with @ReactModule and added to a @ReactModuleList.");
           }
-          moduleHolder = new ModuleHolder(moduleSpec.getProvider().get());
+          NativeModule module;
+          ReactMarker.logMarker(
+            ReactMarkerConstants.CREATE_MODULE_START,
+            moduleSpec.getType().getName());
+          try {
+            module = moduleSpec.getProvider().get();
+          } finally {
+            ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_END);
+          }
+          moduleHolder = new ModuleHolder(module);
         } else {
-          moduleHolder = new ModuleHolder(
-            reactModuleInfo.name(),
-            reactModuleInfo.canOverrideExistingModule(),
-            reactModuleInfo.supportsWebWorkers(),
-            reactModuleInfo.needsEagerInit(),
-            moduleSpec.getProvider());
+          moduleHolder = new ModuleHolder(reactModuleInfo, moduleSpec.getProvider());
         }
 
         String name = moduleHolder.getName();
@@ -87,7 +96,16 @@ public class NativeModuleRegistryBuilder {
         ReactConstants.TAG,
         reactPackage.getClass().getSimpleName() +
           " is not a LazyReactPackage, falling back to old version.");
-      for (NativeModule nativeModule : reactPackage.createNativeModules(mReactApplicationContext)) {
+      List<NativeModule> nativeModules;
+      if (reactPackage instanceof ReactInstancePackage) {
+        ReactInstancePackage reactInstancePackage = (ReactInstancePackage) reactPackage;
+        nativeModules = reactInstancePackage.createNativeModules(
+            mReactApplicationContext,
+            mReactInstanceManager);
+      } else {
+        nativeModules = reactPackage.createNativeModules(mReactApplicationContext);
+      }
+      for (NativeModule nativeModule : nativeModules) {
         addNativeModule(nativeModule);
       }
     }
@@ -113,21 +131,16 @@ public class NativeModuleRegistryBuilder {
   }
 
   public NativeModuleRegistry build() {
-    ArrayList<OnBatchCompleteListener> batchCompleteListenerModules = new ArrayList<>();
+    ArrayList<ModuleHolder> batchCompleteListenerModules = new ArrayList<>();
     for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
-      Class<? extends NativeModule> type = entry.getKey();
-      if (OnBatchCompleteListener.class.isAssignableFrom(type)) {
-        final ModuleHolder moduleHolder = entry.getValue();
-        batchCompleteListenerModules.add(new OnBatchCompleteListener() {
-          @Override
-          public void onBatchComplete() {
-            OnBatchCompleteListener listener = (OnBatchCompleteListener) moduleHolder.getModule();
-            listener.onBatchComplete();
-          }
-        });
+      if (OnBatchCompleteListener.class.isAssignableFrom(entry.getKey())) {
+        batchCompleteListenerModules.add(entry.getValue());
       }
     }
 
-    return new NativeModuleRegistry(mModules, batchCompleteListenerModules);
+    return new NativeModuleRegistry(
+      mReactApplicationContext,
+      mModules,
+      batchCompleteListenerModules);
   }
 }

@@ -5,11 +5,9 @@
 #include <memory>
 #include <vector>
 
-#include <folly/dynamic.h>
+#include <cxxreact/NativeModule.h>
 #include <folly/Optional.h>
-
-#include "ExecutorToken.h"
-#include "NativeModule.h"
+#include <folly/dynamic.h>
 
 namespace facebook {
 namespace react {
@@ -31,13 +29,14 @@ class ModuleRegistry {
   // notifyCatalystInstanceDestroy: use RAII instead
 
   ModuleRegistry(std::vector<std::unique_ptr<NativeModule>> modules);
+  void registerModules(std::vector<std::unique_ptr<NativeModule>> modules);
+
   std::vector<std::string> moduleNames();
 
   folly::Optional<ModuleConfig> getConfig(const std::string& name);
 
-  void callNativeMethod(ExecutorToken token, unsigned int moduleId, unsigned int methodId,
-                        folly::dynamic&& params, int callId);
-  MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int moduleId, unsigned int methodId, folly::dynamic&& args);
+  void callNativeMethod(unsigned int moduleId, unsigned int methodId, folly::dynamic&& params, int callId);
+  MethodCallResult callSerializableNativeHook(unsigned int moduleId, unsigned int methodId, folly::dynamic&& args);
 
  private:
   // This is always populated

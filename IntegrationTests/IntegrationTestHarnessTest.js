@@ -7,11 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @providesModule IntegrationTestHarnessTest
  */
 'use strict';
 
 var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
 var React = require('react');
+var PropTypes = require('prop-types');
 var ReactNative = require('react-native');
 var {
   Text,
@@ -26,8 +28,8 @@ class IntegrationTestHarnessTest extends React.Component {
   };
 
   static propTypes = {
-    shouldThrow: React.PropTypes.bool,
-    waitOneFrame: React.PropTypes.bool,
+    shouldThrow: PropTypes.bool,
+    waitOneFrame: PropTypes.bool,
   };
 
   state = {

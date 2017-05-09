@@ -7,29 +7,67 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ReactRef
+ * @flow
  */
 
 'use strict';
 
 var ReactOwner = require('ReactOwner');
 
-import type { ReactInstance } from 'ReactInstanceType';
-import type { ReactElement } from 'ReactElementType';
-import type { Transaction } from 'Transaction';
+import type {ReactInstance} from 'ReactInstanceType';
+import type {ReactElement} from 'ReactElementType';
 
 var ReactRef = {};
 
-function attachRef(ref, component, owner, transaction) {
+if (__DEV__) {
+  var ReactCompositeComponentTypes = require('ReactCompositeComponentTypes');
+  var {ReactComponentTreeHook} = require('ReactGlobalSharedState');
+  var warning = require('fbjs/lib/warning');
+
+  var warnedAboutStatelessRefs = {};
+}
+
+function attachRef(ref, component, owner) {
+  if (__DEV__) {
+    if (
+      component._compositeType ===
+      ReactCompositeComponentTypes.StatelessFunctional
+    ) {
+      let info = '';
+      let ownerName;
+      if (owner) {
+        if (typeof owner.getName === 'function') {
+          ownerName = owner.getName();
+        }
+        if (ownerName) {
+          info += '\n\nCheck the render method of `' + ownerName + '`.';
+        }
+      }
+
+      let warningKey = ownerName || component._debugID;
+      let element = component._currentElement;
+      if (element && element._source) {
+        warningKey =
+          element._source.fileName + ':' + element._source.lineNumber;
+      }
+      if (!warnedAboutStatelessRefs[warningKey]) {
+        warnedAboutStatelessRefs[warningKey] = true;
+        warning(
+          false,
+          'Stateless function components cannot be given refs. ' +
+            'Attempts to access this ref will fail.%s%s',
+          info,
+          ReactComponentTreeHook.getStackAddendumByID(component._debugID),
+        );
+      }
+    }
+  }
+
   if (typeof ref === 'function') {
-    ref(component.getPublicInstance(transaction));
+    ref(component.getPublicInstance());
   } else {
     // Legacy ref
-    ReactOwner.addComponentAsRefTo(
-      component,
-      ref,
-      owner,
-      transaction,
-    );
+    ReactOwner.addComponentAsRefTo(component, ref, owner);
   }
 }
 
@@ -45,14 +83,13 @@ function detachRef(ref, component, owner) {
 ReactRef.attachRefs = function(
   instance: ReactInstance,
   element: ReactElement | string | number | null | false,
-  transaction: Transaction,
 ): void {
   if (element === null || typeof element !== 'object') {
     return;
   }
   var ref = element.ref;
   if (ref != null) {
-    attachRef(ref, instance, element._owner, transaction);
+    attachRef(ref, instance, element._owner);
   }
 };
 
