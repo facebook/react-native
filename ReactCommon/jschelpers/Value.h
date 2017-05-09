@@ -233,9 +233,9 @@ private:
 
 class Value : public noncopyable {
 public:
-  Value(JSContextRef context, JSValueRef value);
-  Value(JSContextRef context, JSStringRef value);
-  Value(Value&&);
+  __attribute__((visibility("default"))) Value(JSContextRef context, JSValueRef value);
+  __attribute__((visibility("default"))) Value(JSContextRef context, JSStringRef value);
+  __attribute__((visibility("default"))) Value(Value&&);
 
   Value& operator=(Value&& other) {
     m_context = other.m_context;
@@ -316,10 +316,10 @@ public:
     return Value(ctx, JSC_JSValueMakeNull(ctx));
   }
 
-  std::string toJSONString(unsigned indent = 0) const;
-  static Value fromJSON(JSContextRef ctx, const String& json);
-  static JSValueRef fromDynamic(JSContextRef ctx, const folly::dynamic& value);
-  JSContextRef context() const;
+  __attribute__((visibility("default"))) std::string toJSONString(unsigned indent = 0) const;
+  __attribute__((visibility("default"))) static Value fromJSON(JSContextRef ctx, const String& json);
+  __attribute__((visibility("default"))) static JSValueRef fromDynamic(JSContextRef ctx, const folly::dynamic& value);
+  __attribute__((visibility("default"))) JSContextRef context() const;
 protected:
   JSContextRef m_context;
   JSValueRef m_value;

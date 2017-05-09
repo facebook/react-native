@@ -138,6 +138,8 @@ type Options = {|
   +watch: boolean,
 |};
 
+const {hasOwnProperty} = Object;
+
 class Bundler {
 
   _opts: Options;
@@ -673,7 +675,7 @@ class Bundler {
       const preloaded =
         module.path === entryFilePath ||
         isPolyfill ||
-        preloadedModules && preloadedModules.hasOwnProperty(module.path);
+        preloadedModules && hasOwnProperty.call(preloadedModules, module.path);
 
       return new ModuleTransport({
         name,

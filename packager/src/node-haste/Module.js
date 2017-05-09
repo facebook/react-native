@@ -22,7 +22,7 @@ const jsonStableStringify = require('json-stable-stringify');
 
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
-import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type {TransformedCode, Options as WorkerOptions} from '../JSTransformer/worker/worker';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {MappingsMap} from '../lib/SourceMap';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
@@ -47,7 +47,7 @@ export type CachedReadResult = {|
 export type TransformCode = (
   module: Module,
   sourceCode: string,
-  transformOptions: TransformOptions,
+  transformOptions: WorkerOptions,
 ) => Promise<TransformedCode>;
 
 export type HasteImpl = {
@@ -131,11 +131,11 @@ class Module {
     return Promise.resolve().then(() => this._getHasteName() != null);
   }
 
-  getCode(transformOptions: TransformOptions) {
+  getCode(transformOptions: WorkerOptions) {
     return this.read(transformOptions).then(({code}) => code);
   }
 
-  getMap(transformOptions: TransformOptions) {
+  getMap(transformOptions: WorkerOptions) {
     return this.read(transformOptions).then(({map}) => map);
   }
 
@@ -168,7 +168,7 @@ class Module {
     return this._moduleCache.getPackageForModule(this);
   }
 
-  getDependencies(transformOptions: TransformOptions) {
+  getDependencies(transformOptions: WorkerOptions) {
     return this.read(transformOptions).then(({dependencies}) => dependencies);
   }
 
@@ -324,7 +324,7 @@ class Module {
    * Shorthand for reading both from cache or from fresh for all call sites that
    * are asynchronous by default.
    */
-  read(transformOptions: TransformOptions): Promise<ReadResult> {
+  read(transformOptions: WorkerOptions): Promise<ReadResult> {
     return Promise.resolve().then(() => {
       const cached = this.readCached(transformOptions);
       if (cached.result != null) {
@@ -339,7 +339,7 @@ class Module {
    * the file from source. This has the benefit of being synchronous. As a
    * result it is possible to read many cached Module in a row, synchronously.
    */
-  readCached(transformOptions: TransformOptions): CachedReadResult {
+  readCached(transformOptions: WorkerOptions): CachedReadResult {
     const key = stableObjectHash(transformOptions || {});
     let result = this._readResultsByOptionsKey.get(key);
     if (result != null) {
@@ -355,7 +355,7 @@ class Module {
    * so it's faster in case the results are already in memory.
    */
   _readFromTransformCache(
-    transformOptions: TransformOptions,
+    transformOptions: WorkerOptions,
     transformOptionsKey: string,
   ): CachedReadResult {
     const cacheProps = this._getCacheProps(transformOptions, transformOptionsKey);
@@ -375,7 +375,7 @@ class Module {
    * scratch. We don't repeat the same work as `readCached` because we assume
    * call sites have called it already.
    */
-  readFresh(transformOptions: TransformOptions): Promise<ReadResult> {
+  readFresh(transformOptions: WorkerOptions): Promise<ReadResult> {
     const key = stableObjectHash(transformOptions || {});
     const promise = this._readPromises.get(key);
     if (promise != null) {
@@ -404,7 +404,7 @@ class Module {
     return freshPromise;
   }
 
-  _getCacheProps(transformOptions: TransformOptions, transformOptionsKey: string) {
+  _getCacheProps(transformOptions: WorkerOptions, transformOptionsKey: string) {
     const sourceCode = this._readSourceCode();
     const getTransformCacheKey = this._getTransformCacheKey;
     return {
