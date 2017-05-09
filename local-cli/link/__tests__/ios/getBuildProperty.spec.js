@@ -17,6 +17,6 @@ describe('ios::getBuildProperty', () => {
 
   it('should return build property from main target', () => {
     const plistPath = getBuildProperty(project, 'INFOPLIST_FILE');
-    expect(plistPath).toEqual('"Basic/Info.plist"');
+    expect(plistPath).toEqual('Basic/Info.plist');
   });
 });

@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 'use strict';
 const docgen = require('react-docgen');
 
@@ -18,18 +27,18 @@ function stylePropTypeHandler(documentation, path) {
         docgen.utils.getPropertyName(propertyPath) !== 'style') {
       return;
     }
-    let valuePath = docgen.utils.resolveToValue(propertyPath.get('value'));
+    const valuePath = docgen.utils.resolveToValue(propertyPath.get('value'));
     // If it's a call to StyleSheetPropType, do stuff
     if (valuePath.node.type !== 'CallExpression' ||
         valuePath.node.callee.name !== 'StyleSheetPropType') {
       return;
     }
     // Get type of style sheet
-    let styleSheetModule = docgen.utils.resolveToModule(
+    const styleSheetModule = docgen.utils.resolveToModule(
       valuePath.get('arguments', 0)
     );
     if (styleSheetModule) {
-      let propDescriptor = documentation.getPropDescriptor('style');
+      const propDescriptor = documentation.getPropDescriptor('style');
       propDescriptor.type = {name: 'stylesheet', value: styleSheetModule};
     }
   });
@@ -48,13 +57,13 @@ function deprecatedPropTypeHandler(documentation, path) {
 
   // Checks for deprecatedPropType function and add deprecation info.
   propTypesPath.get('properties').each(function(propertyPath) {
-    let valuePath = docgen.utils.resolveToValue(propertyPath.get('value'));
+    const valuePath = docgen.utils.resolveToValue(propertyPath.get('value'));
     // If it's a call to deprecatedPropType, do stuff
     if (valuePath.node.type !== 'CallExpression' ||
         valuePath.node.callee.name !== 'deprecatedPropType') {
       return;
     }
-    let propDescriptor = documentation.getPropDescriptor(
+    const propDescriptor = documentation.getPropDescriptor(
       docgen.utils.getPropertyName(propertyPath)
     );
     // The 2nd argument of deprecatedPropType is the deprecation message.
@@ -78,7 +87,7 @@ function typedefHandler(documentation, path) {
 
   // Name, type, description of the typedef
   const name = declarationPath.value.id.name;
-  const type = { names: [typePath.node.id.name] };
+  const type = { names: [typePath.node.id ? typePath.node.id.name : typePath.node.type] };
   const description = docgen.utils.docblock.getDocblock(path);
 
   // Get the properties for the typedef
@@ -108,7 +117,7 @@ function typedefHandler(documentation, path) {
     });
   }
 
-  let typedef = {
+  const typedef = {
     name: name,
     description: description,
     type: type,
@@ -134,7 +143,7 @@ function getTypeName(type) {
 }
 
 function jsDocFormatType(entities) {
-  let modEntities = entities;
+  const modEntities = entities;
   if (entities) {
     if (typeof entities === 'object' && entities.length) {
       entities.map((entity, entityIndex) => {
@@ -155,7 +164,7 @@ function jsDocFormatHandler(documentation, path) {
   if (!methods || methods.length === 0) {
     return;
   }
-  let modMethods = methods;
+  const modMethods = methods;
   methods.map((method, methodIndex) => {
     modMethods[methodIndex].params = jsDocFormatType(method.params);
     modMethods[methodIndex].returns = jsDocFormatType(method.returns);
@@ -184,8 +193,8 @@ function findExportedObject(ast, recast) {
     // handler.
     // This converts any expression, e.g. `foo` to an object expression of
     // the form `{propTypes: foo}`
-    let b = recast.types.builders;
-    let nt = recast.types.namedTypes;
+    const b = recast.types.builders;
+    const nt = recast.types.namedTypes;
     let obj = objPath.node;
 
     // Hack: This is converting calls like
@@ -215,7 +224,7 @@ function findExportedObject(ast, recast) {
 }
 
 function findExportedType(ast, recast) {
-  let types = recast.types.namedTypes;
+  const types = recast.types.namedTypes;
   let definitions;
   recast.visit(ast, {
     visitExportNamedDeclaration: function(path) {

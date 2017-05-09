@@ -1,6 +1,6 @@
 jest.autoMockOff();
 
-const findAndroidAppFolder = require('../../config/android/findAndroidAppFolder');
+const findAndroidAppFolder = require('../../android/findAndroidAppFolder');
 const mockFs = require('mock-fs');
 const mocks = require('../../__fixtures__/android');
 

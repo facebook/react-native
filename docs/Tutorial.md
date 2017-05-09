@@ -21,7 +21,7 @@ In accordance with the ancient traditions of our people, we must first build an 
 import React, { Component } from 'react';
 import { AppRegistry, Text } from 'react-native';
 
-class HelloWorldApp extends Component {
+class AwesomeProject extends Component {
   render() {
     return (
       <Text>Hello world!</Text>
@@ -29,7 +29,7 @@ class HelloWorldApp extends Component {
   }
 }
 
-AppRegistry.registerComponent('HelloWorldApp', () => HelloWorldApp);
+AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
 ```
 
 If you are feeling curious, you can play around with sample code directly in the web simulators. You can also paste it into your `index.ios.js` or `index.android.js` file to create a real app on your local machine.
@@ -51,4 +51,4 @@ The `AppRegistry` just tells React Native which component is the root one for th
 
 ## This App Doesn't Do Very Much
 
-Good point. To make components do more interesting things, you need to [learn about Props](/react-native/docs/props.html).
+Good point. To make components do more interesting things, you need to [learn about Props](docs/props.html).

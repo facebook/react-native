@@ -13,8 +13,8 @@
 #include <cxxabi.h>
 
 #import "RCTAssert.h"
-#import "RCTBridge.h"
 #import "RCTBridge+Private.h"
+#import "RCTBridge.h"
 #import "RCTDefines.h"
 #import "RCTRedBox.h"
 #import "RCTUtils.h"
@@ -218,7 +218,7 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
 #if RCT_DEBUG
 
     // Log to red box in debug mode.
-    if ([UIApplication sharedApplication] && level >= RCTLOG_REDBOX_LEVEL) {
+    if (RCTSharedApplication() && level >= RCTLOG_REDBOX_LEVEL) {
       NSArray<NSString *> *stackSymbols = [NSThread callStackSymbols];
       NSMutableArray<NSDictionary *> *stack =
         [NSMutableArray arrayWithCapacity:(stackSymbols.count - 1)];
@@ -229,7 +229,7 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
         }
 
         NSRange range = NSMakeRange(0, frameSymbols.length);
-        NSTextCheckingResult *match = [nativeStackFrameRegex() firstMatchInString:frameSymbols                                                                           options:0 range:range];
+        NSTextCheckingResult *match = [nativeStackFrameRegex() firstMatchInString:frameSymbols options:0 range:range];
         if (!match) {
           return;
         }

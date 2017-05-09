@@ -87,6 +87,27 @@
   [subview removeFromSuperview];
 }
 
+- (UIUserInterfaceLayoutDirection)reactLayoutDirection
+{
+  if ([self respondsToSelector:@selector(semanticContentAttribute)]) {
+    return [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:self.semanticContentAttribute];
+  } else {
+    return [objc_getAssociatedObject(self, @selector(reactLayoutDirection)) integerValue];
+  }
+}
+
+- (void)setReactLayoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
+{
+  if ([self respondsToSelector:@selector(setSemanticContentAttribute:)]) {
+    self.semanticContentAttribute =
+      layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
+        UISemanticContentAttributeForceLeftToRight :
+        UISemanticContentAttributeForceRightToLeft;
+  } else {
+    objc_setAssociatedObject(self, @selector(reactLayoutDirection), @(layoutDirection), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  }
+}
+
 - (NSInteger)reactZIndex
 {
   return [objc_getAssociatedObject(self, _cmd) integerValue];
@@ -191,13 +212,34 @@
 }
 
 /**
- * Responder overrides - to be deprecated.
+ * Focus manipulation.
  */
-- (void)reactWillMakeFirstResponder {};
-- (void)reactDidMakeFirstResponder {};
-- (BOOL)reactRespondsToTouch:(__unused UITouch *)touch
+- (BOOL)reactIsFocusNeeded
 {
-  return YES;
+  return [(NSNumber *)objc_getAssociatedObject(self, @selector(reactIsFocusNeeded)) boolValue];
+}
+
+- (void)setReactIsFocusNeeded:(BOOL)isFocusNeeded
+{
+  objc_setAssociatedObject(self, @selector(reactIsFocusNeeded), @(isFocusNeeded), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (void)reactFocus {
+  if (![self becomeFirstResponder]) {
+    self.reactIsFocusNeeded = YES;
+  }
+}
+
+- (void)reactFocusIfNeeded {
+  if (self.reactIsFocusNeeded) {
+    if ([self becomeFirstResponder]) {
+      self.reactIsFocusNeeded = NO;
+    }
+  }
+}
+
+- (void)reactBlur {
+  [self resignFirstResponder];
 }
 
 @end

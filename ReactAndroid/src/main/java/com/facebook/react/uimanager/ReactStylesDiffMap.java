@@ -15,6 +15,7 @@ import android.view.View;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.Dynamic;
 
 /**
  * Wrapper for {@link ReadableMap} which should be used for styles property map. It extends
@@ -80,6 +81,11 @@ public class ReactStylesDiffMap {
   @Nullable
   public ReadableMap getMap(String key) {
     return mBackingMap.getMap(key);
+  }
+
+  @Nullable
+  public Dynamic getDynamic(String key) {
+    return mBackingMap.getDynamic(key);
   }
 
   @Override

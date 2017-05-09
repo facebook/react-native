@@ -30,7 +30,7 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
   }
 }
 
-RCT_EXPORT_MODULE(IOSConstants)
+RCT_EXPORT_MODULE(PlatformConstants)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
@@ -40,6 +40,7 @@ RCT_EXPORT_MODULE(IOSConstants)
     @"osVersion": [device systemVersion],
     @"systemName": [device systemName],
     @"interfaceIdiom": interfaceIdiom([device userInterfaceIdiom]),
+    @"isTesting": @(RCTRunningInTestEnvironment()),
   };
 }
 

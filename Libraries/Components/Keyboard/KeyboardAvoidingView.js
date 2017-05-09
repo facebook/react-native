@@ -15,10 +15,10 @@ const Keyboard = require('Keyboard');
 const LayoutAnimation = require('LayoutAnimation');
 const Platform = require('Platform');
 const React = require('React');
+const PropTypes = require('prop-types');
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
-
-const PropTypes = React.PropTypes;
+const ViewPropTypes = require('ViewPropTypes');
 
 import type EmitterSubscription from 'EmitterSubscription';
 
@@ -52,17 +52,18 @@ const viewRef = 'VIEW';
  * It is a component to solve the common problem of views that need to move out of the way of the virtual keyboard.
  * It can automatically adjust either its position or bottom padding based on the position of the keyboard.
  */
+// $FlowFixMe(>=0.41.0)
 const KeyboardAvoidingView = React.createClass({
   mixins: [TimerMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     behavior: PropTypes.oneOf(['height', 'position', 'padding']),
 
     /**
      * The style of the content container(View) when behavior is 'position'.
      */
-    contentContainerStyle: View.propTypes.style,
+    contentContainerStyle: ViewPropTypes.style,
 
     /**
      * This is the distance between the top of the user screen and the react native view,
@@ -153,6 +154,7 @@ const KeyboardAvoidingView = React.createClass({
   },
 
   render(): React.Element<any> {
+    // $FlowFixMe(>=0.41.0)
     const {behavior, children, style, ...props} = this.props;
 
     switch (behavior) {
