@@ -18,5 +18,8 @@ SDK="appletvsimulator"
 DESTINATION="platform=tvOS Simulator,name=Apple TV 1080p,OS=10.3"
 
 # If there's a "test" argument, pass it to the test script.
-. ./scripts/objc-test.sh $1
+. ./scripts/objc-test.sh
+if [ -z "$1"]; then
+  . ./scripts/objc-test.sh $1
+fi
 
