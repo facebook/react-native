@@ -94,7 +94,7 @@ type Address = {
   port: number,
 };
 
-const DEVICE_TIMEOUT = 5000;
+const DEVICE_TIMEOUT = 30000;
 
 // FIXME: This is the url we want to use as it more closely matches the actual protocol we use.
 // However, it's broken in Chrome 54+ due to it using 'KeyboardEvent.keyIdentifier'.
