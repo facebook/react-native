@@ -13,6 +13,7 @@
 import type {MappingsMap, SourceMap} from '../lib/SourceMap';
 import type {Ast} from 'babel-core';
 import type {Console} from 'console';
+export type {Transformer} from '../JSTransformer/worker/worker.js';
 
 export type Callback<A = void, B = void>
   = (Error => void)
@@ -104,15 +105,6 @@ export type TransformerResult = {|
   code: string,
   map: ?MappingsMap,
 |};
-
-export type Transformer = {
-  transform: (
-    sourceCode: string,
-    filename: string,
-    options: ?{},
-    plugins?: Array<string | Object | [string | Object, any]>,
-  ) => {ast: ?Ast, code: string, map: ?MappingsMap}
-};
 
 export type TransformResult = {|
   code: string,

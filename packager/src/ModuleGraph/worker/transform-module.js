@@ -12,6 +12,7 @@
 
 const JsFileWrapping = require('./JsFileWrapping');
 
+const asyncify = require('async/asyncify');
 const collectDependencies = require('./collect-dependencies');
 const defaults = require('../../../defaults');
 const docblock = require('../../node-haste/DependencyGraph/docblock');
@@ -34,10 +35,18 @@ import type {
 export type TransformOptions = {|
   filename: string,
   polyfill?: boolean,
-  transformer: Transformer,
+  transformer: Transformer<*>,
   variants?: TransformVariants,
 |};
 
+const defaultTransformOptions = {
+  dev: true,
+  generateSourceMaps: true,
+  hot: false,
+  inlineRequires: false,
+  platform: '',
+  projectRoot: '',
+};
 const defaultVariants = {default: {}};
 
 const ASSET_EXTENSIONS = new Set(defaults.assetExts);
@@ -61,17 +70,12 @@ function transformModule(
   const {filename, transformer, variants = defaultVariants} = options;
   const tasks = {};
   Object.keys(variants).forEach(name => {
-    tasks[name] = cb => {
-      try {
-        cb(null, transformer.transform(
-          code,
-          filename,
-          variants[name],
-        ));
-      } catch (error) {
-        cb(error, null);
-      }
-    };
+    tasks[name] = asyncify(() => transformer.transform(
+        code,
+        filename,
+        {...defaultTransformOptions, ...variants[name]},
+      )
+    );
   });
 
   series(tasks, (error, results: {[key: string]: TransformerResult}) => {
