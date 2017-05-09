@@ -13,7 +13,6 @@
 
 const BatchedBridge = require('BatchedBridge');
 
-const defineLazyObjectProperty = require('defineLazyObjectProperty');
 const invariant = require('fbjs/lib/invariant');
 
 type ModuleConfig = [
@@ -125,6 +124,7 @@ if (global.nativeModuleProxy) {
   const bridgeConfig = global.__fbBatchedBridgeConfig;
   invariant(bridgeConfig, '__fbBatchedBridgeConfig is not set, cannot invoke native modules');
 
+  const defineLazyObjectProperty = require('defineLazyObjectProperty');
   (bridgeConfig.remoteModuleConfig || []).forEach((config: ModuleConfig, moduleID: number) => {
     // Initially this config will only contain the module name when running in JSC. The actual
     // configuration of the module will be lazily loaded.

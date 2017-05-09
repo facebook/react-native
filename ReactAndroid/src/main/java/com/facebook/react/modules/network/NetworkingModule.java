@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import android.util.Base64;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -36,6 +35,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEm
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.CookieJar;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.JavaNetCookieJar;
@@ -51,8 +51,10 @@ import okio.ByteString;
 /**
  * Implements the XMLHttpRequest JavaScript interface.
  */
-@ReactModule(name = "RCTNetworking", supportsWebWorkers = true)
+@ReactModule(name = NetworkingModule.NAME)
 public final class NetworkingModule extends ReactContextBaseJavaModule {
+
+  protected static final String NAME = "Networking";
 
   private static final String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
   private static final String CONTENT_TYPE_HEADER_NAME = "content-type";
@@ -86,7 +88,6 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       client = clientBuilder.build();
     }
     mClient = client;
-    OkHttpClientProvider.replaceOkHttpClient(client);
     mCookieHandler = new ForwardingCookieHandler(reactContext);
     mCookieJarContainer = (CookieJarContainer) mClient.cookieJar();
     mShuttingDown = false;
@@ -111,7 +112,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * @param context the ReactContext of the application
    */
   public NetworkingModule(final ReactApplicationContext context) {
-    this(context, null, OkHttpClientProvider.getOkHttpClient(), null);
+    this(context, null, OkHttpClientProvider.createClient(), null);
   }
 
   /**
@@ -122,7 +123,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   public NetworkingModule(
     ReactApplicationContext context,
     List<NetworkInterceptorCreator> networkInterceptorCreators) {
-    this(context, null, OkHttpClientProvider.getOkHttpClient(), networkInterceptorCreators);
+    this(context, null, OkHttpClientProvider.createClient(), networkInterceptorCreators);
   }
 
   /**
@@ -131,7 +132,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * caller does not provide one explicitly
    */
   public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
-    this(context, defaultUserAgent, OkHttpClientProvider.getOkHttpClient(), null);
+    this(context, defaultUserAgent, OkHttpClientProvider.createClient(), null);
   }
 
   @Override
@@ -141,7 +142,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "RCTNetworking";
+    return NAME;
   }
 
   @Override
@@ -158,7 +159,6 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * @param timeout value of 0 results in no timeout
    */
   public void sendRequest(
-      final ExecutorToken executorToken,
       String method,
       String url,
       final int requestId,
@@ -166,15 +166,20 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       ReadableMap data,
       final String responseType,
       final boolean useIncrementalUpdates,
-      int timeout) {
+      int timeout,
+      boolean withCredentials) {
     Request.Builder requestBuilder = new Request.Builder().url(url);
 
     if (requestId != 0) {
       requestBuilder.tag(requestId);
     }
 
-    final RCTDeviceEventEmitter eventEmitter = getEventEmitter(executorToken);
+    final RCTDeviceEventEmitter eventEmitter = getEventEmitter();
     OkHttpClient.Builder clientBuilder = mClient.newBuilder();
+
+    if (!withCredentials) {
+      clientBuilder.cookieJar(CookieJar.NO_COOKIES);
+    }
 
     // If JS is listening for progress updates, install a ProgressResponseBody that intercepts the
     // response and counts bytes received.
@@ -296,7 +301,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       }
       ReadableArray parts = data.getArray(REQUEST_BODY_KEY_FORMDATA);
       MultipartBody.Builder multipartBuilder =
-          constructMultipartBody(executorToken, parts, contentType, requestId);
+          constructMultipartBody(parts, contentType, requestId);
       if (multipartBuilder == null) {
         return;
       }
@@ -331,7 +336,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
               return;
             }
             removeRequest(requestId);
-            ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+            String errorMessage = e.getMessage() != null
+                    ? e.getMessage()
+                    : "Error while executing request: " + e.getClass().getSimpleName();
+            ResponseUtil.onRequestError(eventEmitter, requestId, errorMessage, e);
           }
 
           @Override
@@ -441,7 +449,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void abortRequest(ExecutorToken executorToken, final int requestId) {
+  public void abortRequest(final int requestId) {
     cancelRequest(requestId);
     removeRequest(requestId);
   }
@@ -458,23 +466,15 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void clearCookies(
-      ExecutorToken executorToken,
-      com.facebook.react.bridge.Callback callback) {
+  public void clearCookies(com.facebook.react.bridge.Callback callback) {
     mCookieHandler.clearCookies(callback);
   }
 
-  @Override
-  public boolean supportsWebWorkers() {
-    return true;
-  }
-
   private @Nullable MultipartBody.Builder constructMultipartBody(
-      ExecutorToken ExecutorToken,
       ReadableArray body,
       String contentType,
       int requestId) {
-    RCTDeviceEventEmitter eventEmitter = getEventEmitter(ExecutorToken);
+    RCTDeviceEventEmitter eventEmitter = getEventEmitter();
     MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
     multipartBuilder.setType(MediaType.parse(contentType));
 
@@ -567,8 +567,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     return headersBuilder.build();
   }
 
-  private RCTDeviceEventEmitter getEventEmitter(ExecutorToken ExecutorToken) {
-    return getReactApplicationContext()
-        .getJSModule(ExecutorToken, RCTDeviceEventEmitter.class);
+  private RCTDeviceEventEmitter getEventEmitter() {
+    return getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class);
   }
 }

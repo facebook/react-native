@@ -12,17 +12,25 @@
 
 const path = require('path');
 const flatten = require('lodash').flatten;
-
-const blacklist = require('../../packager/blacklist');
-
 const android = require('./android');
 const findAssets = require('./findAssets');
 const ios = require('./ios');
 const windows = require('./windows');
 const wrapCommands = require('./wrapCommands');
 const findPlugins = require('./findPlugins');
+const findSymlinksPaths = require('../util/findSymlinksPaths');
 
-import type {ConfigT} from './index';
+function getProjectPath() {
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli[\/\\]core$/)) {
+    // Packager is running from node_modules.
+    // This is the default case for all projects created using 'react-native init'.
+    return path.resolve(__dirname, '../../../..');
+  } else if (__dirname.match(/Pods[\/\\]React[\/\\]packager$/)) {
+    // React Native was installed using CocoaPods.
+    return path.resolve(__dirname, '../../../..');
+  }
+  return path.resolve(__dirname, '../..');
+}
 
 const getRNPMConfig = (folder) =>
   // $FlowFixMe non-literal require
@@ -32,6 +40,14 @@ const attachPackage = (command, pkg) => Array.isArray(command)
   ? command.map(cmd => attachPackage(cmd, pkg))
   : { ...command, pkg };
 
+const resolveSymlink = (roots) =>
+  roots.concat(
+    findSymlinksPaths(
+      path.join(getProjectPath(), 'node_modules'),
+      roots
+    )
+  );
+
 /**
  * Default configuration for the CLI.
  *
@@ -39,7 +55,7 @@ const attachPackage = (command, pkg) => Array.isArray(command)
  * `rn-cli.config.js` on the root of your project with the functions you need
  * to tweak.
  */
-const config: ConfigT = {
+const config = {
   getProjectCommands() {
     const appRoot = process.cwd();
     const plugins = findPlugins([appRoot])
@@ -67,7 +83,7 @@ const config: ConfigT = {
       assets: findAssets(folder, rnpm.assets),
     });
   },
-  getDependencyConfig(packageName) {
+  getDependencyConfig(packageName: string) {
     const folder = path.join(process.cwd(), 'node_modules', packageName);
     const rnpm = getRNPMConfig(
       path.join(process.cwd(), 'node_modules', packageName)
@@ -82,33 +98,13 @@ const config: ConfigT = {
       params: rnpm.params || [],
     });
   },
-  getAssetExts() {
-    return [];
-  },
-  getPlatforms() {
-    return [];
-  },
-  getBlacklistRE() {
-    return blacklist();
-  },
-  getTransformModulePath() {
-    return require.resolve('../../packager/transformer');
-  },
   getProjectRoots() {
     const root = process.env.REACT_NATIVE_APP_ROOT;
     if (root) {
-      return [path.resolve(root)];
+      return resolveSymlink([path.resolve(root)]);
     }
-    if (__dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli[\/\\]core$/)) {
-      // Packager is running from node_modules.
-      // This is the default case for all projects created using 'react-native init'.
-      return [path.resolve(__dirname, '../../../..')];
-    } else if (__dirname.match(/Pods[\/\\]React[\/\\]packager$/)) {
-      // React Native was installed using CocoaPods.
-      return [path.resolve(__dirname, '../../../..')];
-    } else {
-      return [path.resolve(__dirname, '../..')];
-    }
+
+    return resolveSymlink([getProjectPath()]);
   },
 };
 

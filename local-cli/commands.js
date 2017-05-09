@@ -12,18 +12,18 @@
 
 const { getProjectCommands } = require('./core');
 
-import type { ConfigT } from './core';
+import type { RNConfig } from './core';
 
 export type CommandT = {
   name: string,
   description?: string,
   usage?: string,
-  func: (argv: Array<string>, config: ConfigT, args: Object) => ?Promise<void>,
+  func: (argv: Array<string>, config: RNConfig, args: Object) => ?Promise<void>,
   options?: Array<{
     command: string,
     description?: string,
     parse?: (val: string) => any,
-    default?: (config: ConfigT) => any | any,
+    default?: (config: RNConfig) => any | any,
   }>,
   examples?: Array<{
     desc: string,
@@ -42,6 +42,7 @@ const documentedCommands = [
   require('./library/library'),
   require('./bundle/bundle'),
   require('./bundle/unbundle'),
+  require('./eject/eject'),
   require('./link/link'),
   require('./link/unlink'),
   require('./install/install'),

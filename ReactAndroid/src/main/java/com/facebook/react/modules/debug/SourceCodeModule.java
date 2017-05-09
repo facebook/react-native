@@ -22,8 +22,10 @@ import com.facebook.react.module.annotations.ReactModule;
 /**
  * Module that exposes the URL to the source code map (used for exception stack trace parsing) to JS
  */
-@ReactModule(name = "RCTSourceCode")
+@ReactModule(name = SourceCodeModule.NAME)
 public class SourceCodeModule extends BaseJavaModule {
+
+  public static final String NAME = "SourceCode";
 
   private final ReactContext mReactContext;
 
@@ -33,7 +35,7 @@ public class SourceCodeModule extends BaseJavaModule {
 
   @Override
   public String getName() {
-    return "RCTSourceCode";
+    return NAME;
   }
 
   @Override

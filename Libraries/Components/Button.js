@@ -14,6 +14,7 @@
 const ColorPropType = require('ColorPropType');
 const Platform = require('Platform');
 const React = require('React');
+const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TouchableNativeFeedback = require('TouchableNativeFeedback');
@@ -29,8 +30,8 @@ const invariant = require('fbjs/lib/invariant');
  * <center><img src="img/buttonExample.png"></img></center>
  *
  * If this button doesn't look right for your app, you can build your own
- * button using [TouchableOpacity](https://facebook.github.io/react-native/docs/touchableopacity.html)
- * or [TouchableNativeFeedback](https://facebook.github.io/react-native/docs/touchablenativefeedback.html).
+ * button using [TouchableOpacity](docs/touchableopacity.html)
+ * or [TouchableNativeFeedback](docs/touchablenativefeedback.html).
  * For inspiration, look at the [source code for this button component](https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js).
  * Or, take a look at the [wide variety of button components built by the community](https://js.coach/react-native?search=button).
  *
@@ -62,11 +63,11 @@ class Button extends React.Component {
     /**
      * Text to display inside the button
      */
-    title: React.PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
     /**
      * Text to display for blindness accessibility features
      */
-    accessibilityLabel: React.PropTypes.string,
+    accessibilityLabel: PropTypes.string,
     /**
      * Color of the text (iOS), or background color of the button (Android)
      */
@@ -74,15 +75,15 @@ class Button extends React.Component {
     /**
      * If true, disable all interactions for this component.
      */
-    disabled: React.PropTypes.bool,
+    disabled: PropTypes.bool,
     /**
      * Handler to be called when the user taps the button
      */
-    onPress: React.PropTypes.func.isRequired,
+    onPress: PropTypes.func.isRequired,
     /**
      * Used to locate this view in end-to-end tests.
      */
-    testID: React.PropTypes.string,
+    testID: PropTypes.string,
   };
 
   render() {
@@ -111,16 +112,20 @@ class Button extends React.Component {
       'The title prop of a Button must be a string',
     );
     const formattedTitle = Platform.OS === 'android' ? title.toUpperCase() : title;
+    const accessibilityTraits = ['button'];
+    if (disabled) {
+      accessibilityTraits.push('disabled');
+    }
     return (
       <Touchable
         accessibilityComponentType="button"
         accessibilityLabel={accessibilityLabel}
-        accessibilityTraits={['button']}
+        accessibilityTraits={accessibilityTraits}
         testID={testID}
         disabled={disabled}
         onPress={onPress}>
         <View style={buttonStyles}>
-          <Text style={textStyles}>{formattedTitle}</Text>
+          <Text style={textStyles} disabled={disabled}>{formattedTitle}</Text>
         </View>
       </Touchable>
     );

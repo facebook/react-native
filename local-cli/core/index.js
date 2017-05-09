@@ -14,46 +14,13 @@ const Config = require('../util/Config');
 
 const defaultConfig = require('./default.config');
 const minimist = require('minimist');
+const path = require('path');
 
-import type {GetTransformOptions} from '../../packager/react-packager/src/Bundler';
 import type {CommandT} from '../commands';
+import type {ConfigT} from '../util/Config';
 
-/**
- * Configuration file of the CLI.
- */
-export type ConfigT = {
-  extraNodeModules?: { [id: string]: string },
-  /**
-   * Specify any additional asset extentions to be used by the packager.
-   * For example, if you want to include a .ttf file, you would return ['ttf']
-   * from here and use `require('./fonts/example.ttf')` inside your app.
-   */
-  getAssetExts?: () => Array<string>,
-  /**
-   * Specify any additional platforms to be used by the packager.
-   * For example, if you want to add a "custom" platform, and use modules
-   * ending in .custom.js, you would return ['custom'] here.
-   */
-  getPlatforms: () => Array<string>,
-  /**
-   * Specify any additional node modules that should be processed for
-   * providesModule declarations.
-   */
-  getProvidesModuleNodeModules?: () => Array<string>,
-  /**
-   * Returns the path to a custom transformer. This can also be overridden
-   * with the --transformer commandline argument.
-   */
-  getTransformModulePath?: () => string,
-  getTransformOptions?: GetTransformOptions,
-  transformVariants?: () => {[name: string]: Object},
-  /**
-   * Returns a regular expression for modules that should be ignored by the
-   * packager on a given platform.
-   */
-  getBlacklistRE(): RegExp,
-  getProjectRoots(): Array<string>,
-  getAssetExts(): Array<string>,
+export type RNConfig = {
+  ...ConfigT,
   /**
    * Returns an array of project commands used by the CLI to load
    */
@@ -71,21 +38,13 @@ export type ConfigT = {
 /**
  * Loads the CLI configuration
  */
-function getCliConfig(): ConfigT {
+function getCliConfig(): RNConfig {
   const cliArgs = minimist(process.argv.slice(2));
+  const config = cliArgs.config != null
+    ? Config.loadFile(path.resolve(__dirname, cliArgs.config))
+    : Config.findOptional(__dirname);
 
-  let cwd;
-  let configPath;
-
-  if (cliArgs.config != null) {
-    cwd = process.cwd();
-    configPath = cliArgs.config;
-  } else {
-    cwd = __dirname;
-    configPath = Config.findConfigPath(cwd);
-  }
-
-  return Config.get(cwd, defaultConfig, configPath);
+  return {...defaultConfig, ...config};
 }
 
 module.exports = getCliConfig();

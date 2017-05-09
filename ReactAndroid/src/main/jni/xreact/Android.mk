@@ -7,14 +7,13 @@ LOCAL_MODULE := reactnativejnifb
 LOCAL_SRC_FILES := \
   CatalystInstanceImpl.cpp \
   CxxModuleWrapper.cpp \
-  JExecutorToken.cpp \
+  JavaModuleWrapper.cpp \
   JMessageQueueThread.cpp \
   JniJSModulesUnbundle.cpp \
   JSCPerfLogging.cpp \
   JSLoader.cpp \
   JSLogging.cpp \
   MethodInvoker.cpp \
-  ModuleRegistryHolder.cpp \
   OnLoad.cpp \
   ProxyExecutor.cpp \
 

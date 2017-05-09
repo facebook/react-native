@@ -361,6 +361,7 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
@@ -412,6 +413,7 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
@@ -447,7 +449,6 @@
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/UIExplorer-gjaibsjtheitasdxdtcvxxqavkvy/Build/Products/Debug-iphoneos",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTImage;
@@ -462,7 +463,6 @@
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/UIExplorer-gjaibsjtheitasdxdtcvxxqavkvy/Build/Products/Debug-iphoneos",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTImage;

@@ -85,13 +85,13 @@ typedef void (^RCTFatalHandler)(NSError *error);
  * Convenience macro for asserting that we're running on main queue.
  */
 #define RCTAssertMainQueue() RCTAssert(RCTIsMainQueue(), \
-  @"This function must be called on the main thread")
+  @"This function must be called on the main queue")
 
 /**
  * Convenience macro for asserting that we're running off the main queue.
  */
 #define RCTAssertNotMainQueue() RCTAssert(!RCTIsMainQueue(), \
-@"This function must not be called on the main thread")
+@"This function must not be called on the main queue")
 
 /**
  * Deprecated, do not use

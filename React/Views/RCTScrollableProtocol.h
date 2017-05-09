@@ -19,6 +19,11 @@
 
 - (void)scrollToOffset:(CGPoint)offset;
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated;
+/**
+ * If this is a vertical scroll view, scrolls to the bottom.
+ * If this is a horizontal scroll view, scrolls to the right.
+ */
+- (void)scrollToEnd:(BOOL)animated;
 - (void)zoomToRect:(CGRect)rect animated:(BOOL)animated;
 
 - (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener;

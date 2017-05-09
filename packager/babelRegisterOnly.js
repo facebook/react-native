@@ -8,9 +8,7 @@
  */
 'use strict';
 
-Array.prototype.values || require('core-js/fn/array/values');
-Object.entries || require('core-js/fn/object/entries');
-Object.values || require('core-js/fn/object/values');
+require('./setupNodePolyfills');
 
 var _only = [];
 
@@ -26,6 +24,7 @@ function config(onlyList) {
       'transform-flow-strip-types',
       'syntax-trailing-function-commas',
       'transform-object-rest-spread',
+      'transform-async-to-generator',
     ],
     only: _only,
     retainLines: true,

@@ -16,7 +16,11 @@ using facebook::jni::alias_ref;
 namespace {
 
 // This is a wrapper around the Java proxy to the javascript module. This
-// allows us to call functions on the js module from c++.
+// allows us to call functions on the js module from c++.  Are you seeing
+// crashes in this class?  Android 6+ crashes when you try to call a
+// method on a Proxy.  Switch to an older version of Android.  If you're
+// really desperate, you can fix this by using ToReflectedMethod on the
+// underlying jmethodid and invoking that.
 class JavaJSModule : public jni::JavaClass<JavaJSModule> {
 public:
   static constexpr auto kJavaDescriptor =

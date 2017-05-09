@@ -14,27 +14,29 @@
 
 var warning = require('fbjs/lib/warning');
 
+var ReactInvalidSetStateWarningHook = {};
+
 if (__DEV__) {
   var processingChildContext = false;
 
   var warnInvalidSetState = function() {
     warning(
       !processingChildContext,
-      'setState(...): Cannot call setState() inside getChildContext()'
+      'setState(...): Cannot call setState() inside getChildContext()',
     );
   };
-}
 
-var ReactInvalidSetStateWarningHook = {
-  onBeginProcessingChildContext(): void {
-    processingChildContext = true;
-  },
-  onEndProcessingChildContext(): void {
-    processingChildContext = false;
-  },
-  onSetState(): void {
-    warnInvalidSetState();
-  },
-};
+  ReactInvalidSetStateWarningHook = {
+    onBeginProcessingChildContext(): void {
+      processingChildContext = true;
+    },
+    onEndProcessingChildContext(): void {
+      processingChildContext = false;
+    },
+    onSetState(): void {
+      warnInvalidSetState();
+    },
+  };
+}
 
 module.exports = ReactInvalidSetStateWarningHook;

@@ -36,6 +36,13 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @interface RCTShadowView : NSObject <RCTComponent>
 
 /**
+ * Yoga Config which will be used to create `yogaNode` property.
+ * Override in subclass to enable special Yoga features.
+ * Defaults to suitable to current device configuration.
+ */
++ (YGConfigRef)yogaConfig;
+
+/**
  * RCTComponent interface.
  */
 - (NSArray<RCTShadowView *> *)reactSubviews NS_REQUIRES_SUPER;
@@ -44,7 +51,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 - (void)removeReactSubview:(RCTShadowView *)subview NS_REQUIRES_SUPER;
 
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
-@property (nonatomic, assign, readonly) YGNodeRef cssNode;
+@property (nonatomic, assign, readonly) YGNodeRef yogaNode;
 @property (nonatomic, copy) NSString *viewName;
 @property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
 @property (nonatomic, copy) RCTDirectEventBlock onLayout;
@@ -63,6 +70,11 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign, getter=isHidden) BOOL hidden;
 
 /**
+ * Computed layout direction for the view backed to Yoga node value.
+ */
+@property (nonatomic, assign, readonly) UIUserInterfaceLayoutDirection effectiveLayoutDirection;
+
+/**
  * Position and dimensions.
  * Defaults to { 0, 0, NAN, NAN }.
  */
@@ -79,16 +91,11 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGValue minHeight;
 @property (nonatomic, assign) YGValue maxHeight;
 
-@property (nonatomic, assign) CGRect frame;
-
-- (void)setTopLeft:(CGPoint)topLeft;
-- (void)setSize:(CGSize)size;
-
 /**
- * Set the natural size of the view, which is used when no explicit size is set.
- * Use UIViewNoIntrinsicMetric to ignore a dimension.
+ * Convenient alias to `width` and `height` in pixels.
+ * Defaults to NAN in case of non-pixel dimention.
  */
-- (void)setIntrinsicContentSize:(CGSize)size;
+@property (nonatomic, assign) CGSize size;
 
 /**
  * Border. Defaults to { 0, 0, 0, 0 }.
@@ -121,8 +128,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGValue paddingBottom;
 @property (nonatomic, assign) YGValue paddingRight;
 
-- (UIEdgeInsets)paddingAsInsets;
-
 /**
  * Flexbox properties. All zero/disabled by default
  */
@@ -130,16 +135,17 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGJustify justifyContent;
 @property (nonatomic, assign) YGAlign alignSelf;
 @property (nonatomic, assign) YGAlign alignItems;
+@property (nonatomic, assign) YGAlign alignContent;
 @property (nonatomic, assign) YGPositionType position;
 @property (nonatomic, assign) YGWrap flexWrap;
+@property (nonatomic, assign) YGDisplay display;
 
+@property (nonatomic, assign) float flex;
 @property (nonatomic, assign) float flexGrow;
 @property (nonatomic, assign) float flexShrink;
 @property (nonatomic, assign) YGValue flexBasis;
 
 @property (nonatomic, assign) float aspectRatio;
-
-- (void)setFlex:(float)flex;
 
 /**
  * z-index, used to override sibling order in the view
@@ -147,9 +153,25 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) NSInteger zIndex;
 
 /**
+ * Interface direction (LTR or RTL)
+ */
+@property (nonatomic, assign) YGDirection direction;
+
+/**
  * Clipping properties
  */
 @property (nonatomic, assign) YGOverflow overflow;
+
+/**
+ * Computed position of the view.
+ */
+@property (nonatomic, assign, readonly) CGRect frame;
+
+/**
+ * Represents the natural size of the view, which is used when explicit size is not set or is ambiguous.
+ * Defaults to `{UIViewNoIntrinsicMetric, UIViewNoIntrinsicMetric}`.
+ */
+@property (nonatomic, assign) CGSize intrinsicContentSize;
 
 /**
  * Calculate property changes that need to be propagated to the view.
@@ -195,11 +217,11 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
              absolutePosition:(CGPoint)absolutePosition;
 
 /**
- * Return whether or not this node acts as a leaf node in the eyes of Yoga. For example
- * RCTShadowText has children which it does not want Yoga to lay out so in the eyes of
- * Yoga it is a leaf node.
+ * Return whether or not this node acts as a leaf node in the eyes of Yoga.
+ * For example `RCTShadowText` has children which it does not want Yoga
+ * to lay out so in the eyes of Yoga it is a leaf node.
  */
-- (BOOL)isCSSLeafNode;
+- (BOOL)isYogaLeafNode;
 
 - (void)dirtyPropagation NS_REQUIRES_SUPER;
 - (BOOL)isPropagationDirty;
@@ -228,5 +250,15 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * Checks if the current shadow view is a descendant of the provided `ancestor`
  */
 - (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor;
+
+@end
+
+@interface RCTShadowView (Deprecated)
+
+@property (nonatomic, assign, readonly) YGNodeRef cssNode
+__deprecated_msg("Use `yogaNode` instead.");
+
+- (BOOL)isCSSLeafNode
+__deprecated_msg("Use `isYogaLeafNode` instead.");
 
 @end
