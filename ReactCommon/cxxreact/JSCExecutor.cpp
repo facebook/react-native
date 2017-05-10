@@ -292,11 +292,18 @@ static const char* explainLoadSourceStatus(JSLoadSourceStatus status) {
 }
 #endif
 
+// basename_r isn't in all iOS SDKs, so use this simple version instead.
+static std::string simpleBasename(const std::string &path) {
+  size_t pos = path.rfind("/");
+  return (pos != std::string::npos) ? path.substr(pos) : path;
+}
+
 void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) {
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
 
-  ReactMarker::logMarker(ReactMarker::RUN_JS_BUNDLE_START);
+  std::string scriptName = simpleBasename(sourceURL);
+  ReactMarker::logTaggedMarker(ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
   String jsSourceURL(m_context, sourceURL.c_str());
 
   // TODO t15069155: reduce the number of overrides here

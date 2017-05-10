@@ -84,10 +84,17 @@ class ProxyJavaScriptExecutorHolder : public HybridClass<ProxyJavaScriptExecutor
 class JReactMarker : public JavaClass<JReactMarker> {
  public:
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/ReactMarker;";
+
   static void logMarker(const std::string& marker) {
     static auto cls = javaClassStatic();
     static auto meth = cls->getStaticMethod<void(std::string)>("logMarker");
     meth(cls, marker);
+  }
+
+  static void logMarker(const std::string& marker, const std::string& tag) {
+    static auto cls = javaClassStatic();
+    static auto meth = cls->getStaticMethod<void(std::string, std::string)>("logMarker");
+    meth(cls, marker, tag);
   }
 };
 
@@ -113,10 +120,10 @@ static JSValueRef nativePerformanceNow(
   return Value::makeNumber(ctx, (nano / (double)NANOSECONDS_IN_MILLISECOND));
 }
 
-static void logPerfMarker(const ReactMarker::ReactMarkerId markerId) {
+static void logPerfMarker(const ReactMarker::ReactMarkerId markerId, const char* tag) {
   switch (markerId) {
     case ReactMarker::RUN_JS_BUNDLE_START:
-      JReactMarker::logMarker("RUN_JS_BUNDLE_START");
+      JReactMarker::logMarker("RUN_JS_BUNDLE_START", tag);
       break;
     case ReactMarker::RUN_JS_BUNDLE_STOP:
       JReactMarker::logMarker("RUN_JS_BUNDLE_END");
@@ -143,7 +150,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
     gloginit::initialize();
     // Inject some behavior into react/
-    ReactMarker::logMarker = logPerfMarker;
+    ReactMarker::logTaggedMarker = logPerfMarker;
     PerfLogging::installNativeHooks = addNativePerfLoggingHooks;
     JSNativeHooks::loggingHook = nativeLoggingHook;
     JSNativeHooks::nowHook = nativePerformanceNow;
