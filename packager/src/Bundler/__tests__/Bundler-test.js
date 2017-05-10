@@ -19,7 +19,7 @@ jest
   .mock('os')
   .mock('assert')
   .mock('progress')
-  .mock('../../node-haste')
+  .mock('../../node-haste/DependencyGraph')
   .mock('../../JSTransformer')
   .mock('../../lib/declareOpts')
   .mock('../../Resolver')

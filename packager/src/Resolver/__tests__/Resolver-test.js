@@ -16,7 +16,7 @@ jest.mock('path');
 
 const {join: pathJoin} = require.requireActual('path');
 const DependencyGraph = jest.fn();
-jest.setMock('../../node-haste', DependencyGraph);
+jest.setMock('../../node-haste/DependencyGraph', DependencyGraph);
 let Module;
 let Polyfill;
 
