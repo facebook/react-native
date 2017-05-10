@@ -442,36 +442,38 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
          currDir !== '.' && currDir !== realPath.parse(fromModule.path).root;
          currDir = path.dirname(currDir)) {
       const searchPath = path.join(currDir, 'node_modules');
-      if (this._options.dirExists(searchPath)) {
-        searchQueue.push(
-          path.join(searchPath, realModuleName)
-        );
-      }
+      searchQueue.push(path.join(searchPath, realModuleName));
     }
 
+    const extraSearchQueue = [];
     if (this._options.extraNodeModules) {
       const {extraNodeModules} = this._options;
       const bits = toModuleName.split(path.sep);
       const packageName = bits[0];
       if (extraNodeModules[packageName]) {
         bits[0] = extraNodeModules[packageName];
-        searchQueue.push(path.join.apply(path, bits));
+        extraSearchQueue.push(path.join.apply(path, bits));
       }
     }
 
-    for (let i = 0; i < searchQueue.length; ++i) {
-      const resolvedModule = this._tryResolveNodeDep(searchQueue[i], fromModule, toModuleName);
+    const fullSearchQueue = searchQueue.concat(extraSearchQueue);
+    for (let i = 0; i < fullSearchQueue.length; ++i) {
+      const resolvedModule = this._tryResolveNodeDep(fullSearchQueue[i], fromModule, toModuleName);
       if (resolvedModule != null) {
         return resolvedModule;
       }
     }
 
-    const hint = searchQueue.length ? ' or in these directories:' : '';
+    const displaySearchQueue = searchQueue
+      .filter(dirPath => this._options.dirExists(dirPath))
+      .concat(extraSearchQueue);
+
+    const hint = displaySearchQueue.length ? ' or in these directories:' : '';
     throw new UnableToResolveError(
       fromModule,
       toModuleName,
       `Module does not exist in the module map${hint}\n` +
-        searchQueue.map(searchPath => `  ${path.dirname(searchPath)}\n`).join(', ') + '\n' +
+        displaySearchQueue.map(searchPath => `  ${path.dirname(searchPath)}\n`).join(', ') + '\n' +
       `This might be related to https://github.com/facebook/react-native/issues/4968\n` +
       `To resolve try the following:\n` +
       `  1. Clear watchman watches: \`watchman watch-del-all\`.\n` +
