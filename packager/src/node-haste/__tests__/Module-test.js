@@ -11,7 +11,7 @@
 jest
   .dontMock('absolute-path')
   .dontMock('json-stable-stringify')
-  .dontMock('imurmurhash')
+  .dontMock('crypto')
   .dontMock('../lib/replacePatterns')
   .dontMock('../DependencyGraph/docblock')
   .dontMock('../Module');
