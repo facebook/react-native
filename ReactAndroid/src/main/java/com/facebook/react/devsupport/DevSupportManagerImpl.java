@@ -809,8 +809,8 @@ public class DevSupportManagerImpl implements
     mDevLoadingViewController.showForUrl(bundleURL);
     mDevLoadingViewVisible = true;
 
-    mDevServerHelper.downloadBundleFromURL(
-        new DevServerHelper.BundleDownloadCallback() {
+    mDevServerHelper.getBundleDownloader().downloadBundleFromURL(
+        new BundleDownloader.DownloadCallback() {
           @Override
           public void onSuccess() {
             mDevLoadingViewController.hide();
