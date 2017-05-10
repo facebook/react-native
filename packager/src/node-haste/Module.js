@@ -78,6 +78,8 @@ export type ConstructorArgs = {
 
 type DocBlock = {+[key: string]: string};
 
+const TRANSFORM_CACHE = new TransformCache();
+
 class Module {
 
   path: string;
@@ -315,7 +317,7 @@ class Module {
         return;
       }
       invariant(result != null, 'missing result');
-      TransformCache.writeSync({...cacheProps, result});
+      TRANSFORM_CACHE.writeSync({...cacheProps, result});
       callback(undefined, result);
     });
   }
@@ -359,7 +361,7 @@ class Module {
     transformOptionsKey: string,
   ): CachedReadResult {
     const cacheProps = this._getCacheProps(transformOptions, transformOptionsKey);
-    const cachedResult = TransformCache.readSync(cacheProps);
+    const cachedResult = TRANSFORM_CACHE.readSync(cacheProps);
     if (cachedResult.result == null) {
       return {result: null, outdatedDependencies: cachedResult.outdatedDependencies};
     }

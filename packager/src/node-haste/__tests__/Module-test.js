@@ -32,6 +32,8 @@ const packageJson =
     description: "A require('foo') story",
   });
 
+const TRANSFORM_CACHE = new TransformCache();
+
 function mockFS(rootChildren) {
   fs.__setMockFilesystem({root: rootChildren});
 }
@@ -79,7 +81,7 @@ describe('Module', () => {
     process.platform = 'linux';
     cache = createCache();
     transformCacheKey = 'abcdef';
-    TransformCache.mock.reset();
+    TRANSFORM_CACHE.mock.reset();
   });
 
   describe('Module ID', () => {
@@ -182,7 +184,7 @@ describe('Module', () => {
       transformResult = {code: ''};
       transformCode = jest.genMockFn()
         .mockImplementation((module, sourceCode, options) => {
-          TransformCache.writeSync({
+          TRANSFORM_CACHE.writeSync({
             filePath: module.path,
             sourceCode,
             transformOptions: options,
