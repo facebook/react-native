@@ -569,14 +569,6 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
   }
 
   _loadAsDir(potentialDirPath: string, fromModule: TModule, toModule: string): TModule {
-    if (!this._options.dirExists(potentialDirPath)) {
-      throw new UnableToResolveError(
-        fromModule,
-        toModule,
-        `Directory ${potentialDirPath} doesn't exist`,
-      );
-    }
-
     const packageJsonPath = path.join(potentialDirPath, 'package.json');
     if (this._options.hasteFS.exists(packageJsonPath)) {
       const main = this._options.moduleCache.getPackage(packageJsonPath).getMain();
