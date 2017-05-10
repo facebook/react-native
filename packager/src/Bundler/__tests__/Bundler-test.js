@@ -21,12 +21,11 @@ jest
   .mock('progress')
   .mock('../../node-haste/DependencyGraph')
   .mock('../../JSTransformer')
-  .mock('../../lib/declareOpts')
   .mock('../../Resolver')
   .mock('../Bundle')
   .mock('../HMRBundle')
   .mock('../../Logger')
-  .mock('../../lib/declareOpts');
+  ;
 
 var Bundler = require('../');
 var Resolver = require('../../Resolver');

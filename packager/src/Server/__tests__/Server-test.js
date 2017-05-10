@@ -22,7 +22,6 @@ jest.mock('../../worker-farm', () => () => () => {})
     )
     .mock('../../Bundler')
     .mock('../../AssetServer')
-    .mock('../../lib/declareOpts')
     .mock('../../node-haste/DependencyGraph')
     .mock('../../Logger')
     .mock('../../lib/GlobalTransformCache');

@@ -171,7 +171,6 @@
     "image-size": "^0.3.5",
     "inquirer": "^0.12.0",
     "jest-haste-map": "19.0.0",
-    "joi": "^6.6.1",
     "json-stable-stringify": "^1.0.1",
     "json5": "^0.4.0",
     "left-pad": "^1.1.3",
