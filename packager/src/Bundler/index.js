@@ -53,11 +53,11 @@ export type BundlingOptions = {|
   +transformer: JSTransformerOptions,
 |};
 
-export type ExtraTransformOptions = {|
-  +inlineRequires?: {+blacklist: {[string]: true}} | boolean,
+export type ExtraTransformOptions = {
   +preloadedModules?: {[path: string]: true} | false,
   +ramGroups?: Array<string>,
-|};
+  +transform?: {+inlineRequires?: {+blacklist: {[string]: true}} | boolean},
+};
 
 export type GetTransformOptionsOpts = {|
   dev: boolean,
@@ -799,9 +799,12 @@ class Bundler {
         .then(r => r.dependencies.map(d => d.path));
 
     const {dev, hot, platform} = options;
-    const extraOptions = this._getTransformOptions
+    const extraOptions: ExtraTransformOptions = this._getTransformOptions
       ? await this._getTransformOptions(mainModuleName, {dev, hot, platform}, getDependencies)
       : {};
+
+    const {transform = {}} = extraOptions;
+
     return {
       transformer: {
         dev,
@@ -811,7 +814,7 @@ class Bundler {
           dev,
           generateSourceMaps: options.generateSourceMaps,
           hot,
-          inlineRequires: extraOptions.inlineRequires || false,
+          inlineRequires: transform.inlineRequires || false,
           platform,
           projectRoot: options.projectRoots[0],
         }
