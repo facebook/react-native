@@ -1,0 +1,35 @@
+include_defs("//ReactAndroid/DEFS")
+
+cxx_library(
+    name = "jni",
+    srcs = glob(["*.cpp"]),
+    compiler_flags = [
+        "-Wall",
+        "-Werror",
+        "-fexceptions",
+        "-std=c++1y",
+        "-frtti",
+    ],
+    header_namespace = "",
+    headers = glob(
+        ["*.h"],
+    ),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"PackagerConnectionJNI\"",
+        "-DWITH_FBSYSTRACE=1",
+        "-DWITH_INSPECTOR=1",
+    ],
+    soname = "libpackagerconnectionjnifb.$(ext)",
+    visibility = [
+        "PUBLIC",
+    ],
+    xcode_public_headers_symlinks = True,
+    deps = JSC_DEPS + [
+        "//native/fb:fb",
+        "//native/third-party/android-ndk:android",
+        "//xplat/folly:molly",
+        "//xplat/fbgloginit:fbgloginit",
+        "//xplat/fbsystrace:fbsystrace",
+        react_native_xplat_target("jschelpers:jschelpers"),
+    ],
+)

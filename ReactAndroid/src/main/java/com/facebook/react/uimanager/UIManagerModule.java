@@ -184,6 +184,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * NB: this method is horribly not-thread-safe.
    */
   public int addMeasuredRootView(final SizeMonitoringFrameLayout rootView) {
+    Systrace.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+      "UIManagerModule.addMeasuredRootView");
     final int tag = mNextRootViewTag;
     mNextRootViewTag += ROOT_VIEW_TAG_INCREMENT;
 
@@ -220,6 +223,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
         }
       });
 
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return tag;
   }
 
@@ -229,7 +233,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
-    getReactApplicationContext().assertOnNativeModulesQueueThread();
+    getReactApplicationContext().assertOnUIBackgroundOrNativeModulesThread();
 
     mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight);
   }

@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
@@ -24,7 +26,7 @@ babelRegisterOnly([]);
 const transformer = require('../packager/transformer.js');
 
 module.exports = {
-  process(src, file) {
+  process(src/*: string*/, file/*: string*/) {
     if (nodeFiles.test(file)) { // node specific transforms only
       return babel.transform(
         src,
@@ -32,7 +34,12 @@ module.exports = {
       ).code;
     }
 
-    return transformer.transform(src, file, {inlineRequires: true}).code;
+    return transformer.transform(src, file, {
+      dev: true,
+      inlineRequires: true,
+      platform: '',
+      projectRoot: '',
+    }).code;
   },
 
   getCacheKey: createCacheKeyFunction([

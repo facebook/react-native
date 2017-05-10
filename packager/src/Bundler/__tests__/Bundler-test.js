@@ -12,20 +12,20 @@ jest.disableAutomock();
 
 jest
   .setMock('worker-farm', () => () => undefined)
+  .setMock('../../worker-farm', () => () => undefined)
   .setMock('uglify-js')
   .mock('image-size')
   .mock('fs')
   .mock('os')
   .mock('assert')
   .mock('progress')
-  .mock('../../node-haste')
+  .mock('../../node-haste/DependencyGraph')
   .mock('../../JSTransformer')
-  .mock('../../lib/declareOpts')
   .mock('../../Resolver')
   .mock('../Bundle')
   .mock('../HMRBundle')
   .mock('../../Logger')
-  .mock('../../lib/declareOpts');
+  ;
 
 var Bundler = require('../');
 var Resolver = require('../../Resolver');
@@ -43,6 +43,7 @@ var commonOptions = {
   extraNodeModules: {},
   platforms: defaults.platforms,
   resetCache: false,
+  sourceExts: defaults.sourceExts,
   watch: false,
 };
 

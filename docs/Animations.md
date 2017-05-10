@@ -348,9 +348,9 @@ the animation will always run a frame behind the gesture due to the async nature
 </Animated.ScrollView>
 ```
 
-You can see the native driver in action by running the [UIExplorer sample app](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/),
+You can see the native driver in action by running the [RNTester app](https://github.com/facebook/react-native/blob/master/RNTester/),
 then loading the Native Animated Example.
-You can also take a look at the [source code](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/js/NativeAnimationsExample.js) to learn how these examples were produced.
+You can also take a look at the [source code](https://github.com/facebook/react-native/blob/master/RNTester/js/NativeAnimationsExample.js) to learn how these examples were produced.
 
 #### Caveats
 
@@ -362,10 +362,10 @@ This means it does not work with `PanResponder` but does work with things like `
 
 ### Additional examples
 
-The UIExplorer sample app has various examples of `Animated` in use:
+The RNTester app has various examples of `Animated` in use:
 
-- [AnimatedGratuitousApp](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/js/AnimatedGratuitousApp)
-- [NativeAnimationsExample](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/js/NativeAnimationsExample.js)
+- [AnimatedGratuitousApp](https://github.com/facebook/react-native/tree/master/Examples/RNTester/js/AnimatedGratuitousApp)
+- [NativeAnimationsExample](https://github.com/facebook/react-native/blob/master/Examples/RNTester/js/NativeAnimationsExample.js)
 
 ## `LayoutAnimation` API
 

@@ -6,7 +6,12 @@ namespace facebook {
 namespace react {
 
 namespace ReactMarker {
-LogMarker logMarker;
+LogTaggedMarker logTaggedMarker;
+
+void logMarker(const ReactMarkerId markerId) {
+  logTaggedMarker(markerId, nullptr);
+}
+
 };
 
 namespace PerfLogging {

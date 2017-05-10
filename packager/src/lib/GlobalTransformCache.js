@@ -24,7 +24,7 @@ const throat = require('throat');
 
 import type {
   Options as TransformWorkerOptions,
-  TransformOptions,
+  TransformOptionsStrict,
 } from '../JSTransformer/worker/worker';
 import type {CachedResult, GetTransformCacheKey} from './TransformCache';
 
@@ -381,7 +381,7 @@ class OptionsHasher {
    * of the cache key as they should not affect the transformation of a single
    * particular file.
    */
-  hashTransformOptions(hash: crypto$Hash, options: TransformOptions): crypto$Hash {
+  hashTransformOptions(hash: crypto$Hash, options: TransformOptionsStrict): crypto$Hash {
     const {
       generateSourceMaps, dev, hot, inlineRequires, platform, projectRoot,
       ...unknowns,

@@ -33,6 +33,7 @@ type WarningInfo = {
 
 const _warningEmitter = new EventEmitter();
 const _warningMap: Map<string, WarningInfo> = new Map();
+const IGNORED_WARNINGS: Array<string> = [];
 
 /**
  * YellowBox renders warnings at the bottom of the app being developed.
@@ -47,7 +48,11 @@ const _warningMap: Map<string, WarningInfo> = new Map();
  *   console.disableYellowBox = true;
  *   console.warn('YellowBox is disabled.');
  *
- * Warnings can be ignored programmatically by setting the array:
+ * Ignore specific warnings by calling:
+ *
+ *   YellowBox.ignoreWarnings(['Warning: ...']);
+ *
+ * (DEPRECATED) Warnings can be ignored programmatically by setting the array:
  *
  *   console.ignoredYellowBox = ['Warning: ...'];
  *
@@ -153,6 +158,16 @@ function ensureSymbolicatedWarning(warning: string): void {
 }
 
 function isWarningIgnored(warning: string): boolean {
+  const isIgnored =
+    IGNORED_WARNINGS.some(
+      (ignoredWarning: string) => warning.startsWith(ignoredWarning)
+    );
+
+  if (isIgnored) {
+    return true;
+  }
+
+  // DEPRECATED
   return (
     Array.isArray(console.ignoredYellowBox) &&
     console.ignoredYellowBox.some(
@@ -314,6 +329,14 @@ class YellowBox extends React.Component {
         warningMap,
       });
     };
+  }
+
+  static ignoreWarnings(warnings: Array<string>): void {
+    warnings.forEach((warning: string) => {
+      if (IGNORED_WARNINGS.indexOf(warning) === -1) {
+        IGNORED_WARNINGS.push(warning);
+      }
+    });
   }
 
   componentDidMount() {

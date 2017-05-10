@@ -18,9 +18,9 @@ const denodeify = require('denodeify');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 const util = require('util');
-const workerFarm = require('worker-farm');
+const workerFarm = require('../worker-farm');
 
-import type {Data as TransformData, Options as TransformOptions} from './worker/worker';
+import type {Data as TransformData, Options as WorkerOptions} from './worker/worker';
 import type {MappingsMap} from '../lib/SourceMap';
 
 // Avoid memory leaks caused in workers. This number seems to be a good enough number
@@ -38,6 +38,7 @@ function makeFarm(worker, methods, timeout, maxConcurrentWorkers) {
   return workerFarm(
     {
       autoStart: true,
+      execArgv: [],
       maxConcurrentCallsPerWorker: 1,
       maxConcurrentWorkers,
       maxCallsPerWorker: MAX_CALLS_PER_WORKER,
@@ -49,15 +50,20 @@ function makeFarm(worker, methods, timeout, maxConcurrentWorkers) {
   );
 }
 
+type Reporters = {
+  +stdoutChunk: (chunk: string) => mixed,
+  +stderrChunk: (chunk: string) => mixed,
+};
+
 class Transformer {
 
-  _workers: {[name: string]: mixed};
+  _workers: {[name: string]: Function};
   _transformModulePath: string;
   _transform: (
     transform: string,
     filename: string,
     sourceCode: string,
-    options: ?TransformOptions,
+    options: ?WorkerOptions,
   ) => Promise<TransformData>;
   minify: (
     filename: string,
@@ -65,16 +71,24 @@ class Transformer {
     sourceMap: MappingsMap,
   ) => Promise<{code: string, map: MappingsMap}>;
 
-  constructor(transformModulePath: string, maxWorkerCount: number) {
+  constructor(transformModulePath: string, maxWorkerCount: number, reporters: Reporters) {
     invariant(path.isAbsolute(transformModulePath), 'transform module path should be absolute');
     this._transformModulePath = transformModulePath;
 
-    this._workers = makeFarm(
+    const farm = makeFarm(
       require.resolve('./worker'),
       ['minify', 'transformAndExtractDependencies'],
       TRANSFORM_TIMEOUT_INTERVAL,
       maxWorkerCount,
     );
+    farm.stdout.on('data', chunk => {
+      reporters.stdoutChunk(chunk.toString('utf8'));
+    });
+    farm.stderr.on('data', chunk => {
+      reporters.stderrChunk(chunk.toString('utf8'));
+    });
+
+    this._workers = farm.methods;
     this._transform = denodeify(this._workers.transformAndExtractDependencies);
     this.minify = denodeify(this._workers.minify);
   }
@@ -83,7 +97,7 @@ class Transformer {
     this._workers && workerFarm.end(this._workers);
   }
 
-  transformFile(fileName: string, code: string, options: TransformOptions) {
+  transformFile(fileName: string, code: string, options: WorkerOptions) {
     if (!this._transform) {
       return Promise.reject(new Error('No transform module'));
     }
