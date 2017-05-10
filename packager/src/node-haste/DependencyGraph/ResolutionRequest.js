@@ -500,30 +500,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
 
   _loadAsFile(potentialModulePath: string, fromModule: TModule, toModule: string): TModule {
     if (this._options.helpers.isAssetFile(potentialModulePath)) {
-      const dirname = path.dirname(potentialModulePath);
-      if (!this._options.dirExists(dirname)) {
-        throw new UnableToResolveError(
-          fromModule,
-          toModule,
-          `Directory ${dirname} doesn't exist`,
-        );
-      }
-
-      const {name, type} = getAssetDataFromName(potentialModulePath, this._options.platforms);
-
-      let pattern = '^' + name + '(@[\\d\\.]+x)?';
-      if (this._options.platform != null) {
-        pattern += '(\\.' + this._options.platform + ')?';
-      }
-      pattern += '\\.' + type + '$';
-
-      const assetFiles = this._options.matchFiles(dirname, new RegExp(pattern));
-      // We arbitrarly grab the lowest, because scale selection will happen
-      // somewhere else. Always the lowest so that it's stable between builds.
-      const assetFile = getArrayLowestItem(assetFiles);
-      if (assetFile) {
-        return this._options.moduleCache.getAssetModule(assetFile);
-      }
+      return this._loadAsAssetFile(potentialModulePath, fromModule, toModule);
     }
 
     let file;
@@ -565,6 +542,30 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     }
 
     return this._options.moduleCache.getModule(file);
+  }
+
+  _loadAsAssetFile(potentialModulePath: string, fromModule: TModule, toModule: string): TModule {
+    const {name, type} = getAssetDataFromName(potentialModulePath, this._options.platforms);
+
+    let pattern = '^' + name + '(@[\\d\\.]+x)?';
+    if (this._options.platform != null) {
+      pattern += '(\\.' + this._options.platform + ')?';
+    }
+    pattern += '\\.' + type + '$';
+
+    const dirname = path.dirname(potentialModulePath);
+    const assetFiles = this._options.matchFiles(dirname, new RegExp(pattern));
+    // We arbitrarly grab the lowest, because scale selection will happen
+    // somewhere else. Always the lowest so that it's stable between builds.
+    const assetFile = getArrayLowestItem(assetFiles);
+    if (assetFile) {
+      return this._options.moduleCache.getAssetModule(assetFile);
+    }
+    throw new UnableToResolveError(
+      fromModule,
+      toModule,
+      `Directory \`${dirname}' doesn't contain asset \`${name}'`,
+    );
   }
 
   _loadAsDir(potentialDirPath: string, fromModule: TModule, toModule: string): TModule {
