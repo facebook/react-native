@@ -108,8 +108,8 @@ public class DevServerHelper {
 
   public interface PackagerCommandListener {
     void onPackagerReloadCommand();
-    void onCaptureHeapCommand(@Nullable final Responder responder);
-    void onPokeSamplingProfilerCommand(@Nullable final Responder responder);
+    void onCaptureHeapCommand(final Responder responder);
+    void onPokeSamplingProfilerCommand(final Responder responder);
   }
 
   public interface SymbolicationListener {
