@@ -20,7 +20,6 @@
 		130443DC1E401AF400D93A67 /* RCTConvert+Transform.h in Headers */ = {isa = PBXBuildFile; fileRef = 130443C31E401A8C00D93A67 /* RCTConvert+Transform.h */; };
 		130443DD1E401AF500D93A67 /* RCTConvert+Transform.h in Headers */ = {isa = PBXBuildFile; fileRef = 130443C31E401A8C00D93A67 /* RCTConvert+Transform.h */; };
 		130443DE1E401B0D00D93A67 /* RCTTVView.h in Headers */ = {isa = PBXBuildFile; fileRef = 130443D61E401AD800D93A67 /* RCTTVView.h */; };
-		130443DF1E401B0D00D93A67 /* RCTTVView.m in Sources */ = {isa = PBXBuildFile; fileRef = 130443D71E401AD800D93A67 /* RCTTVView.m */; };
 		130E3D881E6A082100ACE484 /* RCTDevSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 130E3D861E6A082100ACE484 /* RCTDevSettings.h */; };
 		130E3D891E6A082100ACE484 /* RCTDevSettings.mm in Sources */ = {isa = PBXBuildFile; fileRef = 130E3D871E6A082100ACE484 /* RCTDevSettings.mm */; };
 		130E3D8A1E6A083600ACE484 /* RCTDevSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 130E3D861E6A082100ACE484 /* RCTDevSettings.h */; };
@@ -153,7 +152,6 @@
 		13EBC6821E28733C00880AC5 /* Value.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B10D1E0369AD0018521A /* Value.h */; };
 		13F17A851B8493E5007D4C75 /* RCTRedBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 13F17A841B8493E5007D4C75 /* RCTRedBox.m */; };
 		13F880381E296D2800C3C7A1 /* JSCWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DE1DE32541002E3F95 /* JSCWrapper.h */; };
-		13F880411E29709F00C3C7A1 /* libdouble-conversion.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139D7E881E25C6D100323FB7 /* libdouble-conversion.a */; };
 		13F887581E2971D400C3C7A1 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887521E2971C500C3C7A1 /* Demangle.cpp */; };
 		13F887591E2971D400C3C7A1 /* StringBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887531E2971C500C3C7A1 /* StringBase.cpp */; };
 		13F8875A1E2971D400C3C7A1 /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887541E2971C500C3C7A1 /* Unicode.cpp */; };
@@ -348,6 +346,17 @@
 		3D0976D61E9739F000B9C6DD /* RCTBridge+JavaScriptCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D0976D41E9739ED00B9C6DD /* RCTBridge+JavaScriptCore.h */; };
 		3D0976D71E9739FB00B9C6DD /* RCTBridge+JavaScriptCore.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D0976D41E9739ED00B9C6DD /* RCTBridge+JavaScriptCore.h */; };
 		3D0976D81E973A0200B9C6DD /* RCTBridge+JavaScriptCore.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D0976D41E9739ED00B9C6DD /* RCTBridge+JavaScriptCore.h */; };
+		3D0B84221EC0B3F600B2BD8E /* RCTResizeMode.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D1FA0851DE4F3A000E03CC6 /* RCTResizeMode.h */; };
+		3D0B84231EC0B40D00B2BD8E /* RCTImageLoader.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D1FA0831DE4F3A000E03CC6 /* RCTImageLoader.h */; };
+		3D0B84241EC0B40D00B2BD8E /* RCTImageStoreManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D1FA0841DE4F3A000E03CC6 /* RCTImageStoreManager.h */; };
+		3D0B84251EC0B42600B2BD8E /* RCTNetworking.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D1FA07A1DE4F2EA00E03CC6 /* RCTNetworking.h */; };
+		3D0B84261EC0B42600B2BD8E /* RCTNetworkTask.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D1FA07B1DE4F2EA00E03CC6 /* RCTNetworkTask.h */; };
+		3D0B84271EC0B45400B2BD8E /* RCTLinkingManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D1FA08B1DE4F4DD00E03CC6 /* RCTLinkingManager.h */; };
+		3D0B842A1EC0B49400B2BD8E /* RCTTVRemoteHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D0B84281EC0B49400B2BD8E /* RCTTVRemoteHandler.h */; };
+		3D0B842B1EC0B49400B2BD8E /* RCTTVRemoteHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0B84291EC0B49400B2BD8E /* RCTTVRemoteHandler.m */; };
+		3D0B842C1EC0B4EA00B2BD8E /* RCTTVView.m in Sources */ = {isa = PBXBuildFile; fileRef = 130443D71E401AD800D93A67 /* RCTTVView.m */; };
+		3D0B842F1EC0B51200B2BD8E /* RCTTVNavigationEventEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D0B842D1EC0B51200B2BD8E /* RCTTVNavigationEventEmitter.h */; };
+		3D0B84301EC0B51200B2BD8E /* RCTTVNavigationEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D0B842E1EC0B51200B2BD8E /* RCTTVNavigationEventEmitter.m */; };
 		3D1E68DB1CABD13900DD7465 /* RCTDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D1E68D91CABD13900DD7465 /* RCTDisplayLink.m */; };
 		3D302F1E1DF8265A00D6DDAE /* JavaScriptCore.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */; };
 		3D302F1F1DF8265A00D6DDAE /* JSCWrapper.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DE1DE32541002E3F95 /* JSCWrapper.h */; };
@@ -464,6 +473,59 @@
 		3D3030251DF8295E00D6DDAE /* JavaScriptCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */; };
 		3D3030261DF8295E00D6DDAE /* JSCWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DE1DE32541002E3F95 /* JSCWrapper.h */; };
 		3D37B5821D522B190042D5B5 /* RCTFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3D37B5811D522B190042D5B5 /* RCTFont.mm */; };
+		3D383D1F1EBD27A8005632C8 /* RCTBridge+Private.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 14A43DB81C1F849600794BC8 /* RCTBridge+Private.h */; };
+		3D383D201EBD27AF005632C8 /* RCTBridge+Private.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 14A43DB81C1F849600794BC8 /* RCTBridge+Private.h */; };
+		3D383D251EBD27B6005632C8 /* Conv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D849F1E273B5600323FB7 /* Conv.cpp */; };
+		3D383D261EBD27B6005632C8 /* StringBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887531E2971C500C3C7A1 /* StringBase.cpp */; };
+		3D383D271EBD27B6005632C8 /* raw_logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EDB1E25DBDC00323FB7 /* raw_logging.cc */; };
+		3D383D281EBD27B6005632C8 /* signalhandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EDC1E25DBDC00323FB7 /* signalhandler.cc */; };
+		3D383D291EBD27B6005632C8 /* dynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D84A21E273B5600323FB7 /* dynamic.cpp */; };
+		3D383D2A1EBD27B6005632C8 /* utilities.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EE01E25DBDC00323FB7 /* utilities.cc */; };
+		3D383D2B1EBD27B6005632C8 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887A01E2977D800C3C7A1 /* MallocImpl.cpp */; };
+		3D383D2C1EBD27B6005632C8 /* Bits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D849D1E273B5600323FB7 /* Bits.cpp */; };
+		3D383D2D1EBD27B6005632C8 /* symbolize.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EDE1E25DBDC00323FB7 /* symbolize.cc */; };
+		3D383D2E1EBD27B6005632C8 /* vlog_is_on.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EE21E25DBDC00323FB7 /* vlog_is_on.cc */; };
+		3D383D2F1EBD27B6005632C8 /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887541E2971C500C3C7A1 /* Unicode.cpp */; };
+		3D383D301EBD27B6005632C8 /* demangle.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7F081E25DE3700323FB7 /* demangle.cc */; };
+		3D383D311EBD27B6005632C8 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887521E2971C500C3C7A1 /* Demangle.cpp */; };
+		3D383D321EBD27B6005632C8 /* File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D84A51E273B5600323FB7 /* File.cpp */; };
+		3D383D331EBD27B6005632C8 /* logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EDA1E25DBDC00323FB7 /* logging.cc */; };
+		3D383D341EBD27B6005632C8 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D84A71E273B5600323FB7 /* json.cpp */; };
+		3D383D351EBD27B6005632C8 /* BitsFunctexcept.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F8879C1E29740700C3C7A1 /* BitsFunctexcept.cpp */; };
+		3D383D401EBD27B9005632C8 /* bignum-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7E391E25C5A300323FB7 /* bignum-dtoa.cc */; };
+		3D383D411EBD27B9005632C8 /* bignum.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7E3B1E25C5A300323FB7 /* bignum.cc */; };
+		3D383D421EBD27B9005632C8 /* cached-powers.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7E3D1E25C5A300323FB7 /* cached-powers.cc */; };
+		3D383D431EBD27B9005632C8 /* diy-fp.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7E3F1E25C5A300323FB7 /* diy-fp.cc */; };
+		3D383D441EBD27B9005632C8 /* double-conversion.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7E411E25C5A300323FB7 /* double-conversion.cc */; };
+		3D383D451EBD27B9005632C8 /* fast-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7E431E25C5A300323FB7 /* fast-dtoa.cc */; };
+		3D383D461EBD27B9005632C8 /* fixed-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7E451E25C5A300323FB7 /* fixed-dtoa.cc */; };
+		3D383D471EBD27B9005632C8 /* strtod.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7E481E25C5A300323FB7 /* strtod.cc */; };
+		3D383D4A1EBD27B9005632C8 /* bignum-dtoa.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E3A1E25C5A300323FB7 /* bignum-dtoa.h */; };
+		3D383D4B1EBD27B9005632C8 /* bignum.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E3C1E25C5A300323FB7 /* bignum.h */; };
+		3D383D4C1EBD27B9005632C8 /* cached-powers.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E3E1E25C5A300323FB7 /* cached-powers.h */; };
+		3D383D4D1EBD27B9005632C8 /* diy-fp.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E401E25C5A300323FB7 /* diy-fp.h */; };
+		3D383D4E1EBD27B9005632C8 /* double-conversion.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E421E25C5A300323FB7 /* double-conversion.h */; };
+		3D383D4F1EBD27B9005632C8 /* fast-dtoa.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E441E25C5A300323FB7 /* fast-dtoa.h */; };
+		3D383D501EBD27B9005632C8 /* fixed-dtoa.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E461E25C5A300323FB7 /* fixed-dtoa.h */; };
+		3D383D511EBD27B9005632C8 /* ieee.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E471E25C5A300323FB7 /* ieee.h */; };
+		3D383D521EBD27B9005632C8 /* strtod.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E491E25C5A300323FB7 /* strtod.h */; };
+		3D383D531EBD27B9005632C8 /* utils.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 139D7E4A1E25C5A300323FB7 /* utils.h */; };
+		3D383D551EBD27B9005632C8 /* bignum-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E3A1E25C5A300323FB7 /* bignum-dtoa.h */; };
+		3D383D561EBD27B9005632C8 /* bignum.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E3C1E25C5A300323FB7 /* bignum.h */; };
+		3D383D571EBD27B9005632C8 /* cached-powers.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E3E1E25C5A300323FB7 /* cached-powers.h */; };
+		3D383D581EBD27B9005632C8 /* diy-fp.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E401E25C5A300323FB7 /* diy-fp.h */; };
+		3D383D591EBD27B9005632C8 /* double-conversion.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E421E25C5A300323FB7 /* double-conversion.h */; };
+		3D383D5A1EBD27B9005632C8 /* fast-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E441E25C5A300323FB7 /* fast-dtoa.h */; };
+		3D383D5B1EBD27B9005632C8 /* fixed-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E461E25C5A300323FB7 /* fixed-dtoa.h */; };
+		3D383D5C1EBD27B9005632C8 /* ieee.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E471E25C5A300323FB7 /* ieee.h */; };
+		3D383D5D1EBD27B9005632C8 /* strtod.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E491E25C5A300323FB7 /* strtod.h */; };
+		3D383D5E1EBD27B9005632C8 /* utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D7E4A1E25C5A300323FB7 /* utils.h */; };
+		3D383D6D1EBD2940005632C8 /* libdouble-conversion.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139D7E881E25C6D100323FB7 /* libdouble-conversion.a */; };
+		3D383D6E1EBD2940005632C8 /* libjschelpers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3CD90B1DE5FBD600167DC4 /* libjschelpers.a */; };
+		3D383D6F1EBD2940005632C8 /* libthird-party.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139D7ECE1E25DB7D00323FB7 /* libthird-party.a */; };
+		3D383D701EBD2949005632C8 /* libdouble-conversion.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D383D621EBD27B9005632C8 /* libdouble-conversion.a */; };
+		3D383D711EBD2949005632C8 /* libjschelpers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3CD9181DE5FBD800167DC4 /* libjschelpers.a */; };
+		3D383D721EBD2949005632C8 /* libthird-party.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D383D3C1EBD27B6005632C8 /* libthird-party.a */; };
 		3D3C08891DE342FB00C268FA /* libyoga.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3C059A1DE3340900C268FA /* libyoga.a */; };
 		3D3CD93D1DE5FC1400167DC4 /* JavaScriptCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */; };
 		3D3CD93E1DE5FC1400167DC4 /* JSCWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7A27DE1DE32541002E3F95 /* JSCWrapper.h */; };
@@ -733,9 +795,6 @@
 		3D80DA921DF820620028D040 /* RCTWrapperViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 13B080231A694A8400A75B9A /* RCTWrapperViewController.h */; };
 		3D80DA931DF820620028D040 /* UIView+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 83F15A171B7CC46900F10295 /* UIView+Private.h */; };
 		3D80DA941DF820620028D040 /* UIView+React.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E067531A70F44B002CDEE1 /* UIView+React.h */; };
-		3D8ED9271E5B11D800D83D20 /* libdouble-conversion.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139D7E881E25C6D100323FB7 /* libdouble-conversion.a */; };
-		3D8ED9281E5B11D800D83D20 /* libjschelpers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3CD90B1DE5FBD600167DC4 /* libjschelpers.a */; };
-		3D8ED9291E5B11D800D83D20 /* libthird-party.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139D7ECE1E25DB7D00323FB7 /* libthird-party.a */; };
 		3D8ED92C1E5B120100D83D20 /* libcxxreact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3CD9321DE5FBEE00167DC4 /* libcxxreact.a */; };
 		3D8ED92D1E5B120100D83D20 /* libyoga.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3C06751DE3340C00C268FA /* libyoga.a */; };
 		3DA9819E1E5B0DBB004F2374 /* NSDataBigString.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7454B31E54786200E74ADD /* NSDataBigString.h */; };
@@ -835,7 +894,6 @@
 		3DA982051E5B0F7F004F2374 /* RCTComponent.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13C325281AA63B6A0048765F /* RCTComponent.h */; };
 		3DA982061E5B0F7F004F2374 /* RCTComponentData.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13AB90BF1B6FA36700713B4F /* RCTComponentData.h */; };
 		3DA982071E5B0F7F004F2374 /* RCTConvert+CoreLocation.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13456E911ADAD2DE009F94A7 /* RCTConvert+CoreLocation.h */; };
-		3DA982091E5B0F7F004F2374 /* RCTConvert+Transform.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130443C31E401A8C00D93A67 /* RCTConvert+Transform.h */; };
 		3DA9820A1E5B0F7F004F2374 /* RCTDatePicker.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 133CAE8C1B8E5CFD00F6AD92 /* RCTDatePicker.h */; };
 		3DA9820B1E5B0F7F004F2374 /* RCTDatePickerManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 58C571C01AA56C1900CDF9C8 /* RCTDatePickerManager.h */; };
 		3DA9820C1E5B0F7F004F2374 /* RCTFont.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D37B5801D522B190042D5B5 /* RCTFont.h */; };
@@ -1019,6 +1077,20 @@
 			remoteGlobalIDString = 3D3CD9261DE5FBEE00167DC4;
 			remoteInfo = "cxxreact-tvOS";
 		};
+		3D383D631EBD27CE005632C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D383D211EBD27B6005632C8;
+			remoteInfo = "third-party-tvOS";
+		};
+		3D383D651EBD27DB005632C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D383D3D1EBD27B9005632C8;
+			remoteInfo = "double-conversion-tvOS";
+		};
 		3D3CD94B1DE5FCE700167DC4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
@@ -1069,15 +1141,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		139D7ECC1E25DB7D00323FB7 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "include/$(PRODUCT_NAME)";
-			dstSubfolderSpec = 16;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		3D302E191DF8249100D6DDAE /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1086,6 +1149,13 @@
 			files = (
 				59EB6DC01EBD70130072A5E7 /* RCTUIManagerObserverCoordinator.h in Copy Headers */,
 				59B1EBCA1EBD47520047B19B /* RCTShadowView+Layout.h in Copy Headers */,
+				3D0B84271EC0B45400B2BD8E /* RCTLinkingManager.h in Copy Headers */,
+				3D0B84251EC0B42600B2BD8E /* RCTNetworking.h in Copy Headers */,
+				3D0B84261EC0B42600B2BD8E /* RCTNetworkTask.h in Copy Headers */,
+				3D0B84231EC0B40D00B2BD8E /* RCTImageLoader.h in Copy Headers */,
+				3D0B84241EC0B40D00B2BD8E /* RCTImageStoreManager.h in Copy Headers */,
+				3D0B84221EC0B3F600B2BD8E /* RCTResizeMode.h in Copy Headers */,
+				3D383D201EBD27AF005632C8 /* RCTBridge+Private.h in Copy Headers */,
 				3D7BFD351EA8E43F008DFB7A /* RCTDevSettings.h in Copy Headers */,
 				3D7BFD331EA8E433008DFB7A /* RCTPackagerClient.h in Copy Headers */,
 				3D0976D71E9739FB00B9C6DD /* RCTBridge+JavaScriptCore.h in Copy Headers */,
@@ -1119,7 +1189,6 @@
 				3DA982051E5B0F7F004F2374 /* RCTComponent.h in Copy Headers */,
 				3DA982061E5B0F7F004F2374 /* RCTComponentData.h in Copy Headers */,
 				3DA982071E5B0F7F004F2374 /* RCTConvert+CoreLocation.h in Copy Headers */,
-				3DA982091E5B0F7F004F2374 /* RCTConvert+Transform.h in Copy Headers */,
 				3DA9820A1E5B0F7F004F2374 /* RCTDatePicker.h in Copy Headers */,
 				3DA9820B1E5B0F7F004F2374 /* RCTDatePickerManager.h in Copy Headers */,
 				3DA9820C1E5B0F7F004F2374 /* RCTFont.h in Copy Headers */,
@@ -1272,6 +1341,25 @@
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3D383D491EBD27B9005632C8 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				3D383D4A1EBD27B9005632C8 /* bignum-dtoa.h in CopyFiles */,
+				3D383D4B1EBD27B9005632C8 /* bignum.h in CopyFiles */,
+				3D383D4C1EBD27B9005632C8 /* cached-powers.h in CopyFiles */,
+				3D383D4D1EBD27B9005632C8 /* diy-fp.h in CopyFiles */,
+				3D383D4E1EBD27B9005632C8 /* double-conversion.h in CopyFiles */,
+				3D383D4F1EBD27B9005632C8 /* fast-dtoa.h in CopyFiles */,
+				3D383D501EBD27B9005632C8 /* fixed-dtoa.h in CopyFiles */,
+				3D383D511EBD27B9005632C8 /* ieee.h in CopyFiles */,
+				3D383D521EBD27B9005632C8 /* strtod.h in CopyFiles */,
+				3D383D531EBD27B9005632C8 /* utils.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3D80D91E1DF6FA530028D040 /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1280,6 +1368,7 @@
 			files = (
 				59EB6DBF1EBD6FFC0072A5E7 /* RCTUIManagerObserverCoordinator.h in Copy Headers */,
 				59B1EBC91EBD46250047B19B /* RCTShadowView+Layout.h in Copy Headers */,
+				3D383D1F1EBD27A8005632C8 /* RCTBridge+Private.h in Copy Headers */,
 				3D7BFD311EA8E41F008DFB7A /* RCTPackagerClient.h in Copy Headers */,
 				3D7BFD291EA8E37B008DFB7A /* RCTDevSettings.h in Copy Headers */,
 				3D0976D81E973A0200B9C6DD /* RCTBridge+JavaScriptCore.h in Copy Headers */,
@@ -1507,7 +1596,6 @@
 		131B6AF11AF1093D00FFC3E0 /* RCTSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSegmentedControl.m; sourceTree = "<group>"; };
 		131B6AF21AF1093D00FFC3E0 /* RCTSegmentedControlManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSegmentedControlManager.h; sourceTree = "<group>"; };
 		131B6AF31AF1093D00FFC3E0 /* RCTSegmentedControlManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSegmentedControlManager.m; sourceTree = "<group>"; };
-		132008221E2845E700F0C457 /* folly.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = folly.xcconfig; sourceTree = "<group>"; };
 		133CAE8C1B8E5CFD00F6AD92 /* RCTDatePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDatePicker.h; sourceTree = "<group>"; };
 		133CAE8D1B8E5CFD00F6AD92 /* RCTDatePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDatePicker.m; sourceTree = "<group>"; };
 		13442BF21AA90E0B0037E5B0 /* RCTAnimationType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAnimationType.h; sourceTree = "<group>"; };
@@ -1706,6 +1794,10 @@
 		391E86A21C623EC800009732 /* RCTTouchEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTouchEvent.m; sourceTree = "<group>"; };
 		391E86A31C623EC800009732 /* RCTTouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTouchEvent.h; sourceTree = "<group>"; };
 		3D0976D41E9739ED00B9C6DD /* RCTBridge+JavaScriptCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTBridge+JavaScriptCore.h"; sourceTree = "<group>"; };
+		3D0B84281EC0B49400B2BD8E /* RCTTVRemoteHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTVRemoteHandler.h; sourceTree = "<group>"; };
+		3D0B84291EC0B49400B2BD8E /* RCTTVRemoteHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTVRemoteHandler.m; sourceTree = "<group>"; };
+		3D0B842D1EC0B51200B2BD8E /* RCTTVNavigationEventEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTVNavigationEventEmitter.h; sourceTree = "<group>"; };
+		3D0B842E1EC0B51200B2BD8E /* RCTTVNavigationEventEmitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTVNavigationEventEmitter.m; sourceTree = "<group>"; };
 		3D1E68D81CABD13900DD7465 /* RCTDisplayLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDisplayLink.h; sourceTree = "<group>"; };
 		3D1E68D91CABD13900DD7465 /* RCTDisplayLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDisplayLink.m; sourceTree = "<group>"; };
 		3D1FA07A1DE4F2EA00E03CC6 /* RCTNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNetworking.h; sourceTree = "<group>"; };
@@ -1717,6 +1809,8 @@
 		3D1FA08D1DE4F4EE00E03CC6 /* RCTPushNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTPushNotificationManager.h; path = PushNotificationIOS/RCTPushNotificationManager.h; sourceTree = "<group>"; };
 		3D37B5801D522B190042D5B5 /* RCTFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTFont.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		3D37B5811D522B190042D5B5 /* RCTFont.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTFont.mm; sourceTree = "<group>"; };
+		3D383D3C1EBD27B6005632C8 /* libthird-party.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libthird-party.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D383D621EBD27B9005632C8 /* libdouble-conversion.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libdouble-conversion.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D3C059A1DE3340900C268FA /* libyoga.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libyoga.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D3C06751DE3340C00C268FA /* libyoga.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libyoga.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSBundleType.h; sourceTree = "<group>"; };
@@ -1729,6 +1823,7 @@
 		3D7454B31E54786200E74ADD /* NSDataBigString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSDataBigString.h; sourceTree = "<group>"; };
 		3D7749421DC1065C007EC8D8 /* RCTPlatform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPlatform.h; sourceTree = "<group>"; };
 		3D7749431DC1065C007EC8D8 /* RCTPlatform.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPlatform.m; sourceTree = "<group>"; };
+		3D788F841EBD2D240063D616 /* third-party.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "third-party.xcconfig"; sourceTree = "<group>"; };
 		3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JavaScriptCore.h; sourceTree = "<group>"; };
 		3D7A27DD1DE32541002E3F95 /* JSCWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSCWrapper.cpp; sourceTree = "<group>"; };
 		3D7A27DE1DE32541002E3F95 /* JSCWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCWrapper.h; sourceTree = "<group>"; };
@@ -1861,25 +1956,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		139D7E851E25C6D100323FB7 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		139D7ECB1E25DB7D00323FB7 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				13F880411E29709F00C3C7A1 /* libdouble-conversion.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		3D3C08881DE342EE00C268FA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D383D6D1EBD2940005632C8 /* libdouble-conversion.a in Frameworks */,
+				3D383D6E1EBD2940005632C8 /* libjschelpers.a in Frameworks */,
+				3D383D6F1EBD2940005632C8 /* libthird-party.a in Frameworks */,
 				3D3CD9411DE5FC5300167DC4 /* libcxxreact.a in Frameworks */,
 				3D3C08891DE342FB00C268FA /* libyoga.a in Frameworks */,
 			);
@@ -1889,18 +1972,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D383D701EBD2949005632C8 /* libdouble-conversion.a in Frameworks */,
+				3D383D711EBD2949005632C8 /* libjschelpers.a in Frameworks */,
+				3D383D721EBD2949005632C8 /* libthird-party.a in Frameworks */,
 				3D8ED92C1E5B120100D83D20 /* libcxxreact.a in Frameworks */,
 				3D8ED92D1E5B120100D83D20 /* libyoga.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3D8ED9261E5B11CB00D83D20 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				3D8ED9271E5B11D800D83D20 /* libdouble-conversion.a in Frameworks */,
-				3D8ED9281E5B11D800D83D20 /* libjschelpers.a in Frameworks */,
-				3D8ED9291E5B11D800D83D20 /* libthird-party.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2086,6 +2162,8 @@
 				13723B4F1A82FD3C00F88898 /* RCTStatusBarManager.m */,
 				13B07FED1A69327A00A75B9A /* RCTTiming.h */,
 				13B07FEE1A69327A00A75B9A /* RCTTiming.m */,
+				3D0B842D1EC0B51200B2BD8E /* RCTTVNavigationEventEmitter.h */,
+				3D0B842E1EC0B51200B2BD8E /* RCTTVNavigationEventEmitter.m */,
 				13E067481A70F434002CDEE1 /* RCTUIManager.h */,
 				13E067491A70F434002CDEE1 /* RCTUIManager.m */,
 				59EB6DB91EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.h */,
@@ -2336,7 +2414,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				132008221E2845E700F0C457 /* folly.xcconfig */,
 				83CBBA2F1A601D0F00E9B192 /* React */,
 				3D10A3C71DDF3CED004A0F9D /* ReactCommon */,
 				3D1FA0781DE4F2CD00E03CC6 /* Libraries */,
@@ -2360,6 +2437,8 @@
 				3D3CD9321DE5FBEE00167DC4 /* libcxxreact.a */,
 				139D7E881E25C6D100323FB7 /* libdouble-conversion.a */,
 				139D7ECE1E25DB7D00323FB7 /* libthird-party.a */,
+				3D383D3C1EBD27B6005632C8 /* libthird-party.a */,
+				3D383D621EBD27B9005632C8 /* libdouble-conversion.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2375,6 +2454,7 @@
 				13B07FE01A69315300A75B9A /* Modules */,
 				1450FF7F1BCFF28A00208362 /* Profiler */,
 				13B07FF31A6947C200A75B9A /* Views */,
+				3D788F841EBD2D240063D616 /* third-party.xcconfig */,
 			);
 			name = React;
 			sourceTree = "<group>";
@@ -2446,6 +2526,8 @@
 				391E86A21C623EC800009732 /* RCTTouchEvent.m */,
 				83CBBA961A6020BB00E9B192 /* RCTTouchHandler.h */,
 				83CBBA971A6020BB00E9B192 /* RCTTouchHandler.m */,
+				3D0B84281EC0B49400B2BD8E /* RCTTVRemoteHandler.h */,
+				3D0B84291EC0B49400B2BD8E /* RCTTVRemoteHandler.m */,
 				1345A83A1B265A0E00583190 /* RCTURLRequestDelegate.h */,
 				1345A83B1B265A0E00583190 /* RCTURLRequestHandler.h */,
 				83CBBA4F1A601E3B00E9B192 /* RCTUtils.h */,
@@ -2564,6 +2646,7 @@
 				3D302F311DF828F800D6DDAE /* RCTBundleURLProvider.h in Headers */,
 				3D302F321DF828F800D6DDAE /* RCTConvert.h in Headers */,
 				3D302F331DF828F800D6DDAE /* RCTDefines.h in Headers */,
+				3D0B842F1EC0B51200B2BD8E /* RCTTVNavigationEventEmitter.h in Headers */,
 				3D302F341DF828F800D6DDAE /* RCTDisplayLink.h in Headers */,
 				3D302F351DF828F800D6DDAE /* RCTErrorCustomizer.h in Headers */,
 				3D302F361DF828F800D6DDAE /* RCTErrorInfo.h in Headers */,
@@ -2602,6 +2685,7 @@
 				3D302F581DF828F800D6DDAE /* RCTAsyncLocalStorage.h in Headers */,
 				3D302F591DF828F800D6DDAE /* RCTClipboard.h in Headers */,
 				3D302F5A1DF828F800D6DDAE /* RCTDevLoadingView.h in Headers */,
+				3D0B842A1EC0B49400B2BD8E /* RCTTVRemoteHandler.h in Headers */,
 				3D302F5B1DF828F800D6DDAE /* RCTDevMenu.h in Headers */,
 				3D302F5C1DF828F800D6DDAE /* RCTEventEmitter.h in Headers */,
 				3D302F5D1DF828F800D6DDAE /* RCTExceptionsManager.h in Headers */,
@@ -2726,6 +2810,23 @@
 				19F61C071E8495FF00571D81 /* Value.h in Headers */,
 				3D3030251DF8295E00D6DDAE /* JavaScriptCore.h in Headers */,
 				3D3030261DF8295E00D6DDAE /* JSCWrapper.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D383D541EBD27B9005632C8 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D383D551EBD27B9005632C8 /* bignum-dtoa.h in Headers */,
+				3D383D561EBD27B9005632C8 /* bignum.h in Headers */,
+				3D383D571EBD27B9005632C8 /* cached-powers.h in Headers */,
+				3D383D581EBD27B9005632C8 /* diy-fp.h in Headers */,
+				3D383D591EBD27B9005632C8 /* double-conversion.h in Headers */,
+				3D383D5A1EBD27B9005632C8 /* fast-dtoa.h in Headers */,
+				3D383D5B1EBD27B9005632C8 /* fixed-dtoa.h in Headers */,
+				3D383D5C1EBD27B9005632C8 /* ieee.h in Headers */,
+				3D383D5D1EBD27B9005632C8 /* strtod.h in Headers */,
+				3D383D5E1EBD27B9005632C8 /* utils.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2945,10 +3046,9 @@
 			buildConfigurationList = 139D7E8E1E25C6D100323FB7 /* Build configuration list for PBXNativeTarget "double-conversion" */;
 			buildPhases = (
 				190EE32F1E6A43DE00A8543A /* Install Third Party */,
-				139D7E841E25C6D100323FB7 /* Sources */,
-				139D7E851E25C6D100323FB7 /* Frameworks */,
-				139D7E861E25C6D100323FB7 /* CopyFiles */,
 				139D7EA41E25C7BD00323FB7 /* Headers */,
+				139D7E841E25C6D100323FB7 /* Sources */,
+				139D7E861E25C6D100323FB7 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2964,8 +3064,6 @@
 			buildConfigurationList = 139D7ED41E25DB7D00323FB7 /* Build configuration list for PBXNativeTarget "third-party" */;
 			buildPhases = (
 				139D7ECA1E25DB7D00323FB7 /* Sources */,
-				139D7ECB1E25DB7D00323FB7 /* Frameworks */,
-				139D7ECC1E25DB7D00323FB7 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2997,6 +3095,40 @@
 			name = "React-tvOS";
 			productName = "React-tvOS";
 			productReference = 2D2A28131D9B038B00D4039D /* libReact.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		3D383D211EBD27B6005632C8 /* third-party-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D383D391EBD27B6005632C8 /* Build configuration list for PBXNativeTarget "third-party-tvOS" */;
+			buildPhases = (
+				3D383D241EBD27B6005632C8 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3D383D661EBD27DB005632C8 /* PBXTargetDependency */,
+			);
+			name = "third-party-tvOS";
+			productName = "third-party";
+			productReference = 3D383D3C1EBD27B6005632C8 /* libthird-party.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		3D383D3D1EBD27B9005632C8 /* double-conversion-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3D383D5F1EBD27B9005632C8 /* Build configuration list for PBXNativeTarget "double-conversion-tvOS" */;
+			buildPhases = (
+				3D383D3E1EBD27B9005632C8 /* Install Third Party */,
+				3D383D541EBD27B9005632C8 /* Headers */,
+				3D383D3F1EBD27B9005632C8 /* Sources */,
+				3D383D491EBD27B9005632C8 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "double-conversion-tvOS";
+			productName = ThirdParty;
+			productReference = 3D383D621EBD27B9005632C8 /* libdouble-conversion.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		3D3C04B91DE3340900C268FA /* yoga */ = {
@@ -3062,6 +3194,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				3D383D641EBD27CE005632C8 /* PBXTargetDependency */,
 			);
 			name = "jschelpers-tvOS";
 			productName = "React-tvOS";
@@ -3075,7 +3208,6 @@
 				3D3CD91A1DE5FBEC00167DC4 /* Headers */,
 				3D80DAB91DF821710028D040 /* Copy Headers */,
 				3D3CD91F1DE5FBEC00167DC4 /* Sources */,
-				3D8ED9261E5B11CB00D83D20 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -3150,6 +3282,12 @@
 						CreatedOnToolsVersion = 8.0;
 						ProvisioningStyle = Automatic;
 					};
+					3D383D211EBD27B6005632C8 = {
+						DevelopmentTeam = V9WTTPBFK9;
+					};
+					3D383D3D1EBD27B9005632C8 = {
+						DevelopmentTeam = V9WTTPBFK9;
+					};
 					83CBBA2D1A601D0E00E9B192 = {
 						CreatedOnToolsVersion = 6.1.1;
 					};
@@ -3177,7 +3315,9 @@
 				3D3CD8FF1DE5FBD600167DC4 /* jschelpers */,
 				3D3CD90C1DE5FBD800167DC4 /* jschelpers-tvOS */,
 				139D7ECD1E25DB7D00323FB7 /* third-party */,
+				3D383D211EBD27B6005632C8 /* third-party-tvOS */,
 				139D7E871E25C6D100323FB7 /* double-conversion */,
+				3D383D3D1EBD27B9005632C8 /* double-conversion-tvOS */,
 			);
 		};
 /* End PBXProject section */
@@ -3225,7 +3365,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd $SRCROOT/..\n./ios-install-third-party.sh";
+			shellScript = "cd $SRCROOT/..\nexec ./scripts/ios-install-third-party.sh";
 		};
 		2D6948201DA3042200B3FA97 /* Include RCTJSCProfiler */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -3256,6 +3396,20 @@
 			shellPath = /bin/sh;
 			shellScript = "if [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\nif nc -w 5 -z localhost 8081 ; then\nif ! curl -s \"http://localhost:8081/status\" | grep -q \"packager-status:running\" ; then\necho \"Port 8081 already in use, packager is either not running or not running correctly\"\nexit 2\nfi\nelse\nopen \"$SRCROOT/../packager/launchPackager.command\" || echo \"Can't start packager automatically\"\nfi\nfi";
 			showEnvVarsInLog = 0;
+		};
+		3D383D3E1EBD27B9005632C8 /* Install Third Party */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Install Third Party";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd $SRCROOT/..\nexec ./scripts/ios-install-third-party.sh";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -3326,7 +3480,6 @@
 				2D3B5EE41D9B09BB00451313 /* RCTSegmentedControlManager.m in Sources */,
 				13134C9F1E296B2A00B9F3CB /* RCTCxxModule.mm in Sources */,
 				2D3B5EE31D9B09B700451313 /* RCTSegmentedControl.m in Sources */,
-				130443DF1E401B0D00D93A67 /* RCTTVView.m in Sources */,
 				130443A41E3FEAC600D93A67 /* RCTFollyConvert.mm in Sources */,
 				3D7BFD201EA8E351008DFB7A /* RCTPackagerConnection.m in Sources */,
 				2D3B5EB71D9B091800451313 /* RCTRedBox.m in Sources */,
@@ -3338,6 +3491,7 @@
 				2D3B5EE01D9B09AD00451313 /* RCTRootShadowView.m in Sources */,
 				2D3B5EBA1D9B092100451313 /* RCTI18nUtil.m in Sources */,
 				2D3B5EB41D9B090A00451313 /* RCTDevLoadingView.m in Sources */,
+				3D0B842C1EC0B4EA00B2BD8E /* RCTTVView.m in Sources */,
 				2D3B5EED1D9B09D700451313 /* RCTTabBarManager.m in Sources */,
 				2D3B5EEF1D9B09DC00451313 /* RCTViewManager.m in Sources */,
 				13134C971E296B2A00B9F3CB /* RCTObjcExecutor.mm in Sources */,
@@ -3375,6 +3529,7 @@
 				2D3B5EC81D9B095800451313 /* RCTActivityIndicatorViewManager.m in Sources */,
 				3DCD185D1DF978E7007FE5A1 /* RCTReloadCommand.m in Sources */,
 				130443DB1E401ADD00D93A67 /* RCTConvert+Transform.m in Sources */,
+				3D0B84301EC0B51200B2BD8E /* RCTTVNavigationEventEmitter.m in Sources */,
 				2D3B5EC61D9B095000451313 /* RCTProfileTrampoline-x86_64.S in Sources */,
 				2D3B5EA61D9B08CA00451313 /* RCTTouchEvent.m in Sources */,
 				2D8C2E331DA40441000EE098 /* RCTMultipartStreamReader.m in Sources */,
@@ -3385,6 +3540,7 @@
 				2D3B5E9C1D9B08A300451313 /* RCTImageSource.m in Sources */,
 				3DDEC1521DDCE0CA0020BBDF /* RCTJSCSamplingProfiler.m in Sources */,
 				2D3B5EC31D9B094800451313 /* RCTProfileTrampoline-arm.S in Sources */,
+				3D0B842B1EC0B49400B2BD8E /* RCTTVRemoteHandler.m in Sources */,
 				59FBEFB31E46D91C0095D885 /* RCTScrollContentShadowView.m in Sources */,
 				2D3B5ED91D9B098E00451313 /* RCTNavItem.m in Sources */,
 				2D74EAFA1DAE9590003B751B /* RCTMultipartDataTask.m in Sources */,
@@ -3404,6 +3560,45 @@
 				2D3B5EC71D9B095600451313 /* RCTActivityIndicatorView.m in Sources */,
 				2D3B5EB21D9B090300451313 /* RCTAsyncLocalStorage.m in Sources */,
 				2D3B5EC01D9B093600451313 /* RCTPerfMonitor.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D383D241EBD27B6005632C8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D383D251EBD27B6005632C8 /* Conv.cpp in Sources */,
+				3D383D261EBD27B6005632C8 /* StringBase.cpp in Sources */,
+				3D383D271EBD27B6005632C8 /* raw_logging.cc in Sources */,
+				3D383D281EBD27B6005632C8 /* signalhandler.cc in Sources */,
+				3D383D291EBD27B6005632C8 /* dynamic.cpp in Sources */,
+				3D383D2A1EBD27B6005632C8 /* utilities.cc in Sources */,
+				3D383D2B1EBD27B6005632C8 /* MallocImpl.cpp in Sources */,
+				3D383D2C1EBD27B6005632C8 /* Bits.cpp in Sources */,
+				3D383D2D1EBD27B6005632C8 /* symbolize.cc in Sources */,
+				3D383D2E1EBD27B6005632C8 /* vlog_is_on.cc in Sources */,
+				3D383D2F1EBD27B6005632C8 /* Unicode.cpp in Sources */,
+				3D383D301EBD27B6005632C8 /* demangle.cc in Sources */,
+				3D383D311EBD27B6005632C8 /* Demangle.cpp in Sources */,
+				3D383D321EBD27B6005632C8 /* File.cpp in Sources */,
+				3D383D331EBD27B6005632C8 /* logging.cc in Sources */,
+				3D383D341EBD27B6005632C8 /* json.cpp in Sources */,
+				3D383D351EBD27B6005632C8 /* BitsFunctexcept.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3D383D3F1EBD27B9005632C8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D383D401EBD27B9005632C8 /* bignum-dtoa.cc in Sources */,
+				3D383D411EBD27B9005632C8 /* bignum.cc in Sources */,
+				3D383D421EBD27B9005632C8 /* cached-powers.cc in Sources */,
+				3D383D431EBD27B9005632C8 /* diy-fp.cc in Sources */,
+				3D383D441EBD27B9005632C8 /* double-conversion.cc in Sources */,
+				3D383D451EBD27B9005632C8 /* fast-dtoa.cc in Sources */,
+				3D383D461EBD27B9005632C8 /* fixed-dtoa.cc in Sources */,
+				3D383D471EBD27B9005632C8 /* strtod.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3644,6 +3839,16 @@
 			target = 3D3CD9261DE5FBEE00167DC4 /* cxxreact-tvOS */;
 			targetProxy = 3D0574561DE5FF9600184BB4 /* PBXContainerItemProxy */;
 		};
+		3D383D641EBD27CE005632C8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3D383D211EBD27B6005632C8 /* third-party-tvOS */;
+			targetProxy = 3D383D631EBD27CE005632C8 /* PBXContainerItemProxy */;
+		};
+		3D383D661EBD27DB005632C8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3D383D3D1EBD27B9005632C8 /* double-conversion-tvOS */;
+			targetProxy = 3D383D651EBD27DB005632C8 /* PBXContainerItemProxy */;
+		};
 		3D3CD94C1DE5FCE700167DC4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3D3CD9191DE5FBEC00167DC4 /* cxxreact */;
@@ -3676,10 +3881,6 @@
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = V9WTTPBFK9;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRIVATE_HEADERS_FOLDER_PATH = "/usr/local/include/double-conversion";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3706,7 +3907,7 @@
 		};
 		139D7ED51E25DB7D00323FB7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 132008221E2845E700F0C457 /* folly.xcconfig */;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3714,10 +3915,6 @@
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = V9WTTPBFK9;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3728,7 +3925,7 @@
 		};
 		139D7ED61E25DB7D00323FB7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 132008221E2845E700F0C457 /* folly.xcconfig */;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3747,6 +3944,7 @@
 		};
 		2D2A28191D9B038B00D4039D /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
@@ -3756,10 +3954,6 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = React;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/React;
@@ -3769,6 +3963,7 @@
 		};
 		2D2A281A1D9B038B00D4039D /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
@@ -3785,12 +3980,85 @@
 			};
 			name = Release;
 		};
+		3D383D3A1EBD27B6005632C8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = V9WTTPBFK9;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "third-party";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "";
+			};
+			name = Debug;
+		};
+		3D383D3B1EBD27B6005632C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = V9WTTPBFK9;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "third-party";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "";
+			};
+			name = Release;
+		};
+		3D383D601EBD27B9005632C8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = V9WTTPBFK9;
+				OTHER_LDFLAGS = "-ObjC";
+				PRIVATE_HEADERS_FOLDER_PATH = "/usr/local/include/double-conversion";
+				PRODUCT_NAME = "double-conversion";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		3D383D611EBD27B9005632C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = V9WTTPBFK9;
+				OTHER_LDFLAGS = "-ObjC";
+				PRIVATE_HEADERS_FOLDER_PATH = "/usr/local/include/double-conversion";
+				PRODUCT_NAME = "double-conversion";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 		3D3C05981DE3340900C268FA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3824,10 +4092,6 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = yoga;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/yoga;
@@ -3855,11 +4119,10 @@
 		};
 		3D3CD9091DE5FBD600167DC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 132008221E2845E700F0C457 /* folly.xcconfig */;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3870,7 +4133,7 @@
 		};
 		3D3CD90A1DE5FBD600167DC4 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 132008221E2845E700F0C457 /* folly.xcconfig */;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
@@ -3885,6 +4148,7 @@
 		};
 		3D3CD9161DE5FBD800167DC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
@@ -3894,10 +4158,6 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = jschelpers;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jschelpers;
@@ -3907,6 +4167,7 @@
 		};
 		3D3CD9171DE5FBD800167DC4 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
@@ -3925,11 +4186,10 @@
 		};
 		3D3CD9231DE5FBEC00167DC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 132008221E2845E700F0C457 /* folly.xcconfig */;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3940,7 +4200,7 @@
 		};
 		3D3CD9241DE5FBEC00167DC4 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 132008221E2845E700F0C457 /* folly.xcconfig */;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
@@ -3955,6 +4215,7 @@
 		};
 		3D3CD9301DE5FBEE00167DC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
@@ -3964,10 +4225,6 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = cxxreact;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/cxxreact;
@@ -3977,6 +4234,7 @@
 		};
 		3D3CD9311DE5FBEE00167DC4 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
@@ -4099,11 +4357,10 @@
 		};
 		83CBBA401A601D0F00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 132008221E2845E700F0C457 /* folly.xcconfig */;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4114,7 +4371,7 @@
 		};
 		83CBBA411A601D0F00E9B192 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 132008221E2845E700F0C457 /* folly.xcconfig */;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
@@ -4153,6 +4410,24 @@
 			buildConfigurations = (
 				2D2A28191D9B038B00D4039D /* Debug */,
 				2D2A281A1D9B038B00D4039D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3D383D391EBD27B6005632C8 /* Build configuration list for PBXNativeTarget "third-party-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D383D3A1EBD27B6005632C8 /* Debug */,
+				3D383D3B1EBD27B6005632C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3D383D5F1EBD27B9005632C8 /* Build configuration list for PBXNativeTarget "double-conversion-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D383D601EBD27B9005632C8 /* Debug */,
+				3D383D611EBD27B9005632C8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
