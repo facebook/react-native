@@ -882,7 +882,7 @@ public class DevSupportManagerImpl implements
         mDevLoadingViewController.show();
       }
 
-      mDevServerHelper.openPackagerConnection(this);
+      mDevServerHelper.openPackagerConnection(this.getClass().getSimpleName(), this);
       mDevServerHelper.openInspectorConnection();
       if (mDevSettings.isReloadOnJSChangeEnabled()) {
         mDevServerHelper.startPollingOnChangeEndpoint(

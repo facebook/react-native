@@ -129,7 +129,8 @@ public class DevServerHelper {
     mRestartOnChangePollingHandler = new Handler();
   }
 
-  public void openPackagerConnection(final PackagerCommandListener commandListener) {
+  public void openPackagerConnection(
+      final String clientId, final PackagerCommandListener commandListener) {
     if (mPackagerClient != null) {
       FLog.w(ReactConstants.TAG, "Packager connection already open, nooping.");
       return;
@@ -159,7 +160,7 @@ public class DevServerHelper {
         handlers.putAll(new FileIoHandler().handlers());
 
         mPackagerClient = new JSPackagerClient(
-            "devserverhelper",
+            clientId,
             mSettings.getPackagerConnectionSettings(),
             handlers);
         mPackagerClient.init();
