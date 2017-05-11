@@ -30,6 +30,30 @@ fb_xplat_cxx_library(
 )
 
 fb_xplat_cxx_library(
+    name = "jsbigstring",
+    srcs = [
+        "JSBigString.cpp",
+    ],
+    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
+        "-fexceptions",
+        "-frtti",
+    ],
+    exported_headers = [
+        "JSBigString.h",
+    ],
+    fbobjc_header_path_prefix = "cxxreact",
+    force_static = True,
+    header_namespace = "cxxreact",
+    visibility = [
+        "PUBLIC",
+    ],
+    xcode_public_headers_symlinks = True,
+    deps = [
+        "//xplat/folly:molly",
+    ],
+)
+
+fb_xplat_cxx_library(
     name = "samplemodule",
     srcs = ["SampleCxxModule.cpp"],
     compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
@@ -53,7 +77,6 @@ CXXREACT_PUBLIC_HEADERS = [
     "CxxNativeModule.h",
     "Executor.h",
     "Instance.h",
-    "JSBigString.h",
     "JSBundleType.h",
     "JSCExecutor.h",
     "JSCNativeModules.h",
@@ -74,7 +97,10 @@ fb_xplat_cxx_library(
     name = "bridge",
     srcs = glob(
         ["*.cpp"],
-        excludes = ["SampleCxxModule.cpp"],
+        excludes = [
+            "JSBigString.cpp",
+            "SampleCxxModule.cpp",
+        ],
     ),
     compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
         "-fexceptions",
@@ -126,6 +152,7 @@ fb_xplat_cxx_library(
     xcode_public_headers_symlinks = True,
     deps = [
         ":module",
+        ":jsbigstring",
         "//xplat/fbsystrace:fbsystrace",
         "//xplat/folly:molly",
         react_native_xplat_target("jschelpers:jschelpers"),
