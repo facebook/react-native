@@ -456,7 +456,7 @@ class Bundler {
       log(createActionEndEntry(transformingFilesLogEntry));
       onResolutionResponse(response);
 
-      // get entry file complete path (`entryFile` is relative to roots)
+      // get entry file complete path (`entryFile` is a local path, i.e. relative to roots)
       let entryFilePath;
       if (response.dependencies.length > 1) { // skip HMR requests
         const numModuleSystemDependencies =
@@ -603,12 +603,12 @@ class Bundler {
         const placeHolder = {};
         dependencies.forEach(dep => {
           if (dep.isAsset()) {
-            const relPath = getPathRelativeToRoot(
+            const localPath = toLocalPath(
               this._projectRoots,
               dep.path
             );
             promises.push(
-              this._assetServer.getAssetData(relPath, platform)
+              this._assetServer.getAssetData(localPath, platform)
             );
             ret.push(placeHolder);
           } else {
@@ -688,8 +688,8 @@ class Bundler {
     assetPlugins: Array<string>,
     platform: ?string = null,
   ) {
-    const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
-    var assetUrlPath = joinPath('/assets', pathDirname(relPath));
+    const localPath = toLocalPath(this._projectRoots, module.path);
+    var assetUrlPath = joinPath('/assets', pathDirname(localPath));
 
     // On Windows, change backslashes to slashes to get proper URL path from file path.
     if (pathSeparator === '\\') {
@@ -698,7 +698,7 @@ class Bundler {
 
     const isImage = isAssetTypeAnImage(extname(module.path).slice(1));
 
-    return this._assetServer.getAssetData(relPath, platform).then(assetData => {
+    return this._assetServer.getAssetData(localPath, platform).then(assetData => {
       return Promise.all([isImage ? sizeOf(assetData.files[0]) : null, assetData]);
     }).then(res => {
       const dimensions = res[0];
@@ -842,11 +842,11 @@ class Bundler {
 
 }
 
-function getPathRelativeToRoot(roots, absPath) {
+function toLocalPath(roots, absPath) {
   for (let i = 0; i < roots.length; i++) {
-    const relPath = relativePath(roots[i], absPath);
-    if (relPath[0] !== '.') {
-      return relPath;
+    const localPath = relativePath(roots[i], absPath);
+    if (localPath[0] !== '.') {
+      return localPath;
     }
   }
 

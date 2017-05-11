@@ -348,9 +348,9 @@ class OptionsHasher {
    * This function is extra-conservative with how it hashes the transform
    * options. In particular:
    *
-   *     * we need to hash paths relative to the root, not the absolute paths,
-   *       otherwise everyone would have a different cache, defeating the
-   *       purpose of global cache;
+   *     * we need to hash paths as local paths, i.e. relative to the root, not
+   *       the absolute paths, otherwise everyone would have a different cache,
+   *       defeating the purpose of global cache;
    *     * we need to reject any additional field we do not know of, because
    *       they could contain absolute path, and we absolutely want to process
    *       these.
@@ -397,21 +397,21 @@ class OptionsHasher {
       +dev | +generateSourceMaps << 1 | +hot << 2 | +!!inlineRequires << 3,
     ]));
     hash.update(JSON.stringify(platform));
-    let relativeBlacklist = [];
+    let blacklistWithLocalPaths = [];
     if (typeof inlineRequires === 'object') {
-      relativeBlacklist = this.relativizeFilePaths(Object.keys(inlineRequires.blacklist));
+      blacklistWithLocalPaths = this.pathsToLocal(Object.keys(inlineRequires.blacklist));
     }
-    const relativeProjectRoot = this.relativizeFilePath(projectRoot);
-    const optionTuple = [relativeBlacklist, relativeProjectRoot];
+    const localProjectRoot = this.toLocalPath(projectRoot);
+    const optionTuple = [blacklistWithLocalPaths, localProjectRoot];
     hash.update(JSON.stringify(optionTuple));
     return hash;
   }
 
-  relativizeFilePaths(filePaths: Array<string>): Array<string> {
-    return filePaths.map(this.relativizeFilePath.bind(this));
+  pathsToLocal(filePaths: Array<string>): Array<string> {
+    return filePaths.map(this.toLocalPath, this);
   }
 
-  relativizeFilePath(filePath: string): string {
+  toLocalPath(filePath: string): string {
     return path.relative(this._rootPath, filePath);
   }
 }
