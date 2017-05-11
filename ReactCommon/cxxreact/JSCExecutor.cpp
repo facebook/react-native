@@ -200,13 +200,13 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   // Create a custom global class, so we can store data in it later using JSObjectSetPrivate
   JSClassRef globalClass = nullptr;
   {
-    SystraceSection s("JSClassCreate");
+    SystraceSection s_("JSClassCreate");
     JSClassDefinition definition = kJSClassDefinitionEmpty;
     definition.attributes |= kJSClassAttributeNoAutomaticPrototype;
     globalClass = JSC_JSClassCreate(useCustomJSC, &definition);
   }
   {
-    SystraceSection s("JSGlobalContextCreateInGroup");
+    SystraceSection s_("JSGlobalContextCreateInGroup");
     m_context = JSC_JSGlobalContextCreateInGroup(useCustomJSC, nullptr, globalClass);
   }
   JSC_JSClassRelease(useCustomJSC, globalClass);

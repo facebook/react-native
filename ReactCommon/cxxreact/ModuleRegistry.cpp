@@ -72,12 +72,12 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name)
   folly::dynamic config = folly::dynamic::array(name);
 
   {
-    SystraceSection s("getConstants");
+    SystraceSection s_("getConstants");
     config.push_back(module->getConstants());
   }
 
   {
-    SystraceSection s("getMethods");
+    SystraceSection s_("getMethods");
     std::vector<MethodDescriptor> methods = module->getMethods();
 
     folly::dynamic methodNames = folly::dynamic::array;

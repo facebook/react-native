@@ -1,3 +1,7 @@
 # Set up common deps
 
 GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
+
+INSPECTOR_FLAGS = []
+
+JSC_DEPS = []
