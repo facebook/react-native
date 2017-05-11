@@ -110,6 +110,7 @@ function tryResolveSync<T>(action: () => T, secondaryAction: () => T): T {
 }
 
 class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
+  _doesFileExist: (filePath: string) => boolean;
   _immediateResolutionCache: {[key: string]: TModule};
   _options: Options<TModule, TPackage>;
   static emptyModule: string;
@@ -117,6 +118,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
   constructor(options: Options<TModule, TPackage>) {
     this._options = options;
     this._resetResolutionCache();
+    this._doesFileExist = filePath => this._options.hasteFS.exists(filePath);
   }
 
   _tryResolve<T>(
@@ -578,52 +580,32 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
   }
 
   _loadAsFile(
-    potentialModulePath: string,
+    basepath: string,
     fromModule: TModule,
     toModule: string,
   ): TModule {
-    if (this._options.helpers.isAssetFile(potentialModulePath)) {
-      return this._loadAsAssetFile(potentialModulePath, fromModule, toModule);
+    if (this._options.helpers.isAssetFile(basepath)) {
+      return this._loadAsAssetFile(basepath, fromModule, toModule);
     }
-
-    let file;
-    if (this._options.hasteFS.exists(potentialModulePath)) {
-      file = potentialModulePath;
-    } else {
-      const {platform, preferNativePlatform, hasteFS} = this._options;
-      for (let i = 0; i < this._options.sourceExts.length; i++) {
-        const ext = this._options.sourceExts[i];
-        if (platform != null) {
-          const platformSpecificPath = `${potentialModulePath}.${platform}.${ext}`;
-          if (hasteFS.exists(platformSpecificPath)) {
-            file = platformSpecificPath;
-            break;
-          }
-        }
-        if (preferNativePlatform) {
-          const nativeSpecificPath = `${potentialModulePath}.native.${ext}`;
-          if (hasteFS.exists(nativeSpecificPath)) {
-            file = nativeSpecificPath;
-            break;
-          }
-        }
-        const genericPath = `${potentialModulePath}.${ext}`;
-        if (hasteFS.exists(genericPath)) {
-          file = genericPath;
-          break;
-        }
-      }
-
-      if (file == null) {
-        throw new UnableToResolveError(
-          fromModule,
-          toModule,
-          `File ${potentialModulePath} doesn't exist`,
-        );
-      }
+    const dirPath = path.dirname(basepath);
+    const doesFileExist = this._doesFileExist;
+    const resolver = new FileNameResolver({doesFileExist, dirPath});
+    const fileNamePrefix = path.basename(basepath);
+    const fileName = this._tryToResolveAllFileNames(resolver, fileNamePrefix);
+    if (fileName != null) {
+      return this._options.moduleCache.getModule(path.join(dirPath, fileName));
     }
-
-    return this._options.moduleCache.getModule(file);
+    throw new UnableToResolveError(
+      fromModule,
+      toModule,
+      `Could not resolve the base path \`${basepath}' into a module. The ` +
+        `folder \`${dirPath}' was searched for one of these files: ` +
+        resolver
+          .getTentativeFileNames()
+          .map(filePath => `\`${filePath}'`)
+          .join(', ') +
+        '.',
+    );
   }
 
   _loadAsAssetFile(
@@ -657,6 +639,60 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     );
   }
 
+  /**
+   * A particular 'base path' can resolve to a number of possibilities depending
+   * on the context. For example `foo/bar` could resolve to `foo/bar.ios.js`, or
+   * to `foo/bar.js`. If can also resolve to the bare path `foo/bar` itself, as
+   * supported by Node.js resolution. On the other hand it doesn't support
+   * `foo/bar.ios`, for historical reasons.
+   */
+  _tryToResolveAllFileNames(
+    resolver: FileNameResolver,
+    fileNamePrefix: string,
+  ): ?string {
+    if (resolver.tryToResolveFileName(fileNamePrefix)) {
+      return fileNamePrefix;
+    }
+    const {sourceExts} = this._options;
+    for (let i = 0; i < sourceExts.length; i++) {
+      const fileName = this._tryToResolveFileNamesForExt(
+        fileNamePrefix,
+        resolver,
+        sourceExts[i],
+      );
+      if (fileName != null) {
+        return fileName;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * For a particular extension, ex. `js`, we want to try a few possibilities,
+   * such as `foo.ios.js`, `foo.native.js`, and of course `foo.js`.
+   */
+  _tryToResolveFileNamesForExt(
+    fileNamePrefix: string,
+    resolver: FileNameResolver,
+    ext: string,
+  ): ?string {
+    const {platform, preferNativePlatform} = this._options;
+    if (platform != null) {
+      const fileName = `${fileNamePrefix}.${platform}.${ext}`;
+      if (resolver.tryToResolveFileName(fileName)) {
+        return fileName;
+      }
+    }
+    if (preferNativePlatform) {
+      const fileName = `${fileNamePrefix}.native.${ext}`;
+      if (resolver.tryToResolveFileName(fileName)) {
+        return fileName;
+      }
+    }
+    const fileName = `${fileNamePrefix}.${ext}`;
+    return resolver.tryToResolveFileName(fileName) ? fileName : null;
+  }
+
   _loadAsDir(
     potentialDirPath: string,
     fromModule: TModule,
@@ -687,6 +723,35 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
 
 function resolutionHash(modulePath, depName) {
   return `${path.resolve(modulePath)}:${depName}`;
+}
+
+type FileNameResolverOptions = {|
+  +dirPath: string,
+  +doesFileExist: (filePath: string) => boolean,
+|};
+
+/**
+ * When resolving a single module we want to keep track of the list of paths
+ * we tried to find.
+ */
+class FileNameResolver {
+  _options: FileNameResolverOptions;
+  _tentativeFileNames: Array<string>;
+
+  constructor(options: FileNameResolverOptions) {
+    this._options = options;
+    this._tentativeFileNames = [];
+  }
+
+  getTentativeFileNames(): $ReadOnlyArray<string> {
+    return this._tentativeFileNames;
+  }
+
+  tryToResolveFileName(fileName: string): boolean {
+    this._tentativeFileNames.push(fileName);
+    const filePath = path.join(this._options.dirPath, fileName);
+    return this._options.doesFileExist(filePath);
+  }
 }
 
 class UnableToResolveError extends Error {
