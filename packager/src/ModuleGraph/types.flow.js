@@ -110,7 +110,7 @@ export type TransformResult = {|
   code: string,
   dependencies: Array<string>,
   dependencyMapName?: string,
-  map: ?Object,
+  map: ?MappingsMap,
 |};
 
 export type TransformResults = {[string]: TransformResult};

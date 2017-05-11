@@ -14,7 +14,7 @@
 const crypto = require('crypto');
 const denodeify = require('denodeify');
 const fs = require('fs');
-const getAssetDataFromName = require('../node-haste').getAssetDataFromName;
+const getAssetDataFromName = require('../node-haste/DependencyGraph').getAssetDataFromName;
 const path = require('path');
 
 import type {AssetData} from '../node-haste/lib/getAssetDataFromName';

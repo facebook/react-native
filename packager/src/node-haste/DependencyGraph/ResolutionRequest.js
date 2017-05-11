@@ -442,36 +442,38 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
          currDir !== '.' && currDir !== realPath.parse(fromModule.path).root;
          currDir = path.dirname(currDir)) {
       const searchPath = path.join(currDir, 'node_modules');
-      if (this._options.dirExists(searchPath)) {
-        searchQueue.push(
-          path.join(searchPath, realModuleName)
-        );
-      }
+      searchQueue.push(path.join(searchPath, realModuleName));
     }
 
+    const extraSearchQueue = [];
     if (this._options.extraNodeModules) {
       const {extraNodeModules} = this._options;
       const bits = toModuleName.split(path.sep);
       const packageName = bits[0];
       if (extraNodeModules[packageName]) {
         bits[0] = extraNodeModules[packageName];
-        searchQueue.push(path.join.apply(path, bits));
+        extraSearchQueue.push(path.join.apply(path, bits));
       }
     }
 
-    for (let i = 0; i < searchQueue.length; ++i) {
-      const resolvedModule = this._tryResolveNodeDep(searchQueue[i], fromModule, toModuleName);
+    const fullSearchQueue = searchQueue.concat(extraSearchQueue);
+    for (let i = 0; i < fullSearchQueue.length; ++i) {
+      const resolvedModule = this._tryResolveNodeDep(fullSearchQueue[i], fromModule, toModuleName);
       if (resolvedModule != null) {
         return resolvedModule;
       }
     }
 
-    const hint = searchQueue.length ? ' or in these directories:' : '';
+    const displaySearchQueue = searchQueue
+      .filter(dirPath => this._options.dirExists(dirPath))
+      .concat(extraSearchQueue);
+
+    const hint = displaySearchQueue.length ? ' or in these directories:' : '';
     throw new UnableToResolveError(
       fromModule,
       toModuleName,
       `Module does not exist in the module map${hint}\n` +
-        searchQueue.map(searchPath => `  ${path.dirname(searchPath)}\n`).join(', ') + '\n' +
+        displaySearchQueue.map(searchPath => `  ${path.dirname(searchPath)}\n`).join(', ') + '\n' +
       `This might be related to https://github.com/facebook/react-native/issues/4968\n` +
       `To resolve try the following:\n` +
       `  1. Clear watchman watches: \`watchman watch-del-all\`.\n` +
@@ -500,30 +502,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
 
   _loadAsFile(potentialModulePath: string, fromModule: TModule, toModule: string): TModule {
     if (this._options.helpers.isAssetFile(potentialModulePath)) {
-      const dirname = path.dirname(potentialModulePath);
-      if (!this._options.dirExists(dirname)) {
-        throw new UnableToResolveError(
-          fromModule,
-          toModule,
-          `Directory ${dirname} doesn't exist`,
-        );
-      }
-
-      const {name, type} = getAssetDataFromName(potentialModulePath, this._options.platforms);
-
-      let pattern = '^' + name + '(@[\\d\\.]+x)?';
-      if (this._options.platform != null) {
-        pattern += '(\\.' + this._options.platform + ')?';
-      }
-      pattern += '\\.' + type + '$';
-
-      const assetFiles = this._options.matchFiles(dirname, new RegExp(pattern));
-      // We arbitrarly grab the lowest, because scale selection will happen
-      // somewhere else. Always the lowest so that it's stable between builds.
-      const assetFile = getArrayLowestItem(assetFiles);
-      if (assetFile) {
-        return this._options.moduleCache.getAssetModule(assetFile);
-      }
+      return this._loadAsAssetFile(potentialModulePath, fromModule, toModule);
     }
 
     let file;
@@ -567,15 +546,31 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     return this._options.moduleCache.getModule(file);
   }
 
-  _loadAsDir(potentialDirPath: string, fromModule: TModule, toModule: string): TModule {
-    if (!this._options.dirExists(potentialDirPath)) {
-      throw new UnableToResolveError(
-        fromModule,
-        toModule,
-        `Directory ${potentialDirPath} doesn't exist`,
-      );
-    }
+  _loadAsAssetFile(potentialModulePath: string, fromModule: TModule, toModule: string): TModule {
+    const {name, type} = getAssetDataFromName(potentialModulePath, this._options.platforms);
 
+    let pattern = '^' + name + '(@[\\d\\.]+x)?';
+    if (this._options.platform != null) {
+      pattern += '(\\.' + this._options.platform + ')?';
+    }
+    pattern += '\\.' + type + '$';
+
+    const dirname = path.dirname(potentialModulePath);
+    const assetFiles = this._options.matchFiles(dirname, new RegExp(pattern));
+    // We arbitrarly grab the lowest, because scale selection will happen
+    // somewhere else. Always the lowest so that it's stable between builds.
+    const assetFile = getArrayLowestItem(assetFiles);
+    if (assetFile) {
+      return this._options.moduleCache.getAssetModule(assetFile);
+    }
+    throw new UnableToResolveError(
+      fromModule,
+      toModule,
+      `Directory \`${dirname}' doesn't contain asset \`${name}'`,
+    );
+  }
+
+  _loadAsDir(potentialDirPath: string, fromModule: TModule, toModule: string): TModule {
     const packageJsonPath = path.join(potentialDirPath, 'package.json');
     if (this._options.hasteFS.exists(packageJsonPath)) {
       const main = this._options.moduleCache.getPackage(packageJsonPath).getMain();

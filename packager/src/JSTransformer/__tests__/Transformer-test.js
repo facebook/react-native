@@ -10,7 +10,7 @@
 
 jest
   .unmock('stream')
-  .unmock('imurmurhash')
+  .unmock('crypto')
   .unmock('../../lib/ModuleTransport')
   .unmock('../');
 

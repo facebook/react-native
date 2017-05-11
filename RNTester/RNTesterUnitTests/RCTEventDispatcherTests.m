@@ -13,7 +13,6 @@
 
 #import <OCMock/OCMock.h>
 
-#import <React/RCTBridge+Private.h>
 #import <React/RCTEventDispatcher.h>
 
 @interface RCTTestEvent : NSObject <RCTEvent>

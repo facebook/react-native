@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @format
  */
 
 'use strict';
@@ -23,16 +24,13 @@ type PackageContent = {
 };
 
 class Package {
-
   path: string;
   root: string;
   type: string;
 
   _content: ?PackageContent;
 
-  constructor({file}: {
-    file: string,
-  }) {
+  constructor({file}: {file: string}) {
     this.path = path.resolve(file);
     this.root = path.dirname(this.path);
     this.type = 'Package';
@@ -49,7 +47,8 @@ class Package {
     let main = json.main || 'index';
 
     if (replacements && typeof replacements === 'object') {
-      main = replacements[main] ||
+      main =
+        replacements[main] ||
         replacements[main + '.js'] ||
         replacements[main + '.json'] ||
         replacements[main.replace(/(\.js|\.json)$/, '')] ||
@@ -85,8 +84,8 @@ class Package {
       // support exclude with "someDependency": false
       return replacement === false
         ? false
-        /* $FlowFixMe: type of replacements is not being validated */
-        : replacement || name;
+        : /* $FlowFixMe: type of replacements is not being validated */
+          replacement || name;
     }
 
     let relPath = './' + path.relative(this.root, name);
@@ -113,7 +112,7 @@ class Package {
       return path.join(
         this.root,
         /* $FlowFixMe: `getReplacements` doesn't validate the return value. */
-        redirect
+        redirect,
       );
     }
 
