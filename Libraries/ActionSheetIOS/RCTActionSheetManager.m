@@ -91,7 +91,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   NSInteger index = 0;
   for (NSString *option in buttons) {
     UIAlertActionStyle style = UIAlertActionStyleDefault;
-    if (index == destructiveButtonIndex || [destructiveButtonIndexes containsObject:@(index)]) 
+    if (index == destructiveButtonIndex || [destructiveButtonIndexes containsObject:@(index)]) {
       style = UIAlertActionStyleDestructive;
     } else if (index == cancelButtonIndex) {
       style = UIAlertActionStyleCancel;
