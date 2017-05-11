@@ -162,14 +162,15 @@ class DependencyGraph extends EventEmitter {
   _createModuleCache() {
     const {_opts} = this;
     return new ModuleCache({
+      assetDependencies: _opts.assetDependencies,
+      depGraphHelpers: this._helpers,
+      getClosestPackage: this._getClosestPackage.bind(this),
       getTransformCacheKey: _opts.getTransformCacheKey,
       globalTransformCache: _opts.globalTransformCache,
-      transformCode: _opts.transformCode,
-      depGraphHelpers: this._helpers,
-      assetDependencies: _opts.assetDependencies,
       moduleOptions: _opts.moduleOptions,
       reporter: _opts.reporter,
-      getClosestPackage: this._getClosestPackage.bind(this),
+      roots: _opts.roots,
+      transformCode: _opts.transformCode,
     }, _opts.platforms);
   }
 

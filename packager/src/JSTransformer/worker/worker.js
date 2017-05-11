@@ -19,6 +19,7 @@ const invariant = require('fbjs/lib/invariant');
 const minify = require('./minify');
 
 import type {LogEntry} from '../../Logger/Types';
+import type {LocalPath} from '../../node-haste/lib/toLocalPath';
 import type {Ast, Plugins as BabelPlugins, SourceMap as MappingsMap} from 'babel-core';
 
 export type TransformedCode = {

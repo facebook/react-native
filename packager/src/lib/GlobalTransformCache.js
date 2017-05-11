@@ -18,6 +18,7 @@ const FetchError = require('node-fetch/lib/fetch-error');
 
 const crypto = require('crypto');
 const fetch = require('node-fetch');
+const invariant = require('fbjs/lib/invariant');
 const jsonStableStringify = require('json-stable-stringify');
 const path = require('path');
 const throat = require('throat');
@@ -26,6 +27,7 @@ import type {
   Options as TransformWorkerOptions,
   TransformOptionsStrict,
 } from '../JSTransformer/worker/worker';
+import type {LocalPath} from '../node-haste/lib/toLocalPath';
 import type {CachedResult, GetTransformCacheKey} from './TransformCache';
 
 /**
@@ -62,10 +64,10 @@ type FetchResultFromURI = (uri: string) => Promise<?CachedResult>;
 type StoreResults = (resultsByKey: Map<string, CachedResult>) => Promise<void>;
 
 export type FetchProps = {
-  filePath: string,
-  sourceCode: string,
-  getTransformCacheKey: GetTransformCacheKey,
-  transformOptions: TransformWorkerOptions,
+  +localPath: LocalPath,
+  +sourceCode: string,
+  +getTransformCacheKey: GetTransformCacheKey,
+  +transformOptions: TransformWorkerOptions,
 };
 
 type URI = string;
@@ -227,13 +229,13 @@ class URIBasedGlobalTransformCache {
    */
   keyOf(props: FetchProps) {
     const hash = crypto.createHash('sha1');
-    const {sourceCode, filePath, transformOptions} = props;
+    const {sourceCode, localPath, transformOptions} = props;
     hash.update(this._optionsHasher.getTransformWorkerOptionsDigest(transformOptions));
     const cacheKey = props.getTransformCacheKey(transformOptions);
     hash.update(JSON.stringify(cacheKey));
     hash.update(crypto.createHash('sha1').update(sourceCode).digest('hex'));
     const digest = hash.digest('hex');
-    return `${digest}-${path.basename(filePath)}`;
+    return `${digest}-${localPath}`;
   }
 
   /**

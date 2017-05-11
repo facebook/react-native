@@ -24,6 +24,7 @@ const writeFileAtomicSync = require('write-file-atomic').sync;
 import type {Options as WorkerOptions} from '../JSTransformer/worker/worker';
 import type {MappingsMap} from './SourceMap';
 import type {Reporter} from './reporting';
+import type {LocalPath} from '../node-haste/lib/toLocalPath';
 
 type CacheFilePaths = {transformedCode: string, metadata: string};
 export type GetTransformCacheKey = (options: {}) => string;
@@ -50,6 +51,7 @@ export type CacheOptions = {
 
 export type ReadTransformProps = {
   filePath: string,
+  localPath: LocalPath,
   sourceCode: string,
   transformOptions: WorkerOptions,
   transformOptionsKey: string,

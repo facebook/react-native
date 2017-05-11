@@ -26,13 +26,13 @@ const denodeify = require('denodeify');
 const defaults = require('../../defaults');
 const os = require('os');
 const invariant = require('fbjs/lib/invariant');
+const toLocalPath = require('../node-haste/lib/toLocalPath');
 
 const {generateAssetTransformResult, isAssetTypeAnImage} = require('./util');
 
 const {
   sep: pathSeparator,
   join: joinPath,
-  relative: relativePath,
   dirname: pathDirname,
   extname,
 } = require('path');
@@ -840,19 +840,6 @@ class Bundler {
     return Math.min(cores, envCount);
   }
 
-}
-
-function toLocalPath(roots, absPath) {
-  for (let i = 0; i < roots.length; i++) {
-    const localPath = relativePath(roots[i], absPath);
-    if (localPath[0] !== '.') {
-      return localPath;
-    }
-  }
-
-  throw new Error(
-    'Expected root module to be relative to one of the project roots'
-  );
 }
 
 function verifyRootExists(root) {
