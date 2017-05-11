@@ -161,6 +161,7 @@ YG_NODE_PROPERTY(YGMeasureFunc, MeasureFunc, measureFunc);
 YG_NODE_PROPERTY(YGBaselineFunc, BaselineFunc, baselineFunc)
 YG_NODE_PROPERTY(YGPrintFunc, PrintFunc, printFunc);
 YG_NODE_PROPERTY(bool, HasNewLayout, hasNewLayout);
+YG_NODE_PROPERTY(YGNodeType, NodeType, nodeType);
 
 YG_NODE_STYLE_PROPERTY(YGDirection, Direction, direction);
 YG_NODE_STYLE_PROPERTY(YGFlexDirection, FlexDirection, flexDirection);

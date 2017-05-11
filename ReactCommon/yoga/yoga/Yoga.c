@@ -121,6 +121,7 @@ typedef struct YGNode {
 
   bool isDirty;
   bool hasNewLayout;
+  YGNodeType nodeType;
 
   YGValue const *resolvedDimensions[2];
 } YGNode;
@@ -158,6 +159,7 @@ static YGNode gYGNodeDefaults = {
     .children = NULL,
     .hasNewLayout = true,
     .isDirty = false,
+    .nodeType = YGNodeTypeDefault,
     .resolvedDimensions = {[YGDimensionWidth] = &YGValueUndefined,
                            [YGDimensionHeight] = &YGValueUndefined},
 
@@ -444,11 +446,15 @@ static void YGNodeMarkDirtyInternal(const YGNodeRef node) {
 void YGNodeSetMeasureFunc(const YGNodeRef node, YGMeasureFunc measureFunc) {
   if (measureFunc == NULL) {
     node->measure = NULL;
+    // TODO: t18095186 Move nodeType to opt-in function and mark appropriate places in Litho
+    node->nodeType = YGNodeTypeDefault;
   } else {
     YGAssertWithNode(node,
              YGNodeGetChildCount(node) == 0,
              "Cannot set measure function: Nodes with measure functions cannot have children.");
     node->measure = measureFunc;
+    // TODO: t18095186 Move nodeType to opt-in function and mark appropriate places in Litho
+    node->nodeType = YGNodeTypeText;
   }
 }
 
@@ -722,6 +728,7 @@ static inline const YGValue *YGNodeResolveFlexBasisPtr(const YGNodeRef node) {
 YG_NODE_PROPERTY_IMPL(void *, Context, context, context);
 YG_NODE_PROPERTY_IMPL(YGPrintFunc, PrintFunc, printFunc, print);
 YG_NODE_PROPERTY_IMPL(bool, HasNewLayout, hasNewLayout, hasNewLayout);
+YG_NODE_PROPERTY_IMPL(YGNodeType, NodeType, nodeType, nodeType);
 
 YG_NODE_STYLE_PROPERTY_IMPL(YGDirection, Direction, direction, direction);
 YG_NODE_STYLE_PROPERTY_IMPL(YGFlexDirection, FlexDirection, flexDirection, flexDirection);
@@ -3402,19 +3409,19 @@ static void YGRoundToPixelGrid(const YGNodeRef node,
 
   // If a node has a custom measure function we never want to round down its size as this could
   // lead to unwanted text truncation.
-  const bool hasMeasure = node->measure != NULL;
+  const bool textRounding = node->nodeType == YGNodeTypeText;
 
   node->layout.position[YGEdgeLeft] =
-      YGRoundValueToPixelGrid(nodeLeft, pointScaleFactor, false, hasMeasure);
+      YGRoundValueToPixelGrid(nodeLeft, pointScaleFactor, false, textRounding);
   node->layout.position[YGEdgeTop] =
-      YGRoundValueToPixelGrid(nodeTop, pointScaleFactor, false, hasMeasure);
+      YGRoundValueToPixelGrid(nodeTop, pointScaleFactor, false, textRounding);
 
   node->layout.dimensions[YGDimensionWidth] =
-      YGRoundValueToPixelGrid(absoluteNodeRight, pointScaleFactor, hasMeasure, false) -
-      YGRoundValueToPixelGrid(absoluteNodeLeft, pointScaleFactor, false, hasMeasure);
+      YGRoundValueToPixelGrid(absoluteNodeRight, pointScaleFactor, textRounding, false) -
+      YGRoundValueToPixelGrid(absoluteNodeLeft, pointScaleFactor, false, textRounding);
   node->layout.dimensions[YGDimensionHeight] =
-      YGRoundValueToPixelGrid(absoluteNodeBottom, pointScaleFactor, hasMeasure, false) -
-      YGRoundValueToPixelGrid(absoluteNodeTop, pointScaleFactor, false, hasMeasure);
+      YGRoundValueToPixelGrid(absoluteNodeBottom, pointScaleFactor, textRounding, false) -
+      YGRoundValueToPixelGrid(absoluteNodeTop, pointScaleFactor, false, textRounding);
 
   const uint32_t childCount = YGNodeListCount(node->children);
   for (uint32_t i = 0; i < childCount; i++) {
