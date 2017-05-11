@@ -11,7 +11,7 @@
 
 'use strict';
 
-const DependencyGraph = require('../node-haste');
+const DependencyGraph = require('../node-haste/DependencyGraph');
 
 const defaults = require('../../defaults');
 const pathJoin = require('path').join;

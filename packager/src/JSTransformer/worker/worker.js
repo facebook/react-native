@@ -166,7 +166,7 @@ exports.transformAndExtractDependencies = (
 exports.minify = (
   filename: string,
   code: string,
-  sourceMap: string,
+  sourceMap: MappingsMap,
   callback: (error: ?Error, result: mixed) => mixed,
 ) => {
   var result;
