@@ -29,13 +29,13 @@ export type TransformedCode = {
 };
 
 export type Transformer<ExtraOptions: {} = {}> = {
-  transform: (
+  transform: ({|
     filename: string,
-    sourceCode: string,
     options: ExtraOptions & TransformOptions,
     plugins?: BabelPlugins,
-  ) => {ast: ?Ast, code: string, map: ?MappingsMap},
-  getCacheKey: TransformOptionsStrict => string,
+    src: string,
+  |}) => {ast: ?Ast, code: string, map: ?MappingsMap},
+  getCacheKey: () => string,
 };
 
 
@@ -102,7 +102,11 @@ function transformCode(
 
   let transformed;
   try {
-    transformed = transformer.transform(sourceCode, filename, options.transform);
+    transformed = transformer.transform({
+      filename,
+      options: options.transform,
+      src: sourceCode,
+    });
   } catch (error) {
     callback(error);
     return;

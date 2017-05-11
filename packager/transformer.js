@@ -112,11 +112,14 @@ function buildBabelConfig(filename, options) {
   return Object.assign({}, babelRC, config);
 }
 
-function transform(
-  src: string,
+type Params = {
   filename: string,
-  options,
-) {
+  options: TransformOptions,
+  plugins?: BabelPlugins,
+  src: string,
+};
+
+function transform({filename, options, src}: Params) {
   options = options || {};
 
   const OLD_BABEL_ENV = process.env.BABEL_ENV;
@@ -154,7 +157,7 @@ function transform(
   }
 }
 
-function getCacheKey(options: TransformOptions) {
+function getCacheKey() {
   var key = crypto.createHash('md5');
   cacheKeyParts.forEach(part => key.update(part));
   return key.digest('hex');

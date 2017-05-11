@@ -95,10 +95,16 @@ describe('transforming JS modules:', () => {
       const variants = {dev: {dev: true}, prod: {dev: false}};
 
       transformModule(sourceCode, options(variants), () => {
-        expect(transformer.transform)
-          .toBeCalledWith(sourceCode, filename, {...defaults, ...variants.dev});
-        expect(transformer.transform)
-          .toBeCalledWith(sourceCode, filename, {...defaults, ...variants.prod});
+        expect(transformer.transform).toBeCalledWith({
+            filename,
+            options: {...defaults, ...variants.dev},
+            src: sourceCode,
+          });
+        expect(transformer.transform).toBeCalledWith({
+            filename,
+            options: {...defaults, ...variants.prod},
+            src: sourceCode,
+          });
         done();
       });
     },

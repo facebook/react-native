@@ -26,7 +26,7 @@ describe('code transformation worker:', () => {
     extractDependencies =
       require('../extract-dependencies').mockReturnValue({});
     transformer = {
-      transform: jest.fn((src, filename, options) => ({
+      transform: jest.fn(({filename, options, src}) => ({
         code: src,
         map: {},
       })),
@@ -38,22 +38,22 @@ describe('code transformation worker:', () => {
     const sourceCode = 'arbitrary(code)';
     const transformOptions = {arbitrary: 'options'};
     transformCode(transformer, filename, sourceCode, {transform: transformOptions}, () => {});
-    expect(transformer.transform).toBeCalledWith(
-      sourceCode,
+    expect(transformer.transform).toBeCalledWith({
       filename,
-      transformOptions,
-    );
+      options: transformOptions,
+      src: sourceCode,
+    });
   });
 
   it('prefixes JSON files with an assignment to module.exports to make the code valid', function() {
     const filename = 'arbitrary/file.json';
     const sourceCode = '{"arbitrary":"property"}';
     transformCode(transformer, filename, sourceCode, {}, () => {});
-    expect(transformer.transform).toBeCalledWith(
-      `module.exports=${sourceCode}`,
+    expect(transformer.transform).toBeCalledWith({
       filename,
-      undefined,
-    );
+      options: undefined,
+      src: `module.exports=${sourceCode}`,
+    });
   });
 
   it('calls back with the result of the transform in the cache', done => {
