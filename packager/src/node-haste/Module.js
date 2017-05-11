@@ -133,8 +133,8 @@ class Module {
     this._readResultsByOptionsKey = new Map();
   }
 
-  isHaste(): Promise<boolean> {
-    return Promise.resolve().then(() => this._getHasteName() != null);
+  isHaste(): boolean {
+    return this._getHasteName() != null;
   }
 
   getCode(transformOptions: WorkerOptions) {

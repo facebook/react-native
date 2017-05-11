@@ -123,36 +123,38 @@ class HasteMap extends EventEmitter {
 
   _processHasteModule(file, previousName) {
     const module = this._moduleCache.getModule(file);
-    return module.isHaste().then(
-      isHaste => isHaste && module.getName()
+    return Promise.resolve().then(() => {
+      const isHaste = module.isHaste();
+      return isHaste && module.getName()
         .then(name => {
           const result = this._updateHasteMap(name, module);
           if (previousName && name !== previousName) {
             this.emit('change');
           }
           return result;
-        })
-    );
+        });
+    });
   }
 
   _processHastePackage(file, previousName) {
     const p = this._moduleCache.getPackage(file);
-    return p.isHaste()
-      .then(isHaste => isHaste && p.getName()
+    return Promise.resolve().then(() => {
+      const isHaste = p.isHaste();
+      return isHaste && p.getName()
         .then(name => {
           const result = this._updateHasteMap(name, p);
           if (previousName && name !== previousName) {
             this.emit('change');
           }
           return result;
-        }))
-      .catch(e => {
-        if (e instanceof SyntaxError) {
-          // Malformed package.json.
-          return;
-        }
-        throw e;
-      });
+        });
+    }).catch(e => {
+      if (e instanceof SyntaxError) {
+        // Malformed package.json.
+        return;
+      }
+      throw e;
+    });
   }
 
   _updateHasteMap(name, mod) {
