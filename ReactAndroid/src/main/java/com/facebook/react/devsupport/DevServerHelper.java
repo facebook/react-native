@@ -219,8 +219,7 @@ public class DevServerHelper {
    * @return the host to use when connecting to the bundle server from the host itself.
    */
   private String getHostForJSProxy() {
-    String host = getDebugServerHost();
-	Assertions.assertNotNull(host);
+    String host = Assertions.assertNotNull(getDebugServerHost());
     int portOffset = host.lastIndexOf(':');
     return "localhost" + (portOffset > -1 ? host.substring(portOffset) : "");
   }
