@@ -19,8 +19,9 @@ const invariant = require('fbjs/lib/invariant');
 const minify = require('./minify');
 
 import type {LogEntry} from '../../Logger/Types';
+import type {MappingsMap} from '../../lib/SourceMap';
 import type {LocalPath} from '../../node-haste/lib/toLocalPath';
-import type {Ast, Plugins as BabelPlugins, SourceMap as MappingsMap} from 'babel-core';
+import type {Ast, Plugins as BabelPlugins} from 'babel-core';
 
 export type TransformedCode = {
   code: string,
@@ -32,6 +33,7 @@ export type TransformedCode = {
 export type Transformer<ExtraOptions: {} = {}> = {
   transform: ({|
     filename: string,
+    localPath: string,
     options: ExtraOptions & TransformOptions,
     plugins?: BabelPlugins,
     src: string,
@@ -71,17 +73,18 @@ export type Data = {
   transformFileEndLogEntry: LogEntry,
 };
 
-type Callback = (
+type Callback<T> = (
   error: ?Error,
-  data: ?Data,
+  data: ?T,
 ) => mixed;
 
 function transformCode(
   transformer: Transformer<*>,
   filename: string,
+  localPath: LocalPath,
   sourceCode: string,
   options: Options,
-  callback: Callback,
+  callback: Callback<Data>,
 ) {
   invariant(
     !options.minify || options.transform.generateSourceMaps,
@@ -105,6 +108,7 @@ function transformCode(
   try {
     transformed = transformer.transform({
       filename,
+      localPath,
       options: options.transform,
       src: sourceCode,
     });
@@ -158,21 +162,22 @@ function transformCode(
 exports.transformAndExtractDependencies = (
   transform: string,
   filename: string,
+  localPath: LocalPath,
   sourceCode: string,
   options: Options,
-  callback: Callback,
+  callback: Callback<Data>,
 ) => {
   babelRegisterOnly([transform]);
   /* $FlowFixMe: impossible to type a dynamic require */
   const transformModule: Transformer<*> = require(transform);
-  transformCode(transformModule, filename, sourceCode, options, callback);
+  transformCode(transformModule, filename, localPath, sourceCode, options, callback);
 };
 
 exports.minify = (
   filename: string,
   code: string,
   sourceMap: MappingsMap,
-  callback: (error: ?Error, result: mixed) => mixed,
+  callback: Callback<{code: string, map: MappingsMap}>,
 ) => {
   var result;
   try {

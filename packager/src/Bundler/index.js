@@ -224,6 +224,7 @@ class Bundler {
       transformCode:
         (module, code, transformCodeOptions) => this._transformer.transformFile(
           module.path,
+          module.localPath,
           code,
           transformCodeOptions,
         ),

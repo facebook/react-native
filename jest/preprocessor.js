@@ -36,6 +36,7 @@ module.exports = {
 
     return transformer.transform({
       filename: file,
+      localPath: file,
       options: {
         dev: true,
         inlineRequires: true,
