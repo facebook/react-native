@@ -133,7 +133,7 @@ type Options = {|
   +reporter: Reporter,
   +resetCache: boolean,
   +sourceExts: Array<string>,
-  +transformModulePath?: string,
+  +transformModulePath: string,
   +transformTimeoutInterval: ?number,
   +watch: boolean,
 |};
@@ -155,15 +155,9 @@ class Bundler {
 
     opts.projectRoots.forEach(verifyRootExists);
 
-    let transformModuleHash;
-    try {
-      /* $FlowFixMe: if transformModulePath is null it'll just be caught */
-      const transformModuleStr = fs.readFileSync(opts.transformModulePath);
-      transformModuleHash =
-        crypto.createHash('sha1').update(transformModuleStr).digest('hex');
-    } catch (error) {
-      transformModuleHash = '';
-    }
+    const transformModuleStr = fs.readFileSync(opts.transformModulePath);
+    const transformModuleHash =
+      crypto.createHash('sha1').update(transformModuleStr).digest('hex');
 
     const stableProjectRoots = opts.projectRoots.map(p => {
       return path.relative(path.join(__dirname, '../../../..'), p);
@@ -197,7 +191,6 @@ class Bundler {
     const maxWorkerCount = Bundler.getMaxWorkerCount();
 
     this._transformer = new Transformer(
-      /* $FlowFixMe: in practice it's always here. */
       opts.transformModulePath,
       maxWorkerCount,
       {

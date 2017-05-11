@@ -75,7 +75,7 @@ type Options = {
   resetCache?: boolean,
   silent?: boolean,
   +sourceExts: ?Array<string>,
-  transformModulePath?: string,
+  +transformModulePath: string,
   transformTimeoutInterval?: number,
   watch?: boolean,
 };
@@ -131,7 +131,7 @@ class Server {
     resetCache: boolean,
     silent: boolean,
     +sourceExts: Array<string>,
-    transformModulePath: void | string,
+    +transformModulePath: string,
     transformTimeoutInterval: ?number,
     watch: boolean,
   };
