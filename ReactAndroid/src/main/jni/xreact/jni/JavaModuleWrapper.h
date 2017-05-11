@@ -16,7 +16,7 @@ class MessageQueueThread;
 
 struct JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
   static constexpr auto kJavaDescriptor =
-    "Lcom/facebook/react/cxxbridge/JavaModuleWrapper$MethodDescriptor;";
+    "Lcom/facebook/react/bridge/JavaModuleWrapper$MethodDescriptor;";
 
   jni::local_ref<JReflectMethod::javaobject> getMethod() const;
   std::string getSignature() const;
@@ -25,7 +25,7 @@ struct JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
 };
 
 struct JavaModuleWrapper : jni::JavaClass<JavaModuleWrapper> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/cxxbridge/JavaModuleWrapper;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/JavaModuleWrapper;";
 
   jni::local_ref<JBaseJavaModule::javaobject> getModule() {
     // This is the call which causes a lazy Java module to actually be

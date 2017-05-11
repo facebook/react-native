@@ -7,16 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.cxxbridge;
+package com.facebook.react.bridge;
 
 import javax.inject.Provider;
 import java.util.List;
-
-import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableNativeArray;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.NativeArgumentsParseException;
 
 import org.junit.Before;
 import org.junit.Rule;

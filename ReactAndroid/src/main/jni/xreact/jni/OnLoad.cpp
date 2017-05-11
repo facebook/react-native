@@ -35,7 +35,7 @@ namespace {
 class JSCJavaScriptExecutorHolder : public HybridClass<JSCJavaScriptExecutorHolder,
                                                        JavaScriptExecutorHolder> {
  public:
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/cxxbridge/JSCJavaScriptExecutor;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/JSCJavaScriptExecutor;";
 
   static local_ref<jhybriddata> initHybrid(alias_ref<jclass>, ReadableNativeArray* jscConfigArray) {
     // See JSCJavaScriptExecutor.Factory() for the other side of this hack.
@@ -61,7 +61,7 @@ struct JavaJSExecutor : public JavaClass<JavaJSExecutor> {
 class ProxyJavaScriptExecutorHolder : public HybridClass<ProxyJavaScriptExecutorHolder,
                                                          JavaScriptExecutorHolder> {
  public:
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/cxxbridge/ProxyJavaScriptExecutor;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/ProxyJavaScriptExecutor;";
 
   static local_ref<jhybriddata> initHybrid(
     alias_ref<jclass>, alias_ref<JavaJSExecutor::javaobject> executorInstance) {
@@ -159,7 +159,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     CatalystInstanceImpl::registerNatives();
     CxxModuleWrapperBase::registerNatives();
     CxxModuleWrapper::registerNatives();
-    JCallbackImpl::registerNatives();
+    JCxxCallbackImpl::registerNatives();
     #ifdef WITH_INSPECTOR
     JInspector::registerNatives();
     #endif

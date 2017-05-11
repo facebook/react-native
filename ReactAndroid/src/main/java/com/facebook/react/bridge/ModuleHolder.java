@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.react.cxxbridge;
+package com.facebook.react.bridge;
 
 import javax.annotation.Nullable;
 import javax.inject.Provider;
