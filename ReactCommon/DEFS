@@ -7,6 +7,7 @@ def rn_xplat_cxx_library(**kwargs):
 GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
 
 INSPECTOR_FLAGS = []
+STATIC_LIBRARY_IOS_FLAGS = []
 
 JSC_DEPS = []
 JSC_INTERNAL_DEPS = []
