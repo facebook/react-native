@@ -2937,7 +2937,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                 if (!YGNodeIsStyleDimDefined(child, crossAxis, availableInnerCrossDim)) {
                   const float childWidth =
                       isMainAxisRow ? (child->layout.measuredDimensions[YGDimensionWidth] +
-                                       YGNodeMarginForAxis(child, crossAxis, availableInnerWidth))
+                                       YGNodeMarginForAxis(child, mainAxis, availableInnerWidth))
                                     : lineHeight;
 
                   const float childHeight =
