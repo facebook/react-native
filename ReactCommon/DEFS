@@ -1,8 +1,15 @@
 # Set up common deps
 
+# Building is not supported in OSS right now
+def rn_xplat_cxx_library(**kwargs):
+  pass
+
 GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
 
 INSPECTOR_FLAGS = []
 
 JSC_DEPS = []
 JSC_INTERNAL_DEPS = []
+
+THIS_IS_FBOBJC = False
+THIS_IS_FBANDROID = False
