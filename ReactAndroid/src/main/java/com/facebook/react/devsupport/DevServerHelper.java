@@ -320,8 +320,10 @@ public class DevServerHelper {
   /**
    * @return the host to use when connecting to the bundle server from the host itself.
    */
-  private static String getHostForJSProxy() {
-    return AndroidInfoHelpers.DEVICE_LOCALHOST;
+  private String getHostForJSProxy() {
+    String host = Assertions.assertNotNull(getDebugServerHost());
+    int portOffset = host.lastIndexOf(':');
+    return "localhost" + (portOffset > -1 ? host.substring(portOffset) : "");
   }
 
   /**
