@@ -127,7 +127,7 @@ type Options = {|
   +platforms: Array<string>,
   +polyfillModuleNames: Array<string>,
   +postProcessModules?: PostProcessModules,
-  +postMinifyProcess?: PostMinifyProcess,
+  +postMinifyProcess: PostMinifyProcess,
   +projectRoots: Array<string>,
   +providesModuleNodeModules?: Array<string>,
   +reporter: Reporter,

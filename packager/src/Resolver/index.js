@@ -39,7 +39,7 @@ type Options = {|
   +hasteImpl?: HasteImpl,
   +maxWorkerCount: number,
   +minifyCode: MinifyCode,
-  +postMinifyProcess?: PostMinifyProcess,
+  +postMinifyProcess: PostMinifyProcess,
   +platforms: Set<string>,
   +polyfillModuleNames?: Array<string>,
   +projectRoots: Array<string>,
@@ -55,7 +55,7 @@ class Resolver {
 
   _depGraph: DependencyGraph;
   _minifyCode: MinifyCode;
-  _postMinifyProcess: ?PostMinifyProcess;
+  _postMinifyProcess: PostMinifyProcess;
   _polyfillModuleNames: Array<string>;
 
   constructor(opts: Options, depGraph: DependencyGraph) {
