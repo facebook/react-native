@@ -119,7 +119,6 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
         moduleCache,
         moduleMap: getFakeModuleMap(hasteMap),
         platform,
-        platforms,
         preferNativePlatform: true,
         sourceExts,
       });

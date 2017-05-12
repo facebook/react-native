@@ -88,7 +88,6 @@ type Options<TModule, TPackage> = {|
   +moduleCache: ModuleishCache<TModule, TPackage>,
   +moduleMap: ModuleMap,
   +platform: ?string,
-  +platforms: Set<string>,
   +preferNativePlatform: boolean,
   +sourceExts: Array<string>,
 |};
@@ -108,6 +107,8 @@ function tryResolveSync<T>(action: () => T, secondaryAction: () => T): T {
     return secondaryAction();
   }
 }
+
+const EMPTY_SET = new Set();
 
 class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
   _doesFileExist = filePath => this._options.hasteFS.exists(filePath);
@@ -613,10 +614,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     fromModule: TModule,
     toModule: string,
   ): TModule {
-    const {name, type} = getAssetDataFromName(
-      potentialModulePath,
-      this._options.platforms,
-    );
+    const {name, type} = getAssetDataFromName(potentialModulePath, EMPTY_SET);
 
     let pattern = '^' + name + '(@[\\d\\.]+x)?';
     if (this._options.platform != null) {

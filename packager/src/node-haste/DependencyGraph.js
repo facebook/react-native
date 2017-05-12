@@ -233,7 +233,6 @@ class DependencyGraph extends EventEmitter {
       moduleCache: this._moduleCache,
       moduleMap: this._moduleMap,
       platform,
-      platforms: this._opts.platforms,
       preferNativePlatform: this._opts.preferNativePlatform,
       sourceExts: this._opts.sourceExts,
     });
