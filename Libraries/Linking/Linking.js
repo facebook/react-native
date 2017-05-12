@@ -71,6 +71,23 @@ const LinkingManager = Platform.OS === 'android' ?
  * In case you also want to listen to incoming app links during your app's
  * execution you'll need to add the following lines to your `*AppDelegate.m`:
  *
+ * NOTE: openURL Deprecated in iOS10.
+ *
+ * IOS 10:
+ * ```
+ * #import <React/RCTLinkingManager.h>
+ * - (BOOL)application:(UIApplication *)application
+ *    openURL:(NSURL *)url
+ *    options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+ * {
+ *
+ *  return [RCTLinkingManager application:application openURL:url
+ *  sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
+ *             annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
+ *
+ * }
+ * ```
+ * IOS 9 and older:
  * ```
  * #import <React/RCTLinkingManager.h>
  *
@@ -78,9 +95,11 @@ const LinkingManager = Platform.OS === 'android' ?
  *   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
  * {
  *   return [RCTLinkingManager application:application openURL:url
- *                       sourceApplication:sourceApplication annotation:annotation];
+ *          sourceApplication:sourceApplication annotation:annotation];
  * }
- *
+ * ```
+ * Universal Links:
+ * ```
  * // Only if your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
  * - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
  *  restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
