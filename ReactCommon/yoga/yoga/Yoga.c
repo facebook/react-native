@@ -2109,7 +2109,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     }
   }
 
-  float totalFlexBasis = 0;
+  float totalOuterFlexBasis = 0;
 
   // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
   for (uint32_t i = 0; i < childCount; i++) {
@@ -2162,11 +2162,14 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       }
     }
 
-    totalFlexBasis += child->layout.computedFlexBasis;
+    totalOuterFlexBasis +=
+        child->layout.computedFlexBasis + YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
+    ;
   }
 
-  const bool flexBasisOverflows =
-      measureModeMainDim == YGMeasureModeUndefined ? false : totalFlexBasis > availableInnerMainDim;
+  const bool flexBasisOverflows = measureModeMainDim == YGMeasureModeUndefined
+                                      ? false
+                                      : totalOuterFlexBasis > availableInnerMainDim;
   if (isNodeFlexWrap && flexBasisOverflows && measureModeMainDim == YGMeasureModeAtMost) {
     measureModeMainDim = YGMeasureModeExactly;
   }
