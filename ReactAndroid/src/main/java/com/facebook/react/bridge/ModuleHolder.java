@@ -5,6 +5,8 @@ package com.facebook.react.bridge;
 import javax.annotation.Nullable;
 import javax.inject.Provider;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactMarker;
@@ -29,6 +31,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  */
 @DoNotStrip
 public class ModuleHolder {
+
+  private static final AtomicInteger sInstanceKeyCounter = new AtomicInteger(1);
 
   private final String mName;
   private final boolean mCanOverrideExistingModule;
@@ -96,7 +100,8 @@ public class ModuleHolder {
 
   private NativeModule create() {
     SoftAssertions.assertCondition(mModule == null, "Creating an already created module.");
-    ReactMarker.logMarker(CREATE_MODULE_START, mName);
+    int instanceKey = sInstanceKeyCounter.getAndIncrement();
+    ReactMarker.logMarker(CREATE_MODULE_START, mName, instanceKey);
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createModule")
       .arg("name", mName)
       .flush();
@@ -110,7 +115,7 @@ public class ModuleHolder {
       }
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-      ReactMarker.logMarker(CREATE_MODULE_END);
+      ReactMarker.logMarker(CREATE_MODULE_END, instanceKey);
     }
     return module;
   }
