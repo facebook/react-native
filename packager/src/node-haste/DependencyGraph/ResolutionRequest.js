@@ -49,21 +49,26 @@ export type ModuleMap = {
   ): ?string,
 };
 
-type Packageish = {
+export type Packageish = {
+  isHaste(): boolean,
+  getName(): Promise<string>,
+  path: string,
   redirectRequire(toModuleName: string): string | false,
   getMain(): string,
   +root: string,
 };
 
-type Moduleish = {
+export type Moduleish = {
   +path: string,
+  isHaste(): boolean,
+  getName(): Promise<string>,
   getPackage(): ?Packageish,
   hash(): string,
   readCached(transformOptions: TransformWorkerOptions): CachedReadResult,
   readFresh(transformOptions: TransformWorkerOptions): Promise<ReadResult>,
 };
 
-type ModuleishCache<TModule, TPackage> = {
+export type ModuleishCache<TModule, TPackage> = {
   getPackage(
     name: string,
     platform?: string,

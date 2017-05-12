@@ -31,6 +31,8 @@ const ResolutionRequest = require('../../node-haste/DependencyGraph/ResolutionRe
 
 const defaults = require('../../../defaults');
 
+import type {Moduleish, Packageish} from '../../node-haste/DependencyGraph/ResolutionRequest';
+
 type ResolveOptions = {|
   assetExts: Extensions,
   extraNodeModules: {[id: string]: string},
@@ -45,7 +47,7 @@ const platforms = new Set(defaults.platforms);
  * a jest-haste-map's ModuleMap instance. Eventually, though, we'll
  * want to figure out how to reunify and get rid of `HasteMap`.
  */
-function getFakeModuleMap(hasteMap: HasteMap) {
+function getFakeModuleMap(hasteMap: HasteMap<Module, Packageish>) {
   return {
     getModule(name: string, platform: ?string): ?string {
       const module = hasteMap.getModule(name, platform);
@@ -58,7 +60,7 @@ function getFakeModuleMap(hasteMap: HasteMap) {
   };
 }
 
-const nullModule = {
+const nullModule: Moduleish = {
   path: '/',
   getPackage() {},
   hash() {
@@ -66,6 +68,8 @@ const nullModule = {
   },
   readCached() { throw new Error('not implemented'); },
   readFresh() { return Promise.reject(new Error('not implemented')); },
+  isHaste() { throw new Error('not implemented'); },
+  getName() { throw new Error('not implemented'); },
 };
 
 exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
