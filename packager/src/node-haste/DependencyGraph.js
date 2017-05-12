@@ -16,18 +16,14 @@ const FilesByDirNameIndex = require('./FilesByDirNameIndex');
 const JestHasteMap = require('jest-haste-map');
 const Module = require('./Module');
 const ModuleCache = require('./ModuleCache');
-const Polyfill = require('./Polyfill');
 const ResolutionRequest = require('./DependencyGraph/ResolutionRequest');
 const ResolutionResponse = require('./DependencyGraph/ResolutionResponse');
 
 const fs = require('fs');
-const getAssetDataFromName = require('./lib/getAssetDataFromName');
-const getInverseDependencies = require('./lib/getInverseDependencies');
 const getPlatformExtension = require('./lib/getPlatformExtension');
 const invariant = require('fbjs/lib/invariant');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
-const replacePatterns = require('./lib/replacePatterns');
 const util = require('util');
 
 const {
@@ -288,21 +284,7 @@ class DependencyGraph extends EventEmitter {
     return this._moduleCache.createPolyfill(options);
   }
 
-  static Module;
-  static Polyfill;
-  static getAssetDataFromName;
-  static replacePatterns;
-  static getInverseDependencies;
-
 }
-
-Object.assign(DependencyGraph, {
-  Module,
-  Polyfill,
-  getAssetDataFromName,
-  replacePatterns,
-  getInverseDependencies,
-});
 
 function NotFoundError() {
   /* $FlowFixMe: monkey-patching */
