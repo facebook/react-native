@@ -19,8 +19,8 @@ const fetch = require('node-fetch');
  *   - `unrecognized`: one other process is running on the port we expect the
  *                     packager to be running.
  */
-function isPackagerRunning() {
-  return fetch('http://localhost:8081/status').then(
+function isPackagerRunning(port = 8081) {
+  return fetch(`http://localhost:${port}/status`).then(
     res => res.text().then(body =>
       body === 'packager-status:running' ? 'running' : 'unrecognized'
     ),

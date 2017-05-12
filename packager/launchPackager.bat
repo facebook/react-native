@@ -7,6 +7,12 @@
 
 @echo off
 title React Packager
+if "%PACKAGER_PORT%" == "" goto NOPORT
+:YESPORT
+node "%~dp0..\local-cli\cli.js" start --port "%PACKAGER_PORT%"
+goto DONE
+:NOPORT
 node "%~dp0..\local-cli\cli.js" start
+:DONE
 pause
 exit
