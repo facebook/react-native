@@ -62,7 +62,7 @@ export type ExtraTransformOptions = {
 export type GetTransformOptionsOpts = {|
   dev: boolean,
   hot: boolean,
-  platform: string,
+  platform: ?string,
 |};
 
 export type GetTransformOptions = (
@@ -521,7 +521,7 @@ class Bundler {
     generateSourceMaps = false,
   }: {
     entryFile: string,
-    platform: string,
+    platform: ?string,
     dev?: boolean,
     minify?: boolean,
     hot?: boolean,
@@ -560,7 +560,7 @@ class Bundler {
     onProgress,
   }: {
     entryFile: string,
-    platform: string,
+    platform: ?string,
     dev?: boolean,
     minify?: boolean,
     hot?: boolean,
@@ -784,7 +784,7 @@ class Bundler {
       generateSourceMaps: boolean,
       hot: boolean,
       minify: boolean,
-      platform: string,
+      platform: ?string,
       projectRoots: Array<string>,
     |},
     ): Promise<BundlingOptions> {

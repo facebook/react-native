@@ -18,7 +18,6 @@ const FetchError = require('node-fetch/lib/fetch-error');
 
 const crypto = require('crypto');
 const fetch = require('node-fetch');
-const invariant = require('fbjs/lib/invariant');
 const jsonStableStringify = require('json-stable-stringify');
 const path = require('path');
 const throat = require('throat');
@@ -134,7 +133,7 @@ class KeyResultStore {
 
 }
 
-export type TransformProfile = {+dev: boolean, +minify: boolean, +platform: string};
+export type TransformProfile = {+dev: boolean, +minify: boolean, +platform: ?string};
 
 function profileKey({dev, minify, platform}: TransformProfile): string {
   return jsonStableStringify({dev, minify, platform});

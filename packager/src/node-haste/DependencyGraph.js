@@ -291,7 +291,6 @@ class DependencyGraph extends EventEmitter {
   static Module;
   static Polyfill;
   static getAssetDataFromName;
-  static getPlatformExtension;
   static replacePatterns;
   static getInverseDependencies;
 
@@ -301,7 +300,6 @@ Object.assign(DependencyGraph, {
   Module,
   Polyfill,
   getAssetDataFromName,
-  getPlatformExtension,
   replacePatterns,
   getInverseDependencies,
 });

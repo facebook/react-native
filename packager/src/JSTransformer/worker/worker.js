@@ -47,7 +47,7 @@ export type TransformOptionsStrict = {|
   +generateSourceMaps: boolean,
   +hot: boolean,
   +inlineRequires: {+blacklist: {[string]: true}} | boolean,
-  +platform: string,
+  +platform: ?string,
   +projectRoot: string,
 |};
 
@@ -56,14 +56,14 @@ export type TransformOptions = {
   +generateSourceMaps?: boolean,
   +hot?: boolean,
   +inlineRequires?: {+blacklist: {[string]: true}} | boolean,
-  +platform: string,
+  +platform: ?string,
   +projectRoot: string,
 };
 
 export type Options = {|
   +dev: boolean,
   +minify: boolean,
-  +platform: string,
+  +platform: ?string,
   +transform: TransformOptionsStrict,
 |};
 

@@ -98,7 +98,7 @@ class Resolver {
 
   getDependencies<T: ContainsTransformerOptions>(
     entryPath: string,
-    options: {platform: string, recursive?: boolean},
+    options: {platform: ?string, recursive?: boolean},
     bundlingOptions: T,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     getModuleId: mixed,
