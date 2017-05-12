@@ -107,7 +107,8 @@
     "React",
     "ReactAndroid",
     "ReactCommon",
-    "README.md"
+    "README.md",
+    "third-party-podspecs"
   ],
   "scripts": {
     "test": "jest",
