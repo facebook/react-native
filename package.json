@@ -140,6 +140,7 @@
     "babel-plugin-external-helpers": "^6.18.0",
     "babel-plugin-syntax-trailing-function-commas": "^6.20.0",
     "babel-plugin-transform-async-to-generator": "6.16.0",
+    "babel-plugin-transform-class-properties": "^6.18.0",
     "babel-plugin-transform-flow-strip-types": "^6.21.0",
     "babel-plugin-transform-object-rest-spread": "^6.20.2",
     "babel-polyfill": "^6.20.0",

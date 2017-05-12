@@ -110,15 +110,15 @@ function tryResolveSync<T>(action: () => T, secondaryAction: () => T): T {
 }
 
 class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
-  _doesFileExist: (filePath: string) => boolean;
+  _doesFileExist = filePath => this._options.hasteFS.exists(filePath);
   _immediateResolutionCache: {[key: string]: TModule};
   _options: Options<TModule, TPackage>;
-  static emptyModule: string;
+
+  static EMPTY_MODULE: string = require.resolve('./assets/empty-module.js');
 
   constructor(options: Options<TModule, TPackage>) {
     this._options = options;
     this._resetResolutionCache();
-    this._doesFileExist = filePath => this._options.hasteFS.exists(filePath);
   }
 
   _tryResolve<T>(
@@ -465,7 +465,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     );
     if (realModuleName === false) {
       return this._loadAsFile(
-        ResolutionRequest.emptyModule,
+        ResolutionRequest.EMPTY_MODULE,
         fromModule,
         toModuleName,
       );
@@ -485,7 +485,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     // exclude
     if (realModuleName === false) {
       return this._loadAsFile(
-        ResolutionRequest.emptyModule,
+        ResolutionRequest.EMPTY_MODULE,
         fromModule,
         toModuleName,
       );
@@ -813,7 +813,5 @@ function getArrayLowestItem(a: Array<string>): string | void {
   }
   return lowest;
 }
-
-ResolutionRequest.emptyModule = require.resolve('./assets/empty-module.js');
 
 module.exports = ResolutionRequest;
