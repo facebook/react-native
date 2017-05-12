@@ -29,7 +29,7 @@ describe('build setup', () => {
         dependencies: [],
         file: {
           code: 'var __DEV__=true,__BUNDLE_START_TIME__=' +
-            'global.nativePerformanceNow?global.nativePerformanceNow():Date.now();',
+            'this.nativePerformanceNow?nativePerformanceNow():Date.now();',
           path: '',
           type: 'script',
         },
@@ -43,7 +43,7 @@ describe('build setup', () => {
       const [prelude] = result.modules;
       expect(prelude.file.code)
         .toEqual('var __DEV__=false,__BUNDLE_START_TIME__=' +
-            'global.nativePerformanceNow?global.nativePerformanceNow():Date.now();');
+            'this.nativePerformanceNow?nativePerformanceNow():Date.now();');
       done();
     });
   });
