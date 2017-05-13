@@ -57,4 +57,76 @@ Now, whenever you [start your service][0], e.g. as a periodic task or in respons
 * By default, your app will crash if you try to run a task while the app is in the foreground. This is to prevent developers from shooting themselves in the foot by doing a lot of work in a task and slowing the UI. There is a way around this.
 * If you start your service from a `BroadcastReceiver`, make sure to call `HeadlessJsTaskService.acquireWakelockNow()` before returning from `onReceive()`.
 
+## Example Usage
+```xml
+<receiver android:name=".NetworkChangeReceiver" >
+  <intent-filter>
+    <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+  </intent-filter>
+</receiver>
+```
+
+```java
+public class NetworkChangeReceiver extends BroadcastReceiver {
+
+    @Override
+    public void onReceive(final Context context, final Intent intent) {
+        /**
+          This part will be called everytime network connection is changed
+          e.g. Connected -> Not Connected
+        **/
+        if (!isAppOnForeground((context))) {
+            /**
+              We will start our service and send extra info about 
+              network connections
+            **/
+            boolean hasInternet = checkInternet(context);
+            Intent serviceIntent = new Intent(context, MyTaskService.class);
+            serviceIntent.putExtra("hasInternet", hasInternet);
+            context.startService(serviceIntent);
+            HeadlessJsTaskService.acquireWakeLockNow(context);
+        }
+    }
+
+    private boolean isAppOnForeground(Context context) {
+        /**
+          We need to check if app is in foreground otherwise the app will crash.
+         http://stackoverflow.com/questions/8489993/check-android-application-is-in-foreground-or-not
+        **/
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = 
+        activityManager.getRunningAppProcesses();
+        if (appProcesses == null) {
+            return false;
+        }
+        final String packageName = context.getPackageName();
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            if (appProcess.importance == 
+            ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND &&
+             appProcess.processName.equals(packageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    boolean checkInternet(Context context) {
+        if (isNetworkAvailable(context)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) 
+        context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return (netInfo != null && netInfo.isConnected());
+    }
+
+
+}
+```
+
 [0]: https://developer.android.com/reference/android/content/Context.html#startService(android.content.Intent)
