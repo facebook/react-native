@@ -25,4 +25,13 @@ describe('TouchableHighlight', () => {
 
     expect(instance.toJSON()).toMatchSnapshot();
   });
+  it('renders correctly with array of styles', () => {
+    const instance = ReactTestRenderer.create(
+      <TouchableHighlight style={[{backgroundColor:'red'}, {borderWidth:1}]}>
+        <Text>Touchable</Text>
+      </TouchableHighlight>
+    );
+
+    expect(instance.toJSON()).toMatchSnapshot();
+  });
 });
