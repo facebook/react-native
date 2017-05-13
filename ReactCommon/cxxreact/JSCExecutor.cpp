@@ -182,7 +182,7 @@ static bool canUseInspector(JSContextRef context) {
 #endif
 
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
-  SystraceSection s("JSCExecutor.initOnJSVMThread");
+  SystraceSection s("JSCExecutor::initOnJSVMThread");
 
   #if defined(__APPLE__)
   const bool useCustomJSC = m_jscConfig.getDefault("UseCustomJSC", false).getBool();
@@ -353,20 +353,15 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
   } else
 #endif
   {
-    #ifdef WITH_FBSYSTRACE
-    fbsystrace_begin_section(
-      TRACE_TAG_REACT_CXX_BRIDGE,
-      "JSCExecutor::loadApplicationScript-createExpectingAscii");
-    #endif
+    String jsScript;
+    {
+      SystraceSection s_("JSCExecutor::loadApplicationScript-createExpectingAscii");
+      ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_START);
+      jsScript = jsStringFromBigString(m_context, *script);
+      ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP);
+    }
 
-    ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_START);
-    String jsScript = jsStringFromBigString(m_context, *script);
-    ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP);
-
-    #ifdef WITH_FBSYSTRACE
-    fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
-    #endif
-
+    SystraceSection s_("JSCExecutor::loadApplicationScript-evaluateScript");
     evaluateScript(m_context, jsScript, jsSourceURL);
   }
 
@@ -457,9 +452,9 @@ void JSCExecutor::flush() {
 
 void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
   SystraceSection s("JSCExecutor::callFunction");
+
   // This weird pattern is because Value is not default constructible.
   // The lambda is inlined, so there's no overhead.
-
   auto result = [&] {
     try {
       if (!m_callFunctionReturnResultAndFlushedQueueJS) {
@@ -524,8 +519,7 @@ Value JSCExecutor::callFunctionSyncWithValue(
 
 void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {
   try {
-    SystraceSection s("JSCExecutor.setGlobalVariable",
-                      "propName", propName);
+    SystraceSection s("JSCExecutor::setGlobalVariable", "propName", propName);
 
     auto valueToInject = Value::fromJSON(m_context, jsStringFromBigString(m_context, *jsonValue));
     Object::getGlobalObject(m_context).setProperty(propName.c_str(), valueToInject);
