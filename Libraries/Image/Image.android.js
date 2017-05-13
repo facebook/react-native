@@ -15,7 +15,6 @@ var ImageResizeMode = require('ImageResizeMode');
 var ImageStylePropTypes = require('ImageStylePropTypes');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var NativeModules = require('NativeModules');
-var PropTypes = require('react/lib/ReactPropTypes');
 var React = require('React');
 var PropTypes = require('prop-types');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');

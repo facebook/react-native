@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @format
  */
 
 'use strict';
@@ -18,13 +19,15 @@ const getAssetDataFromName = require('./lib/getAssetDataFromName');
 import type {CachedReadResult, ConstructorArgs, ReadResult} from './Module';
 
 class AssetModule extends Module {
-
   resolution: mixed;
   _name: string;
   _type: string;
   _dependencies: Array<string>;
 
-  constructor(args: ConstructorArgs & {dependencies: Array<string>}, platforms: Set<string>) {
+  constructor(
+    args: ConstructorArgs & {dependencies: Array<string>},
+    platforms: Set<string>,
+  ) {
     super(args);
     const {resolution, name, type} = getAssetDataFromName(this.path, platforms);
     this.resolution = resolution;
@@ -34,13 +37,16 @@ class AssetModule extends Module {
   }
 
   isHaste() {
-    return Promise.resolve(false);
+    return false;
   }
 
   readCached(): CachedReadResult {
-    /** $FlowFixMe: improper OOP design. AssetModule, being different from a
-     * normal Module, shouldn't inherit it in the first place. */
-    return {result: {dependencies: this._dependencies}, outdatedDependencies: []};
+    return {
+      /** $FlowFixMe: improper OOP design. AssetModule, being different from a
+       * normal Module, shouldn't inherit it in the first place. */
+      result: {dependencies: this._dependencies},
+      outdatedDependencies: [],
+    };
   }
 
   /** $FlowFixMe: improper OOP design. */
@@ -49,9 +55,9 @@ class AssetModule extends Module {
   }
 
   getName() {
-    return super.getName().then(
-      id => id.replace(/\/[^\/]+$/, `/${this._name}.${this._type}`)
-    );
+    return super
+      .getName()
+      .then(id => id.replace(/\/[^\/]+$/, `/${this._name}.${this._type}`));
   }
 
   hash() {

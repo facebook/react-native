@@ -45,6 +45,7 @@ typedef BOOL (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
   NSArray<RCTArgumentBlock> *_argumentBlocks;
   NSString *_methodSignature;
   SEL _selector;
+  BOOL _isSync;
 }
 
 @synthesize JSMethodName = _JSMethodName;
@@ -165,12 +166,14 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
 
 - (instancetype)initWithMethodSignature:(NSString *)methodSignature
                            JSMethodName:(NSString *)JSMethodName
+                                 isSync:(BOOL)isSync
                             moduleClass:(Class)moduleClass
 {
   if (self = [super init]) {
     _moduleClass = moduleClass;
     _methodSignature = [methodSignature copy];
     _JSMethodName = [JSMethodName copy];
+    _isSync = isSync;
   }
 
   return self;
@@ -417,6 +420,13 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
     }
   }
 
+  if (RCT_DEBUG) {
+    const char *objcType = _invocation.methodSignature.methodReturnType;
+    if (_isSync && objcType[0] != _C_ID)
+      RCTLogError(@"Return type of %@.%@ should be (id) as the method is \"sync\"",
+                  RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+  }
+
   _argumentBlocks = [argumentBlocks copy];
 }
 
@@ -450,7 +460,11 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
 - (RCTFunctionType)functionType
 {
   if ([_methodSignature rangeOfString:@"RCTPromise"].length) {
+    RCTAssert(!_isSync, @"Promises cannot be used in sync functions");
+
     return RCTFunctionTypePromise;
+  } else if (_isSync) {
+    return RCTFunctionTypeSync;
   } else {
     return RCTFunctionTypeNormal;
   }
@@ -525,7 +539,14 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
     }
   }
 
-  return nil;
+  id result = nil;
+  if (_isSync) {
+    void *pointer;
+    [_invocation getReturnValue:&pointer];
+    result = (__bridge id)pointer;
+  }
+
+  return result;
 }
 
 - (NSString *)methodName
@@ -539,8 +560,8 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
 
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"<%@: %p; exports %@ as %@()>",
-          [self class], self, [self methodName], self.JSMethodName];
+  return [NSString stringWithFormat:@"<%@: %p; exports %@ as %@(); type: %s>",
+          [self class], self, [self methodName], self.JSMethodName, RCTFunctionDescriptorFromType(self.functionType)];
 }
 
 @end

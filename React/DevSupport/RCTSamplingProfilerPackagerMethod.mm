@@ -14,6 +14,7 @@
 #import <React/RCTBridge+JavaScriptCore.h>
 #import <jschelpers/JavaScriptCore.h>
 
+#import "RCTBridge.h"
 #import "RCTLog.h"
 
 #if RCT_DEV // Only supported in dev mode

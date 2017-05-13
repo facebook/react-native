@@ -30,7 +30,7 @@ type Event = Object;
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
- * Do not use unless you have a very good reason. All the elements that
+ * Do not use unless you have a very good reason. All elements that
  * respond to press should have a visual feedback when touched.
  *
  * TouchableWithoutFeedback supports only one child.

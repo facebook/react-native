@@ -12,9 +12,7 @@
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JSCPerfLogging.h"
-#include "JSLoader.h"
 #include "ProxyExecutor.h"
-#include "WebWorkers.h"
 #include "JCallback.h"
 #include "JSLogging.h"
 
@@ -34,36 +32,71 @@ namespace react {
 
 namespace {
 
-static std::string getApplicationDir(const char* methodName) {
-  // Get the Application Context object
-  auto getApplicationClass = findClassLocal(
-                              "com/facebook/react/common/ApplicationHolder");
-  auto getApplicationMethod = getApplicationClass->getStaticMethod<jobject()>(
-                              "getApplication",
-                              "()Landroid/app/Application;"
-                              );
-  auto application = getApplicationMethod(getApplicationClass);
+class JSCJavaScriptExecutorHolder : public HybridClass<JSCJavaScriptExecutorHolder,
+                                                       JavaScriptExecutorHolder> {
+ public:
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/JSCJavaScriptExecutor;";
 
-  // Get getCacheDir() from the context
-  auto getDirMethod = findClassLocal("android/app/Application")
-                       ->getMethod<jobject()>(methodName,
-                                              "()Ljava/io/File;"
-                                                  );
-  auto dirObj = getDirMethod(application);
+  static local_ref<jhybriddata> initHybrid(alias_ref<jclass>, ReadableNativeArray* jscConfigArray) {
+    // See JSCJavaScriptExecutor.Factory() for the other side of this hack.
+    folly::dynamic jscConfigMap = jscConfigArray->consume()[0];
+    return makeCxxInstance(std::make_shared<JSCExecutorFactory>(std::move(jscConfigMap)));
+  }
 
-  // Call getAbsolutePath() on the returned File object
-  auto getAbsolutePathMethod = findClassLocal("java/io/File")
-                                ->getMethod<jstring()>("getAbsolutePath");
-  return getAbsolutePathMethod(dirObj)->toStdString();
-}
+  static void registerNatives() {
+    registerHybrid({
+      makeNativeMethod("initHybrid", JSCJavaScriptExecutorHolder::initHybrid),
+    });
+  }
 
-static std::string getApplicationCacheDir() {
-  return getApplicationDir("getCacheDir");
-}
+ private:
+  friend HybridBase;
+  using HybridBase::HybridBase;
+};
 
-static std::string getApplicationPersistentDir() {
-  return getApplicationDir("getFilesDir");
-}
+struct JavaJSExecutor : public JavaClass<JavaJSExecutor> {
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/JavaJSExecutor;";
+};
+
+class ProxyJavaScriptExecutorHolder : public HybridClass<ProxyJavaScriptExecutorHolder,
+                                                         JavaScriptExecutorHolder> {
+ public:
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/ProxyJavaScriptExecutor;";
+
+  static local_ref<jhybriddata> initHybrid(
+    alias_ref<jclass>, alias_ref<JavaJSExecutor::javaobject> executorInstance) {
+    return makeCxxInstance(
+      std::make_shared<ProxyExecutorOneTimeFactory>(
+        make_global(executorInstance)));
+  }
+
+  static void registerNatives() {
+    registerHybrid({
+      makeNativeMethod("initHybrid", ProxyJavaScriptExecutorHolder::initHybrid),
+    });
+  }
+
+ private:
+  friend HybridBase;
+  using HybridBase::HybridBase;
+};
+
+class JReactMarker : public JavaClass<JReactMarker> {
+ public:
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/ReactMarker;";
+
+  static void logMarker(const std::string& marker) {
+    static auto cls = javaClassStatic();
+    static auto meth = cls->getStaticMethod<void(std::string)>("logMarker");
+    meth(cls, marker);
+  }
+
+  static void logMarker(const std::string& marker, const std::string& tag) {
+    static auto cls = javaClassStatic();
+    static auto meth = cls->getStaticMethod<void(std::string, std::string)>("logMarker");
+    meth(cls, marker, tag);
+  }
+};
 
 static JSValueRef nativePerformanceNow(
     JSContextRef ctx,
@@ -87,67 +120,29 @@ static JSValueRef nativePerformanceNow(
   return Value::makeNumber(ctx, (nano / (double)NANOSECONDS_IN_MILLISECOND));
 }
 
-class JSCJavaScriptExecutorHolder : public HybridClass<JSCJavaScriptExecutorHolder,
-                                                       JavaScriptExecutorHolder> {
- public:
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/cxxbridge/JSCJavaScriptExecutor;";
-
-  static local_ref<jhybriddata> initHybrid(alias_ref<jclass>, ReadableNativeArray* jscConfigArray) {
-    // See JSCJavaScriptExecutor.Factory() for the other side of this hack.
-    folly::dynamic jscConfigMap = jscConfigArray->consume()[0];
-    jscConfigMap["PersistentDirectory"] = getApplicationPersistentDir();
-    return makeCxxInstance(
-      std::make_shared<JSCExecutorFactory>(getApplicationCacheDir(), std::move(jscConfigMap)));
+static void logPerfMarker(const ReactMarker::ReactMarkerId markerId, const char* tag) {
+  switch (markerId) {
+    case ReactMarker::RUN_JS_BUNDLE_START:
+      JReactMarker::logMarker("RUN_JS_BUNDLE_START", tag);
+      break;
+    case ReactMarker::RUN_JS_BUNDLE_STOP:
+      JReactMarker::logMarker("RUN_JS_BUNDLE_END");
+      break;
+    case ReactMarker::CREATE_REACT_CONTEXT_STOP:
+      JReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
+      break;
+    case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:
+      JReactMarker::logMarker("loadApplicationScript_startStringConvert");
+      break;
+    case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
+      JReactMarker::logMarker("loadApplicationScript_endStringConvert");
+      break;
+    case ReactMarker::NATIVE_REQUIRE_START:
+    case ReactMarker::NATIVE_REQUIRE_STOP:
+      // These are not used on Android.
+      break;
   }
-
-  static void registerNatives() {
-    registerHybrid({
-      makeNativeMethod("initHybrid", JSCJavaScriptExecutorHolder::initHybrid),
-    });
-  }
-
- private:
-  friend HybridBase;
-  using HybridBase::HybridBase;
-};
-
-struct JavaJSExecutor : public JavaClass<JavaJSExecutor> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/JavaJSExecutor;";
-};
-
-class ProxyJavaScriptExecutorHolder : public HybridClass<ProxyJavaScriptExecutorHolder,
-                                                         JavaScriptExecutorHolder> {
- public:
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/cxxbridge/ProxyJavaScriptExecutor;";
-
-  static local_ref<jhybriddata> initHybrid(
-    alias_ref<jclass>, alias_ref<JavaJSExecutor::javaobject> executorInstance) {
-    return makeCxxInstance(
-      std::make_shared<ProxyExecutorOneTimeFactory>(
-        make_global(executorInstance)));
-  }
-
-  static void registerNatives() {
-    registerHybrid({
-      makeNativeMethod("initHybrid", ProxyJavaScriptExecutorHolder::initHybrid),
-    });
-  }
-
- private:
-  friend HybridBase;
-  using HybridBase::HybridBase;
-};
-
-
-class JReactMarker : public JavaClass<JReactMarker> {
- public:
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/ReactMarker;";
-  static void logMarker(const std::string& marker) {
-    static auto cls = javaClassStatic();
-    static auto meth = cls->getStaticMethod<void(std::string)>("logMarker");
-    meth(cls, marker);
-  }
-};
+}
 
 }
 
@@ -155,13 +150,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
     gloginit::initialize();
     // Inject some behavior into react/
-    ReactMarker::logMarker = JReactMarker::logMarker;
-    WebWorkerUtil::createWebWorkerThread = WebWorkers::createWebWorkerThread;
-    WebWorkerUtil::loadScriptFromAssets =
-      [] (const std::string& assetName) {
-        return loadScriptFromAssets(assetName);
-      };
-    WebWorkerUtil::loadScriptFromNetworkSync = WebWorkers::loadScriptFromNetworkSync;
+    ReactMarker::logTaggedMarker = logPerfMarker;
     PerfLogging::installNativeHooks = addNativePerfLoggingHooks;
     JSNativeHooks::loggingHook = nativeLoggingHook;
     JSNativeHooks::nowHook = nativePerformanceNow;
@@ -170,7 +159,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     CatalystInstanceImpl::registerNatives();
     CxxModuleWrapperBase::registerNatives();
     CxxModuleWrapper::registerNatives();
-    JCallbackImpl::registerNatives();
+    JCxxCallbackImpl::registerNatives();
     #ifdef WITH_INSPECTOR
     JInspector::registerNatives();
     #endif

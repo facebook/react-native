@@ -54,7 +54,7 @@
   RCTAssert(self.executorClass || self->_jsThread == [NSThread currentThread], \
             @"This method must be called on JS thread")
 
-NSString *const RCTJSThreadName = @"com.facebook.React.JavaScript";
+static NSString *const RCTJSThreadName = @"com.facebook.react.JavaScript";
 
 using namespace facebook::react;
 
@@ -72,6 +72,32 @@ static bool isRAMBundle(NSData *script) {
   BundleHeader header;
   [script getBytes:&header length:sizeof(header)];
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
+}
+
+static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger) {
+  __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
+  ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *tag) {
+    switch (markerId) {
+      case ReactMarker::RUN_JS_BUNDLE_START:
+        [weakPerformanceLogger markStartForTag:RCTPLScriptExecution];
+        break;
+      case ReactMarker::RUN_JS_BUNDLE_STOP:
+        [weakPerformanceLogger markStopForTag:RCTPLScriptExecution];
+        break;
+      case ReactMarker::NATIVE_REQUIRE_START:
+        [weakPerformanceLogger appendStartForTag:RCTPLRAMNativeRequires];
+        break;
+      case ReactMarker::NATIVE_REQUIRE_STOP:
+        [weakPerformanceLogger appendStopForTag:RCTPLRAMNativeRequires];
+        [weakPerformanceLogger addValue:1 forTag:RCTPLRAMNativeRequiresCount];
+        break;
+      case ReactMarker::CREATE_REACT_CONTEXT_STOP:
+      case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:
+      case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
+        // These are not used on iOS.
+        break;
+    }
+  };
 }
 
 @interface RCTCxxBridge ()
@@ -95,10 +121,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
   void incrementPendingJSCalls() override {}
   void decrementPendingJSCalls() override {}
-  ExecutorToken createExecutorToken() override {
-    return ExecutorToken(std::make_shared<PlatformExecutorToken>());
-  }
-  void onExecutorStopped(ExecutorToken) override {}
 };
 
 @implementation RCTCxxBridge
@@ -156,6 +178,8 @@ struct RCTInstanceCallback : public InstanceCallback {
                         launchOptions:bridge.launchOptions])) {
     _parentBridge = bridge;
     _performanceLogger = [bridge performanceLogger];
+
+    registerPerformanceLoggerHooks(_performanceLogger);
 
     RCTLogInfo(@"Initializing %@ (parent: %@, executor: %@)", self, bridge, [self executorClass]);
 
@@ -231,6 +255,8 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (void)start
 {
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge start]", nil);
+
   [[NSNotificationCenter defaultCenter]
     postNotificationName:RCTJavaScriptWillStartLoadingNotification
     object:_parentBridge userInfo:@{@"bridge": self}];
@@ -261,7 +287,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       [self.delegate respondsToSelector:@selector(shouldBridgeUseCustomJSC:)] &&
       [self.delegate shouldBridgeUseCustomJSC:self];
     // The arg is a cache dir.  It's not used with standard JSC.
-    executorFactory.reset(new JSCExecutorFactory("", folly::dynamic::object
+    executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
       ("UseCustomJSC", (bool)useCustomJSC)
 #if RCT_PROFILE
       ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
@@ -325,6 +351,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       }
     });
   }
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
 - (void)loadSource:(RCTSourceLoadBlock)_onSourceLoad onProgress:(RCTSourceLoadProgressBlock)onProgress
@@ -356,7 +383,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       if (error && [self.delegate respondsToSelector:@selector(fallbackSourceURLForBridge:)]) {
         NSURL *fallbackURL = [self.delegate fallbackSourceURLForBridge:self->_parentBridge];
         if (fallbackURL && ![fallbackURL isEqual:self.bundleURL]) {
-          RCTLogError(@"Failed to load bundle(%@) with error:(%@)", self.bundleURL, error.localizedDescription);
+          RCTLogError(@"Failed to load bundle(%@) with error:(%@ %@)", self.bundleURL, error.localizedDescription, error.localizedFailureReason);
           self.bundleURL = fallbackURL;
           [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:onSourceLoad];
           return;
@@ -931,9 +958,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (void)_flushPendingCalls
 {
+  // Log metrics about native requires during the bridge startup.
+  uint64_t nativeRequiresCount = [self->_performanceLogger valueForTag:RCTPLRAMNativeRequiresCount];
+  [_performanceLogger setValue:nativeRequiresCount forTag:RCTPLRAMStartupNativeRequiresCount];
+  uint64_t nativeRequires = [self->_performanceLogger valueForTag:RCTPLRAMNativeRequires];
+  [_performanceLogger setValue:nativeRequires forTag:RCTPLRAMStartupNativeRequires];
+
   [_performanceLogger markStopForTag:RCTPLBridgeStartup];
 
-  RCT_PROFILE_BEGIN_EVENT(0, @"Processing pendingCalls", @{ @"count": @(_pendingCalls.count) });
+  RCT_PROFILE_BEGIN_EVENT(0, @"Processing pendingCalls", @{ @"count": [@(_pendingCalls.count) stringValue] });
   // Phase B: _flushPendingCalls happens.  Each block in _pendingCalls is
   // executed, adding work to the queue, and _pendingCount is decremented.
   // loading is set to NO.
@@ -966,8 +999,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     RCTProfileEndFlowEvent();
 
     if (self->_reactInstance) {
-      self->_reactInstance->callJSFunction(self->_reactInstance->getMainExecutorToken(),
-                                           [module UTF8String], [method UTF8String],
+      self->_reactInstance->callJSFunction([module UTF8String], [method UTF8String],
                                            [RCTConvert folly_dynamic:args ?: @[]]);
 
       if (completion) {
@@ -999,7 +1031,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
     if (self->_reactInstance)
       self->_reactInstance->callJSCallback(
-        self->_reactInstance->getMainExecutorToken(), [cbID unsignedLongLongValue],
+        [cbID unsignedLongLongValue],
         [RCTConvert folly_dynamic:args ?: @[]]);
   }];
 }
@@ -1012,8 +1044,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCTAssertJSThread();
 
   if (_reactInstance)
-    _reactInstance->callJSFunction(_reactInstance->getMainExecutorToken(),
-                                   "JSTimersExecution", "callTimers",
+    _reactInstance->callJSFunction("JSTimersExecution", "callTimers",
                                    folly::dynamic::array(folly::dynamic::array([timer doubleValue])));
 }
 
@@ -1023,13 +1054,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssert(onComplete != nil, @"onComplete block passed in should be non-nil");
 
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
-                          @"-[RCTCxxBridge enqueueApplicationScript]", nil);
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge enqueueApplicationScript]", nil);
 
   [self _tryAndHandleError:^{
     if (isRAMBundle(script)) {
+      [self->_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
       auto ramBundle = std::make_unique<JSIndexedRAMBundle>(url.path.UTF8String);
       std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();
+      [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
+      [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance)
         self->_reactInstance->loadUnbundle(std::move(ramBundle), std::move(scriptStr),
                                            [[url absoluteString] UTF8String]);
@@ -1051,8 +1084,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   [self _tryAndHandleError:^{
     if (isRAMBundle(script)) {
+      [self->_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
       auto ramBundle = std::make_unique<JSIndexedRAMBundle>(url.path.UTF8String);
       std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();
+      [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
+      [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
         self->_reactInstance->loadUnbundleSync(std::move(ramBundle), std::move(scriptStr),
                                                [[url absoluteString] UTF8String]);

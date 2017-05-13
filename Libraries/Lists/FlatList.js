@@ -62,7 +62,7 @@ type RequiredProps<ItemT> = {
    * For simplicity, data is just a plain array. If you want to use something else, like an
    * immutable list, use the underlying `VirtualizedList` directly.
    */
-  data: ?Array<ItemT>,
+  data: ?$ReadOnlyArray<ItemT>,
 };
 type OptionalProps<ItemT> = {
   /**
@@ -72,6 +72,11 @@ type OptionalProps<ItemT> = {
    * `separators.updateProps`.
    */
   ItemSeparatorComponent?: ?ReactClass<any>,
+  /**
+   * Rendered when the list is empty. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListEmptyComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
    * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
    * a rendered element.
@@ -116,6 +121,13 @@ type OptionalProps<ItemT> = {
    * to improve perceived performance of scroll-to-top actions.
    */
   initialNumToRender: number,
+  /**
+   * Instead of starting at the top with the first item, start at `initialScrollIndex`. This
+   * disables the "scroll to top" optimization that keeps the first `initialNumToRender` items
+   * always rendered and immediately renders the items starting at this initial index. Requires
+   * `getItemLayout` to be implemented.
+   */
+  initialScrollIndex?: ?number,
   /**
    * Used to extract a unique key for a given item at the specified index. Key is used for caching
    * and as the react key to track item re-ordering. The default extractor checks `item.key`, then
@@ -171,8 +183,6 @@ type Props<ItemT> = RequiredProps<ItemT> & OptionalProps<ItemT> & VirtualizedLis
 
 const defaultProps = {
   ...VirtualizedList.defaultProps,
-  getItem: undefined,
-  getItemCount: undefined,
   numColumns: 1,
 };
 type DefaultProps = typeof defaultProps;
@@ -236,7 +246,7 @@ type DefaultProps = typeof defaultProps;
  *         this.setState((state) => {
  *           // copy the map rather than modifying state.
  *           const selected = new Map(state.selected);
- *           selected.set(id, !state.get(id)); // toggle
+ *           selected.set(id, !selected.get(id)); // toggle
  *           return {selected};
  *         });
  *       };

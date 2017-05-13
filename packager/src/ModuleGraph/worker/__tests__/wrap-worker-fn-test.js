@@ -33,9 +33,9 @@ describe('wrapWorkerFn:', () => {
   const fs = require('fs');
   const mkdirp = require('mkdirp');
 
-  it('reads the passed-in file synchronously as UTF-8', done => {
+  it('reads the passed-in file synchronously as buffer', done => {
     wrapped(infile, outfile, {}, () => {
-      expect(fs.readFileSync).toBeCalledWith(infile, 'utf8');
+      expect(fs.readFileSync).toBeCalledWith(infile);
       done();
     });
   });

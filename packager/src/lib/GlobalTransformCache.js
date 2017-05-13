@@ -11,6 +11,8 @@
 
 'use strict';
 
+/* global Buffer: true */
+
 const BatchProcessor = require('./BatchProcessor');
 const FetchError = require('node-fetch/lib/fetch-error');
 
@@ -18,11 +20,13 @@ const crypto = require('crypto');
 const fetch = require('node-fetch');
 const jsonStableStringify = require('json-stable-stringify');
 const path = require('path');
+const throat = require('throat');
 
 import type {
   Options as TransformWorkerOptions,
-  TransformOptions,
+  TransformOptionsStrict,
 } from '../JSTransformer/worker/worker';
+import type {LocalPath} from '../node-haste/lib/toLocalPath';
 import type {CachedResult, GetTransformCacheKey} from './TransformCache';
 
 /**
@@ -59,10 +63,10 @@ type FetchResultFromURI = (uri: string) => Promise<?CachedResult>;
 type StoreResults = (resultsByKey: Map<string, CachedResult>) => Promise<void>;
 
 export type FetchProps = {
-  filePath: string,
-  sourceCode: string,
-  getTransformCacheKey: GetTransformCacheKey,
-  transformOptions: TransformWorkerOptions,
+  +localPath: LocalPath,
+  +sourceCode: string,
+  +getTransformCacheKey: GetTransformCacheKey,
+  +transformOptions: TransformWorkerOptions,
 };
 
 type URI = string;
@@ -129,7 +133,7 @@ class KeyResultStore {
 
 }
 
-export type TransformProfile = {+dev: boolean, +minify: boolean, +platform: string};
+export type TransformProfile = {+dev: boolean, +minify: boolean, +platform: ?string};
 
 function profileKey({dev, minify, platform}: TransformProfile): string {
   return jsonStableStringify({dev, minify, platform});
@@ -224,13 +228,13 @@ class URIBasedGlobalTransformCache {
    */
   keyOf(props: FetchProps) {
     const hash = crypto.createHash('sha1');
-    const {sourceCode, filePath, transformOptions} = props;
-    this._optionsHasher.hashTransformWorkerOptions(hash, transformOptions);
-    const cacheKey = props.getTransformCacheKey(sourceCode, filePath, transformOptions);
+    const {sourceCode, localPath, transformOptions} = props;
+    hash.update(this._optionsHasher.getTransformWorkerOptionsDigest(transformOptions));
+    const cacheKey = props.getTransformCacheKey(transformOptions);
     hash.update(JSON.stringify(cacheKey));
     hash.update(crypto.createHash('sha1').update(sourceCode).digest('hex'));
     const digest = hash.digest('hex');
-    return `${digest}-${path.basename(filePath)}`;
+    return `${digest}-${localPath}`;
   }
 
   /**
@@ -260,7 +264,7 @@ class URIBasedGlobalTransformCache {
    * a second time if we expect them to be transient. We might even consider
    * waiting a little time before retring if experience shows it's useful.
    */
-  static fetchResultFromURI(uri: string): Promise<CachedResult> {
+  static _fetchResultFromURIWithRetry(uri: string): Promise<CachedResult> {
     return URIBasedGlobalTransformCache._fetchResultFromURI(uri).catch(error => {
       if (!URIBasedGlobalTransformCache.shouldRetryAfterThatError(error)) {
         throw error;
@@ -268,6 +272,12 @@ class URIBasedGlobalTransformCache {
       return this._fetchResultFromURI(uri);
     });
   }
+
+  /**
+   * The exposed version uses throat() to limit concurrency, as making too many parallel requests
+   * is more likely to trigger server-side throttling and cause timeouts.
+   */
+  static fetchResultFromURI: (uri: string) => Promise<CachedResult>;
 
   /**
    * We want to retry timeouts as they're likely temporary. We retry 503
@@ -311,20 +321,37 @@ class URIBasedGlobalTransformCache {
 
 }
 
+URIBasedGlobalTransformCache.fetchResultFromURI =
+  throat(500, URIBasedGlobalTransformCache._fetchResultFromURIWithRetry);
+
 class OptionsHasher {
   _rootPath: string;
+  _cache: WeakMap<TransformWorkerOptions, string>;
 
   constructor(rootPath: string) {
     this._rootPath = rootPath;
+    this._cache = new WeakMap();
+  }
+
+  getTransformWorkerOptionsDigest(options: TransformWorkerOptions): string {
+    const digest = this._cache.get(options);
+    if (digest != null) {
+      return digest;
+    }
+    const hash = crypto.createHash('sha1');
+    this.hashTransformWorkerOptions(hash, options);
+    const newDigest = hash.digest('hex');
+    this._cache.set(options, newDigest);
+    return newDigest;
   }
 
   /**
    * This function is extra-conservative with how it hashes the transform
    * options. In particular:
    *
-   *     * we need to hash paths relative to the root, not the absolute paths,
-   *       otherwise everyone would have a different cache, defeating the
-   *       purpose of global cache;
+   *     * we need to hash paths as local paths, i.e. relative to the root, not
+   *       the absolute paths, otherwise everyone would have a different cache,
+   *       defeating the purpose of global cache;
    *     * we need to reject any additional field we do not know of, because
    *       they could contain absolute path, and we absolutely want to process
    *       these.
@@ -355,32 +382,38 @@ class OptionsHasher {
    * of the cache key as they should not affect the transformation of a single
    * particular file.
    */
-  hashTransformOptions(hash: crypto$Hash, options: TransformOptions): crypto$Hash {
-    const {generateSourceMaps, dev, hot, inlineRequires, platform,
-      preloadedModules, projectRoots, ramGroups, ...unknowns} = options;
+  hashTransformOptions(hash: crypto$Hash, options: TransformOptionsStrict): crypto$Hash {
+    const {
+      generateSourceMaps, dev, hot, inlineRequires, platform, projectRoot,
+      ...unknowns,
+    } = options;
     const unknownKeys = Object.keys(unknowns);
     if (unknownKeys.length > 0) {
       const message = `these transform option fields are unknown: ${JSON.stringify(unknownKeys)}`;
       throw new CannotHashOptionsError(message);
     }
-    // eslint-disable-next-line no-undef
+
     hash.update(new Buffer([
       // eslint-disable-next-line no-bitwise
       +dev | +generateSourceMaps << 1 | +hot << 2 | +!!inlineRequires << 3,
     ]));
     hash.update(JSON.stringify(platform));
-    let relativeBlacklist = [];
+    let blacklistWithLocalPaths = [];
     if (typeof inlineRequires === 'object') {
-      relativeBlacklist = this.relativizeFilePaths(Object.keys(inlineRequires.blacklist));
+      blacklistWithLocalPaths = this.pathsToLocal(Object.keys(inlineRequires.blacklist));
     }
-    const relativeProjectRoots = this.relativizeFilePaths(projectRoots);
-    const optionTuple = [relativeBlacklist, preloadedModules, relativeProjectRoots, ramGroups];
+    const localProjectRoot = this.toLocalPath(projectRoot);
+    const optionTuple = [blacklistWithLocalPaths, localProjectRoot];
     hash.update(JSON.stringify(optionTuple));
     return hash;
   }
 
-  relativizeFilePaths(filePaths: Array<string>): Array<string> {
-    return filePaths.map(filepath => path.relative(this._rootPath, filepath));
+  pathsToLocal(filePaths: Array<string>): Array<string> {
+    return filePaths.map(this.toLocalPath, this);
+  }
+
+  toLocalPath(filePath: string): string {
+    return path.relative(this._rootPath, filePath);
   }
 }
 

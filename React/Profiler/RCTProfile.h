@@ -68,7 +68,7 @@ RCT_EXTERN void _RCTProfileBeginEvent(NSThread *calleeThread,
                                       NSTimeInterval time,
                                       uint64_t tag,
                                       NSString *name,
-                                      NSDictionary *args);
+                                      NSDictionary<NSString *, NSString *> *args);
 #define RCT_PROFILE_BEGIN_EVENT(tag, name, args) \
   do { \
     if (RCTProfileIsProfiling()) { \
@@ -104,7 +104,7 @@ RCT_EXTERN void _RCTProfileEndEvent(NSThread *calleeThread,
  */
 RCT_EXTERN NSUInteger RCTProfileBeginAsyncEvent(uint64_t tag,
                                                 NSString *name,
-                                                NSDictionary *args);
+                                                NSDictionary<NSString *, NSString *> *args);
 
 /**
  * The ID returned by BeginEvent should then be passed into EndEvent, with the

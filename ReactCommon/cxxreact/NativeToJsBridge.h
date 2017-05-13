@@ -8,7 +8,6 @@
 #include <vector>
 
 #include <cxxreact/Executor.h>
-#include <cxxreact/ExecutorToken.h>
 #include <cxxreact/JSCExecutor.h>
 #include <cxxreact/JSModulesUnbundle.h>
 #include <cxxreact/MessageQueueThread.h>
@@ -26,22 +25,9 @@ struct dynamic;
 namespace facebook {
 namespace react {
 
-struct InstanceCallback;
 class ModuleRegistry;
-
-class ExecutorRegistration {
-public:
-  ExecutorRegistration(
-      std::unique_ptr<JSExecutor> executor,
-      std::shared_ptr<MessageQueueThread> executorMessageQueueThread) :
-    executor_(std::move(executor)),
-    messageQueueThread_(executorMessageQueueThread) {}
-
-  std::unique_ptr<JSExecutor> executor_;
-  std::shared_ptr<MessageQueueThread> messageQueueThread_;
-};
-
 class JsToNativeBridge;
+struct InstanceCallback;
 
 // This class manages calls from native code to JS.  It also manages
 // executors and their threads.  All functions here can be called from
@@ -68,16 +54,12 @@ public:
    * Executes a function with the module ID and method ID and any additional
    * arguments in JS.
    */
-  void callFunction(
-    ExecutorToken executorToken,
-    std::string&& module,
-    std::string&& method,
-    folly::dynamic&& args);
+  void callFunction(std::string&& module, std::string&& method, folly::dynamic&& args);
 
   /**
    * Invokes a callback with the cbID, and optional additional arguments in JS.
    */
-  void invokeCallback(ExecutorToken executorToken, double callbackId, folly::dynamic&& args);
+  void invokeCallback(double callbackId, folly::dynamic&& args);
 
   /**
    * Executes a JS method on the given executor synchronously, returning its
@@ -98,10 +80,10 @@ public:
                                " after bridge is destroyed"));
     }
 
-    JSCExecutor *jscExecutor = dynamic_cast<JSCExecutor*>(m_mainExecutor);
+    JSCExecutor *jscExecutor = dynamic_cast<JSCExecutor*>(m_executor.get());
     if (!jscExecutor) {
       throw std::invalid_argument(
-        folly::to<std::string>("Executor type ", typeid(*m_mainExecutor).name(),
+        folly::to<std::string>("Executor type ", typeid(m_executor.get()).name(),
                                " does not support synchronous calls"));
     }
 
@@ -132,55 +114,24 @@ public:
   void handleMemoryPressureCritical();
 
   /**
-   * Returns the ExecutorToken corresponding to the main JSExecutor.
-   */
-  ExecutorToken getMainExecutorToken() const;
-
-  /**
    * Synchronously tears down the bridge and the main executor.
    */
   void destroy();
 private:
-  /**
-   * Registers the given JSExecutor which runs on the given MessageQueueThread
-   * with the NativeToJsBridge. Part of this registration is transfering
-   * ownership of this JSExecutor to the NativeToJsBridge for the duration of
-   * the registration.
-   *
-   * Returns a ExecutorToken which can be used to refer to this JSExecutor
-   * in the NativeToJsBridge.
-   */
-  ExecutorToken registerExecutor(
-      ExecutorToken token,
-      std::unique_ptr<JSExecutor> executor,
-      std::shared_ptr<MessageQueueThread> executorMessageQueueThread);
-
-  /**
-   * Unregisters a JSExecutor that was previously registered with this NativeToJsBridge
-   * using registerExecutor.
-   */
-  std::unique_ptr<JSExecutor> unregisterExecutor(JSExecutor& executorToken);
-
-  void runOnExecutorQueue(ExecutorToken token, std::function<void(JSExecutor*)> task);
+  void runOnExecutorQueue(std::function<void(JSExecutor*)> task);
 
   // This is used to avoid a race condition where a proxyCallback gets queued
   // after ~NativeToJsBridge(), on the same thread. In that case, the callback
   // will try to run the task on m_callback which will have been destroyed
   // within ~NativeToJsBridge(), thus causing a SIGSEGV.
   std::shared_ptr<bool> m_destroyed;
-  JSExecutor* m_mainExecutor;
-  ExecutorToken m_mainExecutorToken;
   std::shared_ptr<JsToNativeBridge> m_delegate;
-  std::unordered_map<JSExecutor*, ExecutorToken> m_executorTokenMap;
-  std::unordered_map<ExecutorToken, ExecutorRegistration> m_executorMap;
-  std::mutex m_registrationMutex;
+  std::unique_ptr<JSExecutor> m_executor;
+  std::shared_ptr<MessageQueueThread> m_executorMessageQueueThread;
+
   #ifdef WITH_FBSYSTRACE
   std::atomic_uint_least32_t m_systraceCookie = ATOMIC_VAR_INIT();
   #endif
-
-  MessageQueueThread* getMessageQueueThread(const ExecutorToken& executorToken);
-  JSExecutor* getExecutor(const ExecutorToken& executorToken);
-  ExecutorToken getTokenForExecutor(JSExecutor& executor);
 };
 
 } }
