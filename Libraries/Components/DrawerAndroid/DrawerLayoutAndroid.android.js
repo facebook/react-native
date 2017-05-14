@@ -281,7 +281,7 @@ var DrawerLayoutAndroid = React.createClass({
   *   return (
   *     <DrawerLayoutAndroid ref={'DRAWER'}>
   *     </DrawerLayoutAndroid>
-  *   ) 
+  *   )
   * }
   */
   _getDrawerLayoutHandle: function() {
