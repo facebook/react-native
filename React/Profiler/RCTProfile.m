@@ -71,7 +71,7 @@ if (!RCTProfileIsProfiling()) { \
 static RCTProfileCallbacks *callbacks;
 static char *systrace_buffer;
 
-static systrace_arg_t *RCTProfileSystraceArgsFromNSDictionary(NSDictionary *args)
+static systrace_arg_t *systraceArgsFromDictionary(NSDictionary<NSString *, NSString *> *args)
 {
   if (args.count == 0) {
     return NULL;
@@ -79,14 +79,11 @@ static systrace_arg_t *RCTProfileSystraceArgsFromNSDictionary(NSDictionary *args
 
   systrace_arg_t *systrace_args = malloc(sizeof(systrace_arg_t) * args.count);
   __block size_t i = 0;
-  [args enumerateKeysAndObjectsUsingBlock:^(id key, id value, __unused BOOL *stop) {
-    const char *keyc = [key description].UTF8String;
-    systrace_args[i].key = keyc;
-    systrace_args[i].key_len = (int)strlen(keyc);
-
-    const char *valuec = RCTJSONStringify(value, NULL).UTF8String;
-    systrace_args[i].value = valuec;
-    systrace_args[i].value_len = (int)strlen(valuec);
+  [args enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, __unused BOOL *stop) {
+    systrace_args[i].key = [key UTF8String];
+    systrace_args[i].key_len = [key length];
+    systrace_args[i].value = [value UTF8String];
+    systrace_args[i].value_len = [value length];
     i++;
   }];
   return systrace_args;
@@ -123,7 +120,7 @@ static NSDictionary *RCTProfileGetMemoryUsage(void)
                                  TASK_BASIC_INFO,
                                  (task_info_t)&info,
                                  &size);
-  if( kerr == KERN_SUCCESS ) {
+  if ( kerr == KERN_SUCCESS ) {
     return @{
       @"suspend_count": @(info.suspend_count),
       @"virtual_size": RCTProfileMemory(info.virtual_size),
@@ -545,12 +542,12 @@ void _RCTProfileBeginEvent(
   NSTimeInterval time,
   uint64_t tag,
   NSString *name,
-  NSDictionary *args
+  NSDictionary<NSString *, NSString *> *args
 ) {
   CHECK();
 
   if (callbacks != NULL) {
-    callbacks->begin_section(tag, name.UTF8String, args.count, RCTProfileSystraceArgsFromNSDictionary(args));
+    callbacks->begin_section(tag, name.UTF8String, args.count, systraceArgsFromDictionary(args));
     return;
   }
 
@@ -603,7 +600,7 @@ void _RCTProfileEndEvent(
 NSUInteger RCTProfileBeginAsyncEvent(
   uint64_t tag,
   NSString *name,
-  NSDictionary *args
+  NSDictionary<NSString *, NSString *> *args
 ) {
   CHECK(0);
 
@@ -613,7 +610,8 @@ NSUInteger RCTProfileBeginAsyncEvent(
   NSUInteger currentEventID = ++eventID;
 
   if (callbacks != NULL) {
-    callbacks->begin_async_section(tag, name.UTF8String, (int)(currentEventID % INT_MAX), args.count, RCTProfileSystraceArgsFromNSDictionary(args));
+    callbacks->begin_async_section(tag, name.UTF8String, (int)(currentEventID % INT_MAX),
+                                   args.count, systraceArgsFromDictionary(args));
   } else {
     dispatch_async(RCTProfileGetQueue(), ^{
       RCTProfileOngoingEvents[@(currentEventID)] = @[

@@ -16,18 +16,14 @@ const FilesByDirNameIndex = require('./FilesByDirNameIndex');
 const JestHasteMap = require('jest-haste-map');
 const Module = require('./Module');
 const ModuleCache = require('./ModuleCache');
-const Polyfill = require('./Polyfill');
 const ResolutionRequest = require('./DependencyGraph/ResolutionRequest');
 const ResolutionResponse = require('./DependencyGraph/ResolutionResponse');
 
 const fs = require('fs');
-const getAssetDataFromName = require('./lib/getAssetDataFromName');
-const getInverseDependencies = require('./lib/getInverseDependencies');
 const getPlatformExtension = require('./lib/getPlatformExtension');
 const invariant = require('fbjs/lib/invariant');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
-const replacePatterns = require('./lib/replacePatterns');
 const util = require('util');
 
 const {
@@ -162,14 +158,15 @@ class DependencyGraph extends EventEmitter {
   _createModuleCache() {
     const {_opts} = this;
     return new ModuleCache({
+      assetDependencies: _opts.assetDependencies,
+      depGraphHelpers: this._helpers,
+      getClosestPackage: this._getClosestPackage.bind(this),
       getTransformCacheKey: _opts.getTransformCacheKey,
       globalTransformCache: _opts.globalTransformCache,
-      transformCode: _opts.transformCode,
-      depGraphHelpers: this._helpers,
-      assetDependencies: _opts.assetDependencies,
       moduleOptions: _opts.moduleOptions,
       reporter: _opts.reporter,
-      getClosestPackage: this._getClosestPackage.bind(this),
+      roots: _opts.roots,
+      transformCode: _opts.transformCode,
     }, _opts.platforms);
   }
 
@@ -232,7 +229,6 @@ class DependencyGraph extends EventEmitter {
       moduleCache: this._moduleCache,
       moduleMap: this._moduleMap,
       platform,
-      platforms: this._opts.platforms,
       preferNativePlatform: this._opts.preferNativePlatform,
       sourceExts: this._opts.sourceExts,
     });
@@ -288,23 +284,7 @@ class DependencyGraph extends EventEmitter {
     return this._moduleCache.createPolyfill(options);
   }
 
-  static Module;
-  static Polyfill;
-  static getAssetDataFromName;
-  static getPlatformExtension;
-  static replacePatterns;
-  static getInverseDependencies;
-
 }
-
-Object.assign(DependencyGraph, {
-  Module,
-  Polyfill,
-  getAssetDataFromName,
-  getPlatformExtension,
-  replacePatterns,
-  getInverseDependencies,
-});
 
 function NotFoundError() {
   /* $FlowFixMe: monkey-patching */

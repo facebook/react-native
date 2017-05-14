@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.cxxbridge;
+package com.facebook.react.bridge;
 
 import java.util.ArrayList;
 import java.util.List;

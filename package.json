@@ -107,7 +107,8 @@
     "React",
     "ReactAndroid",
     "ReactCommon",
-    "README.md"
+    "README.md",
+    "third-party-podspecs"
   ],
   "scripts": {
     "test": "jest",
@@ -139,12 +140,13 @@
     "babel-plugin-external-helpers": "^6.18.0",
     "babel-plugin-syntax-trailing-function-commas": "^6.20.0",
     "babel-plugin-transform-async-to-generator": "6.16.0",
+    "babel-plugin-transform-class-properties": "^6.18.0",
     "babel-plugin-transform-flow-strip-types": "^6.21.0",
     "babel-plugin-transform-object-rest-spread": "^6.20.2",
     "babel-polyfill": "^6.20.0",
     "babel-preset-es2015-node": "^6.1.1",
     "babel-preset-fbjs": "^2.1.2",
-    "babel-preset-react-native": "^1.9.1",
+    "babel-preset-react-native": "^1.9.2",
     "babel-register": "^6.24.1",
     "babel-runtime": "^6.23.0",
     "babel-traverse": "^6.24.1",
@@ -221,7 +223,7 @@
     "eslint-plugin-babel": "^3.3.0",
     "eslint-plugin-flowtype": "^2.20.0",
     "eslint-plugin-react": "^6.4.1",
-    "flow-bin": "^0.45.0",
+    "flow-bin": "^0.46.0",
     "jest": "19.0.2",
     "jest-repl": "19.0.2",
     "jest-runtime": "^19.0.3",

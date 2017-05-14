@@ -42,7 +42,6 @@ describe('Resolver', function() {
     DependencyGraph.load = jest.fn().mockImplementation(
       opts => Promise.resolve(new DependencyGraph(opts)),
     );
-    DependencyGraph.replacePatterns = require.requireActual('../../node-haste/lib/replacePatterns');
     DependencyGraph.prototype.createPolyfill = jest.fn();
     DependencyGraph.prototype.getDependencies = jest.fn();
 

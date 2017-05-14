@@ -59,8 +59,8 @@ class Package {
     return path.join(this.root, main);
   }
 
-  isHaste(): Promise<boolean> {
-    return Promise.resolve().then(() => !!this.read().name);
+  isHaste(): boolean {
+    return !!this.read().name;
   }
 
   getName(): Promise<string> {

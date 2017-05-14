@@ -12,7 +12,6 @@ jest
   .dontMock('absolute-path')
   .dontMock('json-stable-stringify')
   .dontMock('crypto')
-  .dontMock('../lib/replacePatterns')
   .dontMock('../DependencyGraph/docblock')
   .dontMock('../Module');
 
@@ -107,7 +106,7 @@ describe('Module', () => {
       );
 
       it('identifies the module as haste module', () =>
-        module.isHaste().then(isHaste => expect(isHaste).toBe(true))
+        expect(module.isHaste()).toBe(true)
       );
 
       it('does not transform the file in order to access the name', () => {
@@ -120,8 +119,8 @@ describe('Module', () => {
       it('does not transform the file in order to access the haste status', () => {
         const transformCode =
           jest.genMockFn().mockReturnValue(Promise.resolve());
-        return createModule({transformCode}).isHaste()
-          .then(() => expect(transformCode).not.toBeCalled());
+        createModule({transformCode}).isHaste();
+        expect(transformCode).not.toBeCalled();
       });
     });
 
@@ -135,7 +134,7 @@ describe('Module', () => {
       );
 
       it('does not identify the module as haste module', () =>
-        module.isHaste().then(isHaste => expect(isHaste).toBe(false))
+        expect(module.isHaste()).toBe(false)
       );
 
       it('does not transform the file in order to access the name', () => {
@@ -148,8 +147,8 @@ describe('Module', () => {
       it('does not transform the file in order to access the haste status', () => {
         const transformCode =
           jest.genMockFn().mockReturnValue(Promise.resolve());
-        return createModule({transformCode}).isHaste()
-          .then(() => expect(transformCode).not.toBeCalled());
+        createModule({transformCode}).isHaste();
+        expect(transformCode).not.toBeCalled();
       });
     });
   });

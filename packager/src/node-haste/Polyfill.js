@@ -32,7 +32,7 @@ class Polyfill extends Module {
   }
 
   isHaste() {
-    return Promise.resolve(false);
+    return false;
   }
 
   getName() {

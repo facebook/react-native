@@ -68,10 +68,9 @@ function buildBundle(
     const sourceExts = (config.getSourceExts && config.getSourceExts()) || [];
     const platforms = (config.getPlatforms && config.getPlatforms()) || [];
 
-    const transformModulePath =
-      args.transformer ? path.resolve(args.transformer) :
-      typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
-      undefined;
+    const transformModulePath = args.transformer
+      ? path.resolve(args.transformer)
+      : config.getTransformModulePath();
 
     const providesModuleNodeModules =
       typeof config.getProvidesModuleNodeModules === 'function' ? config.getProvidesModuleNodeModules() :
@@ -85,6 +84,7 @@ function buildBundle(
       globalTransformCache: null,
       hasteImpl: config.hasteImpl,
       platforms: defaultPlatforms.concat(platforms),
+      postMinifyProcess: config.postMinifyProcess,
       postProcessModules: config.postProcessModules,
       projectRoots: config.getProjectRoots(),
       providesModuleNodeModules: providesModuleNodeModules,

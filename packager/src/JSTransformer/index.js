@@ -14,14 +14,21 @@
 const Logger = require('../Logger');
 
 const debug = require('debug')('RNP:JStransformer');
-const denodeify = require('denodeify');
+const denodeify: Denodeify = require('denodeify');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 const util = require('util');
 const workerFarm = require('../worker-farm');
 
 import type {Data as TransformData, Options as WorkerOptions} from './worker/worker';
+import type {LocalPath} from '../node-haste/lib/toLocalPath';
 import type {MappingsMap} from '../lib/SourceMap';
+import typeof {minify as Minify, transformAndExtractDependencies as TransformAndExtractDependencies} from './worker/worker';
+
+type CB<T> = (?Error, ?T) => mixed;
+type Denodeify =
+  & (<A, B, C, T>((A, B, C, CB<T>) => void) => (A, B, C) => Promise<T>)
+  & (<A, B, C, D, E, T>((A, B, C, D, E, CB<T>) => void) => (A, B, C, D, E) => Promise<T>);
 
 // Avoid memory leaks caused in workers. This number seems to be a good enough number
 // to avoid any memory leak while not slowing down initial builds.
@@ -62,8 +69,9 @@ class Transformer {
   _transform: (
     transform: string,
     filename: string,
+    localPath: LocalPath,
     sourceCode: string,
-    options: ?WorkerOptions,
+    options: WorkerOptions,
   ) => Promise<TransformData>;
   minify: (
     filename: string,
@@ -71,7 +79,11 @@ class Transformer {
     sourceMap: MappingsMap,
   ) => Promise<{code: string, map: MappingsMap}>;
 
-  constructor(transformModulePath: string, maxWorkerCount: number, reporters: Reporters) {
+  constructor(
+    transformModulePath: string,
+    maxWorkerCount: number,
+    reporters: Reporters,
+  ) {
     invariant(path.isAbsolute(transformModulePath), 'transform module path should be absolute');
     this._transformModulePath = transformModulePath;
 
@@ -89,21 +101,31 @@ class Transformer {
     });
 
     this._workers = farm.methods;
-    this._transform = denodeify(this._workers.transformAndExtractDependencies);
-    this.minify = denodeify(this._workers.minify);
+    this._transform = denodeify((this._workers.transformAndExtractDependencies: TransformAndExtractDependencies));
+    this.minify = denodeify((this._workers.minify: Minify));
   }
 
   kill() {
     this._workers && workerFarm.end(this._workers);
   }
 
-  transformFile(fileName: string, code: string, options: WorkerOptions) {
+  transformFile(
+    fileName: string,
+    localPath: LocalPath,
+    code: string,
+    options: WorkerOptions) {
     if (!this._transform) {
       return Promise.reject(new Error('No transform module'));
     }
     debug('transforming file', fileName);
     return this
-      ._transform(this._transformModulePath, fileName, code, options)
+      ._transform(
+        this._transformModulePath,
+        fileName,
+        localPath,
+        code,
+        options,
+      )
       .then(data => {
         Logger.log(data.transformFileStartLogEntry);
         Logger.log(data.transformFileEndLogEntry);

@@ -14,7 +14,7 @@
 const crypto = require('crypto');
 const denodeify = require('denodeify');
 const fs = require('fs');
-const getAssetDataFromName = require('../node-haste/DependencyGraph').getAssetDataFromName;
+const getAssetDataFromName = require('../node-haste/lib/getAssetDataFromName');
 const path = require('path');
 
 import type {AssetData} from '../node-haste/lib/getAssetDataFromName';
@@ -55,7 +55,10 @@ class AssetServer {
   }
 
   get(assetPath: string, platform: ?string = null): Promise<Buffer> {
-    const assetData = getAssetDataFromName(assetPath, new Set([platform]));
+    const assetData = getAssetDataFromName(
+      assetPath,
+      new Set(platform != null ? [platform] : []),
+    );
     return this._getAssetRecord(assetPath, platform).then(record => {
       for (let i = 0; i < record.scales.length; i++) {
         if (record.scales[i] >= assetData.resolution) {
@@ -74,7 +77,10 @@ class AssetServer {
     scales: Array<number>,
     type: string,
   |}> {
-    const nameData = getAssetDataFromName(assetPath, new Set([platform]));
+    const nameData = getAssetDataFromName(
+      assetPath,
+      new Set(platform != null ? [platform] : []),
+    );
     const {name, type} = nameData;
 
     return this._getAssetRecord(assetPath, platform).then(record => {
@@ -135,7 +141,10 @@ class AssetServer {
       .then(res => {
         const dir = res[0];
         const files = res[1];
-        const assetData = getAssetDataFromName(filename, new Set([platform]));
+        const assetData = getAssetDataFromName(
+          filename,
+          new Set(platform != null ? [platform] : []),
+        );
 
         const map = this._buildAssetMap(dir, files, platform);
 

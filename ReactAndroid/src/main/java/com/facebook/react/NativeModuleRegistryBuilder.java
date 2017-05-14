@@ -10,14 +10,14 @@ import java.util.Map;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ModuleSpec;
+import com.facebook.react.bridge.ModuleHolder;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.cxxbridge.ModuleHolder;
-import com.facebook.react.cxxbridge.NativeModuleRegistry;
 import com.facebook.react.module.model.ReactModuleInfo;
 
 /**

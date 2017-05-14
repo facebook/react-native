@@ -25,11 +25,8 @@ cxx_library(
     ],
     xcode_public_headers_symlinks = True,
     deps = JSC_DEPS + [
-        "//native/fb:fb",
-        "//native/third-party/android-ndk:android",
+        FBJNI_TARGET,
         "//xplat/folly:molly",
-        "//xplat/fbgloginit:fbgloginit",
-        "//xplat/fbsystrace:fbsystrace",
         react_native_xplat_target("jschelpers:jschelpers"),
-    ],
+    ] if not IS_OSS_BUILD else [],
 )

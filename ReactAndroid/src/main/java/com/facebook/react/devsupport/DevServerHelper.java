@@ -320,8 +320,16 @@ public class DevServerHelper {
   /**
    * @return the host to use when connecting to the bundle server from the host itself.
    */
-  private static String getHostForJSProxy() {
-    return AndroidInfoHelpers.DEVICE_LOCALHOST;
+  private String getHostForJSProxy() {
+    // Use custom port if configured. Note that host stays "localhost".
+    String host = Assertions.assertNotNull(
+      mSettings.getPackagerConnectionSettings().getDebugServerHost());
+    int portOffset = host.lastIndexOf(':');
+    if (portOffset > -1) {
+      return "localhost" + host.substring(portOffset);
+    } else {
+      return AndroidInfoHelpers.DEVICE_LOCALHOST;
+    }
   }
 
   /**
@@ -551,7 +559,7 @@ public class DevServerHelper {
   }
 
   public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
-    // The host IP we use when connecting to the JS bundle server from the emulator is not the
+    // The host we use when connecting to the JS bundle server from the emulator is not the
     // same as the one needed to connect to the same server from the JavaScript proxy running on the
     // host itself.
     return createBundleURL(
