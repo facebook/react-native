@@ -37,7 +37,7 @@ class AssetModule extends Module {
   }
 
   isHaste() {
-    return Promise.resolve(false);
+    return false;
   }
 
   readCached(): CachedReadResult {

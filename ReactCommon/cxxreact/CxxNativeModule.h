@@ -27,7 +27,7 @@ public:
   std::string getName() override;
   std::vector<MethodDescriptor> getMethods() override;
   folly::dynamic getConstants() override;
-  void invoke(unsigned int reactMethodId, folly::dynamic&& params) override;
+  void invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) override;
   MethodCallResult callSerializableNativeHook(unsigned int hookId, folly::dynamic&& args) override;
 
 private:

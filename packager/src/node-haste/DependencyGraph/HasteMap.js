@@ -5,7 +5,11 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
+ * @format
  */
+
 'use strict';
 
 const EventEmitter = require('events');
@@ -18,15 +22,37 @@ const GENERIC_PLATFORM = 'generic';
 const NATIVE_PLATFORM = 'native';
 const PACKAGE_JSON = path.sep + 'package.json';
 
-class HasteMap extends EventEmitter {
+import type {Moduleish, Packageish, ModuleishCache} from './ResolutionRequest';
+import type DependencyGraphHelpers from './DependencyGraphHelpers';
+
+type Options<TModule, TPackage> = {|
+  extensions: Array<string>,
+  files: Array<string>,
+  helpers: DependencyGraphHelpers,
+  moduleCache: ModuleishCache<TModule, TPackage>,
+  platforms: Set<string>,
+  preferNativePlatform: boolean,
+|};
+
+class HasteMap<TModule: Moduleish, TPackage: Packageish> extends EventEmitter {
+
+  _extensions: Array<string>;
+  _files: Array<string>;
+  _helpers: DependencyGraphHelpers;
+  _map: {};
+  _moduleCache: ModuleishCache<TModule, TPackage>;
+  _packages: {};
+  _platforms: Set<string>;
+  _preferNativePlatform: boolean;
+
   constructor({
     extensions,
     files,
-    moduleCache,
-    preferNativePlatform,
     helpers,
+    moduleCache,
     platforms,
-  }) {
+    preferNativePlatform,
+  }: Options<TModule, TPackage>) {
     super();
     this._extensions = extensions;
     this._files = files;
@@ -35,8 +61,8 @@ class HasteMap extends EventEmitter {
     this._platforms = platforms;
     this._preferNativePlatform = preferNativePlatform;
 
-    this._processHastePackage = throat(1, this._processHastePackage.bind(this));
-    this._processHasteModule = throat(1, this._processHasteModule.bind(this));
+    (this: any)._processHastePackage = throat(1, this._processHastePackage.bind(this));
+    (this: any)._processHasteModule = throat(1, this._processHasteModule.bind(this));
   }
 
   build() {
@@ -60,7 +86,7 @@ class HasteMap extends EventEmitter {
     return this._files;
   }
 
-  processFileChange(type, absPath) {
+  processFileChange(type: string, absPath: string) {
     return Promise.resolve().then(() => {
       /*eslint no-labels: 0 */
       let invalidated;
@@ -96,7 +122,7 @@ class HasteMap extends EventEmitter {
     });
   }
 
-  getModule(name, platform = null): Module {
+  getModule(name: string, platform: ?string): ?TModule {
     const modulesMap = this._map[name];
     if (modulesMap == null) {
       return null;
@@ -117,45 +143,47 @@ class HasteMap extends EventEmitter {
     return module;
   }
 
-  getPackage(name): Package {
+  getPackage(name: string): TPackage {
     return this._packages[name];
   }
 
-  _processHasteModule(file, previousName) {
+  _processHasteModule(file: string, previousName: ?string) {
     const module = this._moduleCache.getModule(file);
-    return module.isHaste().then(
-      isHaste => isHaste && module.getName()
+    return Promise.resolve().then(() => {
+      const isHaste = module.isHaste();
+      return isHaste && module.getName()
         .then(name => {
           const result = this._updateHasteMap(name, module);
           if (previousName && name !== previousName) {
             this.emit('change');
           }
           return result;
-        })
-    );
+        });
+    });
   }
 
-  _processHastePackage(file, previousName) {
+  _processHastePackage(file: string, previousName: ?string) {
     const p = this._moduleCache.getPackage(file);
-    return p.isHaste()
-      .then(isHaste => isHaste && p.getName()
+    return Promise.resolve().then(() => {
+      const isHaste = p.isHaste();
+      return isHaste && p.getName()
         .then(name => {
           const result = this._updateHasteMap(name, p);
           if (previousName && name !== previousName) {
             this.emit('change');
           }
           return result;
-        }))
-      .catch(e => {
-        if (e instanceof SyntaxError) {
-          // Malformed package.json.
-          return;
-        }
-        throw e;
-      });
+        });
+    }).catch(e => {
+      if (e instanceof SyntaxError) {
+        // Malformed package.json.
+        return;
+      }
+      throw e;
+    });
   }
 
-  _updateHasteMap(name, mod) {
+  _updateHasteMap(name: string, mod: TModule | TPackage) {
     let existingModule;
 
     if (mod.type === 'Package') {

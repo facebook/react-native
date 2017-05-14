@@ -1819,7 +1819,7 @@ describe('DependencyGraph', function() {
       });
 
       it('should support browser exclude of a package ("' + fieldName + '")', function() {
-        ResolutionRequest.emptyModule = '/root/emptyModule.js';
+        ResolutionRequest.EMPTY_MODULE = '/root/emptyModule.js';
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1885,7 +1885,7 @@ describe('DependencyGraph', function() {
       });
 
       it('should support browser exclude of a file ("' + fieldName + '")', function() {
-        ResolutionRequest.emptyModule = '/root/emptyModule.js';
+        ResolutionRequest.EMPTY_MODULE = '/root/emptyModule.js';
 
         var root = '/root';
         setMockFileSystem({

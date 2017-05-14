@@ -17,6 +17,8 @@ const Module = require('./Module');
 const Package = require('./Package');
 const Polyfill = require('./Polyfill');
 
+const toLocalPath = require('./lib/toLocalPath');
+
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
@@ -39,6 +41,7 @@ class ModuleCache {
   _platforms: Set<string>;
   _transformCode: TransformCode;
   _reporter: Reporter;
+  _roots: Array<string>;
 
   constructor(
     {
@@ -49,18 +52,20 @@ class ModuleCache {
       getTransformCacheKey,
       globalTransformCache,
       moduleOptions,
+      roots,
       reporter,
       transformCode,
-    }: {
+    }: {|
       assetDependencies: Array<string>,
       depGraphHelpers: DependencyGraphHelpers,
       getClosestPackage: GetClosestPackageFn,
       getTransformCacheKey: GetTransformCacheKey,
       globalTransformCache: ?GlobalTransformCache,
       moduleOptions: ModuleOptions,
+      roots: Array<string>,
       reporter: Reporter,
       transformCode: TransformCode,
-    },
+    |},
     platforms: Set<string>,
   ) {
     this._assetDependencies = assetDependencies;
@@ -75,6 +80,7 @@ class ModuleCache {
     this._platforms = platforms;
     this._transformCode = transformCode;
     this._reporter = reporter;
+    this._roots = roots;
   }
 
   getModule(filePath: string): Module {
@@ -84,6 +90,7 @@ class ModuleCache {
         file: filePath,
         getTransformCacheKey: this._getTransformCacheKey,
         globalTransformCache: this._globalTransformCache,
+        localPath: toLocalPath(this._roots, filePath),
         moduleCache: this,
         options: this._moduleOptions,
         reporter: this._reporter,
@@ -99,14 +106,22 @@ class ModuleCache {
 
   getAssetModule(filePath: string) {
     if (!this._moduleCache[filePath]) {
-      /* $FlowFixMe: missing options. This is because this is an incorrect OOP
-       * design in the first place: AssetModule, being simpler than a normal
-       * Module, should not inherit the Module class. */
+      /* FixMe: AssetModule does not need all these options. This is because
+       * this is an incorrect OOP design in the first place: AssetModule, being
+       * simpler than a normal Module, should not inherit the Module class.
+       */
       this._moduleCache[filePath] = new AssetModule(
         {
-          file: filePath,
-          moduleCache: this,
           dependencies: this._assetDependencies,
+          depGraphHelpers: this._depGraphHelpers,
+          file: filePath,
+          getTransformCacheKey: this._getTransformCacheKey,
+          globalTransformCache: null,
+          localPath: toLocalPath(this._roots, filePath),
+          moduleCache: this,
+          options: this._moduleOptions,
+          reporter: this._reporter,
+          transformCode: this._transformCode,
         },
         this._platforms,
       );
@@ -149,6 +164,7 @@ class ModuleCache {
       file,
       depGraphHelpers: this._depGraphHelpers,
       getTransformCacheKey: this._getTransformCacheKey,
+      localPath: toLocalPath(this._roots, file),
       moduleCache: this,
       transformCode: this._transformCode,
     });

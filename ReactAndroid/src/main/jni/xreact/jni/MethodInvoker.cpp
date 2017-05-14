@@ -46,11 +46,11 @@ jdouble extractDouble(const folly::dynamic& value) {
   }
 }
 
-local_ref<JCallbackImpl::jhybridobject> extractCallback(std::weak_ptr<Instance>& instance, const folly::dynamic& value) {
+local_ref<JCxxCallbackImpl::jhybridobject> extractCallback(std::weak_ptr<Instance>& instance, const folly::dynamic& value) {
   if (value.isNull()) {
-    return local_ref<JCallbackImpl::jhybridobject>(nullptr);
+    return local_ref<JCxxCallbackImpl::jhybridobject>(nullptr);
   } else {
-    return JCallbackImpl::newObjectCxxArgs(makeCallback(instance, value));
+    return JCxxCallbackImpl::newObjectCxxArgs(makeCallback(instance, value));
   }
 }
 

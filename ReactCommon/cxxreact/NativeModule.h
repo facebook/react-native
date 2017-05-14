@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
-#include <folly/dynamic.h>
 #include <cxxreact/Executor.h>
+#include <folly/dynamic.h>
 
 namespace facebook {
 namespace react {
@@ -29,7 +29,7 @@ class NativeModule {
   virtual folly::dynamic getConstants() = 0;
   // TODO mhorowitz: do we need initialize()/onCatalystInstanceDestroy() in C++
   // or only Java?
-  virtual void invoke(unsigned int reactMethodId, folly::dynamic&& params) = 0;
+  virtual void invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) = 0;
   virtual MethodCallResult callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic&& args) = 0;
 };
 

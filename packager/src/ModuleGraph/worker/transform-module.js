@@ -70,11 +70,12 @@ function transformModule(
   const {filename, transformer, variants = defaultVariants} = options;
   const tasks = {};
   Object.keys(variants).forEach(name => {
-    tasks[name] = asyncify(() => transformer.transform(
-        code,
+    tasks[name] = asyncify(() => transformer.transform({
         filename,
-        {...defaultTransformOptions, ...variants[name]},
-      )
+        localPath: filename,
+        options: {...defaultTransformOptions, ...variants[name]},
+        src: code,
+      })
     );
   });
 
