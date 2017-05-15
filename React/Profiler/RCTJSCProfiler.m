@@ -11,7 +11,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTLog.h"
+#import <React/RCTLog.h>
 
 #ifndef RCT_JSC_PROFILER
 #define RCT_JSC_PROFILER RCT_PROFILE

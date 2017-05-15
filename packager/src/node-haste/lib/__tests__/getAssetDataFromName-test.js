@@ -13,9 +13,11 @@ jest.dontMock('../getPlatformExtension')
 
 var getAssetDataFromName = require('../getAssetDataFromName');
 
+const TEST_PLATFORMS = new Set(['ios', 'android']);
+
 describe('getAssetDataFromName', () => {
   it('should get data from name', () => {
-    expect(getAssetDataFromName('a/b/c.png')).toEqual({
+    expect(getAssetDataFromName('a/b/c.png', TEST_PLATFORMS)).toEqual({
       resolution: 1,
       assetName: 'a/b/c.png',
       type: 'png',
@@ -23,7 +25,7 @@ describe('getAssetDataFromName', () => {
       platform: null,
     });
 
-    expect(getAssetDataFromName('a/b/c@1x.png')).toEqual({
+    expect(getAssetDataFromName('a/b/c@1x.png', TEST_PLATFORMS)).toEqual({
       resolution: 1,
       assetName: 'a/b/c.png',
       type: 'png',
@@ -31,7 +33,7 @@ describe('getAssetDataFromName', () => {
       platform: null,
     });
 
-    expect(getAssetDataFromName('a/b/c@2.5x.png')).toEqual({
+    expect(getAssetDataFromName('a/b/c@2.5x.png', TEST_PLATFORMS)).toEqual({
       resolution: 2.5,
       assetName: 'a/b/c.png',
       type: 'png',
@@ -39,7 +41,7 @@ describe('getAssetDataFromName', () => {
       platform: null,
     });
 
-    expect(getAssetDataFromName('a/b/c.ios.png')).toEqual({
+    expect(getAssetDataFromName('a/b/c.ios.png', TEST_PLATFORMS)).toEqual({
       resolution: 1,
       assetName: 'a/b/c.png',
       type: 'png',
@@ -47,7 +49,7 @@ describe('getAssetDataFromName', () => {
       platform: 'ios',
     });
 
-    expect(getAssetDataFromName('a/b/c@1x.ios.png')).toEqual({
+    expect(getAssetDataFromName('a/b/c@1x.ios.png', TEST_PLATFORMS)).toEqual({
       resolution: 1,
       assetName: 'a/b/c.png',
       type: 'png',
@@ -55,7 +57,7 @@ describe('getAssetDataFromName', () => {
       platform: 'ios',
     });
 
-    expect(getAssetDataFromName('a/b/c@2.5x.ios.png')).toEqual({
+    expect(getAssetDataFromName('a/b/c@2.5x.ios.png', TEST_PLATFORMS)).toEqual({
       resolution: 2.5,
       assetName: 'a/b/c.png',
       type: 'png',
@@ -63,7 +65,7 @@ describe('getAssetDataFromName', () => {
       platform: 'ios',
     });
 
-    expect(getAssetDataFromName('a/b /c.png')).toEqual({
+    expect(getAssetDataFromName('a/b /c.png', TEST_PLATFORMS)).toEqual({
       resolution: 1,
       assetName: 'a/b /c.png',
       type: 'png',
@@ -74,7 +76,7 @@ describe('getAssetDataFromName', () => {
 
   describe('resolution extraction', () => {
     it('should extract resolution simple case', () =>  {
-      var data = getAssetDataFromName('test@2x.png');
+      var data = getAssetDataFromName('test@2x.png', TEST_PLATFORMS);
       expect(data).toEqual({
         assetName: 'test.png',
         resolution: 2,
@@ -85,7 +87,7 @@ describe('getAssetDataFromName', () => {
     });
 
     it('should default resolution to 1', () =>  {
-      var data = getAssetDataFromName('test.png');
+      var data = getAssetDataFromName('test.png', TEST_PLATFORMS);
       expect(data).toEqual({
         assetName: 'test.png',
         resolution: 1,
@@ -96,7 +98,7 @@ describe('getAssetDataFromName', () => {
     });
 
     it('should support float', () =>  {
-      var data = getAssetDataFromName('test@1.1x.png');
+      var data = getAssetDataFromName('test@1.1x.png', TEST_PLATFORMS);
       expect(data).toEqual({
         assetName: 'test.png',
         resolution: 1.1,
@@ -105,7 +107,7 @@ describe('getAssetDataFromName', () => {
         platform: null,
       });
 
-      data = getAssetDataFromName('test@.1x.png');
+      data = getAssetDataFromName('test@.1x.png', TEST_PLATFORMS);
       expect(data).toEqual({
         assetName: 'test.png',
         resolution: 0.1,
@@ -114,7 +116,7 @@ describe('getAssetDataFromName', () => {
         platform: null,
       });
 
-      data = getAssetDataFromName('test@0.2x.png');
+      data = getAssetDataFromName('test@0.2x.png', TEST_PLATFORMS);
       expect(data).toEqual({
         assetName: 'test.png',
         resolution: 0.2,

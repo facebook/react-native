@@ -31,10 +31,8 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -186,6 +184,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * NB: this method is horribly not-thread-safe.
    */
   public int addMeasuredRootView(final SizeMonitoringFrameLayout rootView) {
+    Systrace.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+      "UIManagerModule.addMeasuredRootView");
     final int tag = mNextRootViewTag;
     mNextRootViewTag += ROOT_VIEW_TAG_INCREMENT;
 
@@ -212,7 +213,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       new SizeMonitoringFrameLayout.OnSizeChangedListener() {
         @Override
         public void onSizeChanged(final int width, final int height, int oldW, int oldH) {
-          reactApplicationContext.runOnNativeModulesQueueThread(
+          reactApplicationContext.runUIBackgroundRunnable(
             new GuardedRunnable(reactApplicationContext) {
               @Override
               public void runGuarded() {
@@ -222,6 +223,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
         }
       });
 
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return tag;
   }
 
@@ -231,7 +233,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
-    getReactApplicationContext().assertOnNativeModulesQueueThread();
+    getReactApplicationContext().assertOnUIBackgroundOrNativeModulesThread();
 
     mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight);
   }

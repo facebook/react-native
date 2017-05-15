@@ -23,6 +23,16 @@ export type GlobalCacheDisabledReason = 'too_many_errors' | 'too_many_misses';
  * report to the tool user.
  */
 export type ReportableEvent = {
+  port: number,
+  projectRoots: Array<string>,
+  type: 'initialize_packager_started',
+} | {
+  type: 'initialize_packager_done',
+} | {
+  type: 'initialize_packager_failed',
+  port: number,
+  error: Error,
+} | {
   entryFilePath: string,
   type: 'bundle_build_done',
 } | {
@@ -49,6 +59,12 @@ export type ReportableEvent = {
   reason: GlobalCacheDisabledReason,
 } | {
   type: 'transform_cache_reset',
+} | {
+  type: 'worker_stdout_chunk',
+  chunk: string,
+} | {
+  type: 'worker_stderr_chunk',
+  chunk: string,
 };
 
 /**

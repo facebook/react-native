@@ -564,29 +564,10 @@ public class UIViewOperationQueue {
   }
 
   public void addRootView(
-      final int tag,
-      final SizeMonitoringFrameLayout rootView,
-      final ThemedReactContext themedRootContext) {
-    if (UiThreadUtil.isOnUiThread()) {
-      mNativeViewHierarchyManager.addRootView(tag, rootView, themedRootContext);
-    } else {
-      final Semaphore semaphore = new Semaphore(0);
-      mReactApplicationContext.runOnUiQueueThread(
-          new Runnable() {
-            @Override
-            public void run() {
-              mNativeViewHierarchyManager.addRootView(tag, rootView, themedRootContext);
-              semaphore.release();
-            }
-          });
-      try {
-        SoftAssertions.assertCondition(
-            semaphore.tryAcquire(5000, TimeUnit.MILLISECONDS),
-            "Timed out adding root view");
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-    }
+    final int tag,
+    final SizeMonitoringFrameLayout rootView,
+    final ThemedReactContext themedRootContext) {
+    mNativeViewHierarchyManager.addRootView(tag, rootView, themedRootContext);
   }
 
   /**

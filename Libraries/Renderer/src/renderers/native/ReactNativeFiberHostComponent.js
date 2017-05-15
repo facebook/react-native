@@ -17,10 +17,7 @@ var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var TextInputState = require('TextInputState');
 var UIManager = require('UIManager');
 
-var {
-  mountSafeCallback,
-  warnForStyleProps,
-} = require('NativeMethodsMixinUtils');
+var {mountSafeCallback, warnForStyleProps} = require('NativeMethodsMixinUtils');
 
 import type {
   MeasureInWindowOnSuccessCallback,
@@ -28,8 +25,10 @@ import type {
   MeasureOnSuccessCallback,
   NativeMethodsInterface,
 } from 'NativeMethodsMixinUtils';
-import type { Instance } from 'ReactNativeFiber';
-import type { ReactNativeBaseComponentViewConfig } from 'ReactNativeViewConfigRegistry';
+import type {Instance} from 'ReactNativeFiber';
+import type {
+  ReactNativeBaseComponentViewConfig,
+} from 'ReactNativeViewConfigRegistry';
 
 /**
  * This component defines the same methods as NativeMethodsMixin but without the
@@ -39,14 +38,11 @@ import type { ReactNativeBaseComponentViewConfig } from 'ReactNativeViewConfigRe
  * ReactNativeFiber).
  */
 class ReactNativeFiberHostComponent implements NativeMethodsInterface {
-  _children: Array<Instance | number>
-  _nativeTag: number
-  viewConfig: ReactNativeBaseComponentViewConfig
+  _children: Array<Instance | number>;
+  _nativeTag: number;
+  viewConfig: ReactNativeBaseComponentViewConfig;
 
-  constructor(
-    tag : number,
-    viewConfig : ReactNativeBaseComponentViewConfig
-  ) {
+  constructor(tag: number, viewConfig: ReactNativeBaseComponentViewConfig) {
     this._nativeTag = tag;
     this._children = [];
     this.viewConfig = viewConfig;
@@ -61,29 +57,26 @@ class ReactNativeFiberHostComponent implements NativeMethodsInterface {
   }
 
   measure(callback: MeasureOnSuccessCallback) {
-    UIManager.measure(
-      this._nativeTag,
-      mountSafeCallback(this, callback)
-    );
+    UIManager.measure(this._nativeTag, mountSafeCallback(this, callback));
   }
 
   measureInWindow(callback: MeasureInWindowOnSuccessCallback) {
     UIManager.measureInWindow(
       this._nativeTag,
-      mountSafeCallback(this, callback)
+      mountSafeCallback(this, callback),
     );
   }
 
   measureLayout(
     relativeToNativeNode: number,
     onSuccess: MeasureLayoutOnSuccessCallback,
-    onFail: () => void /* currently unused */
+    onFail: () => void /* currently unused */,
   ) {
     UIManager.measureLayout(
       this._nativeTag,
       relativeToNativeNode,
       mountSafeCallback(this, onFail),
-      mountSafeCallback(this, onSuccess)
+      mountSafeCallback(this, onSuccess),
     );
   }
 
@@ -94,13 +87,13 @@ class ReactNativeFiberHostComponent implements NativeMethodsInterface {
 
     var updatePayload = ReactNativeAttributePayload.create(
       nativeProps,
-      this.viewConfig.validAttributes
+      this.viewConfig.validAttributes,
     );
 
     UIManager.updateView(
       this._nativeTag,
       this.viewConfig.uiViewClassName,
-      updatePayload
+      updatePayload,
     );
   }
 }

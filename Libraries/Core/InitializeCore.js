@@ -112,7 +112,9 @@ BatchedBridge.registerCallableModule('HeapCapture', require('HeapCapture'));
 BatchedBridge.registerCallableModule('SamplingProfiler', require('SamplingProfiler'));
 
 if (__DEV__) {
-  BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));
+  if (!global.__RCTProfileIsProfiling) {
+    BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));
+  }
 }
 
 // RCTLog needs to register with BatchedBridge
@@ -203,19 +205,23 @@ defineProperty(global, 'Set', () => require('Set'), true);
 
 // Set up devtools
 if (__DEV__) {
-  // not when debugging in chrome
-  // TODO(t12832058) This check is broken
-  if (!window.document) {
-    require('setupDevtools');
-  }
+  if (!global.__RCTProfileIsProfiling) {
+    // not when debugging in chrome
+    // TODO(t12832058) This check is broken
+    if (!window.document) {
+      require('setupDevtools');
+    }
 
-  require('RCTDebugComponentOwnership');
+    require('RCTDebugComponentOwnership');
+  }
 }
 
 // Set up inspector
 if (__DEV__) {
-  const JSInspector = require('JSInspector');
-  JSInspector.registerAgent(require('NetworkAgent'));
+  if (!global.__RCTProfileIsProfiling) {
+    const JSInspector = require('JSInspector');
+    JSInspector.registerAgent(require('NetworkAgent'));
+  }
 }
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
