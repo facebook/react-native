@@ -150,7 +150,7 @@ public class BundleDownloader {
       int statusCode,
       BufferedSource body,
       File outputFile,
-      DownloadCallback callback) throws IOException {
+      DevBundleDownloadListener callback) throws IOException {
     // Check for server errors. If the server error has the expected form, fail with more info.
     if (statusCode != 200) {
       String bodyString = body.readUtf8();
