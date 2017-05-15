@@ -27,7 +27,7 @@ class TabBarIOS extends React.Component {
     tintColor?: $FlowFixMe,
     unselectedItemTintColor?: $FlowFixMe,
     barTintColor?: $FlowFixMe,
-    barStyle: 'default' | 'black',
+    barStyle?: 'default' | 'black',
     translucent?: boolean,
     itemPositioning?: 'fill' | 'center' | 'auto',
   };
