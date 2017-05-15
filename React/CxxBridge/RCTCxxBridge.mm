@@ -54,7 +54,7 @@
   RCTAssert(self.executorClass || self->_jsThread == [NSThread currentThread], \
             @"This method must be called on JS thread")
 
-NSString *const RCTJSThreadName = @"com.facebook.React.JavaScript";
+static NSString *const RCTJSThreadName = @"com.facebook.react.JavaScript";
 
 using namespace facebook::react;
 
@@ -76,7 +76,7 @@ static bool isRAMBundle(NSData *script) {
 
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger) {
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
-  ReactMarker::logMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId) {
+  ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *tag) {
     switch (markerId) {
       case ReactMarker::RUN_JS_BUNDLE_START:
         [weakPerformanceLogger markStartForTag:RCTPLScriptExecution];
@@ -255,6 +255,8 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (void)start
 {
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge start]", nil);
+
   [[NSNotificationCenter defaultCenter]
     postNotificationName:RCTJavaScriptWillStartLoadingNotification
     object:_parentBridge userInfo:@{@"bridge": self}];
@@ -349,6 +351,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       }
     });
   }
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
 - (void)loadSource:(RCTSourceLoadBlock)_onSourceLoad onProgress:(RCTSourceLoadProgressBlock)onProgress
@@ -963,7 +966,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   [_performanceLogger markStopForTag:RCTPLBridgeStartup];
 
-  RCT_PROFILE_BEGIN_EVENT(0, @"Processing pendingCalls", @{ @"count": @(_pendingCalls.count) });
+  RCT_PROFILE_BEGIN_EVENT(0, @"Processing pendingCalls", @{ @"count": [@(_pendingCalls.count) stringValue] });
   // Phase B: _flushPendingCalls happens.  Each block in _pendingCalls is
   // executed, adding work to the queue, and _pendingCount is decremented.
   // loading is set to NO.
@@ -1051,8 +1054,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssert(onComplete != nil, @"onComplete block passed in should be non-nil");
 
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
-                          @"-[RCTCxxBridge enqueueApplicationScript]", nil);
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge enqueueApplicationScript]", nil);
 
   [self _tryAndHandleError:^{
     if (isRAMBundle(script)) {

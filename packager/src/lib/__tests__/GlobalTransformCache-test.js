@@ -51,16 +51,16 @@ describe('GlobalTransformCache', () => {
         hot: false,
         inlineRequires: false,
         platform: 'ios',
-        projectRoots: [path.join(__dirname, 'root')],
+        projectRoot: path.join(__dirname, 'root'),
       },
     };
     const result = await Promise.all([cache.fetch({
-      filePath: 'foo.js',
+      localPath: 'some/where/foo.js',
       sourceCode: '/* beep */',
       getTransformCacheKey: () => 'abcd',
       transformOptions,
     }), cache.fetch({
-      filePath: 'bar.js',
+      localPath: 'some/where/else/bar.js',
       sourceCode: '/* boop */',
       getTransformCacheKey: () => 'abcd',
       transformOptions,

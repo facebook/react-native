@@ -15,8 +15,8 @@
 
 var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
 const PropTypes = require('prop-types');
+var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var TimerMixin = require('react-timer-mixin');
@@ -137,14 +137,20 @@ var TouchableHighlight = React.createClass({
   },
 
   getInitialState: function() {
+    this._isMounted = false;
     return merge(
       this.touchableGetInitialState(), this._computeSyntheticState(this.props)
     );
   },
 
   componentDidMount: function() {
+    this._isMounted = true;
     ensurePositiveDelayProps(this.props);
     ensureComponentIsNative(this.refs[CHILD_REF]);
+  },
+
+  componentWillUnmount: function() {
+    this._isMounted = false;
   },
 
   componentDidUpdate: function() {
@@ -216,7 +222,7 @@ var TouchableHighlight = React.createClass({
   },
 
   _showUnderlay: function() {
-    if (!this.isMounted() || !this._hasPressHandler()) {
+    if (!this._isMounted || !this._hasPressHandler()) {
       return;
     }
 

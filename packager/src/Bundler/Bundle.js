@@ -20,8 +20,9 @@ const debug = require('debug')('RNP:Bundle');
 const invariant = require('fbjs/lib/invariant');
 
 const {fromRawMappings} = require('./source-map');
+const {isMappingsMap} = require('../lib/SourceMap');
 
-import type {SourceMap, CombinedSourceMap, MixedSourceMap} from '../lib/SourceMap';
+import type {IndexMap, MappingsMap, SourceMap} from '../lib/SourceMap';
 import type {GetSourceOptions, FinalizeOptions} from './BundleBase';
 
 export type Unbundle = {
@@ -206,7 +207,7 @@ class Bundle extends BundleBase {
    * that makes use of of the `sections` field to combine sourcemaps by adding
    * an offset. This is supported only by Chrome for now.
    */
-  _getCombinedSourceMaps(options: {excludeSource?: boolean}): CombinedSourceMap {
+  _getCombinedSourceMaps(options: {excludeSource?: boolean}): IndexMap {
     const result = {
       version: 3,
       file: this._getSourceMapFile(),
@@ -215,22 +216,22 @@ class Bundle extends BundleBase {
 
     let line = 0;
     this.getModules().forEach(module => {
-      let map = module.map == null || module.virtual
+      invariant(
+        !Array.isArray(module.map),
+        `Unexpected raw mappings for ${module.sourcePath}`,
+      );
+      let map: SourceMap = module.map == null || module.virtual
         ? generateSourceMapForVirtualModule(module)
         : module.map;
 
-      invariant(
-        !Array.isArray(map),
-        `Unexpected raw mappings for ${module.sourcePath}`,
-      );
 
-      if (options.excludeSource && 'sourcesContent' in map) {
+      if (options.excludeSource && isMappingsMap(map)) {
         map = {...map, sourcesContent: []};
       }
 
       result.sections.push({
         offset: {line, column: 0},
-        map: (map: MixedSourceMap),
+        map: map,
       });
       line += module.code.split('\n').length;
     });
@@ -238,7 +239,7 @@ class Bundle extends BundleBase {
     return result;
   }
 
-  getSourceMap(options: {excludeSource?: boolean}): MixedSourceMap {
+  getSourceMap(options: {excludeSource?: boolean}): SourceMap {
     this.assertFinalized();
 
     return this._sourceMapFormat === 'indexed'
@@ -314,7 +315,7 @@ class Bundle extends BundleBase {
   }
 }
 
-function generateSourceMapForVirtualModule(module): SourceMap {
+function generateSourceMapForVirtualModule(module): MappingsMap {
   // All lines map 1-to-1
   let mappings = 'AAAA;';
 

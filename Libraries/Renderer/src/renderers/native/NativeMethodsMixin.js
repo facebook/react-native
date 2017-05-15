@@ -99,7 +99,7 @@ var NativeMethodsMixin = {
   },
 
   /**
-   * Like [`measure()`](#measure), but measures the view relative to an ancestor,
+   * Like [`measure()`](#measure), but measures the view relative an ancestor,
    * specified as `relativeToNativeNode`. This means that the returned x, y
    * are relative to the origin x, y of the ancestor view.
    *
@@ -176,7 +176,8 @@ function setNativePropsFiber(componentOrHandle: any, nativeProps: Object) {
     return;
   }
 
-  const viewConfig: ReactNativeBaseComponentViewConfig = maybeInstance.viewConfig;
+  const viewConfig: ReactNativeBaseComponentViewConfig =
+    maybeInstance.viewConfig;
 
   if (__DEV__) {
     warnForStyleProps(nativeProps, viewConfig.validAttributes);

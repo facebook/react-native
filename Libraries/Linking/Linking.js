@@ -153,6 +153,10 @@ class Linking extends NativeEventEmitter {
    * or "http://maps.apple.com/?ll=37.484847,-122.148386" on iOS), a contact,
    * or any other URL that can be opened with the installed apps.
    *
+   * The method returns a `Promise` object. If the user confirms the open dialog or the
+   * url automatically opens, the promise is resolved.  If the user cancels the open dialog
+   * or there are no registered applications for the url, the promise is rejected.
+   *
    * NOTE: This method will fail if the system doesn't know how to open the specified URL.
    * If you're passing in a non-http(s) URL, it's best to check {@code canOpenURL} first.
    *

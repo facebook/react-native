@@ -63,7 +63,7 @@ To debug the JavaScript code in Chrome, select "Debug JS Remotely" from the Deve
 
 Select `Tools → Developer Tools` from the Chrome Menu to open the [Developer Tools](https://developer.chrome.com/devtools). You may also access the DevTools using keyboard shortcuts (**`Command`**`⌘` + **`Option`**`⌥` + **`I`** on Mac, **`Ctrl`** + **`Shift`** + **`I`** on Windows). You may also want to enable [Pause On Caught Exceptions](http://stackoverflow.com/questions/2233339/javascript-is-there-a-way-to-get-chrome-to-break-on-all-errors/17324511#17324511) for a better debugging experience.
 
-> It is [currently not possible](https://github.com/facebook/react-devtools/issues/229) to use the "React" tab in the Chrome Developer Tools to inspect app widgets. You can use Nuclide's "React Native Inspector" as a workaround.
+> Note: the React Developer Tools Chrome extension does not work with React Native, but you can use its standalone version instead. Read [this section](docs/debugging.html#react-developer-tools) to learn how.
 
 ### Debugging using a custom JavaScript debugger
 
@@ -72,6 +72,50 @@ To use a custom JavaScript debugger in place of Chrome Developer Tools, set the 
 The debugger will receive a list of all project roots, separated by a space. For example, if you set `REACT_DEBUGGER="node /path/to/launchDebugger.js --port 2345 --type ReactNative"`, then the command `node /path/to/launchDebugger.js --port 2345 --type ReactNative /path/to/reactNative/app` will be used to start your debugger.
 
 > Custom debugger commands executed this way should be short-lived processes, and they shouldn't produce more than 200 kilobytes of output.
+
+## React Developer Tools
+
+With React Native 0.43 or higher, you can use [the standalone version of React Developer Tools](https://github.com/facebook/react-devtools/tree/master/packages/react-devtools) to debug the React component hierarchy. To use it, install the `react-devtools` package globally:
+
+```
+npm install -g react-devtools
+```
+
+Now run `react-devtools` from the terminal to launch the standalone DevTools app:
+
+```
+react-devtools
+```
+
+![React DevTools](img/ReactDevTools.png)
+
+It should connect to your simulator within a few seconds.
+
+> Note: if you prefer to avoid global installations, you can add `react-devtools` as a project dependency. With Yarn, you can run `yarn add --dev react-devtools`, and then run `yarn react-devtools` from your project folder to open the DevTools. With npm, you can run `npm install --save-dev react-devtools`, add `"react-devtools": "react-devtools"` to the `scripts` section in your `package.json`, and then run `npm run react-devtools` from your project folder to open the DevTools.
+
+### Integration with React Native Inspector
+
+You can open the [in-app developer menu](#accessing-the-in-app-developer-menu) and choose "Show Inspector". It will bring up an overlay that lets you tap on any UI element and see information about it:
+
+![React Native Inspector](img/Inspector.gif)
+
+However, when `react-devtools` is running, Inspector will enter a special collapsed mode, and instead use the DevTools as primary UI. In this mode, clicking on something in the simulator will bring up the relevant components in the DevTools:
+
+![React DevTools Inspector Integration](img/ReactDevToolsInspector.gif)
+
+You can choose "Hide Inspector" in the same menu to exit this mode.
+
+### Inspecting Component Instances
+
+When debugging JavaScript in Chrome, you can inspect the props and state of the React components in the browser console.
+
+First, follow the [instructions for debugging in Chrome](docs/debugging.html#chrome-developer-tools) to open the Chrome console.
+
+Make sure that the dropdown in the top left corner of the Chrome console says `debuggerWorker.js`. **This step is essential.**
+
+Then select a React component in React DevTools. There is a search box at the top that helps you find one by name. As soon as you select it, it will be available as `$r` in the Chrome console, letting you inspect its props, state, and instance properties.
+
+![React DevTools Chrome Console Integration](img/ReactDevToolsDollarR.gif)
 
 ## Performance Monitor
 

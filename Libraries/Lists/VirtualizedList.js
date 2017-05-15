@@ -38,6 +38,14 @@ type RequiredProps = {
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
    */
   data?: any,
+  /**
+   * A generic accessor for extracting an item from any sort of data blob.
+   */
+  getItem: (data: any, index: number) => ?Item,
+  /**
+   * Determines how many items are in the data blob.
+   */
+  getItemCount: (data: any) => number,
 };
 type OptionalProps = {
   /**
@@ -57,14 +65,6 @@ type OptionalProps = {
    * `data` prop, stick it here and treat it immutably.
    */
   extraData?: any,
-  /**
-   * A generic accessor for extracting an item from any sort of data blob.
-   */
-  getItem: (data: any, index: number) => ?Item,
-  /**
-   * Determines how many items are in the data blob.
-   */
-  getItemCount: (data: any) => number,
   getItemLayout?: (data: any, index: number) =>
     {length: number, offset: number, index: number}, // e.g. height, y
   horizontal?: ?boolean,
@@ -82,6 +82,21 @@ type OptionalProps = {
    */
   initialScrollIndex?: ?number,
   keyExtractor: (item: Item, index: number) => string,
+  /**
+   * Rendered when the list is empty. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListEmptyComponent?: ?(ReactClass<any> | React.Element<any>),
+  /**
+   * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
+  /**
+   * Rendered at the top of all the items. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListHeaderComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
    * The maximum number of items to render in each incremental render batch. The more rendered at
    * once, the better the fill rate, but responsiveness my suffer because rendering content may
@@ -254,8 +269,6 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
 
   static defaultProps = {
     disableVirtualization: false,
-    getItem: (data: any, index: number) => data[index],
-    getItemCount: (data: any) => data ? data.length : 0,
     horizontal: false,
     initialNumToRender: 10,
     keyExtractor: (item: Item, index: number) => {
@@ -347,7 +360,6 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     if (data !== this.props.data || extraData !== this.props.extraData) {
       this._hasDataChangedSinceEndReached = true;
     }
-    this._updateCellsToRenderBatcher.schedule();
   }
 
   _pushCells(
@@ -397,14 +409,14 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   };
 
   render() {
-    const {ListFooterComponent, ListHeaderComponent} = this.props;
+    const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} = this.props;
     const {data, disableVirtualization, horizontal} = this.props;
     const cells = [];
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
     if (ListHeaderComponent) {
       const element = React.isValidElement(ListHeaderComponent)
-        ? ListHeaderComponent
+        ? ListHeaderComponent // $FlowFixMe
         : <ListHeaderComponent />;
       cells.push(
         <View key="$header" onLayout={this._onLayoutHeader}>
@@ -479,10 +491,19 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           <View key="$tail_spacer" style={{[spacerKey]: tailSpacerLength}} />
         );
       }
+    } else if (ListEmptyComponent) {
+      const element = React.isValidElement(ListEmptyComponent)
+        ? ListEmptyComponent // $FlowFixMe
+        : <ListEmptyComponent />;
+      cells.push(
+        <View key="$empty" onLayout={this._onLayoutEmpty}>
+          {element}
+        </View>
+      );
     }
     if (ListFooterComponent) {
       const element = React.isValidElement(ListFooterComponent)
-        ? ListFooterComponent
+        ? ListFooterComponent // $FlowFixMe
         : <ListFooterComponent />;
       cells.push(
         <View key="$footer" onLayout={this._onLayoutFooter}>
@@ -513,7 +534,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   componentDidUpdate() {
-    this._updateCellsToRenderBatcher.schedule();
+    this._scheduleCellsToRenderUpdate();
   }
 
   _averageCellLength = 0;
@@ -567,7 +588,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       this._averageCellLength = this._totalCellLength / this._totalCellsMeasured;
       this._frames[cellKey] = next;
       this._highestMeasuredFrameIndex = Math.max(this._highestMeasuredFrameIndex, index);
-      this._updateCellsToRenderBatcher.schedule();
+      this._scheduleCellsToRenderUpdate();
     } else {
       this._frames[cellKey].inLayout = true;
     }
@@ -584,7 +605,12 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   _onLayout = (e: Object) => {
     this._scrollMetrics.visibleLength = this._selectLength(e.nativeEvent.layout);
     this.props.onLayout && this.props.onLayout(e);
-    this._updateCellsToRenderBatcher.schedule();
+    this._scheduleCellsToRenderUpdate();
+    this._maybeCallOnEndReached();
+  };
+
+  _onLayoutEmpty = (e) => {
+    this.props.onLayout && this.props.onLayout(e);
   };
 
   _onLayoutFooter = (e) => {
@@ -671,7 +697,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       this.props.onContentSizeChange(width, height);
     }
     this._scrollMetrics.contentLength = this._selectLength({height, width});
-    this._updateCellsToRenderBatcher.schedule();
+    this._scheduleCellsToRenderUpdate();
     this._maybeCallOnEndReached();
   };
 
@@ -697,36 +723,43 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const dOffset = offset - this._scrollMetrics.offset;
     const velocity = dOffset / dt;
     this._scrollMetrics = {contentLength, dt, dOffset, offset, timestamp, velocity, visibleLength};
-    const {data, getItemCount, windowSize} = this.props;
-
-    this._updateViewableItems(data);
-    if (!data) {
+    this._updateViewableItems(this.props);
+    if (!this.props) {
       return;
     }
     this._maybeCallOnEndReached();
-
-    const {first, last} = this.state;
     if (velocity !== 0) {
       this._fillRateHelper.activate();
     }
     this._computeBlankness();
-    const itemCount = getItemCount(data);
-    if ((first > 0 && velocity < 0) || (last < itemCount - 1 && velocity > 0)) {
-      const distanceToContentEdge = Math.min(
-        Math.abs(this._getFrameMetricsApprox(first).offset - offset),
-        Math.abs(this._getFrameMetricsApprox(last).offset - (offset + visibleLength)),
-      );
-      const hiPri = distanceToContentEdge < (windowSize * visibleLength / 4);
-      if (hiPri) {
-        // Don't worry about interactions when scrolling quickly; focus on filling content as fast
-        // as possible.
-        this._updateCellsToRenderBatcher.dispose({abort: true});
-        this._updateCellsToRender();
-        return;
-      }
-    }
-    this._updateCellsToRenderBatcher.schedule();
+    this._scheduleCellsToRenderUpdate();
   };
+
+  _scheduleCellsToRenderUpdate() {
+    const {first, last} = this.state;
+    const {offset, visibleLength, velocity} = this._scrollMetrics;
+    const itemCount = this.props.getItemCount(this.props.data);
+    let hiPri = false;
+    if (first > 0 || last < itemCount - 1) {
+      const distTop = offset - this._getFrameMetricsApprox(first).offset;
+      const distBottom = this._getFrameMetricsApprox(last).offset - (offset + visibleLength);
+      const scrollingThreshold = this.props.onEndReachedThreshold * visibleLength / 2;
+      hiPri = (
+        Math.min(distTop, distBottom) < 0 ||
+        (velocity < -2 && distTop < scrollingThreshold) ||
+        (velocity > 2 && distBottom < scrollingThreshold)
+      );
+    }
+    if (hiPri) {
+      // Don't worry about interactions when scrolling quickly; focus on filling content as fast
+      // as possible.
+      this._updateCellsToRenderBatcher.dispose({abort: true});
+      this._updateCellsToRender();
+      return;
+    } else {
+      this._updateCellsToRenderBatcher.schedule();
+    }
+  }
 
   _onScrollBeginDrag = (e): void => {
     this._viewabilityHelper.recordInteraction();
@@ -867,7 +900,7 @@ class CellRenderer extends React.Component {
     },
     updateProps: (select: 'leading' | 'trailing', newProps: Object) => {
       const {cellKey, prevCellKey} = this.props;
-      this.props.onUpdateSeparators([select === 'leading' ? cellKey : prevCellKey], newProps);
+      this.props.onUpdateSeparators([select === 'leading' ? prevCellKey : cellKey], newProps);
     },
   };
 
