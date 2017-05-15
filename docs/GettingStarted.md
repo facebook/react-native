@@ -257,7 +257,15 @@ Select the "SDK Platforms" tab from within the SDK Manager, then check the box n
 - `Intel x86 Atom_64 System Image`
 - `Google APIs Intel x86 Atom_64 System Image`
 
-![Android SDK Manager](img/AndroidSDKManager.png)
+<block class="mac android" />
+
+![Android SDK Manager](img/AndroidSDKManagerMacOS.png)
+
+<block class="windows android" />
+
+![Android SDK Manager](img/AndroidSDKManagerWindows.png)
+
+<block class="windows mac linux android" />
 
 Next, select the "SDK Tools" tab and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build Tools" entry, then make sure that `Android SDK Build-Tools 23.0.1` is selected.
 
@@ -301,7 +309,7 @@ Type `source ~/.profile` to load the config into your current shell.
 
 Open the System pane under **System and Security** in the Control Panel, then click on **Change settings...**. Open the **Advanced** tab and click on **Environment Variables...**. Click on **New...** to create a new `ANDROID_HOME` user variable that points to the path to your Android SDK. The Android SDK is installed at `C:\Users\YOUR_USER\AppData\Local\Android\sdk` by default.
 
-![env variable](img/react-native-android-sdk-environment-variable-windows.png)
+![ANDROID_HOME Environment Variable](img/react-native-android-sdk-environment-variable-windows.png)
 
 Close and open a new Command Prompt window to ensure the new environment variable is loaded.
 
@@ -318,13 +326,21 @@ changes in the filesystem. It is highly recommended you install it for better pe
 
 ## Starting the Android Virtual Device
 
+You can see the list of available AVDs by opening the "AVD Manager" from within Android Studio:
+
 ![Android Studio AVD Manager](img/react-native-tools-avd.png)
 
-You can see the list of available AVDs by opening the "AVD Manager" from within Android Studio.
+<block class="windows linux android" />
+
+Launch the default AVD before proceeding to the next step.
+
+<block class="mac android" />
 
 Once in the "AVD Manager", select your AVD and click "Edit...". Choose "Android 6.0 - API Level 23" under Device, and "Intel Atom (x86_64)" under CPU/ABI. Click OK, then select your new AVD and click "Start...", and finally, "Launch".
 
 ![Android AVD Configuration](img/AndroidAVDConfiguration.png)
+
+<block class="mac windows linux android" />
 
 > It is very common to run into an issue where Android Studio fails to create a default AVD. You may follow the [Android Studio User Guide](https://developer.android.com/studio/run/managing-avds.html) to create a new AVD manually if needed.
 
