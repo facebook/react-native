@@ -3164,10 +3164,11 @@ bool YGNodeCanUseCachedMeasurement(const YGMeasureMode widthMode,
   if (lastComputedHeight < 0 || lastComputedWidth < 0) {
     return false;
   }
-  const float effectiveWidth = config != NULL ? YGRoundValueToPixelGrid(width, config->pointScaleFactor, false, false) : width;
-  const float effectiveHeight = config != NULL ? YGRoundValueToPixelGrid(height, config->pointScaleFactor, false, false) : height;
-  const float effectiveLastWidth = config != NULL ? YGRoundValueToPixelGrid(lastWidth, config->pointScaleFactor, false, false) : lastWidth;
-  const float effectiveLastHeight = config != NULL ? YGRoundValueToPixelGrid(lastHeight, config->pointScaleFactor, false, false) : lastHeight;
+  bool useRoundedComparison = config != NULL && config->pointScaleFactor != 0;
+  const float effectiveWidth = useRoundedComparison ? YGRoundValueToPixelGrid(width, config->pointScaleFactor, false, false) : width;
+  const float effectiveHeight = useRoundedComparison ? YGRoundValueToPixelGrid(height, config->pointScaleFactor, false, false) : height;
+  const float effectiveLastWidth = useRoundedComparison ? YGRoundValueToPixelGrid(lastWidth, config->pointScaleFactor, false, false) : lastWidth;
+  const float effectiveLastHeight = useRoundedComparison ? YGRoundValueToPixelGrid(lastHeight, config->pointScaleFactor, false, false) : lastHeight;
 
   const bool hasSameWidthSpec = lastWidthMode == widthMode && YGFloatsEqual(effectiveLastWidth, effectiveWidth);
   const bool hasSameHeightSpec = lastHeightMode == heightMode && YGFloatsEqual(effectiveLastHeight, effectiveHeight);
