@@ -12,6 +12,7 @@
 
 var Platform = require('Platform');
 var React = require('React');
+var PropTypes = require('prop-types');
 var ReactNative = require('ReactNative');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
@@ -20,16 +21,14 @@ var UIManager = require('UIManager');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var processColor = require('processColor');
 
-var PropTypes = React.PropTypes;
-
 var rippleBackgroundPropType = PropTypes.shape({
-  type: React.PropTypes.oneOf(['RippleAndroid']),
+  type: PropTypes.oneOf(['RippleAndroid']),
   color: PropTypes.number,
   borderless: PropTypes.bool,
 });
 
 var themeAttributeBackgroundPropType = PropTypes.shape({
-  type: React.PropTypes.oneOf(['ThemeAttrAndroid']),
+  type: PropTypes.oneOf(['ThemeAttrAndroid']),
   attribute: PropTypes.string.isRequired,
 });
 

@@ -18,10 +18,11 @@ import type { // eslint-disable-line sort-requires
 
 import type {
   ResolveFn,
-  TransformedFile,
+  TransformedCodeFile,
 } from '../types.flow';
 
 const DependencyGraphHelpers = require('../../node-haste/DependencyGraph/DependencyGraphHelpers');
+const FilesByDirNameIndex = require('../../node-haste/FilesByDirNameIndex');
 const HasteFS = require('./HasteFS');
 const HasteMap = require('../../node-haste/DependencyGraph/HasteMap');
 const Module = require('./Module');
@@ -30,10 +31,13 @@ const ResolutionRequest = require('../../node-haste/DependencyGraph/ResolutionRe
 
 const defaults = require('../../../defaults');
 
+import type {Moduleish, Packageish} from '../../node-haste/DependencyGraph/ResolutionRequest';
+
 type ResolveOptions = {|
   assetExts: Extensions,
   extraNodeModules: {[id: string]: string},
-  transformedFiles: {[path: Path]: TransformedFile},
+  +sourceExts: Extensions,
+  transformedFiles: {[path: Path]: TransformedCodeFile},
 |};
 
 const platforms = new Set(defaults.platforms);
@@ -43,24 +47,37 @@ const platforms = new Set(defaults.platforms);
  * a jest-haste-map's ModuleMap instance. Eventually, though, we'll
  * want to figure out how to reunify and get rid of `HasteMap`.
  */
-function getFakeModuleMap(hasteMap: HasteMap) {
+function getFakeModuleMap(hasteMap: HasteMap<Module, Packageish>) {
   return {
-    getModule(name: string, platform_: string): ?string {
-      const module = hasteMap.getModule(name, platform_);
+    getModule(name: string, platform: ?string): ?string {
+      const module = hasteMap.getModule(name, platform);
       return module && module.type === 'Module' ? module.path : null;
     },
-    getPackage(name: string, platform_: string): ?string {
-      const module = hasteMap.getModule(name, platform_);
-      return module && module.type === 'Package' ? module.path : null;
+    getPackage(name: string, platform: ?string): ?string {
+      const pkg = hasteMap.getPackage(name);
+      return pkg && pkg.path;
     },
   };
 }
+
+const nullModule: Moduleish = {
+  path: '/',
+  getPackage() {},
+  hash() {
+    throw new Error('not implemented');
+  },
+  readCached() { throw new Error('not implemented'); },
+  readFresh() { return Promise.reject(new Error('not implemented')); },
+  isHaste() { throw new Error('not implemented'); },
+  getName() { throw new Error('not implemented'); },
+};
 
 exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
   const {
     assetExts,
     extraNodeModules,
     transformedFiles,
+    sourceExts,
   } = options;
   const files = Object.keys(transformedFiles);
   function getTransformedFile(path) {
@@ -82,7 +99,7 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
     getTransformedFile,
   );
   const hasteMap = new HasteMap({
-    extensions: ['js', 'json'],
+    extensions: sourceExts,
     files,
     helpers,
     moduleCache,
@@ -92,6 +109,7 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
 
   const hasteMapBuilt = hasteMap.build();
   const resolutionRequests = {};
+  const filesByDirNameIndex = new FilesByDirNameIndex(hasteMap.getAllFiles());
   return (id, source, platform, _, callback) => {
     let resolutionRequest = resolutionRequests[platform];
     if (!resolutionRequest) {
@@ -100,17 +118,19 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
         entryPath: '',
         extraNodeModules,
         hasteFS,
-        hasteMap,
         helpers,
+        matchFiles: filesByDirNameIndex.match.bind(filesByDirNameIndex),
         moduleCache,
         moduleMap: getFakeModuleMap(hasteMap),
         platform,
-        platforms,
         preferNativePlatform: true,
+        sourceExts,
       });
     }
 
-    const from = new Module(source, moduleCache, getTransformedFile(source));
+    const from = source != null
+      ? new Module(source, moduleCache, getTransformedFile(source))
+      : nullModule;
     hasteMapBuilt
       .then(() => resolutionRequest.resolveDependency(from, id))
       .then(

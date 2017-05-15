@@ -16,6 +16,7 @@ const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
+const defaultSourceExts = require('../../packager/defaults').sourceExts;
 const defaultPlatforms = require('../../packager/defaults').platforms;
 const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
@@ -93,7 +94,7 @@ function getPackagerServer(args, config) {
       // First we let require resolve it, so we can require packages in node_modules
       // as expected. eg: require('my-package/reporter');
       LogReporter = require(args.customLogReporterPath);
-    } catch(e) {
+    } catch (e) {
       // If that doesn't work, then we next try relative to the cwd, eg:
       // require('./reporter');
       LogReporter = require(path.resolve(args.customLogReporterPath));
@@ -110,10 +111,13 @@ function getPackagerServer(args, config) {
     getTransformOptions: config.getTransformOptions,
     hasteImpl: config.hasteImpl,
     platforms: defaultPlatforms.concat(args.platforms),
+    postProcessModules: config.postProcessModules,
+    postMinifyProcess: config.postMinifyProcess,
     projectRoots: args.projectRoots,
     providesModuleNodeModules: providesModuleNodeModules,
     reporter: new LogReporter(),
     resetCache: args.resetCache,
+    sourceExts: defaultSourceExts.concat(args.sourceExts),
     transformModulePath: transformModulePath,
     verbose: args.verbose,
     watch: !args.nonPersistent,

@@ -17,8 +17,6 @@
 #import "RCTAnimationUtils.h"
 #import "RCTValueAnimatedNode.h"
 
-const double SINGLE_FRAME_INTERVAL = 1.0 / 60.0;
-
 @interface RCTFrameAnimation ()
 
 @property (nonatomic, strong) NSNumber *animationId;
@@ -91,7 +89,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   // Determine how many frames have passed since last update.
   // Get index of frames that surround the current interval
-  NSUInteger startIndex = floor(currentDuration / SINGLE_FRAME_INTERVAL);
+  NSUInteger startIndex = floor(currentDuration / RCTSingleFrameInterval);
   NSUInteger nextIndex = startIndex + 1;
 
   if (nextIndex >= _frames.count) {
@@ -106,8 +104,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Do a linear remap of the two frames to safegaurd against variable framerates
   NSNumber *fromFrameValue = _frames[startIndex];
   NSNumber *toFrameValue = _frames[nextIndex];
-  NSTimeInterval fromInterval = startIndex * SINGLE_FRAME_INTERVAL;
-  NSTimeInterval toInterval = nextIndex * SINGLE_FRAME_INTERVAL;
+  NSTimeInterval fromInterval = startIndex * RCTSingleFrameInterval;
+  NSTimeInterval toInterval = nextIndex * RCTSingleFrameInterval;
 
   // Interpolate between the individual frames to ensure the animations are
   //smooth and of the proper duration regardless of the framerate.

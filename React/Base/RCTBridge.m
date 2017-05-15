@@ -12,6 +12,7 @@
 
 #import <objc/runtime.h>
 
+#import "RCTBridge+JavaScriptCore.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
@@ -169,7 +170,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
 }
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
-                   moduleProvider:(RCTBridgeModuleProviderBlock)block
+                   moduleProvider:(RCTBridgeModuleListProvider)block
                     launchOptions:(NSDictionary *)launchOptions
 {
   return [self initWithDelegate:nil
@@ -180,7 +181,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
 
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
                        bundleURL:(NSURL *)bundleURL
-                  moduleProvider:(RCTBridgeModuleProviderBlock)block
+                  moduleProvider:(RCTBridgeModuleListProvider)block
                    launchOptions:(NSDictionary *)launchOptions
 {
   if (self = [super init]) {
@@ -283,10 +284,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     } else {
       implClass = batchedBridgeClass;
     }
-  } else if (batchedBridgeClass != nil) {
-    implClass = batchedBridgeClass;
   } else if (cxxBridgeClass != nil) {
     implClass = cxxBridgeClass;
+  } else if (batchedBridgeClass != nil) {
+    implClass = batchedBridgeClass;
   }
 
   RCTAssert(implClass != nil, @"No bridge implementation is available, giving up.");
@@ -378,5 +379,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge callFunctionOnModule:module method:method arguments:arguments error:error];
 }
 
+@end
+
+@implementation RCTBridge (JavaScriptCore)
+
+- (JSContext *)jsContext
+{
+  return [self.batchedBridge jsContext];
+}
+
+- (JSGlobalContextRef)jsContextRef
+{
+  return [self.batchedBridge jsContextRef];
+}
 
 @end

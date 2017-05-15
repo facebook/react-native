@@ -14,19 +14,19 @@
 const Module = require('./Module');
 const Package = require('./Package');
 
-import type {PackageData, TransformedFile} from '../types.flow';
+import type {PackageData, TransformedCodeFile} from '../types.flow';
 
 type GetClosestPackageFn = (filePath: string) => ?string;
 
 module.exports = class ModuleCache {
   _getClosestPackage: GetClosestPackageFn;
-  getTransformedFile: string => TransformedFile;
+  getTransformedFile: string => TransformedCodeFile;
   modules: Map<string, Module>;
   packages: Map<string, Package>;
 
   constructor(
     getClosestPackage: GetClosestPackageFn,
-    getTransformedFile: string => TransformedFile,
+    getTransformedFile: string => TransformedCodeFile,
   ) {
     this._getClosestPackage = getClosestPackage;
     this.getTransformedFile = getTransformedFile;
@@ -34,11 +34,11 @@ module.exports = class ModuleCache {
     this.packages = new Map();
   }
 
-  getAssetModule(path: string) {
+  getAssetModule(path: string): Module {
     return this.getModule(path);
   }
 
-  getModule(path: string) {
+  getModule(path: string): Module {
     let m = this.modules.get(path);
     if (!m) {
       m = new Module(path, this, this.getTransformedFile(path));
@@ -47,7 +47,7 @@ module.exports = class ModuleCache {
     return m;
   }
 
-  getPackage(path: string) {
+  getPackage(path: string): Package {
     let p = this.packages.get(path);
     if (!p) {
       p = new Package(path, this.getPackageData(path));
@@ -64,7 +64,7 @@ module.exports = class ModuleCache {
     return pkg;
   }
 
-  getPackageOf(filePath: string) {
+  getPackageOf(filePath: string): ?Package {
     const candidate = this._getClosestPackage(filePath);
     return candidate != null ? this.getPackage(candidate) : null;
   }

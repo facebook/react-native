@@ -15,14 +15,12 @@ const ColorPropType = require('ColorPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
+const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
-
 const ViewPropTypes = require('ViewPropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
-
-const PropTypes = React.PropTypes;
 
 const GRAY = '#999999';
 

@@ -37,7 +37,7 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
   public int mLastRequestId;
   public boolean mAbortedRequest;
 
-  private final boolean mCompleteRequest;
+  private boolean mCompleteRequest;
 
   public NetworkRecordingModuleMock(ReactApplicationContext reactContext) {
     this(reactContext, true);
@@ -87,7 +87,8 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
       ReadableMap data,
       final String responseType,
       boolean incrementalUpdates,
-      int timeout) {
+      int timeout,
+      boolean withCredentials) {
     mLastRequestId = requestId;
     mRequestCount++;
     mRequestMethod = method;
@@ -113,6 +114,10 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
   @Override
   public boolean canOverrideExistingModule() {
     return true;
+  }
+
+  public void setCompleteRequest(boolean completeRequest) {
+    mCompleteRequest = completeRequest;
   }
 
   private void onDataReceived(int requestId, String data) {

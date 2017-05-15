@@ -16,7 +16,6 @@ LOCAL_SRC_FILES := \
   JSCNativeModules.cpp \
   JSCPerfStats.cpp \
   JSCTracing.cpp \
-  JSCWebWorker.cpp \
   JSIndexedRAMBundle.cpp \
   MethodCall.cpp \
   ModuleRegistry.cpp \

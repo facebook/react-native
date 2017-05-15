@@ -5,17 +5,17 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
+ * @format
  */
+
 'use strict';
 
-const SUPPORTED_PLATFORM_EXTS = new Set([
-  'android',
-  'ios',
-  'web',
-]);
-
-// Extract platform extension: index.ios.js -> ios
-function getPlatformExtension(file, platforms = SUPPORTED_PLATFORM_EXTS) {
+/**
+ * Extract platform extension: `index.ios.js` -> `ios`.
+ */
+function getPlatformExtension(file: string, platforms: Set<string>): ?string {
   const last = file.lastIndexOf('.');
   const secondToLast = file.lastIndexOf('.', last - 1);
   if (secondToLast === -1) {

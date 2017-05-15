@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @format
  */
 
 'use strict';
@@ -14,8 +15,6 @@
 const fs = require('fs');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
-
-import type Cache from './Cache';
 
 type PackageContent = {
   name: string,
@@ -25,22 +24,16 @@ type PackageContent = {
 };
 
 class Package {
-
   path: string;
   root: string;
   type: string;
-  _cache: Cache;
 
   _content: ?PackageContent;
 
-  constructor({file, cache}: {
-    file: string,
-    cache: Cache,
-  }) {
+  constructor({file}: {file: string}) {
     this.path = path.resolve(file);
     this.root = path.dirname(this.path);
     this.type = 'Package';
-    this._cache = cache;
     this._content = null;
   }
 
@@ -54,7 +47,8 @@ class Package {
     let main = json.main || 'index';
 
     if (replacements && typeof replacements === 'object') {
-      main = replacements[main] ||
+      main =
+        replacements[main] ||
         replacements[main + '.js'] ||
         replacements[main + '.json'] ||
         replacements[main.replace(/(\.js|\.json)$/, '')] ||
@@ -65,20 +59,16 @@ class Package {
     return path.join(this.root, main);
   }
 
-  isHaste() {
-    return this._cache.get(this.path, 'package-haste', () =>
-      Promise.resolve().then(() => !!this.read().name)
-    );
+  isHaste(): boolean {
+    return !!this.read().name;
   }
 
   getName(): Promise<string> {
-    return this._cache.get(this.path, 'package-name', () =>
-      Promise.resolve().then(() => this.read().name)
-    );
+    return Promise.resolve().then(() => this.read().name);
   }
 
   invalidate() {
-    this._cache.invalidate(this.path);
+    this._content = null;
   }
 
   redirectRequire(name: string): string | false {
@@ -94,8 +84,8 @@ class Package {
       // support exclude with "someDependency": false
       return replacement === false
         ? false
-        /* $FlowFixMe: type of replacements is not being validated */
-        : replacement || name;
+        : /* $FlowFixMe: type of replacements is not being validated */
+          replacement || name;
     }
 
     let relPath = './' + path.relative(this.root, name);
@@ -122,7 +112,7 @@ class Package {
       return path.join(
         this.root,
         /* $FlowFixMe: `getReplacements` doesn't validate the return value. */
-        redirect
+        redirect,
       );
     }
 

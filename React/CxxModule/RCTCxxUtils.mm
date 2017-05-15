@@ -41,17 +41,11 @@ using namespace facebook::react;
 namespace facebook {
 namespace react {
 
-std::shared_ptr<ModuleRegistry> buildModuleRegistry(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance)
+std::vector<std::unique_ptr<NativeModule>> createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance)
 {
   std::vector<std::unique_ptr<NativeModule>> nativeModules;
   for (RCTModuleData *moduleData in modules) {
     if ([moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
-      // If a module does not support automatic instantiation, and
-      // wasn't provided as an extra module, it may not have an
-      // instance.  If so, skip it.
-      if (![moduleData hasInstance]) {
-        continue;
-      }
       nativeModules.emplace_back(std::make_unique<CxxNativeModule>(
         instance,
         [moduleData.name UTF8String],
@@ -61,8 +55,7 @@ std::shared_ptr<ModuleRegistry> buildModuleRegistry(NSArray<RCTModuleData *> *mo
       nativeModules.emplace_back(std::make_unique<RCTNativeModule>(bridge, moduleData));
     }
   }
-
-  return std::make_shared<ModuleRegistry>(std::move(nativeModules));
+  return nativeModules;
 }
 
 JSContext *contextForGlobalContextRef(JSGlobalContextRef contextRef)

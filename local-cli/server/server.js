@@ -67,9 +67,14 @@ module.exports = {
     default: (config) => config.getProjectRoots(),
   }, {
     command: '--assetExts [list]',
-    description: 'Specify any additional asset extentions to be used by the packager',
+    description: 'Specify any additional asset extensions to be used by the packager',
     parse: (val) => val.split(','),
     default: (config) => config.getAssetExts(),
+  }, {
+    command: '--sourceExts [list]',
+    description: 'Specify any additional source extensions to be used by the packager',
+    parse: (val) => val.split(','),
+    default: (config) => config.getSourceExts(),
   }, {
     command: '--platforms [list]',
     description: 'Specify any additional platforms to be used by the packager',

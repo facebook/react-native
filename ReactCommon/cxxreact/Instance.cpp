@@ -128,20 +128,15 @@ void *Instance::getJavaScriptContext() {
   return nativeToJsBridge_->getJavaScriptContext();
 }
 
-void Instance::callJSFunction(ExecutorToken token, std::string&& module, std::string&& method,
-                              folly::dynamic&& params) {
+void Instance::callJSFunction(std::string&& module, std::string&& method, folly::dynamic&& params) {
   callback_->incrementPendingJSCalls();
-  nativeToJsBridge_->callFunction(token, std::move(module), std::move(method), std::move(params));
+  nativeToJsBridge_->callFunction(std::move(module), std::move(method), std::move(params));
 }
 
-void Instance::callJSCallback(ExecutorToken token, uint64_t callbackId, folly::dynamic&& params) {
+void Instance::callJSCallback(uint64_t callbackId, folly::dynamic&& params) {
   SystraceSection s("<callback>");
   callback_->incrementPendingJSCalls();
-  nativeToJsBridge_->invokeCallback(token, (double) callbackId, std::move(params));
-}
-
-ExecutorToken Instance::getMainExecutorToken() {
-  return nativeToJsBridge_->getMainExecutorToken();
+  nativeToJsBridge_->invokeCallback((double) callbackId, std::move(params));
 }
 
 void Instance::handleMemoryPressureUiHidden() {

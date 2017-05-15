@@ -12,21 +12,20 @@ jest.dontMock('../getPlatformExtension');
 
 var getPlatformExtension = require('../getPlatformExtension');
 
+const TEST_PLATFORMS = new Set(['ios', 'android']);
+
 describe('getPlatformExtension', function() {
   it('should get platform ext', function() {
-    expect(getPlatformExtension('a.ios.js')).toBe('ios');
-    expect(getPlatformExtension('a.android.js')).toBe('android');
-    expect(getPlatformExtension('/b/c/a.ios.js')).toBe('ios');
-    expect(getPlatformExtension('/b/c.android/a.ios.js')).toBe('ios');
-    expect(getPlatformExtension('/b/c/a@1.5x.ios.png')).toBe('ios');
-    expect(getPlatformExtension('/b/c/a@1.5x.lol.png')).toBe(null);
-    expect(getPlatformExtension('/b/c/a.lol.png')).toBe(null);
-  });
-
-  it('should optionally accept supported platforms', function() {
+    const get = name => getPlatformExtension(name, TEST_PLATFORMS);
+    expect(get('a.ios.js')).toBe('ios');
+    expect(get('a.android.js')).toBe('android');
+    expect(get('/b/c/a.ios.js')).toBe('ios');
+    expect(get('/b/c.android/a.ios.js')).toBe('ios');
+    expect(get('/b/c/a@1.5x.ios.png')).toBe('ios');
+    expect(get('/b/c/a@1.5x.lol.png')).toBe(null);
+    expect(get('/b/c/a.lol.png')).toBe(null);
     expect(getPlatformExtension('a.ios.js', new Set(['ios']))).toBe('ios');
     expect(getPlatformExtension('a.android.js', new Set(['android']))).toBe('android');
-    expect(getPlatformExtension('/b/c/a.ios.js', new Set(['ios', 'android']))).toBe('ios');
     expect(getPlatformExtension('a.ios.js', new Set(['ubuntu']))).toBe(null);
     expect(getPlatformExtension('a.ubuntu.js', new Set(['ubuntu']))).toBe('ubuntu');
   });

@@ -18,6 +18,7 @@
 #import "RCTDivisionAnimatedNode.h"
 #import "RCTEventAnimation.h"
 #import "RCTFrameAnimation.h"
+#import "RCTDecayAnimation.h"
 #import "RCTInterpolationAnimatedNode.h"
 #import "RCTModuloAnimatedNode.h"
 #import "RCTMultiplicationAnimatedNode.h"
@@ -221,6 +222,11 @@
                                                      forNode:valueNode
                                                     callBack:callBack];
 
+  } else if ([type isEqual:@"decay"]) {
+    animationDriver = [[RCTDecayAnimation alloc] initWithId:animationId
+                                                     config:config
+                                                    forNode:valueNode
+                                                   callBack:callBack];
   } else {
     RCTLogError(@"Unsupported animation type: %@", config[@"type"]);
     return;

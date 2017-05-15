@@ -15,6 +15,7 @@ const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 const React = require('React');
+const PropTypes = require('prop-types');
 const ReactNativeFeatureFlags = require('ReactNativeFeatureFlags');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
@@ -112,7 +113,7 @@ const View = React.createClass({
   },
 
   contextTypes: {
-    isInAParentText: React.PropTypes.bool,
+    isInAParentText: PropTypes.bool,
   },
 
   render: function() {

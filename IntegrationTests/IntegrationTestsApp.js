@@ -22,7 +22,7 @@ var {
   View,
 } = ReactNative;
 
-// Keep this list in sync with UIExplorerIntegrationTests.m
+// Keep this list in sync with RNTesterIntegrationTests.m
 var TESTS = [
   require('./IntegrationTestHarnessTest'),
   require('./TimersTest'),
@@ -34,6 +34,7 @@ var TESTS = [
   require('./ImageSnapshotTest'),
   require('./PromiseTest'),
   require('./WebViewTest'),
+  require('./SyncMethodTest'),
   require('./WebSocketTest'),
 ];
 

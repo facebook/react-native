@@ -16,6 +16,7 @@ const BugReporting = require('BugReporting');
 const FrameRateLogger = require('FrameRateLogger');
 const NativeModules = require('NativeModules');
 const ReactNative = require('ReactNative');
+const SceneTracker = require('SceneTracker');
 
 const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
@@ -56,8 +57,21 @@ const sections: Runnables = {};
 const tasks: Map<string, TaskProvider> = new Map();
 let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
   (component: ComponentProvider) => component();
+let _frameRateLoggerSceneListener = null;
+
 
 /**
+ * <div class="banner-crna-ejected">
+ *   <h3>Project with Native Code Required</h3>
+ *   <p>
+ *     This API only works in projects made with <code>react-native init</code>
+ *     or in those made with Create React Native App which have since ejected. For
+ *     more information about ejecting, please see
+ *     the <a href="https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md" target="_blank">guide</a> on
+ *     the Create React Native App repository.
+ *   </p>
+ * </div>
+ *
  * `AppRegistry` is the JS entry point to running all React Native apps.  App
  * root components should register themselves with
  * `AppRegistry.registerComponent`, then the native system can load the bundle
@@ -95,14 +109,14 @@ const AppRegistry = {
 
   registerComponent(
     appKey: string,
-    component: ComponentProvider,
+    componentProvider: ComponentProvider,
     section?: boolean,
   ): string {
     runnables[appKey] = {
-      component,
+      componentProvider,
       run: (appParameters) =>
         renderApplication(
-          componentProviderInstrumentationHook(component),
+          componentProviderInstrumentationHook(componentProvider),
           appParameters.initialProps,
           appParameters.rootTag
         )
@@ -173,7 +187,12 @@ const AppRegistry = {
       'This error can also happen due to a require() error during ' +
       'initialization or failure to call AppRegistry.registerComponent.\n\n'
     );
-    FrameRateLogger.setContext(appKey);
+    if (!_frameRateLoggerSceneListener) {
+      _frameRateLoggerSceneListener = SceneTracker.addActiveSceneChangedListener(
+        (scene) => FrameRateLogger.setContext(scene.name)
+      );
+    }
+    SceneTracker.setActiveScene({name: appKey});
     runnables[appKey].run(appParameters);
   },
 

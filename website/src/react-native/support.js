@@ -9,11 +9,12 @@
 'use strict';
 
 var React = require('React');
+var PropTypes = require('prop-types');
 var Site = require('Site');
 
 var support = React.createClass({
   childContextTypes: {
-    permalink: React.PropTypes.string
+    permalink: PropTypes.string
   },
 
   getChildContext: function() {
@@ -59,7 +60,7 @@ var support = React.createClass({
                     <a href="http://makeitopen.com/">Building the F8 2016 App</a>
                   </li>
                   <li className="help-list-entry">
-                    <a href="https://github.com/facebook/react-native/tree/master/Examples/UIExplorer">UIExplorer</a>
+                    <a href="https://github.com/facebook/react-native/tree/master/RNTester">RNTester</a>
                   </li>
                   <li className="help-list-entry">
                     <a href="https://github.com/facebook/react-native/tree/master/Examples/Movies">Movies</a>

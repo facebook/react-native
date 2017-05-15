@@ -9,93 +9,57 @@
 
 #import "RCTPackagerClient.h"
 
-#import <React/RCTConvert.h>
-#import <React/RCTDefines.h>
 #import <React/RCTLog.h>
-#import <React/RCTReconnectingWebSocket.h>
 #import <React/RCTSRWebSocket.h>
 #import <React/RCTUtils.h>
 
-#import "RCTPackagerClientResponder.h"
-
 #if RCT_DEV // Only supported in dev mode
 
-@interface RCTPackagerClient () <RCTWebSocketProtocolDelegate>
-@end
+const int RCT_PACKAGER_CLIENT_PROTOCOL_VERSION = 2;
 
-@implementation RCTPackagerClient {
-  RCTReconnectingWebSocket *_socket;
-  NSMutableDictionary<NSString *, id<RCTPackagerClientMethod>> *_handlers;
+@implementation RCTPackagerClientResponder {
+  id _msgId;
+  __weak RCTSRWebSocket *_socket;
 }
 
-- (instancetype)initWithURL:(NSURL *)url
+- (instancetype)initWithId:(id)msgId socket:(RCTSRWebSocket *)socket
 {
   if (self = [super init]) {
-    _socket = [[RCTReconnectingWebSocket alloc] initWithURL:url];
-    _socket.delegate = self;
-    _handlers = [NSMutableDictionary new];
+    _msgId = msgId;
+    _socket = socket;
   }
   return self;
 }
 
-- (void)addHandler:(id<RCTPackagerClientMethod>)handler forMethod:(NSString *)name
+- (void)respondWithResult:(id)result
 {
-  _handlers[name] = handler;
-}
-
-- (void)start
-{
-  _socket.delegate = self;
-  [_socket start];
-}
-
-- (void)stop
-{
-  [_socket stop];
-}
-
-- (BOOL)isSupportedVersion:(NSNumber *)version
-{
-  NSArray<NSNumber *> *const kSupportedVersions = @[ @(RCT_PACKAGER_CLIENT_PROTOCOL_VERSION) ];
-  return [kSupportedVersions containsObject:version];
-}
-
-- (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
-{
-  if (!_handlers) {
-    return;
-  }
-
-  NSError *error = nil;
-  NSDictionary<NSString *, id> *msg = RCTJSONParse(message, &error);
-
-  if (error) {
-    RCTLogError(@"%@ failed to parse message with error %@\n<message>\n%@\n</message>", [self class], error, msg);
-    return;
-  }
-
-  if (![self isSupportedVersion:msg[@"version"]]) {
-    RCTLogError(@"%@ received message with not supported version %@", [self class], msg[@"version"]);
-    return;
-  }
-
-  id<RCTPackagerClientMethod> methodHandler = _handlers[msg[@"method"]];
-  if (!methodHandler) {
-    if (msg[@"id"]) {
-      NSString *errorMsg = [NSString stringWithFormat:@"%@ no handler found for method %@", [self class], msg[@"method"]];
-      RCTLogError(errorMsg, msg[@"method"]);
-      [[[RCTPackagerClientResponder alloc] initWithId:msg[@"id"]
-                                               socket:webSocket] respondWithError:errorMsg];
-    }
-    return; // If it was a broadcast then we ignore it gracefully
-  }
-
-  if (msg[@"id"]) {
-    [methodHandler handleRequest:msg[@"params"]
-                   withResponder:[[RCTPackagerClientResponder alloc] initWithId:msg[@"id"]
-                                                                         socket:webSocket]];
+  NSDictionary<NSString *, id> *msg = @{
+                                        @"version": @(RCT_PACKAGER_CLIENT_PROTOCOL_VERSION),
+                                        @"id": _msgId,
+                                        @"result": result,
+                                        };
+  NSError *jsError = nil;
+  NSString *message = RCTJSONStringify(msg, &jsError);
+  if (jsError) {
+    RCTLogError(@"%@ failed to stringify message with error %@", [self class], jsError);
   } else {
-    [methodHandler handleNotification:msg[@"params"]];
+    [_socket send:message];
+  }
+}
+
+- (void)respondWithError:(id)error
+{
+  NSDictionary<NSString *, id> *msg = @{
+                                        @"version": @(RCT_PACKAGER_CLIENT_PROTOCOL_VERSION),
+                                        @"id": _msgId,
+                                        @"error": error,
+                                        };
+  NSError *jsError = nil;
+  NSString *message = RCTJSONStringify(msg, &jsError);
+  if (jsError) {
+    RCTLogError(@"%@ failed to stringify message with error %@", [self class], jsError);
+  } else {
+    [_socket send:message];
   }
 }
 @end
