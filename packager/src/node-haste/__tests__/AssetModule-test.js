@@ -13,7 +13,7 @@ jest.autoMockOff();
 const AssetModule = require('../AssetModule');
 
 describe('AssetModule:', () => {
-  const defaults = {file: '/arbitrary'};
+  const defaults = {file: '/arbitrary.png'};
 
   it('has no dependencies by default', () => {
     return new AssetModule(defaults).getDependencies()
