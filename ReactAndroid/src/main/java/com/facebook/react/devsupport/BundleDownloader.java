@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,12 +36,6 @@ import okio.Okio;
 import okio.Sink;
 
 public class BundleDownloader {
-  public interface DownloadCallback {
-    void onSuccess();
-    void onProgress(@Nullable String status, @Nullable Integer done, @Nullable Integer total);
-    void onFailure(Exception cause);
-  }
-
   private final OkHttpClient mClient;
 
   private @Nullable Call mDownloadBundleFromURLCall;
@@ -50,7 +45,7 @@ public class BundleDownloader {
   }
 
   public void downloadBundleFromURL(
-      final DownloadCallback callback,
+      final DevBundleDownloadListener callback,
       final File outputFile,
       final String bundleURL) {
     final Request request = new Request.Builder()
