@@ -80,7 +80,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
               We will start our service and send extra info about 
               network connections
             **/
-            boolean hasInternet = checkInternet(context);
+            boolean hasInternet = isNetworkAvailable(context);
             Intent serviceIntent = new Intent(context, MyTaskService.class);
             serviceIntent.putExtra("hasInternet", hasInternet);
             context.startService(serviceIntent);
@@ -108,14 +108,6 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             }
         }
         return false;
-    }
-
-    boolean checkInternet(Context context) {
-        if (isNetworkAvailable(context)) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public static boolean isNetworkAvailable(Context context) {
