@@ -28,8 +28,6 @@ The folks who built the app for Facebook's F8 conference in 2016 also [open-sour
 
 [Nuclide](https://nuclide.io/) is the IDE that Facebook uses internally for React Native development. The killer feature of Nuclide is its debugging ability. It also has great inline Flow support.
 
-[Create React Native App](https://github.com/react-community/create-react-native-app) makes it significantly easier to get started with a React Native project. There's no need to use Xcode or Android Studio, and you can develop for your iOS device using Linux or Windows.
-
 [Ignite](https://github.com/infinitered/ignite) is a starter kit that uses Redux and a few different common UI libraries. It has a CLI to generate apps, components, and containers. If you like all of the individual tech choices, Ignite could be perfect for you.
 
 [CodePush](https://microsoft.github.io/code-push/) is a service from Microsoft that makes it easy to deploy live updates to your React Native app. If you don't like going through the app store process to deploy little tweaks, and you also don't like setting up your own backend, give CodePush a try.

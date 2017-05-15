@@ -9,6 +9,7 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 
 
 /**
@@ -18,6 +19,7 @@ package com.facebook.react.bridge;
  * must not provide any Java code (so they can be reused on other platforms), and instead should
  * register themselves using {@link CxxModuleWrapper}.
  */
+@DoNotStrip
 public interface NativeModule {
   interface NativeMethod {
     void invoke(JSInstance jsInstance, ReadableNativeArray parameters);

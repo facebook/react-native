@@ -18,11 +18,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Process;
 import android.view.View;
 
@@ -39,20 +37,18 @@ import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
+import com.facebook.react.bridge.CatalystInstanceImpl;
+import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JSCJavaScriptExecutor;
+import com.facebook.react.bridge.JavaScriptExecutor;
+import com.facebook.react.bridge.NativeModuleRegistry;
+import com.facebook.react.bridge.ProxyJavaScriptExecutor;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.cxxbridge.Arguments;
-import com.facebook.react.cxxbridge.CatalystInstanceImpl;
-import com.facebook.react.cxxbridge.JSBundleLoader;
-import com.facebook.react.cxxbridge.JSCJavaScriptExecutor;
-import com.facebook.react.cxxbridge.JavaScriptExecutor;
-import com.facebook.react.cxxbridge.NativeModuleRegistry;
-import com.facebook.react.cxxbridge.ProxyJavaScriptExecutor;
-import com.facebook.react.cxxbridge.UiThreadUtil;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.devsupport.RedBoxHandler;
@@ -74,6 +70,8 @@ import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
+import static com.facebook.react.bridge.ReactMarkerConstants.ATTACH_MEASURED_ROOT_VIEWS_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.ATTACH_MEASURED_ROOT_VIEWS_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_CATALYST_INSTANCE_END;
@@ -412,7 +410,8 @@ public class ReactInstanceManager {
 
       if (Intent.ACTION_VIEW.equals(action) && uri != null) {
         DeviceEventManagerModule deviceEventManagerModule =
-                Assertions.assertNotNull(mCurrentReactContext).getNativeModule(DeviceEventManagerModule.class);
+          Assertions.assertNotNull(mCurrentReactContext)
+            .getNativeModule(DeviceEventManagerModule.class);
         deviceEventManagerModule.emitNewIntentReceived(uri);
       }
 
@@ -746,7 +745,7 @@ public class ReactInstanceManager {
       @Override
       public void run() {
         try {
-          Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+          Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
           final ReactApplicationContext reactApplicationContext = createReactContext(
             initParams.getJsExecutorFactory().create(),
             initParams.getJsBundleLoader());
@@ -814,11 +813,13 @@ public class ReactInstanceManager {
     mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
     moveReactContextToCurrentLifecycleState();
 
+    ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
     synchronized (mAttachedRootViews) {
       for (ReactRootView rootView : mAttachedRootViews) {
         attachMeasuredRootViewToInstance(rootView, catalystInstance);
       }
     }
+    ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
 
     ReactInstanceEventListener[] listeners =
       new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
@@ -829,6 +830,26 @@ public class ReactInstanceManager {
     }
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_END);
+    mCurrentReactContext.runOnJSQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+      }
+    });
+    mCurrentReactContext.runOnNativeModulesQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+      }
+    });
+    if (mUseSeparateUIBackgroundThread) {
+      mCurrentReactContext.runOnUiBackgroundQueueThread(new Runnable() {
+        @Override
+        public void run() {
+          Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+        }
+      });
+    }
   }
 
   private void attachMeasuredRootViewToInstance(
@@ -840,12 +861,20 @@ public class ReactInstanceManager {
     }
 
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
-    int rootTag = uiManagerModule.addMeasuredRootView(rootView);
+    final int rootTag = uiManagerModule.addMeasuredRootView(rootView);
     rootView.setRootViewTag(rootTag);
     rootView.runApplication();
+    Systrace.beginAsyncSection(
+      TRACE_TAG_REACT_JAVA_BRIDGE,
+      "pre_rootView.onAttachedToReactInstance",
+      rootTag);
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
+        Systrace.endAsyncSection(
+          TRACE_TAG_REACT_JAVA_BRIDGE,
+          "pre_rootView.onAttachedToReactInstance",
+          rootTag);
         rootView.onAttachedToReactInstance();
       }
     });
@@ -936,12 +965,14 @@ public class ReactInstanceManager {
         ? mNativeModuleCallExceptionHandler
         : mDevSupportManager;
     CatalystInstanceImpl.Builder catalystInstanceBuilder = new CatalystInstanceImpl.Builder()
-        .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
-        .setJSExecutor(jsExecutor)
-        .setRegistry(nativeModuleRegistry)
-        .setJSModuleRegistry(jsModulesBuilder.build())
-        .setJSBundleLoader(jsBundleLoader)
-        .setNativeModuleCallExceptionHandler(exceptionHandler);
+      .setReactQueueConfigurationSpec(mUseSeparateUIBackgroundThread ?
+        ReactQueueConfigurationSpec.createWithSeparateUIBackgroundThread() :
+        ReactQueueConfigurationSpec.createDefault())
+      .setJSExecutor(jsExecutor)
+      .setRegistry(nativeModuleRegistry)
+      .setJSModuleRegistry(jsModulesBuilder.build())
+      .setJSBundleLoader(jsBundleLoader)
+      .setNativeModuleCallExceptionHandler(exceptionHandler);
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp
@@ -962,6 +993,7 @@ public class ReactInstanceManager {
     }
 
     reactContext.initializeWithInstance(catalystInstance);
+    ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);
     catalystInstance.runJSBundle();
 
     return reactContext;

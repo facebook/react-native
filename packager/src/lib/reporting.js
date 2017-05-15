@@ -59,6 +59,12 @@ export type ReportableEvent = {
   reason: GlobalCacheDisabledReason,
 } | {
   type: 'transform_cache_reset',
+} | {
+  type: 'worker_stdout_chunk',
+  chunk: string,
+} | {
+  type: 'worker_stderr_chunk',
+  chunk: string,
 };
 
 /**

@@ -11,23 +11,28 @@
 
 'use strict';
 
-import type {SourceMap as BabelSourceMap} from 'babel-core';
+import type {SourceMap as MappingsMap} from 'babel-core';
 
-export type SourceMap = BabelSourceMap;
-
-export type CombinedSourceMap = {
-  version: number,
-  file?: string,
-  sections: Array<{
-    offset: {line: number, column: number},
-    map: MixedSourceMap,
-  }>,
+export type IndexMapSection = {
+  map: SourceMap,
+  offset: {line: number, column: number},
 };
 
-type FBExtensions = {x_facebook_offsets?: Array<number>};
+type FBExtensions = {x_facebook_offsets: Array<number>};
 
-export type MixedSourceMap
-  = SourceMap
-  | CombinedSourceMap
-  | (SourceMap & FBExtensions)
-  | (CombinedSourceMap & FBExtensions);
+export type {MappingsMap};
+export type IndexMap = {
+  file?: string,
+  mappings?: void, // avoids SourceMap being a disjoint union
+  sections: Array<IndexMapSection>,
+  version: number,
+};
+
+export type SourceMap = IndexMap | MappingsMap;
+export type FBSourceMap = (IndexMap & FBExtensions) | (MappingsMap & FBExtensions);
+
+function isMappingsMap(map: SourceMap)/*: %checks*/ {
+  return map.mappings !== undefined;
+}
+
+exports.isMappingsMap = isMappingsMap;

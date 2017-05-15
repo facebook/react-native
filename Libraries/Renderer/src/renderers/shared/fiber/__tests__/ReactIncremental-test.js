@@ -11,17 +11,17 @@
 
 'use strict';
 
-var PropTypes;
 var React;
 var ReactNoop;
 var ReactFeatureFlags;
+var PropTypes;
 
 describe('ReactIncremental', () => {
   beforeEach(() => {
     jest.resetModules();
-    PropTypes = require('prop-types');
     React = require('react');
     ReactNoop = require('ReactNoop');
+    PropTypes = require('prop-types');
 
     ReactFeatureFlags = require('ReactFeatureFlags');
     ReactFeatureFlags.disableNewFiberFeatures = false;
@@ -51,10 +51,10 @@ describe('ReactIncremental', () => {
     var fooCalled = false;
     function Foo() {
       fooCalled = true;
-      return [<Bar isBar={true} />, <Bar isBar={true} />];
+      return [<Bar key="a" isBar={true} />, <Bar key="b" isBar={true} />];
     }
 
-    ReactNoop.render(<Foo />, () => renderCallbackCalled = true);
+    ReactNoop.render(<Foo />, () => (renderCallbackCalled = true));
     expect(fooCalled).toBe(false);
     expect(barCalled).toBe(false);
     expect(renderCallbackCalled).toBe(false);
@@ -103,7 +103,8 @@ describe('ReactIncremental', () => {
     }
 
     ReactNoop.render(<Foo text="foo" />, () =>
-      ops.push('renderCallbackCalled'));
+      ops.push('renderCallbackCalled'),
+    );
     ReactNoop.flush();
 
     expect(ops).toEqual([
@@ -117,9 +118,11 @@ describe('ReactIncremental', () => {
     ops = [];
 
     ReactNoop.render(<Foo text="bar" />, () =>
-      ops.push('firstRenderCallbackCalled'));
+      ops.push('firstRenderCallbackCalled'),
+    );
     ReactNoop.render(<Foo text="bar" />, () =>
-      ops.push('secondRenderCallbackCalled'));
+      ops.push('secondRenderCallbackCalled'),
+    );
     ReactNoop.flush();
 
     // TODO: Test bail out of host components. This is currently unobservable.
@@ -384,8 +387,8 @@ describe('ReactIncremental', () => {
       }
       render() {
         return [
-          <Tester unused={this.props.unused} />,
-          <bbb hidden={true}>
+          <Tester key="a" unused={this.props.unused} />,
+          <bbb key="b" hidden={true}>
             <ccc>
               <Middle>Hi</Middle>
             </ccc>
@@ -447,6 +450,47 @@ describe('ReactIncremental', () => {
     ReactNoop.render(<Foo text="bar" />);
     ReactNoop.flush();
     expect(ops).toEqual(['Foo', 'Bar', 'Bar']);
+  });
+
+  it('can resume mounting a class component', () => {
+    let ops = [];
+    let foo;
+    class Parent extends React.Component {
+      shouldComponentUpdate() {
+        return false;
+      }
+      render() {
+        return <Foo prop={this.props.prop} />;
+      }
+    }
+
+    class Foo extends React.Component {
+      constructor(props) {
+        super(props);
+        // Test based on a www bug where props was null on resume
+        ops.push('Foo constructor: ' + props.prop);
+      }
+      render() {
+        foo = this;
+        ops.push('Foo');
+        return <Bar />;
+      }
+    }
+
+    function Bar() {
+      ops.push('Bar');
+      return <div />;
+    }
+
+    ReactNoop.render(<Parent prop="foo" />);
+    ReactNoop.flushDeferredPri(20);
+    expect(ops).toEqual(['Foo constructor: foo', 'Foo']);
+
+    foo.setState({value: 'bar'});
+
+    ops = [];
+    ReactNoop.flush();
+    expect(ops).toEqual(['Foo constructor: foo', 'Foo', 'Bar']);
   });
 
   it('can reuse work done after being preempted', () => {
@@ -583,8 +627,8 @@ describe('ReactIncremental', () => {
         // low priority. I think this would be fixed by changing
         // pendingWorkPriority and progressedPriority to be the priority of
         // the children only, not including the fiber itself.
-        <div><Child /></div>,
-        <Sibling />,
+        <div key="a"><Child /></div>,
+        <Sibling key="b" />,
       ];
     }
 
@@ -875,15 +919,13 @@ describe('ReactIncremental', () => {
 
   it('can replaceState', () => {
     let instance;
-    const Bar = React.createClass({
-      getInitialState() {
-        instance = this;
-        return {a: 'a'};
-      },
+    class Bar extends React.Component {
+      state = {a: 'a'};
       render() {
+        instance = this;
         return <div>{this.props.children}</div>;
-      },
-    });
+      }
+    }
 
     function Foo() {
       return (
@@ -897,7 +939,7 @@ describe('ReactIncremental', () => {
     ReactNoop.flush();
     instance.setState({b: 'b'});
     instance.setState({c: 'c'});
-    instance.replaceState({d: 'd'});
+    instance.updater.enqueueReplaceState(instance, {d: 'd'});
     ReactNoop.flush();
     expect(instance.state).toEqual({d: 'd'});
   });
@@ -1415,7 +1457,7 @@ describe('ReactIncremental', () => {
     }
 
     function App(props) {
-      return [<LifeCycle x={props.x} />, <Sibling />];
+      return [<LifeCycle key="a" x={props.x} />, <Sibling key="b" />];
     }
 
     ReactNoop.render(<App x={0} />);
@@ -1664,13 +1706,13 @@ describe('ReactIncremental', () => {
       render() {
         ops.push('Indirection ' + JSON.stringify(this.context));
         return [
-          <ShowLocale />,
-          <ShowRoute />,
-          <ShowNeither />,
-          <Intl locale="ru">
+          <ShowLocale key="a" />,
+          <ShowRoute key="b" />,
+          <ShowNeither key="c" />,
+          <Intl key="d" locale="ru">
             <ShowBoth />
           </Intl>,
-          <ShowBoth />,
+          <ShowBoth key="e" />,
         ];
       }
     }

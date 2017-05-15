@@ -13,9 +13,9 @@
 import type Bundle from '../../packager/src/Bundler/Bundle';
 import type {Unbundle} from '../../packager/src/Bundler/Bundle';
 import type ModuleTransport from '../../packager/src/lib/ModuleTransport';
-import type {MixedSourceMap} from '../../packager/src/lib/SourceMap';
+import type {FBSourceMap, SourceMap} from '../../packager/src/lib/SourceMap';
 
-export type {Bundle, ModuleTransport, MixedSourceMap as SourceMap, Unbundle};
+export type {Bundle, FBSourceMap, ModuleTransport, SourceMap, Unbundle};
 
 export type ModuleGroups = {|
   groups: Map<number, Set<number>>,

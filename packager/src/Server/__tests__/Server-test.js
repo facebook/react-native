@@ -11,7 +11,8 @@
 
 jest.disableAutomock();
 
-jest.mock('worker-farm', () => () => () => {})
+jest.mock('../../worker-farm', () => () => () => {})
+    .mock('worker-farm', () => () => () => {})
     .mock('timers', () => ({setImmediate: fn => setTimeout(fn, 0)}))
     .mock('uglify-js')
     .mock('crypto')
@@ -21,8 +22,7 @@ jest.mock('worker-farm', () => () => () => {})
     )
     .mock('../../Bundler')
     .mock('../../AssetServer')
-    .mock('../../lib/declareOpts')
-    .mock('../../node-haste')
+    .mock('../../node-haste/DependencyGraph')
     .mock('../../Logger')
     .mock('../../lib/GlobalTransformCache');
 
@@ -155,7 +155,7 @@ describe('processRequest', () => {
         isolateModuleIDs: false,
         minify: false,
         onProgress: jasmine.any(Function),
-        platform: undefined,
+        platform: null,
         resolutionResponse: null,
         runBeforeMainModule: ['InitializeCore'],
         runModule: true,
@@ -209,7 +209,7 @@ describe('processRequest', () => {
         isolateModuleIDs: false,
         minify: false,
         onProgress: jasmine.any(Function),
-        platform: undefined,
+        platform: null,
         resolutionResponse: null,
         runBeforeMainModule: ['InitializeCore'],
         runModule: true,
@@ -457,7 +457,7 @@ describe('processRequest', () => {
             isolateModuleIDs: false,
             minify: false,
             onProgress: null,
-            platform: undefined,
+            platform: null,
             resolutionResponse: null,
             runBeforeMainModule: ['InitializeCore'],
             runModule: false,

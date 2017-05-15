@@ -10,14 +10,12 @@
 'use strict';
 
 jest
-  .dontMock('imurmurhash')
   .dontMock('json-stable-stringify')
   .dontMock('../TransformCache')
   .dontMock('left-pad')
   .dontMock('lodash/throttle')
   .dontMock('crypto');
 
-const imurmurhash = require('imurmurhash');
 const crypto = require('crypto');
 const jsonStableStringify = require('json-stable-stringify');
 
@@ -52,12 +50,12 @@ function cartesianProductOf(a1, a2) {
 
 describe('TransformCache', () => {
 
-  let TransformCache;
+  let transformCache;
 
   beforeEach(() => {
     jest.resetModules();
     mockFS.clear();
-    TransformCache = require('../TransformCache');
+    transformCache = new (require('../TransformCache'))();
   });
 
   it('is caching different files and options separately', () => {
@@ -73,7 +71,7 @@ describe('TransformCache', () => {
         result: {
           code: `/* result for ${key} */`,
           dependencies: ['foo', `dep of ${key}`],
-          dependencyOffsets: [12, imurmurhash('dep' + key).result()],
+          dependencyOffsets: [12, 34],
           map: {desc: `source map for ${key}`},
         },
       };
@@ -83,12 +81,12 @@ describe('TransformCache', () => {
       [{foo: 1}, {foo: 2}],
     );
     allCases.forEach(
-      entry => TransformCache.writeSync(argsFor(entry)),
+      entry => transformCache.writeSync(argsFor(entry)),
     );
     allCases.forEach(entry => {
       const args = argsFor(entry);
       const {result} = args;
-      const cachedResult = TransformCache.readSync({
+      const cachedResult = transformCache.readSync({
         ...args,
         cacheOptions: {resetCache: false},
       });
@@ -108,7 +106,7 @@ describe('TransformCache', () => {
         result: {
           code: `/* result for ${key} */`,
           dependencies: ['foo', 'bar'],
-          dependencyOffsets: [12, imurmurhash('dep' + key).result()],
+          dependencyOffsets: [12, 34],
           map: {desc: `source map for ${key}`},
         },
       };
@@ -118,10 +116,10 @@ describe('TransformCache', () => {
       ['abcd', 'efgh'],
     );
     allCases.forEach(entry => {
-      TransformCache.writeSync(argsFor(entry));
+      transformCache.writeSync(argsFor(entry));
       const args = argsFor(entry);
       const {result} = args;
-      const cachedResult = TransformCache.readSync({
+      const cachedResult = transformCache.readSync({
         ...args,
         cacheOptions: {resetCache: false},
       });
@@ -129,7 +127,7 @@ describe('TransformCache', () => {
     });
     allCases.pop();
     allCases.forEach(entry => {
-      const cachedResult = TransformCache.readSync({
+      const cachedResult = transformCache.readSync({
         ...argsFor(entry),
         cacheOptions: {resetCache: false},
       });
