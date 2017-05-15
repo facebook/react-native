@@ -211,15 +211,13 @@ Setting up your development environment can be somewhat tedious if you're new to
 
 <block class="mac linux windows android" />
 
-#### 1. Download and install Android Studio
+#### 1. Install Android Studio
 
-Android Studio provides the Android SDK and AVD (emulator) required to run and test your React Native apps. [Download Android Studio](https://developer.android.com/studio/index.html), then follow the [installation instructions](https://developer.android.com/studio/install.html). Choose `Custom` installation when prompted by the Setup Wizard, and proceed to the next step.
+Android Studio provides the Android SDK and AVD (emulator) required to run and test your React Native apps. Download and install [Android Studio](https://developer.android.com/studio/index.html). 
+
+Once the installation process is completed, launch Android Studio. Choose "Custom" when prompted to select an installation type. Make sure the boxes next to all of the following are checked:
 
 <block class="mac windows android" />
-
-#### 2. Install the AVD and HAXM
-
-Android Virtual Devices allow you to run Android apps on your computer without the need for an actual Android phone or tablet. Choose `Custom` installation when running Android Studio for the first time. Make sure the boxes next to all of the following are checked:
 
 - `Android SDK`
 - `Android SDK Platform`
@@ -228,13 +226,7 @@ Android Virtual Devices allow you to run Android apps on your computer without t
 
 Then, click "Next" to install all of these components.
 
-> If you've already installed Android Studio before, you can still install HAXM ([Windows](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-windows)|[Mac](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-mac-os-x)) without performing a custom installation.
-
 <block class="linux android" />
-
-#### 2. Install the AVD and configure VM acceleration
-
-Android Virtual Devices allow you to run Android apps on your computer without the need for an actual Android phone or tablet. Choose `Custom` installation when running Android Studio for the first time. Make sure the boxes next to all of the following are checked:
 
 - `Android SDK`
 - `Android SDK Platform`
@@ -242,11 +234,19 @@ Android Virtual Devices allow you to run Android apps on your computer without t
 
 Click "Next" to install all of these components, then [configure VM acceleration](https://developer.android.com/studio/run/emulator-acceleration.html#vm-linux) on your system.
 
-<block class="mac linux windows android" />
+<block class="windows android" />
 
-#### 3. Install the Android 6.0 (Marshmallow) SDK
+> If you've already installed Android Studio before, you can still [install HAXM](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-windows) without performing a custom installation.
 
-Android Studio installs the most recent Android SDK by default. React Native, however, requires the `Android 6.0 (Marshmallow)` SDK. To install it, launch the SDK Manager, click on "Configure" > "SDK Manager" in the "Welcome to Android Studio" screen.
+<block class="mac android" />
+
+> If you've already installed Android Studio before, you can still [install HAXM](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-mac-os-x) without performing a custom installation.
+
+<block class="windows mac linux android" />
+
+#### 2. Install the Android 6.0 (Marshmallow) SDK
+
+Android Studio installs the most recent Android SDK by default. React Native, however, requires the `Android 6.0 (Marshmallow)` SDK. You can use the SDK Manager to install additional SDK platforms. To access the SDK Manager, click on "Configure", then select "SDK Manager" from the "Welcome to Android Studio" screen.
 
 > The SDK Manager can also be found within the Android Studio "Preferences" menu, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
@@ -265,7 +265,7 @@ Finally, click "Apply" to download and install the Android SDK and related build
 
 <block class="mac windows linux android" />
 
-#### 4. Set up the ANDROID_HOME environment variable
+#### 3. Set up the ANDROID_HOME environment variable
 
 The React Native command line interface requires the `ANDROID_HOME` environment variable to be set up.
 
@@ -299,14 +299,13 @@ Type `source ~/.profile` to load the config into your current shell.
 
 <block class="windows android" />
 
+Open the System pane under **System and Security** in the Control Panel, then click on **Change settings...**. Open the **Advanced** tab and click on **Environment Variables...**. Click on **New...** to create a new `ANDROID_HOME` user variable that points to the path to your Android SDK.
 Go to **Control Panel** → **System and Security** → **System** → **Change settings** →
-**Advanced System Settings** → **Environment variables** → **New**, then enter the path to your Android SDK.
+**Advanced** → **Environment Variables...** → **New**, then enter the path to your Android SDK. The path to the Android SDK is, by default, `C:\Users\YOUR_USER\AppData\Local\Android\sdk`.
 
 ![env variable](img/react-native-android-sdk-environment-variable-windows.png)
 
-Restart the Command Prompt to apply the new environment variable.
-
-> Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio.
+Close and open a new Command Prompt window to ensure the new environment variable is loaded.
 
 <block class="linux android" />
 
