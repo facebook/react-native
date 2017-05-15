@@ -213,7 +213,7 @@ Setting up your development environment can be somewhat tedious if you're new to
 
 #### 1. Install Android Studio
 
-Android Studio provides the Android SDK and AVD (emulator) required to run and test your React Native apps. Download and install [Android Studio](https://developer.android.com/studio/index.html). 
+Android Studio provides the Android SDK and AVD (emulator) required to run and test your React Native apps. Download and install [Android Studio](https://developer.android.com/studio/index.html).
 
 Once the installation process is completed, launch Android Studio. Choose "Custom" when prompted to select an installation type. Make sure the boxes next to all of the following are checked:
 
@@ -236,11 +236,11 @@ Click "Next" to install all of these components, then [configure VM acceleration
 
 <block class="windows android" />
 
-> If you've already installed Android Studio before, you can still [install HAXM](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-windows) without performing a custom installation.
+> You may also install Intel ® HAXM by following [these instructions](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-windows).
 
 <block class="mac android" />
 
-> If you've already installed Android Studio before, you can still [install HAXM](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-mac-os-x) without performing a custom installation.
+> You may also install Intel ® HAXM by following [these instructions](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-mac-os-x).
 
 <block class="windows mac linux android" />
 
