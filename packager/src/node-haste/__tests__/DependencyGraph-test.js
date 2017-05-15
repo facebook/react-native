@@ -106,7 +106,7 @@ describe('DependencyGraph', function() {
     const realPlatform = process.platform;
     beforeEach(function() {
       process.platform = 'linux';
-      DependencyGraph = require('../index');
+      DependencyGraph = require('../DependencyGraph');
     });
 
     afterEach(function() {
@@ -1819,7 +1819,7 @@ describe('DependencyGraph', function() {
       });
 
       it('should support browser exclude of a package ("' + fieldName + '")', function() {
-        ResolutionRequest.emptyModule = '/root/emptyModule.js';
+        ResolutionRequest.EMPTY_MODULE = '/root/emptyModule.js';
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1885,7 +1885,7 @@ describe('DependencyGraph', function() {
       });
 
       it('should support browser exclude of a file ("' + fieldName + '")', function() {
-        ResolutionRequest.emptyModule = '/root/emptyModule.js';
+        ResolutionRequest.EMPTY_MODULE = '/root/emptyModule.js';
 
         var root = '/root';
         setMockFileSystem({
@@ -2368,7 +2368,7 @@ describe('DependencyGraph', function() {
       // reload path module
       jest.resetModules();
       jest.mock('path', () => path.win32);
-      DependencyGraph = require('../index');
+      DependencyGraph = require('../DependencyGraph');
     });
 
     afterEach(function() {
@@ -2559,7 +2559,7 @@ describe('DependencyGraph', function() {
     let DependencyGraph;
     beforeEach(function() {
       process.platform = 'linux';
-      DependencyGraph = require('../index');
+      DependencyGraph = require('../DependencyGraph');
     });
 
     afterEach(function() {
@@ -3539,7 +3539,7 @@ describe('DependencyGraph', function() {
     // due to the drive letter expectation
     if (realPlatform !== 'win32') { return; }
 
-    const DependencyGraph = require('../index');
+    const DependencyGraph = require('../DependencyGraph');
 
     it('should work with nested node_modules', function() {
       var root = '/root';
@@ -4503,7 +4503,7 @@ describe('DependencyGraph', function() {
 
     beforeEach(function() {
       process.platform = 'linux';
-      DependencyGraph = require('../index');
+      DependencyGraph = require('../DependencyGraph');
     });
 
     afterEach(function() {
@@ -5221,7 +5221,7 @@ describe('DependencyGraph', function() {
     let DependencyGraph;
     beforeEach(function() {
       process.platform = 'linux';
-      DependencyGraph = require('../index');
+      DependencyGraph = require('../DependencyGraph');
     });
 
     afterEach(function() {
@@ -5393,7 +5393,7 @@ describe('DependencyGraph', function() {
           'g.js': makeModule('g'),
         },
       });
-      const DependencyGraph = require('../');
+      const DependencyGraph = require('../DependencyGraph');
       return DependencyGraph.load({
         ...defaults,
         roots: ['/root'],
@@ -5424,7 +5424,7 @@ describe('DependencyGraph', function() {
   describe('Asset module dependencies', () => {
     let DependencyGraph;
     beforeEach(() => {
-      DependencyGraph = require('../index');
+      DependencyGraph = require('../DependencyGraph');
     });
 
     it('allows setting dependencies for asset modules', () => {
@@ -5460,7 +5460,7 @@ describe('DependencyGraph', function() {
 
     beforeEach(() => {
       moduleRead = Module.prototype.read;
-      DependencyGraph = require('../index');
+      DependencyGraph = require('../DependencyGraph');
       setMockFileSystem({
         'root': {
           'index.js': `

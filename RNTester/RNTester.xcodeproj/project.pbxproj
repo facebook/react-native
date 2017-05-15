@@ -33,7 +33,6 @@
 		144D21241B2204C5006DB32B /* RCTImageUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 144D21231B2204C5006DB32B /* RCTImageUtilTests.m */; };
 		147CED4C1AB3532B00DA3E4C /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 147CED4B1AB34F8C00DA3E4C /* libRCTActionSheet.a */; };
 		1497CFAC1B21F5E400C1F8F2 /* RCTAllocationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA41B21F5E400C1F8F2 /* RCTAllocationTests.m */; };
-		1497CFAD1B21F5E400C1F8F2 /* RCTBridgeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA51B21F5E400C1F8F2 /* RCTBridgeTests.m */; };
 		1497CFAF1B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA71B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m */; };
 		1497CFB01B21F5E400C1F8F2 /* RCTFontTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA81B21F5E400C1F8F2 /* RCTFontTests.m */; };
 		1497CFB11B21F5E400C1F8F2 /* RCTEventDispatcherTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA91B21F5E400C1F8F2 /* RCTEventDispatcherTests.m */; };
@@ -70,7 +69,6 @@
 		2D4BD8D21DA2E20D005AC8A8 /* RCTURLUtilsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B6C1A21C34225900D3FAF5 /* RCTURLUtilsTests.m */; };
 		2D4BD8D31DA2E20D005AC8A8 /* RCTBundleURLProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */; };
 		2D4BD8D41DA2E20D005AC8A8 /* RCTAllocationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA41B21F5E400C1F8F2 /* RCTAllocationTests.m */; };
-		2D4BD8D51DA2E20D005AC8A8 /* RCTBridgeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA51B21F5E400C1F8F2 /* RCTBridgeTests.m */; };
 		2D4BD8D71DA2E20D005AC8A8 /* RCTConvert_NSURLTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA71B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m */; };
 		2D4BD8D81DA2E20D005AC8A8 /* RCTFontTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA81B21F5E400C1F8F2 /* RCTFontTests.m */; };
 		2D4BD8D91DA2E20D005AC8A8 /* RCTEventDispatcherTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA91B21F5E400C1F8F2 /* RCTEventDispatcherTests.m */; };
@@ -421,7 +419,6 @@
 		143BC5A01B21E45C00462512 /* RNTesterSnapshotTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNTesterSnapshotTests.m; sourceTree = "<group>"; };
 		144D21231B2204C5006DB32B /* RCTImageUtilTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageUtilTests.m; sourceTree = "<group>"; };
 		1497CFA41B21F5E400C1F8F2 /* RCTAllocationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAllocationTests.m; sourceTree = "<group>"; };
-		1497CFA51B21F5E400C1F8F2 /* RCTBridgeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBridgeTests.m; sourceTree = "<group>"; };
 		1497CFA71B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert_NSURLTests.m; sourceTree = "<group>"; };
 		1497CFA81B21F5E400C1F8F2 /* RCTFontTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTFontTests.m; sourceTree = "<group>"; };
 		1497CFA91B21F5E400C1F8F2 /* RCTEventDispatcherTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTEventDispatcherTests.m; sourceTree = "<group>"; };
@@ -688,7 +685,6 @@
 				13B6C1A21C34225900D3FAF5 /* RCTURLUtilsTests.m */,
 				68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */,
 				1497CFA41B21F5E400C1F8F2 /* RCTAllocationTests.m */,
-				1497CFA51B21F5E400C1F8F2 /* RCTBridgeTests.m */,
 				1497CFA71B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m */,
 				1497CFA81B21F5E400C1F8F2 /* RCTFontTests.m */,
 				1497CFA91B21F5E400C1F8F2 /* RCTEventDispatcherTests.m */,
@@ -1474,7 +1470,6 @@
 				1497CFAF1B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m in Sources */,
 				13129DD41C85F87C007D611C /* RCTModuleInitNotificationRaceTests.m in Sources */,
 				192F69B81E82409A008692C7 /* RCTAnimationUtilsTests.m in Sources */,
-				1497CFAD1B21F5E400C1F8F2 /* RCTBridgeTests.m in Sources */,
 				134CB92A1C85A38800265FA6 /* RCTModuleInitTests.m in Sources */,
 				192F69BA1E82409A008692C7 /* RCTNativeAnimatedNodesManagerTests.m in Sources */,
 				1497CFB11B21F5E400C1F8F2 /* RCTEventDispatcherTests.m in Sources */,
@@ -1547,7 +1542,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2D4BD8DC1DA2E20D005AC8A8 /* RCTImageLoaderTests.m in Sources */,
-				2D4BD8D51DA2E20D005AC8A8 /* RCTBridgeTests.m in Sources */,
 				2D4BD8D91DA2E20D005AC8A8 /* RCTEventDispatcherTests.m in Sources */,
 				2D4BD8D41DA2E20D005AC8A8 /* RCTAllocationTests.m in Sources */,
 				2D4BD8DA1DA2E20D005AC8A8 /* RCTGzipTests.m in Sources */,

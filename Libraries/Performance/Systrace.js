@@ -81,6 +81,10 @@ const Systrace = {
     }
   },
 
+  isEnabled(): boolean {
+    return _enabled;
+  },
+
   /**
    * beginEvent/endEvent for starting and then ending a profile within the same call stack frame
   **/
