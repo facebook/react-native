@@ -7,7 +7,8 @@
 
 #include <folly/json.h>
 
-#include <cxxreact/JsArgumentHelpers.h>
+#include "JsArgumentHelpers.h"
+#include "SystraceSection.h"
 
 using facebook::xplat::module::CxxModule;
 
@@ -75,7 +76,7 @@ folly::dynamic CxxNativeModule::getConstants() {
   return constants;
 }
 
-void CxxNativeModule::invoke(unsigned int reactMethodId, folly::dynamic&& params) {
+void CxxNativeModule::invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) {
   if (reactMethodId >= methods_.size()) {
     throw std::invalid_argument(folly::to<std::string>("methodId ", reactMethodId,
         " out of range [0..", methods_.size(), "]"));
@@ -128,7 +129,13 @@ void CxxNativeModule::invoke(unsigned int reactMethodId, folly::dynamic&& params
   // stack.  I'm told that will be possible in the future.  TODO
   // mhorowitz #7128529: convert C++ exceptions to Java
 
-  messageQueueThread_->runOnQueue([method, params=std::move(params), first, second] () {
+  messageQueueThread_->runOnQueue([method, params=std::move(params), first, second, callId] () {
+  #ifdef WITH_FBSYSTRACE
+    if (callId != -1) {
+      fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
+    }
+  #endif
+    SystraceSection s(method.name.c_str());
     try {
       method.func(std::move(params), first, second);
     } catch (const facebook::xplat::JsArgumentException& ex) {

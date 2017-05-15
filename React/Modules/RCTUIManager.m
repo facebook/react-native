@@ -32,6 +32,7 @@
 #import "RCTRootViewInternal.h"
 #import "RCTScrollableProtocol.h"
 #import "RCTShadowView.h"
+#import "RCTUIManagerObserverCoordinator.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "RCTViewManager.h"
@@ -225,7 +226,6 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
   NSDictionary *_componentDataByName;
 
   NSMutableSet<id<RCTComponent>> *_bridgeTransactionListeners;
-  NSMutableSet<id<RCTUIManagerObserver>> *_uiManagerObservers;
 }
 
 @synthesize bridge = _bridge;
@@ -306,7 +306,7 @@ RCT_EXPORT_MODULE()
   _rootViewTags = [NSMutableSet new];
 
   _bridgeTransactionListeners = [NSMutableSet new];
-  _uiManagerObservers = [NSMutableSet new];
+  _observerCoordinator = [RCTUIManagerObserverCoordinator new];
 
   _viewsToBeDeleted = [NSMutableSet new];
 
@@ -343,6 +343,16 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
     }
   });
   return shadowQueue;
+}
+
+BOOL RCTIsUIManagerQueue()
+{
+  static void *queueKey = &queueKey;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    dispatch_queue_set_specific(RCTGetUIManagerQueue(), queueKey, queueKey, NULL);
+  });
+  return dispatch_get_specific(queueKey) == queueKey;
 }
 
 - (dispatch_queue_t)methodQueue
@@ -711,20 +721,6 @@ dispatch_queue_t RCTGetUIManagerQueue(void)
       }
     }];
   }
-}
-
-- (void)addUIManagerObserver:(id<RCTUIManagerObserver>)observer
-{
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self->_uiManagerObservers addObject:observer];
-  });
-}
-
-- (void)removeUIManagerObserver:(id<RCTUIManagerObserver>)observer
-{
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self->_uiManagerObservers removeObject:observer];
-  });
 }
 
 /**
@@ -1149,10 +1145,19 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     [self addUIBlock:uiBlock];
   }
 
+  [_observerCoordinator uiManagerWillPerformLayout:self];
+
   // Perform layout
   for (NSNumber *reactTag in _rootViewTags) {
     RCTRootShadowView *rootView = (RCTRootShadowView *)_shadowViewRegistry[reactTag];
     [self addUIBlock:[self uiBlockWithLayoutUpdateForRootView:rootView]];
+  }
+
+  [_observerCoordinator uiManagerDidPerformLayout:self];
+
+  // Properies propagation
+  for (NSNumber *reactTag in _rootViewTags) {
+    RCTRootShadowView *rootView = (RCTRootShadowView *)_shadowViewRegistry[reactTag];
     [self _amendPendingUIBlocksWithStylePropagationUpdateForShadowView:rootView];
   }
 
@@ -1165,9 +1170,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     }
   }];
 
-  for (id<RCTUIManagerObserver> observer in _uiManagerObservers) {
-    [observer uiManagerWillFlushUIBlocks:self];
-  }
+  [_observerCoordinator uiManagerWillFlushUIBlocks:self];
 
   [self flushUIBlocks];
 }
@@ -1189,7 +1192,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     dispatch_async(dispatch_get_main_queue(), ^{
       RCTProfileEndFlowEvent();
       RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[UIManager flushUIBlocks]", (@{
-        @"count": @(previousPendingUIBlocks.count),
+        @"count": [@(previousPendingUIBlocks.count) stringValue],
       }));
       @try {
         for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
@@ -1199,6 +1202,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
       @catch (NSException *exception) {
         RCTLogError(@"Exception thrown while executing UI block: %@", exception);
       }
+      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
     });
   }
 }

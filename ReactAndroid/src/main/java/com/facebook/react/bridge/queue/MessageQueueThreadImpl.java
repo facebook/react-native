@@ -142,8 +142,6 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     switch (spec.getThreadType()) {
       case MAIN_UI:
         return createForMainThread(spec.getName(), exceptionHandler);
-      case BACKGROUND_UI:
-        return startUIBackgroundThread(spec.getName(), spec.getStackSize(), exceptionHandler);
       case NEW_BACKGROUND:
         return startNewBackgroundThread(spec.getName(), spec.getStackSize(), exceptionHandler);
       default:
@@ -177,29 +175,6 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     return mqt;
   }
 
-  public static MessageQueueThreadImpl startUIBackgroundThread(
-    final String name,
-    long stackSize,
-    QueueThreadExceptionHandler exceptionHandler) {
-    return startNewBackgroundThread(name, stackSize, exceptionHandler, true);
-  }
-
-  public static MessageQueueThreadImpl startNewBackgroundThread(
-    final String name,
-    QueueThreadExceptionHandler exceptionHandler) {
-    return startNewBackgroundThread(
-      name,
-      MessageQueueThreadSpec.DEFAULT_STACK_SIZE_BYTES,
-      exceptionHandler);
-  }
-
-  public static MessageQueueThreadImpl startNewBackgroundThread(
-    final String name,
-    long stackSize,
-    QueueThreadExceptionHandler exceptionHandler) {
-    return startNewBackgroundThread(name, stackSize, exceptionHandler, false);
-  }
-
   /**
    * Creates and starts a new MessageQueueThreadImpl encapsulating a new Thread with a new Looper
    * running on it. Give it a name for easier debugging and optionally a suggested stack size.
@@ -208,17 +183,14 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
   private static MessageQueueThreadImpl startNewBackgroundThread(
     final String name,
     long stackSize,
-    QueueThreadExceptionHandler exceptionHandler,
-    final boolean forUIManagerModule) {
+    QueueThreadExceptionHandler exceptionHandler) {
     final SimpleSettableFuture<Looper> looperFuture = new SimpleSettableFuture<>();
     final SimpleSettableFuture<MessageQueueThread> mqtFuture = new SimpleSettableFuture<>();
     Thread bgThread = new Thread(null,
         new Runnable() {
           @Override
           public void run() {
-            Process.setThreadPriority(forUIManagerModule ?
-              Process.THREAD_PRIORITY_DEFAULT + Process.THREAD_PRIORITY_MORE_FAVORABLE :
-              Process.THREAD_PRIORITY_DEFAULT);
+            Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
             Looper.prepare();
 
             looperFuture.set(Looper.myLooper());

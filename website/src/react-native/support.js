@@ -60,7 +60,7 @@ var support = React.createClass({
                     <a href="http://makeitopen.com/">Building the F8 2016 App</a>
                   </li>
                   <li className="help-list-entry">
-                    <a href="https://github.com/facebook/react-native/tree/master/Examples/UIExplorer">UIExplorer</a>
+                    <a href="https://github.com/facebook/react-native/tree/master/RNTester">RNTester</a>
                   </li>
                   <li className="help-list-entry">
                     <a href="https://github.com/facebook/react-native/tree/master/Examples/Movies">Movies</a>

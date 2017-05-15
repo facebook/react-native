@@ -28,7 +28,7 @@ var STYLE_ATTRIBUTES = [
   'LargeInverse',
 ];
 
-var indeterminateType = function(props, propName, componentName) {
+var indeterminateType = function(props, propName, componentName, ...rest) {
   var checker = function() {
     var indeterminate = props[propName];
     var styleAttr = props.styleAttr;
@@ -37,7 +37,7 @@ var indeterminateType = function(props, propName, componentName) {
     }
   };
 
-  return PropTypes.bool(props, propName, componentName) || checker();
+  return PropTypes.bool(props, propName, componentName, ...rest) || checker();
 };
 
 /**

@@ -80,16 +80,33 @@ describe('transforming JS modules:', () => {
     });
   });
 
+  const defaults = {
+    dev: false,
+    generateSourceMaps: true,
+    hot: false,
+    inlineRequires: false,
+    platform: '',
+    projectRoot: '',
+  };
+
   it('calls the passed-in transform function with code, file name, and options ' +
     'for all passed in variants',
     done => {
       const variants = {dev: {dev: true}, prod: {dev: false}};
 
       transformModule(sourceCode, options(variants), () => {
-        expect(transformer.transform)
-          .toBeCalledWith(sourceCode, filename, variants.dev);
-        expect(transformer.transform)
-          .toBeCalledWith(sourceCode, filename, variants.prod);
+        expect(transformer.transform).toBeCalledWith({
+            filename,
+            localPath: filename,
+            options: {...defaults, ...variants.dev},
+            src: sourceCode,
+          });
+        expect(transformer.transform).toBeCalledWith({
+            filename,
+            localPath: filename,
+            options: {...defaults, ...variants.prod},
+            src: sourceCode,
+          });
         done();
       });
     },

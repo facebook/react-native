@@ -1138,12 +1138,12 @@ class AnimatedInterpolation extends AnimatedWithChildren {
         return value;
       }
       if (/deg$/.test(value)) {
-        const degrees = parseFloat(value, 10) || 0;
+        const degrees = parseFloat(value) || 0;
         const radians = degrees * Math.PI / 180.0;
         return radians;
       } else {
         // Assume radians
-        return parseFloat(value, 10) || 0;
+        return parseFloat(value) || 0;
       }
     });
   }

@@ -13,6 +13,7 @@
 import type {MappingsMap, SourceMap} from '../lib/SourceMap';
 import type {Ast} from 'babel-core';
 import type {Console} from 'console';
+export type {Transformer} from '../JSTransformer/worker/worker.js';
 
 export type Callback<A = void, B = void>
   = (Error => void)
@@ -46,8 +47,8 @@ type GraphOptions = {|
 |};
 
 export type GraphResult = {|
-  entryModules: Array<Module>,
-  modules: Array<Module>,
+  entryModules: Iterable<Module>,
+  modules: Iterable<Module>,
 |};
 
 export type IdForPathFn = {path: string} => number;
@@ -105,25 +106,16 @@ export type TransformerResult = {|
   map: ?MappingsMap,
 |};
 
-export type Transformer = {
-  transform: (
-    sourceCode: string,
-    filename: string,
-    options: ?{},
-    plugins?: Array<string | Object | [string | Object, any]>,
-  ) => {ast: ?Ast, code: string, map: ?MappingsMap}
-};
-
 export type TransformResult = {|
   code: string,
   dependencies: Array<string>,
   dependencyMapName?: string,
-  map: ?Object,
+  map: ?MappingsMap,
 |};
 
 export type TransformResults = {[string]: TransformResult};
 
-export type TransformVariants = {[key: string]: Object};
+export type TransformVariants = {+[name: string]: {}, +default: {}};
 
 export type TransformedCodeFile = {
   +code: string,
@@ -152,8 +144,9 @@ export type TransformedSourceFile =
 
 export type LibraryOptions = {|
   dependencies?: Array<string>,
+  optimize: boolean,
   platform?: string,
-  root: string,
+  rebasePath: string => string,
 |};
 
 export type Base64Content = string;
