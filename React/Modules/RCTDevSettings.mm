@@ -141,7 +141,6 @@ RCT_EXPORT_MODULE()
 {
   if (self = [super init]) {
     _dataSource = dataSource;
-    [self _configurePackagerConnection];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(jsLoaded:)
@@ -154,6 +153,13 @@ RCT_EXPORT_MODULE()
     });
   }
   return self;
+}
+
+- (void)setBridge:(RCTBridge *)bridge
+{
+  RCTAssert(_bridge == nil, @"RCTDevSettings module should not be reused");
+  _bridge = bridge;
+  [self _configurePackagerConnection];
 }
 
 - (dispatch_queue_t)methodQueue
