@@ -299,9 +299,7 @@ Type `source ~/.profile` to load the config into your current shell.
 
 <block class="windows android" />
 
-Open the System pane under **System and Security** in the Control Panel, then click on **Change settings...**. Open the **Advanced** tab and click on **Environment Variables...**. Click on **New...** to create a new `ANDROID_HOME` user variable that points to the path to your Android SDK.
-Go to **Control Panel** → **System and Security** → **System** → **Change settings** →
-**Advanced** → **Environment Variables...** → **New**, then enter the path to your Android SDK. The path to the Android SDK is, by default, `C:\Users\YOUR_USER\AppData\Local\Android\sdk`.
+Open the System pane under **System and Security** in the Control Panel, then click on **Change settings...**. Open the **Advanced** tab and click on **Environment Variables...**. Click on **New...** to create a new `ANDROID_HOME` user variable that points to the path to your Android SDK. The Android SDK is installed at `C:\Users\YOUR_USER\AppData\Local\Android\sdk` by default.
 
 ![env variable](img/react-native-android-sdk-environment-variable-windows.png)
 
