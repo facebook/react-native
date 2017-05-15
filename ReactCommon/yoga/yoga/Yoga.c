@@ -3129,6 +3129,25 @@ static inline bool YGMeasureModeNewMeasureSizeIsStricterAndStillValid(YGMeasureM
          lastSize > size && (lastComputedSize <= size || YGFloatsEqual(size, lastComputedSize));
 }
 
+static float YGRoundValueToPixelGrid(const float value,
+                                     const float pointScaleFactor,
+                                     const bool forceCeil,
+                                     const bool forceFloor) {
+  float fractial = fmodf(value, pointScaleFactor);
+  if (YGFloatsEqual(fractial, 0)) {
+    // Still remove fractial as fractial could be  extremely small.
+    return value - fractial;
+  }
+  
+  if (forceCeil) {
+    return value - fractial + pointScaleFactor;
+  } else if (forceFloor) {
+    return value - fractial;
+  } else {
+    return value - fractial + (fractial >= pointScaleFactor / 2.0f ? pointScaleFactor : 0);
+  }
+}
+
 bool YGNodeCanUseCachedMeasurement(const YGMeasureMode widthMode,
                                    const float width,
                                    const YGMeasureMode heightMode,
@@ -3140,13 +3159,18 @@ bool YGNodeCanUseCachedMeasurement(const YGMeasureMode widthMode,
                                    const float lastComputedWidth,
                                    const float lastComputedHeight,
                                    const float marginRow,
-                                   const float marginColumn) {
+                                   const float marginColumn,
+                                   const YGConfigRef config) {
   if (lastComputedHeight < 0 || lastComputedWidth < 0) {
     return false;
   }
+  const float effectiveWidth = config != NULL ? YGRoundValueToPixelGrid(width, config->pointScaleFactor, false, false) : width;
+  const float effectiveHeight = config != NULL ? YGRoundValueToPixelGrid(height, config->pointScaleFactor, false, false) : height;
+  const float effectiveLastWidth = config != NULL ? YGRoundValueToPixelGrid(lastWidth, config->pointScaleFactor, false, false) : lastWidth;
+  const float effectiveLastHeight = config != NULL ? YGRoundValueToPixelGrid(lastHeight, config->pointScaleFactor, false, false) : lastHeight;
 
-  const bool hasSameWidthSpec = lastWidthMode == widthMode && YGFloatsEqual(lastWidth, width);
-  const bool hasSameHeightSpec = lastHeightMode == heightMode && YGFloatsEqual(lastHeight, height);
+  const bool hasSameWidthSpec = lastWidthMode == widthMode && YGFloatsEqual(effectiveLastWidth, effectiveWidth);
+  const bool hasSameHeightSpec = lastHeightMode == heightMode && YGFloatsEqual(effectiveLastHeight, effectiveHeight);
 
   const bool widthIsCompatible =
       hasSameWidthSpec || YGMeasureModeSizeIsExactAndMatchesOldMeasuredSize(widthMode,
@@ -3239,7 +3263,8 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
                                       layout->cachedLayout.computedWidth,
                                       layout->cachedLayout.computedHeight,
                                       marginAxisRow,
-                                      marginAxisColumn)) {
+                                      marginAxisColumn,
+                                      config)) {
       cachedResults = &layout->cachedLayout;
     } else {
       // Try to use the measurement cache.
@@ -3255,7 +3280,8 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
                                           layout->cachedMeasurements[i].computedWidth,
                                           layout->cachedMeasurements[i].computedHeight,
                                           marginAxisRow,
-                                          marginAxisColumn)) {
+                                          marginAxisColumn,
+                                          config)) {
           cachedResults = &layout->cachedMeasurements[i];
           break;
         }
@@ -3386,25 +3412,6 @@ void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInP
     config->pointScaleFactor = 0.0f;
   } else {
     config->pointScaleFactor = 1.0f / pixelsInPoint;
-  }
-}
-
-static float YGRoundValueToPixelGrid(const float value,
-                                     const float pointScaleFactor,
-                                     const bool forceCeil,
-                                     const bool forceFloor) {
-  float fractial = fmodf(value, pointScaleFactor);
-  if (YGFloatsEqual(fractial, 0)) {
-    // Still remove fractial as fractial could be  extremely small.
-    return value - fractial;
-  }
-
-  if (forceCeil) {
-    return value - fractial + pointScaleFactor;
-  } else if (forceFloor) {
-    return value - fractial;
-  } else {
-    return value - fractial + (fractial >= pointScaleFactor / 2.0f ? pointScaleFactor : 0);
   }
 }
 
