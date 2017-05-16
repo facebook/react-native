@@ -261,7 +261,7 @@ After you have created your `Podfile`, you are ready to install the React Native
 $ pod install
 ```
 
-Your should see output such as:
+You should see output such as:
 
 ```bash
 Analyzing dependencies
