@@ -42,6 +42,7 @@ const invariant = require('fbjs/lib/invariant');
  *   onPress={onPressLearnMore}
  *   title="Learn More"
  *   color="#841584"
+ *   margin={10}
  *   accessibilityLabel="Learn more about this purple button"
  * />
  * ```
@@ -57,6 +58,13 @@ class Button extends React.Component {
     accessibilityLabel?: ?string,
     disabled?: ?boolean,
     testID?: ?string,
+    margin?: ?number,
+    marginHorizontal?: ?number,
+    marginVertical?: ?number,
+    marginTop?: ?number,
+    marginRight?: ?number,
+    marginBottom?: ?number,
+    marginLeft?: ?number,
   };
 
   static propTypes = {
@@ -72,9 +80,6 @@ class Button extends React.Component {
      * Color of the text (iOS), or background color of the button (Android)
      */
     color: ColorPropType,
-    /**
-     * If true, disable all interactions for this component.
-     */
     disabled: PropTypes.bool,
     /**
      * Handler to be called when the user taps the button
@@ -84,6 +89,37 @@ class Button extends React.Component {
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
+    /**
+     * Margin of the button
+     */
+    margin: PropTypes.number,
+    /**
+     * Margin horizontal of the button
+     */
+    marginHorizontal: PropTypes.number,
+    /**
+     * Margin vertical of the button
+     */
+    marginVertical: PropTypes.number,
+    /**
+     * Margin top of the button
+     */
+    marginTop: PropTypes.number,
+    /**
+     * Margin right of the button
+     */
+    marginRight: PropTypes.number,
+    /**
+     * Margin bottom of the button
+     */
+    marginBottom: PropTypes.number,
+    /**
+     * Margin left of the button
+     */
+    marginLeft: PropTypes.number,
+    /**
+     * If true, disable all interactions for this component.
+     */
   };
 
   render() {
@@ -94,6 +130,13 @@ class Button extends React.Component {
       title,
       disabled,
       testID,
+      margin,
+      marginHorizontal,
+      marginVertical,
+      marginTop,
+      marginRight,
+      marginBottom,
+      marginLeft,
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
@@ -102,6 +145,27 @@ class Button extends React.Component {
       textStyles.push({color: color});
     } else if (color) {
       buttonStyles.push({backgroundColor: color});
+    }
+    if (margin) {
+      buttonStyles.push({margin});
+    }
+    if (marginHorizontal) {
+      buttonStyles.push({marginHorizontal});
+    }
+    if (marginVertical) {
+      buttonStyles.push({marginVertical});
+    }
+    if (marginTop) {
+      buttonStyles.push({marginTop});
+    }
+    if (marginRight) {
+      buttonStyles.push({marginRight});
+    }
+    if (marginBottom) {
+      buttonStyles.push({marginBottom});
+    }
+    if (marginLeft) {
+      buttonStyles.push({marginLeft});
     }
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
