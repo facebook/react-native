@@ -236,12 +236,18 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 }
 
-- (void)executeBlockOnJavaScriptThread:(dispatch_block_t)block
+/**
+ * Ensure block is run on the JS thread. If we're already on the JS thread, the block will execute synchronously.
+ * If we're not on the JS thread, the block is dispatched to that thread. Any errors encountered while executing
+ * the block will go through handleError:
+ */
+- (void)ensureOnJavaScriptThread:(dispatch_block_t)block
 {
   RCTAssert(_jsThread, @"This method must not be called before the JS thread is created");
 
-  // This does not use _jsMessageThread because it may be called early
-  // before the runloop reference is captured and _jsMessageThread is valid.
+  // This does not use _jsMessageThread because it may be called early before the runloop reference is captured
+  // and _jsMessageThread is valid. _jsMessageThread also doesn't allow us to shortcut the dispatch if we're
+  // already on the correct thread.
 
   if ([NSThread currentThread] == _jsThread) {
     [self _tryAndHandleError:block];
@@ -703,7 +709,7 @@ struct RCTInstanceCallback : public InstanceCallback {
        object:self->_parentBridge userInfo:@{@"bridge": self}];
 
       // Starting the display link is not critical to startup, so do it last
-      [self executeBlockOnJavaScriptThread:^{
+      [self ensureOnJavaScriptThread:^{
         // Register the display link to start sending js calls after everything is setup
         [self->_displayLink addToRunLoop:[NSRunLoop currentRunLoop]];
       }];
@@ -840,7 +846,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
                 queue:(dispatch_queue_t)queue
 {
   if (queue == RCTJSThread) {
-    [self executeBlockOnJavaScriptThread:block];
+    [self ensureOnJavaScriptThread:block];
   } else if (queue) {
     dispatch_async(queue, block);
   }
@@ -883,7 +889,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 
   dispatch_group_notify(group, dispatch_get_main_queue(), ^{
-    [self executeBlockOnJavaScriptThread:^{
+    [self ensureOnJavaScriptThread:^{
       [self->_displayLink invalidate];
       self->_displayLink = nil;
 
@@ -949,7 +955,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
         OSAtomicDecrement32Barrier(&self->_pendingCount);
       }
     };
-    [self executeBlockOnJavaScriptThread:jsQueueBlock];
+    [self ensureOnJavaScriptThread:jsQueueBlock];
   } else {
     // Phase 2/Phase D: blocks are executed directly, adding work to the JS queue.
     block();
@@ -1002,8 +1008,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       self->_reactInstance->callJSFunction([module UTF8String], [method UTF8String],
                                            [RCTConvert folly_dynamic:args ?: @[]]);
 
+      // ensureOnJavaScriptThread may execute immediately, so use jsMessageThread, to make sure
+      // the block is invoked after callJSFunction
       if (completion) {
-        [self executeBlockOnJavaScriptThread:completion];
+        self->_jsMessageThread->runOnQueue(completion);
       }
     }
   }];
@@ -1052,8 +1060,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
                              url:(NSURL *)url
                       onComplete:(dispatch_block_t)onComplete
 {
-  RCTAssert(onComplete != nil, @"onComplete block passed in should be non-nil");
-
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge enqueueApplicationScript]", nil);
 
   [self _tryAndHandleError:^{
@@ -1069,15 +1075,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     } else if (self->_reactInstance) {
       self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
                                                  [[url absoluteString] UTF8String]);
+    } else {
+      throw std::logic_error("Attempt to call loadApplicationScript: on uninitialized bridge");
     }
   }];
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
   // Assumes that onComplete can be called when the next block on the JS thread is scheduled
-  [self executeBlockOnJavaScriptThread:^{
-    onComplete();
-  }];
+  if (onComplete) {
+    RCTAssert(_jsMessageThread != nullptr, @"Cannot invoke completion without jsMessageThread");
+    _jsMessageThread->runOnQueue(onComplete);
+  }
 }
 
 - (void)executeApplicationScriptSync:(NSData *)script url:(NSURL *)url
@@ -1097,8 +1106,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       self->_reactInstance->loadScriptFromStringSync(std::make_unique<NSDataBigString>(script),
                                                      [[url absoluteString] UTF8String]);
     } else {
-      throw std::logic_error(
-        "Attempt to call loadApplicationScriptSync: on uninitialized bridge");
+      throw std::logic_error("Attempt to call loadApplicationScriptSync: on uninitialized bridge");
     }
   }];
 }
@@ -1183,7 +1191,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertMainQueue();
 
-  [self executeBlockOnJavaScriptThread:^{
+  [self ensureOnJavaScriptThread:^{
     #if WITH_FBSYSTRACE
     [RCTFBSystrace registerCallbacks];
     #endif
@@ -1195,7 +1203,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertMainQueue();
 
-  [self executeBlockOnJavaScriptThread:^{
+  [self ensureOnJavaScriptThread:^{
     RCTProfileEnd(self, ^(NSString *log) {
       NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
       callback(logData);
