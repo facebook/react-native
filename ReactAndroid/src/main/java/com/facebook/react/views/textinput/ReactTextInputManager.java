@@ -691,8 +691,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                   new ReactTextInputSubmitEditingEvent(
                       editText.getId(),
                       editText.getText().toString()));
+              
+              if (!editText.getBlurOnSubmit() && (editText.getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0) {
+                return false;
+              }
             }
-
+            
             if (editText.getBlurOnSubmit()) {
               editText.clearFocus();
             }
