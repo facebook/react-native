@@ -66,15 +66,13 @@ const LinkingManager = Platform.OS === 'android' ?
  *   android:launchMode="singleTask">
  * ```
  *
- * NOTE: On iOS you'll need to link `RCTLinking` to your project by following
+ * NOTE: On iOS, you'll need to link `RCTLinking` to your project by following
  * the steps described [here](docs/linking-libraries-ios.html#manual-linking).
- * In case you also want to listen to incoming app links during your app's
- * execution you'll need to add the following lines to your `*AppDelegate.m`:
+ * If you also want to listen to incoming app links during your app's
+ * execution, you'll need to add the following lines to your `*AppDelegate.m`:
  *
- * NOTE: openURL Deprecated in iOS10.
- *
- * IOS 10:
  * ```
+ * // iOS 10
  * #import <React/RCTLinkingManager.h>
  * - (BOOL)application:(UIApplication *)application
  *    openURL:(NSURL *)url
@@ -87,8 +85,11 @@ const LinkingManager = Platform.OS === 'android' ?
  *
  * }
  * ```
- * IOS 9 and older:
+ * 
+ * If you're targeting iOS 9 or older, you can use the following code instead:
+ *
  * ```
+ * // iOS 9 or older
  * #import <React/RCTLinkingManager.h>
  *
  * - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
@@ -98,9 +99,11 @@ const LinkingManager = Platform.OS === 'android' ?
  *          sourceApplication:sourceApplication annotation:annotation];
  * }
  * ```
- * Universal Links:
+ * 
+ * If your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html),
+ * you'll need to add the following code as well:
+ * 
  * ```
- * // Only if your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
  * - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
  *  restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
  * {
