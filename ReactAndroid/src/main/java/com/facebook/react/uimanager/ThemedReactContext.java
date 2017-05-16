@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 import android.app.Activity;
 import android.content.Context;
 
-import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -47,16 +46,6 @@ public class ThemedReactContext extends ReactContext {
   @Override
   public void removeLifecycleEventListener(LifecycleEventListener listener) {
     mReactApplicationContext.removeLifecycleEventListener(listener);
-  }
-
-  @Override
-  public void addActivityEventListener(ActivityEventListener listener) {
-    mReactApplicationContext.addActivityEventListener(listener);
-  }
-
-  @Override
-  public void removeActivityEventListener(ActivityEventListener listener) {
-    mReactApplicationContext.removeActivityEventListener(listener);
   }
 
   @Override
