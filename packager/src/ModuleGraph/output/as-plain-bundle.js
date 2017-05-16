@@ -16,7 +16,7 @@ const {addModuleIdsToModuleWrapper} = require('./util');
 import type {OutputFn} from '../types.flow';
 
 module.exports = (
-  (modules, filename, idForPath) => {
+  (modules, filename, idForPath, sourceMapPath) => {
     let code = '';
     let line = 0;
     const sections = [];
@@ -35,6 +35,10 @@ module.exports = (
         });
       }
       line += countLines(moduleCode);
+    }
+
+    if (sourceMapPath) {
+      code += `/*# sourceMappingURL=${sourceMapPath}*/`;
     }
 
     return {code, map: createIndexMap({file: filename, sections})};
