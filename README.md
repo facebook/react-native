@@ -7,7 +7,6 @@ Supported operating systems are >= Android 4.1 (API 16) and >= iOS 8.0.
 - [Getting Started](#getting-started)
 - [Getting Help](#getting-help)
 - [Documentation](#documentation)
-- [Examples](#examples)
 - [Extending React Native](#extending-react-native)
 - [Upgrading](#upgrading)
 - [Opening Issues](#opening-issues)
@@ -48,26 +47,6 @@ Another great way to learn more about the components and APIs included with Reac
 
 The React Native documentation only discusses the components, APIs and topics specific to React Native (React on iOS and Android). For further documentation on the React API that is shared between React Native and React DOM, refer to the [React documentation](https://facebook.github.io/react/).
 
-## Examples
-
-- `git clone https://github.com/facebook/react-native.git`
-- `cd react-native && npm install`
-
-### Running the examples on iOS
-
-Now open any example (the `.xcodeproj` file in each of the `Examples` subdirectories) and hit Run in Xcode.
-
-### Running the examples on Android
-
-Note that you'll need the Android NDK installed, see [prerequisites](https://github.com/facebook/react-native/blob/master/ReactAndroid/README.md#prerequisites).
-
-```bash
-./gradlew :Examples:Movies:android:app:installDebug
-# Start the packager in a separate shell (make sure you ran npm install):
-./packager/packager.sh
-# Open the Movies app in your emulator
-```
-
 ## Extending React Native
 
 - Looking for a component? [JS.coach](https://js.coach/react-native)
@@ -98,5 +77,3 @@ We encourage the community to ask and answer questions on Stack Overflow with [t
 React is [BSD licensed](./LICENSE). We also provide an additional [patent grant](./PATENTS).
 
 React documentation is [Creative Commons licensed](./LICENSE-docs).
-
-Examples provided in this repository and in the documentation are [separately licensed](./LICENSE-examples), as are some of the [custom components](./LICENSE-CustomComponents).
