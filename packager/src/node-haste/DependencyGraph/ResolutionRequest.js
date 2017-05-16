@@ -12,7 +12,6 @@
 
 'use strict';
 
-const AssetPaths = require('../lib/AssetPaths');
 const AsyncTaskGroup = require('../lib/AsyncTaskGroup');
 const MapWithDefaults = require('../lib/MapWithDefaults');
 
@@ -78,22 +77,17 @@ export type ModuleishCache<TModule, TPackage> = {
   getAssetModule(path: string): TModule,
 };
 
-type MatchFilesByDirAndPattern = (
-  dirName: string,
-  pattern: RegExp,
-) => Array<string>;
-
 type Options<TModule, TPackage> = {|
   +dirExists: DirExistsFn,
   +entryPath: string,
   +extraNodeModules: ?Object,
   +hasteFS: HasteFS,
   +helpers: DependencyGraphHelpers,
-  +matchFiles: MatchFilesByDirAndPattern,
   +moduleCache: ModuleishCache<TModule, TPackage>,
   +moduleMap: ModuleMap,
   +platform: ?string,
   +preferNativePlatform: boolean,
+  +resolveAsset: (dirPath: string, assetName: string) => $ReadOnlyArray<string>,
   +sourceExts: Array<string>,
 |};
 
@@ -112,8 +106,6 @@ function tryResolveSync<T>(action: () => T, secondaryAction: () => T): T {
     return secondaryAction();
   }
 }
-
-const EMPTY_SET = new Set();
 
 class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
   _doesFileExist = filePath => this._options.hasteFS.exists(filePath);
@@ -619,26 +611,18 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     fromModule: TModule,
     toModule: string,
   ): TModule {
-    const {name, type} = AssetPaths.parse(potentialModulePath, EMPTY_SET);
-
-    let pattern = '^' + name + '(@[\\d\\.]+x)?';
-    if (this._options.platform != null) {
-      pattern += '(\\.' + this._options.platform + ')?';
-    }
-    pattern += '\\.' + type + '$';
-
-    const dirname = path.dirname(potentialModulePath);
-    const assetFiles = this._options.matchFiles(dirname, new RegExp(pattern));
-    // We arbitrarly grab the lowest, because scale selection will happen
-    // somewhere else. Always the lowest so that it's stable between builds.
-    const assetFile = getArrayLowestItem(assetFiles);
-    if (assetFile) {
-      return this._options.moduleCache.getAssetModule(assetFile);
+    const dirPath = path.dirname(potentialModulePath);
+    const baseName = path.basename(potentialModulePath);
+    const assetNames = this._options.resolveAsset(dirPath, baseName);
+    const assetName = getArrayLowestItem(assetNames);
+    if (assetName != null) {
+      const assetPath = path.join(dirPath, assetName);
+      return this._options.moduleCache.getAssetModule(assetPath);
     }
     throw new UnableToResolveError(
       fromModule,
       toModule,
-      `Directory \`${dirname}' doesn't contain asset \`${name}'`,
+      `Directory \`${dirPath}' doesn't contain asset \`${baseName}'`,
     );
   }
 
@@ -804,7 +788,7 @@ function isRelativeImport(filePath) {
   return /^[.][.]?(?:[/]|$)/.test(filePath);
 }
 
-function getArrayLowestItem(a: Array<string>): string | void {
+function getArrayLowestItem(a: $ReadOnlyArray<string>): string | void {
   if (a.length === 0) {
     return undefined;
   }
