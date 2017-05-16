@@ -138,30 +138,36 @@ class TransformCache {
    */
   _readSync(props: ReadTransformProps): TransformCacheResult {
     this._collectIfNecessarySync(props.cacheOptions);
-    const cacheFilePaths = this._getCacheFilePaths(props);
-    let metadata, transformedCode;
     try {
-      metadata = readMetadataFileSync(cacheFilePaths.metadata);
-      if (metadata == null) {
-        return {result: null, outdatedDependencies: EMPTY_ARRAY};
-      }
-      const sourceHash = hashSourceCode(props);
-      if (sourceHash !== metadata.cachedSourceHash) {
-        return {result: null, outdatedDependencies: metadata.dependencies};
-      }
-      transformedCode = fs.readFileSync(cacheFilePaths.transformedCode, 'utf8');
-      const codeHash = crypto
-        .createHash('sha1')
-        .update(transformedCode)
-        .digest('hex');
-      if (metadata.cachedResultHash !== codeHash) {
-        return {result: null, outdatedDependencies: metadata.dependencies};
-      }
+      return this._readFilesSync(props);
     } catch (error) {
       if (error.code === 'ENOENT') {
         return {result: null, outdatedDependencies: EMPTY_ARRAY};
       }
       throw error;
+    }
+  }
+
+  _readFilesSync(props: ReadTransformProps): TransformCacheResult {
+    const cacheFilePaths = this._getCacheFilePaths(props);
+    const metadata = readMetadataFileSync(cacheFilePaths.metadata);
+    if (metadata == null) {
+      return {result: null, outdatedDependencies: EMPTY_ARRAY};
+    }
+    const sourceHash = hashSourceCode(props);
+    if (sourceHash !== metadata.cachedSourceHash) {
+      return {result: null, outdatedDependencies: metadata.dependencies};
+    }
+    const transformedCode = fs.readFileSync(
+      cacheFilePaths.transformedCode,
+      'utf8',
+    );
+    const codeHash = crypto
+      .createHash('sha1')
+      .update(transformedCode)
+      .digest('hex');
+    if (metadata.cachedResultHash !== codeHash) {
+      return {result: null, outdatedDependencies: metadata.dependencies};
     }
     return {
       result: {
@@ -336,15 +342,7 @@ function readMetadataFileSync(
   sourceMap: ?MappingsMap,
 } {
   const metadataStr = fs.readFileSync(metadataFilePath, 'utf8');
-  let metadata;
-  try {
-    metadata = JSON.parse(metadataStr);
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      return null;
-    }
-    throw error;
-  }
+  const metadata = tryParseJSON(metadataStr);
   if (!Array.isArray(metadata)) {
     return null;
   }
@@ -373,6 +371,17 @@ function readMetadataFileSync(
     dependencyOffsets,
     sourceMap,
   };
+}
+
+function tryParseJSON(str: string): any {
+  try {
+    return JSON.parse(str);
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return null;
+    }
+    throw error;
+  }
 }
 
 function hashSourceCode(props: {

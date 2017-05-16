@@ -20,12 +20,6 @@ const fs = require('fs');
 const {objectContaining} = jasmine;
 
 describe('AssetServer', () => {
-  beforeEach(() => {
-    const NodeHaste = require('../../node-haste/DependencyGraph');
-    NodeHaste.getAssetDataFromName =
-      require.requireActual('../../node-haste/lib/getAssetDataFromName');
-  });
-
   describe('assetServer.get', () => {
     it('should work for the simple case', () => {
       const server = new AssetServer({

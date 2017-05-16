@@ -40,18 +40,8 @@ class FilesByDirNameIndex {
     }
   }
 
-  match(dirName: string, pattern: RegExp): Array<string> {
-    const results = [];
-    const dir = this._filesByDirName.get(dirName);
-    if (dir === undefined) {
-      return [];
-    }
-    for (let i = 0; i < dir.length; ++i) {
-      if (pattern.test(dir[i])) {
-        results.push(path.join(dirName, dir[i]));
-      }
-    }
-    return results;
+  getAllFiles(dirPath: string): $ReadOnlyArray<string> {
+    return this._filesByDirName.get(dirPath) || [];
   }
 }
 
