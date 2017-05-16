@@ -116,7 +116,7 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
 class WebView extends React.Component {
   static JSNavigationScheme = JSNavigationScheme;
   static NavigationType = NavigationType;
-  static get extraNativeComponentConfig() { 
+  static get extraNativeComponentConfig() {
     return {
       nativeOnly: {
         onLoadingStart: true,
