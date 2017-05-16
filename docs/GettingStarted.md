@@ -402,7 +402,7 @@ react-native run-android
 
 If everything is set up correctly, you should see your new app running in your Android emulator shortly.
 
-![AwesomeProject on Android](img/AndroidSuccess.png)
+![AwesomeProject on Android](img/AndroidSuccessMacOS.png)
 
 `react-native run-android` is just one way to run your app - you can also run it directly from within Android Studio or [Nuclide](https://nuclide.io/).
 
@@ -460,7 +460,7 @@ react-native run-android
 
 If everything is set up correctly, you should see your new app running in your Android emulator shortly.
 
-![AwesomeProject on Android](img/AndroidSuccess.png)
+![AwesomeProject on Android](img/AndroidSuccessWindows.png)
 
 <block class="windows linux android" />
 
