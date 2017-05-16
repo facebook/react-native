@@ -45,6 +45,14 @@ var defaultRenderLoading = () => (
  * Renders a native WebView.
  */
 class WebView extends React.Component {
+  static get extraNativeComponentConfig() { 
+    return {
+      nativeOnly: {
+        messagingEnabled: PropTypes.bool,
+      },
+    };
+  }
+
   static propTypes = {
     ...ViewPropTypes,
     renderError: PropTypes.func,
@@ -395,11 +403,7 @@ class WebView extends React.Component {
   }
 }
 
-var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
-  nativeOnly: {
-    messagingEnabled: PropTypes.bool,
-  },
-});
+var RCTWebView = requireNativeComponent('RCTWebView', WebView, WebView.extraNativeComponentConfig);
 
 var styles = StyleSheet.create({
   container: {
