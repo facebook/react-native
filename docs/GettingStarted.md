@@ -213,7 +213,7 @@ Setting up your development environment can be somewhat tedious if you're new to
 
 #### 1. Install Android Studio
 
-Android Studio provides the Android SDK and AVD (emulator) required to run and test your React Native apps. Download and install [Android Studio](https://developer.android.com/studio/index.html).
+Android Studio provides the Android SDK and Android Virtual Device (emulator) required to run and test your React Native apps. Download and install [Android Studio](https://developer.android.com/studio/index.html).
 
 Once the installation process is completed, launch Android Studio. Choose "Custom" when prompted to select an installation type. Make sure the boxes next to all of the following are checked:
 
@@ -248,7 +248,7 @@ Click "Next" to install all of these components, then [configure VM acceleration
 
 Android Studio installs the most recent Android SDK by default. React Native, however, requires the `Android 6.0 (Marshmallow)` SDK. You can use the SDK Manager to install additional SDK platforms. To access the SDK Manager, click on "Configure", then select "SDK Manager" from the "Welcome to Android Studio" screen.
 
-> The SDK Manager can also be found within the Android Studio "Preferences" menu, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
+> The SDK Manager can also be found within the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
 Select the "SDK Platforms" tab from within the SDK Manager, then check the box next to "Show Package Details" in the bottom right corner. Look for and expand the `Android 6.0 (Marshmallow)` entry, then make sure the following items are all checked:
 
@@ -267,9 +267,27 @@ Select the "SDK Platforms" tab from within the SDK Manager, then check the box n
 
 <block class="windows mac linux android" />
 
-Next, select the "SDK Tools" tab and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build Tools" entry, then make sure that `Android SDK Build-Tools 23.0.1` is selected.
+Next, select the "SDK Tools" tab and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build-Tools" entry, then make sure that `23.0.1` is selected.
+
+<block class="mac android" />
+
+![Android SDK Manager - 23.0.1 Build Tools](img/AndroidSDKManagerSDKToolsMacOS.png)
+
+<block class="windows android" />
+
+![Android SDK Manager - 23.0.1 Build Tools](img/AndroidSDKManagerSDKToolsWindows.png)
+
+<block class="windows mac linux android" />
 
 Finally, click "Apply" to download and install the Android SDK and related build tools.
+
+<block class="mac android" />
+
+![Android SDK Manager - Installs](img/AndroidSDKManagerInstallsMacOS.png)
+
+<block class="windows android" />
+
+![Android SDK Manager - Installs](img/AndroidSDKManagerInstallsWindows.png)
 
 <block class="mac windows linux android" />
 
@@ -289,7 +307,7 @@ export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 
 Type `source ~/.profile` to load the config into your current shell.
 
-> Please make sure you export the correct path for `ANDROID_HOME`. If you installed the Android SDK using Homebrew, it would be located at `/usr/local/opt/android-sdk`.
+> Please make sure you export the correct path for `ANDROID_HOME`. If you installed the Android SDK using Homebrew, it would be located at `/usr/local/opt/android-sdk`. You can find the actual location of the SDK in the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
 <block class="linux android" />
 
@@ -303,15 +321,17 @@ export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 
 Type `source ~/.profile` to load the config into your current shell.
 
-> Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio.
+> Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio. You can find the actual location of the SDK in the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
 <block class="windows android" />
 
-Open the System pane under **System and Security** in the Control Panel, then click on **Change settings...**. Open the **Advanced** tab and click on **Environment Variables...**. Click on **New...** to create a new `ANDROID_HOME` user variable that points to the path to your Android SDK. The Android SDK is installed at `C:\Users\YOUR_USER\AppData\Local\Android\sdk` by default.
+Open the System pane under **System and Security** in the Control Panel, then click on **Change settings...**. Open the **Advanced** tab and click on **Environment Variables...**. Click on **New...** to create a new `ANDROID_HOME` user variable that points to the path to your Android SDK.
 
-![ANDROID_HOME Environment Variable](img/react-native-android-sdk-environment-variable-windows.png)
+![ANDROID_HOME Environment Variable](img/AndroidEnvironmentVariableANDROID_HOME.png)
 
-Close and open a new Command Prompt window to ensure the new environment variable is loaded.
+You can find the actual location of the SDK in the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
+
+Open a new Command Prompt window to ensure the new environment variable is loaded.
 
 <block class="linux android" />
 
