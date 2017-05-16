@@ -25,7 +25,7 @@ type SectionBase<SectionItemT> = {
   /**
    * The data for rendering items in this section.
    */
-  data: Array<SectionItemT>,
+  data: $ReadOnlyArray<SectionItemT>,
   /**
    * Optional key to keep track of section re-ordering. If you don't plan on re-ordering sections,
    * the array index will be used by default.
@@ -56,13 +56,13 @@ type RequiredProps<SectionT: SectionBase<any>> = {
    *
    * General shape:
    *
-   *     sections: Array<{
-   *       data: Array<SectionItem>,
+   *     sections: $ReadOnlyArray<{
+   *       data: $ReadOnlyArray<SectionItem>,
    *       renderItem?: ({item: SectionItem, ...}) => ?React.Element<*>,
    *       ItemSeparatorComponent?: ?ReactClass<{highlighted: boolean, ...}>,
    *     }>
    */
-  sections: Array<SectionT>,
+  sections: $ReadOnlyArray<SectionT>,
 };
 
 type OptionalProps<SectionT: SectionBase<any>> = {
@@ -87,11 +87,18 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    */
   ItemSeparatorComponent?: ?ReactClass<any>,
   /**
-   * Rendered at the very beginning of the list.
+   * Rendered at the very beginning of the list. Can be a React Component Class, a render function, or
+   * a rendered element.
    */
   ListHeaderComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
-   * Rendered at the very end of the list.
+   * Rendered when the list is empty. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListEmptyComponent?: ?(ReactClass<any> | React.Element<any>),
+  /**
+   * Rendered at the very end of the list. Can be a React Component Class, a render function, or
+   * a rendered element.
    */
   ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
   /**

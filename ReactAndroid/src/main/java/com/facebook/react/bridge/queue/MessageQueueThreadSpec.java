@@ -22,12 +22,11 @@ public class MessageQueueThreadSpec {
 
   protected static enum ThreadType {
     MAIN_UI,
-    BACKGROUND_UI,
     NEW_BACKGROUND,
   }
 
   public static MessageQueueThreadSpec newUIBackgroundTreadSpec(String name) {
-    return new MessageQueueThreadSpec(ThreadType.BACKGROUND_UI, name);
+    return new MessageQueueThreadSpec(ThreadType.NEW_BACKGROUND, name);
   }
 
   public static MessageQueueThreadSpec newBackgroundThreadSpec(String name) {

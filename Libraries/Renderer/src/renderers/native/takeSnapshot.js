@@ -33,23 +33,22 @@ import type {Element} from 'React';
  * Returns a Promise.
  * @platform ios
  */
-module.exports = async function takeSnapshot(
-  view ?: 'window' | Element<any> | number,
-  options ?: {
-     width ?: number,
-     height ?: number,
-     format ?: 'png' | 'jpeg',
-     quality ?: number,
+function takeSnapshot(
+  view?: 'window' | Element<any> | number,
+  options?: {
+    width?: number,
+    height?: number,
+    format?: 'png' | 'jpeg',
+    quality?: number,
   },
-) {
-  if (
-    typeof view !== 'number' &&
-    view !== 'window'
-  ) {
+): Promise<any> {
+  if (typeof view !== 'number' && view !== 'window') {
     view = ReactNative.findNodeHandle(view) || 'window';
   }
 
   // Call the hidden '__takeSnapshot' method; the main one throws an error to
   // prevent accidental backwards-incompatible usage.
   return UIManager.__takeSnapshot(view, options);
-};
+}
+
+module.exports = takeSnapshot;

@@ -17,6 +17,10 @@
 #import <React/RCTProfile.h>
 #import <React/RCTUtils.h>
 
+#ifdef WITH_FBSYSTRACE
+#include <fbsystrace.h>
+#endif
+
 namespace facebook {
 namespace react {
 
@@ -50,20 +54,20 @@ folly::dynamic RCTNativeModule::getConstants() {
   return ret;
 }
 
-void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params) {
+void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int callId) {
   // The BatchedBridge version of this buckets all the callbacks by thread, and
   // queues one block on each.  This is much simpler; we'll see how it goes and
   // iterate.
-  dispatch_block_t block = [this, methodId, params=std::move(params)] {
-    if (!m_bridge.valid) {
-      return;
+  dispatch_block_t block = [this, methodId, params=std::move(params), callId] {
+    #ifdef WITH_FBSYSTRACE
+    if (callId != -1) {
+      fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
     }
-
+    #endif
     invokeInner(methodId, std::move(params));
   };
 
   dispatch_queue_t queue = m_moduleData.methodQueue;
-
   if (queue == RCTJSThread) {
     block();
   } else if (queue) {
@@ -76,6 +80,10 @@ MethodCallResult RCTNativeModule::callSerializableNativeHook(unsigned int reactM
 }
 
 MethodCallResult RCTNativeModule::invokeInner(unsigned int methodId, const folly::dynamic &&params) {
+  if (!m_bridge.valid) {
+    return folly::none;
+  }
+
   id<RCTBridgeMethod> method = m_moduleData.methods[methodId];
   if (RCT_DEBUG && !method) {
     RCTLogError(@"Unknown methodID: %ud for module: %@",
@@ -83,7 +91,6 @@ MethodCallResult RCTNativeModule::invokeInner(unsigned int methodId, const folly
   }
 
   NSArray *objcParams = convertFollyDynamicToId(params);
-
   @try {
     id result = [method invokeWithBridge:m_bridge module:m_moduleData.instance arguments:objcParams];
     return convertIdToFollyDynamic(result);
@@ -99,7 +106,6 @@ MethodCallResult RCTNativeModule::invokeInner(unsigned int methodId, const folly
                          exception, method.JSMethodName, m_moduleData.name, objcParams];
     RCTFatal(RCTErrorWithMessage(message));
   }
-
 }
 
 }

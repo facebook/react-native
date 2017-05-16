@@ -12,7 +12,6 @@
 
 const path = require('path');
 const flatten = require('lodash').flatten;
-const blacklist = require('../../packager/blacklist');
 const android = require('./android');
 const findAssets = require('./findAssets');
 const ios = require('./ios');
@@ -20,8 +19,6 @@ const windows = require('./windows');
 const wrapCommands = require('./wrapCommands');
 const findPlugins = require('./findPlugins');
 const findSymlinksPaths = require('../util/findSymlinksPaths');
-
-import type {ConfigT} from './index';
 
 function getProjectPath() {
   if (__dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli[\/\\]core$/)) {
@@ -58,7 +55,7 @@ const resolveSymlink = (roots) =>
  * `rn-cli.config.js` on the root of your project with the functions you need
  * to tweak.
  */
-const config: ConfigT = {
+const config = {
   getProjectCommands() {
     const appRoot = process.cwd();
     const plugins = findPlugins([appRoot])
@@ -86,7 +83,7 @@ const config: ConfigT = {
       assets: findAssets(folder, rnpm.assets),
     });
   },
-  getDependencyConfig(packageName) {
+  getDependencyConfig(packageName: string) {
     const folder = path.join(process.cwd(), 'node_modules', packageName);
     const rnpm = getRNPMConfig(
       path.join(process.cwd(), 'node_modules', packageName)
@@ -100,18 +97,6 @@ const config: ConfigT = {
       commands: wrapCommands(rnpm.commands),
       params: rnpm.params || [],
     });
-  },
-  getAssetExts() {
-    return [];
-  },
-  getPlatforms() {
-    return [];
-  },
-  getBlacklistRE() {
-    return blacklist();
-  },
-  getTransformModulePath() {
-    return require.resolve('../../packager/transformer');
   },
   getProjectRoots() {
     const root = process.env.REACT_NATIVE_APP_ROOT;

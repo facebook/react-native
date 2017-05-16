@@ -10,10 +10,14 @@
  */
 'use strict';
 
-const babel = require('babel-core');
+const JsFileWrapping = require('./JsFileWrapping');
+
+const asyncify = require('async/asyncify');
 const collectDependencies = require('./collect-dependencies');
+const defaults = require('../../../defaults');
 const docblock = require('../../node-haste/DependencyGraph/docblock');
 const generate = require('./generate');
+const path = require('path');
 const series = require('async/series');
 
 const {basename} = require('path');
@@ -31,20 +35,28 @@ import type {
 export type TransformOptions = {|
   filename: string,
   polyfill?: boolean,
-  transformer: Transformer,
+  transformer: Transformer<*>,
   variants?: TransformVariants,
 |};
 
+const defaultTransformOptions = {
+  dev: true,
+  generateSourceMaps: true,
+  hot: false,
+  inlineRequires: false,
+  platform: '',
+  projectRoot: '',
+};
 const defaultVariants = {default: {}};
-const moduleFactoryParameters = ['global', 'require', 'module', 'exports'];
-const polyfillFactoryParameters = ['global'];
+
+const ASSET_EXTENSIONS = new Set(defaults.assetExts);
 
 function transformModule(
   content: Buffer,
   options: TransformOptions,
   callback: Callback<TransformedSourceFile>,
 ): void {
-  if (options.filename.endsWith('.png')) {
+  if (ASSET_EXTENSIONS.has(path.extname(options.filename).substr(1))) {
     transformAsset(content, options, callback);
     return;
   }
@@ -58,17 +70,13 @@ function transformModule(
   const {filename, transformer, variants = defaultVariants} = options;
   const tasks = {};
   Object.keys(variants).forEach(name => {
-    tasks[name] = cb => {
-      try {
-        cb(null, transformer.transform(
-          code,
-          filename,
-          variants[name],
-        ));
-      } catch (error) {
-        cb(error, null);
-      }
-    };
+    tasks[name] = asyncify(() => transformer.transform({
+        filename,
+        localPath: filename,
+        options: {...defaultTransformOptions, ...variants[name]},
+        src: code,
+      })
+    );
   });
 
   series(tasks, (error, results: {[key: string]: TransformerResult}) => {
@@ -105,7 +113,7 @@ function transformJSON(json, options, callback) {
   const value = JSON.parse(json);
   const {filename} = options;
   const code =
-    `__d(function(${moduleFactoryParameters.join(', ')}) { module.exports = \n${
+    `__d(function(${JsFileWrapping.MODULE_FACTORY_PARAMETERS.join(', ')}) { module.exports = \n${
       json
     }\n});`;
 
@@ -158,42 +166,14 @@ function makeResult(ast, filename, sourceCode, isPolyfill = false) {
   let dependencies, dependencyMapName, file;
   if (isPolyfill) {
     dependencies = [];
-    file = wrapPolyfill(ast);
+    file = JsFileWrapping.wrapPolyfill(ast);
   } else {
     ({dependencies, dependencyMapName} = collectDependencies(ast));
-    file = wrapModule(ast, dependencyMapName);
+    file = JsFileWrapping.wrapModule(ast, dependencyMapName);
   }
 
   const gen = generate(file, filename, sourceCode);
   return {code: gen.code, map: gen.map, dependencies, dependencyMapName};
-}
-
-function wrapModule(file, dependencyMapName) {
-  const t = babel.types;
-  const params = moduleFactoryParameters.concat(dependencyMapName);
-  const factory = functionFromProgram(file.program, params);
-  const def = t.callExpression(t.identifier('__d'), [factory]);
-  return t.file(t.program([t.expressionStatement(def)]));
-}
-
-function wrapPolyfill(file) {
-  const t = babel.types;
-  const factory = functionFromProgram(file.program, polyfillFactoryParameters);
-  const iife = t.callExpression(factory, [t.identifier('this')]);
-  return t.file(t.program([t.expressionStatement(iife)]));
-}
-
-function functionFromProgram(program, parameters) {
-  const t = babel.types;
-  return t.functionExpression(
-    t.identifier(''),
-    parameters.map(makeIdentifier),
-    t.blockStatement(program.body, program.directives),
-  );
-}
-
-function makeIdentifier(name) {
-  return babel.types.identifier(name);
 }
 
 module.exports = transformModule;

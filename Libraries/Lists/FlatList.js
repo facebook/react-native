@@ -73,6 +73,11 @@ type OptionalProps<ItemT> = {
    */
   ItemSeparatorComponent?: ?ReactClass<any>,
   /**
+   * Rendered when the list is empty. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListEmptyComponent?: ?(ReactClass<any> | React.Element<any>),
+  /**
    * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
    * a rendered element.
    */
@@ -178,8 +183,6 @@ type Props<ItemT> = RequiredProps<ItemT> & OptionalProps<ItemT> & VirtualizedLis
 
 const defaultProps = {
   ...VirtualizedList.defaultProps,
-  getItem: undefined,
-  getItemCount: undefined,
   numColumns: 1,
 };
 type DefaultProps = typeof defaultProps;
@@ -243,7 +246,7 @@ type DefaultProps = typeof defaultProps;
  *         this.setState((state) => {
  *           // copy the map rather than modifying state.
  *           const selected = new Map(state.selected);
- *           selected.set(id, !state.get(id)); // toggle
+ *           selected.set(id, !selected.get(id)); // toggle
  *           return {selected};
  *         });
  *       };

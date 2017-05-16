@@ -128,8 +128,6 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) YGValue paddingBottom;
 @property (nonatomic, assign) YGValue paddingRight;
 
-- (UIEdgeInsets)paddingAsInsets;
-
 /**
  * Flexbox properties. All zero/disabled by default
  */

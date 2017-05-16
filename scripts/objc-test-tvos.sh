@@ -3,9 +3,9 @@ set -ex
 
 # Script used to run tvOS tests.
 # If not arguments are passed to the script, it will only compile
-# the UIExplorer.
+# the RNTester.
 # If the script is called with a single argument "test", we'll
-# also run the UIExplorer integration test (needs JS and packager):
+# also run the RNTester integration test (needs JS and packager):
 # ./objc-test-tvos.sh test
 
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
@@ -13,7 +13,7 @@ ROOT=$(dirname "$SCRIPTS")
 
 cd "$ROOT"
 
-SCHEME="UIExplorer-tvOS"
+SCHEME="RNTester-tvOS"
 SDK="appletvsimulator"
 DESTINATION="platform=tvOS Simulator,name=Apple TV 1080p,OS=10.1"
 

@@ -19,11 +19,12 @@ const outputBundle = require('./output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
+const defaultSourceExts = require('../../packager/defaults').sourceExts;
 const defaultPlatforms = require('../../packager/defaults').platforms;
 const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
 
 import type {RequestOptions, OutputOptions} from './types.flow';
-import type {ConfigT} from '../core';
+import type {ConfigT} from '../util/Config';
 
 function saveBundle(output, bundle, args) {
   return Promise.resolve(
@@ -64,12 +65,12 @@ function buildBundle(
   var shouldClosePackager = false;
   if (!packagerInstance) {
     const assetExts = (config.getAssetExts && config.getAssetExts()) || [];
+    const sourceExts = (config.getSourceExts && config.getSourceExts()) || [];
     const platforms = (config.getPlatforms && config.getPlatforms()) || [];
 
-    const transformModulePath =
-      args.transformer ? path.resolve(args.transformer) :
-      typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
-      undefined;
+    const transformModulePath = args.transformer
+      ? path.resolve(args.transformer)
+      : config.getTransformModulePath();
 
     const providesModuleNodeModules =
       typeof config.getProvidesModuleNodeModules === 'function' ? config.getProvidesModuleNodeModules() :
@@ -83,11 +84,13 @@ function buildBundle(
       globalTransformCache: null,
       hasteImpl: config.hasteImpl,
       platforms: defaultPlatforms.concat(platforms),
+      postMinifyProcess: config.postMinifyProcess,
       postProcessModules: config.postProcessModules,
       projectRoots: config.getProjectRoots(),
       providesModuleNodeModules: providesModuleNodeModules,
       resetCache: args.resetCache,
       reporter: new TerminalReporter(),
+      sourceExts: defaultSourceExts.concat(sourceExts),
       transformModulePath: transformModulePath,
       watch: false,
     };

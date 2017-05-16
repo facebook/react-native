@@ -317,7 +317,6 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				OTHER_LDFLAGS = "-ObjC";
@@ -336,7 +335,6 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -447,9 +445,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTImage;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTImage;
@@ -461,9 +457,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTImage;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/RCTImage;

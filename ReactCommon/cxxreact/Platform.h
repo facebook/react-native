@@ -23,8 +23,12 @@ enum ReactMarkerId {
   JS_BUNDLE_STRING_CONVERT_START,
   JS_BUNDLE_STRING_CONVERT_STOP,
 };
-using LogMarker = std::function<void(const ReactMarkerId)>;
-extern LogMarker logMarker;
+
+using LogTaggedMarker = std::function<void(const ReactMarkerId, const char* tag)>;
+extern LogTaggedMarker logTaggedMarker;
+
+extern void logMarker(const ReactMarkerId markerId);
+
 };
 
 namespace PerfLogging {
