@@ -8,16 +8,16 @@
  */
 'use strict';
 
-jest.dontMock('../getPlatformExtension')
-    .dontMock('../getAssetDataFromName');
+jest.dontMock('../parsePlatformFilePath')
+    .dontMock('../AssetPaths');
 
-var getAssetDataFromName = require('../getAssetDataFromName');
+var AssetPaths = require('../AssetPaths');
 
 const TEST_PLATFORMS = new Set(['ios', 'android']);
 
-describe('getAssetDataFromName', () => {
+describe('AssetPaths', () => {
   it('should get data from name', () => {
-    expect(getAssetDataFromName('a/b/c.png', TEST_PLATFORMS)).toEqual({
+    expect(AssetPaths.parse('a/b/c.png', TEST_PLATFORMS)).toEqual({
       resolution: 1,
       assetName: 'a/b/c.png',
       type: 'png',
@@ -25,7 +25,7 @@ describe('getAssetDataFromName', () => {
       platform: null,
     });
 
-    expect(getAssetDataFromName('a/b/c@1x.png', TEST_PLATFORMS)).toEqual({
+    expect(AssetPaths.parse('a/b/c@1x.png', TEST_PLATFORMS)).toEqual({
       resolution: 1,
       assetName: 'a/b/c.png',
       type: 'png',
@@ -33,7 +33,7 @@ describe('getAssetDataFromName', () => {
       platform: null,
     });
 
-    expect(getAssetDataFromName('a/b/c@2.5x.png', TEST_PLATFORMS)).toEqual({
+    expect(AssetPaths.parse('a/b/c@2.5x.png', TEST_PLATFORMS)).toEqual({
       resolution: 2.5,
       assetName: 'a/b/c.png',
       type: 'png',
@@ -41,7 +41,7 @@ describe('getAssetDataFromName', () => {
       platform: null,
     });
 
-    expect(getAssetDataFromName('a/b/c.ios.png', TEST_PLATFORMS)).toEqual({
+    expect(AssetPaths.parse('a/b/c.ios.png', TEST_PLATFORMS)).toEqual({
       resolution: 1,
       assetName: 'a/b/c.png',
       type: 'png',
@@ -49,7 +49,7 @@ describe('getAssetDataFromName', () => {
       platform: 'ios',
     });
 
-    expect(getAssetDataFromName('a/b/c@1x.ios.png', TEST_PLATFORMS)).toEqual({
+    expect(AssetPaths.parse('a/b/c@1x.ios.png', TEST_PLATFORMS)).toEqual({
       resolution: 1,
       assetName: 'a/b/c.png',
       type: 'png',
@@ -57,7 +57,7 @@ describe('getAssetDataFromName', () => {
       platform: 'ios',
     });
 
-    expect(getAssetDataFromName('a/b/c@2.5x.ios.png', TEST_PLATFORMS)).toEqual({
+    expect(AssetPaths.parse('a/b/c@2.5x.ios.png', TEST_PLATFORMS)).toEqual({
       resolution: 2.5,
       assetName: 'a/b/c.png',
       type: 'png',
@@ -65,7 +65,7 @@ describe('getAssetDataFromName', () => {
       platform: 'ios',
     });
 
-    expect(getAssetDataFromName('a/b /c.png', TEST_PLATFORMS)).toEqual({
+    expect(AssetPaths.parse('a/b /c.png', TEST_PLATFORMS)).toEqual({
       resolution: 1,
       assetName: 'a/b /c.png',
       type: 'png',
@@ -76,7 +76,7 @@ describe('getAssetDataFromName', () => {
 
   describe('resolution extraction', () => {
     it('should extract resolution simple case', () =>  {
-      var data = getAssetDataFromName('test@2x.png', TEST_PLATFORMS);
+      var data = AssetPaths.parse('test@2x.png', TEST_PLATFORMS);
       expect(data).toEqual({
         assetName: 'test.png',
         resolution: 2,
@@ -87,7 +87,7 @@ describe('getAssetDataFromName', () => {
     });
 
     it('should default resolution to 1', () =>  {
-      var data = getAssetDataFromName('test.png', TEST_PLATFORMS);
+      var data = AssetPaths.parse('test.png', TEST_PLATFORMS);
       expect(data).toEqual({
         assetName: 'test.png',
         resolution: 1,
@@ -98,7 +98,7 @@ describe('getAssetDataFromName', () => {
     });
 
     it('should support float', () =>  {
-      var data = getAssetDataFromName('test@1.1x.png', TEST_PLATFORMS);
+      var data = AssetPaths.parse('test@1.1x.png', TEST_PLATFORMS);
       expect(data).toEqual({
         assetName: 'test.png',
         resolution: 1.1,
@@ -107,7 +107,7 @@ describe('getAssetDataFromName', () => {
         platform: null,
       });
 
-      data = getAssetDataFromName('test@.1x.png', TEST_PLATFORMS);
+      data = AssetPaths.parse('test@.1x.png', TEST_PLATFORMS);
       expect(data).toEqual({
         assetName: 'test.png',
         resolution: 0.1,
@@ -116,7 +116,7 @@ describe('getAssetDataFromName', () => {
         platform: null,
       });
 
-      data = getAssetDataFromName('test@0.2x.png', TEST_PLATFORMS);
+      data = AssetPaths.parse('test@0.2x.png', TEST_PLATFORMS);
       expect(data).toEqual({
         assetName: 'test.png',
         resolution: 0.2,

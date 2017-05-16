@@ -12,6 +12,7 @@
 
 'use strict';
 
+const AssetPaths = require('../lib/AssetPaths');
 const AsyncTaskGroup = require('../lib/AsyncTaskGroup');
 const MapWithDefaults = require('../lib/MapWithDefaults');
 
@@ -21,7 +22,6 @@ const path = require('path');
 const realPath = require('path');
 const invariant = require('fbjs/lib/invariant');
 const isAbsolutePath = require('absolute-path');
-const getAssetDataFromName = require('../lib/getAssetDataFromName');
 
 import type {HasteFS} from '../types';
 import type DependencyGraphHelpers from './DependencyGraphHelpers';
@@ -619,7 +619,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     fromModule: TModule,
     toModule: string,
   ): TModule {
-    const {name, type} = getAssetDataFromName(potentialModulePath, EMPTY_SET);
+    const {name, type} = AssetPaths.parse(potentialModulePath, EMPTY_SET);
 
     let pattern = '^' + name + '(@[\\d\\.]+x)?';
     if (this._options.platform != null) {

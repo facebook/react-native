@@ -190,6 +190,12 @@ const mockNativeModules = {
     deleteTimer: jest.fn(),
   },
   UIManager: {
+    AndroidViewPager: {
+      Commands: {
+        setPage: jest.fn(),
+        setPageWithoutAnimation: jest.fn(),
+      },
+    },
     blur: jest.fn(),
     createView: jest.fn(),
     dispatchViewManagerCommand: jest.fn(),

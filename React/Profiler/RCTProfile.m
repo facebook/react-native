@@ -71,7 +71,7 @@ if (!RCTProfileIsProfiling()) { \
 static RCTProfileCallbacks *callbacks;
 static char *systrace_buffer;
 
-static systrace_arg_t *systraceArgsFromDictionary(NSDictionary<NSString *, NSString *> *args)
+static systrace_arg_t *newSystraceArgsFromDictionary(NSDictionary<NSString *, NSString *> *args)
 {
   if (args.count == 0) {
     return NULL;
@@ -547,7 +547,9 @@ void _RCTProfileBeginEvent(
   CHECK();
 
   if (callbacks != NULL) {
-    callbacks->begin_section(tag, name.UTF8String, args.count, systraceArgsFromDictionary(args));
+    systrace_arg_t *systraceArgs = newSystraceArgsFromDictionary(args);
+    callbacks->begin_section(tag, name.UTF8String, args.count, systraceArgs);
+    free(systraceArgs);
     return;
   }
 
@@ -610,8 +612,9 @@ NSUInteger RCTProfileBeginAsyncEvent(
   NSUInteger currentEventID = ++eventID;
 
   if (callbacks != NULL) {
-    callbacks->begin_async_section(tag, name.UTF8String, (int)(currentEventID % INT_MAX),
-                                   args.count, systraceArgsFromDictionary(args));
+    systrace_arg_t *systraceArgs = newSystraceArgsFromDictionary(args);
+    callbacks->begin_async_section(tag, name.UTF8String, (int)(currentEventID % INT_MAX), args.count, systraceArgs);
+    free(systraceArgs);
   } else {
     dispatch_async(RCTProfileGetQueue(), ^{
       RCTProfileOngoingEvents[@(currentEventID)] = @[

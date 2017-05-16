@@ -20,9 +20,9 @@ const ResolutionRequest = require('./DependencyGraph/ResolutionRequest');
 const ResolutionResponse = require('./DependencyGraph/ResolutionResponse');
 
 const fs = require('fs');
-const getPlatformExtension = require('./lib/getPlatformExtension');
 const invariant = require('fbjs/lib/invariant');
 const isAbsolutePath = require('absolute-path');
+const parsePlatformFilePath = require('./lib/parsePlatformFilePath');
 const path = require('path');
 const util = require('util');
 
@@ -253,7 +253,7 @@ class DependencyGraph extends EventEmitter {
 
   _getRequestPlatform(entryPath: string, platform: ?string): ?string {
     if (platform == null) {
-      platform = getPlatformExtension(entryPath, this._opts.platforms);
+      platform = parsePlatformFilePath(entryPath, this._opts.platforms).platform;
     } else if (!this._opts.platforms.has(platform)) {
       throw new Error('Unrecognized platform: ' + platform);
     }
