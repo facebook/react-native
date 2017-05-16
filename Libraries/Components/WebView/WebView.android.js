@@ -45,7 +45,7 @@ var defaultRenderLoading = () => (
  * Renders a native WebView.
  */
 class WebView extends React.Component {
-  static get extraNativeComponentConfig() { 
+  static get extraNativeComponentConfig() {
     return {
       nativeOnly: {
         messagingEnabled: PropTypes.bool,
