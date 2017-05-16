@@ -84,6 +84,9 @@ function getPackagerServer(args, config) {
     args.transformer ? path.resolve(args.transformer) :
     typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
     undefined;
+  const polyfillModuleNames =
+    typeof config.getPolyfillModuleNames === 'function' ? config.getPolyfillModuleNames() :
+    undefined;
 
   const providesModuleNodeModules =
     args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
@@ -111,7 +114,7 @@ function getPackagerServer(args, config) {
     getTransformOptions: config.getTransformOptions,
     hasteImpl: config.hasteImpl,
     platforms: defaultPlatforms.concat(args.platforms),
-    polyfillModuleNames: config.polyfillModuleNames,
+    polyfillModuleNames: polyfillModuleNames,
     postProcessModules: config.postProcessModules,
     postMinifyProcess: config.postMinifyProcess,
     projectRoots: args.projectRoots,
