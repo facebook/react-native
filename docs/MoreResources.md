@@ -20,7 +20,7 @@ If you're looking for a library that does a specific thing, check out [Awesome R
 
 ## Example Apps
 
-There are some example apps in the [`Examples/` directory](https://github.com/facebook/react-native/tree/master/Examples) on GitHub. You can run the apps on a simulator or device, and you can see the source code for these apps, which is neat.
+There are some [example apps on GitHub](https://github.com/ReactNativeNews/React-Native-Apps). You can run the apps on a simulator or device, and you can see the source code for these apps, which is neat.
 
 The folks who built the app for Facebook's F8 conference in 2016 also [open-sourced the code](https://github.com/fbsamples/f8app) and wrote up a [detailed series of tutorials](http://makeitopen.com/tutorials/building-the-f8-app/planning/). This is useful if you want a more in-depth example that's more realistic than most sample apps out there.
 
