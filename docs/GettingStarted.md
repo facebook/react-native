@@ -90,7 +90,7 @@ one to start with, since the setup is a bit different.
 
 ## Unsupported
 
-<div>Unfortunately, Apple only lets you develop for iOS on a Mac. If you want to build an iOS app but you don't have a Mac yet, you can try starting with the <a href="" onclick="display('platform', 'android')">Android</a> instructions instead.</div>
+<div>Unfortunately, Apple only lets you develop for iOS on a Mac. If you want to build an iOS app but you don't have a Mac yet, you can try starting with the <a href="javascript:void(0);" onclick="display('platform', 'android')">Android</a> instructions instead.</div>
 
 <center><img src="img/react-native-sorry-not-supported.png" width="150"></img></center>
 
