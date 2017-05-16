@@ -7,20 +7,151 @@ permalink: docs/getting-started.html
 next: tutorial
 ---
 
-Welcome to React Native! This page will help you install React Native on
-your system, so that you can build apps with it right away. If you already
-have React Native installed, you can skip ahead to the
-[Tutorial](docs/tutorial.html).
+<style>
+  .toggler li {
+    display: inline-block;
+    position: relative;
+    top: 1px;
+    padding: 10px;
+    margin: 0px 2px 0px 2px;
+    border: 1px solid #05A5D1;
+    border-bottom-color: transparent;
+    border-radius: 3px 3px 0px 0px;
+    color: #05A5D1;
+    background-color: transparent;
+    font-size: 0.99em;
+    cursor: pointer;
+  }
+  .toggler li:first-child {
+    margin-left: 0;
+  }
+  .toggler li:last-child {
+    margin-right: 0;
+  }
+  .toggler ul {
+    display: inline-block;
+    list-style-type: none;
+    margin: 0;
+    border-bottom: 1px solid #05A5D1;
+    cursor: default;
+  }
+  @media screen and (max-width: 960px) {
+    .toggler li,
+    .toggler li:first-child,
+    .toggler li:last-child {
+      display: block;
+      border-bottom-color: #05A5D1;
+      border-radius: 3px;
+      margin: 2px 0px 2px 0px;
+    }
+    .toggler ul {
+      border-bottom: 0;
+    }
+  }
+  .toggler a {
+    display: inline-block;
+    padding: 10px 5px;
+    margin: 2px;
+    border: 1px solid #05A5D1;
+    border-radius: 3px;
+    text-decoration: none !important;
+  }
+  .display-guide-quickstart .toggler .button-quickstart,
+  .display-guide-native .toggler .button-native,
+  .display-os-mac .toggler .button-mac,
+  .display-os-linux .toggler .button-linux,
+  .display-os-windows .toggler .button-windows,
+  .display-platform-ios .toggler .button-ios,
+  .display-platform-android .toggler .button-android {
+    background-color: #05A5D1;
+    color: white;
+  }
+  block { display: none; }
+  .display-guide-quickstart.display-platform-ios.display-os-mac .quickstart.ios.mac,
+  .display-guide-quickstart.display-platform-ios.display-os-linux .quickstart.ios.linux,
+  .display-guide-quickstart.display-platform-ios.display-os-windows .quickstart.ios.windows,
+  .display-guide-quickstart.display-platform-android.display-os-mac .quickstart.android.mac,
+  .display-guide-quickstart.display-platform-android.display-os-linux .quickstart.android.linux,
+  .display-guide-quickstart.display-platform-android.display-os-windows .quickstart.android.windows,    .display-guide-native.display-platform-ios.display-os-mac .native.ios.mac,
+  .display-guide-native.display-platform-ios.display-os-linux .native.ios.linux,
+  .display-guide-native.display-platform-ios.display-os-windows .native.ios.windows,
+  .display-guide-native.display-platform-android.display-os-mac .native.android.mac,
+  .display-guide-native.display-platform-android.display-os-linux .native.android.linux,
+  .display-guide-native.display-platform-android.display-os-windows .native.android.windows {
+    display: block;
+  }
+</style>
 
-## Quick Start
+This page will help you install and build your first React Native app. If you already have React Native installed, you can skip ahead to the [Tutorial](docs/tutorial.html).
+
+<div class="toggler">
+  <ul role="tablist" >
+    <li id="quickstart" class="button-quickstart" aria-selected="false" role="tab" tabindex="0" aria-controls="quickstarttab" onclick="display('guide', 'quickstart')">
+      Quick Start
+    </li>
+    <li id="native" class="button-native" aria-selected="false" role="tab" tabindex="-1" aria-controls="nativetab" onclick="display('guide', 'native')">
+      Building Projects with Native Code
+    </li>
+  </ul>
+</div>
+
+<block class="quickstart mac windows linux ios android" />
 
 [Create React Native App](https://github.com/react-community/create-react-native-app) is the easiest way to start building a new React Native application. It allows you to start a project without installing or configuring any tools to build native code.
 
-No Xcode or Android Studio installation is required. Assuming that you have Node installed, you can run the following commands to create a new React Native project called "AwesomeProject":
+No Xcode or Android Studio installation is required. You will only need to install Node if you haven't yet.
+
+### Installing Node
+
+The instructions for installing Node are a bit different depending on your development operating system.
+
+<div class="toggler">
+  <ul role="tablist" >
+    <li id="mac" class="button-mac" aria-selected="false" role="tab" tabindex="0" aria-controls="mactab" onclick="display('os', 'mac')">
+      macOS
+    </li>
+    <li id="windows" class="button-windows" aria-selected="false" role="tab" tabindex="-1" aria-controls="windowstab" onclick="display('os', 'windows')">
+      Windows
+    </li>
+    <li id="linux" class="button-linux" aria-selected="false" role="tab" tabindex="-1" aria-controls="linuxtab" onclick="display('os', 'linux')">
+      Linux
+    </li>
+  </ul>
+</div>
+
+<block class="quickstart mac ios android" />
+
+We recommend installing Node using [Homebrew](http://brew.sh/):
+
+```
+brew install node
+```
+
+<block class="quickstart windows ios android" />
+
+We recommend installing Node using [Chocolatey](https://chocolatey.org):
+
+```
+choco install nodejs.install
+```
+
+> You can find additional installation options on [Node's Downloads page](https://nodejs.org/en/download/).
+
+<block class="quickstart linux ios android" />
+
+Follow the [installation instructions for your Linux distribution](https://nodejs.org/en/download/package-manager/) to install Node 4 or newer.
+
+<block class="quickstart mac windows linux ios android" />
+
+## Creating a New Application
+
+Once you have Node installed, you can run the following commands to create a new React Native project called "AwesomeProject":
 
 ```
 npm install -g create-react-native-app
+
 create-react-native-app AwesomeProject
+
 cd AwesomeProject
 npm start
 ```
@@ -35,90 +166,59 @@ Once you've created your project and opened it in the Expo client app, you can p
 
 Because you don't build any native code with Create React Native App, it's not possible to include custom native modules beyond the React Native APIs and components that are available in the Expo client app.
 
-If you know that you'll eventually need to include your own native code, Create React Native App is still a good way to get started. In that case you'll just need to "[eject](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#ejecting-from-create-react-native-app)" eventually to create your own native builds. If you do eject, the native build instructions below will be required to continue working on your project.
+If you know that you'll eventually need to include your own native code, Create React Native App is still a good way to get started. In that case you'll just need to "[eject](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#ejecting-from-create-react-native-app)" eventually to create your own native builds. If you do eject, the "Building Projects with Native Code" instructions will be required to continue working on your project.
 
-If you're integrating React Native into an existing project, you'll want to skip Create React Native App and go directly to setting up the native build environment. See below for instructions on configuring a native build environment for React Native.
+If you're integrating React Native into an existing project, you'll want to skip Create React Native App and go directly to setting up the native build environment. Select "Building Projects with Native Code" above for instructions on configuring a native build environment for React Native.
 
-<hr style="margin-top:25px"/>
+<block class="native mac windows linux ios android" />
 
-## Building Projects with Native Code
-
-Follow these instructions if you need to build native code in your project. For example, if you "ejected" from Create React Native app, or if you are integrating React Native into an existing application, you'll need this section.
+<p>Follow these instructions if you need to build native code in your project. For example, if you are integrating React Native into an existing application, or if you "ejected" from <a href="docs/getting-started.html" onclick="display('guide', 'quickstart')">Create React Native App</a>, you'll need this section.</p>
 
 The instructions are a bit different depending on your development operating system, and whether you want to start developing for iOS or Android. If you want to develop for both iOS and Android, that's fine - you just have to pick
 one to start with, since the setup is a bit different.
 
 <div class="toggler">
-  <style>
-    .toggler a {
-      display: inline-block;
-      padding: 10px 5px;
-      margin: 2px;
-      border: 1px solid #05A5D1;
-      border-radius: 3px;
-      text-decoration: none !important;
-    }
-    .display-os-mac .toggler .button-mac,
-    .display-os-linux .toggler .button-linux,
-    .display-os-windows .toggler .button-windows,
-    .display-platform-ios .toggler .button-ios,
-    .display-platform-android .toggler .button-android {
-      background-color: #05A5D1;
-      color: white;
-    }
-    block { display: none; }
-    .display-platform-ios.display-os-mac .ios.mac,
-    .display-platform-ios.display-os-linux .ios.linux,
-    .display-platform-ios.display-os-windows .ios.windows,
-    .display-platform-android.display-os-mac .android.mac,
-    .display-platform-android.display-os-linux .android.linux,
-    .display-platform-android.display-os-windows .android.windows {
-      display: block;
-    }
-  </style>
-  <span>Mobile OS:</span>
-  <a href="javascript:void(0);" class="button-ios" onclick="display('platform', 'ios')">iOS</a>
-  <a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
-  <br />
   <span>Development OS:</span>
   <a href="javascript:void(0);" class="button-mac" onclick="display('os', 'mac')">macOS</a>
-  <a href="javascript:void(0);" class="button-linux" onclick="display('os', 'linux')">Linux</a>
   <a href="javascript:void(0);" class="button-windows" onclick="display('os', 'windows')">Windows</a>
+  <a href="javascript:void(0);" class="button-linux" onclick="display('os', 'linux')">Linux</a>
+  <br />
+  <span>Target OS:</span>
+  <a href="javascript:void(0);" class="button-ios" onclick="display('platform', 'ios')">iOS</a>
+  <a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
 </div>
 
-<block class="linux windows ios" />
+<block class="native linux windows ios" />
 
 ## Unsupported
 
-<div>Unfortunately, Apple only lets you develop for iOS on a Mac. If you want to build an iOS app but you don't have a Mac yet, you can try starting with the <a href="" onclick="display('platform', 'android')">Android</a> instructions instead.</div>
+<blockquote><p>A Mac is required to build projects with native code for iOS. You can follow the <a href="docs/getting-started.html" onclick="display('guide', 'quickstart')">Quick Start</a> to learn how to build your app using Create React Native App instead.</p></blockquote>
 
-<center><img src="img/react-native-sorry-not-supported.png" width="150"></img></center>
-
-<block class="mac ios" />
+<block class="native mac ios" />
 
 ## Installing Dependencies
 
 You will need Node, Watchman, the React Native command line interface, and Xcode.
 
-<block class="mac android" />
+<block class="native mac android" />
 
 ## Installing Dependencies
 
 You will need Node, Watchman, the React Native command line interface, a JDK, and Android Studio.
 
-<block class="linux android" />
+<block class="native linux android" />
 
 ## Installing Dependencies
 
 You will need Node, the React Native command line interface, a JDK, and Android Studio.
 
-<block class="windows android" />
+<block class="native windows android" />
 
 ## Installing Dependencies
 
 You will need Node, the React Native command line interface, Python2, a JDK, and Android Studio.
 
-<block class="mac ios android" />
+<block class="native mac ios android" />
 
 ### Node, Watchman
 
@@ -133,13 +233,13 @@ If you have already installed Node on your system, make sure it is version 4 or 
 
 [Watchman](https://facebook.github.io/watchman) is a tool by Facebook for watching changes in the filesystem. It is highly recommended you install it for better performance.
 
-<block class="linux android" />
+<block class="native linux android" />
 
 ### Node
 
 Follow the [installation instructions for your Linux distribution](https://nodejs.org/en/download/package-manager/) to install Node 4 or newer.
 
-<block class='windows android' />
+<block class='native windows android' />
 
 ### Node, Python2, JDK
 
@@ -157,23 +257,9 @@ choco install jdk8
 
 If you have already installed Node on your system, make sure it is version 4 or newer. If you already have a JDK on your system, make sure it is version 8 or newer.
 
-> You can find additional installation options on [Node.js's Downloads page](https://nodejs.org/en/download/).
+> You can find additional installation options on [Node's Downloads page](https://nodejs.org/en/download/).
 
-<block class="mac ios android" />
-
-### The React Native CLI
-
-Node comes with npm, which lets you install the React Native command line interface.
-
-Run the following command in a Terminal:
-
-```
-npm install -g react-native-cli
-```
-
-> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
-
-<block class="windows linux android" />
+<block class="native mac ios android" />
 
 ### The React Native CLI
 
@@ -187,7 +273,21 @@ npm install -g react-native-cli
 
 > If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
 
-<block class="mac ios" />
+<block class="native windows linux android" />
+
+### The React Native CLI
+
+Node comes with npm, which lets you install the React Native command line interface.
+
+Run the following command in a Command Prompt or shell:
+
+```
+npm install -g react-native-cli
+```
+
+> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
+
+<block class="native mac ios" />
 
 ### Xcode
 
@@ -195,31 +295,31 @@ The easiest way to install Xcode is via the [Mac App Store](https://itunes.apple
 
 If you have already installed Xcode on your system, make sure it is version 8 or higher.
 
+#### Command Line Tools
+
 You will also need to install the Xcode Command Line Tools. Open Xcode, then choose "Preferences..." from the Xcode menu. Go to the Locations panel and install the tools by selecting the most recent version in the Command Line Tools dropdown.
 
 ![Xcode Command Line Tools](img/XcodeCommandLineTools.png)
 
-<block class="mac linux windows android" />
+<block class="native mac linux windows android" />
 
 ### Android Development Environment
 
 Setting up your development environment can be somewhat tedious if you're new to Android development. If you're already familiar with Android development, there are a few things you may need to configure. In either case, please make sure to carefully follow the next few steps.
 
-<block class="mac linux android" />
+<block class="native mac linux android" />
 
 > Android Studio requires a recent version of the [Java SE Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html). Go ahead and install JDK 8 or newer if needed.
 
-<block class="mac linux windows android" />
+<block class="native mac linux windows android" />
 
-#### 1. Download and install Android Studio
+#### 1. Install Android Studio
 
-Android Studio provides the Android SDK and AVD (emulator) required to run and test your React Native apps. [Download Android Studio](https://developer.android.com/studio/index.html), then follow the [installation instructions](https://developer.android.com/studio/install.html). Choose `Custom` installation when prompted by the Setup Wizard, and proceed to the next step.
+Android Studio provides the Android SDK and Android Virtual Device (emulator) required to run and test your React Native apps. Download and install [Android Studio](https://developer.android.com/studio/index.html).
 
-<block class="mac windows android" />
+Once the installation process is completed, launch Android Studio. Choose "Custom" when prompted to select an installation type. Make sure the boxes next to all of the following are checked:
 
-#### 2. Install the AVD and HAXM
-
-Android Virtual Devices allow you to run Android apps on your computer without the need for an actual Android phone or tablet. Choose `Custom` installation when running Android Studio for the first time. Make sure the boxes next to all of the following are checked:
+<block class="native mac windows android" />
 
 - `Android SDK`
 - `Android SDK Platform`
@@ -228,13 +328,7 @@ Android Virtual Devices allow you to run Android apps on your computer without t
 
 Then, click "Next" to install all of these components.
 
-> If you've already installed Android Studio before, you can still install HAXM ([Windows](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-windows)|[Mac](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-mac-os-x)) without performing a custom installation.
-
-<block class="linux android" />
-
-#### 2. Install the AVD and configure VM acceleration
-
-Android Virtual Devices allow you to run Android apps on your computer without the need for an actual Android phone or tablet. Choose `Custom` installation when running Android Studio for the first time. Make sure the boxes next to all of the following are checked:
+<block class="native linux android" />
 
 - `Android SDK`
 - `Android SDK Platform`
@@ -242,13 +336,21 @@ Android Virtual Devices allow you to run Android apps on your computer without t
 
 Click "Next" to install all of these components, then [configure VM acceleration](https://developer.android.com/studio/run/emulator-acceleration.html#vm-linux) on your system.
 
-<block class="mac linux windows android" />
+<block class="native windows android" />
 
-#### 3. Install the Android 6.0 (Marshmallow) SDK
+> You may also install Intel ® HAXM by following [these instructions](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-windows).
 
-Android Studio installs the most recent Android SDK by default. React Native, however, requires the `Android 6.0 (Marshmallow)` SDK. To install it, launch the SDK Manager, click on "Configure" > "SDK Manager" in the "Welcome to Android Studio" screen.
+<block class="native mac android" />
 
-> The SDK Manager can also be found within the Android Studio "Preferences" menu, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
+> You may also install Intel ® HAXM by following [these instructions](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-mac-os-x).
+
+<block class="native windows mac linux android" />
+
+#### 2. Install the Android 6.0 (Marshmallow) SDK
+
+Android Studio installs the most recent Android SDK by default. React Native, however, requires the `Android 6.0 (Marshmallow)` SDK. You can use the SDK Manager to install additional SDK platforms. To access the SDK Manager, click on "Configure", then select "SDK Manager" from the "Welcome to Android Studio" screen.
+
+> The SDK Manager can also be found within the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
 Select the "SDK Platforms" tab from within the SDK Manager, then check the box next to "Show Package Details" in the bottom right corner. Look for and expand the `Android 6.0 (Marshmallow)` entry, then make sure the following items are all checked:
 
@@ -257,19 +359,45 @@ Select the "SDK Platforms" tab from within the SDK Manager, then check the box n
 - `Intel x86 Atom_64 System Image`
 - `Google APIs Intel x86 Atom_64 System Image`
 
-![Android SDK Manager](img/AndroidSDKManager.png)
+<block class="native mac android" />
 
-Next, select the "SDK Tools" tab and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build Tools" entry, then make sure that `Android SDK Build-Tools 23.0.1` is selected.
+![Android SDK Manager](img/AndroidSDKManagerMacOS.png)
+
+<block class="native windows android" />
+
+![Android SDK Manager](img/AndroidSDKManagerWindows.png)
+
+<block class="native windows mac linux android" />
+
+Next, select the "SDK Tools" tab and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build-Tools" entry, then make sure that `23.0.1` is selected.
+
+<block class="native mac android" />
+
+![Android SDK Manager - 23.0.1 Build Tools](img/AndroidSDKManagerSDKToolsMacOS.png)
+
+<block class="native windows android" />
+
+![Android SDK Manager - 23.0.1 Build Tools](img/AndroidSDKManagerSDKToolsWindows.png)
+
+<block class="native windows mac linux android" />
 
 Finally, click "Apply" to download and install the Android SDK and related build tools.
 
-<block class="mac windows linux android" />
+<block class="native mac android" />
 
-#### 4. Set up the ANDROID_HOME environment variable
+![Android SDK Manager - Installs](img/AndroidSDKManagerInstallsMacOS.png)
+
+<block class="native windows android" />
+
+![Android SDK Manager - Installs](img/AndroidSDKManagerInstallsWindows.png)
+
+<block class="native mac windows linux android" />
+
+#### 3. Set up the ANDROID_HOME environment variable
 
 The React Native command line interface requires the `ANDROID_HOME` environment variable to be set up.
 
-<block class="mac android" />
+<block class="native mac android" />
 
 Add the following lines to your `~/.profile` (or equivalent) config file:
 
@@ -281,9 +409,9 @@ export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 
 Type `source ~/.profile` to load the config into your current shell.
 
-> Please make sure you export the correct path for `ANDROID_HOME`. If you installed the Android SDK using Homebrew, it would be located at `/usr/local/opt/android-sdk`.
+> Please make sure you export the correct path for `ANDROID_HOME`. If you installed the Android SDK using Homebrew, it would be located at `/usr/local/opt/android-sdk`. You can find the actual location of the SDK in the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
-<block class="linux android" />
+<block class="native linux android" />
 
 Add the following lines to your `~/.profile` (or equivalent) config file:
 
@@ -295,20 +423,20 @@ export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 
 Type `source ~/.profile` to load the config into your current shell.
 
-> Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio.
+> Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio. You can find the actual location of the SDK in the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
-<block class="windows android" />
+<block class="native windows android" />
 
-Go to **Control Panel** → **System and Security** → **System** → **Change settings** →
-**Advanced System Settings** → **Environment variables** → **New**, then enter the path to your Android SDK.
+Open the System pane under **System and Security** in the Control Panel, then click on **Change settings...**. Open the **Advanced** tab and click on **Environment Variables...**. Click on **New...** to create a new `ANDROID_HOME` user variable that points to the path to your Android SDK.
 
-![env variable](img/react-native-android-sdk-environment-variable-windows.png)
 
-Restart the Command Prompt to apply the new environment variable.
+![ANDROID_HOME Environment Variable](img/AndroidEnvironmentVariableANDROID_HOME.png)
 
-> Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio.
+You can find the actual location of the SDK in the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
-<block class="linux android" />
+Open a new Command Prompt window to ensure the new environment variable is loaded.
+
+<block class="native linux android" />
 
 ### Watchman (optional)
 
@@ -317,17 +445,25 @@ Follow the [Watchman installation guide](https://facebook.github.io/watchman/doc
 > [Watchman](https://facebook.github.io/watchman/docs/install.html) is a tool by Facebook for watching
 changes in the filesystem. It is highly recommended you install it for better performance, but it's alright to skip this if you find the process to be tedious.
 
-<block class="mac windows linux android" />
+<block class="native mac windows linux android" />
 
 ## Starting the Android Virtual Device
 
+You can see the list of available AVDs by opening the "AVD Manager" from within Android Studio:
+
 ![Android Studio AVD Manager](img/react-native-tools-avd.png)
 
-You can see the list of available AVDs by opening the "AVD Manager" from within Android Studio.
+<block class="native windows linux android" />
+
+Launch the default AVD before proceeding to the next step.
+
+<block class="native mac android" />
 
 Once in the "AVD Manager", select your AVD and click "Edit...". Choose "Android 6.0 - API Level 23" under Device, and "Intel Atom (x86_64)" under CPU/ABI. Click OK, then select your new AVD and click "Start...", and finally, "Launch".
 
 ![Android AVD Configuration](img/AndroidAVDConfiguration.png)
+
+<block class="native mac windows linux android" />
 
 > It is very common to run into an issue where Android Studio fails to create a default AVD. You may follow the [Android Studio User Guide](https://developer.android.com/studio/run/managing-avds.html) to create a new AVD manually if needed.
 
@@ -335,17 +471,37 @@ Once in the "AVD Manager", select your AVD and click "Edit...". Choose "Android 
 
 If you have a physical Android device, you can use it for development in place of an AVD. Plug it in to your computer using a USB cable and [enable USB debugging](https://developer.android.com/training/basics/firstapp/running-app.html) before proceeding to the next step.
 
-<block class="mac ios android" />
+<block class="native mac ios android" />
 
-## Testing your React Native Installation
+## Creating a New Application
 
-<block class="mac ios" />
-
-Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-ios` inside the newly created folder.
+Use the React Native command line interface to generate a new React Native project called "AwesomeProject":
 
 ```
-# skip this first command if you ejected from Create React Native App
 react-native init AwesomeProject
+```
+
+> This is not necessary if you are integrating React Native into an existing application, or if you "ejected" from Create React Native App.
+
+<block class="native windows linux android" />
+
+## Creating a New Application
+
+Use the React Native command line interface to generate a new React Native project called "AwesomeProject":
+
+```
+react-native init AwesomeProject
+```
+
+> This is not necessary if you are integrating React Native into an existing application, or if you "ejected" from Create React Native App.
+
+<block class="native mac ios" />
+
+## Running your React Native Application
+
+Run `react-native run-ios` inside your React Native project folder:
+
+```
 cd AwesomeProject
 react-native run-ios
 ```
@@ -356,40 +512,40 @@ You should see your new app running in the iOS Simulator shortly.
 
 `react-native run-ios` is just one way to run your app. You can also run it directly from within Xcode or [Nuclide](https://nuclide.io/).
 
-<block class="mac android" />
+<block class="native mac android" />
 
-Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder:
+## Running your React Native Application
+
+Run `react-native run-android` inside your React Native project folder:
 
 ```
-# skip this first command if you ejected from Create React Native App
-react-native init AwesomeProject
 cd AwesomeProject
 react-native run-android
 ```
 
 If everything is set up correctly, you should see your new app running in your Android emulator shortly.
 
-![AwesomeProject on Android](img/AndroidSuccess.png)
+![AwesomeProject on Android](img/AndroidSuccessMacOS.png)
 
 `react-native run-android` is just one way to run your app - you can also run it directly from within Android Studio or [Nuclide](https://nuclide.io/).
 
-<block class="mac ios android" />
+<block class="native mac ios android" />
 
 ### Modifying your app
 
 Now that you have successfully run the app, let's modify it.
 
-<block class="mac ios" />
+<block class="native mac ios" />
 
 - Open `index.ios.js` in your text editor of choice and edit some lines.
 - Hit `Command⌘ + R` in your iOS Simulator to reload the app and see your change!
 
-<block class="mac android" />
+<block class="native mac android" />
 
 - Open `index.android.js` in your text editor of choice and edit some lines.
 - Press the `R` key twice or select `Reload` from the Developer Menu to see your change!
 
-<block class="mac ios android" />
+<block class="native mac ios android" />
 
 ### That's it!
 
@@ -397,39 +553,24 @@ Congratulations! You've successfully run and modified your first React Native ap
 
 <center><img src="img/react-native-congratulations.png" width="150"></img></center>
 
-<block class="windows android" />
+<block class="native windows linux android" />
 
-## Testing your React Native Installation
+## Running your React Native Application
 
-Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder:
+Run `react-native run-android` inside your React Native project folder:
 
 ```
-# skip this first command if you ejected from Create React Native App
-react-native init AwesomeProject
 cd AwesomeProject
 react-native run-android
 ```
 
-<block class="linux android" />
-
-## Testing your React Native Installation
-
-Use the React Native command line interface to generate a new React Native project called "AwesomeProject", then run `react-native run-android` inside the newly created folder.
-
-```
-# skip this first command if you ejected from Create React Native App
-react-native init AwesomeProject
-cd AwesomeProject
-react-native run-android
-```
-
-<block class="windows linux android" />
+<block class="native windows linux android" />
 
 If everything is set up correctly, you should see your new app running in your Android emulator shortly.
 
-![AwesomeProject on Android](img/AndroidSuccess.png)
+![AwesomeProject on Android](img/AndroidSuccessWindows.png)
 
-<block class="windows linux android" />
+<block class="native windows linux android" />
 
 ### Modifying your app
 
@@ -444,7 +585,7 @@ Congratulations! You've successfully run and modified a React Native app.
 
 <center><img src="img/react-native-congratulations.png" width="150"></img></center>
 
-<block class="mac ios" />
+<block class="native mac ios" />
 
 ## Now What?
 
@@ -455,7 +596,7 @@ Congratulations! You've successfully run and modified a React Native app.
 - If you're curious to learn more about React Native, continue on
 to the [Tutorial](docs/tutorial.html).
 
-<block class="windows linux mac android" />
+<block class="native windows linux mac android" />
 
 ## Now What?
 
@@ -527,6 +668,7 @@ if (window.location.hash !== '' && window.location.hash !== 'content') { // cont
             break; // assume we don't have anything.
           }
           // We would have broken out if both targetPlatform and devOS hadn't been filled.
+          display('guide', 'native');
           display('os', devOS);
           display('platform', targetPlatform);
           foundHash = true;
@@ -541,6 +683,7 @@ if (window.location.hash !== '' && window.location.hash !== 'content') { // cont
 if (!foundHash) {
   var isMac = navigator.platform === 'MacIntel';
   var isWindows = navigator.platform === 'Win32';
+  display('guide', 'quickstart');
   display('os', isMac ? 'mac' : (isWindows ? 'windows' : 'linux'));
   display('platform', isMac ? 'ios' : 'android');
 }
