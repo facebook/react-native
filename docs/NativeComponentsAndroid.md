@@ -5,7 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/native-components-android.html
 banner: ejected
-next: headless-js-android
+next: custom-webview-android
 previous: native-modules-android
 ---
 
