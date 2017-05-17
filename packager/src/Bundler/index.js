@@ -338,7 +338,7 @@ class Bundler {
     unbundle,
   }: {
     assetPlugins?: Array<string>,
-    bundle: Bundle,
+    bundle: Bundle | HMRBundle,
     dev: boolean,
     entryFile?: string,
     entryModuleOnly?: boolean,
