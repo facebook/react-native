@@ -18,7 +18,7 @@ as "🍕🍕🍕".
 import React, { Component } from 'react';
 import { AppRegistry, Text, TextInput, View } from 'react-native';
 
-class PizzaTranslator extends Component {
+export default class PizzaTranslator extends Component {
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -40,6 +40,7 @@ class PizzaTranslator extends Component {
   }
 }
 
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('PizzaTranslator', () => PizzaTranslator);
 ```
 
