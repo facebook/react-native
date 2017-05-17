@@ -58,6 +58,10 @@ Now, whenever you [start your service][0], e.g. as a periodic task or in respons
 * If you start your service from a `BroadcastReceiver`, make sure to call `HeadlessJsTaskService.acquireWakelockNow()` before returning from `onReceive()`.
 
 ## Example Usage
+
+Service can be started from Java API. First you need to decide when the service should be started and implement your solution accordingly. Here is a simple example that reacts to network connection change.
+
+Following lines shows part of Android manifest file for registering broadcast receiver.   
 ```xml
 <receiver android:name=".NetworkChangeReceiver" >
   <intent-filter>
@@ -65,6 +69,8 @@ Now, whenever you [start your service][0], e.g. as a periodic task or in respons
   </intent-filter>
 </receiver>
 ```
+
+Broadcast receiver then handles intent that was broadcasted in onReceive function. This is a great place to check whether your app is on foreground or not. If app is not on foreground we can prepare our intent to be started, with no information or additional information bundled using putExta (keep in mind bundle can handle only parcelable values). In the end service is started and wakelock is acquired.
 
 ```java
 public class NetworkChangeReceiver extends BroadcastReceiver {
