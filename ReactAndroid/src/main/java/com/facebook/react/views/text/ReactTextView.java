@@ -75,10 +75,11 @@ public class ReactTextView extends TextView implements ReactCompoundView {
       if (!FloatUtil.floatsEqual(mLetterSpacing, nextLetterSpacing)) {
         mLetterSpacing = nextLetterSpacing;
         if(Float.isNaN(mLetterSpacing)) {
-          setLetterSpacing((float)0.0);
+          setLetterSpacing((float) 0.0);
         } else {
-          //calculate EM from proper font pixels
-          setLetterSpacing(1+(mLetterSpacing-PixelUtil.toDIPFromPixel(fontSize))/PixelUtil.toDIPFromPixel(fontSize));
+          // Calculate EM from proper font pixels
+          // This does PX to EM conversions since Android does letterSpacing in EM
+          setLetterSpacing(1 + (mLetterSpacing - PixelUtil.toDIPFromPixel(fontSize)) / PixelUtil.toDIPFromPixel(fontSize));
         }
       }
     }
