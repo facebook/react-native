@@ -168,7 +168,7 @@ Access it by selecting Perf Monitor from the Debug menu.
 
 For iOS, Instruments is an invaluable tool, and on Android you should learn to use [`systrace`](docs/performance.html#profiling-android-ui-performance-with-systrace).
 
-You can also use `RCTRenderingPerf.js` to get insights into where React is spending time when rendering your components. Its behaviour is similar to that of react's [`react-addons-perf`](https://facebook.github.io/react/docs/perf.html)
+You can also use `RCTRenderingPerf.js` to get insights into where React is spending time when rendering your components. Its behaviour is similar to that of react's [`react-addons-perf`](https://facebook.github.io/react/docs/perf.html):
 
 ```js
 import PerfMonitor from 'react-native/Libraries/Performance/RCTRenderingPerf';
@@ -178,8 +178,8 @@ componentDidMount() {
   PerfMonitor.toggle();
   PerfMonitor.start();
   setTimeout(() => {
-      PerfMonitor.stop();
-  },5000);
+    PerfMonitor.stop();
+  }, 5000);
 
 }
 ```
