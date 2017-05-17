@@ -162,9 +162,9 @@ class Device {
         this._handlers.delete(name);
         reject(new Error('Timeout waiting for device'));
       }, DEVICE_TIMEOUT);
-      this._handlers.set(name, (...args) => {
+      this._handlers.set(name, arg => {
         clearTimeout(timerId);
-        fulfill(...args);
+        fulfill(arg);
       });
     });
     this._send({event: name});

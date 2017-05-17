@@ -44,4 +44,20 @@ public class YogaValue {
   public int hashCode() {
     return Float.floatToIntBits(value) + unit.intValue();
   }
+
+  @Override
+  public String toString() {
+    switch (unit) {
+      case UNDEFINED:
+        return "undefined";
+      case POINT:
+        return Float.toString(value);
+      case PERCENT:
+        return value + "%";
+      case AUTO:
+        return "auto";
+      default:
+        throw new IllegalStateException();
+    }
+  }
 }

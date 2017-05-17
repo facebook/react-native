@@ -28,18 +28,18 @@ class BundleBase {
   _assets: Array<mixed>;
   _finalized: boolean;
   _mainModuleId: number | void;
-  _modules: Array<ModuleTransport>;
   _source: ?string;
+  __modules: Array<ModuleTransport>;
 
   constructor() {
     this._finalized = false;
-    this._modules = [];
+    this.__modules = [];
     this._assets = [];
     this._mainModuleId = undefined;
   }
 
   isEmpty() {
-    return this._modules.length === 0 && this._assets.length === 0;
+    return this.__modules.length === 0 && this._assets.length === 0;
   }
 
   getMainModuleId() {
@@ -55,7 +55,7 @@ class BundleBase {
       throw new Error('Expected a ModuleTransport object');
     }
 
-    return this._modules.push(module) - 1;
+    return this.__modules.push(module) - 1;
   }
 
   replaceModuleAt(index: number, module: ModuleTransport) {
@@ -63,11 +63,11 @@ class BundleBase {
       throw new Error('Expeceted a ModuleTransport object');
     }
 
-    this._modules[index] = module;
+    this.__modules[index] = module;
   }
 
   getModules() {
-    return this._modules;
+    return this.__modules;
   }
 
   getAssets() {
@@ -80,7 +80,7 @@ class BundleBase {
 
   finalize(options: FinalizeOptions) {
     if (!options.allowUpdates) {
-      Object.freeze(this._modules);
+      Object.freeze(this.__modules);
       Object.freeze(this._assets);
     }
 
@@ -94,7 +94,7 @@ class BundleBase {
       return this._source;
     }
 
-    this._source = this._modules.map(module => module.code).join('\n');
+    this._source = this.__modules.map(module => module.code).join('\n');
     return this._source;
   }
 

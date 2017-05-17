@@ -10,13 +10,15 @@
  */
 'use strict';
 
+const meta = require('../../../../local-cli/bundle/output/meta');
+
 const {createIndexMap} = require('./source-map');
 const {addModuleIdsToModuleWrapper} = require('./util');
 
 import type {OutputFn} from '../types.flow';
 
 module.exports = (
-  (modules, filename, idForPath) => {
+  (modules, filename, idForPath, sourceMapPath) => {
     let code = '';
     let line = 0;
     const sections = [];
@@ -37,7 +39,15 @@ module.exports = (
       line += countLines(moduleCode);
     }
 
-    return {code, map: createIndexMap({file: filename, sections})};
+    if (sourceMapPath) {
+      code += `/*# sourceMappingURL=${sourceMapPath}*/`;
+    }
+
+    return {
+      code,
+      extraFiles: [[`${filename}.meta`, meta(code)]],
+      map: createIndexMap({file: filename, sections}),
+    };
   }: OutputFn);
 
 const reLine = /^/gm;

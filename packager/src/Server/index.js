@@ -12,12 +12,12 @@
 'use strict';
 
 const AssetServer = require('../AssetServer');
-const getPlatformExtension = require('../node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const MultipartResponse = require('./MultipartResponse');
 
 const defaults = require('../../defaults');
 const mime = require('mime-types');
+const parsePlatformFilePath = require('../node-haste/lib/parsePlatformFilePath');
 const path = require('path');
 const symbolicate = require('./symbolicate');
 const terminal = require('../lib/terminal');
@@ -68,14 +68,14 @@ type Options = {
   platforms?: Array<string>,
   polyfillModuleNames?: Array<string>,
   postProcessModules?: PostProcessModules,
-  postMinifyProcess?: PostMinifyProcess,
-  projectRoots: Array<string>,
+  postMinifyProcess: PostMinifyProcess,
+  projectRoots: $ReadOnlyArray<string>,
   providesModuleNodeModules?: Array<string>,
   reporter: Reporter,
   resetCache?: boolean,
   silent?: boolean,
   +sourceExts: ?Array<string>,
-  transformModulePath?: string,
+  +transformModulePath: string,
   transformTimeoutInterval?: number,
   watch?: boolean,
 };
@@ -124,18 +124,18 @@ class Server {
     platforms: Array<string>,
     polyfillModuleNames: Array<string>,
     postProcessModules?: PostProcessModules,
-    postMinifyProcess?: PostMinifyProcess,
-    projectRoots: Array<string>,
+    postMinifyProcess: PostMinifyProcess,
+    projectRoots: $ReadOnlyArray<string>,
     providesModuleNodeModules?: Array<string>,
     reporter: Reporter,
     resetCache: boolean,
     silent: boolean,
     +sourceExts: Array<string>,
-    transformModulePath: void | string,
+    +transformModulePath: string,
     transformTimeoutInterval: ?number,
     watch: boolean,
   };
-  _projectRoots: Array<string>;
+  _projectRoots: $ReadOnlyArray<string>;
   _bundles: {};
   _changeWatchers: Array<{
     req: IncomingMessage,
@@ -148,6 +148,7 @@ class Server {
   _hmrFileChangeListener: ?(type: string, filePath: string) => mixed;
   _reporter: Reporter;
   _symbolicateInWorker: Symbolicate;
+  _platforms: Set<string>;
 
   constructor(options: Options) {
     this._opts = {
@@ -181,6 +182,7 @@ class Server {
     this._bundles = Object.create(null);
     this._changeWatchers = [];
     this._fileChangeListeners = [];
+    this._platforms = new Set(this._opts.platforms);
 
     this._assetServer = new AssetServer({
       assetExts: this._opts.assetExts,
@@ -281,7 +283,7 @@ class Server {
   getShallowDependencies(options: DependencyOptions): Promise<Array<Module>> {
     return Promise.resolve().then(() => {
       const platform = options.platform != null
-        ? options.platform : getPlatformExtension(options.entryFile);
+        ? options.platform : parsePlatformFilePath(options.entryFile, this._platforms).platform;
       const {entryFile, dev, minify, hot} = options;
       return this._bundler.getShallowDependencies(
         {entryFile, platform, dev, minify, hot, generateSourceMaps: false},
@@ -296,7 +298,7 @@ class Server {
   getDependencies(options: DependencyOptions): Promise<ResolutionResponse<Module, *>> {
     return Promise.resolve().then(() => {
       const platform = options.platform != null
-        ? options.platform : getPlatformExtension(options.entryFile);
+        ? options.platform : parsePlatformFilePath(options.entryFile, this._platforms).platform;
       const {entryFile, dev, minify, hot} = options;
       return this._bundler.getDependencies(
         {entryFile, platform, dev, minify, hot, generateSourceMaps: false},
@@ -550,6 +552,7 @@ class Server {
               changedModules.forEach(m => {
                 response.setResolvedDependencyPairs(
                   m,
+                  /* $FlowFixMe: should be enforced not to be null. */
                   dependencyPairs.get(m.path),
                   {ignoreFinalized: true},
                 );
@@ -832,7 +835,7 @@ class Server {
     // try to get the platform from the url
     /* $FlowFixMe: `query` could be empty for an invalid URL */
     const platform = urlObj.query.platform ||
-      getPlatformExtension(pathname);
+      parsePlatformFilePath(pathname, this._platforms).platform;
 
     /* $FlowFixMe: `query` could be empty for an invalid URL */
     const assetPlugin = urlObj.query.assetPlugin;

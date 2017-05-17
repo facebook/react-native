@@ -149,7 +149,7 @@ var TouchableHighlight = React.createClass({
     ensureComponentIsNative(this.refs[CHILD_REF]);
   },
 
-  componentWillMount: function() {
+  componentWillUnmount: function() {
     this._isMounted = false;
   },
 

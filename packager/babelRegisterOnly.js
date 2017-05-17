@@ -19,13 +19,14 @@ function registerOnly(onlyList) {
 function config(onlyList) {
   _only = _only.concat(onlyList);
   return {
-    presets: ['es2015-node'],
+    presets: [require('babel-preset-es2015-node')],
     plugins: [
       'transform-flow-strip-types',
       'syntax-trailing-function-commas',
       'transform-object-rest-spread',
       'transform-async-to-generator',
-    ],
+      'transform-class-properties',
+    ].map(pluginName => require(`babel-plugin-${pluginName}`)),
     only: _only,
     retainLines: true,
     sourceMaps: 'inline',

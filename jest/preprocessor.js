@@ -34,11 +34,16 @@ module.exports = {
       ).code;
     }
 
-    return transformer.transform(src, file, {
-      dev: true,
-      inlineRequires: true,
-      platform: '',
-      projectRoot: '',
+    return transformer.transform({
+      filename: file,
+      localPath: file,
+      options: {
+        dev: true,
+        inlineRequires: true,
+        platform: '',
+        projectRoot: '',
+      },
+      src,
     }).code;
   },
 

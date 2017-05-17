@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @format
  */
 
 'use strict';
@@ -22,14 +23,19 @@ const jsonStableStringify = require('json-stable-stringify');
 
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
-import type {TransformedCode, Options as WorkerOptions} from '../JSTransformer/worker/worker';
+import type {
+  TransformedCode,
+  Options as WorkerOptions,
+} from '../JSTransformer/worker/worker';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {MappingsMap} from '../lib/SourceMap';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {ReadTransformProps} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
-import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
+import type DependencyGraphHelpers
+  from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
+import type {LocalPath} from './lib/toLocalPath';
 
 export type ReadResult = {
   +code: string,
@@ -51,12 +57,12 @@ export type TransformCode = (
 ) => Promise<TransformedCode>;
 
 export type HasteImpl = {
-  getHasteName(filePath: string): (string | void),
+  getHasteName(filePath: string): string | void,
   // This exists temporarily to enforce consistency while we deprecate
   // @providesModule.
   enforceHasteNameMatches?: (
     filePath: string,
-    expectedName: (string | void),
+    expectedName: string | void,
   ) => void,
 };
 
@@ -69,6 +75,7 @@ export type ConstructorArgs = {
   depGraphHelpers: DependencyGraphHelpers,
   globalTransformCache: ?GlobalTransformCache,
   file: string,
+  localPath: LocalPath,
   moduleCache: ModuleCache,
   options: Options,
   reporter: Reporter,
@@ -78,8 +85,10 @@ export type ConstructorArgs = {
 
 type DocBlock = {+[key: string]: string};
 
-class Module {
+const TRANSFORM_CACHE = new TransformCache();
 
+class Module {
+  localPath: LocalPath;
   path: string;
   type: string;
 
@@ -100,6 +109,7 @@ class Module {
 
   constructor({
     depGraphHelpers,
+    localPath,
     file,
     getTransformCacheKey,
     globalTransformCache,
@@ -112,6 +122,7 @@ class Module {
       throw new Error('Expected file to be absolute path but got ' + file);
     }
 
+    this.localPath = localPath;
     this.path = file;
     this.type = 'Module';
 
@@ -127,8 +138,8 @@ class Module {
     this._readResultsByOptionsKey = new Map();
   }
 
-  isHaste(): Promise<boolean> {
-    return Promise.resolve().then(() => this._getHasteName() != null);
+  isHaste(): boolean {
+    return this._getHasteName() != null;
   }
 
   getCode(transformOptions: WorkerOptions) {
@@ -153,14 +164,16 @@ class Module {
         return this.path;
       }
 
-      return p.getName()
-        .then(packageName => {
-          if (!packageName) {
-            return this.path;
-          }
+      return p.getName().then(packageName => {
+        if (!packageName) {
+          return this.path;
+        }
 
-          return joinPath(packageName, relativePath(p.root, this.path)).replace(/\\/g, '/');
-        });
+        return joinPath(packageName, relativePath(p.root, this.path)).replace(
+          /\\/g,
+          '/',
+        );
+      });
     });
   }
 
@@ -294,13 +307,18 @@ class Module {
       return;
     }
     _globalCache.fetch(cacheProps).then(
-      globalCachedResult => process.nextTick(() => {
-        if (globalCachedResult == null) {
-          this._transformAndStoreCodeGlobally(cacheProps, _globalCache, callback);
-          return;
-        }
-        callback(undefined, globalCachedResult);
-      }),
+      globalCachedResult =>
+        process.nextTick(() => {
+          if (globalCachedResult == null) {
+            this._transformAndStoreCodeGlobally(
+              cacheProps,
+              _globalCache,
+              callback,
+            );
+            return;
+          }
+          callback(undefined, globalCachedResult);
+        }),
       globalCacheError => process.nextTick(() => callback(globalCacheError)),
     );
   }
@@ -315,7 +333,7 @@ class Module {
         return;
       }
       invariant(result != null, 'missing result');
-      TransformCache.writeSync({...cacheProps, result});
+      TRANSFORM_CACHE.writeSync({...cacheProps, result});
       callback(undefined, result);
     });
   }
@@ -358,13 +376,22 @@ class Module {
     transformOptions: WorkerOptions,
     transformOptionsKey: string,
   ): CachedReadResult {
-    const cacheProps = this._getCacheProps(transformOptions, transformOptionsKey);
-    const cachedResult = TransformCache.readSync(cacheProps);
+    const cacheProps = this._getCacheProps(
+      transformOptions,
+      transformOptionsKey,
+    );
+    const cachedResult = TRANSFORM_CACHE.readSync(cacheProps);
     if (cachedResult.result == null) {
-      return {result: null, outdatedDependencies: cachedResult.outdatedDependencies};
+      return {
+        result: null,
+        outdatedDependencies: cachedResult.outdatedDependencies,
+      };
     }
     return {
-      result: this._finalizeReadResult(cacheProps.sourceCode, cachedResult.result),
+      result: this._finalizeReadResult(
+        cacheProps.sourceCode,
+        cachedResult.result,
+      ),
       outdatedDependencies: [],
     };
   }
@@ -392,11 +419,16 @@ class Module {
               return;
             }
             invariant(freshResult != null, 'inconsistent state');
-            resolve(this._finalizeReadResult(cacheProps.sourceCode, freshResult));
+            resolve(
+              this._finalizeReadResult(cacheProps.sourceCode, freshResult),
+            );
           },
         );
       }).then(result => {
-        this._readResultsByOptionsKey.set(key, {result, outdatedDependencies: []});
+        this._readResultsByOptionsKey.set(key, {
+          result,
+          outdatedDependencies: [],
+        });
         return result;
       });
     });
@@ -409,6 +441,7 @@ class Module {
     const getTransformCacheKey = this._getTransformCacheKey;
     return {
       filePath: this.path,
+      localPath: this.localPath,
       sourceCode,
       getTransformCacheKey,
       transformOptions,
@@ -442,7 +475,8 @@ const knownHashes = new WeakMap();
 function stableObjectHash(object) {
   let digest = knownHashes.get(object);
   if (!digest) {
-    digest = crypto.createHash('md5')
+    digest = crypto
+      .createHash('md5')
       .update(jsonStableStringify(object))
       .digest('base64');
     knownHashes.set(object, digest);
