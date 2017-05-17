@@ -74,7 +74,7 @@ const DataDetectorTypes = [
  * import React, { Component } from 'react';
  * import { AppRegistry, TextInput } from 'react-native';
  *
- * class UselessTextInput extends Component {
+ * export default class UselessTextInput extends Component {
  *   constructor(props) {
  *     super(props);
  *     this.state = { text: 'Useless Placeholder' };
@@ -91,7 +91,7 @@ const DataDetectorTypes = [
  *   }
  * }
  *
- * // App registration and rendering
+ * // skip this line if using Create React Native App
  * AppRegistry.registerComponent('AwesomeProject', () => UselessTextInput);
  * ```
  *
@@ -117,7 +117,7 @@ const DataDetectorTypes = [
  *   }
  * }
  *
- * class UselessTextInputMultiline extends Component {
+ * export default class UselessTextInputMultiline extends Component {
  *   constructor(props) {
  *     super(props);
  *     this.state = {
@@ -145,7 +145,7 @@ const DataDetectorTypes = [
  *   }
  * }
  *
- * // App registration and rendering
+ * // skip these lines if using Create React Native App
  * AppRegistry.registerComponent(
  *  'AwesomeProject',
  *  () => UselessTextInputMultiline
