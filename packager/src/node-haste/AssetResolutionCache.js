@@ -36,7 +36,7 @@ type Options = {|
   +platforms: Set<string>,
 |};
 
-type AssetInfo = {platform: ?string, fileName: string};
+type AssetInfo = {|platform: ?string, fileName: string|};
 type InfoByAssetName = Map<string, Array<AssetInfo>>;
 
 const EMPTY_ARRAY = [];
@@ -102,7 +102,7 @@ class AssetResolutionCache {
         continue;
       }
       getWithDefaultArray(results, assetData.assetName).push({
-        plaform: assetData.platform,
+        platform: assetData.platform,
         fileName,
       });
     }
