@@ -69,7 +69,7 @@ type Options = {
   polyfillModuleNames?: Array<string>,
   postProcessModules?: PostProcessModules,
   postMinifyProcess: PostMinifyProcess,
-  projectRoots: Array<string>,
+  projectRoots: $ReadOnlyArray<string>,
   providesModuleNodeModules?: Array<string>,
   reporter: Reporter,
   resetCache?: boolean,
@@ -125,7 +125,7 @@ class Server {
     polyfillModuleNames: Array<string>,
     postProcessModules?: PostProcessModules,
     postMinifyProcess: PostMinifyProcess,
-    projectRoots: Array<string>,
+    projectRoots: $ReadOnlyArray<string>,
     providesModuleNodeModules?: Array<string>,
     reporter: Reporter,
     resetCache: boolean,
@@ -135,7 +135,7 @@ class Server {
     transformTimeoutInterval: ?number,
     watch: boolean,
   };
-  _projectRoots: Array<string>;
+  _projectRoots: $ReadOnlyArray<string>;
   _bundles: {};
   _changeWatchers: Array<{
     req: IncomingMessage,

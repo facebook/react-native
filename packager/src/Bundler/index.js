@@ -128,7 +128,7 @@ type Options = {|
   +polyfillModuleNames: Array<string>,
   +postProcessModules?: PostProcessModules,
   +postMinifyProcess: PostMinifyProcess,
-  +projectRoots: Array<string>,
+  +projectRoots: $ReadOnlyArray<string>,
   +providesModuleNodeModules?: Array<string>,
   +reporter: Reporter,
   +resetCache: boolean,
@@ -146,7 +146,7 @@ class Bundler {
   _getModuleId: (opts: Module) => number;
   _transformer: Transformer;
   _resolverPromise: Promise<Resolver>;
-  _projectRoots: Array<string>;
+  _projectRoots: $ReadOnlyArray<string>;
   _assetServer: AssetServer;
   _getTransformOptions: void | GetTransformOptions;
 
@@ -785,7 +785,7 @@ class Bundler {
       hot: boolean,
       minify: boolean,
       platform: ?string,
-      projectRoots: Array<string>,
+      projectRoots: $ReadOnlyArray<string>,
     |},
     ): Promise<BundlingOptions> {
     const getDependencies = (entryFile: string) =>
