@@ -277,6 +277,8 @@ var ListView = React.createClass({
   ) {
     if (this._scrollComponent && this._scrollComponent.scrollTo) {
       var scrollToProps = {};
+
+      // The correct params were passed so use them
       if (typeof y === 'object') {
         scrollToProps = y;
       } else {
