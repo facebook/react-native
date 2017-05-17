@@ -37,8 +37,9 @@ const unless = require('./middleware/unless');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
 import type {ConfigT} from '../util/Config';
+import type {Reporter} from '../../packager/src/lib/reporting';
 
-type Args = {|
+export type Args = {|
   +assetExts: $ReadOnlyArray<string>,
   +host: string,
   +nonPersistent: boolean,
@@ -53,8 +54,10 @@ type Args = {|
 function runServer(
   args: Args,
   config: ConfigT,
-  startedCallback: () => mixed,
-  readyCallback: () => mixed,
+  // FIXME: this is weird design. The top-level should pass down a custom
+  // reporter rather than passing it up as argument to an event.
+  startedCallback: (reporter: Reporter) => mixed,
+  readyCallback: (reporter: Reporter) => mixed,
 ) {
   var wsProxy = null;
   var ms = null;
