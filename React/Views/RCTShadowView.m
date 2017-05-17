@@ -528,16 +528,6 @@ RCT_PADDING_PROPERTY(Left, LEFT)
 RCT_PADDING_PROPERTY(Bottom, BOTTOM)
 RCT_PADDING_PROPERTY(Right, RIGHT)
 
-- (UIEdgeInsets)paddingAsInsets
-{
-  return (UIEdgeInsets){
-    YGNodeLayoutGetPadding(_yogaNode, YGEdgeTop),
-    YGNodeLayoutGetPadding(_yogaNode, YGEdgeLeft),
-    YGNodeLayoutGetPadding(_yogaNode, YGEdgeBottom),
-    YGNodeLayoutGetPadding(_yogaNode, YGEdgeRight)
-  };
-}
-
 // Border
 
 #define RCT_BORDER_PROPERTY(prop, metaProp)             \

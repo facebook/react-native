@@ -19,14 +19,14 @@ jest
   .mock('os')
   .mock('assert')
   .mock('progress')
-  .mock('../../node-haste')
+  .mock('../../node-haste/DependencyGraph')
   .mock('../../JSTransformer')
-  .mock('../../lib/declareOpts')
   .mock('../../Resolver')
   .mock('../Bundle')
   .mock('../HMRBundle')
   .mock('../../Logger')
-  .mock('../../lib/declareOpts');
+  .mock('/path/to/transformer.js', () => ({}), {virtual: true})
+  ;
 
 var Bundler = require('../');
 var Resolver = require('../../Resolver');
@@ -37,6 +37,7 @@ const os = require('os');
 
 const {any, objectContaining} = expect;
 
+
 var commonOptions = {
   allowBundleUpdates: false,
   assetExts: defaults.assetExts,
@@ -45,6 +46,7 @@ var commonOptions = {
   platforms: defaults.platforms,
   resetCache: false,
   sourceExts: defaults.sourceExts,
+  transformModulePath: '/path/to/transformer.js',
   watch: false,
 };
 
@@ -95,6 +97,10 @@ describe('Bundler', function() {
       };
     });
     Resolver.load = jest.fn().mockImplementation(opts => Promise.resolve(new Resolver(opts)));
+
+    fs.__setMockFilesystem({
+      'path': {'to': {'transformer.js': ''}},
+    });
 
     fs.statSync.mockImplementation(function() {
       return {

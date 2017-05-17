@@ -9,7 +9,8 @@
 'use strict';
 
 jest
-  .unmock('imurmurhash')
+  .unmock('stream')
+  .unmock('crypto')
   .unmock('../../lib/ModuleTransport')
   .unmock('../');
 
@@ -24,10 +25,12 @@ jest.setMock('../../worker-farm', workerFarm);
 var Transformer = require('../');
 
 const {any} = jasmine;
+const {Readable} = require('stream');
 
 describe('Transformer', function() {
   let workers, Cache;
   const fileName = '/an/arbitrary/file.js';
+  const localPath = 'arbitrary/file.js';
   const transformModulePath = __filename;
 
   beforeEach(function() {
@@ -39,7 +42,7 @@ describe('Transformer', function() {
     workerFarm.mockImplementation((opts, path, methods) => {
       const api = workers = {};
       methods.forEach(method => {api[method] = jest.fn();});
-      return api;
+      return {methods: api, stdout: new Readable({read() {}}), stderr: new Readable({read() {}})};
     });
   });
 
@@ -47,10 +50,11 @@ describe('Transformer', function() {
     ' to the worker farm when transforming', () => {
     const transformOptions = {arbitrary: 'options'};
     const code = 'arbitrary(code)';
-    new Transformer(transformModulePath).transformFile(fileName, code, transformOptions);
+    new Transformer(transformModulePath).transformFile(fileName, localPath, code, transformOptions);
     expect(workers.transformAndExtractDependencies).toBeCalledWith(
       transformModulePath,
       fileName,
+      localPath,
       code,
       transformOptions,
       any(Function),
@@ -63,7 +67,7 @@ describe('Transformer', function() {
     var snippet = 'snippet';
 
     workers.transformAndExtractDependencies.mockImplementation(
-      function(transformPath, filename, code, opts, callback) {
+      function(transformPath, filename, localPth, code, opts, callback) {
         var babelError = new SyntaxError(message);
         babelError.type = 'SyntaxError';
         babelError.description = message;
@@ -76,7 +80,8 @@ describe('Transformer', function() {
       },
     );
 
-    return transformer.transformFile(fileName, '', {})
+    expect.assertions(7);
+    return transformer.transformFile(fileName, localPath, '', {})
       .catch(function(error) {
         expect(error.type).toEqual('TransformError');
         expect(error.message).toBe('SyntaxError ' + message);

@@ -17,7 +17,7 @@ def downloadsDir = new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
 // You need to have following folders in this directory:
-//   - boost_1_57_0
+//   - boost_1_63_0
 //   - double-conversion-1.1.1
 //   - folly-deprecate-dynamic-initializer
 //   - glog-0.3.3
@@ -44,9 +44,12 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
 task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
     from boostPath ?: tarTree(resources.gzip(downloadBoost.dest))
     from 'src/main/jni/third-party/boost/Android.mk'
-    include 'Android.mk', 'boost_1_63_0/boost/**/*.hpp'
+    include 'Android.mk', 'boost_1_63_0/boost/**/*.hpp', 'boost/boost/**/*.hpp'
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/boost"
+    doLast {
+        file("$thirdPartyNdkDir/boost/boost").renameTo("$thirdPartyNdkDir/boost/boost_1_63_0")
+    }
 }
 
 task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {

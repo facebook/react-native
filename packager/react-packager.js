@@ -34,6 +34,7 @@ type Options = {
   projectRoots: Array<string>,
   reporter?: Reporter,
   +sourceExts: ?Array<string>,
+  +transformModulePath: string,
   watch?: boolean,
 };
 

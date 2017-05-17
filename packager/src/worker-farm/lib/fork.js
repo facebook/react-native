@@ -16,9 +16,10 @@ const childModule = require.resolve('./child/index');
 
 function fork(forkModule: string, options: {|+execArgv: Array<string>|}) {
   const child = childProcess.fork(childModule, {
-    env: process.env,
     cwd: process.cwd(),
+    env: process.env,
     execArgv: options.execArgv,
+    silent: true,
   });
 
   child.send({module: forkModule});

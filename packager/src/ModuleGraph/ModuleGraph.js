@@ -97,6 +97,6 @@ function* concat<T>(...iterables: Array<Iterable<T>>): Iterable<T> {
 function prelude(optimize) {
   return virtualModule(
     `var __DEV__=${String(!optimize)},` +
-    '__BUNDLE_START_TIME__=global.nativePerformanceNow?global.nativePerformanceNow():Date.now();'
+    '__BUNDLE_START_TIME__=this.nativePerformanceNow?nativePerformanceNow():Date.now();'
   );
 }
