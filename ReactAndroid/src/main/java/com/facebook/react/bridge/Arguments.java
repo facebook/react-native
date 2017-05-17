@@ -18,12 +18,6 @@ import javax.annotation.Nullable;
 
 import android.os.Bundle;
 
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.WritableNativeArray;
-import com.facebook.react.bridge.WritableNativeMap;
-
 public class Arguments {
   private static Object makeNativeObject(Object object) {
     if (object == null) {

@@ -8,9 +8,6 @@ import javax.inject.Provider;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactMarker;
-import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;

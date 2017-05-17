@@ -15,21 +15,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.Dynamic;
-import com.facebook.react.bridge.DynamicFromArray;
-import com.facebook.react.bridge.JSInstance;
-import com.facebook.react.bridge.NativeArgumentsParseException;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.PromiseImpl;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeArray;
-import com.facebook.react.bridge.UnexpectedNativeTypeException;
-import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.infer.annotation.Assertions.assertNotNull;

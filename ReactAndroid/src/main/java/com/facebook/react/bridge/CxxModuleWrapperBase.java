@@ -4,7 +4,6 @@ package com.facebook.react.bridge;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.NativeModule;
 import com.facebook.soloader.SoLoader;
 
 /**
