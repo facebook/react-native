@@ -16,8 +16,8 @@ const Bundler = require('../Bundler');
 const MultipartResponse = require('./MultipartResponse');
 
 const defaults = require('../../defaults');
-const getPlatformExtension = require('../node-haste/lib/getPlatformExtension');
 const mime = require('mime-types');
+const parsePlatformFilePath = require('../node-haste/lib/parsePlatformFilePath');
 const path = require('path');
 const symbolicate = require('./symbolicate');
 const terminal = require('../lib/terminal');
@@ -283,7 +283,7 @@ class Server {
   getShallowDependencies(options: DependencyOptions): Promise<Array<Module>> {
     return Promise.resolve().then(() => {
       const platform = options.platform != null
-        ? options.platform : getPlatformExtension(options.entryFile, this._platforms);
+        ? options.platform : parsePlatformFilePath(options.entryFile, this._platforms).platform;
       const {entryFile, dev, minify, hot} = options;
       return this._bundler.getShallowDependencies(
         {entryFile, platform, dev, minify, hot, generateSourceMaps: false},
@@ -298,7 +298,7 @@ class Server {
   getDependencies(options: DependencyOptions): Promise<ResolutionResponse<Module, *>> {
     return Promise.resolve().then(() => {
       const platform = options.platform != null
-        ? options.platform : getPlatformExtension(options.entryFile, this._platforms);
+        ? options.platform : parsePlatformFilePath(options.entryFile, this._platforms).platform;
       const {entryFile, dev, minify, hot} = options;
       return this._bundler.getDependencies(
         {entryFile, platform, dev, minify, hot, generateSourceMaps: false},
@@ -834,7 +834,7 @@ class Server {
     // try to get the platform from the url
     /* $FlowFixMe: `query` could be empty for an invalid URL */
     const platform = urlObj.query.platform ||
-      getPlatformExtension(pathname, this._platforms);
+      parsePlatformFilePath(pathname, this._platforms).platform;
 
     /* $FlowFixMe: `query` could be empty for an invalid URL */
     const assetPlugin = urlObj.query.assetPlugin;

@@ -45,7 +45,7 @@ import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.JSPackagerClient;
 import com.facebook.react.packagerconnection.Responder;
-import com.facebook.react.packagerconnection.SamplingProfilerPackagerMethod;
+import com.facebook.react.packagerconnection.RequestHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -699,9 +699,14 @@ public class DevSupportManagerImpl implements
           responder.error("JSCContext is missing, unable to profile");
           return;
         }
-        SamplingProfilerPackagerMethod method =
-          new SamplingProfilerPackagerMethod(mCurrentContext.getJavaScriptContext());
-        method.onRequest(null, responder);
+        try {
+          long jsContext = mCurrentContext.getJavaScriptContext();
+          Class clazz = Class.forName("com.facebook.react.packagerconnection.SamplingProfilerPackagerMethod");
+          RequestHandler handler = (RequestHandler)clazz.getConstructor(long.class).newInstance(jsContext);
+          handler.onRequest(null, responder);
+        } catch (Exception e) {
+          // Module not present
+        }
       }
     });
   }

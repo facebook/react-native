@@ -41,8 +41,8 @@
     _bridge = bridge;
 
     _handlers = [NSMutableDictionary new];
-    _handlers[@"reload"] = [[RCTReloadPackagerMethod alloc] initWithBridge:_bridge];
-    _handlers[@"pokeSamplingProfiler"] = [[RCTSamplingProfilerPackagerMethod alloc] initWithBridge:_bridge];
+    _handlers[@"reload"] = [[RCTReloadPackagerMethod alloc] initWithBridge:bridge];
+    _handlers[@"pokeSamplingProfiler"] = [[RCTSamplingProfilerPackagerMethod alloc] initWithBridge:bridge];
 
     [self connect];
   }

@@ -8,15 +8,16 @@
  */
 'use strict';
 
-jest.dontMock('../getPlatformExtension');
+jest.dontMock('../parsePlatformFilePath');
 
-var getPlatformExtension = require('../getPlatformExtension');
+var parsePlatformFilePath = require('../parsePlatformFilePath');
 
 const TEST_PLATFORMS = new Set(['ios', 'android']);
 
-describe('getPlatformExtension', function() {
+describe('parsePlatformFilePath', function() {
   it('should get platform ext', function() {
-    const get = name => getPlatformExtension(name, TEST_PLATFORMS);
+    const get = name => parsePlatformFilePath(name, TEST_PLATFORMS).platform;
+    expect(get('a.js')).toBe(null);
     expect(get('a.ios.js')).toBe('ios');
     expect(get('a.android.js')).toBe('android');
     expect(get('/b/c/a.ios.js')).toBe('ios');
@@ -24,9 +25,9 @@ describe('getPlatformExtension', function() {
     expect(get('/b/c/a@1.5x.ios.png')).toBe('ios');
     expect(get('/b/c/a@1.5x.lol.png')).toBe(null);
     expect(get('/b/c/a.lol.png')).toBe(null);
-    expect(getPlatformExtension('a.ios.js', new Set(['ios']))).toBe('ios');
-    expect(getPlatformExtension('a.android.js', new Set(['android']))).toBe('android');
-    expect(getPlatformExtension('a.ios.js', new Set(['ubuntu']))).toBe(null);
-    expect(getPlatformExtension('a.ubuntu.js', new Set(['ubuntu']))).toBe('ubuntu');
+    expect(parsePlatformFilePath('a.ios.js', new Set(['ios'])).platform).toBe('ios');
+    expect(parsePlatformFilePath('a.android.js', new Set(['android'])).platform).toBe('android');
+    expect(parsePlatformFilePath('a.ios.js', new Set(['ubuntu'])).platform).toBe(null);
+    expect(parsePlatformFilePath('a.ubuntu.js', new Set(['ubuntu'])).platform).toBe('ubuntu');
   });
 });

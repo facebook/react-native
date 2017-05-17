@@ -14,7 +14,7 @@
 
 const EventEmitter = require('events');
 
-const getPlatformExtension = require('../lib/getPlatformExtension');
+const parsePlatformFilePath = require('../lib/parsePlatformFilePath');
 const path = require('path');
 const throat = require('throat');
 
@@ -194,7 +194,9 @@ class HasteMap<TModule: Moduleish, TPackage: Packageish> extends EventEmitter {
         this._map[name] = Object.create(null);
       }
       const moduleMap = this._map[name];
-      const modulePlatform = getPlatformExtension(mod.path, this._platforms) || GENERIC_PLATFORM;
+      const modulePlatform =
+        parsePlatformFilePath(mod.path, this._platforms).platform ||
+        GENERIC_PLATFORM;
       existingModule = moduleMap[modulePlatform];
       moduleMap[modulePlatform] = mod;
     }
