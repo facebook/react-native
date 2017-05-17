@@ -642,7 +642,7 @@ class Bundler {
     entryFilePath: string,
     options: BundlingOptions,
     getModuleId: () => number,
-    dependencyPairs: Array<[mixed, {path: string}]>,
+    dependencyPairs: Array<[string, Module]>,
     assetPlugins: Array<string>,
   }): Promise<ModuleTransport> {
     let moduleTransport;
