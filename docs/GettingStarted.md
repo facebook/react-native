@@ -302,9 +302,19 @@ Once setup has finalized and you're presented with the Welcome screen, proceed t
 
 #### 2. Install the Android SDK
 
-Android Studio installs the latest Android SDK by default. Building a React Native app with native code, however, requires the `Android 6.0 (Marshmallow)` SDK in particular. Additional Android SDKs can be installed through the SDK Manager in Android Studio. To access the SDK Manager, click on "Configure", then select "SDK Manager" from the "Welcome to Android Studio" screen.
+Android Studio installs the latest Android SDK by default. Building a React Native app with native code, however, requires the `Android 6.0 (Marshmallow)` SDK in particular. Additional Android SDKs can be installed through the SDK Manager in Android Studio.
 
-![Android Studio Welcome](img/AndroidStudioWelcome.png)
+The SDK Manager can be accessed from the "Welcome to Android Studio" screen. Click on "Configure", then select "SDK Manager".
+
+<block class="native mac android" />
+
+![Android Studio Welcome](img/AndroidStudioWelcomeMacOS.png)
+
+<block class="native windows linux android" />
+
+![Android Studio Welcome](img/AndroidStudioWelcomeWindows.png)
+
+<block class="native mac windows linux android" />
 
 > The SDK Manager can also be found within the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
@@ -406,6 +416,30 @@ Follow the [Watchman installation guide](https://facebook.github.io/watchman/doc
 > [Watchman](https://facebook.github.io/watchman/docs/install.html) is a tool by Facebook for watching
 changes in the filesystem. It is highly recommended you install it for better performance, but it's alright to skip this if you find the process to be tedious.
 
+<block class="native mac ios" />
+
+## Creating a New Application
+
+Use the React Native command line interface to generate a new React Native project called "AwesomeProject":
+
+```
+react-native init AwesomeProject
+```
+
+This is not necessary if you are integrating React Native into an existing application, if you "ejected" from Create React Native App, or if you're adding iOS support to an existing React Native project (see [Platform Specific Code](docs/platform-specific-code.html)).
+
+<block class="native mac windows linux android" />
+
+## Creating a New Application
+
+Use the React Native command line interface to generate a new React Native project called "AwesomeProject":
+
+```
+react-native init AwesomeProject
+```
+
+This is not necessary if you are integrating React Native into an existing application, if you "ejected" from Create React Native App, or if you're adding Android support to an existing React Native project (see [Platform Specific Code](docs/platform-specific-code.html)).
+
 <block class="native mac windows linux android" />
 
 ## Preparing the Android Device
@@ -420,7 +454,7 @@ If you have a physical Android device, you can use it for development in place o
 
 ### Using a virtual device
 
-You can see the list of available Android Virtual Devices (AVDs) by opening the "AVD Manager" from within Android Studio (you may need to create a new project in order to access the main Android Studio UI first):
+You can see the list of available Android Virtual Devices (AVDs) by opening the "AVD Manager" from within Android Studio.
 
 ![Android Studio AVD Manager](img/react-native-tools-avd.png)
 
@@ -442,30 +476,6 @@ If you have just installed Android Studio, you will likely need to [create a new
 
 Click "Next" then "Finish" to create your AVD. At this point you should be able to click on the green triangle button next to your AVD to launch it. Make sure the AVD is running before proceeding to the next step.
 
-<block class="native mac ios android" />
-
-## Creating a New Application
-
-Use the React Native command line interface to generate a new React Native project called "AwesomeProject":
-
-```
-react-native init AwesomeProject
-```
-
-> This is not necessary if you are integrating React Native into an existing application, or if you "ejected" from Create React Native App.
-
-<block class="native windows linux android" />
-
-## Creating a New Application
-
-Use the React Native command line interface to generate a new React Native project called "AwesomeProject":
-
-```
-react-native init AwesomeProject
-```
-
-> This is not necessary if you are integrating React Native into an existing application, or if you "ejected" from Create React Native App.
-
 <block class="native mac ios" />
 
 ## Running your React Native Application
@@ -483,7 +493,7 @@ You should see your new app running in the iOS Simulator shortly.
 
 `react-native run-ios` is just one way to run your app. You can also run it directly from within Xcode or [Nuclide](https://nuclide.io/).
 
-<block class="native mac android" />
+<block class="native mac windows linux android" />
 
 ## Running your React Native Application
 
@@ -496,7 +506,15 @@ react-native run-android
 
 If everything is set up correctly, you should see your new app running in your Android emulator shortly.
 
+<block class="native mac android" />
+
 ![AwesomeProject on Android](img/AndroidSuccessMacOS.png)
+
+<block class="native windows linux android" />
+
+![AwesomeProject on Android](img/AndroidSuccessWindows.png)
+
+<block class="native mac windows linux android" />
 
 `react-native run-android` is just one way to run your app - you can also run it directly from within Android Studio or [Nuclide](https://nuclide.io/).
 
@@ -516,6 +534,15 @@ Now that you have successfully run the app, let's modify it.
 - Open `index.android.js` in your text editor of choice and edit some lines.
 - Press the `R` key twice or select `Reload` from the Developer Menu to see your change!
 
+<block class="native windows linux android" />
+
+### Modifying your app
+
+Now that you have successfully run the app, let's modify it.
+
+- Open `index.android.js` in your text editor of choice and edit some lines.
+- Press the `R` key twice or select `Reload` from the Developer Menu to see your change!
+
 <block class="native mac ios android" />
 
 ### That's it!
@@ -525,30 +552,6 @@ Congratulations! You've successfully run and modified your first React Native ap
 <center><img src="img/react-native-congratulations.png" width="150"></img></center>
 
 <block class="native windows linux android" />
-
-## Running your React Native Application
-
-Run `react-native run-android` inside your React Native project folder:
-
-```
-cd AwesomeProject
-react-native run-android
-```
-
-<block class="native windows linux android" />
-
-If everything is set up correctly, you should see your new app running in your Android emulator shortly.
-
-![AwesomeProject on Android](img/AndroidSuccessWindows.png)
-
-<block class="native windows linux android" />
-
-### Modifying your app
-
-Now that you have successfully run the app, let's modify it.
-
-- Open `index.android.js` in your text editor of choice and edit some lines.
-- Press the `R` key twice or select `Reload` from the Developer Menu to see your change!
 
 ### That's it!
 
