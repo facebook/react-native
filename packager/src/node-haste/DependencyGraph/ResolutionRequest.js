@@ -214,9 +214,10 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
           );
       });
 
-    const collectedDependencies = new MapWithDefaults(module =>
-      collect(module),
-    );
+    const collectedDependencies: MapWithDefaults<
+      TModule,
+      Promise<Array<TModule>>,
+    > = new MapWithDefaults(module => collect(module));
     const crawlDependencies = (mod, [depNames, dependencies]) => {
       const filteredPairs = [];
 

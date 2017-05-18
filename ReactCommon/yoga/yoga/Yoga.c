@@ -525,6 +525,10 @@ void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode) {
 }
 
 static inline float YGResolveFlexGrow(const YGNodeRef node) {
+  // Root nodes flexGrow should always be 0
+  if (node->parent == NULL) {
+    return 0.0;
+  }
   if (!YGFloatIsUndefined(node->style.flexGrow)) {
     return node->style.flexGrow;
   }
@@ -545,6 +549,10 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
 }
 
 static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
+  // Root nodes flexShrink should always be 0
+  if (node->parent == NULL) {
+    return 0.0;
+  }
   if (!YGFloatIsUndefined(node->style.flexShrink)) {
     return node->style.flexShrink;
   }
@@ -2293,7 +2301,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         if (!node->config->useLegacyStretchBehaviour &&
             (totalFlexGrowFactors == 0 || YGResolveFlexGrow(node) == 0)) {
           // If we don't have any children to flex or we can't flex the node itself,
-          // space we've used is all space we need
+          // space we've used is all space we need. Root node also should be shrunk to minimum
           availableInnerMainDim = sizeConsumedOnCurrentLine;
         }
       }

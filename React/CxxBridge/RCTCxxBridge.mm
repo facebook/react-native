@@ -140,7 +140,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   // JS thread management
   NSThread *_jsThread;
-  std::promise<std::shared_ptr<RCTMessageThread>> _jsMessageThreadPromise;
   std::shared_ptr<RCTMessageThread> _jsMessageThread;
 
   // This is uniquely owned, but weak_ptr is used.
@@ -204,15 +203,6 @@ struct RCTInstanceCallback : public InstanceCallback {
     // copy thread name to pthread name
     pthread_setname_np([NSThread currentThread].name.UTF8String);
 
-    __typeof(self) weakSelf = self;
-    _jsMessageThreadPromise.set_value(std::make_shared<RCTMessageThread>(
-      [NSRunLoop currentRunLoop],
-      ^(NSError *error) {
-        if (error) {
-          [weakSelf handleError:error];
-        }
-    }));
-
     // Set up a dummy runloop source to avoid spinning
     CFRunLoopSourceContext noSpinCtx = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
     CFRunLoopSourceRef noSpinSource = CFRunLoopSourceCreate(NULL, 0, &noSpinCtx);
@@ -275,12 +265,10 @@ struct RCTInstanceCallback : public InstanceCallback {
   _jsThread.qualityOfService = NSOperationQualityOfServiceUserInteractive;
   [_jsThread start];
 
-  dispatch_group_t initModulesAndLoadSource = dispatch_group_create();
-  dispatch_queue_t bridgeQueue = dispatch_queue_create("com.facebook.react.RCTBridgeQueue",
-                                                       DISPATCH_QUEUE_SERIAL);
+  dispatch_group_t prepareBridge = dispatch_group_create();
 
   // Initialize all native modules that cannot be loaded lazily
-  [self _initModulesWithDispatchGroup:initModulesAndLoadSource];
+  [self _initModulesWithDispatchGroup:prepareBridge];
 
   // This doesn't really do anything.  The real work happens in initializeBridge.
   _reactInstance.reset(new Instance);
@@ -310,9 +298,11 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   // Dispatch the instance initialization as soon as the initial module metadata has
   // been collected (see initModules)
-  dispatch_group_async(initModulesAndLoadSource, bridgeQueue, ^{
+  dispatch_group_enter(prepareBridge);
+  [self ensureOnJavaScriptThread:^{
     [weakSelf _initializeBridge:executorFactory];
-  });
+    dispatch_group_leave(prepareBridge);
+  }];
 
   // Optional load and execute JS source synchronously
   // TODO #10487027: should this be async on reload?
@@ -333,7 +323,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     }
   } else {
     // Load the source asynchronously, then store it for later execution.
-    dispatch_group_enter(initModulesAndLoadSource);
+    dispatch_group_enter(prepareBridge);
     __block NSData *sourceCode;
     [self loadSource:^(NSError *error, NSData *source, int64_t sourceLength) {
       if (error) {
@@ -341,7 +331,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       }
 
       sourceCode = source;
-      dispatch_group_leave(initModulesAndLoadSource);
+      dispatch_group_leave(prepareBridge);
     } onProgress:^(RCTLoadingProgress *progressData) {
 #ifdef RCT_DEV
       RCTDevLoadingView *loadingView = [weakSelf moduleForClass:[RCTDevLoadingView class]];
@@ -350,7 +340,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     }];
 
     // Wait for both the modules and source code to have finished loading
-    dispatch_group_notify(initModulesAndLoadSource, bridgeQueue, ^{
+    dispatch_group_notify(prepareBridge, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
       RCTCxxBridge *strongSelf = weakSelf;
       if (sourceCode && strongSelf.loading) {
         [strongSelf executeSourceCode:sourceCode sync:NO];
@@ -450,9 +440,13 @@ struct RCTInstanceCallback : public InstanceCallback {
     return;
   }
 
-  if (!_jsMessageThread) {
-    _jsMessageThread = _jsMessageThreadPromise.get_future().get();
-  }
+  RCTAssertJSThread();
+  __weak RCTCxxBridge *weakSelf = self;
+  _jsMessageThread = std::make_shared<RCTMessageThread>([NSRunLoop currentRunLoop], ^(NSError *error) {
+    if (error) {
+      [weakSelf handleError:error];
+    }
+  });
 
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge initializeBridge:]", nil);
   // This can only be false if the bridge was invalidated before startup completed
@@ -1037,10 +1031,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   [self _runAfterLoad:^{
     RCTProfileEndFlowEvent();
 
-    if (self->_reactInstance)
-      self->_reactInstance->callJSCallback(
-        [cbID unsignedLongLongValue],
-        [RCTConvert folly_dynamic:args ?: @[]]);
+    if (self->_reactInstance) {
+      self->_reactInstance->callJSCallback([cbID unsignedLongLongValue], [RCTConvert folly_dynamic:args ?: @[]]);
+    }
   }];
 }
 
@@ -1051,9 +1044,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertJSThread();
 
-  if (_reactInstance)
+  if (_reactInstance) {
     _reactInstance->callJSFunction("JSTimersExecution", "callTimers",
                                    folly::dynamic::array(folly::dynamic::array([timer doubleValue])));
+  }
 }
 
 - (void)enqueueApplicationScript:(NSData *)script
@@ -1069,9 +1063,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
-      if (self->_reactInstance)
+      if (self->_reactInstance) {
         self->_reactInstance->loadUnbundle(std::move(ramBundle), std::move(scriptStr),
                                            [[url absoluteString] UTF8String]);
+      }
     } else if (self->_reactInstance) {
       self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
                                                  [[url absoluteString] UTF8String]);

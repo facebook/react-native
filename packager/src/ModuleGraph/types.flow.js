@@ -78,7 +78,8 @@ export type OutputFn = (
 ) => OutputResult;
 
 type OutputResult = {|
-  code: string,
+  code: string | Buffer,
+  extraFiles: Iterable<[string, string | Buffer]>,
   map: SourceMap,
 |};
 

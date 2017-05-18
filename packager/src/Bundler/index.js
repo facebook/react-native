@@ -128,7 +128,7 @@ type Options = {|
   +polyfillModuleNames: Array<string>,
   +postProcessModules?: PostProcessModules,
   +postMinifyProcess: PostMinifyProcess,
-  +projectRoots: Array<string>,
+  +projectRoots: $ReadOnlyArray<string>,
   +providesModuleNodeModules?: Array<string>,
   +reporter: Reporter,
   +resetCache: boolean,
@@ -146,7 +146,7 @@ class Bundler {
   _getModuleId: (opts: Module) => number;
   _transformer: Transformer;
   _resolverPromise: Promise<Resolver>;
-  _projectRoots: Array<string>;
+  _projectRoots: $ReadOnlyArray<string>;
   _assetServer: AssetServer;
   _getTransformOptions: void | GetTransformOptions;
 
@@ -338,7 +338,7 @@ class Bundler {
     unbundle,
   }: {
     assetPlugins?: Array<string>,
-    bundle: Bundle,
+    bundle: Bundle | HMRBundle,
     dev: boolean,
     entryFile?: string,
     entryModuleOnly?: boolean,
@@ -642,7 +642,7 @@ class Bundler {
     entryFilePath: string,
     options: BundlingOptions,
     getModuleId: () => number,
-    dependencyPairs: Array<[mixed, {path: string}]>,
+    dependencyPairs: Array<[string, Module]>,
     assetPlugins: Array<string>,
   }): Promise<ModuleTransport> {
     let moduleTransport;
@@ -785,7 +785,7 @@ class Bundler {
       hot: boolean,
       minify: boolean,
       platform: ?string,
-      projectRoots: Array<string>,
+      projectRoots: $ReadOnlyArray<string>,
     |},
     ): Promise<BundlingOptions> {
     const getDependencies = (entryFile: string) =>

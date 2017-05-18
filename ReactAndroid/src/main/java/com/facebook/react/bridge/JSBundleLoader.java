@@ -11,7 +11,7 @@ package com.facebook.react.bridge;
 
 import android.content.Context;
 
-import com.facebook.react.devsupport.DebugServerException;
+import com.facebook.react.common.DebugServerException;
 
 /**
  * A class that stores JS bundle information and allows {@link CatalystInstance} to load a correct

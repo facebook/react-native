@@ -42,6 +42,12 @@ export type ConfigT = {
   getBlacklistRE(): RegExp,
 
   /**
+   * Specify any additional polyfill modules that should be processed
+   * before regular module loading.
+   */
+ getPolyfillModuleNames: () => Array<string>,
+
+  /**
    * Specify any additional platforms to be used by the packager.
    * For example, if you want to add a "custom" platform, and use modules
    * ending in .custom.js, you would return ['custom'] here.
@@ -98,6 +104,7 @@ const defaultConfig: ConfigT = {
   getAssetExts: () => [],
   getBlacklistRE: () => blacklist(),
   getPlatforms: () => [],
+  getPolyfillModuleNames: () => [],
   getProjectRoots: () => [process.cwd()],
   getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
   getSourceExts: () => [],

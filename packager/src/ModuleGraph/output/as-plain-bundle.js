@@ -10,6 +10,8 @@
  */
 'use strict';
 
+const meta = require('../../../../local-cli/bundle/output/meta');
+
 const {createIndexMap} = require('./source-map');
 const {addModuleIdsToModuleWrapper} = require('./util');
 
@@ -41,7 +43,11 @@ module.exports = (
       code += `/*# sourceMappingURL=${sourceMapPath}*/`;
     }
 
-    return {code, map: createIndexMap({file: filename, sections})};
+    return {
+      code,
+      extraFiles: [[`${filename}.meta`, meta(code)]],
+      map: createIndexMap({file: filename, sections}),
+    };
   }: OutputFn);
 
 const reLine = /^/gm;
