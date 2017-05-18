@@ -98,13 +98,17 @@ This page will help you install and build your first React Native app. If you al
 
 <block class="quickstart mac windows linux ios android" />
 
-[Create React Native App](https://github.com/react-community/create-react-native-app) is the easiest way to start building a new React Native application. It allows you to start a project without installing or configuring any tools to build native code.
+[Create React Native App](https://github.com/react-community/create-react-native-app) is the easiest way to start building a new React Native application. It allows you to start a project without installing or configuring any tools to build native code - no Xcode or Android Studio installation required (see [Caveats](docs/getting-started.html#caveats)).
 
-No Xcode or Android Studio installation is required. Assuming that you have [Node](https://nodejs.org/en/download/) installed, you can run the following commands to install the create a new React Native project called "AwesomeProject":
+Assuming that you have [Node](https://nodejs.org/en/download/) installed, you can use npm to install the `create-react-native-app` command line utility:
 
 ```
 npm install -g create-react-native-app
+```
 
+Then run the following commands to create a new React Native project called "AwesomeProject":
+
+```
 create-react-native-app AwesomeProject
 
 cd AwesomeProject
@@ -113,13 +117,32 @@ npm start
 
 This will start a development server for you, and print a QR code in your terminal.
 
-Install the [Expo](https://expo.io) client app on your iOS or Android phone, make sure your phone is on the same network as your computer, and scan the QR code in your terminal to open your project. Create React Native App also has a [user guide](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md) you can reference if you have questions specific to the tool.
+## Running your React Native application
 
-Once you've created your project and opened it in the Expo client app, you can proceed to the [Tutorial](docs/tutorial.html).
+Install the [Expo](https://expo.io) client app on your iOS or Android phone and connect to the same wireless network as your computer. Using the Expo app, scan the QR code from your terminal to open your project.
+
+### Modifying your app
+
+Now that you have successfully run the app, let's modify it. Open `App.js` in your text editor of choice and edit some lines. The application should reload automatically once you save your changes.
+
+### That's it!
+
+Congratulations! You've successfully run and modified your first React Native app.
+
+<center><img src="img/react-native-congratulations.png" width="150"></img></center>
+
+## Now what?
+
+- If you're curious to learn more about React Native, continue on
+to the [Tutorial](docs/tutorial.html).
+
+- Create React Native App also has a [user guide](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md) you can reference if you have questions specific to the tool.
+
+- If you can't get this to work, see the [Troubleshooting](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#troubleshooting) section in the README for Create React Native App.
 
 ### Caveats
 
-Because you don't build any native code with Create React Native App, it's not possible to include custom native modules beyond the React Native APIs and components that are available in the Expo client app.
+Because you don't build any native code when using Create React Native App to create a project, it's not possible to include custom native modules beyond the React Native APIs and components that are available in the Expo client app.
 
 If you know that you'll eventually need to include your own native code, Create React Native App is still a good way to get started. In that case you'll just need to "[eject](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#ejecting-from-create-react-native-app)" eventually to create your own native builds. If you do eject, the "Building Projects with Native Code" instructions will be required to continue working on your project.
 
@@ -150,7 +173,7 @@ one to start with, since the setup is a bit different.
 
 <block class="native mac ios" />
 
-## Installing Dependencies
+## Installing dependencies
 
 You will need Node, Watchman, the React Native command line interface, and Xcode.
 
@@ -158,19 +181,19 @@ While you can use any editor of your choice to develop your app, you will need t
 
 <block class="native mac android" />
 
-## Installing Dependencies
+## Installing dependencies
 
 You will need Node, Watchman, the React Native command line interface, a JDK, and Android Studio.
 
 <block class="native linux android" />
 
-## Installing Dependencies
+## Installing dependencies
 
 You will need Node, the React Native command line interface, a JDK, and Android Studio.
 
 <block class="native windows android" />
 
-## Installing Dependencies
+## Installing dependencies
 
 You will need Node, the React Native command line interface, Python2, a JDK, and Android Studio.
 
@@ -269,7 +292,7 @@ React Native requires a recent version of the Java SE Development Kit (JDK). [Do
 
 <block class="native mac linux windows android" />
 
-### Android Development Environment
+### Android development environment
 
 Setting up your development environment can be somewhat tedious if you're new to Android development. If you're already familiar with Android development, there are a few things you may need to configure. In either case, please make sure to carefully follow the next few steps.
 
@@ -418,7 +441,7 @@ changes in the filesystem. It is highly recommended you install it for better pe
 
 <block class="native mac ios" />
 
-## Creating a New Application
+## Creating a new application
 
 Use the React Native command line interface to generate a new React Native project called "AwesomeProject":
 
@@ -430,7 +453,7 @@ This is not necessary if you are integrating React Native into an existing appli
 
 <block class="native mac windows linux android" />
 
-## Creating a New Application
+## Creating a new application
 
 Use the React Native command line interface to generate a new React Native project called "AwesomeProject":
 
@@ -442,7 +465,7 @@ This is not necessary if you are integrating React Native into an existing appli
 
 <block class="native mac windows linux android" />
 
-## Preparing the Android Device
+## Preparing the Android device
 
 You will need an Android device to run your React Native Android app. This can be either a physical Android device, or more commonly, you can use an Android Virtual Device which allows you to emulate an Android device on your computer.
 
@@ -498,7 +521,7 @@ Click "Next" then "Finish" to create your AVD. At this point you should be able 
 
 <block class="native mac ios" />
 
-## Running your React Native Application
+## Running your React Native application
 
 Run `react-native run-ios` inside your React Native project folder:
 
@@ -515,7 +538,7 @@ You should see your new app running in the iOS Simulator shortly.
 
 <block class="native mac windows linux android" />
 
-## Running your React Native Application
+## Running your React Native application
 
 Run `react-native run-android` inside your React Native project folder:
 
@@ -547,12 +570,12 @@ Now that you have successfully run the app, let's modify it.
 <block class="native mac ios" />
 
 - Open `index.ios.js` in your text editor of choice and edit some lines.
-- Hit `Command⌘ + R` in your iOS Simulator to reload the app and see your change!
+- Hit `Command⌘ + R` in your iOS Simulator to reload the app and see your changes!
 
 <block class="native mac android" />
 
 - Open `index.android.js` in your text editor of choice and edit some lines.
-- Press the `R` key twice or select `Reload` from the Developer Menu to see your change!
+- Press the `R` key twice or select `Reload` from the Developer Menu to see your changes!
 
 <block class="native windows linux android" />
 
@@ -561,7 +584,7 @@ Now that you have successfully run the app, let's modify it.
 Now that you have successfully run the app, let's modify it.
 
 - Open `index.android.js` in your text editor of choice and edit some lines.
-- Press the `R` key twice or select `Reload` from the Developer Menu to see your change!
+- Press the `R` key twice or select `Reload` from the Developer Menu to see your changes!
 
 <block class="native mac ios android" />
 
@@ -583,23 +606,24 @@ Congratulations! You've successfully run and modified a React Native app.
 
 ## Now What?
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](docs/integration-with-existing-apps.html).
+- If you're curious to learn more about React Native, continue on
+to the [Tutorial](docs/tutorial.html).
 
 - If you can't get this to work, see the [Troubleshooting](docs/troubleshooting.html#content) page.
 
-- If you're curious to learn more about React Native, continue on
-to the [Tutorial](docs/tutorial.html).
+- If you want to add this new React Native code to an existing application, check out the [Integration guide](docs/integration-with-existing-apps.html).
 
 <block class="native windows linux mac android" />
 
 ## Now What?
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](docs/integration-with-existing-apps.html).
+- If you're curious to learn more about React Native, continue on
+to the [Tutorial](docs/tutorial.html).
 
 - If you can't get this to work, see the [Troubleshooting](docs/troubleshooting.html#content) page.
 
-- If you're curious to learn more about React Native, continue on
-to the [Tutorial](docs/tutorial.html).
+- If you want to add this new React Native code to an existing application, check out the [Integration guide](docs/integration-with-existing-apps.html).
+
 
 <script>
 // Convert <div>...<span><block /></span>...</div>
