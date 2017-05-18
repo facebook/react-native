@@ -9,6 +9,7 @@
 
 package com.facebook.react.modules.websocket;
 
+import android.os.Build;
 import android.util.Base64;
 
 import java.io.IOException;
@@ -30,18 +31,22 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.network.ForwardingCookieHandler;
+import com.facebook.react.modules.network.TLSSocketFactory;
 
+import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.TlsVersion;
 import okhttp3.ws.WebSocket;
 import okhttp3.ws.WebSocketCall;
 import okhttp3.ws.WebSocketListener;
 
 import java.net.URISyntaxException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -51,6 +56,7 @@ import okio.Buffer;
 import okio.ByteString;
 
 @ReactModule(name = "WebSocketModule", hasConstants = false)
+@ReactModule(name = "WebSocketModule")
 public class WebSocketModule extends ReactContextBaseJavaModule {
 
   private final Map<Integer, WebSocket> mWebSocketConnections = new HashMap<>();
@@ -75,17 +81,46 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     return "WebSocketModule";
   }
 
+  /*
+    On Android 4.1-4.4 (API level 16 to 19) TLS 1.1 and 1.2 are
+    available but not enabled by default. The following method
+    enables it.
+   */
+  public static OkHttpClient.Builder enableTls12OnPreLollipop(OkHttpClient.Builder client) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+      try {
+        client.sslSocketFactory(new TLSSocketFactory());
+
+        ConnectionSpec cs = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+                .tlsVersions(TlsVersion.TLS_1_2)
+                .build();
+
+        List<ConnectionSpec> specs = new ArrayList<>();
+        specs.add(cs);
+        specs.add(ConnectionSpec.COMPATIBLE_TLS);
+        specs.add(ConnectionSpec.CLEARTEXT);
+
+        client.connectionSpecs(specs);
+      } catch (Exception exc) {
+        FLog.e("OkHttpClientProvider", "Error while enabling TLS 1.2", exc);
+      }
+    }
+
+    return client;
+  }
+
   @ReactMethod
   public void connect(
     final String url,
     @Nullable final ReadableArray protocols,
     @Nullable final ReadableMap headers,
     final int id) {
-    OkHttpClient client = new OkHttpClient.Builder()
+    OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
       .connectTimeout(10, TimeUnit.SECONDS)
       .writeTimeout(10, TimeUnit.SECONDS)
-      .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
-      .build();
+      .readTimeout(0, TimeUnit.MINUTES); // Disable timeouts for read
+
+    OkHttpClient client = enableTls12OnPreLollipop(clientBuilder).build();
 
     Request.Builder builder = new Request.Builder()
         .tag(id)
