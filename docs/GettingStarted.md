@@ -279,14 +279,14 @@ Setting up your development environment can be somewhat tedious if you're new to
 
 [Download and install Android Studio](https://developer.android.com/studio/index.html). Choose a "Custom" setup when prompted to select an installation type. Make sure the boxes next to all of the following are checked:
 
-<block class="native mac android" />
+<block class="native mac windows android" />
 
 - `Android SDK`
 - `Android SDK Platform`
 - `Performance (Intel ® HAXM)`
 - `Android Virtual Device`
 
-<block class="native windows linux android" />
+<block class="native linux android" />
 
 - `Android SDK`
 - `Android SDK Platform`
@@ -310,7 +310,7 @@ The SDK Manager can be accessed from the "Welcome to Android Studio" screen. Cli
 
 ![Android Studio Welcome](img/AndroidStudioWelcomeMacOS.png)
 
-<block class="native windows linux android" />
+<block class="native windows android" />
 
 ![Android Studio Welcome](img/AndroidStudioWelcomeWindows.png)
 
@@ -454,11 +454,23 @@ If you have a physical Android device, you can use it for development in place o
 
 ### Using a virtual device
 
-You can see the list of available Android Virtual Devices (AVDs) by opening the "AVD Manager" from within Android Studio.
+You can see the list of available Android Virtual Devices (AVDs) by opening the "AVD Manager" from within Android Studio. Look for an icon that looks like this:
 
 ![Android Studio AVD Manager](img/react-native-tools-avd.png)
 
-If you have just installed Android Studio, you will likely need to [create a new AVD](https://developer.android.com/studio/run/managing-avds.html). Select "Create Virtual Device...", then pick any Phone from the list. Select the "x86 Images" tab, then look for the **Marshmallow** API Level 23, x86_64 ABI image with a Android 6.0 (Google APIs) target.
+If you have just installed Android Studio, you will likely need to [create a new AVD](https://developer.android.com/studio/run/managing-avds.html). Select "Create Virtual Device...", then pick any Phone from the list and click "Next".
+
+<block class="native windows android" />
+
+![Android Studio AVD Manager](img/CreateAVDWindows.png)
+
+<block class="native mac android" />
+
+![Android Studio AVD Manager](img/CreateAVDMacOS.png)
+
+<block class="native mac windows linux android" />
+
+Select the "x86 Images" tab, then look for the **Marshmallow** API Level 23, x86_64 ABI image with a Android 6.0 (Google APIs) target.
 
 <block class="native linux android" />
 
@@ -466,15 +478,23 @@ If you have just installed Android Studio, you will likely need to [create a new
 
 <block class="native windows android" />
 
+![Install HAXM](img/CreateAVDx86Windows.png)
+
 > If you don't have HAXM installed, click on "Install HAXM" or follow [these instructions](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-windows) to set it up, then go back to the AVD Manager.
+
+![AVD List](img/AVDManagerWindows.png)
 
 <block class="native mac android" />
 
+![Install HAXM](img/CreateAVDx86MacOS.png)
+
 > If you don't have HAXM installed, follow [these instructions](https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-mac-os-x) to set it up, then go back to the AVD Manager.
+
+![AVD List](img/AVDManagerMacOS.png)
 
 <block class="native mac windows linux android" />
 
-Click "Next" then "Finish" to create your AVD. At this point you should be able to click on the green triangle button next to your AVD to launch it. Make sure the AVD is running before proceeding to the next step.
+Click "Next" then "Finish" to create your AVD. At this point you should be able to click on the green triangle button next to your AVD to launch it, then proceed to the next step.
 
 <block class="native mac ios" />
 
@@ -510,7 +530,7 @@ If everything is set up correctly, you should see your new app running in your A
 
 ![AwesomeProject on Android](img/AndroidSuccessMacOS.png)
 
-<block class="native windows linux android" />
+<block class="native windows android" />
 
 ![AwesomeProject on Android](img/AndroidSuccessWindows.png)
 
