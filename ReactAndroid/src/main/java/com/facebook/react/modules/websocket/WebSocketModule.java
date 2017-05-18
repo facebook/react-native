@@ -56,7 +56,6 @@ import okio.Buffer;
 import okio.ByteString;
 
 @ReactModule(name = "WebSocketModule", hasConstants = false)
-@ReactModule(name = "WebSocketModule")
 public class WebSocketModule extends ReactContextBaseJavaModule {
 
   private final Map<Integer, WebSocket> mWebSocketConnections = new HashMap<>();
