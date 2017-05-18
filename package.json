@@ -231,6 +231,6 @@
     "react": "16.0.0-alpha.12",
     "react-test-renderer": "16.0.0-alpha.12",
     "shelljs": "0.6.0",
-    "sinon": "^2.0.0-pre.2"
+    "sinon": "^2.2.0"
   }
 }
