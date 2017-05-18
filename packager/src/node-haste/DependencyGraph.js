@@ -60,7 +60,7 @@ type Options = {|
   +providesModuleNodeModules: Array<string>,
   +reporter: Reporter,
   +resetCache: boolean,
-  +roots: Array<string>,
+  +roots: $ReadOnlyArray<string>,
   +sourceExts: Array<string>,
   +transformCode: TransformCode,
   +useWatchman: boolean,

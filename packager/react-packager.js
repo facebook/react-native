@@ -31,7 +31,7 @@ type Options = {
   nonPersistent?: boolean,
   postProcessModules?: PostProcessModules,
   postMinifyProcess?: PostMinifyProcess,
-  projectRoots: Array<string>,
+  projectRoots: $ReadOnlyArray<string>,
   reporter?: Reporter,
   +sourceExts: ?Array<string>,
   +transformModulePath: string,

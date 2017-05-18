@@ -15,12 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JSInstance;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.OnBatchCompleteListener;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMarker;
-import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.systrace.Systrace;
 
 /**

@@ -42,7 +42,7 @@ type Options = {|
   +postMinifyProcess: PostMinifyProcess,
   +platforms: Set<string>,
   +polyfillModuleNames?: Array<string>,
-  +projectRoots: Array<string>,
+  +projectRoots: $ReadOnlyArray<string>,
   +providesModuleNodeModules: Array<string>,
   +reporter: Reporter,
   +resetCache: boolean,

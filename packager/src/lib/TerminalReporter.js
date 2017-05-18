@@ -135,7 +135,7 @@ class TerminalReporter {
     }
   }
 
-  _logPackagerInitializing(port: number, projectRoots: Array<string>) {
+  _logPackagerInitializing(port: number, projectRoots: $ReadOnlyArray<string>) {
     terminal.log(
       formatBanner(
         'Running packager on port ' +
