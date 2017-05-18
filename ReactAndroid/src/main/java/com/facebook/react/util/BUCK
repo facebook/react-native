@@ -1,0 +1,12 @@
+include_defs("//ReactAndroid/DEFS")
+
+android_library(
+    name = "util",
+    srcs = glob(["**/*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_target("java/com/facebook/react/bridge:bridge"),
+    ],
+)
