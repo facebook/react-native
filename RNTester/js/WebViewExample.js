@@ -20,7 +20,7 @@ var {
   TouchableWithoutFeedback,
   TouchableOpacity,
   View,
-  WebView
+  WebView,
   Platform,
   Alert,
 } = ReactNative;
