@@ -251,6 +251,18 @@ class WebView extends React.Component {
      * on the first load.
      */
     startInLoadingState: PropTypes.bool,
+
+    /**
+     * An array of string corresponding to custom actions displayed in select menu
+     */
+    selectActions: PropTypes.arrayOf(PropTypes.string),
+
+
+    /**
+     * Event handler which will be invoked if a custom select action is chosen
+     */
+    onSelectAction: PropTypes.func,
+
     /**
      * The style to apply to the `WebView`.
      */
@@ -430,6 +442,8 @@ class WebView extends React.Component {
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this._onLoadingStart}
+        selectActions= {this.props.selectActions || []}
+        onSelectAction={this._onSelectAction}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}
         messagingEnabled={messagingEnabled}
@@ -526,6 +540,14 @@ class WebView extends React.Component {
     );
   };
 
+  registerSelectActions = (actions) => {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.registerSelectActions,
+      actions
+    );
+  };
+
   /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
@@ -542,6 +564,11 @@ class WebView extends React.Component {
   getWebViewHandle = (): any => {
     return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
   };
+
+  _onSelectAction = (event: Event) => {
+    var onSelectAction = this.props.onSelectAction;
+    onSelectAction && onSelectAction(event);
+  }
 
   _onLoadingStart = (event: Event) => {
     var onLoadStart = this.props.onLoadStart;

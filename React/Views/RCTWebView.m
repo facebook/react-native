@@ -19,6 +19,64 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
+@interface MyUIWebView : UIWebView
+@end
+
+@implementation MyUIWebView
+-(BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+  NSString *sel = NSStringFromSelector(action);
+  NSRange match = [sel rangeOfString:@"wvsa_"];
+  if (match.location == 0) {
+    NSLog(@"WEBVIEW: canPerforAction: %@ YES", sel);
+    return YES;
+  }
+  NSLog(@"WEBVIEW: canPerforAction: %@ NO", sel);
+  return NO;
+}
+
+-(void)registerSelectActions:(NSArray<NSString*>*)selectActions {
+  
+  NSMutableArray *menuItems = [NSMutableArray array];
+  for (NSString *buttonText in selectActions) {
+    NSLog(@"RCT WEBVIEW: registering action %@", buttonText);
+    NSString *sel = [NSString stringWithFormat:@"wvsa_%@", buttonText];
+    [menuItems addObject:[[UIMenuItem alloc]
+                          initWithTitle:buttonText
+                          action:NSSelectorFromString(sel)]];
+  }
+  NSLog(@"RCT WEBVIEW: registered %d actions %@", [menuItems count], selectActions);
+  if([menuItems count] > 1) {
+    [[UIMenuController sharedMenuController] setMenuItems:menuItems];
+  }
+}
+
+- (void)tappedMenuItem:(NSString*)buttonText {
+  NSString* selectedText = [self stringByEvaluatingJavaScriptFromString:@"(function(){return window.getSelection().toString();})();"];
+  NSLog(@"RCT WEBVIEW Tapped '%@' selectedText=%@", buttonText, selectedText);
+  RCTWebView* delegate = (RCTWebView*)self.delegate;
+  [delegate onSelect:buttonText withSelection:selectedText];
+}
+
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)sel {
+  if ([super methodSignatureForSelector:sel]) {
+    return [super methodSignatureForSelector:sel];
+  }
+  return [super methodSignatureForSelector:@selector(tappedMenuItem:)];
+}
+
+- (void)forwardInvocation:(NSInvocation *)invocation {
+  NSString *sel = NSStringFromSelector([invocation selector]);
+  NSRange match = [sel rangeOfString:@"wvsa_"];
+  if (match.location == 0) {
+    [self tappedMenuItem:[sel substringFromIndex:5]];
+  } else {
+    [super forwardInvocation:invocation];
+  }
+}
+
+@end
+
 NSString *const RCTJSNavigationScheme = @"react-js-navigation";
 NSString *const RCTJSPostMessageHost = @"postMessage";
 
@@ -29,6 +87,7 @@ NSString *const RCTJSPostMessageHost = @"postMessage";
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
 @property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
+@property (nonatomic, copy) RCTDirectEventBlock onSelectAction;
 
 @end
 
@@ -36,6 +95,7 @@ NSString *const RCTJSPostMessageHost = @"postMessage";
 {
   UIWebView *_webView;
   NSString *_injectedJavaScript;
+  BOOL _registerdSelectActions;
 }
 
 - (void)dealloc
@@ -49,9 +109,10 @@ NSString *const RCTJSPostMessageHost = @"postMessage";
     super.backgroundColor = [UIColor clearColor];
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
-    _webView = [[UIWebView alloc] initWithFrame:self.bounds];
+    _webView = [[MyUIWebView alloc] initWithFrame:self.bounds];
     _webView.delegate = self;
     [self addSubview:_webView];
+    _registerdSelectActions = FALSE;
   }
   return self;
 }
@@ -77,6 +138,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   else {
     [_webView reload];
   }
+}
+
+-(void)onSelect:(NSString*)action withSelection:(NSString*)selectedText
+{
+  NSLog(@"RCT WebView onSelect '%@' selectedText=%@", action, selectedText);
+  _onSelectAction(@{@"action": action, @"selectedText": selectedText});
 }
 
 - (void)stopLoading
@@ -279,6 +346,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
+  if ( !_registerdSelectActions) {
+    MyUIWebView* myWebView = (MyUIWebView*)_webView;
+    [myWebView registerSelectActions:_selectActions];
+  }
   if (_messagingEnabled) {
     #if RCT_DEV
     // See isNative in lodash

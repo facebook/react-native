@@ -32,6 +32,8 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, weak) id<RCTWebViewDelegate> delegate;
 
 @property (nonatomic, copy) NSDictionary *source;
+@property (nonatomic, copy) NSArray<NSString*> *selectActions;
+
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, assign) BOOL messagingEnabled;
@@ -44,5 +46,6 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 - (void)stopLoading;
 - (void)postMessage:(NSString *)message;
 - (void)injectJavaScript:(NSString *)script;
+- (void)onSelect:(NSString*)action withSelection:(NSString*)selectedText;
 
 @end
