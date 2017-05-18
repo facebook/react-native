@@ -90,14 +90,16 @@ class TransformCache {
    * close to each others, one of the workers is going to loose its results no
    * matter what.
    */
-  writeSync(props: {
-    filePath: string,
-    sourceCode: string,
-    getTransformCacheKey: GetTransformCacheKey,
-    transformOptions: WorkerOptions,
-    transformOptionsKey: string,
-    result: CachedResult,
-  }): void {
+  writeSync(
+    props: {
+      filePath: string,
+      sourceCode: string,
+      getTransformCacheKey: GetTransformCacheKey,
+      transformOptions: WorkerOptions,
+      transformOptionsKey: string,
+      result: CachedResult,
+    },
+  ): void {
     const cacheFilePath = this._getCacheFilePaths(props);
     mkdirp.sync(path.dirname(cacheFilePath.transformedCode));
     const {result} = props;
@@ -233,7 +235,7 @@ class TransformCache {
     mkdirp.sync(cacheDirPath);
     const cacheCollectionFilePath = path.join(cacheDirPath, 'last_collected');
     const lastCollected = Number.parseInt(
-      tryReadFileSync(cacheCollectionFilePath, 'utf8'),
+      tryReadFileSync(cacheCollectionFilePath),
       10,
     );
     if (
@@ -253,10 +255,12 @@ class TransformCache {
    * account because it would generate lots of file during development. (The
    * source hash is stored in the metadata instead).
    */
-  _getCacheFilePaths(props: {
-    filePath: string,
-    transformOptionsKey: string,
-  }): CacheFilePaths {
+  _getCacheFilePaths(
+    props: {
+      filePath: string,
+      transformOptionsKey: string,
+    },
+  ): CacheFilePaths {
     const hasher = crypto
       .createHash('sha1')
       .update(props.filePath)
@@ -384,13 +388,15 @@ function tryParseJSON(str: string): any {
   }
 }
 
-function hashSourceCode(props: {
-  filePath: string,
-  sourceCode: string,
-  getTransformCacheKey: GetTransformCacheKey,
-  transformOptions: WorkerOptions,
-  transformOptionsKey: string,
-}): string {
+function hashSourceCode(
+  props: {
+    filePath: string,
+    sourceCode: string,
+    getTransformCacheKey: GetTransformCacheKey,
+    transformOptions: WorkerOptions,
+    transformOptionsKey: string,
+  },
+): string {
   return crypto
     .createHash('sha1')
     .update(props.getTransformCacheKey(props.transformOptions))

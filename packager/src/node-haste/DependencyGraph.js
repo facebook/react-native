@@ -156,8 +156,8 @@ class DependencyGraph extends EventEmitter {
     this._filesByDirNameIndex = new FilesByDirNameIndex(hasteFS.getAllFiles());
     this._assetResolutionCache.clear();
     this._moduleMap = moduleMap;
-    eventsQueue.forEach(({type, filePath, stat}) =>
-      this._moduleCache.processFileChange(type, filePath, stat)
+    eventsQueue.forEach(({type, filePath}) =>
+      this._moduleCache.processFileChange(type, filePath)
     );
     this.emit('change');
   }
@@ -290,11 +290,11 @@ class DependencyGraph extends EventEmitter {
 
 }
 
-function NotFoundError() {
+function NotFoundError(...args) {
   /* $FlowFixMe: monkey-patching */
   Error.call(this);
   Error.captureStackTrace(this, this.constructor);
-  var msg = util.format.apply(util, arguments);
+  var msg = util.format.apply(util, args);
   this.message = msg;
   this.type = this.name = 'NotFoundError';
   this.status = 404;

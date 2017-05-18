@@ -14,6 +14,7 @@
 const assert = require('assert');
 const crypto = require('crypto');
 const debug = require('debug')('RNP:Bundler');
+const emptyFunction = require('fbjs/lib/emptyFunction');
 const fs = require('fs');
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
@@ -88,8 +89,6 @@ export type ExtendedAssetDescriptor = AssetDescriptor & {
 };
 
 const sizeOf = denodeify(imageSize);
-
-const noop = () => {};
 
 const {
   createActionStartEntry,
@@ -173,7 +172,7 @@ class Bundler {
 
     this._getModuleId = createModuleIdFactory();
 
-    let getCacheKey = () => '';
+    let getCacheKey = (options: mixed) => '';
     if (opts.transformModulePath) {
       /* $FlowFixMe: dynamic requires prevent static typing :'(  */
       const transformer = require(opts.transformModulePath);
@@ -283,7 +282,7 @@ class Bundler {
     const matchingRoot = this._projectRoots.find(root => filePath.startsWith(root));
 
     if (!matchingRoot) {
-      throw new Error('No matching project root for ', filePath);
+      throw new Error('No matching project root for ' + filePath);
     }
 
     // Replaces '\' with '/' for Windows paths.
@@ -422,10 +421,10 @@ class Bundler {
     isolateModuleIDs,
     generateSourceMaps,
     assetPlugins,
-    onResolutionResponse = noop,
-    onModuleTransformed = noop,
-    finalizeBundle = noop,
-    onProgress = noop,
+    onResolutionResponse = emptyFunction,
+    onModuleTransformed = emptyFunction,
+    finalizeBundle = emptyFunction,
+    onProgress = emptyFunction,
   }: *) {
     const transformingFilesLogEntry =
       log(createActionStartEntry({
@@ -641,7 +640,7 @@ class Bundler {
     bundle: Bundle,
     entryFilePath: string,
     options: BundlingOptions,
-    getModuleId: () => number,
+    getModuleId: (module: Module) => number,
     dependencyPairs: Array<[string, Module]>,
     assetPlugins: Array<string>,
   }): Promise<ModuleTransport> {
