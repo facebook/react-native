@@ -253,15 +253,34 @@ class WebView extends React.Component {
     startInLoadingState: PropTypes.bool,
 
     /**
-     * An array of string corresponding to custom actions displayed in select menu
+     * selectActions: A string containing the list of actions that will be
+     * displayed in iOS selection menu
+     *
+     * onSelectActions: The event handler that will be invoked if a custom
+     * select action is chosen. The event handler will be invoked with `event'
+     * variable. The chosen action will be available in event.nativeEvent.action.
+     *
+     * Example Usage:
+     *
+     * return ( 
+     *   <WebView
+     *
+     *      source={{uri: 'https://github.com/facebook/react-native'}}
+     *      style={{marginTop: 20}}
+     *      selectActions={['Like', 'Share', 'Save', 'Add To Notes']}
+     *      onSelectAction={this.onSelect.bind(this)}
+     *      onLoadEnd={this.onLoadEnd.bind(this)}
+     *    />
+     * )
+     * ...
+     * ...
+     * onSelect(event) {
+     *    console.log('selected action:', event.nativeEvent.action);
+     * }
+     *
      */
-    selectActions: PropTypes.arrayOf(PropTypes.string),
-
-
-    /**
-     * Event handler which will be invoked if a custom select action is chosen
-     */
-    onSelectAction: PropTypes.func,
+     selectActions: PropTypes.arrayOf(PropTypes.string),
+     onSelectAction: PropTypes.func,
 
     /**
      * The style to apply to the `WebView`.
