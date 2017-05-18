@@ -17,8 +17,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import okhttp3.ResponseBody;
-import okhttp3.ws.WebSocket;
+import okhttp3.WebSocket;
+import okio.ByteString;
 
 import static org.mockito.Mockito.*;
 import org.robolectric.RobolectricTestRunner;
@@ -47,10 +47,7 @@ public class JSPackagerClientTest {
     RequestHandler handler = mock(RequestHandler.class);
     final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
-    client.onMessage(
-        ResponseBody.create(
-          WebSocket.TEXT,
-          "{\"version\": 2, \"method\": \"methodValue\", \"params\": \"paramsValue\"}"));
+    client.onMessage("{\"version\": 2, \"method\": \"methodValue\", \"params\": \"paramsValue\"}");
     verify(handler).onNotification(eq("paramsValue"));
     verify(handler, never()).onRequest(any(), any(Responder.class));
   }
@@ -60,10 +57,7 @@ public class JSPackagerClientTest {
     RequestHandler handler = mock(RequestHandler.class);
     final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
-    client.onMessage(
-        ResponseBody.create(
-          WebSocket.TEXT,
-          "{\"version\": 2, \"id\": \"idValue\", \"method\": \"methodValue\", \"params\": \"paramsValue\"}"));
+    client.onMessage("{\"version\": 2, \"id\": \"idValue\", \"method\": \"methodValue\", \"params\": \"paramsValue\"}");
     verify(handler, never()).onNotification(any());
     verify(handler).onRequest(eq("paramsValue"), any(Responder.class));
   }
@@ -73,10 +67,7 @@ public class JSPackagerClientTest {
     RequestHandler handler = mock(RequestHandler.class);
     final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
-    client.onMessage(
-        ResponseBody.create(
-          WebSocket.TEXT,
-          "{\"version\": 2, \"method\": \"methodValue\"}"));
+    client.onMessage("{\"version\": 2, \"method\": \"methodValue\"}");
     verify(handler).onNotification(eq(null));
     verify(handler, never()).onRequest(any(), any(Responder.class));
   }
@@ -86,10 +77,7 @@ public class JSPackagerClientTest {
     RequestHandler handler = mock(RequestHandler.class);
     final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
-    client.onMessage(
-        ResponseBody.create(
-          WebSocket.BINARY,
-          "{\"version\": 2, \"method\": \"methodValue\"}"));
+    client.onMessage(ByteString.EMPTY);
     verify(handler, never()).onNotification(any());
     verify(handler, never()).onRequest(any(), any(Responder.class));
   }
@@ -99,10 +87,7 @@ public class JSPackagerClientTest {
     RequestHandler handler = mock(RequestHandler.class);
     final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
-    client.onMessage(
-        ResponseBody.create(
-          WebSocket.TEXT,
-          "{\"version\": 2}"));
+    client.onMessage("{\"version\": 2}");
     verify(handler, never()).onNotification(any());
     verify(handler, never()).onRequest(any(), any(Responder.class));
   }
@@ -112,10 +97,7 @@ public class JSPackagerClientTest {
     RequestHandler handler = mock(RequestHandler.class);
     final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
-    client.onMessage(
-        ResponseBody.create(
-          WebSocket.TEXT,
-          "{\"version\": 2, \"method\": null}"));
+    client.onMessage("{\"version\": 2, \"method\": null}");
     verify(handler, never()).onNotification(any());
     verify(handler, never()).onRequest(any(), any(Responder.class));
   }
@@ -125,10 +107,7 @@ public class JSPackagerClientTest {
     RequestHandler handler = mock(RequestHandler.class);
     final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
-    client.onMessage(
-        ResponseBody.create(
-          WebSocket.BINARY,
-          "{\"version\": 2, \"method\": \"methodValue2\"}"));
+    client.onMessage("{\"version\": 2, \"method\": \"methodValue2\"}");
     verify(handler, never()).onNotification(any());
     verify(handler, never()).onRequest(any(), any(Responder.class));
   }
@@ -138,10 +117,7 @@ public class JSPackagerClientTest {
     RequestHandler handler = mock(RequestHandler.class);
     final JSPackagerClient client = new JSPackagerClient("test_client", mSettings, createRH("methodValue", handler));
 
-    client.onMessage(
-        ResponseBody.create(
-          WebSocket.TEXT,
-          "{\"version\": 1, \"method\": \"methodValue\"}"));
+    client.onMessage("{\"version\": 1, \"method\": \"methodValue\"}");
     verify(handler, never()).onNotification(any());
     verify(handler, never()).onRequest(any(), any(Responder.class));
   }
