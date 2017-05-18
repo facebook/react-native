@@ -49,6 +49,7 @@ RCT_REMAP_VIEW_PROPERTY(secureTextEntry, backedTextInputView.secureTextEntry, BO
 RCT_REMAP_VIEW_PROPERTY(selectionColor, backedTextInputView.tintColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(spellCheck, backedTextInputView.spellCheckingType, UITextSpellCheckingType)
 RCT_REMAP_VIEW_PROPERTY(textAlign, backedTextInputView.textAlignment, NSTextAlignment)
+RCT_EXPORT_VIEW_PROPERTY(allowFontScaling, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(maxLength, NSNumber)
@@ -66,19 +67,23 @@ RCT_EXPORT_VIEW_PROPERTY(onTextInput, RCTDirectEventBlock)
 
 RCT_CUSTOM_VIEW_PROPERTY(fontSize, NSNumber, RCTTextView)
 {
-  view.font = [RCTFont updateFont:view.font withSize:json ?: @(defaultView.font.pointSize)];
+  view.fontSize = json ?: @(defaultView.font.pointSize);
+  [view updateFont];
 }
 RCT_CUSTOM_VIEW_PROPERTY(fontWeight, NSString, __unused RCTTextView)
 {
-  view.font = [RCTFont updateFont:view.font withWeight:json]; // defaults to normal
+  view.fontWeight = json; //defaults to normal
+  [view updateFont]; 
 }
 RCT_CUSTOM_VIEW_PROPERTY(fontStyle, NSString, __unused RCTTextView)
 {
-  view.font = [RCTFont updateFont:view.font withStyle:json]; // defaults to normal
+  view.fontStyle = json; //defaults to normal
+  [view updateFont]; 
 }
 RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextView)
 {
-  view.font = [RCTFont updateFont:view.font withFamily:json ?: defaultView.font.familyName];
+  view.fontFamily = json ?: defaultView.font.familyName;
+  [view updateFont];
 }
 RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
 

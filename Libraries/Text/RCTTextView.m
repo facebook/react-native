@@ -11,6 +11,7 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
+#import <React/RCTFont.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
@@ -68,6 +69,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (id<RCTBackedTextInputViewProtocol>)backedTextInputView
 {
   return _backedTextInput;
+}
+
+- (void)updateFont
+{
+  CGFloat scaleMultiplier = self.allowFontScaling ? self.fontSizeMultiplier : 1.0;
+  
+  self.font = [RCTFont updateFont:nil
+                       withFamily:self.fontFamily
+                             size:self.fontSize
+                           weight:self.fontWeight
+                           style:self.fontStyle
+                         variant:nil
+                 scaleMultiplier:scaleMultiplier];
+
+ // Because the font changed, the TextInput may take up more space now so we call
+ // invalidateContentSize. However, if there's currently no text to render, then
+ // there's no need to call invalidateContentSize.
+ if ([self text].length != 0) {
+   [self invalidateContentSize];
+ }
 }
 
 #pragma mark - RCTComponent

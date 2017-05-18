@@ -219,6 +219,11 @@ const TextInput = createReactClass({
      */
     autoGrow: PropTypes.bool,
     /**
+     * Specifies whether fonts should scale to respect Text Size accessibility settings. The
+     * default is `true`.
+     */
+    allowFontScaling: PropTypes.bool,
+    /**
      * If `false`, text is not editable. The default value is `true`.
      */
     editable: PropTypes.bool,
@@ -550,7 +555,11 @@ const TextInput = createReactClass({
      */
     caretHidden: PropTypes.bool,
   },
-
+  getDefaultProps(): Object {
+    return {
+      allowFontScaling: true,
+    };
+  },
   /**
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
    * make `this` look like an actual native component class.
@@ -688,7 +697,7 @@ const TextInput = createReactClass({
         'Cannot specify both value and children.'
       );
       if (childCount >= 1) {
-        children = <Text style={props.style}>{children}</Text>;
+        children = <Text style={props.style} allowFontScaling={props.allowFontScaling}>{children}</Text>;
       }
       if (props.inputView) {
         children = [children, props.inputView];

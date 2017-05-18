@@ -9,6 +9,7 @@
 
 #import "RCTTextInput.h"
 
+#import <React/RCTAccessibilityManager.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
@@ -28,7 +29,15 @@
 
   if (self = [super initWithFrame:CGRectZero]) {
     _bridge = bridge;
+    _accessibilityManager = bridge.accessibilityManager;
     _eventDispatcher = bridge.eventDispatcher;
+    _fontSizeMultiplier = _accessibilityManager.multiplier;
+    [self updateFont];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(contentSizeMultiplierDidChange)
+                                                 name:RCTAccessibilityManagerDidUpdateMultiplierNotification
+                                               object:_accessibilityManager];
   }
 
   return self;
@@ -38,13 +47,47 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (id<RCTBackedTextInputViewProtocol>)backedTextInputView
 {
   RCTAssert(NO, @"-[RCTTextInput backedTextInputView] must be implemented in subclass.");
   return nil;
 }
 
+- (void)updateFont
+{
+  RCTAssert(NO, @"-[RCTTextInput updateFont] must be implemented in subclass.");
+}
+
+- (void)contentSizeMultiplierDidChange
+{
+  self.fontSizeMultiplier = _accessibilityManager.multiplier;
+}
+
 #pragma mark - Properties
+
+- (void)setAllowFontScaling:(BOOL)allowFontScaling
+{
+  _allowFontScaling = allowFontScaling;
+  [self updateFont];
+
+}
+
+- (void)setFontSizeMultiplier:(CGFloat)fontSizeMultiplier
+{
+   _fontSizeMultiplier = fontSizeMultiplier;
+  
+  if (_fontSizeMultiplier == 0) {
+    RCTLogError(@"fontSizeMultiplier value must be > zero.");
+    _fontSizeMultiplier = 1.0;
+  }
+
+  [self updateFont];
+}
 
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
 {
