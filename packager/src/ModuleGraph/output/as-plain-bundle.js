@@ -17,41 +17,54 @@ const {addModuleIdsToModuleWrapper} = require('./util');
 
 import type {OutputFn} from '../types.flow';
 
-module.exports = (
-  (modules, filename, idForPath, sourceMapPath) => {
-    let code = '';
-    let line = 0;
-    const sections = [];
+function asPlainBundle({
+  filename,
+  idForPath,
+  modules,
+  requireCalls,
+  sourceMapPath,
+}) {
+  let code = '';
+  let line = 0;
+  const sections = [];
 
-    for (const module of modules) {
-      const {file} = module;
-      const moduleCode = file.type === 'module'
-        ? addModuleIdsToModuleWrapper(module, idForPath)
-        : file.code;
+  for (const module of concat(modules, requireCalls)) {
+    const {file} = module;
+    const moduleCode = file.type === 'module'
+      ? addModuleIdsToModuleWrapper(module, idForPath)
+      : file.code;
 
-      code += moduleCode + '\n';
-      if (file.map) {
-        sections.push({
-          map: file.map,
-          offset: {column: 0, line},
-        });
-      }
-      line += countLines(moduleCode);
+    code += moduleCode + '\n';
+    if (file.map) {
+      sections.push({
+        map: file.map,
+        offset: {column: 0, line},
+      });
     }
+    line += countLines(moduleCode);
+  }
 
-    if (sourceMapPath) {
-      code += `/*# sourceMappingURL=${sourceMapPath}*/`;
-    }
+  if (sourceMapPath) {
+    code += `/*# sourceMappingURL=${sourceMapPath}*/`;
+  }
 
-    return {
-      code,
-      extraFiles: [[`${filename}.meta`, meta(code)]],
-      map: createIndexMap({file: filename, sections}),
-    };
-  }: OutputFn);
+  return {
+    code,
+    extraFiles: [[`${filename}.meta`, meta(code)]],
+    map: createIndexMap({file: filename, sections}),
+  };
+}
+
+module.exports = (asPlainBundle: OutputFn);
 
 const reLine = /^/gm;
 function countLines(string: string): number {
   //$FlowFixMe This regular expression always matches
   return string.match(reLine).length;
+}
+
+function* concat<T>(...iterables: Array<Iterable<T>>): Iterable<T> {
+  for (const it of iterables) {
+    yield* it;
+  }
 }
