@@ -64,7 +64,15 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
           arrayList.add(getBoolean(i));
           break;
         case Number:
-          arrayList.add(getDouble(i));
+          Double aDouble = getDouble(i);
+          if (Math.rint(aDouble) == aDouble) {
+            // WARNING: doubles have 64-bits, but the IEEE 754 encoding
+            // means we can only store integers of up to 52-bits.
+            // (This is still better than using 32-bit integers).
+            arrayList.add(aDouble.longValue());
+          } else {
+            arrayList.add(aDouble);
+          }
           break;
         case String:
           arrayList.add(getString(i));

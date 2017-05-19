@@ -71,7 +71,15 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
           hashMap.put(key, getBoolean(key));
           break;
         case Number:
-          hashMap.put(key, getDouble(key));
+          Double aDouble = getDouble(key);
+          if (Math.rint(aDouble) == aDouble) {
+            // WARNING: doubles have 64-bits, but the IEEE 754 encoding
+            // means we can only store integers of up to 52-bits.
+            // (This is still better than using 32-bit integers).
+            hashMap.put(key, aDouble.longValue());
+          } else {
+            hashMap.put(key, aDouble);
+          }
           break;
         case String:
           hashMap.put(key, getString(key));
