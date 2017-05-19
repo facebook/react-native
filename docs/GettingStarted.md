@@ -366,6 +366,13 @@ Once in the "AVD Manager", select your AVD and click "Edit...". Choose "Android 
 
 > It is very common to run into an issue where Android Studio fails to create a default AVD. You may follow the [Android Studio User Guide](https://developer.android.com/studio/run/managing-avds.html) to create a new AVD manually if needed.
 
+<block class="mac android" />
+
+You can also run the following command in a terminal:
+```
+$ANDROID_HOME/tools/bin/avdmanager list avd
+```
+
 ### Using a real device
 
 If you have a physical Android device, you can use it for development in place of an AVD. Plug it in to your computer using a USB cable and [enable USB debugging](https://developer.android.com/training/basics/firstapp/running-app.html) before proceeding to the next step.
