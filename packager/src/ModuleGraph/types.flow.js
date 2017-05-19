@@ -70,16 +70,17 @@ export type Module = {|
   file: File,
 |};
 
-export type OutputFn = (
-  modules: Iterable<Module>,
+export type OutputFn = ({|
   filename: string,
   idForPath: IdForPathFn,
+  modules: Iterable<Module>,
+  requireCalls: Iterable<Module>,
   sourceMapPath?: string,
-) => OutputResult;
+|}) => OutputResult;
 
 type OutputResult = {|
   code: string | Buffer,
-  extraFiles: Iterable<[string, string | Buffer]>,
+  extraFiles?: Iterable<[string, string | Buffer]>,
   map: SourceMap,
 |};
 

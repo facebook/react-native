@@ -695,7 +695,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         contentWidth = mEditText.getCompoundPaddingLeft() + mEditText.getLayout().getWidth() +
           mEditText.getCompoundPaddingRight();
         contentHeight = mEditText.getCompoundPaddingTop() + mEditText.getLayout().getHeight() +
-          mEditText.getCompoundPaddingTop();
+          mEditText.getCompoundPaddingBottom();
       }
 
       // The event that contains the event counter and updates it must be sent first.
