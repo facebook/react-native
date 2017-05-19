@@ -92,6 +92,19 @@ type Options<TModule, TPackage> = {|
 |};
 
 /**
+ * This is a way to describe what files we tried to look for when resolving
+ * a module name as file. This is mainly used for error reporting, so that
+ * we can explain why we cannot resolve a module.
+ */
+type FileCandidates =
+  // We only tried to resolve a specific asset.
+  | {|+type: 'asset', +name: string|}
+  // We attempted to resolve a name as being a source file (ex. JavaScript,
+  // JSON...), in which case there can be several variants we tried, for
+  // example `foo.ios.js`, `foo.js`, etc.
+  | {|+type: 'sources', +fileNames: $ReadOnlyArray<string>|};
+
+/**
  * It may not be a great pattern to leverage exception just for "trying" things
  * out, notably for performance. We should consider replacing these functions
  * to be nullable-returning, or being better stucture to the algorithm.
@@ -433,7 +446,12 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
         path.relative(packageName, realModuleName),
       );
       return tryResolveSync(
-        () => this._loadAsFile(potentialModulePath, fromModule, toModuleName),
+        () =>
+          this._loadAsFileOrThrow(
+            potentialModulePath,
+            fromModule,
+            toModuleName,
+          ),
         () => this._loadAsDir(potentialModulePath, fromModule, toModuleName),
       );
     }
@@ -463,7 +481,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
       potentialModulePath,
     );
     if (realModuleName === false) {
-      return this._loadAsFile(
+      return this._loadAsFileOrThrow(
         ResolutionRequest.EMPTY_MODULE,
         fromModule,
         toModuleName,
@@ -471,7 +489,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     }
 
     return tryResolveSync(
-      () => this._loadAsFile(realModuleName, fromModule, toModuleName),
+      () => this._loadAsFileOrThrow(realModuleName, fromModule, toModuleName),
       () => this._loadAsDir(realModuleName, fromModule, toModuleName),
     );
   }
@@ -483,7 +501,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     const realModuleName = this._redirectRequire(fromModule, toModuleName);
     // exclude
     if (realModuleName === false) {
-      return this._loadAsFile(
+      return this._loadAsFileOrThrow(
         ResolutionRequest.EMPTY_MODULE,
         fromModule,
         toModuleName,
@@ -567,7 +585,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
   ): ?TModule {
     try {
       return tryResolveSync(
-        () => this._loadAsFile(searchPath, fromModule, toModuleName),
+        () => this._loadAsFileOrThrow(searchPath, fromModule, toModuleName),
         () => this._loadAsDir(searchPath, fromModule, toModuleName),
       );
     } catch (error) {
@@ -578,53 +596,74 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     }
   }
 
-  _loadAsFile(
-    basepath: string,
+  /**
+   * Eventually we'd like to remove all the exception being throw in the middle
+   * of the resolution algorithm, instead keeping track of tentatives in a
+   * specific data structure, and building a proper error at the top-level.
+   * This function is meant to be a temporary proxy for _loadAsFile until
+   * the callsites switch to that tracking structure.
+   */
+  _loadAsFileOrThrow(
+    basePath: string,
     fromModule: TModule,
     toModule: string,
   ): TModule {
-    if (this._options.helpers.isAssetFile(basepath)) {
-      return this._loadAsAssetFile(basepath, fromModule, toModule);
+    const dirPath = path.dirname(basePath);
+    const fileNameHint = path.basename(basePath);
+    const candidates = [];
+    const result = this._loadAsFile(dirPath, fileNameHint, candidates);
+    if (result != null) {
+      return result;
     }
-    const dirPath = path.dirname(basepath);
+    const [candidate] = candidates;
+    invariant(candidate != null, 'missing file candidate');
+    if (candidate.type === 'asset') {
+      const msg =
+        `Directory \`${dirPath}' doesn't contain asset ` +
+        `\`${candidate.name}'`;
+      throw new UnableToResolveError(fromModule, toModule, msg);
+    }
+    invariant(candidate.type === 'sources', 'invalid candidate type');
+    const msg =
+      `Could not resolve the base path \`${basePath}' into a module. The ` +
+      `folder \`${dirPath}' was searched for one of these files: ` +
+      candidate.fileNames.map(filePath => `\`${filePath}'`).join(', ') +
+      '.';
+    throw new UnableToResolveError(fromModule, toModule, msg);
+  }
+
+  _loadAsFile(
+    dirPath: string,
+    fileNameHint: string,
+    candidates: Array<FileCandidates>,
+  ): ?TModule {
+    if (this._options.helpers.isAssetFile(fileNameHint)) {
+      const result = this._loadAsAssetFile(dirPath, fileNameHint);
+      if (result != null) {
+        return result;
+      }
+      candidates.push({type: 'asset', name: fileNameHint});
+      return null;
+    }
     const doesFileExist = this._doesFileExist;
     const resolver = new FileNameResolver({doesFileExist, dirPath});
-    const fileNamePrefix = path.basename(basepath);
-    const fileName = this._tryToResolveAllFileNames(resolver, fileNamePrefix);
+    const fileName = this._tryToResolveAllFileNames(resolver, fileNameHint);
     if (fileName != null) {
       return this._options.moduleCache.getModule(path.join(dirPath, fileName));
     }
-    throw new UnableToResolveError(
-      fromModule,
-      toModule,
-      `Could not resolve the base path \`${basepath}' into a module. The ` +
-        `folder \`${dirPath}' was searched for one of these files: ` +
-        resolver
-          .getTentativeFileNames()
-          .map(filePath => `\`${filePath}'`)
-          .join(', ') +
-        '.',
-    );
+    const fileNames = resolver.getTentativeFileNames();
+    candidates.push({type: 'sources', fileNames});
+    return null;
   }
 
-  _loadAsAssetFile(
-    potentialModulePath: string,
-    fromModule: TModule,
-    toModule: string,
-  ): TModule {
-    const dirPath = path.dirname(potentialModulePath);
-    const baseName = path.basename(potentialModulePath);
-    const assetNames = this._options.resolveAsset(dirPath, baseName);
+  _loadAsAssetFile(dirPath: string, fileNameHint: string): ?TModule {
+    const assetNames = this._options.resolveAsset(dirPath, fileNameHint);
     const assetName = getArrayLowestItem(assetNames);
     if (assetName != null) {
       const assetPath = path.join(dirPath, assetName);
       return this._options.moduleCache.getAssetModule(assetPath);
     }
-    throw new UnableToResolveError(
-      fromModule,
-      toModule,
-      `Directory \`${dirPath}' doesn't contain asset \`${baseName}'`,
-    );
+    return null;
   }
 
   /**
@@ -692,12 +731,12 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
         .getPackage(packageJsonPath)
         .getMain();
       return tryResolveSync(
-        () => this._loadAsFile(main, fromModule, toModule),
+        () => this._loadAsFileOrThrow(main, fromModule, toModule),
         () => this._loadAsDir(main, fromModule, toModule),
       );
     }
 
-    return this._loadAsFile(
+    return this._loadAsFileOrThrow(
       path.join(potentialDirPath, 'index'),
       fromModule,
       toModule,
