@@ -382,6 +382,7 @@ Use the React Native command line interface to generate a new React Native proje
 # skip this first command if you ejected from Create React Native App
 react-native init AwesomeProject
 cd AwesomeProject
+react-native start
 react-native run-ios
 ```
 
@@ -399,6 +400,7 @@ Use the React Native command line interface to generate a new React Native proje
 # skip this first command if you ejected from Create React Native App
 react-native init AwesomeProject
 cd AwesomeProject
+react-native start
 react-native run-android
 ```
 
@@ -442,6 +444,7 @@ Use the React Native command line interface to generate a new React Native proje
 # skip this first command if you ejected from Create React Native App
 react-native init AwesomeProject
 cd AwesomeProject
+react-native start
 react-native run-android
 ```
 
@@ -455,6 +458,7 @@ Use the React Native command line interface to generate a new React Native proje
 # skip this first command if you ejected from Create React Native App
 react-native init AwesomeProject
 cd AwesomeProject
+react-native start
 react-native run-android
 ```
 
