@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "authors": [
+    "Rod Vagg @rvagg <rod@vagg.org> (https://github.com/rvagg)"
+  ],
+  "main": "./lib/index.js",
+  "dependencies": {
+    "errno": ">=0.1.1 <0.2.0-0",
+    "xtend": ">=4.0.0 <4.1.0-0"
+  },
+  "devDependencies": {
+    "tape": ">=3.0.3 <3.1.0-0"
+  },
+  "scripts": {
+    "test": "node ./tests/"
+  },
+  "license": "MIT"
+}

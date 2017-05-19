@@ -305,7 +305,7 @@ You can see we're adding an event handler property to the view by subclassing `M
 // MapView.js
 
 class MapView extends React.Component {
-  constructor() {
+  constructor(props) {
     super(props)
     this._onChange = this._onChange.bind(this);
   }

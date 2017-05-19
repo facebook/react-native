@@ -113,6 +113,8 @@ private:
   void flushQueueImmediate(Value&&);
   void loadModule(uint32_t moduleId);
 
+  String adoptString(std::unique_ptr<const JSBigString>);
+
   template<JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
   void installNativeHook(const char* name);
   JSValueRef getNativeModule(JSObjectRef object, JSStringRef propertyName);

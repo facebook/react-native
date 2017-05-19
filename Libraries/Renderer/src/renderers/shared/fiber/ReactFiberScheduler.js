@@ -31,9 +31,7 @@ export type HandleErrorInfo = {
   componentStack: string,
 };
 
-var {
-  popContextProvider,
-} = require('ReactFiberContext');
+var {popContextProvider} = require('ReactFiberContext');
 const {reset} = require('ReactFiberStack');
 var {
   getStackAddendumByWorkInProgressFiber,
@@ -45,8 +43,8 @@ var ReactFiberBeginWork = require('ReactFiberBeginWork');
 var ReactFiberCompleteWork = require('ReactFiberCompleteWork');
 var ReactFiberCommitWork = require('ReactFiberCommitWork');
 var ReactFiberHostContext = require('ReactFiberHostContext');
-var ReactCurrentOwner = require('react/lib/ReactCurrentOwner');
 var ReactFeatureFlags = require('ReactFeatureFlags');
+var {ReactCurrentOwner} = require('ReactGlobalSharedState');
 var getComponentName = require('getComponentName');
 
 var {cloneFiber} = require('ReactFiber');
@@ -61,6 +59,8 @@ var {
   LowPriority,
   OffscreenPriority,
 } = require('ReactPriorityLevel');
+
+var {AsyncUpdates} = require('ReactTypeOfInternalContext');
 
 var {
   NoEffect,
@@ -81,13 +81,9 @@ var {
   ClassComponent,
 } = require('ReactTypeOfWork');
 
-var {
-  getPendingPriority,
-} = require('ReactFiberUpdateQueue');
+var {getPendingPriority} = require('ReactFiberUpdateQueue');
 
-var {
-  resetContext,
-} = require('ReactFiberContext');
+var {resetContext} = require('ReactFiberContext');
 
 var invariant = require('fbjs/lib/invariant');
 
@@ -173,11 +169,11 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
     resetAfterCommit,
   } = config;
 
-  // The priority level to use when scheduling an update.
-  // TODO: Should we change this to an array? Might be less confusing.
-  let priorityContext: PriorityLevel = useSyncScheduling
-    ? SynchronousPriority
-    : LowPriority;
+  // The priority level to use when scheduling an update. We use NoWork to
+  // represent the default priority.
+  // TODO: Should we change this to an array instead of using the call stack?
+  // Might be less confusing.
+  let priorityContext: PriorityLevel = NoWork;
 
   // Keep track of this so we can reset the priority context if an error
   // is thrown during reconciliation.
@@ -456,7 +452,7 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
       firstEffect = finishedWork.firstEffect;
     }
 
-    const commitInfo = prepareForCommit();
+    prepareForCommit();
 
     // Commit all the side-effects within a tree. We'll do this in two passes.
     // The first pass performs all the host insertions, updates, deletions and
@@ -472,11 +468,10 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
           null,
           commitAllHostEffects,
           null,
-          finishedWork,
         );
       } else {
         try {
-          commitAllHostEffects(finishedWork);
+          commitAllHostEffects();
         } catch (e) {
           error = e;
         }
@@ -498,7 +493,7 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
       stopCommitHostEffectsTimer();
     }
 
-    resetAfterCommit(commitInfo);
+    resetAfterCommit();
 
     // The work-in-progress tree is now the current tree. This must come after
     // the first pass of the commit phase, so that the previous tree is still
@@ -521,11 +516,10 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
           null,
           commitAllLifeCycles,
           null,
-          finishedWork,
         );
       } else {
         try {
-          commitAllLifeCycles(finishedWork);
+          commitAllLifeCycles();
         } catch (e) {
           error = e;
         }
@@ -686,6 +680,8 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
     }
 
     // Without this explicit null return Flow complains of invalid return type
+    // TODO Remove the above while(true) loop
+    // eslint-disable-next-line no-unreachable
     return null;
   }
 
@@ -1146,17 +1142,21 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
   function hasCapturedError(fiber: Fiber): boolean {
     // TODO: capturedErrors should store the boundary instance, to avoid needing
     // to check the alternate.
-    return capturedErrors !== null &&
+    return (
+      capturedErrors !== null &&
       (capturedErrors.has(fiber) ||
-        (fiber.alternate !== null && capturedErrors.has(fiber.alternate)));
+        (fiber.alternate !== null && capturedErrors.has(fiber.alternate)))
+    );
   }
 
   function isFailedBoundary(fiber: Fiber): boolean {
     // TODO: failedBoundaries should store the boundary instance, to avoid
     // needing to check the alternate.
-    return failedBoundaries !== null &&
+    return (
+      failedBoundaries !== null &&
       (failedBoundaries.has(fiber) ||
-        (fiber.alternate !== null && failedBoundaries.has(fiber.alternate)));
+        (fiber.alternate !== null && failedBoundaries.has(fiber.alternate)))
+    );
   }
 
   function commitErrorHandling(effectfulFiber: Fiber) {
@@ -1340,16 +1340,32 @@ module.exports = function<T, P, I, TI, PI, C, CX, PL>(
     }
   }
 
-  function getPriorityContext(): PriorityLevel {
+  function getPriorityContext(
+    fiber: Fiber,
+    forceAsync: boolean,
+  ): PriorityLevel {
+    let priorityLevel = priorityContext;
+    if (priorityLevel === NoWork) {
+      if (
+        !useSyncScheduling ||
+        fiber.internalContextTag & AsyncUpdates ||
+        forceAsync
+      ) {
+        priorityLevel = LowPriority;
+      } else {
+        priorityLevel = SynchronousPriority;
+      }
+    }
+
     // If we're in a batch, or if we're already performing work, downgrade sync
     // priority to task priority
     if (
-      priorityContext === SynchronousPriority &&
+      priorityLevel === SynchronousPriority &&
       (isPerformingWork || isBatchingUpdates)
     ) {
       return TaskPriority;
     }
-    return priorityContext;
+    return priorityLevel;
   }
 
   function scheduleErrorRecovery(fiber: Fiber) {

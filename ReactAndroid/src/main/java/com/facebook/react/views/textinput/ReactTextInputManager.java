@@ -105,7 +105,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       @Override
       public boolean onPreDraw() {
         editText.getViewTreeObserver().removeOnPreDrawListener(this);
+        int selectionStart = editText.getSelectionStart();
+        int selectionEnd = editText.getSelectionEnd();
         editText.setTextIsSelectable(true);
+        editText.setSelection(selectionStart, selectionEnd);
         return true;
       }
     });

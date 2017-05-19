@@ -76,7 +76,7 @@ class TerminalReporter {
     this._activeBundles = new Map();
     this._scheduleUpdateBundleProgress = throttle(data => {
       this.update({...data, type: 'bundle_transform_progressed_throttled'});
-    }, 200);
+    }, 100);
   }
 
   /**
@@ -135,8 +135,7 @@ class TerminalReporter {
     }
   }
 
-
-  _logPackagerInitializing(port: number, projectRoots: Array<string>) {
+  _logPackagerInitializing(port: number, projectRoots: $ReadOnlyArray<string>) {
     terminal.log(
       formatBanner(
         'Running packager on port ' +
@@ -183,7 +182,6 @@ class TerminalReporter {
     }
   }
 
-
   /**
    * This function is only concerned with logging and should not do state
    * or terminal status updates.
@@ -214,7 +212,23 @@ class TerminalReporter {
       case 'transform_cache_reset':
         reporting.logWarning(terminal, 'the transform cache was reset.');
         break;
+      case 'worker_stdout_chunk':
+        this._logWorkerChunk('stdout', event.chunk);
+        break;
+      case 'worker_stderr_chunk':
+        this._logWorkerChunk('stderr', event.chunk);
+        break;
     }
+  }
+
+  _logWorkerChunk(origin: 'stdout' | 'stderr', chunk: string) {
+    const lines = chunk.split('\n');
+    if (lines.length >= 1 && lines[lines.length - 1] === '') {
+      lines.splice(lines.length - 1, 1);
+    }
+    lines.forEach(line => {
+      terminal.log(`transform[${origin}]: ${line}`);
+    });
   }
 
   /**

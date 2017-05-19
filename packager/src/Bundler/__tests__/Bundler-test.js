@@ -12,20 +12,21 @@ jest.disableAutomock();
 
 jest
   .setMock('worker-farm', () => () => undefined)
+  .setMock('../../worker-farm', () => () => undefined)
   .setMock('uglify-js')
   .mock('image-size')
   .mock('fs')
   .mock('os')
   .mock('assert')
   .mock('progress')
-  .mock('../../node-haste')
+  .mock('../../node-haste/DependencyGraph')
   .mock('../../JSTransformer')
-  .mock('../../lib/declareOpts')
   .mock('../../Resolver')
   .mock('../Bundle')
   .mock('../HMRBundle')
   .mock('../../Logger')
-  .mock('../../lib/declareOpts');
+  .mock('/path/to/transformer.js', () => ({}), {virtual: true})
+  ;
 
 var Bundler = require('../');
 var Resolver = require('../../Resolver');
@@ -34,6 +35,9 @@ var sizeOf = require('image-size');
 var fs = require('fs');
 const os = require('os');
 
+const {any, objectContaining} = expect;
+
+
 var commonOptions = {
   allowBundleUpdates: false,
   assetExts: defaults.assetExts,
@@ -41,6 +45,8 @@ var commonOptions = {
   extraNodeModules: {},
   platforms: defaults.platforms,
   resetCache: false,
+  sourceExts: defaults.sourceExts,
+  transformModulePath: '/path/to/transformer.js',
   watch: false,
 };
 
@@ -91,6 +97,10 @@ describe('Bundler', function() {
       };
     });
     Resolver.load = jest.fn().mockImplementation(opts => Promise.resolve(new Resolver(opts)));
+
+    fs.__setMockFilesystem({
+      'path': {'to': {'transformer.js': ''}},
+    });
 
     fs.statSync.mockImplementation(function() {
       return {
@@ -169,7 +179,7 @@ describe('Bundler', function() {
               hot: false,
               inlineRequires: false,
               platform: undefined,
-              projectRoots,
+              projectRoot: projectRoots[0],
             },
           },
         },
@@ -304,14 +314,34 @@ describe('Bundler', function() {
         assetServer,
       });
 
+      const dev = false;
+      const minify = true;
+      const platform = 'arbitrary';
+
       const entryFile = '/root/foo.js';
       return b.bundle({
+        dev,
         entryFile,
+        minify,
+        platform,
         runBeforeMainModule: [],
         runModule: true,
         sourceMapUrl: 'source_map_url',
       }).then(() => {
-        expect(postProcessModules).toBeCalledWith(modules, entryFile);
+        expect(postProcessModules)
+          .toBeCalledWith(
+            modules.map(x => objectContaining({
+              name: any(String),
+              id: any(Number),
+              code: any(String),
+              sourceCode: any(String),
+              sourcePath: x.path,
+              meta: any(Object),
+              polyfill: !!x.isPolyfill(),
+            })),
+            entryFile,
+            {dev, minify, platform},
+          );
       });
     });
 

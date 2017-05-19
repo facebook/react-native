@@ -12,13 +12,14 @@
 'use strict';
 
 import type {RawMapping} from '../Bundler/source-map';
-import type {MixedSourceMap} from './SourceMap';
+import type Module from '../node-haste/Module';
+import type {SourceMap} from './SourceMap';
 
-type SourceMapOrMappings = MixedSourceMap | Array<RawMapping>;
+type SourceMapOrMappings = SourceMap | Array<RawMapping>;
 
 type Metadata = {
   dependencies?: ?Array<string>,
-  dependencyPairs?: Array<[mixed, {path: string}]>,
+  dependencyPairs?: Array<[string, Module]>,
   preloaded: ?boolean,
 };
 
@@ -29,9 +30,9 @@ class ModuleTransport {
   code: string;
   sourceCode: string;
   sourcePath: string;
-  virtual: ?boolean;
+  virtual: boolean;
   meta: ?Metadata;
-  polyfill: ?boolean;
+  polyfill: boolean;
   map: ?SourceMapOrMappings;
 
   constructor(data: {
@@ -40,9 +41,9 @@ class ModuleTransport {
     code: string,
     sourceCode: string,
     sourcePath: string,
-    virtual?: ?boolean,
+    virtual?: boolean,
     meta?: ?Metadata,
-    polyfill?: ?boolean,
+    polyfill?: boolean,
     map?: ?SourceMapOrMappings,
   }) {
     this.name = data.name;
@@ -59,9 +60,9 @@ class ModuleTransport {
     assertExists(data, 'sourcePath');
     this.sourcePath = data.sourcePath;
 
-    this.virtual = data.virtual;
+    this.virtual = !!data.virtual;
     this.meta = data.meta;
-    this.polyfill = data.polyfill;
+    this.polyfill = !!data.polyfill;
     this.map = data.map;
 
     Object.freeze(this);

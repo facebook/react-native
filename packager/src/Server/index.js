@@ -12,13 +12,13 @@
 'use strict';
 
 const AssetServer = require('../AssetServer');
-const getPlatformExtension = require('../node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const MultipartResponse = require('./MultipartResponse');
 
-const declareOpts = require('../lib/declareOpts');
 const defaults = require('../../defaults');
+const emptyFunction = require('fbjs/lib/emptyFunction');
 const mime = require('mime-types');
+const parsePlatformFilePath = require('../node-haste/lib/parsePlatformFilePath');
 const path = require('path');
 const symbolicate = require('./symbolicate');
 const terminal = require('../lib/terminal');
@@ -27,13 +27,12 @@ const url = require('url');
 const debug = require('debug')('RNP:Server');
 
 import type Module, {HasteImpl} from '../node-haste/Module';
-import type {Stats} from 'fs';
 import type {IncomingMessage, ServerResponse} from 'http';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 import type Bundle from '../Bundler/Bundle';
 import type HMRBundle from '../Bundler/HMRBundle';
 import type {Reporter} from '../lib/reporting';
-import type {GetTransformOptions} from '../Bundler';
+import type {GetTransformOptions, PostProcessModules, PostMinifyProcess} from '../Bundler';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {SourceMap, Symbolicate} from './symbolicate';
 
@@ -68,13 +67,15 @@ type Options = {
   moduleFormat?: string,
   platforms?: Array<string>,
   polyfillModuleNames?: Array<string>,
-  postProcessModules?: (modules: Array<Module>, entryFile: string) => Array<Module>,
-  projectRoots: Array<string>,
+  postProcessModules?: PostProcessModules,
+  postMinifyProcess: PostMinifyProcess,
+  projectRoots: $ReadOnlyArray<string>,
   providesModuleNodeModules?: Array<string>,
   reporter: Reporter,
   resetCache?: boolean,
   silent?: boolean,
-  transformModulePath?: string,
+  +sourceExts: ?Array<string>,
+  +transformModulePath: string,
   transformTimeoutInterval?: number,
   watch?: boolean,
 };
@@ -98,32 +99,14 @@ export type BundleOptions = {
   unbundle: boolean,
 };
 
-const dependencyOpts = declareOpts({
-  platform: {
-    type: 'string',
-    required: true,
-  },
-  dev: {
-    type: 'boolean',
-    default: true,
-  },
-  entryFile: {
-    type: 'string',
-    required: true,
-  },
-  recursive: {
-    type: 'boolean',
-    default: true,
-  },
-  hot: {
-    type: 'boolean',
-    default: false,
-  },
-  minify: {
-    type: 'boolean',
-    default: undefined,
-  },
-});
+type DependencyOptions = {|
+  +dev: boolean,
+  +entryFile: string,
+  +hot: boolean,
+  +minify: boolean,
+  +platform: ?string,
+  +recursive: boolean,
+|};
 
 const bundleDeps = new WeakMap();
 const NODE_MODULES = `${path.sep}node_modules${path.sep}`;
@@ -140,17 +123,19 @@ class Server {
     moduleFormat: string,
     platforms: Array<string>,
     polyfillModuleNames: Array<string>,
-    postProcessModules?: (modules: Array<Module>, entryFile: string) => Array<Module>,
-    projectRoots: Array<string>,
+    postProcessModules?: PostProcessModules,
+    postMinifyProcess: PostMinifyProcess,
+    projectRoots: $ReadOnlyArray<string>,
     providesModuleNodeModules?: Array<string>,
     reporter: Reporter,
     resetCache: boolean,
     silent: boolean,
-    transformModulePath: void | string,
+    +sourceExts: Array<string>,
+    +transformModulePath: string,
     transformTimeoutInterval: ?number,
     watch: boolean,
   };
-  _projectRoots: Array<string>;
+  _projectRoots: $ReadOnlyArray<string>;
   _bundles: {};
   _changeWatchers: Array<{
     req: IncomingMessage,
@@ -163,6 +148,7 @@ class Server {
   _hmrFileChangeListener: ?(type: string, filePath: string) => mixed;
   _reporter: Reporter;
   _symbolicateInWorker: Symbolicate;
+  _platforms: Set<string>;
 
   constructor(options: Options) {
     this._opts = {
@@ -177,23 +163,26 @@ class Server {
       platforms: options.platforms || defaults.platforms,
       polyfillModuleNames: options.polyfillModuleNames || [],
       postProcessModules: options.postProcessModules,
+      postMinifyProcess: options.postMinifyProcess,
       projectRoots: options.projectRoots,
       providesModuleNodeModules: options.providesModuleNodeModules,
       reporter: options.reporter,
       resetCache: options.resetCache || false,
       silent: options.silent || false,
+      sourceExts: options.sourceExts || defaults.sourceExts,
       transformModulePath: options.transformModulePath,
       transformTimeoutInterval: options.transformTimeoutInterval,
       watch: options.watch || false,
     };
     const processFileChange =
-      ({type, filePath, stat}) => this.onFileChange(type, filePath, stat);
+      ({type, filePath}) => this.onFileChange(type, filePath);
 
     this._reporter = options.reporter;
     this._projectRoots = this._opts.projectRoots;
     this._bundles = Object.create(null);
     this._changeWatchers = [];
     this._fileChangeListeners = [];
+    this._platforms = new Set(this._opts.platforms);
 
     this._assetServer = new AssetServer({
       assetExts: this._opts.assetExts,
@@ -291,17 +280,14 @@ class Server {
     return this._bundler.hmrBundle(options, host, port);
   }
 
-  getShallowDependencies(options: {
-    entryFile: string,
-    platform?: string,
-  }): Promise<Array<Module>> {
+  getShallowDependencies(options: DependencyOptions): Promise<Array<Module>> {
     return Promise.resolve().then(() => {
-      if (!options.platform) {
-        options.platform = getPlatformExtension(options.entryFile);
-      }
-
-      const opts = dependencyOpts(options);
-      return this._bundler.getShallowDependencies(opts);
+      const platform = options.platform != null
+        ? options.platform : parsePlatformFilePath(options.entryFile, this._platforms).platform;
+      const {entryFile, dev, minify, hot} = options;
+      return this._bundler.getShallowDependencies(
+        {entryFile, platform, dev, minify, hot, generateSourceMaps: false},
+      );
     });
   }
 
@@ -309,29 +295,29 @@ class Server {
     return this._bundler.getModuleForPath(entryFile);
   }
 
-  getDependencies(options: {
-    entryFile: string,
-    platform: ?string,
-  }): Promise<ResolutionResponse<Module, *>> {
+  getDependencies(options: DependencyOptions): Promise<ResolutionResponse<Module, *>> {
     return Promise.resolve().then(() => {
-      if (!options.platform) {
-        options.platform = getPlatformExtension(options.entryFile);
-      }
-
-      const opts = dependencyOpts(options);
-      return this._bundler.getDependencies(opts);
+      const platform = options.platform != null
+        ? options.platform : parsePlatformFilePath(options.entryFile, this._platforms).platform;
+      const {entryFile, dev, minify, hot} = options;
+      return this._bundler.getDependencies(
+        {entryFile, platform, dev, minify, hot, generateSourceMaps: false},
+      );
     });
   }
 
-  getOrderedDependencyPaths(options: {}): Promise<mixed> {
+  getOrderedDependencyPaths(options: {
+    +entryFile: string,
+    +dev: boolean,
+    +platform: string,
+  }): Promise<mixed> {
     return Promise.resolve().then(() => {
-      const opts = dependencyOpts(options);
-      return this._bundler.getOrderedDependencyPaths(opts);
+      return this._bundler.getOrderedDependencyPaths(options);
     });
   }
 
-  onFileChange(type: string, filePath: string, stat: Stats) {
-    this._assetServer.onFileChange(type, filePath, stat);
+  onFileChange(type: string, filePath: string) {
+    this._assetServer.onFileChange(type, filePath);
 
     // If Hot Loading is enabled avoid rebuilding bundles and sending live
     // updates. Instead, send the HMR updates right away and clear the bundles
@@ -566,6 +552,7 @@ class Server {
               changedModules.forEach(m => {
                 response.setResolvedDependencyPairs(
                   m,
+                  /* $FlowFixMe: should be enforced not to be null. */
                   dependencyPairs.get(m.path),
                   {ignoreFinalized: true},
                 );
@@ -666,7 +653,7 @@ class Server {
         entry_point: options.entryFile,
       }));
 
-    let reportProgress = () => {};
+    let reportProgress = emptyFunction;
     if (!this._opts.silent) {
       reportProgress = (transformedFileCount, totalFileCount) => {
         this._reporter.update({
@@ -848,7 +835,7 @@ class Server {
     // try to get the platform from the url
     /* $FlowFixMe: `query` could be empty for an invalid URL */
     const platform = urlObj.query.platform ||
-      getPlatformExtension(pathname);
+      parsePlatformFilePath(pathname, this._platforms).platform;
 
     /* $FlowFixMe: `query` could be empty for an invalid URL */
     const assetPlugin = urlObj.query.assetPlugin;

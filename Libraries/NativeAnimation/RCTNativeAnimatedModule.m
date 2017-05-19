@@ -28,7 +28,7 @@ RCT_EXPORT_MODULE();
 {
   [_nodesManager stopAnimationLoop];
   [self.bridge.eventDispatcher removeDispatchObserver:self];
-  [self.bridge.uiManager removeUIManagerObserver:self];
+  [self.bridge.uiManager.observerCoordinator removeObserver:self];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -48,7 +48,7 @@ RCT_EXPORT_MODULE();
   _preOperations = [NSMutableArray new];
 
   [bridge.eventDispatcher addDispatchObserver:self];
-  [bridge.uiManager addUIManagerObserver:self];
+  [bridge.uiManager.observerCoordinator addObserver:self];
 }
 
 #pragma mark -- API
@@ -195,6 +195,8 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 {
   [_preOperations addObject:operation];
 }
+
+#pragma mark - RCTUIManagerObserver
 
 - (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)uiManager
 {
