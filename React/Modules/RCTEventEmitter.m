@@ -51,7 +51,7 @@
                       args:body ? @[eventName, body] : @[eventName]
                 completion:NULL];
   } else {
-    RCTLogWarn(@"Sending `%@` with no listeners registered.", eventName);
+    RCTLogInfo(@"Sending `%@` with no listeners registered.", eventName);
   }
 }
 
