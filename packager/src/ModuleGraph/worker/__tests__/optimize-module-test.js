@@ -14,6 +14,7 @@ const optimizeModule = require('../optimize-module');
 const transformModule = require('../transform-module');
 const transformer = require('../../../../transformer.js');
 const {SourceMapConsumer} = require('source-map');
+const {fn} = require('../../test-helpers');
 
 const {objectContaining} = jasmine;
 
@@ -22,6 +23,7 @@ describe('optimizing JS modules', () => {
   const optimizationOptions = {
     dev: false,
     platform: 'android',
+    postMinifyProcess: x => x,
   };
   const originalCode =
     `if (Platform.OS !== 'android') {
@@ -82,6 +84,30 @@ describe('optimizing JS modules', () => {
         {...optimizationOptions, isPolyfill: true},
       ).details;
       expect(result.transformed.default.dependencies).toEqual([]);
+    });
+  });
+
+  describe('post-processing', () => {
+    let postMinifyProcess, optimize;
+    beforeEach(() => {
+      postMinifyProcess = fn();
+      optimize = () =>
+        optimizeModule(transformResult, {...optimizationOptions, postMinifyProcess});
+    });
+
+    it('passes the result to the provided postprocessing function', () => {
+      postMinifyProcess.stub.callsFake(x => x);
+      const result = optimize();
+      const {code, map} = result.details.transformed.default;
+      expect(postMinifyProcess).toBeCalledWith({code, map});
+    });
+
+    it('uses the result of the provided postprocessing function for the result', () => {
+      const code = 'var postprocessed = "code";';
+      const map = {version: 3, mappings: 'postprocessed'};
+      postMinifyProcess.stub.returns({code, map});
+      expect(optimize().details.transformed.default)
+        .toEqual(objectContaining({code, map}));
     });
   });
 
