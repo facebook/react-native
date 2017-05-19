@@ -11,23 +11,20 @@
 
 'use strict';
 
+const AssetResolutionCache = require('./AssetResolutionCache');
 const DependencyGraphHelpers = require('./DependencyGraph/DependencyGraphHelpers');
 const FilesByDirNameIndex = require('./FilesByDirNameIndex');
 const JestHasteMap = require('jest-haste-map');
 const Module = require('./Module');
 const ModuleCache = require('./ModuleCache');
-const Polyfill = require('./Polyfill');
 const ResolutionRequest = require('./DependencyGraph/ResolutionRequest');
 const ResolutionResponse = require('./DependencyGraph/ResolutionResponse');
 
 const fs = require('fs');
-const getAssetDataFromName = require('./lib/getAssetDataFromName');
-const getInverseDependencies = require('./lib/getInverseDependencies');
-const getPlatformExtension = require('./lib/getPlatformExtension');
 const invariant = require('fbjs/lib/invariant');
 const isAbsolutePath = require('absolute-path');
+const parsePlatformFilePath = require('./lib/parsePlatformFilePath');
 const path = require('path');
-const replacePatterns = require('./lib/replacePatterns');
 const util = require('util');
 
 const {
@@ -63,7 +60,7 @@ type Options = {|
   +providesModuleNodeModules: Array<string>,
   +reporter: Reporter,
   +resetCache: boolean,
-  +roots: Array<string>,
+  +roots: $ReadOnlyArray<string>,
   +sourceExts: Array<string>,
   +transformCode: TransformCode,
   +useWatchman: boolean,
@@ -74,6 +71,7 @@ const JEST_HASTE_MAP_CACHE_BREAKER = 1;
 
 class DependencyGraph extends EventEmitter {
 
+  _assetResolutionCache: AssetResolutionCache;
   _opts: Options;
   _filesByDirNameIndex: FilesByDirNameIndex;
   _haste: JestHasteMap;
@@ -92,13 +90,17 @@ class DependencyGraph extends EventEmitter {
     invariant(config.opts.maxWorkerCount >= 1, 'worker count must be greater or equal to 1');
     this._opts = config.opts;
     this._filesByDirNameIndex = new FilesByDirNameIndex(config.initialHasteFS.getAllFiles());
+    this._assetResolutionCache = new AssetResolutionCache({
+      assetExtensions: new Set(config.opts.assetExts),
+      getDirFiles: dirPath => this._filesByDirNameIndex.getAllFiles(dirPath),
+      platforms: config.opts.platforms,
+    });
     this._haste = config.haste;
     this._hasteFS = config.initialHasteFS;
     this._moduleMap = config.initialModuleMap;
     this._helpers = new DependencyGraphHelpers(this._opts);
     this._haste.on('change', this._onHasteChange.bind(this));
     this._moduleCache = this._createModuleCache();
-    (this: any)._matchFilesByDirAndPattern = this._matchFilesByDirAndPattern.bind(this);
   }
 
   static _createHaste(opts: Options): JestHasteMap {
@@ -152,9 +154,10 @@ class DependencyGraph extends EventEmitter {
   _onHasteChange({eventsQueue, hasteFS, moduleMap}) {
     this._hasteFS = hasteFS;
     this._filesByDirNameIndex = new FilesByDirNameIndex(hasteFS.getAllFiles());
+    this._assetResolutionCache.clear();
     this._moduleMap = moduleMap;
-    eventsQueue.forEach(({type, filePath, stat}) =>
-      this._moduleCache.processFileChange(type, filePath, stat)
+    eventsQueue.forEach(({type, filePath}) =>
+      this._moduleCache.processFileChange(type, filePath)
     );
     this.emit('change');
   }
@@ -162,14 +165,15 @@ class DependencyGraph extends EventEmitter {
   _createModuleCache() {
     const {_opts} = this;
     return new ModuleCache({
+      assetDependencies: _opts.assetDependencies,
+      depGraphHelpers: this._helpers,
+      getClosestPackage: this._getClosestPackage.bind(this),
       getTransformCacheKey: _opts.getTransformCacheKey,
       globalTransformCache: _opts.globalTransformCache,
-      transformCode: _opts.transformCode,
-      depGraphHelpers: this._helpers,
-      assetDependencies: _opts.assetDependencies,
       moduleOptions: _opts.moduleOptions,
       reporter: _opts.reporter,
-      getClosestPackage: this._getClosestPackage.bind(this),
+      roots: _opts.roots,
+      transformCode: _opts.transformCode,
     }, _opts.platforms);
   }
 
@@ -228,12 +232,12 @@ class DependencyGraph extends EventEmitter {
       extraNodeModules: this._opts.extraNodeModules,
       hasteFS: this._hasteFS,
       helpers: this._helpers,
-      matchFiles: this._matchFilesByDirAndPattern,
       moduleCache: this._moduleCache,
       moduleMap: this._moduleMap,
       platform,
-      platforms: this._opts.platforms,
       preferNativePlatform: this._opts.preferNativePlatform,
+      resolveAsset: (dirPath, assetName) =>
+        this._assetResolutionCache.resolve(dirPath, assetName, platform),
       sourceExts: this._opts.sourceExts,
     });
 
@@ -247,17 +251,13 @@ class DependencyGraph extends EventEmitter {
     }).then(() => response);
   }
 
-  _matchFilesByDirAndPattern(dirName: string, pattern: RegExp) {
-    return this._filesByDirNameIndex.match(dirName, pattern);
-  }
-
   matchFilesByPattern(pattern: RegExp) {
     return Promise.resolve(this._hasteFS.matchFiles(pattern));
   }
 
   _getRequestPlatform(entryPath: string, platform: ?string): ?string {
     if (platform == null) {
-      platform = getPlatformExtension(entryPath, this._opts.platforms);
+      platform = parsePlatformFilePath(entryPath, this._opts.platforms).platform;
     } else if (!this._opts.platforms.has(platform)) {
       throw new Error('Unrecognized platform: ' + platform);
     }
@@ -288,29 +288,13 @@ class DependencyGraph extends EventEmitter {
     return this._moduleCache.createPolyfill(options);
   }
 
-  static Module;
-  static Polyfill;
-  static getAssetDataFromName;
-  static getPlatformExtension;
-  static replacePatterns;
-  static getInverseDependencies;
-
 }
 
-Object.assign(DependencyGraph, {
-  Module,
-  Polyfill,
-  getAssetDataFromName,
-  getPlatformExtension,
-  replacePatterns,
-  getInverseDependencies,
-});
-
-function NotFoundError() {
+function NotFoundError(...args) {
   /* $FlowFixMe: monkey-patching */
   Error.call(this);
   Error.captureStackTrace(this, this.constructor);
-  var msg = util.format.apply(util, arguments);
+  var msg = util.format.apply(util, args);
   this.message = msg;
   this.type = this.name = 'NotFoundError';
   this.status = 404;

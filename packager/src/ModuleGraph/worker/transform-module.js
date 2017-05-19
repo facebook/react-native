@@ -72,6 +72,7 @@ function transformModule(
   Object.keys(variants).forEach(name => {
     tasks[name] = asyncify(() => transformer.transform({
         filename,
+        localPath: filename,
         options: {...defaultTransformOptions, ...variants[name]},
         src: code,
       })

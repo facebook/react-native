@@ -35,6 +35,7 @@ import type {Reporter} from '../lib/reporting';
 import type DependencyGraphHelpers
   from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
+import type {LocalPath} from './lib/toLocalPath';
 
 export type ReadResult = {
   +code: string,
@@ -74,6 +75,7 @@ export type ConstructorArgs = {
   depGraphHelpers: DependencyGraphHelpers,
   globalTransformCache: ?GlobalTransformCache,
   file: string,
+  localPath: LocalPath,
   moduleCache: ModuleCache,
   options: Options,
   reporter: Reporter,
@@ -86,6 +88,7 @@ type DocBlock = {+[key: string]: string};
 const TRANSFORM_CACHE = new TransformCache();
 
 class Module {
+  localPath: LocalPath;
   path: string;
   type: string;
 
@@ -106,6 +109,7 @@ class Module {
 
   constructor({
     depGraphHelpers,
+    localPath,
     file,
     getTransformCacheKey,
     globalTransformCache,
@@ -118,6 +122,7 @@ class Module {
       throw new Error('Expected file to be absolute path but got ' + file);
     }
 
+    this.localPath = localPath;
     this.path = file;
     this.type = 'Module';
 
@@ -436,6 +441,7 @@ class Module {
     const getTransformCacheKey = this._getTransformCacheKey;
     return {
       filePath: this.path,
+      localPath: this.localPath,
       sourceCode,
       getTransformCacheKey,
       transformOptions,

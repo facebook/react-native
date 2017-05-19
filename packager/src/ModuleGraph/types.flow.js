@@ -72,12 +72,14 @@ export type Module = {|
 
 export type OutputFn = (
   modules: Iterable<Module>,
-  filename?: string,
+  filename: string,
   idForPath: IdForPathFn,
+  sourceMapPath?: string,
 ) => OutputResult;
 
 type OutputResult = {|
-  code: string,
+  code: string | Buffer,
+  extraFiles: Iterable<[string, string | Buffer]>,
   map: SourceMap,
 |};
 

@@ -24,6 +24,7 @@ const writeFileAtomicSync = require('write-file-atomic').sync;
 import type {Options as WorkerOptions} from '../JSTransformer/worker/worker';
 import type {MappingsMap} from './SourceMap';
 import type {Reporter} from './reporting';
+import type {LocalPath} from '../node-haste/lib/toLocalPath';
 
 type CacheFilePaths = {transformedCode: string, metadata: string};
 export type GetTransformCacheKey = (options: {}) => string;
@@ -50,6 +51,7 @@ export type CacheOptions = {
 
 export type ReadTransformProps = {
   filePath: string,
+  localPath: LocalPath,
   sourceCode: string,
   transformOptions: WorkerOptions,
   transformOptionsKey: string,
@@ -88,14 +90,16 @@ class TransformCache {
    * close to each others, one of the workers is going to loose its results no
    * matter what.
    */
-  writeSync(props: {
-    filePath: string,
-    sourceCode: string,
-    getTransformCacheKey: GetTransformCacheKey,
-    transformOptions: WorkerOptions,
-    transformOptionsKey: string,
-    result: CachedResult,
-  }): void {
+  writeSync(
+    props: {
+      filePath: string,
+      sourceCode: string,
+      getTransformCacheKey: GetTransformCacheKey,
+      transformOptions: WorkerOptions,
+      transformOptionsKey: string,
+      result: CachedResult,
+    },
+  ): void {
     const cacheFilePath = this._getCacheFilePaths(props);
     mkdirp.sync(path.dirname(cacheFilePath.transformedCode));
     const {result} = props;
@@ -136,30 +140,36 @@ class TransformCache {
    */
   _readSync(props: ReadTransformProps): TransformCacheResult {
     this._collectIfNecessarySync(props.cacheOptions);
-    const cacheFilePaths = this._getCacheFilePaths(props);
-    let metadata, transformedCode;
     try {
-      metadata = readMetadataFileSync(cacheFilePaths.metadata);
-      if (metadata == null) {
-        return {result: null, outdatedDependencies: EMPTY_ARRAY};
-      }
-      const sourceHash = hashSourceCode(props);
-      if (sourceHash !== metadata.cachedSourceHash) {
-        return {result: null, outdatedDependencies: metadata.dependencies};
-      }
-      transformedCode = fs.readFileSync(cacheFilePaths.transformedCode, 'utf8');
-      const codeHash = crypto
-        .createHash('sha1')
-        .update(transformedCode)
-        .digest('hex');
-      if (metadata.cachedResultHash !== codeHash) {
-        return {result: null, outdatedDependencies: metadata.dependencies};
-      }
+      return this._readFilesSync(props);
     } catch (error) {
       if (error.code === 'ENOENT') {
         return {result: null, outdatedDependencies: EMPTY_ARRAY};
       }
       throw error;
+    }
+  }
+
+  _readFilesSync(props: ReadTransformProps): TransformCacheResult {
+    const cacheFilePaths = this._getCacheFilePaths(props);
+    const metadata = readMetadataFileSync(cacheFilePaths.metadata);
+    if (metadata == null) {
+      return {result: null, outdatedDependencies: EMPTY_ARRAY};
+    }
+    const sourceHash = hashSourceCode(props);
+    if (sourceHash !== metadata.cachedSourceHash) {
+      return {result: null, outdatedDependencies: metadata.dependencies};
+    }
+    const transformedCode = fs.readFileSync(
+      cacheFilePaths.transformedCode,
+      'utf8',
+    );
+    const codeHash = crypto
+      .createHash('sha1')
+      .update(transformedCode)
+      .digest('hex');
+    if (metadata.cachedResultHash !== codeHash) {
+      return {result: null, outdatedDependencies: metadata.dependencies};
     }
     return {
       result: {
@@ -225,7 +235,7 @@ class TransformCache {
     mkdirp.sync(cacheDirPath);
     const cacheCollectionFilePath = path.join(cacheDirPath, 'last_collected');
     const lastCollected = Number.parseInt(
-      tryReadFileSync(cacheCollectionFilePath, 'utf8'),
+      tryReadFileSync(cacheCollectionFilePath),
       10,
     );
     if (
@@ -245,10 +255,12 @@ class TransformCache {
    * account because it would generate lots of file during development. (The
    * source hash is stored in the metadata instead).
    */
-  _getCacheFilePaths(props: {
-    filePath: string,
-    transformOptionsKey: string,
-  }): CacheFilePaths {
+  _getCacheFilePaths(
+    props: {
+      filePath: string,
+      transformOptionsKey: string,
+    },
+  ): CacheFilePaths {
     const hasher = crypto
       .createHash('sha1')
       .update(props.filePath)
@@ -334,15 +346,7 @@ function readMetadataFileSync(
   sourceMap: ?MappingsMap,
 } {
   const metadataStr = fs.readFileSync(metadataFilePath, 'utf8');
-  let metadata;
-  try {
-    metadata = JSON.parse(metadataStr);
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      return null;
-    }
-    throw error;
-  }
+  const metadata = tryParseJSON(metadataStr);
   if (!Array.isArray(metadata)) {
     return null;
   }
@@ -373,13 +377,26 @@ function readMetadataFileSync(
   };
 }
 
-function hashSourceCode(props: {
-  filePath: string,
-  sourceCode: string,
-  getTransformCacheKey: GetTransformCacheKey,
-  transformOptions: WorkerOptions,
-  transformOptionsKey: string,
-}): string {
+function tryParseJSON(str: string): any {
+  try {
+    return JSON.parse(str);
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+function hashSourceCode(
+  props: {
+    filePath: string,
+    sourceCode: string,
+    getTransformCacheKey: GetTransformCacheKey,
+    transformOptions: WorkerOptions,
+    transformOptionsKey: string,
+  },
+): string {
   return crypto
     .createHash('sha1')
     .update(props.getTransformCacheKey(props.transformOptions))

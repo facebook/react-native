@@ -19,15 +19,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.JSInstance;
-import com.facebook.react.bridge.NativeArray;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactMarker;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableNativeArray;
-import com.facebook.react.bridge.WritableNativeArray;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 

@@ -387,8 +387,8 @@ void YGNodeFreeRecursive(const YGNodeRef root) {
 
 void YGNodeReset(const YGNodeRef node) {
   YGAssertWithNode(node,
-           YGNodeGetChildCount(node) == 0,
-           "Cannot reset a node which still has children attached");
+                   YGNodeGetChildCount(node) == 0,
+                   "Cannot reset a node which still has children attached");
   YGAssertWithNode(node, node->parent == NULL, "Cannot reset a node still attached to a parent");
 
   YGNodeListFree(node->children);
@@ -449,9 +449,10 @@ void YGNodeSetMeasureFunc(const YGNodeRef node, YGMeasureFunc measureFunc) {
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate places in Litho
     node->nodeType = YGNodeTypeDefault;
   } else {
-    YGAssertWithNode(node,
-             YGNodeGetChildCount(node) == 0,
-             "Cannot set measure function: Nodes with measure functions cannot have children.");
+    YGAssertWithNode(
+        node,
+        YGNodeGetChildCount(node) == 0,
+        "Cannot set measure function: Nodes with measure functions cannot have children.");
     node->measure = measureFunc;
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate places in Litho
     node->nodeType = YGNodeTypeText;
@@ -471,10 +472,12 @@ YGBaselineFunc YGNodeGetBaselineFunc(const YGNodeRef node) {
 }
 
 void YGNodeInsertChild(const YGNodeRef node, const YGNodeRef child, const uint32_t index) {
-  YGAssertWithNode(node, child->parent == NULL, "Child already has a parent, it must be removed first.");
   YGAssertWithNode(node,
-           node->measure == NULL,
-           "Cannot add child: Nodes with measure functions cannot have children.");
+                   child->parent == NULL,
+                   "Child already has a parent, it must be removed first.");
+  YGAssertWithNode(node,
+                   node->measure == NULL,
+                   "Cannot add child: Nodes with measure functions cannot have children.");
 
   YGNodeListInsert(&node->children, child, index);
   child->parent = node;
@@ -503,9 +506,9 @@ inline uint32_t YGNodeGetChildCount(const YGNodeRef node) {
 
 void YGNodeMarkDirty(const YGNodeRef node) {
   YGAssertWithNode(node,
-           node->measure != NULL,
-           "Only leaf nodes with custom measure functions"
-           "should manually mark themselves as dirty");
+                   node->measure != NULL,
+                   "Only leaf nodes with custom measure functions"
+                   "should manually mark themselves as dirty");
 
   YGNodeMarkDirtyInternal(node);
 }
@@ -522,6 +525,10 @@ void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode) {
 }
 
 static inline float YGResolveFlexGrow(const YGNodeRef node) {
+  // Root nodes flexGrow should always be 0
+  if (node->parent == NULL) {
+    return 0.0;
+  }
   if (!YGFloatIsUndefined(node->style.flexGrow)) {
     return node->style.flexGrow;
   }
@@ -542,6 +549,10 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
 }
 
 static inline float YGNodeResolveFlexShrink(const YGNodeRef node) {
+  // Root nodes flexShrink should always be 0
+  if (node->parent == NULL) {
+    return 0.0;
+  }
   if (!YGFloatIsUndefined(node->style.flexShrink)) {
     return node->style.flexShrink;
   }
@@ -702,27 +713,29 @@ static inline const YGValue *YGNodeResolveFlexBasisPtr(const YGNodeRef node) {
     return node->layout.instanceName;                          \
   }
 
-#define YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(type, name, instanceName)                        \
-  type YGNodeLayoutGet##name(const YGNodeRef node, const YGEdge edge) {                        \
-    YGAssertWithNode(node, edge < YGEdgeEnd, "Cannot get layout properties of multi-edge shorthands"); \
-                                                                                               \
-    if (edge == YGEdgeLeft) {                                                                  \
-      if (node->layout.direction == YGDirectionRTL) {                                          \
-        return node->layout.instanceName[YGEdgeEnd];                                           \
-      } else {                                                                                 \
-        return node->layout.instanceName[YGEdgeStart];                                         \
-      }                                                                                        \
-    }                                                                                          \
-                                                                                               \
-    if (edge == YGEdgeRight) {                                                                 \
-      if (node->layout.direction == YGDirectionRTL) {                                          \
-        return node->layout.instanceName[YGEdgeStart];                                         \
-      } else {                                                                                 \
-        return node->layout.instanceName[YGEdgeEnd];                                           \
-      }                                                                                        \
-    }                                                                                          \
-                                                                                               \
-    return node->layout.instanceName[edge];                                                    \
+#define YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(type, name, instanceName)        \
+  type YGNodeLayoutGet##name(const YGNodeRef node, const YGEdge edge) {        \
+    YGAssertWithNode(node,                                                     \
+                     edge < YGEdgeEnd,                                         \
+                     "Cannot get layout properties of multi-edge shorthands"); \
+                                                                               \
+    if (edge == YGEdgeLeft) {                                                  \
+      if (node->layout.direction == YGDirectionRTL) {                          \
+        return node->layout.instanceName[YGEdgeEnd];                           \
+      } else {                                                                 \
+        return node->layout.instanceName[YGEdgeStart];                         \
+      }                                                                        \
+    }                                                                          \
+                                                                               \
+    if (edge == YGEdgeRight) {                                                 \
+      if (node->layout.direction == YGDirectionRTL) {                          \
+        return node->layout.instanceName[YGEdgeStart];                         \
+      } else {                                                                 \
+        return node->layout.instanceName[YGEdgeEnd];                           \
+      }                                                                        \
+    }                                                                          \
+                                                                               \
+    return node->layout.instanceName[edge];                                    \
   }
 
 YG_NODE_PROPERTY_IMPL(void *, Context, context, context);
@@ -1143,8 +1156,8 @@ static float YGBaseline(const YGNodeRef node) {
                                           node->layout.measuredDimensions[YGDimensionWidth],
                                           node->layout.measuredDimensions[YGDimensionHeight]);
     YGAssertWithNode(node,
-             !YGFloatIsUndefined(baseline),
-             "Expect custom baseline function to not return NaN");
+                     !YGFloatIsUndefined(baseline),
+                     "Expect custom baseline function to not return NaN");
     return baseline;
   }
 
@@ -1949,13 +1962,15 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                              const bool performLayout,
                              const YGConfigRef config) {
   YGAssertWithNode(node,
-           YGFloatIsUndefined(availableWidth) ? widthMeasureMode == YGMeasureModeUndefined : true,
-           "availableWidth is indefinite so widthMeasureMode must be "
-           "YGMeasureModeUndefined");
+                   YGFloatIsUndefined(availableWidth) ? widthMeasureMode == YGMeasureModeUndefined
+                                                      : true,
+                   "availableWidth is indefinite so widthMeasureMode must be "
+                   "YGMeasureModeUndefined");
   YGAssertWithNode(node,
-           YGFloatIsUndefined(availableHeight) ? heightMeasureMode == YGMeasureModeUndefined : true,
-           "availableHeight is indefinite so heightMeasureMode must be "
-           "YGMeasureModeUndefined");
+                   YGFloatIsUndefined(availableHeight) ? heightMeasureMode == YGMeasureModeUndefined
+                                                       : true,
+                   "availableHeight is indefinite so heightMeasureMode must be "
+                   "YGMeasureModeUndefined");
 
   // Set the resolved resolution in the node's layout.
   const YGDirection direction = YGNodeResolveDirection(node, parentDirection);
@@ -2102,7 +2117,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     }
   }
 
-  float totalFlexBasis = 0;
+  float totalOuterFlexBasis = 0;
 
   // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
   for (uint32_t i = 0; i < childCount; i++) {
@@ -2155,11 +2170,14 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       }
     }
 
-    totalFlexBasis += child->layout.computedFlexBasis;
+    totalOuterFlexBasis +=
+        child->layout.computedFlexBasis + YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
+    ;
   }
 
-  const bool flexBasisOverflows =
-      measureModeMainDim == YGMeasureModeUndefined ? false : totalFlexBasis > availableInnerMainDim;
+  const bool flexBasisOverflows = measureModeMainDim == YGMeasureModeUndefined
+                                      ? false
+                                      : totalOuterFlexBasis > availableInnerMainDim;
   if (isNodeFlexWrap && flexBasisOverflows && measureModeMainDim == YGMeasureModeAtMost) {
     measureModeMainDim = YGMeasureModeExactly;
   }
@@ -2283,7 +2301,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         if (!node->config->useLegacyStretchBehaviour &&
             (totalFlexGrowFactors == 0 || YGResolveFlexGrow(node) == 0)) {
           // If we don't have any children to flex or we can't flex the node itself,
-          // space we've used is all space we need
+          // space we've used is all space we need. Root node also should be shrunk to minimum
           availableInnerMainDim = sizeConsumedOnCurrentLine;
         }
       }
@@ -2337,7 +2355,12 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       float deltaFlexGrowFactors = 0;
       currentRelativeChild = firstRelativeChild;
       while (currentRelativeChild != NULL) {
-        childFlexBasis = currentRelativeChild->layout.computedFlexBasis;
+        childFlexBasis =
+            fminf(YGResolveValue(&currentRelativeChild->style.maxDimensions[dim[mainAxis]],
+                                 mainAxisParentSize),
+                  fmaxf(YGResolveValue(&currentRelativeChild->style.minDimensions[dim[mainAxis]],
+                                       mainAxisParentSize),
+                        currentRelativeChild->layout.computedFlexBasis));
 
         if (remainingFreeSpace < 0) {
           flexShrinkScaledFactor = -YGNodeResolveFlexShrink(currentRelativeChild) * childFlexBasis;
@@ -2375,6 +2398,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                                             baseMainSize,
                                             availableInnerMainDim,
                                             availableInnerWidth);
+
             if (baseMainSize != boundMainSize) {
               // By excluding this item's size and flex factor from remaining,
               // this item's
@@ -2399,7 +2423,12 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       deltaFreeSpace = 0;
       currentRelativeChild = firstRelativeChild;
       while (currentRelativeChild != NULL) {
-        childFlexBasis = currentRelativeChild->layout.computedFlexBasis;
+        childFlexBasis =
+            fminf(YGResolveValue(&currentRelativeChild->style.maxDimensions[dim[mainAxis]],
+                                 mainAxisParentSize),
+                  fmaxf(YGResolveValue(&currentRelativeChild->style.minDimensions[dim[mainAxis]],
+                                       mainAxisParentSize),
+                        currentRelativeChild->layout.computedFlexBasis));
         float updatedMainSize = childFlexBasis;
 
         if (remainingFreeSpace < 0) {
@@ -2916,7 +2945,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                 if (!YGNodeIsStyleDimDefined(child, crossAxis, availableInnerCrossDim)) {
                   const float childWidth =
                       isMainAxisRow ? (child->layout.measuredDimensions[YGDimensionWidth] +
-                                       YGNodeMarginForAxis(child, crossAxis, availableInnerWidth))
+                                       YGNodeMarginForAxis(child, mainAxis, availableInnerWidth))
                                     : lineHeight;
 
                   const float childHeight =
@@ -3108,6 +3137,25 @@ static inline bool YGMeasureModeNewMeasureSizeIsStricterAndStillValid(YGMeasureM
          lastSize > size && (lastComputedSize <= size || YGFloatsEqual(size, lastComputedSize));
 }
 
+static float YGRoundValueToPixelGrid(const float value,
+                                     const float pointScaleFactor,
+                                     const bool forceCeil,
+                                     const bool forceFloor) {
+  float fractial = fmodf(value, pointScaleFactor);
+  if (YGFloatsEqual(fractial, 0)) {
+    // Still remove fractial as fractial could be  extremely small.
+    return value - fractial;
+  }
+  
+  if (forceCeil) {
+    return value - fractial + pointScaleFactor;
+  } else if (forceFloor) {
+    return value - fractial;
+  } else {
+    return value - fractial + (fractial >= pointScaleFactor / 2.0f ? pointScaleFactor : 0);
+  }
+}
+
 bool YGNodeCanUseCachedMeasurement(const YGMeasureMode widthMode,
                                    const float width,
                                    const YGMeasureMode heightMode,
@@ -3119,13 +3167,19 @@ bool YGNodeCanUseCachedMeasurement(const YGMeasureMode widthMode,
                                    const float lastComputedWidth,
                                    const float lastComputedHeight,
                                    const float marginRow,
-                                   const float marginColumn) {
+                                   const float marginColumn,
+                                   const YGConfigRef config) {
   if (lastComputedHeight < 0 || lastComputedWidth < 0) {
     return false;
   }
+  bool useRoundedComparison = config != NULL && config->pointScaleFactor != 0;
+  const float effectiveWidth = useRoundedComparison ? YGRoundValueToPixelGrid(width, config->pointScaleFactor, false, false) : width;
+  const float effectiveHeight = useRoundedComparison ? YGRoundValueToPixelGrid(height, config->pointScaleFactor, false, false) : height;
+  const float effectiveLastWidth = useRoundedComparison ? YGRoundValueToPixelGrid(lastWidth, config->pointScaleFactor, false, false) : lastWidth;
+  const float effectiveLastHeight = useRoundedComparison ? YGRoundValueToPixelGrid(lastHeight, config->pointScaleFactor, false, false) : lastHeight;
 
-  const bool hasSameWidthSpec = lastWidthMode == widthMode && YGFloatsEqual(lastWidth, width);
-  const bool hasSameHeightSpec = lastHeightMode == heightMode && YGFloatsEqual(lastHeight, height);
+  const bool hasSameWidthSpec = lastWidthMode == widthMode && YGFloatsEqual(effectiveLastWidth, effectiveWidth);
+  const bool hasSameHeightSpec = lastHeightMode == heightMode && YGFloatsEqual(effectiveLastHeight, effectiveHeight);
 
   const bool widthIsCompatible =
       hasSameWidthSpec || YGMeasureModeSizeIsExactAndMatchesOldMeasuredSize(widthMode,
@@ -3218,7 +3272,8 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
                                       layout->cachedLayout.computedWidth,
                                       layout->cachedLayout.computedHeight,
                                       marginAxisRow,
-                                      marginAxisColumn)) {
+                                      marginAxisColumn,
+                                      config)) {
       cachedResults = &layout->cachedLayout;
     } else {
       // Try to use the measurement cache.
@@ -3234,7 +3289,8 @@ bool YGLayoutNodeInternal(const YGNodeRef node,
                                           layout->cachedMeasurements[i].computedWidth,
                                           layout->cachedMeasurements[i].computedHeight,
                                           marginAxisRow,
-                                          marginAxisColumn)) {
+                                          marginAxisColumn,
+                                          config)) {
           cachedResults = &layout->cachedMeasurements[i];
           break;
         }
@@ -3365,25 +3421,6 @@ void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInP
     config->pointScaleFactor = 0.0f;
   } else {
     config->pointScaleFactor = 1.0f / pixelsInPoint;
-  }
-}
-
-static float YGRoundValueToPixelGrid(const float value,
-                                     const float pointScaleFactor,
-                                     const bool forceCeil,
-                                     const bool forceFloor) {
-  float fractial = fmodf(value, pointScaleFactor);
-  if (YGFloatsEqual(fractial, 0)) {
-    // Still remove fractial as fractial could be  extremely small.
-    return value - fractial;
-  }
-
-  if (forceCeil) {
-    return value - fractial + pointScaleFactor;
-  } else if (forceFloor) {
-    return value - fractial;
-  } else {
-    return value - fractial + (fractial >= pointScaleFactor / 2.0f ? pointScaleFactor : 0);
   }
 }
 

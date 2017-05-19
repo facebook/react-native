@@ -41,9 +41,10 @@ private:
 
 class String : public noncopyable {
 public:
-  explicit String(JSContextRef context, const char* utf8) :
-    m_context(context), m_string(JSC_JSStringCreateWithUTF8CString(context, utf8))
-  {}
+  explicit String(): m_context(nullptr), m_string(nullptr) {} // dummy empty constructor
+
+  explicit String(JSContextRef context, const char* utf8)
+  : m_context(context), m_string(JSC_JSStringCreateWithUTF8CString(context, utf8)) {}
 
   String(String&& other) :
     m_context(other.m_context), m_string(other.m_string)
@@ -65,18 +66,30 @@ public:
     }
   }
 
+  String& operator=(String&& other) {
+    if (m_string) {
+      JSC_JSStringRelease(m_context, m_string);
+    }
+
+    m_context = other.m_context;
+    m_string = other.m_string;
+    other.m_string = nullptr;
+
+    return *this;
+  }
+
   operator JSStringRef() const {
     return m_string;
   }
 
   // Length in characters
   size_t length() const {
-    return JSC_JSStringGetLength(m_context, m_string);
+    return m_string ? JSC_JSStringGetLength(m_context, m_string) : 0;
   }
 
   // Length in bytes of a null-terminated utf8 encoded value
   size_t utf8Size() const {
-    return JSC_JSStringGetMaximumUTF8CStringSize(m_context, m_string);
+    return m_string ? JSC_JSStringGetMaximumUTF8CStringSize(m_context, m_string) : 0;
   }
 
   /*
@@ -94,6 +107,9 @@ public:
    * https://mathiasbynens.be/notes/javascript-unicode
    */
   std::string str() const {
+    if (!m_string) {
+      return "";
+    }
     const JSChar* utf16 = JSC_JSStringGetCharactersPtr(m_context, m_string);
     size_t stringLength = JSC_JSStringGetLength(m_context, m_string);
     return unicode::utf16toUTF8(utf16, stringLength);
@@ -101,7 +117,7 @@ public:
 
   // Assumes that utf8 is null terminated
   bool equals(const char* utf8) {
-    return JSC_JSStringIsEqualToUTF8CString(m_context, m_string, utf8);
+    return m_string ? JSC_JSStringIsEqualToUTF8CString(m_context, m_string, utf8) : false;
   }
 
   // This assumes ascii is nul-terminated.

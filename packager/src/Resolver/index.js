@@ -39,10 +39,10 @@ type Options = {|
   +hasteImpl?: HasteImpl,
   +maxWorkerCount: number,
   +minifyCode: MinifyCode,
-  +postMinifyProcess?: PostMinifyProcess,
+  +postMinifyProcess: PostMinifyProcess,
   +platforms: Set<string>,
   +polyfillModuleNames?: Array<string>,
-  +projectRoots: Array<string>,
+  +projectRoots: $ReadOnlyArray<string>,
   +providesModuleNodeModules: Array<string>,
   +reporter: Reporter,
   +resetCache: boolean,
@@ -55,7 +55,7 @@ class Resolver {
 
   _depGraph: DependencyGraph;
   _minifyCode: MinifyCode;
-  _postMinifyProcess: ?PostMinifyProcess;
+  _postMinifyProcess: PostMinifyProcess;
   _polyfillModuleNames: Array<string>;
 
   constructor(opts: Options, depGraph: DependencyGraph) {
@@ -98,7 +98,7 @@ class Resolver {
 
   getDependencies<T: ContainsTransformerOptions>(
     entryPath: string,
-    options: {platform: string, recursive?: boolean},
+    options: {platform: ?string, recursive?: boolean},
     bundlingOptions: T,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     getModuleId: mixed,

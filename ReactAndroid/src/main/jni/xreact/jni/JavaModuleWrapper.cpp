@@ -10,6 +10,10 @@
 #include <cxxreact/JsArgumentHelpers.h>
 #include <cxxreact/NativeModule.h>
 
+#ifdef WITH_FBSYSTRACE
+#include <fbsystrace.h>
+#endif
+
 #include "CatalystInstanceImpl.h"
 #include "ReadableNativeArray.h"
 
@@ -80,9 +84,14 @@ folly::dynamic JavaNativeModule::getConstants() {
   }
 }
 
-void JavaNativeModule::invoke(unsigned int reactMethodId, folly::dynamic&& params) {
-  messageQueueThread_->runOnQueue([this, reactMethodId, params=std::move(params)] {
+void JavaNativeModule::invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) {
+  messageQueueThread_->runOnQueue([this, reactMethodId, params=std::move(params), callId] {
     static auto invokeMethod = wrapper_->getClass()->getMethod<void(jint, ReadableNativeArray::javaobject)>("invoke");
+    #ifdef WITH_FBSYSTRACE
+    if (callId != -1) {
+      fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
+    }
+    #endif
     invokeMethod(
       wrapper_,
       static_cast<jint>(reactMethodId),
@@ -148,13 +157,18 @@ folly::dynamic NewJavaNativeModule::getConstants() {
   }
 }
 
-void NewJavaNativeModule::invoke(unsigned int reactMethodId, folly::dynamic&& params) {
+void NewJavaNativeModule::invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) {
   if (reactMethodId >= methods_.size()) {
     throw std::invalid_argument(
       folly::to<std::string>("methodId ", reactMethodId, " out of range [0..", methods_.size(), "]"));
   }
   CHECK(!methods_[reactMethodId].isSyncHook()) << "Trying to invoke a synchronous hook asynchronously";
-  messageQueueThread_->runOnQueue([this, reactMethodId, params=std::move(params)] () mutable {
+  messageQueueThread_->runOnQueue([this, reactMethodId, params=std::move(params), callId] () mutable {
+    #ifdef WITH_FBSYSTRACE
+    if (callId != -1) {
+      fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
+    }
+    #endif
     invokeInner(reactMethodId, std::move(params));
   });
 }

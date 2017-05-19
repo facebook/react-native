@@ -97,11 +97,13 @@ describe('transforming JS modules:', () => {
       transformModule(sourceCode, options(variants), () => {
         expect(transformer.transform).toBeCalledWith({
             filename,
+            localPath: filename,
             options: {...defaults, ...variants.dev},
             src: sourceCode,
           });
         expect(transformer.transform).toBeCalledWith({
             filename,
+            localPath: filename,
             options: {...defaults, ...variants.prod},
             src: sourceCode,
           });

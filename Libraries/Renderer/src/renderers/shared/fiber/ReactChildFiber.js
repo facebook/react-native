@@ -60,7 +60,7 @@ if (__DEV__) {
       'Each child in an array or iterator should have a unique ' +
       '"key" prop. See https://fb.me/react-warning-keys for ' +
       'more information.' +
-      (getCurrentFiberStackAddendum(child) || '');
+      (getCurrentFiberStackAddendum() || '');
     if (ownerHasKeyUseWarning[currentComponentErrorInfo]) {
       return;
     }
@@ -71,7 +71,7 @@ if (__DEV__) {
       'Each child in an array or iterator should have a unique ' +
         '"key" prop. See https://fb.me/react-warning-keys for ' +
         'more information.%s',
-      getCurrentFiberStackAddendum(child),
+      getCurrentFiberStackAddendum(),
     );
   };
 }

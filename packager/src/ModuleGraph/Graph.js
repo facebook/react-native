@@ -10,6 +10,7 @@
  */
 'use strict';
 
+const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const memoize = require('async/memoize');
 const nullthrows = require('fbjs/lib/nullthrows');
@@ -51,11 +52,10 @@ type LoadQueue =
 const createParentModule =
   () => ({file: {code: '', type: 'script', path: ''}, dependencies: []});
 
-const noop = () => {};
 const NO_OPTIONS = {};
 
 exports.create = function create(resolve: ResolveFn, load: LoadFn): GraphFn {
-  function Graph(entryPoints, platform, options, callback = noop) {
+  function Graph(entryPoints, platform, options, callback = emptyFunction) {
     const {
       log = (console: any),
       optimize = false,
@@ -80,7 +80,7 @@ exports.create = function create(resolve: ResolveFn, load: LoadFn): GraphFn {
       callback(null, collect());
     };
     loadQueue.error = error => {
-      loadQueue.error = noop;
+      loadQueue.error = emptyFunction;
       loadQueue.kill();
       callback(error);
     };
