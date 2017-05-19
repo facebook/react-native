@@ -7,6 +7,7 @@
 import React, { Component } from 'react';
 import {
   AppRegistry,
+  Platform,
   StyleSheet,
   Text,
   View
@@ -31,6 +32,8 @@ export default class HelloWorld extends Component {
   }
 }
 
+const scale = Platform.isTVOS ? 3 : 1;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -39,14 +42,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   welcome: {
-    fontSize: 20,
+    fontSize: scale*20,
     textAlign: 'center',
-    margin: 10,
+    margin: scale*10,
   },
   instructions: {
     textAlign: 'center',
     color: '#333333',
-    marginBottom: 5,
+    marginBottom: scale*5,
+    fontSize: scale*10,
   },
 });
 

@@ -10,11 +10,11 @@
 
 const RunIOSInternals = require('./RunIOSInternals');
 
-const run_ios = new RunIOSInternals('iphoneos',
-                                    'iphonesimulator',
-                                    '',
-                                    'iOS',
-                                    'run-ios',
-                                    'iPhone 6');
+const run_ios = new RunIOSInternals('appletvos',
+                                    'appletvsimulator',
+                                    '-tvOS',
+                                    'tvOS',
+                                    'run-tvos',
+                                    'Apple TV 1080p');
 
 module.exports = run_ios.makeExports();

@@ -22,6 +22,14 @@ function printRunInstructions(projectDir, projectName) {
   console.log('   - or -');
   console.log('   Open ' + relativeXcodeProjectPath + ' in Xcode');
   console.log('   Hit the Run button');
+  // Apple TV
+  console.log(chalk.white.bold('To run your app on Apple TV:'));
+  console.log('   cd ' + absoluteProjectDir);
+  console.log('   react-native run-tvos');
+  console.log('   - or -');
+  console.log('   Open ' + relativeXcodeProjectPath + ' in Xcode');
+  console.log('   Select the ' + projectName + '-tvOS target');
+  console.log('   Hit the Run button');
   // Android
   console.log(chalk.white.bold('To run your app on Android:'));
   console.log('   cd ' + absoluteProjectDir);
