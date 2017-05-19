@@ -233,12 +233,10 @@ RCT_EXPORT_MODULE()
   NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:URL];
   request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
 
-
-  // set supplied headers
-  NSDictionary* headers = [RCTConvert NSDictionary:query[@"headers"]];
+  // Set supplied headers.
+  NSDictionary *headers = [RCTConvert NSDictionary:query[@"headers"]];
   [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
-    //request.allHTTPHeaderFields = [self stripNullsInRequestHeaders:[RCTConvert NSDictionary:query[@"headers"]]];
-    if(value) {
+    if (value) {
       [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
     }
   }];

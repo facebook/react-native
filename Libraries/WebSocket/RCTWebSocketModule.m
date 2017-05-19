@@ -65,9 +65,10 @@ RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols headers:(N
   // fetch). To get secure cookies for wss URLs, replace wss with https
   // in the URL.
   NSURLComponents *components = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:true];
-  if ([[components.scheme lowercaseString] isEqualToString:@"wss"]) {
+  if ([components.scheme.lowercaseString isEqualToString:@"wss"]) {
     components.scheme = @"https";
   }
+
   // Load and set the cookie header.
   NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:components.URL];
   request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
