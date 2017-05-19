@@ -501,7 +501,7 @@ const ScrollView = React.createClass({
    * @platform ios
    */
   flashScrollIndicators: function() {
-    this.getScrollResponder().scrollResponderFlashScrollIndicators()
+    this.getScrollResponder().scrollResponderFlashScrollIndicators();
   },
 
   _getKeyForIndex: function(index, childArray) {
