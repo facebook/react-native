@@ -400,6 +400,7 @@ Use the React Native command line interface to generate a new React Native proje
 react-native init AwesomeProject
 cd AwesomeProject
 react-native run-android
+react-native start
 ```
 
 If everything is set up correctly, you should see your new app running in your Android emulator shortly.
