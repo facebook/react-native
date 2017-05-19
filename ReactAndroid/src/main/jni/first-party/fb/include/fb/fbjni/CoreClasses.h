@@ -557,10 +557,15 @@ class PinnedPrimitiveArray {
    friend class JPrimitiveArray<typename jtype_traits<T>::array_type>;
 };
 
-struct JStackTraceElement : JavaClass<JStackTraceElement> {
+struct FBEXPORT JStackTraceElement : JavaClass<JStackTraceElement> {
   static auto constexpr kJavaDescriptor = "Ljava/lang/StackTraceElement;";
 
   static local_ref<javaobject> create(const std::string& declaringClass, const std::string& methodName, const std::string& file, int line);
+
+  std::string getClassName() const;
+  std::string getMethodName() const;
+  std::string getFileName() const;
+  int getLineNumber() const;
 };
 
 /// Wrapper to provide functionality to jthrowable references

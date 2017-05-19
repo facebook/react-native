@@ -184,6 +184,26 @@ auto JStackTraceElement::create(
   return newInstance(declaringClass, methodName, file, line);
 }
 
+std::string JStackTraceElement::getClassName() const {
+  static auto meth = javaClassStatic()->getMethod<local_ref<JString>()>("getClassName");
+  return meth(self())->toStdString();
+}
+
+std::string JStackTraceElement::getMethodName() const {
+  static auto meth = javaClassStatic()->getMethod<local_ref<JString>()>("getMethodName");
+  return meth(self())->toStdString();
+}
+
+std::string JStackTraceElement::getFileName() const {
+  static auto meth = javaClassStatic()->getMethod<local_ref<JString>()>("getFileName");
+  return meth(self())->toStdString();
+}
+
+int JStackTraceElement::getLineNumber() const {
+  static auto meth = javaClassStatic()->getMethod<jint()>("getLineNumber");
+  return meth(self());
+}
+
 // Translate C++ to Java Exception
 
 namespace {
