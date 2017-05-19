@@ -410,7 +410,7 @@ export PATH=${PATH}:${ANDROID_HOME}/tools
 export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 ```
 
-Type `source ~/.profile` to load the config into your current shell.
+Type `. ~/.profile` to load the config into your current shell.
 
 > Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio. You can find the actual location of the SDK in the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
