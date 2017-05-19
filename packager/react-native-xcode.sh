@@ -18,15 +18,14 @@ case "$CONFIGURATION" in
       echo "Skipping bundling for Simulator platform"
       exit 0;
     fi
-
-    DEV=true
+    if [[ "$DEV" = "" ]]; then DEV=true; fi
     ;;
   "")
     echo "$0 must be invoked by Xcode"
     exit 1
     ;;
   *)
-    DEV=false
+    if [[ "$DEV" = "" ]]; then DEV=false; fi
     ;;
 esac
 
