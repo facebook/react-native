@@ -239,7 +239,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final String method,
       final NativeArray arguments) {
     if (mDestroyed) {
-      FLog.w(ReactConstants.TAG, "Calling JS function after bridge has been destroyed.");
+      final String call = module + "." + method + "(" + arguments.toString() + ")";
+      FLog.w(ReactConstants.TAG, "Calling JS function after bridge has been destroyed: " + call);
       return;
     }
     if (!mAcceptCalls) {

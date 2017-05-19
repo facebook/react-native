@@ -232,9 +232,10 @@ class URIBasedGlobalTransformCache {
     hash.update(this._optionsHasher.getTransformWorkerOptionsDigest(transformOptions));
     const cacheKey = props.getTransformCacheKey(transformOptions);
     hash.update(JSON.stringify(cacheKey));
+    hash.update(JSON.stringify(localPath));
     hash.update(crypto.createHash('sha1').update(sourceCode).digest('hex'));
     const digest = hash.digest('hex');
-    return `${digest}-${localPath}`;
+    return `${digest}-${path.basename(localPath)}`;
   }
 
   /**
