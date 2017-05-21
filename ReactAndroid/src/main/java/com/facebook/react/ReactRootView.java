@@ -105,13 +105,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mWasMeasured = true;
       // Check if we were waiting for onMeasure to attach the root view.
       if (mReactInstanceManager != null && !mIsAttachedToInstance) {
-        // Enqueue it to UIThread not to block onMeasure waiting for the catalyst instance creation.
-        UiThreadUtil.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            attachToReactInstanceManager();
-          }
-        });
+        attachToReactInstanceManager();
       }
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
