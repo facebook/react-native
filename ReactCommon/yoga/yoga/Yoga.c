@@ -874,7 +874,7 @@ static void YGPrintEdgeIfNotUndefined(const YGNodeRef node,
                                       const char *str,
                                       const YGValue *edges,
                                       const YGEdge edge) {
-  YGPrintNumberIfNotUndefined(node, str, YGComputedEdgeValue(edges, YGEdgeLeft, &YGValueUndefined));
+  YGPrintNumberIfNotUndefined(node, str, YGComputedEdgeValue(edges, edge, &YGValueUndefined));
 }
 
 static void YGPrintNumberIfNotZero(const YGNodeRef node,
