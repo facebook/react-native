@@ -175,6 +175,7 @@ Alternatively, select "Dev Settings" from the Developer Menu, then update the "D
 2. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java```, add the following imports:
 
    ```java
+   import android.os.Bundle;
    import com.facebook.react.modules.network.ReactCookieJarContainer;
    import com.facebook.stetho.Stetho;
    import okhttp3.OkHttpClient;
@@ -185,8 +186,8 @@ Alternatively, select "Dev Settings" from the Developer Menu, then update the "D
 
 3. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java``` add the function:
    ```java
-   public void onCreate() {
-         super.onCreate();
+   public void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
          Stetho.initializeWithDefaults(this);
          OkHttpClient client = new OkHttpClient.Builder()
          .connectTimeout(0, TimeUnit.MILLISECONDS)
