@@ -31,7 +31,7 @@ const pollParams = require('./pollParams');
 const commandStub = require('./commandStub');
 const promisify = require('./promisify');
 
-import type {ConfigT} from '../core';
+import type {RNConfig} from '../core';
 
 log.heading = 'rnpm-link';
 
@@ -135,7 +135,7 @@ const linkAssets = (project, assets) => {
  *             only that package is processed.
  * @param config CLI config, see local-cli/core/index.js
  */
-function link(args: Array<string>, config: ConfigT) {
+function link(args: Array<string>, config: RNConfig) {
   var project;
   try {
     project = config.getProjectConfig();

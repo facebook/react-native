@@ -34,7 +34,7 @@ const SIZEOF_UINT32 = 4;
 function saveAsIndexedFile(
   bundle: Bundle,
   options: OutputOptions,
-  log: (x: string) => void,
+  log: (...args: Array<string>) => void,
 ): Promise<> {
   const {
     bundleOutput,

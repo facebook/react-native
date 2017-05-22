@@ -19,9 +19,10 @@ jest
   ;
 
 // This doesn't have state, and it's huge (Babel) so it's much faster to
-// require it only once.
-const extractDependencies = require('../../JSTransformer/worker/extract-dependencies');
-jest.mock('../../JSTransformer/worker/extract-dependencies', () => extractDependencies);
+// require it only once. The variable name is prefixed with "mock" as an escape-hatch
+// for babel-plugin-jest-hoist.
+const mockExtractDependencies = require('../../JSTransformer/worker/extract-dependencies');
+jest.mock('../../JSTransformer/worker/extract-dependencies', () => mockExtractDependencies);
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
@@ -36,10 +37,16 @@ describe('DependencyGraph', function() {
   let Module;
   let ResolutionRequest;
   let defaults;
+  let emptyTransformOptions;
 
   function getOrderedDependenciesAsJSON(dgraphPromise, entryPath, platform, recursive = true) {
-    return dgraphPromise
-      .then(dgraph => dgraph.getDependencies({entryPath, platform, recursive}))
+    return Promise.resolve(dgraphPromise)
+      .then(dgraph => dgraph.getDependencies({
+        entryPath,
+        options: emptyTransformOptions,
+        platform,
+        recursive,
+      }))
       .then(response => response.finalize())
       .then(({dependencies}) => Promise.all(dependencies.map(dep => Promise.all([
         dep.getName(),
@@ -62,47 +69,9 @@ describe('DependencyGraph', function() {
     Module = require('../Module');
     ResolutionRequest = require('../DependencyGraph/ResolutionRequest');
 
-    const Cache = jest.genMockFn().mockImplementation(function() {
-      this._maps = Object.create(null);
-    });
-    Cache.prototype.has = jest.genMockFn()
-      .mockImplementation(function(filepath, field) {
-        if (!(filepath in this._maps)) {
-          return false;
-        }
-        return !field || field in this._maps[filepath];
-      });
-    Cache.prototype.get = jest.genMockFn()
-      .mockImplementation(function(filepath, field, factory) {
-        let cacheForPath  = this._maps[filepath];
-        if (this.has(filepath, field)) {
-          return field ? cacheForPath[field] : cacheForPath;
-        }
-
-        if (!cacheForPath) {
-          cacheForPath = this._maps[filepath] = Object.create(null);
-        }
-        const value = cacheForPath[field] = factory();
-        return value;
-      });
-    Cache.prototype.invalidate = jest.genMockFn()
-      .mockImplementation(function(filepath, field) {
-        if (!this.has(filepath, field)) {
-          return;
-        }
-
-        if (field) {
-          delete this._maps[filepath][field];
-        } else {
-          delete this._maps[filepath];
-        }
-      });
-    Cache.prototype.end = jest.genMockFn();
-
+    emptyTransformOptions = {transformer: {transform: {}}};
     defaults = {
       assetExts: ['png', 'jpg'],
-      cache: new Cache(),
-      extensions: ['js', 'json'],
       forceNodeFilesystemAPI: true,
       providesModuleNodeModules: [
         'haste-fbjs',
@@ -113,19 +82,20 @@ describe('DependencyGraph', function() {
       useWatchman: false,
       ignoreFilePath: () => false,
       maxWorkerCount: 1,
-      moduleOptions: {cacheTransformResults: true},
+      moduleOptions: {},
       resetCache: true,
       transformCode: (module, sourceCode, transformOptions) => {
         return new Promise(resolve => {
           let deps = {dependencies: [], dependencyOffsets: []};
           if (!module.path.endsWith('.json')) {
-            deps = extractDependencies(sourceCode);
+            deps = mockExtractDependencies(sourceCode);
           }
           resolve({...deps, code: sourceCode});
         });
       },
       getTransformCacheKey: () => 'abcdef',
       reporter: require('../../lib/reporting').nullReporter,
+      sourceExts: ['js', 'json'],
       watch: true,
     };
   });
@@ -136,7 +106,7 @@ describe('DependencyGraph', function() {
     const realPlatform = process.platform;
     beforeEach(function() {
       process.platform = 'linux';
-      DependencyGraph = require('../index');
+      DependencyGraph = require('../DependencyGraph');
     });
 
     afterEach(function() {
@@ -1849,7 +1819,7 @@ describe('DependencyGraph', function() {
       });
 
       it('should support browser exclude of a package ("' + fieldName + '")', function() {
-        ResolutionRequest.emptyModule = '/root/emptyModule.js';
+        ResolutionRequest.EMPTY_MODULE = '/root/emptyModule.js';
         var root = '/root';
         setMockFileSystem({
           'root': {
@@ -1915,7 +1885,7 @@ describe('DependencyGraph', function() {
       });
 
       it('should support browser exclude of a file ("' + fieldName + '")', function() {
-        ResolutionRequest.emptyModule = '/root/emptyModule.js';
+        ResolutionRequest.EMPTY_MODULE = '/root/emptyModule.js';
 
         var root = '/root';
         setMockFileSystem({
@@ -2398,7 +2368,7 @@ describe('DependencyGraph', function() {
       // reload path module
       jest.resetModules();
       jest.mock('path', () => path.win32);
-      DependencyGraph = require('../index');
+      DependencyGraph = require('../DependencyGraph');
     });
 
     afterEach(function() {
@@ -2589,7 +2559,7 @@ describe('DependencyGraph', function() {
     let DependencyGraph;
     beforeEach(function() {
       process.platform = 'linux';
-      DependencyGraph = require('../index');
+      DependencyGraph = require('../DependencyGraph');
     });
 
     afterEach(function() {
@@ -3569,7 +3539,7 @@ describe('DependencyGraph', function() {
     // due to the drive letter expectation
     if (realPlatform !== 'win32') { return; }
 
-    const DependencyGraph = require('../index');
+    const DependencyGraph = require('../DependencyGraph');
 
     it('should work with nested node_modules', function() {
       var root = '/root';
@@ -4533,7 +4503,7 @@ describe('DependencyGraph', function() {
 
     beforeEach(function() {
       process.platform = 'linux';
-      DependencyGraph = require('../index');
+      DependencyGraph = require('../DependencyGraph');
     });
 
     afterEach(function() {
@@ -4969,7 +4939,7 @@ describe('DependencyGraph', function() {
           },
           {
             dependencies: [],
-            id: 'aPackage/main.js',
+            id: 'bPackage/main.js',
             isAsset: false,
             isJSON: false,
             isPolyfill: false,
@@ -5181,6 +5151,69 @@ describe('DependencyGraph', function() {
         expect(deps).toBeDefined();
       });
     });
+
+    it('should recover from multiple modules with the same name (but this is broken right now)', async () => {
+      const root = '/root';
+      console.warn = jest.fn();
+      const filesystem = setMockFileSystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require(\'a\')',
+            'require(\'b\')',
+          ].join('\n'),
+          'a.js': [
+            '/**',
+            ' * @providesModule a',
+            ' */',
+          ].join('\n'),
+          'b.js': [
+            '/**',
+            ' * @providesModule b',
+            ' */',
+          ].join('\n'),
+        },
+      });
+
+      const dgraph = DependencyGraph.load({...defaults, roots: [root]});
+      await getOrderedDependenciesAsJSON(dgraph, root + '/index.js');
+      filesystem.root['b.js'] = [
+        '/**',
+        ' * @providesModule a',
+        ' */',
+      ].join('\n');
+      await triggerAndProcessWatchEvent(dgraph, 'change', root + '/b.js');
+      try {
+        await getOrderedDependenciesAsJSON(dgraph, root + '/index.js');
+        throw new Error('expected `getOrderedDependenciesAsJSON` to fail');
+      } catch (error) {
+        if (error.type !== 'UnableToResolveError') {
+          throw error;
+        }
+        expect(console.warn).toBeCalled();
+        filesystem.root['b.js'] = [
+          '/**',
+          ' * @providesModule b',
+          ' */',
+        ].join('\n');
+        await triggerAndProcessWatchEvent(dgraph, 'change', root + '/b.js');
+      }
+
+      // This verifies that it is broken right now. Instead of throwing it should
+      // return correct results. Once this is fixed in `jest-haste`, remove
+      // the whole try catch and verify results are matching a snapshot.
+      try {
+        await getOrderedDependenciesAsJSON(dgraph, root + '/index.js');
+        throw new Error('expected `getOrderedDependenciesAsJSON` to fail');
+      } catch (error) {
+        if (error.type !== 'UnableToResolveError') {
+          throw error;
+        }
+      }
+    });
+
   });
 
   describe('Extensions', () => {
@@ -5188,7 +5221,7 @@ describe('DependencyGraph', function() {
     let DependencyGraph;
     beforeEach(function() {
       process.platform = 'linux';
-      DependencyGraph = require('../index');
+      DependencyGraph = require('../DependencyGraph');
     });
 
     afterEach(function() {
@@ -5217,7 +5250,7 @@ describe('DependencyGraph', function() {
       var dgraph = DependencyGraph.load({
         ...defaults,
         roots: [root],
-        extensions: ['jsx', 'coffee'],
+        sourceExts: ['jsx', 'coffee'],
       });
 
       return dgraph
@@ -5251,6 +5284,80 @@ describe('DependencyGraph', function() {
           ]);
         });
     });
+
+    it('supports custom file extensions with relative paths', async () => {
+      const root = '/root';
+      setMockFileSystem({
+        'root': {
+          'index.jsx': [
+            'require("./a")',
+          ].join('\n'),
+          'a.coffee': [
+          ].join('\n'),
+          'X.js': '',
+        },
+      });
+
+      const dgraph = await DependencyGraph.load({
+        ...defaults,
+        roots: [root],
+        sourceExts: ['jsx', 'coffee'],
+      });
+      const files = await dgraph.matchFilesByPattern('.*');
+      expect(files).toEqual([
+        '/root/index.jsx', '/root/a.coffee',
+      ]);
+
+      const deps = await getOrderedDependenciesAsJSON(dgraph, '/root/index.jsx');
+      expect(deps).toEqual([
+        {
+          dependencies: ['./a'],
+          id: '/root/index.jsx',
+          isAsset: false,
+          isJSON: false,
+          isPolyfill: false,
+          path: '/root/index.jsx',
+          resolution: undefined,
+        },
+        {
+          dependencies: [],
+          id: '/root/a.coffee',
+          isAsset: false,
+          isJSON: false,
+          isPolyfill: false,
+          path: '/root/a.coffee',
+          resolution: undefined,
+        },
+      ]);
+    });
+
+    it('does not include extensions that are not specified explicitely', async () => {
+      const root = '/root';
+      setMockFileSystem({
+        'root': {
+          'index.jsx': [
+            'require("./a")',
+          ].join('\n'),
+          'a.coffee': [
+          ].join('\n'),
+          'X.js': '',
+        },
+      });
+
+      const dgraph = await DependencyGraph.load({
+        ...defaults,
+        roots: [root],
+      });
+      const files = await dgraph.matchFilesByPattern('.*');
+      expect(files).toEqual(['/root/X.js']);
+
+      try {
+        await getOrderedDependenciesAsJSON(dgraph, '/root/index.jsx');
+        throw Error('should not reach this line');
+      } catch (error) {
+        expect(error.type).toEqual('UnableToResolveError');
+      }
+    });
   });
 
   describe('Progress updates', () => {
@@ -5268,6 +5375,7 @@ describe('DependencyGraph', function() {
       return dependencyGraph.getDependencies({
         entryPath: '/root/index.js',
         onProgress,
+        options: emptyTransformOptions,
       });
     }
 
@@ -5285,7 +5393,7 @@ describe('DependencyGraph', function() {
           'g.js': makeModule('g'),
         },
       });
-      const DependencyGraph = require('../');
+      const DependencyGraph = require('../DependencyGraph');
       return DependencyGraph.load({
         ...defaults,
         roots: ['/root'],
@@ -5316,7 +5424,7 @@ describe('DependencyGraph', function() {
   describe('Asset module dependencies', () => {
     let DependencyGraph;
     beforeEach(() => {
-      DependencyGraph = require('../index');
+      DependencyGraph = require('../DependencyGraph');
     });
 
     it('allows setting dependencies for asset modules', () => {
@@ -5352,7 +5460,7 @@ describe('DependencyGraph', function() {
 
     beforeEach(() => {
       moduleRead = Module.prototype.read;
-      DependencyGraph = require('../index');
+      DependencyGraph = require('../DependencyGraph');
       setMockFileSystem({
         'root': {
           'index.js': `

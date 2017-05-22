@@ -28,10 +28,10 @@ var validateCallback = require('validateCallback');
  * @implements PooledClass
  * @internal
  */
-class CallbackQueue<T> {
-  _callbacks: ?Array<() => void>;
+class CallbackQueue<T, Targ> {
+  _callbacks: ?Array<(arg: Targ) => void>;
   _contexts: ?Array<T>;
-  _arg: ?mixed;
+  _arg: Targ;
 
   constructor(arg) {
     this._callbacks = null;
@@ -66,7 +66,7 @@ class CallbackQueue<T> {
     if (callbacks && contexts) {
       invariant(
         callbacks.length === contexts.length,
-        'Mismatched list of contexts in callback queue'
+        'Mismatched list of contexts in callback queue',
       );
       this._callbacks = null;
       this._contexts = null;

@@ -34,6 +34,11 @@
   return self;
 }
 
+- (void)send:(id)data
+{
+  [_socket send:data];
+}
+
 - (void)start
 {
   [self stop];

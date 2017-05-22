@@ -13,7 +13,7 @@
 
 const B64Builder = require('./B64Builder');
 
-import type {SourceMap} from 'babel-core';
+import type {MappingsMap} from '../../lib/SourceMap';
 
 /**
  * Generates a source map from raw mappings.
@@ -39,7 +39,7 @@ class Generator {
   names: IndexedSet;
   source: number;
   sources: Array<string>;
-  sourcesContent: Array<string>;
+  sourcesContent: Array<?string>;
 
   constructor() {
     this.builder = new B64Builder();
@@ -141,7 +141,7 @@ class Generator {
   /**
    * Return the source map as object.
    */
-  toMap(file?: string): SourceMap {
+  toMap(file?: string): MappingsMap {
     return {
       version: 3,
       file,

@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @format
  */
 
 'use strict';
@@ -16,19 +17,19 @@ const Module = require('./Module');
 const Package = require('./Package');
 const Polyfill = require('./Polyfill');
 
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+const toLocalPath = require('./lib/toLocalPath');
+
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
-import type Cache from './Cache';
-import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
+import type DependencyGraphHelpers
+  from './DependencyGraph/DependencyGraphHelpers';
 import type {TransformCode, Options as ModuleOptions} from './Module';
 
 type GetClosestPackageFn = (filePath: string) => ?string;
 
 class ModuleCache {
-
   _assetDependencies: Array<string>;
-  _cache: Cache;
   _depGraphHelpers: DependencyGraphHelpers;
   _getClosestPackage: GetClosestPackageFn;
   _getTransformCacheKey: GetTransformCacheKey;
@@ -40,34 +41,37 @@ class ModuleCache {
   _platforms: Set<string>;
   _transformCode: TransformCode;
   _reporter: Reporter;
+  _roots: $ReadOnlyArray<string>;
 
-  constructor({
-    assetDependencies,
-    cache,
-    depGraphHelpers,
-    extractRequires,
-    getClosestPackage,
-    getTransformCacheKey,
-    globalTransformCache,
-    moduleOptions,
-    reporter,
-    transformCode,
-  }: {
-    assetDependencies: Array<string>,
-    cache: Cache,
-    depGraphHelpers: DependencyGraphHelpers,
-    getClosestPackage: GetClosestPackageFn,
-    getTransformCacheKey: GetTransformCacheKey,
-    globalTransformCache: ?GlobalTransformCache,
-    moduleOptions: ModuleOptions,
-    reporter: Reporter,
-    transformCode: TransformCode,
-  }, platforms: Set<string>) {
+  constructor(
+    {
+      assetDependencies,
+      depGraphHelpers,
+      extractRequires,
+      getClosestPackage,
+      getTransformCacheKey,
+      globalTransformCache,
+      moduleOptions,
+      roots,
+      reporter,
+      transformCode,
+    }: {|
+      assetDependencies: Array<string>,
+      depGraphHelpers: DependencyGraphHelpers,
+      getClosestPackage: GetClosestPackageFn,
+      getTransformCacheKey: GetTransformCacheKey,
+      globalTransformCache: ?GlobalTransformCache,
+      moduleOptions: ModuleOptions,
+      roots: $ReadOnlyArray<string>,
+      reporter: Reporter,
+      transformCode: TransformCode,
+    |},
+    platforms: Set<string>,
+  ) {
     this._assetDependencies = assetDependencies;
     this._getClosestPackage = getClosestPackage;
     this._getTransformCacheKey = getTransformCacheKey;
     this._globalTransformCache = globalTransformCache;
-    this._cache = cache;
     this._depGraphHelpers = depGraphHelpers;
     this._moduleCache = Object.create(null);
     this._moduleOptions = moduleOptions;
@@ -76,16 +80,17 @@ class ModuleCache {
     this._platforms = platforms;
     this._transformCode = transformCode;
     this._reporter = reporter;
+    this._roots = roots;
   }
 
   getModule(filePath: string): Module {
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new Module({
-        cache: this._cache,
         depGraphHelpers: this._depGraphHelpers,
         file: filePath,
         getTransformCacheKey: this._getTransformCacheKey,
         globalTransformCache: this._globalTransformCache,
+        localPath: toLocalPath(this._roots, filePath),
         moduleCache: this,
         options: this._moduleOptions,
         reporter: this._reporter,
@@ -101,24 +106,33 @@ class ModuleCache {
 
   getAssetModule(filePath: string) {
     if (!this._moduleCache[filePath]) {
-      /* $FlowFixMe: missing options. This is because this is an incorrect OOP
-       * design in the first place: AssetModule, being simpler than a normal
-       * Module, should not inherit the Module class. */
-      this._moduleCache[filePath] = new AssetModule({
-        file: filePath,
-        moduleCache: this,
-        cache: this._cache,
-        dependencies: this._assetDependencies,
-      }, this._platforms);
+      /* FixMe: AssetModule does not need all these options. This is because
+       * this is an incorrect OOP design in the first place: AssetModule, being
+       * simpler than a normal Module, should not inherit the Module class.
+       */
+      this._moduleCache[filePath] = new AssetModule(
+        {
+          dependencies: this._assetDependencies,
+          depGraphHelpers: this._depGraphHelpers,
+          file: filePath,
+          getTransformCacheKey: this._getTransformCacheKey,
+          globalTransformCache: null,
+          localPath: toLocalPath(this._roots, filePath),
+          moduleCache: this,
+          options: this._moduleOptions,
+          reporter: this._reporter,
+          transformCode: this._transformCode,
+        },
+        this._platforms,
+      );
     }
     return this._moduleCache[filePath];
   }
 
-  getPackage(filePath: string) {
+  getPackage(filePath: string): Package {
     if (!this._packageCache[filePath]) {
       this._packageCache[filePath] = new Package({
         file: filePath,
-        cache: this._cache,
       });
     }
     return this._packageCache[filePath];
@@ -148,9 +162,9 @@ class ModuleCache {
     /* $FlowFixMe: there are missing arguments. */
     return new Polyfill({
       file,
-      cache: this._cache,
       depGraphHelpers: this._depGraphHelpers,
       getTransformCacheKey: this._getTransformCacheKey,
+      localPath: toLocalPath(this._roots, file),
       moduleCache: this,
       transformCode: this._transformCode,
     });

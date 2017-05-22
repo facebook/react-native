@@ -16,6 +16,7 @@ const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Platform = require('Platform');
 const PointPropType = require('PointPropType');
+const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
 const ScrollResponder = require('ScrollResponder');
@@ -23,13 +24,13 @@ const ScrollViewStickyHeader = require('ScrollViewStickyHeader');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
 const View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
 const dismissKeyboard = require('dismissKeyboard');
 const flattenStyle = require('flattenStyle');
 const invariant = require('fbjs/lib/invariant');
 const processDecelerationRate = require('processDecelerationRate');
-const PropTypes = React.PropTypes;
 const requireNativeComponent = require('requireNativeComponent');
 
 /**
@@ -55,7 +56,7 @@ const requireNativeComponent = require('requireNativeComponent');
  *
  * On the other hand, this has a performance downside. Imagine you have a very
  * long list of items you want to display, maybe several screens worth of
- * content. Creating JS components and native views for everythign all at once,
+ * content. Creating JS components and native views for everything all at once,
  * much of which may not even be shown, will contribute to slow rendering and
  * increased memory usage.
  *
@@ -70,7 +71,7 @@ const requireNativeComponent = require('requireNativeComponent');
 // $FlowFixMe(>=0.41.0)
 const ScrollView = React.createClass({
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * Controls whether iOS should automatically adjust the content inset
      * for scroll views that are placed behind a navigation bar or
@@ -383,7 +384,7 @@ const ScrollView = React.createClass({
   _scrollAnimatedValue: (new Animated.Value(0): Animated.Value),
   _scrollAnimatedValueAttachment: (null: ?{detach: () => void}),
   _stickyHeaderRefs: (new Map(): Map<number, ScrollViewStickyHeader>),
-
+  _headerLayoutYs: (new Map(): Map<string, number>),
   getInitialState: function() {
     return this.scrollResponderMixinGetInitialState();
   },
@@ -391,6 +392,7 @@ const ScrollView = React.createClass({
   componentWillMount: function() {
     this._scrollAnimatedValue = new Animated.Value(0);
     this._stickyHeaderRefs = new Map();
+    this._headerLayoutYs = new Map();
   },
 
   componentDidMount: function() {
@@ -434,7 +436,7 @@ const ScrollView = React.createClass({
    *
    * Example:
    *
-   * `scrollTo({x: 0; y: 0; animated: true})`
+   * `scrollTo({x: 0, y: 0, animated: true})`
    *
    * Note: The weird function signature is due to the fact that, for historical reasons,
    * the function also accepts separate arguments as an alternative to the options object.
@@ -482,37 +484,52 @@ const ScrollView = React.createClass({
     this.scrollTo({x, y, animated: false});
   },
 
+  _getKeyForIndex: function(index, childArray) {
+    const child = childArray[index];
+    return child && child.key;
+  },
+
   _updateAnimatedNodeAttachment: function() {
+    if (this._scrollAnimatedValueAttachment) {
+      this._scrollAnimatedValueAttachment.detach();
+    }
     if (this.props.stickyHeaderIndices && this.props.stickyHeaderIndices.length > 0) {
-      if (!this._scrollAnimatedValueAttachment) {
-        this._scrollAnimatedValueAttachment = Animated.attachNativeEvent(
-          this._scrollViewRef,
-          'onScroll',
-          [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}]
-        );
-      }
-    } else {
-      if (this._scrollAnimatedValueAttachment) {
-        this._scrollAnimatedValueAttachment.detach();
-      }
+      this._scrollAnimatedValueAttachment = Animated.attachNativeEvent(
+        this._scrollViewRef,
+        'onScroll',
+        [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}]
+      );
     }
   },
 
-  _setStickyHeaderRef: function(index, ref) {
-    this._stickyHeaderRefs.set(index, ref);
+  _setStickyHeaderRef: function(key, ref) {
+    if (ref) {
+      this._stickyHeaderRefs.set(key, ref);
+    } else {
+      this._stickyHeaderRefs.delete(key);
+    }
   },
 
-  _onStickyHeaderLayout: function(index, event) {
+  _onStickyHeaderLayout: function(index, event, key) {
     if (!this.props.stickyHeaderIndices) {
       return;
     }
+    const childArray = React.Children.toArray(this.props.children);
+    if (key !== this._getKeyForIndex(index, childArray)) {
+      // ignore stale layout update
+      return;
+    }
 
-    const previousHeaderIndex = this.props.stickyHeaderIndices[
-      this.props.stickyHeaderIndices.indexOf(index) - 1
-    ];
+    const layoutY = event.nativeEvent.layout.y;
+    this._headerLayoutYs.set(key, layoutY);
+
+    const indexOfIndex = this.props.stickyHeaderIndices.indexOf(index);
+    const previousHeaderIndex = this.props.stickyHeaderIndices[indexOfIndex - 1];
     if (previousHeaderIndex != null) {
-      const previousHeader = this._stickyHeaderRefs.get(previousHeaderIndex);
-      previousHeader && previousHeader.setNextHeaderY(event.nativeEvent.layout.y);
+      const previousHeader = this._stickyHeaderRefs.get(
+        this._getKeyForIndex(previousHeaderIndex, childArray)
+      );
+      previousHeader && previousHeader.setNextHeaderY(layoutY);
     }
   },
 
@@ -599,34 +616,38 @@ const ScrollView = React.createClass({
       };
     }
 
-      const {stickyHeaderIndices} = this.props;
-      const hasStickyHeaders = stickyHeaderIndices && stickyHeaderIndices.length > 0;
-      const children = stickyHeaderIndices && hasStickyHeaders ?
-        React.Children.toArray(this.props.children).map((child, index) => {
-          const stickyHeaderIndex = stickyHeaderIndices.indexOf(index);
-          if (child && stickyHeaderIndex >= 0) {
-            return (
-              <ScrollViewStickyHeader
-                key={index}
-                ref={(ref) => this._setStickyHeaderRef(index, ref)}
-                onLayout={(event) => this._onStickyHeaderLayout(index, event)}
-                scrollAnimatedValue={this._scrollAnimatedValue}>
-                {child}
-              </ScrollViewStickyHeader>
-            );
-          } else {
-            return child;
-          }
-        }) :
-        this.props.children;
-      const contentContainer =
+    const {stickyHeaderIndices} = this.props;
+    const hasStickyHeaders = stickyHeaderIndices && stickyHeaderIndices.length > 0;
+    const childArray = hasStickyHeaders && React.Children.toArray(this.props.children);
+    const children = hasStickyHeaders ?
+      childArray.map((child, index) => {
+        const indexOfIndex = child ? stickyHeaderIndices.indexOf(index) : -1;
+        if (indexOfIndex > -1) {
+          const key = child.key;
+          const nextIndex = stickyHeaderIndices[indexOfIndex + 1];
+          return (
+            <ScrollViewStickyHeader
+              key={key}
+              ref={(ref) => this._setStickyHeaderRef(key, ref)}
+              nextHeaderLayoutY={
+                this._headerLayoutYs.get(this._getKeyForIndex(nextIndex, childArray))
+              }
+              onLayout={(event) => this._onStickyHeaderLayout(index, event, key)}
+              scrollAnimatedValue={this._scrollAnimatedValue}>
+              {child}
+            </ScrollViewStickyHeader>
+          );
+        } else {
+          return child;
+        }
+      }) :
+      this.props.children;
+    const contentContainer =
       <ScrollContentContainerViewClass
         {...contentSizeChangeProps}
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
-        removeClippedSubviews={
-          hasStickyHeaders && Platform.OS === 'android' ? false : this.props.removeClippedSubviews
-        }
+        removeClippedSubviews={this.props.removeClippedSubviews}
         collapsable={false}>
         {children}
       </ScrollContentContainerViewClass>;

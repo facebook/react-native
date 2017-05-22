@@ -10,9 +10,10 @@
  */
 'use strict';
 
-import type {SourceMap} from './output/source-map';
+import type {MappingsMap, SourceMap} from '../lib/SourceMap';
 import type {Ast} from 'babel-core';
 import type {Console} from 'console';
+export type {Transformer} from '../JSTransformer/worker/worker.js';
 
 export type Callback<A = void, B = void>
   = (Error => void)
@@ -27,10 +28,10 @@ export type File = {|
   code: string,
   map?: ?Object,
   path: string,
-  type: FileTypes,
+  type: CodeFileTypes,
 |};
 
-type FileTypes = 'module' | 'script';
+type CodeFileTypes = 'module' | 'script';
 
 export type GraphFn = (
   entryPoints: Iterable<string>,
@@ -40,16 +41,15 @@ export type GraphFn = (
 ) => void;
 
 type GraphOptions = {|
-  cwd?: string,
   log?: Console,
   optimize?: boolean,
   skip?: Set<string>,
 |};
 
-export type GraphResult = {
-  entryModules: Array<Module>,
-  modules: Array<Module>,
-};
+export type GraphResult = {|
+  entryModules: Iterable<Module>,
+  modules: Iterable<Module>,
+|};
 
 export type IdForPathFn = {path: string} => number;
 
@@ -70,16 +70,24 @@ export type Module = {|
   file: File,
 |};
 
-export type OutputFn = (
+export type PostProcessModules = (
   modules: Iterable<Module>,
-  filename?: string,
-  idForPath: IdForPathFn,
-) => OutputResult;
+  entryPoints: Array<string>,
+) => Iterable<Module>;
 
-type OutputResult = {
-  code: string,
+export type OutputFn = ({|
+  filename: string,
+  idForPath: IdForPathFn,
+  modules: Iterable<Module>,
+  requireCalls: Iterable<Module>,
+  sourceMapPath?: string,
+|}) => OutputResult;
+
+type OutputResult = {|
+  code: string | Buffer,
+  extraFiles?: Iterable<[string, string | Buffer]>,
   map: SourceMap,
-};
+|};
 
 export type PackageData = {|
   browser?: Object | string,
@@ -90,7 +98,7 @@ export type PackageData = {|
 
 export type ResolveFn = (
   id: string,
-  source: string,
+  source: ?string,
   platform: string,
   options?: ResolveOptions,
   callback: Callback<string>,
@@ -100,37 +108,60 @@ type ResolveOptions = {
   log?: Console,
 };
 
-export type TransformerResult = {
+export type TransformerResult = {|
   ast: ?Ast,
   code: string,
-  map: ?SourceMap,
-};
-
-export type Transformer = {
-  transform: (
-    sourceCode: string,
-    filename: string,
-    options: ?{},
-    plugins?: Array<string | Object | [string | Object, any]>,
-  ) => {ast: ?Ast, code: string, map: ?SourceMap}
-};
+  map: ?MappingsMap,
+|};
 
 export type TransformResult = {|
   code: string,
   dependencies: Array<string>,
   dependencyMapName?: string,
-  map: ?Object,
+  map: ?MappingsMap,
 |};
 
 export type TransformResults = {[string]: TransformResult};
 
-export type TransformVariants = {[key: string]: Object};
+export type TransformVariants = {+[name: string]: {}, +default: {}};
 
-export type TransformedFile = {
-  code: string,
-  file: string,
-  hasteID: ?string,
+export type TransformedCodeFile = {
+  +code: string,
+  +file: string,
+  +hasteID: ?string,
   package?: PackageData,
-  transformed: TransformResults,
-  type: FileTypes,
+  +transformed: TransformResults,
+  +type: CodeFileTypes,
 };
+
+export type AssetFile = {|
+  +assetContentBase64: string,
+  +filePath: string,
+|};
+
+export type TransformedSourceFile =
+  | {|
+    +type: 'code',
+    +details: TransformedCodeFile,
+  |}
+  | {|
+    +type: 'asset',
+    +details: AssetFile,
+  |}
+  ;
+
+export type LibraryOptions = {|
+  dependencies?: Array<string>,
+  optimize: boolean,
+  platform?: string,
+  rebasePath: string => string,
+|};
+
+export type Base64Content = string;
+export type AssetContentsByPath = {[destFilePath: string]: Base64Content};
+
+export type Library = {|
+  +files: Array<TransformedCodeFile>,
+  /* cannot be a Map because it's JSONified later on */
+  +assets: AssetContentsByPath,
+|};

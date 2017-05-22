@@ -31,10 +31,8 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -87,7 +85,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private final Map<String, Object> mModuleConstants;
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
-  private float mFontScale;
 
   private int mNextRootViewTag = 1;
   private int mBatchId = 0;
@@ -100,8 +97,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mEventDispatcher = new EventDispatcher(reactContext);
-    mFontScale = getReactApplicationContext().getResources().getConfiguration().fontScale;
-    mModuleConstants = createConstants(viewManagerList, lazyViewManagersEnabled, mFontScale);
+    mModuleConstants = createConstants(viewManagerList, lazyViewManagersEnabled);
     mUIImplementation = uiImplementationProvider
       .createUIImplementation(reactContext, viewManagerList, mEventDispatcher);
 
@@ -134,12 +130,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @Override
   public void onHostResume() {
     mUIImplementation.onHostResume();
-
-    float fontScale = getReactApplicationContext().getResources().getConfiguration().fontScale;
-    if (mFontScale != fontScale) {
-      mFontScale = fontScale;
-      emitUpdateDimensionsEvent();
-    }
   }
 
   @Override
@@ -163,15 +153,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   private static Map<String, Object> createConstants(
     List<ViewManager> viewManagerList,
-    boolean lazyViewManagersEnabled,
-    float fontScale) {
+    boolean lazyViewManagersEnabled) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
     try {
       return UIManagerModuleConstantsHelper.createConstants(
         viewManagerList,
-        lazyViewManagersEnabled,
-        fontScale);
+        lazyViewManagersEnabled);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
@@ -196,6 +184,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * NB: this method is horribly not-thread-safe.
    */
   public int addMeasuredRootView(final SizeMonitoringFrameLayout rootView) {
+    Systrace.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+      "UIManagerModule.addMeasuredRootView");
     final int tag = mNextRootViewTag;
     mNextRootViewTag += ROOT_VIEW_TAG_INCREMENT;
 
@@ -222,7 +213,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       new SizeMonitoringFrameLayout.OnSizeChangedListener() {
         @Override
         public void onSizeChanged(final int width, final int height, int oldW, int oldH) {
-          reactApplicationContext.runOnNativeModulesQueueThread(
+          reactApplicationContext.runUIBackgroundRunnable(
             new GuardedRunnable(reactApplicationContext) {
               @Override
               public void runGuarded() {
@@ -232,6 +223,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
         }
       });
 
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return tag;
   }
 
@@ -241,7 +233,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
-    getReactApplicationContext().assertOnNativeModulesQueueThread();
+    getReactApplicationContext().assertOnUIBackgroundOrNativeModulesThread();
 
     mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight);
   }
@@ -548,16 +540,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void sendAccessibilityEvent(int tag, int eventType) {
     mUIImplementation.sendAccessibilityEvent(tag, eventType);
-  }
-
-  public void emitUpdateDimensionsEvent() {
-    sendEvent("didUpdateDimensions", UIManagerModuleConstants.getDimensionsConstants(mFontScale));
-  }
-
-  private void sendEvent(String eventName, @Nullable WritableMap params) {
-    getReactApplicationContext()
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit(eventName, params);
   }
 
   /**

@@ -22,21 +22,23 @@ import type {
   GraphFn,
   GraphResult,
   Module,
+  PostProcessModules,
 } from './types.flow';
 
 type BuildFn = (
   entryPoints: Iterable<string>,
   options: BuildOptions,
-  callback: Callback<{modules: Iterable<Module>, entryModules: Iterable<Module>}>,
+  callback: Callback<GraphResult>,
 ) => void;
 
 type BuildOptions = {|
-  optimize?: boolean,
-  platform?: string,
+  optimize: boolean,
+  platform: string,
 |};
 
 exports.createBuildSetup = (
   graph: GraphFn,
+  postProcessModules: PostProcessModules,
   translateDefaultsPath: string => string = x => x,
 ): BuildFn =>
   (entryPoints, options, callback) => {
@@ -51,10 +53,16 @@ exports.createBuildSetup = (
     const graphOnlyModules = seq(graphWithOptions, getModules);
 
     parallel({
-      graph: cb => graphWithOptions(
-        entryPoints,
-        cb,
-      ),
+      graph: cb => graphWithOptions(entryPoints, (error, result) => {
+        if (error) {
+          cb(error);
+          return;
+        }
+        /* $FlowFixMe: not undefined if there is no error */
+        const {modules, entryModules} = result;
+        const prModules = postProcessModules(modules, [...entryPoints]);
+        cb(null, {modules: prModules, entryModules});
+      }),
       moduleSystem: cb => graphOnlyModules(
         [translateDefaultsPath(defaults.moduleSystem)],
         cb,
@@ -96,6 +104,7 @@ function* concat<T>(...iterables: Array<Iterable<T>>): Iterable<T> {
 
 function prelude(optimize) {
   return virtualModule(
-    `var __DEV__=${String(!optimize)},__BUNDLE_START_TIME__=Date.now();`
+    `var __DEV__=${String(!optimize)},` +
+    '__BUNDLE_START_TIME__=this.nativePerformanceNow?nativePerformanceNow():Date.now();'
   );
 }

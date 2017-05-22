@@ -59,7 +59,7 @@ Value Value::fromJSON(JSContextRef ctx, const String& json) {
   return Value(ctx, result);
 }
 
-JSValueRef Value::fromDynamic(JSContextRef ctx, const folly::dynamic& value) {
+Value Value::fromDynamic(JSContextRef ctx, const folly::dynamic& value) {
 // JavaScriptCore's iOS APIs have their own version of this direct conversion.
 // In addition, using this requires exposing some of JSC's private APIs,
 //  so it's limited to non-apple platforms and to builds that use the custom JSC.
@@ -75,7 +75,7 @@ JSValueRef Value::fromDynamic(JSContextRef ctx, const folly::dynamic& value) {
   JSValueRef jsVal = Value::fromDynamicInner(ctx, value);
   JSUnlock(ctx);
   JSResumeGarbageCollection(ctx, deferGC);
-  return jsVal;
+  return Value(ctx, jsVal);
 #else
   auto json = folly::toJson(value);
   return fromJSON(ctx, String(ctx, json.c_str()));
@@ -140,9 +140,7 @@ Object Value::asObject() {
     std::string exceptionText = Value(m_context, exn).toString().str();
     throwJSExecutionException("Failed to convert to object: %s", exceptionText.c_str());
   }
-  Object ret = Object(context(), jsObj);
-  m_value = nullptr;
-  return ret;
+  return Object(context(), jsObj);
 }
 
 Value Value::makeError(JSContextRef ctx, const char *error)
@@ -207,7 +205,7 @@ Value Object::getProperty(const String& propName) const {
   return Value(m_context, property);
 }
 
-Value Object::getPropertyAtIndex(unsigned index) const {
+Value Object::getPropertyAtIndex(unsigned int index) const {
   JSValueRef exn;
   JSValueRef property = JSC_JSObjectGetPropertyAtIndex(m_context, m_obj, index, &exn);
   if (!property) {
@@ -221,8 +219,8 @@ Value Object::getProperty(const char *propName) const {
   return getProperty(String(m_context, propName));
 }
 
-void Object::setProperty(const String& propName, const Value& value) const {
-  JSValueRef exn = NULL;
+void Object::setProperty(const String& propName, const Value& value) {
+  JSValueRef exn = nullptr;
   JSC_JSObjectSetProperty(m_context, m_obj, propName, value, kJSPropertyAttributeNone, &exn);
   if (exn) {
     std::string exceptionText = Value(m_context, exn).toString().str();
@@ -230,7 +228,16 @@ void Object::setProperty(const String& propName, const Value& value) const {
   }
 }
 
-void Object::setProperty(const char *propName, const Value& value) const {
+void Object::setPropertyAtIndex(unsigned int index, const Value& value) {
+  JSValueRef exn = nullptr;
+  JSC_JSObjectSetPropertyAtIndex(m_context, m_obj, index, value, &exn);
+  if (exn) {
+    std::string exceptionText = Value(m_context, exn).toString().str();
+    throwJSExecutionException("Failed to set property: %s", exceptionText.c_str());
+  }
+}
+
+void Object::setProperty(const char *propName, const Value& value) {
   setProperty(String(m_context, propName), value);
 }
 
