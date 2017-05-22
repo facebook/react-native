@@ -236,8 +236,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   /**
    * Unmount the react application at this root view, reclaiming any JS memory associated with that
    * application. If {@link #startReactApplication} is called, this method must be called before the
-   * ReactRootView is garbage collected (typically in your Activity's onDestroy, or in your Fragment's
-   * onDestroyView).
+   * ReactRootView is garbage collected (typically in your Activity's onDestroy, or in your
+   * Fragment's onDestroyView).
    */
   public void unmountReactApplication() {
     if (mReactInstanceManager != null && mIsAttachedToInstance) {
@@ -339,10 +339,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     super.finalize();
     Assertions.assertCondition(
       !mIsAttachedToInstance,
-      "The application this ReactRootView was rendering was not unmounted before the ReactRootView " +
-        "was garbage collected. This usually means that your application is leaking large amounts of " +
-        "memory. To solve this, make sure to call ReactRootView#unmountReactApplication in the onDestroy() " +
-        "of your hosting Activity or in the onDestroyView() of your hosting Fragment.");
+      "The application this ReactRootView was rendering was not unmounted before the " +
+        "ReactRootView was garbage collected. This usually means that your application is " +
+        "leaking large amounts of memory. To solve this, make sure to call " +
+        "ReactRootView#unmountReactApplication in the onDestroy() of your hosting Activity or in " +
+        "the onDestroyView() of your hosting Fragment.");
   }
 
   public int getRootViewTag() {
