@@ -429,6 +429,8 @@ var LayoutPropTypes = {
    *  It works like `overflow` in CSS (default: visible).
    *  See https://developer.mozilla.org/en/docs/Web/CSS/overflow
    *  for more details.
+   *  `overflow: hidden` only works on iOS. On Android, all views will clip their
+   *  children.
    */
   overflow: ReactPropTypes.oneOf([
     'visible',
