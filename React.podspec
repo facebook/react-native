@@ -44,7 +44,16 @@ Pod::Spec.new do |s|
   s.subspec "Core" do |ss|
     ss.dependency             "Yoga", "#{package["version"]}.React"
     ss.source_files         = "React/**/*.{c,h,m,mm,S}"
-    ss.exclude_files        = "**/__tests__/*", "IntegrationTests/*", "React/DevSupport/*", "React/**/RCTTVView.*", "ReactCommon/yoga/*", "React/Cxx*/*", "React/Base/RCTBatchedBridge.mm", "React/Executors/*"
+    ss.exclude_files        = "**/__tests__/*",
+                              "IntegrationTests/*",
+                              "React/DevSupport/*",
+                              "React/Inspector/*",
+                              "React/**/RCTTVView.*",
+                              "ReactCommon/yoga/*",
+                              "React/Cxx*/*",
+                              "React/Base/RCTBatchedBridge.mm",
+                              "React/Executors/*"
+    ss.header_dir           = "React"
     ss.framework            = "JavaScriptCore"
     ss.libraries            = "stdc++"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
@@ -68,7 +77,8 @@ Pod::Spec.new do |s|
   s.subspec "DevSupport" do |ss|
     ss.dependency             "React/Core"
     ss.dependency             "React/RCTWebSocket"
-    ss.source_files         = "React/DevSupport/*"
+    ss.source_files         = "React/DevSupport/*",
+                              "React/Inspector/*"
   end
 
   s.subspec "tvOS" do |ss|
@@ -187,5 +197,10 @@ Pod::Spec.new do |s|
     ss.dependency             "React/Core"
     ss.source_files         = "Libraries/RCTTest/**/*.{h,m}"
     ss.frameworks           = "XCTest"
+  end
+
+  s.subspec "_ignore_me_subspec_for_linting_" do |ss|
+    ss.dependency             "React/Core"
+    ss.dependency             "React/CxxBridge"
   end
 end
