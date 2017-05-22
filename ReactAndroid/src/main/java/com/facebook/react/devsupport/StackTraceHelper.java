@@ -174,17 +174,21 @@ public class StackTraceHelper {
     String[] stackTrace = stack.split("\n");
     StackFrame[] result = new StackFrame[stackTrace.length];
     for (int i = 0; i < stackTrace.length; ++i) {
-      Matcher matcher = STACK_FRAME_PATTERN.matcher(stackTrace[i]);
-      if (!matcher.find()) {
-        throw new IllegalArgumentException(
+      if (stackTrace[i].equals("[native code]")) {
+        result[i] = new StackFrameImpl(null, stackTrace[i], -1, -1);
+      } else {
+        Matcher matcher = STACK_FRAME_PATTERN.matcher(stackTrace[i]);
+        if (!matcher.find()) {
+          throw new IllegalArgumentException(
             "Unexpected stack frame format: " + stackTrace[i]);
-      }
+        }
 
-      result[i] = new StackFrameImpl(
-          matcher.group(2),
-          matcher.group(1) == null ? "(unknown)" : matcher.group(1),
-          Integer.parseInt(matcher.group(3)),
-          Integer.parseInt(matcher.group(4)));
+        result[i] = new StackFrameImpl(
+            matcher.group(2),
+            matcher.group(1) == null ? "(unknown)" : matcher.group(1),
+            Integer.parseInt(matcher.group(3)),
+            Integer.parseInt(matcher.group(4)));
+      }
     }
     return result;
   }
