@@ -183,7 +183,7 @@ Alternatively, select "Dev Settings" from the Developer Menu, then update the "D
    import java.util.concurrent.TimeUnit;
    ```
 
-3. In ```android/app/src/main/java/com/{yourAppName}/MainApplication.java``` add the function:
+3. In ```android/app/src/main/java/com/{yourAppName}/MainActivity.java``` add the function:
    ```java
    public void onCreate() {
          super.onCreate();
