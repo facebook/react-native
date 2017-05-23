@@ -35,5 +35,9 @@ public class MessageQueueThreadRegistry {
         sMyMessageQueueThread.get(),
         "This thread doesn't have a MessageQueueThread registered to it!");
   }
+
+  public static void clear() {
+    sMyMessageQueueThread.remove();
+  }
 }
 
