@@ -302,7 +302,7 @@ WritableMap params = Arguments.createMap();
 sendEvent(reactContext, "keyboardWillShow", params);
 ```
 
-JavaScript modules can then register to receive events by `addListenerOn` using the `Subscribable` mixin
+JavaScript modules can then register to receive events by `addListenerOn` using the `Subscribable` mixin.
 
 ```js
 import { DeviceEventEmitter } from 'react-native';
