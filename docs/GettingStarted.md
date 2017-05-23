@@ -133,12 +133,12 @@ Congratulations! You've successfully run and modified your first React Native ap
 
 ## Now what?
 
-- If you're curious to learn more about React Native, continue on
-to the [Tutorial](docs/tutorial.html).
-
 - Create React Native App also has a [user guide](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md) you can reference if you have questions specific to the tool.
 
 - If you can't get this to work, see the [Troubleshooting](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#troubleshooting) section in the README for Create React Native App.
+
+If you're curious to learn more about React Native, continue on
+to the [Tutorial](docs/tutorial.html).
 
 ### Running your app on a simulator or virtual device
 
@@ -542,6 +542,8 @@ You should see your new app running in the iOS Simulator shortly.
 
 `react-native run-ios` is just one way to run your app. You can also run it directly from within Xcode or [Nuclide](https://nuclide.io/).
 
+> If you can't get this to work, see the [Troubleshooting](docs/troubleshooting.html#content) page.
+
 ### Running on a device
 
 The above command will automatically run your app on the iOS Simulator by default. If you want to run the app on an actual physical iOS device, please follow the instructions [here](docs/running-on-device.html).
@@ -571,6 +573,8 @@ If everything is set up correctly, you should see your new app running in your A
 
 `react-native run-android` is just one way to run your app - you can also run it directly from within Android Studio or [Nuclide](https://nuclide.io/).
 
+> If you can't get this to work, see the [Troubleshooting](docs/troubleshooting.html#content) page.
+
 <block class="native mac ios android" />
 
 ### Modifying your app
@@ -580,12 +584,12 @@ Now that you have successfully run the app, let's modify it.
 <block class="native mac ios" />
 
 - Open `index.ios.js` in your text editor of choice and edit some lines.
-- Hit `Command⌘ + R` in your iOS Simulator to reload the app and see your changes!
+- Hit `⌘R` in your iOS Simulator to reload the app and see your changes!
 
 <block class="native mac android" />
 
 - Open `index.android.js` in your text editor of choice and edit some lines.
-- Press the `R` key twice or select `Reload` from the Developer Menu to see your changes!
+- Press the `R` key twice or select `Reload` from the Developer Menu (`⌘M`) to see your changes!
 
 <block class="native windows linux android" />
 
@@ -594,7 +598,7 @@ Now that you have successfully run the app, let's modify it.
 Now that you have successfully run the app, let's modify it.
 
 - Open `index.android.js` in your text editor of choice and edit some lines.
-- Press the `R` key twice or select `Reload` from the Developer Menu to see your changes!
+- Press the `R` key twice or select `Reload` from the Developer Menu (`⌘M`) to see your changes!
 
 <block class="native mac ios android" />
 
@@ -608,32 +612,31 @@ Congratulations! You've successfully run and modified your first React Native ap
 
 ### That's it!
 
-Congratulations! You've successfully run and modified a React Native app.
+Congratulations! You've successfully run and modified your first React Native app.
 
 <center><img src="img/react-native-congratulations.png" width="150"></img></center>
 
 <block class="native mac ios" />
 
-## Now What?
+## Now what?
 
-- If you're curious to learn more about React Native, continue on
-to the [Tutorial](docs/tutorial.html).
-
-- If you can't get this to work, see the [Troubleshooting](docs/troubleshooting.html#content) page.
+- Turn on [Live Reload](docs/debugging.html#reloading-javascript) in the Developer Menu. Your app will now reload automatically whenever you save any changes!
 
 - If you want to add this new React Native code to an existing application, check out the [Integration guide](docs/integration-with-existing-apps.html).
+
+If you're curious to learn more about React Native, continue on
+to the [Tutorial](docs/tutorial.html).
 
 <block class="native windows linux mac android" />
 
-## Now What?
+## Now what?
 
-- If you're curious to learn more about React Native, continue on
-to the [Tutorial](docs/tutorial.html).
-
-- If you can't get this to work, see the [Troubleshooting](docs/troubleshooting.html#content) page.
+- Turn on [Live Reload](docs/debugging.html#reloading-javascript) in the Developer Menu. Your app will now reload automatically whenever you save any changes!
 
 - If you want to add this new React Native code to an existing application, check out the [Integration guide](docs/integration-with-existing-apps.html).
 
+If you're curious to learn more about React Native, continue on
+to the [Tutorial](docs/tutorial.html).
 
 <script>
 // Convert <div>...<span><block /></span>...</div>
