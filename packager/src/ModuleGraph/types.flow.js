@@ -26,7 +26,7 @@ type Dependency = {|
 
 export type File = {|
   code: string,
-  map?: ?MappingsMap,
+  map: ?MappingsMap,
   path: string,
   type: CodeFileTypes,
 |};
