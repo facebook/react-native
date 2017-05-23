@@ -30,11 +30,9 @@ jest.mock(
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
-const path = require('path');
-
 beforeEach(() => {
   jest.resetModules();
-  jest.mock('path', () => path);
+  jest.mock('path', () => require.requireActual('path'));
 });
 
 describe('DependencyGraph', function() {
@@ -2522,7 +2520,7 @@ describe('DependencyGraph', function() {
 
       // reload path module
       jest.resetModules();
-      jest.mock('path', () => path.win32);
+      jest.mock('path', () => require.requireActual('path').win32);
       DependencyGraph = require('../DependencyGraph');
     });
 
