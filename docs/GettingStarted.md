@@ -382,37 +382,37 @@ Finally, click "Apply" to download and install the Android SDK and related build
 
 <block class="native mac windows linux android" />
 
-#### 3. Set up the ANDROID_HOME environment variable
+#### 3. Configure the ANDROID_HOME environment variable
 
 The React Native tools require some environment variables to be set up in order to build apps with native code.
 
+<block class="native mac linux android" />
+
+Add the following lines to your `$HOME/.bash_profile` config file:
+
 <block class="native mac android" />
 
-Add the following lines to your `~/.profile` (or equivalent) config file:
-
 ```
-export ANDROID_HOME=${HOME}/Library/Android/sdk
-export PATH=${PATH}:${ANDROID_HOME}/tools
-export PATH=${PATH}:${ANDROID_HOME}/platform-tools
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/platform-tools
 ```
-
-Type `source ~/.profile` to load the config into your current shell.
-
-> Please make sure you export the correct path for `ANDROID_HOME`. If you installed the Android SDK using Homebrew, it would be located at `/usr/local/opt/android-sdk`. You can find the actual location of the SDK in the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
 <block class="native linux android" />
 
-Add the following lines to your `~/.profile` (or equivalent) config file:
-
 ```
-export ANDROID_HOME=${HOME}/Android/Sdk
-export PATH=${PATH}:${ANDROID_HOME}/tools
-export PATH=${PATH}:${ANDROID_HOME}/platform-tools
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/platform-tools
 ```
 
-Type `. ~/.profile` to load the config into your current shell.
+<block class="native mac linux android" />
 
-> Please make sure you export the correct path for `ANDROID_HOME` if you did not install the Android SDK using Android Studio. You can find the actual location of the SDK in the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
+> `.bash_profile` is specific to `bash`. If you're using another shell, you will need to edit the appropriate shell-specific config file.
+
+Type `source $HOME/.bash_profile` to load the config into your current shell. Verify that ANDROID_HOME has been added to your path by running `echo $PATH`.
+
+> Please make sure you use the correct Android SDK path. You can find the actual location of the SDK in the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
 <block class="native windows android" />
 
