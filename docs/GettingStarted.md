@@ -140,6 +140,12 @@ to the [Tutorial](docs/tutorial.html).
 
 - If you can't get this to work, see the [Troubleshooting](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#troubleshooting) section in the README for Create React Native App.
 
+### Running your app on a simulator or virtual device
+
+Create React Native App makes it really easy to run your React Native app on a physical device without setting up a development environment. If you want to run your app on the iOS Simulator or an Android Virtual Device, please refer to the instructions for building projects with native code to learn how to install Xcode and set up your Android development environment.
+
+Once you've set these up, you can launch your app on on an Android Virtual Device by running `npm run android`, or on the iOS Simulator by running `npm run ios` (macOS only).
+
 ### Caveats
 
 Because you don't build any native code when using Create React Native App to create a project, it's not possible to include custom native modules beyond the React Native APIs and components that are available in the Expo client app.
@@ -473,7 +479,7 @@ Either way, you will need to prepare the device to run Android apps for developm
 
 ### Using a physical device
 
-If you have a physical Android device, you can use it for development in place of an AVD by plugging it in to your computer using a USB cable and [enabling USB debugging](https://developer.android.com/training/basics/firstapp/running-app.html). You can then proceed to the next step.
+If you have a physical Android device, you can use it for development in place of an AVD by plugging it in to your computer using a USB cable and following the instructions [here](docs/running-on-device.html).
 
 ### Using a virtual device
 
@@ -535,6 +541,10 @@ You should see your new app running in the iOS Simulator shortly.
 ![AwesomeProject on iOS](img/iOSSuccess.png)
 
 `react-native run-ios` is just one way to run your app. You can also run it directly from within Xcode or [Nuclide](https://nuclide.io/).
+
+### Running on a device
+
+The above command will automatically run your app on the iOS Simulator by default. If you want to run the app on an actual physical iOS device, please follow the instructions [here](docs/running-on-device.html).
 
 <block class="native mac windows linux android" />
 
