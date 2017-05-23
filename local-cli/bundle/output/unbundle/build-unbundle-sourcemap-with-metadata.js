@@ -16,9 +16,9 @@ import type {ModuleGroups, ModuleTransportLike} from '../../types.flow';
 
 type Params = {
   fixWrapperOffset: boolean,
-  lazyModules: Array<ModuleTransportLike>,
+  lazyModules: $ReadOnlyArray<ModuleTransportLike>,
   moduleGroups?: ModuleGroups,
-  startupModules: Array<ModuleTransportLike>,
+  startupModules: $ReadOnlyArray<ModuleTransportLike>,
 };
 
 module.exports = ({fixWrapperOffset, lazyModules, moduleGroups, startupModules}: Params) => {

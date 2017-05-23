@@ -46,7 +46,7 @@ const Section =
 type CombineOptions = {fixWrapperOffset: boolean};
 
 function combineSourceMaps(
-  modules: Array<ModuleTransportLike>,
+  modules: $ReadOnlyArray<ModuleTransportLike>,
   moduleGroups?: ModuleGroups,
   options?: ?CombineOptions,
 ): IndexMap {
@@ -55,7 +55,7 @@ function combineSourceMaps(
 }
 
 function combineSourceMapsAddingOffsets(
-  modules: Array<ModuleTransportLike>,
+  modules: $ReadOnlyArray<ModuleTransportLike>,
   moduleGroups?: ModuleGroups,
   options?: ?CombineOptions,
 ): FBIndexMap {
@@ -85,7 +85,7 @@ function combineMaps(modules, offsets: ?Array<number>, moduleGroups, options) {
       group = moduleGroups && moduleGroups.groups.get(id);
       if (group && moduleGroups) {
         const {modulesById} = moduleGroups;
-        const otherModules: Array<ModuleTransportLike> =
+        const otherModules: $ReadOnlyArray<ModuleTransportLike> =
           Array.from(group || [])
             .map(moduleId => modulesById.get(moduleId))
             .filter(Boolean); // needed to appease flow
@@ -116,7 +116,7 @@ function combineMaps(modules, offsets: ?Array<number>, moduleGroups, options) {
 }
 
 const joinModules =
-  (modules: Array<*>): string =>
+  (modules: $ReadOnlyArray<{+code: string}>): string =>
     modules.map(m => m.code).join('\n');
 
 module.exports = {
