@@ -19,7 +19,7 @@ export type {Bundle, FBSourceMap, ModuleTransport, SourceMap, Unbundle};
 
 export type ModuleGroups = {|
   groups: Map<number, Set<number>>,
-  modulesById: Map<number, ModuleTransport>,
+  modulesById: Map<number, ModuleTransportLike>,
   modulesInGroups: Set<number>,
 |};
 
@@ -28,6 +28,7 @@ export type ModuleTransportLike = {
   id: number,
   map?: $PropertyType<ModuleTransport, 'map'>,
   +name?: string,
+  sourcePath: string,
 };
 
 export type OutputOptions = {

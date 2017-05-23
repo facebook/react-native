@@ -13,7 +13,7 @@
 const meta = require('../../../../local-cli/bundle/output/meta');
 
 const {createIndexMap} = require('./source-map');
-const {addModuleIdsToModuleWrapper} = require('./util');
+const {addModuleIdsToModuleWrapper, concat} = require('./util');
 
 import type {OutputFn} from '../types.flow';
 
@@ -55,16 +55,10 @@ function asPlainBundle({
   };
 }
 
-module.exports = (asPlainBundle: OutputFn);
+module.exports = (asPlainBundle: OutputFn<>);
 
 const reLine = /^/gm;
 function countLines(string: string): number {
   //$FlowFixMe This regular expression always matches
   return string.match(reLine).length;
-}
-
-function* concat<T>(...iterables: Array<Iterable<T>>): Iterable<T> {
-  for (const it of iterables) {
-    yield* it;
-  }
 }
