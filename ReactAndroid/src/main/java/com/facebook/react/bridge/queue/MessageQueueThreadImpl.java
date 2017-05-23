@@ -184,27 +184,8 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     final String name,
     long stackSize,
     QueueThreadExceptionHandler exceptionHandler) {
-    final SimpleSettableFuture<Looper> looperFuture = new SimpleSettableFuture<>();
-    final SimpleSettableFuture<MessageQueueThread> mqtFuture = new SimpleSettableFuture<>();
-    Thread bgThread = new Thread(null,
-        new Runnable() {
-          @Override
-          public void run() {
-            Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
-            Looper.prepare();
-
-            looperFuture.set(Looper.myLooper());
-            MessageQueueThreadRegistry.register(mqtFuture.getOrThrow());
-
-            Looper.loop();
-          }
-        }, "mqt_" + name, stackSize);
-    bgThread.start();
-
-    Looper myLooper = looperFuture.getOrThrow();
-    MessageQueueThreadImpl mqt = new MessageQueueThreadImpl(name, myLooper, exceptionHandler);
-    mqtFuture.set(mqt);
-
-    return mqt;
+    MessageQueueHandlerThread messageQueueHandlerThread = new MessageQueueHandlerThread("mqt_" + name, stackSize);
+    messageQueueHandlerThread.start();
+    return new MessageQueueThreadImpl(name, messageQueueHandlerThread.getLooper(), exceptionHandler);
   }
 }
