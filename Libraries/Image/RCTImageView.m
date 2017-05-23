@@ -9,6 +9,7 @@
 
 #import "RCTImageView.h"
 
+#import <React/RCTBorderDrawing.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
@@ -87,6 +88,11 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   if ((self = [super init])) {
     _bridge = bridge;
 
+    _borderTopLeftRadius = -1;
+    _borderTopRightRadius = -1;
+    _borderBottomLeftRadius = -1;
+    _borderBottomRightRadius = -1;
+
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center addObserver:self
                selector:@selector(clearImageIfDetached)
@@ -131,6 +137,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   self.layer.magnificationFilter = kCAFilterTrilinear;
 
   super.image = image;
+
+  if (self.hasBorderRadii) {
+    [self.layer setNeedsDisplay];
+  }
 }
 
 - (void)setImage:(UIImage *)image
@@ -326,6 +336,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   } else {
     [self clearImage];
   }
+
+  if (self.hasBorderRadii) {
+    [self.layer setNeedsDisplay];
+  }
 }
 
 - (void)imageLoaderLoadedImage:(UIImage *)loadedImage error:(NSError *)error forImageSource:(RCTImageSource *)source partial:(BOOL)isPartialLoad
@@ -393,7 +407,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)reactSetFrame:(CGRect)frame
 {
+  CGSize oldSize = self.bounds.size;
   [super reactSetFrame:frame];
+
+  // If the size changed and we have border radius values, we may need to
+  // recompute the border radius mask based on the new size.
+  if (!CGSizeEqualToSize(self.bounds.size, oldSize) && self.hasBorderRadii) {
+    [self.layer setNeedsDisplay];
+  }
 
   // If we didn't load an image yet, or the new frame triggers a different image source
   // to be loaded, reload to swap to the proper image source.
@@ -428,6 +449,68 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
+- (BOOL)hasBorderRadii
+{
+  return _borderRadius > 0 || _borderTopLeftRadius > 0 || _borderTopRightRadius > 0 ||
+    _borderBottomLeftRadius > 0 || _borderBottomRightRadius;
+}
+
+- (RCTCornerRadii)cornerRadii
+{
+  // Get corner radii
+  const CGFloat radius = MAX(0, _borderRadius);
+  const CGFloat topLeftRadius = _borderTopLeftRadius >= 0 ? _borderTopLeftRadius : radius;
+  const CGFloat topRightRadius = _borderTopRightRadius >= 0 ? _borderTopRightRadius : radius;
+  const CGFloat bottomLeftRadius = _borderBottomLeftRadius >= 0 ? _borderBottomLeftRadius : radius;
+  const CGFloat bottomRightRadius = _borderBottomRightRadius >= 0 ? _borderBottomRightRadius : radius;
+
+  // Get scale factors required to prevent radii from overlapping
+  const CGSize size = self.bounds.size;
+  const CGFloat topScaleFactor = RCTZeroIfNaN(MIN(1, size.width / (topLeftRadius + topRightRadius)));
+  const CGFloat bottomScaleFactor = RCTZeroIfNaN(MIN(1, size.width / (bottomLeftRadius + bottomRightRadius)));
+  const CGFloat rightScaleFactor = RCTZeroIfNaN(MIN(1, size.height / (topRightRadius + bottomRightRadius)));
+  const CGFloat leftScaleFactor = RCTZeroIfNaN(MIN(1, size.height / (topLeftRadius + bottomLeftRadius)));
+
+  // Return scaled radii
+  return (RCTCornerRadii){
+    topLeftRadius * MIN(topScaleFactor, leftScaleFactor),
+    topRightRadius * MIN(topScaleFactor, rightScaleFactor),
+    bottomLeftRadius * MIN(bottomScaleFactor, leftScaleFactor),
+    bottomRightRadius * MIN(bottomScaleFactor, rightScaleFactor),
+  };
+}
+
+- (void)displayLayer:(CALayer *)layer
+{
+  [self updateClippingForLayer:layer];
+}
+
+- (void)updateClippingForLayer:(CALayer *)layer
+{
+  CALayer *mask = nil;
+  CGFloat cornerRadius = 0;
+
+  if (self.clipsToBounds) {
+
+    const RCTCornerRadii cornerRadii = [self cornerRadii];
+    if (RCTCornerRadiiAreEqual(cornerRadii)) {
+
+      cornerRadius = cornerRadii.topLeft;
+
+    } else {
+
+      CAShapeLayer *shapeLayer = [CAShapeLayer layer];
+      CGPathRef path = RCTPathCreateWithRoundedRect(self.bounds, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL);
+      shapeLayer.path = path;
+      CGPathRelease(path);
+      mask = shapeLayer;
+    }
+  }
+
+  layer.cornerRadius = cornerRadius;
+  layer.mask = mask;
+}
+
 - (void)didMoveToWindow
 {
   [super didMoveToWindow];
@@ -442,5 +525,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     [self reloadImage];
   }
 }
+
+#define setBorderRadius(side)                     \
+  - (void)setBorder##side##Radius:(CGFloat)radius \
+  {                                               \
+    if (_border##side##Radius == radius) {        \
+      return;                                     \
+    }                                             \
+    _border##side##Radius = radius;               \
+    [self.layer setNeedsDisplay];                 \
+  }
+
+setBorderRadius()
+setBorderRadius(TopLeft)
+setBorderRadius(TopRight)
+setBorderRadius(BottomLeft)
+setBorderRadius(BottomRight)
 
 @end
