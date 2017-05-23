@@ -1736,8 +1736,13 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(const YGNodeRef node,
   const float marginAxisRow = YGNodeMarginForAxis(node, YGFlexDirectionRow, availableWidth);
   const float marginAxisColumn = YGNodeMarginForAxis(node, YGFlexDirectionColumn, availableWidth);
 
-  const float innerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
-  const float innerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
+  // We want to make sure we don't call measure with negative size
+  const float innerWidth = YGFloatIsUndefined(availableWidth)
+                            ? availableWidth
+                            : fmaxf(0, availableWidth - marginAxisRow - paddingAndBorderAxisRow);
+  const float innerHeight = YGFloatIsUndefined(availableHeight)
+                            ? availableHeight
+                            : fmaxf(0, availableHeight - marginAxisColumn - paddingAndBorderAxisColumn);
 
   if (widthMeasureMode == YGMeasureModeExactly && heightMeasureMode == YGMeasureModeExactly) {
     // Don't bother sizing the text if both dimensions are already defined.
