@@ -620,7 +620,7 @@ to the [Tutorial](docs/tutorial.html).
 - If you're curious to learn more about React Native, continue on
 to the [Tutorial](docs/tutorial.html).
 
-- If you can't get this to work, see the [Troubleshooting](docs/troubleshooting.html#content) page.
+- If you can't get this to work, see the [Troubleshooting](/Troubleshooting.md#content) page.
 
 - If you want to add this new React Native code to an existing application, check out the [Integration guide](docs/integration-with-existing-apps.html).
 
