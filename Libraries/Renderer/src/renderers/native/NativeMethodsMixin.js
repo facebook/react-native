@@ -99,7 +99,7 @@ var NativeMethodsMixin = {
   },
 
   /**
-   * Like [`measure()`](#measure), but measures the view relative an ancestor,
+   * Like [`measure()`](#measure), but measures the view relative to an ancestor,
    * specified as `relativeToNativeNode`. This means that the returned x, y
    * are relative to the origin x, y of the ancestor view.
    *
