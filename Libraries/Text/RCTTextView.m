@@ -494,7 +494,9 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   if (!self.reactTag || !_onChange) {
     return;
   }
-
+  UITextRange *selectedRange = [textView markedTextRange];
+  NSString * newText = [textView textInRange:selectedRange];
+  if(newText.length>0) return;
   // When the context size increases, iOS updates the contentSize twice; once
   // with a lower height, then again with the correct height. To prevent a
   // spurious event from being sent, we track the previous, and only send the
