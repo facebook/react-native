@@ -3335,7 +3335,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost 8081 ; then\n    if ! curl -s \"http://localhost:8081/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port 8081 already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../packager/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi";
+			shellScript = "if [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost 8081 ; then\n    if ! curl -s \"http://localhost:8081/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port 8081 already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi";
 			showEnvVarsInLog = 0;
 		};
 		142C4F7F1B582EA6001F0B58 /* Include RCTJSCProfiler */ = {
@@ -3394,7 +3394,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\nif nc -w 5 -z localhost 8081 ; then\nif ! curl -s \"http://localhost:8081/status\" | grep -q \"packager-status:running\" ; then\necho \"Port 8081 already in use, packager is either not running or not running correctly\"\nexit 2\nfi\nelse\nopen \"$SRCROOT/../packager/launchPackager.command\" || echo \"Can't start packager automatically\"\nfi\nfi";
+			shellScript = "if [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\nif nc -w 5 -z localhost 8081 ; then\nif ! curl -s \"http://localhost:8081/status\" | grep -q \"packager-status:running\" ; then\necho \"Port 8081 already in use, packager is either not running or not running correctly\"\nexit 2\nfi\nelse\nopen \"$SRCROOT/../scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\nfi\nfi";
 			showEnvVarsInLog = 0;
 		};
 		3D383D3E1EBD27B9005632C8 /* Install Third Party */ = {
