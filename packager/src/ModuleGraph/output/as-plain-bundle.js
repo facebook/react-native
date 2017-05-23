@@ -45,7 +45,7 @@ function asPlainBundle({
   }
 
   if (sourceMapPath) {
-    code += `/*# sourceMappingURL=${sourceMapPath}*/`;
+    code += `//# sourceMappingURL=${sourceMapPath}`;
   }
 
   return {

@@ -70,6 +70,11 @@ export type Module = {|
   file: File,
 |};
 
+export type PostProcessModules = (
+  modules: Iterable<Module>,
+  entryPoints: Array<string>,
+) => Iterable<Module>;
+
 export type OutputFn = ({|
   filename: string,
   idForPath: IdForPathFn,
