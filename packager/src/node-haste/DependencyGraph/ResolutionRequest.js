@@ -732,13 +732,16 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
   ): TModule {
     const packageJsonPath = path.join(potentialDirPath, 'package.json');
     if (this._options.hasteFS.exists(packageJsonPath)) {
-      const main = this._options.moduleCache
-        .getPackage(packageJsonPath)
-        .getMain();
-      return tryResolveSync(
-        () => this._loadAsFileOrThrow(main, fromModule, toModule),
-        () => this._loadAsDir(main, fromModule, toModule),
-      );
+      const package_ = this._options.moduleCache.getPackage(packageJsonPath);
+      const mainPrefixPath = package_.getMain();
+      const dirPath = path.dirname(mainPrefixPath);
+      const prefixName = path.basename(mainPrefixPath);
+      const candidates = [];
+      const module = this._loadAsFile(dirPath, prefixName, candidates);
+      if (module != null) {
+        return module;
+      }
+      return this._loadAsDir(mainPrefixPath, fromModule, toModule);
     }
 
     return this._loadAsFileOrThrow(
