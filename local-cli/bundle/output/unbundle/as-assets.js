@@ -69,6 +69,7 @@ function saveAsAssets(
       buildSourceMapWithMetaData({
         startupModules: startupModules.concat(),
         lazyModules: lazyModules.concat(),
+        fixWrapperOffset: true,
       }),
       sourcemapSourcesRoot
     );

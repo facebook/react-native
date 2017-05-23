@@ -44,6 +44,14 @@ exports.addModuleIdsToModuleWrapper = (
   );
 };
 
+exports.concat = function* concat<T>(
+  ...iterables: Array<Iterable<T>>
+): Iterable<T> {
+  for (const it of iterables) {
+    yield* it;
+  }
+};
+
 // Creates an idempotent function that returns numeric IDs for objects based
 // on their `path` property.
 exports.createIdForPathFn = (): ({path: string} => number) => {

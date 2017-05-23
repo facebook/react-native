@@ -12,7 +12,7 @@
 
 const invariant = require('fbjs/lib/invariant');
 
-import type {IndexMap, MappingsMap, SourceMap} from '../../../../packager/src/lib/SourceMap';
+import type {FBIndexMap, IndexMap, MappingsMap, SourceMap} from '../../../../packager/src/lib/SourceMap';
 import type {ModuleGroups, ModuleTransportLike} from '../../types.flow';
 
 const newline = /\r\n?|\n|\u2028|\u2029/g;
@@ -43,39 +43,45 @@ const Section =
   (line: number, column: number, map: SourceMap) =>
     ({map, offset: {line, column}});
 
-type CombineSourceMapsOptions = {
-  moduleGroups?: ModuleGroups,
-  modules: Array<ModuleTransportLike>,
-  withCustomOffsets?: boolean,
-};
+type CombineOptions = {fixWrapperOffset: boolean};
 
-function combineSourceMaps({
-  moduleGroups,
-  modules,
-  withCustomOffsets,
-}: CombineSourceMapsOptions): IndexMap {
-  const offsets = [];
+function combineSourceMaps(
+  modules: Array<ModuleTransportLike>,
+  moduleGroups?: ModuleGroups,
+  options?: ?CombineOptions,
+): IndexMap {
+  const sections = combineMaps(modules, null, moduleGroups, options);
+  return {sections, version: 3};
+}
+
+function combineSourceMapsAddingOffsets(
+  modules: Array<ModuleTransportLike>,
+  moduleGroups?: ModuleGroups,
+  options?: ?CombineOptions,
+): FBIndexMap {
+  const x_facebook_offsets = [];
+  const sections = combineMaps(modules, x_facebook_offsets, moduleGroups, options);
+  return {sections, version: 3, x_facebook_offsets};
+}
+
+function combineMaps(modules, offsets: ?Array<number>, moduleGroups, options) {
   const sections = [];
-  const sourceMap: IndexMap = withCustomOffsets
-    ? {sections, version: 3, x_facebook_offsets: offsets}
-    : {sections, version: 3};
 
   let line = 0;
   modules.forEach(moduleTransport => {
     const {code, id, name} = moduleTransport;
     let column = 0;
-    let hasOffset = false;
     let group;
     let groupLines = 0;
     let {map} = moduleTransport;
 
-    if (withCustomOffsets) {
-      if (moduleGroups && moduleGroups.modulesInGroups.has(id)) {
-        // this is a module appended to another module
-        return;
-      }
+    if (moduleGroups && moduleGroups.modulesInGroups.has(id)) {
+      // this is a module appended to another module
+      return;
+    }
 
 
+    if (offsets != null) {
       group = moduleGroups && moduleGroups.groups.get(id);
       if (group && moduleGroups) {
         const {modulesById} = moduleGroups;
@@ -86,13 +92,10 @@ function combineSourceMaps({
         otherModules.forEach(m => {
           groupLines += countLines(m.code);
         });
-        map = combineSourceMaps({
-          modules: [moduleTransport].concat(otherModules),
-        });
+        map = combineSourceMaps([moduleTransport].concat(otherModules));
       }
 
-      hasOffset = id != null;
-      column = wrapperEnd(code);
+      column = options && options.fixWrapperOffset ? wrapperEnd(code) : 0;
     }
 
     invariant(
@@ -100,7 +103,7 @@ function combineSourceMaps({
       'Random Access Bundle source maps cannot be built from raw mappings',
     );
     sections.push(Section(line, column, map || lineToLineSourceMap(code, name)));
-    if (hasOffset) {
+    if (offsets != null && id != null) {
       offsets[id] = line;
       for (const moduleId of group || []) {
         offsets[moduleId] = line;
@@ -109,7 +112,7 @@ function combineSourceMaps({
     line += countLines(code) + groupLines;
   });
 
-  return sourceMap;
+  return sections;
 }
 
 const joinModules =
@@ -117,8 +120,9 @@ const joinModules =
     modules.map(m => m.code).join('\n');
 
 module.exports = {
-  countLines,
-  lineToLineSourceMap,
   combineSourceMaps,
+  combineSourceMapsAddingOffsets,
+  countLines,
   joinModules,
+  lineToLineSourceMap,
 };
