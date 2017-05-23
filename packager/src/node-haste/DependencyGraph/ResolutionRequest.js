@@ -481,11 +481,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
       potentialModulePath,
     );
     if (realModuleName === false) {
-      return this._loadAsFileOrThrow(
-        ResolutionRequest.EMPTY_MODULE,
-        fromModule,
-        toModuleName,
-      );
+      return this._getEmptyModule(fromModule, toModuleName);
     }
 
     return tryResolveSync(
@@ -501,11 +497,7 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     const realModuleName = this._redirectRequire(fromModule, toModuleName);
     // exclude
     if (realModuleName === false) {
-      return this._loadAsFileOrThrow(
-        ResolutionRequest.EMPTY_MODULE,
-        fromModule,
-        toModuleName,
-      );
+      return this._getEmptyModule(fromModule, toModuleName);
     }
 
     if (isRelativeImport(realModuleName) || isAbsolutePath(realModuleName)) {
@@ -718,6 +710,19 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     }
     const fileName = `${fileNamePrefix}.${ext}`;
     return resolver.tryToResolveFileName(fileName) ? fileName : null;
+  }
+
+  _getEmptyModule(fromModule: TModule, toModuleName: string): TModule {
+    const {moduleCache} = this._options;
+    const module = moduleCache.getModule(ResolutionRequest.EMPTY_MODULE);
+    if (module != null) {
+      return module;
+    }
+    throw new UnableToResolveError(
+      fromModule,
+      toModuleName,
+      "could not resolve `${ResolutionRequest.EMPTY_MODULE}'",
+    );
   }
 
   _loadAsDir(
