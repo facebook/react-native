@@ -23,4 +23,13 @@ cat << EOF >> src/config.h
 #undef HAVE_SYS_SYSCALL_H
 #undef OS_MACOSX
 #endif
+
+/* Special configuration for ucontext */
+#undef HAVE_UCONTEXT_H
+#undef PC_FROM_UCONTEXT
+#if defined(__x86_64__)
+#define PC_FROM_UCONTEXT uc_mcontext->__ss.__rip
+#elif defined(__i386__)
+#define PC_FROM_UCONTEXT uc_mcontext->__ss.__eip
+#endif
 EOF
