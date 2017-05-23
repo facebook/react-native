@@ -10,7 +10,7 @@
  */
 'use strict';
 
-import type {MappingsMap, SourceMap} from '../lib/SourceMap';
+import type {FBSourceMap, MappingsMap, SourceMap} from '../lib/SourceMap';
 import type {Ast} from 'babel-core';
 import type {Console} from 'console';
 export type {Transformer} from '../JSTransformer/worker/worker.js';
@@ -26,7 +26,7 @@ type Dependency = {|
 
 export type File = {|
   code: string,
-  map?: ?Object,
+  map: ?MappingsMap,
   path: string,
   type: CodeFileTypes,
 |};
@@ -70,17 +70,23 @@ export type Module = {|
   file: File,
 |};
 
-export type OutputFn = (
+export type PostProcessModules = (
   modules: Iterable<Module>,
+  entryPoints: Array<string>,
+) => Iterable<Module>;
+
+export type OutputFn<M: FBSourceMap | SourceMap = FBSourceMap | SourceMap> = ({|
   filename: string,
   idForPath: IdForPathFn,
+  modules: Iterable<Module>,
+  requireCalls: Iterable<Module>,
   sourceMapPath?: string,
-) => OutputResult;
+|}) => OutputResult<M>;
 
-type OutputResult = {|
+type OutputResult<M: FBSourceMap | SourceMap> = {|
   code: string | Buffer,
-  extraFiles: Iterable<[string, string | Buffer]>,
-  map: SourceMap,
+  extraFiles?: Iterable<[string, string | Buffer]>,
+  map: M,
 |};
 
 export type PackageData = {|

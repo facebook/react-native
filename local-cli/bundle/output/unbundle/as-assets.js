@@ -38,7 +38,7 @@ const MODULES_DIR = 'js-modules';
 function saveAsAssets(
   bundle: Bundle,
   options: OutputOptions,
-  log: (x: string) => void,
+  log: (...args: Array<string>) => void,
 ): Promise<mixed> {
   const {
     bundleOutput,
@@ -69,6 +69,7 @@ function saveAsAssets(
       buildSourceMapWithMetaData({
         startupModules: startupModules.concat(),
         lazyModules: lazyModules.concat(),
+        fixWrapperOffset: true,
       }),
       sourcemapSourcesRoot
     );
