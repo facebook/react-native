@@ -13,5 +13,20 @@
 'use strict';
 
 import 'whatwg-fetch';
+const Platform = require('Platform');
 
-module.exports = {fetch, Headers, Request, Response};
+const DEFAULT_CREDENTIALS = Platform.OS === 'ios' ? 'include' : 'omit';
+
+const fetchWithCredentialsDefault = (input, init) => {
+  if (input.credentials == null) {
+    return fetch({ ...input, credentials: DEFAULT_CREDENTIALS }, init);
+  }
+  return fetch(input, init);
+}
+
+module.exports = {
+  fetch: fetchWithCredentialsDefault,
+  Headers,
+  Request,
+  Response
+};
