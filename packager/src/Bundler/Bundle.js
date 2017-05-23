@@ -231,7 +231,7 @@ class Bundle extends BundleBase {
 
       result.sections.push({
         offset: {line, column: 0},
-        map: map,
+        map,
       });
       line += module.code.split('\n').length;
     });
