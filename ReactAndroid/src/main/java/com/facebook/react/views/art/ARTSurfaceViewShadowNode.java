@@ -24,6 +24,8 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
  * Shadow node for ART virtual tree root - ARTSurfaceView
@@ -32,6 +34,18 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
   implements TextureView.SurfaceTextureListener {
 
   private @Nullable Surface mSurface;
+
+  private boolean mIsBackgroundColorSet;
+  private int mBackgroundColor;
+
+  @ReactProp(name = ViewProps.BACKGROUND_COLOR, customType = "Color")
+  public void setBackgroundColor(Integer color) {
+    mIsBackgroundColorSet = (color != null);
+    if (mIsBackgroundColorSet) {
+      mBackgroundColor = color;
+    }
+    markUpdated();
+  }
 
   @Override
   public boolean isVirtual() {
@@ -59,6 +73,9 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
     try {
       Canvas canvas = mSurface.lockCanvas(null);
       canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+      if (mIsBackgroundColorSet) {
+        canvas.drawColor(mBackgroundColor);
+      }
 
       Paint paint = new Paint();
       for (int i = 0; i < getChildCount(); i++) {
