@@ -12,8 +12,9 @@
 
 'use strict';
 
+require('../../setupBabel')();
 const InspectorProxy = require('./util/inspectorProxy.js');
-const ReactPackager = require('../../packager/react-packager');
+const ReactPackager = require('../../packager');
 
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
