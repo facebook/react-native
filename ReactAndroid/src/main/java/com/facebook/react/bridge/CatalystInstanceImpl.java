@@ -85,6 +85,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private boolean mInitialized = false;
   private volatile boolean mAcceptCalls = false;
 
+  private boolean mJSBundleHasStartedLoading;
   private boolean mJSBundleHasLoaded;
   private @Nullable String mSourceURL;
 
@@ -185,29 +186,31 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniSetSourceURL(remoteURL);
   }
 
-  /* package */ void loadScriptFromAssets(AssetManager assetManager, String assetURL) {
+  /* package */ void loadScriptFromAssets(AssetManager assetManager, String assetURL, boolean loadSynchronously) {
     mSourceURL = assetURL;
-    jniLoadScriptFromAssets(assetManager, assetURL);
+    jniLoadScriptFromAssets(assetManager, assetURL, loadSynchronously);
   }
 
-  /* package */ void loadScriptFromFile(String fileName, String sourceURL) {
+  /* package */ void loadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously) {
     mSourceURL = sourceURL;
-    jniLoadScriptFromFile(fileName, sourceURL);
+    jniLoadScriptFromFile(fileName, sourceURL, loadSynchronously);
   }
 
   private native void jniSetSourceURL(String sourceURL);
-  private native void jniLoadScriptFromAssets(AssetManager assetManager, String assetURL);
-  private native void jniLoadScriptFromFile(String fileName, String sourceURL);
+  private native void jniLoadScriptFromAssets(AssetManager assetManager, String assetURL, boolean loadSynchronously);
+  private native void jniLoadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously);
 
   @Override
   public void runJSBundle() {
     Assertions.assertCondition(!mJSBundleHasLoaded, "JS bundle was already loaded!");
-    mJSBundleHasLoaded = true;
+
+    mJSBundleHasStartedLoading = true;
 
     // incrementPendingJSCalls();
     mJSBundleLoader.loadScript(CatalystInstanceImpl.this);
 
     synchronized (mJSCallsPendingInitLock) {
+
       // Loading the bundle is queued on the JS thread, but may not have
       // run yet.  It's safe to set this here, though, since any work it
       // gates will be queued on the JS thread behind the load.
@@ -217,10 +220,18 @@ public class CatalystInstanceImpl implements CatalystInstance {
         jniCallJSFunction(call.mModule, call.mMethod, call.mArguments);
       }
       mJSCallsPendingInit.clear();
+      mJSBundleHasLoaded = true;
     }
 
     // This is registered after JS starts since it makes a JS call
     Systrace.registerListener(mTraceListener);
+  }
+
+  @Override
+  public boolean hasRunJSBundle() {
+    synchronized (mJSCallsPendingInitLock) {
+      return mJSBundleHasLoaded && mAcceptCalls;
+    }
   }
 
   @Override
