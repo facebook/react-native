@@ -132,16 +132,18 @@ const ScrollView = React.createClass({
      * These styles will be applied to the scroll view content container which
      * wraps all of the child views. Example:
      *
-     *   return (
-     *     <ScrollView contentContainerStyle={styles.contentContainer}>
-     *     </ScrollView>
-     *   );
-     *   ...
-     *   const styles = StyleSheet.create({
-     *     contentContainer: {
-     *       paddingVertical: 20
-     *     }
-     *   });
+     * ```
+     * return (
+     *   <ScrollView contentContainerStyle={styles.contentContainer}>
+     *   </ScrollView>
+     * );
+     * ...
+     * const styles = StyleSheet.create({
+     *   contentContainer: {
+     *     paddingVertical: 20
+     *   }
+     * });
+     * ```
      */
     contentContainerStyle: StyleSheetPropType(ViewStylePropTypes),
     /**
@@ -150,8 +152,10 @@ const ScrollView = React.createClass({
      * shortcuts `"normal"` and `"fast"` which match the underlying iOS settings
      * for `UIScrollViewDecelerationRateNormal` and
      * `UIScrollViewDecelerationRateFast` respectively.
-     *   - normal: 0.998 (the default)
-     *   - fast: 0.99
+     *
+     *   - `'normal'`: 0.998 (the default)
+     *   - `'fast'`: 0.99
+     *
      * @platform ios
      */
     decelerationRate: PropTypes.oneOfType([
@@ -165,9 +169,11 @@ const ScrollView = React.createClass({
     horizontal: PropTypes.bool,
     /**
      * The style of the scroll indicators.
-     *   - `default` (the default), same as `black`.
-     *   - `black`, scroll indicator is black. This style is good against a light background.
-     *   - `white`, scroll indicator is white. This style is good against a dark background.
+     *
+     *   - `'default'` (the default), same as `black`.
+     *   - `'black'`, scroll indicator is black. This style is good against a light background.
+     *   - `'white'`, scroll indicator is white. This style is good against a dark background.
+     *
      * @platform ios
      */
     indicatorStyle: PropTypes.oneOf([
@@ -189,9 +195,10 @@ const ScrollView = React.createClass({
     canCancelContentTouches: PropTypes.bool,
     /**
      * Determines whether the keyboard gets dismissed in response to a drag.
-     *   - 'none' (the default), drags do not dismiss the keyboard.
-     *   - 'on-drag', the keyboard is dismissed when a drag begins.
-     *   - 'interactive', the keyboard is dismissed interactively with the drag and moves in
+     *
+     *   - `'none'` (the default), drags do not dismiss the keyboard.
+     *   - `'on-drag'`, the keyboard is dismissed when a drag begins.
+     *   - `'interactive'`, the keyboard is dismissed interactively with the drag and moves in
      *     synchrony with the touch; dragging upwards cancels the dismissal.
      *     On android this is not supported and it will have the same behavior as 'none'.
      */
@@ -203,14 +210,14 @@ const ScrollView = React.createClass({
     /**
      * Determines when the keyboard should stay visible after a tap.
      *
-     *   - 'never' (the default), tapping outside of the focused text input when the keyboard
+     *   - `'never'` (the default), tapping outside of the focused text input when the keyboard
      *     is up dismisses the keyboard. When this happens, children won't receive the tap.
-     *   - 'always', the keyboard will not dismiss automatically, and the scroll view will not
+     *   - `'always'`, the keyboard will not dismiss automatically, and the scroll view will not
      *     catch taps, but children of the scroll view can catch taps.
-     *   - 'handled', the keyboard will not dismiss automatically when the tap was handled by
+     *   - `'handled'`, the keyboard will not dismiss automatically when the tap was handled by
      *     a children, (or captured by an ancestor).
-     *   - false, deprecated, use 'never' instead
-     *   - true, deprecated, use 'always' instead
+     *   - `false`, deprecated, use 'never' instead
+     *   - `true`, deprecated, use 'always' instead
      */
     keyboardShouldPersistTaps: PropTypes.oneOf(['always', 'never', 'handled', false, true]),
     /**
@@ -310,9 +317,11 @@ const ScrollView = React.createClass({
     /**
      * When `snapToInterval` is set, `snapToAlignment` will define the relationship
      * of the snapping to the scroll view.
-     *   - `start` (the default) will align the snap at the left (horizontal) or top (vertical)
-     *   - `center` will align the snap in the center
-     *   - `end` will align the snap at the right (horizontal) or bottom (vertical)
+     *
+     *   - `'start'` (the default) will align the snap at the left (horizontal) or top (vertical)
+     *   - `'center'` will align the snap in the center
+     *   - `'end'` will align the snap at the right (horizontal) or bottom (vertical)
+     *
      * @platform ios
      */
     snapToAlignment: PropTypes.oneOf([
