@@ -77,6 +77,12 @@ RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);
 // Returns YES if React is running in an iOS App Extension
 RCT_EXTERN BOOL RCTRunningInAppExtension(void);
 
+// Returns the boolean output of UIApplication openUrl, or false if running in an App Extension
+RCT_EXTERN BOOL RCTLinkingIOSOpenUrl(NSURL *URL);
+
+// Returns the boolean output of UIApplication canOpenUrl, or false if running in an App Extension
+RCT_EXTERN BOOL RCTLinkingIOSCanOpenUrl(NSURL *URL);
+
 // Returns the shared UIApplication instance, or nil if running in an App Extension
 RCT_EXTERN UIApplication *__nullable RCTSharedApplication(void);
 
