@@ -64,7 +64,7 @@ Note that you'll need the Android NDK installed, see [prerequisites](https://git
 ```bash
 ./gradlew :Examples:Movies:android:app:installDebug
 # Start the packager in a separate shell (make sure you ran npm install):
-./packager/packager.sh
+./scripts/packager.sh
 # Open the Movies app in your emulator
 ```
 

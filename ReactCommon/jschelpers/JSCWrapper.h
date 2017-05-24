@@ -101,6 +101,7 @@ struct JSCWrapper {
   JSC_WRAPPER_METHOD(JSObjectMakeFunctionWithCallback);
   JSC_WRAPPER_METHOD(JSObjectSetPrivate);
   JSC_WRAPPER_METHOD(JSObjectSetProperty);
+  JSC_WRAPPER_METHOD(JSObjectSetPropertyAtIndex);
 
   // JSPropertyNameArray
   JSC_WRAPPER_METHOD(JSObjectCopyPropertyNames);

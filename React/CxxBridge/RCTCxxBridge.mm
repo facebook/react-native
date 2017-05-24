@@ -1065,11 +1065,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
         self->_reactInstance->loadUnbundle(std::move(ramBundle), std::move(scriptStr),
-                                           [[url absoluteString] UTF8String]);
+                                           [[url absoluteString] UTF8String], false);
       }
     } else if (self->_reactInstance) {
       self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
-                                                 [[url absoluteString] UTF8String]);
+                                                 [[url absoluteString] UTF8String], false);
     } else {
       throw std::logic_error("Attempt to call loadApplicationScript: on uninitialized bridge");
     }
@@ -1094,12 +1094,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
-        self->_reactInstance->loadUnbundleSync(std::move(ramBundle), std::move(scriptStr),
-                                               [[url absoluteString] UTF8String]);
+        self->_reactInstance->loadUnbundle(std::move(ramBundle), std::move(scriptStr),
+                                           [[url absoluteString] UTF8String], true);
       }
     } else if (self->_reactInstance) {
-      self->_reactInstance->loadScriptFromStringSync(std::make_unique<NSDataBigString>(script),
-                                                     [[url absoluteString] UTF8String]);
+      self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
+                                                 [[url absoluteString] UTF8String], true);
     } else {
       throw std::logic_error("Attempt to call loadApplicationScriptSync: on uninitialized bridge");
     }

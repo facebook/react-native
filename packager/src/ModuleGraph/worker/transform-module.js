@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @format
  */
 'use strict';
 
@@ -70,12 +71,13 @@ function transformModule(
   const {filename, transformer, variants = defaultVariants} = options;
   const tasks = {};
   Object.keys(variants).forEach(name => {
-    tasks[name] = asyncify(() => transformer.transform({
+    tasks[name] = asyncify(() =>
+      transformer.transform({
         filename,
         localPath: filename,
         options: {...defaultTransformOptions, ...variants[name]},
         src: code,
-      })
+      }),
     );
   });
 
@@ -89,7 +91,12 @@ function transformModule(
 
     //$FlowIssue #14545724
     Object.entries(results).forEach(([key, value]: [*, TransformFnResult]) => {
-      transformed[key] = makeResult(value.ast, filename, code, options.polyfill);
+      transformed[key] = makeResult(
+        value.ast,
+        filename,
+        code,
+        options.polyfill,
+      );
     });
 
     const annotations = docblock.parseAsObject(docblock.extract(code));
@@ -112,10 +119,7 @@ function transformModule(
 function transformJSON(json, options, callback) {
   const value = JSON.parse(json);
   const {filename} = options;
-  const code =
-    `__d(function(${JsFileWrapping.MODULE_FACTORY_PARAMETERS.join(', ')}) { module.exports = \n${
-      json
-    }\n});`;
+  const code = `__d(function(${JsFileWrapping.MODULE_FACTORY_PARAMETERS.join(', ')}) { module.exports = \n${json}\n});`;
 
   const moduleData = {
     code,
@@ -124,9 +128,9 @@ function transformJSON(json, options, callback) {
   };
   const transformed = {};
 
-  Object
-    .keys(options.variants || defaultVariants)
-    .forEach(key => (transformed[key] = moduleData));
+  Object.keys(options.variants || defaultVariants).forEach(
+    key => (transformed[key] = moduleData),
+  );
 
   const result: TransformedCodeFile = {
     assetContent: null,

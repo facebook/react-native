@@ -16,6 +16,7 @@ const Bundler = require('../Bundler');
 const MultipartResponse = require('./MultipartResponse');
 
 const defaults = require('../../defaults');
+const emptyFunction = require('fbjs/lib/emptyFunction');
 const mime = require('mime-types');
 const parsePlatformFilePath = require('../node-haste/lib/parsePlatformFilePath');
 const path = require('path');
@@ -26,7 +27,6 @@ const url = require('url');
 const debug = require('debug')('RNP:Server');
 
 import type Module, {HasteImpl} from '../node-haste/Module';
-import type {Stats} from 'fs';
 import type {IncomingMessage, ServerResponse} from 'http';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 import type Bundle from '../Bundler/Bundle';
@@ -175,7 +175,7 @@ class Server {
       watch: options.watch || false,
     };
     const processFileChange =
-      ({type, filePath, stat}) => this.onFileChange(type, filePath, stat);
+      ({type, filePath}) => this.onFileChange(type, filePath);
 
     this._reporter = options.reporter;
     this._projectRoots = this._opts.projectRoots;
@@ -316,8 +316,8 @@ class Server {
     });
   }
 
-  onFileChange(type: string, filePath: string, stat: Stats) {
-    this._assetServer.onFileChange(type, filePath, stat);
+  onFileChange(type: string, filePath: string) {
+    this._assetServer.onFileChange(type, filePath);
 
     // If Hot Loading is enabled avoid rebuilding bundles and sending live
     // updates. Instead, send the HMR updates right away and clear the bundles
@@ -653,7 +653,7 @@ class Server {
         entry_point: options.entryFile,
       }));
 
-    let reportProgress = () => {};
+    let reportProgress = emptyFunction;
     if (!this._opts.silent) {
       reportProgress = (transformedFileCount, totalFileCount) => {
         this._reporter.update({

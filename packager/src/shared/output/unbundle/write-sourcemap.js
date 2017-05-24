@@ -15,7 +15,7 @@ const writeFile = require('../writeFile');
 function writeSourcemap(
   fileName: string,
   contents: string,
-  log: (x: string) => void,
+  log: (...args: Array<string>) => void,
 ): Promise<> {
   if (!fileName) {
     return Promise.resolve();
