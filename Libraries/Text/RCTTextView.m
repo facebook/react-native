@@ -647,4 +647,12 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   }
 }
 
+// Disable RCTTextView as accessibility element for VoiceOver.
+// VoiceOver will see _textView instead and will be able to announce the type of the field,
+// actions user needs to take etc.
+- (BOOL)isAccessibilityElement
+{
+  return NO;
+}
+
 @end

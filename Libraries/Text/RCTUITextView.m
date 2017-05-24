@@ -51,6 +51,25 @@ static UIColor *defaultPlaceholderTextColor()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (NSString *)accessibilityLabel
+{
+  NSMutableString *accLabel = [NSMutableString stringWithString:@""];
+  
+  NSString *superAccLabel = super.accessibilityLabel;
+  if (superAccLabel.length > 0) {
+    [accLabel appendString:superAccLabel];
+  }
+  
+  if (self.placeholderText.length > 0 && self.text.length == 0) {
+    if (accLabel.length > 0) {
+      [accLabel appendString:@" "];
+    }
+    [accLabel appendString:self.placeholderText];
+  }
+  
+  return accLabel;
+}
+
 #pragma mark - Properties
 
 - (void)setPlaceholderText:(NSString *)placeholderText
