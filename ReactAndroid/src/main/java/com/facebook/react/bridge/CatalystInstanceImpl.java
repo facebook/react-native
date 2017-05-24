@@ -24,12 +24,14 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.react.bridge.queue.MessageQueueThreadRegistry;
 import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
@@ -307,6 +309,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
         mHybridData.resetNative();
       }
     });
+
+    MessageQueueThreadRegistry.clear();
+    ViewManagerPropertyUpdater.clear();
 
     // This is a noop if the listener was not yet registered.
     Systrace.unregisterListener(mTraceListener);
