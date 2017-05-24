@@ -12,7 +12,7 @@
 
 const invariant = require('fbjs/lib/invariant');
 
-import type {FBIndexMap, IndexMap, MappingsMap, SourceMap} from '../../../../packager/src/lib/SourceMap';
+import type {FBIndexMap, IndexMap, MappingsMap, SourceMap} from '../../../lib/SourceMap';
 import type {ModuleGroups, ModuleTransportLike} from '../../types.flow';
 
 const newline = /\r\n?|\n|\u2028|\u2029/g;

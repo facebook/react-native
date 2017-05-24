@@ -16,7 +16,7 @@ const babelGenerate = require('babel-generator').default;
 const babylon = require('babylon');
 
 import type {AssetDescriptor} from '.';
-import type {ModuleTransportLike} from '../../../local-cli/bundle/types.flow';
+import type {ModuleTransportLike} from '../shared/types.flow';
 
 type SubTree<T: ModuleTransportLike> = (
   moduleTransport: T,

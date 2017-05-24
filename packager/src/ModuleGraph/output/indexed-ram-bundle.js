@@ -10,11 +10,11 @@
  */
 'use strict';
 
-const buildSourceMapWithMetaData = require('../../../../local-cli/bundle/output/unbundle/build-unbundle-sourcemap-with-metadata.js');
+const buildSourceMapWithMetaData = require('../../shared/output/unbundle/build-unbundle-sourcemap-with-metadata.js');
 const nullthrows = require('fbjs/lib/nullthrows');
 
-const {buildTableAndContents, createModuleGroups} = require('../../../../local-cli/bundle/output/unbundle/as-indexed-file');
 const {createRamBundleGroups} = require('../../Bundler/util');
+const {buildTableAndContents, createModuleGroups} = require('../../shared/output/unbundle/as-indexed-file');
 const {concat} = require('./util');
 
 import type {FBIndexMap} from '../../lib/SourceMap.js';

@@ -10,7 +10,7 @@
  */
 'use strict';
 
-const meta = require('../../../../local-cli/bundle/output/meta');
+const meta = require('../../shared/output/meta');
 
 const {createIndexMap} = require('./source-map');
 const {addModuleIdsToModuleWrapper, concat} = require('./util');
