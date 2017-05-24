@@ -68,6 +68,52 @@ JSObjectRef makeFunction(
 
 }
 
+JSException::JSException(JSContextRef ctx, JSValueRef exn, const char* errorMsg, JSStringRef sourceURL) {
+  std::ostringstream msgBuilder;
+  if (errorMsg != nullptr && strlen(errorMsg) > 0) {
+    msgBuilder << errorMsg << ": ";
+  }
+
+  Value exnValue = Value(ctx, exn);
+  msgBuilder << exnValue.toString().str();
+
+  // The null/empty-ness of source tells us if the JS came from a
+  // file/resource, or was a constructed statement.  The location
+  // info will include that source, if any.
+  std::string locationInfo = sourceURL != nullptr ? String::ref(ctx, sourceURL).str() : "";
+  Object exnObject = exnValue.asObject();
+  auto line = exnObject.getProperty("line");
+  if (line != nullptr && line.isNumber()) {
+    if (locationInfo.empty() && line.asInteger() != 1) {
+      // If there is a non-trivial line number, but there was no
+      // location info, we include a placeholder, and the line
+      // number.
+      locationInfo = folly::to<std::string>("<unknown file>:", line.asInteger());
+    } else if (!locationInfo.empty()) {
+      // If there is location info, we always include the line
+      // number, regardless of its value.
+      locationInfo += folly::to<std::string>(":", line.asInteger());
+    }
+  }
+
+  if (!locationInfo.empty()) {
+    msgBuilder << " (" << locationInfo << ")";
+  }
+
+  auto exceptionText = msgBuilder.str();
+  LOG(ERROR) << "Got JS Exception: " << exceptionText;
+
+  Value jsStack = exnObject.getProperty("stack");
+  if (!jsStack.isString()) {
+    msg_ = exceptionText.c_str();
+  } else {
+    LOG(ERROR) << "Got JS Stack: " << jsStack.toString().str();
+    msg_ = exceptionText.c_str();
+    stack_ = jsStack.toString().str().c_str();
+  }
+}
+
+
 JSObjectRef makeFunction(
     JSContextRef ctx,
     const char* name,
@@ -122,11 +168,11 @@ void removeGlobal(JSGlobalContextRef ctx, const char* name) {
   Object::getGlobalObject(ctx).setProperty(name, Value::makeUndefined(ctx));
 }
 
-JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef source) {
+JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef sourceURL) {
   JSValueRef exn, result;
-  result = JSC_JSEvaluateScript(context, script, NULL, source, 0, &exn);
+  result = JSC_JSEvaluateScript(context, script, NULL, sourceURL, 0, &exn);
   if (result == nullptr) {
-    formatAndThrowJSException(context, exn, source);
+    throw JSException(context, exn, nullptr, sourceURL);
   }
   return result;
 }
@@ -136,50 +182,11 @@ JSValueRef evaluateSourceCode(JSContextRef context, JSSourceCodeRef source, JSSt
   JSValueRef exn, result;
   result = JSEvaluateSourceCode(context, source, NULL, &exn);
   if (result == nullptr) {
-    formatAndThrowJSException(context, exn, sourceURL);
+    throw JSException(context, exn, nullptr, sourceURL);
   }
   return result;
 }
 #endif
-
-void formatAndThrowJSException(JSContextRef context, JSValueRef exn, JSStringRef source) {
-  Value exception = Value(context, exn);
-  std::string exceptionText = exception.toString().str();
-
-  // The null/empty-ness of source tells us if the JS came from a
-  // file/resource, or was a constructed statement.  The location
-  // info will include that source, if any.
-  std::string locationInfo = source != nullptr ? String::ref(context, source).str() : "";
-  Object exObject = exception.asObject();
-  auto line = exObject.getProperty("line");
-  if (line != nullptr && line.isNumber()) {
-    if (locationInfo.empty() && line.asInteger() != 1) {
-      // If there is a non-trivial line number, but there was no
-      // location info, we include a placeholder, and the line
-      // number.
-      locationInfo = folly::to<std::string>("<unknown file>:", line.asInteger());
-    } else if (!locationInfo.empty()) {
-      // If there is location info, we always include the line
-      // number, regardless of its value.
-      locationInfo += folly::to<std::string>(":", line.asInteger());
-    }
-  }
-
-  if (!locationInfo.empty()) {
-    exceptionText += " (" + locationInfo + ")";
-  }
-
-  LOG(ERROR) << "Got JS Exception: " << exceptionText;
-
-  Value jsStack = exObject.getProperty("stack");
-  if (jsStack.isNull() || !jsStack.isString()) {
-    throwJSExecutionException("%s", exceptionText.c_str());
-  } else {
-    LOG(ERROR) << "Got JS Stack: " << jsStack.toString().str();
-    throwJSExecutionExceptionWithStack(
-        exceptionText.c_str(), jsStack.toString().str().c_str());
-  }
-}
 
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation) {
   std::ostringstream msg;
