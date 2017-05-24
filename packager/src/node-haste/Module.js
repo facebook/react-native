@@ -20,6 +20,7 @@ const fs = require('fs');
 const invariant = require('fbjs/lib/invariant');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
+const path = require('path');
 
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
@@ -85,8 +86,6 @@ export type ConstructorArgs = {
 
 type DocBlock = {+[key: string]: string};
 
-const TRANSFORM_CACHE = new TransformCache();
-
 class Module {
   localPath: LocalPath;
   path: string;
@@ -106,6 +105,8 @@ class Module {
   _readPromises: Map<string, Promise<ReadResult>>;
 
   _readResultsByOptionsKey: Map<string, CachedReadResult>;
+
+  static _transformCache: TransformCache;
 
   constructor({
     depGraphHelpers,
@@ -333,7 +334,7 @@ class Module {
         return;
       }
       invariant(result != null, 'missing result');
-      TRANSFORM_CACHE.writeSync({...cacheProps, result});
+      Module._getTransformCache().writeSync({...cacheProps, result});
       callback(undefined, result);
     });
   }
@@ -380,7 +381,7 @@ class Module {
       transformOptions,
       transformOptionsKey,
     );
-    const cachedResult = TRANSFORM_CACHE.readSync(cacheProps);
+    const cachedResult = Module._getTransformCache().readSync(cacheProps);
     if (cachedResult.result == null) {
       return {
         result: null,
@@ -467,6 +468,27 @@ class Module {
 
   isPolyfill() {
     return false;
+  }
+
+  /**
+   * If packager is running for two different directories, we don't want the
+   * caches to conflict with each other. `__dirname` carries that because
+   * packager will be, for example, installed in a different `node_modules/`
+   * folder for different projects.
+   */
+  static _getTransformCache(): TransformCache {
+    if (this._transformCache != null) {
+      return this._transformCache;
+    }
+    const hash = crypto.createHash('sha1').update(__dirname);
+    if (process.getuid != null) {
+      hash.update(process.getuid().toString());
+    }
+    const tmpDir = require('os').tmpdir();
+    const cacheName = 'react-native-packager-cache';
+    const rootPath = path.join(tmpDir, cacheName + '-' + hash.digest('hex'));
+    this._transformCache = new TransformCache(rootPath);
+    return this._transformCache;
   }
 }
 

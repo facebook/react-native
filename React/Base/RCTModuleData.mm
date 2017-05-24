@@ -214,6 +214,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (BOOL)hasInstance
 {
+  std::unique_lock<std::mutex> lock(_instanceLock);
   return _instance != nil;
 }
 

@@ -413,6 +413,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   /**
+   *  Check if the first shadow node is the descendant of the second shadow node
+   */
+  @ReactMethod
+  public void viewIsDescendantOf(
+      final int reactTag,
+      final int ancestorReactTag,
+      final Callback callback) {
+    mUIImplementation.viewIsDescendantOf(reactTag, ancestorReactTag, callback);
+  }
+
+  /**
    * Registers a new Animation that can then be added to a View using {@link #addAnimation}.
    */
   public void registerAnimation(Animation animation) {

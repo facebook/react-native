@@ -52,7 +52,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
  * It delegates handling touch events for itself and child views and sending those events to JS by
  * using JSTouchDispatcher.
  * This view is overriding {@link ViewGroup#onInterceptTouchEvent} method in order to be notified
- * about the events for all of it's children and it's also overriding
+ * about the events for all of its children and it's also overriding
  * {@link ViewGroup#requestDisallowInterceptTouchEvent} to make sure that
  * {@link ViewGroup#onInterceptTouchEvent} will get events even when some child view start
  * intercepting it. In case when no child view is interested in handling some particular

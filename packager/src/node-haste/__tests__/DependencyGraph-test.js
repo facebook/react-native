@@ -22,11 +22,15 @@ jest
 // This doesn't have state, and it's huge (Babel) so it's much faster to
 // require it only once. The variable name is prefixed with "mock" as an escape-hatch
 // for babel-plugin-jest-hoist.
-const mockExtractDependencies = require('../../JSTransformer/worker/extract-dependencies');
-jest.mock(
-  '../../JSTransformer/worker/extract-dependencies',
-  () => mockExtractDependencies,
-);
+let mockExtractDependencies;
+jest.mock('../../JSTransformer/worker/extract-dependencies', () => {
+  if (!mockExtractDependencies) {
+    mockExtractDependencies = require.requireActual(
+      '../../JSTransformer/worker/extract-dependencies',
+    );
+  }
+  return mockExtractDependencies;
+});
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
@@ -98,6 +102,11 @@ describe('DependencyGraph', function() {
         return new Promise(resolve => {
           let deps = {dependencies: [], dependencyOffsets: []};
           if (!module.path.endsWith('.json')) {
+            if (!mockExtractDependencies) {
+              mockExtractDependencies = require.requireActual(
+                '../../JSTransformer/worker/extract-dependencies',
+              );
+            }
             deps = mockExtractDependencies(sourceCode);
           }
           resolve({...deps, code: sourceCode});

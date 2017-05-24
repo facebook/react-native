@@ -14,8 +14,7 @@ const defaults = require('../../defaults');
 const nullthrows = require('fbjs/lib/nullthrows');
 const parallel = require('async/parallel');
 const seq = require('async/seq');
-
-const {virtualModule} = require('./output/util');
+const virtualModule = require('./module').virtual;
 
 import type {
   Callback,

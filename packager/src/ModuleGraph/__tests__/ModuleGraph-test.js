@@ -32,6 +32,7 @@ describe('build setup', () => {
         file: {
           code: 'var __DEV__=true,__BUNDLE_START_TIME__=' +
             'this.nativePerformanceNow?nativePerformanceNow():Date.now();',
+          map: null,
           path: '',
           type: 'script',
         },
