@@ -14,7 +14,7 @@
 const Server = require('../../../../packager/src/Server');
 
 const asAssets = require('./as-assets');
-const asIndexedFile = require('./as-indexed-file');
+const asIndexedFile = require('./as-indexed-file').save;
 
 import type Bundle from '../../../../packager/src//Bundler/Bundle';
 import type {OutputOptions, RequestOptions} from '../../types.flow';

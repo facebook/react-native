@@ -72,5 +72,5 @@ function filterObject(object, blacklist) {
 module.exports = {
   generateAssetCodeFileAst,
   generateAssetTransformResult,
-  isAssetTypeAnImage
+  isAssetTypeAnImage,
 };

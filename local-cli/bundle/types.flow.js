@@ -12,22 +12,23 @@
 
 import type Bundle from '../../packager/src/Bundler/Bundle';
 import type {Unbundle} from '../../packager/src/Bundler/Bundle';
-import type ModuleTransport from '../../packager/src/lib/ModuleTransport';
+import type ModuleTransport, {SourceMapOrMappings} from '../../packager/src/lib/ModuleTransport';
 import type {FBSourceMap, SourceMap} from '../../packager/src/lib/SourceMap';
 
 export type {Bundle, FBSourceMap, ModuleTransport, SourceMap, Unbundle};
 
 export type ModuleGroups = {|
   groups: Map<number, Set<number>>,
-  modulesById: Map<number, ModuleTransport>,
+  modulesById: Map<number, ModuleTransportLike>,
   modulesInGroups: Set<number>,
 |};
 
 export type ModuleTransportLike = {
-  code: string,
-  id: number,
-  map?: $PropertyType<ModuleTransport, 'map'>,
+  +code: string,
+  +id: number,
+  +map: ?SourceMapOrMappings,
   +name?: string,
+  +sourcePath: string,
 };
 
 export type OutputOptions = {

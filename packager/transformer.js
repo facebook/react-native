@@ -134,7 +134,7 @@ function transform({filename, options, src}: Params) {
         ast: null,
         code: src,
         filename,
-        map: null
+        map: null,
       };
     } else {
       const result = generate(ast, {

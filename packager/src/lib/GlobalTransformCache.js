@@ -386,7 +386,7 @@ class OptionsHasher {
   hashTransformOptions(hash: crypto$Hash, options: TransformOptionsStrict): crypto$Hash {
     const {
       generateSourceMaps, dev, hot, inlineRequires, platform, projectRoot,
-      ...unknowns,
+      ...unknowns
     } = options;
     const unknownKeys = Object.keys(unknowns);
     if (unknownKeys.length > 0) {

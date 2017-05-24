@@ -12,9 +12,7 @@ echo -en "\033]0;React Packager\a"
 clear
 
 THIS_DIR=$(dirname "$0")
-pushd "$THIS_DIR/.."
-. packager/packager.sh
-popd
+. "$THIS_DIR/packager.sh"
 
 echo "Process terminated. Press <enter> to close the window"
 read

@@ -19,8 +19,7 @@ const writeSourceMap = require('./write-sourcemap');
 
 const {joinModules} = require('./util');
 
-import type ModuleTransport from '../../../../packager/src//lib/ModuleTransport';
-import type {Bundle, ModuleGroups, OutputOptions} from '../../types.flow';
+import type {Bundle, ModuleGroups, ModuleTransportLike, OutputOptions} from '../../types.flow';
 
 const SIZEOF_UINT32 = 4;
 
@@ -62,6 +61,7 @@ function saveAsIndexedFile(
         startupModules: startupModules.concat(),
         lazyModules: lazyModules.concat(),
         moduleGroups,
+        fixWrapperOffset: true,
       }),
       sourcemapSourcesRoot
     );
@@ -104,7 +104,7 @@ function entryOffset(n) {
   return (2 + n * 2) * SIZEOF_UINT32;
 }
 
-function buildModuleTable(startupCode, buffers, moduleGroups) {
+function buildModuleTable(startupCode, moduleBuffers, moduleGroups) {
   // table format:
   // - num_entries:      uint_32  number of entries
   // - startup_code_len: uint_32  length of the startup section
@@ -127,7 +127,7 @@ function buildModuleTable(startupCode, buffers, moduleGroups) {
 
   // entries
   let codeOffset = startupCode.length;
-  buffers.forEach(({id, buffer}) => {
+  moduleBuffers.forEach(({id, buffer}) => {
     const group = moduleGroups.groups.get(id);
     const idsInGroup = group ? [id].concat(Array.from(group)) : [id];
 
@@ -170,7 +170,12 @@ function buildModuleBuffers(modules, moduleGroups, encoding) {
     ));
 }
 
-function buildTableAndContents(startupCode, modules, moduleGroups, encoding) {
+function buildTableAndContents(
+  startupCode: string,
+  modules: $ReadOnlyArray<ModuleTransportLike>,
+  moduleGroups: ModuleGroups,
+  encoding?: 'utf8' | 'utf16le' | 'ascii',
+) {
   // file contents layout:
   // - magic number      char[4]  0xE5 0xD1 0x0B 0xFB (0xFB0BD1E5 uint32 LE)
   // - offset table      table    see `buildModuleTables`
@@ -190,7 +195,7 @@ function buildTableAndContents(startupCode, modules, moduleGroups, encoding) {
 
 function createModuleGroups(
   groups: Map<number, Set<number>>,
-  modules: Array<ModuleTransport>,
+  modules: $ReadOnlyArray<ModuleTransportLike>,
 ): ModuleGroups {
   return {
     groups,
@@ -205,4 +210,6 @@ function * concat(iterators) {
   }
 }
 
-module.exports = saveAsIndexedFile;
+exports.save = saveAsIndexedFile;
+exports.buildTableAndContents = buildTableAndContents;
+exports.createModuleGroups = createModuleGroups;

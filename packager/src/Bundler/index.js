@@ -198,7 +198,7 @@ class Bundler {
       }
     );
 
-    const getTransformCacheKey = (options) => {
+    const getTransformCacheKey = options => {
       return transformCacheKey + getCacheKey(options);
     };
 
@@ -810,7 +810,7 @@ class Bundler {
           inlineRequires: transform.inlineRequires || false,
           platform,
           projectRoot: options.projectRoots[0],
-        }
+        },
       },
       preloadedModules: extraOptions.preloadedModules,
       ramGroups: extraOptions.ramGroups,
