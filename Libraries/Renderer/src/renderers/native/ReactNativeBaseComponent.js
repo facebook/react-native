@@ -120,7 +120,7 @@ ReactNativeBaseComponent.Mixin = {
   },
 
   getName() {
-    return this.constructor.displayName || 'Unknown';
+    return this.constructor.displayName || this.constructor.name || 'Unknown';
   },
 
   /**

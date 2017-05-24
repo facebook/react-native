@@ -25,28 +25,24 @@ const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 const View = require('View');
 const invariant = require('invariant');
+const emptyObject = require('emptyObject');
 
 export type ReactRenderer = {
   getInspectorDataForViewTag: () => Object,
 };
 
-function getHook() {
-  return window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-}
-
-function findRenderer(): ReactRenderer {
-  const hook = getHook();
-  const renderers = hook._renderers;
-  const keys = Object.keys(renderers);
-  invariant(keys.length === 1, 'Expected to find exactly one React Native renderer on DevTools hook.');
-  return renderers[keys[0]];
-}
-
-const hook = getHook();
+const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
 if (hook) {
   // required for devtools to be able to edit react native styles
   hook.resolveRNStyle = require('flattenStyle');
+}
+
+function findRenderer(): ReactRenderer {
+  const renderers = hook._renderers;
+  const keys = Object.keys(renderers);
+  invariant(keys.length === 1, 'Expected to find exactly one React Native renderer on DevTools hook.');
+  return renderers[keys[0]];
 }
 
 class Inspector extends React.Component {
@@ -89,11 +85,12 @@ class Inspector extends React.Component {
   }
 
   componentDidMount() {
-    const _hook = getHook();
-    _hook.on('react-devtools', this.attachToDevtools);
-    // if devtools is already started
-    if (_hook.reactDevtoolsAgent) {
-      this.attachToDevtools(_hook.reactDevtoolsAgent);
+    if (hook) {
+      hook.on('react-devtools', this.attachToDevtools);
+      // if devtools is already started
+      if (hook.reactDevtoolsAgent) {
+        this.attachToDevtools(hook.reactDevtoolsAgent);
+      }
     }
   }
 
@@ -101,7 +98,7 @@ class Inspector extends React.Component {
     if (this._subs) {
       this._subs.map(fn => fn());
     }
-    getHook().off('react-devtools', this.attachToDevtools);
+    hook.off('react-devtools', this.attachToDevtools);
   }
 
   componentWillReceiveProps(newProps: Object) {
@@ -123,7 +120,7 @@ class Inspector extends React.Component {
           hierarchy: [],
           inspected: {
             frame: {left, top, width, height},
-            style: props ? props.style : {},
+            style: props ? props.style : emptyObject,
           },
         });
       });
@@ -164,7 +161,7 @@ class Inspector extends React.Component {
       this.setState({
         inspected: {
           frame: {left, top, width, height},
-          style: props ? props.style : {},
+          style: props.style,
           source,
         },
         selection: i,
@@ -193,7 +190,7 @@ class Inspector extends React.Component {
       selection,
       hierarchy,
       inspected: {
-        style: props.style || {},
+        style: props.style,
         frame,
         source,
       },
