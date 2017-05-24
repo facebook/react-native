@@ -201,9 +201,10 @@ public:
 
   Value getProperty(const String& propName) const;
   Value getProperty(const char *propName) const;
-  Value getPropertyAtIndex(unsigned index) const;
-  void setProperty(const String& propName, const Value& value) const;
-  void setProperty(const char *propName, const Value& value) const;
+  Value getPropertyAtIndex(unsigned int index) const;
+  void setProperty(const String& propName, const Value& value);
+  void setProperty(const char *propName, const Value& value);
+  void setPropertyAtIndex(unsigned int index, const Value& value);
   std::vector<String> getPropertyNames() const;
   std::unordered_map<std::string, std::string> toJSONMap() const;
 
@@ -334,7 +335,7 @@ public:
 
   __attribute__((visibility("default"))) std::string toJSONString(unsigned indent = 0) const;
   __attribute__((visibility("default"))) static Value fromJSON(JSContextRef ctx, const String& json);
-  __attribute__((visibility("default"))) static JSValueRef fromDynamic(JSContextRef ctx, const folly::dynamic& value);
+  __attribute__((visibility("default"))) static Value fromDynamic(JSContextRef ctx, const folly::dynamic& value);
   __attribute__((visibility("default"))) JSContextRef context() const;
 protected:
   JSContextRef m_context;

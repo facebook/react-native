@@ -305,8 +305,7 @@ LocalString::~LocalString() {
 
 std::string fromJString(JNIEnv* env, jstring str) {
   auto utf16String = JStringUtf16Extractor(env, str);
-  auto length = env->GetStringLength(str);
-  return detail::utf16toUTF8(utf16String, length);
+  return detail::utf16toUTF8(utf16String.chars(), utf16String.length());
 }
 
 } }

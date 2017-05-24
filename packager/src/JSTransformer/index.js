@@ -166,11 +166,11 @@ function TransformError() {
 }
 util.inherits(TransformError, SyntaxError);
 
-function formatError(err, filename, source) {
+function formatError(err, filename) {
   if (err.loc) {
-    return formatBabelError(err, filename, source);
+    return formatBabelError(err, filename);
   } else {
-    return formatGenericError(err, filename, source);
+    return formatGenericError(err, filename);
   }
 }
 

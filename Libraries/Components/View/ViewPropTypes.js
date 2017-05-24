@@ -27,7 +27,48 @@ if (Platform.isTVOS) {
   TVViewPropTypes = require('TVViewPropTypes');
 }
 
+import type {
+  AccessibilityComponentType,
+  AccessibilityTrait,
+} from 'ViewAccessibility';
+import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
+import type {TVViewProps} from 'TVViewPropTypes';
+
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
+
+// There's no easy way to create a different type if(Platform.isTVOS):
+// so we must include TVViewProps
+export type ViewProps = {
+  accessible?: bool,
+  accessibilityLabel?: React$PropType$Primitive<any>,
+  accessibilityComponentType?: AccessibilityComponentType,
+  accessibilityLiveRegion?: 'none' | 'polite' | 'assertive',
+  importantForAccessibility?: 'auto'| 'yes'| 'no'| 'no-hide-descendants',
+  accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
+  accessibilityViewIsModal?: bool,
+  onAccessibilityTap?: Function,
+  onMagicTap?: Function,
+  testID?: string,
+  nativeID?: string,
+  onResponderGrant?: Function,
+  onResponderMove?: Function,
+  onResponderReject?: Function,
+  onResponderRelease?: Function,
+  onResponderTerminate?: Function,
+  onResponderTerminationRequest?: Function,
+  onStartShouldSetResponder?: Function,
+  onStartShouldSetResponderCapture?: Function,
+  onMoveShouldSetResponder?: Function,
+  onMoveShouldSetResponderCapture?: Function,
+  hitSlop?: EdgeInsetsProp,
+  pointerEvents?: 'box-none'| 'none'| 'box-only'| 'auto',
+  style?: stylePropType,
+  removeClippedSubviews?: bool,
+  renderToHardwareTextureAndroid?: bool,
+  shouldRasterizeIOS?: bool,
+  collapsable?: bool,
+  needsOffscreenAlphaCompositing?: bool,
+} & TVViewProps;
 
 module.exports = {
   ...TVViewPropTypes,

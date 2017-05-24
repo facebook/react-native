@@ -41,7 +41,7 @@ class ModuleCache {
   _platforms: Set<string>;
   _transformCode: TransformCode;
   _reporter: Reporter;
-  _roots: Array<string>;
+  _roots: $ReadOnlyArray<string>;
 
   constructor(
     {
@@ -62,7 +62,7 @@ class ModuleCache {
       getTransformCacheKey: GetTransformCacheKey,
       globalTransformCache: ?GlobalTransformCache,
       moduleOptions: ModuleOptions,
-      roots: Array<string>,
+      roots: $ReadOnlyArray<string>,
       reporter: Reporter,
       transformCode: TransformCode,
     |},

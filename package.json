@@ -93,6 +93,10 @@
     "init.sh",
     "scripts/ios-configure-glog.sh",
     "scripts/ios-install-third-party.sh",
+    "scripts/launchPackager.bat",
+    "scripts/launchPackager.command",
+    "scripts/packager.sh",
+    "scripts/react-native-xcode.sh",
     "jest-preset.json",
     "jest",
     "lib",
@@ -114,7 +118,7 @@
     "test": "jest",
     "flow": "flow",
     "lint": "eslint RNTester/ Libraries/",
-    "start": "/usr/bin/env bash -c './packager/packager.sh \"$@\" || true' --",
+    "start": "/usr/bin/env bash -c './scripts/packager.sh \"$@\" || true' --",
     "test-android-setup": "docker pull containership/android-base:latest",
     "test-android-build": "docker build -t react/android -f ContainerShip/Dockerfile.android .",
     "test-android-run-instrumentation": "docker run --cap-add=SYS_ADMIN -it react/android bash ContainerShip/scripts/run-android-docker-instrumentation-tests.sh",
@@ -191,7 +195,7 @@
     "promise": "^7.1.1",
     "prop-types": "^15.5.8",
     "react-clone-referenced-element": "^1.0.1",
-    "react-devtools-core": "^2.1.8",
+    "react-devtools-core": "^2.1.9",
     "react-timer-mixin": "^0.13.2",
     "react-transform-hmr": "^1.0.4",
     "rebound": "^0.0.13",
@@ -218,11 +222,11 @@
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
-    "eslint": "^3.8.1",
+    "eslint": "^3.19.0",
     "eslint-config-fbjs": "^1.1.1",
-    "eslint-plugin-babel": "^3.3.0",
-    "eslint-plugin-flowtype": "^2.20.0",
-    "eslint-plugin-react": "^6.4.1",
+    "eslint-plugin-babel": "^4.1.1",
+    "eslint-plugin-flowtype": "^2.33.0",
+    "eslint-plugin-react": "^7.0.1",
     "flow-bin": "^0.46.0",
     "jest": "19.0.2",
     "jest-repl": "19.0.2",
@@ -231,6 +235,6 @@
     "react": "16.0.0-alpha.12",
     "react-test-renderer": "16.0.0-alpha.12",
     "shelljs": "0.6.0",
-    "sinon": "^2.0.0-pre.2"
+    "sinon": "^2.2.0"
   }
 }

@@ -61,7 +61,7 @@ function tryParse(
     assetName: path.join(dirPath, `${rootName}.${extension}`),
     name: rootName,
     platform,
-    resolution: resolution,
+    resolution,
     type: extension,
   };
 }

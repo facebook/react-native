@@ -15,6 +15,7 @@
 const crypto = require('crypto');
 const debugRead = require('debug')('RNP:TransformCache:Read');
 const fs = require('fs');
+const invariant = require('fbjs/lib/invariant');
 const mkdirp = require('mkdirp');
 const path = require('path');
 const rimraf = require('rimraf');
@@ -29,7 +30,6 @@ import type {LocalPath} from '../node-haste/lib/toLocalPath';
 type CacheFilePaths = {transformedCode: string, metadata: string};
 export type GetTransformCacheKey = (options: {}) => string;
 
-const CACHE_NAME = 'react-native-packager-cache';
 const CACHE_SUB_DIR = 'cache';
 
 export type CachedResult = {
@@ -68,11 +68,25 @@ const CACHE_FILE_MAX_LAST_ACCESS_TIME = GARBAGE_COLLECTION_PERIOD * 4;
 
 class TransformCache {
   _cacheWasReset: boolean;
-  _dirPath: string;
   _lastCollected: ?number;
+  _rootPath: string;
 
-  constructor() {
+  /**
+   * The root path is where the data will be stored. It shouldn't contain
+   * other files other than the cache's own files, so it should start empty
+   * when the packager is first run. When doing a cache reset, it may be
+   * completely deleted.
+   */
+  constructor(rootPath: string) {
     this._cacheWasReset = false;
+    invariant(
+      path.isAbsolute(rootPath),
+      'root path of the transform cache must be absolute',
+    );
+    require('debug')('RNP:TransformCache:Dir')(
+      `transform cache directory: ${rootPath}`,
+    );
+    this._rootPath = rootPath;
   }
 
   /**
@@ -138,30 +152,36 @@ class TransformCache {
    */
   _readSync(props: ReadTransformProps): TransformCacheResult {
     this._collectIfNecessarySync(props.cacheOptions);
-    const cacheFilePaths = this._getCacheFilePaths(props);
-    let metadata, transformedCode;
     try {
-      metadata = readMetadataFileSync(cacheFilePaths.metadata);
-      if (metadata == null) {
-        return {result: null, outdatedDependencies: EMPTY_ARRAY};
-      }
-      const sourceHash = hashSourceCode(props);
-      if (sourceHash !== metadata.cachedSourceHash) {
-        return {result: null, outdatedDependencies: metadata.dependencies};
-      }
-      transformedCode = fs.readFileSync(cacheFilePaths.transformedCode, 'utf8');
-      const codeHash = crypto
-        .createHash('sha1')
-        .update(transformedCode)
-        .digest('hex');
-      if (metadata.cachedResultHash !== codeHash) {
-        return {result: null, outdatedDependencies: metadata.dependencies};
-      }
+      return this._readFilesSync(props);
     } catch (error) {
       if (error.code === 'ENOENT') {
         return {result: null, outdatedDependencies: EMPTY_ARRAY};
       }
       throw error;
+    }
+  }
+
+  _readFilesSync(props: ReadTransformProps): TransformCacheResult {
+    const cacheFilePaths = this._getCacheFilePaths(props);
+    const metadata = readMetadataFileSync(cacheFilePaths.metadata);
+    if (metadata == null) {
+      return {result: null, outdatedDependencies: EMPTY_ARRAY};
+    }
+    const sourceHash = hashSourceCode(props);
+    if (sourceHash !== metadata.cachedSourceHash) {
+      return {result: null, outdatedDependencies: metadata.dependencies};
+    }
+    const transformedCode = fs.readFileSync(
+      cacheFilePaths.transformedCode,
+      'utf8',
+    );
+    const codeHash = crypto
+      .createHash('sha1')
+      .update(transformedCode)
+      .digest('hex');
+    if (metadata.cachedResultHash !== codeHash) {
+      return {result: null, outdatedDependencies: metadata.dependencies};
     }
     return {
       result: {
@@ -194,7 +214,7 @@ class TransformCache {
   }
 
   _resetCache(reporter: Reporter) {
-    rimraf.sync(this._getCacheDirPath());
+    rimraf.sync(this._rootPath);
     reporter.update({type: 'transform_cache_reset'});
     this._cacheWasReset = true;
     this._lastCollected = Date.now();
@@ -212,7 +232,7 @@ class TransformCache {
       terminal.log(
         'Error: Cleaning up the cache folder failed. Continuing anyway.',
       );
-      terminal.log('The cache folder is: %s', this._getCacheDirPath());
+      terminal.log('The cache folder is: %s', this._rootPath);
     }
     this._lastCollected = Date.now();
   }
@@ -223,11 +243,11 @@ class TransformCache {
    * first.
    */
   _collectCacheIfOldSync() {
-    const cacheDirPath = this._getCacheDirPath();
+    const cacheDirPath = this._rootPath;
     mkdirp.sync(cacheDirPath);
     const cacheCollectionFilePath = path.join(cacheDirPath, 'last_collected');
     const lastCollected = Number.parseInt(
-      tryReadFileSync(cacheCollectionFilePath, 'utf8'),
+      tryReadFileSync(cacheCollectionFilePath),
       10,
     );
     if (
@@ -258,37 +278,8 @@ class TransformCache {
     const hash = hasher.digest('hex');
     const prefix = hash.substr(0, 2);
     const fileName = `${hash.substr(2)}`;
-    const base = path.join(
-      this._getCacheDirPath(),
-      CACHE_SUB_DIR,
-      prefix,
-      fileName,
-    );
+    const base = path.join(this._rootPath, CACHE_SUB_DIR, prefix, fileName);
     return {transformedCode: base, metadata: base + '.meta'};
-  }
-
-  /**
-   * If packager is running for two different directories, we don't want the
-   * caches to conflict with each other. `__dirname` carries that because
-   * packager will be, for example, installed in a different `node_modules/`
-   * folder for different projects.
-   */
-  _getCacheDirPath() {
-    if (this._dirPath != null) {
-      return this._dirPath;
-    }
-    const hash = crypto.createHash('sha1').update(__dirname);
-    if (process.getuid != null) {
-      hash.update(process.getuid().toString());
-    }
-    this._dirPath = path.join(
-      require('os').tmpdir(),
-      CACHE_NAME + '-' + hash.digest('hex'),
-    );
-    require('debug')('RNP:TransformCache:Dir')(
-      `transform cache directory: ${this._dirPath}`,
-    );
-    return this._dirPath;
   }
 }
 
@@ -336,15 +327,7 @@ function readMetadataFileSync(
   sourceMap: ?MappingsMap,
 } {
   const metadataStr = fs.readFileSync(metadataFilePath, 'utf8');
-  let metadata;
-  try {
-    metadata = JSON.parse(metadataStr);
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      return null;
-    }
-    throw error;
-  }
+  const metadata = tryParseJSON(metadataStr);
   if (!Array.isArray(metadata)) {
     return null;
   }
@@ -373,6 +356,17 @@ function readMetadataFileSync(
     dependencyOffsets,
     sourceMap,
   };
+}
+
+function tryParseJSON(str: string): any {
+  try {
+    return JSON.parse(str);
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return null;
+    }
+    throw error;
+  }
 }
 
 function hashSourceCode(props: {

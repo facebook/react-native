@@ -1,30 +1,35 @@
- /**
+/**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
+ * @format
  */
+
 'use strict';
 
-module.exports = function MapWithDefaults(factory, iterable) {
-  // This can't be `MapWithDefaults extends Map`, b/c the way babel transforms
-  // super calls in constructors: Map.call(this, iterable) throws for native
-  // Map objects in node 4+.
-  // TODO(davidaurelio) switch to a transform that does not transform classes
-  // and super calls, and change this into a class
+class MapWithDefaults<TK, TV> extends Map<TK, TV> {
+  _factory: TK => TV;
 
-  const map = iterable ? new Map(iterable) : new Map();
-  const {get} = map;
-  map.get = key => {
-    if (map.has(key)) {
-      return get.call(map, key);
+  constructor(factory: TK => TV, iterable?: Iterable<[TK, TV]>) {
+    super(iterable);
+    this._factory = factory;
+  }
+
+  get(key: TK): TV {
+    if (this.has(key)) {
+      /* $FlowFixMe: can never be `undefined` since we tested with `has`
+       * (except if `TV` includes `void` as subtype, ex. is nullable) */
+      return Map.prototype.get.call(this, key);
     }
-
-    const value = factory(key);
-    map.set(key, value);
+    const value = this._factory(key);
+    this.set(key, value);
     return value;
-  };
-  return map;
-};
+  }
+}
+
+module.exports = MapWithDefaults;

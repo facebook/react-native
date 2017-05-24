@@ -14,6 +14,7 @@
 const assert = require('assert');
 const crypto = require('crypto');
 const debug = require('debug')('RNP:Bundler');
+const emptyFunction = require('fbjs/lib/emptyFunction');
 const fs = require('fs');
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
@@ -89,8 +90,6 @@ export type ExtendedAssetDescriptor = AssetDescriptor & {
 
 const sizeOf = denodeify(imageSize);
 
-const noop = () => {};
-
 const {
   createActionStartEntry,
   createActionEndEntry,
@@ -128,7 +127,7 @@ type Options = {|
   +polyfillModuleNames: Array<string>,
   +postProcessModules?: PostProcessModules,
   +postMinifyProcess: PostMinifyProcess,
-  +projectRoots: Array<string>,
+  +projectRoots: $ReadOnlyArray<string>,
   +providesModuleNodeModules?: Array<string>,
   +reporter: Reporter,
   +resetCache: boolean,
@@ -146,7 +145,7 @@ class Bundler {
   _getModuleId: (opts: Module) => number;
   _transformer: Transformer;
   _resolverPromise: Promise<Resolver>;
-  _projectRoots: Array<string>;
+  _projectRoots: $ReadOnlyArray<string>;
   _assetServer: AssetServer;
   _getTransformOptions: void | GetTransformOptions;
 
@@ -173,7 +172,7 @@ class Bundler {
 
     this._getModuleId = createModuleIdFactory();
 
-    let getCacheKey = () => '';
+    let getCacheKey = (options: mixed) => '';
     if (opts.transformModulePath) {
       /* $FlowFixMe: dynamic requires prevent static typing :'(  */
       const transformer = require(opts.transformModulePath);
@@ -199,7 +198,7 @@ class Bundler {
       }
     );
 
-    const getTransformCacheKey = (options) => {
+    const getTransformCacheKey = options => {
       return transformCacheKey + getCacheKey(options);
     };
 
@@ -283,7 +282,7 @@ class Bundler {
     const matchingRoot = this._projectRoots.find(root => filePath.startsWith(root));
 
     if (!matchingRoot) {
-      throw new Error('No matching project root for ', filePath);
+      throw new Error('No matching project root for ' + filePath);
     }
 
     // Replaces '\' with '/' for Windows paths.
@@ -338,7 +337,7 @@ class Bundler {
     unbundle,
   }: {
     assetPlugins?: Array<string>,
-    bundle: Bundle,
+    bundle: Bundle | HMRBundle,
     dev: boolean,
     entryFile?: string,
     entryModuleOnly?: boolean,
@@ -422,10 +421,10 @@ class Bundler {
     isolateModuleIDs,
     generateSourceMaps,
     assetPlugins,
-    onResolutionResponse = noop,
-    onModuleTransformed = noop,
-    finalizeBundle = noop,
-    onProgress = noop,
+    onResolutionResponse = emptyFunction,
+    onModuleTransformed = emptyFunction,
+    finalizeBundle = emptyFunction,
+    onProgress = emptyFunction,
   }: *) {
     const transformingFilesLogEntry =
       log(createActionStartEntry({
@@ -641,8 +640,8 @@ class Bundler {
     bundle: Bundle,
     entryFilePath: string,
     options: BundlingOptions,
-    getModuleId: () => number,
-    dependencyPairs: Array<[mixed, {path: string}]>,
+    getModuleId: (module: Module) => number,
+    dependencyPairs: Array<[string, Module]>,
     assetPlugins: Array<string>,
   }): Promise<ModuleTransport> {
     let moduleTransport;
@@ -785,7 +784,7 @@ class Bundler {
       hot: boolean,
       minify: boolean,
       platform: ?string,
-      projectRoots: Array<string>,
+      projectRoots: $ReadOnlyArray<string>,
     |},
     ): Promise<BundlingOptions> {
     const getDependencies = (entryFile: string) =>
@@ -811,7 +810,7 @@ class Bundler {
           inlineRequires: transform.inlineRequires || false,
           platform,
           projectRoot: options.projectRoots[0],
-        }
+        },
       },
       preloadedModules: extraOptions.preloadedModules,
       ramGroups: extraOptions.ramGroups,
