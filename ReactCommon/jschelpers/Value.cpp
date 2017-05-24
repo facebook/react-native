@@ -17,11 +17,24 @@
 namespace facebook {
 namespace react {
 
-Value::Value(JSContextRef context, JSValueRef value)
-  : m_context(context), m_value(value) {}
+Value::Value(JSContextRef context, JSValueRef value) :
+  m_context(context),
+  m_value(value)
+{
+}
 
-Value::Value(JSContextRef context, JSStringRef str)
-  : m_context(context), m_value(JSC_JSValueMakeString(context, str)) {}
+Value::Value(JSContextRef context, JSStringRef str) :
+  m_context(context),
+  m_value(JSC_JSValueMakeString(context, str))
+{
+}
+
+Value::Value(Value&& other) :
+  m_context(other.m_context),
+  m_value(other.m_value)
+{
+  other.m_value = nullptr;
+}
 
 JSContextRef Value::context() const {
   return m_context;
@@ -30,8 +43,9 @@ JSContextRef Value::context() const {
 std::string Value::toJSONString(unsigned indent) const {
   JSValueRef exn;
   auto stringToAdopt = JSC_JSValueCreateJSONString(m_context, m_value, indent, &exn);
-  if (!stringToAdopt) {
-    throw JSException(m_context, exn, "Exception creating JSON string");
+  if (stringToAdopt == nullptr) {
+    std::string exceptionText = Value(m_context, exn).toString().str();
+    throwJSExecutionException("Exception creating JSON string: %s", exceptionText.c_str());
   }
   return String::adopt(m_context, stringToAdopt).str();
 }
@@ -40,7 +54,7 @@ std::string Value::toJSONString(unsigned indent) const {
 Value Value::fromJSON(JSContextRef ctx, const String& json) {
   auto result = JSC_JSValueMakeFromJSONString(ctx, json);
   if (!result) {
-    throw JSException("Failed to create Value from JSON: %s", json.str().c_str());
+    throwJSExecutionException("Failed to create String from JSON: %s", json.str().c_str());
   }
   return Value(ctx, result);
 }
@@ -119,22 +133,14 @@ JSValueRef Value::fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj) 
   }
 }
 
-Object Value::asObject() const {
+Object Value::asObject() {
   JSValueRef exn;
   JSObjectRef jsObj = JSC_JSValueToObject(context(), m_value, &exn);
   if (!jsObj) {
-    throw JSException(m_context, exn, "Failed to convert to object");
+    std::string exceptionText = Value(m_context, exn).toString().str();
+    throwJSExecutionException("Failed to convert to object: %s", exceptionText.c_str());
   }
   return Object(context(), jsObj);
-}
-
-String Value::toString() const {
-  JSValueRef exn;
-  JSStringRef jsStr = JSC_JSValueToStringCopy(context(), m_value, &exn);
-  if (!jsStr) {
-    throw JSException(m_context, exn, "Failed to convert to string");
-  }
-  return String::adopt(context(), jsStr);
 }
 
 Value Value::makeError(JSContextRef ctx, const char *error)
@@ -143,7 +149,8 @@ Value Value::makeError(JSContextRef ctx, const char *error)
   JSValueRef args[] = { Value(ctx, String(ctx, error)) };
   JSObjectRef errorObj = JSC_JSObjectMakeError(ctx, 1, args, &exn);
   if (!errorObj) {
-    throw JSException(ctx, exn, "Exception making error");
+    std::string exceptionText = Value(ctx, exn).toString().str();
+    throwJSExecutionException("%s", exceptionText.c_str());
   }
   return Value(ctx, errorObj);
 }
@@ -172,7 +179,8 @@ Value Object::callAsFunction(JSObjectRef thisObj, int nArgs, const JSValueRef ar
   JSValueRef exn;
   JSValueRef result = JSC_JSObjectCallAsFunction(m_context, m_obj, thisObj, nArgs, args, &exn);
   if (!result) {
-    throw JSException(m_context, exn, "Exception calling object as function");
+    std::string exceptionText = Value(m_context, exn).toString().str();
+    throwJSExecutionException("Exception calling object as function: %s", exceptionText.c_str());
   }
   return Value(m_context, result);
 }
@@ -181,7 +189,8 @@ Object Object::callAsConstructor(std::initializer_list<JSValueRef> args) const {
   JSValueRef exn;
   JSObjectRef result = JSC_JSObjectCallAsConstructor(m_context, m_obj, args.size(), args.begin(), &exn);
   if (!result) {
-    throw JSException(m_context, exn, "Exception calling object as constructor");
+    std::string exceptionText = Value(m_context, exn).toString().str();
+    throwJSExecutionException("Exception calling object as constructor: %s", exceptionText.c_str());
   }
   return Object(m_context, result);
 }
@@ -190,7 +199,8 @@ Value Object::getProperty(const String& propName) const {
   JSValueRef exn;
   JSValueRef property = JSC_JSObjectGetProperty(m_context, m_obj, propName, &exn);
   if (!property) {
-    throw JSException(m_context, exn, "Failed to get property");
+    std::string exceptionText = Value(m_context, exn).toString().str();
+    throwJSExecutionException("Failed to get property: %s", exceptionText.c_str());
   }
   return Value(m_context, property);
 }
@@ -199,7 +209,8 @@ Value Object::getPropertyAtIndex(unsigned int index) const {
   JSValueRef exn;
   JSValueRef property = JSC_JSObjectGetPropertyAtIndex(m_context, m_obj, index, &exn);
   if (!property) {
-    throw JSException(m_context, exn, "Failed to get property at index");
+    std::string exceptionText = Value(m_context, exn).toString().str();
+    throwJSExecutionException("Failed to get property at index %u: %s", index, exceptionText.c_str());
   }
   return Value(m_context, property);
 }
@@ -212,7 +223,8 @@ void Object::setProperty(const String& propName, const Value& value) {
   JSValueRef exn = nullptr;
   JSC_JSObjectSetProperty(m_context, m_obj, propName, value, kJSPropertyAttributeNone, &exn);
   if (exn) {
-    throw JSException(m_context, exn, "Failed to set property");
+    std::string exceptionText = Value(m_context, exn).toString().str();
+    throwJSExecutionException("Failed to set property: %s", exceptionText.c_str());
   }
 }
 
@@ -220,7 +232,8 @@ void Object::setPropertyAtIndex(unsigned int index, const Value& value) {
   JSValueRef exn = nullptr;
   JSC_JSObjectSetPropertyAtIndex(m_context, m_obj, index, value, &exn);
   if (exn) {
-    throw JSException(m_context, exn, "Failed to set property at index");
+    std::string exceptionText = Value(m_context, exn).toString().str();
+    throwJSExecutionException("Failed to set property: %s", exceptionText.c_str());
   }
 }
 

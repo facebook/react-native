@@ -348,7 +348,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
     JSValueRef jsError;
     JSValueRef result = JSC_JSEvaluateBytecodeBundle(m_context, NULL, sourceFD, jsSourceURL, &jsError);
     if (result == nullptr) {
-      throw JSException(m_context, jsError, nullptr, jsSourceURL);
+      formatAndThrowJSException(m_context, jsError, jsSourceURL);
     }
   } else
 #endif
@@ -392,7 +392,7 @@ void JSCExecutor::bindBridge() throw(JSException) {
         batchedBridgeValue = requireBatchedBridge.asObject().callAsFunction({});
       }
       if (batchedBridgeValue.isUndefined()) {
-        throw JSException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
+        throwJSExecutionException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
       }
     }
 

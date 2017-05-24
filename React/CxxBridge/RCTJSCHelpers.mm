@@ -14,7 +14,6 @@
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridge+Private.h>
-#import <React/RCTCxxUtils.h>
 #import <React/RCTLog.h>
 #import <cxxreact/Platform.h>
 #import <jschelpers/Value.h>
@@ -31,9 +30,8 @@ JSValueRef nativeLoggingHook(
     level = MAX(level, (RCTLogLevel)Value(ctx, arguments[1]).asNumber());
   }
   if (argumentCount > 0) {
-    JSContext *contextObj = contextForGlobalContextRef(JSC_JSContextGetGlobalContext(ctx));
-    JSValue *msg = [JSC_JSValue(ctx) valueWithJSValueRef:arguments[0] inContext:contextObj];
-    _RCTLogJavaScriptInternal(level, [msg toString]);
+    String message = Value(ctx, arguments[0]).toString();
+    _RCTLogJavaScriptInternal(level, @(message.str().c_str()));
   }
   return Value::makeUndefined(ctx);
 }
@@ -47,7 +45,7 @@ JSValueRef nativePerformanceNow(
 }
 
 void RCTPrepareJSCExecutor() {
-  ReactMarker::logTaggedMarker = [](const ReactMarker::ReactMarkerId, const char *tag) {};
+  ReactMarker::logTaggedMarker = [](const ReactMarker::ReactMarkerId, const char* tag) {};
   PerfLogging::installNativeHooks = RCTFBQuickPerformanceLoggerConfigureHooks;
   JSNativeHooks::loggingHook = nativeLoggingHook;
   JSNativeHooks::nowHook = nativePerformanceNow;
