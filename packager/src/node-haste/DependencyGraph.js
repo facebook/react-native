@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @format
  */
 
 'use strict';
@@ -34,15 +35,14 @@ const {
 } = require('../Logger');
 const {EventEmitter} = require('events');
 
-import type {Options as JSTransformerOptions} from '../JSTransformer/worker/worker';
+import type {
+  Options as JSTransformerOptions,
+} from '../JSTransformer/worker/worker';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {GetTransformCacheKey} from '../lib/TransformCache';
 import type {Reporter} from '../lib/reporting';
 import type {ModuleMap} from './DependencyGraph/ResolutionRequest';
-import type {
-  Options as ModuleOptions,
-  TransformCode,
-} from './Module';
+import type {Options as ModuleOptions, TransformCode} from './Module';
 import type {HasteFS} from './types';
 
 type Options = {|
@@ -70,15 +70,14 @@ type Options = {|
 const JEST_HASTE_MAP_CACHE_BREAKER = 1;
 
 class DependencyGraph extends EventEmitter {
-
   _assetResolutionCache: AssetResolutionCache;
-  _opts: Options;
   _filesByDirNameIndex: FilesByDirNameIndex;
   _haste: JestHasteMap;
+  _hasteFS: HasteFS;
   _helpers: DependencyGraphHelpers;
   _moduleCache: ModuleCache;
-  _hasteFS: HasteFS;
   _moduleMap: ModuleMap;
+  _opts: Options;
 
   constructor(config: {|
     +opts: Options,
@@ -87,9 +86,14 @@ class DependencyGraph extends EventEmitter {
     +initialModuleMap: ModuleMap,
   |}) {
     super();
-    invariant(config.opts.maxWorkerCount >= 1, 'worker count must be greater or equal to 1');
+    invariant(
+      config.opts.maxWorkerCount >= 1,
+      'worker count must be greater or equal to 1',
+    );
     this._opts = config.opts;
-    this._filesByDirNameIndex = new FilesByDirNameIndex(config.initialHasteFS.getAllFiles());
+    this._filesByDirNameIndex = new FilesByDirNameIndex(
+      config.initialHasteFS.getAllFiles(),
+    );
     this._assetResolutionCache = new AssetResolutionCache({
       assetExtensions: new Set(config.opts.assetExts),
       getDirFiles: dirPath => this._filesByDirNameIndex.getAllFiles(dirPath),
@@ -122,18 +126,19 @@ class DependencyGraph extends EventEmitter {
   }
 
   static async load(opts: Options): Promise<DependencyGraph> {
-    const initializingPackagerLogEntry =
-      log(createActionStartEntry('Initializing Packager'));
+    const initializingPackagerLogEntry = log(
+      createActionStartEntry('Initializing Packager'),
+    );
     opts.reporter.update({type: 'dep_graph_loading'});
     const haste = DependencyGraph._createHaste(opts);
     const {hasteFS, moduleMap} = await haste.build();
     log(createActionEndEntry(initializingPackagerLogEntry));
     opts.reporter.update({type: 'dep_graph_loaded'});
     return new DependencyGraph({
-      opts,
       haste,
       initialHasteFS: hasteFS,
       initialModuleMap: moduleMap,
+      opts,
     });
   }
 
@@ -157,24 +162,27 @@ class DependencyGraph extends EventEmitter {
     this._assetResolutionCache.clear();
     this._moduleMap = moduleMap;
     eventsQueue.forEach(({type, filePath}) =>
-      this._moduleCache.processFileChange(type, filePath)
+      this._moduleCache.processFileChange(type, filePath),
     );
     this.emit('change');
   }
 
   _createModuleCache() {
     const {_opts} = this;
-    return new ModuleCache({
-      assetDependencies: _opts.assetDependencies,
-      depGraphHelpers: this._helpers,
-      getClosestPackage: this._getClosestPackage.bind(this),
-      getTransformCacheKey: _opts.getTransformCacheKey,
-      globalTransformCache: _opts.globalTransformCache,
-      moduleOptions: _opts.moduleOptions,
-      reporter: _opts.reporter,
-      roots: _opts.roots,
-      transformCode: _opts.transformCode,
-    }, _opts.platforms);
+    return new ModuleCache(
+      {
+        assetDependencies: _opts.assetDependencies,
+        depGraphHelpers: this._helpers,
+        getClosestPackage: this._getClosestPackage.bind(this),
+        getTransformCacheKey: _opts.getTransformCacheKey,
+        globalTransformCache: _opts.globalTransformCache,
+        moduleOptions: _opts.moduleOptions,
+        reporter: _opts.reporter,
+        roots: _opts.roots,
+        transformCode: _opts.transformCode,
+      },
+      _opts.platforms,
+    );
   }
 
   /**
@@ -243,12 +251,14 @@ class DependencyGraph extends EventEmitter {
 
     const response = new ResolutionResponse(options);
 
-    return req.getOrderedDependencies({
-      response,
-      transformOptions: options.transformer,
-      onProgress,
-      recursive,
-    }).then(() => response);
+    return req
+      .getOrderedDependencies({
+        response,
+        transformOptions: options.transformer,
+        onProgress,
+        recursive,
+      })
+      .then(() => response);
   }
 
   matchFilesByPattern(pattern: RegExp) {
@@ -257,7 +267,8 @@ class DependencyGraph extends EventEmitter {
 
   _getRequestPlatform(entryPath: string, platform: ?string): ?string {
     if (platform == null) {
-      platform = parsePlatformFilePath(entryPath, this._opts.platforms).platform;
+      platform = parsePlatformFilePath(entryPath, this._opts.platforms)
+        .platform;
     } else if (!this._opts.platforms.has(platform)) {
       throw new Error('Unrecognized platform: ' + platform);
     }
@@ -280,14 +291,13 @@ class DependencyGraph extends EventEmitter {
     throw new NotFoundError(
       'Cannot find entry file %s in any of the roots: %j',
       filePath,
-      this._opts.roots
+      this._opts.roots,
     );
   }
 
   createPolyfill(options: {file: string}) {
     return this._moduleCache.createPolyfill(options);
   }
-
 }
 
 function NotFoundError(...args) {

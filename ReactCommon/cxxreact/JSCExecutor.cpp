@@ -65,8 +65,6 @@
 namespace facebook {
 namespace react {
 
-using namespace detail;
-
 namespace {
 
 template<JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>

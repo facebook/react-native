@@ -181,7 +181,6 @@ const Image = React.createClass({
     accessibilityLabel: PropTypes.node,
     /**
     * blurRadius: the blur radius of the blur filter added to the image
-    * @platform ios
     */
     blurRadius: PropTypes.number,
     /**

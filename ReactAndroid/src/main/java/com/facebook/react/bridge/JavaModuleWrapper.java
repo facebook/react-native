@@ -78,7 +78,17 @@ public class JavaModuleWrapper {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "findMethods");
     Set<String> methodNames = new HashSet<>();
 
-    Method[] targetMethods = mModuleClass.getDeclaredMethods();
+    Class<? extends NativeModule> classForMethods = mModuleClass;
+    Class<? extends NativeModule> superClass =
+        (Class<? extends NativeModule>) mModuleClass.getSuperclass();
+    if (ReactModuleWithSpec.class.isAssignableFrom(superClass)) {
+      // For java module that is based on generated flow-type spec, inspect the
+      // spec abstract class instead, which is the super class of the given java
+      // module.
+      classForMethods = superClass;
+    }
+    Method[] targetMethods = classForMethods.getDeclaredMethods();
+
     for (Method targetMethod : targetMethods) {
       ReactMethod annotation = targetMethod.getAnnotation(ReactMethod.class);
       if (annotation != null) {

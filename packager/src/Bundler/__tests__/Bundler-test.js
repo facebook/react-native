@@ -34,6 +34,7 @@ var defaults = require('../../../defaults');
 var sizeOf = require('image-size');
 var fs = require('fs');
 const os = require('os');
+const path = require('path');
 
 const {any, objectContaining} = expect;
 
@@ -85,6 +86,9 @@ describe('Bundler', function() {
 
   beforeEach(function() {
     os.cpus.mockReturnValue({length: 1});
+    // local directory on purpose, because it should not actually write
+    // anything to the disk during a unit test!
+    os.tmpDir.mockReturnValue(path.join(__dirname));
 
     getDependencies = jest.fn();
     getModuleSystemDependencies = jest.fn();
