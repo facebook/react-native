@@ -56,7 +56,7 @@ function combineSourceMaps(
 
 function combineSourceMapsAddingOffsets(
   modules: $ReadOnlyArray<ModuleTransportLike>,
-  moduleGroups?: ModuleGroups,
+  moduleGroups?: ?ModuleGroups,
   options?: ?CombineOptions,
 ): FBIndexMap {
   const x_facebook_offsets = [];

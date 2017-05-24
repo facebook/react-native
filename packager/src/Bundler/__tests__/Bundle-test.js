@@ -379,7 +379,7 @@ describe('Bundle', () => {
       }).toThrow(
         new Error(
           `Module ${fsLocation('invariant')} belongs to groups ${fsLocation('React')}` +
-            `, and ${fsLocation('OtherFramework')}. Removing it from all groups.`,
+            `, and ${fsLocation('OtherFramework')}. Ensure that each module is only part of one group.`,
         ),
       );
     });

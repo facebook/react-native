@@ -11,8 +11,10 @@
 'use strict';
 
 const buildSourceMapWithMetaData = require('../../../../local-cli/bundle/output/unbundle/build-unbundle-sourcemap-with-metadata.js');
+const nullthrows = require('fbjs/lib/nullthrows');
 
 const {buildTableAndContents, createModuleGroups} = require('../../../../local-cli/bundle/output/unbundle/as-indexed-file');
+const {createRamBundleGroups} = require('../../Bundler/util');
 const {concat} = require('./util');
 
 import type {FBIndexMap} from '../../lib/SourceMap.js';
@@ -23,12 +25,14 @@ function asIndexedRamBundle({
   idForPath,
   modules,
   preloadedModules,
+  ramGroupHeads,
   requireCalls,
 }) {
   const [startup, deferred] = partition(modules, preloadedModules);
   const startupModules = Array.from(concat(startup, requireCalls));
-  const deferredModules = deferred.map(m => toModuleTransport(m.file, idForPath));
-  const moduleGroups = createModuleGroups(new Map(), deferredModules);
+  const deferredModules = deferred.map(m => toModuleTransport(m, idForPath));
+  const ramGroups = createRamBundleGroups(ramGroupHeads || [], deferredModules, subtree);
+  const moduleGroups = createModuleGroups(ramGroups, deferredModules);
 
   const tableAndContents = buildTableAndContents(
     startupModules.map(getModuleCode).join('\n'),
@@ -41,15 +45,17 @@ function asIndexedRamBundle({
     code: Buffer.concat(tableAndContents),
     map: buildSourceMapWithMetaData({
       fixWrapperOffset: false,
-      startupModules: startupModules.map(m => toModuleTransport(m.file, idForPath)),
       lazyModules: deferredModules,
+      moduleGroups,
+      startupModules: startupModules.map(m => toModuleTransport(m, idForPath)),
     }),
   };
 }
 
-function toModuleTransport(file, idForPath) {
+function toModuleTransport({dependencies, file}, idForPath) {
   return {
     code: file.code,
+    dependencies,
     id: idForPath(file),
     map: file.map,
     name: file.path,
@@ -71,7 +77,26 @@ function partition(modules, preloadedModules) {
   return [startup, deferred];
 }
 
-function createBuilder(preloadedModules: Set<string>): OutputFn<FBIndexMap> {
-  return x => asIndexedRamBundle({preloadedModules, ...x});
+function *subtree(
+  moduleTransport,
+  moduleTransportsByPath,
+  seen = new Set(),
+) {
+  seen.add(moduleTransport.id);
+  for (const {path} of moduleTransport.dependencies) {
+    const dependency = nullthrows(moduleTransportsByPath.get(path));
+    if (!seen.has(dependency.id)) {
+      yield dependency.id;
+      yield *subtree(dependency, moduleTransportsByPath, seen);
+    }
+  }
 }
+
+function createBuilder(
+  preloadedModules: Set<string>,
+  ramGroupHeads: ?$ReadOnlyArray<string>,
+): OutputFn<FBIndexMap> {
+  return x => asIndexedRamBundle({...x, preloadedModules, ramGroupHeads});
+}
+
 exports.createBuilder = createBuilder;

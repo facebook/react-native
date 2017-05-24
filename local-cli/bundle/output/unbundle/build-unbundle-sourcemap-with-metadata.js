@@ -14,12 +14,12 @@ const {combineSourceMaps, combineSourceMapsAddingOffsets, joinModules} = require
 
 import type {ModuleGroups, ModuleTransportLike} from '../../types.flow';
 
-type Params = {
+type Params = {|
   fixWrapperOffset: boolean,
   lazyModules: $ReadOnlyArray<ModuleTransportLike>,
-  moduleGroups?: ModuleGroups,
+  moduleGroups: ?ModuleGroups,
   startupModules: $ReadOnlyArray<ModuleTransportLike>,
-};
+|};
 
 module.exports = ({fixWrapperOffset, lazyModules, moduleGroups, startupModules}: Params) => {
   const options = fixWrapperOffset ? {fixWrapperOffset: true} : undefined;
