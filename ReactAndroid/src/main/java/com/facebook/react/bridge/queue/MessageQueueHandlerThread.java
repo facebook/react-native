@@ -10,6 +10,7 @@
 package com.facebook.react.bridge.queue;
 
 import android.os.Looper;
+import android.os.Process;
 
 class MessageQueueHandlerThread extends Thread {
   private Looper mLooper;
@@ -18,17 +19,14 @@ class MessageQueueHandlerThread extends Thread {
     super(null, null, name, stackSize);
   }
 
-  private void onLooperPrepared() {
-  }
-
   @Override
   public void run() {
+    Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
     Looper.prepare();
     synchronized (this) {
       mLooper = Looper.myLooper();
       notifyAll();
     }
-    onLooperPrepared();
     Looper.loop();
   }
 
