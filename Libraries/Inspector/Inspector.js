@@ -32,11 +32,9 @@ export type ReactRenderer = {
 };
 
 const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-
-if (hook) {
-  // required for devtools to be able to edit react native styles
-  hook.resolveRNStyle = require('flattenStyle');
-}
+const renderer: ReactRenderer = findRenderer();
+// required for devtools to be able to edit react native styles
+hook.resolveRNStyle = require('flattenStyle');
 
 function findRenderer(): ReactRenderer {
   const renderers = hook._renderers;
@@ -64,7 +62,6 @@ class Inspector extends React.Component {
   };
 
   _subs: ?Array<() => void>;
-  renderer: ReactRenderer;
 
   constructor(props: Object) {
     super(props);
@@ -80,17 +77,13 @@ class Inspector extends React.Component {
       inspectedViewTag: this.props.inspectedViewTag,
       networking: false,
     };
-
-    this.renderer = findRenderer();
   }
 
   componentDidMount() {
-    if (hook) {
-      hook.on('react-devtools', this.attachToDevtools);
-      // if devtools is already started
-      if (hook.reactDevtoolsAgent) {
-        this.attachToDevtools(hook.reactDevtoolsAgent);
-      }
+    hook.on('react-devtools', this.attachToDevtools);
+    // if devtools is already started
+    if (hook.reactDevtoolsAgent) {
+      this.attachToDevtools(hook.reactDevtoolsAgent);
     }
   }
 
@@ -179,7 +172,7 @@ class Inspector extends React.Component {
       props,
       selection,
       source,
-    } = this.renderer.getInspectorDataForViewTag(touchedViewTag);
+    } = renderer.getInspectorDataForViewTag(touchedViewTag);
 
     if (this.state.devtoolsAgent) {
       this.state.devtoolsAgent.selectFromReactInstance(instance, true);
