@@ -20,14 +20,11 @@ const sourceMap = require('source-map');
 
 import type {TransformedSourceFile, TransformResult} from '../types.flow';
 import type {MappingsMap, SourceMap} from '../../lib/SourceMap';
-import type {PostMinifyProcess} from '../../Bundler/index.js';
-
 
 export type OptimizationOptions = {|
   dev: boolean,
   isPolyfill?: boolean,
   platform: string,
-  postMinifyProcess: PostMinifyProcess,
 |};
 
 function optimizeModule(
@@ -43,21 +40,16 @@ function optimizeModule(
   const {details} = data;
   const {code, file, transformed} = details;
   const result = {...details, transformed: {}};
-  const {postMinifyProcess} = optimizationOptions;
 
   //$FlowIssue #14545724
   Object.entries(transformed).forEach(([k, t: TransformResult]: [*, TransformResult]) => {
-    const optimized = optimize(t, file, code, optimizationOptions);
-    const processed = postMinifyProcess({code: optimized.code, map: optimized.map});
-    optimized.code = processed.code;
-    optimized.map = processed.map;
-    result.transformed[k] = optimized;
+    result.transformed[k] = optimize(t, file, code, optimizationOptions);
   });
 
   return {type: 'code', details: result};
 }
 
-function optimize(transformed, file, originalCode, options) {
+function optimize(transformed, file, originalCode, options): TransformResult {
   const {code, dependencyMapName, map} = transformed;
   const optimized = optimizeCode(code, map, file, options);
 

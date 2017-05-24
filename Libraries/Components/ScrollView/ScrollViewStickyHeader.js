@@ -61,9 +61,8 @@ class ScrollViewStickyHeader extends React.Component {
 
   render() {
     const {measured, layoutHeight, layoutY, nextHeaderLayoutY} = this.state;
-    const inputRange: Array<number> = [-1, 0];
-    const outputRange: Array<number> = [0, 0];
 
+    let translateY;
     if (measured) {
       // The interpolation looks like:
       // - Negative scroll: no translation
@@ -75,8 +74,8 @@ class ScrollViewStickyHeader extends React.Component {
       // header to continue scrolling up and make room for the next sticky header.
       // In the case that there is no next header just translate equally to
       // scroll indefinetly.
-      inputRange.push(layoutY);
-      outputRange.push(0);
+      const inputRange = [-1, 0, layoutY];
+      const outputRange: Array<number> = [0, 0, 0];
       // Sometimes headers jump around so we make sure we don't violate the monotonic inputRange
       // condition.
       const collisionPoint = (nextHeaderLayoutY || 0) - layoutHeight;
@@ -87,12 +86,14 @@ class ScrollViewStickyHeader extends React.Component {
         inputRange.push(layoutY + 1);
         outputRange.push(1);
       }
+      translateY = this.props.scrollAnimatedValue.interpolate({
+        inputRange,
+        outputRange,
+      });
+    } else {
+      translateY = 0;
     }
 
-    const translateY = this.props.scrollAnimatedValue.interpolate({
-      inputRange,
-      outputRange,
-    });
     const child = React.Children.only(this.props.children);
 
     return (

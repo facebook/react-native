@@ -13,7 +13,7 @@ clear
 
 THIS_DIR=$(dirname "$0")
 pushd "$THIS_DIR/.."
-. packager/packager.sh
+source packager/packager.sh
 popd
 
 echo "Process terminated. Press <enter> to close the window"

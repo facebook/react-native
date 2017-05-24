@@ -12,11 +12,6 @@
 #include <fb/assert.h>
 #include <fb/log.h>
 
-#ifdef USE_LYRA
-#include <fb/lyra.h>
-#include <fb/lyra_exceptions.h>
-#endif
-
 #include <alloca.h>
 #include <cstdlib>
 #include <ios>
@@ -26,6 +21,7 @@
 #include <system_error>
 
 #include <jni.h>
+
 
 namespace facebook {
 namespace jni {
@@ -111,13 +107,7 @@ void setJavaExceptionAndAbortOnFailure(alias_ref<JThrowable> throwable) {
 
 // Functions that throw C++ exceptions
 
-// TODO(T6618159) Inject the c++ stack into the exception's stack trace. One
-// issue: when a java exception is created, it captures the full java stack
-// across jni boundaries. lyra will only capture the c++ stack to the jni
-// boundary. So, as we pass the java exception up to c++, we need to capture
-// the c++ stack and then insert it into the correct place in the java stack
-// trace. Then, as the exception propagates across the boundaries, we will
-// slowly fill in the c++ parts of the trace.
+// TODO(T6618159) Take a stack dump here to save context if it results in a crash when propagated
 void throwPendingJniExceptionAsCppException() {
   JNIEnv* env = Environment::current();
   if (env->ExceptionCheck() == JNI_FALSE) {
@@ -161,178 +151,82 @@ void throwNewJavaException(const char* throwableName, const char* msg) {
   throwNewJavaException(throwable.get());
 }
 
-// jthrowable //////////////////////////////////////////////////////////////////////////////////////
-
-local_ref<JThrowable> JThrowable::initCause(alias_ref<JThrowable> cause) {
-  static auto meth = javaClassStatic()->getMethod<javaobject(alias_ref<javaobject>)>("initCause");
-  return meth(self(), cause);
-}
-
-auto JThrowable::getStackTrace() -> local_ref<JStackTrace> {
-  static auto meth = javaClassStatic()->getMethod<JStackTrace::javaobject()>("getStackTrace");
-  return meth(self());
-}
-
-void JThrowable::setStackTrace(alias_ref<JStackTrace> stack) {
-  static auto meth = javaClassStatic()->getMethod<void(alias_ref<JStackTrace>)>("setStackTrace");
-  return meth(self(), stack);
-}
-
-auto JStackTraceElement::create(
-    const std::string& declaringClass, const std::string& methodName, const std::string& file, int line)
-    -> local_ref<javaobject> {
-  return newInstance(declaringClass, methodName, file, line);
-}
-
-std::string JStackTraceElement::getClassName() const {
-  static auto meth = javaClassStatic()->getMethod<local_ref<JString>()>("getClassName");
-  return meth(self())->toStdString();
-}
-
-std::string JStackTraceElement::getMethodName() const {
-  static auto meth = javaClassStatic()->getMethod<local_ref<JString>()>("getMethodName");
-  return meth(self())->toStdString();
-}
-
-std::string JStackTraceElement::getFileName() const {
-  static auto meth = javaClassStatic()->getMethod<local_ref<JString>()>("getFileName");
-  return meth(self())->toStdString();
-}
-
-int JStackTraceElement::getLineNumber() const {
-  static auto meth = javaClassStatic()->getMethod<jint()>("getLineNumber");
-  return meth(self());
-}
-
 // Translate C++ to Java Exception
 
 namespace {
 
-// For each exception in the chain of the exception_ptr argument, func
-// will be called with that exception (in reverse order, i.e. innermost first).
-#ifndef FBJNI_NO_EXCEPTION_PTR
-void denest(const std::function<void(std::exception_ptr)>& func, std::exception_ptr ptr) {
-  FBASSERT(ptr);
+// The implementation std::rethrow_if_nested uses a dynamic_cast to determine
+// if the exception is a nested_exception. If the exception is from a library
+// built with -fno-rtti, then that will crash. This avoids that.
+void rethrow_if_nested() {
   try {
-    std::rethrow_exception(ptr);
+    throw;
   } catch (const std::nested_exception& e) {
-    denest(func, e.nested_ptr());
+    e.rethrow_nested();
   } catch (...) {
-    // ignored.
   }
-  func(ptr);
-  }
-#endif
-
-} // namespace
-
-
-#ifdef USE_LYRA
-local_ref<JStackTraceElement> createJStackTraceElement(const lyra::StackTraceElement& cpp) {
-  return JStackTraceElement::create(
-      "|lyra|{" + cpp.libraryName() + "}", cpp.functionName(), cpp.buildId(), cpp.libraryOffset());
-}
-#endif
-
-#ifndef FBJNI_NO_EXCEPTION_PTR
-void addCppStacktraceToJavaException(alias_ref<JThrowable> java, std::exception_ptr cpp) {
-#ifdef USE_LYRA
-  auto cppStack = lyra::getStackTraceSymbols(
-                    (cpp == nullptr) ?
-                      lyra::getStackTrace()
-                      : lyra::getExceptionTrace(cpp));
-
-  auto javaStack = java->getStackTrace();
-  auto newStack = JThrowable::JStackTrace::newArray(javaStack->size() + cppStack.size());
-  size_t i = 0;
-  for (size_t j = 0; j < cppStack.size(); j++, i++) {
-    (*newStack)[i] = createJStackTraceElement(cppStack[j]);
-  }
-  for (size_t j = 0; j < javaStack->size(); j++, i++) {
-    (*newStack)[i] = (*javaStack)[j];
-  }
-  java->setStackTrace(newStack);
-#endif
 }
 
-local_ref<JThrowable> convertCppExceptionToJavaException(std::exception_ptr ptr) {
-  FBASSERT(ptr);
-  local_ref<JThrowable> current;
-  bool addCppStack = true;
+// For each exception in the chain of the currently handled exception, func
+// will be called with that exception as the currently handled exception (in
+// reverse order, i.e. innermost first).
+void denest(std::function<void()> func) {
   try {
-    std::rethrow_exception(ptr);
-    addCppStack = false;
-  } catch (const JniException& ex) {
-    current = ex.getThrowable();
-  } catch (const std::ios_base::failure& ex) {
-    current = JIOException::create(ex.what());
-  } catch (const std::bad_alloc& ex) {
-    current = JOutOfMemoryError::create(ex.what());
-  } catch (const std::out_of_range& ex) {
-    current = JArrayIndexOutOfBoundsException::create(ex.what());
-  } catch (const std::system_error& ex) {
-    current = JCppSystemErrorException::create(ex);
-  } catch (const std::runtime_error& ex) {
-    current = JRuntimeException::create(ex.what());
-  } catch (const std::exception& ex) {
-    current = JCppException::create(ex.what());
-  } catch (const char* msg) {
-    current = JUnknownCppException::create(msg);
+    throw;
+  } catch (const std::exception& e) {
+    try {
+      rethrow_if_nested();
+    } catch (...) {
+      denest(func);
+    }
+    func();
   } catch (...) {
-    current = JUnknownCppException::create();
+    func();
   }
-
-  if (addCppStack) {
-    addCppStacktraceToJavaException(current, ptr);
-  }
-  return current;
-  }
-#endif
-
-local_ref<JThrowable> getJavaExceptionForCppBackTrace() {
-  return getJavaExceptionForCppBackTrace(nullptr);
+}
 }
 
-local_ref<JThrowable> getJavaExceptionForCppBackTrace(const char* msg) {
-  local_ref<JThrowable> current =
-      msg ? JUnknownCppException::create(msg) : JUnknownCppException::create();
-#ifndef FBJNI_NO_EXCEPTION_PTR
-  addCppStacktraceToJavaException(current, nullptr);
-#endif
-  return current;
-}
-
-
-#ifndef FBJNI_NO_EXCEPTION_PTR
-local_ref<JThrowable> getJavaExceptionForCppException(std::exception_ptr ptr) {
-  FBASSERT(ptr);
+void translatePendingCppExceptionToJavaException() noexcept {
   local_ref<JThrowable> previous;
-  auto func = [&previous] (std::exception_ptr ptr) {
-    auto current = convertCppExceptionToJavaException(ptr);
+  auto func = [&previous] () {
+    local_ref<JThrowable> current;
+    try {
+      throw;
+    } catch(const JniException& ex) {
+      current = ex.getThrowable();
+    } catch(const std::ios_base::failure& ex) {
+      current = JIOException::create(ex.what());
+    } catch(const std::bad_alloc& ex) {
+      current = JOutOfMemoryError::create(ex.what());
+    } catch(const std::out_of_range& ex) {
+      current = JArrayIndexOutOfBoundsException::create(ex.what());
+    } catch(const std::system_error& ex) {
+      current = JCppSystemErrorException::create(ex);
+    } catch(const std::runtime_error& ex) {
+      current = JRuntimeException::create(ex.what());
+    } catch(const std::exception& ex) {
+      current = JCppException::create(ex.what());
+    } catch(const char* msg) {
+      current = JUnknownCppException::create(msg);
+    } catch(...) {
+      current = JUnknownCppException::create();
+    }
     if (previous) {
       current->initCause(previous);
     }
     previous = current;
   };
-  denest(func, ptr);
-  return previous;
-}
-#endif
 
-void translatePendingCppExceptionToJavaException() {
   try {
-#ifndef FBJNI_NO_EXCEPTION_PTR
-    auto exc = getJavaExceptionForCppException(std::current_exception());
-#else
-    auto exc = JUnknownCppException::create();
-#endif
-    setJavaExceptionAndAbortOnFailure(exc);
+    denest(func);
+    setJavaExceptionAndAbortOnFailure(previous);
+  } catch (std::exception& e) {
+    FBLOGE("unexpected exception in translatePendingCppExceptionToJavaException: %s", e.what());
+    // rethrow the exception and let the noexcept handling abort.
+    throw;
   } catch (...) {
-#ifdef USE_LYRA
-    FBLOGE("Unexpected error in translatePendingCppExceptionToJavaException(): %s",
-        lyra::toString(std::current_exception()).c_str());
-#endif
-    std::terminate();
+    FBLOGE("unexpected exception in translatePendingCppExceptionToJavaException");
+    throw;
   }
 }
 
@@ -358,13 +252,8 @@ JniException::JniException(const JniException &rhs)
 }
 
 JniException::~JniException() {
-  try {
-    ThreadScope ts;
-    throwable_.reset();
-  } catch (...) {
-    FBLOGE("Exception in ~JniException()");
-    std::terminate();
-  }
+  ThreadScope ts;
+  throwable_.reset();
 }
 
 local_ref<JThrowable> JniException::getThrowable() const noexcept {
@@ -373,8 +262,8 @@ local_ref<JThrowable> JniException::getThrowable() const noexcept {
 
 // TODO 6900503: consider making this thread-safe.
 void JniException::populateWhat() const noexcept {
+  ThreadScope ts;
   try {
-    ThreadScope ts;
     what_ = throwable_->toString();
     isMessageExtracted_ = true;
   } catch(...) {

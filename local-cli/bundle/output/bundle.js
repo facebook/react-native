@@ -43,7 +43,7 @@ function createCodeWithMap(bundle: Bundle, dev: boolean, sourceMapSourcesRoot?: 
 function saveBundleAndMap(
   bundle: Bundle,
   options: OutputOptions,
-  log: (...args: Array<string>) => {},
+  log: (x: string) => {},
 ): Promise<> {
   const {
     bundleOutput,

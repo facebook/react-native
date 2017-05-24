@@ -12,7 +12,7 @@
 
 const invariant = require('fbjs/lib/invariant');
 
-import type {FBIndexMap, IndexMap, MappingsMap, SourceMap} from '../../../../packager/src/lib/SourceMap';
+import type {IndexMap, MappingsMap, SourceMap} from '../../../../packager/src/lib/SourceMap';
 import type {ModuleGroups, ModuleTransportLike} from '../../types.flow';
 
 const newline = /\r\n?|\n|\u2028|\u2029/g;
@@ -43,59 +43,56 @@ const Section =
   (line: number, column: number, map: SourceMap) =>
     ({map, offset: {line, column}});
 
-type CombineOptions = {fixWrapperOffset: boolean};
-
-function combineSourceMaps(
-  modules: $ReadOnlyArray<ModuleTransportLike>,
+type CombineSourceMapsOptions = {
   moduleGroups?: ModuleGroups,
-  options?: ?CombineOptions,
-): IndexMap {
-  const sections = combineMaps(modules, null, moduleGroups, options);
-  return {sections, version: 3};
-}
+  modules: Array<ModuleTransportLike>,
+  withCustomOffsets?: boolean,
+};
 
-function combineSourceMapsAddingOffsets(
-  modules: $ReadOnlyArray<ModuleTransportLike>,
-  moduleGroups?: ModuleGroups,
-  options?: ?CombineOptions,
-): FBIndexMap {
-  const x_facebook_offsets = [];
-  const sections = combineMaps(modules, x_facebook_offsets, moduleGroups, options);
-  return {sections, version: 3, x_facebook_offsets};
-}
-
-function combineMaps(modules, offsets: ?Array<number>, moduleGroups, options) {
+function combineSourceMaps({
+  moduleGroups,
+  modules,
+  withCustomOffsets,
+}: CombineSourceMapsOptions): IndexMap {
+  const offsets = [];
   const sections = [];
+  const sourceMap: IndexMap = withCustomOffsets
+    ? {sections, version: 3, x_facebook_offsets: offsets}
+    : {sections, version: 3};
 
   let line = 0;
   modules.forEach(moduleTransport => {
     const {code, id, name} = moduleTransport;
     let column = 0;
+    let hasOffset = false;
     let group;
     let groupLines = 0;
     let {map} = moduleTransport;
 
-    if (moduleGroups && moduleGroups.modulesInGroups.has(id)) {
-      // this is a module appended to another module
-      return;
-    }
+    if (withCustomOffsets) {
+      if (moduleGroups && moduleGroups.modulesInGroups.has(id)) {
+        // this is a module appended to another module
+        return;
+      }
 
 
-    if (offsets != null) {
       group = moduleGroups && moduleGroups.groups.get(id);
       if (group && moduleGroups) {
         const {modulesById} = moduleGroups;
-        const otherModules: $ReadOnlyArray<ModuleTransportLike> =
+        const otherModules: Array<ModuleTransportLike> =
           Array.from(group || [])
             .map(moduleId => modulesById.get(moduleId))
             .filter(Boolean); // needed to appease flow
         otherModules.forEach(m => {
           groupLines += countLines(m.code);
         });
-        map = combineSourceMaps([moduleTransport].concat(otherModules));
+        map = combineSourceMaps({
+          modules: [moduleTransport].concat(otherModules),
+        });
       }
 
-      column = options && options.fixWrapperOffset ? wrapperEnd(code) : 0;
+      hasOffset = id != null;
+      column = wrapperEnd(code);
     }
 
     invariant(
@@ -103,7 +100,7 @@ function combineMaps(modules, offsets: ?Array<number>, moduleGroups, options) {
       'Random Access Bundle source maps cannot be built from raw mappings',
     );
     sections.push(Section(line, column, map || lineToLineSourceMap(code, name)));
-    if (offsets != null && id != null) {
+    if (hasOffset) {
       offsets[id] = line;
       for (const moduleId of group || []) {
         offsets[moduleId] = line;
@@ -112,17 +109,16 @@ function combineMaps(modules, offsets: ?Array<number>, moduleGroups, options) {
     line += countLines(code) + groupLines;
   });
 
-  return sections;
+  return sourceMap;
 }
 
 const joinModules =
-  (modules: $ReadOnlyArray<{+code: string}>): string =>
+  (modules: Array<*>): string =>
     modules.map(m => m.code).join('\n');
 
 module.exports = {
-  combineSourceMaps,
-  combineSourceMapsAddingOffsets,
   countLines,
-  joinModules,
   lineToLineSourceMap,
+  combineSourceMaps,
+  joinModules,
 };

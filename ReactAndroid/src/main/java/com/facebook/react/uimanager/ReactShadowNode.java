@@ -452,23 +452,6 @@ public class ReactShadowNode {
     return mTotalNativeChildren;
   }
 
-  public boolean isDescendantOf(ReactShadowNode ancestorNode) {
-    ReactShadowNode parentNode = getParent();
-
-    boolean isDescendant = false;
-
-    while (parentNode != null) {
-      if (parentNode == ancestorNode) {
-        isDescendant = true;
-        break;
-      } else {
-        parentNode = parentNode.getParent();
-      }
-    }
-
-    return isDescendant;
-  }
-
   /**
    * Returns the offset within the native children owned by all layout-only nodes in the subtree
    * rooted at this node for the given child. Put another way, this returns the number of native

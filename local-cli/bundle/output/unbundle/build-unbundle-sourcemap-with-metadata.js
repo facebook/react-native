@@ -10,31 +10,25 @@
  */
 'use strict';
 
-const {combineSourceMaps, combineSourceMapsAddingOffsets, joinModules} = require('./util');
+const {combineSourceMaps, joinModules} = require('./util');
 
 import type {ModuleGroups, ModuleTransportLike} from '../../types.flow';
 
 type Params = {
-  fixWrapperOffset: boolean,
-  lazyModules: $ReadOnlyArray<ModuleTransportLike>,
+  lazyModules: Array<ModuleTransportLike>,
   moduleGroups?: ModuleGroups,
-  startupModules: $ReadOnlyArray<ModuleTransportLike>,
+  startupModules: Array<ModuleTransportLike>,
 };
 
-module.exports = ({fixWrapperOffset, lazyModules, moduleGroups, startupModules}: Params) => {
-  const options = fixWrapperOffset ? {fixWrapperOffset: true} : undefined;
+module.exports = ({startupModules, lazyModules, moduleGroups}: Params) => {
   const startupModule: ModuleTransportLike = {
     code: joinModules(startupModules),
     id:  Number.MIN_SAFE_INTEGER,
-    map: combineSourceMaps(startupModules, undefined, options),
-    sourcePath: '',
+    map: combineSourceMaps({modules: startupModules}),
   };
-
-  const map = combineSourceMapsAddingOffsets(
-    [startupModule].concat(lazyModules),
+  return combineSourceMaps({
+    modules: [startupModule].concat(lazyModules),
     moduleGroups,
-    options,
-  );
-  delete map.x_facebook_offsets[Number.MIN_SAFE_INTEGER];
-  return map;
+    withCustomOffsets: true,
+  });
 };

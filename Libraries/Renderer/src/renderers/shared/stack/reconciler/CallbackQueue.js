@@ -28,10 +28,10 @@ var validateCallback = require('validateCallback');
  * @implements PooledClass
  * @internal
  */
-class CallbackQueue<T, Targ> {
-  _callbacks: ?Array<(arg: Targ) => void>;
+class CallbackQueue<T> {
+  _callbacks: ?Array<() => void>;
   _contexts: ?Array<T>;
-  _arg: Targ;
+  _arg: ?mixed;
 
   constructor(arg) {
     this._callbacks = null;

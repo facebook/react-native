@@ -14,15 +14,14 @@
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
-const PropTypes = require('prop-types');
 const React = require('React');
+const PropTypes = require('prop-types');
 const ReactNativeFeatureFlags = require('ReactNativeFeatureFlags');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const ViewPropTypes = require('ViewPropTypes');
 
 const invariant = require('fbjs/lib/invariant');
-const requireNativeComponent = require('requireNativeComponent');
 const warning = require('fbjs/lib/warning');
 
 const {
@@ -30,12 +29,10 @@ const {
   AccessibilityTraits,
 } = require('ViewAccessibility');
 
+const requireNativeComponent = require('requireNativeComponent');
+
 const forceTouchAvailable = (NativeModules.PlatformConstants &&
   NativeModules.PlatformConstants.forceTouchAvailable) || false;
-
-import type {ViewProps} from 'ViewPropTypes';
-
-export type Props = ViewProps;
 
 /**
  * The most fundamental component for building a UI, `View` is a container that supports layout with

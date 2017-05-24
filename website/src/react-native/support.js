@@ -62,6 +62,9 @@ var support = React.createClass({
                   <li className="help-list-entry">
                     <a href="https://github.com/facebook/react-native/tree/master/RNTester">RNTester</a>
                   </li>
+                  <li className="help-list-entry">
+                    <a href="https://github.com/facebook/react-native/tree/master/Examples/Movies">Movies</a>
+                  </li>
                 </ul>
 
                 <h2>Stay up to date</h2>

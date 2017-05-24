@@ -65,10 +65,8 @@ public:
   JStringUtf16Extractor(JNIEnv* env, jstring javaString)
   : env_(env)
   , javaString_(javaString)
-  , length_(0)
   , utf16String_(nullptr) {
     if (env_ && javaString_) {
-      length_ = env_->GetStringLength(javaString_);
       utf16String_ = env_->GetStringCritical(javaString_, nullptr);
     }
   }
@@ -79,18 +77,13 @@ public:
     }
   }
 
-  const jsize length() const {
-    return length_;
-  }
-
-  const jchar* chars() const {
+  operator const jchar* () const {
     return utf16String_;
   }
 
 private:
   JNIEnv* env_;
   jstring javaString_;
-  jsize length_;
   const jchar* utf16String_;
 };
 

@@ -15,7 +15,7 @@ import type {RawMapping} from '../Bundler/source-map';
 import type Module from '../node-haste/Module';
 import type {SourceMap} from './SourceMap';
 
-export type SourceMapOrMappings = SourceMap | Array<RawMapping>;
+type SourceMapOrMappings = SourceMap | Array<RawMapping>;
 
 type Metadata = {
   dependencies?: ?Array<string>,

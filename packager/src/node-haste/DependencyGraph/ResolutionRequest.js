@@ -92,31 +92,6 @@ type Options<TModule, TPackage> = {|
 |};
 
 /**
- * This is a way to describe what files we tried to look for when resolving
- * a module name as file. This is mainly used for error reporting, so that
- * we can explain why we cannot resolve a module.
- */
-type FileCandidates =
-  // We only tried to resolve a specific asset.
-  | {|+type: 'asset', +name: string|}
-  // We attempted to resolve a name as being a source file (ex. JavaScript,
-  // JSON...), in which case there can be several variants we tried, for
-  // example `foo.ios.js`, `foo.js`, etc.
-  | {|+type: 'sources', +fileNames: $ReadOnlyArray<string>|};
-
-/**
- * This is a way to describe what files we tried to look for when resolving
- * a module name as directory.
- */
-type DirCandidates =
-  | {|+type: 'package', +dir: DirCandidates, +file: FileCandidates|}
-  | {|+type: 'index', +file: FileCandidates|};
-
-type Resolution<TModule, TCandidates> =
-  | {|+type: 'resolved', +module: TModule|}
-  | {|+type: 'failed', +candidates: TCandidates|};
-
-/**
  * It may not be a great pattern to leverage exception just for "trying" things
  * out, notably for performance. We should consider replacing these functions
  * to be nullable-returning, or being better stucture to the algorithm.
@@ -458,14 +433,8 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
         path.relative(packageName, realModuleName),
       );
       return tryResolveSync(
-        () =>
-          this._loadAsFileOrThrow(
-            potentialModulePath,
-            fromModule,
-            toModuleName,
-          ),
-        () =>
-          this._loadAsDirOrThrow(potentialModulePath, fromModule, toModuleName),
+        () => this._loadAsFile(potentialModulePath, fromModule, toModuleName),
+        () => this._loadAsDir(potentialModulePath, fromModule, toModuleName),
       );
     }
 
@@ -494,12 +463,16 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
       potentialModulePath,
     );
     if (realModuleName === false) {
-      return this._getEmptyModule(fromModule, toModuleName);
+      return this._loadAsFile(
+        ResolutionRequest.EMPTY_MODULE,
+        fromModule,
+        toModuleName,
+      );
     }
 
     return tryResolveSync(
-      () => this._loadAsFileOrThrow(realModuleName, fromModule, toModuleName),
-      () => this._loadAsDirOrThrow(realModuleName, fromModule, toModuleName),
+      () => this._loadAsFile(realModuleName, fromModule, toModuleName),
+      () => this._loadAsDir(realModuleName, fromModule, toModuleName),
     );
   }
 
@@ -510,7 +483,11 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     const realModuleName = this._redirectRequire(fromModule, toModuleName);
     // exclude
     if (realModuleName === false) {
-      return this._getEmptyModule(fromModule, toModuleName);
+      return this._loadAsFile(
+        ResolutionRequest.EMPTY_MODULE,
+        fromModule,
+        toModuleName,
+      );
     }
 
     if (isRelativeImport(realModuleName) || isAbsolutePath(realModuleName)) {
@@ -590,8 +567,8 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
   ): ?TModule {
     try {
       return tryResolveSync(
-        () => this._loadAsFileOrThrow(searchPath, fromModule, toModuleName),
-        () => this._loadAsDirOrThrow(searchPath, fromModule, toModuleName),
+        () => this._loadAsFile(searchPath, fromModule, toModuleName),
+        () => this._loadAsDir(searchPath, fromModule, toModuleName),
       );
     } catch (error) {
       if (error.type !== 'UnableToResolveError') {
@@ -601,75 +578,53 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     }
   }
 
-  /**
-   * Eventually we'd like to remove all the exception being throw in the middle
-   * of the resolution algorithm, instead keeping track of tentatives in a
-   * specific data structure, and building a proper error at the top-level.
-   * This function is meant to be a temporary proxy for _loadAsFile until
-   * the callsites switch to that tracking structure.
-   */
-  _loadAsFileOrThrow(
-    basePath: string,
+  _loadAsFile(
+    basepath: string,
     fromModule: TModule,
     toModule: string,
   ): TModule {
-    const dirPath = path.dirname(basePath);
-    const fileNameHint = path.basename(basePath);
-    const result = this._loadAsFile(dirPath, fileNameHint);
-    if (result.type === 'resolved') {
-      return result.module;
+    if (this._options.helpers.isAssetFile(basepath)) {
+      return this._loadAsAssetFile(basepath, fromModule, toModule);
     }
-    if (result.candidates.type === 'asset') {
-      const msg =
-        `Directory \`${dirPath}' doesn't contain asset ` +
-        `\`${result.candidates.name}'`;
-      throw new UnableToResolveError(fromModule, toModule, msg);
-    }
-    invariant(result.candidates.type === 'sources', 'invalid candidate type');
-    const msg =
-      `Could not resolve the base path \`${basePath}' into a module. The ` +
-      `folder \`${dirPath}' was searched for one of these files: ` +
-      result.candidates.fileNames.map(filePath => `\`${filePath}'`).join(', ') +
-      '.';
-    throw new UnableToResolveError(fromModule, toModule, msg);
-  }
-
-  _loadAsFile(
-    dirPath: string,
-    fileNameHint: string,
-  ): Resolution<TModule, FileCandidates> {
-    if (this._options.helpers.isAssetFile(fileNameHint)) {
-      return this._loadAsAssetFile(dirPath, fileNameHint);
-    }
+    const dirPath = path.dirname(basepath);
     const doesFileExist = this._doesFileExist;
     const resolver = new FileNameResolver({doesFileExist, dirPath});
-    const fileName = this._tryToResolveAllFileNames(resolver, fileNameHint);
+    const fileNamePrefix = path.basename(basepath);
+    const fileName = this._tryToResolveAllFileNames(resolver, fileNamePrefix);
     if (fileName != null) {
-      const filePath = path.join(dirPath, fileName);
-      const module = this._options.moduleCache.getModule(filePath);
-      return {type: 'resolved', module};
+      return this._options.moduleCache.getModule(path.join(dirPath, fileName));
     }
-    const fileNames = resolver.getTentativeFileNames();
-    return {type: 'failed', candidates: {type: 'sources', fileNames}};
+    throw new UnableToResolveError(
+      fromModule,
+      toModule,
+      `Could not resolve the base path \`${basepath}' into a module. The ` +
+        `folder \`${dirPath}' was searched for one of these files: ` +
+        resolver
+          .getTentativeFileNames()
+          .map(filePath => `\`${filePath}'`)
+          .join(', ') +
+        '.',
+    );
   }
 
   _loadAsAssetFile(
-    dirPath: string,
-    fileNameHint: string,
-  ): Resolution<TModule, FileCandidates> {
-    const assetNames = this._options.resolveAsset(dirPath, fileNameHint);
+    potentialModulePath: string,
+    fromModule: TModule,
+    toModule: string,
+  ): TModule {
+    const dirPath = path.dirname(potentialModulePath);
+    const baseName = path.basename(potentialModulePath);
+    const assetNames = this._options.resolveAsset(dirPath, baseName);
     const assetName = getArrayLowestItem(assetNames);
     if (assetName != null) {
       const assetPath = path.join(dirPath, assetName);
-      return {
-        type: 'resolved',
-        module: this._options.moduleCache.getAssetModule(assetPath),
-      };
+      return this._options.moduleCache.getAssetModule(assetPath);
     }
-    return {
-      type: 'failed',
-      candidates: {type: 'asset', name: fileNameHint},
-    };
+    throw new UnableToResolveError(
+      fromModule,
+      toModule,
+      `Directory \`${dirPath}' doesn't contain asset \`${baseName}'`,
+    );
   }
 
   /**
@@ -726,102 +681,27 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
     return resolver.tryToResolveFileName(fileName) ? fileName : null;
   }
 
-  _getEmptyModule(fromModule: TModule, toModuleName: string): TModule {
-    const {moduleCache} = this._options;
-    const module = moduleCache.getModule(ResolutionRequest.EMPTY_MODULE);
-    if (module != null) {
-      return module;
-    }
-    throw new UnableToResolveError(
-      fromModule,
-      toModuleName,
-      "could not resolve `${ResolutionRequest.EMPTY_MODULE}'",
-    );
-  }
-
-  /**
-   * Same as `_loadAsDir`, but throws instead of returning candidates in case of
-   * failure. We want to migrate all the callsites to `_loadAsDir` eventually.
-   */
-  _loadAsDirOrThrow(
+  _loadAsDir(
     potentialDirPath: string,
     fromModule: TModule,
-    toModuleName: string,
+    toModule: string,
   ): TModule {
-    const result = this._loadAsDir(potentialDirPath);
-    if (result.type === 'resolved') {
-      return result.module;
-    }
-    if (result.candidates.type === 'package') {
-      throw new UnableToResolveError(
-        fromModule,
-        toModuleName,
-        `could not resolve \`${potentialDirPath}' as a folder: it contained ` +
-          'a package, but its "main" could not be resolved',
-      );
-    }
-    invariant(result.candidates.type === 'index', 'invalid candidate type');
-    throw new UnableToResolveError(
-      fromModule,
-      toModuleName,
-      `could not resolve \`${potentialDirPath}' as a folder: it did not ` +
-        'contain a package, nor an index file',
-    );
-  }
-
-  /**
-   * Try to resolve a potential path as if it was a directory-based module.
-   * Either this is a directory that contains a package, or that the directory
-   * contains an index file. If it fails to resolve these options, it returns
-   * `null` and fills the array of `candidates` that were tried.
-   *
-   * For example we could try to resolve `/foo/bar`, that would eventually
-   * resolve to `/foo/bar/lib/index.ios.js` if we're on platform iOS and that
-   * `bar` contains a package which entry point is `./lib/index` (or `./lib`).
-   */
-  _loadAsDir(potentialDirPath: string): Resolution<TModule, DirCandidates> {
     const packageJsonPath = path.join(potentialDirPath, 'package.json');
     if (this._options.hasteFS.exists(packageJsonPath)) {
-      return this._loadAsPackage(packageJsonPath);
+      const main = this._options.moduleCache
+        .getPackage(packageJsonPath)
+        .getMain();
+      return tryResolveSync(
+        () => this._loadAsFile(main, fromModule, toModule),
+        () => this._loadAsDir(main, fromModule, toModule),
+      );
     }
-    const result = this._loadAsFile(potentialDirPath, 'index');
-    if (result.type === 'resolved') {
-      return result;
-    }
-    return {
-      type: 'failed',
-      candidates: {type: 'index', file: result.candidates},
-    };
-  }
 
-  /**
-   * Right now we just consider it a failure to resolve if we couldn't find the
-   * file corresponding to the `main` indicated by a package. Argument can be
-   * made this should be changed so that failing to find the `main` is not a
-   * resolution failure, but identified instead as a corrupted or invalid
-   * package (or that a package only supports a specific platform, etc.)
-   */
-  _loadAsPackage(packageJsonPath: string): Resolution<TModule, DirCandidates> {
-    const package_ = this._options.moduleCache.getPackage(packageJsonPath);
-    const mainPrefixPath = package_.getMain();
-    const dirPath = path.dirname(mainPrefixPath);
-    const prefixName = path.basename(mainPrefixPath);
-    const fileResult = this._loadAsFile(dirPath, prefixName);
-    if (fileResult.type === 'resolved') {
-      return fileResult;
-    }
-    const dirResult = this._loadAsDir(mainPrefixPath);
-    if (dirResult.type === 'resolved') {
-      return dirResult;
-    }
-    return {
-      type: 'failed',
-      candidates: {
-        type: 'package',
-        dir: dirResult.candidates,
-        file: fileResult.candidates,
-      },
-    };
+    return this._loadAsFile(
+      path.join(potentialDirPath, 'index'),
+      fromModule,
+      toModule,
+    );
   }
 
   _resetResolutionCache() {

@@ -40,7 +40,7 @@ type SectionBase = {
     },
   }) => ?React.Element<*>,
   ItemSeparatorComponent?: ?ReactClass<*>,
-  keyExtractor?: (item: SectionItem, index: ?number) => string,
+  keyExtractor?: (item: SectionItem) => string,
 
   // TODO: support more optional/override props
   // FooterComponent?: ?ReactClass<*>,

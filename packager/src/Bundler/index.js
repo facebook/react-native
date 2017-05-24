@@ -14,7 +14,6 @@
 const assert = require('assert');
 const crypto = require('crypto');
 const debug = require('debug')('RNP:Bundler');
-const emptyFunction = require('fbjs/lib/emptyFunction');
 const fs = require('fs');
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
@@ -89,6 +88,8 @@ export type ExtendedAssetDescriptor = AssetDescriptor & {
 };
 
 const sizeOf = denodeify(imageSize);
+
+const noop = () => {};
 
 const {
   createActionStartEntry,
@@ -172,7 +173,7 @@ class Bundler {
 
     this._getModuleId = createModuleIdFactory();
 
-    let getCacheKey = (options: mixed) => '';
+    let getCacheKey = () => '';
     if (opts.transformModulePath) {
       /* $FlowFixMe: dynamic requires prevent static typing :'(  */
       const transformer = require(opts.transformModulePath);
@@ -198,7 +199,7 @@ class Bundler {
       }
     );
 
-    const getTransformCacheKey = options => {
+    const getTransformCacheKey = (options) => {
       return transformCacheKey + getCacheKey(options);
     };
 
@@ -282,7 +283,7 @@ class Bundler {
     const matchingRoot = this._projectRoots.find(root => filePath.startsWith(root));
 
     if (!matchingRoot) {
-      throw new Error('No matching project root for ' + filePath);
+      throw new Error('No matching project root for ', filePath);
     }
 
     // Replaces '\' with '/' for Windows paths.
@@ -421,10 +422,10 @@ class Bundler {
     isolateModuleIDs,
     generateSourceMaps,
     assetPlugins,
-    onResolutionResponse = emptyFunction,
-    onModuleTransformed = emptyFunction,
-    finalizeBundle = emptyFunction,
-    onProgress = emptyFunction,
+    onResolutionResponse = noop,
+    onModuleTransformed = noop,
+    finalizeBundle = noop,
+    onProgress = noop,
   }: *) {
     const transformingFilesLogEntry =
       log(createActionStartEntry({
@@ -640,7 +641,7 @@ class Bundler {
     bundle: Bundle,
     entryFilePath: string,
     options: BundlingOptions,
-    getModuleId: (module: Module) => number,
+    getModuleId: () => number,
     dependencyPairs: Array<[string, Module]>,
     assetPlugins: Array<string>,
   }): Promise<ModuleTransport> {
@@ -810,7 +811,7 @@ class Bundler {
           inlineRequires: transform.inlineRequires || false,
           platform,
           projectRoot: options.projectRoots[0],
-        },
+        }
       },
       preloadedModules: extraOptions.preloadedModules,
       ramGroups: extraOptions.ramGroups,

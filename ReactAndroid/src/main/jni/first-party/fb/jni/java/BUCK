@@ -1,8 +1,0 @@
-java_library(
-    name = "java",
-    srcs = glob(["**/*.java"]),
-    visibility = ["PUBLIC"],
-    deps = [
-        "//java/com/facebook/proguard/annotations:annotations",
-    ],
-)

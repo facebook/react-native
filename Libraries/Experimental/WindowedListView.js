@@ -73,15 +73,11 @@ type Props = {
   /**
    * Rendered when the list is scrolled faster than rows can be rendered.
    */
-  renderWindowBoundaryIndicator?: (
-    showIndicator: boolean,
-  ) => ?React.Element<any>,
+  renderWindowBoundaryIndicator?: () => ?React.Element<any>,
   /**
    * Always rendered at the bottom of all the rows.
    */
-  renderFooter?: (
-    showFooter: boolean,
-  ) => ?React.Element<any>,
+  renderFooter?: () => ?React.Element<any>,
   /**
    * Pipes through normal onScroll events from the underlying `ScrollView`.
    */

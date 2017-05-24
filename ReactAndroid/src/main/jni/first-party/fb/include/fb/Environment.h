@@ -17,10 +17,6 @@
 namespace facebook {
 namespace jni {
 
-namespace internal {
-  struct CacheEnvTag {};
-}
-
 // Keeps a thread-local reference to the current thread's JNIEnv.
 struct Environment {
   // May be null if this thread isn't attached to the JVM
@@ -74,16 +70,7 @@ class FBEXPORT ThreadScope {
   static void WithClassLoader(std::function<void()>&& runnable);
 
   static void OnLoad();
-
-  // This constructor is only used internally by fbjni.
-  ThreadScope(JNIEnv*, internal::CacheEnvTag);
  private:
-  friend struct Environment;
-  ThreadScope* previous_;
-  // If the JNIEnv* is set, it is guaranteed to be valid at least through the
-  // lifetime of this ThreadScope. The only case where that guarantee can be
-  // made is when there is a java frame in the stack below this.
-  JNIEnv* env_;
   bool attachedWithThisScope_;
 };
 }

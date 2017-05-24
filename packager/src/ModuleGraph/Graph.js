@@ -10,10 +10,8 @@
  */
 'use strict';
 
-const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const memoize = require('async/memoize');
-const emptyModule = require('./module').empty;
 const nullthrows = require('fbjs/lib/nullthrows');
 const queue = require('async/queue');
 const seq = require('async/seq');
@@ -50,10 +48,14 @@ type Async$Queue<T, C> = {
 type LoadQueue =
   Async$Queue<{id: string, parent: ?string}, Callback<File, Array<string>>>;
 
+const createParentModule =
+  () => ({file: {code: '', type: 'script', path: ''}, dependencies: []});
+
+const noop = () => {};
 const NO_OPTIONS = {};
 
 exports.create = function create(resolve: ResolveFn, load: LoadFn): GraphFn {
-  function Graph(entryPoints, platform, options, callback = emptyFunction) {
+  function Graph(entryPoints, platform, options, callback = noop) {
     const {
       log = (console: any),
       optimize = false,
@@ -78,7 +80,7 @@ exports.create = function create(resolve: ResolveFn, load: LoadFn): GraphFn {
       callback(null, collect());
     };
     loadQueue.error = error => {
-      loadQueue.error = emptyFunction;
+      loadQueue.error = noop;
       loadQueue.kill();
       callback(error);
     };
@@ -99,7 +101,7 @@ exports.create = function create(resolve: ResolveFn, load: LoadFn): GraphFn {
 };
 
 function createGraphHelpers(loadQueue, skip) {
-  const modules = new Map([[null, emptyModule()]]);
+  const modules = new Map([[null, createParentModule()]]);
 
   function collect(
     path = null,

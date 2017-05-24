@@ -18,15 +18,14 @@ const {UGLIFY_JS_OUTPUT_OPTIONS} = require('./JsMinification');
 import type {MappingsMap} from '../../lib/SourceMap';
 
 function minify(filename: string, inputCode: string, sourceMap: ?MappingsMap) {
-  const result = uglify.minify(inputCode, {
+  let {code, map} = uglify.minify(inputCode, {
     fromString: true,
     inSourceMap: sourceMap,
     outSourceMap: true,
     output: UGLIFY_JS_OUTPUT_OPTIONS,
   });
 
-  const code = result.code;
-  const map = JSON.parse(result.map);
+  map = JSON.parse(map);
   map.sources = [filename];
   return {code, map};
 }

@@ -32,11 +32,6 @@
 #include "References.h"
 #include "CoreClasses.h"
 
-#if defined(__ANDROID__) && defined(__ARM_ARCH_5TE__) && !defined(FBJNI_NO_EXCEPTION_PTR)
-// ARMv5 NDK does not support exception_ptr so we cannot use that when building for it.
-#define FBJNI_NO_EXCEPTION_PTR
-#endif
-
 namespace facebook {
 namespace jni {
 
@@ -113,16 +108,9 @@ template<typename... Args>
 }
 
 // Identifies any pending C++ exception and throws it as a Java exception. If the exception can't
-// be thrown, it aborts the program.
-FBEXPORT void translatePendingCppExceptionToJavaException();
+// be thrown, it aborts the program. This is a noexcept function at C++ level.
+FBEXPORT void translatePendingCppExceptionToJavaException() noexcept;
 
-#ifndef FBJNI_NO_EXCEPTION_PTR
-FBEXPORT local_ref<JThrowable> getJavaExceptionForCppException(std::exception_ptr ptr);
-#endif
-
-FBEXPORT local_ref<JThrowable> getJavaExceptionForCppBackTrace();
-
-FBEXPORT local_ref<JThrowable> getJavaExceptionForCppBackTrace(const char* msg);
 // For convenience, some exception names in java.lang are available here.
 
 const char* const gJavaLangIllegalArgumentException = "java/lang/IllegalArgumentException";

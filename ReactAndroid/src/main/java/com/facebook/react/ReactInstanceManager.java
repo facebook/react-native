@@ -315,8 +315,7 @@ public class ReactInstanceManager {
   private void recreateReactContextInBackgroundInner() {
     UiThreadUtil.assertOnUiThread();
 
-    if (mUseDeveloperSupport && mJSMainModuleName != null &&
-      !Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JSC_CALLS)) {
+    if (mUseDeveloperSupport && mJSMainModuleName != null) {
       final DeveloperSettings devSettings = mDevSupportManager.getDevSettings();
 
       // If remote JS debugging is enabled, load from dev server.

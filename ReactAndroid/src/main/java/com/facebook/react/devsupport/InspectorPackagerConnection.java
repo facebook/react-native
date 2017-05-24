@@ -19,9 +19,13 @@ import com.facebook.react.bridge.Inspector;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
+import okhttp3.ResponseBody;
+import okhttp3.ws.WebSocket;
+import okhttp3.ws.WebSocketCall;
+import okhttp3.ws.WebSocketListener;
+import okio.Buffer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -171,7 +175,7 @@ public class InspectorPackagerConnection {
     return payload;
   }
 
-  private class Connection extends WebSocketListener {
+  private class Connection implements WebSocketListener {
     private static final int RECONNECT_DELAY_MS = 2000;
 
     private final String mUrl;
@@ -192,9 +196,9 @@ public class InspectorPackagerConnection {
     }
 
     @Override
-    public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+    public void onFailure(IOException e, Response response) {
       if (mWebSocket != null) {
-        abort("Websocket exception", t);
+        abort("Websocket exception", e);
       }
       if (!mClosed) {
         reconnect();
@@ -202,16 +206,22 @@ public class InspectorPackagerConnection {
     }
 
     @Override
-    public void onMessage(WebSocket webSocket, String text) {
+    public void onMessage(ResponseBody message) throws IOException {
       try {
-        handleProxyMessage(new JSONObject(text));
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+        handleProxyMessage(new JSONObject(message.string()));
+      } catch (JSONException e) {
+        throw new IOException(e);
+      } finally {
+        message.close();
       }
     }
 
     @Override
-    public void onClosed(WebSocket webSocket, int code, String reason) {
+    public void onPong(Buffer payload) {
+    }
+
+    @Override
+    public void onClose(int code, String reason) {
       mWebSocket = null;
       closeAllConnections();
       if (!mClosed) {
@@ -230,7 +240,8 @@ public class InspectorPackagerConnection {
           .build();
 
       Request request = new Request.Builder().url(mUrl).build();
-      httpClient.newWebSocket(request, this);
+      WebSocketCall call = WebSocketCall.create(httpClient, request);
+      call.enqueue(this);
     }
 
     private void reconnect() {
@@ -259,7 +270,7 @@ public class InspectorPackagerConnection {
       if (mWebSocket != null) {
         try {
           mWebSocket.close(1000, "End of session");
-        } catch (Exception e) {
+        } catch (IOException e) {
           // swallow, no need to handle it here
         }
         mWebSocket = null;
@@ -274,8 +285,8 @@ public class InspectorPackagerConnection {
             return null;
           }
           try {
-            sockets[0].send(object.toString());
-          } catch (Exception e) {
+            sockets[0].sendMessage(RequestBody.create(WebSocket.TEXT, object.toString()));
+          } catch (IOException e) {
             FLog.w(TAG, "Couldn't send event to packager", e);
           }
           return null;
@@ -293,7 +304,7 @@ public class InspectorPackagerConnection {
       if (mWebSocket != null) {
         try {
           mWebSocket.close(1000, "End of session");
-        } catch (Exception e) {
+        } catch (IOException e) {
           // swallow, no need to handle it here
         }
         mWebSocket = null;

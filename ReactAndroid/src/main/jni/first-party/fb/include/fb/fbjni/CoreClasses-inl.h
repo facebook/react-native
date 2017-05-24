@@ -177,12 +177,7 @@ inline void JClass::registerNatives(std::initializer_list<NativeMethod> methods)
 
 inline bool JClass::isAssignableFrom(alias_ref<JClass> other) const noexcept {
   const auto env = internal::getEnv();
-  // Ths method has behavior compatible with the
-  // java.lang.Class#isAssignableFrom method.  The order of the
-  // arguments to the JNI IsAssignableFrom C function is "opposite"
-  // from what some might expect, which makes this code look a little
-  // odd, but it is correct.
-  const auto result = env->IsAssignableFrom(other.get(), self());
+  const auto result = env->IsAssignableFrom(self(), other.get());
   return result;
 }
 
@@ -344,6 +339,13 @@ struct Convert<const char*> {
     return make_jstring(t);
   }
 };
+}
+
+// jthrowable //////////////////////////////////////////////////////////////////////////////////////
+
+inline local_ref<JThrowable> JThrowable::initCause(alias_ref<JThrowable> cause) {
+  static auto meth = javaClassStatic()->getMethod<javaobject(javaobject)>("initCause");
+  return meth(self(), cause.get());
 }
 
 // jtypeArray //////////////////////////////////////////////////////////////////////////////////////

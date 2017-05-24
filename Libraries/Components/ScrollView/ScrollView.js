@@ -490,15 +490,18 @@ const ScrollView = React.createClass({
   },
 
   _updateAnimatedNodeAttachment: function() {
-    if (this._scrollAnimatedValueAttachment) {
-      this._scrollAnimatedValueAttachment.detach();
-    }
     if (this.props.stickyHeaderIndices && this.props.stickyHeaderIndices.length > 0) {
-      this._scrollAnimatedValueAttachment = Animated.attachNativeEvent(
-        this._scrollViewRef,
-        'onScroll',
-        [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}]
-      );
+      if (!this._scrollAnimatedValueAttachment) {
+        this._scrollAnimatedValueAttachment = Animated.attachNativeEvent(
+          this._scrollViewRef,
+          'onScroll',
+          [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}]
+        );
+      }
+    } else {
+      if (this._scrollAnimatedValueAttachment) {
+        this._scrollAnimatedValueAttachment.detach();
+      }
     }
   },
 

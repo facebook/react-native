@@ -93,7 +93,6 @@ const JSCWrapper* systemJSCWrapper() {
       .JSObjectMakeFunctionWithCallback = JSObjectMakeFunctionWithCallback,
       .JSObjectSetPrivate = JSObjectSetPrivate,
       .JSObjectSetProperty = JSObjectSetProperty,
-      .JSObjectSetPropertyAtIndex = JSObjectSetPropertyAtIndex,
 
       .JSObjectCopyPropertyNames = JSObjectCopyPropertyNames,
       .JSPropertyNameArrayGetCount = JSPropertyNameArrayGetCount,

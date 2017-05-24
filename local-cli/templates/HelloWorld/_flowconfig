@@ -26,7 +26,7 @@ emoji=true
 
 module.system=haste
 
-experimental.strict_call_arity=true
+experimental.strict_type_args=true
 
 munge_underscores=true
 

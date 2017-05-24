@@ -74,14 +74,4 @@ var TVViewPropTypes = {
 
 };
 
-export type TVViewProps = {
-  isTVSelectable?: bool,
-  hasTVPreferredFocus?: bool,
-  tvParallaxProperties?: Object,
-  tvParallaxShiftDistanceX?: number,
-  tvParallaxShiftDistanceY?: number,
-  tvParallaxTiltAngle?: number,
-  tvParallaxMagnification?: number,
-};
-
 module.exports = TVViewPropTypes;
