@@ -27,15 +27,7 @@ const View = require('View');
 const invariant = require('invariant');
 
 export type ReactRenderer = {
-  // Fiber
-  findHostInstanceByFiber: (fiber: any) => ?number,
-  findFiberByHostInstance: (hostInstance: number) => any,
-
-  // Stack
-  ComponentTree: {
-    getNodeFromInstance: (instance: any) => ?number,
-    getClosestInstanceFromNode: (tag: number) => any,
-  },
+  getInspectorDataForViewTag: () => Object,
 };
 
 function getHook() {
@@ -50,33 +42,6 @@ function findRenderer(): ReactRenderer {
   return renderers[keys[0]];
 }
 
-function traverseOwnerTreeUp(hierarchy, instance) {
-  if (instance) {
-    hierarchy.unshift(instance);
-    const owner = typeof instance.tag === 'number' ?
-      // Fiber
-      instance._debugOwner :
-      // Stack
-      instance._currentElement._owner;
-    traverseOwnerTreeUp(hierarchy, owner);
-  }
-}
-
-function getOwnerHierarchy(instance) {
-  var hierarchy = [];
-  traverseOwnerTreeUp(hierarchy, instance);
-  return hierarchy;
-}
-
-function lastNotNativeInstance(hierarchy) {
-  for (let i = hierarchy.length - 1; i > 1; i--) {
-    const instance = hierarchy[i];
-    if (!instance.viewConfig) {
-      return instance;
-    }
-  }
-  return hierarchy[0];
-}
 const hook = getHook();
 
 if (hook) {
@@ -124,11 +89,11 @@ class Inspector extends React.Component {
   }
 
   componentDidMount() {
-    const hook = getHook();
-    hook.on('react-devtools', this.attachToDevtools);
+    const _hook = getHook();
+    _hook.on('react-devtools', this.attachToDevtools);
     // if devtools is already started
-    if (hook.reactDevtoolsAgent) {
-      this.attachToDevtools(hook.reactDevtoolsAgent);
+    if (_hook.reactDevtoolsAgent) {
+      this.attachToDevtools(_hook.reactDevtoolsAgent);
     }
   }
 
@@ -185,49 +150,17 @@ class Inspector extends React.Component {
     });
   };
 
+
   setSelection(i: number) {
-    const instance = this.state.hierarchy[i];
-    const props = typeof instance.tag === 'number' ?
-      // Fiber
-      instance.memoizedProps || {} :
-      // Stack
-      (instance['_instance'] || {}).props || {};
-    const source = typeof instance.tag === 'number' ?
-      // Fiber
-      instance._debugSource :
-      // Stack
-      instance['_currentElement'] && instance['_currentElement']['_source'];
+    const hierarchyItem = this.state.hierarchy[i];
+    // we pass in ReactNative.findNodeHandle as the method is injected
+    const {
+      measure,
+      props,
+      source,
+    } = hierarchyItem.getInspectorData(ReactNative.findNodeHandle);
 
-    let hostNode;
-    if (typeof instance.tag === 'number') {
-      let fiber = instance;
-      // Stateless components make this complicated.
-      // Look for children first.
-      while (fiber) {
-        hostNode = ReactNative.findNodeHandle(fiber.stateNode);
-        if (hostNode) {
-          break;
-        }
-        fiber = fiber.child;
-      }
-      // Look for parents second.
-      fiber = instance.return;
-      while (fiber) {
-        hostNode = ReactNative.findNodeHandle(fiber.stateNode);
-        if (hostNode) {
-          break;
-        }
-        fiber = fiber.return;
-      }
-      if (!hostNode) {
-        // Not found--hard to imagine.
-        return;
-      }
-    } else {
-      hostNode = instance.getHostNode();
-    }
-
-    UIManager.measure(hostNode, (x, y, width, height, left, top) => {
+    measure((x, y, width, height, left, top) => {
       this.setState({
         inspected: {
           frame: {left, top, width, height},
@@ -240,39 +173,24 @@ class Inspector extends React.Component {
   }
 
   onTouchViewTag(touchedViewTag: number, frame: Object, pointerY: number) {
-    const touched = typeof this.renderer.findFiberByHostInstance === 'function' ?
-      // Fiber
-      this.renderer.findFiberByHostInstance(touchedViewTag) :
-      // Stack
-      this.renderer.ComponentTree.getClosestInstanceFromNode(touchedViewTag);
-    if (!touched) {
-      return;
-    }
-
     // Most likely the touched instance is a native wrapper (like RCTView)
     // which is not very interesting. Most likely user wants a composite
     // instance that contains it (like View)
-    const hierarchy = getOwnerHierarchy(touched);
-    const instance = lastNotNativeInstance(hierarchy);
+    const {
+      hierarchy,
+      instance,
+      props,
+      selection,
+      source,
+    } = this.renderer.getInspectorDataForViewTag(touchedViewTag);
 
     if (this.state.devtoolsAgent) {
       this.state.devtoolsAgent.selectFromReactInstance(instance, true);
     }
 
-    const props = typeof instance.tag === 'number' ?
-      // Fiber
-      instance.memoizedProps || {} :
-      // Stack
-      (instance['_instance'] || {}).props || {};
-    const source = typeof instance.tag === 'number' ?
-      // Fiber
-      instance._debugSource :
-      // Stack
-      instance['_currentElement'] && instance['_currentElement']['_source'];
-
     this.setState({
       panelPos: pointerY > Dimensions.get('window').height / 2 ? 'top' : 'bottom',
-      selection: hierarchy.indexOf(instance),
+      selection,
       hierarchy,
       inspected: {
         style: props.style || {},

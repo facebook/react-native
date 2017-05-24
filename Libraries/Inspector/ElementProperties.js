@@ -76,14 +76,14 @@ class ElementProperties extends React.Component {
           <View style={styles.breadcrumb}>
             {mapWithSeparator(
               this.props.hierarchy,
-              (item, i) => (
+              (hierarchyItem, i) => (
                 <TouchableHighlight
                   key={'item-' + i}
                   style={[styles.breadItem, i === selection && styles.selected]}
                   // $FlowFixMe found when converting React.createClass to ES6
                   onPress={() => this.props.setSelection(i)}>
                   <Text style={styles.breadItemText}>
-                    {getInstanceName(item)}
+                    {hierarchyItem.name}
                   </Text>
                 </TouchableHighlight>
               ),
@@ -107,25 +107,6 @@ class ElementProperties extends React.Component {
       </TouchableWithoutFeedback>
     );
   }
-}
-
-function getInstanceName(instance) {
-  if (typeof instance.tag === 'number') {
-    if (typeof instance.type === 'string') {
-      return instance.type;
-    }
-    if (typeof instance.type === 'function') {
-      return instance.type.displayName || instance.type.name || 'Unknown';
-    }
-    return 'Unknown';
-  }
-  if (instance.getName) {
-    return instance.getName();
-  }
-  if (instance.constructor && instance.constructor.displayName) {
-    return instance.constructor.displayName;
-  }
-  return 'Unknown';
 }
 
 const styles = StyleSheet.create({
