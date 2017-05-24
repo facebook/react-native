@@ -60,6 +60,8 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols headers:(NSDictionary *)headers socketID:(nonnull NSNumber *)socketID)
 {
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+  NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:URL];
+  [request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
   [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
     [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
   }];
