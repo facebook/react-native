@@ -12,6 +12,7 @@
 'use strict';
 
 const Logger = require('./src/Logger');
+const TransformCaching = require('./src/lib/TransformCaching');
 
 const debug = require('debug');
 const invariant = require('fbjs/lib/invariant');
@@ -120,7 +121,9 @@ function createServer(options: StrictOptions): Server {
 
   // Some callsites may not be Flowified yet.
   invariant(options.reporter != null, 'createServer() requires reporter');
-  invariant(options.transformCache != null, 'createServer() requires transformCache');
+  if (options.transformCache == null) {
+    options.transformCache = TransformCaching.useTempDir();
+  }
   const serverOptions = Object.assign({}, options);
   delete serverOptions.verbose;
   const ServerClass = require('./src/Server');
