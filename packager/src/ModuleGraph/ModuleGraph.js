@@ -17,6 +17,7 @@ const seq = require('async/seq');
 const virtualModule = require('./module').virtual;
 
 import type {
+  BuildResult,
   Callback,
   GraphFn,
   GraphResult,
@@ -27,7 +28,7 @@ import type {
 type BuildFn = (
   entryPoints: Iterable<string>,
   options: BuildOptions,
-  callback: Callback<GraphResult>,
+  callback: Callback<BuildResult>,
 ) => void;
 
 type BuildOptions = {|
@@ -86,9 +87,12 @@ exports.createBuildSetup = (
         polyfills,
       } = nullthrows(result);
 
+      const preludeScript = prelude(optimize);
+      const prependedScripts = [preludeScript, ...moduleSystem, ...polyfills];
       callback(null, {
         entryModules,
-        modules: concat([prelude(optimize)], moduleSystem, polyfills, modules),
+        modules: concat(prependedScripts, modules),
+        prependedScripts,
       });
     });
   };

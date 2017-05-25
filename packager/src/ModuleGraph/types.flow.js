@@ -15,6 +15,11 @@ import type {Ast} from 'babel-core';
 import type {Console} from 'console';
 export type {Transformer} from '../JSTransformer/worker/worker.js';
 
+export type BuildResult = {|
+  ...GraphResult,
+  prependedScripts: $ReadOnlyArray<Module>,
+|};
+
 export type Callback<A = void, B = void>
   = (Error => void)
   & ((null | void, A, B) => void);
