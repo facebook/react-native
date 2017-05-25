@@ -46,4 +46,4 @@ The [React Twitter account](https://twitter.com/reactjs) covers both React and R
 
 There are a lot of [React Native Meetups](http://www.meetup.com/topics/react-native/) that happen around the world. Often there is React Native content in React meetups as well.
 
-Sometimes we have React conferences. We posted the [videos from React.js Conf 2016](https://www.youtube.com/playlist?list=PLb0IAmt7-GS0M8Q95RIc2lOM6nc77q1IY), and we'll probably have more conferences in the future, too. Stay tuned.
+Sometimes we have React conferences. We posted the [videos from React Conf 2017](https://www.youtube.com/playlist?list=PLb0IAmt7-GS3fZ46IGFirdqKTIxlws7e0), and we'll probably have more conferences in the future, too. Stay tuned.
