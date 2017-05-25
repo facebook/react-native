@@ -98,7 +98,8 @@ const LinkingManager = Platform.OS === 'android' ?
  * ```
  *
  *
- * // Only if your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
+ * // If your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html),
+ * you'll need to add the following code as well:
  *
  * ```
  * - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
