@@ -141,7 +141,10 @@ RCT_EXPORT_MODULE()
   }
 
   // Request location access permission
-  if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
+  if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
+    [_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+    [_locationManager requestWhenInUseAuthorization];
+  } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
     [_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
     [_locationManager requestAlwaysAuthorization];
 
@@ -152,9 +155,6 @@ RCT_EXPORT_MODULE()
         [_locationManager setAllowsBackgroundLocationUpdates:YES];
       }
     }
-  } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
-    [_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-    [_locationManager requestWhenInUseAuthorization];
   }
 
   _locationManager.distanceFilter  = distanceFilter;
