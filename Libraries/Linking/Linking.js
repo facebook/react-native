@@ -74,13 +74,12 @@ const LinkingManager = Platform.OS === 'android' ?
  * ```
  * // iOS 9.x or newer
  * #import <React/RCTLinkingManager.h>
+ *
  * - (BOOL)application:(UIApplication *)application
  *    openURL:(NSURL *)url
  *    options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
  * {
- *  return [RCTLinkingManager application:application openURL:url
- *             sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
- *             annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
+ *   return [RCTLinkingManager application:app openURL:url options:options];
  * }
  * ```
  * 
@@ -96,17 +95,12 @@ const LinkingManager = Platform.OS === 'android' ?
  *   return [RCTLinkingManager application:application openURL:url
  *                       sourceApplication:sourceApplication annotation:annotation];
  * }
+ * ```
  *
- * // For iOS versions supporting 9.x or greater
- *
- * - (BOOL)application:(UIApplication *)app
- *             openURL:(NSURL *)url
- *             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
- * {
- *   return [RCTLinkingManager application:app openURL:url options:options];
- * }
  *
  * // Only if your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
+ *
+ * ```
  * - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
  *  restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
  * {
@@ -114,7 +108,6 @@ const LinkingManager = Platform.OS === 'android' ?
  *                   continueUserActivity:userActivity
  *                     restorationHandler:restorationHandler];
  * }
- *
  * ```
  *
  * And then on your React component you'll be able to listen to the events on
