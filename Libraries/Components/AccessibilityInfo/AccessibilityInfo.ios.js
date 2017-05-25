@@ -109,8 +109,8 @@ var AccessibilityInfo = {
     eventName: ChangeEventName,
     handler: Function
   ): Object {
-    var listener; 
-    
+    var listener;
+
     if (eventName === 'change') {
       listener = RCTDeviceEventEmitter.addListener(
         VOICE_OVER_EVENT,
@@ -139,7 +139,7 @@ var AccessibilityInfo = {
   },
 
   /**
-   * iOS-Only. Post a string to be announced by the screen reader. 
+   * iOS-Only. Post a string to be announced by the screen reader.
    */
   announceForAccessibility: function(
     announcement: string
