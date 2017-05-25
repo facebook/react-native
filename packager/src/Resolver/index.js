@@ -22,7 +22,7 @@ import type {MappingsMap} from '../lib/SourceMap';
 import type {PostMinifyProcess} from '../Bundler';
 import type {Options as JSTransformerOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
-import type {GetTransformCacheKey} from '../lib/TransformCache';
+import type {TransformCache, GetTransformCacheKey} from '../lib/TransformCaching';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 
 type MinifyCode = (filePath: string, code: string, map: MappingsMap) =>
@@ -47,6 +47,7 @@ type Options = {|
   +reporter: Reporter,
   +resetCache: boolean,
   +sourceExts: Array<string>,
+  +transformCache: TransformCache,
   +transformCode: TransformCode,
   +watch: boolean,
 |};
@@ -76,6 +77,7 @@ class Resolver {
       moduleOptions: {
         hasteImpl: opts.hasteImpl,
         resetCache: opts.resetCache,
+        transformCache: opts.transformCache,
       },
       preferNativePlatform: true,
       roots: opts.projectRoots,

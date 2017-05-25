@@ -46,6 +46,7 @@ import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionRes
 import type {MappingsMap} from '../lib/SourceMap';
 import type {Options as JSTransformerOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
+import type {TransformCache} from '../lib/TransformCaching';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 
 export type BundlingOptions = {|
@@ -132,6 +133,7 @@ type Options = {|
   +reporter: Reporter,
   +resetCache: boolean,
   +sourceExts: Array<string>,
+  +transformCache: TransformCache,
   +transformModulePath: string,
   +transformTimeoutInterval: ?number,
   +watch: boolean,
@@ -227,6 +229,7 @@ class Bundler {
           code,
           transformCodeOptions,
         ),
+      transformCache: opts.transformCache,
       watch: opts.watch,
     });
 

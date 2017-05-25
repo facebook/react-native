@@ -20,7 +20,7 @@ const Polyfill = require('./Polyfill');
 const toLocalPath = require('./lib/toLocalPath');
 
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
-import type {GetTransformCacheKey} from '../lib/TransformCache';
+import type {GetTransformCacheKey} from '../lib/TransformCaching';
 import type {Reporter} from '../lib/reporting';
 import type DependencyGraphHelpers
   from './DependencyGraph/DependencyGraphHelpers';
@@ -112,8 +112,8 @@ class ModuleCache {
        */
       this._moduleCache[filePath] = new AssetModule(
         {
-          dependencies: this._assetDependencies,
           depGraphHelpers: this._depGraphHelpers,
+          dependencies: this._assetDependencies,
           file: filePath,
           getTransformCacheKey: this._getTransformCacheKey,
           globalTransformCache: null,
@@ -161,11 +161,12 @@ class ModuleCache {
   createPolyfill({file}: {file: string}) {
     /* $FlowFixMe: there are missing arguments. */
     return new Polyfill({
-      file,
       depGraphHelpers: this._depGraphHelpers,
+      file,
       getTransformCacheKey: this._getTransformCacheKey,
       localPath: toLocalPath(this._roots, file),
       moduleCache: this,
+      options: this._moduleOptions,
       transformCode: this._transformCode,
     });
   }

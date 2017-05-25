@@ -15,7 +15,7 @@ jest.useRealTimers();
 jest
   .mock('fs')
   .mock('../../Logger')
-  .mock('../../lib/TransformCache')
+  .mock('../../lib/TransformCaching')
   // It's noticeably faster to prevent running watchman from FileWatcher.
   .mock('child_process', () => ({}));
 
@@ -96,7 +96,7 @@ describe('DependencyGraph', function() {
       useWatchman: false,
       ignoreFilePath: () => false,
       maxWorkerCount: 1,
-      moduleOptions: {},
+      moduleOptions: {transformCache: require('TransformCaching').mocked()},
       resetCache: true,
       transformCode: (module, sourceCode, transformOptions) => {
         return new Promise(resolve => {

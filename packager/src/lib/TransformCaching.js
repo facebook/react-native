@@ -59,6 +59,23 @@ export type ReadTransformProps = {
   cacheOptions: CacheOptions,
 };
 
+type WriteTransformProps = {
+  filePath: string,
+  sourceCode: string,
+  getTransformCacheKey: GetTransformCacheKey,
+  transformOptions: WorkerOptions,
+  transformOptionsKey: string,
+  result: CachedResult,
+};
+
+/**
+ * The API that should be exposed for a transform cache.
+ */
+export type TransformCache = {
+  writeSync(props: WriteTransformProps): void,
+  readSync(props: ReadTransformProps): TransformCacheResult,
+};
+
 const EMPTY_ARRAY = [];
 
 /* 1 day */
@@ -66,7 +83,7 @@ const GARBAGE_COLLECTION_PERIOD = 24 * 60 * 60 * 1000;
 /* 4 days */
 const CACHE_FILE_MAX_LAST_ACCESS_TIME = GARBAGE_COLLECTION_PERIOD * 4;
 
-class TransformCache {
+class FileBasedCache {
   _cacheWasReset: boolean;
   _lastCollected: ?number;
   _rootPath: string;
@@ -398,4 +415,40 @@ function unlinkIfExistsSync(filePath: string) {
   }
 }
 
-module.exports = TransformCache;
+/**
+ * In some context we want to build from scratch, that is what this cache
+ * implementation allows.
+ */
+function none(): TransformCache {
+  return {
+    writeSync: () => {},
+    readSync: () => ({
+      result: null,
+      outdatedDependencies: [],
+    }),
+  };
+}
+
+/**
+ * If packager is running for two different directories, we don't want the
+ * caches to conflict with each other. `__dirname` carries that because
+ * packager will be, for example, installed in a different `node_modules/`
+ * folder for different projects.
+ */
+function useTempDir(): TransformCache {
+  const hash = crypto.createHash('sha1').update(__dirname);
+  if (process.getuid != null) {
+    hash.update(process.getuid().toString());
+  }
+  const tmpDir = require('os').tmpdir();
+  const cacheName = 'react-native-packager-cache';
+  const rootPath = path.join(tmpDir, cacheName + '-' + hash.digest('hex'));
+  return new FileBasedCache(rootPath);
+}
+
+function useProjectDir(projectPath: string): TransformCache {
+  invariant(path.isAbsolute(projectPath), 'project path must be absolute');
+  return new FileBasedCache(path.join(projectPath, '.metro-bundler'));
+}
+
+module.exports = {FileBasedCache, none, useTempDir, useProjectDir};

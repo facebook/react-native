@@ -27,7 +27,7 @@ import type {
   TransformOptionsStrict,
 } from '../JSTransformer/worker/worker';
 import type {LocalPath} from '../node-haste/lib/toLocalPath';
-import type {CachedResult, GetTransformCacheKey} from './TransformCache';
+import type {CachedResult, GetTransformCacheKey} from './TransformCaching';
 
 /**
  * The API that a global transform cache must comply with. To implement a

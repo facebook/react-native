@@ -44,4 +44,4 @@ class TransformCacheMock {
 
 }
 
-module.exports = TransformCacheMock;
+module.exports = {mocked: () => new TransformCacheMock()};

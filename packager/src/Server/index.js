@@ -33,6 +33,7 @@ import type Bundle from '../Bundler/Bundle';
 import type HMRBundle from '../Bundler/HMRBundle';
 import type {Reporter} from '../lib/reporting';
 import type {GetTransformOptions, PostProcessModules, PostMinifyProcess} from '../Bundler';
+import type {TransformCache} from '../lib/TransformCaching';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {SourceMap, Symbolicate} from './symbolicate';
 
@@ -75,6 +76,7 @@ type Options = {
   resetCache?: boolean,
   silent?: boolean,
   +sourceExts: ?Array<string>,
+  +transformCache: TransformCache,
   +transformModulePath: string,
   transformTimeoutInterval?: number,
   watch?: boolean,
@@ -131,6 +133,7 @@ class Server {
     resetCache: boolean,
     silent: boolean,
     +sourceExts: Array<string>,
+    +transformCache: TransformCache,
     +transformModulePath: string,
     transformTimeoutInterval: ?number,
     watch: boolean,
@@ -170,6 +173,7 @@ class Server {
       resetCache: options.resetCache || false,
       silent: options.silent || false,
       sourceExts: options.sourceExts || defaults.sourceExts,
+      transformCache: options.transformCache,
       transformModulePath: options.transformModulePath,
       transformTimeoutInterval: options.transformTimeoutInterval,
       watch: options.watch || false,

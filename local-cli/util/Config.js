@@ -133,12 +133,17 @@ const defaultConfig: ConfigT = {
  */
 const Config = {
   find(startDir: string): ConfigT {
+    return this.findWithPath(startDir).config;
+  },
+
+  findWithPath(startDir: string): {config: ConfigT, projectPath: string} {
     const configPath = findConfigPath(startDir);
     invariant(
       configPath,
       `Can't find "${RN_CLI_CONFIG}" file in any parent folder of "${startDir}"`,
     );
-    return this.loadFile(configPath, startDir);
+    const projectPath = path.dirname(configPath);
+    return {config: this.loadFile(configPath, startDir), projectPath};
   },
 
   findOptional(startDir: string): ConfigT {

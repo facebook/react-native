@@ -11,7 +11,7 @@
 
 jest
   .dontMock('json-stable-stringify')
-  .dontMock('../TransformCache')
+  .dontMock('../TransformCaching')
   .dontMock('left-pad')
   .dontMock('lodash/throttle')
   .dontMock('crypto');
@@ -48,14 +48,14 @@ function cartesianProductOf(a1, a2) {
   return product;
 }
 
-describe('TransformCache', () => {
+describe('TransformCaching.FileBasedCache', () => {
 
   let transformCache;
 
   beforeEach(() => {
     jest.resetModules();
     mockFS.clear();
-    transformCache = new (require('../TransformCache'))('/cache');
+    transformCache = new (require('../TransformCaching').FileBasedCache)('/cache');
   });
 
   it('is caching different files and options separately', () => {
