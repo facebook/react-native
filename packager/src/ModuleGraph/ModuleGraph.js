@@ -14,20 +14,21 @@ const defaults = require('../../defaults');
 const nullthrows = require('fbjs/lib/nullthrows');
 const parallel = require('async/parallel');
 const seq = require('async/seq');
-
-const {virtualModule} = require('./output/util');
+const virtualModule = require('./module').virtual;
 
 import type {
+  BuildResult,
   Callback,
   GraphFn,
   GraphResult,
   Module,
+  PostProcessModules,
 } from './types.flow';
 
 type BuildFn = (
   entryPoints: Iterable<string>,
   options: BuildOptions,
-  callback: Callback<GraphResult>,
+  callback: Callback<BuildResult>,
 ) => void;
 
 type BuildOptions = {|
@@ -37,6 +38,7 @@ type BuildOptions = {|
 
 exports.createBuildSetup = (
   graph: GraphFn,
+  postProcessModules: PostProcessModules,
   translateDefaultsPath: string => string = x => x,
 ): BuildFn =>
   (entryPoints, options, callback) => {
@@ -51,10 +53,16 @@ exports.createBuildSetup = (
     const graphOnlyModules = seq(graphWithOptions, getModules);
 
     parallel({
-      graph: cb => graphWithOptions(
-        entryPoints,
-        cb,
-      ),
+      graph: cb => graphWithOptions(entryPoints, (error, result) => {
+        if (error) {
+          cb(error);
+          return;
+        }
+        /* $FlowFixMe: not undefined if there is no error */
+        const {modules, entryModules} = result;
+        const prModules = postProcessModules(modules, [...entryPoints]);
+        cb(null, {modules: prModules, entryModules});
+      }),
       moduleSystem: cb => graphOnlyModules(
         [translateDefaultsPath(defaults.moduleSystem)],
         cb,
@@ -79,9 +87,12 @@ exports.createBuildSetup = (
         polyfills,
       } = nullthrows(result);
 
+      const preludeScript = prelude(optimize);
+      const prependedScripts = [preludeScript, ...moduleSystem, ...polyfills];
       callback(null, {
         entryModules,
-        modules: concat([prelude(optimize)], moduleSystem, polyfills, modules),
+        modules: concat(prependedScripts, modules),
+        prependedScripts,
       });
     });
   };
@@ -97,6 +108,6 @@ function* concat<T>(...iterables: Array<Iterable<T>>): Iterable<T> {
 function prelude(optimize) {
   return virtualModule(
     `var __DEV__=${String(!optimize)},` +
-    '__BUNDLE_START_TIME__=global.nativePerformanceNow?global.nativePerformanceNow():Date.now();'
+    '__BUNDLE_START_TIME__=this.nativePerformanceNow?nativePerformanceNow():Date.now();'
   );
 }

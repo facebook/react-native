@@ -72,12 +72,12 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name)
   folly::dynamic config = folly::dynamic::array(name);
 
   {
-    SystraceSection s("getConstants");
+    SystraceSection s_("getConstants");
     config.push_back(module->getConstants());
   }
 
   {
-    SystraceSection s("getMethods");
+    SystraceSection s_("getMethods");
     std::vector<MethodDescriptor> methods = module->getMethods();
 
     folly::dynamic methodNames = folly::dynamic::array;
@@ -118,14 +118,7 @@ void ModuleRegistry::callNativeMethod(unsigned int moduleId, unsigned int method
     throw std::runtime_error(
       folly::to<std::string>("moduleId ", moduleId, " out of range [0..", modules_.size(), ")"));
   }
-
-#ifdef WITH_FBSYSTRACE
-  if (callId != -1) {
-    fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
-  }
-#endif
-
-  modules_[moduleId]->invoke(methodId, std::move(params));
+  modules_[moduleId]->invoke(methodId, std::move(params), callId);
 }
 
 MethodCallResult ModuleRegistry::callSerializableNativeHook(unsigned int moduleId, unsigned int methodId, folly::dynamic&& params) {

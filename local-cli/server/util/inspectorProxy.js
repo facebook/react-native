@@ -94,7 +94,7 @@ type Address = {
   port: number,
 };
 
-const DEVICE_TIMEOUT = 5000;
+const DEVICE_TIMEOUT = 30000;
 
 // FIXME: This is the url we want to use as it more closely matches the actual protocol we use.
 // However, it's broken in Chrome 54+ due to it using 'KeyboardEvent.keyIdentifier'.
@@ -162,9 +162,9 @@ class Device {
         this._handlers.delete(name);
         reject(new Error('Timeout waiting for device'));
       }, DEVICE_TIMEOUT);
-      this._handlers.set(name, (...args) => {
+      this._handlers.set(name, arg => {
         clearTimeout(timerId);
-        fulfill(...args);
+        fulfill(arg);
       });
     });
     this._send({event: name});

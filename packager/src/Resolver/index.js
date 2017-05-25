@@ -11,7 +11,7 @@
 
 'use strict';
 
-const DependencyGraph = require('../node-haste');
+const DependencyGraph = require('../node-haste/DependencyGraph');
 
 const defaults = require('../../defaults');
 const pathJoin = require('path').join;
@@ -22,7 +22,7 @@ import type {MappingsMap} from '../lib/SourceMap';
 import type {PostMinifyProcess} from '../Bundler';
 import type {Options as JSTransformerOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
-import type {GetTransformCacheKey} from '../lib/TransformCache';
+import type {TransformCache, GetTransformCacheKey} from '../lib/TransformCaching';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 
 type MinifyCode = (filePath: string, code: string, map: MappingsMap) =>
@@ -39,14 +39,15 @@ type Options = {|
   +hasteImpl?: HasteImpl,
   +maxWorkerCount: number,
   +minifyCode: MinifyCode,
-  +postMinifyProcess?: PostMinifyProcess,
+  +postMinifyProcess: PostMinifyProcess,
   +platforms: Set<string>,
   +polyfillModuleNames?: Array<string>,
-  +projectRoots: Array<string>,
+  +projectRoots: $ReadOnlyArray<string>,
   +providesModuleNodeModules: Array<string>,
   +reporter: Reporter,
   +resetCache: boolean,
   +sourceExts: Array<string>,
+  +transformCache: TransformCache,
   +transformCode: TransformCode,
   +watch: boolean,
 |};
@@ -55,7 +56,7 @@ class Resolver {
 
   _depGraph: DependencyGraph;
   _minifyCode: MinifyCode;
-  _postMinifyProcess: ?PostMinifyProcess;
+  _postMinifyProcess: PostMinifyProcess;
   _polyfillModuleNames: Array<string>;
 
   constructor(opts: Options, depGraph: DependencyGraph) {
@@ -76,6 +77,7 @@ class Resolver {
       moduleOptions: {
         hasteImpl: opts.hasteImpl,
         resetCache: opts.resetCache,
+        transformCache: opts.transformCache,
       },
       preferNativePlatform: true,
       roots: opts.projectRoots,
@@ -98,7 +100,7 @@ class Resolver {
 
   getDependencies<T: ContainsTransformerOptions>(
     entryPath: string,
-    options: {platform: string, recursive?: boolean},
+    options: {platform: ?string, recursive?: boolean},
     bundlingOptions: T,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     getModuleId: mixed,

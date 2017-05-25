@@ -22,7 +22,7 @@ This example creates a simple `ListView` of hardcoded data. It first initializes
 import React, { Component } from 'react';
 import { AppRegistry, ListView, Text, View } from 'react-native';
 
-class ListViewBasics extends Component {
+export default class ListViewBasics extends Component {
   // Initialize the hardcoded data
   constructor(props) {
     super(props);
@@ -45,7 +45,7 @@ class ListViewBasics extends Component {
   }
 }
 
-// App registration and rendering
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('ListViewBasics', () => ListViewBasics);
 ```
 

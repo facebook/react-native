@@ -39,6 +39,7 @@ describe('SectionList', () => {
   it('renders all the bells and whistles', () => {
     const component = ReactTestRenderer.create(
       <SectionList
+        initialNumToRender={Infinity}
         ItemSeparatorComponent={(props) => <defaultItemSeparator v={propStr(props)} />}
         ListEmptyComponent={(props) => <empty v={propStr(props)} />}
         ListFooterComponent={(props) => <footer v={propStr(props)} />}
@@ -65,6 +66,27 @@ describe('SectionList', () => {
         onRefresh={jest.fn()}
         renderItem={(props) => <defaultItem v={propStr(props)} />}
         renderSectionHeader={(props) => <sectionHeader v={propStr(props)} />}
+        renderSectionFooter={(props) => <sectionFooter v={propStr(props)} />}
+      />
+    );
+    expect(component).toMatchSnapshot();
+  });
+  it('renders a footer when there is no data', () => {
+    const component = ReactTestRenderer.create(
+      <SectionList
+        sections={[{key: 's1', data: []}]}
+        renderItem={({item}) => <item v={item.key} />}
+        renderSectionHeader={(props) => <sectionHeader v={propStr(props)} />}
+        renderSectionFooter={(props) => <sectionFooter v={propStr(props)} />}
+      />
+    );
+    expect(component).toMatchSnapshot();
+  });
+  it('renders a footer when there is no data and no header', () => {
+    const component = ReactTestRenderer.create(
+      <SectionList
+        sections={[{key: 's1', data: []}]}
+        renderItem={({item}) => <item v={item.key} />}
         renderSectionFooter={(props) => <sectionFooter v={propStr(props)} />}
       />
     );

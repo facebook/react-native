@@ -153,10 +153,10 @@ struct JYogaLogLevel : public JavaClass<JYogaLogLevel> {
 };
 
 static int YGJNILogFunc(const YGConfigRef config,
-                 const YGNodeRef node,
-                 YGLogLevel level,
-                 const char *format,
-                 va_list args) {
+                        const YGNodeRef node,
+                        YGLogLevel level,
+                        const char *format,
+                        va_list args) {
   char buffer[256];
   int result = vsnprintf(buffer, sizeof(buffer), format, args);
 

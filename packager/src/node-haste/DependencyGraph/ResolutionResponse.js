@@ -11,8 +11,6 @@
 
 'use strict';
 
-import type Module from '../Module';
-
 const NO_OPTIONS = {};
 
 class ResolutionResponse<TModule: {hash(): string}, TOptions> {
@@ -26,7 +24,7 @@ class ResolutionResponse<TModule: {hash(): string}, TOptions> {
   // This is monkey-patched from Resolver.
   getModuleId: ?() => number;
 
-  _mappings: {};
+  _mappings: {[hash: string]: Array<[string, TModule]>};
   _finalized: boolean;
   _mainModule: ?TModule;
 
@@ -104,8 +102,8 @@ class ResolutionResponse<TModule: {hash(): string}, TOptions> {
   }
 
   setResolvedDependencyPairs(
-    module: Module,
-    pairs: mixed,
+    module: TModule,
+    pairs: Array<[string, TModule]>,
     options: {ignoreFinalized?: boolean} = NO_OPTIONS,
   ) {
     if (!options.ignoreFinalized) {
@@ -121,7 +119,7 @@ class ResolutionResponse<TModule: {hash(): string}, TOptions> {
     this.mocks = mocks;
   }
 
-  getResolvedDependencyPairs(module: TModule) {
+  getResolvedDependencyPairs(module: TModule): $ReadOnlyArray<[string, TModule]> {
     this._assertFinalized();
     return this._mappings[module.hash()];
   }

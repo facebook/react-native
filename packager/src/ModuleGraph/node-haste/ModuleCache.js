@@ -34,11 +34,11 @@ module.exports = class ModuleCache {
     this.packages = new Map();
   }
 
-  getAssetModule(path: string) {
+  getAssetModule(path: string): Module {
     return this.getModule(path);
   }
 
-  getModule(path: string) {
+  getModule(path: string): Module {
     let m = this.modules.get(path);
     if (!m) {
       m = new Module(path, this, this.getTransformedFile(path));
@@ -47,7 +47,7 @@ module.exports = class ModuleCache {
     return m;
   }
 
-  getPackage(path: string) {
+  getPackage(path: string): Package {
     let p = this.packages.get(path);
     if (!p) {
       p = new Package(path, this.getPackageData(path));
@@ -64,7 +64,7 @@ module.exports = class ModuleCache {
     return pkg;
   }
 
-  getPackageOf(filePath: string) {
+  getPackageOf(filePath: string): ?Package {
     const candidate = this._getClosestPackage(filePath);
     return candidate != null ? this.getPackage(candidate) : null;
   }

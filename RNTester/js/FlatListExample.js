@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const Alert = require('Alert');
 const React = require('react');
 const ReactNative = require('react-native');
 const {
@@ -160,7 +161,7 @@ class FlatListExample extends React.PureComponent {
       data: state.data.concat(genItemData(100, state.data.length)),
     }));
   };
-  _onRefresh = () => alert('onRefresh: nothing to refresh :P');
+  _onRefresh = () => Alert.alert('onRefresh: nothing to refresh :P');
   _renderItemComponent = ({item, separators}) => {
     return (
       <ItemComponent

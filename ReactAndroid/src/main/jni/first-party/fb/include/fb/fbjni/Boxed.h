@@ -58,9 +58,12 @@ DEFINE_BOXED_PRIMITIVE(double, Double)
 
 #undef DEFINE_BOXED_PRIMITIVE
 
+struct JVoid : public jni::JavaClass<JVoid> {
+  static auto constexpr kJavaDescriptor = "Ljava/lang/Void;";
+};
+
 inline local_ref<jobject> autobox(alias_ref<jobject> val) {
   return make_local(val);
 }
 
 }}
-

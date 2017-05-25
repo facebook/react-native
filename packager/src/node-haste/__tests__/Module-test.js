@@ -11,8 +11,7 @@
 jest
   .dontMock('absolute-path')
   .dontMock('json-stable-stringify')
-  .dontMock('imurmurhash')
-  .dontMock('../lib/replacePatterns')
+  .dontMock('crypto')
   .dontMock('../DependencyGraph/docblock')
   .dontMock('../Module');
 
@@ -22,7 +21,7 @@ jest
 const Module = require('../Module');
 const ModuleCache = require('../ModuleCache');
 const DependencyGraphHelpers = require('../DependencyGraph/DependencyGraphHelpers');
-const TransformCache = require('../../lib/TransformCache');
+const TransformCaching = require('../../lib/TransformCaching');
 const fs = require('graceful-fs');
 
 const packageJson =
@@ -48,6 +47,7 @@ describe('Module', () => {
   const fileName = '/root/index.js';
 
   let cache;
+  const transformCache = TransformCaching.mocked();
 
   const createCache = () => ({
     get: jest.genMockFn().mockImplementation(
@@ -60,7 +60,7 @@ describe('Module', () => {
   let transformCacheKey;
   const createModule = options =>
     new Module({
-      options: {},
+      options: {transformCache},
       transformCode: (module, sourceCode, transformOptions) => {
         return Promise.resolve({code: sourceCode});
       },
@@ -79,7 +79,7 @@ describe('Module', () => {
     process.platform = 'linux';
     cache = createCache();
     transformCacheKey = 'abcdef';
-    TransformCache.mock.reset();
+    transformCache.mock.reset();
   });
 
   describe('Module ID', () => {
@@ -105,7 +105,7 @@ describe('Module', () => {
       );
 
       it('identifies the module as haste module', () =>
-        module.isHaste().then(isHaste => expect(isHaste).toBe(true))
+        expect(module.isHaste()).toBe(true)
       );
 
       it('does not transform the file in order to access the name', () => {
@@ -118,8 +118,8 @@ describe('Module', () => {
       it('does not transform the file in order to access the haste status', () => {
         const transformCode =
           jest.genMockFn().mockReturnValue(Promise.resolve());
-        return createModule({transformCode}).isHaste()
-          .then(() => expect(transformCode).not.toBeCalled());
+        createModule({transformCode}).isHaste();
+        expect(transformCode).not.toBeCalled();
       });
     });
 
@@ -133,7 +133,7 @@ describe('Module', () => {
       );
 
       it('does not identify the module as haste module', () =>
-        module.isHaste().then(isHaste => expect(isHaste).toBe(false))
+        expect(module.isHaste()).toBe(false)
       );
 
       it('does not transform the file in order to access the name', () => {
@@ -146,8 +146,8 @@ describe('Module', () => {
       it('does not transform the file in order to access the haste status', () => {
         const transformCode =
           jest.genMockFn().mockReturnValue(Promise.resolve());
-        return createModule({transformCode}).isHaste()
-          .then(() => expect(transformCode).not.toBeCalled());
+        createModule({transformCode}).isHaste();
+        expect(transformCode).not.toBeCalled();
       });
     });
   });
@@ -182,7 +182,7 @@ describe('Module', () => {
       transformResult = {code: ''};
       transformCode = jest.genMockFn()
         .mockImplementation((module, sourceCode, options) => {
-          TransformCache.writeSync({
+          transformCache.writeSync({
             filePath: module.path,
             sourceCode,
             transformOptions: options,
@@ -253,23 +253,6 @@ describe('Module', () => {
 
       return module.read().then(result => {
         expect(result).toEqual(jasmine.objectContaining(transformResult));
-      });
-    });
-
-    it('stores all things if options is undefined', () => {
-      transformResult = {
-        code: exampleCode,
-        arbitrary: 'arbitrary',
-        dependencies: ['foo', 'bar'],
-        dependencyOffsets: [12, 764],
-        id: null,
-        map: {version: 3},
-        subObject: {foo: 'bar'},
-      };
-      const module = createModule({transformCode, options: undefined});
-
-      return module.read().then(result => {
-        expect(result).toEqual({...transformResult, source: 'arbitrary(code);'});
       });
     });
 

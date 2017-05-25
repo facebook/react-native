@@ -11,10 +11,9 @@
 
 'use strict';
 
+const getInverseDependencies = require('../../../packager/src//node-haste/lib/getInverseDependencies');
 const querystring = require('querystring');
 const url = require('url');
-
-const {getInverseDependencies} = require('../../../packager/src//node-haste');
 
 import type HMRBundle from '../../../packager/src/Bundler/HMRBundle';
 import type Server from '../../../packager/src/Server';

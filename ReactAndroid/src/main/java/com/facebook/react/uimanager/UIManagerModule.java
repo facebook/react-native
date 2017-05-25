@@ -149,6 +149,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
     getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
     YogaNodePool.get().clear();
+    ViewManagerPropertyUpdater.clear();
   }
 
   private static Map<String, Object> createConstants(
@@ -410,6 +411,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       Math.round(PixelUtil.toPixelFromDIP(point.getDouble(0))),
       Math.round(PixelUtil.toPixelFromDIP(point.getDouble(1))),
       callback);
+  }
+
+  /**
+   *  Check if the first shadow node is the descendant of the second shadow node
+   */
+  @ReactMethod
+  public void viewIsDescendantOf(
+      final int reactTag,
+      final int ancestorReactTag,
+      final Callback callback) {
+    mUIImplementation.viewIsDescendantOf(reactTag, ancestorReactTag, callback);
   }
 
   /**
