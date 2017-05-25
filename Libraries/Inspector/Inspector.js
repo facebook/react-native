@@ -25,7 +25,7 @@ const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 const View = require('View');
 const invariant = require('invariant');
-const emptyObject = require('emptyObject');
+const emptyObject = require('fbjs/lib/emptyObject');
 
 export type ReactRenderer = {
   getInspectorDataForViewTag: () => Object,
