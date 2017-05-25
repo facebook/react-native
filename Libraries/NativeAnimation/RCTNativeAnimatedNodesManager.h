@@ -36,6 +36,8 @@
                           viewTag:(nonnull NSNumber *)viewTag
                          viewName:(nonnull NSString *)viewName;
 
+- (void)restoreDefaultValues:(nonnull NSNumber *)nodeTag;
+
 - (void)disconnectAnimatedNodeFromView:(nonnull NSNumber *)nodeTag
                                viewTag:(nonnull NSNumber *)viewTag;
 

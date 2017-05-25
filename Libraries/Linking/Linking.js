@@ -66,22 +66,44 @@ const LinkingManager = Platform.OS === 'android' ?
  *   android:launchMode="singleTask">
  * ```
  *
- * NOTE: On iOS you'll need to link `RCTLinking` to your project by following
+ * NOTE: On iOS, you'll need to link `RCTLinking` to your project by following
  * the steps described [here](docs/linking-libraries-ios.html#manual-linking).
- * In case you also want to listen to incoming app links during your app's
- * execution you'll need to add the following lines to your `*AppDelegate.m`:
+ * If you also want to listen to incoming app links during your app's
+ * execution, you'll need to add the following lines to your `*AppDelegate.m`:
  *
  * ```
+ * // iOS 10
+ * #import <React/RCTLinkingManager.h>
+ * - (BOOL)application:(UIApplication *)application
+ *    openURL:(NSURL *)url
+ *    options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+ * {
+ *
+ *  return [RCTLinkingManager application:application openURL:url
+ *  sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
+ *             annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
+ *
+ * }
+ * ```
+ * 
+ * If you're targeting iOS 9 or older, you can use the following code instead:
+ *
+ * ```
+ * // iOS 9 or older
  * #import <React/RCTLinkingManager.h>
  *
  * - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
  *   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
  * {
  *   return [RCTLinkingManager application:application openURL:url
- *                       sourceApplication:sourceApplication annotation:annotation];
+ *          sourceApplication:sourceApplication annotation:annotation];
  * }
- *
- * // Only if your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
+ * ```
+ * 
+ * If your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html),
+ * you'll need to add the following code as well:
+ * 
+ * ```
  * - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
  *  restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
  * {

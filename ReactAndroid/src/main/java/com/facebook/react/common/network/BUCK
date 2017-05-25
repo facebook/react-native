@@ -8,5 +8,6 @@ android_library(
     ],
     deps = [
         react_native_dep("third-party/java/okhttp:okhttp3"),
+        react_native_dep("third-party/java/okio:okio"),
     ],
 )

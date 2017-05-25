@@ -21,7 +21,7 @@ In accordance with the ancient traditions of our people, we must first build an 
 import React, { Component } from 'react';
 import { AppRegistry, Text } from 'react-native';
 
-class AwesomeProject extends Component {
+export default class HelloWorldApp extends Component {
   render() {
     return (
       <Text>Hello world!</Text>
@@ -29,7 +29,8 @@ class AwesomeProject extends Component {
   }
 }
 
-AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('HelloWorldApp', () => HelloWorldApp);
 ```
 
 If you are feeling curious, you can play around with sample code directly in the web simulators. You can also paste it into your `index.ios.js` or `index.android.js` file to create a real app on your local machine.
@@ -47,7 +48,7 @@ is a built-in component that just displays some text.
 
 So this code is defining `HelloWorldApp`, a new `Component`, and it's registering it with the `AppRegistry`. When you're building a React Native app, you'll be making new components a lot. Anything you see on the screen is some sort of component. A component can be pretty simple - the only thing that's required is a `render` function which returns some JSX to render.
 
-The `AppRegistry` just tells React Native which component is the root one for the whole application. You won't be thinking about `AppRegistry` a lot - there will probably just be one call to `AppRegistry.registerComponent` in your whole app. It's included in these examples so you can paste the whole thing into your `index.ios.js` or `index.android.js` file and get it running.
+The `AppRegistry` just tells React Native which component is the root one for the whole application. You won't be thinking about `AppRegistry` a lot - there will probably just be one call to `AppRegistry.registerComponent` in your whole app. It's included in these examples so you can paste the whole thing into your `index.ios.js` or `index.android.js` file and get it running. If you have a project from Create React Native App, this is handled for you and it's not necessary to call AppRegistry in your code.
 
 ## This App Doesn't Do Very Much
 

@@ -24,7 +24,7 @@ fi
 cd "$SPEC_REPO_DIR"
 SPEC_REPO_REMOTE=$(git remote get-url origin)
 
-POD_LINT_OPT="--verbose --no-subspecs --allow-warnings --fail-fast --private --swift-version=3.0 --sources=$SPEC_REPO_REMOTE"
+POD_LINT_OPT="--verbose --allow-warnings --fail-fast --private --swift-version=3.0 --sources=$SPEC_REPO_REMOTE"
 
 # Get the version from a podspec.
 version() {

@@ -59,7 +59,7 @@ class JavaNativeModule : public NativeModule {
   std::string getName() override;
   folly::dynamic getConstants() override;
   std::vector<MethodDescriptor> getMethods() override;
-  void invoke(unsigned int reactMethodId, folly::dynamic&& params) override;
+  void invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) override;
   MethodCallResult callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic&& params) override;
 
  private:
@@ -80,7 +80,7 @@ class NewJavaNativeModule : public NativeModule {
   std::string getName() override;
   std::vector<MethodDescriptor> getMethods() override;
   folly::dynamic getConstants() override;
-  void invoke(unsigned int reactMethodId, folly::dynamic&& params) override;
+  void invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) override;
   MethodCallResult callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic&& params) override;
 
  private:

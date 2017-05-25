@@ -25,6 +25,7 @@ function config(onlyList) {
       'syntax-trailing-function-commas',
       'transform-object-rest-spread',
       'transform-async-to-generator',
+      'transform-class-properties',
     ].map(pluginName => require(`babel-plugin-${pluginName}`)),
     only: _only,
     retainLines: true,

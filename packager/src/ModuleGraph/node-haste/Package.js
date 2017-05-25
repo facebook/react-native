@@ -49,12 +49,12 @@ module.exports = class Package {
     return path.join(this.root, main);
   }
 
-  getName() {
+  getName(): Promise<string> {
     return Promise.resolve(nullthrows(this.data.name));
   }
 
-  isHaste() {
-    return Promise.resolve(!!this.data.name);
+  isHaste(): boolean {
+    return !!this.data.name;
   }
 
   redirectRequire(name: string) {

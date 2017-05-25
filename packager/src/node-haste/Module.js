@@ -12,14 +12,13 @@
 
 'use strict';
 
-const TransformCache = require('../lib/TransformCache');
-
 const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
 const fs = require('fs');
 const invariant = require('fbjs/lib/invariant');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
+const path = require('path');
 
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
@@ -29,12 +28,16 @@ import type {
 } from '../JSTransformer/worker/worker';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {MappingsMap} from '../lib/SourceMap';
-import type {GetTransformCacheKey} from '../lib/TransformCache';
-import type {ReadTransformProps} from '../lib/TransformCache';
+import type {
+  TransformCache,
+  GetTransformCacheKey,
+  ReadTransformProps,
+} from '../lib/TransformCaching';
 import type {Reporter} from '../lib/reporting';
 import type DependencyGraphHelpers
   from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
+import type {LocalPath} from './lib/toLocalPath';
 
 export type ReadResult = {
   +code: string,
@@ -68,24 +71,25 @@ export type HasteImpl = {
 export type Options = {
   hasteImpl?: HasteImpl,
   resetCache?: boolean,
+  transformCache: TransformCache,
 };
 
 export type ConstructorArgs = {
   depGraphHelpers: DependencyGraphHelpers,
-  globalTransformCache: ?GlobalTransformCache,
   file: string,
+  getTransformCacheKey: GetTransformCacheKey,
+  globalTransformCache: ?GlobalTransformCache,
+  localPath: LocalPath,
   moduleCache: ModuleCache,
   options: Options,
   reporter: Reporter,
-  getTransformCacheKey: GetTransformCacheKey,
   transformCode: ?TransformCode,
 };
 
 type DocBlock = {+[key: string]: string};
 
-const TRANSFORM_CACHE = new TransformCache();
-
 class Module {
+  localPath: LocalPath;
   path: string;
   type: string;
 
@@ -104,8 +108,11 @@ class Module {
 
   _readResultsByOptionsKey: Map<string, CachedReadResult>;
 
+  static _transformCache: TransformCache;
+
   constructor({
     depGraphHelpers,
+    localPath,
     file,
     getTransformCacheKey,
     globalTransformCache,
@@ -118,6 +125,7 @@ class Module {
       throw new Error('Expected file to be absolute path but got ' + file);
     }
 
+    this.localPath = localPath;
     this.path = file;
     this.type = 'Module';
 
@@ -328,7 +336,7 @@ class Module {
         return;
       }
       invariant(result != null, 'missing result');
-      TRANSFORM_CACHE.writeSync({...cacheProps, result});
+      this._options.transformCache.writeSync({...cacheProps, result});
       callback(undefined, result);
     });
   }
@@ -375,7 +383,7 @@ class Module {
       transformOptions,
       transformOptionsKey,
     );
-    const cachedResult = TRANSFORM_CACHE.readSync(cacheProps);
+    const cachedResult = this._options.transformCache.readSync(cacheProps);
     if (cachedResult.result == null) {
       return {
         result: null,
@@ -436,6 +444,7 @@ class Module {
     const getTransformCacheKey = this._getTransformCacheKey;
     return {
       filePath: this.path,
+      localPath: this.localPath,
       sourceCode,
       getTransformCacheKey,
       transformOptions,

@@ -26,7 +26,8 @@ import type {
   Options as TransformWorkerOptions,
   TransformOptionsStrict,
 } from '../JSTransformer/worker/worker';
-import type {CachedResult, GetTransformCacheKey} from './TransformCache';
+import type {LocalPath} from '../node-haste/lib/toLocalPath';
+import type {CachedResult, GetTransformCacheKey} from './TransformCaching';
 
 /**
  * The API that a global transform cache must comply with. To implement a
@@ -62,10 +63,10 @@ type FetchResultFromURI = (uri: string) => Promise<?CachedResult>;
 type StoreResults = (resultsByKey: Map<string, CachedResult>) => Promise<void>;
 
 export type FetchProps = {
-  filePath: string,
-  sourceCode: string,
-  getTransformCacheKey: GetTransformCacheKey,
-  transformOptions: TransformWorkerOptions,
+  +localPath: LocalPath,
+  +sourceCode: string,
+  +getTransformCacheKey: GetTransformCacheKey,
+  +transformOptions: TransformWorkerOptions,
 };
 
 type URI = string;
@@ -132,7 +133,7 @@ class KeyResultStore {
 
 }
 
-export type TransformProfile = {+dev: boolean, +minify: boolean, +platform: string};
+export type TransformProfile = {+dev: boolean, +minify: boolean, +platform: ?string};
 
 function profileKey({dev, minify, platform}: TransformProfile): string {
   return jsonStableStringify({dev, minify, platform});
@@ -227,13 +228,14 @@ class URIBasedGlobalTransformCache {
    */
   keyOf(props: FetchProps) {
     const hash = crypto.createHash('sha1');
-    const {sourceCode, filePath, transformOptions} = props;
+    const {sourceCode, localPath, transformOptions} = props;
     hash.update(this._optionsHasher.getTransformWorkerOptionsDigest(transformOptions));
     const cacheKey = props.getTransformCacheKey(transformOptions);
     hash.update(JSON.stringify(cacheKey));
+    hash.update(JSON.stringify(localPath));
     hash.update(crypto.createHash('sha1').update(sourceCode).digest('hex'));
     const digest = hash.digest('hex');
-    return `${digest}-${path.basename(filePath)}`;
+    return `${digest}-${path.basename(localPath)}`;
   }
 
   /**
@@ -348,9 +350,9 @@ class OptionsHasher {
    * This function is extra-conservative with how it hashes the transform
    * options. In particular:
    *
-   *     * we need to hash paths relative to the root, not the absolute paths,
-   *       otherwise everyone would have a different cache, defeating the
-   *       purpose of global cache;
+   *     * we need to hash paths as local paths, i.e. relative to the root, not
+   *       the absolute paths, otherwise everyone would have a different cache,
+   *       defeating the purpose of global cache;
    *     * we need to reject any additional field we do not know of, because
    *       they could contain absolute path, and we absolutely want to process
    *       these.
@@ -384,7 +386,7 @@ class OptionsHasher {
   hashTransformOptions(hash: crypto$Hash, options: TransformOptionsStrict): crypto$Hash {
     const {
       generateSourceMaps, dev, hot, inlineRequires, platform, projectRoot,
-      ...unknowns,
+      ...unknowns
     } = options;
     const unknownKeys = Object.keys(unknowns);
     if (unknownKeys.length > 0) {
@@ -397,21 +399,21 @@ class OptionsHasher {
       +dev | +generateSourceMaps << 1 | +hot << 2 | +!!inlineRequires << 3,
     ]));
     hash.update(JSON.stringify(platform));
-    let relativeBlacklist = [];
+    let blacklistWithLocalPaths = [];
     if (typeof inlineRequires === 'object') {
-      relativeBlacklist = this.relativizeFilePaths(Object.keys(inlineRequires.blacklist));
+      blacklistWithLocalPaths = this.pathsToLocal(Object.keys(inlineRequires.blacklist));
     }
-    const relativeProjectRoot = this.relativizeFilePath(projectRoot);
-    const optionTuple = [relativeBlacklist, relativeProjectRoot];
+    const localProjectRoot = this.toLocalPath(projectRoot);
+    const optionTuple = [blacklistWithLocalPaths, localProjectRoot];
     hash.update(JSON.stringify(optionTuple));
     return hash;
   }
 
-  relativizeFilePaths(filePaths: Array<string>): Array<string> {
-    return filePaths.map(this.relativizeFilePath.bind(this));
+  pathsToLocal(filePaths: Array<string>): Array<string> {
+    return filePaths.map(this.toLocalPath, this);
   }
 
-  relativizeFilePath(filePath: string): string {
+  toLocalPath(filePath: string): string {
     return path.relative(this._rootPath, filePath);
   }
 }

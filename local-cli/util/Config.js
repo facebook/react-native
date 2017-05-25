@@ -22,6 +22,7 @@ const RN_CLI_CONFIG = 'rn-cli.config.js';
 import type {GetTransformOptions, PostMinifyProcess, PostProcessModules} from '../../packager/src/Bundler';
 import type {HasteImpl} from '../../packager/src/node-haste/Module';
 import type {TransformVariants} from '../../packager/src/ModuleGraph/types.flow';
+import type {PostProcessModules as PostProcessModulesForBuck} from '../../packager/src/ModuleGraph/types.flow.js';
 
 /**
  * Configuration file of the CLI.
@@ -40,6 +41,12 @@ export type ConfigT = {
    * packager on a given platform.
    */
   getBlacklistRE(): RegExp,
+
+  /**
+   * Specify any additional polyfill modules that should be processed
+   * before regular module loading.
+   */
+ getPolyfillModuleNames: () => Array<string>,
 
   /**
    * Specify any additional platforms to be used by the packager.
@@ -84,6 +91,12 @@ export type ConfigT = {
   postProcessModules: PostProcessModules,
 
   /**
+   * Same as `postProcessModules` but for the Buck worker. Eventually we do want
+   * to unify both variants.
+   */
+  postProcessModulesForBuck: PostProcessModulesForBuck,
+
+  /**
    * A module that exports:
    * - a `getHasteName(filePath)` method that returns `hasteName` for module at
    *  `filePath`, or undefined if `filePath` is not a haste module.
@@ -98,13 +111,15 @@ const defaultConfig: ConfigT = {
   getAssetExts: () => [],
   getBlacklistRE: () => blacklist(),
   getPlatforms: () => [],
+  getPolyfillModuleNames: () => [],
   getProjectRoots: () => [process.cwd()],
   getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
   getSourceExts: () => [],
-  getTransformModulePath: () => path.resolve(__dirname, '../../packager/transformer'),
+  getTransformModulePath: () => path.resolve(__dirname, '../../packager/transformer.js'),
   getTransformOptions: async () => ({}),
   postMinifyProcess: x => x,
   postProcessModules: modules => modules,
+  postProcessModulesForBuck: modules => modules,
   transformVariants: () => ({default: {}}),
 };
 
@@ -118,12 +133,17 @@ const defaultConfig: ConfigT = {
  */
 const Config = {
   find(startDir: string): ConfigT {
+    return this.findWithPath(startDir).config;
+  },
+
+  findWithPath(startDir: string): {config: ConfigT, projectPath: string} {
     const configPath = findConfigPath(startDir);
     invariant(
       configPath,
       `Can't find "${RN_CLI_CONFIG}" file in any parent folder of "${startDir}"`,
     );
-    return this.loadFile(configPath, startDir);
+    const projectPath = path.dirname(configPath);
+    return {config: this.loadFile(configPath, startDir), projectPath};
   },
 
   findOptional(startDir: string): ConfigT {
