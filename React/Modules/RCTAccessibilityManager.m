@@ -165,11 +165,9 @@ RCT_EXPORT_METHOD(setAccessibilityContentSizeMultipliers:(NSDictionary *)JSMulti
 
 RCT_EXPORT_METHOD(setAccessibilityFocus:(nonnull NSNumber *)reactTag)
 {
-  dispatch_async(RCTGetUIManagerQueue(), ^{
-    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-      UIView *view = viewRegistry[reactTag];
-      UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, view);
-    }];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
+    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, view);
   });
 }
 
