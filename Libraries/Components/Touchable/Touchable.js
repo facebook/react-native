@@ -11,18 +11,18 @@
 
 'use strict';
 
-const BoundingDimensions = require('BoundingDimensions');
-const Platform = require('Platform');
-const Position = require('Position');
-const React = require('React');
-const ReactNative = require('ReactNative');
-const TVEventHandler = require('TVEventHandler');
+const BoundingDimensions = require('./BoundingDimensions');
+const Platform = require('../../Utilities/Platform');
+const Position = require('./Position');
+const React = require('../../react-native/React');
+const ReactNative = require('../../Renderer/src/renderers/native/ReactNative');
+const TVEventHandler = require('../AppleTV/TVEventHandler');
 const TouchEventUtils = require('fbjs/lib/TouchEventUtils');
-const UIManager = require('UIManager');
-const View = require('View');
+const UIManager = require('../../ReactNative/UIManager');
+const View = require('../View/View');
 
 const keyMirror = require('fbjs/lib/keyMirror');
-const normalizeColor = require('normalizeColor');
+const normalizeColor = require('../../StyleSheet/normalizeColor');
 
 /**
  * `Touchable`: Taps done right.

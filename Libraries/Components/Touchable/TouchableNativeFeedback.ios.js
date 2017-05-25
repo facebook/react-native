@@ -11,10 +11,10 @@
 
 'use strict';
 
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var View = require('View');
+var React = require('../../react-native/React');
+var StyleSheet = require('../../StyleSheet/StyleSheet');
+var Text = require('../../Text/Text');
+var View = require('../View/View');
 
 class DummyTouchableNativeFeedback extends React.Component {
   render() {

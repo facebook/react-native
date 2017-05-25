@@ -13,7 +13,7 @@
 'use strict';
 
 const PropTypes = require('prop-types');
-const UIManager = require('UIManager');
+const UIManager = require('../ReactNative/UIManager');
 
 const keyMirror = require('fbjs/lib/keyMirror');
 

@@ -11,21 +11,21 @@
  */
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
-const ImageResizeMode = require('ImageResizeMode');
-const ImageSourcePropType = require('ImageSourcePropType');
-const ImageStylePropTypes = require('ImageStylePropTypes');
-const NativeMethodsMixin = require('NativeMethodsMixin');
-const NativeModules = require('NativeModules');
-const React = require('React');
+const EdgeInsetsPropType = require('../StyleSheet/EdgeInsetsPropType');
+const ImageResizeMode = require('./ImageResizeMode');
+const ImageSourcePropType = require('./ImageSourcePropType');
+const ImageStylePropTypes = require('./ImageStylePropTypes');
+const NativeMethodsMixin = require('../Renderer/src/renderers/native/NativeMethodsMixin');
+const NativeModules = require('../BatchedBridge/NativeModules');
+const React = require('../react-native/React');
 const PropTypes = require('prop-types');
-const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-const StyleSheet = require('StyleSheet');
-const StyleSheetPropType = require('StyleSheetPropType');
+const ReactNativeViewAttributes = require('../Components/View/ReactNativeViewAttributes');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const StyleSheetPropType = require('../StyleSheet/StyleSheetPropType');
 
-const flattenStyle = require('flattenStyle');
-const requireNativeComponent = require('requireNativeComponent');
-const resolveAssetSource = require('resolveAssetSource');
+const flattenStyle = require('../StyleSheet/flattenStyle');
+const requireNativeComponent = require('../ReactNative/requireNativeComponent');
+const resolveAssetSource = require('./resolveAssetSource');
 
 const ImageViewManager = NativeModules.ImageViewManager;
 

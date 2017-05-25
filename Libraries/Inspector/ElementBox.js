@@ -11,13 +11,13 @@
  */
 'use strict';
 
-var React = require('React');
-var View = require('View');
-var StyleSheet = require('StyleSheet');
-var BorderBox = require('BorderBox');
-var resolveBoxStyle = require('resolveBoxStyle');
+var React = require('../react-native/React');
+var View = require('../Components/View/View');
+var StyleSheet = require('../StyleSheet/StyleSheet');
+var BorderBox = require('./BorderBox');
+var resolveBoxStyle = require('./resolveBoxStyle');
 
-var flattenStyle = require('flattenStyle');
+var flattenStyle = require('../StyleSheet/flattenStyle');
 
 class ElementBox extends React.Component {
   render() {

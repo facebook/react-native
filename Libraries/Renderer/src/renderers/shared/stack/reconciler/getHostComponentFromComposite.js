@@ -11,7 +11,7 @@
 
 'use strict';
 
-var ReactNodeTypes = require('ReactNodeTypes');
+var ReactNodeTypes = require('./ReactNodeTypes');
 
 function getHostComponentFromComposite(inst) {
   var type;

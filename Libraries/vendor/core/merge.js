@@ -31,7 +31,7 @@
 
 "use strict";
 
-var mergeInto = require('mergeInto');
+var mergeInto = require('./mergeInto');
 
 /**
  * Shallow merges two structures into a return value, without mutating either.

@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const React = require('React');
+const React = require('../react-native/React');
 
 /**
  * Renders static content efficiently by allowing React to short-circuit the

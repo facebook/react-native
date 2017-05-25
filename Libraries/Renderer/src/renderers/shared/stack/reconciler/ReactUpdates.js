@@ -11,10 +11,10 @@
 
 'use strict';
 
-var PooledClass = require('PooledClass');
-var ReactFeatureFlags = require('ReactFeatureFlags');
-var ReactReconciler = require('ReactReconciler');
-var Transaction = require('Transaction');
+var PooledClass = require('../../../../shared/utils/PooledClass');
+var ReactFeatureFlags = require('../../utils/ReactFeatureFlags');
+var ReactReconciler = require('./ReactReconciler');
+var Transaction = require('./Transaction');
 
 var invariant = require('fbjs/lib/invariant');
 

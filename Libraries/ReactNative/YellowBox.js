@@ -12,15 +12,15 @@
 
 'use strict';
 
-const EventEmitter = require('EventEmitter');
-const Platform = require('Platform');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
+const EventEmitter = require('../EventEmitter/EventEmitter');
+const Platform = require('../Utilities/Platform');
+const React = require('../react-native/React');
+const StyleSheet = require('../StyleSheet/StyleSheet');
 
-const infoLog = require('infoLog');
-const openFileInEditor = require('openFileInEditor');
-const parseErrorStack = require('parseErrorStack');
-const symbolicateStackTrace = require('symbolicateStackTrace');
+const infoLog = require('../Utilities/infoLog');
+const openFileInEditor = require('../Core/Devtools/openFileInEditor');
+const parseErrorStack = require('../Core/Devtools/parseErrorStack');
+const symbolicateStackTrace = require('../Core/Devtools/symbolicateStackTrace');
 
 import type EmitterSubscription from 'EmitterSubscription';
 import type {StackFrame} from 'parseErrorStack';
@@ -106,7 +106,7 @@ function updateWarningMap(format, ...args): void {
   if (console.disableYellowBox) {
     return;
   }
-  const stringifySafe = require('stringifySafe');
+  const stringifySafe = require('../Utilities/stringifySafe');
 
   format = String(format);
   const argCount = (format.match(/%s/g) || []).length;
@@ -177,9 +177,9 @@ function isWarningIgnored(warning: string): boolean {
 }
 
 const WarningRow = ({count, warning, onPress}) => {
-  const Text = require('Text');
-  const TouchableHighlight = require('TouchableHighlight');
-  const View = require('View');
+  const Text = require('../Text/Text');
+  const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
+  const View = require('../Components/View/View');
 
   const countText = count > 1 ?
     <Text style={styles.listRowCount}>{'(' + count + ') '}</Text> :
@@ -203,8 +203,8 @@ const WarningRow = ({count, warning, onPress}) => {
 
 type StackRowProps = { frame: StackFrame };
 const StackRow = ({frame}: StackRowProps) => {
-  const Text = require('Text');
-  const TouchableHighlight = require('TouchableHighlight');
+  const Text = require('../Text/Text');
+  const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
   const {file, lineNumber} = frame;
   let fileName;
   if (file) {
@@ -236,10 +236,10 @@ const WarningInspector = ({
   onMinimize,
   toggleStacktrace,
 }) => {
-  const ScrollView = require('ScrollView');
-  const Text = require('Text');
-  const TouchableHighlight = require('TouchableHighlight');
-  const View = require('View');
+  const ScrollView = require('../Components/ScrollView/ScrollView');
+  const Text = require('../Text/Text');
+  const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
+  const View = require('../Components/View/View');
   const {count, stacktrace} = warningInfo || {};
 
   const countSentence =
@@ -370,8 +370,8 @@ class YellowBox extends React.Component {
     if (console.disableYellowBox || this.state.warningMap.size === 0) {
       return null;
     }
-    const ScrollView = require('ScrollView');
-    const View = require('View');
+    const ScrollView = require('../Components/ScrollView/ScrollView');
+    const View = require('../Components/View/View');
 
     const {inspecting, stacktraceVisible} = this.state;
     const inspector = inspecting !== null ?

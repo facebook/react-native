@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const DeviceInfo = require('NativeModules').DeviceInfo;
+const DeviceInfo = require('../BatchedBridge/NativeModules').DeviceInfo;
 
 const invariant = require('fbjs/lib/invariant');
 

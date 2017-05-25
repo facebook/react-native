@@ -17,7 +17,7 @@ type I18nManagerStatus = {
   forceRTL: (forceRTL: boolean) => {},
 };
 
-const I18nManager : I18nManagerStatus = require('NativeModules').I18nManager || {
+const I18nManager : I18nManagerStatus = require('../BatchedBridge/NativeModules').I18nManager || {
   isRTL: false,
   allowRTL: () => {},
   forceRTL: () => {},

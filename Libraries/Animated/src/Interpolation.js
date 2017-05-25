@@ -13,7 +13,7 @@
 'use strict';
 
 var invariant = require('fbjs/lib/invariant');
-var normalizeColor = require('normalizeColor');
+var normalizeColor = require('../../StyleSheet/normalizeColor');
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 

@@ -11,8 +11,8 @@
  */
 'use strict';
 
-var ReactDebugTool = require('ReactDebugTool');
-var ReactPerf = require('ReactPerf');
+var ReactDebugTool = require('../Renderer/src/renderers/shared/ReactDebugTool');
+var ReactPerf = require('../Renderer/src/renderers/shared/ReactPerf');
 
 var invariant = require('fbjs/lib/invariant');
 var performanceNow = require('fbjs/lib/performanceNow');

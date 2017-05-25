@@ -10,7 +10,7 @@
  * @flow
  */
 
-const ReactInstanceMap = require('ReactInstanceMap');
+const ReactInstanceMap = require('./ReactInstanceMap');
 
 const emptyObject = require('fbjs/lib/emptyObject');
 const invariant = require('fbjs/lib/invariant');

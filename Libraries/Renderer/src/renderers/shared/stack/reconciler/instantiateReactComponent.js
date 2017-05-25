@@ -11,11 +11,11 @@
 
 'use strict';
 
-var ReactCompositeComponent = require('ReactCompositeComponent');
-var ReactEmptyComponent = require('ReactEmptyComponent');
-var ReactHostComponent = require('ReactHostComponent');
+var ReactCompositeComponent = require('./ReactCompositeComponent');
+var ReactEmptyComponent = require('./ReactEmptyComponent');
+var ReactHostComponent = require('./ReactHostComponent');
 
-var getNextDebugID = require('getNextDebugID');
+var getNextDebugID = require('../../../../shared/utils/getNextDebugID');
 var invariant = require('fbjs/lib/invariant');
 var warning = require('fbjs/lib/warning');
 

@@ -11,11 +11,11 @@
  */
 'use strict';
 
-var PerformanceLogger = require('PerformanceLogger');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var View = require('View');
+var PerformanceLogger = require('../Utilities/PerformanceLogger');
+var React = require('../react-native/React');
+var StyleSheet = require('../StyleSheet/StyleSheet');
+var Text = require('../Text/Text');
+var View = require('../Components/View/View');
 
 class PerformanceOverlay extends React.Component {
   render() {

@@ -11,8 +11,8 @@
  */
 'use strict';
 
-const JSEventLoopWatchdog = require('JSEventLoopWatchdog');
-const ReactPerf = require('ReactPerf');
+const JSEventLoopWatchdog = require('./JSEventLoopWatchdog');
+const ReactPerf = require('../Renderer/src/renderers/shared/ReactPerf');
 
 const ReactPerfStallHandler = {
   register: function() {

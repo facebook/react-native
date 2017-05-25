@@ -11,10 +11,10 @@
  */
 'use strict';
 
-const NativeModules = require('NativeModules');
-const Platform = require('Platform');
+const NativeModules = require('../BatchedBridge/NativeModules');
+const Platform = require('../Utilities/Platform');
 
-const defineLazyObjectProperty = require('defineLazyObjectProperty');
+const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
 const invariant = require('fbjs/lib/invariant');
 
 const { UIManager } = NativeModules;

@@ -14,7 +14,7 @@
 
 import type {Fiber} from 'ReactFiber';
 
-const {createHostRootFiber} = require('ReactFiber');
+const {createHostRootFiber} = require('./ReactFiber');
 
 export type FiberRoot = {
   // Any additional information from the host associated with this root.

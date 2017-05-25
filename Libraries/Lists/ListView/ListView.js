@@ -11,21 +11,21 @@
  */
 'use strict';
 
-var ListViewDataSource = require('ListViewDataSource');
-var Platform = require('Platform');
-var React = require('React');
+var ListViewDataSource = require('./ListViewDataSource');
+var Platform = require('../../Utilities/Platform');
+var React = require('../../react-native/React');
 var PropTypes = require('prop-types');
-var ReactNative = require('ReactNative');
-var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
-var ScrollView = require('ScrollView');
-var ScrollResponder = require('ScrollResponder');
-var StaticRenderer = require('StaticRenderer');
+var ReactNative = require('../../Renderer/src/renderers/native/ReactNative');
+var RCTScrollViewManager = require('../../BatchedBridge/NativeModules').ScrollViewManager;
+var ScrollView = require('../../Components/ScrollView/ScrollView');
+var ScrollResponder = require('../../Components/ScrollResponder');
+var StaticRenderer = require('../../Components/StaticRenderer');
 var TimerMixin = require('react-timer-mixin');
-var View = require('View');
+var View = require('../../Components/View/View');
 
 var cloneReferencedElement = require('react-clone-referenced-element');
-var isEmpty = require('isEmpty');
-var merge = require('merge');
+var isEmpty = require('../../vendor/core/isEmpty');
+var merge = require('../../vendor/core/merge');
 
 var DEFAULT_PAGE_SIZE = 1;
 var DEFAULT_INITIAL_ROWS = 10;

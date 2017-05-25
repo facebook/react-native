@@ -11,9 +11,9 @@
  */
 'use strict';
 
-const binaryToBase64 = require('binaryToBase64');
+const binaryToBase64 = require('../Utilities/binaryToBase64');
 
-const FormData = require('FormData');
+const FormData = require('./FormData');
 
 export type RequestBody =
     string

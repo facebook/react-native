@@ -11,17 +11,17 @@
 
 'use strict';
 
-var REACT_ELEMENT_TYPE = require('ReactElementSymbol');
+var REACT_ELEMENT_TYPE = require('../../../../shared/utils/ReactElementSymbol');
 
-var getIteratorFn = require('getIteratorFn');
+var getIteratorFn = require('../../../../shared/utils/getIteratorFn');
 var invariant = require('fbjs/lib/invariant');
-var KeyEscapeUtils = require('KeyEscapeUtils');
+var KeyEscapeUtils = require('../../../../shared/utils/KeyEscapeUtils');
 var warning = require('fbjs/lib/warning');
 
 if (__DEV__) {
   var {
     getCurrentStackAddendum,
-  } = require('ReactGlobalSharedState').ReactComponentTreeHook;
+  } = require('../../ReactGlobalSharedState').ReactComponentTreeHook;
 }
 
 var SEPARATOR = '.';

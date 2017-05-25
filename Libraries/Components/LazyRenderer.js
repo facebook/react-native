@@ -10,7 +10,7 @@
  */
 'use strict';
 
-var React = require('React');
+var React = require('../react-native/React');
 var PropTypes = require('prop-types');
 var TimerMixin = require('react-timer-mixin');
 

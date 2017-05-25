@@ -14,7 +14,7 @@
 
 'use strict';
 
-var BackHandler = require('BackHandler');
+var BackHandler = require('./BackHandler');
 
 var warning = require('fbjs/lib/warning');
 

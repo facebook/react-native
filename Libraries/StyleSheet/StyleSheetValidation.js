@@ -11,9 +11,9 @@
  */
 'use strict';
 
-var ImageStylePropTypes = require('ImageStylePropTypes');
-var TextStylePropTypes = require('TextStylePropTypes');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+var ImageStylePropTypes = require('../Image/ImageStylePropTypes');
+var TextStylePropTypes = require('../Text/TextStylePropTypes');
+var ViewStylePropTypes = require('../Components/View/ViewStylePropTypes');
 
 var invariant = require('fbjs/lib/invariant');
 

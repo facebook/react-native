@@ -11,9 +11,9 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModules');
-var Promise = require('Promise');
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+var NativeModules = require('../../BatchedBridge/NativeModules');
+var Promise = require('../../Promise');
+var RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
 
 var AccessibilityManager = NativeModules.AccessibilityManager;
 

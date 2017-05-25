@@ -11,10 +11,10 @@
 
 'use strict';
 
-var ReactInstanceMap = require('ReactInstanceMap');
-var ReactInstrumentation = require('ReactInstrumentation');
-var ReactUpdates = require('ReactUpdates');
-var {ReactCurrentOwner} = require('ReactGlobalSharedState');
+var ReactInstanceMap = require('../../shared/ReactInstanceMap');
+var ReactInstrumentation = require('../../ReactInstrumentation');
+var ReactUpdates = require('./ReactUpdates');
+var {ReactCurrentOwner} = require('../../ReactGlobalSharedState');
 
 if (__DEV__) {
   var warning = require('fbjs/lib/warning');

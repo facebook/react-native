@@ -11,7 +11,7 @@
 
 'use strict';
 
-var ReactReconciler = require('ReactReconciler');
+var ReactReconciler = require('./ReactReconciler');
 
 var ReactSimpleEmptyComponent = function(placeholderElement, instantiate) {
   this._currentElement = null;

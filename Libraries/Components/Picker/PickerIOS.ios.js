@@ -12,18 +12,18 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
+var NativeMethodsMixin = require('../../Renderer/src/renderers/native/NativeMethodsMixin');
+var React = require('../../react-native/React');
 const PropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
-var StyleSheetPropType = require('StyleSheetPropType');
-var TextStylePropTypes = require('TextStylePropTypes');
-var View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
-var processColor = require('processColor');
+var StyleSheet = require('../../StyleSheet/StyleSheet');
+var StyleSheetPropType = require('../../StyleSheet/StyleSheetPropType');
+var TextStylePropTypes = require('../../Text/TextStylePropTypes');
+var View = require('../View/View');
+const ViewPropTypes = require('../View/ViewPropTypes');
+var processColor = require('../../StyleSheet/processColor');
 
 var itemStylePropType = StyleSheetPropType(TextStylePropTypes);
-var requireNativeComponent = require('requireNativeComponent');
+var requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
 var PickerIOS = React.createClass({
   mixins: [NativeMethodsMixin],

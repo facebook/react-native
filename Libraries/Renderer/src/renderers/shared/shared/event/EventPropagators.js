@@ -11,11 +11,11 @@
 
 'use strict';
 
-var EventPluginHub = require('EventPluginHub');
-var ReactTreeTraversal = require('ReactTreeTraversal');
+var EventPluginHub = require('./EventPluginHub');
+var ReactTreeTraversal = require('../ReactTreeTraversal');
 
-var accumulateInto = require('accumulateInto');
-var forEachAccumulated = require('forEachAccumulated');
+var accumulateInto = require('../../utils/accumulateInto');
+var forEachAccumulated = require('../../utils/forEachAccumulated');
 var warning = require('fbjs/lib/warning');
 
 type PropagationPhases = 'bubbled' | 'captured';

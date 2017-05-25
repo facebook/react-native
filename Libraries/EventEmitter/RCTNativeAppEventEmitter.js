@@ -11,8 +11,8 @@
  */
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const BatchedBridge = require('../BatchedBridge/BatchedBridge');
+const RCTDeviceEventEmitter = require('./RCTDeviceEventEmitter');
 
 /**
  * Deprecated - subclass NativeEventEmitter to create granular event modules instead of

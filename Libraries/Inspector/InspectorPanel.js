@@ -11,16 +11,16 @@
  */
 'use strict';
 
-const ElementProperties = require('ElementProperties');
-const NetworkOverlay = require('NetworkOverlay');
-const PerformanceOverlay = require('PerformanceOverlay');
-const React = require('React');
+const ElementProperties = require('./ElementProperties');
+const NetworkOverlay = require('./NetworkOverlay');
+const PerformanceOverlay = require('./PerformanceOverlay');
+const React = require('../react-native/React');
 const PropTypes = require('prop-types');
-const ScrollView = require('ScrollView');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const TouchableHighlight = require('TouchableHighlight');
-const View = require('View');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Text = require('../Text/Text');
+const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
+const View = require('../Components/View/View');
 
 class InspectorPanel extends React.Component {
   renderWaiting() {

@@ -12,17 +12,17 @@
 'use strict';
 
 var React = require('react');
-var ReactInstrumentation = require('ReactInstrumentation');
-var ReactNativeContainerInfo = require('ReactNativeContainerInfo');
-var ReactNativeTagHandles = require('ReactNativeTagHandles');
-var ReactReconciler = require('ReactReconciler');
-var ReactUpdateQueue = require('ReactUpdateQueue');
-var ReactUpdates = require('ReactUpdates');
-var UIManager = require('UIManager');
+var ReactInstrumentation = require('../shared/ReactInstrumentation');
+var ReactNativeContainerInfo = require('./ReactNativeContainerInfo');
+var ReactNativeTagHandles = require('./ReactNativeTagHandles');
+var ReactReconciler = require('../shared/stack/reconciler/ReactReconciler');
+var ReactUpdateQueue = require('../shared/stack/reconciler/ReactUpdateQueue');
+var ReactUpdates = require('../shared/stack/reconciler/ReactUpdates');
+var UIManager = require('../../../../ReactNative/UIManager');
 
 var emptyObject = require('fbjs/lib/emptyObject');
-var instantiateReactComponent = require('instantiateReactComponent');
-var shouldUpdateReactComponent = require('shouldUpdateReactComponent');
+var instantiateReactComponent = require('../shared/stack/reconciler/instantiateReactComponent');
+var shouldUpdateReactComponent = require('../shared/shared/shouldUpdateReactComponent');
 
 /**
  * Temporary (?) hack so that we can store all top-level pending updates on
@@ -87,7 +87,7 @@ var ReactNativeMount = {
   _instancesByContainerID: {},
 
   // these two functions are needed by React Devtools
-  findNodeHandle: require('findNodeHandle'),
+  findNodeHandle: require('./findNodeHandle'),
 
   /**
    * @param {ReactComponent} instance Instance to render.

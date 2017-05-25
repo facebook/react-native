@@ -11,9 +11,9 @@
  */
 'use strict';
 
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-const Map = require('Map');
-const infoLog = require('infoLog');
+const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
+const Map = require('../vendor/core/Map');
+const infoLog = require('../Utilities/infoLog');
 
 import type EmitterSubscription from 'EmitterSubscription';
 
@@ -22,7 +22,7 @@ type SourceCallback = () => string;
 type DebugData = { extras: ExtraData, files: ExtraData };
 
 function defaultExtras() {
-  BugReporting.addFileSource('react_hierarchy.txt', () => require('dumpReactTree')());
+  BugReporting.addFileSource('react_hierarchy.txt', () => require('./dumpReactTree')());
 }
 
 /**
@@ -93,7 +93,7 @@ class BugReporting {
       fileData[key] = callback();
     }
     infoLog('BugReporting extraData:', extraData);
-    const BugReportingNativeModule = require('NativeModules').BugReporting;
+    const BugReportingNativeModule = require('../BatchedBridge/NativeModules').BugReporting;
     BugReportingNativeModule &&
       BugReportingNativeModule.setExtraData &&
       BugReportingNativeModule.setExtraData(extraData, fileData);

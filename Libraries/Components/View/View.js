@@ -11,24 +11,24 @@
  */
 'use strict';
 
-const NativeMethodsMixin = require('NativeMethodsMixin');
-const NativeModules = require('NativeModules');
-const Platform = require('Platform');
+const NativeMethodsMixin = require('../../Renderer/src/renderers/native/NativeMethodsMixin');
+const NativeModules = require('../../BatchedBridge/NativeModules');
+const Platform = require('../../Utilities/Platform');
 const PropTypes = require('prop-types');
-const React = require('React');
-const ReactNativeFeatureFlags = require('ReactNativeFeatureFlags');
-const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-const ViewPropTypes = require('ViewPropTypes');
+const React = require('../../react-native/React');
+const ReactNativeFeatureFlags = require('../../Renderer/src/renderers/native/ReactNativeFeatureFlags');
+const ReactNativeStyleAttributes = require('./ReactNativeStyleAttributes');
+const ReactNativeViewAttributes = require('./ReactNativeViewAttributes');
+const ViewPropTypes = require('./ViewPropTypes');
 
 const invariant = require('fbjs/lib/invariant');
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 const warning = require('fbjs/lib/warning');
 
 const {
   AccessibilityComponentTypes,
   AccessibilityTraits,
-} = require('ViewAccessibility');
+} = require('./ViewAccessibility');
 
 const forceTouchAvailable = (NativeModules.PlatformConstants &&
   NativeModules.PlatformConstants.forceTouchAvailable) || false;
@@ -204,7 +204,7 @@ const RCTView = requireNativeComponent('RCTView', View, {
 });
 
 if (__DEV__) {
-  const UIManager = require('UIManager');
+  const UIManager = require('../../ReactNative/UIManager');
   const viewConfig = UIManager.viewConfigs && UIManager.viewConfigs.RCTView || {};
   for (const prop in viewConfig.nativeProps) {
     const viewAny: any = View; // Appease flow

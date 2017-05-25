@@ -18,10 +18,10 @@ import type {HostContext} from 'ReactFiberHostContext';
 import type {FiberRoot} from 'ReactFiberRoot';
 import type {HostConfig} from 'ReactFiberReconciler';
 
-var {reconcileChildFibers} = require('ReactChildFiber');
-var {popContextProvider} = require('ReactFiberContext');
-var ReactTypeOfWork = require('ReactTypeOfWork');
-var ReactTypeOfSideEffect = require('ReactTypeOfSideEffect');
+var {reconcileChildFibers} = require('./ReactChildFiber');
+var {popContextProvider} = require('./ReactFiberContext');
+var ReactTypeOfWork = require('../../../shared/ReactTypeOfWork');
+var ReactTypeOfSideEffect = require('./ReactTypeOfSideEffect');
 var {
   IndeterminateComponent,
   FunctionalComponent,
@@ -38,7 +38,7 @@ var {
 var {Ref, Update} = ReactTypeOfSideEffect;
 
 if (__DEV__) {
-  var ReactDebugCurrentFiber = require('ReactDebugCurrentFiber');
+  var ReactDebugCurrentFiber = require('./ReactDebugCurrentFiber');
 }
 
 var invariant = require('fbjs/lib/invariant');

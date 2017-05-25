@@ -13,10 +13,10 @@
 
 // Note that the module JSTimers is split into two in order to solve a cycle
 // in dependencies. NativeModules > BatchedBridge > MessageQueue > JSTimersExecution
-const JSTimersExecution = require('JSTimersExecution');
-const Platform = require('Platform');
+const JSTimersExecution = require('./JSTimersExecution');
+const Platform = require('../../Utilities/Platform');
 
-const {Timing} = require('NativeModules');
+const {Timing} = require('../../BatchedBridge/NativeModules');
 
 import type {JSTimerType} from 'JSTimersExecution';
 
@@ -36,7 +36,7 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
   JSTimersExecution.callbacks[freeIndex] = func;
   JSTimersExecution.types[freeIndex] = type;
   if (__DEV__) {
-    const parseErrorStack = require('parseErrorStack');
+    const parseErrorStack = require('../Devtools/parseErrorStack');
     const e = (new Error() : any);
     e.framesToPop = 1;
     const stack = parseErrorStack(e);

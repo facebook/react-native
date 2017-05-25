@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const EventSubscription = require('EventSubscription');
+const EventSubscription = require('./EventSubscription');
 
 import type EventEmitter from 'EventEmitter';
 import type EventSubscriptionVendor from 'EventSubscriptionVendor';

@@ -11,13 +11,13 @@
  */
 'use strict';
 
-var ReactNativeComponentTree = require('ReactNativeComponentTree');
-var ReactNativeInjection = require('ReactNativeInjection');
-var ReactNativeMount = require('ReactNativeMount');
-var ReactNativeStackInjection = require('ReactNativeStackInjection');
-var ReactUpdates = require('ReactUpdates');
+var ReactNativeComponentTree = require('./ReactNativeComponentTree');
+var ReactNativeInjection = require('./ReactNativeInjection');
+var ReactNativeMount = require('./ReactNativeMount');
+var ReactNativeStackInjection = require('./ReactNativeStackInjection');
+var ReactUpdates = require('../shared/stack/reconciler/ReactUpdates');
 
-var findNodeHandle = require('findNodeHandle');
+var findNodeHandle = require('./findNodeHandle');
 
 ReactNativeInjection.inject();
 ReactNativeStackInjection.inject();
@@ -80,7 +80,7 @@ if (
       },
     },
     Mount: ReactNativeMount,
-    Reconciler: require('ReactReconciler'),
+    Reconciler: require('../shared/stack/reconciler/ReactReconciler'),
   });
 }
 

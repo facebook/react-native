@@ -10,7 +10,7 @@
  * @flow
  */
 'use strict';
-var PropTypes = require('React').PropTypes;
+var PropTypes = require('../../react-native/React').PropTypes;
 
 /**
  * Additional View properties for Apple TV

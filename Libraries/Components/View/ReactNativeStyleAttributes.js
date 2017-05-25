@@ -12,14 +12,14 @@
 
 'use strict';
 
-var ImageStylePropTypes = require('ImageStylePropTypes');
-var TextStylePropTypes = require('TextStylePropTypes');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+var ImageStylePropTypes = require('../../Image/ImageStylePropTypes');
+var TextStylePropTypes = require('../../Text/TextStylePropTypes');
+var ViewStylePropTypes = require('./ViewStylePropTypes');
 
 var keyMirror = require('fbjs/lib/keyMirror');
-var processColor = require('processColor');
-var processTransform = require('processTransform');
-var sizesDiffer = require('sizesDiffer');
+var processColor = require('../../StyleSheet/processColor');
+var processTransform = require('../../StyleSheet/processTransform');
+var sizesDiffer = require('../../Utilities/differ/sizesDiffer');
 
 var ReactNativeStyleAttributes = {
   ...keyMirror(ViewStylePropTypes),

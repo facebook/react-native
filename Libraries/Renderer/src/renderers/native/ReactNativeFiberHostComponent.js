@@ -13,11 +13,11 @@
 
 'use strict';
 
-var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
-var TextInputState = require('TextInputState');
-var UIManager = require('UIManager');
+var ReactNativeAttributePayload = require('./ReactNativeAttributePayload');
+var TextInputState = require('../../../../Components/TextInput/TextInputState');
+var UIManager = require('../../../../ReactNative/UIManager');
 
-var {mountSafeCallback, warnForStyleProps} = require('NativeMethodsMixinUtils');
+var {mountSafeCallback, warnForStyleProps} = require('./NativeMethodsMixinUtils');
 
 import type {
   MeasureInWindowOnSuccessCallback,

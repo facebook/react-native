@@ -37,7 +37,7 @@ if (global.window === undefined) {
   global.window = global;
 }
 
-const defineLazyObjectProperty = require('defineLazyObjectProperty');
+const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
 
 /**
  * Sets an object's property. If a property with the same name exists, this will
@@ -97,28 +97,28 @@ if (!global.process.env.NODE_ENV) {
 }
 
 // Set up profile
-const Systrace = require('Systrace');
+const Systrace = require('../Performance/Systrace');
 Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
 
 // Set up console
-const ExceptionsManager = require('ExceptionsManager');
+const ExceptionsManager = require('./ExceptionsManager');
 ExceptionsManager.installConsoleErrorReporter();
 
 // TODO: Move these around to solve the cycle in a cleaner way
-const BatchedBridge = require('BatchedBridge');
-BatchedBridge.registerCallableModule('Systrace', require('Systrace'));
-BatchedBridge.registerCallableModule('JSTimersExecution', require('JSTimersExecution'));
-BatchedBridge.registerCallableModule('HeapCapture', require('HeapCapture'));
-BatchedBridge.registerCallableModule('SamplingProfiler', require('SamplingProfiler'));
+const BatchedBridge = require('../BatchedBridge/BatchedBridge');
+BatchedBridge.registerCallableModule('Systrace', require('../Performance/Systrace'));
+BatchedBridge.registerCallableModule('JSTimersExecution', require('./Timers/JSTimersExecution'));
+BatchedBridge.registerCallableModule('HeapCapture', require('../Utilities/HeapCapture'));
+BatchedBridge.registerCallableModule('SamplingProfiler', require('../Performance/SamplingProfiler'));
 
 if (__DEV__) {
   if (!global.__RCTProfileIsProfiling) {
-    BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));
+    BatchedBridge.registerCallableModule('HMRClient', require('../Utilities/HMRClient'));
   }
 }
 
 // RCTLog needs to register with BatchedBridge
-require('RCTLog');
+require('../Utilities/RCTLog');
 
 // Set up error handler
 if (!global.__fbDisableExceptionsManager) {
@@ -133,13 +133,13 @@ if (!global.__fbDisableExceptionsManager) {
     }
   };
 
-  const ErrorUtils = require('ErrorUtils');
+  const ErrorUtils = require('./ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
 }
 
 // Set up timers
 const defineLazyTimer = name => {
-  defineProperty(global, name, () => require('JSTimers')[name]);
+  defineProperty(global, name, () => require('./Timers/JSTimers')[name]);
 };
 defineLazyTimer('setTimeout');
 defineLazyTimer('setInterval');
@@ -157,14 +157,14 @@ if (!global.alert) {
   global.alert = function(text) {
     // Require Alert on demand. Requiring it too early can lead to issues
     // with things like Platform not being fully initialized.
-    require('Alert').alert('Alert', '' + text);
+    require('../Alert/Alert').alert('Alert', '' + text);
   };
 }
 
 // Set up Promise
 // The native Promise implementation throws the following error:
 // ERROR: Event loop not supported.
-defineProperty(global, 'Promise', () => require('Promise'));
+defineProperty(global, 'Promise', () => require('../Promise'));
 
 // Set up regenerator.
 defineProperty(global, 'regeneratorRuntime', () => {
@@ -178,14 +178,14 @@ defineProperty(global, 'regeneratorRuntime', () => {
 // Set up XHR
 // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
 // let you fetch anything from the internet
-defineProperty(global, 'XMLHttpRequest', () => require('XMLHttpRequest'));
-defineProperty(global, 'FormData', () => require('FormData'));
+defineProperty(global, 'XMLHttpRequest', () => require('../Network/XMLHttpRequest'));
+defineProperty(global, 'FormData', () => require('../Network/FormData'));
 
-defineProperty(global, 'fetch', () => require('fetch').fetch);
-defineProperty(global, 'Headers', () => require('fetch').Headers);
-defineProperty(global, 'Request', () => require('fetch').Request);
-defineProperty(global, 'Response', () => require('fetch').Response);
-defineProperty(global, 'WebSocket', () => require('WebSocket'));
+defineProperty(global, 'fetch', () => require('../Network/fetch').fetch);
+defineProperty(global, 'Headers', () => require('../Network/fetch').Headers);
+defineProperty(global, 'Request', () => require('../Network/fetch').Request);
+defineProperty(global, 'Response', () => require('../Network/fetch').Response);
+defineProperty(global, 'WebSocket', () => require('../WebSocket/WebSocket'));
 
 // Set up Geolocation
 let navigator = global.navigator;
@@ -195,13 +195,13 @@ if (navigator === undefined) {
 
 // see https://github.com/facebook/react-native/issues/10881
 defineProperty(navigator, 'product', () => 'ReactNative', true);
-defineProperty(navigator, 'geolocation', () => require('Geolocation'));
+defineProperty(navigator, 'geolocation', () => require('../Geolocation/Geolocation'));
 
 // Set up collections
 // We can't make these lazy because `Map` checks for `global.Map` (which wouldc
 // not exist if it were lazily defined).
-defineProperty(global, 'Map', () => require('Map'), true);
-defineProperty(global, 'Set', () => require('Set'), true);
+defineProperty(global, 'Map', () => require('../vendor/core/Map'), true);
+defineProperty(global, 'Set', () => require('../vendor/core/Set'), true);
 
 // Set up devtools
 if (__DEV__) {
@@ -209,23 +209,23 @@ if (__DEV__) {
     // not when debugging in chrome
     // TODO(t12832058) This check is broken
     if (!window.document) {
-      require('setupDevtools');
+      require('./Devtools/setupDevtools');
     }
 
-    require('RCTDebugComponentOwnership');
+    require('../DebugComponentHierarchy/RCTDebugComponentOwnership');
   }
 }
 
 // Set up inspector
 if (__DEV__) {
   if (!global.__RCTProfileIsProfiling) {
-    const JSInspector = require('JSInspector');
-    JSInspector.registerAgent(require('NetworkAgent'));
+    const JSInspector = require('../JSInspector/JSInspector');
+    JSInspector.registerAgent(require('../JSInspector/NetworkAgent'));
   }
 }
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
 // been initialized before requiring them.
-require('RCTDeviceEventEmitter');
-require('RCTNativeAppEventEmitter');
-require('PerformanceLogger');
+require('../EventEmitter/RCTDeviceEventEmitter');
+require('../EventEmitter/RCTNativeAppEventEmitter');
+require('../Utilities/PerformanceLogger');

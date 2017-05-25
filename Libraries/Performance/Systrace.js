@@ -32,7 +32,7 @@ let _asyncCookie = 0;
 
 const ReactSystraceDevtool = __DEV__ ? {
   onBeforeMountComponent(debugID) {
-    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
+    const ReactComponentTreeHook = require('../Renderer/src/renderers/shared/ReactGlobalSharedState').ReactComponentTreeHook;
     const displayName = ReactComponentTreeHook.getDisplayName(debugID);
     Systrace.beginEvent(`ReactReconciler.mountComponent(${displayName})`);
   },
@@ -40,7 +40,7 @@ const ReactSystraceDevtool = __DEV__ ? {
     Systrace.endEvent();
   },
   onBeforeUpdateComponent(debugID) {
-    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
+    const ReactComponentTreeHook = require('../Renderer/src/renderers/shared/ReactGlobalSharedState').ReactComponentTreeHook;
     const displayName = ReactComponentTreeHook.getDisplayName(debugID);
     Systrace.beginEvent(`ReactReconciler.updateComponent(${displayName})`);
   },
@@ -48,7 +48,7 @@ const ReactSystraceDevtool = __DEV__ ? {
     Systrace.endEvent();
   },
   onBeforeUnmountComponent(debugID) {
-    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
+    const ReactComponentTreeHook = require('../Renderer/src/renderers/shared/ReactGlobalSharedState').ReactComponentTreeHook;
     const displayName = ReactComponentTreeHook.getDisplayName(debugID);
     Systrace.beginEvent(`ReactReconciler.unmountComponent(${displayName})`);
   },
@@ -56,7 +56,7 @@ const ReactSystraceDevtool = __DEV__ ? {
     Systrace.endEvent();
   },
   onBeginLifeCycleTimer(debugID, timerType) {
-    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
+    const ReactComponentTreeHook = require('../Renderer/src/renderers/shared/ReactGlobalSharedState').ReactComponentTreeHook;
     const displayName = ReactComponentTreeHook.getDisplayName(debugID);
     Systrace.beginEvent(`${displayName}.${timerType}()`);
   },
@@ -71,10 +71,10 @@ const Systrace = {
       if (__DEV__) {
         if (enabled) {
           global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JSC_CALLS);
-          require('ReactDebugTool').addHook(ReactSystraceDevtool);
+          require('../Renderer/src/renderers/shared/ReactDebugTool').addHook(ReactSystraceDevtool);
         } else {
           global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JSC_CALLS);
-          require('ReactDebugTool').removeHook(ReactSystraceDevtool);
+          require('../Renderer/src/renderers/shared/ReactDebugTool').removeHook(ReactSystraceDevtool);
         }
       }
       _enabled = enabled;

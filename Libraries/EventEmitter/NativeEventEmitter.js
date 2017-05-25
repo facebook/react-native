@@ -11,9 +11,9 @@
  */
 'use strict';
 
-const EventEmitter = require('EventEmitter');
-const Platform = require('Platform');
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const EventEmitter = require('./EventEmitter');
+const Platform = require('../Utilities/Platform');
+const RCTDeviceEventEmitter = require('./RCTDeviceEventEmitter');
 const invariant = require('fbjs/lib/invariant');
 
 import type EmitterSubscription from 'EmitterSubscription';

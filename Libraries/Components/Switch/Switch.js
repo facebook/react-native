@@ -11,15 +11,15 @@
  */
 'use strict';
 
-var ColorPropType = require('ColorPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var Platform = require('Platform');
-var React = require('React');
+var ColorPropType = require('../../StyleSheet/ColorPropType');
+var NativeMethodsMixin = require('../../Renderer/src/renderers/native/NativeMethodsMixin');
+var Platform = require('../../Utilities/Platform');
+var React = require('../../react-native/React');
 const PropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
-const ViewPropTypes = require('ViewPropTypes');
+var StyleSheet = require('../../StyleSheet/StyleSheet');
+const ViewPropTypes = require('../View/ViewPropTypes');
 
-var requireNativeComponent = require('requireNativeComponent');
+var requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
 type DefaultProps = {
   value: boolean,

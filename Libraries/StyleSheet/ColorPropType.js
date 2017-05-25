@@ -10,7 +10,7 @@
  */
 'use strict';
 
-var normalizeColor = require('normalizeColor');
+var normalizeColor = require('./normalizeColor');
 
 var colorPropType = function(isRequired, props, propName, componentName, location, propFullName) {
   var color = props[propName];

@@ -11,9 +11,9 @@
  */
 'use strict';
 
-const Animated = require('Animated');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
+const Animated = require('../../Animated/src/Animated');
+const React = require('../../react-native/React');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
 
 type Props = {
   children?: React.Element<*>,

@@ -16,7 +16,7 @@
 var debugTool = ((null: any): typeof ReactDebugTool);
 
 if (__DEV__) {
-  var ReactDebugTool = require('ReactDebugTool');
+  var ReactDebugTool = require('./ReactDebugTool');
   debugTool = ReactDebugTool;
 }
 

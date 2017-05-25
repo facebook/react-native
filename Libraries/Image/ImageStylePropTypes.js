@@ -11,13 +11,13 @@
  */
 'use strict';
 
-var ImageResizeMode = require('ImageResizeMode');
-var LayoutPropTypes = require('LayoutPropTypes');
-var ColorPropType = require('ColorPropType');
-var ShadowPropTypesIOS = require('ShadowPropTypesIOS');
-var TransformPropTypes = require('TransformPropTypes');
+var ImageResizeMode = require('./ImageResizeMode');
+var LayoutPropTypes = require('../StyleSheet/LayoutPropTypes');
+var ColorPropType = require('../StyleSheet/ColorPropType');
+var ShadowPropTypesIOS = require('../Components/View/ShadowPropTypesIOS');
+var TransformPropTypes = require('../StyleSheet/TransformPropTypes');
 
-var ReactPropTypes = require('React').PropTypes;
+var ReactPropTypes = require('../react-native/React').PropTypes;
 
 var ImageStylePropTypes = {
   ...LayoutPropTypes,

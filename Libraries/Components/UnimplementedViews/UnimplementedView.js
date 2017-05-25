@@ -11,8 +11,8 @@
  */
 'use strict';
 
-var React = require('React');
-var StyleSheet = require('StyleSheet');
+var React = require('../../react-native/React');
+var StyleSheet = require('../../StyleSheet/StyleSheet');
 
 /**
  * Common implementation for a simple stubbed view. Simply applies the view's styles to the inner
@@ -27,7 +27,7 @@ class UnimplementedView extends React.Component {
 
   render() {
     // Workaround require cycle from requireNativeComponent
-    var View = require('View');
+    var View = require('../View/View');
     return (
       <View style={[styles.unimplementedView, this.props.style]}>
         {this.props.children}

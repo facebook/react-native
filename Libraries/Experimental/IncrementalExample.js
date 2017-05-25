@@ -22,11 +22,11 @@ const {
   View,
 } = ReactNative;
 
-const Incremental = require('Incremental');
-const IncrementalGroup = require('IncrementalGroup');
-const IncrementalPresenter = require('IncrementalPresenter');
+const Incremental = require('./Incremental');
+const IncrementalGroup = require('./IncrementalGroup');
+const IncrementalPresenter = require('./IncrementalPresenter');
 
-const JSEventLoopWatchdog = require('JSEventLoopWatchdog');
+const JSEventLoopWatchdog = require('../Interaction/JSEventLoopWatchdog');
 
 const performanceNow = require('fbjs/lib/performanceNow');
 

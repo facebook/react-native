@@ -11,10 +11,10 @@
  */
 'use strict';
 
-var ReactNativePropRegistry = require('ReactNativePropRegistry');
+var ReactNativePropRegistry = require('./ReactNativePropRegistry');
 
-var deepDiffer = require('deepDiffer');
-var flattenStyle = require('flattenStyle');
+var deepDiffer = require('../../../../Utilities/differ/deepDiffer');
+var flattenStyle = require('../../../../StyleSheet/flattenStyle');
 
 var emptyObject = {};
 

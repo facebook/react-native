@@ -17,20 +17,20 @@
  * ensures it exists in the dependency graph and can be `require`d.
  * TODO: require this in packager, not in React #10932517
  */
-require('InitializeCore');
+require('../../../../Core/InitializeCore');
 
 var React = require('react');
-var ReactComponentEnvironment = require('ReactComponentEnvironment');
-var ReactDefaultBatchingStrategy = require('ReactDefaultBatchingStrategy');
-var ReactEmptyComponent = require('ReactEmptyComponent');
-var ReactGenericBatching = require('ReactGenericBatching');
-var ReactHostComponent = require('ReactHostComponent');
-var ReactNativeComponentEnvironment = require('ReactNativeComponentEnvironment');
-var ReactNativeTextComponent = require('ReactNativeTextComponent');
-var ReactSimpleEmptyComponent = require('ReactSimpleEmptyComponent');
-var ReactUpdates = require('ReactUpdates');
+var ReactComponentEnvironment = require('../shared/stack/reconciler/ReactComponentEnvironment');
+var ReactDefaultBatchingStrategy = require('../shared/stack/reconciler/ReactDefaultBatchingStrategy');
+var ReactEmptyComponent = require('../shared/stack/reconciler/ReactEmptyComponent');
+var ReactGenericBatching = require('../shared/shared/event/ReactGenericBatching');
+var ReactHostComponent = require('../shared/stack/reconciler/ReactHostComponent');
+var ReactNativeComponentEnvironment = require('./ReactNativeComponentEnvironment');
+var ReactNativeTextComponent = require('./ReactNativeTextComponent');
+var ReactSimpleEmptyComponent = require('../shared/stack/reconciler/ReactSimpleEmptyComponent');
+var ReactUpdates = require('../shared/stack/reconciler/ReactUpdates');
 
-var findNodeHandle = require('findNodeHandle');
+var findNodeHandle = require('./findNodeHandle');
 var invariant = require('fbjs/lib/invariant');
 
 function inject() {
@@ -50,7 +50,7 @@ function inject() {
 
   var EmptyComponent = instantiate => {
     // Can't import View at the top because it depends on React to make its composite
-    var View = require('View');
+    var View = require('../../../../Components/View/View');
     return new ReactSimpleEmptyComponent(
       React.createElement(View, {
         collapsable: true,

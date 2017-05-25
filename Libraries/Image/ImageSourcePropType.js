@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const {PropTypes} = require('React');
+const {PropTypes} = require('../react-native/React');
 
 const ImageURISourcePropType = PropTypes.shape({
   /**

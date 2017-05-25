@@ -12,7 +12,7 @@
 'use strict';
 
 const EventTarget = require('event-target-shim');
-const RCTNetworking = require('RCTNetworking');
+const RCTNetworking = require('./RCTNetworking');
 
 const base64 = require('base64-js');
 const invariant = require('fbjs/lib/invariant');

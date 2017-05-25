@@ -11,8 +11,8 @@
 
 'use strict';
 
-var ReactUpdates = require('ReactUpdates');
-var Transaction = require('Transaction');
+var ReactUpdates = require('./ReactUpdates');
+var Transaction = require('./Transaction');
 
 var emptyFunction = require('fbjs/lib/emptyFunction');
 

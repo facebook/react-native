@@ -11,10 +11,10 @@
  */
 'use strict';
 
-const Map = require('Map');
-const NativeEventEmitter = require('NativeEventEmitter');
-const NativeModules = require('NativeModules');
-const Platform = require('Platform');
+const Map = require('../vendor/core/Map');
+const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+const NativeModules = require('../BatchedBridge/NativeModules');
+const Platform = require('../Utilities/Platform');
 const RCTNetInfo = NativeModules.NetInfo;
 
 const NetInfoEventEmitter = new NativeEventEmitter(RCTNetInfo);

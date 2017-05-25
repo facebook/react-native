@@ -11,9 +11,9 @@
  */
 'use strict';
 
-var PropTypes = require('React').PropTypes;
+var PropTypes = require('../react-native/React').PropTypes;
 
-var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
+var createStrictShapeTypeChecker = require('../Utilities/createStrictShapeTypeChecker');
 
 var PointPropType = createStrictShapeTypeChecker({
   x: PropTypes.number,

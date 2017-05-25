@@ -11,25 +11,25 @@
  */
 'use strict';
 
-var ImageResizeMode = require('ImageResizeMode');
-var ImageStylePropTypes = require('ImageStylePropTypes');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
-var React = require('React');
+var ImageResizeMode = require('./ImageResizeMode');
+var ImageStylePropTypes = require('./ImageStylePropTypes');
+var NativeMethodsMixin = require('../Renderer/src/renderers/native/NativeMethodsMixin');
+var NativeModules = require('../BatchedBridge/NativeModules');
+var React = require('../react-native/React');
 var PropTypes = require('prop-types');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var Set = require('Set');
-var StyleSheet = require('StyleSheet');
-var StyleSheetPropType = require('StyleSheetPropType');
-var View = require('View');
-var ViewPropTypes = require('ViewPropTypes');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+var ReactNativeViewAttributes = require('../Components/View/ReactNativeViewAttributes');
+var Set = require('../vendor/core/Set');
+var StyleSheet = require('../StyleSheet/StyleSheet');
+var StyleSheetPropType = require('../StyleSheet/StyleSheetPropType');
+var View = require('../Components/View/View');
+var ViewPropTypes = require('../Components/View/ViewPropTypes');
+var ViewStylePropTypes = require('../Components/View/ViewStylePropTypes');
 
 var filterObject = require('fbjs/lib/filterObject');
-var flattenStyle = require('flattenStyle');
-var merge = require('merge');
-var requireNativeComponent = require('requireNativeComponent');
-var resolveAssetSource = require('resolveAssetSource');
+var flattenStyle = require('../StyleSheet/flattenStyle');
+var merge = require('../vendor/core/merge');
+var requireNativeComponent = require('../ReactNative/requireNativeComponent');
+var resolveAssetSource = require('./resolveAssetSource');
 
 var {
   ImageLoader,

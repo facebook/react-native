@@ -12,8 +12,8 @@
 
 'use strict';
 
-var KeyEscapeUtils = require('KeyEscapeUtils');
-var traverseStackChildren = require('traverseStackChildren');
+var KeyEscapeUtils = require('../../../../shared/utils/KeyEscapeUtils');
+var traverseStackChildren = require('./traverseStackChildren');
 var warning = require('fbjs/lib/warning');
 
 var ReactComponentTreeHook;
@@ -28,7 +28,7 @@ if (
   // https://github.com/facebook/react/issues/7240
   // Remove the inline requires when we don't need them anymore:
   // https://github.com/facebook/react/pull/7178
-  ReactComponentTreeHook = require('ReactGlobalSharedState')
+  ReactComponentTreeHook = require('../../ReactGlobalSharedState')
     .ReactComponentTreeHook;
 }
 
@@ -50,7 +50,7 @@ function flattenSingleChildIntoContext(
     const keyUnique = result[name] === undefined;
     if (__DEV__) {
       if (!ReactComponentTreeHook) {
-        ReactComponentTreeHook = require('ReactGlobalSharedState')
+        ReactComponentTreeHook = require('../../ReactGlobalSharedState')
           .ReactComponentTreeHook;
       }
       if (!keyUnique) {

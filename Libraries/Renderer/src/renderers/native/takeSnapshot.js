@@ -11,8 +11,8 @@
  */
 'use strict';
 
-var ReactNative = require('ReactNative');
-var UIManager = require('UIManager');
+var ReactNative = require('./ReactNative');
+var UIManager = require('../../../../ReactNative/UIManager');
 
 import type {Element} from 'React';
 

@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var AnimatedImplementation = require('AnimatedImplementation');
+var AnimatedImplementation = require('./AnimatedImplementation');
 
 module.exports = {
   ...AnimatedImplementation,

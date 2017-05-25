@@ -11,12 +11,12 @@
  */
 'use strict';
 
-const IncrementalGroup = require('IncrementalGroup');
-const React = require('React');
+const IncrementalGroup = require('./IncrementalGroup');
+const React = require('../react-native/React');
 const PropTypes = require('prop-types');
-const View = require('View');
+const View = require('../Components/View/View');
 
-const ViewPropTypes = require('ViewPropTypes');
+const ViewPropTypes = require('../Components/View/ViewPropTypes');
 
 import type {Context} from 'Incremental';
 

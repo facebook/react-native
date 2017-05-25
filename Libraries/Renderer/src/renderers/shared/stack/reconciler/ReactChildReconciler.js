@@ -11,13 +11,13 @@
 
 'use strict';
 
-var KeyEscapeUtils = require('KeyEscapeUtils');
-var ReactFeatureFlags = require('ReactFeatureFlags');
-var ReactReconciler = require('ReactReconciler');
+var KeyEscapeUtils = require('../../../../shared/utils/KeyEscapeUtils');
+var ReactFeatureFlags = require('../../utils/ReactFeatureFlags');
+var ReactReconciler = require('./ReactReconciler');
 
-var instantiateReactComponent = require('instantiateReactComponent');
-var shouldUpdateReactComponent = require('shouldUpdateReactComponent');
-var traverseStackChildren = require('traverseStackChildren');
+var instantiateReactComponent = require('./instantiateReactComponent');
+var shouldUpdateReactComponent = require('../../shared/shouldUpdateReactComponent');
+var traverseStackChildren = require('./traverseStackChildren');
 var warning = require('fbjs/lib/warning');
 
 var ReactComponentTreeHook;
@@ -32,7 +32,7 @@ if (
   // https://github.com/facebook/react/issues/7240
   // Remove the inline requires when we don't need them anymore:
   // https://github.com/facebook/react/pull/7178
-  ReactComponentTreeHook = require('ReactGlobalSharedState')
+  ReactComponentTreeHook = require('../../ReactGlobalSharedState')
     .ReactComponentTreeHook;
 }
 
@@ -41,7 +41,7 @@ function instantiateChild(childInstances, child, name, selfDebugID) {
   var keyUnique = childInstances[name] === undefined;
   if (__DEV__) {
     if (!ReactComponentTreeHook) {
-      ReactComponentTreeHook = require('ReactGlobalSharedState')
+      ReactComponentTreeHook = require('../../ReactGlobalSharedState')
         .ReactComponentTreeHook;
     }
     if (!keyUnique) {

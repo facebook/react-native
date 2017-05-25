@@ -10,4 +10,4 @@
  */
 'use strict';
 
-module.exports = require('UnimplementedView');
+module.exports = require('../Components/UnimplementedViews/UnimplementedView');

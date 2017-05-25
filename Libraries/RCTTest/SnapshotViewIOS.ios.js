@@ -11,16 +11,16 @@
  */
 'use strict';
 
-var React = require('React');
+var React = require('../react-native/React');
 const PropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
-var { TestModule } = require('NativeModules');
-var UIManager = require('UIManager');
-var View = require('View');
+var StyleSheet = require('../StyleSheet/StyleSheet');
+var { TestModule } = require('../BatchedBridge/NativeModules');
+var UIManager = require('../ReactNative/UIManager');
+var View = require('../Components/View/View');
 
-const ViewPropTypes = require('ViewPropTypes');
+const ViewPropTypes = require('../Components/View/ViewPropTypes');
 
-var requireNativeComponent = require('requireNativeComponent');
+var requireNativeComponent = require('../ReactNative/requireNativeComponent');
 
 class SnapshotViewIOS extends React.Component {
   props: {

@@ -24,9 +24,9 @@ var {
   reconcileChildFibers,
   reconcileChildFibersInPlace,
   cloneChildFibers,
-} = require('ReactChildFiber');
-var {beginUpdateQueue} = require('ReactFiberUpdateQueue');
-var ReactTypeOfWork = require('ReactTypeOfWork');
+} = require('./ReactChildFiber');
+var {beginUpdateQueue} = require('./ReactFiberUpdateQueue');
+var ReactTypeOfWork = require('../../../shared/ReactTypeOfWork');
 var {
   getMaskedContext,
   getUnmaskedContext,
@@ -34,7 +34,7 @@ var {
   pushContextProvider,
   pushTopLevelContextObject,
   invalidateContextProvider,
-} = require('ReactFiberContext');
+} = require('./ReactFiberContext');
 var {
   IndeterminateComponent,
   FunctionalComponent,
@@ -48,15 +48,15 @@ var {
   YieldComponent,
   Fragment,
 } = ReactTypeOfWork;
-var {NoWork, OffscreenPriority} = require('ReactPriorityLevel');
-var {Placement, ContentReset, Err, Ref} = require('ReactTypeOfSideEffect');
-var ReactFiberClassComponent = require('ReactFiberClassComponent');
-var {ReactCurrentOwner} = require('ReactGlobalSharedState');
+var {NoWork, OffscreenPriority} = require('./ReactPriorityLevel');
+var {Placement, ContentReset, Err, Ref} = require('./ReactTypeOfSideEffect');
+var ReactFiberClassComponent = require('./ReactFiberClassComponent');
+var {ReactCurrentOwner} = require('../ReactGlobalSharedState');
 var invariant = require('fbjs/lib/invariant');
 
 if (__DEV__) {
-  var ReactDebugCurrentFiber = require('ReactDebugCurrentFiber');
-  var {cancelWorkTimer} = require('ReactDebugFiberPerf');
+  var ReactDebugCurrentFiber = require('./ReactDebugCurrentFiber');
+  var {cancelWorkTimer} = require('./ReactDebugFiberPerf');
   var warning = require('fbjs/lib/warning');
 
   var warnedAboutStatelessRefs = {};

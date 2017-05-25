@@ -12,16 +12,16 @@
  */
 'use strict';
 
-var InteractionManager = require('InteractionManager');
-var Interpolation = require('Interpolation');
-var NativeAnimatedHelper = require('NativeAnimatedHelper');
-var React = require('React');
-var ReactNative = require('ReactNative');
-var Set = require('Set');
-var SpringConfig = require('SpringConfig');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+var InteractionManager = require('../../Interaction/InteractionManager');
+var Interpolation = require('./Interpolation');
+var NativeAnimatedHelper = require('./NativeAnimatedHelper');
+var React = require('../../react-native/React');
+var ReactNative = require('../../Renderer/src/renderers/native/ReactNative');
+var Set = require('../../vendor/core/Set');
+var SpringConfig = require('./SpringConfig');
+var ViewStylePropTypes = require('../../Components/View/ViewStylePropTypes');
 
-var flattenStyle = require('flattenStyle');
+var flattenStyle = require('../../StyleSheet/flattenStyle');
 var invariant = require('fbjs/lib/invariant');
 var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
 
@@ -247,7 +247,7 @@ type TimingAnimationConfigSingle = AnimationConfig & {
 let _easeInOut;
 function easeInOut() {
   if (!_easeInOut) {
-    const Easing = require('Easing');
+    const Easing = require('./Easing');
     _easeInOut = Easing.inOut(Easing.ease);
   }
   return _easeInOut;

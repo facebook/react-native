@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
+const BatchedBridge = require('../BatchedBridge/BatchedBridge');
 
 const invariant = require('fbjs/lib/invariant');
 

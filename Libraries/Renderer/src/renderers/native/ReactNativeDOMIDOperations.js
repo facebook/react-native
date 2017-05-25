@@ -10,8 +10,8 @@
  */
 'use strict';
 
-var ReactNativeComponentTree = require('ReactNativeComponentTree');
-var UIManager = require('UIManager');
+var ReactNativeComponentTree = require('./ReactNativeComponentTree');
+var UIManager = require('../../../../ReactNative/UIManager');
 
 /**
  * Updates a component's children by processing a series of updates.

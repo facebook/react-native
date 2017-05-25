@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const InteractionManager = require('InteractionManager');
+const InteractionManager = require('./InteractionManager');
 
 /**
  * A simple class for batching up invocations of a low-pri callback. A timeout is set to run the

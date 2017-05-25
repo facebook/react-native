@@ -11,11 +11,11 @@
  */
 'use strict';
 
-const NativeEventEmitter = require('NativeEventEmitter');
-const Platform = require('Platform');
-const RCTWebSocketModule = require('NativeModules').WebSocketModule;
-const WebSocketEvent = require('WebSocketEvent');
-const binaryToBase64 = require('binaryToBase64');
+const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+const Platform = require('../Utilities/Platform');
+const RCTWebSocketModule = require('../BatchedBridge/NativeModules').WebSocketModule;
+const WebSocketEvent = require('./WebSocketEvent');
+const binaryToBase64 = require('../Utilities/binaryToBase64');
 
 const EventTarget = require('event-target-shim');
 const base64 = require('base64-js');

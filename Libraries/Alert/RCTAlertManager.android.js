@@ -10,7 +10,7 @@
 */
 'use strict';
 
-var NativeModules = require('NativeModules');
+var NativeModules = require('../BatchedBridge/NativeModules');
 
 function emptyCallback() {}
 

@@ -11,8 +11,8 @@
  */
 'use strict';
 
-var ColorPropType = require('ColorPropType');
-var ReactPropTypes = require('React').PropTypes;
+var ColorPropType = require('../../StyleSheet/ColorPropType');
+var ReactPropTypes = require('../../react-native/React').PropTypes;
 
 var ShadowPropTypesIOS = {
   /**

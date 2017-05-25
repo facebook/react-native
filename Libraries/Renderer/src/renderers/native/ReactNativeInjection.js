@@ -17,17 +17,17 @@
  * ensures it exists in the dependency graph and can be `require`d.
  * TODO: require this in packager, not in React #10932517
  */
-require('InitializeCore');
+require('../../../../Core/InitializeCore');
 
-var EventPluginHub = require('EventPluginHub');
-var EventPluginUtils = require('EventPluginUtils');
-var RCTEventEmitter = require('RCTEventEmitter');
-var ReactNativeBridgeEventPlugin = require('ReactNativeBridgeEventPlugin');
-var ReactNativeComponentTree = require('ReactNativeComponentTree');
-var ReactNativeEventEmitter = require('ReactNativeEventEmitter');
-var ReactNativeEventPluginOrder = require('ReactNativeEventPluginOrder');
-var ReactNativeGlobalResponderHandler = require('ReactNativeGlobalResponderHandler');
-var ResponderEventPlugin = require('ResponderEventPlugin');
+var EventPluginHub = require('../shared/shared/event/EventPluginHub');
+var EventPluginUtils = require('../shared/shared/event/EventPluginUtils');
+var RCTEventEmitter = require('../../../../EventEmitter/RCTEventEmitter');
+var ReactNativeBridgeEventPlugin = require('./ReactNativeBridgeEventPlugin');
+var ReactNativeComponentTree = require('./ReactNativeComponentTree');
+var ReactNativeEventEmitter = require('./ReactNativeEventEmitter');
+var ReactNativeEventPluginOrder = require('./ReactNativeEventPluginOrder');
+var ReactNativeGlobalResponderHandler = require('./ReactNativeGlobalResponderHandler');
+var ResponderEventPlugin = require('../shared/shared/event/eventPlugins/ResponderEventPlugin');
 
 function inject() {
   /**

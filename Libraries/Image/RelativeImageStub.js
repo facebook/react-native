@@ -14,7 +14,7 @@
 // This is a stub for flow to make it understand require('./icon.png')
 // See packager/src/Bundler/index.js
 
-var AssetRegistry = require('AssetRegistry');
+var AssetRegistry = require('./AssetRegistry');
 
 module.exports = AssetRegistry.registerAsset({
   __packager_asset: true,

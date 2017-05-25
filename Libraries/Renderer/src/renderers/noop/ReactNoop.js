@@ -22,12 +22,12 @@
 import type { Fiber } from 'ReactFiber';
 import type { UpdateQueue } from 'ReactFiberUpdateQueue';
 
-var ReactFiberInstrumentation = require('ReactFiberInstrumentation');
-var ReactFiberReconciler = require('ReactFiberReconciler');
-var ReactInstanceMap = require('ReactInstanceMap');
+var ReactFiberInstrumentation = require('../shared/fiber/ReactFiberInstrumentation');
+var ReactFiberReconciler = require('../shared/fiber/ReactFiberReconciler');
+var ReactInstanceMap = require('../shared/shared/ReactInstanceMap');
 var {
   AnimationPriority,
-} = require('ReactPriorityLevel');
+} = require('../shared/fiber/ReactPriorityLevel');
 var emptyObject = require('fbjs/lib/emptyObject');
 
 const UPDATE_SIGNAL = {};

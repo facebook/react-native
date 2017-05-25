@@ -12,14 +12,14 @@
 
 'use strict';
 
-var ReactTypeOfWork = require('ReactTypeOfWork');
+var ReactTypeOfWork = require('./ReactTypeOfWork');
 var {
   IndeterminateComponent,
   FunctionalComponent,
   ClassComponent,
   HostComponent,
 } = ReactTypeOfWork;
-var getComponentName = require('getComponentName');
+var getComponentName = require('./utils/getComponentName');
 
 import type {Fiber} from 'ReactFiber';
 

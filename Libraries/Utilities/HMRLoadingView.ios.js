@@ -12,8 +12,8 @@
 
 'use strict';
 
-const processColor = require('processColor');
-const { DevLoadingView } = require('NativeModules');
+const processColor = require('../StyleSheet/processColor');
+const { DevLoadingView } = require('../BatchedBridge/NativeModules');
 
 class HMRLoadingView {
   static showMessage(message: string) {

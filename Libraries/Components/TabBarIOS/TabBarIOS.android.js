@@ -12,10 +12,10 @@
 
 'use strict';
 
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const TabBarItemIOS = require('TabBarItemIOS');
-const View = require('View');
+const React = require('../../react-native/React');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const TabBarItemIOS = require('./TabBarItemIOS');
+const View = require('../View/View');
 
 class DummyTabBarIOS extends React.Component {
   static Item = TabBarItemIOS;

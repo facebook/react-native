@@ -11,26 +11,26 @@
  */
 'use strict';
 
-var ActivityIndicator = require('ActivityIndicator');
-var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var React = require('React');
+var ActivityIndicator = require('../ActivityIndicator/ActivityIndicator');
+var EdgeInsetsPropType = require('../../StyleSheet/EdgeInsetsPropType');
+var React = require('../../react-native/React');
 var PropTypes = require('prop-types');
-var ReactNative = require('ReactNative');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var UIManager = require('UIManager');
-var View = require('View');
-var ViewPropTypes = require('ViewPropTypes');
-var ScrollView = require('ScrollView');
+var ReactNative = require('../../Renderer/src/renderers/native/ReactNative');
+var StyleSheet = require('../../StyleSheet/StyleSheet');
+var Text = require('../../Text/Text');
+var UIManager = require('../../ReactNative/UIManager');
+var View = require('../View/View');
+var ViewPropTypes = require('../View/ViewPropTypes');
+var ScrollView = require('../ScrollView/ScrollView');
 
-var deprecatedPropType = require('deprecatedPropType');
+var deprecatedPropType = require('../../Utilities/deprecatedPropType');
 var invariant = require('fbjs/lib/invariant');
 var keyMirror = require('fbjs/lib/keyMirror');
-var processDecelerationRate = require('processDecelerationRate');
-var requireNativeComponent = require('requireNativeComponent');
-var resolveAssetSource = require('resolveAssetSource');
+var processDecelerationRate = require('../ScrollView/processDecelerationRate');
+var requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+var resolveAssetSource = require('../../Image/resolveAssetSource');
 
-var RCTWebViewManager = require('NativeModules').WebViewManager;
+var RCTWebViewManager = require('../../BatchedBridge/NativeModules').WebViewManager;
 
 var BGWASH = 'rgba(255,255,255,0.8)';
 var RCT_WEBVIEW_REF = 'webview';

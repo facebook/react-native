@@ -12,10 +12,10 @@
 
 'use strict';
 
-var ReactInvalidSetStateWarningHook = require('ReactInvalidSetStateWarningHook');
-var ReactHostOperationHistoryHook = require('ReactHostOperationHistoryHook');
+var ReactInvalidSetStateWarningHook = require('./hooks/ReactInvalidSetStateWarningHook');
+var ReactHostOperationHistoryHook = require('./hooks/ReactHostOperationHistoryHook');
 var ExecutionEnvironment = require('fbjs/lib/ExecutionEnvironment');
-var {ReactComponentTreeHook} = require('ReactGlobalSharedState');
+var {ReactComponentTreeHook} = require('./ReactGlobalSharedState');
 
 var performanceNow = require('fbjs/lib/performanceNow');
 var warning = require('fbjs/lib/warning');

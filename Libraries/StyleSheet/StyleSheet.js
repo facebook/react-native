@@ -11,12 +11,12 @@
  */
 'use strict';
 
-var PixelRatio = require('PixelRatio');
-var ReactNativePropRegistry = require('ReactNativePropRegistry');
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-var StyleSheetValidation = require('StyleSheetValidation');
+var PixelRatio = require('../Utilities/PixelRatio');
+var ReactNativePropRegistry = require('../Renderer/src/renderers/native/ReactNativePropRegistry');
+var ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+var StyleSheetValidation = require('./StyleSheetValidation');
 
-var flatten = require('flattenStyle');
+var flatten = require('./flattenStyle');
 
 export type Styles = {[key: string]: Object};
 export type StyleSheet<S: Styles> = {[key: $Keys<S>]: number};

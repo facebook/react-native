@@ -14,13 +14,13 @@
 
 'use strict';
 
-const ErrorUtils = require('ErrorUtils');
-const JSTimersExecution = require('JSTimersExecution');
-const Systrace = require('Systrace');
+const ErrorUtils = require('../Core/ErrorUtils');
+const JSTimersExecution = require('../Core/Timers/JSTimersExecution');
+const Systrace = require('../Performance/Systrace');
 
-const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
+const deepFreezeAndThrowOnMutationInDev = require('../Utilities/deepFreezeAndThrowOnMutationInDev');
 const invariant = require('fbjs/lib/invariant');
-const stringifySafe = require('stringifySafe');
+const stringifySafe = require('../Utilities/stringifySafe');
 
 export type SpyData = {
   type: number,

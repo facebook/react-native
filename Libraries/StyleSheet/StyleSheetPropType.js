@@ -11,8 +11,8 @@
  */
 'use strict';
 
-var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
-var flattenStyle = require('flattenStyle');
+var createStrictShapeTypeChecker = require('../Utilities/createStrictShapeTypeChecker');
+var flattenStyle = require('./flattenStyle');
 
 function StyleSheetPropType(
   shape: {[key: string]: ReactPropsCheckType}

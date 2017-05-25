@@ -11,19 +11,19 @@
  */
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
-const React = require('React');
+const EdgeInsetsPropType = require('../../StyleSheet/EdgeInsetsPropType');
+const React = require('../../react-native/React');
 const PropTypes = require('prop-types');
 const TimerMixin = require('react-timer-mixin');
-const Touchable = require('Touchable');
+const Touchable = require('./Touchable');
 
-const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+const ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
 const warning = require('fbjs/lib/warning');
 
 const {
   AccessibilityComponentTypes,
   AccessibilityTraits,
-} = require('ViewAccessibility');
+} = require('../View/ViewAccessibility');
 
 type Event = Object;
 

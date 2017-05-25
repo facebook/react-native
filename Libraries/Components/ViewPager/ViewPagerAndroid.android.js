@@ -11,14 +11,14 @@
  */
 'use strict';
 
-var React = require('React');
+var React = require('../../react-native/React');
 var PropTypes = require('prop-types');
-var ReactNative = require('ReactNative');
-var UIManager = require('UIManager');
-var ViewPropTypes = require('ViewPropTypes');
+var ReactNative = require('../../Renderer/src/renderers/native/ReactNative');
+var UIManager = require('../../ReactNative/UIManager');
+var ViewPropTypes = require('../View/ViewPropTypes');
 
-var dismissKeyboard = require('dismissKeyboard');
-var requireNativeComponent = require('requireNativeComponent');
+var dismissKeyboard = require('../../Utilities/dismissKeyboard');
+var requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
 var VIEWPAGER_REF = 'viewPager';
 

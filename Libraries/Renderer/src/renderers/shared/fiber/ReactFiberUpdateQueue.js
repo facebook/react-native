@@ -15,13 +15,13 @@
 import type {Fiber} from 'ReactFiber';
 import type {PriorityLevel} from 'ReactPriorityLevel';
 
-const {Callback: CallbackEffect} = require('ReactTypeOfSideEffect');
+const {Callback: CallbackEffect} = require('./ReactTypeOfSideEffect');
 
 const {
   NoWork,
   SynchronousPriority,
   TaskPriority,
-} = require('ReactPriorityLevel');
+} = require('./ReactPriorityLevel');
 
 const invariant = require('fbjs/lib/invariant');
 if (__DEV__) {

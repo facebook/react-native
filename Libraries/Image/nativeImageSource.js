@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const Platform = require('Platform');
+const Platform = require('../Utilities/Platform');
 
 type SourceSpec = {
   ios?: string,

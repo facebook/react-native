@@ -12,7 +12,7 @@
 
 'use strict';
 
-var ToastAndroid = require('ToastAndroid');
+var ToastAndroid = require('../Components/ToastAndroid/ToastAndroid');
 
 const TOAST_SHORT_DELAY = 2000;
 

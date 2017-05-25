@@ -11,9 +11,9 @@
  */
 'use strict';
 
-var EventPropagators = require('EventPropagators');
-var SyntheticEvent = require('SyntheticEvent');
-var UIManager = require('UIManager');
+var EventPropagators = require('../shared/shared/event/EventPropagators');
+var SyntheticEvent = require('../shared/shared/event/SyntheticEvent');
+var UIManager = require('../../../../ReactNative/UIManager');
 
 var warning = require('fbjs/lib/warning');
 

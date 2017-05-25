@@ -11,8 +11,8 @@
  */
 'use strict';
 
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTSettingsManager = require('NativeModules').SettingsManager;
+var RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
+var RCTSettingsManager = require('../BatchedBridge/NativeModules').SettingsManager;
 
 var invariant = require('fbjs/lib/invariant');
 
