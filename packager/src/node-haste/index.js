@@ -103,7 +103,7 @@ class DependencyGraph extends EventEmitter {
     return new JestHasteMap({
       extensions: opts.extensions.concat(opts.assetExts),
       forceNodeFilesystemAPI: opts.forceNodeFilesystemAPI,
-      ignorePattern: {test: opts.ignoreFilePath},
+      ignorePattern: opts.ignoreFilePath,
       maxWorkers: opts.maxWorkerCount,
       mocksPattern: '',
       name: 'react-native-packager-' + JEST_HASTE_MAP_CACHE_BREAKER,
