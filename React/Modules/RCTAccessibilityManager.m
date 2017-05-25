@@ -9,6 +9,7 @@
 
 #import "RCTAccessibilityManager.h"
 
+#import "RCTUIManager.h"
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
@@ -160,6 +161,16 @@ RCT_EXPORT_METHOD(setAccessibilityContentSizeMultipliers:(NSDictionary *)JSMulti
     multipliers[UIKitCategory] = m;
   }
   self.multipliers = multipliers;
+}
+
+RCT_EXPORT_METHOD(setAccessibilityFocus:(nonnull NSNumber *)reactTag)
+{
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+      UIView *view = viewRegistry[reactTag];
+      UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, view);
+    }];
+  });
 }
 
 RCT_EXPORT_METHOD(getMultiplier:(RCTResponseSenderBlock)callback)
