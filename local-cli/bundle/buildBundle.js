@@ -14,8 +14,9 @@
 const log = require('../util/log').out('bundle');
 const Server = require('../../packager/src/Server');
 const TerminalReporter = require('../../packager/src/lib/TerminalReporter');
+const TransformCaching = require('../../packager/src/lib/TransformCaching');
 
-const outputBundle = require('./output/bundle');
+const outputBundle = require('../../packager/src/shared/output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
 const defaultAssetExts = require('../../packager/defaults').assetExts;
@@ -91,6 +92,7 @@ function buildBundle(
       resetCache: args.resetCache,
       reporter: new TerminalReporter(),
       sourceExts: defaultSourceExts.concat(sourceExts),
+      transformCache: TransformCaching.useTempDir(),
       transformModulePath: transformModulePath,
       watch: false,
     };

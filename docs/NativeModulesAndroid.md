@@ -283,6 +283,60 @@ measureLayout();
 
 Native modules should not have any assumptions about what thread they are being called on, as the current assignment is subject to change in the future. If a blocking call is required, the heavy work should be dispatched to an internally managed worker thread, and any callbacks distributed from there.
 
+### Sending Events to JavaScript
+
+Native modules can signal events to JavaScript without being invoked directly. The easiest way to do this is to use the `RCTDeviceEventEmitter` which can be obtained from the `ReactContext` as in the code snippet below.
+
+```java
+...
+private void sendEvent(ReactContext reactContext,
+                       String eventName,
+                       @Nullable WritableMap params) {
+  reactContext
+      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+      .emit(eventName, params);
+}
+...
+WritableMap params = Arguments.createMap();
+...
+sendEvent(reactContext, "keyboardWillShow", params);
+```
+
+JavaScript modules can then register to receive events by `addListenerOn` using the `Subscribable` mixin.
+
+```js
+import { DeviceEventEmitter } from 'react-native';
+...
+
+var ScrollResponderMixin = {
+  mixins: [Subscribable.Mixin],
+
+
+  componentWillMount: function() {
+    ...
+    this.addListenerOn(DeviceEventEmitter,
+                       'keyboardWillShow',
+                       this.scrollResponderKeyboardWillShow);
+    ...
+  },
+  scrollResponderKeyboardWillShow:function(e: Event) {
+    this.keyboardWillOpenTo = e;
+    this.props.onKeyboardWillShow && this.props.onKeyboardWillShow(e);
+  },
+```
+
+You can also directly use the `DeviceEventEmitter` module to listen for events.
+
+```js
+...
+componentWillMount: function() {
+  DeviceEventEmitter.addListener('keyboardWillShow', function(e: Event) {
+    // handle event.
+  });
+}
+...
+```
+
 ### Getting activity result from `startActivityForResult`
 
 You'll need to listen to `onActivityResult` if you want to get results from an activity you started with `startActivityForResult`. To do this, you must extend `BaseActivityEventListener` or implement `ActivityEventListener`. The former is preferred as it is more resilient to API changes. Then, you need to register the listener in the module's constructor,

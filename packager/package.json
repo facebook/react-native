@@ -29,6 +29,7 @@
     "json5": "^0.4.0",
     "left-pad": "^1.1.3",
     "lodash": "^4.16.6",
+    "merge-stream": "^1.0.1",
     "mime-types": "2.1.11",
     "mkdirp": "^0.5.1",
     "request": "^2.79.0",

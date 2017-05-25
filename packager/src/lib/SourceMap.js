@@ -28,8 +28,9 @@ export type IndexMap = {
   version: number,
 };
 
+export type FBIndexMap = IndexMap & FBExtensions;
 export type SourceMap = IndexMap | MappingsMap;
-export type FBSourceMap = (IndexMap & FBExtensions) | (MappingsMap & FBExtensions);
+export type FBSourceMap = FBIndexMap | (MappingsMap & FBExtensions);
 
 function isMappingsMap(map: SourceMap)/*: %checks*/ {
   return map.mappings !== undefined;

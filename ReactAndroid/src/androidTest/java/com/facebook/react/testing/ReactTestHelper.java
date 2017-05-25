@@ -89,8 +89,9 @@ public class ReactTestHelper {
           .setRegistry(mNativeModuleRegistryBuilder.build())
           .setJSModuleRegistry(mJSModuleRegistryBuilder.build())
           .setJSBundleLoader(JSBundleLoader.createAssetLoader(
-                               mContext,
-                               "assets://AndroidTestBundle.js"))
+              mContext,
+              "assets://AndroidTestBundle.js",
+              false/* Asynchronous */))
           .setNativeModuleCallExceptionHandler(
             new NativeModuleCallExceptionHandler() {
                 @Override

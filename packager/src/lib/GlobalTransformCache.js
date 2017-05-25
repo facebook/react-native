@@ -27,7 +27,7 @@ import type {
   TransformOptionsStrict,
 } from '../JSTransformer/worker/worker';
 import type {LocalPath} from '../node-haste/lib/toLocalPath';
-import type {CachedResult, GetTransformCacheKey} from './TransformCache';
+import type {CachedResult, GetTransformCacheKey} from './TransformCaching';
 
 /**
  * The API that a global transform cache must comply with. To implement a
@@ -386,7 +386,7 @@ class OptionsHasher {
   hashTransformOptions(hash: crypto$Hash, options: TransformOptionsStrict): crypto$Hash {
     const {
       generateSourceMaps, dev, hot, inlineRequires, platform, projectRoot,
-      ...unknowns,
+      ...unknowns
     } = options;
     const unknownKeys = Object.keys(unknowns);
     if (unknownKeys.length > 0) {

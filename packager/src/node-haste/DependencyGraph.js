@@ -39,7 +39,7 @@ import type {
   Options as JSTransformerOptions,
 } from '../JSTransformer/worker/worker';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
-import type {GetTransformCacheKey} from '../lib/TransformCache';
+import type {GetTransformCacheKey} from '../lib/TransformCaching';
 import type {Reporter} from '../lib/reporting';
 import type {ModuleMap} from './DependencyGraph/ResolutionRequest';
 import type {Options as ModuleOptions, TransformCode} from './Module';
