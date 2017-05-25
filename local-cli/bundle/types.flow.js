@@ -10,41 +10,4 @@
  */
 'use strict';
 
-import type Bundle from '../../packager/src/Bundler/Bundle';
-import type {Unbundle} from '../../packager/src/Bundler/Bundle';
-import type ModuleTransport, {SourceMapOrMappings} from '../../packager/src/lib/ModuleTransport';
-import type {FBSourceMap, SourceMap} from '../../packager/src/lib/SourceMap';
-
-export type {Bundle, FBSourceMap, ModuleTransport, SourceMap, Unbundle};
-
-export type ModuleGroups = {|
-  groups: Map<number, Set<number>>,
-  modulesById: Map<number, ModuleTransportLike>,
-  modulesInGroups: Set<number>,
-|};
-
-export type ModuleTransportLike = {
-  +code: string,
-  +id: number,
-  +map: ?SourceMapOrMappings,
-  +name?: string,
-  +sourcePath: string,
-};
-
-export type OutputOptions = {
-  bundleOutput: string,
-  bundleEncoding?: 'utf8' | 'utf16le' | 'ascii',
-  dev?: boolean,
-  platform: string,
-  sourcemapOutput?: string,
-  sourcemapSourcesRoot?: string,
-  sourcemapUseAbsolutePath?: boolean,
-};
-
-export type RequestOptions = {|
-  entryFile: string,
-  sourceMapUrl?: string,
-  dev?: boolean,
-  minify: boolean,
-  platform: string,
-|};
+export type {OutputOptions, RequestOptions} from '../../packager/src/shared/types.flow';

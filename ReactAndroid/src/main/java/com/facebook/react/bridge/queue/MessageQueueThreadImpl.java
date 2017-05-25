@@ -161,14 +161,12 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
 
     if (UiThreadUtil.isOnUiThread()) {
       Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
-      MessageQueueThreadRegistry.register(mqt);
     } else {
       UiThreadUtil.runOnUiThread(
           new Runnable() {
             @Override
             public void run() {
               Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
-              MessageQueueThreadRegistry.register(mqt);
             }
           });
     }

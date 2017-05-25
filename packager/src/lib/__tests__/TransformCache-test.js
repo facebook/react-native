@@ -55,7 +55,7 @@ describe('TransformCache', () => {
   beforeEach(() => {
     jest.resetModules();
     mockFS.clear();
-    transformCache = new (require('../TransformCache'))();
+    transformCache = new (require('../TransformCache'))('/cache');
   });
 
   it('is caching different files and options separately', () => {

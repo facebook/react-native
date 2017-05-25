@@ -11,14 +11,14 @@
 
 'use strict';
 
-const Server = require('../../../packager/src/Server');
+const Server = require('../../Server');
 
 const meta = require('./meta');
-const relativizeSourceMap = require('../../../packager/src//lib/relativizeSourceMap');
+const relativizeSourceMap = require('../../lib/relativizeSourceMap');
 const writeFile = require('./writeFile');
 
-import type Bundle from '../../../packager/src/Bundler/Bundle';
-import type {SourceMap} from '../../../packager/src/lib/SourceMap';
+import type Bundle from '../../Bundler/Bundle';
+import type {SourceMap} from '../../lib/SourceMap';
 import type {OutputOptions, RequestOptions} from '../types.flow';
 
 function buildBundle(packagerClient: Server, requestOptions: RequestOptions) {

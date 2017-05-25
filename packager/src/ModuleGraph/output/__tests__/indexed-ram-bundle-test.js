@@ -26,14 +26,14 @@ let ids, modules, requireCall;
 const idForPath = ({path}) => getId(path);
 beforeAll(() => {
   modules = [
-    makeModule('a', 'script'),
-    makeModule('b'),
-    makeModule('c'),
-    makeModule('d'),
+    makeModule('a', [], 'script'),
+    makeModule('b', ['c']),
+    makeModule('c', ['f']),
+    makeModule('d', ['e']),
     makeModule('e'),
     makeModule('f'),
   ];
-  requireCall = makeModule('r', 'script', 'require(1);');
+  requireCall = makeModule('r', [], 'script', 'require(1);');
 
   ids = new Map(modules.map(({file}, i) => [file.path, i]));
   ({code, map} = createRamBundle());
@@ -79,7 +79,7 @@ it('creates a source map', () => {
   expect(map.x_facebook_offsets).toEqual([1, 2, 3, 4, 5, 6]);
 });
 
-describe('Optimization:', () => {
+describe('Startup section optimization', () => {
   let last, preloaded;
   beforeAll(() => {
     last = modules[modules.length - 1];
@@ -130,12 +130,62 @@ describe('Optimization:', () => {
           return section;
         }
     ));
-
   });
 });
 
-function createRamBundle(preloadedModules = new Set()) {
-  const build = indexedRamBundle.createBuilder(preloadedModules);
+describe('RAM groups / common sections', () => {
+  let groups, groupHeads;
+  beforeAll(() => {
+    groups = [
+      [modules[1], modules[2], modules[5]],
+      [modules[3], modules[4]],
+    ];
+    groupHeads = groups.map(g => g[0]);
+    ({code, map} = createRamBundle(undefined, groupHeads.map(getPath)));
+  });
+
+  it('supports grouping the transitive dependencies of files into common sections', () => {
+    const {codeOffset, table} = parseOffsetTable(code);
+
+    groups.forEach(group => {
+      const [head, ...deps] = group.map(x => idForPath(x.file));
+      const groupEntry = table[head];
+      deps.forEach(id => expect(table[id]).toEqual(groupEntry));
+
+      const [offset, length] = groupEntry;
+      const groupCode = code.slice(codeOffset + offset, codeOffset + offset + length - 1);
+      expect(groupCode.toString())
+        .toEqual(group.map(m => m.file.code).join('\n'));
+    });
+  });
+
+  it('reflects section groups in the source map', () => {
+    expect(map.x_facebook_offsets).toEqual([1, 2, 2, 5, 5, 2]);
+    const maps = map.sections.slice(-2);
+    const toplevelOffsets = [2, 5];
+
+    maps.map((groupMap, i) => [groups[i], groupMap]).forEach(([group, groupMap], i) => {
+      const offsets = group.reduce(moduleLineOffsets, [])[0];
+      expect(groupMap).toEqual({
+        map: {
+          version: 3,
+          sections: group.map((module, j) => ({
+            map: module.file.map,
+            offset: {line: offsets[j], column: 0},
+          })),
+        },
+        offset: {line: toplevelOffsets[i], column: 0},
+      });
+    });
+  });
+
+  function moduleLineOffsets([offsets = [], line = 0], module) {
+    return [[...offsets, line], line + countLines(module)];
+  }
+});
+
+function createRamBundle(preloadedModules = new Set(), ramGroups) {
+  const build = indexedRamBundle.createBuilder(preloadedModules, ramGroups);
   const result = build({
     filename: 'arbitrary/filename.js',
     idForPath,
@@ -149,10 +199,10 @@ function createRamBundle(preloadedModules = new Set()) {
   return {code: result.code, map: result.map};
 }
 
-function makeModule(name, type = 'module', moduleCode = `var ${name};`) {
-  const path = `/${name}.js`;
+function makeModule(name, deps = [], type = 'module', moduleCode = `var ${name};`) {
+  const path = makeModulePath(name);
   return {
-    dependencies: [],
+    dependencies: deps.map(makeDependency),
     file: {
       code: type === 'module' ? makeModuleCode(moduleCode) : moduleCode,
       map: type !== 'module'
@@ -175,6 +225,18 @@ function makeModuleMap(name, path) {
 
 function makeModuleCode(moduleCode) {
   return `__d(() => {${moduleCode}})`;
+}
+
+function makeModulePath(name) {
+  return `/${name}.js`;
+}
+
+function makeDependency(name) {
+  const path = makeModulePath(name);
+  return {
+    id: name,
+    path,
+  };
 }
 
 function getId(path) {

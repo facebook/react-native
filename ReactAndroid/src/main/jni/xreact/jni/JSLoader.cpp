@@ -58,25 +58,4 @@ std::unique_ptr<const JSBigString> loadScriptFromAssets(
     "'. Make sure your bundle is packaged correctly or you're running a packager server."));
 }
 
-std::string loadScriptFromFile(const std::string& fileName) {
-  #ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "reactbridge_jni_loadScriptFromFile",
-    "fileName", fileName);
-  #endif
-  std::ifstream jsfile(fileName);
-  if (jsfile) {
-    std::string output;
-    jsfile.seekg(0, std::ios::end);
-    output.reserve(jsfile.tellg());
-    jsfile.seekg(0, std::ios::beg);
-    output.assign(
-      (std::istreambuf_iterator<char>(jsfile)),
-      std::istreambuf_iterator<char>());
-    return output;
-  }
-
-  throw std::runtime_error(folly::to<std::string>("Unable to load script from file: '", fileName,
-    "'. Make sure your bundle is packaged correctly or you're running a packager server."));
-}
-
-} }
+}}
