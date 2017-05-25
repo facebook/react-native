@@ -149,6 +149,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
     getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
     YogaNodePool.get().clear();
+    ViewManagerPropertyUpdater.clear();
   }
 
   private static Map<String, Object> createConstants(
