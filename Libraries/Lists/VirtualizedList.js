@@ -613,6 +613,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this.props.onLayout && this.props.onLayout(e);
   };
 
+  _onLayoutEmpty = (e) => {
+    this.props.onLayout && this.props.onLayout(e);
+  };
+
   _onLayoutFooter = (e) => {
     this._footerLength = this._selectLength(e.nativeEvent.layout);
   };
