@@ -110,8 +110,8 @@ RCT_EXPORT_MODULE()
 {
   NSDictionary *userInfo = notification.userInfo;
   // Response dictionary to populate the event with.
-  NSDictionary *response = @{@"announcement": userInfo[@"UIAccessibilityAnnouncementKeyStringValue"],
-                              @"success": userInfo[@"UIAccessibilityAnnouncementKeyWasSuccessful"]};
+  NSDictionary *response = @{@"announcement": userInfo[UIAccessibilityAnnouncementKeyStringValue],
+                              @"success": userInfo[UIAccessibilityAnnouncementKeyWasSuccessful]};
     
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
