@@ -5398,7 +5398,7 @@ describe('DependencyGraph', function() {
         });
     });
 
-    it('should recover from multiple modules with the same name (but this is broken right now)', async () => {
+    it('should recover from multiple modules with the same name', async () => {
       const root = '/root';
       console.warn = jest.fn();
       const filesystem = setMockFileSystem({
@@ -5435,17 +5435,11 @@ describe('DependencyGraph', function() {
         await triggerAndProcessWatchEvent(dgraph, 'change', root + '/b.js');
       }
 
-      // This verifies that it is broken right now. Instead of throwing it should
-      // return correct results. Once this is fixed in `jest-haste`, remove
-      // the whole try catch and verify results are matching a snapshot.
-      try {
-        await getOrderedDependenciesAsJSON(dgraph, root + '/index.js');
-        throw new Error('expected `getOrderedDependenciesAsJSON` to fail');
-      } catch (error) {
-        if (error.type !== 'UnableToResolveError') {
-          throw error;
-        }
-      }
+      const deps = await getOrderedDependenciesAsJSON(
+        dgraph,
+        root + '/index.js',
+      );
+      expect(deps).toMatchSnapshot();
     });
   });
 
