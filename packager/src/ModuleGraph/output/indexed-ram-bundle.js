@@ -15,7 +15,7 @@ const nullthrows = require('fbjs/lib/nullthrows');
 
 const {createRamBundleGroups} = require('../../Bundler/util');
 const {buildTableAndContents, createModuleGroups} = require('../../shared/output/unbundle/as-indexed-file');
-const {concat} = require('./util');
+const {addModuleIdsToModuleWrapper, concat} = require('./util');
 
 import type {FBIndexMap} from '../../lib/SourceMap.js';
 import type {OutputFn} from '../types.flow';
@@ -35,7 +35,7 @@ function asIndexedRamBundle({
   const moduleGroups = createModuleGroups(ramGroups, deferredModules);
 
   const tableAndContents = buildTableAndContents(
-    startupModules.map(getModuleCode).join('\n'),
+    startupModules.map(m => getModuleCode(m, idForPath)).join('\n'),
     deferredModules,
     moduleGroups,
     'utf8',
@@ -52,9 +52,10 @@ function asIndexedRamBundle({
   };
 }
 
-function toModuleTransport({dependencies, file}, idForPath) {
+function toModuleTransport(module, idForPath) {
+  const {dependencies, file} = module;
   return {
-    code: file.code,
+    code: getModuleCode(module, idForPath),
     dependencies,
     id: idForPath(file),
     map: file.map,
@@ -63,8 +64,11 @@ function toModuleTransport({dependencies, file}, idForPath) {
   };
 }
 
-function getModuleCode(module) {
-  return module.file.code;
+function getModuleCode(module, idForPath) {
+  const {file} = module;
+  return file.type === 'module'
+    ? addModuleIdsToModuleWrapper(module, idForPath)
+    : file.code;
 }
 
 function partition(modules, preloadedModules) {

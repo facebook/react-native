@@ -14,6 +14,7 @@ declare var jest: any;
 jest.disableAutomock();
 
 const indexedRamBundle = require('../indexed-ram-bundle');
+const {addModuleIdsToModuleWrapper} = require('../util');
 
 declare var describe: any;
 declare var expect: any;
@@ -62,7 +63,7 @@ it('contains the code after the offset table', () => {
   table.forEach(([offset, length], i) => {
     const moduleCode =
       code.slice(codeOffset + offset, codeOffset + offset + length - 1);
-    expect(moduleCode.toString()).toBe(modules[i].file.code);
+    expect(moduleCode.toString()).toBe(expectedCode(modules[i]));
   });
 });
 
@@ -93,7 +94,7 @@ describe('Startup section optimization', () => {
     const startupSection =
       code.slice(codeOffset, codeOffset + startupSectionLength - 1);
     expect(startupSection.toString())
-      .toBe(preloaded.concat([requireCall]).map(getCode).join('\n'));
+      .toBe(preloaded.concat([requireCall]).map(expectedCode).join('\n'));
 
 
     preloaded.forEach(m => {
@@ -105,7 +106,7 @@ describe('Startup section optimization', () => {
       if (offset !== 0 && length !== 0) {
         const moduleCode =
           code.slice(codeOffset + offset, codeOffset + offset + length - 1);
-        expect(moduleCode.toString()).toBe(modules[i].file.code);
+        expect(moduleCode.toString()).toBe(expectedCode(modules[i]));
       }
     });
   });
@@ -155,7 +156,7 @@ describe('RAM groups / common sections', () => {
       const [offset, length] = groupEntry;
       const groupCode = code.slice(codeOffset + offset, codeOffset + offset + length - 1);
       expect(groupCode.toString())
-        .toEqual(group.map(m => m.file.code).join('\n'));
+        .toEqual(group.map(expectedCode).join('\n'));
     });
   });
 
@@ -239,6 +240,13 @@ function makeDependency(name) {
   };
 }
 
+function expectedCode(module) {
+  const {file} = module;
+  return file.type === 'module'
+    ? addModuleIdsToModuleWrapper(module, idForPath)
+    : file.code;
+}
+
 function getId(path) {
   if (path === requireCall.file.path) {
     return -1;
@@ -249,10 +257,6 @@ function getId(path) {
     throw new Error(`Unknown file: ${path}`);
   }
   return id;
-}
-
-function getCode(module) {
-  return module.file.code;
 }
 
 function getPath(module) {
