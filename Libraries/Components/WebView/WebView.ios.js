@@ -420,7 +420,7 @@ class WebView extends React.Component {
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
-        key="webViewKey"
+        key='webViewKey'
         style={webViewStyles}
         source={resolveAssetSource(source)}
         injectedJavaScript={this.props.injectedJavaScript}
