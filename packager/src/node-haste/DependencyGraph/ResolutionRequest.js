@@ -296,6 +296,12 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
       return result;
     }
 
+    function resolveKeyWithPromise(
+      [key: TModule, promise: Promise<Array<TModule>>],
+    ): Promise<[TModule, Array<TModule>]> {
+      return promise.then(value => [key, value]);
+    }
+
     return Promise.all([
       // kicks off recursive dependency discovery, but doesn't block until it's
       // done
@@ -899,10 +905,6 @@ function resolveWindowsPath(modulePath) {
     return modulePath;
   }
   return path.resolve(modulePath);
-}
-
-function resolveKeyWithPromise([key, promise]) {
-  return promise.then(value => [key, value]);
 }
 
 function isRelativeImport(filePath) {
