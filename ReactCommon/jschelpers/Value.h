@@ -15,30 +15,13 @@
 namespace facebook {
 namespace react {
 
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
+
 class Value;
-class Context;
 
-class JSException : public std::exception {
-public:
-  explicit JSException(const char* msg)
-    : msg_(msg), stack_("") {}
-
-  JSException(const char* msg, const char* stack)
-    : msg_(msg), stack_(stack) {}
-
-  const std::string& getStack() const {
-    return stack_;
-  }
-
-  virtual const char* what() const noexcept override {
-    return msg_.c_str();
-  }
-
-private:
-  std::string msg_;
-  std::string stack_;
-};
-
+// C++ object wrapper for JSStringRef
 class String : public noncopyable {
 public:
   explicit String(): m_context(nullptr), m_string(nullptr) {} // dummy empty constructor
@@ -82,12 +65,16 @@ public:
     return m_string;
   }
 
+  JSContextRef context() const {
+    return m_context;
+  }
+
   // Length in characters
   size_t length() const {
     return m_string ? JSC_JSStringGetLength(m_context, m_string) : 0;
   }
 
-  // Length in bytes of a null-terminated utf8 encoded value
+  // Length in bytes of a nul-terminated utf8 encoded value
   size_t utf8Size() const {
     return m_string ? JSC_JSStringGetMaximumUTF8CStringSize(m_context, m_string) : 0;
   }
@@ -115,7 +102,7 @@ public:
     return unicode::utf16toUTF8(utf16, stringLength);
   }
 
-  // Assumes that utf8 is null terminated
+  // Assumes that utf8 is nul-terminated
   bool equals(const char* utf8) {
     return m_string ? JSC_JSStringIsEqualToUTF8CString(m_context, m_string, utf8) : false;
   }
@@ -133,10 +120,13 @@ public:
     return createExpectingAscii(context, ascii.c_str(), ascii.size());
   }
 
+  // Creates a String wrapper and increases the refcount of the JSStringRef
   static String ref(JSContextRef context, JSStringRef string) {
     return String(context, string, false);
   }
 
+  // Creates a String wrapper that takes over ownership of the string. The
+  // JSStringRef passed in must previously have been created or retained.
   static String adopt(JSContextRef context, JSStringRef string) {
     return String(context, string, true);
   }
@@ -154,6 +144,9 @@ private:
   JSStringRef m_string;
 };
 
+// C++ object wrapper for JSObjectRef. The underlying JSObjectRef can be
+// optionally protected. You must protect the object if it is ever
+// heap-allocated, since otherwise you may end up with an invalid reference.
 class Object : public noncopyable {
 public:
   Object(JSContextRef context, JSObjectRef obj) :
@@ -248,11 +241,16 @@ private:
   Value callAsFunction(JSObjectRef thisObj, int nArgs, const JSValueRef args[]) const;
 };
 
+// C++ object wrapper for JSValueRef. The underlying JSValueRef is not
+// protected, so this class should always be used as a stack-allocated
+// variable.
 class Value : public noncopyable {
 public:
-  __attribute__((visibility("default"))) Value(JSContextRef context, JSValueRef value);
-  __attribute__((visibility("default"))) Value(JSContextRef context, JSStringRef value);
-  __attribute__((visibility("default"))) Value(Value&&);
+  RN_EXPORT Value(JSContextRef context, JSValueRef value);
+  RN_EXPORT Value(JSContextRef context, JSStringRef value);
+
+  RN_EXPORT Value(const Value &o) : Value(o.m_context, o.m_value) {}
+  RN_EXPORT Value(const String &o) : Value(o.context(), o) {}
 
   Value& operator=(Value&& other) {
     m_context = other.m_context;
@@ -309,15 +307,13 @@ public:
     return getType() == kJSTypeObject;
   }
 
-  Object asObject();
+  Object asObject() const;
 
   bool isString() const {
     return getType() == kJSTypeString;
   }
 
-  String toString() noexcept {
-    return String::adopt(context(), JSC_JSValueToStringCopy(context(), m_value, nullptr));
-  }
+  String toString() const;
 
   static Value makeError(JSContextRef ctx, const char *error);
 
@@ -333,13 +329,15 @@ public:
     return Value(ctx, JSC_JSValueMakeNull(ctx));
   }
 
-  __attribute__((visibility("default"))) std::string toJSONString(unsigned indent = 0) const;
-  __attribute__((visibility("default"))) static Value fromJSON(JSContextRef ctx, const String& json);
-  __attribute__((visibility("default"))) static Value fromDynamic(JSContextRef ctx, const folly::dynamic& value);
-  __attribute__((visibility("default"))) JSContextRef context() const;
-protected:
+  RN_EXPORT std::string toJSONString(unsigned indent = 0) const;
+  RN_EXPORT static Value fromJSON(JSContextRef ctx, const String& json);
+  RN_EXPORT static Value fromDynamic(JSContextRef ctx, const folly::dynamic& value);
+  RN_EXPORT JSContextRef context() const;
+
+private:
   JSContextRef m_context;
   JSValueRef m_value;
+
   static JSValueRef fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj);
 };
 
