@@ -436,6 +436,16 @@ const ScrollView = React.createClass({
     return ReactNative.findNodeHandle(this._scrollViewRef);
   },
 
+  /**
+   * Returns a reference to the underlying scroll responder, which supports
+   * operations like `scrollTo`. All ScrollView-like components should
+   * implement this method so that they can be composed while providing access
+   * to the underlying scroll responder's methods.
+   */
+  getScrollResponder: function(): ReactComponent {
+    return this;
+  },
+
   getInnerViewNode: function(): any {
     return ReactNative.findNodeHandle(this._innerViewRef);
   },
