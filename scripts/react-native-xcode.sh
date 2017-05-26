@@ -100,7 +100,7 @@ $NODE_BINARY $CLI_PATH bundle \
   --bundle-output "$BUNDLE_FILE" \
   --assets-dest "$DEST"
 
-if [[ ! $DEV && ! -f "$BUNDLE_FILE" ]]; then
+if [[ $DEV != true && ! -f "$BUNDLE_FILE" ]]; then
   echo "error: File $BUNDLE_FILE does not exist. This must be a bug with" >&2
   echo "React Native, please report it here: https://github.com/facebook/react-native/issues"
   exit 2
