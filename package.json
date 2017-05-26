@@ -40,7 +40,6 @@
       ]
     },
     "modulePathIgnorePatterns": [
-      "Libraries/react-native/",
       "/node_modules/(?!react|fbjs|react-native|react-transform-hmr|core-js|promise)/",
       "node_modules/react/node_modules/fbjs/",
       "node_modules/react/lib/ReactDOM.js",
