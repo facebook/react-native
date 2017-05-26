@@ -16,6 +16,8 @@ var sharedBlacklist = [
   /node_modules[/\\]react[/\\]dist[/\\].*/,
 
   /website\/node_modules\/.*/,
+  
+  /node_modules\/react-native-desktop\/.*/,
 
   /heapCapture\/bundle\.js/,
 ];
