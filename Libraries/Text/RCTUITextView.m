@@ -53,21 +53,21 @@ static UIColor *defaultPlaceholderTextColor()
 
 - (NSString *)accessibilityLabel
 {
-  NSMutableString *accLabel = [NSMutableString stringWithString:@""];
+  NSMutableString *accessibilityLabel = [NSMutableString new];
   
-  NSString *superAccLabel = super.accessibilityLabel;
-  if (superAccLabel.length > 0) {
-    [accLabel appendString:superAccLabel];
+  NSString *superAccessibilityLabel = super.accessibilityLabel;
+  if (superAccessibilityLabel.length > 0) {
+    [accessibilityLabel appendString:superAccessibilityLabel];
   }
   
   if (self.placeholderText.length > 0 && self.text.length == 0) {
-    if (accLabel.length > 0) {
-      [accLabel appendString:@" "];
+    if (accessibilityLabel.length > 0) {
+      [accessibilityLabel appendString:@" "];
     }
-    [accLabel appendString:self.placeholderText];
+    [accessibilityLabel appendString:self.placeholderText];
   }
   
-  return accLabel;
+  return accessibilityLabel;
 }
 
 #pragma mark - Properties
