@@ -246,6 +246,7 @@ target 'swift-2048' do
     'RCTText',
     'RCTNetwork',
     'RCTWebSocket', # needed for debugging
+    'RCTNetwork', 
     # Add any other subspecs you want to use in your project
   ]
   # Explicitly include Yoga if you are using RN >= 0.42.0
