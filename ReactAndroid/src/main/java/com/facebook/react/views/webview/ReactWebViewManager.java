@@ -370,6 +370,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     view.getSettings().setJavaScriptEnabled(enabled);
   }
 
+  @ReactProp(name = "allowUniversalAccessFromFileURLs")
+  public void setAllowUniversalAccessFromFileURLs(WebView view, boolean enabled) {
+    view.getSettings().setAllowUniversalAccessFromFileURLs(enabled);
+  }
+
   @ReactProp(name = "scalesPageToFit")
   public void setScalesPageToFit(WebView view, boolean enabled) {
     view.getSettings().setUseWideViewPort(!enabled);

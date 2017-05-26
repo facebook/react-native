@@ -121,6 +121,12 @@ class WebView extends React.Component {
     javaScriptEnabled: PropTypes.bool,
 
     /**
+     * Used on Android only, controls whether or not to enforce CORS on file:/// urls
+     * @platform android
+     */
+    allowUniversalAccessFromFileURLs: PropTypes.bool,
+
+    /**
      * Used on Android only, controls whether DOM Storage is enabled or not
      * @platform android
      */
@@ -253,6 +259,7 @@ class WebView extends React.Component {
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabled={this.props.javaScriptEnabled}
+        allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
         domStorageEnabled={this.props.domStorageEnabled}
         messagingEnabled={typeof this.props.onMessage === 'function'}
         onMessage={this.onMessage}
