@@ -205,6 +205,31 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 
 #pragma mark - Properties
 
+// For the most part, accessibility props need to be forwarded to _textView.
+// RCTTextView is hidden from VoiceOver (`isAccessibilityElement` returns false)
+// because we want VoiceOver to see _textView instead which is a subclass of UITextView
+// and consequently works better with VoiceOver. We don't need to forward the
+// following accessibility props to _textView:
+//   - accessibilityViewIsModal: This prop influences siblings so it needs to be
+//     on the RCTTextView instead of _textView.
+//   - onAccessibilityTap: React Native doesn't support this on TextInputs.
+//   - onMagicTap: React Native doesn't support this on TextInputs.
+
+- (void)setIsAccessibilityElement:(BOOL)isAccessibilityElement
+{
+  _textView.isAccessibilityElement = isAccessibilityElement;
+}
+
+- (void)setAccessibilityLabel:(NSString *)accessibilityLabel
+{
+  _textView.accessibilityLabel = accessibilityLabel;
+}
+
+- (void)setAccessibilityTraits:(UIAccessibilityTraits)accessibilityTraits
+{
+  _textView.accessibilityTraits = accessibilityTraits;
+}
+
 - (UIFont *)font
 {
   return _textView.font;
@@ -652,7 +677,7 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
       },
       @"zoomScale": @(scrollView.zoomScale ?: 1),
     });
-}
+  }
 }
 
 @end
