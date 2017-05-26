@@ -54,6 +54,8 @@ type PublicBundleOptions = {
   +sourceMapUrl?: string,
 };
 
+exports.TransformCaching = TransformCaching;
+
 /**
  * This is a public API, so we don't trust the value and purposefully downgrade
  * it as `mixed`. Because it understands `invariant`, Flow ensure that we

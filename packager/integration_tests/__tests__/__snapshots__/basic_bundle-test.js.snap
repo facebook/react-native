@@ -1,0 +1,1288 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`basic_bundle bundles package as expected 1`] = `
+"(function(global) {
+
+global.__DEV__ = false;
+
+global.__BUNDLE_START_TIME__ = global.nativePerformanceNow ? global.nativePerformanceNow() : Date.now();
+})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);
+(function(global) {
+
+'use strict';
+
+global.require = _require;
+global.__d = define;
+
+var modules = Object.create(null);
+if (__DEV__) {
+  var verboseNamesToModuleIds = Object.create(null);
+}
+
+function define(factory, moduleId, dependencyMap) {
+  if (moduleId in modules) {
+    return;
+  }
+  modules[moduleId] = {
+    dependencyMap: dependencyMap,
+    exports: undefined,
+    factory: factory,
+    hasError: false,
+    isInitialized: false
+  };
+  if (__DEV__) {
+    modules[moduleId].hot = createHotReloadingObject();
+
+    var _verboseName = arguments[3];
+    if (_verboseName) {
+      modules[moduleId].verboseName = _verboseName;
+      verboseNamesToModuleIds[_verboseName] = moduleId;
+    }
+  }
+}
+
+function _require(moduleId) {
+  if (__DEV__ && typeof moduleId === 'string') {
+    var _verboseName2 = moduleId;
+    moduleId = verboseNamesToModuleIds[moduleId];
+    if (moduleId == null) {
+      throw new Error('Unknown named module: \\\\'' + _verboseName2 + '\\\\'');
+    } else {
+      console.warn('Requiring module \\\\'' + _verboseName2 + '\\\\' by name is only supported for ' + 'debugging purposes and will BREAK IN PRODUCTION!');
+    }
+  }
+
+  var moduleIdReallyIsNumber = moduleId;
+  var module = modules[moduleIdReallyIsNumber];
+  return module && module.isInitialized ? module.exports : guardedLoadModule(moduleIdReallyIsNumber, module);
+}
+
+var inGuard = false;
+function guardedLoadModule(moduleId, module) {
+  if (!inGuard && global.ErrorUtils) {
+    inGuard = true;
+    var returnValue = void 0;
+    try {
+      returnValue = loadModuleImplementation(moduleId, module);
+    } catch (e) {
+      global.ErrorUtils.reportFatalError(e);
+    }
+    inGuard = false;
+    return returnValue;
+  } else {
+    return loadModuleImplementation(moduleId, module);
+  }
+}
+
+function loadModuleImplementation(moduleId, module) {
+  var nativeRequire = global.nativeRequire;
+  if (!module && nativeRequire) {
+    nativeRequire(moduleId);
+    module = modules[moduleId];
+  }
+
+  if (!module) {
+    throw unknownModuleError(moduleId);
+  }
+
+  if (module.hasError) {
+    throw moduleThrewError(moduleId, module.error);
+  }
+
+  if (__DEV__) {
+    var Systrace = _require.Systrace;
+  }
+
+  module.isInitialized = true;
+  var exports = module.exports = {};
+  var _module = module,
+      factory = _module.factory,
+      dependencyMap = _module.dependencyMap;
+
+  try {
+    if (__DEV__) {
+      Systrace.beginEvent('JS_require_' + (module.verboseName || moduleId));
+    }
+
+    var _moduleObject = { exports: exports };
+    if (__DEV__ && module.hot) {
+      _moduleObject.hot = module.hot;
+    }
+
+    factory(global, _require, _moduleObject, exports, dependencyMap);
+
+    if (!__DEV__) {
+      module.factory = undefined;
+      module.dependencyMap = undefined;
+    }
+
+    if (__DEV__) {
+      Systrace.endEvent();
+    }
+    return module.exports = _moduleObject.exports;
+  } catch (e) {
+    module.hasError = true;
+    module.error = e;
+    module.isInitialized = false;
+    module.exports = undefined;
+    throw e;
+  }
+}
+
+function unknownModuleError(id) {
+  var message = 'Requiring unknown module \\"' + id + '\\".';
+  if (__DEV__) {
+    message += 'If you are sure the module is there, try restarting the packager. ' + 'You may also want to run \`npm install\`, or \`yarn\` (depending on your environment).';
+  }
+  return Error(message);
+}
+
+function moduleThrewError(id, error) {
+  var displayName = __DEV__ && modules[id] && modules[id].verboseName || id;
+  return Error('Requiring module \\"' + displayName + '\\", which threw an exception: ' + error);
+}
+
+if (__DEV__) {
+  var createHotReloadingObject;
+
+  (function () {
+    _require.Systrace = { beginEvent: function beginEvent() {}, endEvent: function endEvent() {} };
+
+    createHotReloadingObject = function createHotReloadingObject() {
+      var hot = {
+        acceptCallback: null,
+        accept: function accept(callback) {
+          hot.acceptCallback = callback;
+        }
+      };
+      return hot;
+    };
+
+    var acceptAll = function acceptAll(dependentModules, inverseDependencies) {
+      if (!dependentModules || dependentModules.length === 0) {
+        return true;
+      }
+
+      var notAccepted = dependentModules.filter(function (module) {
+        return !accept(module, undefined, inverseDependencies);
+      });
+
+      var parents = [];
+      for (var i = 0; i < notAccepted.length; i++) {
+        if (inverseDependencies[notAccepted[i]].length === 0) {
+          return false;
+        }
+
+        parents.push.apply(parents, babelHelpers.toConsumableArray(inverseDependencies[notAccepted[i]]));
+      }
+
+      return acceptAll(parents, inverseDependencies);
+    };
+
+    var accept = function accept(id, factory, inverseDependencies) {
+      var mod = modules[id];
+
+      if (!mod && factory) {
+        define(factory, id);
+        return true;
+      }
+
+      var hot = mod.hot;
+
+      if (!hot) {
+        console.warn('Cannot accept module because Hot Module Replacement ' + 'API was not installed.');
+        return false;
+      }
+
+      if (factory) {
+        mod.factory = factory;
+      }
+      mod.hasError = false;
+      mod.isInitialized = false;
+      _require(id);
+
+      if (hot.acceptCallback) {
+        hot.acceptCallback();
+        return true;
+      } else {
+        if (!inverseDependencies) {
+          throw new Error('Undefined \`inverseDependencies\`');
+        }
+
+        return acceptAll(inverseDependencies[id], inverseDependencies);
+      }
+    };
+
+    global.__accept = accept;
+  })();
+}
+})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);
+(function(global) {
+
+Object.assign = function (target, sources) {
+  if (__DEV__) {
+    if (target == null) {
+      throw new TypeError('Object.assign target cannot be null or undefined');
+    }
+    if (typeof target !== 'object' && typeof target !== 'function') {
+      throw new TypeError('In this environment the target of assign MUST be an object.' + 'This error is a performance optimization and not spec compliant.');
+    }
+  }
+
+  for (var nextIndex = 1; nextIndex < arguments.length; nextIndex++) {
+    var nextSource = arguments[nextIndex];
+    if (nextSource == null) {
+      continue;
+    }
+
+    if (__DEV__) {
+      if (typeof nextSource !== 'object' && typeof nextSource !== 'function') {
+        throw new TypeError('In this environment the sources for assign MUST be an object.' + 'This error is a performance optimization and not spec compliant.');
+      }
+    }
+
+    for (var key in nextSource) {
+      if (__DEV__) {
+        var hasOwnProperty = Object.prototype.hasOwnProperty;
+        if (!hasOwnProperty.call(nextSource, key)) {
+          throw new TypeError('One of the sources for assign has an enumerable key on the ' + 'prototype chain. Are you trying to assign a prototype property? ' + 'We don\\\\'t allow it, as this is an edge case that we do not support. ' + 'This error is a performance optimization and not spec compliant.');
+        }
+      }
+      target[key] = nextSource[key];
+    }
+  }
+
+  return target;
+};
+})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);
+(function(global) {
+var inspect = function () {
+
+  function inspect(obj, opts) {
+    var ctx = {
+      seen: [],
+      stylize: stylizeNoColor
+    };
+    return formatValue(ctx, obj, opts.depth);
+  }
+
+  function stylizeNoColor(str, styleType) {
+    return str;
+  }
+
+  function arrayToHash(array) {
+    var hash = {};
+
+    array.forEach(function (val, idx) {
+      hash[val] = true;
+    });
+
+    return hash;
+  }
+
+  function formatValue(ctx, value, recurseTimes) {
+    var primitive = formatPrimitive(ctx, value);
+    if (primitive) {
+      return primitive;
+    }
+
+    var keys = Object.keys(value);
+    var visibleKeys = arrayToHash(keys);
+
+    if (isError(value) && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
+      return formatError(value);
+    }
+
+    if (keys.length === 0) {
+      if (isFunction(value)) {
+        var name = value.name ? ': ' + value.name : '';
+        return ctx.stylize('[Function' + name + ']', 'special');
+      }
+      if (isRegExp(value)) {
+        return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+      }
+      if (isDate(value)) {
+        return ctx.stylize(Date.prototype.toString.call(value), 'date');
+      }
+      if (isError(value)) {
+        return formatError(value);
+      }
+    }
+
+    var base = '',
+        array = false,
+        braces = ['{', '}'];
+
+    if (isArray(value)) {
+      array = true;
+      braces = ['[', ']'];
+    }
+
+    if (isFunction(value)) {
+      var n = value.name ? ': ' + value.name : '';
+      base = ' [Function' + n + ']';
+    }
+
+    if (isRegExp(value)) {
+      base = ' ' + RegExp.prototype.toString.call(value);
+    }
+
+    if (isDate(value)) {
+      base = ' ' + Date.prototype.toUTCString.call(value);
+    }
+
+    if (isError(value)) {
+      base = ' ' + formatError(value);
+    }
+
+    if (keys.length === 0 && (!array || value.length == 0)) {
+      return braces[0] + base + braces[1];
+    }
+
+    if (recurseTimes < 0) {
+      if (isRegExp(value)) {
+        return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+      } else {
+        return ctx.stylize('[Object]', 'special');
+      }
+    }
+
+    ctx.seen.push(value);
+
+    var output;
+    if (array) {
+      output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
+    } else {
+      output = keys.map(function (key) {
+        return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
+      });
+    }
+
+    ctx.seen.pop();
+
+    return reduceToSingleString(output, base, braces);
+  }
+
+  function formatPrimitive(ctx, value) {
+    if (isUndefined(value)) return ctx.stylize('undefined', 'undefined');
+    if (isString(value)) {
+      var simple = '\\\\'' + JSON.stringify(value).replace(/^\\"|\\"$/g, '').replace(/'/g, \\"\\\\\\\\'\\").replace(/\\\\\\\\\\"/g, '\\"') + '\\\\'';
+      return ctx.stylize(simple, 'string');
+    }
+    if (isNumber(value)) return ctx.stylize('' + value, 'number');
+    if (isBoolean(value)) return ctx.stylize('' + value, 'boolean');
+
+    if (isNull(value)) return ctx.stylize('null', 'null');
+  }
+
+  function formatError(value) {
+    return '[' + Error.prototype.toString.call(value) + ']';
+  }
+
+  function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
+    var output = [];
+    for (var i = 0, l = value.length; i < l; ++i) {
+      if (hasOwnProperty(value, String(i))) {
+        output.push(formatProperty(ctx, value, recurseTimes, visibleKeys, String(i), true));
+      } else {
+        output.push('');
+      }
+    }
+    keys.forEach(function (key) {
+      if (!key.match(/^\\\\d+$/)) {
+        output.push(formatProperty(ctx, value, recurseTimes, visibleKeys, key, true));
+      }
+    });
+    return output;
+  }
+
+  function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
+    var name, str, desc;
+    desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+    if (desc.get) {
+      if (desc.set) {
+        str = ctx.stylize('[Getter/Setter]', 'special');
+      } else {
+        str = ctx.stylize('[Getter]', 'special');
+      }
+    } else {
+      if (desc.set) {
+        str = ctx.stylize('[Setter]', 'special');
+      }
+    }
+    if (!hasOwnProperty(visibleKeys, key)) {
+      name = '[' + key + ']';
+    }
+    if (!str) {
+      if (ctx.seen.indexOf(desc.value) < 0) {
+        if (isNull(recurseTimes)) {
+          str = formatValue(ctx, desc.value, null);
+        } else {
+          str = formatValue(ctx, desc.value, recurseTimes - 1);
+        }
+        if (str.indexOf('\\\\n') > -1) {
+          if (array) {
+            str = str.split('\\\\n').map(function (line) {
+              return '  ' + line;
+            }).join('\\\\n').substr(2);
+          } else {
+            str = '\\\\n' + str.split('\\\\n').map(function (line) {
+              return '   ' + line;
+            }).join('\\\\n');
+          }
+        }
+      } else {
+        str = ctx.stylize('[Circular]', 'special');
+      }
+    }
+    if (isUndefined(name)) {
+      if (array && key.match(/^\\\\d+$/)) {
+        return str;
+      }
+      name = JSON.stringify('' + key);
+      if (name.match(/^\\"([a-zA-Z_][a-zA-Z_0-9]*)\\"$/)) {
+        name = name.substr(1, name.length - 2);
+        name = ctx.stylize(name, 'name');
+      } else {
+        name = name.replace(/'/g, \\"\\\\\\\\'\\").replace(/\\\\\\\\\\"/g, '\\"').replace(/(^\\"|\\"$)/g, \\"'\\");
+        name = ctx.stylize(name, 'string');
+      }
+    }
+
+    return name + ': ' + str;
+  }
+
+  function reduceToSingleString(output, base, braces) {
+    var numLinesEst = 0;
+    var length = output.reduce(function (prev, cur) {
+      numLinesEst++;
+      if (cur.indexOf('\\\\n') >= 0) numLinesEst++;
+      return prev + cur.replace(/\\\\u001b\\\\[\\\\d\\\\d?m/g, '').length + 1;
+    }, 0);
+
+    if (length > 60) {
+      return braces[0] + (base === '' ? '' : base + '\\\\n ') + ' ' + output.join(',\\\\n  ') + ' ' + braces[1];
+    }
+
+    return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
+  }
+
+  function isArray(ar) {
+    return Array.isArray(ar);
+  }
+
+  function isBoolean(arg) {
+    return typeof arg === 'boolean';
+  }
+
+  function isNull(arg) {
+    return arg === null;
+  }
+
+  function isNullOrUndefined(arg) {
+    return arg == null;
+  }
+
+  function isNumber(arg) {
+    return typeof arg === 'number';
+  }
+
+  function isString(arg) {
+    return typeof arg === 'string';
+  }
+
+  function isSymbol(arg) {
+    return typeof arg === 'symbol';
+  }
+
+  function isUndefined(arg) {
+    return arg === void 0;
+  }
+
+  function isRegExp(re) {
+    return isObject(re) && objectToString(re) === '[object RegExp]';
+  }
+
+  function isObject(arg) {
+    return typeof arg === 'object' && arg !== null;
+  }
+
+  function isDate(d) {
+    return isObject(d) && objectToString(d) === '[object Date]';
+  }
+
+  function isError(e) {
+    return isObject(e) && (objectToString(e) === '[object Error]' || e instanceof Error);
+  }
+
+  function isFunction(arg) {
+    return typeof arg === 'function';
+  }
+
+  function isPrimitive(arg) {
+    return arg === null || typeof arg === 'boolean' || typeof arg === 'number' || typeof arg === 'string' || typeof arg === 'symbol' || typeof arg === 'undefined';
+  }
+
+  function objectToString(o) {
+    return Object.prototype.toString.call(o);
+  }
+
+  function hasOwnProperty(obj, prop) {
+    return Object.prototype.hasOwnProperty.call(obj, prop);
+  }
+
+  return inspect;
+}();
+
+var OBJECT_COLUMN_NAME = '(index)';
+var LOG_LEVELS = {
+  trace: 0,
+  info: 1,
+  warn: 2,
+  error: 3
+};
+var INSPECTOR_LEVELS = [];
+INSPECTOR_LEVELS[LOG_LEVELS.trace] = 'debug';
+INSPECTOR_LEVELS[LOG_LEVELS.info] = 'log';
+INSPECTOR_LEVELS[LOG_LEVELS.warn] = 'warning';
+INSPECTOR_LEVELS[LOG_LEVELS.error] = 'error';
+
+var INSPECTOR_FRAMES_TO_SKIP = __DEV__ ? 2 : 1;
+
+function setupConsole(global) {
+  if (!global.nativeLoggingHook) {
+    return;
+  }
+
+  function getNativeLogFunction(level) {
+    return function () {
+      var str = void 0;
+      if (arguments.length === 1 && typeof arguments[0] === 'string') {
+        str = arguments[0];
+      } else {
+        str = Array.prototype.map.call(arguments, function (arg) {
+          return inspect(arg, { depth: 10 });
+        }).join(', ');
+      }
+
+      var logLevel = level;
+      if (str.slice(0, 9) === 'Warning: ' && logLevel >= LOG_LEVELS.error) {
+        logLevel = LOG_LEVELS.warn;
+      }
+      if (global.__inspectorLog) {
+        global.__inspectorLog(INSPECTOR_LEVELS[logLevel], str, [].slice.call(arguments), INSPECTOR_FRAMES_TO_SKIP);
+      }
+      global.nativeLoggingHook(str, logLevel);
+    };
+  }
+
+  function repeat(element, n) {
+    return Array.apply(null, Array(n)).map(function () {
+      return element;
+    });
+  };
+
+  function consoleTablePolyfill(rows) {
+    if (!Array.isArray(rows)) {
+      var data = rows;
+      rows = [];
+      for (var key in data) {
+        if (data.hasOwnProperty(key)) {
+          var row = data[key];
+          row[OBJECT_COLUMN_NAME] = key;
+          rows.push(row);
+        }
+      }
+    }
+    if (rows.length === 0) {
+      global.nativeLoggingHook('', LOG_LEVELS.info);
+      return;
+    }
+
+    var columns = Object.keys(rows[0]).sort();
+    var stringRows = [];
+    var columnWidths = [];
+
+    columns.forEach(function (k, i) {
+      columnWidths[i] = k.length;
+      for (var j = 0; j < rows.length; j++) {
+        var cellStr = (rows[j][k] || '?').toString();
+        stringRows[j] = stringRows[j] || [];
+        stringRows[j][i] = cellStr;
+        columnWidths[i] = Math.max(columnWidths[i], cellStr.length);
+      }
+    });
+
+    function joinRow(row, space) {
+      var cells = row.map(function (cell, i) {
+        var extraSpaces = repeat(' ', columnWidths[i] - cell.length).join('');
+        return cell + extraSpaces;
+      });
+      space = space || ' ';
+      return cells.join(space + '|' + space);
+    };
+
+    var separators = columnWidths.map(function (columnWidth) {
+      return repeat('-', columnWidth).join('');
+    });
+    var separatorRow = joinRow(separators, '-');
+    var header = joinRow(columns);
+    var table = [header, separatorRow];
+
+    for (var i = 0; i < rows.length; i++) {
+      table.push(joinRow(stringRows[i]));
+    }
+
+    global.nativeLoggingHook('\\\\n' + table.join('\\\\n'), LOG_LEVELS.info);
+  }
+
+  var originalConsole = global.console;
+  var descriptor = Object.getOwnPropertyDescriptor(global, 'console');
+  if (descriptor) {
+    Object.defineProperty(global, 'originalConsole', descriptor);
+  }
+
+  global.console = {
+    error: getNativeLogFunction(LOG_LEVELS.error),
+    info: getNativeLogFunction(LOG_LEVELS.info),
+    log: getNativeLogFunction(LOG_LEVELS.info),
+    warn: getNativeLogFunction(LOG_LEVELS.warn),
+    trace: getNativeLogFunction(LOG_LEVELS.trace),
+    debug: getNativeLogFunction(LOG_LEVELS.trace),
+    table: consoleTablePolyfill
+  };
+
+  if (__DEV__ && originalConsole) {
+    Object.keys(console).forEach(function (methodName) {
+      var reactNativeMethod = console[methodName];
+      if (originalConsole[methodName]) {
+        console[methodName] = function () {
+          originalConsole[methodName].apply(originalConsole, arguments);
+          reactNativeMethod.apply(console, arguments);
+        };
+      }
+    });
+  }
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = setupConsole;
+} else {
+  setupConsole(global);
+}
+})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);
+(function(global) {
+
+var _inGuard = 0;
+
+var _globalHandler = function onError(e) {
+  throw e;
+};
+
+var ErrorUtils = {
+  setGlobalHandler: function setGlobalHandler(fun) {
+    _globalHandler = fun;
+  },
+  getGlobalHandler: function getGlobalHandler() {
+    return _globalHandler;
+  },
+  reportError: function reportError(error) {
+    _globalHandler && _globalHandler(error);
+  },
+  reportFatalError: function reportFatalError(error) {
+    _globalHandler && _globalHandler(error, true);
+  },
+  applyWithGuard: function applyWithGuard(fun, context, args) {
+    try {
+      _inGuard++;
+      return fun.apply(context, args);
+    } catch (e) {
+      ErrorUtils.reportError(e);
+    } finally {
+      _inGuard--;
+    }
+    return null;
+  },
+  applyWithGuardIfNeeded: function applyWithGuardIfNeeded(fun, context, args) {
+    if (ErrorUtils.inGuard()) {
+      return fun.apply(context, args);
+    } else {
+      ErrorUtils.applyWithGuard(fun, context, args);
+    }
+    return null;
+  },
+  inGuard: function inGuard() {
+    return _inGuard;
+  },
+  guard: function guard(fun, name, context) {
+    if (typeof fun !== 'function') {
+      console.warn('A function must be passed to ErrorUtils.guard, got ', fun);
+      return null;
+    }
+    name = name || fun.name || '<generated guard>';
+    function guarded() {
+      return ErrorUtils.applyWithGuard(fun, context || this, arguments, null, name);
+    }
+
+    return guarded;
+  }
+};
+
+global.ErrorUtils = ErrorUtils;
+})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);
+(function(global) {
+
+if (Number.EPSILON === undefined) {
+  Object.defineProperty(Number, 'EPSILON', {
+    value: Math.pow(2, -52)
+  });
+}
+if (Number.MAX_SAFE_INTEGER === undefined) {
+  Object.defineProperty(Number, 'MAX_SAFE_INTEGER', {
+    value: Math.pow(2, 53) - 1
+  });
+}
+if (Number.MIN_SAFE_INTEGER === undefined) {
+  Object.defineProperty(Number, 'MIN_SAFE_INTEGER', {
+    value: -(Math.pow(2, 53) - 1)
+  });
+}
+if (!Number.isNaN) {
+  (function () {
+    var globalIsNaN = global.isNaN;
+    Object.defineProperty(Number, 'isNaN', {
+      configurable: true,
+      enumerable: false,
+      value: function isNaN(value) {
+        return typeof value === 'number' && globalIsNaN(value);
+      },
+      writable: true
+    });
+  })();
+}
+})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);
+(function(global) {
+
+if (!String.prototype.startsWith) {
+  String.prototype.startsWith = function (search) {
+    'use strict';
+
+    if (this == null) {
+      throw TypeError();
+    }
+    var string = String(this);
+    var pos = arguments.length > 1 ? Number(arguments[1]) || 0 : 0;
+    var start = Math.min(Math.max(pos, 0), string.length);
+    return string.indexOf(String(search), pos) === start;
+  };
+}
+
+if (!String.prototype.endsWith) {
+  String.prototype.endsWith = function (search) {
+    'use strict';
+
+    if (this == null) {
+      throw TypeError();
+    }
+    var string = String(this);
+    var stringLength = string.length;
+    var searchString = String(search);
+    var pos = arguments.length > 1 ? Number(arguments[1]) || 0 : stringLength;
+    var end = Math.min(Math.max(pos, 0), stringLength);
+    var start = end - searchString.length;
+    if (start < 0) {
+      return false;
+    }
+    return string.lastIndexOf(searchString, start) === start;
+  };
+}
+
+if (!String.prototype.repeat) {
+  String.prototype.repeat = function (count) {
+    'use strict';
+
+    if (this == null) {
+      throw TypeError();
+    }
+    var string = String(this);
+    count = Number(count) || 0;
+    if (count < 0 || count === Infinity) {
+      throw RangeError();
+    }
+    if (count === 1) {
+      return string;
+    }
+    var result = '';
+    while (count) {
+      if (count & 1) {
+        result += string;
+      }
+      if (count >>= 1) {
+        string += string;
+      }
+    }
+    return result;
+  };
+}
+
+if (!String.prototype.includes) {
+  String.prototype.includes = function (search, start) {
+    'use strict';
+
+    if (typeof start !== 'number') {
+      start = 0;
+    }
+
+    if (start + search.length > this.length) {
+      return false;
+    } else {
+      return this.indexOf(search, start) !== -1;
+    }
+  };
+}
+})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);
+(function(global) {
+function findIndex(predicate, context) {
+  if (this == null) {
+    throw new TypeError('Array.prototype.findIndex called on null or undefined');
+  }
+  if (typeof predicate !== 'function') {
+    throw new TypeError('predicate must be a function');
+  }
+  var list = Object(this);
+  var length = list.length >>> 0;
+  for (var i = 0; i < length; i++) {
+    if (predicate.call(context, list[i], i, list)) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+if (!Array.prototype.findIndex) {
+  Object.defineProperty(Array.prototype, 'findIndex', {
+    enumerable: false,
+    writable: true,
+    configurable: true,
+    value: findIndex
+  });
+}
+
+if (!Array.prototype.find) {
+  Object.defineProperty(Array.prototype, 'find', {
+    enumerable: false,
+    writable: true,
+    configurable: true,
+    value: function value(predicate, context) {
+      if (this == null) {
+        throw new TypeError('Array.prototype.find called on null or undefined');
+      }
+      var index = findIndex.call(this, predicate, context);
+      return index === -1 ? undefined : this[index];
+    }
+  });
+}
+
+if (!Array.prototype.includes) {
+  Object.defineProperty(Array.prototype, 'includes', {
+    enumerable: false,
+    writable: true,
+    configurable: true,
+    value: function value(searchElement) {
+      var O = Object(this);
+      var len = parseInt(O.length) || 0;
+      if (len === 0) {
+        return false;
+      }
+      var n = parseInt(arguments[1]) || 0;
+      var k;
+      if (n >= 0) {
+        k = n;
+      } else {
+        k = len + n;
+        if (k < 0) {
+          k = 0;
+        }
+      }
+      var currentElement;
+      while (k < len) {
+        currentElement = O[k];
+        if (searchElement === currentElement || searchElement !== searchElement && currentElement !== currentElement) {
+          return true;
+        }
+        k++;
+      }
+      return false;
+    }
+  });
+}
+})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);
+(function(global) {
+if (!Array.from) {
+  Array.from = function (arrayLike) {
+    if (arrayLike == null) {
+      throw new TypeError('Object is null or undefined');
+    }
+
+    var mapFn = arguments[1];
+    var thisArg = arguments[2];
+
+    var C = this;
+    var items = Object(arrayLike);
+    var symbolIterator = typeof Symbol === 'function' ? typeof Symbol === 'function' ? Symbol.iterator : '@@iterator' : '@@iterator';
+    var mapping = typeof mapFn === 'function';
+    var usingIterator = typeof items[symbolIterator] === 'function';
+    var key = 0;
+    var ret;
+    var value;
+
+    if (usingIterator) {
+      ret = typeof C === 'function' ? new C() : [];
+      var it = items[symbolIterator]();
+      var next;
+
+      while (!(next = it.next()).done) {
+        value = next.value;
+
+        if (mapping) {
+          value = mapFn.call(thisArg, value, key);
+        }
+
+        ret[key] = value;
+        key += 1;
+      }
+
+      ret.length = key;
+      return ret;
+    }
+
+    var len = items.length;
+    if (isNaN(len) || len < 0) {
+      len = 0;
+    }
+
+    ret = typeof C === 'function' ? new C(len) : new Array(len);
+
+    while (key < len) {
+      value = items[key];
+
+      if (mapping) {
+        value = mapFn.call(thisArg, value, key);
+      }
+
+      ret[key] = value;
+
+      key += 1;
+    }
+
+    ret.length = key;
+    return ret;
+  };
+}
+})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);
+(function(global) {
+
+(function () {
+  'use strict';
+
+  var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+  if (typeof Object.entries !== 'function') {
+    Object.entries = function (object) {
+      if (object == null) {
+        throw new TypeError('Object.entries called on non-object');
+      }
+
+      var entries = [];
+      for (var key in object) {
+        if (hasOwnProperty.call(object, key)) {
+          entries.push([key, object[key]]);
+        }
+      }
+      return entries;
+    };
+  }
+
+  if (typeof Object.values !== 'function') {
+    Object.values = function (object) {
+      if (object == null) {
+        throw new TypeError('Object.values called on non-object');
+      }
+
+      var values = [];
+      for (var key in object) {
+        if (hasOwnProperty.call(object, key)) {
+          values.push(object[key]);
+        }
+      }
+      return values;
+    };
+  }
+})();
+})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);
+(function(global) {
+
+var babelHelpers = global.babelHelpers = {};
+
+babelHelpers.typeof = typeof Symbol === \\"function\\" && typeof (typeof Symbol === \\"function\\" ? Symbol.iterator : \\"@@iterator\\") === \\"symbol\\" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === \\"function\\" && obj.constructor === Symbol && obj !== (typeof Symbol === \\"function\\" ? Symbol.prototype : \\"@@prototype\\") ? \\"symbol\\" : typeof obj;
+};
+
+babelHelpers.createRawReactElement = function () {
+  var REACT_ELEMENT_TYPE = typeof Symbol === \\"function\\" && (typeof Symbol === \\"function\\" ? Symbol.for : \\"@@for\\") && (typeof Symbol === \\"function\\" ? Symbol.for : \\"@@for\\")(\\"react.element\\") || 0xeac7;
+  return function createRawReactElement(type, key, props) {
+    return {
+      $$typeof: REACT_ELEMENT_TYPE,
+      type: type,
+      key: key,
+      ref: null,
+      props: props,
+      _owner: null
+    };
+  };
+}();
+
+babelHelpers.classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError(\\"Cannot call a class as a function\\");
+  }
+};
+
+babelHelpers.createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if (\\"value\\" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+}();
+
+babelHelpers.defineEnumerableProperties = function (obj, descs) {
+  for (var key in descs) {
+    var desc = descs[key];
+    desc.configurable = desc.enumerable = true;
+    if ('value' in desc) desc.writable = true;
+    Object.defineProperty(obj, key, desc);
+  }
+  return obj;
+};
+
+babelHelpers.defineProperty = function (obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+};
+
+babelHelpers._extends = babelHelpers.extends = Object.assign || function (target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i];
+
+    for (var key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        target[key] = source[key];
+      }
+    }
+  }
+
+  return target;
+};
+
+babelHelpers.get = function get(object, property, receiver) {
+  if (object === null) object = Function.prototype;
+  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent === null) {
+      return undefined;
+    } else {
+      return get(parent, property, receiver);
+    }
+  } else if (\\"value\\" in desc) {
+    return desc.value;
+  } else {
+    var getter = desc.get;
+
+    if (getter === undefined) {
+      return undefined;
+    }
+
+    return getter.call(receiver);
+  }
+};
+
+babelHelpers.inherits = function (subClass, superClass) {
+  if (typeof superClass !== \\"function\\" && superClass !== null) {
+    throw new TypeError(\\"Super expression must either be null or a function, not \\" + typeof superClass);
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+};
+
+babelHelpers.interopRequireDefault = function (obj) {
+  return obj && obj.__esModule ? obj : {
+    default: obj
+  };
+};
+
+babelHelpers.interopRequireWildcard = function (obj) {
+  if (obj && obj.__esModule) {
+    return obj;
+  } else {
+    var newObj = {};
+
+    if (obj != null) {
+      for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key];
+      }
+    }
+
+    newObj.default = obj;
+    return newObj;
+  }
+};
+
+babelHelpers.objectWithoutProperties = function (obj, keys) {
+  var target = {};
+
+  for (var i in obj) {
+    if (keys.indexOf(i) >= 0) continue;
+    if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
+    target[i] = obj[i];
+  }
+
+  return target;
+};
+
+babelHelpers.possibleConstructorReturn = function (self, call) {
+  if (!self) {
+    throw new ReferenceError(\\"this hasn't been initialised - super() hasn't been called\\");
+  }
+
+  return call && (typeof call === \\"object\\" || typeof call === \\"function\\") ? call : self;
+};
+
+babelHelpers.slicedToArray = function () {
+  function sliceIterator(arr, i) {
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = arr[typeof Symbol === \\"function\\" ? Symbol.iterator : \\"@@iterator\\"](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i[\\"return\\"]) _i[\\"return\\"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  return function (arr, i) {
+    if (Array.isArray(arr)) {
+      return arr;
+    } else if ((typeof Symbol === \\"function\\" ? Symbol.iterator : \\"@@iterator\\") in Object(arr)) {
+      return sliceIterator(arr, i);
+    } else {
+      throw new TypeError(\\"Invalid attempt to destructure non-iterable instance\\");
+    }
+  };
+}();
+
+babelHelpers.taggedTemplateLiteral = function (strings, raw) {
+  return Object.freeze(Object.defineProperties(strings, {
+    raw: {
+      value: Object.freeze(raw)
+    }
+  }));
+};
+
+babelHelpers.toArray = function (arr) {
+  return Array.isArray(arr) ? arr : Array.from(arr);
+};
+
+babelHelpers.toConsumableArray = function (arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+      arr2[i] = arr[i];
+    }return arr2;
+  } else {
+    return Array.from(arr);
+  }
+};
+})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);
+__d(/* /TestBundle.js */function(global, require, module, exports) {
+
+'use strict';
+
+var Bar = require(12     ); // 12 = ./Bar
+var Foo = require(13     ); // 13 = ./Foo
+
+module.exports = { Foo: Foo, Bar: Bar };
+}, 0);
+__d(/* /Bar.js */function(global, require, module, exports) {
+
+'use strict';
+
+var Foo = require(13     ); // 13 = ./Foo
+
+module.exports = { type: 'bar', foo: Foo.type };
+}, 12);
+__d(/* /Foo.js */function(global, require, module, exports) {
+
+'use strict';
+
+var asset = require(14          ); // 14 = ./test.png
+
+module.exports = { type: 'foo', asset: asset };
+}, 13);
+__d(/* /test.png */function(global, require, module, exports) {module.exports=require(15                                          ).registerAsset({\\"__packager_asset\\":true,\\"httpServerLocation\\":\\"/assets\\",\\"width\\":8,\\"height\\":8,\\"scales\\":[1],\\"hash\\":\\"77d45c1f7fa73c0f6c444a830dc42f67\\",\\"name\\":\\"test\\",\\"type\\":\\"png\\"}); // 15 = react-native/Libraries/Image/AssetRegistry
+}, 14);
+__d(/* /node_modules/react-native/Libraries/Image/AssetRegistry.js */function(global, require, module, exports) {
+
+'use strict';
+
+module.export = {};
+}, 15);
+;require(0);"
+`;
