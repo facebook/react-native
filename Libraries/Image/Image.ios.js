@@ -41,7 +41,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * import React, { Component } from 'react';
  * import { AppRegistry, View, Image } from 'react-native';
  *
- * class DisplayAnImage extends Component {
+ * export default class DisplayAnImage extends Component {
  *   render() {
  *     return (
  *       <View>
@@ -57,7 +57,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *   }
  * }
  *
- * // App registration and rendering
+ * // skip this line if using Create React Native App
  * AppRegistry.registerComponent('DisplayAnImage', () => DisplayAnImage);
  * ```
  *
@@ -74,7 +74,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *   }
  * });
  *
- * class DisplayAnImageWithStyle extends Component {
+ * export default class DisplayAnImageWithStyle extends Component {
  *   render() {
  *     return (
  *       <View>
@@ -87,7 +87,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *   }
  * }
  *
- * // App registration and rendering
+ * // skip these lines if using Create React Native App
  * AppRegistry.registerComponent(
  *   'DisplayAnImageWithStyle',
  *   () => DisplayAnImageWithStyle
@@ -96,7 +96,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *
  * ### GIF and WebP support on Android
  *
- * By default, GIF and WebP are not supported on Android.
+ * When building your own native code, GIF and WebP are not supported by default on Android.
  *
  * You will need to add some optional modules in `android/app/build.gradle`, depending on the needs of your app.
  *
