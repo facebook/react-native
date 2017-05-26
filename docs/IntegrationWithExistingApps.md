@@ -59,16 +59,16 @@ previous: testing
     border-radius: 3px;
     text-decoration: none !important;
   }
-  .display-platform-objc .toggler .button-objc,
-  .display-platform-swift .toggler .button-swift,
-  .display-platform-android .toggler .button-android {
+  .display-language-objc .toggler .button-objc,
+  .display-language-swift .toggler .button-swift,
+  .display-language-android .toggler .button-android {
     background-color: #05A5D1;
     color: white;
   }
   block { display: none; }
-  .display-platform-objc .objc,
-  .display-platform-swift .swift,
-  .display-platform-android .android {
+  .display-language-objc .objc,
+  .display-language-swift .swift,
+  .display-language-android .android {
     display: block;
   }
 </style>
@@ -79,13 +79,13 @@ The specific steps are different depending on what platform you're targeting.
 
 <div class="toggler">
   <ul role="tablist" >
-    <li id="objc" class="button-objc" aria-selected="false" role="tab" tabindex="0" aria-controls="objctab" onclick="display('platform', 'objc')">
+    <li id="objc" class="button-objc" aria-selected="false" role="tab" tabindex="0" aria-controls="objctab" onclick="displayTab('language', 'objc')">
       iOS (Objective-C)
     </li>
-    <li id="swift" class="button-swift" aria-selected="false" role="tab" tabindex="0" aria-controls="swifttab" onclick="display('platform', 'swift')">
+    <li id="swift" class="button-swift" aria-selected="false" role="tab" tabindex="0" aria-controls="swifttab" onclick="displayTab('language', 'swift')">
       iOS (Swift)
     </li>
-    <li id="android" class="button-android" aria-selected="false" role="tab" tabindex="0" aria-controls="androidtab" onclick="display('platform', 'android')">
+    <li id="android" class="button-android" aria-selected="false" role="tab" tabindex="0" aria-controls="androidtab" onclick="displayTab('language', 'android')">
       Android (Java)
     </li>
   </ul>
@@ -805,70 +805,11 @@ Now just create a release build of your native app from within Android Studio as
 At this point you can continue developing your app as usual. Refer to our [debugging](/docs/debugging.html) and [deployment](docs/running-on-device.html) docs to learn more about working with React Native.
 
 <script>
-// Convert <div>...<span><block /></span>...</div>
-// Into <div>...<block />...</div>
-var blocks = document.getElementsByTagName('block');
-for (var i = 0; i < blocks.length; ++i) {
-  var block = blocks[i];
-  var span = blocks[i].parentNode;
-  var container = span.parentNode;
-  container.insertBefore(block, span);
-  container.removeChild(span);
-}
-// Convert <div>...<block />content<block />...</div>
-// Into <div>...<block>content</block><block />...</div>
-blocks = document.getElementsByTagName('block');
-for (var i = 0; i < blocks.length; ++i) {
-  var block = blocks[i];
-  while (block.nextSibling && block.nextSibling.tagName !== 'BLOCK') {
-    block.appendChild(block.nextSibling);
-  }
-}
-function display(type, value) {
+function displayTab(type, value) {
   var container = document.getElementsByTagName('block')[0].parentNode;
   container.className = 'display-' + type + '-' + value + ' ' +
     container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
   console.log(container.className);
   event && event.preventDefault();
-}
-
-// If we are coming to the page with a hash in it (i.e. from a search, for example), try to get
-// us as close as possible to the correct platform and dev os using the hashtag and block walk up.
-var foundHash = false;
-if (window.location.hash !== '' && window.location.hash !== 'content') { // content is default
-  var hashLinks = document.querySelectorAll('a.hash-link');
-  for (var i = 0; i < hashLinks.length && !foundHash; ++i) {
-    if (hashLinks[i].hash === window.location.hash) {
-      var parent = hashLinks[i].parentElement;
-      while (parent) {
-        if (parent.tagName === 'BLOCK') {
-          var targetPlatform = null;
-          // Could be more than one target platform, but just choose some sort of order
-          // of priority here.
-
-          // Target Platform
-          if (parent.className.indexOf('objc') > -1) {
-            targetPlatform = 'objc';
-          } else if (parent.className.indexOf('swift') > -1) {
-            targetPlatform = 'swift';
-          } else if (parent.className.indexOf('android') > -1) {
-            targetPlatform = 'android';
-          } else {
-            break; // assume we don't have anything.
-          }
-          // We would have broken out if both targetPlatform and devOS hadn't been filled.
-          display('platform', targetPlatform);
-          foundHash = true;
-          break;
-        }
-        parent = parent.parentElement;
-      }
-    }
-  }
-}
-// Do the default if there is no matching hash
-if (!foundHash) {
-  var isMac = navigator.platform === 'MacIntel';
-  display('platform', isMac ? 'objc' : 'android');
 }
 </script>
