@@ -12,14 +12,14 @@
 
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
-var ReactNativeComponentTree = require('ReactNativeComponentTree');
-var ReactNativeTagHandles = require('ReactNativeTagHandles');
-var ReactMultiChild = require('ReactMultiChild');
-var UIManager = require('UIManager');
+var NativeMethodsMixin = require('./NativeMethodsMixin');
+var ReactNativeAttributePayload = require('./ReactNativeAttributePayload');
+var ReactNativeComponentTree = require('./ReactNativeComponentTree');
+var ReactNativeTagHandles = require('./ReactNativeTagHandles');
+var ReactMultiChild = require('../shared/stack/reconciler/ReactMultiChild');
+var UIManager = require('../../../../ReactNative/UIManager');
 
-var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
+var deepFreezeAndThrowOnMutationInDev = require('../../../../Utilities/deepFreezeAndThrowOnMutationInDev');
 
 type ReactNativeBaseComponentViewConfig = {
   validAttributes: Object,

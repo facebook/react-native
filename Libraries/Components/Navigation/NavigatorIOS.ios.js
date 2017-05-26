@@ -11,21 +11,21 @@
  */
 'use strict';
 
-var EventEmitter = require('EventEmitter');
-var Image = require('Image');
-var RCTNavigatorManager = require('NativeModules').NavigatorManager;
-var React = require('React');
+var EventEmitter = require('../../EventEmitter/EventEmitter');
+var Image = require('../../Image/Image');
+var RCTNavigatorManager = require('../../BatchedBridge/NativeModules').NavigatorManager;
+var React = require('../../react-native/React');
 var PropTypes = require('prop-types');
-var ReactNative = require('ReactNative');
-var StaticContainer = require('StaticContainer.react');
-var StyleSheet = require('StyleSheet');
-var TVEventHandler = require('TVEventHandler');
-var View = require('View');
-var ViewPropTypes = require('ViewPropTypes');
+var ReactNative = require('../../Renderer/src/renderers/native/ReactNative');
+var StaticContainer = require('../StaticContainer.react');
+var StyleSheet = require('../../StyleSheet/StyleSheet');
+var TVEventHandler = require('../AppleTV/TVEventHandler');
+var View = require('../View/View');
+var ViewPropTypes = require('../View/ViewPropTypes');
 
 var invariant = require('fbjs/lib/invariant');
-var logError = require('logError');
-var requireNativeComponent = require('requireNativeComponent');
+var logError = require('../../Utilities/logError');
+var requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
 const keyMirror = require('fbjs/lib/keyMirror');
 

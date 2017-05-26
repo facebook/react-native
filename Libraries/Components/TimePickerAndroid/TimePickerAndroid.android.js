@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const TimePickerModule = require('NativeModules').TimePickerAndroid;
+const TimePickerModule = require('../../BatchedBridge/NativeModules').TimePickerAndroid;
 
 /**
  * Opens the standard Android time picker dialog.

@@ -15,10 +15,10 @@
 
 'use strict';
 
-var _shouldPolyfillES6Collection = require('_shouldPolyfillES6Collection');
-var guid = require('guid');
+var _shouldPolyfillES6Collection = require('./_shouldPolyfillES6Collection');
+var guid = require('./guid');
 var isNode = require('fbjs/lib/isNode');
-var toIterator = require('toIterator');
+var toIterator = require('./toIterator');
 
 module.exports = (function(global, undefined) {
   // Since our implementation is spec-compliant for the most part we can safely

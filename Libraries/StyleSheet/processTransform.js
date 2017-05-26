@@ -11,11 +11,11 @@
  */
 'use strict';
 
-var MatrixMath = require('MatrixMath');
-var Platform = require('Platform');
+var MatrixMath = require('../Utilities/MatrixMath');
+var Platform = require('../Utilities/Platform');
 
 var invariant = require('fbjs/lib/invariant');
-var stringifySafe = require('stringifySafe');
+var stringifySafe = require('../Utilities/stringifySafe');
 
 /**
  * Generate a transform matrix based on the provided transforms, and use that

@@ -11,7 +11,7 @@
 
 'use strict';
 
-var {HostComponent} = require('ReactTypeOfWork');
+var {HostComponent} = require('../../../shared/ReactTypeOfWork');
 
 function getParent(inst) {
   if (inst._hostParent !== undefined) {

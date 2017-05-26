@@ -10,8 +10,8 @@
  */
  'use strict';
 
-const RCTWebSocketModule = require('NativeModules').WebSocketModule;
-const NativeEventEmitter = require('NativeEventEmitter');
+const RCTWebSocketModule = require('../BatchedBridge/NativeModules').WebSocketModule;
+const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
 
 const base64 = require('base64-js');
 

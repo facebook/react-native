@@ -13,17 +13,17 @@
 
 // Note (avik): add @flow when Flow supports spread properties in propTypes
 
-var Animated = require('Animated');
-var Easing = require('Easing');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
+var Animated = require('../../Animated/src/Animated');
+var Easing = require('../../Animated/src/Easing');
+var NativeMethodsMixin = require('../../Renderer/src/renderers/native/NativeMethodsMixin');
+var React = require('../../react-native/React');
 var PropTypes = require('prop-types');
 var TimerMixin = require('react-timer-mixin');
-var Touchable = require('Touchable');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+var Touchable = require('./Touchable');
+var TouchableWithoutFeedback = require('./TouchableWithoutFeedback');
 
-var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var flattenStyle = require('flattenStyle');
+var ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
+var flattenStyle = require('../../StyleSheet/flattenStyle');
 
 type Event = Object;
 

@@ -12,10 +12,10 @@
  */
 'use strict';
 
-const {PropTypes, checkPropTypes} = require('React');
-const RCTCameraRollManager = require('NativeModules').CameraRollManager;
+const {PropTypes, checkPropTypes} = require('../react-native/React');
+const RCTCameraRollManager = require('../BatchedBridge/NativeModules').CameraRollManager;
 
-const createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
+const createStrictShapeTypeChecker = require('../Utilities/createStrictShapeTypeChecker');
 const invariant = require('fbjs/lib/invariant');
 
 const GROUP_TYPES_OPTIONS = {

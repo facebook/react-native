@@ -11,18 +11,18 @@
  */
 'use strict';
 
-const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-const UIManager = require('UIManager');
-const UnimplementedView = require('UnimplementedView');
+const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+const UIManager = require('./UIManager');
+const UnimplementedView = require('../Components/UnimplementedViews/UnimplementedView');
 
-const createReactNativeComponentClass = require('createReactNativeComponentClass');
-const insetsDiffer = require('insetsDiffer');
-const matricesDiffer = require('matricesDiffer');
-const pointsDiffer = require('pointsDiffer');
-const processColor = require('processColor');
-const resolveAssetSource = require('resolveAssetSource');
-const sizesDiffer = require('sizesDiffer');
-const verifyPropTypes = require('verifyPropTypes');
+const createReactNativeComponentClass = require('../Renderer/src/renderers/native/createReactNativeComponentClass');
+const insetsDiffer = require('../Utilities/differ/insetsDiffer');
+const matricesDiffer = require('../Utilities/differ/matricesDiffer');
+const pointsDiffer = require('../Utilities/differ/pointsDiffer');
+const processColor = require('../StyleSheet/processColor');
+const resolveAssetSource = require('../Image/resolveAssetSource');
+const sizesDiffer = require('../Utilities/differ/sizesDiffer');
+const verifyPropTypes = require('./verifyPropTypes');
 const warning = require('fbjs/lib/warning');
 
 /**

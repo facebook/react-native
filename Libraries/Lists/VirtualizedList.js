@@ -11,21 +11,21 @@
  */
 'use strict';
 
-const Batchinator = require('Batchinator');
-const FillRateHelper = require('FillRateHelper');
-const React = require('React');
-const ReactNative = require('ReactNative');
-const RefreshControl = require('RefreshControl');
-const ScrollView = require('ScrollView');
-const View = require('View');
-const ViewabilityHelper = require('ViewabilityHelper');
+const Batchinator = require('../Interaction/Batchinator');
+const FillRateHelper = require('./FillRateHelper');
+const React = require('../react-native/React');
+const ReactNative = require('../Renderer/src/renderers/native/ReactNative');
+const RefreshControl = require('../Components/RefreshControl/RefreshControl');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const View = require('../Components/View/View');
+const ViewabilityHelper = require('./ViewabilityHelper');
 
-const flattenStyle = require('flattenStyle');
-const infoLog = require('infoLog');
+const flattenStyle = require('../StyleSheet/flattenStyle');
+const infoLog = require('../Utilities/infoLog');
 const invariant = require('fbjs/lib/invariant');
 const warning = require('fbjs/lib/warning');
 
-const {computeWindowedRenderLimits} = require('VirtualizeUtils');
+const {computeWindowedRenderLimits} = require('./VirtualizeUtils');
 
 import type {ViewabilityConfig, ViewToken} from 'ViewabilityHelper';
 

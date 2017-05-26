@@ -21,8 +21,8 @@ export type ResolvedAssetSource = {
 
 import type { PackagerAsset } from 'AssetRegistry';
 
-const PixelRatio = require('PixelRatio');
-const Platform = require('Platform');
+const PixelRatio = require('../Utilities/PixelRatio');
+const Platform = require('../Utilities/Platform');
 
 const assetPathUtils = require('../../local-cli/bundle/assetPathUtils');
 const invariant = require('fbjs/lib/invariant');

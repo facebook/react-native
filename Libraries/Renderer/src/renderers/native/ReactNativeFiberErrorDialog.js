@@ -12,7 +12,7 @@
 
 'use strict';
 
-const ExceptionsManager = require('ExceptionsManager');
+const ExceptionsManager = require('../../../../Core/ExceptionsManager');
 
 import type {CapturedError} from 'ReactFiberScheduler';
 

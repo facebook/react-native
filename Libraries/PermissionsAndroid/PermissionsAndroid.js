@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const NativeModules = require('NativeModules');
+const NativeModules = require('../BatchedBridge/NativeModules');
 
 type Rationale = {
   title: string,

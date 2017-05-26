@@ -10,7 +10,7 @@
  */
 'use strict';
 
-var ReactNativeComponentTree = require('ReactNativeComponentTree');
+var ReactNativeComponentTree = require('../Renderer/src/renderers/native/ReactNativeComponentTree');
 
 function traverseOwnerTreeUp(hierarchy, instance) {
   if (instance) {

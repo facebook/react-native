@@ -12,18 +12,18 @@
 'use strict';
 
 var React = require('react');
-var ReactComponentEnvironment = require('ReactComponentEnvironment');
-var ReactCompositeComponentTypes = require('ReactCompositeComponentTypes');
-var ReactErrorUtils = require('ReactErrorUtils');
-var ReactFeatureFlags = require('ReactFeatureFlags');
-var ReactInstanceMap = require('ReactInstanceMap');
-var ReactInstrumentation = require('ReactInstrumentation');
-var ReactNodeTypes = require('ReactNodeTypes');
-var ReactReconciler = require('ReactReconciler');
-var {ReactCurrentOwner} = require('ReactGlobalSharedState');
+var ReactComponentEnvironment = require('./ReactComponentEnvironment');
+var ReactCompositeComponentTypes = require('./ReactCompositeComponentTypes');
+var ReactErrorUtils = require('../../utils/ReactErrorUtils');
+var ReactFeatureFlags = require('../../utils/ReactFeatureFlags');
+var ReactInstanceMap = require('../../shared/ReactInstanceMap');
+var ReactInstrumentation = require('../../ReactInstrumentation');
+var ReactNodeTypes = require('./ReactNodeTypes');
+var ReactReconciler = require('./ReactReconciler');
+var {ReactCurrentOwner} = require('../../ReactGlobalSharedState');
 
 if (__DEV__) {
-  var {ReactDebugCurrentFrame} = require('ReactGlobalSharedState');
+  var {ReactDebugCurrentFrame} = require('../../ReactGlobalSharedState');
   var warningAboutMissingGetChildContext = {};
 }
 
@@ -31,7 +31,7 @@ var checkPropTypes = require('prop-types/checkPropTypes');
 var emptyObject = require('fbjs/lib/emptyObject');
 var invariant = require('fbjs/lib/invariant');
 var shallowEqual = require('fbjs/lib/shallowEqual');
-var shouldUpdateReactComponent = require('shouldUpdateReactComponent');
+var shouldUpdateReactComponent = require('../../shared/shouldUpdateReactComponent');
 var warning = require('fbjs/lib/warning');
 
 function StatelessComponent(Component) {}

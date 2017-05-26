@@ -11,21 +11,21 @@
  */
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const BugReporting = require('BugReporting');
-const FrameRateLogger = require('FrameRateLogger');
-const NativeModules = require('NativeModules');
-const ReactNative = require('ReactNative');
-const SceneTracker = require('SceneTracker');
+const BatchedBridge = require('../BatchedBridge/BatchedBridge');
+const BugReporting = require('../BugReporting/BugReporting');
+const FrameRateLogger = require('../Interaction/FrameRateLogger');
+const NativeModules = require('../BatchedBridge/NativeModules');
+const ReactNative = require('../Renderer/src/renderers/native/ReactNative');
+const SceneTracker = require('../Utilities/SceneTracker');
 
-const infoLog = require('infoLog');
+const infoLog = require('../Utilities/infoLog');
 const invariant = require('fbjs/lib/invariant');
-const renderApplication = require('renderApplication');
+const renderApplication = require('./renderApplication');
 
 if (__DEV__) {
   // In order to use Cmd+P to record/dump perf data, we need to make sure
   // this module is available in the bundle
-  require('RCTRenderingPerf');
+  require('../Performance/RCTRenderingPerf');
 }
 
 type Task = (taskData: any) => Promise<void>;

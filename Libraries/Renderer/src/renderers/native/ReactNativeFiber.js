@@ -12,26 +12,26 @@
 
 'use strict';
 
-const ReactFiberErrorLogger = require('ReactFiberErrorLogger');
-const ReactFiberReconciler = require('ReactFiberReconciler');
-const ReactGenericBatching = require('ReactGenericBatching');
-const ReactNativeAttributePayload = require('ReactNativeAttributePayload');
-const ReactNativeComponentTree = require('ReactNativeComponentTree');
-const ReactNativeFiberErrorDialog = require('ReactNativeFiberErrorDialog');
-const ReactNativeFiberHostComponent = require('ReactNativeFiberHostComponent');
-const ReactNativeInjection = require('ReactNativeInjection');
-const ReactNativeTagHandles = require('ReactNativeTagHandles');
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactPortal = require('ReactPortal');
-const ReactVersion = require('ReactVersion');
-const UIManager = require('UIManager');
+const ReactFiberErrorLogger = require('../shared/fiber/ReactFiberErrorLogger');
+const ReactFiberReconciler = require('../shared/fiber/ReactFiberReconciler');
+const ReactGenericBatching = require('../shared/shared/event/ReactGenericBatching');
+const ReactNativeAttributePayload = require('./ReactNativeAttributePayload');
+const ReactNativeComponentTree = require('./ReactNativeComponentTree');
+const ReactNativeFiberErrorDialog = require('./ReactNativeFiberErrorDialog');
+const ReactNativeFiberHostComponent = require('./ReactNativeFiberHostComponent');
+const ReactNativeInjection = require('./ReactNativeInjection');
+const ReactNativeTagHandles = require('./ReactNativeTagHandles');
+const ReactNativeViewConfigRegistry = require('./ReactNativeViewConfigRegistry');
+const ReactPortal = require('../shared/fiber/isomorphic/ReactPortal');
+const ReactVersion = require('../../ReactVersion');
+const UIManager = require('../../../../ReactNative/UIManager');
 
-const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
+const deepFreezeAndThrowOnMutationInDev = require('../../../../Utilities/deepFreezeAndThrowOnMutationInDev');
 const emptyObject = require('fbjs/lib/emptyObject');
-const findNodeHandle = require('findNodeHandle');
+const findNodeHandle = require('./findNodeHandle');
 const invariant = require('fbjs/lib/invariant');
 
-const {injectInternals} = require('ReactFiberDevToolsHook');
+const {injectInternals} = require('../shared/fiber/ReactFiberDevToolsHook');
 
 import type {Element} from 'React';
 import type {Fiber} from 'ReactFiber';

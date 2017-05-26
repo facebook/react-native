@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const infoLog = require('infoLog');
+const infoLog = require('../Utilities/infoLog');
 const performanceNow = require('fbjs/lib/performanceNow');
 
 type Handler = {

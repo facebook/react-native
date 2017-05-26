@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+var ReactNativeStyleAttributes = require('./ReactNativeStyleAttributes');
 
 var ReactNativeViewAttributes = {};
 

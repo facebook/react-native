@@ -11,7 +11,7 @@
 
 'use strict';
 
-var ReactControlledComponent = require('ReactControlledComponent');
+var ReactControlledComponent = require('./ReactControlledComponent');
 
 // Used as a way to call batchedUpdates when we don't know if we're in a Fiber
 // or Stack context. Such as when we're dispatching events or if third party

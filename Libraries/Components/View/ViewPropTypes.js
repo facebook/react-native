@@ -11,20 +11,20 @@
  */
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
-const Platform = require('Platform');
-const StyleSheetPropType = require('StyleSheetPropType');
-const ViewStylePropTypes = require('ViewStylePropTypes');
+const EdgeInsetsPropType = require('../../StyleSheet/EdgeInsetsPropType');
+const Platform = require('../../Utilities/Platform');
+const StyleSheetPropType = require('../../StyleSheet/StyleSheetPropType');
+const ViewStylePropTypes = require('./ViewStylePropTypes');
 
-const { PropTypes } = require('React');
+const { PropTypes } = require('../../react-native/React');
 const {
   AccessibilityComponentTypes,
   AccessibilityTraits,
-} = require('ViewAccessibility');
+} = require('./ViewAccessibility');
 
 var TVViewPropTypes = {};
 if (Platform.isTVOS) {
-  TVViewPropTypes = require('TVViewPropTypes');
+  TVViewPropTypes = require('../AppleTV/TVViewPropTypes');
 }
 
 import type {

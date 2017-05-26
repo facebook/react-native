@@ -11,25 +11,25 @@
  */
 'use strict';
 
-const ColorPropType = require('ColorPropType');
-const DocumentSelectionState = require('DocumentSelectionState');
-const EventEmitter = require('EventEmitter');
-const NativeMethodsMixin = require('NativeMethodsMixin');
-const Platform = require('Platform');
-const React = require('React');
+const ColorPropType = require('../../StyleSheet/ColorPropType');
+const DocumentSelectionState = require('../../vendor/document/selection/DocumentSelectionState');
+const EventEmitter = require('../../EventEmitter/EventEmitter');
+const NativeMethodsMixin = require('../../Renderer/src/renderers/native/NativeMethodsMixin');
+const Platform = require('../../Utilities/Platform');
+const React = require('../../react-native/React');
 const PropTypes = require('prop-types');
-const ReactNative = require('ReactNative');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const TextInputState = require('TextInputState');
+const ReactNative = require('../../Renderer/src/renderers/native/ReactNative');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const Text = require('../../Text/Text');
+const TextInputState = require('./TextInputState');
 const TimerMixin = require('react-timer-mixin');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-const UIManager = require('UIManager');
-const ViewPropTypes = require('ViewPropTypes');
+const TouchableWithoutFeedback = require('../Touchable/TouchableWithoutFeedback');
+const UIManager = require('../../ReactNative/UIManager');
+const ViewPropTypes = require('../View/ViewPropTypes');
 
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 const warning = require('fbjs/lib/warning');
 
 const onlyMultiline = {

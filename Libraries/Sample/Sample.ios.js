@@ -4,7 +4,7 @@
  */
 'use strict';
 
-var NativeSample = require('NativeModules').Sample;
+var NativeSample = require('../BatchedBridge/NativeModules').Sample;
 
 /**
  * High-level docs for the Sample iOS API can be written here.

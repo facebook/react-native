@@ -11,12 +11,12 @@
  */
 'use strict';
 
-const Incremental = require('Incremental');
-const React = require('React');
+const Incremental = require('./Incremental');
+const React = require('../react-native/React');
 
 const PropTypes = require('prop-types');
 
-const infoLog = require('infoLog');
+const infoLog = require('../Utilities/infoLog');
 
 let _groupCounter = -1;
 const DEBUG = false;

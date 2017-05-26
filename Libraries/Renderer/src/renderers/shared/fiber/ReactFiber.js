@@ -33,20 +33,20 @@ var {
   CoroutineComponent,
   YieldComponent,
   Fragment,
-} = require('ReactTypeOfWork');
+} = require('../../../shared/ReactTypeOfWork');
 
-var {NoWork} = require('ReactPriorityLevel');
+var {NoWork} = require('./ReactPriorityLevel');
 
-var {NoContext} = require('ReactTypeOfInternalContext');
+var {NoContext} = require('./ReactTypeOfInternalContext');
 
-var {NoEffect} = require('ReactTypeOfSideEffect');
+var {NoEffect} = require('./ReactTypeOfSideEffect');
 
-var {cloneUpdateQueue} = require('ReactFiberUpdateQueue');
+var {cloneUpdateQueue} = require('./ReactFiberUpdateQueue');
 
 var invariant = require('fbjs/lib/invariant');
 
 if (__DEV__) {
-  var getComponentName = require('getComponentName');
+  var getComponentName = require('../../../shared/utils/getComponentName');
 
   var hasBadMapPolyfill = false;
   try {

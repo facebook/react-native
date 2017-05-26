@@ -17,28 +17,28 @@ import type {FiberRoot} from 'ReactFiberRoot';
 import type {PriorityLevel} from 'ReactPriorityLevel';
 import type {ReactNodeList} from 'ReactTypes';
 
-var ReactFeatureFlags = require('ReactFeatureFlags');
+var ReactFeatureFlags = require('../utils/ReactFeatureFlags');
 
-var {addTopLevelUpdate} = require('ReactFiberUpdateQueue');
+var {addTopLevelUpdate} = require('./ReactFiberUpdateQueue');
 
 var {
   findCurrentUnmaskedContext,
   isContextProvider,
   processChildContext,
-} = require('ReactFiberContext');
-var {createFiberRoot} = require('ReactFiberRoot');
-var ReactFiberScheduler = require('ReactFiberScheduler');
+} = require('./ReactFiberContext');
+var {createFiberRoot} = require('./ReactFiberRoot');
+var ReactFiberScheduler = require('./ReactFiberScheduler');
 
 if (__DEV__) {
   var warning = require('fbjs/lib/warning');
-  var ReactFiberInstrumentation = require('ReactFiberInstrumentation');
-  var ReactDebugCurrentFiber = require('ReactDebugCurrentFiber');
-  var getComponentName = require('getComponentName');
+  var ReactFiberInstrumentation = require('./ReactFiberInstrumentation');
+  var ReactDebugCurrentFiber = require('./ReactDebugCurrentFiber');
+  var getComponentName = require('../../../shared/utils/getComponentName');
 }
 
-var {findCurrentHostFiber} = require('ReactFiberTreeReflection');
+var {findCurrentHostFiber} = require('./ReactFiberTreeReflection');
 
-var getContextForSubtree = require('getContextForSubtree');
+var getContextForSubtree = require('../shared/getContextForSubtree');
 
 export type Deadline = {
   timeRemaining: () => number,

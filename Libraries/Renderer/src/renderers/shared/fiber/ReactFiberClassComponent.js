@@ -15,35 +15,35 @@
 import type {Fiber} from 'ReactFiber';
 import type {PriorityLevel} from 'ReactPriorityLevel';
 
-var {Update} = require('ReactTypeOfSideEffect');
+var {Update} = require('./ReactTypeOfSideEffect');
 
-var ReactFeatureFlags = require('ReactFeatureFlags');
-var {AsyncUpdates} = require('ReactTypeOfInternalContext');
+var ReactFeatureFlags = require('../utils/ReactFeatureFlags');
+var {AsyncUpdates} = require('./ReactTypeOfInternalContext');
 
 var {
   cacheContext,
   getMaskedContext,
   getUnmaskedContext,
   isContextConsumer,
-} = require('ReactFiberContext');
+} = require('./ReactFiberContext');
 var {
   addUpdate,
   addReplaceUpdate,
   addForceUpdate,
   beginUpdateQueue,
-} = require('ReactFiberUpdateQueue');
-var {hasContextChanged} = require('ReactFiberContext');
-var {isMounted} = require('ReactFiberTreeReflection');
-var ReactInstanceMap = require('ReactInstanceMap');
+} = require('./ReactFiberUpdateQueue');
+var {hasContextChanged} = require('./ReactFiberContext');
+var {isMounted} = require('./ReactFiberTreeReflection');
+var ReactInstanceMap = require('../shared/ReactInstanceMap');
 var emptyObject = require('fbjs/lib/emptyObject');
-var getComponentName = require('getComponentName');
+var getComponentName = require('../../../shared/utils/getComponentName');
 var shallowEqual = require('fbjs/lib/shallowEqual');
 var invariant = require('fbjs/lib/invariant');
 
 const isArray = Array.isArray;
 
 if (__DEV__) {
-  var {startPhaseTimer, stopPhaseTimer} = require('ReactDebugFiberPerf');
+  var {startPhaseTimer, stopPhaseTimer} = require('./ReactDebugFiberPerf');
   var warning = require('fbjs/lib/warning');
   var warnOnInvalidCallback = function(callback: mixed, callerName: string) {
     warning(

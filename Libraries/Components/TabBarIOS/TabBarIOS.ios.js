@@ -11,14 +11,14 @@
  */
 'use strict';
 
-var ColorPropType = require('ColorPropType');
-var React = require('React');
+var ColorPropType = require('../../StyleSheet/ColorPropType');
+var React = require('../../react-native/React');
 const PropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
-var TabBarItemIOS = require('TabBarItemIOS');
-const ViewPropTypes = require('ViewPropTypes');
+var StyleSheet = require('../../StyleSheet/StyleSheet');
+var TabBarItemIOS = require('./TabBarItemIOS');
+const ViewPropTypes = require('../View/ViewPropTypes');
 
-var requireNativeComponent = require('requireNativeComponent');
+var requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
 class TabBarIOS extends React.Component {
   props: {

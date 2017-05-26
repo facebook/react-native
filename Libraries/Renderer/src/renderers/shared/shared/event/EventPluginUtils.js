@@ -11,7 +11,7 @@
 
 'use strict';
 
-var ReactErrorUtils = require('ReactErrorUtils');
+var ReactErrorUtils = require('../../utils/ReactErrorUtils');
 
 var invariant = require('fbjs/lib/invariant');
 var warning = require('fbjs/lib/warning');

@@ -15,7 +15,7 @@
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
+var BatchedBridge = require('../BatchedBridge/BatchedBridge');
 
 var RCTDebugComponentOwnership = {
   /**

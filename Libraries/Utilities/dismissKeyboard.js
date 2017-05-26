@@ -12,7 +12,7 @@
  */
 'use strict';
 
-var TextInputState = require('TextInputState');
+var TextInputState = require('../Components/TextInput/TextInputState');
 
 function dismissKeyboard() {
   TextInputState.blurTextInput(TextInputState.currentlyFocusedField());

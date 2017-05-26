@@ -12,7 +12,7 @@
 'use strict';
 
 var invariant = require('fbjs/lib/invariant');
-var isEmpty = require('isEmpty');
+var isEmpty = require('../../vendor/core/isEmpty');
 var warning = require('fbjs/lib/warning');
 
 function defaultGetRowData(

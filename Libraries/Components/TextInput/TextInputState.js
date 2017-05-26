@@ -15,8 +15,8 @@
  */
 'use strict';
 
-var Platform = require('Platform');
-var UIManager = require('UIManager');
+var Platform = require('../../Utilities/Platform');
+var UIManager = require('../../ReactNative/UIManager');
 
 var TextInputState = {
    /**

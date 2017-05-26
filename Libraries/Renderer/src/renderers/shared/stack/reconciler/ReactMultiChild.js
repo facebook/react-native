@@ -11,16 +11,16 @@
 
 'use strict';
 
-var ReactComponentEnvironment = require('ReactComponentEnvironment');
-var ReactInstanceMap = require('ReactInstanceMap');
-var ReactInstrumentation = require('ReactInstrumentation');
+var ReactComponentEnvironment = require('./ReactComponentEnvironment');
+var ReactInstanceMap = require('../../shared/ReactInstanceMap');
+var ReactInstrumentation = require('../../ReactInstrumentation');
 
-var ReactReconciler = require('ReactReconciler');
-var ReactChildReconciler = require('ReactChildReconciler');
-var {ReactCurrentOwner} = require('ReactGlobalSharedState');
+var ReactReconciler = require('./ReactReconciler');
+var ReactChildReconciler = require('./ReactChildReconciler');
+var {ReactCurrentOwner} = require('../../ReactGlobalSharedState');
 
 var emptyFunction = require('fbjs/lib/emptyFunction');
-var flattenStackChildren = require('flattenStackChildren');
+var flattenStackChildren = require('./flattenStackChildren');
 var invariant = require('fbjs/lib/invariant');
 
 /**

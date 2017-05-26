@@ -12,10 +12,10 @@
 
 'use strict';
 
-var PooledClass = require('PooledClass');
+var PooledClass = require('../../../../shared/utils/PooledClass');
 
 var invariant = require('fbjs/lib/invariant');
-var validateCallback = require('validateCallback');
+var validateCallback = require('../../utils/validateCallback');
 
 /**
  * A specialized pseudo-event module to help keep track of components waiting to

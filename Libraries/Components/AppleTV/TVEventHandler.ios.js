@@ -11,9 +11,9 @@
  */
 'use strict';
 
-const React = require('React');
-const TVNavigationEventEmitter = require('NativeModules').TVNavigationEventEmitter;
-const NativeEventEmitter = require('NativeEventEmitter');
+const React = require('../../react-native/React');
+const TVNavigationEventEmitter = require('../../BatchedBridge/NativeModules').TVNavigationEventEmitter;
+const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
 
 function TVEventHandler() {
   this.__nativeTVNavigationEventListener = null;

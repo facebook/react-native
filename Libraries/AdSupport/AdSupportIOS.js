@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var AdSupport = require('NativeModules').AdSupport;
+var AdSupport = require('../BatchedBridge/NativeModules').AdSupport;
 
 /**
  * `AdSupport` provides access to the "advertising identifier". If you link this library

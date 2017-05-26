@@ -17,10 +17,10 @@ import type {Fiber} from 'ReactFiber';
 type LifeCyclePhase = 'render' | 'getChildContext';
 
 if (__DEV__) {
-  var getComponentName = require('getComponentName');
+  var getComponentName = require('../../../shared/utils/getComponentName');
   var {
     getStackAddendumByWorkInProgressFiber,
-  } = require('ReactFiberComponentTreeHook');
+  } = require('../../../shared/ReactFiberComponentTreeHook');
 }
 
 function getCurrentFiberOwnerName(): string | null {

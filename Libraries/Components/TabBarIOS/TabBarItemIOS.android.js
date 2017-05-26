@@ -11,9 +11,9 @@
 
 'use strict';
 
-var React = require('React');
-var View = require('View');
-var StyleSheet = require('StyleSheet');
+var React = require('../../react-native/React');
+var View = require('../View/View');
+var StyleSheet = require('../../StyleSheet/StyleSheet');
 
 class DummyTab extends React.Component {
   render() {

@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var RCTImagePicker = require('NativeModules').ImagePickerIOS;
+var RCTImagePicker = require('../BatchedBridge/NativeModules').ImagePickerIOS;
 
 var ImagePickerIOS = {
   canRecordVideos: function(callback: Function) {

@@ -11,9 +11,9 @@
  */
 'use strict';
 
-const EventEmitter = require('EventEmitter');
-const EventSubscriptionVendor = require('EventSubscriptionVendor');
-const BatchedBridge = require('BatchedBridge');
+const EventEmitter = require('./EventEmitter');
+const EventSubscriptionVendor = require('./EventSubscriptionVendor');
+const BatchedBridge = require('../BatchedBridge/BatchedBridge');
 
 import type EmitterSubscription from 'EmitterSubscription';
 
@@ -35,15 +35,15 @@ class RCTDeviceEventEmitter extends EventEmitter {
     if (eventType) {
       if (eventType.lastIndexOf('statusBar', 0) === 0) {
         console.warn('`%s` event should be registered via the StatusBarIOS module', eventType);
-        return require('StatusBarIOS');
+        return require('../Components/StatusBar/StatusBarIOS');
       }
       if (eventType.lastIndexOf('keyboard', 0) === 0) {
         console.warn('`%s` event should be registered via the Keyboard module', eventType);
-        return require('Keyboard');
+        return require('../Components/Keyboard/Keyboard');
       }
       if (eventType === 'appStateDidChange' || eventType === 'memoryWarning') {
         console.warn('`%s` event should be registered via the AppState module', eventType);
-        return require('AppState');
+        return require('../AppState/AppState');
       }
     }
     return null;

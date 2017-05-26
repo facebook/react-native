@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const Platform = require('Platform');
+const Platform = require('./Platform');
 const invariant = require('fbjs/lib/invariant');
 
 /**
@@ -27,7 +27,7 @@ const HMRClient = {
     // need to require WebSocket inside of `enable` function because
     // this module is defined as a `polyfillGlobal`.
     // See `InitializeJavascriptAppEngine.js`
-    const WebSocket = require('WebSocket');
+    const WebSocket = require('../WebSocket/WebSocket');
 
     const wsHostPort = port !== null && port !== ''
       ? `${host}:${port}`
@@ -73,7 +73,7 @@ Error: ${e.message}`
     };
     activeWS.onmessage = ({data}) => {
       // Moving to top gives errors due to NativeModules not being initialized
-      const HMRLoadingView = require('HMRLoadingView');
+      const HMRLoadingView = require('./HMRLoadingView');
 
       data = JSON.parse(data);
 
@@ -91,10 +91,10 @@ Error: ${e.message}`
           } = data.body;
 
           if (Platform.OS === 'ios') {
-            const RCTRedBox = require('NativeModules').RedBox;
+            const RCTRedBox = require('../BatchedBridge/NativeModules').RedBox;
             RCTRedBox && RCTRedBox.dismiss && RCTRedBox.dismiss();
           } else {
-            const RCTExceptionsManager = require('NativeModules').ExceptionsManager;
+            const RCTExceptionsManager = require('../BatchedBridge/NativeModules').ExceptionsManager;
             RCTExceptionsManager && RCTExceptionsManager.dismissRedbox && RCTExceptionsManager.dismissRedbox();
           }
 

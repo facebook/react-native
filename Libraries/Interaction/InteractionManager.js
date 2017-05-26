@@ -11,12 +11,12 @@
  */
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const EventEmitter = require('EventEmitter');
-const Set = require('Set');
-const TaskQueue = require('TaskQueue');
+const BatchedBridge = require('../BatchedBridge/BatchedBridge');
+const EventEmitter = require('../EventEmitter/EventEmitter');
+const Set = require('../vendor/core/Set');
+const TaskQueue = require('./TaskQueue');
 
-const infoLog = require('infoLog');
+const infoLog = require('../Utilities/infoLog');
 const invariant = require('fbjs/lib/invariant');
 const keyMirror = require('fbjs/lib/keyMirror');
 

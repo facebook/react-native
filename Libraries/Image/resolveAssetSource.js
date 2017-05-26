@@ -13,9 +13,9 @@
  */
 'use strict';
 
-const AssetRegistry = require('AssetRegistry');
-const AssetSourceResolver = require('AssetSourceResolver');
-const NativeModules = require('NativeModules');
+const AssetRegistry = require('./AssetRegistry');
+const AssetSourceResolver = require('./AssetSourceResolver');
+const NativeModules = require('../BatchedBridge/NativeModules');
 
 import type { ResolvedAssetSource } from 'AssetSourceResolver';
 

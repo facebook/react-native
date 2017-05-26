@@ -11,9 +11,9 @@
  */
 'use strict';
 
-const AlertIOS = require('AlertIOS');
-const NativeModules = require('NativeModules');
-const Platform = require('Platform');
+const AlertIOS = require('./AlertIOS');
+const NativeModules = require('../BatchedBridge/NativeModules');
+const Platform = require('../Utilities/Platform');
 
 import type { AlertType, AlertButtonStyle } from 'AlertIOS';
 

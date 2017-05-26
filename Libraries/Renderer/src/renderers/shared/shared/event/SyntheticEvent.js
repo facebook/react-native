@@ -13,7 +13,7 @@
 
 'use strict';
 
-var PooledClass = require('PooledClass');
+var PooledClass = require('../../../../shared/utils/PooledClass');
 
 var emptyFunction = require('fbjs/lib/emptyFunction');
 var warning = require('fbjs/lib/warning');

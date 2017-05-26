@@ -11,8 +11,8 @@
  */
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const Systrace = require('Systrace');
+const BatchedBridge = require('../BatchedBridge/BatchedBridge');
+const Systrace = require('../Performance/Systrace');
 
 const performanceNow = global.nativePerformanceNow || require('fbjs/lib/performanceNow');
 

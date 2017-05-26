@@ -27,7 +27,7 @@ var SamplingProfiler = {
         'Error occured when restarting Sampling Profiler: ' + e.toString());
       error = e.toString();
     }
-    require('NativeModules').JSCSamplingProfiler.operationComplete(
+    require('../BatchedBridge/NativeModules').JSCSamplingProfiler.operationComplete(
       token, result, error);
   },
 };

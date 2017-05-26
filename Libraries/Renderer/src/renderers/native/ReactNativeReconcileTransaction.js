@@ -11,11 +11,11 @@
  */
 'use strict';
 
-var CallbackQueue = require('CallbackQueue');
-var PooledClass = require('PooledClass');
-var Transaction = require('Transaction');
-var ReactInstrumentation = require('ReactInstrumentation');
-var ReactUpdateQueue = require('ReactUpdateQueue');
+var CallbackQueue = require('../shared/stack/reconciler/CallbackQueue');
+var PooledClass = require('../../shared/utils/PooledClass');
+var Transaction = require('../shared/stack/reconciler/Transaction');
+var ReactInstrumentation = require('../shared/ReactInstrumentation');
+var ReactUpdateQueue = require('../shared/stack/reconciler/ReactUpdateQueue');
 
 /**
  * Provides a `CallbackQueue` queue for collecting `onDOMReady` callbacks during

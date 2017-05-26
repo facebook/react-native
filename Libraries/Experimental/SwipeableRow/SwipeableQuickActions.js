@@ -11,11 +11,11 @@
  */
 'use strict';
 
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+const React = require('../../react-native/React');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const View = require('../../Components/View/View');
 
-const ViewPropTypes = require('ViewPropTypes');
+const ViewPropTypes = require('../../Components/View/ViewPropTypes');
 
 /**
  * A thin wrapper around standard quick action buttons that can, if the user

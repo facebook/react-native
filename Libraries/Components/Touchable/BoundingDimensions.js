@@ -11,7 +11,7 @@
 
 'use strict';
 
-var PooledClass = require('PooledClass');
+var PooledClass = require('../../Renderer/src/shared/utils/PooledClass');
 
 var twoArgumentPooler = PooledClass.twoArgumentPooler;
 

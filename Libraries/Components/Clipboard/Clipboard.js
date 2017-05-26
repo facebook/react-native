@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const Clipboard = require('NativeModules').Clipboard;
+const Clipboard = require('../../BatchedBridge/NativeModules').Clipboard;
 
 /**
  * `Clipboard` gives you an interface for setting and getting content from Clipboard on both iOS and Android

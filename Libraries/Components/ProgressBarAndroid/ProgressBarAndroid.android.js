@@ -10,13 +10,13 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
+var NativeMethodsMixin = require('../../Renderer/src/renderers/native/NativeMethodsMixin');
+var React = require('../../react-native/React');
 var PropTypes = require('prop-types');
-var ViewPropTypes = require('ViewPropTypes');
-var ColorPropType = require('ColorPropType');
+var ViewPropTypes = require('../View/ViewPropTypes');
+var ColorPropType = require('../../StyleSheet/ColorPropType');
 
-var requireNativeComponent = require('requireNativeComponent');
+var requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
 var STYLE_ATTRIBUTES = [
   'Horizontal',

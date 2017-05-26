@@ -12,7 +12,7 @@
 
 'use strict';
 
-var ReactDebugTool = require('ReactDebugTool');
+var ReactDebugTool = require('./ReactDebugTool');
 var warning = require('fbjs/lib/warning');
 var alreadyWarned = false;
 

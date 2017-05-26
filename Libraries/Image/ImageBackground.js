@@ -12,9 +12,9 @@
  */
 'use strict';
 
-const Image = require('Image');
-const React = require('React');
-const View = require('View');
+const Image = require('./Image');
+const React = require('../react-native/React');
+const View = require('../Components/View/View');
 
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.

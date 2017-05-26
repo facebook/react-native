@@ -11,8 +11,8 @@
 
 'use strict';
 
-var ReactRef = require('ReactRef');
-var ReactInstrumentation = require('ReactInstrumentation');
+var ReactRef = require('./ReactRef');
+var ReactInstrumentation = require('../../ReactInstrumentation');
 
 var warning = require('fbjs/lib/warning');
 

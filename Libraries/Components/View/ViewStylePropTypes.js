@@ -11,11 +11,11 @@
  */
 'use strict';
 
-var LayoutPropTypes = require('LayoutPropTypes');
-var ReactPropTypes = require('React').PropTypes;
-var ColorPropType = require('ColorPropType');
-var ShadowPropTypesIOS = require('ShadowPropTypesIOS');
-var TransformPropTypes = require('TransformPropTypes');
+var LayoutPropTypes = require('../../StyleSheet/LayoutPropTypes');
+var ReactPropTypes = require('../../react-native/React').PropTypes;
+var ColorPropType = require('../../StyleSheet/ColorPropType');
+var ShadowPropTypesIOS = require('./ShadowPropTypesIOS');
+var TransformPropTypes = require('../../StyleSheet/TransformPropTypes');
 
 /**
  * Warning: Some of these properties may not be supported in all releases.

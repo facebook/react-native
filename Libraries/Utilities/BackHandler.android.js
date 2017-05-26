@@ -11,8 +11,8 @@
 
 'use strict';
 
-var DeviceEventManager = require('NativeModules').DeviceEventManager;
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+var DeviceEventManager = require('../BatchedBridge/NativeModules').DeviceEventManager;
+var RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
 
 var DEVICE_BACK_EVENT = 'hardwareBackPress';
 

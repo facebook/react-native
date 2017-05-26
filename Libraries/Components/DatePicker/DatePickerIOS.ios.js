@@ -13,14 +13,14 @@
  */
 'use strict';
 
-const NativeMethodsMixin = require('NativeMethodsMixin');
-const React = require('React');
+const NativeMethodsMixin = require('../../Renderer/src/renderers/native/NativeMethodsMixin');
+const React = require('../../react-native/React');
 const PropTypes = require('prop-types');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const View = require('../View/View');
+const ViewPropTypes = require('../View/ViewPropTypes');
 
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
 type DefaultProps = {
   mode: 'date' | 'time' | 'datetime',

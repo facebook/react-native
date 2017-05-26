@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const {SourceCode} = require('NativeModules');
+const {SourceCode} = require('../../BatchedBridge/NativeModules');
 
 let _cachedDevServerURL: ?string;
 const FALLBACK = 'http://localhost:8081/';

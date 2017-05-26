@@ -11,14 +11,14 @@
  */
 'use strict';
 
-const Keyboard = require('Keyboard');
-const LayoutAnimation = require('LayoutAnimation');
-const Platform = require('Platform');
+const Keyboard = require('./Keyboard');
+const LayoutAnimation = require('../../LayoutAnimation/LayoutAnimation');
+const Platform = require('../../Utilities/Platform');
 const PropTypes = require('prop-types');
-const React = require('React');
+const React = require('../../react-native/React');
 const TimerMixin = require('react-timer-mixin');
-const View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
+const View = require('../View/View');
+const ViewPropTypes = require('../View/ViewPropTypes');
 
 import type EmitterSubscription from 'EmitterSubscription';
 

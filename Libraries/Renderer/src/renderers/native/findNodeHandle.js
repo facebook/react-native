@@ -12,10 +12,10 @@
 
 'use strict';
 
-var ReactInstanceMap = require('ReactInstanceMap');
-var {ReactCurrentOwner} = require('ReactGlobalSharedState');
+var ReactInstanceMap = require('../shared/shared/ReactInstanceMap');
+var {ReactCurrentOwner} = require('../shared/ReactGlobalSharedState');
 
-var getComponentName = require('getComponentName');
+var getComponentName = require('../../shared/utils/getComponentName');
 var invariant = require('fbjs/lib/invariant');
 var warning = require('fbjs/lib/warning');
 

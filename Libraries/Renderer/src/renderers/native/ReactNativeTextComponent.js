@@ -11,9 +11,9 @@
 
 'use strict';
 
-var ReactNativeComponentTree = require('ReactNativeComponentTree');
-var ReactNativeTagHandles = require('ReactNativeTagHandles');
-var UIManager = require('UIManager');
+var ReactNativeComponentTree = require('./ReactNativeComponentTree');
+var ReactNativeTagHandles = require('./ReactNativeTagHandles');
+var UIManager = require('../../../../ReactNative/UIManager');
 
 var invariant = require('fbjs/lib/invariant');
 

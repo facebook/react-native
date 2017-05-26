@@ -11,15 +11,15 @@
  */
 'use strict';
 
-const Platform = require('Platform');
+const Platform = require('../Utilities/Platform');
 
 const invariant = require('fbjs/lib/invariant');
-const processColor = require('processColor');
+const processColor = require('../StyleSheet/processColor');
 
 const {
   ActionSheetManager,
   ShareModule
-} = require('NativeModules');
+} = require('../BatchedBridge/NativeModules');
 
 type Content = { title?: string, message: string } | { title?: string, url: string };
 type Options = { dialogTitle?: string, excludeActivityTypes?: Array<string>, tintColor?: string };

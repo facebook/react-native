@@ -12,7 +12,7 @@
 
 'use strict';
 
-var ReactOwner = require('ReactOwner');
+var ReactOwner = require('./ReactOwner');
 
 import type {ReactInstance} from 'ReactInstanceType';
 import type {ReactElement} from 'ReactElementType';
@@ -20,8 +20,8 @@ import type {ReactElement} from 'ReactElementType';
 var ReactRef = {};
 
 if (__DEV__) {
-  var ReactCompositeComponentTypes = require('ReactCompositeComponentTypes');
-  var {ReactComponentTreeHook} = require('ReactGlobalSharedState');
+  var ReactCompositeComponentTypes = require('./ReactCompositeComponentTypes');
+  var {ReactComponentTreeHook} = require('../../ReactGlobalSharedState');
   var warning = require('fbjs/lib/warning');
 
   var warnedAboutStatelessRefs = {};

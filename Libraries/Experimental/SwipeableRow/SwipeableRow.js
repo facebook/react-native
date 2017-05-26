@@ -11,14 +11,14 @@
  */
 'use strict';
 
-const Animated = require('Animated');
-const I18nManager = require('I18nManager');
-const PanResponder = require('PanResponder');
-const React = require('React');
+const Animated = require('../../Animated/src/Animated');
+const I18nManager = require('../../ReactNative/I18nManager');
+const PanResponder = require('../../Interaction/PanResponder');
+const React = require('../../react-native/React');
 const PropTypes = require('prop-types');
-const StyleSheet = require('StyleSheet');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
 const TimerMixin = require('react-timer-mixin');
-const View = require('View');
+const View = require('../../Components/View/View');
 
 const emptyFunction = require('fbjs/lib/emptyFunction');
 

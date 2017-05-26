@@ -11,20 +11,20 @@
  */
 'use strict';
 
-const ColorPropType = require('ColorPropType');
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
-const NativeMethodsMixin = require('NativeMethodsMixin');
-const Platform = require('Platform');
-const React = require('React');
+const ColorPropType = require('../StyleSheet/ColorPropType');
+const EdgeInsetsPropType = require('../StyleSheet/EdgeInsetsPropType');
+const NativeMethodsMixin = require('../Renderer/src/renderers/native/NativeMethodsMixin');
+const Platform = require('../Utilities/Platform');
+const React = require('../react-native/React');
 const PropTypes = require('prop-types');
-const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-const StyleSheetPropType = require('StyleSheetPropType');
-const TextStylePropTypes = require('TextStylePropTypes');
-const Touchable = require('Touchable');
+const ReactNativeViewAttributes = require('../Components/View/ReactNativeViewAttributes');
+const StyleSheetPropType = require('../StyleSheet/StyleSheetPropType');
+const TextStylePropTypes = require('./TextStylePropTypes');
+const Touchable = require('../Components/Touchable/Touchable');
 
-const createReactNativeComponentClass = require('createReactNativeComponentClass');
-const mergeFast = require('mergeFast');
-const processColor = require('processColor');
+const createReactNativeComponentClass = require('../Renderer/src/renderers/native/createReactNativeComponentClass');
+const mergeFast = require('../Utilities/mergeFast');
+const processColor = require('../StyleSheet/processColor');
 
 const stylePropType = StyleSheetPropType(TextStylePropTypes);
 

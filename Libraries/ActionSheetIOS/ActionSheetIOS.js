@@ -11,10 +11,10 @@
  */
 'use strict';
 
-var RCTActionSheetManager = require('NativeModules').ActionSheetManager;
+var RCTActionSheetManager = require('../BatchedBridge/NativeModules').ActionSheetManager;
 
 var invariant = require('fbjs/lib/invariant');
-var processColor = require('processColor');
+var processColor = require('../StyleSheet/processColor');
 
 var ActionSheetIOS = {
   /**

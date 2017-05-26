@@ -11,10 +11,10 @@
  */
 'use strict';
 
-var DeviceInfo = require('DeviceInfo');
-var EventEmitter = require('EventEmitter');
-var Platform = require('Platform');
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+var DeviceInfo = require('./DeviceInfo');
+var EventEmitter = require('../EventEmitter/EventEmitter');
+var Platform = require('./Platform');
+var RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
 
 var invariant = require('fbjs/lib/invariant');
 

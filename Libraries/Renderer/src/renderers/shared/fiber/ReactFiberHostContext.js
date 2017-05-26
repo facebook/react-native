@@ -16,7 +16,7 @@ import type {Fiber} from 'ReactFiber';
 import type {HostConfig} from 'ReactFiberReconciler';
 import type {StackCursor} from 'ReactFiberStack';
 
-const {createCursor, pop, push} = require('ReactFiberStack');
+const {createCursor, pop, push} = require('./ReactFiberStack');
 
 const invariant = require('fbjs/lib/invariant');
 

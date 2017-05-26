@@ -12,10 +12,10 @@
 'use strict';
 
 
-var AnimatedImplementation = require('AnimatedImplementation');
-var Image = require('Image');
-var Text = require('Text');
-var View = require('View');
+var AnimatedImplementation = require('./AnimatedImplementation');
+var Image = require('../../Image/Image');
+var Text = require('../../Text/Text');
+var View = require('../../Components/View/View');
 
 let AnimatedScrollView;
 
@@ -26,7 +26,7 @@ const Animated = {
   get ScrollView() {
     // Make this lazy to avoid circular reference.
     if (!AnimatedScrollView) {
-      AnimatedScrollView = AnimatedImplementation.createAnimatedComponent(require('ScrollView'));
+      AnimatedScrollView = AnimatedImplementation.createAnimatedComponent(require('../../Components/ScrollView/ScrollView'));
     }
     return AnimatedScrollView;
   },

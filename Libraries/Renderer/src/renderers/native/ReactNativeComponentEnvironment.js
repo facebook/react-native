@@ -11,8 +11,8 @@
  */
 'use strict';
 
-var ReactNativeDOMIDOperations = require('ReactNativeDOMIDOperations');
-var ReactNativeReconcileTransaction = require('ReactNativeReconcileTransaction');
+var ReactNativeDOMIDOperations = require('./ReactNativeDOMIDOperations');
+var ReactNativeReconcileTransaction = require('./ReactNativeReconcileTransaction');
 
 var ReactNativeComponentEnvironment = {
   processChildrenUpdates: ReactNativeDOMIDOperations.dangerouslyProcessChildrenUpdates,

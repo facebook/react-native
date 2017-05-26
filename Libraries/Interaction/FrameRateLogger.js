@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const NativeModules = require('NativeModules');
+const NativeModules = require('../BatchedBridge/NativeModules');
 
 const invariant = require('fbjs/lib/invariant');
 

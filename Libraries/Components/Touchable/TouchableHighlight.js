@@ -13,22 +13,22 @@
 
 // Note (avik): add @flow when Flow supports spread properties in propTypes
 
-var ColorPropType = require('ColorPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
+var ColorPropType = require('../../StyleSheet/ColorPropType');
+var NativeMethodsMixin = require('../../Renderer/src/renderers/native/NativeMethodsMixin');
 const PropTypes = require('prop-types');
-var React = require('React');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var StyleSheet = require('StyleSheet');
+var React = require('../../react-native/React');
+var ReactNativeViewAttributes = require('../View/ReactNativeViewAttributes');
+var StyleSheet = require('../../StyleSheet/StyleSheet');
 var TimerMixin = require('react-timer-mixin');
-var Touchable = require('Touchable');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
+var Touchable = require('./Touchable');
+var TouchableWithoutFeedback = require('./TouchableWithoutFeedback');
+var View = require('../View/View');
+const ViewPropTypes = require('../View/ViewPropTypes');
 
-var ensureComponentIsNative = require('ensureComponentIsNative');
-var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+var ensureComponentIsNative = require('./ensureComponentIsNative');
+var ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
 var keyOf = require('fbjs/lib/keyOf');
-var merge = require('merge');
+var merge = require('../../vendor/core/merge');
 
 type Event = Object;
 

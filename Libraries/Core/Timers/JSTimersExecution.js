@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const Systrace = require('Systrace');
+const Systrace = require('../../Performance/Systrace');
 
 const invariant = require('fbjs/lib/invariant');
 const performanceNow = require('fbjs/lib/performanceNow');
@@ -143,7 +143,7 @@ const JSTimersExecution = {
         // Throw all the other errors in a setTimeout, which will throw each
         // error one at a time
         for (let ii = 1; ii < errorCount; ii++) {
-          require('JSTimers').setTimeout(
+          require('./JSTimers').setTimeout(
             ((error) => { throw error; }).bind(null, errors[ii]),
             0
           );
@@ -169,13 +169,13 @@ const JSTimersExecution = {
     }
 
     if (JSTimersExecution.requestIdleCallbacks.length === 0) {
-      const { Timing } = require('NativeModules');
+      const { Timing } = require('../../BatchedBridge/NativeModules');
       Timing.setSendIdleEvents(false);
     }
 
     if (JSTimersExecution.errors) {
       JSTimersExecution.errors.forEach((error) =>
-        require('JSTimers').setTimeout(() => { throw error; }, 0)
+        require('./JSTimers').setTimeout(() => { throw error; }, 0)
       );
     }
   },
@@ -214,7 +214,7 @@ const JSTimersExecution = {
     while (JSTimersExecution.callImmediatesPass()) {}
     if (JSTimersExecution.errors) {
       JSTimersExecution.errors.forEach((error) =>
-        require('JSTimers').setTimeout(() => { throw error; }, 0)
+        require('./JSTimers').setTimeout(() => { throw error; }, 0)
       );
     }
   },

@@ -11,9 +11,9 @@
  */
 'use strict';
 
-const BridgeSpyStallHandler = require('BridgeSpyStallHandler');
-const JSEventLoopWatchdog = require('JSEventLoopWatchdog');
-const ReactPerfStallHandler = require('ReactPerfStallHandler');
+const BridgeSpyStallHandler = require('./BridgeSpyStallHandler');
+const JSEventLoopWatchdog = require('./JSEventLoopWatchdog');
+const ReactPerfStallHandler = require('./ReactPerfStallHandler');
 
 const InteractionStallDebugger = {
   install: function(options: {thresholdMS: number}) {
