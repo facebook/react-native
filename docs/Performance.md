@@ -107,7 +107,7 @@ One case where I have used this is for animating in a modal (sliding down from t
 
 Caveats:
 
-- LayoutAnimation only works for fire-and-forget animations ("static" animations) -- if it must be be interruptible, you will need to use `Animated`.
+- LayoutAnimation only works for fire-and-forget animations ("static" animations) -- if it must be interruptible, you will need to use `Animated`.
 
 ### Moving a view on the screen (scrolling, translating, rotating) drops UI thread FPS
 
