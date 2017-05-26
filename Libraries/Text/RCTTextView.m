@@ -71,6 +71,14 @@
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
+// Disable RCTTextView as accessibility element for VoiceOver.
+// VoiceOver will see _textView instead and will be able to announce the type of the field,
+// actions user needs to take etc.
+- (BOOL)isAccessibilityElement
+{
+  return NO;
+}
+
 #pragma mark - RCTComponent
 
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)index
@@ -644,15 +652,7 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
       },
       @"zoomScale": @(scrollView.zoomScale ?: 1),
     });
-  }
 }
-
-// Disable RCTTextView as accessibility element for VoiceOver.
-// VoiceOver will see _textView instead and will be able to announce the type of the field,
-// actions user needs to take etc.
-- (BOOL)isAccessibilityElement
-{
-  return NO;
 }
 
 @end
