@@ -80,6 +80,7 @@ import com.facebook.react.uimanager.events.TouchEventType;
         .put("topLoadingStart", MapBuilder.of("registrationName", "onLoadingStart"))
         .put("topSelectionChange", MapBuilder.of("registrationName", "onSelectionChange"))
         .put("topMessage", MapBuilder.of("registrationName", "onMessage"))
+        .put("topUrlBlockedEvent", MapBuilder.of("registrationName", "onUrlBlocked"))
         .build();
   }
 
