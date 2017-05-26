@@ -185,7 +185,7 @@ The first step for debugging this jank is to answer the fundamental question of 
 For that, we'll be using a standard Android profiling tool called `systrace`.
 
 `systrace` is a standard Android marker-based profiling tool (and is installed when you install the Android platform-tools package).
-Profiled code blocks are surrounded by markers start/end markers which are then visualized in a colorful chart format.
+Profiled code blocks are surrounded by start/end markers which are then visualized in a colorful chart format.
 Both the Android SDK and React Native framework provide standard markers that you can visualize.
 
 #### 1. Collecting a trace
