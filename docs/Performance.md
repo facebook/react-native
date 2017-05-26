@@ -321,7 +321,7 @@ And many times, you'll want to look into [shouldComponentUpdate](https://faceboo
 
 If you identified a native UI problem, there are usually two scenarios:
 
-1. the UI you're trying to draw each frame involves to much work on the GPU, or
+1. the UI you're trying to draw each frame involves too much work on the GPU, or
 2. You're constructing new UI during the animation/interaction (e.g. loading in new content during a scroll).
 
 ##### Too much GPU work
