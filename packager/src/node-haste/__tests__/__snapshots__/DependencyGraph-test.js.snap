@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DependencyGraph file watch updating should recover from multiple modules with the same name 1`] = `
+Array [
+  Object {
+    "dependencies": Array [
+      "a",
+      "b",
+    ],
+    "id": "index",
+    "isAsset": false,
+    "isJSON": false,
+    "isPolyfill": false,
+    "path": "/root/index.js",
+    "resolution": undefined,
+  },
+  Object {
+    "dependencies": Array [],
+    "id": "a",
+    "isAsset": false,
+    "isJSON": false,
+    "isPolyfill": false,
+    "path": "/root/a.js",
+    "resolution": undefined,
+  },
+  Object {
+    "dependencies": Array [],
+    "id": "b",
+    "isAsset": false,
+    "isJSON": false,
+    "isPolyfill": false,
+    "path": "/root/b.js",
+    "resolution": undefined,
+  },
+]
+`;
