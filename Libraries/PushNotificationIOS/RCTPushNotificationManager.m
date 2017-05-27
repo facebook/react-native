@@ -50,6 +50,7 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
 + (UILocalNotification *)UILocalNotification:(id)json
 {
   NSDictionary<NSString *, id> *details = [self NSDictionary:json];
+  BOOL isSilent = [RCTConvert BOOL:details[@"isSilent"]];
   UILocalNotification *notification = [UILocalNotification new];
   notification.fireDate = [RCTConvert NSDate:details[@"fireDate"]] ?: [NSDate date];
   notification.alertBody = [RCTConvert NSString:details[@"alertBody"]];
@@ -60,8 +61,8 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
   if (details[@"applicationIconBadgeNumber"]) {
     notification.applicationIconBadgeNumber = [RCTConvert NSInteger:details[@"applicationIconBadgeNumber"]];
   }
-  if (details[@"soundName"]) {
-    notification.soundName = [RCTConvert NSString:details[@"soundName"]];
+  if (!isSilent) {
+    notification.soundName = [RCTConvert NSString:details[@"soundName"]] ?: UILocalNotificationDefaultSoundName;
   }
   return notification;
 }
