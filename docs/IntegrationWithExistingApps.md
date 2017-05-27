@@ -143,7 +143,7 @@ To ensure a smooth experience, create a new folder for your integrated React Nat
 
 Go to the root directory for your project and create a new `package.json` file with the following contents:
 
-```bash
+```
 {
   "name": "MyReactNativeApp",
   "version": "0.0.1",
@@ -156,7 +156,7 @@ Go to the root directory for your project and create a new `package.json` file w
 
 Next, you will install the `react` and `react-native` packages. Open a terminal or command prompt, then navigate to the root directory for your project and type the following commands:
 
-```bash
+```
 $ npm install --save react react-native
 ```
 
@@ -170,7 +170,7 @@ This will create a new `/node_modules` folder in your project's root directory. 
 
 We recommend installing CocoaPods using [Homebrew](http://brew.sh/).
 
-```bash
+```
 $ brew install cocoapods
 ```
 
@@ -200,7 +200,7 @@ The list of supported `subspec`s is available in [`/node_modules/react-native/Re
 
 You can specify which `subspec`s your app will depend on in a `Podfile` file. The easiest way to create a `Podfile` is by running the CocoaPods `init` command in the `/ios` subfolder of your project:
 
-```bash
+```
 $ pod init
 ```
 
@@ -258,13 +258,13 @@ end
 
 After you have created your `Podfile`, you are ready to install the React Native pod.
 
-```bash
+```
 $ pod install
 ```
 
 You should see output such as:
 
-```bash
+```
 Analyzing dependencies
 Fetching podspec for `React` from `../node_modules/react-native`
 Downloading dependencies
@@ -299,7 +299,7 @@ First, create an empty `index.ios.js` file in the root of your React Native proj
 
 In your `index.ios.js`, create your component. In our sample here, we will add simple `<Text>` component within a styled `<View>`
 
-```js
+```javascript
 'use strict';
 
 import React from 'react';
@@ -377,21 +377,21 @@ We will, for debugging purposes, log that the event handler was invoked. Then, w
 
 First `import` the `RCTRootView` header.
 
-```
+```objectivec
 #import <React/RCTRootView.h>
 ```
 
 > The `initialProperties` are here for illustration purposes so we have some data for our high score screen. In our React Native component, we will use `this.props` to get access to that data.
 
-```
+```objectivec
 - (IBAction)highScoreButtonPressed:(id)sender {
     NSLog(@"High Score Button Pressed");
-    NSURL *jsCodeLocation = [NSURL
-                             URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios"];
+    NSURL *jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios"];
+
     RCTRootView *rootView =
-      [[RCTRootView alloc] initWithBundleURL : jsCodeLocation
-                           moduleName        : @"RNHighScores"
-                           initialProperties :
+      [[RCTRootView alloc] initWithBundleURL: jsCodeLocation
+                                  moduleName: @"RNHighScores"
+                           initialProperties:
                              @{
                                @"scores" : @[
                                  @{
@@ -404,7 +404,7 @@ First `import` the `RCTRootView` header.
                                  }
                                ]
                              }
-                           launchOptions    : nil];
+                               launchOptions: nil];
     UIViewController *vc = [[UIViewController alloc] init];
     vc.view = rootView;
     [self presentViewController:vc animated:YES completion:nil];
@@ -417,13 +417,13 @@ First `import` the `RCTRootView` header.
 
 First `import` the `React` library.
 
-```
+```javascript
 import React
 ```
 
 > The `initialProperties` are here for illustration purposes so we have some data for our high score screen. In our React Native component, we will use `this.props` to get access to that data.
 
-```
+```swift
 @IBAction func highScoreButtonTapped(sender : UIButton) {
   NSLog("Hello")
   let jsCodeLocation = URL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
@@ -494,7 +494,7 @@ Apple has blocked implicit cleartext HTTP resource loading. So we need to add th
 
 To run your app, you need to first start the development server. To do this, simply run the following command in the root directory of your React Native project:
 
-```bash
+```
 $ npm start
 ```
 
@@ -502,7 +502,7 @@ $ npm start
 
 If you are using Xcode or your favorite editor, build and run your native iOS application as normal. Alternatively, you can run the app from the command line using:
 
-```bash
+```
 # From the root of your project
 $ react-native run-ios
 ```
@@ -593,7 +593,7 @@ First, create an empty `index.android.js` file in the root of your React Native 
 
 In your `index.android.js`, create your component. In our sample here, we will add simple `<Text>` component within a styled `<View>`:
 
-```js
+```javascript
 'use strict';
 
 import React from 'react';
@@ -692,11 +692,13 @@ public class MyReactActivity extends Activity implements DefaultHardwareBackBtnH
     }
 }
 ```
+
 > If you are using a starter kit for React Native, replace the "HelloWorld" string with the one in your index.android.js file (it’s the first argument to the `AppRegistry.registerComponent()` method).
 
 If you are using Android Studio, use `Alt + Enter` to add all missing imports in your MyReactActivity class. Be careful to use your package’s `BuildConfig` and not the one from the `...facebook...` package.
 
 We need set the theme of `MyReactActivity` to `Theme.AppCompat.Light.NoActionBar` because some components rely on this theme.
+
 ```xml
 <activity
   android:name=".MyReactActivity"
@@ -776,7 +778,7 @@ You have now done all the basic steps to integrate React Native with your curren
 
 To run your app, you need to first start the development server. To do this, simply run the following command in the root directory of your React Native project:
 
-```bash
+```
 $ npm start
 ```
 
@@ -790,11 +792,13 @@ Once you reach your React-powered activity inside the app, it should load the Ja
 
 ### Creating a release build in Android Studio
 
-You can use Android Studio to create your release builds too! It’s as easy as creating release builds of your previously-existing native Android app. There’s just one additional step, which you’ll have to do before every release build. You need to execute the following to create a React Native bundle, which’ll be included with your native Android app:
+You can use Android Studio to create your release builds too! It’s as easy as creating release builds of your previously-existing native Android app. There’s just one additional step, which you’ll have to do before every release build. You need to execute the following to create a React Native bundle, which will be included with your native Android app:
 
-    $ react-native bundle --platform android --dev false --entry-file index.android.js --bundle-output android/com/your-company-name/app-package-name/src/main/assets/index.android.bundle --assets-dest android/com/your-company-name/app-package-name/src/main/res/
+```
+$ react-native bundle --platform android --dev false --entry-file index.android.js --bundle-output android/com/your-company-name/app-package-name/src/main/assets/index.android.bundle --assets-dest android/com/your-company-name/app-package-name/src/main/res/
+```
 
-Don’t forget to replace the paths with correct ones and create the assets folder if it doesn’t exist!
+> Don’t forget to replace the paths with correct ones and create the assets folder if it doesn’t exist.
 
 Now just create a release build of your native app from within Android Studio as usual and you should be good to go!
 
@@ -809,7 +813,6 @@ function displayTab(type, value) {
   var container = document.getElementsByTagName('block')[0].parentNode;
   container.className = 'display-' + type + '-' + value + ' ' +
     container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
-  console.log(container.className);
   event && event.preventDefault();
 }
 </script>
