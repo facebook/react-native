@@ -137,7 +137,7 @@ A solution to this is to wrap any action inside of your `onPress` handler in `re
 handleOnPress() {
   // Always use TimerMixin with requestAnimationFrame, setTimeout and
   // setInterval
-  this.requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
     this.doExpensiveAction();
   });
 }
