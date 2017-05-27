@@ -9,6 +9,8 @@
 
 package com.facebook.react.bridge;
 
+import java.util.ArrayList;
+
 /**
  * Interface for an array that allows typed access to its members. Used to pass parameters from JS
  * to Java.
@@ -25,4 +27,6 @@ public interface ReadableArray {
   ReadableMap getMap(int index);
   Dynamic getDynamic(int index);
   ReadableType getType(int index);
+  ArrayList<Object> toArrayList();
+
 }

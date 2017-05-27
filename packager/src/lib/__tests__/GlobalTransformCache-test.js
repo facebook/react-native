@@ -55,12 +55,12 @@ describe('GlobalTransformCache', () => {
       },
     };
     const result = await Promise.all([cache.fetch({
-      filePath: 'foo.js',
+      localPath: 'some/where/foo.js',
       sourceCode: '/* beep */',
       getTransformCacheKey: () => 'abcd',
       transformOptions,
     }), cache.fetch({
-      filePath: 'bar.js',
+      localPath: 'some/where/else/bar.js',
       sourceCode: '/* boop */',
       getTransformCacheKey: () => 'abcd',
       transformOptions,

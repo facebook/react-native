@@ -7,11 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @format
  */
 
 'use strict';
-
-const TransformCache = require('../lib/TransformCache');
 
 const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
@@ -19,17 +18,26 @@ const fs = require('fs');
 const invariant = require('fbjs/lib/invariant');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
+const path = require('path');
 
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
-import type {TransformedCode, Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type {
+  TransformedCode,
+  Options as WorkerOptions,
+} from '../JSTransformer/worker/worker';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {MappingsMap} from '../lib/SourceMap';
-import type {GetTransformCacheKey} from '../lib/TransformCache';
-import type {ReadTransformProps} from '../lib/TransformCache';
+import type {
+  TransformCache,
+  GetTransformCacheKey,
+  ReadTransformProps,
+} from '../lib/TransformCaching';
 import type {Reporter} from '../lib/reporting';
-import type DependencyGraphHelpers from './DependencyGraph/DependencyGraphHelpers';
+import type DependencyGraphHelpers
+  from './DependencyGraph/DependencyGraphHelpers';
 import type ModuleCache from './ModuleCache';
+import type {LocalPath} from './lib/toLocalPath';
 
 export type ReadResult = {
   +code: string,
@@ -47,39 +55,41 @@ export type CachedReadResult = {|
 export type TransformCode = (
   module: Module,
   sourceCode: string,
-  transformOptions: TransformOptions,
+  transformOptions: WorkerOptions,
 ) => Promise<TransformedCode>;
 
 export type HasteImpl = {
-  getHasteName(filePath: string): (string | void),
+  getHasteName(filePath: string): string | void,
   // This exists temporarily to enforce consistency while we deprecate
   // @providesModule.
   enforceHasteNameMatches?: (
     filePath: string,
-    expectedName: (string | void),
+    expectedName: string | void,
   ) => void,
 };
 
 export type Options = {
   hasteImpl?: HasteImpl,
   resetCache?: boolean,
+  transformCache: TransformCache,
 };
 
 export type ConstructorArgs = {
   depGraphHelpers: DependencyGraphHelpers,
-  globalTransformCache: ?GlobalTransformCache,
   file: string,
+  getTransformCacheKey: GetTransformCacheKey,
+  globalTransformCache: ?GlobalTransformCache,
+  localPath: LocalPath,
   moduleCache: ModuleCache,
   options: Options,
   reporter: Reporter,
-  getTransformCacheKey: GetTransformCacheKey,
   transformCode: ?TransformCode,
 };
 
 type DocBlock = {+[key: string]: string};
 
 class Module {
-
+  localPath: LocalPath;
   path: string;
   type: string;
 
@@ -98,8 +108,11 @@ class Module {
 
   _readResultsByOptionsKey: Map<string, CachedReadResult>;
 
+  static _transformCache: TransformCache;
+
   constructor({
     depGraphHelpers,
+    localPath,
     file,
     getTransformCacheKey,
     globalTransformCache,
@@ -112,6 +125,7 @@ class Module {
       throw new Error('Expected file to be absolute path but got ' + file);
     }
 
+    this.localPath = localPath;
     this.path = file;
     this.type = 'Module';
 
@@ -127,15 +141,15 @@ class Module {
     this._readResultsByOptionsKey = new Map();
   }
 
-  isHaste(): Promise<boolean> {
-    return Promise.resolve().then(() => this._getHasteName() != null);
+  isHaste(): boolean {
+    return this._getHasteName() != null;
   }
 
-  getCode(transformOptions: TransformOptions) {
+  getCode(transformOptions: WorkerOptions) {
     return this.read(transformOptions).then(({code}) => code);
   }
 
-  getMap(transformOptions: TransformOptions) {
+  getMap(transformOptions: WorkerOptions) {
     return this.read(transformOptions).then(({map}) => map);
   }
 
@@ -153,14 +167,16 @@ class Module {
         return this.path;
       }
 
-      return p.getName()
-        .then(packageName => {
-          if (!packageName) {
-            return this.path;
-          }
+      return p.getName().then(packageName => {
+        if (!packageName) {
+          return this.path;
+        }
 
-          return joinPath(packageName, relativePath(p.root, this.path)).replace(/\\/g, '/');
-        });
+        return joinPath(packageName, relativePath(p.root, this.path)).replace(
+          /\\/g,
+          '/',
+        );
+      });
     });
   }
 
@@ -168,7 +184,7 @@ class Module {
     return this._moduleCache.getPackageForModule(this);
   }
 
-  getDependencies(transformOptions: TransformOptions) {
+  getDependencies(transformOptions: WorkerOptions) {
     return this.read(transformOptions).then(({dependencies}) => dependencies);
   }
 
@@ -249,82 +265,51 @@ class Module {
     return {...result, id: this._getHasteName(), source};
   }
 
-  _transformCodeForCallback(
+  async _transformCodeFor(
     cacheProps: ReadTransformProps,
-    callback: (error: ?Error, result: ?TransformedCode) => void,
-  ) {
+  ): Promise<TransformedCode> {
     const {_transformCode} = this;
     invariant(_transformCode != null, 'missing code transform funtion');
     const {sourceCode, transformOptions} = cacheProps;
-    return _transformCode(this, sourceCode, transformOptions).then(
-      freshResult => process.nextTick(callback, undefined, freshResult),
-      error => process.nextTick(callback, error),
-    );
+    return await _transformCode(this, sourceCode, transformOptions);
   }
 
-  _transformAndStoreCodeGlobally(
+  async _transformAndStoreCodeGlobally(
     cacheProps: ReadTransformProps,
     globalCache: GlobalTransformCache,
-    callback: (error: ?Error, result: ?TransformedCode) => void,
-  ) {
-    this._transformCodeForCallback(
-      cacheProps,
-      (transformError, transformResult) => {
-        if (transformError != null) {
-          callback(transformError);
-          return;
-        }
-        invariant(
-          transformResult != null,
-          'Inconsistent state: there is no error, but no results either.',
-        );
-        globalCache.store(cacheProps, transformResult);
-        callback(undefined, transformResult);
-      },
-    );
+  ): Promise<TransformedCode> {
+    const result = await this._transformCodeFor(cacheProps);
+    globalCache.store(cacheProps, result);
+    return result;
   }
 
-  _getTransformedCode(
+  async _getTransformedCode(
     cacheProps: ReadTransformProps,
-    callback: (error: ?Error, result: ?TransformedCode) => void,
-  ) {
+  ): Promise<TransformedCode> {
     const {_globalCache} = this;
     if (_globalCache == null || !_globalCache.shouldFetch(cacheProps)) {
-      this._transformCodeForCallback(cacheProps, callback);
-      return;
+      return await this._transformCodeFor(cacheProps);
     }
-    _globalCache.fetch(cacheProps).then(
-      globalCachedResult => process.nextTick(() => {
-        if (globalCachedResult == null) {
-          this._transformAndStoreCodeGlobally(cacheProps, _globalCache, callback);
-          return;
-        }
-        callback(undefined, globalCachedResult);
-      }),
-      globalCacheError => process.nextTick(() => callback(globalCacheError)),
-    );
+    const globalCachedResult = await _globalCache.fetch(cacheProps);
+    if (globalCachedResult != null) {
+      return globalCachedResult;
+    }
+    return await this._transformAndStoreCodeGlobally(cacheProps, _globalCache);
   }
 
-  _getAndCacheTransformedCode(
+  async _getAndCacheTransformedCode(
     cacheProps: ReadTransformProps,
-    callback: (error: ?Error, result: ?TransformedCode) => void,
-  ) {
-    this._getTransformedCode(cacheProps, (error, result) => {
-      if (error) {
-        callback(error);
-        return;
-      }
-      invariant(result != null, 'missing result');
-      TransformCache.writeSync({...cacheProps, result});
-      callback(undefined, result);
-    });
+  ): Promise<TransformedCode> {
+    const result = await this._getTransformedCode(cacheProps);
+    this._options.transformCache.writeSync({...cacheProps, result});
+    return result;
   }
 
   /**
    * Shorthand for reading both from cache or from fresh for all call sites that
    * are asynchronous by default.
    */
-  read(transformOptions: TransformOptions): Promise<ReadResult> {
+  read(transformOptions: WorkerOptions): Promise<ReadResult> {
     return Promise.resolve().then(() => {
       const cached = this.readCached(transformOptions);
       if (cached.result != null) {
@@ -339,7 +324,7 @@ class Module {
    * the file from source. This has the benefit of being synchronous. As a
    * result it is possible to read many cached Module in a row, synchronously.
    */
-  readCached(transformOptions: TransformOptions): CachedReadResult {
+  readCached(transformOptions: WorkerOptions): CachedReadResult {
     const key = stableObjectHash(transformOptions || {});
     let result = this._readResultsByOptionsKey.get(key);
     if (result != null) {
@@ -355,16 +340,25 @@ class Module {
    * so it's faster in case the results are already in memory.
    */
   _readFromTransformCache(
-    transformOptions: TransformOptions,
+    transformOptions: WorkerOptions,
     transformOptionsKey: string,
   ): CachedReadResult {
-    const cacheProps = this._getCacheProps(transformOptions, transformOptionsKey);
-    const cachedResult = TransformCache.readSync(cacheProps);
+    const cacheProps = this._getCacheProps(
+      transformOptions,
+      transformOptionsKey,
+    );
+    const cachedResult = this._options.transformCache.readSync(cacheProps);
     if (cachedResult.result == null) {
-      return {result: null, outdatedDependencies: cachedResult.outdatedDependencies};
+      return {
+        result: null,
+        outdatedDependencies: cachedResult.outdatedDependencies,
+      };
     }
     return {
-      result: this._finalizeReadResult(cacheProps.sourceCode, cachedResult.result),
+      result: this._finalizeReadResult(
+        cacheProps.sourceCode,
+        cachedResult.result,
+      ),
       outdatedDependencies: [],
     };
   }
@@ -375,40 +369,35 @@ class Module {
    * scratch. We don't repeat the same work as `readCached` because we assume
    * call sites have called it already.
    */
-  readFresh(transformOptions: TransformOptions): Promise<ReadResult> {
+  readFresh(transformOptions: WorkerOptions): Promise<ReadResult> {
     const key = stableObjectHash(transformOptions || {});
     const promise = this._readPromises.get(key);
     if (promise != null) {
       return promise;
     }
-    const freshPromise = Promise.resolve().then(() => {
+    const freshPromise = (async () => {
       const cacheProps = this._getCacheProps(transformOptions, key);
-      return new Promise((resolve, reject) => {
-        this._getAndCacheTransformedCode(
-          cacheProps,
-          (transformError, freshResult) => {
-            if (transformError) {
-              reject(transformError);
-              return;
-            }
-            invariant(freshResult != null, 'inconsistent state');
-            resolve(this._finalizeReadResult(cacheProps.sourceCode, freshResult));
-          },
-        );
-      }).then(result => {
-        this._readResultsByOptionsKey.set(key, {result, outdatedDependencies: []});
-        return result;
+      const freshResult = await this._getAndCacheTransformedCode(cacheProps);
+      const finalResult = this._finalizeReadResult(
+        cacheProps.sourceCode,
+        freshResult,
+      );
+      this._readResultsByOptionsKey.set(key, {
+        result: finalResult,
+        outdatedDependencies: [],
       });
-    });
+      return finalResult;
+    })();
     this._readPromises.set(key, freshPromise);
     return freshPromise;
   }
 
-  _getCacheProps(transformOptions: TransformOptions, transformOptionsKey: string) {
+  _getCacheProps(transformOptions: WorkerOptions, transformOptionsKey: string) {
     const sourceCode = this._readSourceCode();
     const getTransformCacheKey = this._getTransformCacheKey;
     return {
       filePath: this.path,
+      localPath: this.localPath,
       sourceCode,
       getTransformCacheKey,
       transformOptions,
@@ -442,7 +431,8 @@ const knownHashes = new WeakMap();
 function stableObjectHash(object) {
   let digest = knownHashes.get(object);
   if (!digest) {
-    digest = crypto.createHash('md5')
+    digest = crypto
+      .createHash('md5')
       .update(jsonStableStringify(object))
       .digest('base64');
     knownHashes.set(object, digest);

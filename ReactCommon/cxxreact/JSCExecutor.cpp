@@ -20,7 +20,7 @@
 #include <jschelpers/Value.h>
 
 #ifdef WITH_INSPECTOR
-#include <inspector/Inspector.h>
+#include <jschelpers/InspectorInterfaces.h>
 #endif
 
 #include "JSBundleType.h"
@@ -64,8 +64,6 @@
 
 namespace facebook {
 namespace react {
-
-using namespace detail;
 
 namespace {
 
@@ -171,8 +169,18 @@ void JSCExecutor::setContextName(const std::string& name) {
   JSC_JSGlobalContextSetName(m_context, jsName);
 }
 
+#ifdef WITH_INSPECTOR
+static bool canUseInspector(JSContextRef context) {
+#if defined(__APPLE__)
+  return isCustomJSCPtr(context); // WITH_INSPECTOR && Apple
+#else
+  return true; // WITH_INSPECTOR && Android
+#endif
+}
+#endif
+
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
-  SystraceSection s("JSCExecutor.initOnJSVMThread");
+  SystraceSection s("JSCExecutor::initOnJSVMThread");
 
   #if defined(__APPLE__)
   const bool useCustomJSC = m_jscConfig.getDefault("UseCustomJSC", false).getBool();
@@ -190,13 +198,13 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   // Create a custom global class, so we can store data in it later using JSObjectSetPrivate
   JSClassRef globalClass = nullptr;
   {
-    SystraceSection s("JSClassCreate");
+    SystraceSection s_("JSClassCreate");
     JSClassDefinition definition = kJSClassDefinitionEmpty;
     definition.attributes |= kJSClassAttributeNoAutomaticPrototype;
     globalClass = JSC_JSClassCreate(useCustomJSC, &definition);
   }
   {
-    SystraceSection s("JSGlobalContextCreateInGroup");
+    SystraceSection s_("JSGlobalContextCreateInGroup");
     m_context = JSC_JSGlobalContextCreateInGroup(useCustomJSC, nullptr, globalClass);
   }
   JSC_JSClassRelease(useCustomJSC, globalClass);
@@ -204,9 +212,12 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   // Add a pointer to ourselves so we can retrieve it later in our hooks
   Object::getGlobalObject(m_context).setPrivate(this);
 
-  #ifdef WITH_INSPECTOR
-  Inspector::instance().registerGlobalContext("main", m_context);
-  #endif
+#ifdef WITH_INSPECTOR
+  if (canUseInspector(m_context)) {
+    IInspector* pInspector = JSC_JSInspectorGetInstance(true);
+    pInspector->registerGlobalContext("main", m_context);
+  }
+#endif
 
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
@@ -247,9 +258,12 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
 void JSCExecutor::terminateOnJSVMThread() {
   m_nativeModules.reset();
 
-  #ifdef WITH_INSPECTOR
-  Inspector::instance().unregisterGlobalContext(m_context);
-  #endif
+#ifdef WITH_INSPECTOR
+  if (canUseInspector(m_context)) {
+    IInspector* pInspector = JSC_JSInspectorGetInstance(true);
+    pInspector->unregisterGlobalContext(m_context);
+  }
+#endif
 
   JSC_JSGlobalContextRelease(m_context);
   m_context = nullptr;
@@ -276,11 +290,18 @@ static const char* explainLoadSourceStatus(JSLoadSourceStatus status) {
 }
 #endif
 
+// basename_r isn't in all iOS SDKs, so use this simple version instead.
+static std::string simpleBasename(const std::string &path) {
+  size_t pos = path.rfind("/");
+  return (pos != std::string::npos) ? path.substr(pos) : path;
+}
+
 void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) {
   SystraceSection s("JSCExecutor::loadApplicationScript",
                     "sourceURL", sourceURL);
 
-  ReactMarker::logMarker(ReactMarker::RUN_JS_BUNDLE_START);
+  std::string scriptName = simpleBasename(sourceURL);
+  ReactMarker::logTaggedMarker(ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
   String jsSourceURL(m_context, sourceURL.c_str());
 
   // TODO t15069155: reduce the number of overrides here
@@ -325,25 +346,23 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
     JSValueRef jsError;
     JSValueRef result = JSC_JSEvaluateBytecodeBundle(m_context, NULL, sourceFD, jsSourceURL, &jsError);
     if (result == nullptr) {
-      formatAndThrowJSException(m_context, jsError, jsSourceURL);
+      throw JSException(m_context, jsError, jsSourceURL);
     }
   } else
 #endif
   {
-    #ifdef WITH_FBSYSTRACE
-    fbsystrace_begin_section(
-      TRACE_TAG_REACT_CXX_BRIDGE,
-      "JSCExecutor::loadApplicationScript-createExpectingAscii");
-    #endif
-
-    ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_START);
-    String jsScript = jsStringFromBigString(m_context, *script);
-    ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP);
-
+    String jsScript;
+    {
+      SystraceSection s_("JSCExecutor::loadApplicationScript-createExpectingAscii");
+      ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_START);
+      jsScript = adoptString(std::move(script));
+      ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP);
+    }
     #ifdef WITH_FBSYSTRACE
     fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
     #endif
 
+    SystraceSection s_("JSCExecutor::loadApplicationScript-evaluateScript");
     evaluateScript(m_context, jsScript, jsSourceURL);
   }
 
@@ -371,7 +390,7 @@ void JSCExecutor::bindBridge() throw(JSException) {
         batchedBridgeValue = requireBatchedBridge.asObject().callAsFunction({});
       }
       if (batchedBridgeValue.isUndefined()) {
-        throwJSExecutionException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
+        throw JSException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
       }
     }
 
@@ -434,9 +453,9 @@ void JSCExecutor::flush() {
 
 void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
   SystraceSection s("JSCExecutor::callFunction");
+
   // This weird pattern is because Value is not default constructible.
   // The lambda is inlined, so there's no overhead.
-
   auto result = [&] {
     try {
       if (!m_callFunctionReturnResultAndFlushedQueueJS) {
@@ -501,14 +520,27 @@ Value JSCExecutor::callFunctionSyncWithValue(
 
 void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {
   try {
-    SystraceSection s("JSCExecutor.setGlobalVariable",
-                      "propName", propName);
+    SystraceSection s("JSCExecutor::setGlobalVariable", "propName", propName);
 
-    auto valueToInject = Value::fromJSON(m_context, jsStringFromBigString(m_context, *jsonValue));
+    auto valueToInject = Value::fromJSON(m_context, adoptString(std::move(jsonValue)));
     Object::getGlobalObject(m_context).setProperty(propName.c_str(), valueToInject);
   } catch (...) {
     std::throw_with_nested(std::runtime_error("Error setting global variable: " + propName));
   }
+}
+
+String JSCExecutor::adoptString(std::unique_ptr<const JSBigString> script) {
+#if defined(WITH_FBJSCEXTENSIONS)
+  const JSBigString* string = script.release();
+  auto jsString = JSStringCreateAdoptingExternal(string->c_str(), string->size(), (void*)string, [](void* s) {
+    delete static_cast<JSBigString*>(s);
+  });
+  return String::adopt(m_context, jsString);
+#else
+  return script->isAscii()
+    ? String::createExpectingAscii(m_context, script->c_str(), script->size())
+    : String(m_context, script->c_str());
+#endif
 }
 
 void* JSCExecutor::getJavaScriptContext() {
@@ -594,7 +626,7 @@ JSValueRef JSCExecutor::nativeRequire(
   }
 
   double moduleId = Value(m_context, arguments[0]).asNumber();
-  if (moduleId <= 0) {
+  if (moduleId < 0) {
     throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ",
       Value(m_context, arguments[0]).toString().str()));
   }

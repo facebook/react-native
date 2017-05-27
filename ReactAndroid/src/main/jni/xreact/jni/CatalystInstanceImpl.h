@@ -19,12 +19,12 @@ class JavaScriptExecutorHolder;
 class NativeArray;
 
 struct ReactCallback : public jni::JavaClass<ReactCallback> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/cxxbridge/ReactCallback;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/ReactCallback;";
 };
 
 class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
  public:
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/cxxbridge/CatalystInstanceImpl;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/CatalystInstanceImpl;";
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
   ~CatalystInstanceImpl() override;
@@ -57,8 +57,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
    */
   void jniSetSourceURL(const std::string& sourceURL);
 
-  void jniLoadScriptFromAssets(jni::alias_ref<JAssetManager::javaobject> assetManager, const std::string& assetURL);
-  void jniLoadScriptFromFile(const std::string& fileName, const std::string& sourceURL);
+  void jniLoadScriptFromAssets(jni::alias_ref<JAssetManager::javaobject> assetManager, const std::string& assetURL, bool loadSynchronously);
+  void jniLoadScriptFromFile(const std::string& fileName, const std::string& sourceURL, bool loadSynchronously);
   void jniCallJSFunction(std::string module, std::string method, NativeArray* arguments);
   void jniCallJSCallback(jint callbackId, NativeArray* arguments);
   void setGlobalVariable(std::string propName,

@@ -17,7 +17,7 @@ class MessageQueueThread;
 class ModuleHolder : public jni::JavaClass<ModuleHolder> {
  public:
   static auto constexpr kJavaDescriptor =
-    "Lcom/facebook/react/cxxbridge/ModuleHolder;";
+    "Lcom/facebook/react/bridge/ModuleHolder;";
 
   std::string getName() const;
   xplat::module::CxxModule::Provider getProvider() const;

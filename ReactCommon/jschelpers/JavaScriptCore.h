@@ -146,6 +146,7 @@ jsc_poison(JSClassCreate JSClassRelease JSClassRetain)
 #define JSC_JSObjectMakeFunctionWithCallback(...) __jsc_wrapper(JSObjectMakeFunctionWithCallback, __VA_ARGS__)
 #define JSC_JSObjectSetPrivate(...) __jsc_bool_wrapper(JSObjectSetPrivate, __VA_ARGS__)
 #define JSC_JSObjectSetProperty(...) __jsc_wrapper(JSObjectSetProperty, __VA_ARGS__)
+#define JSC_JSObjectSetPropertyAtIndex(...) __jsc_wrapper(JSObjectSetPropertyAtIndex, __VA_ARGS__)
 
 jsc_poison(JSObjectCallAsConstructor JSObjectCallAsFunction JSObjectDeleteProperty
            JSObjectGetPrivate JSObjectGetProperty JSObjectGetPropertyAtIndex
@@ -181,6 +182,10 @@ jsc_poison(JSObjectMakeArrayBufferWithBytesNoCopy JSObjectMakeTypedArray
 
 jsc_poison(JSSamplingProfilerEnabled JSPokeSamplingProfiler
            JSStartSamplingProfilingOnMainJSCThread)
+
+#define JSC_JSInspectorGetInstance(...) __jsc_bool_wrapper(JSInspectorGetInstance, __VA_ARGS__)
+jsc_poison(JSInspectorGetInstance)
+
 
 #define JSC_configureJSCForIOS(...) __jsc_bool_wrapper(configureJSCForIOS, __VA_ARGS__)
 

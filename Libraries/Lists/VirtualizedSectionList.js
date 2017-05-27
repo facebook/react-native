@@ -25,7 +25,7 @@ type SectionItem = any;
 
 type SectionBase = {
   // Must be provided directly on each section.
-  data: Array<SectionItem>,
+  data: $ReadOnlyArray<SectionItem>,
   key?: string,
 
   // Optional props will override list-wide props just for this section.
@@ -40,7 +40,7 @@ type SectionBase = {
     },
   }) => ?React.Element<*>,
   ItemSeparatorComponent?: ?ReactClass<*>,
-  keyExtractor?: (item: SectionItem) => string,
+  keyExtractor?: (item: SectionItem, index: ?number) => string,
 
   // TODO: support more optional/override props
   // FooterComponent?: ?ReactClass<*>,
@@ -49,7 +49,7 @@ type SectionBase = {
 };
 
 type RequiredProps<SectionT: SectionBase> = {
-  sections: Array<SectionT>,
+  sections: $ReadOnlyArray<SectionT>,
 };
 
 type OptionalProps<SectionT: SectionBase> = {
@@ -120,7 +120,7 @@ export type Props<SectionT> =
   OptionalProps<SectionT> &
   VirtualizedListProps;
 
-type DefaultProps = (typeof VirtualizedList.defaultProps) & {data: Array<Item>};
+type DefaultProps = (typeof VirtualizedList.defaultProps) & {data: $ReadOnlyArray<Item>};
 type State = {childProps: VirtualizedListProps};
 
 /**
@@ -145,7 +145,7 @@ class VirtualizedSectionList<SectionT: SectionBase>
   }) {
     let index = params.itemIndex + 1;
     for (let ii = 0; ii < params.sectionIndex; ii++) {
-      index += this.props.sections[ii].data.length + 1;
+      index += this.props.sections[ii].data.length + 2;
     }
     const toIndexParams = {
       ...params,
@@ -169,6 +169,7 @@ class VirtualizedSectionList<SectionT: SectionBase>
     section: SectionT,
     key: string, // Key of the section or combined key for section + item
     index: ?number, // Relative index within the section
+    header?: ?boolean, // True if this is the section header
     leadingItem?: ?Item,
     leadingSection?: ?SectionT,
     trailingItem?: ?Item,
@@ -179,11 +180,25 @@ class VirtualizedSectionList<SectionT: SectionBase>
     for (let ii = 0; ii < this.props.sections.length; ii++) {
       const section = this.props.sections[ii];
       const key = section.key || String(ii);
-      itemIndex -= 1; // The section itself is an item
-      if (itemIndex >= section.data.length) {
-        itemIndex -= section.data.length;
+      itemIndex -= 1; // The section adds an item for the header
+      if (itemIndex >= section.data.length + 1) {
+        itemIndex -= section.data.length + 1; // The section adds an item for the footer.
       } else if (itemIndex === -1) {
-        return {section, key, index: null, trailingSection: this.props.sections[ii + 1]};
+        return {
+          section,
+          key: key + ':header',
+          index: null,
+          header: true,
+          trailingSection: this.props.sections[ii + 1],
+        };
+      } else if (itemIndex === section.data.length) {
+        return {
+          section,
+          key: key + ':footer',
+          index: null,
+          header: false,
+          trailingSection: this.props.sections[ii + 1],
+        };
       } else {
         const keyExtractor = section.keyExtractor || defaultKeyExtractor;
         return {
@@ -232,8 +247,14 @@ class VirtualizedSectionList<SectionT: SectionBase>
     }
     const infoIndex = info.index;
     if (infoIndex == null) {
-      const {renderSectionHeader} = this.props;
-      return renderSectionHeader ? renderSectionHeader({section: info.section}) : null;
+      const {section} = info;
+      if (info.header === true) {
+        const {renderSectionHeader} = this.props;
+        return renderSectionHeader ? renderSectionHeader({section}) : null;
+      } else {
+        const {renderSectionFooter} = this.props;
+        return renderSectionFooter ? renderSectionFooter({section}) : null;
+      }
     } else {
       const renderItem = info.section.renderItem || this.props.renderItem;
       const SeparatorComponent = this._getSeparatorComponent(index, info);
@@ -254,10 +275,6 @@ class VirtualizedSectionList<SectionT: SectionBase>
           prevCellKey={(this._subExtractor(index - 1) || {}).key}
           ref={(ref) => {this._cellRefs[info.key] = ref;}}
           renderItem={renderItem}
-          renderSectionFooter={infoIndex === info.section.data.length - 1
-            ? this.props.renderSectionFooter
-            : undefined
-          }
           section={info.section}
           trailingItem={info.trailingItem}
           trailingSection={info.trailingSection}
@@ -296,7 +313,7 @@ class VirtualizedSectionList<SectionT: SectionBase>
     const itemCount = props.sections.reduce(
       (v, section) => {
         stickyHeaderIndices.push(v + offset);
-        return v + section.data.length + 1;
+        return v + section.data.length + 2; // Add two for the section header and footer.
       },
       0
     );
@@ -345,7 +362,6 @@ class ItemWithSeparator extends React.Component {
     onUpdateSeparator: (cellKey: string, newProps: Object) => void,
     prevCellKey?: ?string,
     renderItem: Function,
-    renderSectionFooter: ?Function,
     section: Object,
     leadingItem: ?Item,
     leadingSection: ?Object,
@@ -406,25 +422,28 @@ class ItemWithSeparator extends React.Component {
     const leadingSeparator = LeadingSeparatorComponent &&
       <LeadingSeparatorComponent {...this.state.leadingSeparatorProps} />;
     const separator = SeparatorComponent && <SeparatorComponent {...this.state.separatorProps} />;
-    const footer = this.props.renderSectionFooter && this.props.renderSectionFooter({section});
-    return (leadingSeparator || separator || footer)
-      ? <View>{leadingSeparator}{element}{separator}{footer}</View>
+    return (leadingSeparator || separator)
+      ? <View>{leadingSeparator}{element}{separator}</View>
       : element;
   }
 }
 
-function getItem(sections: ?Array<Item>, index: number): ?Item {
+function getItem(sections: ?$ReadOnlyArray<Item>, index: number): ?Item {
   if (!sections) {
     return null;
   }
   let itemIdx = index - 1;
   for (let ii = 0; ii < sections.length; ii++) {
-    if (itemIdx === -1) {
-      return sections[ii]; // The section itself is the item
+    if (itemIdx === -1 || itemIdx === sections[ii].data.length) {
+      // We intend for there to be overflow by one on both ends of the list.
+      // This will be for headers and footers. When returning a header or footer
+      // item the section itself is the item.
+      return sections[ii];
     } else if (itemIdx < sections[ii].data.length) {
+      // If we are in the bounds of the list's data then return the item.
       return sections[ii].data[itemIdx];
     } else {
-      itemIdx -= (sections[ii].data.length + 1);
+      itemIdx -= (sections[ii].data.length + 2); // Add two for the header and footer
     }
   }
   return null;

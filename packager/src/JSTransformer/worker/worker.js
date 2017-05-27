@@ -11,6 +11,7 @@
 
 'use strict';
 
+const babelRegisterOnly = require('../../../babelRegisterOnly');
 const constantFolding = require('./constant-folding');
 const extractDependencies = require('./extract-dependencies');
 const inline = require('./inline');
@@ -18,7 +19,9 @@ const invariant = require('fbjs/lib/invariant');
 const minify = require('./minify');
 
 import type {LogEntry} from '../../Logger/Types';
-import type {Ast, SourceMap as MappingsMap} from 'babel-core';
+import type {MappingsMap} from '../../lib/SourceMap';
+import type {LocalPath} from '../../node-haste/lib/toLocalPath';
+import type {Ast, Plugins as BabelPlugins} from 'babel-core';
 
 export type TransformedCode = {
   code: string,
@@ -27,28 +30,41 @@ export type TransformedCode = {
   map?: ?MappingsMap,
 };
 
-type Transformer = {
-  transform: (
+export type Transformer<ExtraOptions: {} = {}> = {
+  transform: ({|
     filename: string,
-    sourceCode: string,
-    options: ?{},
-  ) => {ast: ?Ast, code: string, map: ?MappingsMap}
+    localPath: string,
+    options: ExtraOptions & TransformOptions,
+    plugins?: BabelPlugins,
+    src: string,
+  |}) => {ast: ?Ast, code: string, map: ?MappingsMap},
+  getCacheKey: () => string,
 };
 
-export type TransformOptions = {|
+
+export type TransformOptionsStrict = {|
   +dev: boolean,
   +generateSourceMaps: boolean,
   +hot: boolean,
   +inlineRequires: {+blacklist: {[string]: true}} | boolean,
-  +platform: string,
+  +platform: ?string,
   +projectRoot: string,
 |};
+
+export type TransformOptions = {
+  +dev?: boolean,
+  +generateSourceMaps?: boolean,
+  +hot?: boolean,
+  +inlineRequires?: {+blacklist: {[string]: true}} | boolean,
+  +platform: ?string,
+  +projectRoot: string,
+};
 
 export type Options = {|
   +dev: boolean,
   +minify: boolean,
-  +platform: string,
-  +transform: TransformOptions,
+  +platform: ?string,
+  +transform: TransformOptionsStrict,
 |};
 
 export type Data = {
@@ -57,17 +73,18 @@ export type Data = {
   transformFileEndLogEntry: LogEntry,
 };
 
-type Callback = (
+type Callback<T> = (
   error: ?Error,
-  data: ?Data,
+  data: ?T,
 ) => mixed;
 
 function transformCode(
-  transformer: Transformer,
+  transformer: Transformer<*>,
   filename: string,
+  localPath: LocalPath,
   sourceCode: string,
   options: Options,
-  callback: Callback,
+  callback: Callback<Data>,
 ) {
   invariant(
     !options.minify || options.transform.generateSourceMaps,
@@ -89,7 +106,12 @@ function transformCode(
 
   let transformed;
   try {
-    transformed = transformer.transform(sourceCode, filename, options.transform);
+    transformed = transformer.transform({
+      filename,
+      localPath,
+      options: options.transform,
+      src: sourceCode,
+    });
   } catch (error) {
     callback(error);
     return;
@@ -140,20 +162,22 @@ function transformCode(
 exports.transformAndExtractDependencies = (
   transform: string,
   filename: string,
+  localPath: LocalPath,
   sourceCode: string,
   options: Options,
-  callback: Callback,
+  callback: Callback<Data>,
 ) => {
+  babelRegisterOnly([transform]);
   /* $FlowFixMe: impossible to type a dynamic require */
-  const transformModule = require(transform);
-  transformCode(transformModule, filename, sourceCode, options, callback);
+  const transformModule: Transformer<*> = require(transform);
+  transformCode(transformModule, filename, localPath, sourceCode, options, callback);
 };
 
 exports.minify = (
   filename: string,
   code: string,
-  sourceMap: string,
-  callback: (error: ?Error, result: mixed) => mixed,
+  sourceMap: MappingsMap,
+  callback: Callback<{code: string, map: MappingsMap}>,
 ) => {
   var result;
   try {

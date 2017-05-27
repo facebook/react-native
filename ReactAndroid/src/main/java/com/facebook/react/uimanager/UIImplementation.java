@@ -470,6 +470,22 @@ public class UIImplementation {
   }
 
   /**
+   *  Check if the first shadow node is the descendant of the second shadow node
+   */
+  public void viewIsDescendantOf(
+      final int reactTag,
+      final int ancestorReactTag,
+      final Callback callback) {
+    ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
+    ReactShadowNode ancestorNode = mShadowNodeRegistry.getNode(ancestorReactTag);
+    if (node == null || ancestorNode == null) {
+      callback.invoke(false);
+      return;
+    }
+    callback.invoke(node.isDescendantOf(ancestorNode));
+  }
+
+  /**
    * Determines the location on screen, width, and height of the given view relative to the root
    * view and returns the values via an async callback.
    */

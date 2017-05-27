@@ -22,9 +22,4 @@ AAssetManager *extractAssetManager(jni::alias_ref<JAssetManager::javaobject> ass
 
 std::unique_ptr<const JSBigString> loadScriptFromAssets(AAssetManager *assetManager, const std::string& assetName);
 
-/**
- * Helper method for loading JS script from a file
- */
-std::string loadScriptFromFile(const std::string& fileName);
-
 } }
