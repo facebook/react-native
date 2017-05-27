@@ -9,28 +9,25 @@
  * @providesModule PushNotificationIOS
  * @flow
  */
-"use strict";
+'use strict';
 
-const NativeEventEmitter = require("NativeEventEmitter");
-const RCTPushNotificationManager = require("NativeModules")
-  .PushNotificationManager;
-const invariant = require("fbjs/lib/invariant");
+const NativeEventEmitter = require('NativeEventEmitter');
+const RCTPushNotificationManager = require('NativeModules').PushNotificationManager;
+const invariant = require('fbjs/lib/invariant');
 
-const PushNotificationEmitter = new NativeEventEmitter(
-  RCTPushNotificationManager
-);
+const PushNotificationEmitter = new NativeEventEmitter(RCTPushNotificationManager);
 
 const _notifHandlers = new Map();
 
-const DEVICE_NOTIF_EVENT = "remoteNotificationReceived";
-const NOTIF_REGISTER_EVENT = "remoteNotificationsRegistered";
-const NOTIF_REGISTRATION_ERROR_EVENT = "remoteNotificationRegistrationError";
-const DEVICE_LOCAL_NOTIF_EVENT = "localNotificationReceived";
+const DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
+const NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
+const NOTIF_REGISTRATION_ERROR_EVENT = 'remoteNotificationRegistrationError';
+const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
 
 export type FetchResult = {
   NewData: string,
   NoData: string,
-  ResultFailed: string
+  ResultFailed: string,
 };
 
 /**
@@ -57,7 +54,7 @@ export type PushNotificationEventName = $Enum<{
    * occurs when APNS is having issues, or the device is a simulator. The
    * handler will be invoked with {message: string, code: number, details: any}.
    */
-  registrationError: string
+  registrationError: string,
 }>;
 
 /**
@@ -130,9 +127,9 @@ class PushNotificationIOS {
   _remoteNotificationCompleteCalllbackCalled: boolean;
 
   static FetchResult: FetchResult = {
-    NewData: "UIBackgroundFetchResultNewData",
-    NoData: "UIBackgroundFetchResultNoData",
-    ResultFailed: "UIBackgroundFetchResultFailed"
+    NewData: 'UIBackgroundFetchResultNewData',
+    NoData: 'UIBackgroundFetchResultNoData',
+    ResultFailed: 'UIBackgroundFetchResultFailed',
   };
 
   /**
@@ -199,9 +196,7 @@ class PushNotificationIOS {
    * - `userInfo`  : An optional object containing additional notification data.
    * - `thread-id`  : The thread identifier of this notification, if has one.
    */
-  static getDeliveredNotifications(
-    callback: (notifications: [Object]) => void
-  ): void {
+  static getDeliveredNotifications(callback: (notifications: [Object]) => void): void {
     RCTPushNotificationManager.getDeliveredNotifications(callback);
   }
 
@@ -265,38 +260,35 @@ class PushNotificationIOS {
    */
   static addEventListener(type: PushNotificationEventName, handler: Function) {
     invariant(
-      type === "notification" ||
-        type === "register" ||
-        type === "registrationError" ||
-        type === "localNotification",
-      "PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events"
+      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
+      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
     );
     var listener;
-    if (type === "notification") {
-      listener = PushNotificationEmitter.addListener(
+    if (type === 'notification') {
+      listener =  PushNotificationEmitter.addListener(
         DEVICE_NOTIF_EVENT,
-        notifData => {
+        (notifData) => {
           handler(new PushNotificationIOS(notifData));
         }
       );
-    } else if (type === "localNotification") {
+    } else if (type === 'localNotification') {
       listener = PushNotificationEmitter.addListener(
         DEVICE_LOCAL_NOTIF_EVENT,
-        notifData => {
+        (notifData) => {
           handler(new PushNotificationIOS(notifData));
         }
       );
-    } else if (type === "register") {
+    } else if (type === 'register') {
       listener = PushNotificationEmitter.addListener(
         NOTIF_REGISTER_EVENT,
-        registrationInfo => {
+        (registrationInfo) => {
           handler(registrationInfo.deviceToken);
         }
       );
-    } else if (type === "registrationError") {
+    } else if (type === 'registrationError') {
       listener = PushNotificationEmitter.addListener(
         NOTIF_REGISTRATION_ERROR_EVENT,
-        errorInfo => {
+        (errorInfo) => {
           handler(errorInfo);
         }
       );
@@ -308,16 +300,10 @@ class PushNotificationIOS {
    * Removes the event listener. Do this in `componentWillUnmount` to prevent
    * memory leaks
    */
-  static removeEventListener(
-    type: PushNotificationEventName,
-    handler: Function
-  ) {
+  static removeEventListener(type: PushNotificationEventName, handler: Function) {
     invariant(
-      type === "notification" ||
-        type === "register" ||
-        type === "registrationError" ||
-        type === "localNotification",
-      "PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events"
+      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
+      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
     );
     var listener = _notifHandlers.get(type);
     if (!listener) {
@@ -345,13 +331,11 @@ class PushNotificationIOS {
    * rejects, or if the permissions were previously rejected. The promise
    * resolves to the current state of the permission.
    */
-  static requestPermissions(
-    permissions?: {
-      alert?: boolean,
-      badge?: boolean,
-      sound?: boolean
-    }
-  ): Promise<{
+  static requestPermissions(permissions?: {
+    alert?: boolean,
+    badge?: boolean,
+    sound?: boolean
+  }): Promise<{
     alert: boolean,
     badge: boolean,
     sound: boolean
@@ -394,7 +378,10 @@ class PushNotificationIOS {
    *  - `sound` :boolean
    */
   static checkPermissions(callback: Function) {
-    invariant(typeof callback === "function", "Must provide a valid callback");
+    invariant(
+      typeof callback === 'function',
+      'Must provide a valid callback'
+    );
     RCTPushNotificationManager.checkPermissions(callback);
   }
 
@@ -403,11 +390,9 @@ class PushNotificationIOS {
    * object if the app was launched by a push notification, or `null` otherwise.
    */
   static getInitialNotification(): Promise<?PushNotificationIOS> {
-    return RCTPushNotificationManager.getInitialNotification().then(
-      notification => {
-        return notification && new PushNotificationIOS(notification);
-      }
-    );
+    return RCTPushNotificationManager.getInitialNotification().then(notification => {
+      return notification && new PushNotificationIOS(notification);
+    });
   }
 
   /**
@@ -426,9 +411,9 @@ class PushNotificationIOS {
     if (nativeNotif.remote) {
       // Extract data from Apple's `aps` dict as defined:
       // https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
-      Object.keys(nativeNotif).forEach(notifKey => {
+      Object.keys(nativeNotif).forEach((notifKey) => {
         var notifVal = nativeNotif[notifKey];
-        if (notifKey === "aps") {
+        if (notifKey === 'aps') {
           this._alert = notifVal.alert;
           this._sound = notifVal.sound;
           this._badgeCount = notifVal.badge;
@@ -459,19 +444,12 @@ class PushNotificationIOS {
    * be throttled, to read more about it see the above documentation link.
    */
   finish(fetchResult: FetchResult) {
-    if (
-      !this._isRemote ||
-      !this._notificationId ||
-      this._remoteNotificationCompleteCalllbackCalled
-    ) {
+    if (!this._isRemote || !this._notificationId || this._remoteNotificationCompleteCalllbackCalled) {
       return;
     }
     this._remoteNotificationCompleteCalllbackCalled = true;
 
-    RCTPushNotificationManager.onFinishRemoteNotification(
-      this._notificationId,
-      fetchResult
-    );
+    RCTPushNotificationManager.onFinishRemoteNotification(this._notificationId, fetchResult);
   }
 
   /**
