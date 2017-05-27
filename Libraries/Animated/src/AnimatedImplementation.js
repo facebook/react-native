@@ -1839,10 +1839,16 @@ function createAnimatedComponent(Component: any): any {
     }
 
     render() {
+      const props = this._propsAnimated.__getValue();
       return (
         <Component
-          {...this._propsAnimated.__getValue()}
+          {...props}
           ref={this._setComponentRef}
+          // The native driver updates views directly through the UI thread so we
+          // have to make sure the view doesn't get optimized away because it cannot
+          // go through the NativeViewHierachyManager since it operates on the shadow
+          // thread.
+          collapsable={this._propsAnimated.__isNative ? false : props.collapsable}
         />
       );
     }

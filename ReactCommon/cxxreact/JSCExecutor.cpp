@@ -346,7 +346,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
     JSValueRef jsError;
     JSValueRef result = JSC_JSEvaluateBytecodeBundle(m_context, NULL, sourceFD, jsSourceURL, &jsError);
     if (result == nullptr) {
-      formatAndThrowJSException(m_context, jsError, jsSourceURL);
+      throw JSException(m_context, jsError, jsSourceURL);
     }
   } else
 #endif
@@ -390,7 +390,7 @@ void JSCExecutor::bindBridge() throw(JSException) {
         batchedBridgeValue = requireBatchedBridge.asObject().callAsFunction({});
       }
       if (batchedBridgeValue.isUndefined()) {
-        throwJSExecutionException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
+        throw JSException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
       }
     }
 
@@ -626,7 +626,7 @@ JSValueRef JSCExecutor::nativeRequire(
   }
 
   double moduleId = Value(m_context, arguments[0]).asNumber();
-  if (moduleId <= 0) {
+  if (moduleId < 0) {
     throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ",
       Value(m_context, arguments[0]).toString().str()));
   }

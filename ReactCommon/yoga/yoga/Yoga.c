@@ -3148,19 +3148,19 @@ static float YGRoundValueToPixelGrid(const float value,
                                      const float pointScaleFactor,
                                      const bool forceCeil,
                                      const bool forceFloor) {
-  float fractial = fmodf(value, pointScaleFactor);
+  float scaledValue = value * pointScaleFactor;
+  float fractial = fmodf(scaledValue, 1.0);
   if (YGFloatsEqual(fractial, 0)) {
     // Still remove fractial as fractial could be  extremely small.
-    return value - fractial;
-  }
-  
-  if (forceCeil) {
-    return value - fractial + pointScaleFactor;
+    scaledValue = scaledValue - fractial;
+  } else if (forceCeil) {
+    scaledValue = scaledValue - fractial + 1.0;
   } else if (forceFloor) {
-    return value - fractial;
+    scaledValue = scaledValue - fractial;
   } else {
-    return value - fractial + (fractial >= pointScaleFactor / 2.0f ? pointScaleFactor : 0);
+    scaledValue = scaledValue - fractial + (fractial >= 0.5f ? 1.0 : 0);
   }
+  return scaledValue / pointScaleFactor;
 }
 
 bool YGNodeCanUseCachedMeasurement(const YGMeasureMode widthMode,
@@ -3427,7 +3427,7 @@ void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInP
     // Zero is used to skip rounding
     config->pointScaleFactor = 0.0f;
   } else {
-    config->pointScaleFactor = 1.0f / pixelsInPoint;
+    config->pointScaleFactor = pixelsInPoint;
   }
 }
 

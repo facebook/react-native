@@ -80,7 +80,7 @@ void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
   if (loadSynchronously) {
     loadApplicationSync(nullptr, std::move(string), std::move(sourceURL));
   } else {
-    loadApplicationSync(nullptr, std::move(string), std::move(sourceURL));
+    loadApplication(nullptr, std::move(string), std::move(sourceURL));
   }
 }
 
