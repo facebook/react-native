@@ -62,7 +62,7 @@ Now open any example (the `.xcodeproj` file in each of the `Examples` subdirecto
 Note that you'll need the Android NDK installed, see [prerequisites](https://github.com/facebook/react-native/blob/master/ReactAndroid/README.md#prerequisites).
 
 ```bash
-./gradlew :Examples:Movies:android:app:installDebug
+./gradlew :Examples:UIExplorer:android:app:installDebug
 # Start the packager in a separate shell (make sure you ran npm install):
 ./scripts/packager.sh
 # Open the Movies app in your emulator
