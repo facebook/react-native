@@ -87,10 +87,10 @@ This page will help you install and build your first React Native app. If you al
 
 <div class="toggler">
   <ul role="tablist" >
-    <li id="quickstart" class="button-quickstart" aria-selected="false" role="tab" tabindex="0" aria-controls="quickstarttab" onclick="display('guide', 'quickstart')">
+    <li id="quickstart" class="button-quickstart" aria-selected="false" role="tab" tabindex="0" aria-controls="quickstarttab" onclick="displayTab('guide', 'quickstart')">
       Quick Start
     </li>
-    <li id="native" class="button-native" aria-selected="false" role="tab" tabindex="-1" aria-controls="nativetab" onclick="display('guide', 'native')">
+    <li id="native" class="button-native" aria-selected="false" role="tab" tabindex="-1" aria-controls="nativetab" onclick="displayTab('guide', 'native')">
       Building Projects with Native Code
     </li>
   </ul>
@@ -158,26 +158,26 @@ If you're integrating React Native into an existing project, you'll want to skip
 
 <block class="native mac windows linux ios android" />
 
-<p>Follow these instructions if you need to build native code in your project. For example, if you are integrating React Native into an existing application, or if you "ejected" from <a href="docs/getting-started.html" onclick="display('guide', 'quickstart')">Create React Native App</a>, you'll need this section.</p>
+<p>Follow these instructions if you need to build native code in your project. For example, if you are integrating React Native into an existing application, or if you "ejected" from <a href="docs/getting-started.html" onclick="displayTab('guide', 'quickstart')">Create React Native App</a>, you'll need this section.</p>
 
 The instructions are a bit different depending on your development operating system, and whether you want to start developing for iOS or Android. If you want to develop for both iOS and Android, that's fine - you just have to pick
 one to start with, since the setup is a bit different.
 
 <div class="toggler">
   <span>Development OS:</span>
-  <a href="javascript:void(0);" class="button-mac" onclick="display('os', 'mac')">macOS</a>
-  <a href="javascript:void(0);" class="button-windows" onclick="display('os', 'windows')">Windows</a>
-  <a href="javascript:void(0);" class="button-linux" onclick="display('os', 'linux')">Linux</a>
+  <a href="javascript:void(0);" class="button-mac" onclick="displayTab('os', 'mac')">macOS</a>
+  <a href="javascript:void(0);" class="button-windows" onclick="displayTab('os', 'windows')">Windows</a>
+  <a href="javascript:void(0);" class="button-linux" onclick="displayTab('os', 'linux')">Linux</a>
   <span>Target OS:</span>
-  <a href="javascript:void(0);" class="button-ios" onclick="display('platform', 'ios')">iOS</a>
-  <a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
+  <a href="javascript:void(0);" class="button-ios" onclick="displayTab('platform', 'ios')">iOS</a>
+  <a href="javascript:void(0);" class="button-android" onclick="displayTab('platform', 'android')">Android</a>
 </div>
 
 <block class="native linux windows ios" />
 
 ## Unsupported
 
-<blockquote><p>A Mac is required to build projects with native code for iOS. You can follow the <a href="docs/getting-started.html" onclick="display('guide', 'quickstart')">Quick Start</a> to learn how to build your app using Create React Native App instead.</p></blockquote>
+<blockquote><p>A Mac is required to build projects with native code for iOS. You can follow the <a href="docs/getting-started.html" onclick="displayTab('guide', 'quickstart')">Quick Start</a> to learn how to build your app using Create React Native App instead.</p></blockquote>
 
 <block class="native mac ios" />
 
@@ -640,84 +640,13 @@ to the [Tutorial](docs/tutorial.html).
 If you're curious to learn more about React Native, continue on
 to the [Tutorial](docs/tutorial.html).
 
+
 <script>
-// Convert <div>...<span><block /></span>...</div>
-// Into <div>...<block />...</div>
-var blocks = document.getElementsByTagName('block');
-for (var i = 0; i < blocks.length; ++i) {
-  var block = blocks[i];
-  var span = blocks[i].parentNode;
-  var container = span.parentNode;
-  container.insertBefore(block, span);
-  container.removeChild(span);
-}
-// Convert <div>...<block />content<block />...</div>
-// Into <div>...<block>content</block><block />...</div>
-blocks = document.getElementsByTagName('block');
-for (var i = 0; i < blocks.length; ++i) {
-  var block = blocks[i];
-  while (block.nextSibling && block.nextSibling.tagName !== 'BLOCK') {
-    block.appendChild(block.nextSibling);
-  }
-}
-function display(type, value) {
+function displayTab(type, value) {
   var container = document.getElementsByTagName('block')[0].parentNode;
   container.className = 'display-' + type + '-' + value + ' ' +
     container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
-}
-
-// If we are coming to the page with a hash in it (i.e. from a search, for example), try to get
-// us as close as possible to the correct platform and dev os using the hashtag and block walk up.
-var foundHash = false;
-if (window.location.hash !== '' && window.location.hash !== 'content') { // content is default
-  var hashLinks = document.querySelectorAll('a.hash-link');
-  for (var i = 0; i < hashLinks.length && !foundHash; ++i) {
-    if (hashLinks[i].hash === window.location.hash) {
-      var parent = hashLinks[i].parentElement;
-      while (parent) {
-        if (parent.tagName === 'BLOCK') {
-          var devOS = null;
-          var targetPlatform = null;
-          // Could be more than one target os and dev platform, but just choose some sort of order
-          // of priority here.
-
-          // Dev OS
-          if (parent.className.indexOf('mac') > -1) {
-            devOS = 'mac';
-          } else if (parent.className.indexOf('linux') > -1) {
-            devOS = 'linux';
-          } else if (parent.className.indexOf('windows') > -1) {
-            devOS = 'windows';
-          } else {
-            break; // assume we don't have anything.
-          }
-
-          // Target Platform
-          if (parent.className.indexOf('ios') > -1) {
-            targetPlatform = 'ios';
-          } else if (parent.className.indexOf('android') > -1) {
-            targetPlatform = 'android';
-          } else {
-            break; // assume we don't have anything.
-          }
-          // We would have broken out if both targetPlatform and devOS hadn't been filled.
-          display('guide', 'native');
-          display('os', devOS);
-          display('platform', targetPlatform);
-          foundHash = true;
-          break;
-        }
-        parent = parent.parentElement;
-      }
-    }
-  }
-}
-// Do the default if there is no matching hash
-if (!foundHash) {
-  var isMac = navigator.platform === 'MacIntel';
-  var isWindows = navigator.platform === 'Win32';
-  display('guide', 'quickstart');
-  display('os', isMac ? 'mac' : (isWindows ? 'windows' : 'linux'));
-  display('platform', isMac ? 'ios' : 'android');
+  console.log(container.className);
+  event && event.preventDefault();
 }
 </script>

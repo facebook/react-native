@@ -9,57 +9,111 @@ next: upgrading
 previous: integration-with-existing-apps
 ---
 
+<style>
+  .toggler li {
+    display: inline-block;
+    position: relative;
+    top: 1px;
+    padding: 10px;
+    margin: 0px 2px 0px 2px;
+    border: 1px solid #05A5D1;
+    border-bottom-color: transparent;
+    border-radius: 3px 3px 0px 0px;
+    color: #05A5D1;
+    background-color: transparent;
+    font-size: 0.99em;
+    cursor: pointer;
+  }
+  .toggler li:first-child {
+    margin-left: 0;
+  }
+  .toggler li:last-child {
+    margin-right: 0;
+  }
+  .toggler ul {
+    width: 100%;
+    display: inline-block;
+    list-style-type: none;
+    margin: 0;
+    border-bottom: 1px solid #05A5D1;
+    cursor: default;
+  }
+  @media screen and (max-width: 960px) {
+    .toggler li,
+    .toggler li:first-child,
+    .toggler li:last-child {
+      display: block;
+      border-bottom-color: #05A5D1;
+      border-radius: 3px;
+      margin: 2px 0px 2px 0px;
+    }
+    .toggler ul {
+      border-bottom: 0;
+    }
+  }
+  .toggler a {
+    display: inline-block;
+    padding: 10px 5px;
+    margin: 2px;
+    border: 1px solid #05A5D1;
+    border-radius: 3px;
+    text-decoration: none !important;
+  }
+  .display-os-mac .toggler .button-mac,
+  .display-os-linux .toggler .button-linux,
+  .display-os-windows .toggler .button-windows,
+  .display-platform-ios .toggler .button-ios,
+  .display-platform-android .toggler .button-android {
+    background-color: #05A5D1;
+    color: white;
+  }
+  block { display: none; }
+  .display-platform-ios.display-os-mac .ios.mac,
+  .display-platform-ios.display-os-linux .ios.linux,
+  .display-platform-ios.display-os-windows .ios.windows,
+  .display-platform-android.display-os-mac .android.mac,
+  .display-platform-android.display-os-linux .android.linux,
+  .display-platform-android.display-os-windows .android.windows {
+    display: block;
+  }
+</style>
+
 It's always a good idea to test your app on an actual device before releasing it to your users. This document will guide you through the necessary steps to run your React Native app on a device and to get it ready for production.
 
 <div class="toggler">
-  <style>
-    .toggler a {
-      display: inline-block;
-      padding: 10px 5px;
-      margin: 2px;
-      border: 1px solid #05A5D1;
-      border-radius: 3px;
-      text-decoration: none !important;
-    }
-    .display-os-mac .toggler .button-mac,
-    .display-os-linux .toggler .button-linux,
-    .display-os-windows .toggler .button-windows,
-    .display-platform-ios .toggler .button-ios,
-    .display-platform-android .toggler .button-android {
-      background-color: #05A5D1;
-      color: white;
-    }
-    block { display: none; }
-    .display-platform-ios.display-os-mac .ios.mac,
-    .display-platform-ios.display-os-linux .ios.linux,
-    .display-platform-ios.display-os-windows .ios.windows,
-    .display-platform-android.display-os-mac .android.mac,
-    .display-platform-android.display-os-linux .android.linux,
-    .display-platform-android.display-os-windows .android.windows {
-      display: block;
-    }
-  </style>
-  <span>Development OS:</span>
-  <a href="javascript:void(0);" class="button-mac" onclick="display('os', 'mac')">macOS</a>
-  <a href="javascript:void(0);" class="button-linux" onclick="display('os', 'linux')">Linux</a>
-  <a href="javascript:void(0);" class="button-windows" onclick="display('os', 'windows')">Windows</a>
-  <span>Target OS:</span>
-  <a href="javascript:void(0);" class="button-ios" onclick="display('platform', 'ios')">iOS</a>
-  <a href="javascript:void(0);" class="button-android" onclick="display('platform', 'android')">Android</a>
 
+  <ul role="tablist" >
+    <li id="ios" class="button-ios" aria-selected="false" role="tab" tabindex="0" aria-controls="iostab" onclick="displayTab('platform', 'ios')">
+      iOS
+    </li>
+    <li id="android" class="button-android" aria-selected="false" role="tab" tabindex="-1" aria-controls="androidtab" onclick="displayTab('platform', 'android')">
+      Android
+    </li>
+  </ul>
+</div>
+
+<block class="linux windows mac ios" />
+
+## Running your app on iOS devices
+
+<block class="linux windows mac android" />
+
+## Running your app on Android devices
+
+<block class="linux windows mac ios android" />
+
+<div class="toggler">
+<span>Development OS:</span>
+<a href="javascript:void(0);" class="button-mac" onclick="displayTab('os', 'mac')">macOS</a>
+<a href="javascript:void(0);" class="button-linux" onclick="displayTab('os', 'linux')">Linux</a>
+<a href="javascript:void(0);" class="button-windows" onclick="displayTab('os', 'windows')">Windows</a>
 </div>
 
 <block class="linux windows ios" />
 
-## Running your app on iOS devices
-
 A Mac is required in order to build your app for iOS devices. Alternatively, you can refer to the [Quick Start instructions](docs/getting-started.html) to learn how to build your app using Create React Native App, which will allow you to run your app using the Expo client app.
 
 <block class="mac ios" />
-
-## Running your app on iOS devices
-
-Register for a [Apple developer account](https://developer.apple.com/) if you don't have one yet.
 
 ### 1. Plug in your device via USB
 
@@ -68,6 +122,8 @@ Connect your iOS device to your Mac using a USB to Lightning cable. Navigate to 
 If this is your first time running an app on your iOS device, you may need to register your device for development. Open the **Product** menu from Xcode's menubar, then go to **Destination**. Look for and select your device from the list. Xcode will then register your device for development.
 
 ### 2. Configure code signing
+
+Register for a [Apple developer account](https://developer.apple.com/) if you don't have one yet.
 
 Select your project in the Xcode Project Navigator, then select your main target (it should share the same name as your project). Look for the "General" tab. Go to "Signing" and make sure your Apple developer account or team is selected under the Team dropdown.
 
@@ -84,8 +140,6 @@ If everything is set up correctly, your device will be listed as the build targe
 > If you run into any issues, please take a look at Apple's [Launching Your App on a Device](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/LaunchingYourApponDevices/LaunchingYourApponDevices.html#//apple_ref/doc/uid/TP40012582-CH27-SW4) docs.
 
 <block class="mac windows linux android" />
-
-## Running your app on Android devices
 
 ### 1. Enable Debugging over USB
 
@@ -268,81 +322,9 @@ You can now build your app for release by tapping `⌘B` or selecting **Product*
 You have built a great app using React Native, and you are now itching to release it in the Play Store. The process is the same as any other native Android app, with some additional considerations to take into account. Follow the guide for [generating a signed APK](docs/signed-apk-android.html) to learn more.
 
 <script>
-// Convert <div>...<span><block /></span>...</div>
-// Into <div>...<block />...</div>
-var blocks = document.getElementsByTagName('block');
-for (var i = 0; i < blocks.length; ++i) {
-  var block = blocks[i];
-  var span = blocks[i].parentNode;
-  var container = span.parentNode;
-  container.insertBefore(block, span);
-  container.removeChild(span);
-}
-// Convert <div>...<block />content<block />...</div>
-// Into <div>...<block>content</block><block />...</div>
-blocks = document.getElementsByTagName('block');
-for (var i = 0; i < blocks.length; ++i) {
-  var block = blocks[i];
-  while (block.nextSibling && block.nextSibling.tagName !== 'BLOCK') {
-    block.appendChild(block.nextSibling);
-  }
-}
-function display(type, value) {
+function displayTab(type, value) {
   var container = document.getElementsByTagName('block')[0].parentNode;
   container.className = 'display-' + type + '-' + value + ' ' +
     container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
-}
-
-// If we are coming to the page with a hash in it (i.e. from a search, for example), try to get
-// us as close as possible to the correct platform and dev os using the hashtag and block walk up.
-var foundHash = false;
-if (window.location.hash !== '' && window.location.hash !== 'content') { // content is default
-  var hashLinks = document.querySelectorAll('a.hash-link');
-  for (var i = 0; i < hashLinks.length && !foundHash; ++i) {
-    if (hashLinks[i].hash === window.location.hash) {
-      var parent = hashLinks[i].parentElement;
-      while (parent) {
-        if (parent.tagName === 'BLOCK') {
-          var devOS = null;
-          var targetPlatform = null;
-          // Could be more than one target os and dev platform, but just choose some sort of order
-          // of priority here.
-
-          // Dev OS
-          if (parent.className.indexOf('mac') > -1) {
-            devOS = 'mac';
-          } else if (parent.className.indexOf('linux') > -1) {
-            devOS = 'linux';
-          } else if (parent.className.indexOf('windows') > -1) {
-            devOS = 'windows';
-          } else {
-            break; // assume we don't have anything.
-          }
-
-          // Target Platform
-          if (parent.className.indexOf('ios') > -1) {
-            targetPlatform = 'ios';
-          } else if (parent.className.indexOf('android') > -1) {
-            targetPlatform = 'android';
-          } else {
-            break; // assume we don't have anything.
-          }
-          // We would have broken out if both targetPlatform and devOS hadn't been filled.
-          display('os', devOS);
-          display('platform', targetPlatform);      
-          foundHash = true;
-          break;
-        }
-        parent = parent.parentElement;
-      }
-    }
-  }
-}
-// Do the default if there is no matching hash
-if (!foundHash) {
-  var isMac = navigator.platform === 'MacIntel';
-  var isWindows = navigator.platform === 'Win32';
-  display('os', isMac ? 'mac' : (isWindows ? 'windows' : 'linux'));
-  display('platform', isMac ? 'ios' : 'android');
 }
 </script>
