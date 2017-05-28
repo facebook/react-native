@@ -18,12 +18,17 @@
   UIColor *_titleColor;
 }
 
+static unsigned short defaultHeight;
++(unsigned short) defaultHeight {return defaultHeight; }
++(void) setDefaultHeight:(unsigned short) val { defaultHeight = val; }
+
 - (instancetype)init
 {
   if ((self = [super init])) {
     [self addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
     _isInitialRender = true;
     _currentRefreshingState = false;
+    RCTRefreshControl.defaultHeight = self.frame.size.height;
   }
   return self;
 }
@@ -52,18 +57,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   // When using begin refreshing we need to adjust the ScrollView content offset manually.
   UIScrollView *scrollView = (UIScrollView *)self.superview;
-  CGPoint offset = {scrollView.contentOffset.x, scrollView.contentOffset.y - self.frame.size.height};
-
-  // `beginRefreshing` must be called after the animation is done. This is why it is impossible
-  // to use `setContentOffset` with `animated:YES`.
-  [UIView animateWithDuration:0.25
-                          delay:0
-                        options:UIViewAnimationOptionBeginFromCurrentState
-                     animations:^(void) {
-                       [scrollView setContentOffset:offset];
-                     } completion:^(__unused BOOL finished) {
-                       [super beginRefreshing];
-                     }];
+  CGPoint offset = {scrollView.contentOffset.x, scrollView.contentOffset.y - RCTRefreshControl.defaultHeight};
+  [scrollView setContentOffset:offset animated:YES];
+  [super beginRefreshing];
 }
 
 - (void)endRefreshing
