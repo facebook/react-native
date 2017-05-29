@@ -149,28 +149,31 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
-static void RCTUpdatePlaceholder(RCTTextField *self)
+- (void)updatePlaceholder
 {
-  if (self.placeholder.length > 0 && self.placeholderTextColor) {
-    self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
-                                                                 attributes:@{
-                                                                              NSForegroundColorAttributeName : self.placeholderTextColor
-                                                                              }];
-  } else if (self.placeholder.length) {
-    self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder];
+  if (self.placeholder == nil) {
+    return;
   }
+
+  NSMutableDictionary *attributes = [NSMutableDictionary new];
+  if (self.placeholderTextColor) {
+    [attributes setObject:self.placeholderTextColor forKey:NSForegroundColorAttributeName];
+  }
+
+  self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
+                                                               attributes:attributes];
 }
 
 - (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
 {
   _placeholderTextColor = placeholderTextColor;
-  RCTUpdatePlaceholder(self);
+  [self updatePlaceholder];
 }
 
 - (void)setPlaceholder:(NSString *)placeholder
 {
   super.placeholder = placeholder;
-  RCTUpdatePlaceholder(self);
+  [self updatePlaceholder];
   [self updateIntrinsicContentSize];
 }
 
