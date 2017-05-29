@@ -35,6 +35,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
 import java.util.Map;
+import java.util.HashMap;
 
 public class ToastModule extends ReactContextBaseJavaModule {
 
@@ -61,7 +62,7 @@ An optional method called `getConstants` returns the constant values exposed to 
 ```java
   @Override
   public Map<String, Object> getConstants() {
-    final Map<String, Object> constants = new HashMap<>();
+    final Map<String, Object> constants = new HashMap<String, Object>();
     constants.put(DURATION_SHORT_KEY, Toast.LENGTH_SHORT);
     constants.put(DURATION_LONG_KEY, Toast.LENGTH_LONG);
     return constants;
@@ -126,7 +127,7 @@ public class AnExampleReactPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(
                               ReactApplicationContext reactContext) {
-    List<NativeModule> modules = new ArrayList<>();
+    List<NativeModule> modules = new ArrayList<NativeModule>();
 
     modules.add(new ToastModule(reactContext));
 
