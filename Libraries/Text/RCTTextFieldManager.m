@@ -30,7 +30,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTTextField alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
+  return [[RCTTextField alloc] initWithBridge:self.bridge];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(caretHidden, BOOL)

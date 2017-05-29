@@ -9,8 +9,10 @@
 
 #import "RCTTextField.h"
 
+#import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
+#import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
@@ -47,6 +49,7 @@
 
 @implementation RCTTextField
 {
+  RCTBridge *_bridge;
   RCTEventDispatcher *_eventDispatcher;
   NSInteger _nativeEventCount;
   BOOL _submitted;
@@ -56,17 +59,20 @@
   RCTTextFieldDelegateProxy *_delegateProxy;
 }
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithBridge:(RCTBridge *)bridge
 {
-  if ((self = [super initWithFrame:CGRectZero])) {
-    RCTAssert(eventDispatcher, @"eventDispatcher is a required parameter");
-    _eventDispatcher = eventDispatcher;
+  if (self = [super initWithFrame:CGRectZero]) {
+    RCTAssertParam(bridge);
+
+    _bridge = bridge;
+    _eventDispatcher = bridge.eventDispatcher;
+    _blurOnSubmit = YES;
+
     [self addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
     [self addTarget:self action:@selector(textFieldBeginEditing) forControlEvents:UIControlEventEditingDidBegin];
     [self addTarget:self action:@selector(textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
     [self addTarget:self action:@selector(textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
     [self addObserver:self forKeyPath:@"selectedTextRange" options:0 context:nil];
-    _blurOnSubmit = YES;
 
     // We cannot use `self.delegate = self;` here because `UITextField` implements some of these delegate methods itself,
     // so if we implement this delegate on self, we will override some of its behaviours.
@@ -165,6 +171,7 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 {
   super.placeholder = placeholder;
   RCTUpdatePlaceholder(self);
+  [self updateIntrinsicContentSize];
 }
 
 - (CGRect)caretRectForPosition:(UITextPosition *)position
@@ -185,6 +192,8 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 {
   return [self textRectForBounds:bounds];
 }
+
+#pragma mark - Events
 
 - (void)textFieldDidChange
 {
@@ -291,6 +300,20 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 - (void)didMoveToWindow
 {
   [self reactFocusIfNeeded];
+}
+
+- (void)setFont:(UIFont *)font
+{
+  [super setFont:font];
+  [self updateIntrinsicContentSize];
+}
+
+- (void)updateIntrinsicContentSize
+{
+  NSString *text = self.placeholder ?: @"";
+  CGSize size = [text sizeWithAttributes:@{NSFontAttributeName: self.font}];
+  size = CGSizeMake(RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height));
+  [_bridge.uiManager setIntrinsicContentSize:size forView:self];
 }
 
 #pragma mark - UITextFieldDelegate (Proxied)

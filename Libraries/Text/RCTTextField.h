@@ -11,7 +11,7 @@
 
 #import <React/RCTComponent.h>
 
-@class RCTEventDispatcher;
+@class RCTBridge;
 
 @interface RCTTextField : UITextField
 
@@ -25,6 +25,6 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 @end
