@@ -185,10 +185,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return [super caretRectForPosition:position];
 }
 
+#pragma mark - Positioning Overrides
+
 - (CGRect)textRectForBounds:(CGRect)bounds
 {
-  CGRect rect = [super textRectForBounds:bounds];
-  return UIEdgeInsetsInsetRect(rect, _contentInset);
+  return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], self.reactCompoundInsets);
 }
 
 - (CGRect)editingRectForBounds:(CGRect)bounds

@@ -78,6 +78,14 @@
 - (void)reactFocusIfNeeded;
 - (void)reactBlur;
 
+/**
+ * Useful properties for computing layout.
+ */
+@property (nonatomic, readonly) UIEdgeInsets reactBorderInsets;
+@property (nonatomic, readonly) UIEdgeInsets reactPaddingInsets;
+@property (nonatomic, readonly) UIEdgeInsets reactCompoundInsets;
+@property (nonatomic, readonly) CGRect reactContentFrame;
+
 #if RCT_DEV
 
 /**

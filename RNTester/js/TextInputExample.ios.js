@@ -763,8 +763,18 @@ exports.examples = [
     title: 'TextInput Intrinsic Size',
     render: function() {
       return (
-        <View style={{height: 50}}>
-          <TextInput style={{position: 'absolute', fontSize: 16, backgroundColor: '#eeeeee'}} placeholder="Placeholder defines intrinsic size" />
+        <View style={{height: 80}}>
+          <TextInput
+            style={{
+              position: 'absolute',
+              fontSize: 16,
+              backgroundColor: '#eeeeee',
+              borderWidth: 5,
+              padding: 10,
+              paddingTop: 20,
+            }}
+            placeholder="Placeholder defines intrinsic size"
+          />
         </View>
       );
     }

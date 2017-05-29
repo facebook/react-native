@@ -231,4 +231,35 @@
   [self resignFirstResponder];
 }
 
+#pragma mark - Layout
+
+- (UIEdgeInsets)reactBorderInsets
+{
+  CGFloat borderWidth = self.layer.borderWidth;
+  return UIEdgeInsetsMake(borderWidth, borderWidth, borderWidth, borderWidth);
+}
+
+- (UIEdgeInsets)reactPaddingInsets
+{
+  return UIEdgeInsetsZero;
+}
+
+- (UIEdgeInsets)reactCompoundInsets
+{
+  UIEdgeInsets borderInsets = self.reactBorderInsets;
+  UIEdgeInsets paddingInsets = self.reactPaddingInsets;
+
+  return UIEdgeInsetsMake(
+    borderInsets.top + paddingInsets.top,
+    borderInsets.left + paddingInsets.left,
+    borderInsets.bottom + paddingInsets.bottom,
+    borderInsets.right + paddingInsets.right
+  );
+}
+
+- (CGRect)reactContentFrame
+{
+  return UIEdgeInsetsInsetRect(self.bounds, self.reactCompoundInsets);
+}
+
 @end
