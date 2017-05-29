@@ -87,11 +87,18 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    */
   ItemSeparatorComponent?: ?ReactClass<any>,
   /**
-   * Rendered at the very beginning of the list.
+   * Rendered at the very beginning of the list. Can be a React Component Class, a render function, or
+   * a rendered element.
    */
   ListHeaderComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
-   * Rendered at the very end of the list.
+   * Rendered when the list is empty. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListEmptyComponent?: ?(ReactClass<any> | React.Element<any>),
+  /**
+   * Rendered at the very end of the list. Can be a React Component Class, a render function, or
+   * a rendered element.
    */
   ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
   /**

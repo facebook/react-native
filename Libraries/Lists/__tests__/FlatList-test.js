@@ -48,6 +48,7 @@ describe('FlatList', () => {
     const component = ReactTestRenderer.create(
       <FlatList
         ItemSeparatorComponent={() => <separator />}
+        ListEmptyComponent={() => <empty />}
         ListFooterComponent={() => <footer />}
         ListHeaderComponent={() => <header />}
         data={new Array(5).fill().map((_, ii) => ({id: String(ii)}))}

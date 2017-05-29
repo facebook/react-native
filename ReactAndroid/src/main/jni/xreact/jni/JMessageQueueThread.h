@@ -5,7 +5,6 @@
 #include <functional>
 
 #include <cxxreact/MessageQueueThread.h>
-
 #include <fb/fbjni.h>
 
 using namespace facebook::jni;
@@ -44,17 +43,8 @@ public:
     return m_jobj.get();
   }
 
-  /**
-   * Returns the current MessageQueueThread that owns this thread.
-   */
-  static std::unique_ptr<JMessageQueueThread> currentMessageQueueThread();
 private:
   global_ref<JavaMessageQueueThread::javaobject> m_jobj;
-};
-
-class MessageQueueThreadRegistry : public jni::JavaClass<MessageQueueThreadRegistry> {
-public:
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/queue/MessageQueueThreadRegistry;";
 };
 
 } }

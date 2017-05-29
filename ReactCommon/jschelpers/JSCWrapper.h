@@ -48,7 +48,7 @@ JSC_IMPORT JSValueRef JSPokeSamplingProfiler(JSContextRef);
  *
  * Version number indicating that bytecode is not supported by this runtime.
  */
-extern const int32_t JSNoBytecodeFileFormatVersion;
+__attribute__((visibility("default"))) extern const int32_t JSNoBytecodeFileFormatVersion;
 
 namespace facebook {
 namespace react {
@@ -101,6 +101,7 @@ struct JSCWrapper {
   JSC_WRAPPER_METHOD(JSObjectMakeFunctionWithCallback);
   JSC_WRAPPER_METHOD(JSObjectSetPrivate);
   JSC_WRAPPER_METHOD(JSObjectSetProperty);
+  JSC_WRAPPER_METHOD(JSObjectSetPropertyAtIndex);
 
   // JSPropertyNameArray
   JSC_WRAPPER_METHOD(JSObjectCopyPropertyNames);

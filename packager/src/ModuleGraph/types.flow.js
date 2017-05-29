@@ -10,9 +10,15 @@
  */
 'use strict';
 
-import type {MappingsMap, SourceMap} from '../lib/SourceMap';
+import type {FBSourceMap, MappingsMap, SourceMap} from '../lib/SourceMap';
 import type {Ast} from 'babel-core';
 import type {Console} from 'console';
+export type {Transformer} from '../JSTransformer/worker/worker.js';
+
+export type BuildResult = {|
+  ...GraphResult,
+  prependedScripts: $ReadOnlyArray<Module>,
+|};
 
 export type Callback<A = void, B = void>
   = (Error => void)
@@ -25,7 +31,7 @@ type Dependency = {|
 
 export type File = {|
   code: string,
-  map?: ?Object,
+  map: ?MappingsMap,
   path: string,
   type: CodeFileTypes,
 |};
@@ -46,8 +52,8 @@ type GraphOptions = {|
 |};
 
 export type GraphResult = {|
-  entryModules: Array<Module>,
-  modules: Array<Module>,
+  entryModules: Iterable<Module>,
+  modules: Iterable<Module>,
 |};
 
 export type IdForPathFn = {path: string} => number;
@@ -69,15 +75,23 @@ export type Module = {|
   file: File,
 |};
 
-export type OutputFn = (
+export type PostProcessModules = (
   modules: Iterable<Module>,
-  filename?: string,
-  idForPath: IdForPathFn,
-) => OutputResult;
+  entryPoints: Array<string>,
+) => Iterable<Module>;
 
-type OutputResult = {|
-  code: string,
-  map: SourceMap,
+export type OutputFn<M: FBSourceMap | SourceMap = FBSourceMap | SourceMap> = ({|
+  filename: string,
+  idForPath: IdForPathFn,
+  modules: Iterable<Module>,
+  requireCalls: Iterable<Module>,
+  sourceMapPath?: string,
+|}) => OutputResult<M>;
+
+type OutputResult<M: FBSourceMap | SourceMap> = {|
+  code: string | Buffer,
+  extraFiles?: Iterable<[string, string | Buffer]>,
+  map: M,
 |};
 
 export type PackageData = {|
@@ -105,25 +119,16 @@ export type TransformerResult = {|
   map: ?MappingsMap,
 |};
 
-export type Transformer = {
-  transform: (
-    sourceCode: string,
-    filename: string,
-    options: ?{},
-    plugins?: Array<string | Object | [string | Object, any]>,
-  ) => {ast: ?Ast, code: string, map: ?MappingsMap}
-};
-
 export type TransformResult = {|
   code: string,
   dependencies: Array<string>,
   dependencyMapName?: string,
-  map: ?Object,
+  map: ?MappingsMap,
 |};
 
 export type TransformResults = {[string]: TransformResult};
 
-export type TransformVariants = {[key: string]: Object};
+export type TransformVariants = {+[name: string]: {}, +default: {}};
 
 export type TransformedCodeFile = {
   +code: string,
@@ -152,8 +157,9 @@ export type TransformedSourceFile =
 
 export type LibraryOptions = {|
   dependencies?: Array<string>,
+  optimize: boolean,
   platform?: string,
-  root: string,
+  rebasePath: string => string,
 |};
 
 export type Base64Content = string;

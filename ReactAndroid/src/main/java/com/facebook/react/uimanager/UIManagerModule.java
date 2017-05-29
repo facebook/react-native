@@ -149,6 +149,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
     getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
     YogaNodePool.get().clear();
+    ViewManagerPropertyUpdater.clear();
   }
 
   private static Map<String, Object> createConstants(
@@ -184,6 +185,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * NB: this method is horribly not-thread-safe.
    */
   public int addMeasuredRootView(final SizeMonitoringFrameLayout rootView) {
+    Systrace.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+      "UIManagerModule.addMeasuredRootView");
     final int tag = mNextRootViewTag;
     mNextRootViewTag += ROOT_VIEW_TAG_INCREMENT;
 
@@ -220,6 +224,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
         }
       });
 
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return tag;
   }
 
@@ -229,7 +234,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
-    getReactApplicationContext().assertOnNativeModulesQueueThread();
+    getReactApplicationContext().assertOnUIBackgroundOrNativeModulesThread();
 
     mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight);
   }
@@ -406,6 +411,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       Math.round(PixelUtil.toPixelFromDIP(point.getDouble(0))),
       Math.round(PixelUtil.toPixelFromDIP(point.getDouble(1))),
       callback);
+  }
+
+  /**
+   *  Check if the first shadow node is the descendant of the second shadow node
+   */
+  @ReactMethod
+  public void viewIsDescendantOf(
+      final int reactTag,
+      final int ancestorReactTag,
+      final Callback callback) {
+    mUIImplementation.viewIsDescendantOf(reactTag, ancestorReactTag, callback);
   }
 
   /**

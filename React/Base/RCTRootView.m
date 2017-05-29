@@ -98,8 +98,9 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
     [self showLoadingView];
 
-    // Immediately schedule the application to be started
-    [self bundleFinishedLoading:[_bridge batchedBridge]];
+    // Immediately schedule the application to be started.
+    // (Sometimes actual `_bridge` is already batched bridge here.)
+    [self bundleFinishedLoading:([_bridge batchedBridge] ?: _bridge)];
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");

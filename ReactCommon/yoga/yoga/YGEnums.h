@@ -106,6 +106,13 @@ typedef YG_ENUM_BEGIN(YGMeasureMode) {
 } YG_ENUM_END(YGMeasureMode);
 WIN_EXPORT const char *YGMeasureModeToString(const YGMeasureMode value);
 
+#define YGNodeTypeCount 2
+typedef YG_ENUM_BEGIN(YGNodeType) {
+  YGNodeTypeDefault,
+  YGNodeTypeText,
+} YG_ENUM_END(YGNodeType);
+WIN_EXPORT const char *YGNodeTypeToString(const YGNodeType value);
+
 #define YGOverflowCount 3
 typedef YG_ENUM_BEGIN(YGOverflow) {
   YGOverflowVisible,

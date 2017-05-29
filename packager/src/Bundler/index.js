@@ -14,6 +14,7 @@
 const assert = require('assert');
 const crypto = require('crypto');
 const debug = require('debug')('RNP:Bundler');
+const emptyFunction = require('fbjs/lib/emptyFunction');
 const fs = require('fs');
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
@@ -26,13 +27,13 @@ const denodeify = require('denodeify');
 const defaults = require('../../defaults');
 const os = require('os');
 const invariant = require('fbjs/lib/invariant');
+const toLocalPath = require('../node-haste/lib/toLocalPath');
 
 const {generateAssetTransformResult, isAssetTypeAnImage} = require('./util');
 
 const {
   sep: pathSeparator,
   join: joinPath,
-  relative: relativePath,
   dirname: pathDirname,
   extname,
 } = require('path');
@@ -45,6 +46,7 @@ import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionRes
 import type {MappingsMap} from '../lib/SourceMap';
 import type {Options as JSTransformerOptions} from '../JSTransformer/worker/worker';
 import type {Reporter} from '../lib/reporting';
+import type {TransformCache} from '../lib/TransformCaching';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 
 export type BundlingOptions = {|
@@ -53,16 +55,16 @@ export type BundlingOptions = {|
   +transformer: JSTransformerOptions,
 |};
 
-export type ExtraTransformOptions = {|
-  +inlineRequires?: {+blacklist: {[string]: true}} | boolean,
+export type ExtraTransformOptions = {
   +preloadedModules?: {[path: string]: true} | false,
   +ramGroups?: Array<string>,
-|};
+  +transform?: {+inlineRequires?: {+blacklist: {[string]: true}} | boolean},
+};
 
 export type GetTransformOptionsOpts = {|
   dev: boolean,
   hot: boolean,
-  platform: string,
+  platform: ?string,
 |};
 
 export type GetTransformOptions = (
@@ -88,8 +90,6 @@ export type ExtendedAssetDescriptor = AssetDescriptor & {
 };
 
 const sizeOf = denodeify(imageSize);
-
-const noop = () => {};
 
 const {
   createActionStartEntry,
@@ -127,15 +127,19 @@ type Options = {|
   +platforms: Array<string>,
   +polyfillModuleNames: Array<string>,
   +postProcessModules?: PostProcessModules,
-  +postMinifyProcess?: PostMinifyProcess,
-  +projectRoots: Array<string>,
+  +postMinifyProcess: PostMinifyProcess,
+  +projectRoots: $ReadOnlyArray<string>,
   +providesModuleNodeModules?: Array<string>,
   +reporter: Reporter,
   +resetCache: boolean,
-  +transformModulePath?: string,
+  +sourceExts: Array<string>,
+  +transformCache: TransformCache,
+  +transformModulePath: string,
   +transformTimeoutInterval: ?number,
   +watch: boolean,
 |};
+
+const {hasOwnProperty} = Object;
 
 class Bundler {
 
@@ -143,7 +147,7 @@ class Bundler {
   _getModuleId: (opts: Module) => number;
   _transformer: Transformer;
   _resolverPromise: Promise<Resolver>;
-  _projectRoots: Array<string>;
+  _projectRoots: $ReadOnlyArray<string>;
   _assetServer: AssetServer;
   _getTransformOptions: void | GetTransformOptions;
 
@@ -152,15 +156,9 @@ class Bundler {
 
     opts.projectRoots.forEach(verifyRootExists);
 
-    let transformModuleHash;
-    try {
-      /* $FlowFixMe: if transformModulePath is null it'll just be caught */
-      const transformModuleStr = fs.readFileSync(opts.transformModulePath);
-      transformModuleHash =
-        crypto.createHash('sha1').update(transformModuleStr).digest('hex');
-    } catch (error) {
-      transformModuleHash = '';
-    }
+    const transformModuleStr = fs.readFileSync(opts.transformModulePath);
+    const transformModuleHash =
+      crypto.createHash('sha1').update(transformModuleStr).digest('hex');
 
     const stableProjectRoots = opts.projectRoots.map(p => {
       return path.relative(path.join(__dirname, '../../../..'), p);
@@ -176,7 +174,7 @@ class Bundler {
 
     this._getModuleId = createModuleIdFactory();
 
-    let getCacheKey = () => '';
+    let getCacheKey = (options: mixed) => '';
     if (opts.transformModulePath) {
       /* $FlowFixMe: dynamic requires prevent static typing :'(  */
       const transformer = require(opts.transformModulePath);
@@ -193,10 +191,16 @@ class Bundler {
 
     const maxWorkerCount = Bundler.getMaxWorkerCount();
 
-    /* $FlowFixMe: in practice it's always here. */
-    this._transformer = new Transformer(opts.transformModulePath, maxWorkerCount);
+    this._transformer = new Transformer(
+      opts.transformModulePath,
+      maxWorkerCount,
+      {
+        stdoutChunk: chunk => opts.reporter.update({type: 'worker_stdout_chunk', chunk}),
+        stderrChunk: chunk => opts.reporter.update({type: 'worker_stderr_chunk', chunk}),
+      }
+    );
 
-    const getTransformCacheKey = (options) => {
+    const getTransformCacheKey = options => {
       return transformCacheKey + getCacheKey(options);
     };
 
@@ -217,12 +221,15 @@ class Bundler {
         opts.providesModuleNodeModules || defaults.providesModuleNodeModules,
       reporter: opts.reporter,
       resetCache: opts.resetCache,
+      sourceExts: opts.sourceExts,
       transformCode:
         (module, code, transformCodeOptions) => this._transformer.transformFile(
           module.path,
+          module.localPath,
           code,
           transformCodeOptions,
         ),
+      transformCache: opts.transformCache,
       watch: opts.watch,
     });
 
@@ -278,7 +285,7 @@ class Bundler {
     const matchingRoot = this._projectRoots.find(root => filePath.startsWith(root));
 
     if (!matchingRoot) {
-      throw new Error('No matching project root for ', filePath);
+      throw new Error('No matching project root for ' + filePath);
     }
 
     // Replaces '\' with '/' for Windows paths.
@@ -333,7 +340,7 @@ class Bundler {
     unbundle,
   }: {
     assetPlugins?: Array<string>,
-    bundle: Bundle,
+    bundle: Bundle | HMRBundle,
     dev: boolean,
     entryFile?: string,
     entryModuleOnly?: boolean,
@@ -417,10 +424,10 @@ class Bundler {
     isolateModuleIDs,
     generateSourceMaps,
     assetPlugins,
-    onResolutionResponse = noop,
-    onModuleTransformed = noop,
-    finalizeBundle = noop,
-    onProgress = noop,
+    onResolutionResponse = emptyFunction,
+    onModuleTransformed = emptyFunction,
+    finalizeBundle = emptyFunction,
+    onProgress = emptyFunction,
   }: *) {
     const transformingFilesLogEntry =
       log(createActionStartEntry({
@@ -452,7 +459,7 @@ class Bundler {
       log(createActionEndEntry(transformingFilesLogEntry));
       onResolutionResponse(response);
 
-      // get entry file complete path (`entryFile` is relative to roots)
+      // get entry file complete path (`entryFile` is a local path, i.e. relative to roots)
       let entryFilePath;
       if (response.dependencies.length > 1) { // skip HMR requests
         const numModuleSystemDependencies =
@@ -516,7 +523,7 @@ class Bundler {
     generateSourceMaps = false,
   }: {
     entryFile: string,
-    platform: string,
+    platform: ?string,
     dev?: boolean,
     minify?: boolean,
     hot?: boolean,
@@ -555,7 +562,7 @@ class Bundler {
     onProgress,
   }: {
     entryFile: string,
-    platform: string,
+    platform: ?string,
     dev?: boolean,
     minify?: boolean,
     hot?: boolean,
@@ -599,12 +606,12 @@ class Bundler {
         const placeHolder = {};
         dependencies.forEach(dep => {
           if (dep.isAsset()) {
-            const relPath = getPathRelativeToRoot(
+            const localPath = toLocalPath(
               this._projectRoots,
               dep.path
             );
             promises.push(
-              this._assetServer.getAssetData(relPath, platform)
+              this._assetServer.getAssetData(localPath, platform)
             );
             ret.push(placeHolder);
           } else {
@@ -636,8 +643,8 @@ class Bundler {
     bundle: Bundle,
     entryFilePath: string,
     options: BundlingOptions,
-    getModuleId: () => number,
-    dependencyPairs: Array<[mixed, {path: string}]>,
+    getModuleId: (module: Module) => number,
+    dependencyPairs: Array<[string, Module]>,
     assetPlugins: Array<string>,
   }): Promise<ModuleTransport> {
     let moduleTransport;
@@ -664,7 +671,7 @@ class Bundler {
       const preloaded =
         module.path === entryFilePath ||
         isPolyfill ||
-        preloadedModules && preloadedModules.hasOwnProperty(module.path);
+        preloadedModules && hasOwnProperty.call(preloadedModules, module.path);
 
       return new ModuleTransport({
         name,
@@ -684,8 +691,8 @@ class Bundler {
     assetPlugins: Array<string>,
     platform: ?string = null,
   ) {
-    const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
-    var assetUrlPath = joinPath('/assets', pathDirname(relPath));
+    const localPath = toLocalPath(this._projectRoots, module.path);
+    var assetUrlPath = joinPath('/assets', pathDirname(localPath));
 
     // On Windows, change backslashes to slashes to get proper URL path from file path.
     if (pathSeparator === '\\') {
@@ -694,7 +701,7 @@ class Bundler {
 
     const isImage = isAssetTypeAnImage(extname(module.path).slice(1));
 
-    return this._assetServer.getAssetData(relPath, platform).then(assetData => {
+    return this._assetServer.getAssetData(localPath, platform).then(assetData => {
       return Promise.all([isImage ? sizeOf(assetData.files[0]) : null, assetData]);
     }).then(res => {
       const dimensions = res[0];
@@ -779,8 +786,8 @@ class Bundler {
       generateSourceMaps: boolean,
       hot: boolean,
       minify: boolean,
-      platform: string,
-      projectRoots: Array<string>,
+      platform: ?string,
+      projectRoots: $ReadOnlyArray<string>,
     |},
     ): Promise<BundlingOptions> {
     const getDependencies = (entryFile: string) =>
@@ -788,9 +795,12 @@ class Bundler {
         .then(r => r.dependencies.map(d => d.path));
 
     const {dev, hot, platform} = options;
-    const extraOptions = this._getTransformOptions
+    const extraOptions: ExtraTransformOptions = this._getTransformOptions
       ? await this._getTransformOptions(mainModuleName, {dev, hot, platform}, getDependencies)
       : {};
+
+    const {transform = {}} = extraOptions;
+
     return {
       transformer: {
         dev,
@@ -800,10 +810,10 @@ class Bundler {
           dev,
           generateSourceMaps: options.generateSourceMaps,
           hot,
-          inlineRequires: extraOptions.inlineRequires || false,
+          inlineRequires: transform.inlineRequires || false,
           platform,
           projectRoot: options.projectRoots[0],
-        }
+        },
       },
       preloadedModules: extraOptions.preloadedModules,
       ramGroups: extraOptions.ramGroups,
@@ -833,19 +843,6 @@ class Bundler {
     return Math.min(cores, envCount);
   }
 
-}
-
-function getPathRelativeToRoot(roots, absPath) {
-  for (let i = 0; i < roots.length; i++) {
-    const relPath = relativePath(roots[i], absPath);
-    if (relPath[0] !== '.') {
-      return relPath;
-    }
-  }
-
-  throw new Error(
-    'Expected root module to be relative to one of the project roots'
-  );
 }
 
 function verifyRootExists(root) {

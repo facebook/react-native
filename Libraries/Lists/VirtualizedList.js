@@ -20,8 +20,10 @@ const ScrollView = require('ScrollView');
 const View = require('View');
 const ViewabilityHelper = require('ViewabilityHelper');
 
+const flattenStyle = require('flattenStyle');
 const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
+const warning = require('fbjs/lib/warning');
 
 const {computeWindowedRenderLimits} = require('VirtualizeUtils');
 
@@ -82,6 +84,21 @@ type OptionalProps = {
    */
   initialScrollIndex?: ?number,
   keyExtractor: (item: Item, index: number) => string,
+  /**
+   * Rendered when the list is empty. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListEmptyComponent?: ?(ReactClass<any> | React.Element<any>),
+  /**
+   * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
+  /**
+   * Rendered at the top of all the items. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListHeaderComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
    * The maximum number of items to render in each incremental render batch. The more rendered at
    * once, the better the fill rate, but responsiveness my suffer because rendering content may
@@ -394,14 +411,23 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   };
 
   render() {
-    const {ListFooterComponent, ListHeaderComponent} = this.props;
+    if (__DEV__) {
+      const flatStyles = flattenStyle(this.props.contentContainerStyle);
+      warning(
+        flatStyles == null || flatStyles.flexWrap !== 'wrap',
+        '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
+          'Consider using `numColumns` with `FlatList` instead.',
+      );
+    }
+
+    const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} = this.props;
     const {data, disableVirtualization, horizontal} = this.props;
     const cells = [];
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
     if (ListHeaderComponent) {
       const element = React.isValidElement(ListHeaderComponent)
-        ? ListHeaderComponent
+        ? ListHeaderComponent // $FlowFixMe
         : <ListHeaderComponent />;
       cells.push(
         <View key="$header" onLayout={this._onLayoutHeader}>
@@ -476,10 +502,19 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           <View key="$tail_spacer" style={{[spacerKey]: tailSpacerLength}} />
         );
       }
+    } else if (ListEmptyComponent) {
+      const element = React.isValidElement(ListEmptyComponent)
+        ? ListEmptyComponent // $FlowFixMe
+        : <ListEmptyComponent />;
+      cells.push(
+        <View key="$empty" onLayout={this._onLayoutEmpty}>
+          {element}
+        </View>
+      );
     }
     if (ListFooterComponent) {
       const element = React.isValidElement(ListFooterComponent)
-        ? ListFooterComponent
+        ? ListFooterComponent // $FlowFixMe
         : <ListFooterComponent />;
       cells.push(
         <View key="$footer" onLayout={this._onLayoutFooter}>
@@ -583,6 +618,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this.props.onLayout && this.props.onLayout(e);
     this._scheduleCellsToRenderUpdate();
     this._maybeCallOnEndReached();
+  };
+
+  _onLayoutEmpty = (e) => {
+    this.props.onLayout && this.props.onLayout(e);
   };
 
   _onLayoutFooter = (e) => {
@@ -695,7 +734,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const dOffset = offset - this._scrollMetrics.offset;
     const velocity = dOffset / dt;
     this._scrollMetrics = {contentLength, dt, dOffset, offset, timestamp, velocity, visibleLength};
-    this._updateViewableItems(this.props);
+    this._updateViewableItems(this.props.data);
     if (!this.props) {
       return;
     }

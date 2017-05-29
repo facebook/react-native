@@ -10,6 +10,8 @@
  */
 'use strict';
 
+const virtualModule = require('../module').virtual;
+
 import type {IdForPathFn, Module} from '../types.flow';
 
 // Transformed modules have the form
@@ -44,6 +46,14 @@ exports.addModuleIdsToModuleWrapper = (
   );
 };
 
+exports.concat = function* concat<T>(
+  ...iterables: Array<Iterable<T>>
+): Iterable<T> {
+  for (const it of iterables) {
+    yield* it;
+  }
+};
+
 // Creates an idempotent function that returns numeric IDs for objects based
 // on their `path` property.
 exports.createIdForPathFn = (): ({path: string} => number) => {
@@ -69,17 +79,3 @@ exports.requireCallsTo = function* (
     yield virtualModule(`require(${idForPath(module.file)});`);
   }
 };
-
-// creates a virtual module (i.e. not corresponding to a file on disk)
-// with the given source code.
-exports.virtualModule = virtualModule;
-function virtualModule(code: string) {
-  return {
-    dependencies: [],
-    file: {
-      code,
-      path: '',
-      type: 'script',
-    },
-  };
-}

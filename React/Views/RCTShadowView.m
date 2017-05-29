@@ -232,7 +232,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     [self didUpdateReactSubviews];
     [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
       UIView *view = viewRegistry[self->_reactTag];
-      [view clearSortedSubviews];
       [view didUpdateReactSubviews];
     }];
   }
@@ -527,16 +526,6 @@ RCT_PADDING_PROPERTY(Top, TOP)
 RCT_PADDING_PROPERTY(Left, LEFT)
 RCT_PADDING_PROPERTY(Bottom, BOTTOM)
 RCT_PADDING_PROPERTY(Right, RIGHT)
-
-- (UIEdgeInsets)paddingAsInsets
-{
-  return (UIEdgeInsets){
-    YGNodeLayoutGetPadding(_yogaNode, YGEdgeTop),
-    YGNodeLayoutGetPadding(_yogaNode, YGEdgeLeft),
-    YGNodeLayoutGetPadding(_yogaNode, YGEdgeBottom),
-    YGNodeLayoutGetPadding(_yogaNode, YGEdgeRight)
-  };
-}
 
 // Border
 

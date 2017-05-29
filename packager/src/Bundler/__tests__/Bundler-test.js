@@ -19,14 +19,14 @@ jest
   .mock('os')
   .mock('assert')
   .mock('progress')
-  .mock('../../node-haste')
+  .mock('../../node-haste/DependencyGraph')
   .mock('../../JSTransformer')
-  .mock('../../lib/declareOpts')
   .mock('../../Resolver')
   .mock('../Bundle')
   .mock('../HMRBundle')
   .mock('../../Logger')
-  .mock('../../lib/declareOpts');
+  .mock('/path/to/transformer.js', () => ({}), {virtual: true})
+  ;
 
 var Bundler = require('../');
 var Resolver = require('../../Resolver');
@@ -34,8 +34,10 @@ var defaults = require('../../../defaults');
 var sizeOf = require('image-size');
 var fs = require('fs');
 const os = require('os');
+const path = require('path');
 
 const {any, objectContaining} = expect;
+
 
 var commonOptions = {
   allowBundleUpdates: false,
@@ -44,6 +46,8 @@ var commonOptions = {
   extraNodeModules: {},
   platforms: defaults.platforms,
   resetCache: false,
+  sourceExts: defaults.sourceExts,
+  transformModulePath: '/path/to/transformer.js',
   watch: false,
 };
 
@@ -82,6 +86,9 @@ describe('Bundler', function() {
 
   beforeEach(function() {
     os.cpus.mockReturnValue({length: 1});
+    // local directory on purpose, because it should not actually write
+    // anything to the disk during a unit test!
+    os.tmpDir.mockReturnValue(path.join(__dirname));
 
     getDependencies = jest.fn();
     getModuleSystemDependencies = jest.fn();
@@ -94,6 +101,10 @@ describe('Bundler', function() {
       };
     });
     Resolver.load = jest.fn().mockImplementation(opts => Promise.resolve(new Resolver(opts)));
+
+    fs.__setMockFilesystem({
+      'path': {'to': {'transformer.js': ''}},
+    });
 
     fs.statSync.mockImplementation(function() {
       return {

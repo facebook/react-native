@@ -13,8 +13,8 @@ import android.app.Application;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
+import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.common.LifecycleState;
-import com.facebook.react.cxxbridge.JSBundleLoader;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -233,7 +233,8 @@ public class ReactInstanceManagerBuilder {
       mCurrentActivity,
       mDefaultHardwareBackBtnHandler,
       (mJSBundleLoader == null && mJSBundleAssetUrl != null) ?
-        JSBundleLoader.createAssetLoader(mApplication, mJSBundleAssetUrl) : mJSBundleLoader,
+        JSBundleLoader.createAssetLoader(mApplication, mJSBundleAssetUrl, false /*Asynchronous*/) :
+        mJSBundleLoader,
       mJSMainModuleName,
       mPackages,
       mUseDeveloperSupport,

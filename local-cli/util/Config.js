@@ -21,6 +21,8 @@ const RN_CLI_CONFIG = 'rn-cli.config.js';
 
 import type {GetTransformOptions, PostMinifyProcess, PostProcessModules} from '../../packager/src/Bundler';
 import type {HasteImpl} from '../../packager/src/node-haste/Module';
+import type {TransformVariants} from '../../packager/src/ModuleGraph/types.flow';
+import type {PostProcessModules as PostProcessModulesForBuck} from '../../packager/src/ModuleGraph/types.flow.js';
 
 /**
  * Configuration file of the CLI.
@@ -28,7 +30,7 @@ import type {HasteImpl} from '../../packager/src/node-haste/Module';
 export type ConfigT = {
   extraNodeModules: {[id: string]: string},
   /**
-   * Specify any additional asset extentions to be used by the packager.
+   * Specify any additional asset file extensions to be used by the packager.
    * For example, if you want to include a .ttf file, you would return ['ttf']
    * from here and use `require('./fonts/example.ttf')` inside your app.
    */
@@ -39,6 +41,12 @@ export type ConfigT = {
    * packager on a given platform.
    */
   getBlacklistRE(): RegExp,
+
+  /**
+   * Specify any additional polyfill modules that should be processed
+   * before regular module loading.
+   */
+ getPolyfillModuleNames: () => Array<string>,
 
   /**
    * Specify any additional platforms to be used by the packager.
@@ -54,6 +62,15 @@ export type ConfigT = {
    * providesModule declarations.
    */
   getProvidesModuleNodeModules?: () => Array<string>,
+
+  /**
+   * Specify any additional source file extensions to be used by the packager.
+   * For example, if you want to include a .ts file, you would return ['ts']
+   * from here and use `require('./module/example')` to require the file with
+   * path 'module/example.ts' inside your app.
+   */
+  getSourceExts: () => Array<string>,
+
   /**
    * Returns the path to a custom transformer. This can also be overridden
    * with the --transformer commandline argument.
@@ -74,13 +91,19 @@ export type ConfigT = {
   postProcessModules: PostProcessModules,
 
   /**
+   * Same as `postProcessModules` but for the Buck worker. Eventually we do want
+   * to unify both variants.
+   */
+  postProcessModulesForBuck: PostProcessModulesForBuck,
+
+  /**
    * A module that exports:
    * - a `getHasteName(filePath)` method that returns `hasteName` for module at
    *  `filePath`, or undefined if `filePath` is not a haste module.
    */
   hasteImpl?: HasteImpl,
 
-  transformVariants: () => {[name: string]: Object},
+  transformVariants: () => TransformVariants,
 };
 
 const defaultConfig: ConfigT = {
@@ -88,12 +111,15 @@ const defaultConfig: ConfigT = {
   getAssetExts: () => [],
   getBlacklistRE: () => blacklist(),
   getPlatforms: () => [],
+  getPolyfillModuleNames: () => [],
   getProjectRoots: () => [process.cwd()],
   getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
-  getTransformModulePath: () => path.resolve(__dirname, '../../packager/transformer'),
+  getSourceExts: () => [],
+  getTransformModulePath: () => path.resolve(__dirname, '../../packager/transformer.js'),
   getTransformOptions: async () => ({}),
   postMinifyProcess: x => x,
   postProcessModules: modules => modules,
+  postProcessModulesForBuck: modules => modules,
   transformVariants: () => ({default: {}}),
 };
 
@@ -107,12 +133,17 @@ const defaultConfig: ConfigT = {
  */
 const Config = {
   find(startDir: string): ConfigT {
+    return this.findWithPath(startDir).config;
+  },
+
+  findWithPath(startDir: string): {config: ConfigT, projectPath: string} {
     const configPath = findConfigPath(startDir);
     invariant(
       configPath,
       `Can't find "${RN_CLI_CONFIG}" file in any parent folder of "${startDir}"`,
     );
-    return this.loadFile(configPath, startDir);
+    const projectPath = path.dirname(configPath);
+    return {config: this.loadFile(configPath, startDir), projectPath};
   },
 
   findOptional(startDir: string): ConfigT {

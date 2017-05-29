@@ -42,6 +42,9 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.systrace.Systrace;
+
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 /**
  * Default root view for catalyst apps. Provides the ability to listen for size changes so that a UI
@@ -49,7 +52,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
  * It delegates handling touch events for itself and child views and sending those events to JS by
  * using JSTouchDispatcher.
  * This view is overriding {@link ViewGroup#onInterceptTouchEvent} method in order to be notified
- * about the events for all of it's children and it's also overriding
+ * about the events for all of its children and it's also overriding
  * {@link ViewGroup#requestDisallowInterceptTouchEvent} to make sure that
  * {@link ViewGroup#onInterceptTouchEvent} will get events even when some child view start
  * intercepting it. In case when no child view is interested in handling some particular
@@ -93,20 +96,19 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    setMeasuredDimension(
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.onMeasure");
+    try {
+      setMeasuredDimension(
         MeasureSpec.getSize(widthMeasureSpec),
         MeasureSpec.getSize(heightMeasureSpec));
 
-    mWasMeasured = true;
-    // Check if we were waiting for onMeasure to attach the root view
-    if (mReactInstanceManager != null && !mIsAttachedToInstance) {
-      // Enqueue it to UIThread not to block onMeasure waiting for the catalyst instance creation
-      UiThreadUtil.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          attachToReactInstanceManager();
-        }
-      });
+      mWasMeasured = true;
+      // Check if we were waiting for onMeasure to attach the root view.
+      if (mReactInstanceManager != null && !mIsAttachedToInstance) {
+        attachToReactInstanceManager();
+      }
+    } finally {
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
@@ -201,35 +203,41 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       ReactInstanceManager reactInstanceManager,
       String moduleName,
       @Nullable Bundle initialProperties) {
-    UiThreadUtil.assertOnUiThread();
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "startReactApplication");
+    try {
+      UiThreadUtil.assertOnUiThread();
 
-    // TODO(6788889): Use POJO instead of bundle here, apparently we can't just use WritableMap
-    // here as it may be deallocated in native after passing via JNI bridge, but we want to reuse
-    // it in the case of re-creating the catalyst instance
-    Assertions.assertCondition(
+      // TODO(6788889): Use POJO instead of bundle here, apparently we can't just use WritableMap
+      // here as it may be deallocated in native after passing via JNI bridge, but we want to reuse
+      // it in the case of re-creating the catalyst instance
+      Assertions.assertCondition(
         mReactInstanceManager == null,
         "This root view has already been attached to a catalyst instance manager");
 
-    mReactInstanceManager = reactInstanceManager;
-    mJSModuleName = moduleName;
-    mAppProperties = initialProperties;
+      mReactInstanceManager = reactInstanceManager;
+      mJSModuleName = moduleName;
+      mAppProperties = initialProperties;
 
-    if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
-      mReactInstanceManager.createReactContextInBackground();
-    }
+      if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
+        mReactInstanceManager.createReactContextInBackground();
+      }
 
-    // We need to wait for the initial onMeasure, if this view has not yet been measured, we set which
-    // will make this view startReactApplication itself to instance manager once onMeasure is called.
-    if (mWasMeasured) {
-      attachToReactInstanceManager();
+      // We need to wait for the initial onMeasure, if this view has not yet been measured, we set
+      // which will make this view startReactApplication itself to instance manager once onMeasure
+      // is called.
+      if (mWasMeasured) {
+        attachToReactInstanceManager();
+      }
+    } finally {
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
   /**
    * Unmount the react application at this root view, reclaiming any JS memory associated with that
    * application. If {@link #startReactApplication} is called, this method must be called before the
-   * ReactRootView is garbage collected (typically in your Activity's onDestroy, or in your Fragment's
-   * onDestroyView).
+   * ReactRootView is garbage collected (typically in your Activity's onDestroy, or in your
+   * Fragment's onDestroyView).
    */
   public void unmountReactApplication() {
     if (mReactInstanceManager != null && mIsAttachedToInstance) {
@@ -267,26 +275,31 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
    * same rootTag, which will re-render the application from the root.
    */
   /* package */ void runApplication() {
-    if (mReactInstanceManager == null || !mIsAttachedToInstance) {
-      return;
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.runApplication");
+    try {
+      if (mReactInstanceManager == null || !mIsAttachedToInstance) {
+        return;
+      }
+
+      ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+      if (reactContext == null) {
+        return;
+      }
+
+      CatalystInstance catalystInstance = reactContext.getCatalystInstance();
+
+      WritableNativeMap appParams = new WritableNativeMap();
+      appParams.putDouble("rootTag", getRootViewTag());
+      @Nullable Bundle appProperties = getAppProperties();
+      if (appProperties != null) {
+        appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
+      }
+
+      String jsAppModuleName = getJSModuleName();
+      catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
+    } finally {
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
-
-    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    if (reactContext == null) {
-      return;
-    }
-
-    CatalystInstance catalystInstance = reactContext.getCatalystInstance();
-
-    WritableNativeMap appParams = new WritableNativeMap();
-    appParams.putDouble("rootTag", getRootViewTag());
-    @Nullable Bundle appProperties = getAppProperties();
-    if (appProperties != null) {
-      appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
-    }
-
-    String jsAppModuleName = getJSModuleName();
-    catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
   }
 
   /**
@@ -307,13 +320,18 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   }
 
   private void attachToReactInstanceManager() {
-    if (mIsAttachedToInstance) {
-      return;
-    }
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachToReactInstanceManager");
+    try {
+      if (mIsAttachedToInstance) {
+        return;
+      }
 
-    mIsAttachedToInstance = true;
-    Assertions.assertNotNull(mReactInstanceManager).attachMeasuredRootView(this);
-    getViewTreeObserver().addOnGlobalLayoutListener(getCustomGlobalLayoutListener());
+      mIsAttachedToInstance = true;
+      Assertions.assertNotNull(mReactInstanceManager).attachMeasuredRootView(this);
+      getViewTreeObserver().addOnGlobalLayoutListener(getCustomGlobalLayoutListener());
+    } finally {
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
   }
 
   @Override
@@ -321,10 +339,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     super.finalize();
     Assertions.assertCondition(
       !mIsAttachedToInstance,
-      "The application this ReactRootView was rendering was not unmounted before the ReactRootView " +
-        "was garbage collected. This usually means that your application is leaking large amounts of " +
-        "memory. To solve this, make sure to call ReactRootView#unmountReactApplication in the onDestroy() " +
-        "of your hosting Activity or in the onDestroyView() of your hosting Fragment.");
+      "The application this ReactRootView was rendering was not unmounted before the " +
+        "ReactRootView was garbage collected. This usually means that your application is " +
+        "leaking large amounts of memory. To solve this, make sure to call " +
+        "ReactRootView#unmountReactApplication in the onDestroy() of your hosting Activity or in " +
+        "the onDestroyView() of your hosting Fragment.");
   }
 
   public int getRootViewTag() {

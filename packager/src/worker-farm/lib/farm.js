@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 
 /* eslint-disable */
@@ -25,10 +27,14 @@ const extend                  = require('xtend')
     , ProcessTerminatedError  = require('errno').create('ProcessTerminatedError')
     , MaxConcurrentCallsError = require('errno').create('MaxConcurrentCallsError')
 
-function Farm (options, path) {
+const mergeStream = require('merge-stream');
+
+function Farm (options: {+execArgv: Array<string>}, path: string) {
   this.options     = extend(DEFAULT_OPTIONS, options)
   this.path        = path
   this.activeCalls = 0
+  this.stdout = mergeStream();
+  this.stderr = mergeStream();
 }
 
 // make a handle to pass back in the form of an external API
@@ -106,7 +112,7 @@ Farm.prototype.onExit = function (childId) {
 Farm.prototype.startChild = function () {
   this.childId++
 
-  var forked = fork(this.path)
+  var forked = fork(this.path, {execArgv: this.options.execArgv})
     , id     = this.childId
     , c      = {
           send        : forked.send
@@ -115,6 +121,9 @@ Farm.prototype.startChild = function () {
         , activeCalls : 0
         , exitCode    : null
       }
+
+  this.stdout.add(forked.child.stdout);
+  this.stderr.add(forked.child.stderr);
 
   forked.child.on('message', this.receive.bind(this))
   forked.child.once('exit', function (code) {

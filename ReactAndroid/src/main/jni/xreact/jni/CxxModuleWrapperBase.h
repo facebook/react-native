@@ -24,7 +24,7 @@ class CxxModuleWrapperBase
   : public jni::HybridClass<CxxModuleWrapperBase, JNativeModule> {
 public:
   constexpr static const char *const kJavaDescriptor =
-    "Lcom/facebook/react/cxxbridge/CxxModuleWrapperBase;";
+    "Lcom/facebook/react/bridge/CxxModuleWrapperBase;";
 
   static void registerNatives() {
     registerHybrid({

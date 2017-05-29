@@ -54,10 +54,39 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('renders empty list with empty component', () => {
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[]}
+        ListEmptyComponent={() => <empty />}
+        ListFooterComponent={() => <footer />}
+        ListHeaderComponent={() => <header />}
+        getItem={(data, index) => data[index]}
+        getItemCount={(data) => data.length}
+        renderItem={({item}) => <item value={item.key} />}
+      />
+    );
+    expect(component).toMatchSnapshot();
+  });
+
+  it('renders list with empty component', () => {
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[{key: 'hello'}]}
+        ListEmptyComponent={() => <empty />}
+        getItem={(data, index) => data[index]}
+        getItemCount={(data) => data.length}
+        renderItem={({item}) => <item value={item.key} />}
+      />
+    );
+    expect(component).toMatchSnapshot();
+  });
+
   it('renders all the bells and whistles', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         ItemSeparatorComponent={() => <separator />}
+        ListEmptyComponent={() => <empty />}
         ListFooterComponent={() => <footer />}
         ListHeaderComponent={() => <header />}
         data={new Array(5).fill().map((_, ii) => ({id: String(ii)}))}

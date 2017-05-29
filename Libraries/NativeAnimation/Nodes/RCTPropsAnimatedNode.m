@@ -44,6 +44,13 @@
 
 - (void)disconnectFromView:(NSNumber *)viewTag
 {
+  _connectedViewTag = nil;
+  _connectedViewName = nil;
+  _uiManager = nil;
+}
+
+- (void)restoreDefaultValues
+{
   // Restore the default value for all props that were modified by this node.
   for (NSString *key in _propsDictionary.allKeys) {
     _propsDictionary[key] = [NSNull null];
@@ -54,10 +61,6 @@
                                          viewName:_connectedViewName
                                             props:_propsDictionary];
   }
-
-  _connectedViewTag = nil;
-  _connectedViewName = nil;
-  _uiManager = nil;
 }
 
 - (NSString *)propertyNameForParentTag:(NSNumber *)parentTag
