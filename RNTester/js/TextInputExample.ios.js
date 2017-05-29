@@ -763,18 +763,39 @@ exports.examples = [
     title: 'TextInput Intrinsic Size',
     render: function() {
       return (
-        <View style={{height: 80}}>
-          <TextInput
-            style={{
-              position: 'absolute',
-              fontSize: 16,
-              backgroundColor: '#eeeeee',
-              borderWidth: 5,
-              padding: 10,
-              paddingTop: 20,
-            }}
-            placeholder="Placeholder defines intrinsic size"
-          />
+        <View>
+          <Text>Singleline TextInput</Text>
+          <View style={{height: 80}}>
+            <TextInput
+              style={{
+                position: 'absolute',
+                fontSize: 16,
+                backgroundColor: '#eeeeee',
+                borderColor: '#666666',
+                borderWidth: 5,
+                padding: 10,
+                paddingTop: 20,
+              }}
+              placeholder="Placeholder defines intrinsic size"
+            />
+          </View>
+          <Text>Multiline TextInput</Text>
+          <View style={{height: 80}}>
+            <TextInput
+              style={{
+                position: 'absolute',
+                fontSize: 16,
+                backgroundColor: '#eeeeee',
+                borderColor: '#666666',
+                borderWidth: 5,
+                padding: 10,
+                paddingTop: 20,
+                borderTopWidth: 20,
+              }}
+              multiline={true}
+              placeholder="Placeholder defines intrinsic size"
+            />
+          </View>
         </View>
       );
     }
