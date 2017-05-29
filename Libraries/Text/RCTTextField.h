@@ -10,15 +10,16 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
+#import <React/RCTView.h>
 
 @class RCTBridge;
+@class RCTUITextField;
 
-@interface RCTTextField : UITextField
+@interface RCTTextField : RCTView
 
 @property (nonatomic, assign) BOOL caretHidden;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) BOOL blurOnSubmit;
-@property (nonatomic, strong) UIColor *placeholderTextColor;
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, strong) NSNumber *maxLength;
 @property (nonatomic, assign) UIEdgeInsets reactPaddingInsets;
@@ -26,6 +27,11 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
 
+@property (nonatomic, strong) RCTUITextField *textField;
+
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
 @end

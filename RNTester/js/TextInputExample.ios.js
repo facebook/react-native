@@ -773,6 +773,9 @@ exports.examples = [
                 backgroundColor: '#eeeeee',
                 borderColor: '#666666',
                 borderWidth: 5,
+                borderTopWidth: 20,
+                borderRadius: 10,
+                borderBottomRightRadius: 20,
                 padding: 10,
                 paddingTop: 20,
               }}
@@ -780,7 +783,7 @@ exports.examples = [
             />
           </View>
           <Text>Multiline TextInput</Text>
-          <View style={{height: 80}}>
+          <View style={{height: 130}}>
             <TextInput
               style={{
                 position: 'absolute',
@@ -788,9 +791,12 @@ exports.examples = [
                 backgroundColor: '#eeeeee',
                 borderColor: '#666666',
                 borderWidth: 5,
+                borderTopWidth: 20,
+                borderRadius: 10,
+                borderBottomRightRadius: 20,
                 padding: 10,
                 paddingTop: 20,
-                borderTopWidth: 20,
+                maxHeight: 100
               }}
               multiline={true}
               placeholder="Placeholder defines intrinsic size"

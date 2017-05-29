@@ -547,7 +547,7 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   [_textView reactFocusIfNeeded];
 }
 
-#pragma mark - Content size
+#pragma mark - Content Size (in Yoga terms, without any insets)
 
 - (CGSize)contentSize
 {
@@ -581,7 +581,7 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   }
 }
 
-#pragma mark - Layout
+#pragma mark - Layout (in UIKit terms, with all insets)
 
 - (CGSize)intrinsicContentSize
 {
