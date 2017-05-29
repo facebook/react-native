@@ -2237,9 +2237,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         const float childMarginMainAxis = YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
         const float flexBasisWithMaxConstraints =
             fminf(YGResolveValue(&child->style.maxDimensions[dim[mainAxis]], mainAxisParentSize),
-                  fmaxf(YGResolveValue(&child->style.minDimensions[dim[mainAxis]],
-                                       mainAxisParentSize),
-                        child->layout.computedFlexBasis));
+                        child->layout.computedFlexBasis);
         const float flexBasisWithMinAndMaxConstraints =
             fmaxf(YGResolveValue(&child->style.minDimensions[dim[mainAxis]], mainAxisParentSize),
                   flexBasisWithMaxConstraints);
@@ -2257,15 +2255,13 @@ static void YGNodelayoutImpl(const YGNodeRef node,
 
         sizeConsumedOnCurrentLineIncludingMinConstraint +=
             flexBasisWithMinAndMaxConstraints + childMarginMainAxis;
-        sizeConsumedOnCurrentLine += flexBasisWithMaxConstraints + childMarginMainAxis;
+        sizeConsumedOnCurrentLine += flexBasisWithMinAndMaxConstraints + childMarginMainAxis;
         itemsOnLine++;
 
         if (YGNodeIsFlex(child)) {
           totalFlexGrowFactors += YGResolveFlexGrow(child);
 
-          // Unlike the grow factor, the shrink factor is scaled relative to the
-          // child
-          // dimension.
+          // Unlike the grow factor, the shrink factor is scaled relative to the child dimension.
           totalFlexShrinkScaledFactors +=
               -YGNodeResolveFlexShrink(child) * child->layout.computedFlexBasis;
         }
