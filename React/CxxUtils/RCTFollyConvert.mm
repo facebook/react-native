@@ -57,14 +57,14 @@ folly::dynamic convertIdToFollyDynamic(id json)
     switch (objCType[0]) {
       // This is a c++ bool or C99 _Bool.  On some platforms, BOOL is a bool.
       case _C_BOOL:
-        return [json boolValue];
+        return (bool) [json boolValue];
       case _C_CHR:
         // On some platforms, objc BOOL is a signed char, but it
         // might also be a small number.  Use the same hack JSC uses
         // to distinguish them:
         // https://phabricator.intern.facebook.com/diffusion/FBS/browse/master/fbobjc/xplat/third-party/jsc/safari-600-1-4-17/JavaScriptCore/API/JSValue.mm;b8ee03916489f8b12143cd5c0bca546da5014fc9$901
         if ([json isKindOfClass:[@YES class]]) {
-          return [json boolValue];
+          return (bool) [json boolValue];
         } else {
           return [json longLongValue];
         }

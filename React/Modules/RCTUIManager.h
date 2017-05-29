@@ -26,6 +26,17 @@ RCT_EXTERN dispatch_queue_t RCTGetUIManagerQueue(void);
 RCT_EXTERN char *const RCTUIManagerQueueName;
 
 /**
+ * Check if we are currently on UIManager queue.
+ */
+RCT_EXTERN BOOL RCTIsUIManagerQueue(void);
+
+/**
+ * Convenience macro for asserting that we're running on UIManager queue.
+ */
+#define RCTAssertUIManagerQueue() RCTAssert(RCTIsUIManagerQueue(), \
+@"This function must be called on the UIManager queue")
+
+/**
  * Posted right before re-render happens. This is a chance for views to invalidate their state so
  * next render cycle will pick up updated views and layout appropriately.
  */
@@ -48,7 +59,7 @@ RCT_EXTERN NSString *const RCTUIManagerDidRemoveRootViewNotification;
  */
 RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 
-@protocol RCTScrollableProtocol;
+@class RCTUIManagerObserverCoordinator;
 
 /**
  * The RCTUIManager is the module responsible for updating the view hierarchy.
@@ -69,6 +80,11 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  * Gets the view associated with a reactTag.
  */
 - (UIView *)viewForReactTag:(NSNumber *)reactTag;
+
+/**
+ * Gets the shadow view associated with a reactTag.
+ */
+- (RCTShadowView *)shadowViewForReactTag:(NSNumber *)reactTag;
 
 /**
  * Set the available size (`availableSize` property) for a root view.
@@ -104,6 +120,12 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  * view logic after all currently queued view updates have completed.
  */
 - (void)addUIBlock:(RCTViewManagerUIBlock)block;
+
+/**
+ * Schedule a block to be executed on the UI thread. Useful if you need to execute
+ * view logic before all currently queued view updates have completed.
+ */
+- (void)prependUIBlock:(RCTViewManagerUIBlock)block;
 
 /**
  * Used by native animated module to bypass the process of updating the values through the shadow
@@ -146,6 +168,12 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  * React won't be aware of this, so we need to make sure it happens.
  */
 - (void)setNeedsLayout;
+
+/**
+ * Dedicated object for subscribing for UIManager events.
+ * See `RCTUIManagerObserver` protocol for more details.
+ */
+@property (atomic, retain, readonly) RCTUIManagerObserverCoordinator *observerCoordinator;
 
 @end
 

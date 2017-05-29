@@ -81,20 +81,17 @@
 
 static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
-  BOOL isFirstIteration = YES;
   NSMutableString *str = [NSMutableString stringWithString:@""];
   for (UIView *subview in view.subviews) {
-    if (isFirstIteration) {
-      isFirstIteration = NO;
-    } else {
-      [str appendString:@" "];
-    }
-    
     NSString *label = subview.accessibilityLabel;
-    if (label) {
+    if (!label) {
+      label = RCTRecursiveAccessibilityLabel(subview);
+    }
+    if (label && label.length > 0) {
+      if (str.length > 0) {
+        [str appendString:@" "];
+      }
       [str appendString:label];
-    } else {
-      [str appendString:RCTRecursiveAccessibilityLabel(subview)];
     }
   }
   return str;

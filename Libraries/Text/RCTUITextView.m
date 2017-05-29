@@ -9,9 +9,10 @@
 
 #import "RCTUITextView.h"
 
+#import <React/UIView+React.h>
+
 @implementation RCTUITextView
 {
-  BOOL _jsRequestingFirstResponder;
   UILabel *_placeholderView;
   UITextView *_detachedTextView;
 }
@@ -36,9 +37,9 @@ static UIColor *defaultPlaceholderTextColor()
                                                object:self];
 
     _placeholderView = [[UILabel alloc] initWithFrame:self.bounds];
-    _placeholderView.hidden = YES;
     _placeholderView.isAccessibilityElement = NO;
     _placeholderView.numberOfLines = 0;
+    _placeholderView.textColor = defaultPlaceholderTextColor();
     [self addSubview:_placeholderView];
   }
 
@@ -55,45 +56,19 @@ static UIColor *defaultPlaceholderTextColor()
 - (void)setPlaceholderText:(NSString *)placeholderText
 {
   _placeholderText = placeholderText;
-  [self invalidatePlaceholder];
+  _placeholderView.text = _placeholderText;
 }
 
 - (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
 {
   _placeholderTextColor = placeholderTextColor;
-  [self invalidatePlaceholder];
+  _placeholderView.textColor = _placeholderTextColor ?: defaultPlaceholderTextColor();
 }
-
 
 - (void)textDidChange
 {
   _textWasPasted = NO;
-  [self invalidatePlaceholder];
-}
-
-#pragma mark - UIResponder
-
-- (void)reactWillMakeFirstResponder
-{
-  _jsRequestingFirstResponder = YES;
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-  return _jsRequestingFirstResponder;
-}
-
-- (void)reactDidMakeFirstResponder
-{
-  _jsRequestingFirstResponder = NO;
-}
-
-- (void)didMoveToWindow
-{
-  if (_jsRequestingFirstResponder) {
-    [self becomeFirstResponder];
-    [self reactDidMakeFirstResponder];
-  }
+  [self invalidatePlaceholderVisibility];
 }
 
 #pragma mark - Overrides
@@ -101,7 +76,13 @@ static UIColor *defaultPlaceholderTextColor()
 - (void)setFont:(UIFont *)font
 {
   [super setFont:font];
-  [self invalidatePlaceholder];
+  _placeholderView.font = font ?: defaultPlaceholderFont();
+}
+
+- (void)setTextAlignment:(NSTextAlignment)textAlignment
+{
+  [super setTextAlignment:textAlignment];
+  _placeholderView.textAlignment = textAlignment;
 }
 
 - (void)setText:(NSString *)text
@@ -168,22 +149,10 @@ static UIColor *defaultPlaceholderTextColor()
 
 #pragma mark - Placeholder
 
-- (void)invalidatePlaceholder
+- (void)invalidatePlaceholderVisibility
 {
-  BOOL wasVisible = !_placeholderView.isHidden;
   BOOL isVisible = _placeholderText.length != 0 && self.text.length == 0;
-
-  if (wasVisible != isVisible) {
-    _placeholderView.hidden = !isVisible;
-  }
-
-  if (isVisible) {
-    _placeholderView.font = self.font ?: defaultPlaceholderFont();
-    _placeholderView.textColor = _placeholderTextColor ?: defaultPlaceholderTextColor();
-    _placeholderView.textAlignment = self.textAlignment;
-    _placeholderView.text = _placeholderText;
-    [self setNeedsLayout];
-  }
+  _placeholderView.hidden = !isVisible;
 }
 
 @end

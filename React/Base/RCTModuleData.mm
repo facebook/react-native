@@ -10,13 +10,12 @@
 #import "RCTModuleData.h"
 
 #import <objc/runtime.h>
-
 #include <mutex>
 
-#import "RCTBridge.h"
 #import "RCTBridge+Private.h"
-#import "RCTModuleMethod.h"
+#import "RCTBridge.h"
 #import "RCTLog.h"
+#import "RCTModuleMethod.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
 
@@ -25,6 +24,7 @@
   NSDictionary<NSString *, id> *_constantsToExport;
   NSString *_queueName;
   __weak RCTBridge *_bridge;
+  RCTBridgeModuleProvider _moduleProvider;
   std::mutex _instanceLock;
   BOOL _setupComplete;
 }
@@ -57,9 +57,19 @@
 - (instancetype)initWithModuleClass:(Class)moduleClass
                              bridge:(RCTBridge *)bridge
 {
-  if ((self = [super init])) {
+  return [self initWithModuleClass:moduleClass
+                    moduleProvider:^id<RCTBridgeModule>{ return [moduleClass new]; }
+                            bridge:bridge];
+}
+
+- (instancetype)initWithModuleClass:(Class)moduleClass
+                     moduleProvider:(RCTBridgeModuleProvider)moduleProvider
+                             bridge:(RCTBridge *)bridge
+{
+  if (self = [super init]) {
     _bridge = bridge;
     _moduleClass = moduleClass;
+    _moduleProvider = [moduleProvider copy];
     [self setUp];
   }
   return self;
@@ -68,7 +78,7 @@
 - (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
                                 bridge:(RCTBridge *)bridge
 {
-  if ((self = [super init])) {
+  if (self = [super init]) {
     _bridge = bridge;
     _instance = instance;
     _moduleClass = [instance class];
@@ -83,7 +93,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (void)setUpInstanceAndBridge
 {
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] [_instanceLock lock]", @{ @"moduleClass": NSStringFromClass(_moduleClass) });
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge]", @{
+    @"moduleClass": NSStringFromClass(_moduleClass)
+  });
   {
     std::unique_lock<std::mutex> lock(_instanceLock);
 
@@ -92,8 +104,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         if (RCT_DEBUG && _requiresMainQueueSetup) {
           RCTAssertMainQueue();
         }
-        RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] [_moduleClass new]",  @{ @"moduleClass": NSStringFromClass(_moduleClass) });
-        _instance = [_moduleClass new];
+        RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] Create module", nil);
+        _instance = _moduleProvider ? _moduleProvider() : nil;
         RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
         if (!_instance) {
           // Module init returned nil, probably because automatic instantatiation
@@ -163,7 +175,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     [_bridge registerModuleForFrameUpdates:_instance withModuleData:self];
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
                                                         object:_bridge
-                                                      userInfo:@{@"module": _instance}];
+                                                      userInfo:@{@"module": _instance, @"bridge": RCTNullIfNil(_bridge.parentBridge)}];
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
 }
@@ -202,6 +214,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (BOOL)hasInstance
 {
+  std::unique_lock<std::mutex> lock(_instanceLock);
   return _instance != nil;
 }
 
@@ -256,11 +269,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         SEL selector = method_getName(method);
         if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
           IMP imp = method_getImplementation(method);
-          NSArray<NSString *> *entries =
-            ((NSArray<NSString *> *(*)(id, SEL))imp)(_moduleClass, selector);
+          NSArray *entries =
+            ((NSArray *(*)(id, SEL))imp)(_moduleClass, selector);
           id<RCTBridgeMethod> moduleMethod =
             [[RCTModuleMethod alloc] initWithMethodSignature:entries[1]
                                                 JSMethodName:entries[0]
+                                                      isSync:((NSNumber *)entries[2]).boolValue
                                                  moduleClass:_moduleClass];
 
           [moduleMethods addObject:moduleMethod];
@@ -292,18 +306,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   }
 }
 
-- (NSArray *)config
+- (NSDictionary<NSString *, id> *)exportedConstants
 {
   [self gatherConstants];
-  __block NSDictionary<NSString *, id> *constants = _constantsToExport;
+  NSDictionary<NSString *, id> *constants = _constantsToExport;
   _constantsToExport = nil; // Not needed anymore
+  return constants;
+}
 
+// TODO 10487027: this method can go once RCTBatchedBridge is gone
+- (NSArray *)config
+{
+  NSDictionary<NSString *, id> *constants = [self exportedConstants];
   if (constants.count == 0 && self.methods.count == 0) {
     return (id)kCFNull; // Nothing to export
   }
 
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData config] %@", _moduleClass]), nil);
-
   NSMutableArray<NSString *> *methods = self.methods.count ? [NSMutableArray new] : nil;
   NSMutableArray<NSNumber *> *promiseMethods = nil;
   NSMutableArray<NSNumber *> *syncMethods = nil;

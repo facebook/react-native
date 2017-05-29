@@ -7,10 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
+#import <Foundation/Foundation.h>
 
 #import <React/RCTBridgeModule.h>
+
+static CGFloat RCTSingleFrameInterval = 1.0 / 60.0;
 
 @class RCTValueAnimatedNode;
 
@@ -29,9 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
                   callBack:(nullable RCTResponseSenderBlock)callback;
 
 - (void)startAnimation;
+- (void)stepAnimationWithTime:(NSTimeInterval)currentTime;
 - (void)stopAnimation;
-- (void)stepAnimation;
-- (void)removeAnimation;
 
 NS_ASSUME_NONNULL_END
 

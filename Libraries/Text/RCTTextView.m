@@ -30,8 +30,6 @@
   NSAttributedString *_pendingAttributedText;
 
   UITextRange *_previousSelectionRange;
-  NSUInteger _previousTextLength;
-  CGFloat _previousContentHeight;
   NSString *_predictedText;
 
   BOOL _blockTextShouldChange;
@@ -332,7 +330,7 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
                                          text:self.text
                                           key:nil
                                    eventCount:_nativeEventCount];
-      [self resignFirstResponder];
+      [_textView resignFirstResponder];
       return NO;
     }
   }
@@ -490,31 +488,12 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   _nativeUpdatesInFlight = NO;
   _nativeEventCount++;
 
-  // TODO: t16435709 This part will be removed soon.
   if (!self.reactTag || !_onChange) {
     return;
   }
 
-  // When the context size increases, iOS updates the contentSize twice; once
-  // with a lower height, then again with the correct height. To prevent a
-  // spurious event from being sent, we track the previous, and only send the
-  // update event if it matches our expectation that greater text length
-  // should result in increased height. This assumption is, of course, not
-  // necessarily true because shorter text might include more linebreaks, but
-  // in practice this works well enough.
-  NSUInteger textLength = textView.text.length;
-  CGFloat contentHeight = textView.contentSize.height;
-  if (textLength >= _previousTextLength) {
-    contentHeight = MAX(contentHeight, _previousContentHeight);
-  }
-  _previousTextLength = textLength;
-  _previousContentHeight = contentHeight;
   _onChange(@{
     @"text": self.text,
-    @"contentSize": @{
-      @"height": @(contentHeight),
-      @"width": @(textView.contentSize.width)
-    },
     @"target": self.reactTag,
     @"eventCount": @(_nativeEventCount),
   });
@@ -541,40 +520,24 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
                                eventCount:_nativeEventCount];
 }
 
-#pragma mark - UIResponder
+#pragma mark - Focus control deledation
 
-- (BOOL)isFirstResponder
+- (void)reactFocus
 {
-  return [_textView isFirstResponder];
+  [_textView reactFocus];
 }
 
-- (BOOL)canBecomeFirstResponder
+- (void)reactBlur
 {
-  return [_textView canBecomeFirstResponder];
+  [_textView reactBlur];
 }
 
-- (void)reactWillMakeFirstResponder
+- (void)didMoveToWindow
 {
-  [_textView reactWillMakeFirstResponder];
+  [_textView reactFocusIfNeeded];
 }
 
-- (BOOL)becomeFirstResponder
-{
-  return [_textView becomeFirstResponder];
-}
-
-- (void)reactDidMakeFirstResponder
-{
-  [_textView reactDidMakeFirstResponder];
-}
-
-- (BOOL)resignFirstResponder
-{
-  [super resignFirstResponder];
-  return [_textView resignFirstResponder];
-}
-
-#pragma mark - Content Size
+#pragma mark - Content size
 
 - (CGSize)contentSize
 {

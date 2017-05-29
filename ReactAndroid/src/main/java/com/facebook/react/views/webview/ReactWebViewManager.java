@@ -137,7 +137,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         if (url.startsWith("http://") || url.startsWith("https://") ||
-            url.startsWith("file://")) {
+            url.startsWith("file://") || url.equals("about:blank")) {
           return false;
         } else {
           try {
@@ -396,6 +396,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "allowUniversalAccessFromFileURLs")
   public void setAllowUniversalAccessFromFileURLs(WebView view, boolean allow) {
     view.getSettings().setAllowUniversalAccessFromFileURLs(allow);
+  }
+  
+  @ReactProp(name = "saveFormDataDisabled")
+  public void setSaveFormDataDisabled(WebView view, boolean disable) {
+    view.getSettings().setSaveFormData(!disable);
   }
 
   @ReactProp(name = "injectedJavaScript")

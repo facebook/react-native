@@ -16,7 +16,7 @@ class MessageQueueThread;
 
 struct JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
   static constexpr auto kJavaDescriptor =
-    "Lcom/facebook/react/cxxbridge/JavaModuleWrapper$MethodDescriptor;";
+    "Lcom/facebook/react/bridge/JavaModuleWrapper$MethodDescriptor;";
 
   jni::local_ref<JReflectMethod::javaobject> getMethod() const;
   std::string getSignature() const;
@@ -25,13 +25,18 @@ struct JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
 };
 
 struct JavaModuleWrapper : jni::JavaClass<JavaModuleWrapper> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/cxxbridge/JavaModuleWrapper;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/JavaModuleWrapper;";
 
   jni::local_ref<JBaseJavaModule::javaobject> getModule() {
     // This is the call which causes a lazy Java module to actually be
     // created.
     static auto getModule = javaClassStatic()->getMethod<JBaseJavaModule::javaobject()>("getModule");
     return getModule(self());
+  }
+
+  std::string getName() const {
+    static auto getName = javaClassStatic()->getMethod<jstring()>("getName");
+    return getName(self())->toStdString();
   }
 
   jni::local_ref<jni::JList<JMethodDescriptor::javaobject>::javaobject> getMethodDescriptors() {
@@ -54,9 +59,8 @@ class JavaNativeModule : public NativeModule {
   std::string getName() override;
   folly::dynamic getConstants() override;
   std::vector<MethodDescriptor> getMethods() override;
-  bool supportsWebWorkers() override;
-  void invoke(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) override;
-  MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) override;
+  void invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) override;
+  MethodCallResult callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic&& params) override;
 
  private:
   std::weak_ptr<Instance> instance_;
@@ -76,9 +80,8 @@ class NewJavaNativeModule : public NativeModule {
   std::string getName() override;
   std::vector<MethodDescriptor> getMethods() override;
   folly::dynamic getConstants() override;
-  bool supportsWebWorkers() override;
-  void invoke(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) override;
-  MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) override;
+  void invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) override;
+  MethodCallResult callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic&& params) override;
 
  private:
   std::weak_ptr<Instance> instance_;
@@ -88,7 +91,7 @@ class NewJavaNativeModule : public NativeModule {
   std::vector<MethodInvoker> methods_;
   std::vector<MethodDescriptor> methodDescriptors_;
 
-  MethodCallResult invokeInner(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params);
+  MethodCallResult invokeInner(unsigned int reactMethodId, folly::dynamic&& params);
 };
 
 }}

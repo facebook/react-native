@@ -35,6 +35,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.DebugServerException;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
@@ -44,6 +45,8 @@ import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.JSPackagerClient;
+import com.facebook.react.packagerconnection.Responder;
+import com.facebook.react.packagerconnection.RequestHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -234,16 +237,21 @@ public class DevSupportManagerImpl implements
   @Override
   public void handleException(Exception e) {
     if (mIsDevSupportEnabled) {
+      String message = e.getMessage();
+      Throwable cause = e.getCause();
+      while (cause != null) {
+        message += "\n\n" + cause.getMessage();
+        cause = cause.getCause();
+      }
+
       if (e instanceof JSException) {
         FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
+        message += "\n\n" + ((JSException) e).getStack();
+
         // TODO #11638796: convert the stack into something useful
-        showNewError(
-            e.getMessage() + "\n\n" + ((JSException) e).getStack(),
-            new StackFrame[] {},
-            JSEXCEPTION_ERROR_COOKIE,
-            ErrorType.JS);
+        showNewError(message, new StackFrame[] {}, JSEXCEPTION_ERROR_COOKIE, ErrorType.JS);
       } else {
-        showNewJavaError(e.getMessage(), e);
+        showNewJavaError(message, e);
       }
     } else {
       mDefaultNativeModuleCallExceptionHandler.handleException(e);
@@ -427,7 +435,7 @@ public class DevSupportManagerImpl implements
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            handlePokeSamplingProfiler(null);
+            handlePokeSamplingProfiler();
           }
         });
     options.put(
@@ -674,7 +682,7 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void onCaptureHeapCommand(final JSPackagerClient.Responder responder) {
+  public void onCaptureHeapCommand(final Responder responder) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -684,16 +692,27 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void onPokeSamplingProfilerCommand(@Nullable final JSPackagerClient.Responder responder) {
+  public void onPokeSamplingProfilerCommand(final Responder responder) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        handlePokeSamplingProfiler(responder);
+        if (mCurrentContext == null) {
+          responder.error("JSCContext is missing, unable to profile");
+          return;
+        }
+        try {
+          long jsContext = mCurrentContext.getJavaScriptContext();
+          Class clazz = Class.forName("com.facebook.react.packagerconnection.SamplingProfilerPackagerMethod");
+          RequestHandler handler = (RequestHandler)clazz.getConstructor(long.class).newInstance(jsContext);
+          handler.onRequest(null, responder);
+        } catch (Exception e) {
+          // Module not present
+        }
       }
     });
   }
 
-  private void handleCaptureHeap(final JSPackagerClient.Responder responder) {
+  private void handleCaptureHeap(final Responder responder) {
     if (mCurrentContext == null) {
       return;
     }
@@ -713,7 +732,7 @@ public class DevSupportManagerImpl implements
       });
   }
 
-  private void handlePokeSamplingProfiler(@Nullable final JSPackagerClient.Responder responder) {
+  private void handlePokeSamplingProfiler() {
     try {
       List<String> pokeResults = JSCSamplingProfiler.poke(60000);
       for (String result : pokeResults) {
@@ -723,16 +742,9 @@ public class DevSupportManagerImpl implements
             ? "Started JSC Sampling Profiler"
             : "Stopped JSC Sampling Profiler",
           Toast.LENGTH_LONG).show();
-        if (responder != null) {
-          // Responder is provided, so there is a client waiting our response
-          responder.respond(result == null ? "started" : result);
-        } else if (result != null) {
-          // The profile was not initiated by external client, so process the
-          // profile if there is one in the result
-          new JscProfileTask(getSourceUrl()).executeOnExecutor(
-              AsyncTask.THREAD_POOL_EXECUTOR,
-              result);
-        }
+        new JscProfileTask(getSourceUrl()).executeOnExecutor(
+            AsyncTask.THREAD_POOL_EXECUTOR,
+            result);
       }
     } catch (JSCSamplingProfiler.ProfilerException e) {
       showNewJavaError(e.getMessage(), e);
@@ -803,8 +815,8 @@ public class DevSupportManagerImpl implements
     mDevLoadingViewController.showForUrl(bundleURL);
     mDevLoadingViewVisible = true;
 
-    mDevServerHelper.downloadBundleFromURL(
-        new DevServerHelper.BundleDownloadCallback() {
+    mDevServerHelper.getBundleDownloader().downloadBundleFromURL(
+        new BundleDownloader.DownloadCallback() {
           @Override
           public void onSuccess() {
             mDevLoadingViewController.hide();
@@ -876,7 +888,7 @@ public class DevSupportManagerImpl implements
         mDevLoadingViewController.show();
       }
 
-      mDevServerHelper.openPackagerConnection(this);
+      mDevServerHelper.openPackagerConnection(this.getClass().getSimpleName(), this);
       mDevServerHelper.openInspectorConnection();
       if (mDevSettings.isReloadOnJSChangeEnabled()) {
         mDevServerHelper.startPollingOnChangeEndpoint(

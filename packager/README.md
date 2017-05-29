@@ -87,7 +87,7 @@ The packager is made of two things:
 ReactPackager is how you mainly interact with the API.
 
 ```js
-var ReactPackager = require('./react-packager');
+var ReactPackager = require('path/to/packager/');
 ```
 
 ### ReactPackager.buildBundle(serverOptions, bundleOptions)

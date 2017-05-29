@@ -17,6 +17,7 @@ const EventEmitter = require('EventEmitter');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
+const PropTypes = require('prop-types');
 const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
@@ -24,14 +25,12 @@ const TextInputState = require('TextInputState');
 const TimerMixin = require('react-timer-mixin');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
-const View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
 const warning = require('fbjs/lib/warning');
-
-const PropTypes = React.PropTypes;
 
 const onlyMultiline = {
   onTextInput: true,
@@ -75,7 +74,7 @@ const DataDetectorTypes = [
  * import React, { Component } from 'react';
  * import { AppRegistry, TextInput } from 'react-native';
  *
- * class UselessTextInput extends Component {
+ * export default class UselessTextInput extends Component {
  *   constructor(props) {
  *     super(props);
  *     this.state = { text: 'Useless Placeholder' };
@@ -92,7 +91,7 @@ const DataDetectorTypes = [
  *   }
  * }
  *
- * // App registration and rendering
+ * // skip this line if using Create React Native App
  * AppRegistry.registerComponent('AwesomeProject', () => UselessTextInput);
  * ```
  *
@@ -118,7 +117,7 @@ const DataDetectorTypes = [
  *   }
  * }
  *
- * class UselessTextInputMultiline extends Component {
+ * export default class UselessTextInputMultiline extends Component {
  *   constructor(props) {
  *     super(props);
  *     this.state = {
@@ -146,7 +145,7 @@ const DataDetectorTypes = [
  *   }
  * }
  *
- * // App registration and rendering
+ * // skip these lines if using Create React Native App
  * AppRegistry.registerComponent(
  *  'AwesomeProject',
  *  () => UselessTextInputMultiline
@@ -176,7 +175,7 @@ const TextInput = React.createClass({
   },
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * Can tell `TextInput` to automatically capitalize certain characters.
      *
@@ -336,7 +335,7 @@ const TextInput = React.createClass({
      * The default value is `simple`.
      * @platform android
      */
-    textBreakStrategy: React.PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
+    textBreakStrategy: PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
     /**
      * Callback that is called when the text input is blurred.
      */
@@ -540,13 +539,6 @@ const TextInput = React.createClass({
    */
   mixins: [NativeMethodsMixin, TimerMixin],
 
-  viewConfig:
-    ((Platform.OS === 'ios' && RCTTextField ?
-      RCTTextField.viewConfig :
-      (Platform.OS === 'android' && AndroidTextInput ?
-        AndroidTextInput.viewConfig :
-        {})) : Object),
-
   /**
    * Returns `true` if the input is currently focused; `false` otherwise.
    */
@@ -556,8 +548,8 @@ const TextInput = React.createClass({
   },
 
   contextTypes: {
-    onFocusRequested: React.PropTypes.func,
-    focusEmitter: React.PropTypes.instanceOf(EventEmitter),
+    onFocusRequested: PropTypes.func,
+    focusEmitter: PropTypes.instanceOf(EventEmitter),
   },
 
   _inputRef: (undefined: any),
@@ -600,7 +592,7 @@ const TextInput = React.createClass({
   },
 
   childContextTypes: {
-    isInAParentText: React.PropTypes.bool
+    isInAParentText: PropTypes.bool
   },
 
   /**
@@ -705,6 +697,7 @@ const TextInput = React.createClass({
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityTraits={props.accessibilityTraits}
+        nativeID={this.props.nativeID}
         testID={props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
@@ -755,6 +748,7 @@ const TextInput = React.createClass({
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
+        nativeID={this.props.nativeID}
         testID={this.props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>

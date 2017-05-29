@@ -17,8 +17,6 @@
 #import "RCTAnimationUtils.h"
 #import "RCTValueAnimatedNode.h"
 
-const double SINGLE_FRAME_INTERVAL = 1.0 / 60.0;
-
 @interface RCTFrameAnimation ()
 
 @property (nonatomic, strong) NSNumber *animationId;
@@ -33,10 +31,11 @@ const double SINGLE_FRAME_INTERVAL = 1.0 / 60.0;
   NSArray<NSNumber *> *_frames;
   CGFloat _toValue;
   CGFloat _fromValue;
-  NSTimeInterval _delay;
   NSTimeInterval _animationStartTime;
   NSTimeInterval _animationCurrentTime;
   RCTResponseSenderBlock _callback;
+  NSInteger _iterations;
+  NSInteger _currentLoop;
 }
 
 - (instancetype)initWithId:(NSNumber *)animationId
@@ -46,16 +45,18 @@ const double SINGLE_FRAME_INTERVAL = 1.0 / 60.0;
 {
   if ((self = [super init])) {
     NSNumber *toValue = [RCTConvert NSNumber:config[@"toValue"]] ?: @1;
-    NSTimeInterval delay = [RCTConvert double:config[@"delay"]];
     NSArray<NSNumber *> *frames = [RCTConvert NSNumberArray:config[@"frames"]];
+    NSNumber *iterations = [RCTConvert NSNumber:config[@"iterations"]] ?: @1;
 
     _animationId = animationId;
     _toValue = toValue.floatValue;
     _fromValue = valueNode.value;
     _valueNode = valueNode;
-    _delay = delay;
     _frames = [frames copy];
     _callback = [callback copy];
+    _animationHasFinished = iterations.integerValue == 0;
+    _iterations = iterations.integerValue;
+    _currentLoop = 1;
   }
   return self;
 }
@@ -64,19 +65,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)startAnimation
 {
-  _animationStartTime = CACurrentMediaTime();
-  _animationCurrentTime = _animationStartTime;
+  _animationStartTime = _animationCurrentTime = -1;
   _animationHasBegun = YES;
 }
 
 - (void)stopAnimation
 {
-  _animationHasFinished = YES;
-}
-
-- (void)removeAnimation
-{
-  [self stopAnimation];
   _valueNode = nil;
   if (_callback) {
     _callback(@[@{
@@ -85,43 +79,47 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
-- (void)stepAnimation
+- (void)stepAnimationWithTime:(NSTimeInterval)currentTime
 {
   if (!_animationHasBegun || _animationHasFinished || _frames.count == 0) {
     // Animation has not begun or animation has already finished.
     return;
   }
 
-  NSTimeInterval currentTime = CACurrentMediaTime();
-  NSTimeInterval stepInterval = currentTime - _animationCurrentTime;
+  if (_animationStartTime == -1) {
+    _animationStartTime = _animationCurrentTime = currentTime;
+  }
+
   _animationCurrentTime = currentTime;
   NSTimeInterval currentDuration = _animationCurrentTime - _animationStartTime;
 
-  if (_delay > 0) {
-    // Decrement delay
-    _delay -= stepInterval;
-    return;
-  }
-
   // Determine how many frames have passed since last update.
   // Get index of frames that surround the current interval
-  NSUInteger startIndex = floor(currentDuration / SINGLE_FRAME_INTERVAL);
+  NSUInteger startIndex = floor(currentDuration / RCTSingleFrameInterval);
   NSUInteger nextIndex = startIndex + 1;
 
   if (nextIndex >= _frames.count) {
-    // We are at the end of the animation
-    // Update value and flag animation has ended.
-    NSNumber *finalValue = _frames.lastObject;
-    [self updateOutputWithFrameOutput:finalValue.doubleValue];
-    [self stopAnimation];
+    if (_iterations == -1 || _currentLoop < _iterations) {
+      // Looping, reset to the first frame value.
+      _animationStartTime = currentTime;
+      _currentLoop++;
+      NSNumber *firstValue = _frames.firstObject;
+      [self updateOutputWithFrameOutput:firstValue.doubleValue];
+    } else {
+      _animationHasFinished = YES;
+      // We are at the end of the animation
+      // Update value and flag animation has ended.
+      NSNumber *finalValue = _frames.lastObject;
+      [self updateOutputWithFrameOutput:finalValue.doubleValue];
+    }
     return;
   }
 
   // Do a linear remap of the two frames to safegaurd against variable framerates
   NSNumber *fromFrameValue = _frames[startIndex];
   NSNumber *toFrameValue = _frames[nextIndex];
-  NSTimeInterval fromInterval = startIndex * SINGLE_FRAME_INTERVAL;
-  NSTimeInterval toInterval = nextIndex * SINGLE_FRAME_INTERVAL;
+  NSTimeInterval fromInterval = startIndex * RCTSingleFrameInterval;
+  NSTimeInterval toInterval = nextIndex * RCTSingleFrameInterval;
 
   // Interpolate between the individual frames to ensure the animations are
   //smooth and of the proper duration regardless of the framerate.

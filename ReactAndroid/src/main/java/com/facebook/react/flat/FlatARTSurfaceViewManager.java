@@ -9,26 +9,26 @@
 
 package com.facebook.react.flat;
 
-import com.facebook.yoga.YogaMeasureMode;
-import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNodeAPI;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.art.ARTSurfaceView;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaNode;
 
 public class FlatARTSurfaceViewManager extends
-    BaseViewManager<ARTSurfaceView, FlatARTSurfaceViewShadowNode> {
+  BaseViewManager<ARTSurfaceView, FlatARTSurfaceViewShadowNode> {
 
-  private static final String REACT_CLASS = "ARTSurfaceView";
+  /* package */ static final String REACT_CLASS = "ARTSurfaceView";
 
   private static final YogaMeasureFunction MEASURE_FUNCTION = new YogaMeasureFunction() {
     @Override
     public long measure(
-        YogaNodeAPI node,
-        float width,
-        YogaMeasureMode widthMode,
-        float height,
-        YogaMeasureMode heightMode) {
+      YogaNode node,
+      float width,
+      YogaMeasureMode widthMode,
+      float height,
+      YogaMeasureMode heightMode) {
       throw new IllegalStateException("SurfaceView should have explicit width and height set");
     }
   };
