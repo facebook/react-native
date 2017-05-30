@@ -347,7 +347,7 @@ class MapViewExample extends React.Component {
 }
 
 // Module name
-AppRegistry.registerComponent('MapViewExample', () => MapViewExample);
+AppRegistry.registerComponent('AwesomeProject', () => MapViewExample);
 ```
 
 ## Styles

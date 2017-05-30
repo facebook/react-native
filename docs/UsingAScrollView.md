@@ -58,7 +58,7 @@ export default class IScrolledDownAndWhatHappenedNextShockedMe extends Component
 
 // skip these lines if using Create React Native App
 AppRegistry.registerComponent(
-  'IScrolledDownAndWhatHappenedNextShockedMe',
+  'AwesomeProject',
   () => IScrolledDownAndWhatHappenedNextShockedMe);
 ```
 
