@@ -1699,6 +1699,51 @@ input#algolia-doc-search:focus {
 .buttons-unit.downloads {
   margin: 30px 0; }
 
+.component-grid {
+  max-width: 800px;
+}
+
+.component {
+  border: 1px solid #05A5D1;
+  border-radius: 3px;
+  margin: 0 auto 10px;
+  width: 100%;
+  display: inline-block;
+  background-color: white;
+}
+
+.component h3 {
+  font-size: 16px;
+  margin: 0;
+  padding: 0 10px;
+  background-color: #05A5D1;
+  color: white;
+}
+
+.component h3 a {
+  color: white;
+}
+
+.component p {
+  padding: 10px;
+  margin: 2px;
+}
+
+@media only screen and (min-device-width: 768px) {
+  .component-grid {
+    width: 768px;
+  }
+  .component-grid.component-grid-border {
+    border-bottom: 1px solid #f1eff0;
+  }
+  .component {
+    width: 30%;
+    height: 150px;
+    margin: 0 22px 22px auto;
+    vertical-align: top;
+  }
+}
+
 /** Showcase **/
 .home-showcase-section {
   max-width: 800px;

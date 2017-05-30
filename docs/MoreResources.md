@@ -4,7 +4,7 @@ title: More Resources
 layout: docs
 category: The Basics
 permalink: docs/more-resources.html
-next: handling-touches
+next: components
 previous: networking
 ---
 
@@ -16,7 +16,7 @@ If you're using React Native, you probably already know about [React](https://fa
 
 One common question is how to handle the "state" of your React Native application. The most popular library for this is [Redux](http://redux.js.org/). Don't be afraid of how often Redux uses the word "reducer" - it's a pretty simple library, and there's also a nice [series of videos](https://egghead.io/courses/getting-started-with-redux) explaining it.
 
-If you're looking for a library that does a specific thing, check out [Awesome React Native](https://github.com/jondot/awesome-react-native), a curated list of components that also has demos, articles, and other stuff.
+If you're looking for a library that does a specific thing, check out [Awesome React Native](http://www.awesome-react-native.com/), a curated list of components that also has demos, articles, and other stuff.
 
 ## Example Apps
 
