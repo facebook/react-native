@@ -174,15 +174,19 @@ public class ReactViewPager extends ViewPager {
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    if (!mScrollEnabled) {
-      return false;
-    }
-
-    if (super.onInterceptTouchEvent(ev)) {
-      NativeGestureUtil.notifyNativeGestureStarted(this, ev);
-      return true;
-    }
-    return false;
+      if (!mScrollEnabled) {
+          return false;
+      }
+      try {
+          if (super.onInterceptTouchEvent(ev)) {
+              NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+              return true;
+          }
+          return false;
+      }
+      catch (Exception e) {
+          return false;
+      }
   }
 
   @Override
