@@ -72,6 +72,16 @@ type GeoOptions = {
 var Geolocation = {
 
   /*
+   * Request suitable Location permission based on the key configured on pList.
+   * If NSLocationAlwaysUsageDescription is set, it will request Always authorization,
+   * although if NSLocationWhenInUseUsageDescription is set, it will request InUse
+   * authorization.
+   */
+  requestAuthorization: function() {
+    RCTLocationObserver.requestAuthorization();
+  },
+
+  /*
    * Invokes the success callback once with the latest location info.  Supported
    * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool)
    * On Android, if the location is cached this can return almost immediately,

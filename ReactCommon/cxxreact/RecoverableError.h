@@ -8,7 +8,6 @@
 
 namespace facebook {
 namespace react {
-namespace detail {
 
 /**
  * RecoverableError
@@ -42,6 +41,5 @@ private:
   std::string m_what;
 };
 
-} // namespace detail
 } // namespace react
 } // namespace facebook

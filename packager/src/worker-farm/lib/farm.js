@@ -27,10 +27,14 @@ const extend                  = require('xtend')
     , ProcessTerminatedError  = require('errno').create('ProcessTerminatedError')
     , MaxConcurrentCallsError = require('errno').create('MaxConcurrentCallsError')
 
+const mergeStream = require('merge-stream');
+
 function Farm (options: {+execArgv: Array<string>}, path: string) {
   this.options     = extend(DEFAULT_OPTIONS, options)
   this.path        = path
   this.activeCalls = 0
+  this.stdout = mergeStream();
+  this.stderr = mergeStream();
 }
 
 // make a handle to pass back in the form of an external API
@@ -117,6 +121,9 @@ Farm.prototype.startChild = function () {
         , activeCalls : 0
         , exitCode    : null
       }
+
+  this.stdout.add(forked.child.stdout);
+  this.stderr.add(forked.child.stderr);
 
   forked.child.on('message', this.receive.bind(this))
   forked.child.once('exit', function (code) {

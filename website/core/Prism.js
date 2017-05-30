@@ -314,14 +314,38 @@ _.languages.clike = {
 };
 
 _.languages.javascript = _.languages.extend('clike', {
-  'keyword': /\b(var|let|if|else|while|do|for|return|in|instanceof|function|get|set|new|with|typeof|try|throw|catch|finally|null|break|continue|this)\b/g,
-  'number': /\b-?(0x[\dA-Fa-f]+|\d*\.?\d+([Ee]-?\d+)?|NaN|-?Infinity)\b/g
+  'keyword': /\b(as|async|await|break|case|catch|class|const|continue|debugger|default|delete|do|else|enum|export|extends|finally|for|from|function|get|if|implements|import|in|instanceof|interface|let|new|null|of|package|private|protected|public|return|set|static|super|switch|this|throw|try|typeof|var|void|while|with|yield)\b/,
+  'number': /\b-?(0x[\dA-Fa-f]+|0b[01]+|0o[0-7]+|\d*\.?\d+([Ee][+-]?\d+)?|NaN|Infinity)\b/,
+  // Allow for all non-ASCII characters (See http://stackoverflow.com/a/2008444)
+  'function': /[_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*(?=\()/i,
+  'operator': /-[-=]?|\+[+=]?|!=?=?|<<?=?|>>?>?=?|=(?:==?|>)?|&[&=]?|\|[|=]?|\*\*?=?|\/=?|~|\^=?|%=?|\?|\.{3}/
 });
 
 _.languages.insertBefore('javascript', 'keyword', {
   'regex': {
-    pattern: /(^|[^/])\/(?!\/)(\[.+?]|\\.|[^/\r\n])+\/[gim]{0,3}(?=\s*($|[\r\n,.;})]))/g,
-    lookbehind: true
+    pattern: /(^|[^/])\/(?!\/)(\[.+?]|\\.|[^/\\\r\n])+\/[gimyu]{0,5}(?=\s*($|[\r\n,.;})]))/,
+    lookbehind: true,
+    greedy: true
+  }
+});
+
+_.languages.insertBefore('javascript', 'string', {
+  'template-string': {
+    pattern: /`(?:\\\\|\\?[^\\])*?`/,
+    greedy: true,
+    inside: {
+      'interpolation': {
+        pattern: /\$\{[^}]+\}/,
+        inside: {
+          'interpolation-punctuation': {
+            pattern: /^\$\{|\}$/,
+            alias: 'punctuation'
+          },
+          rest: _.languages.javascript
+        }
+      },
+      'string': /[\s\S]+/
+    }
   }
 });
 

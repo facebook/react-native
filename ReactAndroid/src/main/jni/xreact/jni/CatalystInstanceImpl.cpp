@@ -17,6 +17,7 @@
 #include <cxxreact/JSBundleType.h>
 #include <cxxreact/JSIndexedRAMBundle.h>
 #include <cxxreact/MethodCall.h>
+#include <cxxreact/RecoverableError.h>
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/CxxNativeModule.h>
 
@@ -166,7 +167,8 @@ void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
 
 void CatalystInstanceImpl::jniLoadScriptFromAssets(
     jni::alias_ref<JAssetManager::javaobject> assetManager,
-    const std::string& assetURL) {
+    const std::string& assetURL,
+    bool loadSynchronously) {
   const int kAssetsLength = 9;  // strlen("assets://");
   auto sourceURL = assetURL.substr(kAssetsLength);
 
@@ -176,10 +178,11 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
     instance_->loadUnbundle(
       folly::make_unique<JniJSModulesUnbundle>(manager, sourceURL),
       std::move(script),
-      sourceURL);
+      sourceURL,
+      loadSynchronously);
     return;
   } else {
-    instance_->loadScriptFromString(std::move(script), sourceURL);
+    instance_->loadScriptFromString(std::move(script), sourceURL, loadSynchronously);
   }
 }
 
@@ -195,7 +198,8 @@ bool CatalystInstanceImpl::isIndexedRAMBundle(const char *sourcePath) {
 }
 
 void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
-                                                 const std::string& sourceURL) {
+                                                 const std::string& sourceURL,
+                                                 bool loadSynchronously) {
   auto zFileName = fileName.c_str();
   if (isIndexedRAMBundle(zFileName)) {
     auto bundle = folly::make_unique<JSIndexedRAMBundle>(zFileName);
@@ -203,9 +207,15 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
     instance_->loadUnbundle(
       std::move(bundle),
       std::move(startupScript),
-      sourceURL);
+      sourceURL,
+      loadSynchronously);
   } else {
-    instance_->loadScriptFromFile(fileName, sourceURL);
+    std::unique_ptr<const JSBigFileString> script;
+    RecoverableError::runRethrowingAsRecoverable<std::system_error>(
+      [&fileName, &script]() {
+        script = JSBigFileString::fromPath(fileName);
+      });
+    instance_->loadScriptFromString(std::move(script), sourceURL, loadSynchronously);
   }
 }
 

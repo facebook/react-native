@@ -19,7 +19,7 @@ namely the node module format. We want to even go further, and let you
 choose your own packager and asset pipeline or even integrate into
 your existing infrastructure.
 
-React Native users need not to understand how the packager work,
+React Native users don't need to understand how the packager work,
 however, this documentation might be useful for advanced users and
 people who want to fix bugs or add features to the packager (patches
 welcome!).
@@ -87,7 +87,7 @@ The packager is made of two things:
 ReactPackager is how you mainly interact with the API.
 
 ```js
-var ReactPackager = require('./react-packager');
+var ReactPackager = require('path/to/packager/');
 ```
 
 ### ReactPackager.buildBundle(serverOptions, bundleOptions)
