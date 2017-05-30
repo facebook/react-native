@@ -93,6 +93,8 @@ public class ViewProps {
 
   public static final String ALLOW_FONT_SCALING = "allowFontScaling";
 
+  public static final String ALLOW_FONT_SCALING = "allowFontScaling";
+
   public static final String BORDER_WIDTH = "borderWidth";
   public static final String BORDER_LEFT_WIDTH = "borderLeftWidth";
   public static final String BORDER_TOP_WIDTH = "borderTopWidth";
