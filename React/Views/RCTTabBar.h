@@ -16,7 +16,7 @@
 @property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, assign) BOOL translucent;
 #if !TARGET_OS_TV
-@property (nonatomic, assign) UIBarStyle *barStyle;
+@property (nonatomic, assign) UIBarStyle barStyle;
 #endif
 
 @end

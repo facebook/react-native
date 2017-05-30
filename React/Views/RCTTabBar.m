@@ -9,7 +9,6 @@
 
 #import "RCTTabBar.h"
 
-#import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTTabBarItem.h"
