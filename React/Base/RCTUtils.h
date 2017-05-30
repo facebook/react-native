@@ -74,6 +74,12 @@ RCT_EXTERN NSString *const RCTErrorUnspecified;
 // Returns YES if React is running in a test environment
 RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);
 
+// Returns the boolean output of UIApplication openUrl, or false if running in an App Extension
+RCT_EXTERN BOOL RCTLinkingIOSOpenUrl(NSURL *URL);
+
+// Returns the boolean output of UIApplication canOpenUrl, or false if running in an App Extension
+RCT_EXTERN BOOL RCTLinkingIOSCanOpenUrl(NSURL *URL);
+
 // Returns YES if React is running in an iOS App Extension
 RCT_EXTERN BOOL RCTRunningInAppExtension(void);
 
