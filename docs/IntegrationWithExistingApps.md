@@ -59,16 +59,16 @@ previous: testing
     border-radius: 3px;
     text-decoration: none !important;
   }
-  .display-platform-objc .toggler .button-objc,
-  .display-platform-swift .toggler .button-swift,
-  .display-platform-android .toggler .button-android {
+  .display-language-objc .toggler .button-objc,
+  .display-language-swift .toggler .button-swift,
+  .display-language-android .toggler .button-android {
     background-color: #05A5D1;
     color: white;
   }
   block { display: none; }
-  .display-platform-objc .objc,
-  .display-platform-swift .swift,
-  .display-platform-android .android {
+  .display-language-objc .objc,
+  .display-language-swift .swift,
+  .display-language-android .android {
     display: block;
   }
 </style>
@@ -79,13 +79,13 @@ The specific steps are different depending on what platform you're targeting.
 
 <div class="toggler">
   <ul role="tablist" >
-    <li id="objc" class="button-objc" aria-selected="false" role="tab" tabindex="0" aria-controls="objctab" onclick="display('platform', 'objc')">
+    <li id="objc" class="button-objc" aria-selected="false" role="tab" tabindex="0" aria-controls="objctab" onclick="displayTab('language', 'objc')">
       iOS (Objective-C)
     </li>
-    <li id="swift" class="button-swift" aria-selected="false" role="tab" tabindex="0" aria-controls="swifttab" onclick="display('platform', 'swift')">
+    <li id="swift" class="button-swift" aria-selected="false" role="tab" tabindex="0" aria-controls="swifttab" onclick="displayTab('language', 'swift')">
       iOS (Swift)
     </li>
-    <li id="android" class="button-android" aria-selected="false" role="tab" tabindex="0" aria-controls="androidtab" onclick="display('platform', 'android')">
+    <li id="android" class="button-android" aria-selected="false" role="tab" tabindex="0" aria-controls="androidtab" onclick="displayTab('language', 'android')">
       Android (Java)
     </li>
   </ul>
@@ -143,7 +143,7 @@ To ensure a smooth experience, create a new folder for your integrated React Nat
 
 Go to the root directory for your project and create a new `package.json` file with the following contents:
 
-```bash
+```
 {
   "name": "MyReactNativeApp",
   "version": "0.0.1",
@@ -156,7 +156,7 @@ Go to the root directory for your project and create a new `package.json` file w
 
 Next, you will install the `react` and `react-native` packages. Open a terminal or command prompt, then navigate to the root directory for your project and type the following commands:
 
-```bash
+```
 $ npm install --save react react-native
 ```
 
@@ -170,7 +170,7 @@ This will create a new `/node_modules` folder in your project's root directory. 
 
 We recommend installing CocoaPods using [Homebrew](http://brew.sh/).
 
-```bash
+```
 $ brew install cocoapods
 ```
 
@@ -200,7 +200,7 @@ The list of supported `subspec`s is available in [`/node_modules/react-native/Re
 
 You can specify which `subspec`s your app will depend on in a `Podfile` file. The easiest way to create a `Podfile` is by running the CocoaPods `init` command in the `/ios` subfolder of your project:
 
-```bash
+```
 $ pod init
 ```
 
@@ -258,13 +258,13 @@ end
 
 After you have created your `Podfile`, you are ready to install the React Native pod.
 
-```bash
+```
 $ pod install
 ```
 
 You should see output such as:
 
-```bash
+```
 Analyzing dependencies
 Fetching podspec for `React` from `../node_modules/react-native`
 Downloading dependencies
@@ -299,7 +299,7 @@ First, create an empty `index.ios.js` file in the root of your React Native proj
 
 In your `index.ios.js`, create your component. In our sample here, we will add simple `<Text>` component within a styled `<View>`
 
-```js
+```javascript
 'use strict';
 
 import React from 'react';
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
 });
 
 // Module name
-AppRegistry.registerComponent('RNHighScores', () => RNHighScores);
+AppRegistry.registerComponent('AwesomeProject', () => RNHighScores);
 ```
 
 > `RNHighScores` is the name of your module that will be used when you add a view to React Native from within your iOS application.
@@ -377,21 +377,21 @@ We will, for debugging purposes, log that the event handler was invoked. Then, w
 
 First `import` the `RCTRootView` header.
 
-```
+```objectivec
 #import <React/RCTRootView.h>
 ```
 
 > The `initialProperties` are here for illustration purposes so we have some data for our high score screen. In our React Native component, we will use `this.props` to get access to that data.
 
-```
+```objectivec
 - (IBAction)highScoreButtonPressed:(id)sender {
     NSLog(@"High Score Button Pressed");
-    NSURL *jsCodeLocation = [NSURL
-                             URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios"];
+    NSURL *jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios"];
+
     RCTRootView *rootView =
-      [[RCTRootView alloc] initWithBundleURL : jsCodeLocation
-                           moduleName        : @"RNHighScores"
-                           initialProperties :
+      [[RCTRootView alloc] initWithBundleURL: jsCodeLocation
+                                  moduleName: @"RNHighScores"
+                           initialProperties:
                              @{
                                @"scores" : @[
                                  @{
@@ -404,7 +404,7 @@ First `import` the `RCTRootView` header.
                                  }
                                ]
                              }
-                           launchOptions    : nil];
+                               launchOptions: nil];
     UIViewController *vc = [[UIViewController alloc] init];
     vc.view = rootView;
     [self presentViewController:vc animated:YES completion:nil];
@@ -417,13 +417,13 @@ First `import` the `RCTRootView` header.
 
 First `import` the `React` library.
 
-```
+```javascript
 import React
 ```
 
 > The `initialProperties` are here for illustration purposes so we have some data for our high score screen. In our React Native component, we will use `this.props` to get access to that data.
 
-```
+```swift
 @IBAction func highScoreButtonTapped(sender : UIButton) {
   NSLog("Hello")
   let jsCodeLocation = URL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
@@ -494,7 +494,7 @@ Apple has blocked implicit cleartext HTTP resource loading. So we need to add th
 
 To run your app, you need to first start the development server. To do this, simply run the following command in the root directory of your React Native project:
 
-```bash
+```
 $ npm start
 ```
 
@@ -502,7 +502,7 @@ $ npm start
 
 If you are using Xcode or your favorite editor, build and run your native iOS application as normal. Alternatively, you can run the app from the command line using:
 
-```bash
+```
 # From the root of your project
 $ react-native run-ios
 ```
@@ -593,7 +593,7 @@ First, create an empty `index.android.js` file in the root of your React Native 
 
 In your `index.android.js`, create your component. In our sample here, we will add simple `<Text>` component within a styled `<View>`:
 
-```js
+```javascript
 'use strict';
 
 import React from 'react';
@@ -625,7 +625,7 @@ var styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('HelloWorld', () => HelloWorld);
+AppRegistry.registerComponent('AwesomeProject', () => HelloWorld);
 ```
 
 ##### 3. Configure permissions for development error overlay
@@ -692,11 +692,13 @@ public class MyReactActivity extends Activity implements DefaultHardwareBackBtnH
     }
 }
 ```
+
 > If you are using a starter kit for React Native, replace the "HelloWorld" string with the one in your index.android.js file (it’s the first argument to the `AppRegistry.registerComponent()` method).
 
 If you are using Android Studio, use `Alt + Enter` to add all missing imports in your MyReactActivity class. Be careful to use your package’s `BuildConfig` and not the one from the `...facebook...` package.
 
 We need set the theme of `MyReactActivity` to `Theme.AppCompat.Light.NoActionBar` because some components rely on this theme.
+
 ```xml
 <activity
   android:name=".MyReactActivity"
@@ -776,7 +778,7 @@ You have now done all the basic steps to integrate React Native with your curren
 
 To run your app, you need to first start the development server. To do this, simply run the following command in the root directory of your React Native project:
 
-```bash
+```
 $ npm start
 ```
 
@@ -790,11 +792,13 @@ Once you reach your React-powered activity inside the app, it should load the Ja
 
 ### Creating a release build in Android Studio
 
-You can use Android Studio to create your release builds too! It’s as easy as creating release builds of your previously-existing native Android app. There’s just one additional step, which you’ll have to do before every release build. You need to execute the following to create a React Native bundle, which’ll be included with your native Android app:
+You can use Android Studio to create your release builds too! It’s as easy as creating release builds of your previously-existing native Android app. There’s just one additional step, which you’ll have to do before every release build. You need to execute the following to create a React Native bundle, which will be included with your native Android app:
 
-    $ react-native bundle --platform android --dev false --entry-file index.android.js --bundle-output android/com/your-company-name/app-package-name/src/main/assets/index.android.bundle --assets-dest android/com/your-company-name/app-package-name/src/main/res/
+```
+$ react-native bundle --platform android --dev false --entry-file index.android.js --bundle-output android/com/your-company-name/app-package-name/src/main/assets/index.android.bundle --assets-dest android/com/your-company-name/app-package-name/src/main/res/
+```
 
-Don’t forget to replace the paths with correct ones and create the assets folder if it doesn’t exist!
+> Don’t forget to replace the paths with correct ones and create the assets folder if it doesn’t exist.
 
 Now just create a release build of your native app from within Android Studio as usual and you should be good to go!
 
@@ -805,70 +809,10 @@ Now just create a release build of your native app from within Android Studio as
 At this point you can continue developing your app as usual. Refer to our [debugging](/docs/debugging.html) and [deployment](docs/running-on-device.html) docs to learn more about working with React Native.
 
 <script>
-// Convert <div>...<span><block /></span>...</div>
-// Into <div>...<block />...</div>
-var blocks = document.getElementsByTagName('block');
-for (var i = 0; i < blocks.length; ++i) {
-  var block = blocks[i];
-  var span = blocks[i].parentNode;
-  var container = span.parentNode;
-  container.insertBefore(block, span);
-  container.removeChild(span);
-}
-// Convert <div>...<block />content<block />...</div>
-// Into <div>...<block>content</block><block />...</div>
-blocks = document.getElementsByTagName('block');
-for (var i = 0; i < blocks.length; ++i) {
-  var block = blocks[i];
-  while (block.nextSibling && block.nextSibling.tagName !== 'BLOCK') {
-    block.appendChild(block.nextSibling);
-  }
-}
-function display(type, value) {
+function displayTab(type, value) {
   var container = document.getElementsByTagName('block')[0].parentNode;
   container.className = 'display-' + type + '-' + value + ' ' +
     container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
-  console.log(container.className);
   event && event.preventDefault();
-}
-
-// If we are coming to the page with a hash in it (i.e. from a search, for example), try to get
-// us as close as possible to the correct platform and dev os using the hashtag and block walk up.
-var foundHash = false;
-if (window.location.hash !== '' && window.location.hash !== 'content') { // content is default
-  var hashLinks = document.querySelectorAll('a.hash-link');
-  for (var i = 0; i < hashLinks.length && !foundHash; ++i) {
-    if (hashLinks[i].hash === window.location.hash) {
-      var parent = hashLinks[i].parentElement;
-      while (parent) {
-        if (parent.tagName === 'BLOCK') {
-          var targetPlatform = null;
-          // Could be more than one target platform, but just choose some sort of order
-          // of priority here.
-
-          // Target Platform
-          if (parent.className.indexOf('objc') > -1) {
-            targetPlatform = 'objc';
-          } else if (parent.className.indexOf('swift') > -1) {
-            targetPlatform = 'swift';
-          } else if (parent.className.indexOf('android') > -1) {
-            targetPlatform = 'android';
-          } else {
-            break; // assume we don't have anything.
-          }
-          // We would have broken out if both targetPlatform and devOS hadn't been filled.
-          display('platform', targetPlatform);
-          foundHash = true;
-          break;
-        }
-        parent = parent.parentElement;
-      }
-    }
-  }
-}
-// Do the default if there is no matching hash
-if (!foundHash) {
-  var isMac = navigator.platform === 'MacIntel';
-  display('platform', isMac ? 'objc' : 'android');
 }
 </script>

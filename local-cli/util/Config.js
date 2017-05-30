@@ -79,6 +79,11 @@ export type ConfigT = {
   getTransformOptions: GetTransformOptions,
 
   /**
+   * Returns the path to the worker that is used for transformation.
+   */
+  getWorkerPath: () => string,
+
+  /**
    * An optional function that can modify the code and source map of bundle
    * after the minifaction took place.
    */
@@ -121,6 +126,7 @@ const defaultConfig: ConfigT = {
   postProcessModules: modules => modules,
   postProcessModulesForBuck: modules => modules,
   transformVariants: () => ({default: {}}),
+  getWorkerPath: () => require.resolve('./worker.js'),
 };
 
 /**

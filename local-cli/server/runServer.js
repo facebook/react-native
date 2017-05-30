@@ -157,6 +157,7 @@ function getPackagerServer(args, config) {
     transformModulePath: transformModulePath,
     verbose: args.verbose,
     watch: !args.nonPersistent,
+    workerPath: config.getWorkerPath(),
   });
 }
 

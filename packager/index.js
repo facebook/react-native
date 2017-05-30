@@ -39,6 +39,7 @@ type Options = {
   +transformCache: TransformCache,
   +transformModulePath: string,
   watch?: boolean,
+  workerPath: ?string,
 };
 
 type StrictOptions = {...Options, reporter: Reporter};
@@ -53,6 +54,8 @@ type PublicBundleOptions = {
   +runModule?: boolean,
   +sourceMapUrl?: string,
 };
+
+exports.TransformCaching = TransformCaching;
 
 /**
  * This is a public API, so we don't trust the value and purposefully downgrade

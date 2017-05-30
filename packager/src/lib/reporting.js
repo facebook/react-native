@@ -37,11 +37,13 @@ export type ReportableEvent = {
   type: 'bundle_build_done',
 } | {
   entryFilePath: string,
-  error: Error,
   type: 'bundle_build_failed',
 } | {
   entryFilePath: string,
   type: 'bundle_build_started',
+} | {
+  error: Error,
+  type: 'bundling_error',
 } | {
   type: 'dep_graph_loading',
 } | {
