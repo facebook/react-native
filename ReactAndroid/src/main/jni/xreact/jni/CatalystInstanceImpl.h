@@ -6,10 +6,10 @@
 #include <folly/Memory.h>
 
 #include "CxxModuleWrapper.h"
-#include "JExecutorToken.h"
+#include "JavaModuleWrapper.h"
 #include "JMessageQueueThread.h"
 #include "JSLoader.h"
-#include "JavaModuleWrapper.h"
+#include "ModuleRegistryBuilder.h"
 
 namespace facebook {
 namespace react {
@@ -19,14 +19,15 @@ class JavaScriptExecutorHolder;
 class NativeArray;
 
 struct ReactCallback : public jni::JavaClass<ReactCallback> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/cxxbridge/ReactCallback;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/ReactCallback;";
 };
 
 class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
  public:
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/cxxbridge/CatalystInstanceImpl;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/CatalystInstanceImpl;";
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
+  ~CatalystInstanceImpl() override;
 
   static void registerNatives();
 
@@ -47,20 +48,19 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       JavaScriptExecutorHolder* jseh,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
       jni::alias_ref<JavaMessageQueueThread::javaobject> moduleQueue,
+      jni::alias_ref<JavaMessageQueueThread::javaobject> uiBackgroundQueue,
       jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
-      jni::alias_ref<jni::JCollection<CxxModuleWrapper::javaobject>::javaobject> cxxModules);
+      jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules);
 
   /**
    * Sets the source URL of the underlying bridge without loading any JS code.
    */
   void jniSetSourceURL(const std::string& sourceURL);
 
-  void jniLoadScriptFromAssets(jni::alias_ref<JAssetManager::javaobject> assetManager, const std::string& assetURL);
-  void jniLoadScriptFromFile(const std::string& fileName, const std::string& sourceURL);
-  void jniLoadScriptFromOptimizedBundle(const std::string& bundlePath, const std::string& sourceURL, jint flags);
-  void callJSFunction(JExecutorToken* token, std::string module, std::string method, NativeArray* arguments);
-  void callJSCallback(JExecutorToken* token, jint callbackId, NativeArray* arguments);
-  local_ref<JExecutorToken::JavaPart> getMainExecutorToken();
+  void jniLoadScriptFromAssets(jni::alias_ref<JAssetManager::javaobject> assetManager, const std::string& assetURL, bool loadSynchronously);
+  void jniLoadScriptFromFile(const std::string& fileName, const std::string& sourceURL, bool loadSynchronously);
+  void jniCallJSFunction(std::string module, std::string method, NativeArray* arguments);
+  void jniCallJSCallback(jint callbackId, NativeArray* arguments);
   void setGlobalVariable(std::string propName,
                          std::string&& jsonValue);
   jlong getJavaScriptContext();
@@ -74,6 +74,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   // This should be the only long-lived strong reference, but every C++ class
   // will have a weak reference.
   std::shared_ptr<Instance> instance_;
+  std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
+  std::shared_ptr<JMessageQueueThread> uiBackgroundMessageQueue_;
 };
 
 }}

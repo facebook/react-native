@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @format
  */
 'use strict';
 
@@ -12,7 +14,6 @@ jest.disableAutomock();
 
 const Bundle = require('../Bundle');
 const ModuleTransport = require('../../lib/ModuleTransport');
-const SourceMapGenerator = require('source-map').SourceMapGenerator;
 const crypto = require('crypto');
 
 describe('Bundle', () => {
@@ -27,87 +28,99 @@ describe('Bundle', () => {
 
   describe('source bundle', () => {
     it('should create a bundle and get the source', () => {
-      return Promise.resolve().then(() => {
-        return addModule({
-          bundle,
-          code: 'transformed foo;',
-          sourceCode: 'source foo',
-          sourcePath: 'foo path',
+      return Promise.resolve()
+        .then(() => {
+          return addModule({
+            bundle,
+            code: 'transformed foo;',
+            sourceCode: 'source foo',
+            sourcePath: 'foo path',
+          });
+        })
+        .then(() => {
+          return addModule({
+            bundle,
+            code: 'transformed bar;',
+            sourceCode: 'source bar',
+            sourcePath: 'bar path',
+          });
+        })
+        .then(() => {
+          bundle.finalize({});
+          expect(bundle.getSource({dev: true})).toBe(
+            [
+              'transformed foo;',
+              'transformed bar;',
+              '\/\/# sourceMappingURL=test_url',
+            ].join('\n'),
+          );
         });
-      }).then(() => {
-        return addModule({
-          bundle,
-          code: 'transformed bar;',
-          sourceCode: 'source bar',
-          sourcePath: 'bar path',
-        });
-      }).then(() => {
-        bundle.finalize({});
-        expect(bundle.getSource({dev: true})).toBe([
-          'transformed foo;',
-          'transformed bar;',
-          '\/\/# sourceMappingURL=test_url'
-        ].join('\n'));
-      });
     });
 
     it('should be ok to leave out the source map url', () => {
       const otherBundle = new Bundle();
-      return Promise.resolve().then(() => {
-        return addModule({
-          bundle: otherBundle,
-          code: 'transformed foo;',
-          sourceCode: 'source foo',
-          sourcePath: 'foo path',
+      return Promise.resolve()
+        .then(() => {
+          return addModule({
+            bundle: otherBundle,
+            code: 'transformed foo;',
+            sourceCode: 'source foo',
+            sourcePath: 'foo path',
+          });
+        })
+        .then(() => {
+          return addModule({
+            bundle: otherBundle,
+            code: 'transformed bar;',
+            sourceCode: 'source bar',
+            sourcePath: 'bar path',
+          });
+        })
+        .then(() => {
+          otherBundle.finalize({});
+          expect(otherBundle.getSource({dev: true})).toBe(
+            ['transformed foo;', 'transformed bar;'].join('\n'),
+          );
         });
-      }).then(() => {
-        return addModule({
-          bundle: otherBundle,
-          code: 'transformed bar;',
-          sourceCode: 'source bar',
-          sourcePath: 'bar path',
-        });
-      }).then(() => {
-        otherBundle.finalize({});
-        expect(otherBundle.getSource({dev: true})).toBe([
-          'transformed foo;',
-          'transformed bar;',
-        ].join('\n'));
-      });
     });
 
     it('should create a bundle and add run module code', () => {
-      return Promise.resolve().then(() => {
-        return addModule({
-          bundle,
-          code: 'transformed foo;',
-          sourceCode: 'source foo',
-          sourcePath: 'foo path',
+      return Promise.resolve()
+        .then(() => {
+          return addModule({
+            bundle,
+            code: 'transformed foo;',
+            sourceCode: 'source foo',
+            sourcePath: 'foo path',
+          });
+        })
+        .then(() => {
+          return addModule({
+            bundle,
+            code: 'transformed bar;',
+            sourceCode: 'source bar',
+            sourcePath: 'bar path',
+          });
+        })
+        .then(() => {
+          bundle.setMainModuleId('foo');
+          bundle.finalize({
+            runBeforeMainModule: ['bar'],
+            runModule: true,
+          });
+          expect(bundle.getSource({dev: true})).toBe(
+            [
+              'transformed foo;',
+              'transformed bar;',
+              ';require("bar");',
+              ';require("foo");',
+              '\/\/# sourceMappingURL=test_url',
+            ].join('\n'),
+          );
         });
-      }).then(() => {
-        return addModule({
-          bundle,
-          code: 'transformed bar;',
-          sourceCode: 'source bar',
-          sourcePath: 'bar path',
-        });
-      }).then(() => {
-        bundle.setMainModuleId('foo');
-        bundle.finalize({
-          runBeforeMainModule: ['bar'],
-          runMainModule: true,
-        });
-        expect(bundle.getSource({dev: true})).toBe([
-          'transformed foo;',
-          'transformed bar;',
-          ';require("bar");',
-          ';require("foo");',
-          '\/\/# sourceMappingURL=test_url',
-        ].join('\n'));
-      });
     });
 
-    it('should insert modules in a deterministic order, independent from timing of the wrapping process', () => {
+    it('inserts modules in a deterministic order, independent of timing of the wrapper process', () => {
       const moduleTransports = [
         createModuleTransport({name: 'module1'}),
         createModuleTransport({name: 'module2'}),
@@ -117,15 +130,18 @@ describe('Bundle', () => {
       const resolves = {};
       const resolver = {
         wrapModule({name}) {
-          return new Promise(resolve => resolves[name] = resolve);
-        }
+          return new Promise(resolve => {
+            resolves[name] = resolve;
+          });
+        },
       };
 
       const promise = Promise.all(
-        moduleTransports.map(m => bundle.addModule(resolver, null, {isPolyfill: () => false}, m)))
-      .then(() => {
-        expect(bundle.getModules())
-          .toEqual(moduleTransports);
+        moduleTransports.map(m =>
+          bundle.addModule(resolver, null, {isPolyfill: () => false}, m),
+        ),
+      ).then(() => {
+        expect(bundle.getModules()).toEqual(moduleTransports);
       });
 
       resolves.module2({code: ''});
@@ -144,89 +160,93 @@ describe('Bundle', () => {
     it('should combine sourcemaps', () => {
       const otherBundle = new Bundle({sourceMapUrl: 'test_url'});
 
-      return Promise.resolve().then(() => {
-        return addModule({
-          bundle: otherBundle,
-          code: 'transformed foo;\n',
-          sourceCode: 'source foo',
-          map: {name: 'sourcemap foo'},
-          sourcePath: 'foo path',
-        });
-      }).then(() => {
-        return addModule({
-          bundle: otherBundle,
-          code: 'transformed bar;\n',
-          sourceCode: 'source bar',
-          map: {name: 'sourcemap bar'},
-          sourcePath: 'bar path',
-        });
-      }).then(() => {
-        return addModule({
-          bundle: otherBundle,
-          code: 'image module;\nimage module;',
-          virtual: true,
-          sourceCode: 'image module;\nimage module;',
-          sourcePath: 'image.png',
-        });
-      }).then(() => {
-        otherBundle.setMainModuleId('foo');
-        otherBundle.finalize({
-          runBeforeMainModule: ['InitializeCore'],
-          runMainModule: true,
-        });
+      return Promise.resolve()
+        .then(() => {
+          return addModule({
+            bundle: otherBundle,
+            code: 'transformed foo;\n',
+            sourceCode: 'source foo',
+            map: {name: 'sourcemap foo'},
+            sourcePath: 'foo path',
+          });
+        })
+        .then(() => {
+          return addModule({
+            bundle: otherBundle,
+            code: 'transformed bar;\n',
+            sourceCode: 'source bar',
+            map: {name: 'sourcemap bar'},
+            sourcePath: 'bar path',
+          });
+        })
+        .then(() => {
+          return addModule({
+            bundle: otherBundle,
+            code: 'image module;\nimage module;',
+            virtual: true,
+            sourceCode: 'image module;\nimage module;',
+            sourcePath: 'image.png',
+          });
+        })
+        .then(() => {
+          otherBundle.setMainModuleId('foo');
+          otherBundle.finalize({
+            runBeforeMainModule: ['InitializeCore'],
+            runModule: true,
+          });
 
-        const sourceMap = otherBundle.getSourceMap({dev: true});
-        expect(sourceMap).toEqual({
-          file: 'test_url',
-          version: 3,
-          sections: [
-            { offset: { line: 0, column: 0 }, map: { name: 'sourcemap foo' } },
-            { offset: { line: 2, column: 0 }, map: { name: 'sourcemap bar' } },
-            {
-              offset: {
-                column: 0,
-                line: 4
+          const sourceMap = otherBundle.getSourceMap({dev: true});
+          expect(sourceMap).toEqual({
+            file: 'test_url',
+            version: 3,
+            sections: [
+              {offset: {line: 0, column: 0}, map: {name: 'sourcemap foo'}},
+              {offset: {line: 2, column: 0}, map: {name: 'sourcemap bar'}},
+              {
+                offset: {
+                  column: 0,
+                  line: 4,
+                },
+                map: {
+                  file: 'image.png',
+                  mappings: 'AAAA;AACA;',
+                  names: [],
+                  sources: ['image.png'],
+                  sourcesContent: ['image module;\nimage module;'],
+                  version: 3,
+                },
               },
-              map: {
-                file: 'image.png',
-                mappings: 'AAAA;AACA;',
-                names: [],
-                sources: [ 'image.png' ],
-                sourcesContent: ['image module;\nimage module;'],
-                version: 3,
-              }
-            },
-            {
-              offset: {
-                column: 0,
-                line: 6
+              {
+                offset: {
+                  column: 0,
+                  line: 6,
+                },
+                map: {
+                  file: 'require-InitializeCore.js',
+                  mappings: 'AAAA;',
+                  names: [],
+                  sources: ['require-InitializeCore.js'],
+                  sourcesContent: [';require("InitializeCore");'],
+                  version: 3,
+                },
               },
-              map: {
-                file: 'require-InitializeCore.js',
-                mappings: 'AAAA;',
-                names: [],
-                sources: [ 'require-InitializeCore.js' ],
-                sourcesContent: [';require("InitializeCore");'],
-                version: 3,
-              }
-            },
-            {
-              offset: {
-                column: 0,
-                line: 7
+              {
+                offset: {
+                  column: 0,
+                  line: 7,
+                },
+                map: {
+                  file: 'require-foo.js',
+                  mappings: 'AAAA;',
+                  names: [],
+                  sources: ['require-foo.js'],
+                  sourcesContent: [';require("foo");'],
+                  version: 3,
+                },
               },
-              map: {
-                file: 'require-foo.js',
-                mappings: 'AAAA;',
-                names: [],
-                sources: [ 'require-foo.js' ],
-                sourcesContent: [';require("foo");'],
-                version: 3,
-              }
-            },
-          ],
+            ],
+          });
         });
-      });
     });
   });
 
@@ -245,32 +265,37 @@ describe('Bundle', () => {
   describe('getJSModulePaths()', () => {
     it('should return module paths', () => {
       var otherBundle = new Bundle({sourceMapUrl: 'test_url'});
-      return Promise.resolve().then(() => {
-        return addModule({
-          bundle: otherBundle,
-          code: 'transformed foo;\n',
-          sourceCode: 'source foo',
-          sourcePath: 'foo path',
+      return Promise.resolve()
+        .then(() => {
+          return addModule({
+            bundle: otherBundle,
+            code: 'transformed foo;\n',
+            sourceCode: 'source foo',
+            sourcePath: 'foo path',
+          });
+        })
+        .then(() => {
+          return addModule({
+            bundle: otherBundle,
+            code: 'image module;\nimage module;',
+            virtual: true,
+            sourceCode: 'image module;\nimage module;',
+            sourcePath: 'image.png',
+          });
+        })
+        .then(() => {
+          expect(otherBundle.getJSModulePaths()).toEqual(['foo path']);
         });
-      }).then(() => {
-        return addModule({
-          bundle: otherBundle,
-          code: 'image module;\nimage module;',
-          virtual: true,
-          sourceCode: 'image module;\nimage module;',
-          sourcePath: 'image.png',
-        });
-      }).then(() => {
-        expect(otherBundle.getJSModulePaths()).toEqual(['foo path']);
-      });
     });
   });
 
   describe('getEtag()', function() {
     it('should return an etag', function() {
-      var bundle = new Bundle({sourceMapUrl: 'test_url'});
       bundle.finalize({});
-      var eTag = crypto.createHash('md5').update(bundle.getSource()).digest('hex');
+      var eTag = crypto
+        .createHash('md5')
+        .update(bundle.getSource())
+        .digest('hex');
       expect(bundle.getEtag()).toEqual(eTag);
     });
   });
@@ -303,54 +328,86 @@ describe('Bundle', () => {
     it('can create a single group', () => {
       bundle = createBundle([fsLocation('React')]);
       const {groups} = bundle.getUnbundle();
-      expect(groups).toEqual(new Map([
-        [idFor('React'), new Set(['ReactFoo', 'invariant', 'ReactBar', 'cx'].map(idFor))],
-      ]));
+      expect(groups).toEqual(
+        new Map([
+          [
+            idFor('React'),
+            new Set(['ReactFoo', 'invariant', 'ReactBar', 'cx'].map(idFor)),
+          ],
+        ]),
+      );
     });
 
     it('can create two groups', () => {
       bundle = createBundle([fsLocation('ReactFoo'), fsLocation('ReactBar')]);
       const {groups} = bundle.getUnbundle();
-      expect(groups).toEqual(new Map([
-        [idFor('ReactFoo'), new Set([idFor('invariant')])],
-        [idFor('ReactBar'), new Set([idFor('cx')])],
-      ]));
+      expect(groups).toEqual(
+        new Map([
+          [idFor('ReactFoo'), new Set([idFor('invariant')])],
+          [idFor('ReactBar'), new Set([idFor('cx')])],
+        ]),
+      );
     });
 
     it('can handle circular dependencies', () => {
       bundle = createBundle([fsLocation('OtherFramework')]);
       const {groups} = bundle.getUnbundle();
-      expect(groups).toEqual(new Map([[
-        idFor('OtherFramework'),
-        new Set(['OtherFrameworkFoo', 'invariant', 'OtherFrameworkBar', 'crc32'].map(idFor)),
-      ]]));
+      expect(groups).toEqual(
+        new Map([
+          [
+            idFor('OtherFramework'),
+            new Set(
+              [
+                'OtherFrameworkFoo',
+                'invariant',
+                'OtherFrameworkBar',
+                'crc32',
+              ].map(idFor),
+            ),
+          ],
+        ]),
+      );
     });
 
     it('omits modules that are contained by more than one group', () => {
-      bundle = createBundle([fsLocation('React'), fsLocation('OtherFramework')]);
-      const {groups} = bundle.getUnbundle();
-      expect(groups).toEqual(new Map([
-        [idFor('React'),
-          new Set(['ReactFoo', 'ReactBar', 'cx'].map(idFor))],
-        [idFor('OtherFramework'),
-          new Set(['OtherFrameworkFoo', 'OtherFrameworkBar', 'crc32'].map(idFor))],
-      ]));
+      bundle = createBundle([
+        fsLocation('React'),
+        fsLocation('OtherFramework'),
+      ]);
+      expect(() => {
+        const {groups} = bundle.getUnbundle(); //eslint-disable-line no-unused-vars
+      }).toThrow(
+        new Error(
+          `Module ${fsLocation('invariant')} belongs to groups ${fsLocation('React')}` +
+            `, and ${fsLocation('OtherFramework')}. Ensure that each module is only part of one group.`,
+        ),
+      );
     });
 
     it('ignores missing dependencies', () => {
       bundle = createBundle([fsLocation('Product1')]);
       const {groups} = bundle.getUnbundle();
-      expect(groups).toEqual(new Map([[
-        idFor('Product1'),
-        new Set(['React', 'ReactFoo', 'invariant', 'ReactBar', 'cx'].map(idFor))
-      ]]));
+      expect(groups).toEqual(
+        new Map([
+          [
+            idFor('Product1'),
+            new Set(
+              ['React', 'ReactFoo', 'invariant', 'ReactBar', 'cx'].map(idFor),
+            ),
+          ],
+        ]),
+      );
     });
 
     it('throws for group roots that do not exist', () => {
       bundle = createBundle([fsLocation('DoesNotExist')]);
       expect(() => {
         const {groups} = bundle.getUnbundle(); //eslint-disable-line no-unused-vars
-      }).toThrow(new Error(`Group root ${fsLocation('DoesNotExist')} is not part of the bundle`));
+      }).toThrow(
+        new Error(
+          `Group root ${fsLocation('DoesNotExist')} is not part of the bundle`,
+        ),
+      );
     });
 
     function idFor(name) {
@@ -398,7 +455,17 @@ function resolverFor(code, map) {
   };
 }
 
-function addModule({bundle, code, sourceCode, sourcePath, map, virtual, polyfill, meta, id = ''}) {
+function addModule({
+  bundle,
+  code,
+  sourceCode,
+  sourcePath,
+  map,
+  virtual,
+  polyfill,
+  meta,
+  id = '',
+}) {
   return bundle.addModule(
     resolverFor(code, map),
     null,

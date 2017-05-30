@@ -228,8 +228,21 @@ RCT_EXPORT_MODULE()
   NSURL *URL = [RCTConvert NSURL:query[@"url"]]; // this is marked as nullable in JS, but should not be null
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
   request.HTTPMethod = [RCTConvert NSString:RCTNilIfNull(query[@"method"])].uppercaseString ?: @"GET";
-  request.allHTTPHeaderFields = [self stripNullsInRequestHeaders:[RCTConvert NSDictionary:query[@"headers"]]];
+
+  // Load and set the cookie header.
+  NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:URL];
+  request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+
+  // Set supplied headers.
+  NSDictionary *headers = [RCTConvert NSDictionary:query[@"headers"]];
+  [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
+    if (value) {
+      [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
+    }
+  }];
+
   request.timeoutInterval = [RCTConvert NSTimeInterval:query[@"timeout"]];
+  request.HTTPShouldHandleCookies = [RCTConvert BOOL:query[@"withCredentials"]];
   NSDictionary<NSString *, id> *data = [RCTConvert NSDictionary:RCTNilIfNull(query[@"data"])];
   NSString *trackingName = data[@"trackingName"];
   if (trackingName) {
@@ -431,11 +444,11 @@ RCT_EXPORT_MODULE()
      responseSender:(RCTResponseSenderBlock)responseSender
 {
   RCTAssertThread(_methodQueue, @"sendRequest: must be called on method queue");
-
+  __weak __typeof(self) weakSelf = self;
   __block RCTNetworkTask *task;
   RCTURLRequestProgressBlock uploadProgressBlock = ^(int64_t progress, int64_t total) {
     NSArray *responseJSON = @[task.requestID, @((double)progress), @((double)total)];
-    [self sendEventWithName:@"didSendNetworkData" body:responseJSON];
+    [weakSelf sendEventWithName:@"didSendNetworkData" body:responseJSON];
   };
 
   RCTURLRequestResponseBlock responseBlock = ^(NSURLResponse *response) {
@@ -451,7 +464,7 @@ RCT_EXPORT_MODULE()
     }
     id responseURL = response.URL ? response.URL.absoluteString : [NSNull null];
     NSArray<id> *responseJSON = @[task.requestID, @(status), headers, responseURL];
-    [self sendEventWithName:@"didReceiveNetworkResponse" body:responseJSON];
+    [weakSelf sendEventWithName:@"didReceiveNetworkResponse" body:responseJSON];
   };
 
   // XHR does not allow you to peek at xhr.response before the response is
@@ -484,32 +497,35 @@ RCT_EXPORT_MODULE()
                                       @(progress + initialCarryLength - incrementalDataCarry.length),
                                       @(total)];
 
-        [self sendEventWithName:@"didReceiveNetworkIncrementalData" body:responseJSON];
+        [weakSelf sendEventWithName:@"didReceiveNetworkIncrementalData" body:responseJSON];
       };
     } else {
       downloadProgressBlock = ^(int64_t progress, int64_t total) {
         NSArray<id> *responseJSON = @[task.requestID, @(progress), @(total)];
-        [self sendEventWithName:@"didReceiveNetworkDataProgress" body:responseJSON];
+        [weakSelf sendEventWithName:@"didReceiveNetworkDataProgress" body:responseJSON];
       };
     }
   }
 
   RCTURLRequestCompletionBlock completionBlock =
   ^(NSURLResponse *response, NSData *data, NSError *error) {
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+
     // Unless we were sending incremental (text) chunks to JS, all along, now
     // is the time to send the request body to JS.
     if (!(incrementalUpdates && [responseType isEqualToString:@"text"])) {
-      [self sendData:data
-        responseType:responseType
-             forTask:task];
+      [strongSelf sendData:data responseType:responseType forTask:task];
     }
     NSArray *responseJSON = @[task.requestID,
                               RCTNullIfNil(error.localizedDescription),
                               error.code == kCFURLErrorTimedOut ? @YES : @NO
                               ];
 
-    [self sendEventWithName:@"didCompleteNetworkResponse" body:responseJSON];
-    [self->_tasksByRequestID removeObjectForKey:task.requestID];
+    [strongSelf sendEventWithName:@"didCompleteNetworkResponse" body:responseJSON];
+    [strongSelf->_tasksByRequestID removeObjectForKey:task.requestID];
   };
 
   task = [self networkTaskWithRequest:request completionBlock:completionBlock];

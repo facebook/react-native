@@ -2,14 +2,12 @@
 
 #pragma once
 
-#include <folly/Optional.h>
-
 #include <memory>
 #include <string>
 
+#include <cxxreact/ModuleRegistry.h>
+#include <folly/Optional.h>
 #include <jschelpers/Value.h>
-
-#include "ModuleRegistry.h"
 
 namespace facebook {
 namespace react {

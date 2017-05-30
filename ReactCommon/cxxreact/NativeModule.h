@@ -5,9 +5,8 @@
 #include <string>
 #include <vector>
 
+#include <cxxreact/Executor.h>
 #include <folly/dynamic.h>
-
-#include "ExecutorToken.h"
 
 namespace facebook {
 namespace react {
@@ -28,11 +27,10 @@ class NativeModule {
   virtual std::string getName() = 0;
   virtual std::vector<MethodDescriptor> getMethods() = 0;
   virtual folly::dynamic getConstants() = 0;
-  virtual bool supportsWebWorkers() = 0;
   // TODO mhorowitz: do we need initialize()/onCatalystInstanceDestroy() in C++
   // or only Java?
-  virtual void invoke(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) = 0;
-  virtual MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& args) = 0;
+  virtual void invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) = 0;
+  virtual MethodCallResult callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic&& args) = 0;
 };
 
 }

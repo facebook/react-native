@@ -8,7 +8,7 @@ Both iOS and Android allow you to display formatted text by annotating ranges of
 import React, { Component } from 'react';
 import { AppRegistry, Text } from 'react-native';
 
-class BoldAndBeautiful extends Component {
+export default class BoldAndBeautiful extends Component {
   render() {
     return (
       <Text style={{fontWeight: 'bold'}}>
@@ -21,6 +21,7 @@ class BoldAndBeautiful extends Component {
   }
 }
 
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('BoldAndBeautiful', () => BoldAndBeautiful);
 ```
 
@@ -40,7 +41,7 @@ On iOS, you can nest views within your Text component. Here's an example:
 import React, { Component } from 'react';
 import { AppRegistry, Text, View } from 'react-native';
 
-class BlueIsCool extends Component {
+export default class BlueIsCool extends Component {
   render() {
     return (
       <Text>
@@ -52,6 +53,7 @@ class BlueIsCool extends Component {
   }
 }
 
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('BlueIsCool', () => BlueIsCool);
 ```
 
@@ -83,7 +85,7 @@ The `<Text>` element is special relative to layout: everything inside is no long
 
 ## Limited Style Inheritance
 
-On the web, the usual way to set a font family and size for the entire document is to write:
+On the web, the usual way to set a font family and size for the entire document is to take advantage of inherited CSS properties like so:
 
 ```css
 /* CSS, *not* React Native */
@@ -94,7 +96,7 @@ html {
 }
 ```
 
-When the browser is trying to render a text node, it's going to go all the way up to the root element of the tree and find an element with a `font-size` attribute. An unexpected property of this system is that **any** node can have `font-size` attribute, including a `<div>`. This was designed for convenience, even though not really semantically correct.
+All elements in the document will inherit this font unless they or one of their parents specifies a new rule.
 
 In React Native, we are more strict about it: **you must wrap all the text nodes inside of a `<Text>` component**; you cannot have a text node directly under a `<View>`.
 

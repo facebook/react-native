@@ -24,12 +24,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.ViewGroup.LayoutParams;
+import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
+import android.webkit.WebSettings;
+import android.webkit.CookieManager;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
@@ -135,7 +138,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         if (url.startsWith("http://") || url.startsWith("https://") ||
-            url.startsWith("file://")) {
+            url.startsWith("file://") || url.equals("about:blank")) {
           return false;
         } else {
           try {
@@ -332,6 +335,15 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     ReactWebView webView = new ReactWebView(reactContext);
     webView.setWebChromeClient(new WebChromeClient() {
       @Override
+      public boolean onConsoleMessage(ConsoleMessage message) {
+        if (ReactBuildConfig.DEBUG) {
+          return super.onConsoleMessage(message);
+        }
+        // Ignore console logs in non debug builds.
+        return true;
+      }
+
+      @Override
       public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
         callback.invoke(origin, true, false);
       }
@@ -357,6 +369,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "javaScriptEnabled")
   public void setJavaScriptEnabled(WebView view, boolean enabled) {
     view.getSettings().setJavaScriptEnabled(enabled);
+  }
+
+  @ReactProp(name = "thirdPartyCookiesEnabled")
+  public void setThirdPartyCookiesEnabled(WebView view, boolean enabled) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      CookieManager.getInstance().setAcceptThirdPartyCookies(view, enabled);
+    }
   }
 
   @ReactProp(name = "scalesPageToFit")
@@ -385,6 +404,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "allowUniversalAccessFromFileURLs")
   public void setAllowUniversalAccessFromFileURLs(WebView view, boolean allow) {
     view.getSettings().setAllowUniversalAccessFromFileURLs(allow);
+  }
+  
+  @ReactProp(name = "saveFormDataDisabled")
+  public void setSaveFormDataDisabled(WebView view, boolean disable) {
+    view.getSettings().setSaveFormData(!disable);
   }
 
   @ReactProp(name = "injectedJavaScript")
@@ -463,6 +487,19 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       view.setPictureListener(getPictureListener());
     } else {
       view.setPictureListener(null);
+    }
+  }
+
+  @ReactProp(name = "mixedContentMode")
+  public void setMixedContentMode(WebView view, @Nullable String mixedContentMode) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (mixedContentMode == null || "never".equals(mixedContentMode)) {
+        view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
+      } else if ("always".equals(mixedContentMode)) {
+        view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+      } else if ("compatibility".equals(mixedContentMode)) {
+        view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+      } 
     }
   }
 

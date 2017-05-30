@@ -91,7 +91,7 @@ class B64Builder {
     return this.buffer.toString('ascii', 0, this.pos);
   }
 
-  _writeByte(byte) {
+  _writeByte(byte: number) {
     if (this.pos === this.buffer.length) {
       this._realloc();
     }

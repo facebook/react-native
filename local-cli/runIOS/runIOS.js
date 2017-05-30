@@ -47,7 +47,7 @@ function runIOS(argv, config, args) {
   } else if (args.udid) {
     return runOnDeviceByUdid(args, scheme, xcodeProject, devices);
   } else {
-    return runOnSimulator(xcodeProject, args, inferredSchemeName, scheme);
+    return runOnSimulator(xcodeProject, args, scheme);
   }
 }
 
@@ -66,7 +66,7 @@ function runOnDeviceByUdid(args, scheme, xcodeProject, devices) {
   }
 }
 
-function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
+function runOnSimulator(xcodeProject, args, scheme){
   return new Promise((resolve) => {
     try {
       var simulators = JSON.parse(
@@ -94,7 +94,7 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
   .then((udid) => buildProject(xcodeProject, udid, scheme, args.configuration, args.packager))
   .then((appName) => {
     if (!appName) {
-      appName = inferredSchemeName;
+      appName = scheme;
     }
     let appPath = getBuildPath(args.configuration, appName);
     console.log(`Installing ${appPath}`);
@@ -157,7 +157,7 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launc
     });
     buildProcess.on('close', function(code) {
       //FULL_PRODUCT_NAME is the actual file name of the app, which actually comes from the Product Name in the build config, which does not necessary match a scheme name,  example output line: export FULL_PRODUCT_NAME="Super App Dev.app"
-      let productNameMatch = /export FULL_PRODUCT_NAME="?(.+).app/.exec(buildOutput);
+      let productNameMatch = /export FULL_PRODUCT_NAME="?(.+).app"?$/m.exec(buildOutput);
       if (productNameMatch && productNameMatch.length && productNameMatch.length > 1) {
         return resolve(productNameMatch[1]);//0 is the full match, 1 is the app name
       }
@@ -222,7 +222,7 @@ module.exports = {
   },
   {
     desc: "Run on a connected device, e.g. Max's iPhone",
-    cmd: "react-native run-ios --device 'Max's iPhone'",
+    cmd: 'react-native run-ios --device "Max\'s iPhone"',
   },
   ],
   options: [{

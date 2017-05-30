@@ -4,18 +4,20 @@
 
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <unordered_map>
 
-#include <folly/json.h>
+#include <cxxreact/Executor.h>
+#include <cxxreact/JSCNativeModules.h>
 #include <folly/Optional.h>
-
-#include <jschelpers/JavaScriptCore.h>
+#include <folly/json.h>
 #include <jschelpers/JSCHelpers.h>
+#include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Value.h>
 
-#include "Executor.h"
-#include "ExecutorToken.h"
-#include "JSCNativeModules.h"
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
 
 namespace facebook {
 namespace react {
@@ -24,26 +26,14 @@ class MessageQueueThread;
 
 class RN_EXPORT JSCExecutorFactory : public JSExecutorFactory {
 public:
-  JSCExecutorFactory(const std::string& cacheDir, const folly::dynamic& jscConfig) :
-  m_cacheDir(cacheDir),
-  m_jscConfig(jscConfig) {}
-  virtual std::unique_ptr<JSExecutor> createJSExecutor(
+  JSCExecutorFactory(const folly::dynamic& jscConfig) :
+    m_jscConfig(jscConfig) {}
+  std::unique_ptr<JSExecutor> createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> jsQueue) override;
 private:
   std::string m_cacheDir;
   folly::dynamic m_jscConfig;
-};
-
-class JSCExecutor;
-class WorkerRegistration : public noncopyable {
-public:
-  explicit WorkerRegistration(JSCExecutor* executor_, Object jsObj_) :
-      executor(executor_),
-      jsObj(std::move(jsObj_)) {}
-
-  JSCExecutor *executor;
-  Object jsObj;
 };
 
 template <typename T>
@@ -56,20 +46,12 @@ public:
    */
   explicit JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
                        std::shared_ptr<MessageQueueThread> messageQueueThread,
-                       const std::string& cacheDir,
                        const folly::dynamic& jscConfig) throw(JSException);
   ~JSCExecutor() override;
 
   virtual void loadApplicationScript(
     std::unique_ptr<const JSBigString> script,
     std::string sourceURL) override;
-
-#ifdef WITH_FBJSCEXTENSIONS
-  virtual void loadApplicationScript(
-    std::string bundlePath,
-    std::string sourceURL,
-    int flags) override;
-#endif
 
   virtual void setJSModulesUnbundle(
     std::unique_ptr<JSModulesUnbundle> unbundle) override;
@@ -112,32 +94,17 @@ public:
 private:
   JSGlobalContextRef m_context;
   std::shared_ptr<ExecutorDelegate> m_delegate;
-  int m_workerId = 0; // if this is a worker executor, this is non-zero
-  JSCExecutor *m_owner = nullptr; // if this is a worker executor, this is non-null
   std::shared_ptr<bool> m_isDestroyed = std::shared_ptr<bool>(new bool(false));
-  std::unordered_map<int, WorkerRegistration> m_ownedWorkers;
-  std::string m_deviceCacheDir;
   std::shared_ptr<MessageQueueThread> m_messageQueueThread;
   std::unique_ptr<JSModulesUnbundle> m_unbundle;
   JSCNativeModules m_nativeModules;
   folly::dynamic m_jscConfig;
+  std::once_flag m_bindFlag;
 
   folly::Optional<Object> m_invokeCallbackAndReturnFlushedQueueJS;
   folly::Optional<Object> m_callFunctionReturnFlushedQueueJS;
   folly::Optional<Object> m_flushedQueueJS;
   folly::Optional<Object> m_callFunctionReturnResultAndFlushedQueueJS;
-
-  /**
-   * WebWorker constructor. Must be invoked from thread this Executor will run on.
-   */
-  JSCExecutor(
-      std::shared_ptr<ExecutorDelegate> delegate,
-      std::shared_ptr<MessageQueueThread> messageQueueThread,
-      int workerId,
-      JSCExecutor *owner,
-      std::string scriptURL,
-      std::unordered_map<std::string, std::string> globalObjAsJSON,
-      const folly::dynamic& jscConfig);
 
   void initOnJSVMThread() throw(JSException);
   // This method is experimental, and may be modified or removed.
@@ -150,30 +117,12 @@ private:
   void flushQueueImmediate(Value&&);
   void loadModule(uint32_t moduleId);
 
-  int addWebWorker(std::string scriptURL, JSValueRef workerRef, JSValueRef globalObjRef);
-  void postMessageToOwnedWebWorker(int worker, JSValueRef message);
-  void postMessageToOwner(JSValueRef result);
-  void receiveMessageFromOwnedWebWorker(int workerId, const std::string& message);
-  void receiveMessageFromOwner(const std::string &msgString);
-  void terminateOwnedWebWorker(int worker);
-  Object createMessageObject(const std::string& msgData);
+  String adoptString(std::unique_ptr<const JSBigString>);
 
   template<JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
   void installNativeHook(const char* name);
   JSValueRef getNativeModule(JSObjectRef object, JSStringRef propertyName);
 
-  JSValueRef nativeStartWorker(
-      size_t argumentCount,
-      const JSValueRef arguments[]);
-  JSValueRef nativePostMessageToWorker(
-      size_t argumentCount,
-      const JSValueRef arguments[]);
-  JSValueRef nativeTerminateWorker(
-      size_t argumentCount,
-      const JSValueRef arguments[]);
-  JSValueRef nativePostMessage(
-      size_t argumentCount,
-      const JSValueRef arguments[]);
   JSValueRef nativeRequire(
       size_t argumentCount,
       const JSValueRef arguments[]);

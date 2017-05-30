@@ -4,15 +4,16 @@ title: Communication between native and React Native
 layout: docs
 category: Guides (iOS)
 permalink: docs/communication-ios.html
-next: native-modules-android
-previous: running-on-simulator-ios
+banner: ejected
+next: building-for-apple-tv
+previous: linking-libraries-ios
 ---
 
 In [Integrating with Existing Apps guide](docs/integration-with-existing-apps.html) and [Native UI Components guide](docs/native-components-ios.html) we learn how to embed React Native in a native component and vice versa. When we mix native and React Native components, we'll eventually find a need to communicate between these two worlds. Some ways to achieve that have been already mentioned in other guides. This article summarizes available techniques.
 
 ## Introduction
 
-React Native is inspired by React, so the basic idea of the information flow is similar. The flow in React is one-directional. We maintain a hierarchy of components, in which each component depends only on its parent and own internal state. We do this with properties: data is passed from a parent to its children in a top-down manner. If we have an ancestor component that rely on the state of its descendant, the recommended solution would be to pass down a callback that would be used by the descendant to update the ancestor.
+React Native is inspired by React, so the basic idea of the information flow is similar. The flow in React is one-directional. We maintain a hierarchy of components, in which each component depends only on its parent and its own internal state. We do this with properties: data is passed from a parent to its children in a top-down manner. If an ancestor component relies on the state of its descendant, one should pass down a callback to be used by the descendant to update the ancestor.
 
 The same concept applies to React Native. As long as we are building our application purely within the framework, we can drive our app with properties and callbacks. But, when we mix React Native and native components, we need some special, cross-language mechanisms that would allow us to pass information between them.
 
@@ -103,8 +104,8 @@ Events are described in detail in [this article](docs/native-components-ios.html
 Events are powerful, because they allow us to change React Native components without needing a reference to them. However, there are some pitfalls that you can fall into while using them:
 
 * As events can be sent from anywhere, they can introduce spaghetti-style dependencies into your project.
-* Events share namespace, which means that you may encounter some name collisions. Collisions will not be detected statically, what makes them hard to debug.
-* If you use several instances of the same React Native component and you want to distinguish them from the perspective of your event, you'll likely need to introduce some kind of identifiers and pass them along with events (you can use the native view's `reactTag` as an identifier).
+* Events share namespace, which means that you may encounter some name collisions. Collisions will not be detected statically, which makes them hard to debug.
+* If you use several instances of the same React Native component and you want to distinguish them from the perspective of your event, you'll likely need to introduce identifiers and pass them along with events (you can use the native view's `reactTag` as an identifier).
 
 The common pattern we use when embedding native in React Native is to make the native component's RCTViewManager a delegate for the views, sending events back to JavaScript via the bridge. This keeps related event calls in one place.
 
@@ -112,18 +113,18 @@ The common pattern we use when embedding native in React Native is to make the n
 
 Native modules are Objective-C classes that are available in JS. Typically one instance of each module is created per JS bridge. They can export arbitrary functions and constants to React Native. They have been covered in detail in [this article](docs/native-modules-ios.html#content).
 
-The fact that native modules are singletons limits the mechanism in context of embedding. Let's say we have a React Native component embedded in a native view and we want to update the native, parent view. Using the native module mechanism, we would export a function that not only takes expected arguments, but also an identifier of the parent native view. The identifier would be used to retrieve a reference to the parent view to update. That said, we would need to keep a mapping from identifiers to native views in the module.
+The fact that native modules are singletons limits the mechanism in the context of embedding. Let's say we have a React Native component embedded in a native view and we want to update the native, parent view. Using the native module mechanism, we would export a function that not only takes expected arguments, but also an identifier of the parent native view. The identifier would be used to retrieve a reference to the parent view to update. That said, we would need to keep a mapping from identifiers to native views in the module.
 
 Although this solution is complex, it is used in `RCTUIManager`, which is an internal React Native class that manages all React Native views.
 
-Native modules can also be used to expose existing native libraries to JS. [Geolocation library](https://github.com/facebook/react-native/tree/master/Libraries/Geolocation) is a living example of the idea.
+Native modules can also be used to expose existing native libraries to JS. The [Geolocation library](https://github.com/facebook/react-native/tree/master/Libraries/Geolocation) is a living example of the idea.
 
 > ***Warning***:
 > All native modules share the same namespace. Watch out for name collisions when creating new ones.
 
 ## Layout computation flow
 
-When integrating native and React Native, we also need a way to consolidate two different layout systems. This section covers common layouting problems and provides a brief description of mechanisms that are intended to address them.
+When integrating native and React Native, we also need a way to consolidate two different layout systems. This section covers common layout problems and provides a brief description of mechanisms to address them.
 
 ### Layout of a native component embedded in React Native
 
@@ -159,7 +160,7 @@ It's totally fine to update root view's size dynamically by re-setting its frame
 In some cases we'd like to render content of initially unknown size. Let's say the size will be defined dynamically in JS. We have two solutions to this problem.
 
 
-1. You can wrap your React Native view in `ScrollView` component. This guarantees that your content will always be available and it won't overlap with native views.
+1. You can wrap your React Native view in a `ScrollView` component. This guarantees that your content will always be available and it won't overlap with native views.
 2. React Native allows you to determine, in JS, the size of the RN app and provide it to the owner of the hosting `RCTRootView`. The owner is then responsible for re-laying out the subviews and keeping the UI consistent. We achieve this with `RCTRootView`'s flexibility modes.
 
 
@@ -203,7 +204,7 @@ Let's look at an example.
 - (void)rootViewDidChangeIntrinsicSize:(RCTRootView *)rootView
 {
   CGRect newFrame = rootView.frame;
-  newFrame.size = rootView.intrinsicSize;
+  newFrame.size = rootView.intrinsicContentSize;
 
   rootView.frame = newFrame;
 }
@@ -211,7 +212,7 @@ Let's look at an example.
 
 In the example we have a `FlexibleSizeExampleView` view that holds a root view. We create the root view, initialize it and set the delegate. The delegate will handle size updates. Then, we set the root view's size flexibility to `RCTRootViewSizeFlexibilityHeight`, which means that `rootViewDidChangeIntrinsicSize:` method will be called every time the React Native content changes its height. Finally, we set the root view's width and position. Note that we set there height as well, but it has no effect as we made the height RN-dependent.
 
-You can checkout full source code of the example [here](https://phabricator.fb.com/diffusion/FBOBJC/browse/master/Libraries/FBReactKit/js/react-native-github/Examples/UIExplorer/UIExplorer/NativeExampleViews/FlexibleSizeExampleView.m).
+You can checkout full source code of the exmaple [here](https://github.com/facebook/react-native/blob/master/RNTester/RNTester/NativeExampleViews/FlexibleSizeExampleView.m).
 
 It's fine to change root view's size flexibility mode dynamically. Changing flexibility mode of a root view will schedule a layout recalculation and the delegate `rootViewDidChangeIntrinsicSize:` method will be called once the content size is known.
 

@@ -19,9 +19,11 @@ const crypto = require('crypto');
 const debug = require('debug')('RNP:Bundle');
 const invariant = require('fbjs/lib/invariant');
 
+const {createRamBundleGroups} = require('./util');
 const {fromRawMappings} = require('./source-map');
+const {isMappingsMap} = require('../lib/SourceMap');
 
-import type {SourceMap, CombinedSourceMap, MixedSourceMap} from '../lib/SourceMap';
+import type {IndexMap, MappingsMap, SourceMap} from '../lib/SourceMap';
 import type {GetSourceOptions, FinalizeOptions} from './BundleBase';
 
 export type Unbundle = {
@@ -41,13 +43,13 @@ class Bundle extends BundleBase {
   _minify: boolean | void;
   _numRequireCalls: number;
   _ramBundle: Unbundle | null;
-  _ramGroups: Array<string> | void;
+  _ramGroups: ?Array<string>;
   _sourceMap: string | null;
   _sourceMapFormat: SourceMapFormat;
-  _sourceMapUrl: string | void;
+  _sourceMapUrl: ?string;
 
   constructor({sourceMapUrl, dev, minify, ramGroups}: {
-    sourceMapUrl?: string,
+    sourceMapUrl: ?string,
     dev?: boolean,
     minify?: boolean,
     ramGroups?: Array<string>,
@@ -116,9 +118,9 @@ class Bundle extends BundleBase {
 
   finalize(options: FinalizeOptions) {
     options = options || {};
-    if (options.runMainModule) {
+    if (options.runModule) {
       /* $FlowFixMe: this is unsound, as nothing enforces runBeforeMainModule
-       * to be available if `runMainModule` is true. Refactor. */
+       * to be available if `runModule` is true. Refactor. */
       options.runBeforeMainModule.forEach(this._addRequireCall, this);
       /* $FlowFixMe: this is unsound, as nothing enforces the module ID to have
        * been set beforehand. */
@@ -143,7 +145,7 @@ class Bundle extends BundleBase {
     this._numRequireCalls += 1;
   }
 
-  _getInlineSourceMap(dev) {
+  _getInlineSourceMap(dev: ?boolean) {
     if (this._inlineSourceMap == null) {
       const sourceMap = this.getSourceMapString({excludeSource: true, dev});
       /*eslint-env node*/
@@ -184,7 +186,7 @@ class Bundle extends BundleBase {
         lazyModules,
         get groups() {
           if (!groups) {
-            groups = createGroups(ramGroups || [], lazyModules);
+            groups = createRamBundleGroups(ramGroups || [], lazyModules, subtree);
           }
           return groups;
         },
@@ -206,7 +208,7 @@ class Bundle extends BundleBase {
    * that makes use of of the `sections` field to combine sourcemaps by adding
    * an offset. This is supported only by Chrome for now.
    */
-  _getCombinedSourceMaps(options): CombinedSourceMap {
+  _getCombinedSourceMaps(options: {excludeSource?: boolean}): IndexMap {
     const result = {
       version: 3,
       file: this._getSourceMapFile(),
@@ -215,22 +217,22 @@ class Bundle extends BundleBase {
 
     let line = 0;
     this.getModules().forEach(module => {
-      let map = module.map == null || module.virtual
+      invariant(
+        !Array.isArray(module.map),
+        `Unexpected raw mappings for ${module.sourcePath}`,
+      );
+      let map: SourceMap = module.map == null || module.virtual
         ? generateSourceMapForVirtualModule(module)
         : module.map;
 
-      invariant(
-        !Array.isArray(map),
-        `Unexpected raw mappings for ${module.sourcePath}`,
-      );
 
-      if (options.excludeSource && 'sourcesContent' in map) {
+      if (options.excludeSource && isMappingsMap(map)) {
         map = {...map, sourcesContent: []};
       }
 
       result.sections.push({
-        offset: { line: line, column: 0 },
-        map: (map: MixedSourceMap),
+        offset: {line, column: 0},
+        map,
       });
       line += module.code.split('\n').length;
     });
@@ -238,7 +240,7 @@ class Bundle extends BundleBase {
     return result;
   }
 
-  getSourceMap(options: {excludeSource?: boolean}): MixedSourceMap {
+  getSourceMap(options: {excludeSource?: boolean}): SourceMap {
     this.assertFinalized();
 
     return this._sourceMapFormat === 'indexed'
@@ -309,12 +311,12 @@ class Bundle extends BundleBase {
     ].join('\n');
   }
 
-  setRamGroups(ramGroups: Array<string>) {
+  setRamGroups(ramGroups: ?Array<string>) {
     this._ramGroups = ramGroups;
   }
 }
 
-function generateSourceMapForVirtualModule(module): SourceMap {
+function generateSourceMapForVirtualModule(module): MappingsMap {
   // All lines map 1-to-1
   let mappings = 'AAAA;';
 
@@ -324,11 +326,11 @@ function generateSourceMapForVirtualModule(module): SourceMap {
 
   return {
     version: 3,
-    sources: [ module.sourcePath ],
+    sources: [module.sourcePath],
     names: [],
-    mappings: mappings,
+    mappings,
     file: module.sourcePath,
-    sourcesContent: [ module.sourceCode ],
+    sourcesContent: [module.sourceCode],
   };
 }
 
@@ -343,93 +345,24 @@ function partition(array, predicate) {
   return [included, excluded];
 }
 
-function * filter(iterator, predicate) {
-  for (const value of iterator) {
-    if (predicate(value)) {
-      yield value;
-    }
-  }
-}
-
-function * subtree(moduleTransport: ModuleTransport, moduleTransportsByPath, seen = new Set()) {
+function * subtree(
+  moduleTransport: ModuleTransport,
+  moduleTransportsByPath: Map<string, ModuleTransport>,
+  seen = new Set(),
+) {
   seen.add(moduleTransport.id);
-  /* $FlowFixMe: there may not be a `meta` object */
-  for (const [, {path}] of moduleTransport.meta.dependencyPairs || []) {
+  const {meta} = moduleTransport;
+  invariant(
+    meta != null,
+    'Unexpected module transport without meta information: ' + moduleTransport.sourcePath,
+  );
+  for (const [, {path}] of meta.dependencyPairs || []) {
     const dependency = moduleTransportsByPath.get(path);
     if (dependency && !seen.has(dependency.id)) {
       yield dependency.id;
       yield * subtree(dependency, moduleTransportsByPath, seen);
     }
   }
-}
-
-class ArrayMap extends Map {
-  get(key) {
-    let array = super.get(key);
-    if (!array) {
-      array = [];
-      this.set(key, array);
-    }
-    return array;
-  }
-}
-
-function createGroups(ramGroups: Array<string>, lazyModules) {
-  // build two maps that allow to lookup module data
-  // by path or (numeric) module id;
-  const byPath = new Map();
-  const byId = new Map();
-  lazyModules.forEach(m => {
-    byPath.set(m.sourcePath, m);
-    byId.set(m.id, m.sourcePath);
-  });
-
-  // build a map of group root IDs to an array of module IDs in the group
-  const result: Map<number, Set<number>> = new Map(
-    ramGroups
-      .map(modulePath => {
-        const root = byPath.get(modulePath);
-        if (!root) {
-          throw Error(`Group root ${modulePath} is not part of the bundle`);
-        }
-        return [
-          root.id,
-          // `subtree` yields the IDs of all transitive dependencies of a module
-          /* $FlowFixMe: assumes the module is always in the Map */
-          new Set(subtree(byPath.get(root.sourcePath), byPath)),
-        ];
-      })
-  );
-
-  if (ramGroups.length > 1) {
-    // build a map of all grouped module IDs to an array of group root IDs
-    const all = new ArrayMap();
-    for (const [parent, children] of result) {
-      for (const module of children) {
-        all.get(module).push(parent);
-      }
-    }
-
-    // find all module IDs that are part of more than one group
-    const doubles = filter(all, ([, parents]) => parents.length > 1);
-    for (const [moduleId, parents] of doubles) {
-      // remove them from their groups
-      /* $FlowFixMe: this assumes the element exists. */
-      parents.forEach(p => result.get(p).delete(moduleId));
-
-      // print a warning for each removed module
-      const parentNames = parents.map(byId.get, byId);
-      const lastName = parentNames.pop();
-      console.warn(
-        /* $FlowFixMe: this assumes the element exists. */
-        `Module ${byId.get(moduleId)} belongs to groups ${
-          parentNames.join(', ')}, and ${lastName
-          }. Removing it from all groups.`
-      );
-    }
-  }
-
-  return result;
 }
 
 const isRawMappings = Array.isArray;

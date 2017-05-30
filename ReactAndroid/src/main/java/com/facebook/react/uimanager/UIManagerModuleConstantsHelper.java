@@ -12,6 +12,7 @@ package com.facebook.react.uimanager;
 import java.util.List;
 import java.util.Map;
 
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;

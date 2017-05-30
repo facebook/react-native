@@ -1,19 +1,32 @@
-Thanks for submitting a pull request! Please provide enough information so that others can review your pull request:
+Thanks for submitting a PR! Please read these instructions carefully:
 
-> **Unless you are a React Native release maintainer and cherry-picking an *existing* commit into a current release, ensure your pull request is targeting the `master` React Native branch.**
+- [ ] Explain the **motivation** for making this change.
+- [ ] Provide a **test plan** demonstrating that the code is solid.
+- [ ] Match the **code formatting** of the rest of the codebase.
+- [ ] Target the `master` branch, NOT a "stable" branch.
 
-Explain the **motivation** for making this change. What existing problem does the pull request solve?
+## Motivation (required)
 
-Prefer **small pull requests**. These are much easier to review and more likely to get merged. Make sure the PR does only one thing, otherwise please split it.
+What existing problem does the pull request solve?
 
-**Test plan (required)**
+## Test Plan (required)
 
-Demonstrate the code is solid. Example: The exact commands you ran and their output, screenshots / videos if the pull request changes UI.
+A good test plan has the exact commands you ran and their output, provides screenshots or videos if the pull request changes UI or updates the website. See [What is a Test Plan?][1] to learn more.  
 
-Make sure tests pass on both Travis and Circle CI.
+If you have added code that should be tested, add tests.
 
-**Code formatting**
+## Next Steps
 
-Look around. Match the style of the rest of the codebase. See also the simple [style guide](https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md#style-guide).
+Sign the [CLA][2], if you haven't already.
 
-For more info, see the ["Pull Requests" section of our "Contributing" guidelines](https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md#pull-requests).
+Small pull requests are much easier to review and more likely to get merged. Make sure the PR does only one thing, otherwise please split it.
+
+Make sure all **tests pass** on both [Travis][3] and [Circle CI][4]. PRs that break tests are unlikely to be merged.
+
+For more info, see the ["Pull Requests"][5] section of our "Contributing" guidelines.
+
+[1]: https://medium.com/@martinkonicek/what-is-a-test-plan-8bfc840ec171#.y9lcuqqi9
+[2]: https://code.facebook.com/cla
+[3]: https://travis-ci.org/facebook/react-native
+[4]: http://circleci.com/gh/facebook/react-native
+[5]: https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md#pull-requests

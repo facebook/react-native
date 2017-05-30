@@ -25,7 +25,9 @@ public class ViewProps {
   // !!! Keep in sync with LAYOUT_ONLY_PROPS below
   public static final String ALIGN_ITEMS = "alignItems";
   public static final String ALIGN_SELF = "alignSelf";
+  public static final String ALIGN_CONTENT = "alignContent";
   public static final String OVERFLOW = "overflow";
+  public static final String DISPLAY = "display";
   public static final String BOTTOM = "bottom";
   public static final String COLLAPSABLE = "collapsable";
   public static final String FLEX = "flex";
@@ -118,10 +120,15 @@ public class ViewProps {
             ALIGN_ITEMS,
             COLLAPSABLE,
             FLEX,
+            FLEX_BASIS,
             FLEX_DIRECTION,
+            FLEX_GROW,
+            FLEX_SHRINK,
             FLEX_WRAP,
             JUSTIFY_CONTENT,
             OVERFLOW,
+            ALIGN_CONTENT,
+            DISPLAY,
 
             /* position */
             POSITION,

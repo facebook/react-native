@@ -87,7 +87,7 @@ function getYarnVersionIfAvailable() {
   try {
     // execSync returns a Buffer -> convert to string
     if (process.platform.startsWith('win')) {
-      yarnVersion = (execSync('yarn --version').toString() || '').trim();
+      yarnVersion = (execSync('yarn --version 2> NUL').toString() || '').trim();
     } else {
       yarnVersion = (execSync('yarn --version 2>/dev/null').toString() || '').trim();
     }
@@ -167,7 +167,7 @@ if (cli) {
 }
 
 function validateProjectName(name) {
-  if (!name.match(/^[$A-Z_][0-9A-Z_$]*$/i)) {
+  if (!String(name).match(/^[$A-Z_][0-9A-Z_$]*$/i)) {
     console.error(
       '"%s" is not a valid name for a project. Please use a valid identifier ' +
         'name (alphanumeric).',

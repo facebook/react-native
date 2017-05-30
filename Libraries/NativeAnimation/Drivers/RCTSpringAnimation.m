@@ -14,7 +14,6 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 
-#import "RCTAnimationUtils.h"
 #import "RCTValueAnimatedNode.h"
 
 @interface RCTSpringAnimation ()
@@ -42,6 +41,9 @@
 
   CGFloat _lastPosition;
   CGFloat _lastVelocity;
+
+  NSInteger _iterations;
+  NSInteger _currentLoop;
 }
 
 - (instancetype)initWithId:(NSNumber *)animationId
@@ -50,6 +52,8 @@
                   callBack:(nullable RCTResponseSenderBlock)callback
 {
   if ((self = [super init])) {
+    NSNumber *iterations = [RCTConvert NSNumber:config[@"iterations"]] ?: @1;
+
     _animationId = animationId;
     _toValue = [RCTConvert CGFloat:config[@"toValue"]];
     _fromValue = valueNode.value;
@@ -64,6 +68,10 @@
 
     _lastPosition = _fromValue;
     _lastVelocity = _initialVelocity;
+
+    _animationHasFinished = iterations.integerValue == 0;
+    _iterations = iterations.integerValue;
+    _currentLoop = 1;
   }
   return self;
 }
@@ -72,19 +80,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)startAnimation
 {
-  _animationStartTime = CACurrentMediaTime();
-  _animationCurrentTime = _animationStartTime;
+  _animationStartTime = _animationCurrentTime = -1;
   _animationHasBegun = YES;
 }
 
 - (void)stopAnimation
 {
-  _animationHasFinished = YES;
-}
-
-- (void)removeAnimation
-{
-  [self stopAnimation];
   _valueNode = nil;
   if (_callback) {
     _callback(@[@{
@@ -93,11 +94,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
-- (void)stepAnimation
+- (void)stepAnimationWithTime:(NSTimeInterval)currentTime
 {
   if (!_animationHasBegun || _animationHasFinished) {
     // Animation has not begun or animation has already finished.
     return;
+  }
+
+  if (_animationStartTime == -1) {
+    _animationStartTime = _animationCurrentTime = currentTime;
   }
 
   // We are using a fixed time step and a maximum number of iterations.
@@ -107,7 +112,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Velocity is based on seconds instead of milliseconds
   CGFloat step = TIMESTEP_MSEC / 1000;
 
-  NSTimeInterval currentTime = CACurrentMediaTime();
   NSInteger numSteps = floorf((currentTime - _animationCurrentTime) / step);
   _animationCurrentTime = currentTime;
   if (numSteps == 0) {
@@ -183,7 +187,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       [self onUpdate:_toValue];
     }
 
-    [self stopAnimation];
+    if (_iterations == -1 || _currentLoop < _iterations) {
+      _lastPosition = _fromValue;
+      _lastVelocity = _initialVelocity;
+      _currentLoop++;
+      [self onUpdate:_fromValue];
+    } else {
+      _animationHasFinished = YES;
+    }
   }
 }
 

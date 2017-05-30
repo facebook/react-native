@@ -14,7 +14,7 @@ const escapeRegExp = require('lodash/escapeRegExp');
 const path = require('path');
 
 const BABEL_ENABLED_PATHS = [
-  'packager/react-packager.js',
+  'packager/index.js',
   'packager/src',
   'packager/transformer.js',
   'local-cli',

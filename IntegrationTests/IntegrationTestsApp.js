@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @providesModule IntegrationTestsApp
  */
 'use strict';
 
@@ -21,7 +22,7 @@ var {
   View,
 } = ReactNative;
 
-// Keep this list in sync with UIExplorerIntegrationTests.m
+// Keep this list in sync with RNTesterIntegrationTests.m
 var TESTS = [
   require('./IntegrationTestHarnessTest'),
   require('./TimersTest'),
@@ -32,6 +33,7 @@ var TESTS = [
   require('./ImageCachePolicyTest'),
   require('./ImageSnapshotTest'),
   require('./PromiseTest'),
+  require('./SyncMethodTest'),
   require('./WebSocketTest'),
 ];
 

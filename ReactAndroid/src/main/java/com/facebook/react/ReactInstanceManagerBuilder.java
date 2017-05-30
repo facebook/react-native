@@ -13,9 +13,9 @@ import android.app.Application;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
+import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.common.LifecycleState;
-import com.facebook.react.cxxbridge.JSBundleLoader;
-import com.facebook.react.devsupport.DevSupportManager;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
@@ -42,6 +42,8 @@ public class ReactInstanceManagerBuilder {
   protected @Nullable RedBoxHandler mRedBoxHandler;
   protected boolean mLazyNativeModulesEnabled;
   protected boolean mLazyViewManagersEnabled;
+  protected boolean mSetupReactContextInBackground;
+  protected boolean mUseSeparateUIBackgroundThread;
 
   /* package protected */ ReactInstanceManagerBuilder() {
   }
@@ -186,6 +188,18 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setSetupReactContextInBackgroundEnabled(
+    boolean setupReactContextInBackground) {
+    mSetupReactContextInBackground = setupReactContextInBackground;
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder setUseSeparateUIBackgroundThread(
+    boolean useSeparateUIBackgroundThread) {
+   mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
+   return this;
+  }
+
   /**
    * Instantiates a new {@link ReactInstanceManager}.
    * Before calling {@code build}, the following must be called:
@@ -219,7 +233,8 @@ public class ReactInstanceManagerBuilder {
       mCurrentActivity,
       mDefaultHardwareBackBtnHandler,
       (mJSBundleLoader == null && mJSBundleAssetUrl != null) ?
-        JSBundleLoader.createAssetLoader(mApplication, mJSBundleAssetUrl) : mJSBundleLoader,
+        JSBundleLoader.createAssetLoader(mApplication, mJSBundleAssetUrl, false /*Asynchronous*/) :
+        mJSBundleLoader,
       mJSMainModuleName,
       mPackages,
       mUseDeveloperSupport,
@@ -230,6 +245,8 @@ public class ReactInstanceManagerBuilder {
       mJSCConfig,
       mRedBoxHandler,
       mLazyNativeModulesEnabled,
-      mLazyViewManagersEnabled);
+      mLazyViewManagersEnabled,
+      mSetupReactContextInBackground,
+      mUseSeparateUIBackgroundThread);
   }
 }

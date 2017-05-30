@@ -8,7 +8,7 @@ next: network
 previous: using-a-scrollview
 ---
 
-The `ListView` component displays a vertically scrolling list of changing, but similarly structured, data.
+The `ListView` component displays a scrolling list of changing, but similarly structured, data.
 
 `ListView` works well for long lists of data, where the number of items might change over time. Unlike the more generic [`ScrollView`](docs/using-a-scrollview.html), the `ListView` only renders elements that are currently showing on the screen, not all the elements at once.
 
@@ -22,7 +22,7 @@ This example creates a simple `ListView` of hardcoded data. It first initializes
 import React, { Component } from 'react';
 import { AppRegistry, ListView, Text, View } from 'react-native';
 
-class ListViewBasics extends Component {
+export default class ListViewBasics extends Component {
   // Initialize the hardcoded data
   constructor(props) {
     super(props);
@@ -45,7 +45,7 @@ class ListViewBasics extends Component {
   }
 }
 
-// App registration and rendering
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('ListViewBasics', () => ListViewBasics);
 ```
 

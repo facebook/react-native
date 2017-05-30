@@ -84,11 +84,14 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   NSMutableString *str = [NSMutableString stringWithString:@""];
   for (UIView *subview in view.subviews) {
     NSString *label = subview.accessibilityLabel;
-    if (label) {
-      [str appendString:@" "];
+    if (!label) {
+      label = RCTRecursiveAccessibilityLabel(subview);
+    }
+    if (label && label.length > 0) {
+      if (str.length > 0) {
+        [str appendString:@" "];
+      }
       [str appendString:label];
-    } else {
-      [str appendString:RCTRecursiveAccessibilityLabel(subview)];
     }
   }
   return str;
@@ -98,8 +101,6 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   UIColor *_backgroundColor;
 }
-
-@synthesize reactZIndex = _reactZIndex;
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -166,13 +167,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   BOOL isPointInside = [self pointInside:point withEvent:event];
   BOOL needsHitSubview = !(_pointerEvents == RCTPointerEventsNone || _pointerEvents == RCTPointerEventsBoxOnly);
   if (needsHitSubview && (![self clipsToBounds] || isPointInside)) {
+    // Take z-index into account when calculating the touch target.
+    NSArray<UIView *> *sortedSubviews = [self reactZIndexSortedSubviews];
+
     // The default behaviour of UIKit is that if a view does not contain a point,
     // then no subviews will be returned from hit testing, even if they contain
     // the hit point. By doing hit testing directly on the subviews, we bypass
     // the strict containment policy (i.e., UIKit guarantees that every ancestor
     // of the hit view will return YES from -pointInside:withEvent:). See:
     //  - https://developer.apple.com/library/ios/qa/qa2013/qa1812.html
-    for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
+    for (UIView *subview in [sortedSubviews reverseObjectEnumerator]) {
       CGPoint convertedPoint = [subview convertPoint:point fromView:self];
       hitSubview = [subview hitTest:convertedPoint withEvent:event];
       if (hitSubview != nil) {
@@ -288,7 +292,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 - (void)react_remountAllSubviews
 {
   if (_removeClippedSubviews) {
-    for (UIView *view in self.sortedReactSubviews) {
+    for (UIView *view in self.reactSubviews) {
       if (view.superview != self) {
         [self addSubview:view];
         [view react_remountAllSubviews];
@@ -327,7 +331,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   clipView = self;
 
   // Mount / unmount views
-  for (UIView *view in self.sortedReactSubviews) {
+  for (UIView *view in self.reactSubviews) {
     if (!CGRectIsEmpty(CGRectIntersection(clipRect, view.frame))) {
 
       // View is at least partially visible, so remount it if unmounted

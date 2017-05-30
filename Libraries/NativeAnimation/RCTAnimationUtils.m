@@ -11,6 +11,19 @@
 
 #import <React/RCTLog.h>
 
+static NSUInteger _RCTFindIndexOfNearestValue(CGFloat value, NSArray<NSNumber *> *range)
+{
+  NSUInteger index;
+  NSUInteger rangeCount = range.count;
+  for (index = 1; index < rangeCount - 1; index++) {
+    NSNumber *inputValue = range[index];
+    if (inputValue.doubleValue >= value) {
+      break;
+    }
+  }
+  return index - 1;
+}
+
 /**
  * Interpolates value by remapping it linearly fromMin->fromMax to toMin->toMax
  */
@@ -47,6 +60,30 @@ CGFloat RCTInterpolateValue(CGFloat value,
   }
 
   return outputMin + (value - inputMin) * (outputMax - outputMin) / (inputMax - inputMin);
+}
+
+/**
+ * Interpolates value by mapping it from the inputRange to the outputRange.
+ */
+CGFloat RCTInterpolateValueInRange(CGFloat value,
+                                   NSArray<NSNumber *> *inputRange,
+                                   NSArray<NSNumber *> *outputRange,
+                                   NSString *extrapolateLeft,
+                                   NSString *extrapolateRight)
+{
+  NSUInteger rangeIndex = _RCTFindIndexOfNearestValue(value, inputRange);
+  CGFloat inputMin = inputRange[rangeIndex].doubleValue;
+  CGFloat inputMax = inputRange[rangeIndex + 1].doubleValue;
+  CGFloat outputMin = outputRange[rangeIndex].doubleValue;
+  CGFloat outputMax = outputRange[rangeIndex + 1].doubleValue;
+
+  return RCTInterpolateValue(value,
+                             inputMin,
+                             inputMax,
+                             outputMin,
+                             outputMax,
+                             extrapolateLeft,
+                             extrapolateRight);
 }
 
 CGFloat RCTRadiansToDegrees(CGFloat radians)

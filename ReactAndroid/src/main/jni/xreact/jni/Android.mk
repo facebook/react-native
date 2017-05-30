@@ -8,13 +8,13 @@ LOCAL_SRC_FILES := \
   CatalystInstanceImpl.cpp \
   CxxModuleWrapper.cpp \
   JavaModuleWrapper.cpp \
-  JExecutorToken.cpp \
   JMessageQueueThread.cpp \
   JSCPerfLogging.cpp \
   JSLoader.cpp \
   JSLogging.cpp \
   JniJSModulesUnbundle.cpp \
   MethodInvoker.cpp \
+  ModuleRegistryBuilder.cpp \
   NativeArray.cpp \
   NativeCommon.cpp \
   NativeMap.cpp \

@@ -15,14 +15,13 @@ const AppContainer = require('AppContainer');
 const I18nManager = require('I18nManager');
 const Platform = require('Platform');
 const React = require('React');
+const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
 const deprecatedPropType = require('deprecatedPropType');
 const requireNativeComponent = require('requireNativeComponent');
 const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
-
-const PropTypes = React.PropTypes;
 
 /**
  * The Modal component is a simple way to present content above an enclosing view.
@@ -87,6 +86,8 @@ class Modal extends React.Component {
      * - `slide` slides in from the bottom
      * - `fade` fades into view
      * - `none` appears without an animation
+     *
+     * Default is set to `none`.
      */
     animationType: PropTypes.oneOf(['none', 'slide', 'fade']),
     /**
@@ -135,7 +136,7 @@ class Modal extends React.Component {
   };
 
   static contextTypes = {
-    rootTag: React.PropTypes.number,
+    rootTag: PropTypes.number,
   };
 
   render(): ?React.Element<any> {

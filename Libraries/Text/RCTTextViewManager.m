@@ -12,18 +12,25 @@
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTFont.h>
+#import <React/RCTShadowView+Layout.h>
 #import <React/RCTShadowView.h>
 
 #import "RCTConvert+Text.h"
+#import "RCTShadowTextView.h"
 #import "RCTTextView.h"
 
 @implementation RCTTextViewManager
 
 RCT_EXPORT_MODULE()
 
+- (RCTShadowView *)shadowView
+{
+  return [RCTShadowTextView new];
+}
+
 - (UIView *)view
 {
-  return [[RCTTextView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
+  return [[RCTTextView alloc] initWithBridge:self.bridge];
 }
 
 RCT_REMAP_VIEW_PROPERTY(autoCapitalize, textView.autocapitalizationType, UITextAutocapitalizationType)
@@ -76,9 +83,11 @@ RCT_REMAP_VIEW_PROPERTY(dataDetectorTypes, textView.dataDetectorTypes, UIDataDet
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
 {
   NSNumber *reactTag = shadowView.reactTag;
-  UIEdgeInsets padding = shadowView.paddingAsInsets;
+  UIEdgeInsets borderAsInsets = shadowView.borderAsInsets;
+  UIEdgeInsets paddingAsInsets = shadowView.paddingAsInsets;
   return ^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTTextView *> *viewRegistry) {
-    viewRegistry[reactTag].contentInset = padding;
+    viewRegistry[reactTag].reactBorderInsets = borderAsInsets;
+    viewRegistry[reactTag].reactPaddingInsets = paddingAsInsets;
   };
 }
 

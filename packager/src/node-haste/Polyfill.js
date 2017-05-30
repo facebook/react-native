@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @format
  */
 
 'use strict';
@@ -16,21 +17,22 @@ const Module = require('./Module');
 import type {ConstructorArgs} from './Module';
 
 class Polyfill extends Module {
-
   _id: string;
   _dependencies: Array<string>;
 
-  constructor(options: ConstructorArgs & {
-    id: string,
-    dependencies: Array<string>,
-  }) {
+  constructor(
+    options: ConstructorArgs & {
+      id: string,
+      dependencies: Array<string>,
+    },
+  ) {
     super(options);
     this._id = options.id;
     this._dependencies = options.dependencies;
   }
 
   isHaste() {
-    return Promise.resolve(false);
+    return false;
   }
 
   getName() {

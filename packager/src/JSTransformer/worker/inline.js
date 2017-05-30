@@ -14,7 +14,7 @@
 const babel = require('babel-core');
 const invariant = require('fbjs/lib/invariant');
 
-import type {Ast, SourceMap} from 'babel-core';
+import type {Ast, SourceMap as MappingsMap} from 'babel-core';
 const t = babel.types;
 
 const React = {name: 'React'};
@@ -32,7 +32,13 @@ const dev = {name: '__DEV__'};
 
 const importMap = new Map([['ReactNative', 'react-native']]);
 
-const isGlobal = (binding) => !binding;
+const isGlobal = binding => !binding;
+
+const isFlowDeclared = binding =>
+  t.isDeclareVariable(binding.path);
+
+const isGlobalOrFlowDeclared = binding =>
+  isGlobal(binding) || isFlowDeclared(binding);
 
 const isToplevelBinding = (binding, isWrappedModule) =>
   isGlobal(binding) ||
@@ -93,7 +99,7 @@ const isReactPlatformSelect = (node, scope, isWrappedModule) =>
 
 const isDev = (node, parent, scope) =>
   t.isIdentifier(node, dev) &&
-  isGlobal(scope.getBinding(dev.name)) &&
+  isGlobalOrFlowDeclared(scope.getBinding(dev.name)) &&
   !(t.isMemberExpression(parent));
 
 function findProperty(objectExpression, key, fallback) {
@@ -141,7 +147,7 @@ const inlinePlugin = {
 
         path.replaceWith(replacement);
       }
-    }
+    },
   },
 };
 
@@ -158,13 +164,13 @@ function checkRequireArgs(args, dependencyId) {
 type AstResult = {
   ast: Ast,
   code: ?string,
-  map: ?SourceMap,
+  map: ?MappingsMap,
 };
 
 function inline(
   filename: string,
-  transformResult: {ast?: ?Ast, code: string, map: ?SourceMap},
-  options: {},
+  transformResult: {ast?: ?Ast, code: string, map: ?MappingsMap},
+  options: {+dev: boolean, +platform: ?string},
 ): AstResult {
   const code = transformResult.code;
   const babelOptions = {

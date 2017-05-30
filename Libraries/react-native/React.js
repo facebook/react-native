@@ -11,4 +11,4 @@
 
 'use strict';
 
-module.exports = require('react/lib/React');
+module.exports = require('react');

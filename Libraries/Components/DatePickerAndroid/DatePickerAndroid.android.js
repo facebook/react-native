@@ -49,13 +49,14 @@ class DatePickerAndroid {
    * Opens the standard Android date picker dialog.
    *
    * The available keys for the `options` object are:
-   *   * `date` (`Date` object or timestamp in milliseconds) - date to show by default
-   *   * `minDate` (`Date` or timestamp in milliseconds) - minimum date that can be selected
-   *   * `maxDate` (`Date` object or timestamp in milliseconds) - minimum date that can be selected
-   *   * `mode` (`enum('calendar', 'spinner', 'default')`) - To set the date-picker mode to calendar/spinner/default
-   *            - 'calendar': Show a date picker in calendar mode.
-   *            - 'spinner': Show a date picker in spinner mode.
-   *            - 'default': Show a default native date picker(spinner/calendar) based on android versions.
+   *
+   *   - `date` (`Date` object or timestamp in milliseconds) - date to show by default
+   *   - `minDate` (`Date` or timestamp in milliseconds) - minimum date that can be selected
+   *   - `maxDate` (`Date` object or timestamp in milliseconds) - maximum date that can be selected
+   *   - `mode` (`enum('calendar', 'spinner', 'default')`) - To set the date-picker mode to calendar/spinner/default
+   *     - 'calendar': Show a date picker in calendar mode.
+   *     - 'spinner': Show a date picker in spinner mode.
+   *     - 'default': Show a default native date picker(spinner/calendar) based on android versions.
    *
    * Returns a Promise which will be invoked an object containing `action`, `year`, `month` (0-11),
    * `day` if the user picked a date. If the user dismissed the dialog, the Promise will
