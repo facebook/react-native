@@ -27,7 +27,7 @@ import type DependencyGraphHelpers from './DependencyGraphHelpers';
 import type ResolutionResponse from './ResolutionResponse';
 import type {
   Options as TransformWorkerOptions,
-} from '../../JSTransformer/worker/worker';
+} from '../../JSTransformer/worker';
 import type {ReadResult, CachedReadResult} from '../Module';
 
 type DirExistsFn = (filePath: string) => boolean;
@@ -294,6 +294,12 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
       const end = () => collectionsInProgress.end(module);
       result.then(end, end);
       return result;
+    }
+
+    function resolveKeyWithPromise(
+      [key: TModule, promise: Promise<Array<TModule>>],
+    ): Promise<[TModule, Array<TModule>]> {
+      return promise.then(value => [key, value]);
     }
 
     return Promise.all([
@@ -899,10 +905,6 @@ function resolveWindowsPath(modulePath) {
     return modulePath;
   }
   return path.resolve(modulePath);
-}
-
-function resolveKeyWithPromise([key, promise]) {
-  return promise.then(value => [key, value]);
 }
 
 function isRelativeImport(filePath) {

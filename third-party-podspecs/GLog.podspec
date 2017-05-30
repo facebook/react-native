@@ -6,13 +6,7 @@ Pod::Spec.new do |spec|
   spec.summary = 'Google logging module'
   spec.authors = 'Google'
 
-  spec.prepare_command = <<-CMD
-    echo '#!/bin/sh' > ./ios-cc.sh
-    echo 'exec "$(xcrun -find -sdk iphoneos cc)" -arch armv7 -isysroot "$(xcrun -sdk iphoneos --show-sdk-path)" "$@"' >> ./ios-cc.sh
-    chmod 755 ./ios-cc.sh
-    CC="`pwd`"/ios-cc.sh CXX="`pwd`"/ios-cc.sh ./configure --host arm-apple-darwin
-    CMD
-
+  spec.prepare_command = File.read("../scripts/ios-configure-glog.sh")
   spec.source = { :git => 'https://github.com/google/glog.git',
                   :tag => "v#{spec.version}" }
   spec.module_name = 'glog'
@@ -24,11 +18,13 @@ Pod::Spec.new do |spec|
                       'src/symbolize.cc',
                       'src/utilities.cc',
                       'src/vlog_is_on.cc'
-  spec.public_header_files = 'src/glog/*.h'
+  spec.exclude_files       = "src/windows/**/*"
+  spec.public_header_files = "src/glog/*.h"
+  spec.libraries           = "stdc++"
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src" }
 
   # Pinning to the same version as React.podspec.
-  spec.platform = :ios, '8.0'
+  spec.platform = :ios, "8.0"
 
 end

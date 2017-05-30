@@ -1714,7 +1714,7 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
          child->layout.measuredDimensions[dim[crossAxis]]) /
         2.0f;
   } else if (!YGNodeIsLeadingPosDefined(child, crossAxis) &&
-             YGNodeAlignItem(node, child) == YGAlignFlexEnd) {
+             (YGNodeAlignItem(node, child) == YGAlignFlexEnd || node->style.flexWrap == YGWrapWrapReverse)) {
     child->layout.position[leading[crossAxis]] = (node->layout.measuredDimensions[dim[crossAxis]] -
                                                   child->layout.measuredDimensions[dim[crossAxis]]);
   }
@@ -2237,9 +2237,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         const float childMarginMainAxis = YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
         const float flexBasisWithMaxConstraints =
             fminf(YGResolveValue(&child->style.maxDimensions[dim[mainAxis]], mainAxisParentSize),
-                  fmaxf(YGResolveValue(&child->style.minDimensions[dim[mainAxis]],
-                                       mainAxisParentSize),
-                        child->layout.computedFlexBasis));
+                        child->layout.computedFlexBasis);
         const float flexBasisWithMinAndMaxConstraints =
             fmaxf(YGResolveValue(&child->style.minDimensions[dim[mainAxis]], mainAxisParentSize),
                   flexBasisWithMaxConstraints);
@@ -2257,15 +2255,13 @@ static void YGNodelayoutImpl(const YGNodeRef node,
 
         sizeConsumedOnCurrentLineIncludingMinConstraint +=
             flexBasisWithMinAndMaxConstraints + childMarginMainAxis;
-        sizeConsumedOnCurrentLine += flexBasisWithMaxConstraints + childMarginMainAxis;
+        sizeConsumedOnCurrentLine += flexBasisWithMinAndMaxConstraints + childMarginMainAxis;
         itemsOnLine++;
 
         if (YGNodeIsFlex(child)) {
           totalFlexGrowFactors += YGResolveFlexGrow(child);
 
-          // Unlike the grow factor, the shrink factor is scaled relative to the
-          // child
-          // dimension.
+          // Unlike the grow factor, the shrink factor is scaled relative to the child dimension.
           totalFlexShrinkScaledFactors +=
               -YGNodeResolveFlexShrink(child) * child->layout.computedFlexBasis;
         }
@@ -3148,19 +3144,19 @@ static float YGRoundValueToPixelGrid(const float value,
                                      const float pointScaleFactor,
                                      const bool forceCeil,
                                      const bool forceFloor) {
-  float fractial = fmodf(value, pointScaleFactor);
+  float scaledValue = value * pointScaleFactor;
+  float fractial = fmodf(scaledValue, 1.0);
   if (YGFloatsEqual(fractial, 0)) {
     // Still remove fractial as fractial could be  extremely small.
-    return value - fractial;
-  }
-  
-  if (forceCeil) {
-    return value - fractial + pointScaleFactor;
+    scaledValue = scaledValue - fractial;
+  } else if (forceCeil) {
+    scaledValue = scaledValue - fractial + 1.0;
   } else if (forceFloor) {
-    return value - fractial;
+    scaledValue = scaledValue - fractial;
   } else {
-    return value - fractial + (fractial >= pointScaleFactor / 2.0f ? pointScaleFactor : 0);
+    scaledValue = scaledValue - fractial + (fractial >= 0.5f ? 1.0 : 0);
   }
+  return scaledValue / pointScaleFactor;
 }
 
 bool YGNodeCanUseCachedMeasurement(const YGMeasureMode widthMode,
@@ -3427,7 +3423,7 @@ void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInP
     // Zero is used to skip rounding
     config->pointScaleFactor = 0.0f;
   } else {
-    config->pointScaleFactor = 1.0f / pixelsInPoint;
+    config->pointScaleFactor = pixelsInPoint;
   }
 }
 

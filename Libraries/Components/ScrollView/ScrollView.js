@@ -257,8 +257,10 @@ const ScrollView = React.createClass({
      */
     pagingEnabled: PropTypes.bool,
     /**
-     * When false, the content does not scroll.
+     * When false, the view cannot be scrolled via touch interaction.
      * The default value is true.
+     *
+     * Note that the view can be always be scrolled by calling `scrollTo`.
      */
     scrollEnabled: PropTypes.bool,
     /**

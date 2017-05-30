@@ -26,7 +26,7 @@ const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
 const {compactMapping} = require('./src/Bundler/source-map');
 
 import type {Plugins as BabelPlugins} from 'babel-core';
-import type {Transformer, TransformOptions} from './src/JSTransformer/worker/worker';
+import type {Transformer, TransformOptions} from './src/JSTransformer/worker';
 
 const cacheKeyParts = [
   fs.readFileSync(__filename),

@@ -628,7 +628,7 @@ const TextInput = React.createClass({
     var textContainer;
 
     var props = Object.assign({}, this.props);
-    props.style = [styles.input, this.props.style];
+    props.style = [this.props.style];
 
     if (props.selection && props.selection.end == null) {
       props.selection = {start: props.selection.start, end: props.selection.start};
@@ -859,9 +859,6 @@ const TextInput = React.createClass({
 });
 
 var styles = StyleSheet.create({
-  input: {
-    alignSelf: 'stretch',
-  },
   multilineInput: {
     // This default top inset makes RCTTextView seem as close as possible
     // to single-line RCTTextField defaults, using the system defaults

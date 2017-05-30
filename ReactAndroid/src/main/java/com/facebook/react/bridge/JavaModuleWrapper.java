@@ -129,29 +129,32 @@ public class JavaModuleWrapper {
     if (!mModuleHolder.getHasConstants()) {
       return null;
     }
-    BaseJavaModule baseJavaModule = getModule();
-    ReactMarker.logMarker(GET_CONSTANTS_START, getName());
-    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "Map constants")
-      .arg("moduleName", getName())
+
+    final String moduleName = getName();
+    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "JavaModuleWrapper.getConstants")
+      .arg("moduleName", moduleName)
       .flush();
+    ReactMarker.logMarker(GET_CONSTANTS_START, moduleName);
+
+    BaseJavaModule baseJavaModule = getModule();
+
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "module.getConstants");
     Map<String, Object> map = baseJavaModule.getConstants();
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
-    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "WritableNativeMap constants")
-      .arg("moduleName", getName())
-      .flush();
-    ReactMarker.logMarker(CONVERT_CONSTANTS_START, getName());
-    WritableNativeMap writableNativeMap;
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "create WritableNativeMap");
+    ReactMarker.logMarker(CONVERT_CONSTANTS_START, moduleName);
     try {
-      writableNativeMap = Arguments.makeNativeMap(map);
+      WritableNativeArray array = new WritableNativeArray();
+      array.pushMap(Arguments.makeNativeMap(map));
+      return array;
     } finally {
+      ReactMarker.logMarker(CONVERT_CONSTANTS_END);
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+
+      ReactMarker.logMarker(GET_CONSTANTS_END);
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
-    WritableNativeArray array = new WritableNativeArray();
-    array.pushMap(writableNativeMap);
-    ReactMarker.logMarker(CONVERT_CONSTANTS_END);
-    ReactMarker.logMarker(GET_CONSTANTS_END);
-    return array;
   }
 
   @DoNotStrip
