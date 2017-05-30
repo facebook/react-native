@@ -36,8 +36,8 @@ trap cleanup EXIT
 
 if [ "$1" = "test" ]; then
 
-# Start the packager 
-open "./packager/launchPackager.command" || echo "Can't start packager automatically"
+# Start the packager
+open "./scripts/launchPackager.command" || echo "Can't start packager automatically"
 # Start the WebSocket test server
 open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
 
@@ -73,6 +73,6 @@ xcodebuild \
   -project "RNTester/RNTester.xcodeproj" \
   -scheme $SCHEME \
   -sdk $SDK \
-  build 
+  build
 
 fi

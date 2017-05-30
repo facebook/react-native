@@ -22,6 +22,7 @@ const RN_CLI_CONFIG = 'rn-cli.config.js';
 import type {GetTransformOptions, PostMinifyProcess, PostProcessModules} from '../../packager/src/Bundler';
 import type {HasteImpl} from '../../packager/src/node-haste/Module';
 import type {TransformVariants} from '../../packager/src/ModuleGraph/types.flow';
+import type {PostProcessModules as PostProcessModulesForBuck} from '../../packager/src/ModuleGraph/types.flow.js';
 
 /**
  * Configuration file of the CLI.
@@ -40,6 +41,12 @@ export type ConfigT = {
    * packager on a given platform.
    */
   getBlacklistRE(): RegExp,
+
+  /**
+   * Specify any additional polyfill modules that should be processed
+   * before regular module loading.
+   */
+ getPolyfillModuleNames: () => Array<string>,
 
   /**
    * Specify any additional platforms to be used by the packager.
@@ -72,6 +79,11 @@ export type ConfigT = {
   getTransformOptions: GetTransformOptions,
 
   /**
+   * Returns the path to the worker that is used for transformation.
+   */
+  getWorkerPath: () => string,
+
+  /**
    * An optional function that can modify the code and source map of bundle
    * after the minifaction took place.
    */
@@ -82,6 +94,12 @@ export type ConfigT = {
    * finalized.
    */
   postProcessModules: PostProcessModules,
+
+  /**
+   * Same as `postProcessModules` but for the Buck worker. Eventually we do want
+   * to unify both variants.
+   */
+  postProcessModulesForBuck: PostProcessModulesForBuck,
 
   /**
    * A module that exports:
@@ -98,6 +116,7 @@ const defaultConfig: ConfigT = {
   getAssetExts: () => [],
   getBlacklistRE: () => blacklist(),
   getPlatforms: () => [],
+  getPolyfillModuleNames: () => [],
   getProjectRoots: () => [process.cwd()],
   getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
   getSourceExts: () => [],
@@ -105,7 +124,9 @@ const defaultConfig: ConfigT = {
   getTransformOptions: async () => ({}),
   postMinifyProcess: x => x,
   postProcessModules: modules => modules,
+  postProcessModulesForBuck: modules => modules,
   transformVariants: () => ({default: {}}),
+  getWorkerPath: () => require.resolve('./worker.js'),
 };
 
 /**
@@ -118,12 +139,17 @@ const defaultConfig: ConfigT = {
  */
 const Config = {
   find(startDir: string): ConfigT {
+    return this.findWithPath(startDir).config;
+  },
+
+  findWithPath(startDir: string): {config: ConfigT, projectPath: string} {
     const configPath = findConfigPath(startDir);
     invariant(
       configPath,
       `Can't find "${RN_CLI_CONFIG}" file in any parent folder of "${startDir}"`,
     );
-    return this.loadFile(configPath, startDir);
+    const projectPath = path.dirname(configPath);
+    return {config: this.loadFile(configPath, startDir), projectPath};
   },
 
   findOptional(startDir: string): ConfigT {

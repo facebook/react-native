@@ -232,7 +232,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     [self didUpdateReactSubviews];
     [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
       UIView *view = viewRegistry[self->_reactTag];
-      [view clearSortedSubviews];
       [view didUpdateReactSubviews];
     }];
   }

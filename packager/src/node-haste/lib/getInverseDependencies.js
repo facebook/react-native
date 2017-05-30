@@ -17,7 +17,7 @@ import type ResolutionResponse from '../DependencyGraph/ResolutionResponse';
 function resolveModuleRequires<TModule: {hash(): string}, TOptions>(
   resolutionResponse: ResolutionResponse<TModule, TOptions>,
   module: TModule,
-) {
+): Array<TModule> {
   const pairs = resolutionResponse.getResolvedDependencyPairs(module);
   return pairs ? pairs.map(([, dependencyModule]) => dependencyModule) : [];
 }

@@ -12,14 +12,16 @@ if THIS_IS_FBOBJC:
 rn_xplat_cxx_library(
     name = "module",
     compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
-    exported_headers = [
-        "CxxModule.h",
-        "JsArgumentHelpers.h",
-        "JsArgumentHelpers-inl.h",
-    ],
-    fbobjc_header_path_prefix = "cxxreact",
+    exported_headers = subdir_glob(
+        [
+            ("", "CxxModule.h"),
+            ("", "JsArgumentHelpers.h"),
+            ("", "JsArgumentHelpers-inl.h"),
+        ],
+        prefix = "cxxreact",
+    ),
     force_static = True,
-    header_namespace = "cxxreact",
+    header_namespace = "",
     visibility = [
         "PUBLIC",
     ],
@@ -38,12 +40,12 @@ rn_xplat_cxx_library(
         "-fexceptions",
         "-frtti",
     ],
-    exported_headers = [
-        "JSBigString.h",
-    ],
-    fbobjc_header_path_prefix = "cxxreact",
+    exported_headers = subdir_glob(
+        [("", "JSBigString.h")],
+        prefix = "cxxreact",
+    ),
     force_static = True,
-    header_namespace = "cxxreact",
+    header_namespace = "",
     visibility = [
         "PUBLIC",
     ],
@@ -106,7 +108,13 @@ rn_xplat_cxx_library(
         "-fexceptions",
         "-frtti",
     ],
-    exported_headers = CXXREACT_PUBLIC_HEADERS,
+    exported_headers = dict([
+        (
+            "cxxreact/%s" % header,
+            header,
+        )
+        for header in CXXREACT_PUBLIC_HEADERS
+    ]),
     fbandroid_preprocessor_flags = [
         "-DWITH_JSC_EXTRA_TRACING=1",
         "-DWITH_JSC_MEMORY_PRESSURE=1",
@@ -132,12 +140,11 @@ rn_xplat_cxx_library(
     fbobjc_frameworks = [
         "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
     ],
-    fbobjc_header_path_prefix = "cxxreact",
     fbobjc_inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
     fbobjc_preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS,
     fbobjc_visibility = ["PUBLIC"],
     force_static = True,
-    header_namespace = "cxxreact",
+    header_namespace = "",
     headers = glob(
         ["*.h"],
         excludes = CXXREACT_PUBLIC_HEADERS,

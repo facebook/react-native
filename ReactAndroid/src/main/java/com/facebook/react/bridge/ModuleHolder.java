@@ -8,9 +8,6 @@ import javax.inject.Provider;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactMarker;
-import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -102,7 +99,7 @@ public class ModuleHolder {
     SoftAssertions.assertCondition(mModule == null, "Creating an already created module.");
     int instanceKey = sInstanceKeyCounter.getAndIncrement();
     ReactMarker.logMarker(CREATE_MODULE_START, mName, instanceKey);
-    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createModule")
+    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ModuleHolder.createModule")
       .arg("name", mName)
       .flush();
     NativeModule module;
@@ -121,14 +118,9 @@ public class ModuleHolder {
   }
 
   private void doInitialize(NativeModule module) {
-    SystraceMessage.Builder section =
-      SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "initialize");
-    if (module instanceof CxxModuleWrapper) {
-      section.arg("className", module.getClass().getSimpleName());
-    } else {
-      section.arg("name", mName);
-    }
-    section.flush();
+    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ModuleHolder.initialize")
+      .arg("name", mName)
+      .flush();
     ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_START, mName);
     try {
       module.initialize();

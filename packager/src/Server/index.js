@@ -16,8 +16,9 @@ const Bundler = require('../Bundler');
 const MultipartResponse = require('./MultipartResponse');
 
 const defaults = require('../../defaults');
-const getPlatformExtension = require('../node-haste/lib/getPlatformExtension');
+const emptyFunction = require('fbjs/lib/emptyFunction');
 const mime = require('mime-types');
+const parsePlatformFilePath = require('../node-haste/lib/parsePlatformFilePath');
 const path = require('path');
 const symbolicate = require('./symbolicate');
 const terminal = require('../lib/terminal');
@@ -26,13 +27,13 @@ const url = require('url');
 const debug = require('debug')('RNP:Server');
 
 import type Module, {HasteImpl} from '../node-haste/Module';
-import type {Stats} from 'fs';
 import type {IncomingMessage, ServerResponse} from 'http';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 import type Bundle from '../Bundler/Bundle';
 import type HMRBundle from '../Bundler/HMRBundle';
 import type {Reporter} from '../lib/reporting';
 import type {GetTransformOptions, PostProcessModules, PostMinifyProcess} from '../Bundler';
+import type {TransformCache} from '../lib/TransformCaching';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {SourceMap, Symbolicate} from './symbolicate';
 
@@ -69,15 +70,17 @@ type Options = {
   polyfillModuleNames?: Array<string>,
   postProcessModules?: PostProcessModules,
   postMinifyProcess: PostMinifyProcess,
-  projectRoots: Array<string>,
+  projectRoots: $ReadOnlyArray<string>,
   providesModuleNodeModules?: Array<string>,
   reporter: Reporter,
   resetCache?: boolean,
   silent?: boolean,
   +sourceExts: ?Array<string>,
+  +transformCache: TransformCache,
   +transformModulePath: string,
   transformTimeoutInterval?: number,
   watch?: boolean,
+  workerPath: ?string,
 };
 
 export type BundleOptions = {
@@ -125,17 +128,19 @@ class Server {
     polyfillModuleNames: Array<string>,
     postProcessModules?: PostProcessModules,
     postMinifyProcess: PostMinifyProcess,
-    projectRoots: Array<string>,
+    projectRoots: $ReadOnlyArray<string>,
     providesModuleNodeModules?: Array<string>,
     reporter: Reporter,
     resetCache: boolean,
     silent: boolean,
     +sourceExts: Array<string>,
+    +transformCache: TransformCache,
     +transformModulePath: string,
     transformTimeoutInterval: ?number,
     watch: boolean,
+    workerPath: ?string,
   };
-  _projectRoots: Array<string>;
+  _projectRoots: $ReadOnlyArray<string>;
   _bundles: {};
   _changeWatchers: Array<{
     req: IncomingMessage,
@@ -170,12 +175,15 @@ class Server {
       resetCache: options.resetCache || false,
       silent: options.silent || false,
       sourceExts: options.sourceExts || defaults.sourceExts,
+      transformCache: options.transformCache,
       transformModulePath: options.transformModulePath,
       transformTimeoutInterval: options.transformTimeoutInterval,
       watch: options.watch || false,
+      workerPath: options.workerPath,
     };
+
     const processFileChange =
-      ({type, filePath, stat}) => this.onFileChange(type, filePath, stat);
+      ({type, filePath}) => this.onFileChange(type, filePath);
 
     this._reporter = options.reporter;
     this._projectRoots = this._opts.projectRoots;
@@ -283,7 +291,7 @@ class Server {
   getShallowDependencies(options: DependencyOptions): Promise<Array<Module>> {
     return Promise.resolve().then(() => {
       const platform = options.platform != null
-        ? options.platform : getPlatformExtension(options.entryFile, this._platforms);
+        ? options.platform : parsePlatformFilePath(options.entryFile, this._platforms).platform;
       const {entryFile, dev, minify, hot} = options;
       return this._bundler.getShallowDependencies(
         {entryFile, platform, dev, minify, hot, generateSourceMaps: false},
@@ -298,7 +306,7 @@ class Server {
   getDependencies(options: DependencyOptions): Promise<ResolutionResponse<Module, *>> {
     return Promise.resolve().then(() => {
       const platform = options.platform != null
-        ? options.platform : getPlatformExtension(options.entryFile, this._platforms);
+        ? options.platform : parsePlatformFilePath(options.entryFile, this._platforms).platform;
       const {entryFile, dev, minify, hot} = options;
       return this._bundler.getDependencies(
         {entryFile, platform, dev, minify, hot, generateSourceMaps: false},
@@ -316,8 +324,8 @@ class Server {
     });
   }
 
-  onFileChange(type: string, filePath: string, stat: Stats) {
-    this._assetServer.onFileChange(type, filePath, stat);
+  onFileChange(type: string, filePath: string) {
+    this._assetServer.onFileChange(type, filePath);
 
     // If Hot Loading is enabled avoid rebuilding bundles and sending live
     // updates. Instead, send the HMR updates right away and clear the bundles
@@ -499,7 +507,6 @@ class Server {
     }, error => {
       this._reporter.update({
         entryFilePath: options.entryFile,
-        error,
         type: 'bundle_build_failed',
       });
       return Promise.reject(error);
@@ -552,6 +559,7 @@ class Server {
               changedModules.forEach(m => {
                 response.setResolvedDependencyPairs(
                   m,
+                  /* $FlowFixMe: should be enforced not to be null. */
                   dependencyPairs.get(m.path),
                   {ignoreFinalized: true},
                 );
@@ -652,7 +660,7 @@ class Server {
         entry_point: options.entryFile,
       }));
 
-    let reportProgress = () => {};
+    let reportProgress = emptyFunction;
     if (!this._opts.silent) {
       reportProgress = (transformedFileCount, totalFileCount) => {
         this._reporter.update({
@@ -791,9 +799,11 @@ class Server {
       'Content-Type': 'application/json; charset=UTF-8',
     });
 
-    if (error.type === 'TransformError' ||
-        error.type === 'NotFoundError' ||
-        error.type === 'UnableToResolveError') {
+    if (error instanceof Error && (
+          error.type === 'TransformError' ||
+          error.type === 'NotFoundError' ||
+          error.type === 'UnableToResolveError'
+        )) {
       error.errors = [{
         description: error.description,
         filename: error.filename,
@@ -804,6 +814,7 @@ class Server {
       if (error.type === 'NotFoundError') {
         delete this._bundles[bundleID];
       }
+      this._reporter.update({error, type: 'bundling_error'});
     } else {
       console.error(error.stack || error);
       res.end(JSON.stringify({
@@ -834,7 +845,7 @@ class Server {
     // try to get the platform from the url
     /* $FlowFixMe: `query` could be empty for an invalid URL */
     const platform = urlObj.query.platform ||
-      getPlatformExtension(pathname, this._platforms);
+      parsePlatformFilePath(pathname, this._platforms).platform;
 
     /* $FlowFixMe: `query` could be empty for an invalid URL */
     const assetPlugin = urlObj.query.assetPlugin;
