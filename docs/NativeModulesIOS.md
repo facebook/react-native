@@ -117,7 +117,7 @@ RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location date:(
 You would then call this from JavaScript by using either:
 
 ```javascript
-CalendarManager.addEvent('Birthday Party', '4 Privet Drive, Surrey', date.getTime()); // passing date as number of seconds since Unix epoch
+CalendarManager.addEvent('Birthday Party', '4 Privet Drive, Surrey', date.getTime()); // passing date as number of milliseconds since Unix epoch
 ```
 
 or
@@ -329,7 +329,7 @@ You can then define methods and export your enum constants like this:
 {
   return @{ @"statusBarAnimationNone" : @(UIStatusBarAnimationNone),
             @"statusBarAnimationFade" : @(UIStatusBarAnimationFade),
-            @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide) }
+            @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide) };
 };
 
 RCT_EXPORT_METHOD(updateStatusBarAnimation:(UIStatusBarAnimation)animation

@@ -8,7 +8,8 @@
  */
 'use strict';
 
-const ReactPackager = require('../../packager/react-packager');
+require('../../setupBabel')();
+const ReactPackager = require('../../packager');
 
 const denodeify = require('denodeify');
 const fs = require('fs');

@@ -21,7 +21,7 @@ In accordance with the ancient traditions of our people, we must first build an 
 import React, { Component } from 'react';
 import { AppRegistry, Text } from 'react-native';
 
-class HelloWorldApp extends Component {
+export default class HelloWorldApp extends Component {
   render() {
     return (
       <Text>Hello world!</Text>
@@ -29,6 +29,7 @@ class HelloWorldApp extends Component {
   }
 }
 
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('HelloWorldApp', () => HelloWorldApp);
 ```
 
@@ -49,7 +50,7 @@ So this code is defining `HelloWorldApp`, a new `Component`, and it's registerin
 
 ## AppRegistry
 
-The call to `AppRegistry` is needed to register the root component for the whole application. You only need to call `AppRegistry.registerComponent` once in your whole app. Notice in the example above that the first argument has to be the name of your project, in our case `HelloWorldApp`. You won't be thinking about `AppRegistry` a lot. It's included in these examples so you can paste the whole thing into your `index.ios.js` or `index.android.js` file and get it running.
+The call to `AppRegistry` is needed to register the root component for the whole application. You only need to call `AppRegistry.registerComponent` once in your whole app. Notice in the example above that the first argument has to be the name of your project, in our case `HelloWorldApp`. You won't be thinking about `AppRegistry` a lot. It's included in these examples so you can paste the whole thing into your `index.ios.js` or `index.android.js` file and get it running. If you have a project from Create React Native App, this is handled for you and it's not necessary to call AppRegistry in your code.
 
 ## This App Doesn't Do Very Much
 

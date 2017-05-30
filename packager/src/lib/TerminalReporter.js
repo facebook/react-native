@@ -76,7 +76,7 @@ class TerminalReporter {
     this._activeBundles = new Map();
     this._scheduleUpdateBundleProgress = throttle(data => {
       this.update({...data, type: 'bundle_transform_progressed_throttled'});
-    }, 200);
+    }, 100);
   }
 
   /**
@@ -126,8 +126,7 @@ class TerminalReporter {
     }
   }
 
-  _logBundleBuildFailed(entryFilePath: string, error: Error) {
-    reporting.logError(terminal, 'bundling: %s', error.stack);
+  _logBundleBuildFailed(entryFilePath: string) {
     const progress = this._activeBundles.get(entryFilePath);
     if (progress != null) {
       const msg = this._getBundleStatusMessage(entryFilePath, progress, 'failed');
@@ -135,8 +134,7 @@ class TerminalReporter {
     }
   }
 
-
-  _logPackagerInitializing(port: number, projectRoots: Array<string>) {
+  _logPackagerInitializing(port: number, projectRoots: $ReadOnlyArray<string>) {
     terminal.log(
       formatBanner(
         'Running packager on port ' +
@@ -183,7 +181,6 @@ class TerminalReporter {
     }
   }
 
-
   /**
    * This function is only concerned with logging and should not do state
    * or terminal status updates.
@@ -203,7 +200,10 @@ class TerminalReporter {
         this._logBundleBuildDone(event.entryFilePath);
         break;
       case 'bundle_build_failed':
-        this._logBundleBuildFailed(event.entryFilePath, event.error);
+        this._logBundleBuildFailed(event.entryFilePath);
+        break;
+      case 'bundling_error':
+        this._logBundlingError(event.error);
         break;
       case 'dep_graph_loaded':
         terminal.log(`${DEP_GRAPH_MESSAGE}, done.`);
@@ -214,7 +214,33 @@ class TerminalReporter {
       case 'transform_cache_reset':
         reporting.logWarning(terminal, 'the transform cache was reset.');
         break;
+      case 'worker_stdout_chunk':
+        this._logWorkerChunk('stdout', event.chunk);
+        break;
+      case 'worker_stderr_chunk':
+        this._logWorkerChunk('stderr', event.chunk);
+        break;
     }
+  }
+
+  /**
+   * We do not want to log the whole stacktrace for bundling error, because
+   * these are operational errors, not programming errors, and the stacktrace
+   * is not actionable to end users.
+   */
+  _logBundlingError(error: Error) {
+    const str = JSON.stringify(error.message);
+    reporting.logError(terminal, 'bundling failed: %s', str);
+  }
+
+  _logWorkerChunk(origin: 'stdout' | 'stderr', chunk: string) {
+    const lines = chunk.split('\n');
+    if (lines.length >= 1 && lines[lines.length - 1] === '') {
+      lines.splice(lines.length - 1, 1);
+    }
+    lines.forEach(line => {
+      terminal.log(`transform[${origin}]: ${line}`);
+    });
   }
 
   /**

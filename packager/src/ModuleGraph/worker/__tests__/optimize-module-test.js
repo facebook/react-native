@@ -14,6 +14,7 @@ const optimizeModule = require('../optimize-module');
 const transformModule = require('../transform-module');
 const transformer = require('../../../../transformer.js');
 const {SourceMapConsumer} = require('source-map');
+const {fn} = require('../../test-helpers');
 
 const {objectContaining} = jasmine;
 
@@ -22,6 +23,7 @@ describe('optimizing JS modules', () => {
   const optimizationOptions = {
     dev: false,
     platform: 'android',
+    postMinifyProcess: x => x,
   };
   const originalCode =
     `if (Platform.OS !== 'android') {
@@ -36,23 +38,24 @@ describe('optimizing JS modules', () => {
       if (error) {
         throw error;
       }
-      transformResult = JSON.stringify(result);
+      transformResult = JSON.stringify({type: 'code', details: result.details});
       done();
     });
   });
 
   it('copies everything from the transformed file, except for transform results', () => {
     const result = optimizeModule(transformResult, optimizationOptions);
-    const expected = JSON.parse(transformResult);
+    const expected = JSON.parse(transformResult).details;
     delete expected.transformed;
-    expect(result).toEqual(objectContaining(expected));
+    expect(result.type).toBe('code');
+    expect(result.details).toEqual(objectContaining(expected));
   });
 
   describe('code optimization', () => {
     let dependencyMapName, injectedVars, optimized, requireName;
     beforeAll(() => {
       const result = optimizeModule(transformResult, optimizationOptions);
-      optimized = result.transformed.default;
+      optimized = result.details.transformed.default;
       injectedVars = optimized.code.match(/function\(([^)]*)/)[1].split(',');
       [, requireName,,, dependencyMapName] = injectedVars;
     });
@@ -79,9 +82,39 @@ describe('optimizing JS modules', () => {
       const result = optimizeModule(
         transformResult,
         {...optimizationOptions, isPolyfill: true},
-      );
+      ).details;
       expect(result.transformed.default.dependencies).toEqual([]);
     });
+  });
+
+  describe('post-processing', () => {
+    let postMinifyProcess, optimize;
+    beforeEach(() => {
+      postMinifyProcess = fn();
+      optimize = () =>
+        optimizeModule(transformResult, {...optimizationOptions, postMinifyProcess});
+    });
+
+    it('passes the result to the provided postprocessing function', () => {
+      postMinifyProcess.stub.callsFake(x => x);
+      const result = optimize();
+      const {code, map} = result.details.transformed.default;
+      expect(postMinifyProcess).toBeCalledWith({code, map});
+    });
+
+    it('uses the result of the provided postprocessing function for the result', () => {
+      const code = 'var postprocessed = "code";';
+      const map = {version: 3, mappings: 'postprocessed'};
+      postMinifyProcess.stub.returns({code, map});
+      expect(optimize().details.transformed.default)
+        .toEqual(objectContaining({code, map}));
+    });
+  });
+
+  it('passes through non-code data unmodified', () => {
+    const data = {type: 'asset', details: {arbitrary: 'data'}};
+    expect(optimizeModule(JSON.stringify(data), {dev: true, platform: ''}))
+      .toEqual(data);
   });
 });
 

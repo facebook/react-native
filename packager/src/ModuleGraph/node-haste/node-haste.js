@@ -18,9 +18,10 @@ import type { // eslint-disable-line sort-requires
 
 import type {
   ResolveFn,
-  TransformedFile,
+  TransformedCodeFile,
 } from '../types.flow';
 
+const AssetResolutionCache = require('../../node-haste/AssetResolutionCache');
 const DependencyGraphHelpers = require('../../node-haste/DependencyGraph/DependencyGraphHelpers');
 const FilesByDirNameIndex = require('../../node-haste/FilesByDirNameIndex');
 const HasteFS = require('./HasteFS');
@@ -31,10 +32,13 @@ const ResolutionRequest = require('../../node-haste/DependencyGraph/ResolutionRe
 
 const defaults = require('../../../defaults');
 
+import type {Moduleish, Packageish} from '../../node-haste/DependencyGraph/ResolutionRequest';
+
 type ResolveOptions = {|
   assetExts: Extensions,
   extraNodeModules: {[id: string]: string},
-  transformedFiles: {[path: Path]: TransformedFile},
+  +sourceExts: Extensions,
+  transformedFiles: {[path: Path]: TransformedCodeFile},
 |};
 
 const platforms = new Set(defaults.platforms);
@@ -44,20 +48,20 @@ const platforms = new Set(defaults.platforms);
  * a jest-haste-map's ModuleMap instance. Eventually, though, we'll
  * want to figure out how to reunify and get rid of `HasteMap`.
  */
-function getFakeModuleMap(hasteMap: HasteMap) {
+function getFakeModuleMap(hasteMap: HasteMap<Module, Packageish>) {
   return {
     getModule(name: string, platform: ?string): ?string {
       const module = hasteMap.getModule(name, platform);
       return module && module.type === 'Module' ? module.path : null;
     },
     getPackage(name: string, platform: ?string): ?string {
-      const module = hasteMap.getModule(name, platform);
-      return module && module.type === 'Package' ? module.path : null;
+      const pkg = hasteMap.getPackage(name);
+      return pkg && pkg.path;
     },
   };
 }
 
-const nullModule = {
+const nullModule: Moduleish = {
   path: '/',
   getPackage() {},
   hash() {
@@ -65,6 +69,8 @@ const nullModule = {
   },
   readCached() { throw new Error('not implemented'); },
   readFresh() { return Promise.reject(new Error('not implemented')); },
+  isHaste() { throw new Error('not implemented'); },
+  getName() { throw new Error('not implemented'); },
 };
 
 exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
@@ -72,6 +78,7 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
     assetExts,
     extraNodeModules,
     transformedFiles,
+    sourceExts,
   } = options;
   const files = Object.keys(transformedFiles);
   function getTransformedFile(path) {
@@ -93,7 +100,7 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
     getTransformedFile,
   );
   const hasteMap = new HasteMap({
-    extensions: ['js', 'json'],
+    extensions: sourceExts,
     files,
     helpers,
     moduleCache,
@@ -104,6 +111,11 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
   const hasteMapBuilt = hasteMap.build();
   const resolutionRequests = {};
   const filesByDirNameIndex = new FilesByDirNameIndex(hasteMap.getAllFiles());
+  const assetResolutionCache = new AssetResolutionCache({
+    assetExtensions: new Set(assetExts),
+    getDirFiles: dirPath => filesByDirNameIndex.getAllFiles(dirPath),
+    platforms,
+  });
   return (id, source, platform, _, callback) => {
     let resolutionRequest = resolutionRequests[platform];
     if (!resolutionRequest) {
@@ -113,12 +125,13 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
         extraNodeModules,
         hasteFS,
         helpers,
-        matchFiles: filesByDirNameIndex.match.bind(filesByDirNameIndex),
         moduleCache,
         moduleMap: getFakeModuleMap(hasteMap),
         platform,
-        platforms,
         preferNativePlatform: true,
+        resolveAsset: (dirPath, assetName) =>
+          assetResolutionCache.resolve(dirPath, assetName, platform),
+        sourceExts,
       });
     }
 

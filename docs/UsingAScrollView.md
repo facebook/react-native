@@ -14,9 +14,9 @@ This example creates a vertical `ScrollView` with both images and text mixed tog
 
 ```ReactNativeWebPlayer
 import React, { Component } from 'react';
-import { AppRegistry, ScrollView, Image, Text } from 'react-native'
+import { AppRegistry, ScrollView, Image, Text } from 'react-native';
 
-class IScrolledDownAndWhatHappenedNextShockedMe extends Component {
+export default class IScrolledDownAndWhatHappenedNextShockedMe extends Component {
   render() {
       return (
         <ScrollView>
@@ -56,7 +56,7 @@ class IScrolledDownAndWhatHappenedNextShockedMe extends Component {
   }
 }
 
-
+// skip these lines if using Create React Native App
 AppRegistry.registerComponent(
   'IScrolledDownAndWhatHappenedNextShockedMe',
   () => IScrolledDownAndWhatHappenedNextShockedMe);

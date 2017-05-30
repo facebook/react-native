@@ -46,6 +46,19 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   YGValue _borderMetaProps[META_PROP_COUNT];
 }
 
++ (YGConfigRef)yogaConfig
+{
+  static YGConfigRef yogaConfig;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    yogaConfig = YGConfigNew();
+    // Turnig off pixel rounding.
+    YGConfigSetPointScaleFactor(yogaConfig, 0.0);
+    YGConfigSetUseLegacyStretchBehaviour(yogaConfig, true);
+  });
+  return yogaConfig;
+}
+
 @synthesize reactTag = _reactTag;
 
 // YogaNode API
@@ -154,6 +167,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   }
   YGNodeSetHasNewLayout(node, false);
 
+  RCTAssert(!YGNodeIsDirty(node), @"Attempt to get layout metrics from dirtied Yoga node.");
+
 #if RCT_DEBUG
   // This works around a breaking change in Yoga layout where setting flexBasis needs to be set explicitly, instead of relying on flex to propagate.
   // We check for it by seeing if a width/height is provided along with a flexBasis of 0 and the width/height is laid out as 0.
@@ -217,7 +232,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     [self didUpdateReactSubviews];
     [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
       UIView *view = viewRegistry[self->_reactTag];
-      [view clearSortedSubviews];
       [view didUpdateReactSubviews];
     }];
   }
@@ -318,7 +332,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 - (instancetype)init
 {
   if ((self = [super init])) {
-
     _frame = CGRectMake(0, 0, YGUndefined, YGUndefined);
 
     for (unsigned int ii = 0; ii < META_PROP_COUNT; ii++) {
@@ -335,7 +348,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 
     _reactSubviews = [NSMutableArray array];
 
-    _yogaNode = YGNodeNew();
+    _yogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
     YGNodeSetContext(_yogaNode, (__bridge void *)self);
     YGNodeSetPrintFunc(_yogaNode, RCTPrint);
   }
@@ -513,16 +526,6 @@ RCT_PADDING_PROPERTY(Top, TOP)
 RCT_PADDING_PROPERTY(Left, LEFT)
 RCT_PADDING_PROPERTY(Bottom, BOTTOM)
 RCT_PADDING_PROPERTY(Right, RIGHT)
-
-- (UIEdgeInsets)paddingAsInsets
-{
-  return (UIEdgeInsets){
-    YGNodeLayoutGetPadding(_yogaNode, YGEdgeTop),
-    YGNodeLayoutGetPadding(_yogaNode, YGEdgeLeft),
-    YGNodeLayoutGetPadding(_yogaNode, YGEdgeBottom),
-    YGNodeLayoutGetPadding(_yogaNode, YGEdgeRight)
-  };
-}
 
 // Border
 

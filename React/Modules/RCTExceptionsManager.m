@@ -16,9 +16,6 @@
 #import "RCTRootView.h"
 
 @implementation RCTExceptionsManager
-{
-  __weak id<RCTExceptionsManagerDelegate> _delegate;
-}
 
 @synthesize bridge = _bridge;
 

@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @format
  */
 'use strict';
 
@@ -35,16 +37,15 @@ it('symbolicates stack frames', () => {
   ];
 
   const stack = mappings.map(m => m.to);
-  const maps =
-    Object.entries(groupBy(mappings, m => m.from.file))
-    .map(([file, ms]) => [file, sourceMap(file, ms)]);
+  const maps = Object.entries(
+    groupBy(mappings, m => m.from.file),
+  ).map(([file, ms]) => [file, sourceMap(file, ms)]);
 
-  return symbolicate(connection, makeData(stack, maps))
-    .then(() =>
-      expect(connection.end).toBeCalledWith(
-        JSON.stringify({result: mappings.map(m => m.to)})
-      )
-    );
+  return symbolicate(connection, makeData(stack, maps)).then(() =>
+    expect(connection.end).toBeCalledWith(
+      JSON.stringify({result: mappings.map(m => m.to)}),
+    ),
+  );
 });
 
 it('ignores stack frames without corresponding map', () => {
@@ -54,12 +55,12 @@ it('ignores stack frames without corresponding map', () => {
     column: 456,
   };
 
-  return symbolicate(connection, makeData([frame], [['other.js', emptyMap()]]))
-    .then(() =>
-      expect(connection.end).toBeCalledWith(
-        JSON.stringify({result: [frame]})
-      )
-    );
+  return symbolicate(
+    connection,
+    makeData([frame], [['other.js', emptyMap()]]),
+  ).then(() =>
+    expect(connection.end).toBeCalledWith(JSON.stringify({result: [frame]})),
+  );
 });
 
 it('ignores `/debuggerWorker.js` stack frames', () => {
@@ -69,12 +70,9 @@ it('ignores `/debuggerWorker.js` stack frames', () => {
     column: 456,
   };
 
-  return symbolicate(connection, makeData([frame]))
-    .then(() =>
-      expect(connection.end).toBeCalledWith(
-        JSON.stringify({result: [frame]})
-      )
-    );
+  return symbolicate(connection, makeData([frame])).then(() =>
+    expect(connection.end).toBeCalledWith(JSON.stringify({result: [frame]})),
+  );
 });
 
 function makeData(stack, maps = []) {
@@ -85,7 +83,8 @@ function sourceMap(file, mappings) {
   const g = new SourceMapGenerator();
   g.startFile(file, null);
   mappings.forEach(({from, to}) =>
-    g.addSourceMapping(to.lineNumber, to.column, from.lineNumber, from.column));
+    g.addSourceMapping(to.lineNumber, to.column, from.lineNumber, from.column),
+  );
   return g.toMap();
 }
 

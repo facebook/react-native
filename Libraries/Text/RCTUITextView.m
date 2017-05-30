@@ -9,6 +9,7 @@
 
 #import "RCTUITextView.h"
 
+#import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
 @implementation RCTUITextView
@@ -39,6 +40,7 @@ static UIColor *defaultPlaceholderTextColor()
     _placeholderView = [[UILabel alloc] initWithFrame:self.bounds];
     _placeholderView.isAccessibilityElement = NO;
     _placeholderView.numberOfLines = 0;
+    _placeholderView.textColor = defaultPlaceholderTextColor();
     [self addSubview:_placeholderView];
   }
 
@@ -122,6 +124,21 @@ static UIColor *defaultPlaceholderTextColor()
 }
 
 - (CGSize)sizeThatFits:(CGSize)size
+{
+  // Returned fitting size depends on text size and placeholder size.
+  CGSize textSize = [self fixedSizeThatFits:size];
+
+  UIEdgeInsets padddingInsets = self.textContainerInset;
+  NSString *placeholderText = self.placeholderText ?: @"";
+  CGSize placeholderSize = [placeholderText sizeWithAttributes:@{NSFontAttributeName: self.font ?: defaultPlaceholderFont()}];
+  placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
+  placeholderSize.width += padddingInsets.left + padddingInsets.right;
+  placeholderSize.height += padddingInsets.top + padddingInsets.bottom;
+
+  return CGSizeMake(MAX(textSize.width, placeholderSize.width), MAX(textSize.height, placeholderSize.height));
+}
+
+- (CGSize)fixedSizeThatFits:(CGSize)size
 {
   // UITextView on iOS 8 has a bug that automatically scrolls to the top
   // when calling `sizeThatFits:`. Use a copy so that self is not screwed up.

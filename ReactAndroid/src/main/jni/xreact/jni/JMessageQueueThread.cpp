@@ -85,11 +85,4 @@ void JMessageQueueThread::quitSynchronous() {
   method(m_jobj);
 }
 
-/* static */
-std::unique_ptr<JMessageQueueThread> JMessageQueueThread::currentMessageQueueThread() {
-  static auto method = MessageQueueThreadRegistry::javaClassStatic()->
-      getStaticMethod<JavaMessageQueueThread::javaobject()>("myMessageQueueThread");
-  return folly::make_unique<JMessageQueueThread>(method(MessageQueueThreadRegistry::javaClassStatic()));
-}
-
 } }

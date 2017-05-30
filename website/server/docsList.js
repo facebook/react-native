@@ -74,7 +74,6 @@ const apis = [
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/Linking/Linking.js',
   '../Libraries/Lists/ListView/ListViewDataSource.js',
-  '../Libraries/Renderer/src/renderers/native/NativeMethodsMixin.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/Interaction/PanResponder.js',
   '../Libraries/PermissionsAndroid/PermissionsAndroid.js',

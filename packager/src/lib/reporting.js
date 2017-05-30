@@ -24,7 +24,7 @@ export type GlobalCacheDisabledReason = 'too_many_errors' | 'too_many_misses';
  */
 export type ReportableEvent = {
   port: number,
-  projectRoots: Array<string>,
+  projectRoots: $ReadOnlyArray<string>,
   type: 'initialize_packager_started',
 } | {
   type: 'initialize_packager_done',
@@ -37,11 +37,13 @@ export type ReportableEvent = {
   type: 'bundle_build_done',
 } | {
   entryFilePath: string,
-  error: Error,
   type: 'bundle_build_failed',
 } | {
   entryFilePath: string,
   type: 'bundle_build_started',
+} | {
+  error: Error,
+  type: 'bundling_error',
 } | {
   type: 'dep_graph_loading',
 } | {
@@ -59,6 +61,12 @@ export type ReportableEvent = {
   reason: GlobalCacheDisabledReason,
 } | {
   type: 'transform_cache_reset',
+} | {
+  type: 'worker_stdout_chunk',
+  chunk: string,
+} | {
+  type: 'worker_stderr_chunk',
+  chunk: string,
 };
 
 /**

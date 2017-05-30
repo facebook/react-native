@@ -9,9 +9,9 @@
 
 #import <React/RCTPackagerClient.h>
 
-#if RCT_DEV // Only supported in dev mode
-
 @class RCTBridge;
+
+#if RCT_DEV // Only supported in dev mode
 
 @interface RCTReloadPackagerMethod : NSObject <RCTPackagerClientMethod>
 
