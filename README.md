@@ -53,19 +53,18 @@ The React Native documentation only discusses the components, APIs and topics sp
 - `git clone https://github.com/facebook/react-native.git`
 - `cd react-native && npm install`
 
-### Running the examples on iOS
+### Running the RNTester app on iOS
 
-Now open any example (the `.xcodeproj` file in each of the `Examples` subdirectories) and hit Run in Xcode.
+Now open `RNTester/RNTester.xcodeproj` and hit Run in Xcode.
 
-### Running the examples on Android
+### Running the RNTester app on Android
 
 Note that you'll need the Android NDK installed, see [prerequisites](https://github.com/facebook/react-native/blob/master/ReactAndroid/README.md#prerequisites).
 
 ```bash
-./gradlew :Examples:Movies:android:app:installDebug
+./gradlew :RNTester:android:app:installDebug
 # Start the packager in a separate shell (make sure you ran npm install):
 ./scripts/packager.sh
-# Open the Movies app in your emulator
 ```
 
 ## Extending React Native

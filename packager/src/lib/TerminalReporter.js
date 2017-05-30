@@ -126,8 +126,7 @@ class TerminalReporter {
     }
   }
 
-  _logBundleBuildFailed(entryFilePath: string, error: Error) {
-    reporting.logError(terminal, 'bundling: %s', error.stack);
+  _logBundleBuildFailed(entryFilePath: string) {
     const progress = this._activeBundles.get(entryFilePath);
     if (progress != null) {
       const msg = this._getBundleStatusMessage(entryFilePath, progress, 'failed');
@@ -201,7 +200,10 @@ class TerminalReporter {
         this._logBundleBuildDone(event.entryFilePath);
         break;
       case 'bundle_build_failed':
-        this._logBundleBuildFailed(event.entryFilePath, event.error);
+        this._logBundleBuildFailed(event.entryFilePath);
+        break;
+      case 'bundling_error':
+        this._logBundlingError(event.error);
         break;
       case 'dep_graph_loaded':
         terminal.log(`${DEP_GRAPH_MESSAGE}, done.`);
@@ -219,6 +221,16 @@ class TerminalReporter {
         this._logWorkerChunk('stderr', event.chunk);
         break;
     }
+  }
+
+  /**
+   * We do not want to log the whole stacktrace for bundling error, because
+   * these are operational errors, not programming errors, and the stacktrace
+   * is not actionable to end users.
+   */
+  _logBundlingError(error: Error) {
+    const str = JSON.stringify(error.message);
+    reporting.logError(terminal, 'bundling failed: %s', str);
   }
 
   _logWorkerChunk(origin: 'stdout' | 'stderr', chunk: string) {

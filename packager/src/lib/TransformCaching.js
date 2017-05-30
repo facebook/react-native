@@ -22,7 +22,7 @@ const rimraf = require('rimraf');
 const terminal = require('../lib/terminal');
 const writeFileAtomicSync = require('write-file-atomic').sync;
 
-import type {Options as WorkerOptions} from '../JSTransformer/worker/worker';
+import type {Options as WorkerOptions} from '../JSTransformer/worker';
 import type {MappingsMap} from './SourceMap';
 import type {Reporter} from './reporting';
 import type {LocalPath} from '../node-haste/lib/toLocalPath';

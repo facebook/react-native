@@ -347,7 +347,6 @@ var styles = StyleSheet.create({
     paddingBottom: 300,
   },
   default: {
-    height: 26,
     borderWidth: 0.5,
     borderColor: '#0f0f0f',
     flex: 1,
@@ -756,6 +755,53 @@ exports.examples = [
             style={styles.multiline}>
             <View style={styles.multilineChild}/>
           </TextInput>
+        </View>
+      );
+    }
+  },
+  {
+    title: 'TextInput Intrinsic Size',
+    render: function() {
+      return (
+        <View>
+          <Text>Singleline TextInput</Text>
+          <View style={{height: 80}}>
+            <TextInput
+              style={{
+                position: 'absolute',
+                fontSize: 16,
+                backgroundColor: '#eeeeee',
+                borderColor: '#666666',
+                borderWidth: 5,
+                borderTopWidth: 20,
+                borderRadius: 10,
+                borderBottomRightRadius: 20,
+                padding: 10,
+                paddingTop: 20,
+              }}
+              placeholder="Placeholder defines intrinsic size"
+            />
+          </View>
+          <Text>Multiline TextInput</Text>
+          <View style={{height: 130}}>
+            <TextInput
+              style={{
+                position: 'absolute',
+                fontSize: 16,
+                backgroundColor: '#eeeeee',
+                borderColor: '#666666',
+                borderWidth: 5,
+                borderTopWidth: 20,
+                borderRadius: 10,
+                borderBottomRightRadius: 20,
+                padding: 10,
+                paddingTop: 20,
+                maxHeight: 100
+              }}
+              multiline={true}
+              placeholder="Placeholder defines intrinsic size"
+            />
+          </View>
         </View>
       );
     }

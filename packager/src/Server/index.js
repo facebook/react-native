@@ -80,6 +80,7 @@ type Options = {
   +transformModulePath: string,
   transformTimeoutInterval?: number,
   watch?: boolean,
+  workerPath: ?string,
 };
 
 export type BundleOptions = {
@@ -137,6 +138,7 @@ class Server {
     +transformModulePath: string,
     transformTimeoutInterval: ?number,
     watch: boolean,
+    workerPath: ?string,
   };
   _projectRoots: $ReadOnlyArray<string>;
   _bundles: {};
@@ -177,7 +179,9 @@ class Server {
       transformModulePath: options.transformModulePath,
       transformTimeoutInterval: options.transformTimeoutInterval,
       watch: options.watch || false,
+      workerPath: options.workerPath,
     };
+
     const processFileChange =
       ({type, filePath}) => this.onFileChange(type, filePath);
 
@@ -503,7 +507,6 @@ class Server {
     }, error => {
       this._reporter.update({
         entryFilePath: options.entryFile,
-        error,
         type: 'bundle_build_failed',
       });
       return Promise.reject(error);
@@ -796,9 +799,11 @@ class Server {
       'Content-Type': 'application/json; charset=UTF-8',
     });
 
-    if (error.type === 'TransformError' ||
-        error.type === 'NotFoundError' ||
-        error.type === 'UnableToResolveError') {
+    if (error instanceof Error && (
+          error.type === 'TransformError' ||
+          error.type === 'NotFoundError' ||
+          error.type === 'UnableToResolveError'
+        )) {
       error.errors = [{
         description: error.description,
         filename: error.filename,
@@ -809,6 +814,7 @@ class Server {
       if (error.type === 'NotFoundError') {
         delete this._bundles[bundleID];
       }
+      this._reporter.update({error, type: 'bundling_error'});
     } else {
       console.error(error.stack || error);
       res.end(JSON.stringify({

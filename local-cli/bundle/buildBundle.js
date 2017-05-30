@@ -95,6 +95,7 @@ function buildBundle(
       transformCache: TransformCaching.useTempDir(),
       transformModulePath: transformModulePath,
       watch: false,
+      workerPath: config.getWorkerPath && config.getWorkerPath(),
     };
 
     packagerInstance = new Server(options);

@@ -329,7 +329,7 @@ You can then define methods and export your enum constants like this:
 {
   return @{ @"statusBarAnimationNone" : @(UIStatusBarAnimationNone),
             @"statusBarAnimationFade" : @(UIStatusBarAnimationFade),
-            @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide) }
+            @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide) };
 };
 
 RCT_EXPORT_METHOD(updateStatusBarAnimation:(UIStatusBarAnimation)animation
