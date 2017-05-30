@@ -25,7 +25,7 @@ Vending a view is simple:
 - Add the `RCT_EXPORT_MODULE()` marker macro.
 - Implement the `-(UIView *)view` method.
 
-```objective-c
+```objectivec
 // RNTMapManager.m
 #import <MapKit/MapKit.h>
 
@@ -66,7 +66,7 @@ This is now a fully-functioning native map view component in JavaScript, complet
 
 The first thing we can do to make this component more usable is to bridge over some native properties. Let's say we want to be able to disable pitch control and specify the visible region.  Disabling pitch is a simple boolean, so we add this one line:
 
-```objective-c
+```objectivec
 // RNTMapManager.m
 RCT_EXPORT_VIEW_PROPERTY(pitchEnabled, BOOL)
 ```
@@ -113,7 +113,7 @@ Now we have a nicely documented wrapper component that is easy to work with.  No
 
 Next, let's add the more complex `region` prop.  We start by adding the native code:
 
-```objective-c
+```objectivec
 // RNTMapManager.m
 RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RNTMap)
 {
@@ -125,7 +125,7 @@ Ok, this is more complicated than the simple `BOOL` case we had before.  Now we 
 
 You could write any conversion function you want for your view - here is the implementation for `MKCoordinateRegion` via two categories on `RCTConvert`:
 
-```objective-c
+```objectivec
 @implementation RCTConvert(CoreLocation)
 
 RCT_CONVERTER(CLLocationDegrees, CLLocationDegrees, doubleValue);
@@ -229,7 +229,7 @@ var RCTSwitch = requireNativeComponent('RCTSwitch', Switch, {
 
 So now we have a native map component that we can control easily from JS, but how do we deal with events from the user, like pinch-zooms or panning to change the visible region?  The key is to declare an event handler property on `RNTMapManager`, make it a delegate for all the views it vends, and forward events to JS by calling the event handler block from the native view.  This looks like so (simplified from the full implementation):
 
-```objective-c
+```objectivec
 // RNTMap.h
 
 #import <MapKit/MapKit.h>
@@ -243,7 +243,7 @@ So now we have a native map component that we can control easily from JS, but ho
 @end
 ```
 
-```objective-c
+```objectivec
 // RNTMap.m
 
 #import "RNTMap.h"
@@ -253,7 +253,7 @@ So now we have a native map component that we can control easily from JS, but ho
 @end
 ```
 
-```objective-c
+```objectivec
 // RNTMapManager.m
 
 #import "RNTMapManager.h"
@@ -383,7 +383,7 @@ var styles = StyleSheet.create({
 
 The `RCTDatePickerIOSConsts` constants are exported from native by grabbing the actual frame of the native component like so:
 
-```objective-c
+```objectivec
 // RCTDatePickerManager.m
 
 - (NSDictionary *)constantsToExport

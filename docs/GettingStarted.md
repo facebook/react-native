@@ -240,7 +240,7 @@ React Native also requires a recent version of the [Java SE Development Kit (JDK
 
 Open an Administrator Command Prompt (right click Command Prompt and select "Run as Administrator"), then run the following commands:
 
-```
+```powershell
 choco install nodejs.install
 choco install python2
 choco install jdk8
@@ -272,7 +272,7 @@ Node comes with npm, which lets you install the React Native command line interf
 
 Run the following command in a Command Prompt or shell:
 
-```
+```powershell
 npm install -g react-native-cli
 ```
 
@@ -430,7 +430,7 @@ Open the System pane under **System and Security** in the Control Panel, then cl
 
 The SDK is installed, by default, at the following location:
 
-```
+```powershell
 c:\Users\YOUR_USERNAME\AppData\Local\Android\Sdk
 ```
 
@@ -646,7 +646,6 @@ function displayTab(type, value) {
   var container = document.getElementsByTagName('block')[0].parentNode;
   container.className = 'display-' + type + '-' + value + ' ' +
     container.className.replace(RegExp('display-' + type + '-[a-z]+ ?'), '');
-  console.log(container.className);
   event && event.preventDefault();
 }
 </script>
