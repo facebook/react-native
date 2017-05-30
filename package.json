@@ -27,7 +27,8 @@
       "Libraries/Renderer",
       "/node_modules/",
       "/website/",
-      "local-cli/templates/"
+      "local-cli/templates/",
+      "packager/integration_tests/__tests__/basic_bundle-test.js"
     ],
     "haste": {
       "defaultPlatform": "ios",

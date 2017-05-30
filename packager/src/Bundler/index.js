@@ -44,7 +44,7 @@ import type AssetServer from '../AssetServer';
 import type Module, {HasteImpl} from '../node-haste/Module';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 import type {MappingsMap} from '../lib/SourceMap';
-import type {Options as JSTransformerOptions} from '../JSTransformer/worker/worker';
+import type {Options as JSTransformerOptions} from '../JSTransformer/worker';
 import type {Reporter} from '../lib/reporting';
 import type {TransformCache} from '../lib/TransformCaching';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
@@ -126,8 +126,8 @@ type Options = {|
   +hasteImpl?: HasteImpl,
   +platforms: Array<string>,
   +polyfillModuleNames: Array<string>,
-  +postProcessModules?: PostProcessModules,
   +postMinifyProcess: PostMinifyProcess,
+  +postProcessModules?: PostProcessModules,
   +projectRoots: $ReadOnlyArray<string>,
   +providesModuleNodeModules?: Array<string>,
   +reporter: Reporter,
@@ -137,6 +137,7 @@ type Options = {|
   +transformModulePath: string,
   +transformTimeoutInterval: ?number,
   +watch: boolean,
+  +workerPath: ?string,
 |};
 
 const {hasOwnProperty} = Object;
@@ -197,7 +198,8 @@ class Bundler {
       {
         stdoutChunk: chunk => opts.reporter.update({type: 'worker_stdout_chunk', chunk}),
         stderrChunk: chunk => opts.reporter.update({type: 'worker_stderr_chunk', chunk}),
-      }
+      },
+      opts.workerPath,
     );
 
     const getTransformCacheKey = options => {

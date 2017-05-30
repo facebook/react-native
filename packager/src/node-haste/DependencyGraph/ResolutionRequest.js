@@ -27,7 +27,7 @@ import type DependencyGraphHelpers from './DependencyGraphHelpers';
 import type ResolutionResponse from './ResolutionResponse';
 import type {
   Options as TransformWorkerOptions,
-} from '../../JSTransformer/worker/worker';
+} from '../../JSTransformer/worker';
 import type {ReadResult, CachedReadResult} from '../Module';
 
 type DirExistsFn = (filePath: string) => boolean;

@@ -39,6 +39,7 @@ type Options = {
   +transformCache: TransformCache,
   +transformModulePath: string,
   watch?: boolean,
+  workerPath: ?string,
 };
 
 type StrictOptions = {...Options, reporter: Reporter};
