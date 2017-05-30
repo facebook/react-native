@@ -62,11 +62,11 @@ class TransformSampleApp extends React.Component {
   render() {
     var style = {
       transform: [
-        {translateX: 20},
-        {translateY: 25},
-        {rotate: '15deg'},
-        {scaleX: 5},
         {scaleY: 10},
+        {scaleX: 5},
+        {rotate: '15deg'},
+        {translateY: 25},
+        {translateX: 20},
       ]
     };
     return (
