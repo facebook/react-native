@@ -17,12 +17,13 @@ Pod::Spec.new do |spec|
                       'folly/Bits.cpp',
                       'folly/Conv.cpp',
                       'folly/Demangle.cpp',
-#                      'folly/File.cpp',
                       'folly/StringBase.cpp',
                       'folly/Unicode.cpp',
                       'folly/dynamic.cpp',
                       'folly/json.cpp'
+  spec.libraries           = "stdc++"
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\"" }
 
   # Pinning to the same version as React.podspec.
