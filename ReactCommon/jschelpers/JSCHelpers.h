@@ -6,7 +6,6 @@
 #include <functional>
 #include <stdexcept>
 
-#include <folly/String.h>
 #include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Value.h>
 
@@ -18,21 +17,12 @@ public:
   explicit JSException(const char* msg)
     : msg_(msg) {}
 
-  template <typename... Args>
-  explicit JSException(const char* fmt, Args... args)
-    : msg_(folly::stringPrintf(fmt, args...)) {}
-
   explicit JSException(JSContextRef ctx, JSValueRef exn, const char* msg) {
     buildMessage(ctx, exn, nullptr, msg);
   }
 
   explicit JSException(JSContextRef ctx, JSValueRef exn, JSStringRef sourceURL) {
     buildMessage(ctx, exn, sourceURL, nullptr);
-  }
-
-  template <typename... Args>
-  explicit JSException(JSContextRef ctx, JSValueRef exn, JSStringRef sourceURL, const char* fmt, Args... args) {
-    buildMessage(ctx, exn, sourceURL, folly::stringPrintf(fmt, args...).c_str());
   }
 
   const std::string& getStack() const {
