@@ -199,5 +199,14 @@
     "infoLink": "https://eng.uber.com/ubereats-react-native/",
     "infoTitle": "Powering UberEATS with React Native and Uber Engineering",
     "pinned": false
+  },
+  {
+    "name": "Wix",
+    "icon": "http://static.wixstatic.com/media/fde015_133f8812904047099f0306bec5c66c78~mv2.png",
+    "linkAppStore": "https://itunes.apple.com/us/app/wix.com/id1099748482",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.wix.android",
+    "infoLink": "https://www.youtube.com/watch?v=abSNo2P9mMM",
+    "infoTitle": "Building a React Native App for 80 Million Users",
+    "pinned": false
   }
 ]
