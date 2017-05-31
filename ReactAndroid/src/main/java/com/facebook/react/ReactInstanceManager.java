@@ -613,7 +613,7 @@ public class ReactInstanceManager {
    * be re-attached.
    */
   @ThreadConfined(UI)
-  public void attachMeasuredRootView(ReactRootView rootView) {
+  public void attachRootView(ReactRootView rootView) {
     UiThreadUtil.assertOnUiThread();
     mAttachedRootViews.add(rootView);
 
@@ -624,7 +624,7 @@ public class ReactInstanceManager {
     // If react context is being created in the background, JS application will be started
     // automatically when creation completes, as root view is part of the attached root view list.
     if (mCreateReactContextThread == null && mCurrentReactContext != null) {
-      attachMeasuredRootViewToInstance(rootView, mCurrentReactContext.getCatalystInstance());
+      attachRootViewToInstance(rootView, mCurrentReactContext.getCatalystInstance());
     }
   }
 
@@ -814,7 +814,7 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
     synchronized (mAttachedRootViews) {
       for (ReactRootView rootView : mAttachedRootViews) {
-        attachMeasuredRootViewToInstance(rootView, catalystInstance);
+        attachRootViewToInstance(rootView, catalystInstance);
       }
     }
     ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
@@ -850,16 +850,16 @@ public class ReactInstanceManager {
     }
   }
 
-  private void attachMeasuredRootViewToInstance(
+  private void attachRootViewToInstance(
       final ReactRootView rootView,
       CatalystInstance catalystInstance) {
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachMeasuredRootViewToInstance");
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
     if (!mSetupReactContextInBackgroundEnabled) {
       UiThreadUtil.assertOnUiThread();
     }
 
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
-    final int rootTag = uiManagerModule.addMeasuredRootView(rootView);
+    final int rootTag = uiManagerModule.addRootView(rootView);
     rootView.setRootViewTag(rootTag);
     rootView.runApplication();
     Systrace.beginAsyncSection(

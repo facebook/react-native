@@ -94,7 +94,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private native static HybridData initHybrid();
 
   private CatalystInstanceImpl(
-      final ReactQueueConfigurationSpec ReactQueueConfigurationSpec,
+      final ReactQueueConfigurationSpec reactQueueConfigurationSpec,
       final JavaScriptExecutor jsExecutor,
       final NativeModuleRegistry registry,
       final JavaScriptModuleRegistry jsModuleRegistry,
@@ -104,7 +104,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mHybridData = initHybrid();
 
     mReactQueueConfiguration = ReactQueueConfigurationImpl.create(
-        ReactQueueConfigurationSpec,
+        reactQueueConfigurationSpec,
         new NativeExceptionHandler());
     mBridgeIdleListeners = new CopyOnWriteArrayList<>();
     mJavaRegistry = registry;

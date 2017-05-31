@@ -26,6 +26,7 @@ const GLOBAL_CACHE_DISABLED_MESSAGE_FORMAT =
   'The global cache is now disabled because %s';
 
 type BundleProgress = {
+  entryFilePath: string,
   transformedFileCount: number,
   totalFileCount: number,
   ratio: number,
@@ -43,8 +44,8 @@ function getProgressBar(ratio: number, length: number) {
 }
 
 export type TerminalReportableEvent = ReportableEvent | {
+  buildID: string,
   type: 'bundle_transform_progressed_throttled',
-  entryFilePath: string,
   transformedFileCount: number,
   totalFileCount: number,
 };
@@ -66,7 +67,7 @@ class TerminalReporter {
 
   _dependencyGraphHasLoaded: boolean;
   _scheduleUpdateBundleProgress: (data: {
-    entryFilePath: string,
+    buildID: string,
     transformedFileCount: number,
     totalFileCount: number,
   }) => void;
@@ -86,8 +87,7 @@ class TerminalReporter {
    *     Bunding `foo.js`  |####         | 34.2% (324/945)
    */
   _getBundleStatusMessage(
-    entryFilePath: string,
-    {totalFileCount, transformedFileCount, ratio}: BundleProgress,
+    {entryFilePath, totalFileCount, transformedFileCount, ratio}: BundleProgress,
     phase: BuildPhase,
   ): string {
     const localPath = path.relative('.', entryFilePath);
@@ -114,10 +114,10 @@ class TerminalReporter {
     }
   }
 
-  _logBundleBuildDone(entryFilePath: string) {
-    const progress = this._activeBundles.get(entryFilePath);
+  _logBundleBuildDone(buildID: string) {
+    const progress = this._activeBundles.get(buildID);
     if (progress != null) {
-      const msg = this._getBundleStatusMessage(entryFilePath, {
+      const msg = this._getBundleStatusMessage({
         ...progress,
         ratio: 1,
         transformedFileCount: progress.totalFileCount,
@@ -126,10 +126,10 @@ class TerminalReporter {
     }
   }
 
-  _logBundleBuildFailed(entryFilePath: string) {
-    const progress = this._activeBundles.get(entryFilePath);
+  _logBundleBuildFailed(buildID: string) {
+    const progress = this._activeBundles.get(buildID);
     if (progress != null) {
-      const msg = this._getBundleStatusMessage(entryFilePath, progress, 'failed');
+      const msg = this._getBundleStatusMessage(progress, 'failed');
       terminal.log(msg);
     }
   }
@@ -197,10 +197,10 @@ class TerminalReporter {
         this._logPackagerInitializingFailed(event.port, event.error);
         break;
       case 'bundle_build_done':
-        this._logBundleBuildDone(event.entryFilePath);
+        this._logBundleBuildDone(event.buildID);
         break;
       case 'bundle_build_failed':
-        this._logBundleBuildFailed(event.entryFilePath);
+        this._logBundleBuildFailed(event.buildID);
         break;
       case 'bundling_error':
         this._logBundlingError(event.error);
@@ -249,13 +249,13 @@ class TerminalReporter {
    * also prevent the ratio from going backwards.
    */
   _updateBundleProgress(
-    {entryFilePath, transformedFileCount, totalFileCount}: {
-      entryFilePath: string,
+    {buildID, transformedFileCount, totalFileCount}: {
+      buildID: string,
       transformedFileCount: number,
       totalFileCount: number,
     },
   ) {
-    const currentProgress = this._activeBundles.get(entryFilePath);
+    const currentProgress = this._activeBundles.get(buildID);
     if (currentProgress == null) {
       return;
     }
@@ -277,10 +277,11 @@ class TerminalReporter {
     switch (event.type) {
       case 'bundle_build_done':
       case 'bundle_build_failed':
-        this._activeBundles.delete(event.entryFilePath);
+        this._activeBundles.delete(event.buildID);
         break;
       case 'bundle_build_started':
-        this._activeBundles.set(event.entryFilePath, {
+        this._activeBundles.set(event.buildID, {
+          entryFilePath: event.entryFilePath,
           transformedFileCount: 0,
           totalFileCount: 1,
           ratio: 0,
@@ -322,8 +323,8 @@ class TerminalReporter {
     return [
       this._getDepGraphStatusMessage(),
     ].concat(Array.from(this._activeBundles.entries()).map(
-      ([entryFilePath, progress]) =>
-        this._getBundleStatusMessage(entryFilePath, progress, 'in_progress'),
+      ([_, progress]) =>
+        this._getBundleStatusMessage(progress, 'in_progress'),
     )).filter(str => str != null).join('\n');
   }
 

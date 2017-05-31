@@ -78,7 +78,7 @@ function saveAsAssets(
 
   return Promise.all([
     writeUnbundle,
-    sourcemapOutput && writeSourceMap(sourcemapOutput, JSON.stringify(sourceMap), log)
+    sourcemapOutput && writeSourceMap(sourcemapOutput, JSON.stringify(sourceMap), log),
   ]);
 }
 

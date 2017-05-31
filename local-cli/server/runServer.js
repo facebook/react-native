@@ -20,10 +20,10 @@ const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
-const defaultAssetExts = require('../../packager/defaults').assetExts;
-const defaultSourceExts = require('../../packager/defaults').sourceExts;
-const defaultPlatforms = require('../../packager/defaults').platforms;
-const defaultProvidesModuleNodeModules = require('../../packager/defaults')
+const defaultAssetExts = require('../../packager/src/defaults').assetExts;
+const defaultSourceExts = require('../../packager/src/defaults').sourceExts;
+const defaultPlatforms = require('../../packager/src/defaults').platforms;
+const defaultProvidesModuleNodeModules = require('../../packager/src/defaults')
   .providesModuleNodeModules;
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
 const http = require('http');

@@ -11,7 +11,7 @@
 jest.disableAutomock();
 
 const ModuleGraph = require('../ModuleGraph');
-const defaults = require('../../../defaults');
+const defaults = require('../../defaults');
 
 const FILE_TYPE = 'module';
 

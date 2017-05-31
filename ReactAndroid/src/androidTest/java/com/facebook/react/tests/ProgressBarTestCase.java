@@ -27,7 +27,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
-import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
@@ -98,7 +97,7 @@ public class ProgressBarTestCase extends ReactIntegrationTestCase {
     DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
     mRootView.setLayoutParams(
         new FrameLayout.LayoutParams(metrics.widthPixels, metrics.heightPixels));
-    int rootTag = mUIManager.addMeasuredRootView(mRootView);
+    int rootTag = mUIManager.addRootView(mRootView);
     mInstance.getJSModule(ProgressBarTestModule.class).renderProgressBarApplication(rootTag);
     waitForBridgeAndUIIdle();
   }

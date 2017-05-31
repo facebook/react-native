@@ -13,7 +13,7 @@
 
 const DependencyGraph = require('../node-haste/DependencyGraph');
 
-const defaults = require('../../defaults');
+const defaults = require('../defaults');
 const pathJoin = require('path').join;
 
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';

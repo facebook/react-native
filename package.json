@@ -175,7 +175,7 @@
     "glob": "^7.1.1",
     "graceful-fs": "^4.1.3",
     "image-size": "^0.3.5",
-    "inquirer": "^0.12.0",
+    "inquirer": "^3.0.6",
     "jest-haste-map": "^20.0.4",
     "json-stable-stringify": "^1.0.1",
     "json5": "^0.4.0",
