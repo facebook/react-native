@@ -34,6 +34,7 @@ function dependencies(argv, config, args, packagerInstance) {
     transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
     verbose: config.verbose,
+    workerPath: config.getWorkerPath(),
   };
 
   const relativePath = packageOpts.projectRoots.map(root =>
