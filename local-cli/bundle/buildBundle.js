@@ -19,10 +19,10 @@ const TransformCaching = require('../../packager/src/lib/TransformCaching');
 const outputBundle = require('../../packager/src/shared/output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
-const defaultAssetExts = require('../../packager/defaults').assetExts;
-const defaultSourceExts = require('../../packager/defaults').sourceExts;
-const defaultPlatforms = require('../../packager/defaults').platforms;
-const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
+const defaultAssetExts = require('../../packager/src/defaults').assetExts;
+const defaultSourceExts = require('../../packager/src/defaults').sourceExts;
+const defaultPlatforms = require('../../packager/src/defaults').platforms;
+const defaultProvidesModuleNodeModules = require('../../packager/src/defaults').providesModuleNodeModules;
 
 import type {RequestOptions, OutputOptions} from './types.flow';
 import type {ConfigT} from '../util/Config';

@@ -15,7 +15,7 @@ const AssetServer = require('../AssetServer');
 const Bundler = require('../Bundler');
 const MultipartResponse = require('./MultipartResponse');
 
-const defaults = require('../../defaults');
+const defaults = require('../defaults');
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const mime = require('mime-types');
 const parsePlatformFilePath = require('../node-haste/lib/parsePlatformFilePath');

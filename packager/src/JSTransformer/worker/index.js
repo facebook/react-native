@@ -11,7 +11,7 @@
 
 'use strict';
 
-const babelRegisterOnly = require('../../../babelRegisterOnly');
+const babelRegisterOnly = require('../../babelRegisterOnly');
 const constantFolding = require('./constant-folding');
 const extractDependencies = require('./extract-dependencies');
 const inline = require('./inline');

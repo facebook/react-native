@@ -23,10 +23,10 @@ const makeHMRConfig = require('babel-preset-react-native/configs/hmr');
 const path = require('path');
 const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
 
-const {compactMapping} = require('./src/Bundler/source-map');
+const {compactMapping} = require('./Bundler/source-map');
 
 import type {Plugins as BabelPlugins} from 'babel-core';
-import type {Transformer, TransformOptions} from './src/JSTransformer/worker';
+import type {Transformer, TransformOptions} from './JSTransformer/worker';
 
 const cacheKeyParts = [
   fs.readFileSync(__filename),
@@ -63,7 +63,7 @@ const getBabelRC = (function() {
     if (!projectBabelRCPath || !fs.existsSync(projectBabelRCPath)) {
       babelRC = json5.parse(
         fs.readFileSync(
-          path.resolve(__dirname, 'rn-babelrc.json'))
+          path.resolve(__dirname, '..', 'rn-babelrc.json'))
         );
 
       // Require the babel-preset's listed in the default babel config

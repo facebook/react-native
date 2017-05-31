@@ -10,12 +10,12 @@
  */
 'use strict';
 
-const blacklist = require('../../packager/blacklist');
+const blacklist = require('../../packager/src/blacklist');
 const fs = require('fs');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 
-const {providesModuleNodeModules} = require('../../packager/defaults');
+const {providesModuleNodeModules} = require('../../packager/src/defaults');
 
 const RN_CLI_CONFIG = 'rn-cli.config.js';
 
@@ -120,7 +120,7 @@ const defaultConfig: ConfigT = {
   getProjectRoots: () => [process.cwd()],
   getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
   getSourceExts: () => [],
-  getTransformModulePath: () => path.resolve(__dirname, '../../packager/transformer.js'),
+  getTransformModulePath: () => path.resolve(__dirname, '../../packager/src/transformer.js'),
   getTransformOptions: async () => ({}),
   postMinifyProcess: x => x,
   postProcessModules: modules => modules,

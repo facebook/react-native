@@ -11,18 +11,18 @@
 
 'use strict';
 
-const Logger = require('./src/Logger');
-const TransformCaching = require('./src/lib/TransformCaching');
+const Logger = require('./Logger');
+const TransformCaching = require('./lib/TransformCaching');
 
 const debug = require('debug');
 const invariant = require('fbjs/lib/invariant');
 
-import type {PostProcessModules, PostMinifyProcess} from './src/Bundler';
-import type Server from './src/Server';
-import type {GlobalTransformCache} from './src/lib/GlobalTransformCache';
-import type {TransformCache} from './src/lib/TransformCaching';
-import type {Reporter} from './src/lib/reporting';
-import type {HasteImpl} from './src/node-haste/Module';
+import type {PostProcessModules, PostMinifyProcess} from './Bundler';
+import type Server from './Server';
+import type {GlobalTransformCache} from './lib/GlobalTransformCache';
+import type {TransformCache} from './lib/TransformCaching';
+import type {Reporter} from './lib/reporting';
+import type {HasteImpl} from './node-haste/Module';
 
 exports.createServer = createServer;
 exports.Logger = Logger;
@@ -78,7 +78,7 @@ function assertPublicBundleOptions(bo: mixed): PublicBundleOptions {
 
 exports.buildBundle = function(options: Options, bundleOptions: PublicBundleOptions) {
   var server = createNonPersistentServer(options);
-  const ServerClass = require('./src/Server');
+  const ServerClass = require('./Server');
   return server.buildBundle({
     ...ServerClass.DEFAULT_BUNDLE_OPTIONS,
     ...assertPublicBundleOptions(bundleOptions),
@@ -129,7 +129,7 @@ function createServer(options: StrictOptions): Server {
   }
   const serverOptions = Object.assign({}, options);
   delete serverOptions.verbose;
-  const ServerClass = require('./src/Server');
+  const ServerClass = require('./Server');
   return new ServerClass(serverOptions);
 }
 
@@ -138,7 +138,7 @@ function createNonPersistentServer(options: Options): Server {
     // It's unsound to set-up the reporter here,
     // but this allows backward compatibility.
     reporter: options.reporter == null
-      ? require('./src/lib/reporting').nullReporter
+      ? require('./lib/reporting').nullReporter
       : options.reporter,
     ...options,
     watch: !options.nonPersistent,
