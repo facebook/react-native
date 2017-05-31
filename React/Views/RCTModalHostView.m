@@ -132,16 +132,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     } else if ([self.animationType isEqualToString:@"slide"]) {
       _modalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     }
-    if ([self.presentationStyle isEqualToString:@"fullScreen"]) {
-      _modalViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-#if !TARGET_OS_TV
-    } else if ([self.presentationStyle isEqualToString:@"pageSheet"]) {
-      _modalViewController.modalPresentationStyle = UIModalPresentationPageSheet;
-    } else if ([self.presentationStyle isEqualToString:@"formSheet"]) {
-      _modalViewController.modalPresentationStyle = UIModalPresentationFormSheet;
-#endif
-    } else if ([self.presentationStyle isEqualToString:@"overFullScreen"]) {
-      _modalViewController.modalPresentationStyle = UIModalPresentationOverFullScreen;
+    if (self.presentationStyle != UIModalPresentationNone) {
+      _modalViewController.modalPresentationStyle = self.presentationStyle;
     }
     [_delegate presentModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = YES;
@@ -176,7 +168,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
 - (void)setTransparent:(BOOL)transparent
 {
-  if ([self isTransparent] != transparent) {
+  if (self.transparent != transparent) {
     _modalViewController.modalPresentationStyle = transparent ? UIModalPresentationOverFullScreen : UIModalPresentationFullScreen;
   }
 }

@@ -18,6 +18,7 @@ const React = require('React');
 const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
+const warning = require('fbjs/lib/warning');
 
 const deprecatedPropType = require('deprecatedPropType');
 const requireNativeComponent = require('requireNativeComponent');
@@ -153,16 +154,19 @@ class Modal extends React.Component {
   static contextTypes = {
     rootTag: PropTypes.number,
   };
+
   constructor(props: Object) {
     super(props);
     Modal._confirmProps(props);
   }
+
   componentWillReceiveProps(nextProps: Object) {
     Modal._confirmProps(nextProps);
   }
+
   static _confirmProps(props: Object) {
     if (props.presentationStyle && props.presentationStyle !== 'overFullScreen' && props.transparent) {
-      console.warn(`Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`);
+      warning(false, `Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`);
     }
   }
 
