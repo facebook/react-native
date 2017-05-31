@@ -37,6 +37,7 @@ JSC_IMPORT JSValueRef JSEvaluateBytecodeBundle(JSContextRef, JSObjectRef, int, J
 JSC_IMPORT bool JSSamplingProfilerEnabled();
 JSC_IMPORT void JSStartSamplingProfilingOnMainJSCThread(JSGlobalContextRef);
 JSC_IMPORT JSValueRef JSPokeSamplingProfiler(JSContextRef);
+JSC_IMPORT void FBJSContextStartGCTimers(JSContextRef);
 
 #if defined(__APPLE__)
 #import <objc/objc.h>
@@ -64,6 +65,7 @@ struct JSCWrapper {
   // JSContext
   JSC_WRAPPER_METHOD(JSContextGetGlobalContext);
   JSC_WRAPPER_METHOD(JSContextGetGlobalObject);
+  JSC_WRAPPER_METHOD(FBJSContextStartGCTimers);
 
   // JSEvaluate
   JSC_WRAPPER_METHOD(JSEvaluateScript);
