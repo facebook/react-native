@@ -13,7 +13,6 @@
 
 const BatchedBridge = require('BatchedBridge');
 
-const defineLazyObjectProperty = require('defineLazyObjectProperty');
 const invariant = require('fbjs/lib/invariant');
 
 type ModuleConfig = [
@@ -81,6 +80,12 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
     };
   } else if (type === 'sync') {
     fn = function(...args: Array<any>) {
+      if (__DEV__) {
+        invariant(global.nativeCallSyncHook, 'Calling synchronous methods on native ' +
+          'modules is not supported in Chrome.\n\n Consider providing alternative ' +
+          'methods to expose this method in debug mode, e.g. by exposing constants ' +
+          'ahead-of-time.');
+      }
       return global.nativeCallSyncHook(moduleID, methodID, args);
     };
   } else {
@@ -125,6 +130,7 @@ if (global.nativeModuleProxy) {
   const bridgeConfig = global.__fbBatchedBridgeConfig;
   invariant(bridgeConfig, '__fbBatchedBridgeConfig is not set, cannot invoke native modules');
 
+  const defineLazyObjectProperty = require('defineLazyObjectProperty');
   (bridgeConfig.remoteModuleConfig || []).forEach((config: ModuleConfig, moduleID: number) => {
     // Initially this config will only contain the module name when running in JSC. The actual
     // configuration of the module will be lazily loaded.

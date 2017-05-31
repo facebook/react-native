@@ -4,6 +4,7 @@ title: Native Modules
 layout: docs
 category: Guides (Android)
 permalink: docs/native-modules-android.html
+banner: ejected
 next: native-components-android
 previous: communication-ios
 ---
@@ -131,7 +132,7 @@ public class AnExampleReactPackage implements ReactPackage {
 
     return modules;
   }
-  
+
 }
 ```
 
@@ -301,7 +302,7 @@ WritableMap params = Arguments.createMap();
 sendEvent(reactContext, "keyboardWillShow", params);
 ```
 
-JavaScript modules can then register to receive events by `addListenerOn` using the `Subscribable` mixin
+JavaScript modules can then register to receive events by `addListenerOn` using the `Subscribable` mixin.
 
 ```js
 import { DeviceEventEmitter } from 'react-native';
@@ -369,9 +370,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule {
   private static final String E_NO_IMAGE_DATA_FOUND = "E_NO_IMAGE_DATA_FOUND";
 
   private Promise mPickerPromise;
-  
+
   private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
-  
+
     @Override
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent intent) {
       if (requestCode == IMAGE_PICKER_REQUEST) {

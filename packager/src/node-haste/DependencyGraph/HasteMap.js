@@ -5,12 +5,16 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
+ * @format
  */
+
 'use strict';
 
 const EventEmitter = require('events');
 
-const getPlatformExtension = require('../lib/getPlatformExtension');
+const parsePlatformFilePath = require('../lib/parsePlatformFilePath');
 const path = require('path');
 const throat = require('throat');
 
@@ -18,15 +22,37 @@ const GENERIC_PLATFORM = 'generic';
 const NATIVE_PLATFORM = 'native';
 const PACKAGE_JSON = path.sep + 'package.json';
 
-class HasteMap extends EventEmitter {
+import type {Moduleish, Packageish, ModuleishCache} from './ResolutionRequest';
+import type DependencyGraphHelpers from './DependencyGraphHelpers';
+
+type Options<TModule, TPackage> = {|
+  extensions: Array<string>,
+  files: Array<string>,
+  helpers: DependencyGraphHelpers,
+  moduleCache: ModuleishCache<TModule, TPackage>,
+  platforms: Set<string>,
+  preferNativePlatform: boolean,
+|};
+
+class HasteMap<TModule: Moduleish, TPackage: Packageish> extends EventEmitter {
+
+  _extensions: Array<string>;
+  _files: Array<string>;
+  _helpers: DependencyGraphHelpers;
+  _map: {};
+  _moduleCache: ModuleishCache<TModule, TPackage>;
+  _packages: {};
+  _platforms: Set<string>;
+  _preferNativePlatform: boolean;
+
   constructor({
     extensions,
     files,
-    moduleCache,
-    preferNativePlatform,
     helpers,
+    moduleCache,
     platforms,
-  }) {
+    preferNativePlatform,
+  }: Options<TModule, TPackage>) {
     super();
     this._extensions = extensions;
     this._files = files;
@@ -35,12 +61,13 @@ class HasteMap extends EventEmitter {
     this._platforms = platforms;
     this._preferNativePlatform = preferNativePlatform;
 
-    this._processHastePackage = throat(1, this._processHastePackage.bind(this));
-    this._processHasteModule = throat(1, this._processHasteModule.bind(this));
+    (this: any)._processHastePackage = throat(1, this._processHastePackage.bind(this));
+    (this: any)._processHasteModule = throat(1, this._processHasteModule.bind(this));
   }
 
   build() {
     this._map = Object.create(null);
+    this._packages = Object.create(null);
     const promises = [];
     this._files.forEach(filePath => {
       if (!this._helpers.isNodeModulesDir(filePath)) {
@@ -55,7 +82,11 @@ class HasteMap extends EventEmitter {
     return Promise.all(promises).then(() => this._map);
   }
 
-  processFileChange(type, absPath) {
+  getAllFiles(): Array<string> {
+    return this._files;
+  }
+
+  processFileChange(type: string, absPath: string) {
     return Promise.resolve().then(() => {
       /*eslint no-labels: 0 */
       let invalidated;
@@ -87,10 +118,11 @@ class HasteMap extends EventEmitter {
           return this._processHasteModule(absPath, invalidated);
         }
       }
+      return null;
     });
   }
 
-  getModule(name, platform = null) {
+  getModule(name: string, platform: ?string): ?TModule {
     const modulesMap = this._map[name];
     if (modulesMap == null) {
       return null;
@@ -111,48 +143,63 @@ class HasteMap extends EventEmitter {
     return module;
   }
 
-  _processHasteModule(file, previousName) {
+  getPackage(name: string): TPackage {
+    return this._packages[name];
+  }
+
+  _processHasteModule(file: string, previousName: ?string) {
     const module = this._moduleCache.getModule(file);
-    return module.isHaste().then(
-      isHaste => isHaste && module.getName()
+    return Promise.resolve().then(() => {
+      const isHaste = module.isHaste();
+      return isHaste && module.getName()
         .then(name => {
           const result = this._updateHasteMap(name, module);
           if (previousName && name !== previousName) {
             this.emit('change');
           }
           return result;
-        })
-    );
+        });
+    });
   }
 
-  _processHastePackage(file, previousName) {
+  _processHastePackage(file: string, previousName: ?string) {
     const p = this._moduleCache.getPackage(file);
-    return p.isHaste()
-      .then(isHaste => isHaste && p.getName()
+    return Promise.resolve().then(() => {
+      const isHaste = p.isHaste();
+      return isHaste && p.getName()
         .then(name => {
           const result = this._updateHasteMap(name, p);
           if (previousName && name !== previousName) {
             this.emit('change');
           }
           return result;
-        }))
-      .catch(e => {
-        if (e instanceof SyntaxError) {
-          // Malformed package.json.
-          return;
-        }
-        throw e;
-      });
+        });
+    }).catch(e => {
+      if (e instanceof SyntaxError) {
+        // Malformed package.json.
+        return;
+      }
+      throw e;
+    });
   }
 
-  _updateHasteMap(name, mod) {
-    if (this._map[name] == null) {
-      this._map[name] = Object.create(null);
-    }
+  _updateHasteMap(name: string, mod: TModule | TPackage) {
+    let existingModule;
 
-    const moduleMap = this._map[name];
-    const modulePlatform = getPlatformExtension(mod.path, this._platforms) || GENERIC_PLATFORM;
-    const existingModule = moduleMap[modulePlatform];
+    if (mod.type === 'Package') {
+      existingModule = this._packages[name];
+      this._packages[name] = mod;
+    } else {
+      if (this._map[name] == null) {
+        this._map[name] = Object.create(null);
+      }
+      const moduleMap = this._map[name];
+      const modulePlatform =
+        parsePlatformFilePath(mod.path, this._platforms).platform ||
+        GENERIC_PLATFORM;
+      existingModule = moduleMap[modulePlatform];
+      moduleMap[modulePlatform] = mod;
+    }
 
     if (existingModule && existingModule.path !== mod.path) {
       throw new Error(
@@ -163,8 +210,6 @@ class HasteMap extends EventEmitter {
         'with the same name across two different files.'
       );
     }
-
-    moduleMap[modulePlatform] = mod;
   }
 }
 

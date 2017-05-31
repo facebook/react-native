@@ -6,11 +6,13 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
 'use strict';
 
 jest.disableAutomock();
 
-jest.mock('worker-farm', () => () => () => {})
+jest.mock('../../worker-farm', () => () => () => {})
+    .mock('worker-farm', () => () => () => {})
     .mock('timers', () => ({setImmediate: fn => setTimeout(fn, 0)}))
     .mock('uglify-js')
     .mock('crypto')
@@ -20,8 +22,7 @@ jest.mock('worker-farm', () => () => () => {})
     )
     .mock('../../Bundler')
     .mock('../../AssetServer')
-    .mock('../../lib/declareOpts')
-    .mock('../../node-haste')
+    .mock('../../node-haste/DependencyGraph')
     .mock('../../Logger')
     .mock('../../lib/GlobalTransformCache');
 
@@ -79,12 +80,12 @@ describe('processRequest', () => {
 
     Bundler.prototype.invalidateFile = invalidatorFunc;
     Bundler.prototype.getResolver =
-      jest.fn().mockReturnValue({
+      jest.fn().mockReturnValue(Promise.resolve({
         getDependencyGraph: jest.fn().mockReturnValue({
           getHasteMap: jest.fn().mockReturnValue({on: jest.fn()}),
           load: jest.fn(() => Promise.resolve()),
         }),
-      });
+      }));
 
     server = new Server(options);
     requestHandler = server.processRequest.bind(server);
@@ -144,21 +145,22 @@ describe('processRequest', () => {
     ).then(response => {
       expect(response.body).toEqual('this is the source');
       expect(Bundler.prototype.bundle).toBeCalledWith({
+        assetPlugins: [],
+        dev: true,
         entryFile: 'index.ios.js',
-        inlineSourceMap: false,
-        minify: false,
+        entryModuleOnly: false,
         generateSourceMaps: false,
         hot: false,
+        inlineSourceMap: false,
+        isolateModuleIDs: false,
+        minify: false,
+        onProgress: jasmine.any(Function),
+        platform: null,
+        resolutionResponse: null,
+        runBeforeMainModule: ['InitializeCore'],
         runModule: true,
         sourceMapUrl: 'index.ios.includeRequire.map',
-        dev: true,
-        platform: undefined,
-        onProgress: jasmine.any(Function),
-        runBeforeMainModule: ['InitializeCore'],
         unbundle: false,
-        entryModuleOnly: false,
-        isolateModuleIDs: false,
-        assetPlugins: [],
       });
     });
   });
@@ -170,21 +172,22 @@ describe('processRequest', () => {
     ).then(function(response) {
       expect(response.body).toEqual('this is the source');
       expect(Bundler.prototype.bundle).toBeCalledWith({
+        assetPlugins: [],
+        dev: true,
         entryFile: 'index.js',
-        inlineSourceMap: false,
-        minify: false,
+        entryModuleOnly: false,
         generateSourceMaps: false,
         hot: false,
+        inlineSourceMap: false,
+        isolateModuleIDs: false,
+        minify: false,
+        onProgress: jasmine.any(Function),
+        platform: 'ios',
+        resolutionResponse: null,
+        runBeforeMainModule: ['InitializeCore'],
         runModule: true,
         sourceMapUrl: 'index.map?platform=ios',
-        dev: true,
-        platform: 'ios',
-        onProgress: jasmine.any(Function),
-        runBeforeMainModule: ['InitializeCore'],
         unbundle: false,
-        entryModuleOnly: false,
-        isolateModuleIDs: false,
-        assetPlugins: [],
       });
     });
   });
@@ -196,35 +199,27 @@ describe('processRequest', () => {
     ).then(function(response) {
       expect(response.body).toEqual('this is the source');
       expect(Bundler.prototype.bundle).toBeCalledWith({
+        assetPlugins: ['assetPlugin1', 'assetPlugin2'],
+        dev: true,
         entryFile: 'index.js',
-        inlineSourceMap: false,
-        minify: false,
+        entryModuleOnly: false,
         generateSourceMaps: false,
         hot: false,
+        inlineSourceMap: false,
+        isolateModuleIDs: false,
+        minify: false,
+        onProgress: jasmine.any(Function),
+        platform: null,
+        resolutionResponse: null,
+        runBeforeMainModule: ['InitializeCore'],
         runModule: true,
         sourceMapUrl: 'index.map?assetPlugin=assetPlugin1&assetPlugin=assetPlugin2',
-        dev: true,
-        platform: undefined,
-        onProgress: jasmine.any(Function),
-        runBeforeMainModule: ['InitializeCore'],
         unbundle: false,
-        entryModuleOnly: false,
-        isolateModuleIDs: false,
-        assetPlugins: ['assetPlugin1', 'assetPlugin2'],
       });
     });
   });
 
   describe('file changes', () => {
-    it('invalides files in bundle when file is updated', () => {
-      return makeRequest(
-        requestHandler,
-        'mybundle.bundle?runModule=true'
-      ).then(() => {
-        server.onFileChange('all', options.projectRoots[0] + '/path/file.js');
-        expect(invalidatorFunc.mock.calls[0][0]).toEqual('root/path/file.js');
-      });
-    });
 
     it('does not rebuild the bundles that contain a file when that file is changed', () => {
       const bundleFunc = jest.fn();
@@ -422,21 +417,26 @@ describe('processRequest', () => {
   describe('buildbundle(options)', () => {
     it('Calls the bundler with the correct args', () => {
       return server.buildBundle({
+        ...Server.DEFAULT_BUNDLE_OPTIONS,
         entryFile: 'foo file',
       }).then(() =>
         expect(Bundler.prototype.bundle).toBeCalledWith({
-          entryFile: 'foo file',
-          inlineSourceMap: false,
-          minify: false,
-          hot: false,
-          runModule: true,
-          dev: true,
-          platform: undefined,
-          runBeforeMainModule: ['InitializeCore'],
-          unbundle: false,
-          entryModuleOnly: false,
-          isolateModuleIDs: false,
           assetPlugins: [],
+          dev: true,
+          entryFile: 'foo file',
+          entryModuleOnly: false,
+          generateSourceMaps: false,
+          hot: false,
+          inlineSourceMap: false,
+          isolateModuleIDs: false,
+          minify: false,
+          onProgress: null,
+          platform: undefined,
+          resolutionResponse: null,
+          runBeforeMainModule: ['InitializeCore'],
+          runModule: true,
+          sourceMapUrl: null,
+          unbundle: false,
         })
       );
     });
@@ -447,20 +447,22 @@ describe('processRequest', () => {
       return server.buildBundleFromUrl('/path/to/foo.bundle?dev=false&runModule=false')
         .then(() =>
           expect(Bundler.prototype.bundle).toBeCalledWith({
+            assetPlugins: [],
+            dev: false,
             entryFile: 'path/to/foo.js',
-            inlineSourceMap: false,
-            minify: false,
+            entryModuleOnly: false,
             generateSourceMaps: true,
             hot: false,
+            inlineSourceMap: false,
+            isolateModuleIDs: false,
+            minify: false,
+            onProgress: null,
+            platform: null,
+            resolutionResponse: null,
+            runBeforeMainModule: ['InitializeCore'],
             runModule: false,
             sourceMapUrl: '/path/to/foo.map?dev=false&runModule=false',
-            dev: false,
-            platform: undefined,
-            runBeforeMainModule: ['InitializeCore'],
             unbundle: false,
-            entryModuleOnly: false,
-            isolateModuleIDs: false,
-            assetPlugins: [],
           })
         );
     });

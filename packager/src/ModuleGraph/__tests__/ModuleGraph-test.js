@@ -16,7 +16,9 @@ const defaults = require('../../../defaults');
 const FILE_TYPE = 'module';
 
 describe('build setup', () => {
-  const buildSetup = ModuleGraph.createBuildSetup(graph);
+  const buildSetup = ModuleGraph.createBuildSetup(graph, mds => {
+    return [...mds].sort((l, r) => l.file.path > r.file.path);
+  });
   const noOptions = {};
   const noEntryPoints = [];
 
@@ -28,7 +30,9 @@ describe('build setup', () => {
       expect(prelude).toEqual({
         dependencies: [],
         file: {
-          code: 'var __DEV__=true,__BUNDLE_START_TIME__=Date.now();',
+          code: 'var __DEV__=true,__BUNDLE_START_TIME__=' +
+            'this.nativePerformanceNow?nativePerformanceNow():Date.now();',
+          map: null,
           path: '',
           type: 'script',
         },
@@ -41,7 +45,8 @@ describe('build setup', () => {
     buildSetup(noEntryPoints, {optimize: true}, (error, result) => {
       const [prelude] = result.modules;
       expect(prelude.file.code)
-        .toEqual('var __DEV__=false,__BUNDLE_START_TIME__=Date.now();');
+        .toEqual('var __DEV__=false,__BUNDLE_START_TIME__=' +
+            'this.nativePerformanceNow?nativePerformanceNow():Date.now();');
       done();
     });
   });
@@ -70,30 +75,11 @@ describe('build setup', () => {
     });
   });
 
-  it('places all modules from `defaults.runBeforeMainModule` after the polyfills', done => {
-    buildSetup(noEntryPoints, noOptions, (error, result) => {
-      const additionalModules =
-        Array.from(result.modules).slice(-defaults.runBeforeMainModule.length);
-      expect(additionalModules)
-        .toEqual(defaults.runBeforeMainModule.map(moduleFromPath));
-      done();
-    });
-  });
-
-  it('places all entry points at the end', done => {
-    const entryPoints = ['a', 'b', 'c'];
+  it('places all entry points and dependencies at the end, post-processed', done => {
+    const entryPoints = ['b', 'c', 'd'];
     buildSetup(entryPoints, noOptions, (error, result) => {
-      expect(Array.from(result.modules).slice(-3))
-        .toEqual(entryPoints.map(moduleFromPath));
-      done();
-    });
-  });
-
-  it('concatenates `runBeforeMainModule` and entry points as `entryModules`', done => {
-    const entryPoints = ['a', 'b', 'c'];
-    buildSetup(entryPoints, noOptions, (error, result) => {
-      expect(Array.from(result.entryModules)).toEqual(
-        defaults.runBeforeMainModule.concat(entryPoints).map(moduleFromPath));
+      expect(Array.from(result.modules).slice(-4))
+        .toEqual(['a', 'b', 'c', 'd'].map(moduleFromPath));
       done();
     });
   });
@@ -101,7 +87,7 @@ describe('build setup', () => {
 
 function moduleFromPath(path) {
   return {
-    dependencies: [],
+    dependencies: path === 'b' ? ['a'] : [],
     file: {
       code: '',
       path,
@@ -112,8 +98,12 @@ function moduleFromPath(path) {
 
 function graph(entryPoints, platform, options, callback) {
   const modules = Array.from(entryPoints, moduleFromPath);
+  const depModules = Array.prototype.concat.apply(
+    [],
+    modules.map(x => x.dependencies.map(moduleFromPath)),
+  );
   callback(null, {
     entryModules: modules,
-    modules,
+    modules: modules.concat(depModules),
   });
 }

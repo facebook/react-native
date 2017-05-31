@@ -16,16 +16,15 @@ const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
+const PropTypes = require('prop-types');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 const Touchable = require('Touchable');
 
-const processColor = require('processColor');
 const createReactNativeComponentClass = require('createReactNativeComponentClass');
 const mergeFast = require('mergeFast');
-
-const { PropTypes } = React;
+const processColor = require('processColor');
 
 const stylePropType = StyleSheetPropType(TextStylePropTypes);
 
@@ -35,6 +34,7 @@ const viewConfig = {
     numberOfLines: true,
     ellipsizeMode: true,
     allowFontScaling: true,
+    disabled: true,
     selectable: true,
     selectionColor: true,
     adjustsFontSizeToFit: true,
@@ -57,7 +57,7 @@ const viewConfig = {
  * import React, { Component } from 'react';
  * import { AppRegistry, Text, StyleSheet } from 'react-native';
  *
- * class TextInANest extends Component {
+ * export default class TextInANest extends Component {
  *   constructor(props) {
  *     super(props);
  *     this.state = {
@@ -90,11 +90,12 @@ const viewConfig = {
  *   },
  * });
  *
- * // App registration and rendering
+ * // skip this line if using Create React Native App
  * AppRegistry.registerComponent('TextInANest', () => TextInANest);
  * ```
  */
 
+// $FlowFixMe(>=0.41.0)
 const Text = React.createClass({
   propTypes: {
     /**
@@ -177,6 +178,11 @@ const Text = React.createClass({
      */
     testID: PropTypes.string,
     /**
+     * Used to locate this view from native code.
+     * @platform android
+     */
+    nativeID: PropTypes.string,
+    /**
      * Specifies whether fonts should scale to respect Text Size accessibility settings. The
      * default is `true`.
      */
@@ -201,12 +207,18 @@ const Text = React.createClass({
      * @platform ios
      */
     minimumFontScale: PropTypes.number,
+    /**
+     * Specifies the disabled state of the text view for testing purposes
+     * @platform android
+     */
+    disabled: PropTypes.bool,
   },
   getDefaultProps(): Object {
     return {
       accessible: true,
       allowFontScaling: true,
       ellipsizeMode: 'tail',
+      disabled: false,
     };
   },
   getInitialState: function(): Object {
@@ -248,6 +260,7 @@ const Text = React.createClass({
         this._handlers = {
           onStartShouldSetResponder: (): bool => {
             const shouldSetFromProps = this.props.onStartShouldSetResponder &&
+                // $FlowFixMe(>=0.41.0)
                 this.props.onStartShouldSetResponder();
             const setResponder = shouldSetFromProps || this._hasPressHandler();
             if (setResponder && !this.touchableHandleActivePressIn) {
@@ -288,33 +301,44 @@ const Text = React.createClass({
                 return this.props.pressRetentionOffset || PRESS_RECT_OFFSET;
               };
             }
+            // $FlowFixMe(>=0.41.0)
             return setResponder;
           },
           onResponderGrant: function(e: SyntheticEvent, dispatchID: string) {
+            // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderGrant(e, dispatchID);
             this.props.onResponderGrant &&
+              // $FlowFixMe(>=0.41.0)
               this.props.onResponderGrant.apply(this, arguments);
           }.bind(this),
           onResponderMove: function(e: SyntheticEvent) {
+            // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderMove(e);
             this.props.onResponderMove &&
+              // $FlowFixMe(>=0.41.0)
               this.props.onResponderMove.apply(this, arguments);
           }.bind(this),
           onResponderRelease: function(e: SyntheticEvent) {
+            // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderRelease(e);
             this.props.onResponderRelease &&
+              // $FlowFixMe(>=0.41.0)
               this.props.onResponderRelease.apply(this, arguments);
           }.bind(this),
           onResponderTerminate: function(e: SyntheticEvent) {
+            // $FlowFixMe(>=0.41.0)
             this.touchableHandleResponderTerminate(e);
             this.props.onResponderTerminate &&
+              // $FlowFixMe(>=0.41.0)
               this.props.onResponderTerminate.apply(this, arguments);
           }.bind(this),
           onResponderTerminationRequest: function(): bool {
             // Allow touchable or props.onResponderTerminationRequest to deny
             // the request
+            // $FlowFixMe(>=0.41.0)
             var allowTermination = this.touchableHandleResponderTerminationRequest();
             if (allowTermination && this.props.onResponderTerminationRequest) {
+              // $FlowFixMe(>=0.41.0)
               allowTermination = this.props.onResponderTerminationRequest.apply(this, arguments);
             }
             return allowTermination;

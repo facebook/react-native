@@ -8,7 +8,6 @@ LOCAL_SRC_FILES := \
   CatalystInstanceImpl.cpp \
   CxxModuleWrapper.cpp \
   JavaModuleWrapper.cpp \
-  JExecutorToken.cpp \
   JMessageQueueThread.cpp \
   JniJSModulesUnbundle.cpp \
   JSCPerfLogging.cpp \

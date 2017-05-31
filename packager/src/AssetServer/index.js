@@ -5,15 +5,20 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
+
 'use strict';
 
+const AssetPaths = require('../node-haste/lib/AssetPaths');
+
 const crypto = require('crypto');
-const declareOpts = require('../lib/declareOpts');
 const denodeify = require('denodeify');
 const fs = require('fs');
-const getAssetDataFromName = require('../node-haste').getAssetDataFromName;
 const path = require('path');
+
+import type {AssetData} from '../node-haste/lib/AssetPaths';
 
 const createTimeoutPromise = timeout => new Promise((resolve, reject) => {
   setTimeout(reject, timeout, 'fs operation timeout');
@@ -33,28 +38,28 @@ const stat = timeoutableDenodeify(fs.stat, FS_OP_TIMEOUT);
 const readDir = timeoutableDenodeify(fs.readdir, FS_OP_TIMEOUT);
 const readFile = timeoutableDenodeify(fs.readFile, FS_OP_TIMEOUT);
 
-const validateOpts = declareOpts({
-  projectRoots: {
-    type: 'array',
-    required: true,
-  },
-  assetExts: {
-    type: 'array',
-    required: true,
-  },
-});
-
 class AssetServer {
-  constructor(options) {
-    const opts = validateOpts(options);
-    this._roots = opts.projectRoots;
-    this._assetExts = opts.assetExts;
+
+  _roots: $ReadOnlyArray<string>;
+  _assetExts: $ReadOnlyArray<string>;
+  _hashes: Map<?string, string>;
+  _files: Map<string, string>;
+
+  constructor(options: {|
+    +assetExts: $ReadOnlyArray<string>,
+    +projectRoots: $ReadOnlyArray<string>,
+  |}) {
+    this._roots = options.projectRoots;
+    this._assetExts = options.assetExts;
     this._hashes = new Map();
     this._files = new Map();
   }
 
-  get(assetPath, platform = null) {
-    const assetData = getAssetDataFromName(assetPath, new Set([platform]));
+  get(assetPath: string, platform: ?string = null): Promise<Buffer> {
+    const assetData = AssetPaths.parse(
+      assetPath,
+      new Set(platform != null ? [platform] : []),
+    );
     return this._getAssetRecord(assetPath, platform).then(record => {
       for (let i = 0; i < record.scales.length; i++) {
         if (record.scales[i] >= assetData.resolution) {
@@ -66,39 +71,44 @@ class AssetServer {
     });
   }
 
-  getAssetData(assetPath, platform = null) {
-    const nameData = getAssetDataFromName(assetPath, new Set([platform]));
-    const data = {
-      name: nameData.name,
-      type: nameData.type,
-    };
+  getAssetData(assetPath: string, platform: ?string = null): Promise<{|
+    files: Array<string>,
+    hash: string,
+    name: string,
+    scales: Array<number>,
+    type: string,
+  |}> {
+    const nameData = AssetPaths.parse(
+      assetPath,
+      new Set(platform != null ? [platform] : []),
+    );
+    const {name, type} = nameData;
 
     return this._getAssetRecord(assetPath, platform).then(record => {
-      data.scales = record.scales;
-      data.files = record.files;
+      const {scales, files} = record;
 
-      if (this._hashes.has(assetPath)) {
-        data.hash = this._hashes.get(assetPath);
-        return data;
+      const hash = this._hashes.get(assetPath);
+      if (hash != null) {
+        return {files, hash, name, scales, type};
       }
 
       return new Promise((resolve, reject) => {
-        const hash = crypto.createHash('md5');
-        hashFiles(data.files.slice(), hash, error => {
+        const hasher = crypto.createHash('md5');
+        hashFiles(files.slice(), hasher, error => {
           if (error) {
             reject(error);
           } else {
-            data.hash = hash.digest('hex');
-            this._hashes.set(assetPath, data.hash);
-            data.files.forEach(f => this._files.set(f, assetPath));
-            resolve(data);
+            const freshHash = hasher.digest('hex');
+            this._hashes.set(assetPath, freshHash);
+            files.forEach(f => this._files.set(f, assetPath));
+            resolve({files, hash: freshHash, name, scales, type});
           }
         });
       });
     });
   }
 
-  onFileChange(type, filePath) {
+  onFileChange(type: string, filePath: string) {
     this._hashes.delete(this._files.get(filePath));
   }
 
@@ -113,7 +123,10 @@ class AssetServer {
    * 4. Then try to pick platform-specific asset records
    * 5. Then pick the closest resolution (rounding up) to the requested one
    */
-  _getAssetRecord(assetPath, platform = null) {
+  _getAssetRecord(assetPath: string, platform: ?string = null): Promise<{|
+    files: Array<string>,
+    scales: Array<number>,
+  |}> {
     const filename = path.basename(assetPath);
 
     return (
@@ -129,20 +142,24 @@ class AssetServer {
       .then(res => {
         const dir = res[0];
         const files = res[1];
-        const assetData = getAssetDataFromName(filename, new Set([platform]));
+        const assetData = AssetPaths.parse(
+          filename,
+          new Set(platform != null ? [platform] : []),
+        );
 
         const map = this._buildAssetMap(dir, files, platform);
 
         let record;
         if (platform != null) {
-          record = map[getAssetKey(assetData.assetName, platform)] ||
-                   map[assetData.assetName];
+          record = map.get(getAssetKey(assetData.assetName, platform)) ||
+                   map.get(assetData.assetName);
         } else {
-          record = map[assetData.assetName];
+          record = map.get(assetData.assetName);
         }
 
         if (!record) {
           throw new Error(
+            /* $FlowFixMe: platform can be null */
             `Asset not found: ${assetPath} for platform: ${platform}`
           );
         }
@@ -152,7 +169,7 @@ class AssetServer {
     );
   }
 
-  _findRoot(roots, dir, debugInfoFile) {
+  _findRoot(roots: $ReadOnlyArray<string>, dir: string, debugInfoFile: string): Promise<string> {
     return Promise.all(
       roots.map(root => {
         const absRoot = path.resolve(root);
@@ -185,18 +202,26 @@ class AssetServer {
     });
   }
 
-  _buildAssetMap(dir, files, platform) {
-    const assets = files.map(this._getAssetDataFromName.bind(this, new Set([platform])));
-    const map = Object.create(null);
+  _buildAssetMap(dir: string, files: $ReadOnlyArray<string>, platform: ?string): Map<string, {|
+    files: Array<string>,
+    scales: Array<number>,
+  |}> {
+    const platforms = new Set(platform != null ? [platform] : []);
+    const assets = files.map(this._getAssetDataFromName.bind(this, platforms));
+    const map = new Map();
     assets.forEach(function(asset, i) {
+      if (asset == null) {
+        return;
+      }
       const file = files[i];
       const assetKey = getAssetKey(asset.assetName, asset.platform);
-      let record = map[assetKey];
+      let record = map.get(assetKey);
       if (!record) {
-        record = map[assetKey] = {
+        record = {
           scales: [],
           files: [],
         };
+        map.set(assetKey, record);
       }
 
       let insertIndex;
@@ -214,8 +239,8 @@ class AssetServer {
     return map;
   }
 
-  _getAssetDataFromName(platform, file) {
-    return getAssetDataFromName(file, platform);
+  _getAssetDataFromName(platforms: Set<string>, file: string): ?AssetData {
+    return AssetPaths.tryParse(file, platforms);
   }
 }
 

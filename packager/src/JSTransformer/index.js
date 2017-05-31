@@ -14,15 +14,21 @@
 const Logger = require('../Logger');
 
 const debug = require('debug')('RNP:JStransformer');
-const denodeify = require('denodeify');
+const denodeify: Denodeify = require('denodeify');
 const invariant = require('fbjs/lib/invariant');
-const os = require('os');
 const path = require('path');
 const util = require('util');
-const workerFarm = require('worker-farm');
+const workerFarm = require('../worker-farm');
 
-import type {Data as TransformData, Options as TransformOptions} from './worker/worker';
-import type {SourceMap} from '../lib/SourceMap';
+import type {Data as TransformData, Options as WorkerOptions} from './worker';
+import type {LocalPath} from '../node-haste/lib/toLocalPath';
+import type {MappingsMap} from '../lib/SourceMap';
+import typeof {minify as Minify, transformAndExtractDependencies as TransformAndExtractDependencies} from './worker';
+
+type CB<T> = (?Error, ?T) => mixed;
+type Denodeify =
+  & (<A, B, C, T>((A, B, C, CB<T>) => void) => (A, B, C) => Promise<T>)
+  & (<A, B, C, D, E, T>((A, B, C, D, E, CB<T>) => void) => (A, B, C, D, E) => Promise<T>);
 
 // Avoid memory leaks caused in workers. This number seems to be a good enough number
 // to avoid any memory leak while not slowing down initial builds.
@@ -35,27 +41,11 @@ const TRANSFORM_TIMEOUT_INTERVAL = 301000;
 // How may times can we tolerate failures from the worker.
 const MAX_RETRIES = 2;
 
-const maxConcurrentWorkers = ((cores, override) => {
-  if (override) {
-    return Math.min(cores, override);
-  }
-
-  if (cores < 3) {
-    return cores;
-  }
-  if (cores < 8) {
-    return Math.floor(cores * 0.75);
-  }
-  if (cores < 24) {
-    return Math.floor(3 / 8 * cores + 3); // between cores *.75 and cores / 2
-  }
-  return cores / 2;
-})(os.cpus().length, parseInt(process.env.REACT_NATIVE_MAX_WORKERS, 10));
-
-function makeFarm(worker, methods, timeout) {
+function makeFarm(worker, methods, timeout, maxConcurrentWorkers) {
   return workerFarm(
     {
       autoStart: true,
+      execArgv: [],
       maxConcurrentCallsPerWorker: 1,
       maxConcurrentWorkers,
       maxCallsPerWorker: MAX_CALLS_PER_WORKER,
@@ -67,46 +57,76 @@ function makeFarm(worker, methods, timeout) {
   );
 }
 
+type Reporters = {
+  +stdoutChunk: (chunk: string) => mixed,
+  +stderrChunk: (chunk: string) => mixed,
+};
+
 class Transformer {
 
-  _workers: {[name: string]: mixed};
+  _workers: {[name: string]: Function};
   _transformModulePath: string;
   _transform: (
     transform: string,
     filename: string,
+    localPath: LocalPath,
     sourceCode: string,
-    options: ?TransformOptions,
+    options: WorkerOptions,
   ) => Promise<TransformData>;
   minify: (
     filename: string,
     code: string,
-    sourceMap: SourceMap,
-  ) => Promise<{code: string, map: SourceMap}>;
+    sourceMap: MappingsMap,
+  ) => Promise<{code: string, map: MappingsMap}>;
 
-  constructor(transformModulePath: string) {
+  constructor(
+    transformModulePath: string,
+    maxWorkerCount: number,
+    reporters: Reporters,
+    workerPath: ?string,
+  ) {
     invariant(path.isAbsolute(transformModulePath), 'transform module path should be absolute');
     this._transformModulePath = transformModulePath;
 
-    this._workers = makeFarm(
-      require.resolve('./worker'),
+    const farm = makeFarm(
+      workerPath || require.resolve('./worker'),
       ['minify', 'transformAndExtractDependencies'],
       TRANSFORM_TIMEOUT_INTERVAL,
+      maxWorkerCount,
     );
-    this._transform = denodeify(this._workers.transformAndExtractDependencies);
-    this.minify = denodeify(this._workers.minify);
+    farm.stdout.on('data', chunk => {
+      reporters.stdoutChunk(chunk.toString('utf8'));
+    });
+    farm.stderr.on('data', chunk => {
+      reporters.stderrChunk(chunk.toString('utf8'));
+    });
+
+    this._workers = farm.methods;
+    this._transform = denodeify((this._workers.transformAndExtractDependencies: TransformAndExtractDependencies));
+    this.minify = denodeify((this._workers.minify: Minify));
   }
 
   kill() {
     this._workers && workerFarm.end(this._workers);
   }
 
-  transformFile(fileName: string, code: string, options: TransformOptions) {
+  transformFile(
+    fileName: string,
+    localPath: LocalPath,
+    code: string,
+    options: WorkerOptions) {
     if (!this._transform) {
       return Promise.reject(new Error('No transform module'));
     }
     debug('transforming file', fileName);
     return this
-      ._transform(this._transformModulePath, fileName, code, options)
+      ._transform(
+        this._transformModulePath,
+        fileName,
+        localPath,
+        code,
+        options,
+      )
       .then(data => {
         Logger.log(data.transformFileStartLogEntry);
         Logger.log(data.transformFileEndLogEntry);
@@ -147,11 +167,11 @@ function TransformError() {
 }
 util.inherits(TransformError, SyntaxError);
 
-function formatError(err, filename, source) {
+function formatError(err, filename) {
   if (err.loc) {
-    return formatBabelError(err, filename, source);
+    return formatBabelError(err, filename);
   } else {
-    return formatGenericError(err, filename, source);
+    return formatGenericError(err, filename);
   }
 }
 

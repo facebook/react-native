@@ -11,93 +11,86 @@
 
 'use strict';
 
-const DependencyGraph = require('../node-haste');
+const DependencyGraph = require('../node-haste/DependencyGraph');
 
 const defaults = require('../../defaults');
 const pathJoin = require('path').join;
 
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
-import type Module, {HasteImpl} from '../node-haste/Module';
-import type {SourceMap} from '../lib/SourceMap';
-import type {Options as TransformOptions} from '../JSTransformer/worker/worker';
+import type Module, {HasteImpl, TransformCode} from '../node-haste/Module';
+import type {MappingsMap} from '../lib/SourceMap';
+import type {PostMinifyProcess} from '../Bundler';
+import type {Options as JSTransformerOptions} from '../JSTransformer/worker';
 import type {Reporter} from '../lib/reporting';
-import type {TransformCode} from '../node-haste/Module';
-import type Cache from '../node-haste/Cache';
-import type {GetTransformCacheKey} from '../lib/TransformCache';
-import type GlobalTransformCache from '../lib/GlobalTransformCache';
+import type {TransformCache, GetTransformCacheKey} from '../lib/TransformCaching';
+import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 
-type MinifyCode = (filePath: string, code: string, map: SourceMap) =>
-  Promise<{code: string, map: SourceMap}>;
+type MinifyCode = (filePath: string, code: string, map: MappingsMap) =>
+  Promise<{code: string, map: MappingsMap}>;
 
-type Options = {
-  assetExts: Array<string>,
-  blacklistRE?: RegExp,
-  cache: Cache,
-  extraNodeModules?: {},
-  getTransformCacheKey: GetTransformCacheKey,
-  globalTransformCache: ?GlobalTransformCache,
-  hasteImpl?: HasteImpl,
-  minifyCode: MinifyCode,
-  platforms: Array<string>,
-  polyfillModuleNames?: Array<string>,
-  projectRoots: Array<string>,
-  providesModuleNodeModules?: Array<string>,
-  reporter: Reporter,
-  resetCache: boolean,
-  transformCode: TransformCode,
-  watch?: boolean,
-};
+type ContainsTransformerOptions = {+transformer: JSTransformerOptions}
+
+type Options = {|
+  +assetExts: Array<string>,
+  +blacklistRE?: RegExp,
+  +extraNodeModules: ?{},
+  +getTransformCacheKey: GetTransformCacheKey,
+  +globalTransformCache: ?GlobalTransformCache,
+  +hasteImpl?: HasteImpl,
+  +maxWorkerCount: number,
+  +minifyCode: MinifyCode,
+  +postMinifyProcess: PostMinifyProcess,
+  +platforms: Set<string>,
+  +polyfillModuleNames?: Array<string>,
+  +projectRoots: $ReadOnlyArray<string>,
+  +providesModuleNodeModules: Array<string>,
+  +reporter: Reporter,
+  +resetCache: boolean,
+  +sourceExts: Array<string>,
+  +transformCache: TransformCache,
+  +transformCode: TransformCode,
+  +watch: boolean,
+|};
 
 class Resolver {
 
   _depGraph: DependencyGraph;
   _minifyCode: MinifyCode;
+  _postMinifyProcess: PostMinifyProcess;
   _polyfillModuleNames: Array<string>;
 
-  constructor(opts: Options) {
-    this._depGraph = new DependencyGraph({
+  constructor(opts: Options, depGraph: DependencyGraph) {
+    this._minifyCode = opts.minifyCode;
+    this._postMinifyProcess = opts.postMinifyProcess;
+    this._polyfillModuleNames = opts.polyfillModuleNames || [];
+    this._depGraph = depGraph;
+  }
+
+  static async load(opts: Options): Promise<Resolver> {
+    const depGraphOpts = Object.assign(Object.create(opts), {
       assetDependencies: ['react-native/Libraries/Image/AssetRegistry'],
-      assetExts: opts.assetExts,
-      cache: opts.cache,
-      extraNodeModules: opts.extraNodeModules,
-      extensions: ['js', 'json'],
       forceNodeFilesystemAPI: false,
-      getTransformCacheKey: opts.getTransformCacheKey,
-      globalTransformCache: opts.globalTransformCache,
       ignoreFilePath(filepath) {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE != null && opts.blacklistRE.test(filepath));
       },
-      maxWorkers: null,
       moduleOptions: {
-        cacheTransformResults: true,
         hasteImpl: opts.hasteImpl,
         resetCache: opts.resetCache,
+        transformCache: opts.transformCache,
       },
-      platforms: new Set(opts.platforms),
       preferNativePlatform: true,
-      providesModuleNodeModules: opts.providesModuleNodeModules || defaults.providesModuleNodeModules,
-      reporter: opts.reporter,
-      resetCache: opts.resetCache,
       roots: opts.projectRoots,
-      transformCode: opts.transformCode,
       useWatchman: true,
-      watch: opts.watch || false,
     });
-
-    this._minifyCode = opts.minifyCode;
-    this._polyfillModuleNames = opts.polyfillModuleNames || [];
-
-    this._depGraph.load().catch(err => {
-      console.error(err.message + '\n' + err.stack);
-      process.exit(1);
-    });
+    const depGraph = await DependencyGraph.load(depGraphOpts);
+    return new Resolver(opts, depGraph);
   }
 
   getShallowDependencies(
     entryFile: string,
-    transformOptions: TransformOptions,
-  ): Array<string> {
+    transformOptions: JSTransformerOptions,
+  ): Promise<Array<Module>> {
     return this._depGraph.getShallowDependencies(entryFile, transformOptions);
   }
 
@@ -105,18 +98,18 @@ class Resolver {
     return this._depGraph.getModuleForPath(entryFile);
   }
 
-  getDependencies(
+  getDependencies<T: ContainsTransformerOptions>(
     entryPath: string,
-    options: {platform: string, recursive?: boolean},
-    transformOptions: TransformOptions,
+    options: {platform: ?string, recursive?: boolean},
+    bundlingOptions: T,
     onProgress?: ?(finishedModules: number, totalModules: number) => mixed,
     getModuleId: mixed,
-  ): Promise<ResolutionResponse> {
+  ): Promise<ResolutionResponse<Module, T>> {
     const {platform, recursive = true} = options;
     return this._depGraph.getDependencies({
       entryPath,
       platform,
-      transformOptions,
+      options: bundlingOptions,
       recursive,
       onProgress,
     }).then(resolutionResponse => {
@@ -124,6 +117,7 @@ class Resolver {
         polyfill => resolutionResponse.prependDependency(polyfill)
       );
 
+      /* $FlowFixMe: monkey patching */
       resolutionResponse.getModuleId = getModuleId;
       return resolutionResponse.finalize();
     });
@@ -159,8 +153,8 @@ class Resolver {
     );
   }
 
-  resolveRequires(
-    resolutionResponse: ResolutionResponse,
+  resolveRequires<T: ContainsTransformerOptions>(
+    resolutionResponse: ResolutionResponse<Module, T>,
     module: Module,
     code: string,
     dependencyOffsets: Array<number> = [],
@@ -194,7 +188,7 @@ class Resolver {
     ).join('');
   }
 
-  wrapModule({
+  wrapModule<T: ContainsTransformerOptions>({
     resolutionResponse,
     module,
     name,
@@ -204,10 +198,10 @@ class Resolver {
     dev = true,
     minify = false,
   }: {
-    resolutionResponse: ResolutionResponse,
+    resolutionResponse: ResolutionResponse<Module, T>,
     module: Module,
     name: string,
-    map: SourceMap,
+    map: MappingsMap,
     code: string,
     meta?: {
       dependencyOffsets?: Array<number>,
@@ -234,13 +228,13 @@ class Resolver {
     }
 
     return minify
-      ? this._minifyCode(module.path, code, map)
+      ? this._minifyCode(module.path, code, map).then(this._postMinifyProcess)
       : Promise.resolve({code, map});
   }
 
   minifyModule(
-    {path, code, map}: {path: string, code: string, map: SourceMap},
-  ): Promise<{code: string, map: SourceMap}> {
+    {path, code, map}: {path: string, code: string, map: MappingsMap},
+  ): Promise<{code: string, map: MappingsMap}> {
     return this._minifyCode(path, code, map);
   }
 
@@ -261,7 +255,7 @@ function defineModuleCode(moduleName, code, verboseName = '', dev = true) {
   ].join('');
 }
 
-function definePolyfillCode(code,) {
+function definePolyfillCode(code) {
   return [
     '(function(global) {',
     code,

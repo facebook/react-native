@@ -13,21 +13,23 @@
 
 const path = require('path');
 
-import type {MixedSourceMap} from './SourceMap';
+const {isMappingsMap} = require('./SourceMap');
 
-function relativizeSourceMapInternal(sourceMap: any, sourcesRoot: string) {
-  if (sourceMap.sections) {
-    for (var i = 0; i < sourceMap.sections.length; i++) {
+import type {SourceMap} from './SourceMap';
+
+function relativizeSourceMapInternal(sourceMap: SourceMap, sourcesRoot: string) {
+  if (!isMappingsMap(sourceMap)) {
+    for (let i = 0; i < sourceMap.sections.length; i++) {
       relativizeSourceMapInternal(sourceMap.sections[i].map, sourcesRoot);
     }
   } else {
-    for (var i = 0; i < sourceMap.sources.length; i++) {
+    for (let i = 0; i < sourceMap.sources.length; i++) {
       sourceMap.sources[i] = path.relative(sourcesRoot, sourceMap.sources[i]);
     }
   }
 }
 
-function relativizeSourceMap(sourceMap: MixedSourceMap, sourcesRoot?: string): MixedSourceMap {
+function relativizeSourceMap(sourceMap: SourceMap, sourcesRoot?: string): SourceMap {
   if (!sourcesRoot) {
     return sourceMap;
   }

@@ -18,6 +18,7 @@ const ImageStylePropTypes = require('ImageStylePropTypes');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
 const React = require('React');
+const PropTypes = require('prop-types');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
@@ -25,8 +26,6 @@ const StyleSheetPropType = require('StyleSheetPropType');
 const flattenStyle = require('flattenStyle');
 const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
-
-const PropTypes = React.PropTypes;
 
 const ImageViewManager = NativeModules.ImageViewManager;
 
@@ -42,7 +41,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * import React, { Component } from 'react';
  * import { AppRegistry, View, Image } from 'react-native';
  *
- * class DisplayAnImage extends Component {
+ * export default class DisplayAnImage extends Component {
  *   render() {
  *     return (
  *       <View>
@@ -58,7 +57,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *   }
  * }
  *
- * // App registration and rendering
+ * // skip this line if using Create React Native App
  * AppRegistry.registerComponent('DisplayAnImage', () => DisplayAnImage);
  * ```
  *
@@ -75,7 +74,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *   }
  * });
  *
- * class DisplayAnImageWithStyle extends Component {
+ * export default class DisplayAnImageWithStyle extends Component {
  *   render() {
  *     return (
  *       <View>
@@ -88,7 +87,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *   }
  * }
  *
- * // App registration and rendering
+ * // skip these lines if using Create React Native App
  * AppRegistry.registerComponent(
  *   'DisplayAnImageWithStyle',
  *   () => DisplayAnImageWithStyle
@@ -97,24 +96,24 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *
  * ### GIF and WebP support on Android
  *
- * By default, GIF and WebP are not supported on Android.
+ * When building your own native code, GIF and WebP are not supported by default on Android.
  *
  * You will need to add some optional modules in `android/app/build.gradle`, depending on the needs of your app.
  *
  * ```
  * dependencies {
  *   // If your app supports Android versions before Ice Cream Sandwich (API level 14)
- *   compile 'com.facebook.fresco:animated-base-support:0.11.0'
+ *   compile 'com.facebook.fresco:animated-base-support:1.0.1'
  *
  *   // For animated GIF support
- *   compile 'com.facebook.fresco:animated-gif:0.11.0'
+ *   compile 'com.facebook.fresco:animated-gif:1.0.1'
  *
  *   // For WebP support, including animated WebP
- *   compile 'com.facebook.fresco:animated-webp:0.11.0'
- *   compile 'com.facebook.fresco:webpsupport:0.11.0'
+ *   compile 'com.facebook.fresco:animated-webp:1.0.1'
+ *   compile 'com.facebook.fresco:webpsupport:1.0.1'
  *
  *   // For WebP support, without animations
- *   compile 'com.facebook.fresco:webpsupport:0.11.0'
+ *   compile 'com.facebook.fresco:webpsupport:1.0.1'
  * }
  * ```
  *
@@ -126,6 +125,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * ```
  *
  */
+// $FlowFixMe(>=0.41.0)
 const Image = React.createClass({
   propTypes: {
     /**
@@ -142,6 +142,9 @@ const Image = React.createClass({
      * The native side will then choose the best `uri` to display based on the
      * measured size of the image container. A `cache` property can be added to
      * control how networked request interacts with the local cache.
+     *
+     * The currently supported formats are `png`, `jpg`, `jpeg`, `bmp`, `gif`,
+     * `webp` (Android only), `psd` (iOS only).
      */
     source: ImageSourcePropType,
     /**
@@ -181,7 +184,6 @@ const Image = React.createClass({
     accessibilityLabel: PropTypes.node,
     /**
     * blurRadius: the blur radius of the blur filter added to the image
-    * @platform ios
     */
     blurRadius: PropTypes.number,
     /**
@@ -288,6 +290,8 @@ const Image = React.createClass({
      * does not fully load/download the image data. A proper, supported way to
      * preload images will be provided as a separate API.
      *
+     * Does not work for static image resources.
+     *
      * @param uri The location of the image.
      * @param success The function that will be called if the image was successfully found and width
      * and height retrieved.
@@ -301,7 +305,7 @@ const Image = React.createClass({
     getSize: function(
       uri: string,
       success: (width: number, height: number) => void,
-      failure: (error: any) => void,
+      failure?: (error: any) => void,
     ) {
       ImageViewManager.getSize(uri, success, failure || function() {
         console.warn('Failed to get size for image: ' + uri);
