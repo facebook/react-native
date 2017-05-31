@@ -227,23 +227,23 @@ import com.facebook.react.uimanager.Spacing;
     float defaultWidth = getBorderWidth();
 
     float top = getTop();
-    float topWidth = resolveWidth(mBorderTopWidth, defaultWidth);
-    float bottomOfTheTop = top + topWidth;
+    float borderTop = resolveWidth(mBorderTopWidth, defaultWidth);
+    float topInset = top + borderTop;
     int topColor = resolveBorderColor(BORDER_TOP_COLOR_SET, mBorderTopColor, defaultColor);
 
     float bottom = getBottom();
-    float bottomWidth = resolveWidth(mBorderBottomWidth, defaultWidth);
-    float topOfTheBottom = bottom - bottomWidth;
+    float borderBottom = resolveWidth(mBorderBottomWidth, defaultWidth);
+    float bottomInset = bottom - borderBottom;
     int bottomColor = resolveBorderColor(BORDER_BOTTOM_COLOR_SET, mBorderBottomColor, defaultColor);
 
     float left = getLeft();
-    float leftWidth = resolveWidth(mBorderLeftWidth, defaultWidth);
-    float rightOfTheLeft = left + leftWidth;
+    float borderLeft = resolveWidth(mBorderLeftWidth, defaultWidth);
+    float leftInset = left + borderLeft;
     int leftColor = resolveBorderColor(BORDER_LEFT_COLOR_SET, mBorderLeftColor, defaultColor);
 
     float right = getRight();
-    float rightWidth = resolveWidth(mBorderRightWidth, defaultWidth);
-    float leftOfTheRight = right - rightWidth;
+    float borderRight = resolveWidth(mBorderRightWidth, defaultWidth);
+    float rightInset = right - borderRight;
     int rightColor = resolveBorderColor(BORDER_RIGHT_COLOR_SET, mBorderRightColor, defaultColor);
 
     boolean isDrawPathRequired = isBorderColorDifferentAtIntersectionPoints();
@@ -251,154 +251,154 @@ import com.facebook.react.uimanager.Spacing;
       mPathForBorder = new Path();
     }
 
-    // draw top
-    if (Color.alpha(topColor) != 0 && topWidth != 0) {
+    // Draw center.  The border might be opaque, so we need to draw this.
+    if (Color.alpha(mBackgroundColor) != 0) {
+      PAINT.setColor(mBackgroundColor);
+      canvas.drawRect(left, top, right, bottom, PAINT);
+    }
+
+    // Draw top.
+    if (borderTop != 0 && Color.alpha(topColor) != 0) {
       PAINT.setColor(topColor);
 
       if (isDrawPathRequired) {
         updatePathForTopBorder(
             top,
-            bottomOfTheTop,
+            topInset,
             left,
-            rightOfTheLeft,
+            leftInset,
             right,
-            leftOfTheRight);
+            rightInset);
         canvas.drawPath(mPathForBorder, PAINT);
       } else {
-        canvas.drawRect(left, top, right, bottomOfTheTop, PAINT);
+        canvas.drawRect(left, top, right, topInset, PAINT);
       }
     }
 
-    // draw bottom
-    if (Color.alpha(bottomColor) != 0 && bottomWidth != 0) {
+    // Draw bottom.
+    if (borderBottom != 0 && Color.alpha(bottomColor) != 0) {
       PAINT.setColor(bottomColor);
 
       if (isDrawPathRequired) {
         updatePathForBottomBorder(
             bottom,
-            topOfTheBottom,
+            bottomInset,
             left,
-            rightOfTheLeft,
+            leftInset,
             right,
-            leftOfTheRight);
+            rightInset);
         canvas.drawPath(mPathForBorder, PAINT);
       } else {
-        canvas.drawRect(left, topOfTheBottom, right, bottom, PAINT);
+        canvas.drawRect(left, bottomInset, right, bottom, PAINT);
       }
     }
 
-    // draw left
-    if (Color.alpha(leftColor) != 0 && leftWidth != 0) {
+    // Draw left.
+    if (borderLeft != 0 && Color.alpha(leftColor) != 0) {
       PAINT.setColor(leftColor);
 
       if (isDrawPathRequired) {
         updatePathForLeftBorder(
             top,
-            bottomOfTheTop,
+            topInset,
             bottom,
-            topOfTheBottom,
+            bottomInset,
             left,
-            rightOfTheLeft);
+            leftInset);
         canvas.drawPath(mPathForBorder, PAINT);
       } else {
-        canvas.drawRect(left, bottomOfTheTop, rightOfTheLeft, topOfTheBottom, PAINT);
+        canvas.drawRect(left, topInset, leftInset, bottomInset, PAINT);
       }
     }
 
-    // draw right
-    if (Color.alpha(rightColor) != 0 && rightWidth != 0) {
+    // Draw right.
+    if (borderRight != 0 && Color.alpha(rightColor) != 0) {
       PAINT.setColor(rightColor);
 
       if (isDrawPathRequired) {
         updatePathForRightBorder(
             top,
-            bottomOfTheTop,
+            topInset,
             bottom,
-            topOfTheBottom,
+            bottomInset,
             right,
-            leftOfTheRight);
+            rightInset);
         canvas.drawPath(mPathForBorder, PAINT);
       } else {
-        canvas.drawRect(leftOfTheRight, bottomOfTheTop, right, topOfTheBottom, PAINT);
+        canvas.drawRect(rightInset, topInset, right, bottomInset, PAINT);
       }
-    }
-
-    // draw center
-    if (Color.alpha(mBackgroundColor) != 0) {
-      PAINT.setColor(mBackgroundColor);
-      canvas.drawRect(rightOfTheLeft, bottomOfTheTop, leftOfTheRight, topOfTheBottom, PAINT);
     }
   }
 
   private void updatePathForTopBorder(
       float top,
-      float bottomOfTheTop,
+      float topInset,
       float left,
-      float rightOfTheLeft,
+      float leftInset,
       float right,
-      float leftOfTheRight) {
+      float rightInset) {
     if (mPathForBorder == null) {
       mPathForBorder = new Path();
     }
     mPathForBorder.reset();
     mPathForBorder.moveTo(left, top);
-    mPathForBorder.lineTo(rightOfTheLeft, bottomOfTheTop);
-    mPathForBorder.lineTo(leftOfTheRight, bottomOfTheTop);
+    mPathForBorder.lineTo(leftInset, topInset);
+    mPathForBorder.lineTo(rightInset, topInset);
     mPathForBorder.lineTo(right, top);
     mPathForBorder.lineTo(left, top);
   }
 
   private void updatePathForBottomBorder(
       float bottom,
-      float topOfTheBottom,
+      float bottomInset,
       float left,
-      float rightOfTheLeft,
+      float leftInset,
       float right,
-      float leftOfTheRight) {
+      float rightInset) {
     if (mPathForBorder == null) {
       mPathForBorder = new Path();
     }
     mPathForBorder.reset();
     mPathForBorder.moveTo(left, bottom);
     mPathForBorder.lineTo(right, bottom);
-    mPathForBorder.lineTo(leftOfTheRight, topOfTheBottom);
-    mPathForBorder.lineTo(rightOfTheLeft, topOfTheBottom);
+    mPathForBorder.lineTo(rightInset, bottomInset);
+    mPathForBorder.lineTo(leftInset, bottomInset);
     mPathForBorder.lineTo(left, bottom);
   }
 
   private void updatePathForLeftBorder(
       float top,
-      float bottomOfTheTop,
+      float topInset,
       float bottom,
-      float topOfTheBottom,
+      float bottomInset,
       float left,
-      float rightOfTheLeft) {
+      float leftInset) {
     if (mPathForBorder == null) {
       mPathForBorder = new Path();
     }
     mPathForBorder.reset();
     mPathForBorder.moveTo(left, top);
-    mPathForBorder.lineTo(rightOfTheLeft, bottomOfTheTop);
-    mPathForBorder.lineTo(rightOfTheLeft, topOfTheBottom);
+    mPathForBorder.lineTo(leftInset, topInset);
+    mPathForBorder.lineTo(leftInset, bottomInset);
     mPathForBorder.lineTo(left, bottom);
     mPathForBorder.lineTo(left, top);
   }
 
   private void updatePathForRightBorder(
       float top,
-      float bottomOfTheTop,
+      float topInset,
       float bottom,
-      float topOfTheBottom,
+      float bottomInset,
       float right,
-      float leftOfTheRight) {
+      float rightInset) {
     if (mPathForBorder == null) {
       mPathForBorder = new Path();
     }
     mPathForBorder.reset();
     mPathForBorder.moveTo(right, top);
     mPathForBorder.lineTo(right, bottom);
-    mPathForBorder.lineTo(leftOfTheRight, topOfTheBottom);
-    mPathForBorder.lineTo(leftOfTheRight, bottomOfTheTop);
+    mPathForBorder.lineTo(rightInset, bottomInset);
+    mPathForBorder.lineTo(rightInset, topInset);
     mPathForBorder.lineTo(right, top);
   }
 
