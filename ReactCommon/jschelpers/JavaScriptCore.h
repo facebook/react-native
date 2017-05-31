@@ -75,8 +75,9 @@ jsc_poison(JSContextGroupCreate JSContextGroupRelease JSContextGroupRetain
 // JSContext
 #define JSC_JSContextGetGlobalContext(...) __jsc_wrapper(JSContextGetGlobalContext, __VA_ARGS__)
 #define JSC_JSContextGetGlobalObject(...) __jsc_wrapper(JSContextGetGlobalObject, __VA_ARGS__)
+#define JSC_FBJSContextStartGCTimers(...) __jsc_wrapper(FBJSContextStartGCTimers, __VA_ARGS__)
 
-jsc_poison(JSContextGetGlobalContext JSContextGetGlobalObject JSContextGetGroup)
+jsc_poison(JSContextGetGlobalContext JSContextGetGlobalObject JSContextGetGroup FBJSContextStartGCTimers)
 
 // JSEvaluate
 #define JSC_JSEvaluateScript(...) __jsc_wrapper(JSEvaluateScript, __VA_ARGS__)
@@ -146,6 +147,7 @@ jsc_poison(JSClassCreate JSClassRelease JSClassRetain)
 #define JSC_JSObjectMakeFunctionWithCallback(...) __jsc_wrapper(JSObjectMakeFunctionWithCallback, __VA_ARGS__)
 #define JSC_JSObjectSetPrivate(...) __jsc_bool_wrapper(JSObjectSetPrivate, __VA_ARGS__)
 #define JSC_JSObjectSetProperty(...) __jsc_wrapper(JSObjectSetProperty, __VA_ARGS__)
+#define JSC_JSObjectSetPropertyAtIndex(...) __jsc_wrapper(JSObjectSetPropertyAtIndex, __VA_ARGS__)
 
 jsc_poison(JSObjectCallAsConstructor JSObjectCallAsFunction JSObjectDeleteProperty
            JSObjectGetPrivate JSObjectGetProperty JSObjectGetPropertyAtIndex

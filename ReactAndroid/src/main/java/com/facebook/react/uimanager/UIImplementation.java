@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.yoga.YogaDirection;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
@@ -30,6 +29,7 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+import com.facebook.yoga.YogaDirection;
 
 /**
  * An class that is used to receive React commands from JS and translate them into a
@@ -467,6 +467,22 @@ public class UIImplementation {
    */
   public void findSubviewIn(int reactTag, float targetX, float targetY, Callback callback) {
     mOperationsQueue.enqueueFindTargetForTouch(reactTag, targetX, targetY, callback);
+  }
+
+  /**
+   *  Check if the first shadow node is the descendant of the second shadow node
+   */
+  public void viewIsDescendantOf(
+      final int reactTag,
+      final int ancestorReactTag,
+      final Callback callback) {
+    ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
+    ReactShadowNode ancestorNode = mShadowNodeRegistry.getNode(ancestorReactTag);
+    if (node == null || ancestorNode == null) {
+      callback.invoke(false);
+      return;
+    }
+    callback.invoke(node.isDescendantOf(ancestorNode));
   }
 
   /**

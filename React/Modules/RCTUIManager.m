@@ -32,8 +32,8 @@
 #import "RCTRootViewInternal.h"
 #import "RCTScrollableProtocol.h"
 #import "RCTShadowView.h"
-#import "RCTUtils.h"
 #import "RCTUIManagerObserverCoordinator.h"
+#import "RCTUtils.h"
 #import "RCTView.h"
 #import "RCTViewManager.h"
 #import "UIView+React.h"
@@ -407,6 +407,12 @@ BOOL RCTIsUIManagerQueue()
 {
   RCTAssertMainQueue();
   return _viewRegistry[reactTag];
+}
+
+- (RCTShadowView *)shadowViewForReactTag:(NSNumber *)reactTag
+{
+  RCTAssertUIManagerQueue();
+  return _shadowViewRegistry[reactTag];
 }
 
 - (void)setAvailableSize:(CGSize)availableSize forRootView:(UIView *)rootView
@@ -1192,7 +1198,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     dispatch_async(dispatch_get_main_queue(), ^{
       RCTProfileEndFlowEvent();
       RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[UIManager flushUIBlocks]", (@{
-        @"count": @(previousPendingUIBlocks.count),
+        @"count": [@(previousPendingUIBlocks.count) stringValue],
       }));
       @try {
         for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
@@ -1202,6 +1208,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
       @catch (NSException *exception) {
         RCTLogError(@"Exception thrown while executing UI block: %@", exception);
       }
+      RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
     });
   }
 }

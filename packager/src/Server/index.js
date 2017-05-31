@@ -12,12 +12,13 @@
 'use strict';
 
 const AssetServer = require('../AssetServer');
-const getPlatformExtension = require('../node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const MultipartResponse = require('./MultipartResponse');
 
-const defaults = require('../../defaults');
+const defaults = require('../defaults');
+const emptyFunction = require('fbjs/lib/emptyFunction');
 const mime = require('mime-types');
+const parsePlatformFilePath = require('../node-haste/lib/parsePlatformFilePath');
 const path = require('path');
 const symbolicate = require('./symbolicate');
 const terminal = require('../lib/terminal');
@@ -26,13 +27,13 @@ const url = require('url');
 const debug = require('debug')('RNP:Server');
 
 import type Module, {HasteImpl} from '../node-haste/Module';
-import type {Stats} from 'fs';
 import type {IncomingMessage, ServerResponse} from 'http';
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 import type Bundle from '../Bundler/Bundle';
 import type HMRBundle from '../Bundler/HMRBundle';
 import type {Reporter} from '../lib/reporting';
 import type {GetTransformOptions, PostProcessModules, PostMinifyProcess} from '../Bundler';
+import type {TransformCache} from '../lib/TransformCaching';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {SourceMap, Symbolicate} from './symbolicate';
 
@@ -68,16 +69,18 @@ type Options = {
   platforms?: Array<string>,
   polyfillModuleNames?: Array<string>,
   postProcessModules?: PostProcessModules,
-  postMinifyProcess?: PostMinifyProcess,
-  projectRoots: Array<string>,
+  postMinifyProcess: PostMinifyProcess,
+  projectRoots: $ReadOnlyArray<string>,
   providesModuleNodeModules?: Array<string>,
   reporter: Reporter,
   resetCache?: boolean,
   silent?: boolean,
   +sourceExts: ?Array<string>,
-  transformModulePath?: string,
+  +transformCache: TransformCache,
+  +transformModulePath: string,
   transformTimeoutInterval?: number,
   watch?: boolean,
+  workerPath: ?string,
 };
 
 export type BundleOptions = {
@@ -124,18 +127,20 @@ class Server {
     platforms: Array<string>,
     polyfillModuleNames: Array<string>,
     postProcessModules?: PostProcessModules,
-    postMinifyProcess?: PostMinifyProcess,
-    projectRoots: Array<string>,
+    postMinifyProcess: PostMinifyProcess,
+    projectRoots: $ReadOnlyArray<string>,
     providesModuleNodeModules?: Array<string>,
     reporter: Reporter,
     resetCache: boolean,
     silent: boolean,
     +sourceExts: Array<string>,
-    transformModulePath: void | string,
+    +transformCache: TransformCache,
+    +transformModulePath: string,
     transformTimeoutInterval: ?number,
     watch: boolean,
+    workerPath: ?string,
   };
-  _projectRoots: Array<string>;
+  _projectRoots: $ReadOnlyArray<string>;
   _bundles: {};
   _changeWatchers: Array<{
     req: IncomingMessage,
@@ -148,6 +153,8 @@ class Server {
   _hmrFileChangeListener: ?(type: string, filePath: string) => mixed;
   _reporter: Reporter;
   _symbolicateInWorker: Symbolicate;
+  _platforms: Set<string>;
+  _nextBundleBuildID: number;
 
   constructor(options: Options) {
     this._opts = {
@@ -169,18 +176,22 @@ class Server {
       resetCache: options.resetCache || false,
       silent: options.silent || false,
       sourceExts: options.sourceExts || defaults.sourceExts,
+      transformCache: options.transformCache,
       transformModulePath: options.transformModulePath,
       transformTimeoutInterval: options.transformTimeoutInterval,
       watch: options.watch || false,
+      workerPath: options.workerPath,
     };
+
     const processFileChange =
-      ({type, filePath, stat}) => this.onFileChange(type, filePath, stat);
+      ({type, filePath}) => this.onFileChange(type, filePath);
 
     this._reporter = options.reporter;
     this._projectRoots = this._opts.projectRoots;
     this._bundles = Object.create(null);
     this._changeWatchers = [];
     this._fileChangeListeners = [];
+    this._platforms = new Set(this._opts.platforms);
 
     this._assetServer = new AssetServer({
       assetExts: this._opts.assetExts,
@@ -229,6 +240,7 @@ class Server {
     }, 50);
 
     this._symbolicateInWorker = symbolicate.createWorker();
+    this._nextBundleBuildID = 1;
   }
 
   end(): mixed {
@@ -281,7 +293,7 @@ class Server {
   getShallowDependencies(options: DependencyOptions): Promise<Array<Module>> {
     return Promise.resolve().then(() => {
       const platform = options.platform != null
-        ? options.platform : getPlatformExtension(options.entryFile);
+        ? options.platform : parsePlatformFilePath(options.entryFile, this._platforms).platform;
       const {entryFile, dev, minify, hot} = options;
       return this._bundler.getShallowDependencies(
         {entryFile, platform, dev, minify, hot, generateSourceMaps: false},
@@ -296,7 +308,7 @@ class Server {
   getDependencies(options: DependencyOptions): Promise<ResolutionResponse<Module, *>> {
     return Promise.resolve().then(() => {
       const platform = options.platform != null
-        ? options.platform : getPlatformExtension(options.entryFile);
+        ? options.platform : parsePlatformFilePath(options.entryFile, this._platforms).platform;
       const {entryFile, dev, minify, hot} = options;
       return this._bundler.getDependencies(
         {entryFile, platform, dev, minify, hot, generateSourceMaps: false},
@@ -314,8 +326,8 @@ class Server {
     });
   }
 
-  onFileChange(type: string, filePath: string, stat: Stats) {
-    this._assetServer.onFileChange(type, filePath, stat);
+  onFileChange(type: string, filePath: string) {
+    this._assetServer.onFileChange(type, filePath);
 
     // If Hot Loading is enabled avoid rebuilding bundles and sending live
     // updates. Instead, send the HMR updates right away and clear the bundles
@@ -481,30 +493,34 @@ class Server {
    * and for when we build for scratch.
    */
   _reportBundlePromise(
+    buildID: string,
     options: {entryFile: string},
     bundlePromise: Promise<Bundle>,
   ): Promise<Bundle> {
     this._reporter.update({
+      buildID,
       entryFilePath: options.entryFile,
       type: 'bundle_build_started',
     });
     return bundlePromise.then(bundle => {
       this._reporter.update({
-        entryFilePath: options.entryFile,
+        buildID,
         type: 'bundle_build_done',
       });
       return bundle;
     }, error => {
       this._reporter.update({
-        entryFilePath: options.entryFile,
-        error,
+        buildID,
         type: 'bundle_build_failed',
       });
       return Promise.reject(error);
     });
   }
 
-  useCachedOrUpdateOrCreateBundle(options: BundleOptions): Promise<Bundle> {
+  useCachedOrUpdateOrCreateBundle(
+    buildID: string,
+    options: BundleOptions,
+  ): Promise<Bundle> {
     const optionsJson = this.optionsHash(options);
     const bundleFromScratch = () => {
       const building = this.buildBundle(options);
@@ -550,6 +566,7 @@ class Server {
               changedModules.forEach(m => {
                 response.setResolvedDependencyPairs(
                   m,
+                  /* $FlowFixMe: should be enforced not to be null. */
                   dependencyPairs.get(m.path),
                   {ignoreFinalized: true},
                 );
@@ -596,7 +613,7 @@ class Server {
               debug('Failed to update existing bundle, rebuilding...', e.stack || e.message);
               return bundleFromScratch();
             });
-          return this._reportBundlePromise(options, bundlePromise);
+          return this._reportBundlePromise(buildID, options, bundlePromise);
         } else {
           debug('Using cached bundle');
           return bundle;
@@ -604,7 +621,7 @@ class Server {
       });
     }
 
-    return this._reportBundlePromise(options, bundleFromScratch());
+    return this._reportBundlePromise(buildID, options, bundleFromScratch());
   }
 
   processRequest(
@@ -650,12 +667,13 @@ class Server {
         entry_point: options.entryFile,
       }));
 
-    let reportProgress = () => {};
+    const buildID = this.getNewBuildID();
+    let reportProgress = emptyFunction;
     if (!this._opts.silent) {
       reportProgress = (transformedFileCount, totalFileCount) => {
         this._reporter.update({
+          buildID,
           type: 'bundle_transform_progressed',
-          entryFilePath: options.entryFile,
           transformedFileCount,
           totalFileCount,
         });
@@ -669,7 +687,7 @@ class Server {
     };
 
     debug('Getting bundle for request');
-    const building = this.useCachedOrUpdateOrCreateBundle(options);
+    const building = this.useCachedOrUpdateOrCreateBundle(buildID, options);
     building.then(
       p => {
         if (requestType === 'bundle') {
@@ -770,7 +788,12 @@ class Server {
 
   _sourceMapForURL(reqUrl: string): Promise<SourceMap> {
     const options = this._getOptionsFromUrl(reqUrl);
-    const building = this.useCachedOrUpdateOrCreateBundle(options);
+    // We're not properly reporting progress here. Reporting should be done
+    // from within that function.
+    const building = this.useCachedOrUpdateOrCreateBundle(
+      this.getNewBuildID(),
+      options,
+    );
     return building.then(p => p.getSourceMap({
       minify: options.minify,
       dev: options.dev,
@@ -789,9 +812,11 @@ class Server {
       'Content-Type': 'application/json; charset=UTF-8',
     });
 
-    if (error.type === 'TransformError' ||
-        error.type === 'NotFoundError' ||
-        error.type === 'UnableToResolveError') {
+    if (error instanceof Error && (
+          error.type === 'TransformError' ||
+          error.type === 'NotFoundError' ||
+          error.type === 'UnableToResolveError'
+        )) {
       error.errors = [{
         description: error.description,
         filename: error.filename,
@@ -802,6 +827,7 @@ class Server {
       if (error.type === 'NotFoundError') {
         delete this._bundles[bundleID];
       }
+      this._reporter.update({error, type: 'bundling_error'});
     } else {
       console.error(error.stack || error);
       res.end(JSON.stringify({
@@ -832,7 +858,7 @@ class Server {
     // try to get the platform from the url
     /* $FlowFixMe: `query` could be empty for an invalid URL */
     const platform = urlObj.query.platform ||
-      getPlatformExtension(pathname);
+      parsePlatformFilePath(pathname, this._platforms).platform;
 
     /* $FlowFixMe: `query` could be empty for an invalid URL */
     const assetPlugin = urlObj.query.assetPlugin;
@@ -883,6 +909,10 @@ class Server {
     }
 
     return query[opt] === 'true' || query[opt] === '1';
+  }
+
+  getNewBuildID(): string {
+    return (this._nextBundleBuildID++).toString(36);
   }
 
   static DEFAULT_BUNDLE_OPTIONS;

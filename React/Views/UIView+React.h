@@ -31,15 +31,15 @@
 @property (nonatomic, assign) UIUserInterfaceLayoutDirection reactLayoutDirection;
 
 /**
- * z-index, used to override sibling order in didUpdateReactSubviews.
+ * The z-index of the view.
  */
 @property (nonatomic, assign) NSInteger reactZIndex;
 
 /**
- * The reactSubviews array, sorted by zIndex. This value is cached and
- * automatically recalculated if views are added or removed.
+ * Subviews sorted by z-index. Note that this method doesn't do any caching (yet)
+ * and sorts all the views each call.
  */
-@property (nonatomic, copy, readonly) NSArray<UIView *> *sortedReactSubviews;
+- (NSArray<UIView *> *)reactZIndexSortedSubviews;
 
 /**
  * Updates the subviews array based on the reactSubviews. Default behavior is
@@ -77,6 +77,14 @@
 - (void)reactFocus;
 - (void)reactFocusIfNeeded;
 - (void)reactBlur;
+
+/**
+ * Useful properties for computing layout.
+ */
+@property (nonatomic, readonly) UIEdgeInsets reactBorderInsets;
+@property (nonatomic, readonly) UIEdgeInsets reactPaddingInsets;
+@property (nonatomic, readonly) UIEdgeInsets reactCompoundInsets;
+@property (nonatomic, readonly) CGRect reactContentFrame;
 
 #if RCT_DEV
 

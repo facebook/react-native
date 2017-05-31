@@ -74,7 +74,7 @@ const DataDetectorTypes = [
  * import React, { Component } from 'react';
  * import { AppRegistry, TextInput } from 'react-native';
  *
- * class UselessTextInput extends Component {
+ * export default class UselessTextInput extends Component {
  *   constructor(props) {
  *     super(props);
  *     this.state = { text: 'Useless Placeholder' };
@@ -91,7 +91,7 @@ const DataDetectorTypes = [
  *   }
  * }
  *
- * // App registration and rendering
+ * // skip this line if using Create React Native App
  * AppRegistry.registerComponent('AwesomeProject', () => UselessTextInput);
  * ```
  *
@@ -117,7 +117,7 @@ const DataDetectorTypes = [
  *   }
  * }
  *
- * class UselessTextInputMultiline extends Component {
+ * export default class UselessTextInputMultiline extends Component {
  *   constructor(props) {
  *     super(props);
  *     this.state = {
@@ -145,7 +145,7 @@ const DataDetectorTypes = [
  *   }
  * }
  *
- * // App registration and rendering
+ * // skip these lines if using Create React Native App
  * AppRegistry.registerComponent(
  *  'AwesomeProject',
  *  () => UselessTextInputMultiline
@@ -628,7 +628,7 @@ const TextInput = React.createClass({
     var textContainer;
 
     var props = Object.assign({}, this.props);
-    props.style = [styles.input, this.props.style];
+    props.style = [this.props.style];
 
     if (props.selection && props.selection.end == null) {
       props.selection = {start: props.selection.start, end: props.selection.start};
@@ -859,9 +859,6 @@ const TextInput = React.createClass({
 });
 
 var styles = StyleSheet.create({
-  input: {
-    alignSelf: 'stretch',
-  },
   multilineInput: {
     // This default top inset makes RCTTextView seem as close as possible
     // to single-line RCTTextField defaults, using the system defaults

@@ -22,7 +22,7 @@ This example creates a simple `ListView` of hardcoded data. It first initializes
 import React, { Component } from 'react';
 import { AppRegistry, ListView, Text, View } from 'react-native';
 
-class ListViewBasics extends Component {
+export default class ListViewBasics extends Component {
   // Initialize the hardcoded data
   constructor(props) {
     super(props);
@@ -45,8 +45,8 @@ class ListViewBasics extends Component {
   }
 }
 
-// App registration and rendering
-AppRegistry.registerComponent('ListViewBasics', () => ListViewBasics);
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => ListViewBasics);
 ```
 
 One of the most common uses for a `ListView` is displaying data that you fetch from a server. To do that, you will need to [learn about networking in React Native](docs/network.html).

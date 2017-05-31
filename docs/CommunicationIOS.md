@@ -63,7 +63,7 @@ class ImageBrowserApp extends React.Component {
   }
 }
 
-AppRegistry.registerComponent('ImageBrowserApp', () => ImageBrowserApp);
+AppRegistry.registerComponent('AwesomeProject', () => ImageBrowserApp);
 ```
 
 `RCTRootView` also provides a read-write property `appProperties`. After `appProperties` is set, the React Native app is re-rendered with new properties. The update is only performed when the new updated properties differ from the previous ones.

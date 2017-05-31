@@ -7,13 +7,15 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @format
  */
 'use strict';
 
 const JsFileWrapping = require('./JsFileWrapping');
 
+const asyncify = require('async/asyncify');
 const collectDependencies = require('./collect-dependencies');
-const defaults = require('../../../defaults');
+const defaults = require('../../defaults');
 const docblock = require('../../node-haste/DependencyGraph/docblock');
 const generate = require('./generate');
 const path = require('path');
@@ -34,10 +36,18 @@ import type {
 export type TransformOptions = {|
   filename: string,
   polyfill?: boolean,
-  transformer: Transformer,
+  transformer: Transformer<*>,
   variants?: TransformVariants,
 |};
 
+const defaultTransformOptions = {
+  dev: true,
+  generateSourceMaps: true,
+  hot: false,
+  inlineRequires: false,
+  platform: '',
+  projectRoot: '',
+};
 const defaultVariants = {default: {}};
 
 const ASSET_EXTENSIONS = new Set(defaults.assetExts);
@@ -61,17 +71,14 @@ function transformModule(
   const {filename, transformer, variants = defaultVariants} = options;
   const tasks = {};
   Object.keys(variants).forEach(name => {
-    tasks[name] = cb => {
-      try {
-        cb(null, transformer.transform(
-          code,
-          filename,
-          variants[name],
-        ));
-      } catch (error) {
-        cb(error, null);
-      }
-    };
+    tasks[name] = asyncify(() =>
+      transformer.transform({
+        filename,
+        localPath: filename,
+        options: {...defaultTransformOptions, ...variants[name]},
+        src: code,
+      }),
+    );
   });
 
   series(tasks, (error, results: {[key: string]: TransformerResult}) => {
@@ -84,7 +91,12 @@ function transformModule(
 
     //$FlowIssue #14545724
     Object.entries(results).forEach(([key, value]: [*, TransformFnResult]) => {
-      transformed[key] = makeResult(value.ast, filename, code, options.polyfill);
+      transformed[key] = makeResult(
+        value.ast,
+        filename,
+        code,
+        options.polyfill,
+      );
     });
 
     const annotations = docblock.parseAsObject(docblock.extract(code));
@@ -107,10 +119,7 @@ function transformModule(
 function transformJSON(json, options, callback) {
   const value = JSON.parse(json);
   const {filename} = options;
-  const code =
-    `__d(function(${JsFileWrapping.MODULE_FACTORY_PARAMETERS.join(', ')}) { module.exports = \n${
-      json
-    }\n});`;
+  const code = `__d(function(${JsFileWrapping.MODULE_FACTORY_PARAMETERS.join(', ')}) { module.exports = \n${json}\n});`;
 
   const moduleData = {
     code,
@@ -119,9 +128,9 @@ function transformJSON(json, options, callback) {
   };
   const transformed = {};
 
-  Object
-    .keys(options.variants || defaultVariants)
-    .forEach(key => (transformed[key] = moduleData));
+  Object.keys(options.variants || defaultVariants).forEach(
+    key => (transformed[key] = moduleData),
+  );
 
   const result: TransformedCodeFile = {
     assetContent: null,

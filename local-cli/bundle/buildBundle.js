@@ -14,14 +14,15 @@
 const log = require('../util/log').out('bundle');
 const Server = require('../../packager/src/Server');
 const TerminalReporter = require('../../packager/src/lib/TerminalReporter');
+const TransformCaching = require('../../packager/src/lib/TransformCaching');
 
-const outputBundle = require('./output/bundle');
+const outputBundle = require('../../packager/src/shared/output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
-const defaultAssetExts = require('../../packager/defaults').assetExts;
-const defaultSourceExts = require('../../packager/defaults').sourceExts;
-const defaultPlatforms = require('../../packager/defaults').platforms;
-const defaultProvidesModuleNodeModules = require('../../packager/defaults').providesModuleNodeModules;
+const defaultAssetExts = require('../../packager/src/defaults').assetExts;
+const defaultSourceExts = require('../../packager/src/defaults').sourceExts;
+const defaultPlatforms = require('../../packager/src/defaults').platforms;
+const defaultProvidesModuleNodeModules = require('../../packager/src/defaults').providesModuleNodeModules;
 
 import type {RequestOptions, OutputOptions} from './types.flow';
 import type {ConfigT} from '../util/Config';
@@ -68,10 +69,9 @@ function buildBundle(
     const sourceExts = (config.getSourceExts && config.getSourceExts()) || [];
     const platforms = (config.getPlatforms && config.getPlatforms()) || [];
 
-    const transformModulePath =
-      args.transformer ? path.resolve(args.transformer) :
-      typeof config.getTransformModulePath === 'function' ? config.getTransformModulePath() :
-      undefined;
+    const transformModulePath = args.transformer
+      ? path.resolve(args.transformer)
+      : config.getTransformModulePath();
 
     const providesModuleNodeModules =
       typeof config.getProvidesModuleNodeModules === 'function' ? config.getProvidesModuleNodeModules() :
@@ -85,14 +85,17 @@ function buildBundle(
       globalTransformCache: null,
       hasteImpl: config.hasteImpl,
       platforms: defaultPlatforms.concat(platforms),
+      postMinifyProcess: config.postMinifyProcess,
       postProcessModules: config.postProcessModules,
       projectRoots: config.getProjectRoots(),
       providesModuleNodeModules: providesModuleNodeModules,
       resetCache: args.resetCache,
       reporter: new TerminalReporter(),
       sourceExts: defaultSourceExts.concat(sourceExts),
+      transformCache: TransformCaching.useTempDir(),
       transformModulePath: transformModulePath,
       watch: false,
+      workerPath: config.getWorkerPath && config.getWorkerPath(),
     };
 
     packagerInstance = new Server(options);

@@ -8,7 +8,8 @@
  */
 'use strict';
 
-const ReactPackager = require('../../packager/react-packager');
+require('../../setupBabel')();
+const ReactPackager = require('../../packager');
 
 const denodeify = require('denodeify');
 const fs = require('fs');
@@ -33,6 +34,7 @@ function dependencies(argv, config, args, packagerInstance) {
     transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
     verbose: config.verbose,
+    workerPath: config.getWorkerPath(),
   };
 
   const relativePath = packageOpts.projectRoots.map(root =>
