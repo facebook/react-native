@@ -154,6 +154,7 @@ class Server {
   _reporter: Reporter;
   _symbolicateInWorker: Symbolicate;
   _platforms: Set<string>;
+  _nextBundleBuildID: number;
 
   constructor(options: Options) {
     this._opts = {
@@ -239,6 +240,7 @@ class Server {
     }, 50);
 
     this._symbolicateInWorker = symbolicate.createWorker();
+    this._nextBundleBuildID = 1;
   }
 
   end(): mixed {
@@ -491,29 +493,34 @@ class Server {
    * and for when we build for scratch.
    */
   _reportBundlePromise(
+    buildID: string,
     options: {entryFile: string},
     bundlePromise: Promise<Bundle>,
   ): Promise<Bundle> {
     this._reporter.update({
+      buildID,
       entryFilePath: options.entryFile,
       type: 'bundle_build_started',
     });
     return bundlePromise.then(bundle => {
       this._reporter.update({
-        entryFilePath: options.entryFile,
+        buildID,
         type: 'bundle_build_done',
       });
       return bundle;
     }, error => {
       this._reporter.update({
-        entryFilePath: options.entryFile,
+        buildID,
         type: 'bundle_build_failed',
       });
       return Promise.reject(error);
     });
   }
 
-  useCachedOrUpdateOrCreateBundle(options: BundleOptions): Promise<Bundle> {
+  useCachedOrUpdateOrCreateBundle(
+    buildID: string,
+    options: BundleOptions,
+  ): Promise<Bundle> {
     const optionsJson = this.optionsHash(options);
     const bundleFromScratch = () => {
       const building = this.buildBundle(options);
@@ -606,7 +613,7 @@ class Server {
               debug('Failed to update existing bundle, rebuilding...', e.stack || e.message);
               return bundleFromScratch();
             });
-          return this._reportBundlePromise(options, bundlePromise);
+          return this._reportBundlePromise(buildID, options, bundlePromise);
         } else {
           debug('Using cached bundle');
           return bundle;
@@ -614,7 +621,7 @@ class Server {
       });
     }
 
-    return this._reportBundlePromise(options, bundleFromScratch());
+    return this._reportBundlePromise(buildID, options, bundleFromScratch());
   }
 
   processRequest(
@@ -660,12 +667,13 @@ class Server {
         entry_point: options.entryFile,
       }));
 
+    const buildID = this.getNewBuildID();
     let reportProgress = emptyFunction;
     if (!this._opts.silent) {
       reportProgress = (transformedFileCount, totalFileCount) => {
         this._reporter.update({
+          buildID,
           type: 'bundle_transform_progressed',
-          entryFilePath: options.entryFile,
           transformedFileCount,
           totalFileCount,
         });
@@ -679,7 +687,7 @@ class Server {
     };
 
     debug('Getting bundle for request');
-    const building = this.useCachedOrUpdateOrCreateBundle(options);
+    const building = this.useCachedOrUpdateOrCreateBundle(buildID, options);
     building.then(
       p => {
         if (requestType === 'bundle') {
@@ -780,7 +788,12 @@ class Server {
 
   _sourceMapForURL(reqUrl: string): Promise<SourceMap> {
     const options = this._getOptionsFromUrl(reqUrl);
-    const building = this.useCachedOrUpdateOrCreateBundle(options);
+    // We're not properly reporting progress here. Reporting should be done
+    // from within that function.
+    const building = this.useCachedOrUpdateOrCreateBundle(
+      this.getNewBuildID(),
+      options,
+    );
     return building.then(p => p.getSourceMap({
       minify: options.minify,
       dev: options.dev,
@@ -896,6 +909,10 @@ class Server {
     }
 
     return query[opt] === 'true' || query[opt] === '1';
+  }
+
+  getNewBuildID(): string {
+    return (this._nextBundleBuildID++).toString(36);
   }
 
   static DEFAULT_BUNDLE_OPTIONS;
