@@ -22,6 +22,10 @@
 #define JSC_IMPORT extern
 #endif
 
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
+
 namespace facebook {
 namespace react {
   class IInspector;
@@ -49,7 +53,7 @@ JSC_IMPORT void FBJSContextStartGCTimers(JSContextRef);
  *
  * Version number indicating that bytecode is not supported by this runtime.
  */
-__attribute__((visibility("default"))) extern const int32_t JSNoBytecodeFileFormatVersion;
+RN_EXPORT extern const int32_t JSNoBytecodeFileFormatVersion;
 
 namespace facebook {
 namespace react {
@@ -148,12 +152,12 @@ bool isCustomJSCPtr(T *x) {
   return (uintptr_t)x & 0x1;
 }
 
-bool isCustomJSCWrapperSet();
-void setCustomJSCWrapper(const JSCWrapper* wrapper);
+RN_EXPORT bool isCustomJSCWrapperSet();
+RN_EXPORT void setCustomJSCWrapper(const JSCWrapper* wrapper);
 
 // This will return a single value for the whole life of the process.
-__attribute__((visibility("default"))) const JSCWrapper *systemJSCWrapper();
-__attribute__((visibility("default"))) const JSCWrapper *customJSCWrapper();
+RN_EXPORT const JSCWrapper *systemJSCWrapper();
+RN_EXPORT const JSCWrapper *customJSCWrapper();
 
 } }
 
