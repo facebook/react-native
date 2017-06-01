@@ -168,9 +168,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
 - (void)setTransparent:(BOOL)transparent
 {
-  if (self.transparent != transparent) {
-    _modalViewController.modalPresentationStyle = transparent ? UIModalPresentationOverFullScreen : UIModalPresentationFullScreen;
+  if (_transparent == transparent) {
+    return;
   }
+
+  _modalViewController.modalPresentationStyle = transparent ? UIModalPresentationOverFullScreen : UIModalPresentationFullScreen;
 }
 
 #if !TARGET_OS_TV
