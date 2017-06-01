@@ -16,7 +16,7 @@ import com.facebook.soloader.SoLoader;
 public class CxxModuleWrapperBase implements NativeModule
 {
   static {
-    SoLoader.loadLibrary(CatalystInstanceImpl.REACT_NATIVE_LIB);
+    ReactBridge.staticInit();
   }
 
   @DoNotStrip

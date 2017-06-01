@@ -40,11 +40,8 @@ import com.facebook.systrace.TraceListener;
  */
 @DoNotStrip
 public class CatalystInstanceImpl implements CatalystInstance {
-
-  /* package */ static final String REACT_NATIVE_LIB = "reactnativejnifb";
-
   static {
-    SoLoader.loadLibrary(REACT_NATIVE_LIB);
+    ReactBridge.staticInit();
   }
 
   private static final AtomicInteger sNextInstanceIdForTrace = new AtomicInteger(1);

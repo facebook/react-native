@@ -32,7 +32,7 @@ public class JSCJavaScriptExecutor extends JavaScriptExecutor {
   }
 
   static {
-    SoLoader.loadLibrary(CatalystInstanceImpl.REACT_NATIVE_LIB);
+    ReactBridge.staticInit();
   }
 
   public JSCJavaScriptExecutor(ReadableNativeArray jscConfig) {

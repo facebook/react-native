@@ -39,7 +39,7 @@ public class ProxyJavaScriptExecutor extends JavaScriptExecutor {
   }
 
   static {
-    SoLoader.loadLibrary(CatalystInstanceImpl.REACT_NATIVE_LIB);
+    ReactBridge.staticInit();
   }
 
   private @Nullable JavaJSExecutor mJavaJSExecutor;
