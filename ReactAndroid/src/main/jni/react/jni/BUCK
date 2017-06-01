@@ -45,7 +45,7 @@ cxx_library(
         "PUBLIC",
     ],
     xcode_public_headers_symlinks = True,
-    deps = JSC_DEPS + [
+    deps = ([
         "//native/third-party/android-ndk:android",
         "//xplat/folly:molly",
         "//xplat/fbgloginit:fbgloginit",
@@ -53,5 +53,6 @@ cxx_library(
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
         FBJNI_TARGET,
-    ],
+        NDK_TARGET,
+    ] + JSC_DEPS) if not IS_OSS_BUILD else [],
 )
