@@ -596,12 +596,14 @@ class Bundler {
     return response;
   }
 
-  getOrderedDependencyPaths({entryFile, dev, platform}: {
+  getOrderedDependencyPaths({entryFile, dev, platform, minify, generateSourceMaps}: {
     +entryFile: string,
     +dev: boolean,
     +platform: string,
+    +minify: boolean,
+    +generateSourceMaps: boolean,
   }) {
-    return this.getDependencies({entryFile, dev, platform}).then(
+    return this.getDependencies({entryFile, dev, platform, minify, generateSourceMaps}).then(
       ({dependencies}) => {
         const ret = [];
         const promises = [];

@@ -92,6 +92,8 @@ exports.getOrderedDependencyPaths = function(options: Options, depOptions: {
   +entryFile: string,
   +dev: boolean,
   +platform: string,
+  +minify: boolean,
+  +generateSourceMaps: boolean,
 }) {
   var server = createNonPersistentServer(options);
   return server.getOrderedDependencyPaths(depOptions)
