@@ -702,7 +702,6 @@ var _uniqueId = 1;
  */
 class AnimatedValue extends AnimatedWithChildren {
   _value: number;
-  _startingValue: number;
   _offset: number;
   _animation: ?Animation;
   _tracking: ?Animated;
@@ -711,7 +710,7 @@ class AnimatedValue extends AnimatedWithChildren {
 
   constructor(value: number) {
     super();
-    this._startingValue = this._value = value;
+    this._value = value;
     this._offset = 0;
     this._animation = null;
     this._listeners = {};
