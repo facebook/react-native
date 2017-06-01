@@ -21,7 +21,6 @@ const mime = require('mime-types');
 const parsePlatformFilePath = require('../node-haste/lib/parsePlatformFilePath');
 const path = require('path');
 const symbolicate = require('./symbolicate');
-const terminal = require('../lib/terminal');
 const url = require('url');
 
 const debug = require('debug')('RNP:Server');
@@ -396,7 +395,8 @@ class Server {
         e => {
           res.writeHead(500);
           res.end('Internal Error');
-          terminal.log(e.stack); // eslint-disable-line no-console-disallow
+          // FIXME: $FlowFixMe: that's a hack, doesn't work with JSON-mode output
+          this._reporter.terminal && this._reporter.terminal.log(e.stack);
         }
       );
     } else {

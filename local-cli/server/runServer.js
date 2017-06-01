@@ -15,6 +15,7 @@
 require('../../setupBabel')();
 const InspectorProxy = require('./util/inspectorProxy.js');
 const ReactPackager = require('../../packager');
+const Terminal = require('../../packager/src/lib/TerminalClass');
 
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
@@ -138,6 +139,9 @@ function getPackagerServer(args, config) {
     LogReporter = require('../../packager/src/lib/TerminalReporter');
   }
 
+  /* $FlowFixMe: Flow is wrong, Node.js docs specify that process.stdout is an
+   * instance of a net.Socket (a local socket, not network). */
+  const terminal = new Terminal(process.stdout);
   return ReactPackager.createServer({
     assetExts: defaultAssetExts.concat(args.assetExts),
     blacklistRE: config.getBlacklistRE(),
@@ -151,7 +155,7 @@ function getPackagerServer(args, config) {
     postMinifyProcess: config.postMinifyProcess,
     projectRoots: args.projectRoots,
     providesModuleNodeModules: providesModuleNodeModules,
-    reporter: new LogReporter(),
+    reporter: new LogReporter(terminal),
     resetCache: args.resetCache,
     sourceExts: defaultSourceExts.concat(args.sourceExts),
     transformModulePath: transformModulePath,

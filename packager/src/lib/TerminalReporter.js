@@ -15,10 +15,10 @@ const chalk = require('chalk');
 const formatBanner = require('./formatBanner');
 const path = require('path');
 const reporting = require('./reporting');
-const terminal = require('./terminal');
 const throttle = require('lodash/throttle');
 const util = require('util');
 
+import type Terminal from './TerminalClass';
 import type {ReportableEvent, GlobalCacheDisabledReason} from './reporting';
 
 const DEP_GRAPH_MESSAGE = 'Loading dependency graph';
@@ -72,12 +72,15 @@ class TerminalReporter {
     totalFileCount: number,
   }) => void;
 
-  constructor() {
+  +terminal: Terminal;
+
+  constructor(terminal: Terminal) {
     this._dependencyGraphHasLoaded = false;
     this._activeBundles = new Map();
     this._scheduleUpdateBundleProgress = throttle(data => {
       this.update({...data, type: 'bundle_transform_progressed_throttled'});
     }, 100);
+    (this: any).terminal = terminal;
   }
 
   /**
@@ -106,10 +109,18 @@ class TerminalReporter {
     const format = GLOBAL_CACHE_DISABLED_MESSAGE_FORMAT;
     switch (reason) {
       case 'too_many_errors':
-        reporting.logWarning(terminal, format, 'it has been failing too many times.');
+        reporting.logWarning(
+          this.terminal,
+          format,
+          'it has been failing too many times.',
+        );
         break;
       case 'too_many_misses':
-        reporting.logWarning(terminal, format, 'it has been missing too many consecutive keys.');
+        reporting.logWarning(
+          this.terminal,
+          format,
+          'it has been missing too many consecutive keys.',
+        );
         break;
     }
   }
@@ -122,7 +133,7 @@ class TerminalReporter {
         ratio: 1,
         transformedFileCount: progress.totalFileCount,
       }, 'done');
-      terminal.log(msg);
+      this.terminal.log(msg);
     }
   }
 
@@ -130,12 +141,12 @@ class TerminalReporter {
     const progress = this._activeBundles.get(buildID);
     if (progress != null) {
       const msg = this._getBundleStatusMessage(progress, 'failed');
-      terminal.log(msg);
+      this.terminal.log(msg);
     }
   }
 
   _logPackagerInitializing(port: number, projectRoots: $ReadOnlyArray<string>) {
-    terminal.log(
+    this.terminal.log(
       formatBanner(
         'Running packager on port ' +
           port +
@@ -152,7 +163,7 @@ class TerminalReporter {
       )
     );
 
-    terminal.log(
+    this.terminal.log(
       'Looking for JS files in\n  ',
       chalk.dim(projectRoots.join('\n   ')),
       '\n'
@@ -161,23 +172,23 @@ class TerminalReporter {
 
   _logPackagerInitializingFailed(port: number, error: Error) {
     if (error.code === 'EADDRINUSE') {
-      terminal.log(
+      this.terminal.log(
         chalk.bgRed.bold(' ERROR '),
         chalk.red("Packager can't listen on port", chalk.bold(port))
       );
-      terminal.log('Most likely another process is already using this port');
-      terminal.log('Run the following command to find out which process:');
-      terminal.log('\n  ', chalk.bold('lsof -i :' + port), '\n');
-      terminal.log('Then, you can either shut down the other process:');
-      terminal.log('\n  ', chalk.bold('kill -9 <PID>'), '\n');
-      terminal.log('or run packager on different port.');
+      this.terminal.log('Most likely another process is already using this port');
+      this.terminal.log('Run the following command to find out which process:');
+      this.terminal.log('\n  ', chalk.bold('lsof -i :' + port), '\n');
+      this.terminal.log('Then, you can either shut down the other process:');
+      this.terminal.log('\n  ', chalk.bold('kill -9 <PID>'), '\n');
+      this.terminal.log('or run packager on different port.');
     } else {
-      terminal.log(chalk.bgRed.bold(' ERROR '), chalk.red(error.message));
+      this.terminal.log(chalk.bgRed.bold(' ERROR '), chalk.red(error.message));
       const errorAttributes = JSON.stringify(error);
       if (errorAttributes !== '{}') {
-        terminal.log(chalk.red(errorAttributes));
+        this.terminal.log(chalk.red(errorAttributes));
       }
-      terminal.log(chalk.red(error.stack));
+      this.terminal.log(chalk.red(error.stack));
     }
   }
 
@@ -191,7 +202,7 @@ class TerminalReporter {
         this._logPackagerInitializing(event.port, event.projectRoots);
         break;
       case 'initialize_packager_done':
-        terminal.log('\nReact packager ready.\n');
+        this.terminal.log('\nReact packager ready.\n');
         break;
       case 'initialize_packager_failed':
         this._logPackagerInitializingFailed(event.port, event.error);
@@ -206,13 +217,13 @@ class TerminalReporter {
         this._logBundlingError(event.error);
         break;
       case 'dep_graph_loaded':
-        terminal.log(`${DEP_GRAPH_MESSAGE}, done.`);
+        this.terminal.log(`${DEP_GRAPH_MESSAGE}, done.`);
         break;
       case 'global_cache_disabled':
         this._logCacheDisabled(event.reason);
         break;
       case 'transform_cache_reset':
-        reporting.logWarning(terminal, 'the transform cache was reset.');
+        reporting.logWarning(this.terminal, 'the transform cache was reset.');
         break;
       case 'worker_stdout_chunk':
         this._logWorkerChunk('stdout', event.chunk);
@@ -230,7 +241,7 @@ class TerminalReporter {
    */
   _logBundlingError(error: Error) {
     const str = JSON.stringify(error.message);
-    reporting.logError(terminal, 'bundling failed: %s', str);
+    reporting.logError(this.terminal, 'bundling failed: %s', str);
   }
 
   _logWorkerChunk(origin: 'stdout' | 'stderr', chunk: string) {
@@ -239,7 +250,7 @@ class TerminalReporter {
       lines.splice(lines.length - 1, 1);
     }
     lines.forEach(line => {
-      terminal.log(`transform[${origin}]: ${line}`);
+      this.terminal.log(`transform[${origin}]: ${line}`);
     });
   }
 
@@ -335,7 +346,7 @@ class TerminalReporter {
   update(event: TerminalReportableEvent) {
     this._log(event);
     this._updateState(event);
-    terminal.status(this._getStatusMessage());
+    this.terminal.status(this._getStatusMessage());
   }
 
 }

@@ -13,6 +13,7 @@
 
 const log = require('../util/log').out('bundle');
 const Server = require('../../packager/src/Server');
+const Terminal = require('../../packager/src/lib/TerminalClass');
 const TerminalReporter = require('../../packager/src/lib/TerminalReporter');
 const TransformCaching = require('../../packager/src/lib/TransformCaching');
 
@@ -74,9 +75,13 @@ function buildBundle(
       : config.getTransformModulePath();
 
     const providesModuleNodeModules =
-      typeof config.getProvidesModuleNodeModules === 'function' ? config.getProvidesModuleNodeModules() :
-      defaultProvidesModuleNodeModules;
+      typeof config.getProvidesModuleNodeModules === 'function'
+        ? config.getProvidesModuleNodeModules()
+        : defaultProvidesModuleNodeModules;
 
+    /* $FlowFixMe: Flow is wrong, Node.js docs specify that process.stdout is an
+     * instance of a net.Socket (a local socket, not network). */
+    const terminal = new Terminal(process.stdout);
     const options = {
       assetExts: defaultAssetExts.concat(assetExts),
       blacklistRE: config.getBlacklistRE(),
@@ -90,7 +95,7 @@ function buildBundle(
       projectRoots: config.getProjectRoots(),
       providesModuleNodeModules: providesModuleNodeModules,
       resetCache: args.resetCache,
-      reporter: new TerminalReporter(),
+      reporter: new TerminalReporter(terminal),
       sourceExts: defaultSourceExts.concat(sourceExts),
       transformCache: TransformCaching.useTempDir(),
       transformModulePath: transformModulePath,
