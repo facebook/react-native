@@ -12,7 +12,6 @@ package com.facebook.react.bridge;
 import javax.annotation.Nullable;
 
 import com.facebook.jni.HybridData;
-import com.facebook.soloader.SoLoader;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 /**

@@ -12,11 +12,8 @@ package com.facebook.react.bridge;
 import com.facebook.soloader.SoLoader;
 
 public class ReactBridge {
-  static {
-    SoLoader.loadLibrary("reactnativejni");
-  }
-
   public static void staticInit() {
-    // This method only exists to trigger the static initializer above
+    // Ideally we'd put this in static and only run it once, but that causes this method to get stripped
+    SoLoader.loadLibrary("reactnativejni");
   }
 }
