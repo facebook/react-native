@@ -156,6 +156,8 @@ request.send();
 React Native also supports [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket), a protocol which provides full-duplex communication channels over a single TCP connection.
 
 ```js
+import { WebSocketModule } from 'react-native';
+
 var ws = new WebSocket('ws://host.com/path');
 
 ws.onopen = () => {
