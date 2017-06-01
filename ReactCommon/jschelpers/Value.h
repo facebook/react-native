@@ -307,15 +307,15 @@ public:
     return getType() == kJSTypeObject;
   }
 
-  Object asObject() const;
+  RN_EXPORT Object asObject() const;
 
   bool isString() const {
     return getType() == kJSTypeString;
   }
 
-  String toString() const;
+  RN_EXPORT String toString() const;
 
-  static Value makeError(JSContextRef ctx, const char *error);
+  RN_EXPORT static Value makeError(JSContextRef ctx, const char *error);
 
   static Value makeNumber(JSContextRef ctx, double value) {
     return Value(ctx, JSC_JSValueMakeNumber(ctx, value));
