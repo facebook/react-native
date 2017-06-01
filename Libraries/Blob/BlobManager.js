@@ -80,7 +80,7 @@ class BlobManager {
   static async createFromURI(uri: string, options?: { type: string }): Promise<File> {
     const blob = await BlobModule.createFromURI(uri);
 
-    BlobRegistry.register(blob.data.blobId);
+    BlobRegistry.register(blob.blobId);
 
     if (options && typeof options.type === 'string') {
       blob.type = options.type;
