@@ -8,9 +8,11 @@ next: images
 previous: animations
 ---
 
-This guide covers the various navigation components available in React Native. If you are just getting started with navigation, you will probably want to use React Navigation.
+This guide covers the various navigation components available in React Native. If you are just getting started with navigation, you will probably want to use [React Navigation](docs/navigation.html#react-navigation). React Navigation provides an easy to use navigation solution, with the ability to present common stack navigation and tabbed navigation patterns on both iOS and Android. As this is a JavaScript implementation, it provides the greatest amount of configurability as well as flexibility when integrating with state management libraries such as [redux](https://reactnavigation.org/docs/guides/redux).
 
-If you are only targeting iOS and would like to stick to the native look and feel, check out `NavigatorIOS`. The `Navigator` component is older but has been thoroughly tested in production.
+If you're only targeting iOS, you may want to also check out [NavigatorIOS](docs/navigation.html#navigatorios) as a way of providing a native look and feel with minimal configuration, as it provides a wrapper around the native `UINavigationController` class. This component will not work on Android, however.
+
+If you'd like to achieve a native look and feel on both iOS and Android, or you're integrating React Native into an app that already manages navigation natively, the following libraries provide native navigation on both platforms: [native-navigation](http://airbnb.io/native-navigation/), [react-native-navigation](https://github.com/wix/react-native-navigation).
 
 ## React Navigation
 
