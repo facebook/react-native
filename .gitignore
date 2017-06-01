@@ -20,6 +20,7 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
+scripts/compile_commands.json
 
 # Gradle
 /build/
