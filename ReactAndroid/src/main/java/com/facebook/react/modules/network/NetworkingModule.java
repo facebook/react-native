@@ -369,7 +369,19 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
               // Otherwise send the data in one big chunk, in the format that JS requested.
               String responseString = "";
               if (responseType.equals("text")) {
-                responseString = responseBody.string();
+                try {
+                  responseString = responseBody.string();
+                } catch (IOException e) {
+                  if (response.request().method().equalsIgnoreCase("HEAD")) {
+                    // The request is an `HEAD` and the body is empty,
+                    // the OkHttp will produce an exception.
+                    // Ignore the exception to not invalidate the request in the
+                    // Javascript layer.
+                    // Introduced to fix issue #7463.
+                  } else {
+                    ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+                  }
+                }
               } else if (responseType.equals("base64")) {
                 responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
               }
