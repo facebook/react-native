@@ -281,6 +281,22 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
     }
   }
 
+  private static class DynamicPropSetter extends PropSetter {
+
+    public DynamicPropSetter(ReactProp prop, Method setter) {
+      super(prop, "Dynamic", setter);
+    }
+
+    public DynamicPropSetter(ReactPropGroup prop, Method setter, int index) {
+      super(prop, "Dynamic", setter, index);
+    }
+
+    @Override
+    protected @Nullable Object extractProperty(ReactStylesDiffMap props) {
+      return props.getDynamic(mPropName);
+    }
+  }
+
   /*package*/ static Map<String, String> getNativePropsForView(
       Class<? extends ViewManager> viewManagerTopClass,
       Class<? extends ReactShadowNode> shadowNodeTopClass) {
@@ -373,6 +389,8 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
       return new ArrayPropSetter(annotation, method);
     } else if (propTypeClass == ReadableMap.class) {
       return new MapPropSetter(annotation, method);
+    } else if (propTypeClass == Dynamic.class) {
+      return new DynamicPropSetter(annotation, method);
     } else {
       throw new RuntimeException("Unrecognized type: " + propTypeClass + " for method: " +
           method.getDeclaringClass().getName() + "#" + method.getName());
@@ -414,6 +432,12 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
         props.put(
             names[i],
             new BoxedIntPropSetter(annotation, method, i));
+      }
+    } else if (propTypeClass == Dynamic.class) {
+      for (int i = 0; i < names.length; i++) {
+        props.put(
+            names[i],
+            new DynamicPropSetter(annotation, method, i));
       }
     } else {
       throw new RuntimeException("Unrecognized type: " + propTypeClass + " for method: " +
