@@ -28,7 +28,7 @@
       "/node_modules/",
       "/website/",
       "local-cli/templates/",
-      "packager/integration_tests/__tests__/basic_bundle-test.js"
+      "packager/src/integration_tests/__tests__/basic_bundle-test.js"
     ],
     "haste": {
       "defaultPlatform": "ios",
