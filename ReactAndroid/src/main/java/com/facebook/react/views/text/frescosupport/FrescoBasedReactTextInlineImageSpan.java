@@ -155,6 +155,9 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
     // Align to baseline by default
     int transY = y - mDrawable.getBounds().bottom;
 
+    // Align to baseline by default
+    transY -= paint.getFontMetricsInt().descent;
+
     canvas.translate(x, transY);
     mDrawable.draw(canvas);
     canvas.restore();
