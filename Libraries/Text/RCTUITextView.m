@@ -55,7 +55,7 @@ static UIColor *defaultPlaceholderTextColor()
 {
   NSMutableString *accessibilityLabel = [NSMutableString new];
   
-  NSString *superAccessibilityLabel = super.accessibilityLabel;
+  NSString *superAccessibilityLabel = [super accessibilityLabel];
   if (superAccessibilityLabel.length > 0) {
     [accessibilityLabel appendString:superAccessibilityLabel];
   }
