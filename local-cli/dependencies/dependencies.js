@@ -9,7 +9,7 @@
 'use strict';
 
 require('../../setupBabel')();
-const ReactPackager = require('../../packager');
+const ReactPackager = require('metro-bundler');
 
 const denodeify = require('denodeify');
 const fs = require('fs');

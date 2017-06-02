@@ -12,18 +12,18 @@
 'use strict';
 
 const log = require('../util/log').out('bundle');
-const Server = require('../../packager/src/Server');
-const Terminal = require('../../packager/src/lib/TerminalClass');
-const TerminalReporter = require('../../packager/src/lib/TerminalReporter');
-const TransformCaching = require('../../packager/src/lib/TransformCaching');
+const Server = require('metro-bundler/build/Server');
+const Terminal = require('metro-bundler/build/lib/TerminalClass');
+const TerminalReporter = require('metro-bundler/build/lib/TerminalReporter');
+const TransformCaching = require('metro-bundler/build/lib/TransformCaching');
 
-const outputBundle = require('../../packager/src/shared/output/bundle');
+const outputBundle = require('metro-bundler/build/shared/output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
-const defaultAssetExts = require('../../packager/src/defaults').assetExts;
-const defaultSourceExts = require('../../packager/src/defaults').sourceExts;
-const defaultPlatforms = require('../../packager/src/defaults').platforms;
-const defaultProvidesModuleNodeModules = require('../../packager/src/defaults').providesModuleNodeModules;
+const defaultAssetExts = require('metro-bundler/build/defaults').assetExts;
+const defaultSourceExts = require('metro-bundler/build/defaults').sourceExts;
+const defaultPlatforms = require('metro-bundler/build/defaults').platforms;
+const defaultProvidesModuleNodeModules = require('metro-bundler/build/defaults').providesModuleNodeModules;
 
 import type {RequestOptions, OutputOptions} from './types.flow';
 import type {ConfigT} from '../util/Config';
