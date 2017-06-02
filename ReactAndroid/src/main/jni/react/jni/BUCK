@@ -26,6 +26,7 @@ cxx_library(
     ),
     header_namespace = "react/jni",
     exported_headers = EXPORTED_HEADERS,
+    allow_jni_merging = True,
     compiler_flags = [
         "-Wall",
         "-Werror",
