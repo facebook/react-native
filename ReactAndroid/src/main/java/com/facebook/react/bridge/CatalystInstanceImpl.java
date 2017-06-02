@@ -81,7 +81,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private boolean mInitialized = false;
   private volatile boolean mAcceptCalls = false;
 
-  private boolean mJSBundleHasStartedLoading;
   private boolean mJSBundleHasLoaded;
   private @Nullable String mSourceURL;
 
@@ -199,8 +198,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public void runJSBundle() {
     Assertions.assertCondition(!mJSBundleHasLoaded, "JS bundle was already loaded!");
-
-    mJSBundleHasStartedLoading = true;
 
     // incrementPendingJSCalls();
     mJSBundleLoader.loadScript(CatalystInstanceImpl.this);
