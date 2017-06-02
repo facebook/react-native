@@ -111,58 +111,79 @@ export type ConfigT = {
   transformVariants: () => TransformVariants,
 };
 
-const defaultConfig: ConfigT = {
-  extraNodeModules: Object.create(null),
-  getAssetExts: () => [],
-  getBlacklistRE: () => blacklist(),
-  getPlatforms: () => [],
-  getPolyfillModuleNames: () => [],
-  getProjectRoots: () => [process.cwd()],
-  getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
-  getSourceExts: () => [],
-  getTransformModulePath: () => path.resolve(__dirname, '../../packager/src/transformer.js'),
-  getTransformOptions: async () => ({}),
-  postMinifyProcess: x => x,
-  postProcessModules: modules => modules,
-  postProcessModulesForBuck: modules => modules,
-  transformVariants: () => ({default: {}}),
-  getWorkerPath: () => require.resolve('./worker.js'),
-};
-
 /**
  * Module capable of getting the configuration out of a given file.
  *
  * The function will return all the default configuration, as specified by the
- * `defaultConfig` param overriden by those found on `rn-cli.config.js` files, if any. If no
+ * `DEFAULTS` param overriden by those found on `rn-cli.config.js` files, if any. If no
  * default config is provided and no configuration can be found in the directory
  * hierarchy, an error will be thrown.
  */
 const Config = {
+  DEFAULTS: ({
+    extraNodeModules: Object.create(null),
+    getAssetExts: () => [],
+    getBlacklistRE: () => blacklist(),
+    getPlatforms: () => [],
+    getPolyfillModuleNames: () => [],
+    getProjectRoots: () => [process.cwd()],
+    getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
+    getSourceExts: () => [],
+    getTransformModulePath: () => path.resolve(__dirname, '../../packager/src/transformer.js'),
+    getTransformOptions: async () => ({}),
+    postMinifyProcess: x => x,
+    postProcessModules: modules => modules,
+    postProcessModulesForBuck: modules => modules,
+    transformVariants: () => ({default: {}}),
+    getWorkerPath: () => require.resolve('./worker.js'),
+  }: ConfigT),
+
   find(startDir: string): ConfigT {
-    return this.findWithPath(startDir).config;
+    return Config.findCustom(startDir, Config.DEFAULTS);
+  },
+
+  /**
+   * This allows a callsite to grab a config that may have custom fields or
+   * a different version of the config. In that case the defaults have to be
+   * specified explicitely.
+   */
+  findCustom<TConfig: {}>(startDir: string, defaults: TConfig): TConfig {
+    return Config.findWithPathCustom(startDir, defaults).config;
   },
 
   findWithPath(startDir: string): {config: ConfigT, projectPath: string} {
+    return Config.findWithPathCustom(startDir, Config.DEFAULTS);
+  },
+
+  findWithPathCustom<TConfig: {}>(startDir: string, defaults: TConfig): {config: TConfig, projectPath: string} {
     const configPath = findConfigPath(startDir);
     invariant(
       configPath,
       `Can't find "${RN_CLI_CONFIG}" file in any parent folder of "${startDir}"`,
     );
     const projectPath = path.dirname(configPath);
-    return {config: this.loadFile(configPath, startDir), projectPath};
+    return {config: Config.loadFileCustom(configPath, defaults), projectPath};
   },
 
   findOptional(startDir: string): ConfigT {
+    return Config.findOptionalCustom(startDir, Config.DEFAULTS);
+  },
+
+  findOptionalCustom<TConfig: {}>(startDir: string, defaults: TConfig): TConfig {
     const configPath = findConfigPath(startDir);
     return configPath
-      ? this.loadFile(configPath, startDir)
-      : {...defaultConfig};
+      ? Config.loadFileCustom(configPath, defaults)
+      : {...defaults};
   },
 
   loadFile(pathToConfig: string): ConfigT {
+    return Config.loadFileCustom(pathToConfig, Config.DEFAULTS);
+  },
+
+  loadFileCustom<TConfig: {}>(pathToConfig: string, defaults: TConfig): TConfig {
     //$FlowFixMe: necessary dynamic require
     const config: {} = require(pathToConfig);
-    return {...defaultConfig, ...config};
+    return {...defaults, ...config};
   },
 };
 
