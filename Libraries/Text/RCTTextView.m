@@ -71,14 +71,6 @@
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
-// Disable RCTTextView as accessibility element for VoiceOver.
-// VoiceOver will see _textView instead and will be able to announce the type of the field,
-// actions user needs to take etc.
-- (BOOL)isAccessibilityElement
-{
-  return NO;
-}
-
 #pragma mark - RCTComponent
 
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)index
@@ -204,31 +196,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 }
 
 #pragma mark - Properties
-
-// For the most part, accessibility props need to be forwarded to _textView.
-// RCTTextView is hidden from VoiceOver (`isAccessibilityElement` returns false)
-// because we want VoiceOver to see _textView instead which is a subclass of UITextView
-// and consequently works better with VoiceOver. We don't need to forward the
-// following accessibility props to _textView:
-//   - accessibilityViewIsModal: This prop influences siblings so it needs to be
-//     on the RCTTextView instead of _textView.
-//   - onAccessibilityTap: React Native doesn't support this on TextInputs.
-//   - onMagicTap: React Native doesn't support this on TextInputs.
-
-- (void)setIsAccessibilityElement:(BOOL)isAccessibilityElement
-{
-  _textView.isAccessibilityElement = isAccessibilityElement;
-}
-
-- (void)setAccessibilityLabel:(NSString *)accessibilityLabel
-{
-  _textView.accessibilityLabel = accessibilityLabel;
-}
-
-- (void)setAccessibilityTraits:(UIAccessibilityTraits)accessibilityTraits
-{
-  _textView.accessibilityTraits = accessibilityTraits;
-}
 
 - (UIFont *)font
 {
