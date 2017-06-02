@@ -67,7 +67,7 @@ class HMRBundle extends BundleBase {
     return (Promise.resolve(): any);
   }
 
-  getModulesIdsAndCode() {
+  getModulesIdsAndCode(): Array<{id: string, code: string}> {
     return this.__modules.map(module => {
       return {
         id: JSON.stringify(module.id),
