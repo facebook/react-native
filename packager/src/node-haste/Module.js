@@ -18,14 +18,13 @@ const fs = require('fs');
 const invariant = require('fbjs/lib/invariant');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
-const path = require('path');
 
 const {join: joinPath, relative: relativePath, extname} = require('path');
 
 import type {
   TransformedCode,
   Options as WorkerOptions,
-} from '../JSTransformer/worker/worker';
+} from '../JSTransformer/worker';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {MappingsMap} from '../lib/SourceMap';
 import type {

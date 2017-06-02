@@ -13,14 +13,14 @@
 
 const DependencyGraph = require('../node-haste/DependencyGraph');
 
-const defaults = require('../../defaults');
+const defaults = require('../defaults');
 const pathJoin = require('path').join;
 
 import type ResolutionResponse from '../node-haste/DependencyGraph/ResolutionResponse';
 import type Module, {HasteImpl, TransformCode} from '../node-haste/Module';
 import type {MappingsMap} from '../lib/SourceMap';
 import type {PostMinifyProcess} from '../Bundler';
-import type {Options as JSTransformerOptions} from '../JSTransformer/worker/worker';
+import type {Options as JSTransformerOptions} from '../JSTransformer/worker';
 import type {Reporter} from '../lib/reporting';
 import type {TransformCache, GetTransformCacheKey} from '../lib/TransformCaching';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';

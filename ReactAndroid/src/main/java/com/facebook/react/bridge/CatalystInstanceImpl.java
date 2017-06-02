@@ -30,7 +30,6 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
 
@@ -40,11 +39,8 @@ import com.facebook.systrace.TraceListener;
  */
 @DoNotStrip
 public class CatalystInstanceImpl implements CatalystInstance {
-
-  /* package */ static final String REACT_NATIVE_LIB = "reactnativejnifb";
-
   static {
-    SoLoader.loadLibrary(REACT_NATIVE_LIB);
+    ReactBridge.staticInit();
   }
 
   private static final AtomicInteger sNextInstanceIdForTrace = new AtomicInteger(1);
@@ -94,7 +90,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private native static HybridData initHybrid();
 
   private CatalystInstanceImpl(
-      final ReactQueueConfigurationSpec ReactQueueConfigurationSpec,
+      final ReactQueueConfigurationSpec reactQueueConfigurationSpec,
       final JavaScriptExecutor jsExecutor,
       final NativeModuleRegistry registry,
       final JavaScriptModuleRegistry jsModuleRegistry,
@@ -104,7 +100,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mHybridData = initHybrid();
 
     mReactQueueConfiguration = ReactQueueConfigurationImpl.create(
-        ReactQueueConfigurationSpec,
+        reactQueueConfigurationSpec,
         new NativeExceptionHandler());
     mBridgeIdleListeners = new CopyOnWriteArrayList<>();
     mJavaRegistry = registry;

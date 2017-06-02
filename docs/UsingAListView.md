@@ -46,7 +46,7 @@ export default class ListViewBasics extends Component {
 }
 
 // skip this line if using Create React Native App
-AppRegistry.registerComponent('ListViewBasics', () => ListViewBasics);
+AppRegistry.registerComponent('AwesomeProject', () => ListViewBasics);
 ```
 
 One of the most common uses for a `ListView` is displaying data that you fetch from a server. To do that, you will need to [learn about networking in React Native](docs/network.html).

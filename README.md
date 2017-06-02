@@ -40,11 +40,11 @@ Please use these community resources for getting help. We use the GitHub issues 
 
 [The website’s documentation](https://facebook.github.io/react-native/docs/) is divided into multiple sections.
 - There are **Guides** that discuss topics like [debugging](https://facebook.github.io/react-native/docs/debugging.html), [integrating with existing apps](https://facebook.github.io/react-native/docs/integration-with-existing-apps.html), and [the gesture responder system](https://facebook.github.io/react-native/docs/gesture-responder-system.html).
-- The **Components** section covers React components such as [`View`](https://facebook.github.io/react-native/docs/view.html) and [`Navigator`](https://facebook.github.io/react-native/docs/navigator.html).
+- The **Components** section covers React components such as [`View`](https://facebook.github.io/react-native/docs/view.html) and [`Button`](https://facebook.github.io/react-native/docs/button.html).
 - The **APIs** section covers other libraries like [Animated](https://facebook.github.io/react-native/docs/animated.html) and [StyleSheet](https://facebook.github.io/react-native/docs/stylesheet.html) that aren’t React components themselves.
 - Finally, React Native provides a small number of **Polyfills** that offer web-like APIs.
 
-Another great way to learn more about the components and APIs included with React Native is to read their source. Look under the `Libraries` directory for components like `ScrollView` and `Navigator`, for example. The RNTester example is also here to demonstrate some of the ways to use these components. From the source you can get an accurate understanding of each component’s behavior and API.
+Another great way to learn more about the components and APIs included with React Native is to read their source. Look under the `Libraries/Components` directory for components like `ScrollView` and `TextInput`, for example. The RNTester example is also here to demonstrate some of the ways to use these components. From the source you can get an accurate understanding of each component’s behavior and API.
 
 The React Native documentation only discusses the components, APIs and topics specific to React Native (React on iOS and Android). For further documentation on the React API that is shared between React Native and React DOM, refer to the [React documentation](https://facebook.github.io/react/).
 

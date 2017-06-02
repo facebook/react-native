@@ -15,7 +15,7 @@ const JsFileWrapping = require('./JsFileWrapping');
 
 const asyncify = require('async/asyncify');
 const collectDependencies = require('./collect-dependencies');
-const defaults = require('../../../defaults');
+const defaults = require('../../defaults');
 const docblock = require('../../node-haste/DependencyGraph/docblock');
 const generate = require('./generate');
 const path = require('path');

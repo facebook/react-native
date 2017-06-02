@@ -30,7 +30,7 @@ jest
 
 var Bundler = require('../');
 var Resolver = require('../../Resolver');
-var defaults = require('../../../defaults');
+var defaults = require('../../defaults');
 var sizeOf = require('image-size');
 var fs = require('fs');
 const os = require('os');

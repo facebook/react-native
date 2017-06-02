@@ -10,12 +10,12 @@
  */
 'use strict';
 
-const blacklist = require('../../packager/blacklist');
+const blacklist = require('../../packager/src/blacklist');
 const fs = require('fs');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 
-const {providesModuleNodeModules} = require('../../packager/defaults');
+const {providesModuleNodeModules} = require('../../packager/src/defaults');
 
 const RN_CLI_CONFIG = 'rn-cli.config.js';
 
@@ -79,6 +79,11 @@ export type ConfigT = {
   getTransformOptions: GetTransformOptions,
 
   /**
+   * Returns the path to the worker that is used for transformation.
+   */
+  getWorkerPath: () => string,
+
+  /**
    * An optional function that can modify the code and source map of bundle
    * after the minifaction took place.
    */
@@ -115,12 +120,13 @@ const defaultConfig: ConfigT = {
   getProjectRoots: () => [process.cwd()],
   getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
   getSourceExts: () => [],
-  getTransformModulePath: () => path.resolve(__dirname, '../../packager/transformer.js'),
+  getTransformModulePath: () => path.resolve(__dirname, '../../packager/src/transformer.js'),
   getTransformOptions: async () => ({}),
   postMinifyProcess: x => x,
   postProcessModules: modules => modules,
   postProcessModulesForBuck: modules => modules,
   transformVariants: () => ({default: {}}),
+  getWorkerPath: () => require.resolve('./worker.js'),
 };
 
 /**

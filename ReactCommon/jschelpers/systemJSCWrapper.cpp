@@ -33,6 +33,8 @@ UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSInspectorGetInstance)
 
 UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(configureJSCForIOS)
 
+UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(FBJSContextStartGCTimers)
+
 bool JSSamplingProfilerEnabled() {
   return false;
 }
@@ -56,6 +58,9 @@ const JSCWrapper* systemJSCWrapper() {
 
       .JSContextGetGlobalContext = JSContextGetGlobalContext,
       .JSContextGetGlobalObject = JSContextGetGlobalObject,
+      .FBJSContextStartGCTimers =
+        (decltype(&FBJSContextStartGCTimers))
+        Unimplemented_FBJSContextStartGCTimers,
 
       .JSEvaluateScript = JSEvaluateScript,
       .JSEvaluateBytecodeBundle =

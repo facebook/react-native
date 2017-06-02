@@ -724,78 +724,93 @@ public class UIViewOperationQueue {
   }
 
   /* package */ void dispatchViewUpdates(final int batchId) {
-    // Store the current operation queues to dispatch and create new empty ones to continue
-    // receiving new operations
-    final ArrayList<UIOperation> operations = mOperations.isEmpty() ? null : mOperations;
-    if (operations != null) {
-      mOperations = new ArrayList<>();
-    }
-
-    final UIOperation[] nonBatchedOperations;
-    synchronized (mNonBatchedOperationsLock) {
-      if (!mNonBatchedOperations.isEmpty()) {
-        nonBatchedOperations =
-          mNonBatchedOperations.toArray(new UIOperation[mNonBatchedOperations.size()]);
-        mNonBatchedOperations.clear();
-      } else {
-        nonBatchedOperations = null;
+    SystraceMessage.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+      "UIImplementation.dispatchViewUpdates")
+      .arg("batchId", batchId)
+      .flush();
+    try {
+      // Store the current operation queues to dispatch and create new empty ones to continue
+      // receiving new operations
+      final ArrayList<UIOperation> operations = mOperations.isEmpty() ? null : mOperations;
+      if (operations != null) {
+        mOperations = new ArrayList<>();
       }
-    }
 
-    if (mViewHierarchyUpdateDebugListener != null) {
-      mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateEnqueued();
-    }
+      final UIOperation[] nonBatchedOperations;
+      synchronized (mNonBatchedOperationsLock) {
+        if (!mNonBatchedOperations.isEmpty()) {
+          nonBatchedOperations =
+            mNonBatchedOperations.toArray(new UIOperation[mNonBatchedOperations.size()]);
+          mNonBatchedOperations.clear();
+        } else {
+          nonBatchedOperations = null;
+        }
+      }
 
-    synchronized (mDispatchRunnablesLock) {
-      mDispatchUIRunnables.add(
+      if (mViewHierarchyUpdateDebugListener != null) {
+        mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateEnqueued();
+      }
+
+      SystraceMessage.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "acquiring mDispatchRunnablesLock")
+        .arg("batchId", batchId)
+        .flush();
+      synchronized (mDispatchRunnablesLock) {
+        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        mDispatchUIRunnables.add(
           new Runnable() {
-             @Override
-             public void run() {
-               SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "DispatchUI")
-                   .arg("BatchId", batchId)
-                   .flush();
-               try {
-                 // All nonBatchedOperations should be executed before regular operations as
-                 // regular operations may depend on them
-                 if (nonBatchedOperations != null) {
-                   for (UIOperation op : nonBatchedOperations) {
-                     op.execute();
-                   }
-                 }
+            @Override
+            public void run() {
+              SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "DispatchUI")
+                .arg("BatchId", batchId)
+                .flush();
+              try {
+                // All nonBatchedOperations should be executed before regular operations as
+                // regular operations may depend on them
+                if (nonBatchedOperations != null) {
+                  for (UIOperation op : nonBatchedOperations) {
+                    op.execute();
+                  }
+                }
 
-                 if (operations != null) {
-                   for (int i = 0; i < operations.size(); i++) {
-                     operations.get(i).execute();
-                   }
-                 }
+                if (operations != null) {
+                  for (int i = 0; i < operations.size(); i++) {
+                    operations.get(i).execute();
+                  }
+                }
 
-                 // Clear layout animation, as animation only apply to current UI operations batch.
-                 mNativeViewHierarchyManager.clearLayoutAnimation();
+                // Clear layout animation, as animation only apply to current UI operations batch.
+                mNativeViewHierarchyManager.clearLayoutAnimation();
 
-                 if (mViewHierarchyUpdateDebugListener != null) {
-                   mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateFinished();
-                 }
-               } catch (Exception e) {
-                 mIsInIllegalUIState = true;
-                 throw e;
-               } finally {
-                 Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-               }
-             }
-           });
-    }
+                if (mViewHierarchyUpdateDebugListener != null) {
+                  mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateFinished();
+                }
+              } catch (Exception e) {
+                mIsInIllegalUIState = true;
+                throw e;
+              } finally {
+                Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+              }
+            }
+          });
+      }
 
-    // In the case where the frame callback isn't enqueued, the UI isn't being displayed or is being
-    // destroyed. In this case it's no longer important to align to frames, but it is imporant to make
-    // sure any late-arriving UI commands are executed.
-    if (!mIsDispatchUIFrameCallbackEnqueued) {
-      UiThreadUtil.runOnUiThread(
+      // In the case where the frame callback isn't enqueued, the UI isn't being displayed or is being
+      // destroyed. In this case it's no longer important to align to frames, but it is imporant to make
+      // sure any late-arriving UI commands are executed.
+      if (!mIsDispatchUIFrameCallbackEnqueued) {
+        UiThreadUtil.runOnUiThread(
           new GuardedRunnable(mReactApplicationContext) {
             @Override
             public void runGuarded() {
               flushPendingBatches();
             }
           });
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
