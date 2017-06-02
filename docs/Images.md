@@ -38,6 +38,8 @@ You can also use the `@2x` and `@3x` suffixes to provide images for different sc
 
 On Windows, you might need to restart the packager if you add new images to your project.
 
+On Windows, you might need to restart the packager if you add new images to your project.
+
 Here are some benefits that you get:
 
 1. Same system on iOS and Android.
