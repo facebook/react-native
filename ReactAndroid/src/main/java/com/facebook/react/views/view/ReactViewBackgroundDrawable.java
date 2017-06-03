@@ -243,6 +243,11 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
   private void drawRoundedBackgroundWithBorders(Canvas canvas) {
     updatePath();
+
+    if (mPathForBorderRadius == null) {
+      return;
+    }
+
     int useColor = ColorUtil.multiplyColorAlpha(mColor, mAlpha);
     if (Color.alpha(useColor) != 0) { // color is not transparent
       mPaint.setColor(useColor);
