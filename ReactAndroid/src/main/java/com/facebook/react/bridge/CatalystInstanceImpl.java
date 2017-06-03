@@ -287,6 +287,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     // TODO: tell all APIs to shut down
     mDestroyed = true;
+
     mNativeModulesQueueThread.runOnQueue(new Runnable() {
       @Override
       public void run() {
@@ -297,7 +298,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
             listener.onTransitionToBridgeIdle();
           }
         }
-        mHybridData.resetNative();
+        UiThreadUtil.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            mHybridData.resetNative();
+            // Kill non-UI threads from UI thread.
+            getReactQueueConfiguration().destroy();
+          }
+        });
       }
     });
 
