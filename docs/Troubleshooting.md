@@ -36,9 +36,7 @@ You can configure the packager to use a port other than 8081 by using the `port`
 $ react-native start --port=8088
 ```
 
-If running on device from Xcode, you'll also need to update 8081 to your chosen port in `node_modules/react-native/React/React.xcodeproj/project.pbxproj`
-
-You will also need to update your applications to load the JavaScript bundle from the new port.
+You will also need to update your applications to load the JavaScript bundle from the new port. If running on device from Xcode, you can do this by updating occurrences of `8081` to your chosen port in the `node_modules/react-native/React/React.xcodeproj/project.pbxproj` file.
 
 ### NPM locking error
 
