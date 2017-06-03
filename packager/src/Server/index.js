@@ -319,6 +319,8 @@ class Server {
     +entryFile: string,
     +dev: boolean,
     +platform: string,
+    +minify: boolean,
+    +generateSourceMaps: boolean,
   }): Promise<mixed> {
     return Promise.resolve().then(() => {
       return this._bundler.getOrderedDependencyPaths(options);

@@ -30,7 +30,6 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
 
@@ -82,7 +81,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private boolean mInitialized = false;
   private volatile boolean mAcceptCalls = false;
 
-  private boolean mJSBundleHasStartedLoading;
   private boolean mJSBundleHasLoaded;
   private @Nullable String mSourceURL;
 
@@ -201,8 +199,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   public void runJSBundle() {
     Assertions.assertCondition(!mJSBundleHasLoaded, "JS bundle was already loaded!");
 
-    mJSBundleHasStartedLoading = true;
-
     // incrementPendingJSCalls();
     mJSBundleLoader.loadScript(CatalystInstanceImpl.this);
 
@@ -291,6 +287,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     // TODO: tell all APIs to shut down
     mDestroyed = true;
+
     mNativeModulesQueueThread.runOnQueue(new Runnable() {
       @Override
       public void run() {
@@ -301,7 +298,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
             listener.onTransitionToBridgeIdle();
           }
         }
-        mHybridData.resetNative();
+        UiThreadUtil.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            mHybridData.resetNative();
+            // Kill non-UI threads from UI thread.
+            getReactQueueConfiguration().destroy();
+          }
+        });
       }
     });
 

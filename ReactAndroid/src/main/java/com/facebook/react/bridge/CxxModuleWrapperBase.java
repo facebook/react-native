@@ -4,7 +4,6 @@ package com.facebook.react.bridge;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.soloader.SoLoader;
 
 /**
  * A Java Object which represents a cross-platform C++ module

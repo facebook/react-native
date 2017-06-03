@@ -10,4 +10,4 @@
 'use strict';
 
 require('../../setupBabel')();
-module.exports = require('../../packager/src/JSTransformer/worker');
+module.exports = require('metro-bundler/build/JSTransformer/worker');

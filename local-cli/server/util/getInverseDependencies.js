@@ -12,10 +12,25 @@
 
 'use strict';
 
-import type ResolutionResponse from '../DependencyGraph/ResolutionResponse';
+/**
+ * This is a subset of the actual `metro-bundler`'s `ResolutionResponse` class,
+ * without all the stuff we don't need to know about. This allows us to use
+ * `getInverseDependencies` with different versions of `metro-bundler`.
+ */
+export type ResolutionResponse<TModule> = {
+  copy(data: {
+    dependencies?: Array<TModule>,
+    mainModuleId?: number,
+    mocks?: mixed,
+  }): ResolutionResponse<TModule>,
+  dependencies: Array<TModule>,
+  getResolvedDependencyPairs(
+    module: TModule,
+  ): $ReadOnlyArray<[string, TModule]>,
+};
 
-function resolveModuleRequires<TModule: {hash(): string}, TOptions>(
-  resolutionResponse: ResolutionResponse<TModule, TOptions>,
+function resolveModuleRequires<TModule>(
+  resolutionResponse: ResolutionResponse<TModule>,
   module: TModule,
 ): Array<TModule> {
   const pairs = resolutionResponse.getResolvedDependencyPairs(module);
@@ -37,8 +52,8 @@ function getModuleDependents<TModule>(
 /**
  * Returns an object that indicates in which module each module is required.
  */
-function getInverseDependencies<TModule: {hash(): string}, TOptions>(
-  resolutionResponse: ResolutionResponse<TModule, TOptions>,
+function getInverseDependencies<TModule>(
+  resolutionResponse: ResolutionResponse<TModule>,
 ): Map<TModule, Set<TModule>> {
   const cache = new Map();
 

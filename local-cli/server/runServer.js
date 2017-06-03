@@ -14,17 +14,17 @@
 
 require('../../setupBabel')();
 const InspectorProxy = require('./util/inspectorProxy.js');
-const ReactPackager = require('../../packager');
-const Terminal = require('../../packager/src/lib/TerminalClass');
+const ReactPackager = require('metro-bundler');
+const Terminal = require('metro-bundler/build/lib/TerminalClass');
 
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
-const defaultAssetExts = require('../../packager/src/defaults').assetExts;
-const defaultSourceExts = require('../../packager/src/defaults').sourceExts;
-const defaultPlatforms = require('../../packager/src/defaults').platforms;
-const defaultProvidesModuleNodeModules = require('../../packager/src/defaults')
+const defaultAssetExts = require('metro-bundler/build/defaults').assetExts;
+const defaultSourceExts = require('metro-bundler/build/defaults').sourceExts;
+const defaultPlatforms = require('metro-bundler/build/defaults').platforms;
+const defaultProvidesModuleNodeModules = require('metro-bundler/build/defaults')
   .providesModuleNodeModules;
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
 const http = require('http');
@@ -39,7 +39,7 @@ const unless = require('./middleware/unless');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
 import type {ConfigT} from '../util/Config';
-import type {Reporter} from '../../packager/src/lib/reporting';
+import type {Reporter} from 'metro-bundler/build/lib/reporting';
 
 export type Args = {|
   +assetExts: $ReadOnlyArray<string>,
@@ -136,7 +136,7 @@ function getPackagerServer(args, config) {
       LogReporter = require(path.resolve(args.customLogReporterPath));
     }
   } else {
-    LogReporter = require('../../packager/src/lib/TerminalReporter');
+    LogReporter = require('metro-bundler/build/lib/TerminalReporter');
   }
 
   /* $FlowFixMe: Flow is wrong, Node.js docs specify that process.stdout is an
