@@ -24,6 +24,7 @@
 @property (nonatomic, assign, getter=isTransparent) BOOL transparent;
 
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
+@property (nonatomic, copy) RCTDirectEventBlock onHide;
 
 @property (nonatomic, weak) id<RCTModalHostViewInteractor> delegate;
 
