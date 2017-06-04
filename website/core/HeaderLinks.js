@@ -22,7 +22,8 @@ var HeaderLinks = React.createClass({
   ],
   linksExternal: [
     {section: 'github', href: 'https://github.com/facebook/react-native', text: 'GitHub'},
-    {section: 'react', href: 'http://facebook.github.io/react', text: 'React'},
+    {section: 'react-vr', href: 'https://facebook.github.io/react-vr', text: 'React VR'},
+    {section: 'react', href: 'https://facebook.github.io/react', text: 'React'},
   ],
 
   makeLinks: function(links) {
