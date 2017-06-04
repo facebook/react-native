@@ -91,6 +91,13 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
           dispatcher.dispatchEvent(new ShowEvent(view.getId()));
         }
       });
+    view.setOnDismissListener(
+      new DialogInterface.OnDismissListener() {
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+          dispatcher.dispatchEvent(new HideEvent(view.getId()));
+        }
+      });
   }
 
   @Override
@@ -98,6 +105,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
     return MapBuilder.<String, Object>builder()
       .put(RequestCloseEvent.EVENT_NAME, MapBuilder.of("registrationName", "onRequestClose"))
       .put(ShowEvent.EVENT_NAME, MapBuilder.of("registrationName", "onShow"))
+      .put(HideEvent.EVENT_NAME, MapBuilder.of("registrationName", "onHide"))
       .build();
   }
 
