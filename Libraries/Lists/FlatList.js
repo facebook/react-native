@@ -327,12 +327,12 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
   /**
    * Scroll to a specific content pixel offset in the list.
    * 
-   * Param offset expects the offset to scroll to.
-   * In case of horizontal true, the offset is the x-value,
+   * Param `offset` expects the offset to scroll to.
+   * In case of `horizontal` is true, the offset is the x-value,
    * in any other case the offset is the y-value.
    * 
-   * Param animated (true by default) defines whether the flatList
-   * should do an animation while scrolling
+   * Param `animated` (`true` by default) defines whether the list
+   * should do an animation while scrolling.
    */
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     this._listRef.scrollToOffset(params);
