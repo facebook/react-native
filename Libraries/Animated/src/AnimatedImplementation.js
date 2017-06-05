@@ -1391,6 +1391,43 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
   }
 }
 
+class AnimatedDiffClamp extends AnimatedWithChildren {
+  _a: Animated;
+  _min: number;
+  _max: number;
+  _value: number;
+  _lastValue: number;
+
+  constructor(a: Animated, min: number, max: number) {
+    super();
+
+    this._a = a;
+    this._min = min;
+    this._max = max;
+    this._value = this._lastValue = this._a.__getValue();
+  }
+
+  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+    return new AnimatedInterpolation(this, config);
+  }
+
+  __getValue(): number {
+    const value = this._a.__getValue();
+    const diff = value - this._lastValue;
+    this._lastValue = value;
+    this._value = Math.min(Math.max(this._value + diff, this._min), this._max);
+    return this._value;
+  }
+
+  __attach(): void {
+    this._a.__addChild(this);
+  }
+
+  __detach(): void {
+    this._a.__removeChild(this);
+  }
+}
+
 class AnimatedTransform extends AnimatedWithChildren {
   _transforms: Array<Object>;
 
