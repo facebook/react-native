@@ -11,7 +11,7 @@
 'use strict';
 
 const babel = require('babel-core');
-const babelRegisterOnly = require('../packager/babelRegisterOnly');
+const babelRegisterOnly = require('../packager/src/babelRegisterOnly');
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
 const path = require('path');
 
@@ -23,7 +23,7 @@ const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
 babelRegisterOnly([]);
 // has to be required after setting up babelRegisterOnly
-const transformer = require('../packager/transformer.js');
+const transformer = require('../packager/src/transformer.js');
 
 module.exports = {
   process(src/*: string*/, file/*: string*/) {
@@ -49,7 +49,7 @@ module.exports = {
 
   getCacheKey: createCacheKeyFunction([
     __filename,
-    path.join(__dirname, '../packager/transformer.js'),
+    path.join(__dirname, '../packager/src/transformer.js'),
     require.resolve('babel-core/package.json'),
   ]),
 };

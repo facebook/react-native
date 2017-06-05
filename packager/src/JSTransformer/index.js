@@ -20,10 +20,10 @@ const path = require('path');
 const util = require('util');
 const workerFarm = require('../worker-farm');
 
-import type {Data as TransformData, Options as WorkerOptions} from './worker/worker';
+import type {Data as TransformData, Options as WorkerOptions} from './worker';
 import type {LocalPath} from '../node-haste/lib/toLocalPath';
 import type {MappingsMap} from '../lib/SourceMap';
-import typeof {minify as Minify, transformAndExtractDependencies as TransformAndExtractDependencies} from './worker/worker';
+import typeof {minify as Minify, transformAndExtractDependencies as TransformAndExtractDependencies} from './worker';
 
 type CB<T> = (?Error, ?T) => mixed;
 type Denodeify =
@@ -83,12 +83,13 @@ class Transformer {
     transformModulePath: string,
     maxWorkerCount: number,
     reporters: Reporters,
+    workerPath: ?string,
   ) {
     invariant(path.isAbsolute(transformModulePath), 'transform module path should be absolute');
     this._transformModulePath = transformModulePath;
 
     const farm = makeFarm(
-      require.resolve('./worker'),
+      workerPath || require.resolve('./worker'),
       ['minify', 'transformAndExtractDependencies'],
       TRANSFORM_TIMEOUT_INTERVAL,
       maxWorkerCount,

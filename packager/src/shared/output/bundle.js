@@ -50,7 +50,7 @@ function saveBundleAndMap(
     bundleEncoding: encoding,
     dev,
     sourcemapOutput,
-    sourcemapSourcesRoot
+    sourcemapSourcesRoot,
   } = options;
 
   log('start');

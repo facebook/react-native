@@ -25,7 +25,7 @@ const throat = require('throat');
 import type {
   Options as TransformWorkerOptions,
   TransformOptionsStrict,
-} from '../JSTransformer/worker/worker';
+} from '../JSTransformer/worker';
 import type {LocalPath} from '../node-haste/lib/toLocalPath';
 import type {CachedResult, GetTransformCacheKey} from './TransformCaching';
 

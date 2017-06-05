@@ -20,23 +20,9 @@ const path = require('path');
 
 import type {AssetData} from '../node-haste/lib/AssetPaths';
 
-const createTimeoutPromise = timeout => new Promise((resolve, reject) => {
-  setTimeout(reject, timeout, 'fs operation timeout');
-});
-function timeoutableDenodeify(fsFunc, timeout) {
-  return function raceWrapper(...args) {
-    return Promise.race([
-      createTimeoutPromise(timeout),
-      denodeify(fsFunc).apply(this, args),
-    ]);
-  };
-}
-
-const FS_OP_TIMEOUT = parseInt(process.env.REACT_NATIVE_FSOP_TIMEOUT, 10) || 15000;
-
-const stat = timeoutableDenodeify(fs.stat, FS_OP_TIMEOUT);
-const readDir = timeoutableDenodeify(fs.readdir, FS_OP_TIMEOUT);
-const readFile = timeoutableDenodeify(fs.readFile, FS_OP_TIMEOUT);
+const stat = denodeify(fs.stat);
+const readDir = denodeify(fs.readdir);
+const readFile = denodeify(fs.readFile);
 
 class AssetServer {
 

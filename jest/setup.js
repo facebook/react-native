@@ -124,7 +124,7 @@ const mockNativeModules = {
   },
   ImageLoader: {
     getSize: jest.fn(
-      (uri, success) => process.nextTick(() => success(320, 240))
+      (url) => new Promise(() => ({width: 320, height: 240}))
     ),
     prefetchImage: jest.fn(),
   },

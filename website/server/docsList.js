@@ -74,7 +74,6 @@ const apis = [
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/Linking/Linking.js',
   '../Libraries/Lists/ListView/ListViewDataSource.js',
-  '../Libraries/Renderer/src/renderers/native/NativeMethodsMixin.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/Interaction/PanResponder.js',
   '../Libraries/PermissionsAndroid/PermissionsAndroid.js',
@@ -91,16 +90,18 @@ const apis = [
   '../Libraries/Vibration/VibrationIOS.ios.js',
 ];
 
-const stylesWithPermalink = [
-  '../Libraries/StyleSheet/LayoutPropTypes.js',
-  '../Libraries/StyleSheet/TransformPropTypes.js',
-  '../Libraries/Components/View/ShadowPropTypesIOS.js',
-];
-
 const stylesForEmbed = [
   '../Libraries/Components/View/ViewStylePropTypes.js',
   '../Libraries/Text/TextStylePropTypes.js',
   '../Libraries/Image/ImageStylePropTypes.js',
+];
+
+const stylesWithPermalink = [
+  '../Libraries/StyleSheet/LayoutPropTypes.js',
+  '../Libraries/StyleSheet/TransformPropTypes.js',
+  '../Libraries/Components/View/ShadowPropTypesIOS.js',
+  '../Libraries/Components/View/ViewPropTypes.js',
+  ...stylesForEmbed,
 ];
 
 const viewPropTypes = '../Libraries/Components/View/ViewPropTypes.js';

@@ -42,18 +42,23 @@ const View = require('View');
  */
 class ImageBackground extends React.Component {
   render() {
-    const {children, style, ...props} = this.props;
+    const {children, style, imageStyle, imageRef, ...props} = this.props;
+
     return (
       <View style={style}>
         <Image
           {...props}
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
-          }}
+          style={[
+            {
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+            },
+            imageStyle,
+          ]}
+          ref={imageRef}
         />
         {children}
       </View>
