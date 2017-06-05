@@ -429,7 +429,6 @@ class PushNotificationIOS {
       this._sound = nativeNotif.soundName;
       this._alert = nativeNotif.alertBody;
       this._data = nativeNotif.userInfo;
-      this._data = nativeNotif.category;
     }
   }
 
