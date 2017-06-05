@@ -120,4 +120,9 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
   public void setPageMargin(ReactViewPager pager, float margin) {
     pager.setPageMargin((int) PixelUtil.toPixelFromDIP(margin));
   }
+
+  @ReactProp(name = "pageWidth", defaultFloat = 1.f)
+  public void setPageWidth(ReactViewPager viewPager, float value) {
+    viewPager.setPageWidth(value);
+  }
 }
