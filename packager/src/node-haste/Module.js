@@ -18,7 +18,6 @@ const fs = require('fs');
 const invariant = require('fbjs/lib/invariant');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
-const path = require('path');
 
 const {join: joinPath, relative: relativePath, extname} = require('path');
 

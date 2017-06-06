@@ -9,6 +9,10 @@
 #include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Value.h>
 
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
+
 namespace facebook {
 namespace react {
 
@@ -47,7 +51,7 @@ JSObjectRef makeFunction(
     const char* name,
     JSFunction function);
 
-void installGlobalFunction(
+RN_EXPORT void installGlobalFunction(
     JSGlobalContextRef ctx,
     const char* name,
     JSFunction function);

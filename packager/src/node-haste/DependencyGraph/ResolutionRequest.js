@@ -13,6 +13,7 @@
 'use strict';
 
 const AsyncTaskGroup = require('../lib/AsyncTaskGroup');
+const FileNameResolver = require('./FileNameResolver');
 const MapWithDefaults = require('../lib/MapWithDefaults');
 
 const debug = require('debug')('RNP:DependencyGraph');
@@ -837,35 +838,6 @@ class ResolutionRequest<TModule: Moduleish, TPackage: Packageish> {
 
 function resolutionHash(modulePath, depName) {
   return `${path.resolve(modulePath)}:${depName}`;
-}
-
-type FileNameResolverOptions = {|
-  +dirPath: string,
-  +doesFileExist: (filePath: string) => boolean,
-|};
-
-/**
- * When resolving a single module we want to keep track of the list of paths
- * we tried to find.
- */
-class FileNameResolver {
-  _options: FileNameResolverOptions;
-  _tentativeFileNames: Array<string>;
-
-  constructor(options: FileNameResolverOptions) {
-    this._options = options;
-    this._tentativeFileNames = [];
-  }
-
-  getTentativeFileNames(): $ReadOnlyArray<string> {
-    return this._tentativeFileNames;
-  }
-
-  tryToResolveFileName(fileName: string): boolean {
-    this._tentativeFileNames.push(fileName);
-    const filePath = path.join(this._options.dirPath, fileName);
-    return this._options.doesFileExist(filePath);
-  }
 }
 
 class UnableToResolveError extends Error {

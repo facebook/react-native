@@ -10,7 +10,7 @@
  */
 'use strict';
 
-const defaults = require('../../defaults');
+const defaults = require('../defaults');
 const nullthrows = require('fbjs/lib/nullthrows');
 const parallel = require('async/parallel');
 const seq = require('async/seq');

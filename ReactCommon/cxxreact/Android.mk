@@ -2,7 +2,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := libreactnativefb
+LOCAL_MODULE := reactnative
 
 LOCAL_SRC_FILES := \
   CxxNativeModule.cpp \

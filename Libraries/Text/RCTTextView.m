@@ -530,6 +530,13 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
                                eventCount:_nativeEventCount];
 }
 
+#pragma mark - Accessibility
+
+- (UIView *)reactAccessibilityElement
+{
+  return _textView;
+}
+
 #pragma mark - Focus control deledation
 
 - (void)reactFocus

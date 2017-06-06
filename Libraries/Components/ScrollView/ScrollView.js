@@ -495,6 +495,15 @@ const ScrollView = React.createClass({
     this.scrollTo({x, y, animated: false});
   },
 
+  /**
+   * Displays the scroll indicators momentarily.
+   *
+   * @platform ios
+   */
+  flashScrollIndicators: function() {
+    this.getScrollResponder().scrollResponderFlashScrollIndicators();
+  },
+
   _getKeyForIndex: function(index, childArray) {
     const child = childArray[index];
     return child && child.key;

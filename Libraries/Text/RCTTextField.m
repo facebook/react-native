@@ -357,6 +357,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                eventCount:_nativeEventCount];
 }
 
+#pragma mark - Accessibility
+
+- (UIView *)reactAccessibilityElement
+{
+  return _textField;
+}
+
 #pragma mark - Focus control deledation
 
 - (void)reactFocus

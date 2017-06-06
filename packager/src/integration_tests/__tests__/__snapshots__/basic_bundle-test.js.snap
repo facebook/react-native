@@ -143,78 +143,74 @@ function moduleThrewError(id, error) {
 }
 
 if (__DEV__) {
-  var createHotReloadingObject;
+  _require.Systrace = { beginEvent: function beginEvent() {}, endEvent: function endEvent() {} };
 
-  (function () {
-    _require.Systrace = { beginEvent: function beginEvent() {}, endEvent: function endEvent() {} };
-
-    createHotReloadingObject = function createHotReloadingObject() {
-      var hot = {
-        acceptCallback: null,
-        accept: function accept(callback) {
-          hot.acceptCallback = callback;
-        }
-      };
-      return hot;
+  var createHotReloadingObject = function createHotReloadingObject() {
+    var hot = {
+      acceptCallback: null,
+      accept: function accept(callback) {
+        hot.acceptCallback = callback;
+      }
     };
+    return hot;
+  };
 
-    var acceptAll = function acceptAll(dependentModules, inverseDependencies) {
-      if (!dependentModules || dependentModules.length === 0) {
-        return true;
-      }
+  var acceptAll = function acceptAll(dependentModules, inverseDependencies) {
+    if (!dependentModules || dependentModules.length === 0) {
+      return true;
+    }
 
-      var notAccepted = dependentModules.filter(function (module) {
-        return !accept(module, undefined, inverseDependencies);
-      });
+    var notAccepted = dependentModules.filter(function (module) {
+      return !_accept(module, undefined, inverseDependencies);
+    });
 
-      var parents = [];
-      for (var i = 0; i < notAccepted.length; i++) {
-        if (inverseDependencies[notAccepted[i]].length === 0) {
-          return false;
-        }
-
-        parents.push.apply(parents, babelHelpers.toConsumableArray(inverseDependencies[notAccepted[i]]));
-      }
-
-      return acceptAll(parents, inverseDependencies);
-    };
-
-    var accept = function accept(id, factory, inverseDependencies) {
-      var mod = modules[id];
-
-      if (!mod && factory) {
-        define(factory, id);
-        return true;
-      }
-
-      var hot = mod.hot;
-
-      if (!hot) {
-        console.warn('Cannot accept module because Hot Module Replacement ' + 'API was not installed.');
+    var parents = [];
+    for (var i = 0; i < notAccepted.length; i++) {
+      if (inverseDependencies[notAccepted[i]].length === 0) {
         return false;
       }
 
-      if (factory) {
-        mod.factory = factory;
+      parents.push.apply(parents, babelHelpers.toConsumableArray(inverseDependencies[notAccepted[i]]));
+    }
+
+    return acceptAll(parents, inverseDependencies);
+  };
+
+  var _accept = function _accept(id, factory, inverseDependencies) {
+    var mod = modules[id];
+
+    if (!mod && factory) {
+      define(factory, id);
+      return true;
+    }
+
+    var hot = mod.hot;
+
+    if (!hot) {
+      console.warn('Cannot accept module because Hot Module Replacement ' + 'API was not installed.');
+      return false;
+    }
+
+    if (factory) {
+      mod.factory = factory;
+    }
+    mod.hasError = false;
+    mod.isInitialized = false;
+    _require(id);
+
+    if (hot.acceptCallback) {
+      hot.acceptCallback();
+      return true;
+    } else {
+      if (!inverseDependencies) {
+        throw new Error('Undefined \`inverseDependencies\`');
       }
-      mod.hasError = false;
-      mod.isInitialized = false;
-      _require(id);
 
-      if (hot.acceptCallback) {
-        hot.acceptCallback();
-        return true;
-      } else {
-        if (!inverseDependencies) {
-          throw new Error('Undefined \`inverseDependencies\`');
-        }
+      return acceptAll(inverseDependencies[id], inverseDependencies);
+    }
+  };
 
-        return acceptAll(inverseDependencies[id], inverseDependencies);
-      }
-    };
-
-    global.__accept = accept;
-  })();
+  global.__accept = _accept;
 }
 })(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);
 (function(global) {
@@ -748,17 +744,15 @@ if (Number.MIN_SAFE_INTEGER === undefined) {
   });
 }
 if (!Number.isNaN) {
-  (function () {
-    var globalIsNaN = global.isNaN;
-    Object.defineProperty(Number, 'isNaN', {
-      configurable: true,
-      enumerable: false,
-      value: function isNaN(value) {
-        return typeof value === 'number' && globalIsNaN(value);
-      },
-      writable: true
-    });
-  })();
+  var globalIsNaN = global.isNaN;
+  Object.defineProperty(Number, 'isNaN', {
+    configurable: true,
+    enumerable: false,
+    value: function isNaN(value) {
+      return typeof value === 'number' && globalIsNaN(value);
+    },
+    writable: true
+  });
 }
 })(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);
 (function(global) {
@@ -1255,34 +1249,27 @@ __d(/* /TestBundle.js */function(global, require, module, exports) {
 
 'use strict';
 
-var Bar = require(12     ); // 12 = ./Bar
-var Foo = require(13     ); // 13 = ./Foo
-
-module.exports = { Foo: Foo, Bar: Bar };
+module.exports = { Foo: require(12     ), Bar: require(15     ) }; // 15 = ./Bar // 12 = ./Foo
 }, 0);
-__d(/* /Bar.js */function(global, require, module, exports) {
-
-'use strict';
-
-var Foo = require(13     ); // 13 = ./Foo
-
-module.exports = { type: 'bar', foo: Foo.type };
-}, 12);
 __d(/* /Foo.js */function(global, require, module, exports) {
 
 'use strict';
 
-var asset = require(14          ); // 14 = ./test.png
-
-module.exports = { type: 'foo', asset: asset };
+module.exports = { type: 'foo', asset: require(13          ) }; // 13 = ./test.png
+}, 12);
+__d(/* /test.png */function(global, require, module, exports) {module.exports=require(14                                          ).registerAsset({\\"__packager_asset\\":true,\\"httpServerLocation\\":\\"/assets\\",\\"width\\":8,\\"height\\":8,\\"scales\\":[1],\\"hash\\":\\"77d45c1f7fa73c0f6c444a830dc42f67\\",\\"name\\":\\"test\\",\\"type\\":\\"png\\"}); // 14 = react-native/Libraries/Image/AssetRegistry
 }, 13);
-__d(/* /test.png */function(global, require, module, exports) {module.exports=require(15                                          ).registerAsset({\\"__packager_asset\\":true,\\"httpServerLocation\\":\\"/assets\\",\\"width\\":8,\\"height\\":8,\\"scales\\":[1],\\"hash\\":\\"77d45c1f7fa73c0f6c444a830dc42f67\\",\\"name\\":\\"test\\",\\"type\\":\\"png\\"}); // 15 = react-native/Libraries/Image/AssetRegistry
-}, 14);
 __d(/* /node_modules/react-native/Libraries/Image/AssetRegistry.js */function(global, require, module, exports) {
 
 'use strict';
 
 module.export = {};
+}, 14);
+__d(/* /Bar.js */function(global, require, module, exports) {
+
+'use strict';
+
+module.exports = { type: 'bar', foo: require(12     ).type }; // 12 = ./Foo
 }, 15);
 ;require(0);"
 `;

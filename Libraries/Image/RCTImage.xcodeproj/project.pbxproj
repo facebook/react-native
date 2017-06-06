@@ -29,6 +29,8 @@
 		354631681B69857700AA0B86 /* RCTImageEditingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 354631671B69857700AA0B86 /* RCTImageEditingManager.m */; };
 		3D302E181DF8228100D6DDAE /* RCTImageUtils.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; };
 		3D302F211DF8269200D6DDAE /* RCTImageUtils.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 134B00A01B54232B00EC8DFB /* RCTImageUtils.h */; };
+		3DA05A5A1EE0312600805843 /* RCTImageShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59AB09281EDE5DD1009F97B5 /* RCTImageShadowView.h */; };
+		3DA05A5B1EE0312900805843 /* RCTImageShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59AB09291EDE5DD1009F97B5 /* RCTImageShadowView.m */; };
 		3DED3A8A1DE6F79800336DD7 /* RCTGIFImageDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304D5B01AA8C50D0002E2BE /* RCTGIFImageDecoder.h */; };
 		3DED3A8B1DE6F79800336DD7 /* RCTImageBlurUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = EEF314701C9B0DD30049118E /* RCTImageBlurUtils.h */; };
 		3DED3A8C1DE6F79800336DD7 /* RCTImageCache.h in Headers */ = {isa = PBXBuildFile; fileRef = CCD34C251D4B8FE900268922 /* RCTImageCache.h */; };
@@ -197,6 +199,7 @@
 				3DED3A9A1DE6F7A400336DD7 /* RCTImageLoader.h in Headers */,
 				3DED3A9B1DE6F7A400336DD7 /* RCTImageStoreManager.h in Headers */,
 				3DED3A9C1DE6F7A400336DD7 /* RCTImageUtils.h in Headers */,
+				3DA05A5A1EE0312600805843 /* RCTImageShadowView.h in Headers */,
 				3DED3A9D1DE6F7A400336DD7 /* RCTImageView.h in Headers */,
 				3DED3A9E1DE6F7A400336DD7 /* RCTImageViewManager.h in Headers */,
 				3DED3A9F1DE6F7A400336DD7 /* RCTLocalAssetImageLoader.h in Headers */,
@@ -290,6 +293,7 @@
 				2D3B5F1C1D9B0D1300451313 /* RCTResizeMode.m in Sources */,
 				2D3B5F221D9B0D1300451313 /* RCTImageViewManager.m in Sources */,
 				2D3B5F211D9B0D1300451313 /* RCTImageView.m in Sources */,
+				3DA05A5B1EE0312900805843 /* RCTImageShadowView.m in Sources */,
 				2D3B5F201D9B0D1300451313 /* RCTImageLoader.m in Sources */,
 				2D3B5F1B1D9B0D0700451313 /* RCTImageBlurUtils.m in Sources */,
 				2D3B5F241D9B0D1300451313 /* RCTImageUtils.m in Sources */,

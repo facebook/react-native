@@ -286,7 +286,7 @@ function countLines(module) {
 
 function lineByLineMap(file) {
   return {
-    file: file,
+    file,
     mappings: 'AAAA;',
     names: [],
     sources: [file],
