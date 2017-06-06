@@ -107,3 +107,7 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
     srcs = srcs,
     vm_args = vm_args + extra_vm_args,
     *args, **kwargs)
+
+original_cxx_library = cxx_library
+def cxx_library(allow_jni_merging=None, **kwargs):
+    original_cxx_library(**kwargs)

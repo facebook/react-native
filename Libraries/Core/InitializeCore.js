@@ -106,19 +106,17 @@ ExceptionsManager.installConsoleErrorReporter();
 
 // TODO: Move these around to solve the cycle in a cleaner way
 const BatchedBridge = require('BatchedBridge');
-BatchedBridge.registerCallableModule('Systrace', require('Systrace'));
-BatchedBridge.registerCallableModule('JSTimersExecution', require('JSTimersExecution'));
-BatchedBridge.registerCallableModule('HeapCapture', require('HeapCapture'));
-BatchedBridge.registerCallableModule('SamplingProfiler', require('SamplingProfiler'));
+BatchedBridge.registerLazyCallableModule('Systrace', () => require('Systrace'));
+BatchedBridge.registerLazyCallableModule('JSTimersExecution', () => require('JSTimersExecution'));
+BatchedBridge.registerLazyCallableModule('HeapCapture', () => require('HeapCapture'));
+BatchedBridge.registerLazyCallableModule('SamplingProfiler', () => require('SamplingProfiler'));
+BatchedBridge.registerLazyCallableModule('RCTLog', () => require('RCTLog'));
 
 if (__DEV__) {
   if (!global.__RCTProfileIsProfiling) {
     BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));
   }
 }
-
-// RCTLog needs to register with BatchedBridge
-require('RCTLog');
 
 // Set up error handler
 if (!global.__fbDisableExceptionsManager) {
@@ -226,6 +224,6 @@ if (__DEV__) {
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
 // been initialized before requiring them.
-require('RCTDeviceEventEmitter');
-require('RCTNativeAppEventEmitter');
-require('PerformanceLogger');
+BatchedBridge.registerLazyCallableModule('RCTDeviceEventEmitter', () => require('RCTDeviceEventEmitter'));
+BatchedBridge.registerLazyCallableModule('RCTNativeAppEventEmitter', () => require('RCTNativeAppEventEmitter'));
+BatchedBridge.registerLazyCallableModule('PerformanceLogger', () => require('PerformanceLogger'));

@@ -42,7 +42,7 @@ const TRACE_TAG_REACT_APPS = 1 << 17;
 const DEBUG_INFO_LIMIT = 32;
 
 class MessageQueue {
-  _callableModules: {[key: string]: Object};
+  _lazyCallableModules: {[key: string]: void => Object};
   _queue: [Array<number>, Array<number>, Array<any>, number];
   _successCallbacks: Array<?Function>;
   _failureCallbacks: Array<?Function>;
@@ -58,7 +58,7 @@ class MessageQueue {
   __spy: ?(data: SpyData) => void;
 
   constructor() {
-    this._callableModules = {};
+    this._lazyCallableModules = {};
     this._queue = [[], [], [], 0];
     this._successCallbacks = [];
     this._failureCallbacks = [];
@@ -136,7 +136,23 @@ class MessageQueue {
   }
 
   registerCallableModule(name: string, module: Object) {
-    this._callableModules[name] = module;
+    this._lazyCallableModules[name] = () => module;
+  }
+
+  registerLazyCallableModule(name: string, factory: void => Object) {
+    let module: Object;
+    let getValue: ?(void => Object) = factory;
+    this._lazyCallableModules[name] = () => {
+      if (getValue) {
+        module = getValue();
+        getValue = null;
+      }
+      return module;
+    };
+  }
+
+  _getCallableModule(name: string) {
+    return this._lazyCallableModules[name]();
   }
 
   enqueueNativeCall(moduleID: number, methodID: number, params: Array<any>, onFail: ?Function, onSucc: ?Function) {
@@ -230,7 +246,7 @@ class MessageQueue {
     if (this.__spy) {
       this.__spy({ type: TO_JS, module, method, args});
     }
-    const moduleMethods = this._callableModules[module];
+    const moduleMethods = this._getCallableModule(module);
     invariant(
       !!moduleMethods,
       'Module %s is not a registered callable module (calling %s)',
