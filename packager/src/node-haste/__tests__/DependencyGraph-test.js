@@ -1127,13 +1127,14 @@ describe('DependencyGraph', function() {
 
       return dgraph.catch(err => {
         expect(err.message).toEqual(
-          'jest-haste-map: @providesModule naming collision:\n' +
+          `Failed to build DependencyGraph: @providesModule naming collision:\n` +
             `  Duplicate module name: index\n` +
             `  Paths: /root/b.js collides with /root/index.js\n\n` +
             'This error is caused by a @providesModule declaration ' +
             'with the same name across two different files.',
         );
-        expect(console.warn).not.toBeCalled();
+        expect(err.type).toEqual('DependencyGraphError');
+        expect(console.warn).toBeCalled();
       });
     });
 

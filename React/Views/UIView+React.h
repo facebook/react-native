@@ -78,6 +78,23 @@
 - (void)reactFocusIfNeeded;
 - (void)reactBlur;
 
+/**
+ * Useful properties for computing layout.
+ */
+@property (nonatomic, readonly) UIEdgeInsets reactBorderInsets;
+@property (nonatomic, readonly) UIEdgeInsets reactPaddingInsets;
+@property (nonatomic, readonly) UIEdgeInsets reactCompoundInsets;
+@property (nonatomic, readonly) CGRect reactContentFrame;
+
+/**
+ * The (sub)view which represents this view in terms of accessibility.
+ * ViewManager will apply all accessibility properties directly to this view.
+ * May be overriten in view subclass which needs to be accessiblitywise
+ * transparent in favour of some subview.
+ * Defaults to `self`.
+ */
+@property (nonatomic, readonly) UIView *reactAccessibilityElement;
+
 #if RCT_DEV
 
 /**

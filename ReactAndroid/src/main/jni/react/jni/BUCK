@@ -1,17 +1,58 @@
 include_defs("//ReactAndroid/DEFS")
 
-# TODO(cjhopman): Remove this target (or move the xreact target to this directory).
+EXPORTED_HEADERS = [
+    "CxxModuleWrapper.h",
+    "CxxModuleWrapperBase.h",
+    "CxxSharedModuleWrapper.h",
+    "JavaModuleWrapper.h",
+    "JSLoader.h",
+    "MethodInvoker.h",
+    "ModuleRegistryBuilder.h",
+    "NativeArray.h",
+    "NativeCommon.h",
+    "NativeMap.h",
+    "ReadableNativeArray.h",
+    "ReadableNativeMap.h",
+    "WritableNativeArray.h",
+    "WritableNativeMap.h",
+]
+
 cxx_library(
     name = "jni",
-    srcs = [
-        "Dummy.cpp",
-    ],
+    srcs = glob(["*.cpp"]),
+    headers = glob(
+        ["*.h"],
+        excludes = EXPORTED_HEADERS,
+    ),
     header_namespace = "react/jni",
+    exported_headers = EXPORTED_HEADERS,
+    allow_jni_merging = True,
+    compiler_flags = [
+        "-Wall",
+        "-Werror",
+        "-fexceptions",
+        "-std=c++1y",
+        "-frtti",
+        "-Wno-pessimizing-move",
+        "-Wno-inconsistent-missing-override",
+    ],
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNativeJNI\"",
+        "-DWITH_FBSYSTRACE=1",
+        "-DWITH_INSPECTOR=1",
+    ],
     soname = "libreactnativejni.$(ext)",
     visibility = [
         "PUBLIC",
     ],
-    deps = [
-        react_native_target("jni/xreact/jni:jni"),
-    ],
+    xcode_public_headers_symlinks = True,
+    deps = ([
+        "//native/third-party/android-ndk:android",
+        "//xplat/folly:molly",
+        "//xplat/fbgloginit:fbgloginit",
+        "//xplat/fbsystrace:fbsystrace",
+        react_native_xplat_target("cxxreact:bridge"),
+        react_native_xplat_target("cxxreact:module"),
+        FBJNI_TARGET,
+    ] + JSC_DEPS) if not IS_OSS_BUILD else [],
 )

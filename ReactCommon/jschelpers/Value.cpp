@@ -1,8 +1,9 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#include <folly/json.h>
-
 #include "Value.h"
+
+#include <folly/json.h>
+#include <folly/Conv.h>
 
 #include "JSCHelpers.h"
 #include "JavaScriptCore.h"
@@ -40,7 +41,8 @@ std::string Value::toJSONString(unsigned indent) const {
 Value Value::fromJSON(JSContextRef ctx, const String& json) {
   auto result = JSC_JSValueMakeFromJSONString(ctx, json);
   if (!result) {
-    throw JSException("Failed to create Value from JSON: %s", json.str().c_str());
+    throw JSException(folly::to<std::string>(
+      "Failed to create Value from JSON: ", json.str()).c_str());
   }
   return Value(ctx, result);
 }
@@ -190,7 +192,8 @@ Value Object::getProperty(const String& propName) const {
   JSValueRef exn;
   JSValueRef property = JSC_JSObjectGetProperty(m_context, m_obj, propName, &exn);
   if (!property) {
-    throw JSException(m_context, exn, nullptr, "Failed to get property '%s'", propName.str().c_str());
+    throw JSException(m_context, exn, folly::to<std::string>(
+      "Failed to get property '", propName.str(), "'").c_str());
   }
   return Value(m_context, property);
 }
@@ -199,7 +202,8 @@ Value Object::getPropertyAtIndex(unsigned int index) const {
   JSValueRef exn;
   JSValueRef property = JSC_JSObjectGetPropertyAtIndex(m_context, m_obj, index, &exn);
   if (!property) {
-    throw JSException(m_context, exn, nullptr, "Failed to get property at index %d", index);
+    throw JSException(m_context, exn, folly::to<std::string>(
+      "Failed to get property at index ", index).c_str());
   }
   return Value(m_context, property);
 }
@@ -212,7 +216,8 @@ void Object::setProperty(const String& propName, const Value& value) {
   JSValueRef exn = nullptr;
   JSC_JSObjectSetProperty(m_context, m_obj, propName, value, kJSPropertyAttributeNone, &exn);
   if (exn) {
-    throw JSException(m_context, exn, nullptr, "Failed to set property '%s'", propName.str().c_str());
+    throw JSException(m_context, exn, folly::to<std::string>(
+      "Failed to set property '", propName.str(), "'").c_str());
   }
 }
 
@@ -220,7 +225,8 @@ void Object::setPropertyAtIndex(unsigned int index, const Value& value) {
   JSValueRef exn = nullptr;
   JSC_JSObjectSetPropertyAtIndex(m_context, m_obj, index, value, &exn);
   if (exn) {
-    throw JSException(m_context, exn, nullptr, "Failed to set property at index %d", index);
+    throw JSException(m_context, exn, folly::to<std::string>(
+      "Failed to set property at index ", index).c_str());
   }
 }
 

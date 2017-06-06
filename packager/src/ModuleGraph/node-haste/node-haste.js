@@ -30,7 +30,7 @@ const Module = require('./Module');
 const ModuleCache = require('./ModuleCache');
 const ResolutionRequest = require('../../node-haste/DependencyGraph/ResolutionRequest');
 
-const defaults = require('../../../defaults');
+const defaults = require('../../defaults');
 
 import type {Moduleish, Packageish} from '../../node-haste/DependencyGraph/ResolutionRequest';
 

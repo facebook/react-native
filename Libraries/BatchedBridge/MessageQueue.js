@@ -99,7 +99,6 @@ class MessageQueue {
   callFunctionReturnFlushedQueue(module: string, method: string, args: Array<any>) {
     this.__guard(() => {
       this.__callFunction(module, method, args);
-      this.__callImmediates();
     });
 
     return this.flushedQueue();
@@ -109,7 +108,6 @@ class MessageQueue {
     let result;
     this.__guard(() => {
       result = this.__callFunction(module, method, args);
-      this.__callImmediates();
     });
 
     return [result, this.flushedQueue()];
@@ -118,14 +116,15 @@ class MessageQueue {
   invokeCallbackAndReturnFlushedQueue(cbID: number, args: Array<any>) {
     this.__guard(() => {
       this.__invokeCallback(cbID, args);
-      this.__callImmediates();
     });
 
     return this.flushedQueue();
   }
 
   flushedQueue() {
-    this.__callImmediates();
+    this.__guard(() => {
+      this.__callImmediates();
+    });
 
     const queue = this._queue;
     this._queue = [[], [], [], this._callID];
@@ -220,7 +219,7 @@ class MessageQueue {
 
   __callImmediates() {
     Systrace.beginEvent('JSTimersExecution.callImmediates()');
-    this.__guard(() => JSTimersExecution.callImmediates());
+    JSTimersExecution.callImmediates();
     Systrace.endEvent();
   }
 

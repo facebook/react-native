@@ -19,20 +19,20 @@ exports.assetExts = [
 
 exports.sourceExts = ['js', 'json'];
 
-exports.moduleSystem = require.resolve('./src/Resolver/polyfills/require.js');
+exports.moduleSystem = require.resolve('./Resolver/polyfills/require.js');
 
 exports.platforms = ['ios', 'android', 'windows', 'web'];
 
 exports.polyfills = [
-  require.resolve('./src/Resolver/polyfills/Object.es6.js'),
-  require.resolve('./src/Resolver/polyfills/console.js'),
-  require.resolve('./src/Resolver/polyfills/error-guard.js'),
-  require.resolve('./src/Resolver/polyfills/Number.es6.js'),
-  require.resolve('./src/Resolver/polyfills/String.prototype.es6.js'),
-  require.resolve('./src/Resolver/polyfills/Array.prototype.es6.js'),
-  require.resolve('./src/Resolver/polyfills/Array.es6.js'),
-  require.resolve('./src/Resolver/polyfills/Object.es7.js'),
-  require.resolve('./src/Resolver/polyfills/babelHelpers.js'),
+  require.resolve('./Resolver/polyfills/Object.es6.js'),
+  require.resolve('./Resolver/polyfills/console.js'),
+  require.resolve('./Resolver/polyfills/error-guard.js'),
+  require.resolve('./Resolver/polyfills/Number.es6.js'),
+  require.resolve('./Resolver/polyfills/String.prototype.es6.js'),
+  require.resolve('./Resolver/polyfills/Array.prototype.es6.js'),
+  require.resolve('./Resolver/polyfills/Array.es6.js'),
+  require.resolve('./Resolver/polyfills/Object.es7.js'),
+  require.resolve('./Resolver/polyfills/babelHelpers.js'),
 ];
 
 exports.providesModuleNodeModules = [
