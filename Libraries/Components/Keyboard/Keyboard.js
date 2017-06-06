@@ -101,6 +101,8 @@ let Keyboard = {
    *
    * Note that if you set `android:windowSoftInputMode` to `adjustResize`  or `adjustNothing`,
    * only `keyboardDidShow` and `keyboardDidHide` events will available on Android.
+   * 
+   * Limitation for keyboardWillShow: On Android no event is fired when the keyboard is about to be opened. Instead you can use a layout listener to check if the height of the layout has changed which means the keyboard was opened.
    *
    * @param {function} callback function to be called when the event fires.
    */
