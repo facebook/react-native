@@ -127,7 +127,7 @@ class ViewPagerAndroid extends React.Component {
      * The proportional width for the given page. As the percentage of the
      * ViewPagerAndroid's measured width from (0.f-1.f]
      */
-    pageWidth: ReactPropTypes.number,
+    pageWidth: PropTypes.number,
 
     /**
      * Determines whether the keyboard gets dismissed in response to a drag.
