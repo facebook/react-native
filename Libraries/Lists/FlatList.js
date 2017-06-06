@@ -327,7 +327,7 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
   /**
    * Scroll to a specific content pixel offset in the list.
    * 
-   * Check out [scrollToOffset](virtualizedlist.html#scrolltooffset) of VirtualizedList
+   * Check out [scrollToOffset](docs/virtualizedlist.html#scrolltooffset) of VirtualizedList
    */
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     this._listRef.scrollToOffset(params);
