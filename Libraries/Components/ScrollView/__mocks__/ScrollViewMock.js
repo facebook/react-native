@@ -7,8 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
- * eslint-env jest
  */
+
+/* eslint-env jest */
+
 'use strict';
 
 const React = require('React');
