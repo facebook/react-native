@@ -150,6 +150,7 @@ public class ReactInstanceManager {
   private final boolean mLazyViewManagersEnabled;
   private final boolean mSetupReactContextInBackgroundEnabled;
   private final boolean mUseSeparateUIBackgroundThread;
+  private final int mMinNumShakes;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -222,7 +223,8 @@ public class ReactInstanceManager {
     boolean lazyNativeModulesEnabled,
     boolean lazyViewManagersEnabled,
     boolean setupReactContextInBackgroundEnabled,
-    boolean useSeparateUIBackgroundThread) {
+    boolean useSeparateUIBackgroundThread,
+    int minNumShakes) {
 
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -240,7 +242,8 @@ public class ReactInstanceManager {
         mDevInterface,
         mJSMainModuleName,
         useDeveloperSupport,
-        redBoxHandler);
+        redBoxHandler,
+        minNumShakes);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
     mUIImplementationProvider = uiImplementationProvider;
@@ -251,6 +254,7 @@ public class ReactInstanceManager {
     mLazyViewManagersEnabled = lazyViewManagersEnabled;
     mSetupReactContextInBackgroundEnabled = setupReactContextInBackgroundEnabled;
     mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
+    mMinNumShakes = minNumShakes;
 
     // Instantiate ReactChoreographer in UI thread.
     ReactChoreographer.initialize();
@@ -683,6 +687,10 @@ public class ReactInstanceManager {
 
   public LifecycleState getLifecycleState() {
     return mLifecycleState;
+  }
+
+  public int getMinNumShakes() {
+    return mMinNumShakes;
   }
 
   @ThreadConfined(UI)
