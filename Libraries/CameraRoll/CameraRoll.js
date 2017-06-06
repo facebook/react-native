@@ -121,6 +121,9 @@ class CameraRoll {
   static GroupTypesOptions: Object = GROUP_TYPES_OPTIONS;
   static AssetTypeOptions: Object = ASSET_TYPE_OPTIONS;
 
+  /**
+   * CameraRoll.saveImageWithTag is deprecated. Use CameraRoll.saveToCameraRoll instead
+   */
   static saveImageWithTag(tag: string): Promise<Object> {
     console.warn(
       'CameraRoll.saveImageWithTag is deprecated. Use CameraRoll.saveToCameraRoll instead',
@@ -142,10 +145,7 @@ class CameraRoll {
    *
    * Returns a Promise which will resolve with the new URI.
    */
-  static saveToCameraRoll(
-    tag: string,
-    type?: 'photo' | 'video',
-  ): Promise<Object> {
+  static saveToCameraRoll(tag: string, type?: 'photo' | 'video'): Promise<Object> {
     invariant(
       typeof tag === 'string',
       'CameraRoll.saveToCameraRoll must be a valid string.',
