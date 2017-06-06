@@ -13,6 +13,8 @@ import javax.annotation.Nullable;
 
 import android.os.Bundle;
 
+import com.alibaba.fastjson.JSON;
+
 public class Arguments {
 
   /**
@@ -54,7 +56,8 @@ public class Arguments {
       } else if (argumentClass == WritableNativeArray.class) {
         arguments.pushArray((WritableNativeArray) argument);
       } else {
-        throw new RuntimeException("Cannot convert argument of type " + argumentClass);
+        arguments.pushString(JSON.toJSONString(argument));
+//        throw new RuntimeException("Cannot convert argument of type " + argumentClass);
       }
     }
     return arguments;

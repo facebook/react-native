@@ -33,15 +33,15 @@ public class ReactActivityDelegate {
 
   private final int REQUEST_OVERLAY_PERMISSION_CODE = 1111;
   private static final String REDBOX_PERMISSION_GRANTED_MESSAGE =
-    "Overlay permissions have been granted.";
+          "Overlay permissions have been granted.";
   private static final String REDBOX_PERMISSION_MESSAGE =
-    "Overlay permissions needs to be granted in order for react native apps to run in dev mode";
+          "Overlay permissions needs to be granted in order for react native apps to run in dev mode";
 
   private final @Nullable Activity mActivity;
   private final @Nullable FragmentActivity mFragmentActivity;
   private final @Nullable String mMainComponentName;
 
-  private @Nullable ReactRootView mReactRootView;
+  protected  @Nullable ReactRootView mReactRootView;
   private @Nullable DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
@@ -53,8 +53,8 @@ public class ReactActivityDelegate {
   }
 
   public ReactActivityDelegate(
-    FragmentActivity fragmentActivity,
-    @Nullable String mainComponentName) {
+          FragmentActivity fragmentActivity,
+          @Nullable String mainComponentName) {
     mFragmentActivity = fragmentActivity;
     mMainComponentName = mainComponentName;
     mActivity = null;
@@ -102,15 +102,19 @@ public class ReactActivityDelegate {
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
   }
 
+  protected ReactRootView getReactRootView(){
+    return mReactRootView;
+  }
+
   protected void loadApp(String appKey) {
     if (mReactRootView != null) {
       throw new IllegalStateException("Cannot loadApp while app is already running.");
     }
     mReactRootView = createRootView();
     mReactRootView.startReactApplication(
-      getReactNativeHost().getReactInstanceManager(),
-      appKey,
-      getLaunchOptions());
+            getReactNativeHost().getReactInstanceManager(),
+            appKey,
+            getLaunchOptions());
     getPlainActivity().setContentView(mReactRootView);
   }
 
@@ -123,8 +127,8 @@ public class ReactActivityDelegate {
   protected void onResume() {
     if (getReactNativeHost().hasInstance()) {
       getReactNativeHost().getReactInstanceManager().onHostResume(
-        getPlainActivity(),
-        (DefaultHardwareBackBtnHandler) getPlainActivity());
+              getPlainActivity(),
+              (DefaultHardwareBackBtnHandler) getPlainActivity());
     }
 
     if (mPermissionsCallback != null) {
@@ -146,7 +150,7 @@ public class ReactActivityDelegate {
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (getReactNativeHost().hasInstance()) {
       getReactNativeHost().getReactInstanceManager()
-        .onActivityResult(getPlainActivity(), requestCode, resultCode, data);
+              .onActivityResult(getPlainActivity(), requestCode, resultCode, data);
     } else {
       // Did we request overlay permissions?
       if (requestCode == REQUEST_OVERLAY_PERMISSION_CODE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -167,7 +171,7 @@ public class ReactActivityDelegate {
         return true;
       }
       boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
-        .didDoubleTapR(keyCode, getPlainActivity().getCurrentFocus());
+              .didDoubleTapR(keyCode, getPlainActivity().getCurrentFocus());
       if (didDoubleTapR) {
         getReactNativeHost().getReactInstanceManager().getDevSupportManager().handleReloadJS();
         return true;
@@ -194,17 +198,17 @@ public class ReactActivityDelegate {
 
   @TargetApi(Build.VERSION_CODES.M)
   public void requestPermissions(
-    String[] permissions,
-    int requestCode,
-    PermissionListener listener) {
+          String[] permissions,
+          int requestCode,
+          PermissionListener listener) {
     mPermissionListener = listener;
     getPlainActivity().requestPermissions(permissions, requestCode);
   }
 
   public void onRequestPermissionsResult(
-    final int requestCode,
-    final String[] permissions,
-    final int[] grantResults) {
+          final int requestCode,
+          final String[] permissions,
+          final int[] grantResults) {
     mPermissionsCallback = new Callback() {
       @Override
       public void invoke(Object... args) {
@@ -222,7 +226,7 @@ public class ReactActivityDelegate {
     return Assertions.assertNotNull(mFragmentActivity);
   }
 
-  private Activity getPlainActivity() {
+  protected Activity getPlainActivity() {
     return ((Activity) getContext());
   }
 }

@@ -232,6 +232,13 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     if (mReactInstanceManager != null && mIsAttachedToInstance) {
       mReactInstanceManager.detachRootView(this);
       mIsAttachedToInstance = false;
+      mRootViewEventListener = null;
+    }
+  }
+
+  public void showDev(){
+    if (mReactInstanceManager != null && mIsAttachedToInstance) {
+      mReactInstanceManager.showDevOptionsDialog();
     }
   }
 
@@ -268,6 +275,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mCustomGlobalLayoutListener = new CustomGlobalLayoutListener();
     }
     return mCustomGlobalLayoutListener;
+  }
+
+  protected ReactInstanceManager getReactInstanceManager(){
+    return mReactInstanceManager;
   }
 
   private void attachToReactInstanceManager() {

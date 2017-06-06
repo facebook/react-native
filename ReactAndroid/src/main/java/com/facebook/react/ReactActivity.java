@@ -24,7 +24,7 @@ import com.facebook.react.modules.core.PermissionListener;
  * Base Activity for React Native applications.
  */
 public abstract class ReactActivity extends Activity
-    implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
+        implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
   private final ReactActivityDelegate mDelegate;
 
@@ -103,17 +103,17 @@ public abstract class ReactActivity extends Activity
 
   @Override
   public void requestPermissions(
-    String[] permissions,
-    int requestCode,
-    PermissionListener listener) {
+          String[] permissions,
+          int requestCode,
+          PermissionListener listener) {
     mDelegate.requestPermissions(permissions, requestCode, listener);
   }
 
   @Override
   public void onRequestPermissionsResult(
-    int requestCode,
-    String[] permissions,
-    int[] grantResults) {
+          int requestCode,
+          String[] permissions,
+          int[] grantResults) {
     mDelegate.onRequestPermissionsResult(requestCode, permissions, grantResults);
   }
 

@@ -230,7 +230,7 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 14
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -275,13 +275,32 @@ dependencies {
     compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
     compile 'javax.inject:javax.inject:1'
     compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.android.support:recyclerview-v7:23.4.0'
+
+    provided "com.parse.bolts:bolts-tasks:1.4.0"
+    provided "com.meiyou.fresco:fresco-animated-base:${FRESCO_PAINTER_VERSION}"
+    provided "com.meiyou.fresco:fresco-animated-base-support:${FRESCO_PAINTER_VERSION}"
+    provided "com.meiyou.fresco:fresco-animated-gif:${FRESCO_PAINTER_VERSION}"
+    provided "com.meiyou.fresco:fresco-animated-webp:${FRESCO_PAINTER_VERSION}"
+    provided "com.meiyou.fresco:fresco-drawee:${FRESCO_PAINTER_VERSION}"
+    provided "com.meiyou.fresco:fresco-drawee-pipeline:${FRESCO_PAINTER_VERSION}"
+    provided "com.meiyou.fresco:fresco-fbcore:${FRESCO_PAINTER_VERSION}"
+    provided "com.meiyou.fresco:fresco-imagepipeline:${FRESCO_PAINTER_VERSION}"
+    provided "com.meiyou.fresco:fresco-imagepipeline-okhttp3:${FRESCO_PAINTER_VERSION}"
+    provided "com.meiyou.fresco:fresco-imagepipeline-base:${FRESCO_PAINTER_VERSION}"
+    provided "com.meiyou.fresco:fresco-webpsupport:${FRESCO_PAINTER_VERSION}"
+    provided "com.meiyou.fresco:fresco-frescopainter:${FRESCO_PAINTER_VERSION}"
+    provided "com.meiyou.fresco:fresco-fdrawee-span:${FRESCO_PAINTER_VERSION}"
+    provided 'com.squareup.okhttp3:okhttp:3.4.1'
+    //bugly
+    provided 'com.tencent.bugly:crashreport:2.5.0'//其中<version>替换为当前最新bugly版本号1.2.3.8
+
+    provided 'com.tencent.bugly:nativecrashreport:3.1.2'//3.1.2无法下载，先改为3.1.0
+    provided 'com.alibaba:fastjson:1.1.55.android'
+
     compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
-    compile 'com.facebook.fresco:fresco:1.0.1'
-    compile 'com.facebook.fresco:imagepipeline-okhttp3:1.0.1'
     compile 'com.facebook.soloader:soloader:0.1.0'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
-    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+//    compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
     compile 'com.squareup.okhttp3:okhttp-ws:3.4.1'
     compile 'com.squareup.okio:okio:1.9.0'
@@ -300,4 +319,4 @@ dependencies {
     androidTestCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
 }
 
-apply from: 'release.gradle'
+apply from :rootProject.file('mvn.gradle')
