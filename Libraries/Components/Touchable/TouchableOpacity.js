@@ -166,6 +166,11 @@ var TouchableOpacity = React.createClass({
   _opacityFocused: function() {
     this.setOpacityTo(this.props.focusedOpacity);
   },
+  
+  _getChildStyleOpacityWithDefault: function() {
+   var childStyle = flattenStyle(this.props.style) || {};
+   return childStyle.opacity == undefined ? 1 : childStyle.opacity;
+ },
 
   _getChildStyleOpacityWithDefault: function() {
    var childStyle = flattenStyle(this.props.style) || {};
