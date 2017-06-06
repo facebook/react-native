@@ -1714,7 +1714,7 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
          child->layout.measuredDimensions[dim[crossAxis]]) /
         2.0f;
   } else if (!YGNodeIsLeadingPosDefined(child, crossAxis) &&
-             (YGNodeAlignItem(node, child) == YGAlignFlexEnd || node->style.flexWrap == YGWrapWrapReverse)) {
+             ((YGNodeAlignItem(node, child) == YGAlignFlexEnd) ^ (node->style.flexWrap == YGWrapWrapReverse))) {
     child->layout.position[leading[crossAxis]] = (node->layout.measuredDimensions[dim[crossAxis]] -
                                                   child->layout.measuredDimensions[dim[crossAxis]]);
   }

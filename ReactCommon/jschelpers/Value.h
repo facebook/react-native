@@ -307,15 +307,15 @@ public:
     return getType() == kJSTypeObject;
   }
 
-  Object asObject() const;
+  RN_EXPORT Object asObject() const;
 
   bool isString() const {
     return getType() == kJSTypeString;
   }
 
-  String toString() const;
+  RN_EXPORT String toString() const;
 
-  static Value makeError(JSContextRef ctx, const char *error);
+  RN_EXPORT static Value makeError(JSContextRef ctx, const char *error);
 
   static Value makeNumber(JSContextRef ctx, double value) {
     return Value(ctx, JSC_JSValueMakeNumber(ctx, value));
@@ -330,7 +330,7 @@ public:
   }
 
   RN_EXPORT std::string toJSONString(unsigned indent = 0) const;
-  RN_EXPORT static Value fromJSON(JSContextRef ctx, const String& json);
+  RN_EXPORT static Value fromJSON(const String& json);
   RN_EXPORT static Value fromDynamic(JSContextRef ctx, const folly::dynamic& value);
   RN_EXPORT JSContextRef context() const;
 

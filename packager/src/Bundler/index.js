@@ -24,7 +24,7 @@ const ModuleTransport = require('../lib/ModuleTransport');
 const imageSize = require('image-size');
 const path = require('path');
 const denodeify = require('denodeify');
-const defaults = require('../../defaults');
+const defaults = require('../defaults');
 const os = require('os');
 const invariant = require('fbjs/lib/invariant');
 const toLocalPath = require('../node-haste/lib/toLocalPath');
@@ -596,12 +596,14 @@ class Bundler {
     return response;
   }
 
-  getOrderedDependencyPaths({entryFile, dev, platform}: {
+  getOrderedDependencyPaths({entryFile, dev, platform, minify, generateSourceMaps}: {
     +entryFile: string,
     +dev: boolean,
     +platform: string,
+    +minify: boolean,
+    +generateSourceMaps: boolean,
   }) {
-    return this.getDependencies({entryFile, dev, platform}).then(
+    return this.getDependencies({entryFile, dev, platform, minify, generateSourceMaps}).then(
       ({dependencies}) => {
         const ret = [];
         const promises = [];

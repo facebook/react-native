@@ -14,7 +14,7 @@
 const chalk = require('chalk');
 const util = require('util');
 
-import type {Terminal} from './terminal';
+import type Terminal from './TerminalClass';
 
 export type GlobalCacheDisabledReason = 'too_many_errors' | 'too_many_misses';
 
@@ -33,12 +33,13 @@ export type ReportableEvent = {
   port: number,
   error: Error,
 } | {
-  entryFilePath: string,
+  buildID: string,
   type: 'bundle_build_done',
 } | {
-  entryFilePath: string,
+  buildID: string,
   type: 'bundle_build_failed',
 } | {
+  buildID: string,
   entryFilePath: string,
   type: 'bundle_build_started',
 } | {
@@ -49,8 +50,8 @@ export type ReportableEvent = {
 } | {
   type: 'dep_graph_loaded',
 } | {
+  buildID: string,
   type: 'bundle_transform_progressed',
-  entryFilePath: string,
   transformedFileCount: number,
   totalFileCount: number,
 } | {

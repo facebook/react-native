@@ -11,7 +11,6 @@ package com.facebook.react.bridge;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
 public class JSCJavaScriptExecutor extends JavaScriptExecutor {
@@ -32,7 +31,7 @@ public class JSCJavaScriptExecutor extends JavaScriptExecutor {
   }
 
   static {
-    SoLoader.loadLibrary(CatalystInstanceImpl.REACT_NATIVE_LIB);
+    ReactBridge.staticInit();
   }
 
   public JSCJavaScriptExecutor(ReadableNativeArray jscConfig) {

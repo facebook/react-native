@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @format
  */
 
 'use strict';
@@ -84,7 +85,6 @@ function getTTYStream(stream: net$Socket): ?tty.WriteStream {
  * single responsibility of handling status messages.
  */
 class Terminal {
-
   _logLines: Array<string>;
   _nextStatusStr: string;
   _scheduleUpdate: () => void;
@@ -120,7 +120,10 @@ class Terminal {
     });
     this._logLines = [];
     if (ttyStream != null) {
-      this._nextStatusStr = chunkString(this._nextStatusStr, ttyStream.columns).join('\n');
+      this._nextStatusStr = chunkString(
+        this._nextStatusStr,
+        ttyStream.columns,
+      ).join('\n');
       _stream.write(this._nextStatusStr);
     }
     this._statusStr = this._nextStatusStr;
@@ -158,25 +161,6 @@ class Terminal {
     this.log(this._nextStatusStr);
     this._nextStatusStr = '';
   }
-
 }
 
-/**
- * On the same pattern as node.js `console` module, we export the stdout-based
- * terminal at the top-level, but provide access to the Terminal class as a
- * field (so it can be used, for instance, with stderr).
- */
-class GlobalTerminal extends Terminal {
-
-  Terminal: Class<Terminal>;
-
-  constructor() {
-    /* $FlowFixMe: Flow is wrong, Node.js docs specify that process.stdout is an
-     * instance of a net.Socket (a local socket, not network). */
-    super(process.stdout);
-    this.Terminal = Terminal;
-  }
-
-}
-
-module.exports = new GlobalTerminal();
+module.exports = Terminal;

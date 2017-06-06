@@ -123,7 +123,7 @@ If this is your first time running an app on your iOS device, you may need to re
 
 ### 2. Configure code signing
 
-Register for a [Apple developer account](https://developer.apple.com/) if you don't have one yet.
+Register for an [Apple developer account](https://developer.apple.com/) if you don't have one yet.
 
 Select your project in the Xcode Project Navigator, then select your main target (it should share the same name as your project). Look for the "General" tab. Go to "Signing" and make sure your Apple developer account or team is selected under the Team dropdown.
 

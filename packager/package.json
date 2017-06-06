@@ -1,10 +1,11 @@
 {
-  "version": "0.6.1",
-  "name": "react-native-packager",
-  "description": "Build native apps with React!",
+  "version": "0.7.0",
+  "name": "metro-bundler",
+  "description": "🚇 The JavaScript bundler for React Native.",
+  "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git"
+    "url": "git@github.com:facebook/metro-bundler.git"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -12,6 +13,7 @@
     "babel-core": "^6.24.1",
     "babel-generator": "^6.24.1",
     "babel-plugin-external-helpers": "^6.18.0",
+    "babel-preset-es2015-node": "^6.1.1",
     "babel-preset-fbjs": "^2.1.0",
     "babel-preset-react-native": "^1.9.1",
     "babel-register": "^6.24.1",
@@ -35,6 +37,7 @@
     "request": "^2.79.0",
     "rimraf": "^2.5.4",
     "source-map": "^0.5.6",
+    "temp": "0.8.3",
     "throat": "^3.0.0",
     "uglify-js": "2.7.5",
     "write-file-atomic": "^1.2.0",
