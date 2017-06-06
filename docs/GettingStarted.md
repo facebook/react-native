@@ -354,7 +354,6 @@ Select the "SDK Platforms" tab from within the SDK Manager, then check the box n
 - `Google APIs`
 - `Android SDK Platform 23`
 - `Intel x86 Atom_64 System Image`
-- `Google APIs Intel x86 Atom_64 System Image`
 
 <block class="native mac android" />
 
