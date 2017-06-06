@@ -132,6 +132,14 @@ var DrawerLayoutAndroid = React.createClass({
      */
     onDrawerStateChanged: PropTypes.func,
     /**
+     * Opens the navigation view.
+     */
+    openDrawer: ReactPropTypes.func,
+    /**
+     * Closes the navigation view.
+     */
+    closeDrawer: ReactPropTypes.func,
+    /**
      * Function called whenever the navigation view has been opened.
      */
     onDrawerOpen: PropTypes.func,
