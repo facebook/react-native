@@ -9,9 +9,11 @@
 
 #import "RCTUITextView.h"
 
+#import <React/RCTUtils.h>
+#import <React/UIView+React.h>
+
 @implementation RCTUITextView
 {
-  BOOL _jsRequestingFirstResponder;
   UILabel *_placeholderView;
   UITextView *_detachedTextView;
 }
@@ -36,9 +38,9 @@ static UIColor *defaultPlaceholderTextColor()
                                                object:self];
 
     _placeholderView = [[UILabel alloc] initWithFrame:self.bounds];
-    _placeholderView.hidden = YES;
     _placeholderView.isAccessibilityElement = NO;
     _placeholderView.numberOfLines = 0;
+    _placeholderView.textColor = defaultPlaceholderTextColor();
     [self addSubview:_placeholderView];
   }
 
@@ -50,50 +52,43 @@ static UIColor *defaultPlaceholderTextColor()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (NSString *)accessibilityLabel
+{
+  NSMutableString *accessibilityLabel = [NSMutableString new];
+  
+  NSString *superAccessibilityLabel = [super accessibilityLabel];
+  if (superAccessibilityLabel.length > 0) {
+    [accessibilityLabel appendString:superAccessibilityLabel];
+  }
+  
+  if (self.placeholderText.length > 0 && self.text.length == 0) {
+    if (accessibilityLabel.length > 0) {
+      [accessibilityLabel appendString:@" "];
+    }
+    [accessibilityLabel appendString:self.placeholderText];
+  }
+  
+  return accessibilityLabel;
+}
+
 #pragma mark - Properties
 
 - (void)setPlaceholderText:(NSString *)placeholderText
 {
   _placeholderText = placeholderText;
-  [self invalidatePlaceholder];
+  _placeholderView.text = _placeholderText;
 }
 
 - (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
 {
   _placeholderTextColor = placeholderTextColor;
-  [self invalidatePlaceholder];
+  _placeholderView.textColor = _placeholderTextColor ?: defaultPlaceholderTextColor();
 }
-
 
 - (void)textDidChange
 {
   _textWasPasted = NO;
-  [self invalidatePlaceholder];
-}
-
-#pragma mark - UIResponder
-
-- (void)reactWillMakeFirstResponder
-{
-  _jsRequestingFirstResponder = YES;
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-  return _jsRequestingFirstResponder;
-}
-
-- (void)reactDidMakeFirstResponder
-{
-  _jsRequestingFirstResponder = NO;
-}
-
-- (void)didMoveToWindow
-{
-  if (_jsRequestingFirstResponder) {
-    [self becomeFirstResponder];
-    [self reactDidMakeFirstResponder];
-  }
+  [self invalidatePlaceholderVisibility];
 }
 
 #pragma mark - Overrides
@@ -101,7 +96,13 @@ static UIColor *defaultPlaceholderTextColor()
 - (void)setFont:(UIFont *)font
 {
   [super setFont:font];
-  [self invalidatePlaceholder];
+  _placeholderView.font = font ?: defaultPlaceholderFont();
+}
+
+- (void)setTextAlignment:(NSTextAlignment)textAlignment
+{
+  [super setTextAlignment:textAlignment];
+  _placeholderView.textAlignment = textAlignment;
 }
 
 - (void)setText:(NSString *)text
@@ -143,6 +144,21 @@ static UIColor *defaultPlaceholderTextColor()
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
+  // Returned fitting size depends on text size and placeholder size.
+  CGSize textSize = [self fixedSizeThatFits:size];
+
+  UIEdgeInsets padddingInsets = self.textContainerInset;
+  NSString *placeholderText = self.placeholderText ?: @"";
+  CGSize placeholderSize = [placeholderText sizeWithAttributes:@{NSFontAttributeName: self.font ?: defaultPlaceholderFont()}];
+  placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
+  placeholderSize.width += padddingInsets.left + padddingInsets.right;
+  placeholderSize.height += padddingInsets.top + padddingInsets.bottom;
+
+  return CGSizeMake(MAX(textSize.width, placeholderSize.width), MAX(textSize.height, placeholderSize.height));
+}
+
+- (CGSize)fixedSizeThatFits:(CGSize)size
+{
   // UITextView on iOS 8 has a bug that automatically scrolls to the top
   // when calling `sizeThatFits:`. Use a copy so that self is not screwed up.
   static BOOL useCustomImplementation = NO;
@@ -168,22 +184,10 @@ static UIColor *defaultPlaceholderTextColor()
 
 #pragma mark - Placeholder
 
-- (void)invalidatePlaceholder
+- (void)invalidatePlaceholderVisibility
 {
-  BOOL wasVisible = !_placeholderView.isHidden;
   BOOL isVisible = _placeholderText.length != 0 && self.text.length == 0;
-
-  if (wasVisible != isVisible) {
-    _placeholderView.hidden = !isVisible;
-  }
-
-  if (isVisible) {
-    _placeholderView.font = self.font ?: defaultPlaceholderFont();
-    _placeholderView.textColor = _placeholderTextColor ?: defaultPlaceholderTextColor();
-    _placeholderView.textAlignment = self.textAlignment;
-    _placeholderView.text = _placeholderText;
-    [self setNeedsLayout];
-  }
+  _placeholderView.hidden = !isVisible;
 }
 
 @end

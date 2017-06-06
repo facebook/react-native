@@ -11,12 +11,12 @@
 jest.useRealTimers();
 
 jest.unmock('../');
-jest.unmock('../../../defaults');
+jest.unmock('../../defaults');
 jest.mock('path');
 
 const {join: pathJoin} = require.requireActual('path');
 const DependencyGraph = jest.fn();
-jest.setMock('../../node-haste', DependencyGraph);
+jest.setMock('../../node-haste/DependencyGraph', DependencyGraph);
 let Module;
 let Polyfill;
 
@@ -42,7 +42,6 @@ describe('Resolver', function() {
     DependencyGraph.load = jest.fn().mockImplementation(
       opts => Promise.resolve(new DependencyGraph(opts)),
     );
-    DependencyGraph.replacePatterns = require.requireActual('../../node-haste/lib/replacePatterns');
     DependencyGraph.prototype.createPolyfill = jest.fn();
     DependencyGraph.prototype.getDependencies = jest.fn();
 
@@ -109,7 +108,7 @@ describe('Resolver', function() {
           expect(DependencyGraph.prototype.getDependencies).toBeCalledWith({
             entryPath: entry,
             platform,
-            transformOptions,
+            options: transformOptions,
             recursive: true,
           });
         });

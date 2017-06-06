@@ -289,7 +289,6 @@ class TimingAnimation extends Animation {
       type: 'frames',
       frames,
       toValue: this._toValue,
-      delay: this._delay,
       iterations: this.__iterations,
     };
   }
@@ -1139,12 +1138,12 @@ class AnimatedInterpolation extends AnimatedWithChildren {
         return value;
       }
       if (/deg$/.test(value)) {
-        const degrees = parseFloat(value, 10) || 0;
+        const degrees = parseFloat(value) || 0;
         const radians = degrees * Math.PI / 180.0;
         return radians;
       } else {
         // Assume radians
-        return parseFloat(value, 10) || 0;
+        return parseFloat(value) || 0;
       }
     });
   }
@@ -1328,6 +1327,7 @@ class AnimatedModulo extends AnimatedWithChildren {
 
   __detach(): void {
     this._a.__removeChild(this);
+    super.__detach();
   }
 
   __getNativeConfig(): any {
@@ -1378,6 +1378,7 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
 
   __detach(): void {
     this._a.__removeChild(this);
+    super.__detach();
   }
 
   __getNativeConfig(): any {
@@ -1461,6 +1462,7 @@ class AnimatedTransform extends AnimatedWithChildren {
         }
       }
     });
+    super.__detach();
   }
 
   __getNativeConfig(): any {
@@ -1568,6 +1570,7 @@ class AnimatedStyle extends AnimatedWithChildren {
         value.__removeChild(this);
       }
     }
+    super.__detach();
   }
 
   __makeNative() {
@@ -1836,10 +1839,16 @@ function createAnimatedComponent(Component: any): any {
     }
 
     render() {
+      const props = this._propsAnimated.__getValue();
       return (
         <Component
-          {...this._propsAnimated.__getValue()}
+          {...props}
           ref={this._setComponentRef}
+          // The native driver updates views directly through the UI thread so we
+          // have to make sure the view doesn't get optimized away because it cannot
+          // go through the NativeViewHierachyManager since it operates on the shadow
+          // thread.
+          collapsable={this._propsAnimated.__isNative ? false : props.collapsable}
         />
       );
     }
@@ -1855,14 +1864,24 @@ function createAnimatedComponent(Component: any): any {
       return this._component;
     }
   }
+
+  // ReactNative `View.propTypes` have been deprecated in favor of
+  // `ViewPropTypes`. In their place a temporary getter has been added with a
+  // deprecated warning message. Avoid triggering that warning here by using
+  // temporary workaround, __propTypesSecretDontUseThesePlease.
+  // TODO (bvaughn) Revert this particular change any time after April 1
+  var propTypes =
+    Component.__propTypesSecretDontUseThesePlease ||
+    Component.propTypes;
+
   AnimatedComponent.propTypes = {
     style: function(props, propName, componentName) {
-      if (!Component.propTypes) {
+      if (!propTypes) {
         return;
       }
 
       for (var key in ViewStylePropTypes) {
-        if (!Component.propTypes[key] && props[key] !== undefined) {
+        if (!propTypes[key] && props[key] !== undefined) {
           console.warn(
             'You are setting the style `{ ' + key + ': ... }` as a prop. You ' +
             'should nest it in a style object. ' +
@@ -2725,10 +2744,13 @@ module.exports = {
    * [Origami](https://facebook.github.io/origami/).  Tracks velocity state to
    * create fluid motions as the `toValue` updates, and can be chained together.
    *
-   * Config is an object that may have the following options:
+   * Config is an object that may have the following options. Note that you can
+   * only define bounciness/speed or tension/friction but not both:
    *
    *   - `friction`: Controls "bounciness"/overshoot.  Default 7.
    *   - `tension`: Controls speed.  Default 40.
+   *   - `speed`: Controls speed of the animation. Default 12.
+   *   - `bounciness`: Controls bounciness. Default 8.
    *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   spring,

@@ -1,0 +1,25 @@
+# Set up common deps
+
+# Building is not supported in OSS right now
+def rn_xplat_cxx_library(name, **kwargs):
+  cxx_library(name = name)
+
+# Helper for referring to an Android RN target
+def react_native_target(path):
+  return '//ReactAndroid/src/main/' + path
+
+# Helper for referring to an xplat RN target
+def react_native_xplat_target(path):
+  return '//ReactCommon/' + path
+
+GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
+
+INSPECTOR_FLAGS = []
+DEBUG_PREPROCESSOR_FLAGS = []
+STATIC_LIBRARY_IOS_FLAGS = []
+
+JSC_DEPS = []
+JSC_INTERNAL_DEPS = []
+
+THIS_IS_FBOBJC = False
+THIS_IS_FBANDROID = False

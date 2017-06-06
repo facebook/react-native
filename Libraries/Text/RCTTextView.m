@@ -30,8 +30,6 @@
   NSAttributedString *_pendingAttributedText;
 
   UITextRange *_previousSelectionRange;
-  NSUInteger _previousTextLength;
-  CGFloat _previousContentHeight;
   NSString *_predictedText;
 
   BOOL _blockTextShouldChange;
@@ -46,7 +44,6 @@
   RCTAssertParam(bridge);
 
   if (self = [super initWithFrame:CGRectZero]) {
-    _contentInset = UIEdgeInsetsZero;
     _bridge = bridge;
     _eventDispatcher = bridge.eventDispatcher;
     _blurOnSubmit = NO;
@@ -205,12 +202,22 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 - (void)setFont:(UIFont *)font
 {
   _textView.font = font;
+  [self setNeedsLayout];
 }
 
-- (void)setContentInset:(UIEdgeInsets)contentInset
+- (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
 {
-  _contentInset = contentInset;
-  _textView.textContainerInset = contentInset;
+  _reactPaddingInsets = reactPaddingInsets;
+  // We apply `paddingInsets` as `_textView`'s `textContainerInset`.
+  _textView.textContainerInset = reactPaddingInsets;
+  [self setNeedsLayout];
+}
+
+- (void)setReactBorderInsets:(UIEdgeInsets)reactBorderInsets
+{
+  _reactBorderInsets = reactBorderInsets;
+  // We apply `borderInsets` as `_textView` layout offset.
+  _textView.frame = UIEdgeInsetsInsetRect(self.bounds, reactBorderInsets);
   [self setNeedsLayout];
 }
 
@@ -272,6 +279,7 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 - (void)setPlaceholder:(NSString *)placeholder
 {
   _textView.placeholderText = placeholder;
+  [self setNeedsLayout];
 }
 
 - (UIColor *)placeholderTextColor
@@ -332,7 +340,7 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
                                          text:self.text
                                           key:nil
                                    eventCount:_nativeEventCount];
-      [self resignFirstResponder];
+      [_textView resignFirstResponder];
       return NO;
     }
   }
@@ -490,31 +498,12 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   _nativeUpdatesInFlight = NO;
   _nativeEventCount++;
 
-  // TODO: t16435709 This part will be removed soon.
   if (!self.reactTag || !_onChange) {
     return;
   }
 
-  // When the context size increases, iOS updates the contentSize twice; once
-  // with a lower height, then again with the correct height. To prevent a
-  // spurious event from being sent, we track the previous, and only send the
-  // update event if it matches our expectation that greater text length
-  // should result in increased height. This assumption is, of course, not
-  // necessarily true because shorter text might include more linebreaks, but
-  // in practice this works well enough.
-  NSUInteger textLength = textView.text.length;
-  CGFloat contentHeight = textView.contentSize.height;
-  if (textLength >= _previousTextLength) {
-    contentHeight = MAX(contentHeight, _previousContentHeight);
-  }
-  _previousTextLength = textLength;
-  _previousContentHeight = contentHeight;
   _onChange(@{
     @"text": self.text,
-    @"contentSize": @{
-      @"height": @(contentHeight),
-      @"width": @(textView.contentSize.width)
-    },
     @"target": self.reactTag,
     @"eventCount": @(_nativeEventCount),
   });
@@ -541,47 +530,39 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
                                eventCount:_nativeEventCount];
 }
 
-#pragma mark - UIResponder
+#pragma mark - Accessibility
 
-- (BOOL)isFirstResponder
+- (UIView *)reactAccessibilityElement
 {
-  return [_textView isFirstResponder];
+  return _textView;
 }
 
-- (BOOL)canBecomeFirstResponder
+#pragma mark - Focus control deledation
+
+- (void)reactFocus
 {
-  return [_textView canBecomeFirstResponder];
+  [_textView reactFocus];
 }
 
-- (void)reactWillMakeFirstResponder
+- (void)reactBlur
 {
-  [_textView reactWillMakeFirstResponder];
+  [_textView reactBlur];
 }
 
-- (BOOL)becomeFirstResponder
+- (void)didMoveToWindow
 {
-  return [_textView becomeFirstResponder];
+  [_textView reactFocusIfNeeded];
 }
 
-- (void)reactDidMakeFirstResponder
-{
-  [_textView reactDidMakeFirstResponder];
-}
-
-- (BOOL)resignFirstResponder
-{
-  [super resignFirstResponder];
-  return [_textView resignFirstResponder];
-}
-
-#pragma mark - Content Size
+#pragma mark - Content Size (in Yoga terms, without any insets)
 
 - (CGSize)contentSize
 {
-  // Returning value does NOT include insets.
+  // Returning value does NOT include border and padding insets.
   CGSize contentSize = self.intrinsicContentSize;
-  contentSize.width -= _contentInset.left + _contentInset.right;
-  contentSize.height -= _contentInset.top + _contentInset.bottom;
+  UIEdgeInsets compoundInsets = self.reactCompoundInsets;
+  contentSize.width -= compoundInsets.left + compoundInsets.right;
+  contentSize.height -= compoundInsets.top + compoundInsets.bottom;
   return contentSize;
 }
 
@@ -607,20 +588,33 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   }
 }
 
-#pragma mark - Layout
+#pragma mark - Layout (in UIKit terms, with all insets)
 
 - (CGSize)intrinsicContentSize
 {
   // Calling `sizeThatFits:` is probably more expensive method to compute
   // content size compare to direct access `_textView.contentSize` property,
   // but seems `sizeThatFits:` returns more reliable and consistent result.
-  // Returning value DOES include insets.
+  // Returning value DOES include border and padding insets.
   return [self sizeThatFits:CGSizeMake(self.bounds.size.width, INFINITY)];
 }
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-  return [_textView sizeThatFits:size];
+  CGFloat compoundHorizontalBorderInset = _reactBorderInsets.left + _reactBorderInsets.right;
+  CGFloat compoundVerticalBorderInset = _reactBorderInsets.top + _reactBorderInsets.bottom;
+
+  size.width -= compoundHorizontalBorderInset;
+  size.height -= compoundVerticalBorderInset;
+
+  // Note: `paddingInsets` already included in `_textView` size
+  // because it was applied as `textContainerInset`.
+  CGSize fittingSize = [_textView sizeThatFits:size];
+
+  fittingSize.width += compoundHorizontalBorderInset;
+  fittingSize.height += compoundVerticalBorderInset;
+
+  return fittingSize;
 }
 
 - (void)layoutSubviews

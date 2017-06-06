@@ -99,7 +99,14 @@ public class ReactAppTestActivity extends FragmentActivity implements
 
     if (mReactInstanceManager != null) {
       mReactInstanceManager.destroy();
+      mReactInstanceManager = null;
     }
+    if (mReactRootView != null) {
+      mReactRootView.unmountReactApplication();
+      mReactRootView = null;
+    }
+
+    mScreenshotingFrameLayout.clean();
   }
 
   public void waitForDestroy(long timeoutMs) throws InterruptedException {
@@ -127,8 +134,12 @@ public class ReactAppTestActivity extends FragmentActivity implements
       mReactInstanceManager.destroy();
       mReactInstanceManager = null;
     }
+    if (mReactRootView != null) {
+      mReactRootView.unmountReactApplication();
+    }
     mReactRootView = new ReactRootView(this);
     mScreenshotingFrameLayout.removeAllViews();
+    mScreenshotingFrameLayout.clean();
     mScreenshotingFrameLayout.addView(mReactRootView);
   }
 

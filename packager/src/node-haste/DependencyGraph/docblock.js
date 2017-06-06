@@ -5,6 +5,9 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
+ * @format
  */
 
 'use strict';
@@ -16,7 +19,7 @@ var ltrimRe = /^\s*/;
  * @param {String} contents
  * @return {String}
  */
-function extract(contents) {
+function extract(contents: string): string {
   var match = contents.match(docblockRe);
   if (match) {
     return match[0].replace(ltrimRe, '') || '';
@@ -24,20 +27,18 @@ function extract(contents) {
   return '';
 }
 
-
 var commentStartRe = /^\/\*\*/;
 var commentEndRe = /\*\/$/;
 var wsRe = /[\t ]+/g;
 var stringStartRe = /(\r?\n|^) *\*/g;
-var multilineRe =
-      /(?:^|\r?\n) *(@[^\r\n]*?) *\r?\n *([^@\r\n\s][^@\r\n]+?) *\r?\n/g;
+var multilineRe = /(?:^|\r?\n) *(@[^\r\n]*?) *\r?\n *([^@\r\n\s][^@\r\n]+?) *\r?\n/g;
 var propertyRe = /(?:^|\r?\n) *@(\S+) *([^\r\n]*)/g;
 
 /**
  * @param {String} contents
  * @return {Array}
  */
-function parse(docblock) {
+function parse(docblock: string): Array<[string, string]> {
   docblock = docblock
     .replace(commentStartRe, '')
     .replace(commentEndRe, '')
@@ -68,7 +69,7 @@ function parse(docblock) {
  * @param {String} contents
  * @return {Object}
  */
-function parseAsObject(docblock) {
+function parseAsObject(docblock: string): {[string]: string} {
   var pairs = parse(docblock);
   var result = {};
   for (var i = 0; i < pairs.length; i++) {
@@ -76,7 +77,6 @@ function parseAsObject(docblock) {
   }
   return result;
 }
-
 
 exports.extract = extract;
 exports.parse = parse;

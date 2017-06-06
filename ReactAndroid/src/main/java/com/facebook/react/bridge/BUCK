@@ -21,6 +21,7 @@ android_library(
         react_native_dep("java/com/facebook/proguard/annotations:annotations"),
         react_native_dep("third-party/java/jsr-330:jsr-330"),
     ],
+    proguard_config = "reactnative.pro",
     visibility = [
         "PUBLIC",
     ],
@@ -32,5 +33,7 @@ android_library(
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/module/model:model"),
+        react_native_target("jni/react/jni:jni"),
     ],
 )

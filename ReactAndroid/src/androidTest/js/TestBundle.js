@@ -70,6 +70,10 @@ var apps = [
   component: () => require('MultitouchHandlingTestAppModule')
 },
 {
+  appKey: 'NativeIdTestApp',
+  component: () => require('NativeIdTestModule').NativeIdTestApp
+},
+{
   appKey: 'PickerAndroidTestApp',
   component: () => require('PickerAndroidTestModule').PickerAndroidTestApp,
 },

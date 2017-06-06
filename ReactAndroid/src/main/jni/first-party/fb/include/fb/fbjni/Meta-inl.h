@@ -18,7 +18,7 @@
 #include "Boxed.h"
 
 #if defined(__ANDROID__)
-#include <sys/system_properties.h>
+#  include <fb/Build.h>
 #endif
 
 namespace facebook {
@@ -72,12 +72,8 @@ inline bool needsSlowPath(alias_ref<jobject> obj) {
   // So, when we detect that case we must use the safe, slow workaround. That is,
   // we resolve the method id to the corresponding java.lang.reflect.Method object
   // and make the call via it's invoke() method.
-  static auto android_sdk = ([] {
-     char sdk_version_str[PROP_VALUE_MAX];
-     __system_property_get("ro.build.version.sdk", sdk_version_str);
-     return atoi(sdk_version_str);
-  })();
-  static auto is_bad_android = android_sdk == 23;
+  static auto is_bad_android = build::Build::getAndroidSdk() == 23;
+
   if (!is_bad_android) return false;
   static auto proxy_class = findClassStatic("java/lang/reflect/Proxy");
   return obj->isInstanceOf(proxy_class);
@@ -100,7 +96,7 @@ inline void JMethod<void(Args...)>::operator()(alias_ref<jobject> self, Args... 
 
 #pragma push_macro("DEFINE_PRIMITIVE_CALL")
 #undef DEFINE_PRIMITIVE_CALL
-#define DEFINE_PRIMITIVE_CALL(TYPE, METHOD, CLASS)                                             \
+#define DEFINE_PRIMITIVE_CALL(TYPE, METHOD)                                                    \
 template<typename... Args>                                                                     \
 inline TYPE JMethod<TYPE(Args...)>::operator()(alias_ref<jobject> self, Args... args) {        \
   const auto env = internal::getEnv();                                                         \
@@ -112,14 +108,14 @@ inline TYPE JMethod<TYPE(Args...)>::operator()(alias_ref<jobject> self, Args... 
   return result;                                                                               \
 }
 
-DEFINE_PRIMITIVE_CALL(jboolean, Boolean, JBoolean)
-DEFINE_PRIMITIVE_CALL(jbyte, Byte, JByte)
-DEFINE_PRIMITIVE_CALL(jchar, Char, JCharacter)
-DEFINE_PRIMITIVE_CALL(jshort, Short, JShort)
-DEFINE_PRIMITIVE_CALL(jint, Int, JInteger)
-DEFINE_PRIMITIVE_CALL(jlong, Long, JLong)
-DEFINE_PRIMITIVE_CALL(jfloat, Float, JFloat)
-DEFINE_PRIMITIVE_CALL(jdouble, Double, JDouble)
+DEFINE_PRIMITIVE_CALL(jboolean, Boolean)
+DEFINE_PRIMITIVE_CALL(jbyte, Byte)
+DEFINE_PRIMITIVE_CALL(jchar, Char)
+DEFINE_PRIMITIVE_CALL(jshort, Short)
+DEFINE_PRIMITIVE_CALL(jint, Int)
+DEFINE_PRIMITIVE_CALL(jlong, Long)
+DEFINE_PRIMITIVE_CALL(jfloat, Float)
+DEFINE_PRIMITIVE_CALL(jdouble, Double)
 #pragma pop_macro("DEFINE_PRIMITIVE_CALL")
 
 /// JMethod specialization for references that wraps the return value in a @ref local_ref

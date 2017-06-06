@@ -25,7 +25,9 @@ class Blink extends Component {
 
     // Toggle the state every second
     setInterval(() => {
-      this.setState({ showText: !this.state.showText });
+      this.setState(previousState => {
+        return { showText: !previousState.showText };
+      });
     }, 1000);
   }
 
@@ -37,7 +39,7 @@ class Blink extends Component {
   }
 }
 
-class BlinkApp extends Component {
+export default class BlinkApp extends Component {
   render() {
     return (
       <View>
@@ -50,12 +52,13 @@ class BlinkApp extends Component {
   }
 }
 
-AppRegistry.registerComponent('BlinkApp', () => BlinkApp);
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => BlinkApp);
 ```
 
-In a real application, you probably won't be setting state with a timer. You might set state when you have new data arrive from the server, or from user input. You can also use a state container like [Redux](http://redux.js.org/index.html) to control your data flow. In that case you would use Redux to modify your state rather than calling `setState` directly. 
+In a real application, you probably won't be setting state with a timer. You might set state when you have new data arrive from the server, or from user input. You can also use a state container like [Redux](http://redux.js.org/index.html) to control your data flow. In that case you would use Redux to modify your state rather than calling `setState` directly.
 
 When setState is called, BlinkApp will re-render its Component. By calling setState within the Timer, the component will re-render every time the Timer ticks.
 
-State works the same way as it does in React, so for more details on handling state, you can look at the [React.Component API](https://facebook.github.io/react/docs/component-api.html). 
+State works the same way as it does in React, so for more details on handling state, you can look at the [React.Component API](https://facebook.github.io/react/docs/component-api.html).
 At this point, you might be annoyed that most of our examples so far use boring default black text. To make things more beautiful, you will have to [learn about Style](docs/style.html).
