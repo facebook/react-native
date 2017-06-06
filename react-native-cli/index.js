@@ -75,6 +75,7 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
     'package.json'
   );
 };
+checkForVersionArgument(options);
 
 if (options._.length === 0 && (options.v || options.version)) {
   printVersionsAndExit(REACT_NATIVE_PACKAGE_JSON_PATH());
