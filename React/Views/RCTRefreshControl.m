@@ -16,11 +16,8 @@
   BOOL _currentRefreshingState;
   NSString *_title;
   UIColor *_titleColor;
+  unsigned short _initialHeight;
 }
-
-static unsigned short defaultHeight;
-+(unsigned short) defaultHeight {return defaultHeight; }
-+(void) setDefaultHeight:(unsigned short) val { defaultHeight = val; }
 
 - (instancetype)init
 {
@@ -28,7 +25,7 @@ static unsigned short defaultHeight;
     [self addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
     _isInitialRender = true;
     _currentRefreshingState = false;
-    RCTRefreshControl.defaultHeight = self.frame.size.height;
+    _initialHeight = self.frame.size.height;
   }
   return self;
 }
@@ -55,9 +52,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)beginRefreshing
 {
-  // When using begin refreshing we need to adjust the ScrollView content offset manually.
   UIScrollView *scrollView = (UIScrollView *)self.superview;
-  CGPoint offset = {scrollView.contentOffset.x, scrollView.contentOffset.y - RCTRefreshControl.defaultHeight};
+  // When using begin refreshing we need to adjust the ScrollView content offset manually.
+  // the need for _initialHeight is explained in PR #14259
+  CGPoint offset = {scrollView.contentOffset.x, scrollView.contentOffset.y - _initialHeight};
   [scrollView setContentOffset:offset animated:YES];
   [super beginRefreshing];
 }
@@ -68,18 +66,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // endRefreshing otherwise the next pull to refresh will not work properly.
   UIScrollView *scrollView = (UIScrollView *)self.superview;
   if (scrollView.contentOffset.y < 0) {
-    CGPoint offset = {scrollView.contentOffset.x, -scrollView.contentInset.top};
-    [UIView animateWithDuration:0.25
-                          delay:0
-                        options:UIViewAnimationOptionBeginFromCurrentState
-                     animations:^(void) {
-                       [scrollView setContentOffset:offset];
-                     } completion:^(__unused BOOL finished) {
-                       [super endRefreshing];
-                     }];
-  } else {
-    [super endRefreshing];
+    CGPoint offset = {scrollView.contentOffset.x, 0};
+    [scrollView setContentOffset:offset animated:YES];
   }
+  [super endRefreshing];
 }
 
 - (NSString *)title
