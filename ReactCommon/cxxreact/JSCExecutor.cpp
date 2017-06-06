@@ -521,8 +521,7 @@ Value JSCExecutor::callFunctionSyncWithValue(
 void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {
   try {
     SystraceSection s("JSCExecutor::setGlobalVariable", "propName", propName);
-
-    auto valueToInject = Value::fromJSON(m_context, adoptString(std::move(jsonValue)));
+    auto valueToInject = Value::fromJSON(adoptString(std::move(jsonValue)));
     Object::getGlobalObject(m_context).setProperty(propName.c_str(), valueToInject);
   } catch (...) {
     std::throw_with_nested(std::runtime_error("Error setting global variable: " + propName));

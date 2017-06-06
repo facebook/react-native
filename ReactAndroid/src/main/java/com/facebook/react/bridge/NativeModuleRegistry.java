@@ -83,7 +83,7 @@ public class NativeModuleRegistry {
         "NativeModuleRegistry_notifyJSInstanceInitialized");
     try {
       for (ModuleHolder module : mModules.values()) {
-        module.initialize();
+        module.markInitializable();
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -93,7 +93,7 @@ public class NativeModuleRegistry {
 
   public void onBatchComplete() {
     for (ModuleHolder moduleHolder : mBatchCompleteListenerModules) {
-      if (moduleHolder.isInitialized()) {
+      if (moduleHolder.hasInstance()) {
         ((OnBatchCompleteListener) moduleHolder.getModule()).onBatchComplete();
       }
     }
