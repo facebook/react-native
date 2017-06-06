@@ -13,7 +13,6 @@
 
 const EventEmitter = require('EventEmitter');
 const EventSubscriptionVendor = require('EventSubscriptionVendor');
-const BatchedBridge = require('BatchedBridge');
 
 import type EmitterSubscription from 'EmitterSubscription';
 
@@ -70,11 +69,4 @@ class RCTDeviceEventEmitter extends EventEmitter {
   }
 }
 
-RCTDeviceEventEmitter = new RCTDeviceEventEmitter();
-
-BatchedBridge.registerCallableModule(
-  'RCTDeviceEventEmitter',
-  RCTDeviceEventEmitter
-);
-
-module.exports = RCTDeviceEventEmitter;
+module.exports = new RCTDeviceEventEmitter();
