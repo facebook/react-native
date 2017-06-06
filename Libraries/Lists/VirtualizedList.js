@@ -260,6 +260,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this._updateViewableItems(this.props.data);
   }
 
+  flashScrollIndicators() {
+    this._scrollRef.flashScrollIndicators();
+  }
+
   /**
    * Provides a handle to the underlying scroll responder.
    * Note that `this._scrollRef` might not be a `ScrollView`, so we

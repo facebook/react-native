@@ -343,6 +343,15 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
   }
 
   /**
+   * Displays the scroll indicators momentarily.
+   *
+   * @platform ios
+   */
+  flashScrollIndicators() {
+    this._listRef.flashScrollIndicators();
+  }
+
+  /**
    * Provides a handle to the underlying scroll responder.
    */
   getScrollResponder() {

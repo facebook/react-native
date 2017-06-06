@@ -284,6 +284,16 @@ class SectionList<SectionT: SectionBase<any>>
   }
 
   /**
+   * Displays the scroll indicators momentarily.
+   *
+   * @platform ios
+   */
+  flashScrollIndicators() {
+    const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
+    listRef && listRef.flashScrollIndicators();
+  }
+
+  /**
    * Provides a handle to the underlying scroll responder.
    */
   getScrollResponder() {
