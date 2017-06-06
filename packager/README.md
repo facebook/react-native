@@ -1,8 +1,5 @@
 # metro-bundler
 
-[![CircleCI Build Status](https://circleci.com/gh/facebook/metro-bundler.svg?style=shield)](https://circleci.com/gh/facebook/metro-bundler)
-[![npm version](https://badge.fury.io/js/metro-bundler.svg)](http://badge.fury.io/js/metro-bundler)
-
 🚇 The JavaScript bundler for React Native.
 
 - **🚅 Fast**: We aim for sub-second reload cycles, fast startup and quick bundling speeds.

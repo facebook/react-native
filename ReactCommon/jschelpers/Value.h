@@ -330,7 +330,7 @@ public:
   }
 
   RN_EXPORT std::string toJSONString(unsigned indent = 0) const;
-  RN_EXPORT static Value fromJSON(JSContextRef ctx, const String& json);
+  RN_EXPORT static Value fromJSON(const String& json);
   RN_EXPORT static Value fromDynamic(JSContextRef ctx, const folly::dynamic& value);
   RN_EXPORT JSContextRef context() const;
 

@@ -38,7 +38,8 @@ std::string Value::toJSONString(unsigned indent) const {
 }
 
 /* static */
-Value Value::fromJSON(JSContextRef ctx, const String& json) {
+Value Value::fromJSON(const String& json) {
+  JSContextRef ctx = json.context();
   auto result = JSC_JSValueMakeFromJSONString(ctx, json);
   if (!result) {
     throw JSException(folly::to<std::string>(
@@ -66,7 +67,7 @@ Value Value::fromDynamic(JSContextRef ctx, const folly::dynamic& value) {
   return Value(ctx, jsVal);
 #else
   auto json = folly::toJson(value);
-  return fromJSON(ctx, String(ctx, json.c_str()));
+  return fromJSON(String(ctx, json.c_str()));
 #endif
 }
 

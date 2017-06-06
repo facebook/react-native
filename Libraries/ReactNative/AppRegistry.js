@@ -21,12 +21,6 @@ const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const renderApplication = require('renderApplication');
 
-if (__DEV__) {
-  // In order to use Cmd+P to record/dump perf data, we need to make sure
-  // this module is available in the bundle
-  require('RCTRenderingPerf');
-}
-
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
 export type ComponentProvider = () => ReactClass<any>;
