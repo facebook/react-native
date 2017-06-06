@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.module.model.ReactModuleInfo;
-import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
@@ -170,8 +169,8 @@ public class ModuleHolder {
         doInitialize(module);
       }
     } finally {
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_MODULE_END, instanceKey);
+      SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
     return module;
   }
@@ -200,7 +199,7 @@ public class ModuleHolder {
       }
     } finally {
       ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_END);
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
   }
 }

@@ -1023,6 +1023,6 @@ public class ReactInstanceManager {
     if (reactPackage instanceof ReactPackageLogger) {
       ((ReactPackageLogger) reactPackage).endProcessPackage();
     }
-    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
   }
 }
