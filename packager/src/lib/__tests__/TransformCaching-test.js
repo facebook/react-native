@@ -88,7 +88,7 @@ describe('TransformCaching.FileBasedCache', () => {
       const {result} = args;
       const cachedResult = transformCache.readSync({
         ...args,
-        cacheOptions: {resetCache: false},
+        cacheOptions: {reporter: {}, resetCache: false},
       });
       expect(cachedResult.result).toEqual(result);
     });
@@ -121,7 +121,7 @@ describe('TransformCaching.FileBasedCache', () => {
       const {result} = args;
       const cachedResult = transformCache.readSync({
         ...args,
-        cacheOptions: {resetCache: false},
+        cacheOptions: {reporter: {}, resetCache: false},
       });
       expect(cachedResult.result).toEqual(result);
     });
@@ -129,7 +129,7 @@ describe('TransformCaching.FileBasedCache', () => {
     allCases.forEach(entry => {
       const cachedResult = transformCache.readSync({
         ...argsFor(entry),
-        cacheOptions: {resetCache: false},
+        cacheOptions: {reporter: {}, resetCache: false},
       });
       expect(cachedResult.result).toBeNull();
       expect(cachedResult.outdatedDependencies).toEqual(['foo', 'bar']);

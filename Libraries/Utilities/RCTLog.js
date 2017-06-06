@@ -11,8 +11,6 @@
  */
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-
 const invariant = require('fbjs/lib/invariant');
 
 const levelsMap = {
@@ -47,10 +45,5 @@ class RCTLog {
     return true;
   }
 }
-
-BatchedBridge.registerCallableModule(
-  'RCTLog',
-  RCTLog
-);
 
 module.exports = RCTLog;

@@ -169,14 +169,15 @@ class Inspector extends React.Component {
     // instance that contains it (like View)
     const {
       hierarchy,
-      instance,
       props,
       selection,
       source,
     } = renderer.getInspectorDataForViewTag(touchedViewTag);
 
     if (this.state.devtoolsAgent) {
-      this.state.devtoolsAgent.selectFromReactInstance(instance, true);
+      // Skip host leafs
+      const offsetFromLeaf = hierarchy.length - 1 - selection;
+      this.state.devtoolsAgent.selectFromDOMNode(touchedViewTag, true, offsetFromLeaf);
     }
 
     this.setState({

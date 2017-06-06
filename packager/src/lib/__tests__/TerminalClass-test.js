@@ -9,7 +9,7 @@
 
 'use strict';
 
-jest.dontMock('../terminal').dontMock('lodash/throttle');
+jest.dontMock('../TerminalClass').dontMock('lodash/throttle');
 
 jest.mock('readline', () => ({
   moveCursor: (stream, dx, dy) => {
@@ -27,14 +27,14 @@ jest.mock('readline', () => ({
   },
 }));
 
-describe('terminal', () => {
+describe('Terminal', () => {
 
   beforeEach(() => {
     jest.resetModules();
   });
 
   function prepare(isTTY) {
-    const {Terminal} = require('../terminal');
+    const Terminal = require('../TerminalClass');
     const lines = 10;
     const columns = 10;
     const stream = Object.create(

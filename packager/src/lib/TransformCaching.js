@@ -19,7 +19,6 @@ const invariant = require('fbjs/lib/invariant');
 const mkdirp = require('mkdirp');
 const path = require('path');
 const rimraf = require('rimraf');
-const terminal = require('../lib/terminal');
 const writeFileAtomicSync = require('write-file-atomic').sync;
 
 import type {Options as WorkerOptions} from '../JSTransformer/worker';
@@ -226,7 +225,7 @@ class FileBasedCache {
       lastCollected == null ||
       Date.now() - lastCollected > GARBAGE_COLLECTION_PERIOD
     ) {
-      this._collectSyncNoThrow();
+      this._collectSyncNoThrow(options.reporter);
     }
   }
 
@@ -241,15 +240,19 @@ class FileBasedCache {
    * We want to avoid preventing tool use if the cleanup fails for some reason,
    * but still provide some chance for people to report/fix things.
    */
-  _collectSyncNoThrow() {
+  _collectSyncNoThrow(reporter: Reporter) {
     try {
       this._collectCacheIfOldSync();
     } catch (error) {
-      terminal.log(error.stack);
-      terminal.log(
-        'Error: Cleaning up the cache folder failed. Continuing anyway.',
-      );
-      terminal.log('The cache folder is: %s', this._rootPath);
+      // FIXME: $FlowFixMe: this is a hack, only works for TerminalReporter
+      const {terminal} = reporter;
+      if (terminal != null) {
+        terminal.log(error.stack);
+        terminal.log(
+          'Error: Cleaning up the cache folder failed. Continuing anyway.',
+        );
+        terminal.log('The cache folder is: %s', this._rootPath);
+      }
     }
     this._lastCollected = Date.now();
   }
