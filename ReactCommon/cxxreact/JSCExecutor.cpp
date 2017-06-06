@@ -79,11 +79,13 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
         JSValueRef *exception) {
       try {
         auto executor = Object::getGlobalObject(ctx).getPrivate<JSCExecutor>();
-        return (executor->*method)(argumentCount, arguments);
+        if (executor && executor->getJavaScriptContext()) { // Executor not invalidated
+          return (executor->*method)(argumentCount, arguments);
+        }
       } catch (...) {
         *exception = translatePendingCppExceptionToJSError(ctx, function);
-        return Value::makeUndefined(ctx);
       }
+      return Value::makeUndefined(ctx);
     }
   };
 
@@ -100,11 +102,13 @@ inline JSObjectGetPropertyCallback exceptionWrapMethod() {
          JSValueRef *exception) {
       try {
         auto executor = Object::getGlobalObject(ctx).getPrivate<JSCExecutor>();
-        return (executor->*method)(object, propertyName);
+        if (executor && executor->getJavaScriptContext()) { // Executor not invalidated
+          return (executor->*method)(object, propertyName);
+        }
       } catch (...) {
         *exception = translatePendingCppExceptionToJSError(ctx, object);
-        return Value::makeUndefined(ctx);
       }
+      return Value::makeUndefined(ctx);
     }
   };
 
@@ -256,17 +260,19 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
 }
 
 void JSCExecutor::terminateOnJSVMThread() {
+  JSGlobalContextRef context = m_context;
+  m_context = nullptr;
+  Object::getGlobalObject(context).setPrivate(nullptr);
   m_nativeModules.reset();
 
 #ifdef WITH_INSPECTOR
-  if (canUseInspector(m_context)) {
+  if (canUseInspector(context)) {
     IInspector* pInspector = JSC_JSInspectorGetInstance(true);
-    pInspector->unregisterGlobalContext(m_context);
+    pInspector->unregisterGlobalContext(context);
   }
 #endif
 
-  JSC_JSGlobalContextRelease(m_context);
-  m_context = nullptr;
+  JSC_JSGlobalContextRelease(context);
 }
 
 #ifdef WITH_FBJSCEXTENSIONS
