@@ -45,6 +45,7 @@ const JSTimersExecution = {
   timerIDs: ([] : Array<?number>),
   immediates: [],
   requestIdleCallbacks: [],
+  requestIdleCallbackTimeouts: (new Map() : Map<number, number>),
   identifiers: ([] : Array<null | {methodName: string}>),
 
   errors: (null : ?Array<Error>),
@@ -54,7 +55,7 @@ const JSTimersExecution = {
    * if it was a one time timer (setTimeout), and not unregister it if it was
    * recurring (setInterval).
    */
-  callTimer(timerID: number, frameTime: number) {
+  callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
     warning(
       timerID <= JSTimersExecution.GUID,
       'Tried to call timer with ID %s but no such timer exists.',
@@ -103,6 +104,7 @@ const JSTimersExecution = {
             // would require a way to check the bridge queue synchronously.
             return Math.max(0, FRAME_DURATION - (performanceNow() - frameTime));
           },
+          didTimeout: !!didTimeout,
         });
       } else {
         console.error('Tried to call a callback with invalid type: ' + type);
@@ -185,7 +187,9 @@ const JSTimersExecution = {
    * more immediates are queued up (can be used as a condition a while loop).
    */
   callImmediatesPass() {
-    Systrace.beginEvent('JSTimersExecution.callImmediatesPass()');
+    if (__DEV__) {
+      Systrace.beginEvent('JSTimersExecution.callImmediatesPass()');
+    }
 
     // The main reason to extract a single pass is so that we can track
     // in the system trace
@@ -200,8 +204,9 @@ const JSTimersExecution = {
       }
     }
 
-    Systrace.endEvent();
-
+    if (__DEV__) {
+      Systrace.endEvent();
+    }
     return JSTimersExecution.immediates.length > 0;
   },
 

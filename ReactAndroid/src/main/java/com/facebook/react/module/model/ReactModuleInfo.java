@@ -10,19 +10,16 @@ public class ReactModuleInfo {
 
   private final String mName;
   private final boolean mCanOverrideExistingModule;
-  private final boolean mSupportsWebWorkers;
   private final boolean mNeedsEagerInit;
   private final boolean mHasConstants;
 
   public ReactModuleInfo(
     String name,
     boolean canOverrideExistingModule,
-    boolean supportsWebWorkers,
     boolean needsEagerInit,
     boolean hasConstants) {
     mName = name;
     mCanOverrideExistingModule = canOverrideExistingModule;
-    mSupportsWebWorkers = supportsWebWorkers;
     mNeedsEagerInit = needsEagerInit;
     mHasConstants = hasConstants;
   }
@@ -33,10 +30,6 @@ public class ReactModuleInfo {
 
   public boolean canOverrideExistingModule() {
     return mCanOverrideExistingModule;
-  }
-
-  public boolean supportsWebWorkers() {
-    return mSupportsWebWorkers;
   }
 
   public boolean needsEagerInit() {

@@ -21,7 +21,7 @@ See the official [React Native website](https://facebook.github.io/react-native/
 ## Getting Started
 
 - Follow the [Getting Started guide](https://facebook.github.io/react-native/docs/getting-started.html) to install React Native and its dependencies.
-- [Open the UIExplorer example project](#examples) to see a list of components that ship with React Native.
+- [Open the RNTester app](#examples) to see a list of components that ship with React Native.
 - Install the React Developer Tools for [Chrome](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) or [Firefox](https://addons.mozilla.org/firefox/addon/react-devtools/) for better debugging [(read more)](https://facebook.github.io/react-native/docs/debugging.html).
 - Try out apps from the [Showcase](https://facebook.github.io/react-native/showcase.html) to see what React Native is capable of!
 
@@ -40,11 +40,11 @@ Please use these community resources for getting help. We use the GitHub issues 
 
 [The website’s documentation](https://facebook.github.io/react-native/docs/) is divided into multiple sections.
 - There are **Guides** that discuss topics like [debugging](https://facebook.github.io/react-native/docs/debugging.html), [integrating with existing apps](https://facebook.github.io/react-native/docs/integration-with-existing-apps.html), and [the gesture responder system](https://facebook.github.io/react-native/docs/gesture-responder-system.html).
-- The **Components** section covers React components such as [`View`](https://facebook.github.io/react-native/docs/view.html) and [`Navigator`](https://facebook.github.io/react-native/docs/navigator.html).
+- The **Components** section covers React components such as [`View`](https://facebook.github.io/react-native/docs/view.html) and [`Button`](https://facebook.github.io/react-native/docs/button.html).
 - The **APIs** section covers other libraries like [Animated](https://facebook.github.io/react-native/docs/animated.html) and [StyleSheet](https://facebook.github.io/react-native/docs/stylesheet.html) that aren’t React components themselves.
 - Finally, React Native provides a small number of **Polyfills** that offer web-like APIs.
 
-Another great way to learn more about the components and APIs included with React Native is to read their source. Look under the `Libraries` directory for components like `ScrollView` and `Navigator`, for example. The UIExplorer example is also here to demonstrate some of the ways to use these components. From the source you can get an accurate understanding of each component’s behavior and API.
+Another great way to learn more about the components and APIs included with React Native is to read their source. Look under the `Libraries/Components` directory for components like `ScrollView` and `TextInput`, for example. The RNTester example is also here to demonstrate some of the ways to use these components. From the source you can get an accurate understanding of each component’s behavior and API.
 
 The React Native documentation only discusses the components, APIs and topics specific to React Native (React on iOS and Android). For further documentation on the React API that is shared between React Native and React DOM, refer to the [React documentation](https://facebook.github.io/react/).
 
@@ -53,19 +53,18 @@ The React Native documentation only discusses the components, APIs and topics sp
 - `git clone https://github.com/facebook/react-native.git`
 - `cd react-native && npm install`
 
-### Running the examples on iOS
+### Running the RNTester app on iOS
 
-Now open any example (the `.xcodeproj` file in each of the `Examples` subdirectories) and hit Run in Xcode.
+Now open `RNTester/RNTester.xcodeproj` and hit Run in Xcode.
 
-### Running the examples on Android
+### Running the RNTester app on Android
 
 Note that you'll need the Android NDK installed, see [prerequisites](https://github.com/facebook/react-native/blob/master/ReactAndroid/README.md#prerequisites).
 
 ```bash
-./gradlew :Examples:Movies:android:app:installDebug
+./gradlew :RNTester:android:app:installDebug
 # Start the packager in a separate shell (make sure you ran npm install):
-./packager/packager.sh
-# Open the Movies app in your emulator
+./scripts/packager.sh
 ```
 
 ## Extending React Native

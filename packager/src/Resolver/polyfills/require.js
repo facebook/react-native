@@ -177,6 +177,7 @@ function loadModuleImplementation(moduleId, module) {
     if (!__DEV__) {
       // $FlowFixMe: This is only sound because we never access `factory` again
       module.factory = undefined;
+      module.dependencyMap = undefined;
     }
 
     if (__DEV__) {

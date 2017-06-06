@@ -27,10 +27,10 @@ import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
-import com.facebook.react.cxxbridge.CatalystInstanceImpl;
-import com.facebook.react.cxxbridge.JSBundleLoader;
-import com.facebook.react.cxxbridge.JSCJavaScriptExecutor;
-import com.facebook.react.cxxbridge.JavaScriptExecutor;
+import com.facebook.react.bridge.CatalystInstanceImpl;
+import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JSCJavaScriptExecutor;
+import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.modules.core.ReactChoreographer;
 
 import com.android.internal.util.Predicate;
@@ -89,8 +89,9 @@ public class ReactTestHelper {
           .setRegistry(mNativeModuleRegistryBuilder.build())
           .setJSModuleRegistry(mJSModuleRegistryBuilder.build())
           .setJSBundleLoader(JSBundleLoader.createAssetLoader(
-                               mContext,
-                               "assets://AndroidTestBundle.js"))
+              mContext,
+              "assets://AndroidTestBundle.js",
+              false/* Asynchronous */))
           .setNativeModuleCallExceptionHandler(
             new NativeModuleCallExceptionHandler() {
                 @Override

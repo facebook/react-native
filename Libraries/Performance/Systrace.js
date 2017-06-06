@@ -32,28 +32,32 @@ let _asyncCookie = 0;
 
 const ReactSystraceDevtool = __DEV__ ? {
   onBeforeMountComponent(debugID) {
-    const displayName = require('react/lib/ReactComponentTreeHook').getDisplayName(debugID);
+    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
+    const displayName = ReactComponentTreeHook.getDisplayName(debugID);
     Systrace.beginEvent(`ReactReconciler.mountComponent(${displayName})`);
   },
   onMountComponent(debugID) {
     Systrace.endEvent();
   },
   onBeforeUpdateComponent(debugID) {
-    const displayName = require('react/lib/ReactComponentTreeHook').getDisplayName(debugID);
+    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
+    const displayName = ReactComponentTreeHook.getDisplayName(debugID);
     Systrace.beginEvent(`ReactReconciler.updateComponent(${displayName})`);
   },
   onUpdateComponent(debugID) {
     Systrace.endEvent();
   },
   onBeforeUnmountComponent(debugID) {
-    const displayName = require('react/lib/ReactComponentTreeHook').getDisplayName(debugID);
+    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
+    const displayName = ReactComponentTreeHook.getDisplayName(debugID);
     Systrace.beginEvent(`ReactReconciler.unmountComponent(${displayName})`);
   },
   onUnmountComponent(debugID) {
     Systrace.endEvent();
   },
   onBeginLifeCycleTimer(debugID, timerType) {
-    const displayName = require('react/lib/ReactComponentTreeHook').getDisplayName(debugID);
+    const ReactComponentTreeHook = require('ReactGlobalSharedState').ReactComponentTreeHook;
+    const displayName = ReactComponentTreeHook.getDisplayName(debugID);
     Systrace.beginEvent(`${displayName}.${timerType}()`);
   },
   onEndLifeCycleTimer(debugID, timerType) {
@@ -75,6 +79,10 @@ const Systrace = {
       }
       _enabled = enabled;
     }
+  },
+
+  isEnabled(): boolean {
+    return _enabled;
   },
 
   /**

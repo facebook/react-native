@@ -22,14 +22,21 @@ import type {Props as VirtualizedSectionListProps} from 'VirtualizedSectionList'
 type Item = any;
 
 type SectionBase<SectionItemT> = {
-  // Must be provided directly on each section.
-  data: Array<SectionItemT>,
-  key: string,
+  /**
+   * The data for rendering items in this section.
+   */
+  data: $ReadOnlyArray<SectionItemT>,
+  /**
+   * Optional key to keep track of section re-ordering. If you don't plan on re-ordering sections,
+   * the array index will be used by default.
+   */
+  key?: string,
 
   // Optional props will override list-wide props just for this section.
   renderItem?: ?(info: {
     item: SectionItemT,
     index: number,
+    section: SectionBase<SectionItemT>,
     separators: {
       highlight: () => void,
       unhighlight: () => void,
@@ -49,14 +56,13 @@ type RequiredProps<SectionT: SectionBase<any>> = {
    *
    * General shape:
    *
-   *     sections: Array<{
-   *       data: Array<SectionItem>,
-   *       key: string,
+   *     sections: $ReadOnlyArray<{
+   *       data: $ReadOnlyArray<SectionItem>,
    *       renderItem?: ({item: SectionItem, ...}) => ?React.Element<*>,
    *       ItemSeparatorComponent?: ?ReactClass<{highlighted: boolean, ...}>,
    *     }>
    */
-  sections: Array<SectionT>,
+  sections: $ReadOnlyArray<SectionT>,
 };
 
 type OptionalProps<SectionT: SectionBase<any>> = {
@@ -66,6 +72,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   renderItem: (info: {
     item: Item,
     index: number,
+    section: SectionT,
     separators: {
       highlight: () => void,
       unhighlight: () => void,
@@ -73,23 +80,33 @@ type OptionalProps<SectionT: SectionBase<any>> = {
     },
   }) => ?React.Element<any>,
   /**
-   * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
-   * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`
-   * which will update the `highlighted` prop, but you can also add custom props with
-   * `separators.updateProps`.
+   * Rendered in between each item, but not at the top or bottom. By default, `highlighted`,
+   * `section`, and `[leading/trailing][Item/Separator]` props are provided. `renderItem` provides
+   * `separators.highlight`/`unhighlight` which will update the `highlighted` prop, but you can also
+   * add custom props with `separators.updateProps`.
    */
   ItemSeparatorComponent?: ?ReactClass<any>,
   /**
-   * Rendered at the very beginning of the list.
+   * Rendered at the very beginning of the list. Can be a React Component Class, a render function, or
+   * a rendered element.
    */
   ListHeaderComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
-   * Rendered at the very end of the list.
+   * Rendered when the list is empty. Can be a React Component Class, a render function, or
+   * a rendered element.
+   */
+  ListEmptyComponent?: ?(ReactClass<any> | React.Element<any>),
+  /**
+   * Rendered at the very end of the list. Can be a React Component Class, a render function, or
+   * a rendered element.
    */
   ListFooterComponent?: ?(ReactClass<any> | React.Element<any>),
   /**
-   * Rendered in between each section. Also receives `highlighted`, `leadingItem`, and any custom
-   * props from `separators.updateProps`.
+   * Rendered at the top and bottom of each section (note this is different from
+   * `ItemSeparatorComponent` which is only rendered between items). These are intended to separate
+   * sections from the headers above and below and typically have the same highlight response as
+   * `ItemSeparatorComponent`. Also receives `highlighted`, `[leading/trailing][Item/Separator]`,
+   * and any custom props from `separators.updateProps`.
    */
   SectionSeparatorComponent?: ?ReactClass<any>,
   /**
@@ -152,6 +169,10 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    */
   renderSectionHeader?: ?(info: {section: SectionT}) => ?React.Element<any>,
   /**
+   * Rendered at the bottom of each section.
+   */
+  renderSectionFooter?: ?(info: {section: SectionT}) => ?React.Element<any>,
+  /**
    * Makes section headers stick to the top of the screen until the next one pushes it off. Only
    * enabled by default on iOS because that is the platform standard there.
    */
@@ -192,19 +213,19 @@ type DefaultProps = typeof defaultProps;
  *
  *     <SectionList
  *       renderItem={({item}) => <ListItem title={item.title} />}
- *       renderSectionHeader={({section}) => <H1 title={section.key} />}
+ *       renderSectionHeader={({section}) => <H1 title={section.title} />}
  *       sections={[ // homogenous rendering between sections
- *         {data: [...], key: ...},
- *         {data: [...], key: ...},
- *         {data: [...], key: ...},
+ *         {data: [...], title: ...},
+ *         {data: [...], title: ...},
+ *         {data: [...], title: ...},
  *       ]}
  *     />
  *
  *     <SectionList
  *       sections={[ // heterogeneous rendering between sections
- *         {data: [...], key: ..., renderItem: ...},
- *         {data: [...], key: ..., renderItem: ...},
- *         {data: [...], key: ..., renderItem: ...},
+ *         {data: [...], title: ..., renderItem: ...},
+ *         {data: [...], title: ..., renderItem: ...},
+ *         {data: [...], title: ..., renderItem: ...},
  *       ]}
  *     />
  *
@@ -219,7 +240,7 @@ type DefaultProps = typeof defaultProps;
  *   (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on
  *   changes. This includes the `data` prop and parent component state.
  * - In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
- *   offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
+ *   offscreen. This means it's possible to scroll faster than the fill rate and momentarily see
  *   blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
  *   and we are working on improving it behind the scenes.
  * - By default, the list looks for a `key` prop on each item and uses that for the React key.

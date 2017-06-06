@@ -41,7 +41,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  * import React, { Component } from 'react';
  * import { AppRegistry, View, Image } from 'react-native';
  *
- * class DisplayAnImage extends Component {
+ * export default class DisplayAnImage extends Component {
  *   render() {
  *     return (
  *       <View>
@@ -57,7 +57,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *   }
  * }
  *
- * // App registration and rendering
+ * // skip this line if using Create React Native App
  * AppRegistry.registerComponent('DisplayAnImage', () => DisplayAnImage);
  * ```
  *
@@ -74,7 +74,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *   }
  * });
  *
- * class DisplayAnImageWithStyle extends Component {
+ * export default class DisplayAnImageWithStyle extends Component {
  *   render() {
  *     return (
  *       <View>
@@ -87,7 +87,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *   }
  * }
  *
- * // App registration and rendering
+ * // skip these lines if using Create React Native App
  * AppRegistry.registerComponent(
  *   'DisplayAnImageWithStyle',
  *   () => DisplayAnImageWithStyle
@@ -96,7 +96,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *
  * ### GIF and WebP support on Android
  *
- * By default, GIF and WebP are not supported on Android.
+ * When building your own native code, GIF and WebP are not supported by default on Android.
  *
  * You will need to add some optional modules in `android/app/build.gradle`, depending on the needs of your app.
  *
@@ -142,6 +142,9 @@ const Image = React.createClass({
      * The native side will then choose the best `uri` to display based on the
      * measured size of the image container. A `cache` property can be added to
      * control how networked request interacts with the local cache.
+     *
+     * The currently supported formats are `png`, `jpg`, `jpeg`, `bmp`, `gif`,
+     * `webp` (Android only), `psd` (iOS only).
      */
     source: ImageSourcePropType,
     /**
@@ -181,7 +184,6 @@ const Image = React.createClass({
     accessibilityLabel: PropTypes.node,
     /**
     * blurRadius: the blur radius of the blur filter added to the image
-    * @platform ios
     */
     blurRadius: PropTypes.number,
     /**

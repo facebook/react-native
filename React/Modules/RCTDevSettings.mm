@@ -141,6 +141,7 @@ RCT_EXPORT_MODULE()
 {
   if (self = [super init]) {
     _dataSource = dataSource;
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(jsLoaded:)
                                                  name:RCTJavaScriptDidLoadNotification
@@ -149,10 +150,16 @@ RCT_EXPORT_MODULE()
     // Delay setup until after Bridge init
     dispatch_async(dispatch_get_main_queue(), ^{
       [self _synchronizeAllSettings];
-      [self _configurePackagerConnection];
     });
   }
   return self;
+}
+
+- (void)setBridge:(RCTBridge *)bridge
+{
+  RCTAssert(_bridge == nil, @"RCTDevSettings module should not be reused");
+  _bridge = bridge;
+  [self _configurePackagerConnection];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -385,6 +392,20 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   }
 }
 
+#if ENABLE_PACKAGER_CONNECTION
+
+- (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
+{
+  RCTAssert(_packagerConnection, @"Expected packager connection");
+  [_packagerConnection addHandler:handler forMethod:name];
+}
+
+#elif RCT_DEV
+
+- (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name {}
+
+#endif
+
 #pragma mark - Internal
 
 - (void)_configurePackagerConnection
@@ -395,7 +416,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   }
 
   _packagerConnection = [[RCTPackagerConnection alloc] initWithBridge:_bridge];
-  [_packagerConnection connect];
 #endif
 }
 

@@ -14,7 +14,7 @@
 const chalk = require('chalk');
 const util = require('util');
 
-import type {Terminal} from './terminal';
+import type Terminal from './TerminalClass';
 
 export type GlobalCacheDisabledReason = 'too_many_errors' | 'too_many_misses';
 
@@ -24,7 +24,7 @@ export type GlobalCacheDisabledReason = 'too_many_errors' | 'too_many_misses';
  */
 export type ReportableEvent = {
   port: number,
-  projectRoots: Array<string>,
+  projectRoots: $ReadOnlyArray<string>,
   type: 'initialize_packager_started',
 } | {
   type: 'initialize_packager_done',
@@ -33,22 +33,25 @@ export type ReportableEvent = {
   port: number,
   error: Error,
 } | {
-  entryFilePath: string,
+  buildID: string,
   type: 'bundle_build_done',
 } | {
-  entryFilePath: string,
-  error: Error,
+  buildID: string,
   type: 'bundle_build_failed',
 } | {
+  buildID: string,
   entryFilePath: string,
   type: 'bundle_build_started',
+} | {
+  error: Error,
+  type: 'bundling_error',
 } | {
   type: 'dep_graph_loading',
 } | {
   type: 'dep_graph_loaded',
 } | {
+  buildID: string,
   type: 'bundle_transform_progressed',
-  entryFilePath: string,
   transformedFileCount: number,
   totalFileCount: number,
 } | {
@@ -59,6 +62,12 @@ export type ReportableEvent = {
   reason: GlobalCacheDisabledReason,
 } | {
   type: 'transform_cache_reset',
+} | {
+  type: 'worker_stdout_chunk',
+  chunk: string,
+} | {
+  type: 'worker_stderr_chunk',
+  chunk: string,
 };
 
 /**

@@ -57,6 +57,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     return new ReadableNativeMapKeySetIterator(this);
   }
 
+  @Override
   public HashMap<String, Object> toHashMap() {
     ReadableMapKeySetIterator iterator = keySetIterator();
     HashMap<String, Object> hashMap = new HashMap<>();

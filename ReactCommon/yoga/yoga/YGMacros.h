@@ -24,7 +24,7 @@
 #endif
 
 #ifdef WINARMDLL
-#define WIN_STRUCT(type) type*
+#define WIN_STRUCT(type) type *
 #define WIN_STRUCT_REF(value) &value
 #else
 #define WIN_STRUCT(type) type
@@ -33,20 +33,6 @@
 
 #ifndef FB_ASSERTIONS_ENABLED
 #define FB_ASSERTIONS_ENABLED 1
-#endif
-
-#if FB_ASSERTIONS_ENABLED
-#define YG_ABORT() abort()
-#else
-#define YG_ABORT()
-#endif
-
-#ifndef YG_ASSERT
-#define YG_ASSERT(X, message)              \
-  if (!(X)) {                              \
-    YGLog(YGLogLevelError, "%s", message); \
-    YG_ABORT();                            \
-  }
 #endif
 
 #ifdef NS_ENUM
