@@ -42,6 +42,13 @@ public class HeadlessJsTaskContext {
     return helper;
   }
 
+  /**
+   * remove ReactContext instance
+   */
+  public static void clear(){
+    INSTANCES.clear();
+  }
+
   private final WeakReference<ReactContext> mReactContext;
   private final Set<HeadlessJsTaskEventListener> mHeadlessJsTaskEventListeners =
     new CopyOnWriteArraySet<>();
