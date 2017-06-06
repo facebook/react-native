@@ -9,6 +9,7 @@
 
 package com.facebook.react.modules.network;
 
+import android.net.Uri;
 import android.util.Base64;
 
 import com.facebook.react.bridge.Arguments;
@@ -170,13 +171,31 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       final boolean useIncrementalUpdates,
       int timeout,
       boolean withCredentials) {
+
+    final RCTDeviceEventEmitter eventEmitter = getEventEmitter();
+
+    try {
+      Uri uri = Uri.parse(url);
+      String scheme = uri.getScheme();
+      boolean isRemote = scheme.equals("http") || scheme.equals("https");
+
+      if (!isRemote && responseType.equals("blob")) {
+        WritableMap blob = BlobModule.fetch(uri, getReactApplicationContext());
+        ResponseUtil.onDataReceived(eventEmitter, requestId, blob);
+        ResponseUtil.onRequestSuccess(eventEmitter, requestId);
+        return;
+      }
+    } catch (IOException e) {
+      ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+      return;
+    }
+
     Request.Builder requestBuilder = new Request.Builder().url(url);
 
     if (requestId != 0) {
       requestBuilder.tag(requestId);
     }
 
-    final RCTDeviceEventEmitter eventEmitter = getEventEmitter();
     OkHttpClient.Builder clientBuilder = mClient.newBuilder();
 
     if (!withCredentials) {

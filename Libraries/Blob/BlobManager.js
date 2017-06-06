@@ -14,12 +14,10 @@
 
 const uuid = require('uuid');
 const Blob = require('Blob');
-const File = require('File');
 const BlobRegistry = require('BlobRegistry');
 const { BlobModule } = require('NativeModules');
 
 import type { BlobData, BlobOptions } from './BlobTypes';
-import {map} from 'async';
 
 /**
  * Module to manage blobs
@@ -75,21 +73,6 @@ class BlobManager {
   }
 
   /**
-   * Create file instance from a local content URI
-   */
-  static async createFromURI(uri: string, options?: { type: string }): Promise<File> {
-    const blob = await BlobModule.createFromURI(uri);
-
-    BlobRegistry.register(blob.blobId);
-
-    if (options && typeof options.type === 'string') {
-      blob.type = options.type;
-    }
-
-    return Object.assign(Object.create(File.prototype), { data: blob });
-  }
-
-  /**
    * Deallocate resources for a blob.
    */
   static release(blobId: string) {
@@ -97,13 +80,6 @@ class BlobManager {
     if (BlobRegistry.has(blobId)) {
       return;
     }
-    BlobModule.release(blobId);
-  }
-
-  /**
-   * Deallocate resources for a all related blobs, including sliced ones.
-   */
-  static releaseAll(blobId: string) {
     BlobModule.release(blobId);
   }
 }

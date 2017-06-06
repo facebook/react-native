@@ -10,6 +10,7 @@
 package com.facebook.react.modules.blob;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
@@ -18,7 +19,6 @@ import android.support.annotation.Nullable;
 import android.webkit.MimeTypeMap;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -122,8 +122,25 @@ public class BlobModule extends ReactContextBaseJavaModule {
     return resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
   }
 
-  private byte[] getBytesFromUri(Uri contentUri) throws IOException {
-    ContentResolver resolver = getReactApplicationContext().getContentResolver();
+  public static WritableMap fetch(Uri uri, Context context) throws IOException {
+    ContentResolver resolver = context.getContentResolver();
+
+    byte[] data = getBytesFromUri(uri, resolver);
+
+    WritableMap blob = Arguments.createMap();
+    blob.putString("blobId", store(data));
+    blob.putInt("offset", 0);
+    blob.putInt("size", data.length);
+    blob.putString("type", getMimeTypeFromUri(uri, resolver));
+
+    // Needed for files
+    blob.putString("name", getNameFromUri(uri, resolver));
+    blob.putDouble("lastModified", getLastModifiedFromUri(uri));
+
+    return blob;
+  }
+
+  private static byte[] getBytesFromUri(Uri contentUri, ContentResolver resolver) throws IOException {
     InputStream is = resolver.openInputStream(contentUri);
 
     if (is == null) {
@@ -140,12 +157,12 @@ public class BlobModule extends ReactContextBaseJavaModule {
     return byteBuffer.toByteArray();
   }
 
-  private String getNameFromUri(Uri contentUri) {
+  private static String getNameFromUri(Uri contentUri, ContentResolver resolver) {
     if (contentUri.getScheme().equals("file")) {
       return contentUri.getLastPathSegment();
     }
     String[] projection = {MediaStore.MediaColumns.DISPLAY_NAME};
-    Cursor metaCursor = getReactApplicationContext().getContentResolver().query(contentUri, projection, null, null, null);
+    Cursor metaCursor = resolver.query(contentUri, projection, null, null, null);
     if (metaCursor != null) {
       try {
         if (metaCursor.moveToFirst()) {
@@ -158,15 +175,14 @@ public class BlobModule extends ReactContextBaseJavaModule {
     return contentUri.getLastPathSegment();
   }
 
-  private long getLastModifiedFromUri(Uri contentUri) {
+  private static long getLastModifiedFromUri(Uri contentUri) {
     if (contentUri.getScheme().equals("file")) {
       return new File(contentUri.toString()).lastModified();
     }
     return 0;
   }
 
-  private String getMimeTypeFromUri(Uri contentUri) {
-    ContentResolver resolver = getReactApplicationContext().getContentResolver();
+  private static String getMimeTypeFromUri(Uri contentUri, ContentResolver resolver) {
     String type = resolver.getType(contentUri);
 
     if (type == null) {
@@ -209,28 +225,6 @@ public class BlobModule extends ReactContextBaseJavaModule {
       buffer.put(bytes);
     }
     store(buffer.array(), blobId);
-  }
-
-  @ReactMethod
-  public void createFromURI(String path, Promise promise) {
-    try {
-      Uri uri = Uri.parse(path);
-      byte[] data = getBytesFromUri(uri);
-
-      WritableMap blob = Arguments.createMap();
-      blob.putString("blobId", store(data));
-      blob.putInt("offset", 0);
-      blob.putInt("size", data.length);
-      blob.putString("type", getMimeTypeFromUri(uri));
-
-      // Needed for files
-      blob.putString("name", getNameFromUri(uri));
-      blob.putDouble("lastModified", getLastModifiedFromUri(uri));
-
-      promise.resolve(blob);
-    } catch (Exception e) {
-      promise.reject(e);
-    }
   }
 
   @ReactMethod
