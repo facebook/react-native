@@ -461,7 +461,7 @@ BOOL RCTLinkingIOSOpenUrl(NSURL *URL)
     if (RCTRunningInAppExtension()) {
         return false;
     }
-    return [RCTSharedApplication() performSelector:@selector(openURL) withObject: URL];
+    return [RCTSharedApplication() performSelector:@selector(openURL:) withObject: URL];
 }
 
 BOOL RCTLinkingIOSCanOpenUrl(NSURL *URL)
@@ -469,7 +469,7 @@ BOOL RCTLinkingIOSCanOpenUrl(NSURL *URL)
       if (RCTRunningInAppExtension()) {
         return false;
       }
-  return [RCTSharedApplication() performSelector:@selector(canOpenURL) withObject: URL];
+    return [RCTSharedApplication() performSelector:@selector(canOpenURL:) withObject: URL];
 }
 
 UIApplication *__nullable RCTSharedApplication(void)
