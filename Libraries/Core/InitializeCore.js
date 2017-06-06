@@ -213,12 +213,12 @@ if (__DEV__) {
     }
 
     require('RCTDebugComponentOwnership');
-  }
-}
 
-// Set up inspector
-if (__DEV__) {
-  if (!global.__RCTProfileIsProfiling) {
+    // In order to use Cmd+P to record/dump perf data, we need to make sure
+    // this module is available in the bundle
+    require('RCTRenderingPerf');
+
+    // Set up inspector
     const JSInspector = require('JSInspector');
     JSInspector.registerAgent(require('NetworkAgent'));
   }
