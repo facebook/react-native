@@ -9,6 +9,19 @@
 
 package com.facebook.react.devsupport;
 
+import javax.annotation.Nullable;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -34,8 +47,8 @@ import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.DebugServerException;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
@@ -44,22 +57,8 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
-import com.facebook.react.packagerconnection.JSPackagerClient;
-import com.facebook.react.packagerconnection.Responder;
 import com.facebook.react.packagerconnection.RequestHandler;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import javax.annotation.Nullable;
+import com.facebook.react.packagerconnection.Responder;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -172,13 +171,15 @@ public class DevSupportManagerImpl implements
     Context applicationContext,
     ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
     @Nullable String packagerPathForJSBundleName,
-    boolean enableOnCreate) {
+    boolean enableOnCreate,
+    int minNumShakes) {
 
     this(applicationContext,
       reactInstanceCommandsHandler,
       packagerPathForJSBundleName,
       enableOnCreate,
-      null);
+      null,
+      minNumShakes);
   }
 
   public DevSupportManagerImpl(
@@ -186,8 +187,8 @@ public class DevSupportManagerImpl implements
       ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
-      @Nullable RedBoxHandler redBoxHandler) {
-
+      @Nullable RedBoxHandler redBoxHandler,
+      int minNumShakes) {
     mReactInstanceCommandsHandler = reactInstanceCommandsHandler;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
@@ -200,7 +201,7 @@ public class DevSupportManagerImpl implements
       public void onShake() {
         showDevOptionsDialog();
       }
-    });
+    }, minNumShakes);
 
     // Prepare reload APP broadcast receiver (will be registered/unregistered from #reload)
     mReloadAppBroadcastReceiver = new BroadcastReceiver() {
