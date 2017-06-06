@@ -11,7 +11,7 @@
 'use strict';
 
 const babel = require('babel-core');
-const babelRegisterOnly = require('../packager/src/babelRegisterOnly');
+const babelRegisterOnly = require('metro-bundler/build/babelRegisterOnly');
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
 const path = require('path');
 
@@ -23,7 +23,7 @@ const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
 babelRegisterOnly([]);
 // has to be required after setting up babelRegisterOnly
-const transformer = require('../packager/src/transformer.js');
+const transformer = require('metro-bundler/build/transformer.js');
 
 module.exports = {
   process(src/*: string*/, file/*: string*/) {
