@@ -12,8 +12,6 @@
 
 'use strict';
 
-const TransformCache = require('../lib/TransformCache');
-
 const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
 const fs = require('fs');
@@ -26,11 +24,14 @@ const {join: joinPath, relative: relativePath, extname} = require('path');
 import type {
   TransformedCode,
   Options as WorkerOptions,
-} from '../JSTransformer/worker/worker';
+} from '../JSTransformer/worker';
 import type {GlobalTransformCache} from '../lib/GlobalTransformCache';
 import type {MappingsMap} from '../lib/SourceMap';
-import type {GetTransformCacheKey} from '../lib/TransformCache';
-import type {ReadTransformProps} from '../lib/TransformCache';
+import type {
+  TransformCache,
+  GetTransformCacheKey,
+  ReadTransformProps,
+} from '../lib/TransformCaching';
 import type {Reporter} from '../lib/reporting';
 import type DependencyGraphHelpers
   from './DependencyGraph/DependencyGraphHelpers';
@@ -69,23 +70,22 @@ export type HasteImpl = {
 export type Options = {
   hasteImpl?: HasteImpl,
   resetCache?: boolean,
+  transformCache: TransformCache,
 };
 
 export type ConstructorArgs = {
   depGraphHelpers: DependencyGraphHelpers,
-  globalTransformCache: ?GlobalTransformCache,
   file: string,
+  getTransformCacheKey: GetTransformCacheKey,
+  globalTransformCache: ?GlobalTransformCache,
   localPath: LocalPath,
   moduleCache: ModuleCache,
   options: Options,
   reporter: Reporter,
-  getTransformCacheKey: GetTransformCacheKey,
   transformCode: ?TransformCode,
 };
 
 type DocBlock = {+[key: string]: string};
-
-const TRANSFORM_CACHE = new TransformCache();
 
 class Module {
   localPath: LocalPath;
@@ -106,6 +106,8 @@ class Module {
   _readPromises: Map<string, Promise<ReadResult>>;
 
   _readResultsByOptionsKey: Map<string, CachedReadResult>;
+
+  static _transformCache: TransformCache;
 
   constructor({
     depGraphHelpers,
@@ -262,80 +264,44 @@ class Module {
     return {...result, id: this._getHasteName(), source};
   }
 
-  _transformCodeForCallback(
+  async _transformCodeFor(
     cacheProps: ReadTransformProps,
-    callback: (error: ?Error, result: ?TransformedCode) => void,
-  ) {
+  ): Promise<TransformedCode> {
     const {_transformCode} = this;
     invariant(_transformCode != null, 'missing code transform funtion');
     const {sourceCode, transformOptions} = cacheProps;
-    return _transformCode(this, sourceCode, transformOptions).then(
-      freshResult => process.nextTick(callback, undefined, freshResult),
-      error => process.nextTick(callback, error),
-    );
+    return await _transformCode(this, sourceCode, transformOptions);
   }
 
-  _transformAndStoreCodeGlobally(
+  async _transformAndStoreCodeGlobally(
     cacheProps: ReadTransformProps,
     globalCache: GlobalTransformCache,
-    callback: (error: ?Error, result: ?TransformedCode) => void,
-  ) {
-    this._transformCodeForCallback(
-      cacheProps,
-      (transformError, transformResult) => {
-        if (transformError != null) {
-          callback(transformError);
-          return;
-        }
-        invariant(
-          transformResult != null,
-          'Inconsistent state: there is no error, but no results either.',
-        );
-        globalCache.store(cacheProps, transformResult);
-        callback(undefined, transformResult);
-      },
-    );
+  ): Promise<TransformedCode> {
+    const result = await this._transformCodeFor(cacheProps);
+    globalCache.store(cacheProps, result);
+    return result;
   }
 
-  _getTransformedCode(
+  async _getTransformedCode(
     cacheProps: ReadTransformProps,
-    callback: (error: ?Error, result: ?TransformedCode) => void,
-  ) {
+  ): Promise<TransformedCode> {
     const {_globalCache} = this;
     if (_globalCache == null || !_globalCache.shouldFetch(cacheProps)) {
-      this._transformCodeForCallback(cacheProps, callback);
-      return;
+      return await this._transformCodeFor(cacheProps);
     }
-    _globalCache.fetch(cacheProps).then(
-      globalCachedResult =>
-        process.nextTick(() => {
-          if (globalCachedResult == null) {
-            this._transformAndStoreCodeGlobally(
-              cacheProps,
-              _globalCache,
-              callback,
-            );
-            return;
-          }
-          callback(undefined, globalCachedResult);
-        }),
-      globalCacheError => process.nextTick(() => callback(globalCacheError)),
-    );
+    const globalCachedResult = await _globalCache.fetch(cacheProps);
+    if (globalCachedResult != null) {
+      return globalCachedResult;
+    }
+    return await this._transformAndStoreCodeGlobally(cacheProps, _globalCache);
   }
 
-  _getAndCacheTransformedCode(
+  async _getAndCacheTransformedCode(
     cacheProps: ReadTransformProps,
-    callback: (error: ?Error, result: ?TransformedCode) => void,
-  ) {
-    this._getTransformedCode(cacheProps, (error, result) => {
-      if (error) {
-        callback(error);
-        return;
-      }
-      invariant(result != null, 'missing result');
-      TRANSFORM_CACHE.writeSync({...cacheProps, result});
-      callback(undefined, result);
-    });
+  ): Promise<TransformedCode> {
+    const result = await this._getTransformedCode(cacheProps);
+    this._options.transformCache.writeSync({...cacheProps, result});
+    return result;
   }
 
   /**
@@ -380,7 +346,7 @@ class Module {
       transformOptions,
       transformOptionsKey,
     );
-    const cachedResult = TRANSFORM_CACHE.readSync(cacheProps);
+    const cachedResult = this._options.transformCache.readSync(cacheProps);
     if (cachedResult.result == null) {
       return {
         result: null,
@@ -408,30 +374,19 @@ class Module {
     if (promise != null) {
       return promise;
     }
-    const freshPromise = Promise.resolve().then(() => {
+    const freshPromise = (async () => {
       const cacheProps = this._getCacheProps(transformOptions, key);
-      return new Promise((resolve, reject) => {
-        this._getAndCacheTransformedCode(
-          cacheProps,
-          (transformError, freshResult) => {
-            if (transformError) {
-              reject(transformError);
-              return;
-            }
-            invariant(freshResult != null, 'inconsistent state');
-            resolve(
-              this._finalizeReadResult(cacheProps.sourceCode, freshResult),
-            );
-          },
-        );
-      }).then(result => {
-        this._readResultsByOptionsKey.set(key, {
-          result,
-          outdatedDependencies: [],
-        });
-        return result;
+      const freshResult = await this._getAndCacheTransformedCode(cacheProps);
+      const finalResult = this._finalizeReadResult(
+        cacheProps.sourceCode,
+        freshResult,
+      );
+      this._readResultsByOptionsKey.set(key, {
+        result: finalResult,
+        outdatedDependencies: [],
       });
-    });
+      return finalResult;
+    })();
     this._readPromises.set(key, freshPromise);
     return freshPromise;
   }

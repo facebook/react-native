@@ -22,11 +22,16 @@ rn_xplat_cxx_library(
         "-fvisibility=hidden",
         "-std=c++1y",
     ],
-    exported_headers = EXPORTED_HEADERS,
-    fbobjc_header_path_prefix = "jschelpers",
+    exported_headers = dict([
+        (
+            "jschelpers/%s" % header,
+            header,
+        )
+        for header in EXPORTED_HEADERS
+    ]),
     fbobjc_inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
     force_static = True,
-    header_namespace = "jschelpers",
+    header_namespace = "",
     headers = glob(
         ["*.h"],
         excludes = EXPORTED_HEADERS,

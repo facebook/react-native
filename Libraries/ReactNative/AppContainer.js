@@ -52,7 +52,7 @@ class AppContainer extends React.Component {
 
   componentDidMount(): void {
     if (__DEV__) {
-      if (global.__RCTProfileIsProfiling) {
+      if (!global.__RCTProfileIsProfiling) {
         this._subscription = RCTDeviceEventEmitter.addListener(
           'toggleElementInspector',
           () => {

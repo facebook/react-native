@@ -356,7 +356,7 @@ You can also take a look at the [source code](https://github.com/facebook/react-
 
 Not everything you can do with `Animated` is currently supported by the native driver.
 The main limitation is that you can only animate non-layout properties:
-things like `transform`, `opacity` and `backgroundColor` will work, but flexbox and position properties will not.
+things like `transform` and `opacity` will work, but flexbox and position properties will not.
 When using `Animated.event`, it will only work with direct events and not bubbling events.
 This means it does not work with `PanResponder` but does work with things like `ScrollView#onScroll`.
 
@@ -364,8 +364,8 @@ This means it does not work with `PanResponder` but does work with things like `
 
 The RNTester app has various examples of `Animated` in use:
 
-- [AnimatedGratuitousApp](https://github.com/facebook/react-native/tree/master/Examples/RNTester/js/AnimatedGratuitousApp)
-- [NativeAnimationsExample](https://github.com/facebook/react-native/blob/master/Examples/RNTester/js/NativeAnimationsExample.js)
+- [AnimatedGratuitousApp](https://github.com/facebook/react-native/tree/master/RNTester/js/AnimatedGratuitousApp)
+- [NativeAnimationsExample](https://github.com/facebook/react-native/blob/master/RNTester/js/NativeAnimationsExample.js)
 
 ## `LayoutAnimation` API
 

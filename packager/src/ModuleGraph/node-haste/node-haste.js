@@ -21,6 +21,7 @@ import type {
   TransformedCodeFile,
 } from '../types.flow';
 
+const AssetResolutionCache = require('../../node-haste/AssetResolutionCache');
 const DependencyGraphHelpers = require('../../node-haste/DependencyGraph/DependencyGraphHelpers');
 const FilesByDirNameIndex = require('../../node-haste/FilesByDirNameIndex');
 const HasteFS = require('./HasteFS');
@@ -29,7 +30,7 @@ const Module = require('./Module');
 const ModuleCache = require('./ModuleCache');
 const ResolutionRequest = require('../../node-haste/DependencyGraph/ResolutionRequest');
 
-const defaults = require('../../../defaults');
+const defaults = require('../../defaults');
 
 import type {Moduleish, Packageish} from '../../node-haste/DependencyGraph/ResolutionRequest';
 
@@ -110,6 +111,11 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
   const hasteMapBuilt = hasteMap.build();
   const resolutionRequests = {};
   const filesByDirNameIndex = new FilesByDirNameIndex(hasteMap.getAllFiles());
+  const assetResolutionCache = new AssetResolutionCache({
+    assetExtensions: new Set(assetExts),
+    getDirFiles: dirPath => filesByDirNameIndex.getAllFiles(dirPath),
+    platforms,
+  });
   return (id, source, platform, _, callback) => {
     let resolutionRequest = resolutionRequests[platform];
     if (!resolutionRequest) {
@@ -119,11 +125,12 @@ exports.createResolveFn = function(options: ResolveOptions): ResolveFn {
         extraNodeModules,
         hasteFS,
         helpers,
-        matchFiles: filesByDirNameIndex.match.bind(filesByDirNameIndex),
         moduleCache,
         moduleMap: getFakeModuleMap(hasteMap),
         platform,
         preferNativePlatform: true,
+        resolveAsset: (dirPath, assetName) =>
+          assetResolutionCache.resolve(dirPath, assetName, platform),
         sourceExts,
       });
     }

@@ -38,7 +38,7 @@ Pod::Spec.new do |s|
   s.requires_arc            = true
   s.platform                = :ios, "8.0"
   s.pod_target_xcconfig     = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
-  s.preserve_paths          = "package.json", "LICENSE", "LICENSE-CustomComponents", "PATENTS"
+  s.preserve_paths          = "package.json", "LICENSE", "LICENSE-docs", "PATENTS"
   s.cocoapods_version       = ">= 1.2.0"
 
   s.subspec "Core" do |ss|
@@ -47,6 +47,7 @@ Pod::Spec.new do |s|
     ss.exclude_files        = "**/__tests__/*", "IntegrationTests/*", "React/DevSupport/*", "React/**/RCTTVView.*", "ReactCommon/yoga/*", "React/Cxx*/*", "React/Base/RCTBatchedBridge.mm", "React/Executors/*"
     ss.framework            = "JavaScriptCore"
     ss.libraries            = "stdc++"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
   end
 
   s.subspec "BatchedBridge" do |ss|
@@ -56,7 +57,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "CxxBridge" do |ss|
-    ss.dependency             "Folly"
+    ss.dependency             "Folly", "2016.09.26.00"
     ss.dependency             "React/Core"
     ss.dependency             "React/cxxreact"
     ss.compiler_flags       = folly_compiler_flags
@@ -90,7 +91,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "jschelpers" do |ss|
-    ss.dependency             "Folly"
+    ss.dependency             "Folly", "2016.09.26.00"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/jschelpers/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/jschelpers/*.h"
@@ -101,10 +102,10 @@ Pod::Spec.new do |s|
   s.subspec "cxxreact" do |ss|
     ss.dependency             "React/jschelpers"
     ss.dependency             "boost"
-    ss.dependency             "Folly"
+    ss.dependency             "Folly", "2016.09.26.00"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/cxxreact/*.{cpp,h}"
-    ss.exclude_files        = "ReactCommon/cxxreact/JSCTracing.cpp"
+    ss.exclude_files        = "ReactCommon/cxxreact/{JSCTracing,SampleCxxModule}.*"
     ss.private_header_files = "ReactCommon/cxxreact/*.h"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\"" }
   end

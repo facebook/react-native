@@ -18,7 +18,7 @@ export type LocalPath = OpaqueLocalPath & string;
 
 // FIXME: This function has the shortcoming of potentially returning identical
 // paths for two files in different roots.
-function toLocalPath(roots: Array<string>, absolutePath: string): LocalPath {
+function toLocalPath(roots: $ReadOnlyArray<string>, absolutePath: string): LocalPath {
   for (let i = 0; i < roots.length; i++) {
     const localPath = relative(roots[i], absolutePath);
     if (localPath[0] !== '.') {

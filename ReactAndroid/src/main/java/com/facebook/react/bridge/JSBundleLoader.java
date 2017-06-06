@@ -11,7 +11,7 @@ package com.facebook.react.bridge;
 
 import android.content.Context;
 
-import com.facebook.react.devsupport.DebugServerException;
+import com.facebook.react.common.DebugServerException;
 
 /**
  * A class that stores JS bundle information and allows {@link CatalystInstance} to load a correct
@@ -26,11 +26,12 @@ public abstract class JSBundleLoader {
    */
   public static JSBundleLoader createAssetLoader(
       final Context context,
-      final String assetUrl) {
+      final String assetUrl,
+      final boolean loadSynchronously) {
     return new JSBundleLoader() {
       @Override
       public String loadScript(CatalystInstanceImpl instance) {
-        instance.loadScriptFromAssets(context.getAssets(), assetUrl);
+        instance.loadScriptFromAssets(context.getAssets(), assetUrl, loadSynchronously);
         return assetUrl;
       }
     };
@@ -41,16 +42,17 @@ public abstract class JSBundleLoader {
    * passing large strings from java to native memorory.
    */
   public static JSBundleLoader createFileLoader(final String fileName) {
-    return createFileLoader(fileName, fileName);
+    return createFileLoader(fileName, fileName, false);
   }
 
   public static JSBundleLoader createFileLoader(
       final String fileName,
-      final String assetUrl) {
+      final String assetUrl,
+      final boolean loadSynchronously) {
     return new JSBundleLoader() {
       @Override
       public String loadScript(CatalystInstanceImpl instance) {
-        instance.loadScriptFromFile(fileName, assetUrl);
+        instance.loadScriptFromFile(fileName, assetUrl, loadSynchronously);
         return fileName;
       }
     };
@@ -70,7 +72,7 @@ public abstract class JSBundleLoader {
       @Override
       public String loadScript(CatalystInstanceImpl instance) {
         try {
-          instance.loadScriptFromFile(cachedFileLocation, sourceURL);
+          instance.loadScriptFromFile(cachedFileLocation, sourceURL, false);
           return sourceURL;
         } catch (Exception e) {
           throw DebugServerException.makeGeneric(e.getMessage(), e);

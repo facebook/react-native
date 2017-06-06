@@ -65,8 +65,6 @@
 namespace facebook {
 namespace react {
 
-using namespace detail;
-
 namespace {
 
 template<JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
@@ -348,7 +346,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
     JSValueRef jsError;
     JSValueRef result = JSC_JSEvaluateBytecodeBundle(m_context, NULL, sourceFD, jsSourceURL, &jsError);
     if (result == nullptr) {
-      formatAndThrowJSException(m_context, jsError, jsSourceURL);
+      throw JSException(m_context, jsError, jsSourceURL);
     }
   } else
 #endif
@@ -357,9 +355,12 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
     {
       SystraceSection s_("JSCExecutor::loadApplicationScript-createExpectingAscii");
       ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_START);
-      jsScript = jsStringFromBigString(m_context, *script);
+      jsScript = adoptString(std::move(script));
       ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP);
     }
+    #ifdef WITH_FBSYSTRACE
+    fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
+    #endif
 
     SystraceSection s_("JSCExecutor::loadApplicationScript-evaluateScript");
     evaluateScript(m_context, jsScript, jsSourceURL);
@@ -389,7 +390,7 @@ void JSCExecutor::bindBridge() throw(JSException) {
         batchedBridgeValue = requireBatchedBridge.asObject().callAsFunction({});
       }
       if (batchedBridgeValue.isUndefined()) {
-        throwJSExecutionException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
+        throw JSException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
       }
     }
 
@@ -521,11 +522,25 @@ void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const 
   try {
     SystraceSection s("JSCExecutor::setGlobalVariable", "propName", propName);
 
-    auto valueToInject = Value::fromJSON(m_context, jsStringFromBigString(m_context, *jsonValue));
+    auto valueToInject = Value::fromJSON(m_context, adoptString(std::move(jsonValue)));
     Object::getGlobalObject(m_context).setProperty(propName.c_str(), valueToInject);
   } catch (...) {
     std::throw_with_nested(std::runtime_error("Error setting global variable: " + propName));
   }
+}
+
+String JSCExecutor::adoptString(std::unique_ptr<const JSBigString> script) {
+#if defined(WITH_FBJSCEXTENSIONS)
+  const JSBigString* string = script.release();
+  auto jsString = JSStringCreateAdoptingExternal(string->c_str(), string->size(), (void*)string, [](void* s) {
+    delete static_cast<JSBigString*>(s);
+  });
+  return String::adopt(m_context, jsString);
+#else
+  return script->isAscii()
+    ? String::createExpectingAscii(m_context, script->c_str(), script->size())
+    : String(m_context, script->c_str());
+#endif
 }
 
 void* JSCExecutor::getJavaScriptContext() {
@@ -611,7 +626,7 @@ JSValueRef JSCExecutor::nativeRequire(
   }
 
   double moduleId = Value(m_context, arguments[0]).asNumber();
-  if (moduleId <= 0) {
+  if (moduleId < 0) {
     throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ",
       Value(m_context, arguments[0]).toString().str()));
   }

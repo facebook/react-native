@@ -14,9 +14,9 @@ This example creates a vertical `ScrollView` with both images and text mixed tog
 
 ```ReactNativeWebPlayer
 import React, { Component } from 'react';
-import { AppRegistry, ScrollView, Image, Text } from 'react-native'
+import { AppRegistry, ScrollView, Image, Text } from 'react-native';
 
-class IScrolledDownAndWhatHappenedNextShockedMe extends Component {
+export default class IScrolledDownAndWhatHappenedNextShockedMe extends Component {
   render() {
       return (
         <ScrollView>
@@ -56,10 +56,10 @@ class IScrolledDownAndWhatHappenedNextShockedMe extends Component {
   }
 }
 
-
+// skip these lines if using Create React Native App
 AppRegistry.registerComponent(
-  'IScrolledDownAndWhatHappenedNextShockedMe',
+  'AwesomeProject',
   () => IScrolledDownAndWhatHappenedNextShockedMe);
 ```
 
-`ScrollView` works best to present a small amount of things of a limited size. All the elements and views of a `ScrollView` are rendered, even if they are not currently shown on the screen. If you have a long list of more items that can fit on the screen, you should use a `ListView` instead. So let's [learn about the ListView](docs/using-a-listview.html) next.
+`ScrollView` works best to present a small amount of things of a limited size. All the elements and views of a `ScrollView` are rendered, even if they are not currently shown on the screen. If you have a long list of more items that can fit on the screen, you should use a `FlatList` instead. So let's [learn about list views](docs/using-a-listview.html) next.

@@ -629,6 +629,10 @@ public class ReactEditText extends EditText {
           listener.onTextChanged(s, start, before, count);
         }
       }
+
+      if (mContentSizeWatcher != null) {
+        mContentSizeWatcher.onLayout();
+      }
     }
 
     @Override

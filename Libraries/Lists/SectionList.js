@@ -240,7 +240,7 @@ type DefaultProps = typeof defaultProps;
  *   (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on
  *   changes. This includes the `data` prop and parent component state.
  * - In order to constrain memory and enable smooth scrolling, content is rendered asynchronously
- *   offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
+ *   offscreen. This means it's possible to scroll faster than the fill rate and momentarily see
  *   blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
  *   and we are working on improving it behind the scenes.
  * - By default, the list looks for a `key` prop on each item and uses that for the React key.
