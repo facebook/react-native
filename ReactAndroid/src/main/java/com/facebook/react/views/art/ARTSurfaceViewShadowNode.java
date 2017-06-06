@@ -35,15 +35,11 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
 
   private @Nullable Surface mSurface;
 
-  private boolean mIsBackgroundColorSet;
-  private int mBackgroundColor;
+  private @Nullable Integer mBackgroundColor;
 
   @ReactProp(name = ViewProps.BACKGROUND_COLOR, customType = "Color")
   public void setBackgroundColor(Integer color) {
-    mIsBackgroundColorSet = (color != null);
-    if (mIsBackgroundColorSet) {
-      mBackgroundColor = color;
-    }
+    mBackgroundColor = color;
     markUpdated();
   }
 
@@ -73,7 +69,7 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
     try {
       Canvas canvas = mSurface.lockCanvas(null);
       canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-      if (mIsBackgroundColorSet) {
+      if (mBackgroundColor != null) {
         canvas.drawColor(mBackgroundColor);
       }
 
