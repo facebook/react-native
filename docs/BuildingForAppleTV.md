@@ -11,7 +11,7 @@ previous: communication-ios
 
 Apple TV support has been implemented with the intention of making existing React Native iOS applications "just work" on tvOS, with few or no changes needed in the JavaScript code for the applications.
 
-The UIExplorer example project supports Apple TV; use the `UIExplorer-tvOS` build target to build for tvOS.
+The RNTester app supports Apple TV; use the `RNTester-tvOS` build target to build for tvOS.
 
 ## Build changes
 

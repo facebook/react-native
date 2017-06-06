@@ -174,6 +174,11 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   }
 
   @Override
+  public HashMap<String, Object> toHashMap() {
+    return new HashMap<String, Object>(mBackingMap);
+  }
+
+  @Override
   public String toString() {
     return mBackingMap.toString();
   }

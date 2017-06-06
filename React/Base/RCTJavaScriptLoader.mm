@@ -218,7 +218,8 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
                      [@"Could not connect to development server.\n\n"
                       "Ensure the following:\n"
                       "- Node server is running and available on the same network - run 'npm start' from react-native root\n"
-                      "- Node server URL is correctly set in AppDelegate\n\n"
+                      "- Node server URL is correctly set in AppDelegate\n"
+                      "- WiFi is enabled and connected to the same network as the Node Server\n\n"
                       "URL: " stringByAppendingString:scriptURL.absoluteString],
                    NSLocalizedFailureReasonErrorKey: error.localizedDescription,
                    NSUnderlyingErrorKey: error,

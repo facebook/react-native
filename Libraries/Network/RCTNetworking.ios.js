@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const FormData = require('FormData');
+const MissingNativeEventEmitterShim = require('MissingNativeEventEmitterShim');
 const NativeEventEmitter = require('NativeEventEmitter');
 const RCTNetworkingNative = require('NativeModules').Networking;
 const convertRequestBody = require('convertRequestBody');
@@ -19,6 +19,8 @@ const convertRequestBody = require('convertRequestBody');
 import type {RequestBody} from 'convertRequestBody';
 
 class RCTNetworking extends NativeEventEmitter {
+
+  isAvailable: boolean = true;
 
   constructor() {
     super(RCTNetworkingNative);
@@ -58,4 +60,31 @@ class RCTNetworking extends NativeEventEmitter {
   }
 }
 
-module.exports = new RCTNetworking();
+if (__DEV__ && !RCTNetworkingNative) {
+  class MissingNativeRCTNetworkingShim extends MissingNativeEventEmitterShim {
+    constructor() {
+      super('RCTAppState', 'AppState');
+    }
+
+    sendRequest(...args: Array<any>) {
+      this.throwMissingNativeModule();
+    }
+
+    abortRequest(...args: Array<any>) {
+      this.throwMissingNativeModule();
+    }
+
+    clearCookies(...args: Array<any>) {
+      this.throwMissingNativeModule();
+    }
+  }
+
+  // This module depends on the native `RCTNetworkingNative` module. If you don't include it,
+  // `RCTNetworking.isAvailable` will return `false`, and any method calls will throw.
+  // We reassign the class variable to keep the autodoc generator happy.
+  RCTNetworking = new MissingNativeRCTNetworkingShim();
+} else {
+  RCTNetworking = new RCTNetworking();
+}
+
+module.exports = RCTNetworking;

@@ -20,7 +20,6 @@
 #import <React/RCTConvert.h>
 #import <React/RCTCxxModule.h>
 #import <React/RCTCxxUtils.h>
-#import <React/RCTDevLoadingView.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTDisplayLink.h>
 #import <React/RCTJavaScriptLoader.h>
@@ -47,6 +46,10 @@
 #import <React/RCTFBSystrace.h>
 #endif
 
+#if RCT_DEV && __has_include("RCTDevLoadingView.h")
+#import "RCTDevLoadingView.h"
+#endif
+
 @interface RCTCxxBridge : RCTBridge
 @end
 
@@ -54,7 +57,7 @@
   RCTAssert(self.executorClass || self->_jsThread == [NSThread currentThread], \
             @"This method must be called on JS thread")
 
-NSString *const RCTJSThreadName = @"com.facebook.React.JavaScript";
+static NSString *const RCTJSThreadName = @"com.facebook.react.JavaScript";
 
 using namespace facebook::react;
 
@@ -76,7 +79,7 @@ static bool isRAMBundle(NSData *script) {
 
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger) {
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
-  ReactMarker::logMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId) {
+  ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *tag) {
     switch (markerId) {
       case ReactMarker::RUN_JS_BUNDLE_START:
         [weakPerformanceLogger markStartForTag:RCTPLScriptExecution];
@@ -140,7 +143,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   // JS thread management
   NSThread *_jsThread;
-  std::promise<std::shared_ptr<RCTMessageThread>> _jsMessageThreadPromise;
   std::shared_ptr<RCTMessageThread> _jsMessageThread;
 
   // This is uniquely owned, but weak_ptr is used.
@@ -204,15 +206,6 @@ struct RCTInstanceCallback : public InstanceCallback {
     // copy thread name to pthread name
     pthread_setname_np([NSThread currentThread].name.UTF8String);
 
-    __typeof(self) weakSelf = self;
-    _jsMessageThreadPromise.set_value(std::make_shared<RCTMessageThread>(
-      [NSRunLoop currentRunLoop],
-      ^(NSError *error) {
-        if (error) {
-          [weakSelf handleError:error];
-        }
-    }));
-
     // Set up a dummy runloop source to avoid spinning
     CFRunLoopSourceContext noSpinCtx = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
     CFRunLoopSourceRef noSpinSource = CFRunLoopSourceCreate(NULL, 0, &noSpinCtx);
@@ -236,12 +229,18 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 }
 
-- (void)executeBlockOnJavaScriptThread:(dispatch_block_t)block
+/**
+ * Ensure block is run on the JS thread. If we're already on the JS thread, the block will execute synchronously.
+ * If we're not on the JS thread, the block is dispatched to that thread. Any errors encountered while executing
+ * the block will go through handleError:
+ */
+- (void)ensureOnJavaScriptThread:(dispatch_block_t)block
 {
   RCTAssert(_jsThread, @"This method must not be called before the JS thread is created");
 
-  // This does not use _jsMessageThread because it may be called early
-  // before the runloop reference is captured and _jsMessageThread is valid.
+  // This does not use _jsMessageThread because it may be called early before the runloop reference is captured
+  // and _jsMessageThread is valid. _jsMessageThread also doesn't allow us to shortcut the dispatch if we're
+  // already on the correct thread.
 
   if ([NSThread currentThread] == _jsThread) {
     [self _tryAndHandleError:block];
@@ -255,6 +254,8 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (void)start
 {
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge start]", nil);
+
   [[NSNotificationCenter defaultCenter]
     postNotificationName:RCTJavaScriptWillStartLoadingNotification
     object:_parentBridge userInfo:@{@"bridge": self}];
@@ -267,12 +268,10 @@ struct RCTInstanceCallback : public InstanceCallback {
   _jsThread.qualityOfService = NSOperationQualityOfServiceUserInteractive;
   [_jsThread start];
 
-  dispatch_group_t initModulesAndLoadSource = dispatch_group_create();
-  dispatch_queue_t bridgeQueue = dispatch_queue_create("com.facebook.react.RCTBridgeQueue",
-                                                       DISPATCH_QUEUE_SERIAL);
+  dispatch_group_t prepareBridge = dispatch_group_create();
 
   // Initialize all native modules that cannot be loaded lazily
-  [self _initModulesWithDispatchGroup:initModulesAndLoadSource];
+  [self _initModulesWithDispatchGroup:prepareBridge];
 
   // This doesn't really do anything.  The real work happens in initializeBridge.
   _reactInstance.reset(new Instance);
@@ -302,9 +301,11 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   // Dispatch the instance initialization as soon as the initial module metadata has
   // been collected (see initModules)
-  dispatch_group_async(initModulesAndLoadSource, bridgeQueue, ^{
+  dispatch_group_enter(prepareBridge);
+  [self ensureOnJavaScriptThread:^{
     [weakSelf _initializeBridge:executorFactory];
-  });
+    dispatch_group_leave(prepareBridge);
+  }];
 
   // Optional load and execute JS source synchronously
   // TODO #10487027: should this be async on reload?
@@ -325,7 +326,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     }
   } else {
     // Load the source asynchronously, then store it for later execution.
-    dispatch_group_enter(initModulesAndLoadSource);
+    dispatch_group_enter(prepareBridge);
     __block NSData *sourceCode;
     [self loadSource:^(NSError *error, NSData *source, int64_t sourceLength) {
       if (error) {
@@ -333,22 +334,23 @@ struct RCTInstanceCallback : public InstanceCallback {
       }
 
       sourceCode = source;
-      dispatch_group_leave(initModulesAndLoadSource);
+      dispatch_group_leave(prepareBridge);
     } onProgress:^(RCTLoadingProgress *progressData) {
-#ifdef RCT_DEV
+#if RCT_DEV && __has_include("RCTDevLoadingView.h")
       RCTDevLoadingView *loadingView = [weakSelf moduleForClass:[RCTDevLoadingView class]];
       [loadingView updateProgress:progressData];
 #endif
     }];
 
     // Wait for both the modules and source code to have finished loading
-    dispatch_group_notify(initModulesAndLoadSource, bridgeQueue, ^{
+    dispatch_group_notify(prepareBridge, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
       RCTCxxBridge *strongSelf = weakSelf;
       if (sourceCode && strongSelf.loading) {
         [strongSelf executeSourceCode:sourceCode sync:NO];
       }
     });
   }
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
 - (void)loadSource:(RCTSourceLoadBlock)_onSourceLoad onProgress:(RCTSourceLoadProgressBlock)onProgress
@@ -441,9 +443,13 @@ struct RCTInstanceCallback : public InstanceCallback {
     return;
   }
 
-  if (!_jsMessageThread) {
-    _jsMessageThread = _jsMessageThreadPromise.get_future().get();
-  }
+  RCTAssertJSThread();
+  __weak RCTCxxBridge *weakSelf = self;
+  _jsMessageThread = std::make_shared<RCTMessageThread>([NSRunLoop currentRunLoop], ^(NSError *error) {
+    if (error) {
+      [weakSelf handleError:error];
+    }
+  });
 
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge initializeBridge:]", nil);
   // This can only be false if the bridge was invalidated before startup completed
@@ -700,7 +706,7 @@ struct RCTInstanceCallback : public InstanceCallback {
        object:self->_parentBridge userInfo:@{@"bridge": self}];
 
       // Starting the display link is not critical to startup, so do it last
-      [self executeBlockOnJavaScriptThread:^{
+      [self ensureOnJavaScriptThread:^{
         // Register the display link to start sending js calls after everything is setup
         [self->_displayLink addToRunLoop:[NSRunLoop currentRunLoop]];
       }];
@@ -837,7 +843,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
                 queue:(dispatch_queue_t)queue
 {
   if (queue == RCTJSThread) {
-    [self executeBlockOnJavaScriptThread:block];
+    [self ensureOnJavaScriptThread:block];
   } else if (queue) {
     dispatch_async(queue, block);
   }
@@ -880,7 +886,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 
   dispatch_group_notify(group, dispatch_get_main_queue(), ^{
-    [self executeBlockOnJavaScriptThread:^{
+    [self ensureOnJavaScriptThread:^{
       [self->_displayLink invalidate];
       self->_displayLink = nil;
 
@@ -946,7 +952,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
         OSAtomicDecrement32Barrier(&self->_pendingCount);
       }
     };
-    [self executeBlockOnJavaScriptThread:jsQueueBlock];
+    [self ensureOnJavaScriptThread:jsQueueBlock];
   } else {
     // Phase 2/Phase D: blocks are executed directly, adding work to the JS queue.
     block();
@@ -963,7 +969,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   [_performanceLogger markStopForTag:RCTPLBridgeStartup];
 
-  RCT_PROFILE_BEGIN_EVENT(0, @"Processing pendingCalls", @{ @"count": @(_pendingCalls.count) });
+  RCT_PROFILE_BEGIN_EVENT(0, @"Processing pendingCalls", @{ @"count": [@(_pendingCalls.count) stringValue] });
   // Phase B: _flushPendingCalls happens.  Each block in _pendingCalls is
   // executed, adding work to the queue, and _pendingCount is decremented.
   // loading is set to NO.
@@ -999,8 +1005,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       self->_reactInstance->callJSFunction([module UTF8String], [method UTF8String],
                                            [RCTConvert folly_dynamic:args ?: @[]]);
 
+      // ensureOnJavaScriptThread may execute immediately, so use jsMessageThread, to make sure
+      // the block is invoked after callJSFunction
       if (completion) {
-        [self executeBlockOnJavaScriptThread:completion];
+        self->_jsMessageThread->runOnQueue(completion);
       }
     }
   }];
@@ -1026,10 +1034,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   [self _runAfterLoad:^{
     RCTProfileEndFlowEvent();
 
-    if (self->_reactInstance)
-      self->_reactInstance->callJSCallback(
-        [cbID unsignedLongLongValue],
-        [RCTConvert folly_dynamic:args ?: @[]]);
+    if (self->_reactInstance) {
+      self->_reactInstance->callJSCallback([cbID unsignedLongLongValue], [RCTConvert folly_dynamic:args ?: @[]]);
+    }
   }];
 }
 
@@ -1040,19 +1047,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertJSThread();
 
-  if (_reactInstance)
+  if (_reactInstance) {
     _reactInstance->callJSFunction("JSTimersExecution", "callTimers",
                                    folly::dynamic::array(folly::dynamic::array([timer doubleValue])));
+  }
 }
 
 - (void)enqueueApplicationScript:(NSData *)script
                              url:(NSURL *)url
                       onComplete:(dispatch_block_t)onComplete
 {
-  RCTAssert(onComplete != nil, @"onComplete block passed in should be non-nil");
-
-  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
-                          @"-[RCTCxxBridge enqueueApplicationScript]", nil);
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge enqueueApplicationScript]", nil);
 
   [self _tryAndHandleError:^{
     if (isRAMBundle(script)) {
@@ -1061,21 +1066,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
-      if (self->_reactInstance)
+      if (self->_reactInstance) {
         self->_reactInstance->loadUnbundle(std::move(ramBundle), std::move(scriptStr),
-                                           [[url absoluteString] UTF8String]);
+                                           [[url absoluteString] UTF8String], false);
+      }
     } else if (self->_reactInstance) {
       self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
-                                                 [[url absoluteString] UTF8String]);
+                                                 [[url absoluteString] UTF8String], false);
+    } else {
+      throw std::logic_error("Attempt to call loadApplicationScript: on uninitialized bridge");
     }
   }];
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
   // Assumes that onComplete can be called when the next block on the JS thread is scheduled
-  [self executeBlockOnJavaScriptThread:^{
-    onComplete();
-  }];
+  if (onComplete) {
+    RCTAssert(_jsMessageThread != nullptr, @"Cannot invoke completion without jsMessageThread");
+    _jsMessageThread->runOnQueue(onComplete);
+  }
 }
 
 - (void)executeApplicationScriptSync:(NSData *)script url:(NSURL *)url
@@ -1088,15 +1097,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
-        self->_reactInstance->loadUnbundleSync(std::move(ramBundle), std::move(scriptStr),
-                                               [[url absoluteString] UTF8String]);
+        self->_reactInstance->loadUnbundle(std::move(ramBundle), std::move(scriptStr),
+                                           [[url absoluteString] UTF8String], true);
       }
     } else if (self->_reactInstance) {
-      self->_reactInstance->loadScriptFromStringSync(std::make_unique<NSDataBigString>(script),
-                                                     [[url absoluteString] UTF8String]);
+      self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
+                                                 [[url absoluteString] UTF8String], true);
     } else {
-      throw std::logic_error(
-        "Attempt to call loadApplicationScriptSync: on uninitialized bridge");
+      throw std::logic_error("Attempt to call loadApplicationScriptSync: on uninitialized bridge");
     }
   }];
 }
@@ -1181,7 +1189,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertMainQueue();
 
-  [self executeBlockOnJavaScriptThread:^{
+  [self ensureOnJavaScriptThread:^{
     #if WITH_FBSYSTRACE
     [RCTFBSystrace registerCallbacks];
     #endif
@@ -1193,7 +1201,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertMainQueue();
 
-  [self executeBlockOnJavaScriptThread:^{
+  [self ensureOnJavaScriptThread:^{
     RCTProfileEnd(self, ^(NSString *log) {
       NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
       callback(logData);

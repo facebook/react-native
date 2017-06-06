@@ -79,6 +79,138 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
         v="i2"
       />
     </View>
+    <View
+      onLayout={[Function]}
+    />
+  </View>
+</RCTScrollView>
+`;
+
+exports[`SectionList renders a footer when there is no data 1`] = `
+<RCTScrollView
+  ItemSeparatorComponent={undefined}
+  data={
+    Array [
+      Object {
+        "data": Array [],
+        "key": "s1",
+      },
+    ]
+  }
+  disableVirtualization={false}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  horizontal={false}
+  initialNumToRender={10}
+  keyExtractor={[Function]}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onEndReachedThreshold={2}
+  onLayout={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  onViewableItemsChanged={undefined}
+  renderItem={[Function]}
+  renderScrollComponent={[Function]}
+  renderSectionFooter={[Function]}
+  renderSectionHeader={[Function]}
+  scrollEventThrottle={50}
+  sections={
+    Array [
+      Object {
+        "data": Array [],
+        "key": "s1",
+      },
+    ]
+  }
+  stickyHeaderIndices={
+    Array [
+      0,
+    ]
+  }
+  stickySectionHeadersEnabled={true}
+  updateCellsBatchingPeriod={50}
+  windowSize={21}
+>
+  <View>
+    <View
+      onLayout={[Function]}
+    >
+      <sectionHeader
+        v="section:s1"
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+    >
+      <sectionFooter
+        v="section:s1"
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`SectionList renders a footer when there is no data and no header 1`] = `
+<RCTScrollView
+  ItemSeparatorComponent={undefined}
+  data={
+    Array [
+      Object {
+        "data": Array [],
+        "key": "s1",
+      },
+    ]
+  }
+  disableVirtualization={false}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  horizontal={false}
+  initialNumToRender={10}
+  keyExtractor={[Function]}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onEndReachedThreshold={2}
+  onLayout={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  onViewableItemsChanged={undefined}
+  renderItem={[Function]}
+  renderScrollComponent={[Function]}
+  renderSectionFooter={[Function]}
+  scrollEventThrottle={50}
+  sections={
+    Array [
+      Object {
+        "data": Array [],
+        "key": "s1",
+      },
+    ]
+  }
+  stickyHeaderIndices={
+    Array [
+      0,
+    ]
+  }
+  stickySectionHeadersEnabled={true}
+  updateCellsBatchingPeriod={50}
+  windowSize={21}
+>
+  <View>
+    <View
+      onLayout={[Function]}
+    />
+    <View
+      onLayout={[Function]}
+    >
+      <sectionFooter
+        v="section:s1"
+      />
+    </View>
   </View>
 </RCTScrollView>
 `;
@@ -134,7 +266,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
   getItem={[Function]}
   getItemCount={[Function]}
   horizontal={false}
-  initialNumToRender={10}
+  initialNumToRender={Infinity}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
@@ -201,8 +333,8 @@ exports[`SectionList renders all the bells and whistles 1`] = `
   stickyHeaderIndices={
     Array [
       1,
-      4,
-      7,
+      5,
+      9,
     ]
   }
   stickySectionHeadersEnabled={true}
@@ -250,10 +382,14 @@ exports[`SectionList renders all the bells and whistles 1`] = `
         <sectionSeparator
           v="highlighted:false,leadingItem:i2s1,leadingSection:undefined,section:s1,trailingItem:undefined,trailingSection:s2"
         />
-        <sectionFooter
-          v="section:s1"
-        />
       </View>
+    </View>
+    <View
+      onLayout={[Function]}
+    >
+      <sectionFooter
+        v="section:s1"
+      />
     </View>
     <View
       onLayout={[Function]}
@@ -287,10 +423,14 @@ exports[`SectionList renders all the bells and whistles 1`] = `
         <sectionSeparator
           v="highlighted:false,leadingItem:i2s2,leadingSection:s1,section:s2,trailingItem:undefined,trailingSection:s3"
         />
-        <sectionFooter
-          v="section:s2"
-        />
       </View>
+    </View>
+    <View
+      onLayout={[Function]}
+    >
+      <sectionFooter
+        v="section:s2"
+      />
     </View>
     <View
       onLayout={[Function]}
@@ -324,10 +464,14 @@ exports[`SectionList renders all the bells and whistles 1`] = `
         <sectionSeparator
           v="highlighted:false,leadingItem:i2s3,leadingSection:s2,section:s3,trailingItem:undefined,trailingSection:undefined"
         />
-        <sectionFooter
-          v="section:s3"
-        />
       </View>
+    </View>
+    <View
+      onLayout={[Function]}
+    >
+      <sectionFooter
+        v="section:s3"
+      />
     </View>
     <View
       onLayout={[Function]}

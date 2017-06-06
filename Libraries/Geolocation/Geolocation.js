@@ -20,6 +20,9 @@ const warning = require('fbjs/lib/warning');
 
 const LocationEventEmitter = new NativeEventEmitter(RCTLocationObserver);
 
+const Platform = require('Platform');
+const PermissionsAndroid = require('PermissionsAndroid');
+
 var subscriptions = [];
 var updatesEnabled = false;
 
@@ -72,12 +75,22 @@ type GeoOptions = {
 var Geolocation = {
 
   /*
+   * Request suitable Location permission based on the key configured on pList.
+   * If NSLocationAlwaysUsageDescription is set, it will request Always authorization,
+   * although if NSLocationWhenInUseUsageDescription is set, it will request InUse
+   * authorization.
+   */
+  requestAuthorization: function() {
+    RCTLocationObserver.requestAuthorization();
+  },
+
+  /*
    * Invokes the success callback once with the latest location info.  Supported
    * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool)
    * On Android, if the location is cached this can return almost immediately,
    * or it will request an update which might take a while.
    */
-  getCurrentPosition: function(
+  getCurrentPosition: async function(
     geo_success: Function,
     geo_error?: Function,
     geo_options?: GeoOptions
@@ -86,11 +99,27 @@ var Geolocation = {
       typeof geo_success === 'function',
       'Must provide a valid geo_success callback.'
     );
-    RCTLocationObserver.getCurrentPosition(
-      geo_options || {},
-      geo_success,
-      geo_error || logError
-    );
+    let hasPermission = true;
+    // Supports Android's new permission model. For Android older devices,
+    // it's always on.
+    if (Platform.OS === 'android' && Platform.Version >= 23) {
+      hasPermission = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+      if (!hasPermission) {
+        const status = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        );
+        hasPermission = status === PermissionsAndroid.RESULTS.GRANTED;
+      }
+    }
+    if (hasPermission) {
+      RCTLocationObserver.getCurrentPosition(
+        geo_options || {},
+        geo_success,
+        geo_error || logError,
+      );
+    }
   },
 
   /*
