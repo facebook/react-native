@@ -94,5 +94,11 @@ void RCTMessageThread::quitSynchronous() {
   CFRunLoopStop(m_cfRunLoop);
 }
 
+void RCTMessageThread::setRunLoop(NSRunLoop *runLoop) {
+  CFRelease(m_cfRunLoop);
+  m_cfRunLoop = [runLoop getCFRunLoop];
+  CFRetain(m_cfRunLoop);
+}
+
 }
 }

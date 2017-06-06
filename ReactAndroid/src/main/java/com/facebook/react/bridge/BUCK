@@ -34,6 +34,5 @@ android_library(
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/module/model:model"),
-        react_native_target("jni/react/jni:jni"),
-    ],
+    ] + ([react_native_target("jni/react/jni:jni")] if not IS_OSS_BUILD else []),
 )

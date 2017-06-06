@@ -8,7 +8,6 @@
  */
 'use strict';
 
-require('../../setupBabel')();
 const ReactPackager = require('metro-bundler');
 
 const denodeify = require('denodeify');

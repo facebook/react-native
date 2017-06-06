@@ -153,7 +153,7 @@ public class JavaModuleWrapper {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
       ReactMarker.logMarker(GET_CONSTANTS_END);
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
   }
 
