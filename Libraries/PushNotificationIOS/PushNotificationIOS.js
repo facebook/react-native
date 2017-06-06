@@ -58,11 +58,22 @@ export type PushNotificationEventName = $Enum<{
 }>;
 
 /**
+ * <div class="banner-crna-ejected">
+ *   <h3>Projects with Native Code Only</h3>
+ *   <p>
+ *     This section only applies to projects made with <code>react-native init</code>
+ *     or to those made with Create React Native App which have since ejected. For
+ *     more information about ejecting, please see
+ *     the <a href="https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md" target="_blank">guide</a> on
+ *     the Create React Native App repository.
+ *   </p>
+ * </div>
+ *
  * Handle push notifications for your app, including permission handling and
  * icon badge number.
  *
  * To get up and running, [configure your notifications with Apple](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6)
- * and your server-side system. To get an idea, [this is the Parse guide](https://parse.com/tutorials/ios-push-notifications).
+ * and your server-side system.
  *
  * [Manually link](docs/linking-libraries-ios.html#manual-linking) the PushNotificationIOS library
  *
