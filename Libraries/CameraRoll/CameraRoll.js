@@ -121,9 +121,12 @@ class CameraRoll {
   static GroupTypesOptions: Object = GROUP_TYPES_OPTIONS;
   static AssetTypeOptions: Object = ASSET_TYPE_OPTIONS;
 
+  /**
+   * `CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.
+   */
   static saveImageWithTag(tag: string): Promise<Object> {
     console.warn(
-      'CameraRoll.saveImageWithTag is deprecated. Use CameraRoll.saveToCameraRoll instead',
+      '`CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.',
     );
     return this.saveToCameraRoll(tag, 'photo');
   }

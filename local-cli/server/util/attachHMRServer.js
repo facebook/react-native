@@ -15,8 +15,6 @@ const getInverseDependencies = require('./getInverseDependencies');
 const querystring = require('querystring');
 const url = require('url');
 
-import type Server from '../../../packager/src/Server';
-import type Module from '../../../packager/src/node-haste/Module';
 import type {ResolutionResponse} from './getInverseDependencies';
 import type {Server as HTTPServer} from 'http';
 
