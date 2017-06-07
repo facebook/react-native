@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
 AppRegistry.registerComponent('AwesomeProject', () => FlatListBasics);
 ```
 
-If you want to render a set of data broken into logical sections, maybe with section headers, then a `SectionList` is the way to go.
+If you want to render a set of data broken into logical sections, maybe with section headers, similar to `UITableView`s on iOS, then a [SectionList](docs/sectionlist.html) is the way to go.
 
 ```SnackPlayer?name=SectionList%20Basics
 import React, { Component } from 'react';
