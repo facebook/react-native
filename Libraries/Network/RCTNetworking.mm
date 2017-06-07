@@ -19,6 +19,7 @@
 #import <React/RCTURLRequestHandler.h>
 #import <React/RCTUtils.h>
 
+#import "RCTBlobManager.h"
 #import "RCTHTTPRequestHandler.h"
 
 typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSDictionary<NSString *, id> *result);
@@ -411,7 +412,9 @@ RCT_EXPORT_MODULE()
 
 - (void)sendData:(NSData *)data
     responseType:(NSString *)responseType
-         forTask:(RCTNetworkTask *)task
+    mimeType:(NSString *)mimeType
+    fileName:(NSString *)fileName
+    forTask:(RCTNetworkTask *)task
 {
   RCTAssertThread(_methodQueue, @"sendData: must be called on method queue");
 
@@ -419,22 +422,34 @@ RCT_EXPORT_MODULE()
     return;
   }
 
-  NSString *responseString;
+  NSArray<id> *responseJSON;
+
   if ([responseType isEqualToString:@"text"]) {
     // No carry storage is required here because the entire data has been loaded.
-    responseString = [RCTNetworking decodeTextData:data fromResponse:task.response withCarryData:nil];
+    NSString *responseString = [RCTNetworking decodeTextData:data fromResponse:task.response withCarryData:nil];
     if (!responseString) {
       RCTLogWarn(@"Received data was not a string, or was not a recognised encoding.");
       return;
     }
+    responseJSON = @[task.requestID, responseString];
+  } else if ([responseType isEqualToString:@"blob"]) {
+    RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
+    NSDictionary *responseData = @{
+      @"blobId": [blobManager store:data],
+      @"offset": @0,
+      @"size": @(data.length),
+      @"name": fileName,
+      @"type": mimeType,
+    };
+    responseJSON = @[task.requestID, responseData];
   } else if ([responseType isEqualToString:@"base64"]) {
-    responseString = [data base64EncodedStringWithOptions:0];
+    NSString *responseString = [data base64EncodedStringWithOptions:0];
+    responseJSON = @[task.requestID, responseString];
   } else {
     RCTLogWarn(@"Invalid responseType: %@", responseType);
     return;
   }
 
-  NSArray<id> *responseJSON = @[task.requestID, responseString];
   [self sendEventWithName:@"didReceiveNetworkData" body:responseJSON];
 }
 
@@ -517,7 +532,11 @@ RCT_EXPORT_MODULE()
     // Unless we were sending incremental (text) chunks to JS, all along, now
     // is the time to send the request body to JS.
     if (!(incrementalUpdates && [responseType isEqualToString:@"text"])) {
-      [strongSelf sendData:data responseType:responseType forTask:task];
+      [strongSelf sendData:data
+              responseType:responseType
+              mimeType:[response MIMEType]
+              fileName:[response suggestedFilename]
+              forTask:task];
     }
     NSArray *responseJSON = @[task.requestID,
                               RCTNullIfNil(error.localizedDescription),

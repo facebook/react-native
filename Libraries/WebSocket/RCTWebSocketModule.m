@@ -9,16 +9,12 @@
 
 #import "RCTWebSocketModule.h"
 #import "RCTSRWebSocket.h"
+#import "RCTBlobManager.h"
 
 #import <objc/runtime.h>
 
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
-<<<<<<< HEAD
-#import <RCTBlob/RCTBlobManager.h>
-=======
-#import "RCTBlobManager.h"
->>>>>>> Add blob implementation with WebSocket integration
 
 @implementation RCTSRWebSocket (React)
 
