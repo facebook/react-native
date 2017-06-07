@@ -153,7 +153,14 @@ You may also access these through `Debug → Open System Log...` in the iOS Simu
 
 > If you're using Create React Native App, this is configured for you already.
 
-On iOS devices, open the file [`RCTWebSocketExecutor.m`](https://github.com/facebook/react-native/blob/master/Libraries/WebSocket/RCTWebSocketExecutor.m) and change "localhost" to the IP address of your computer, then select "Debug JS Remotely" from the Developer Menu.
+On iOS devices, open the file `ios/{YourApp}/Info.plist` and add the following lines before the `<key>localhost</key>` with the IP address of your computer, then select "Debug JS Remotely" from the Developer Menu:
+```
+<key>{YOUR_IP_ADDRESS}</key>
+	<dict>
+		<key>NSExceptionAllowsInsecureHTTPLoads</key>
+	<true/>
+</dict>
+```
 
 On Android 5.0+ devices connected via USB, you can use the [`adb` command line tool](http://developer.android.com/tools/help/adb.html) to setup port forwarding from the device to your computer:
 
