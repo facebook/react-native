@@ -76,18 +76,11 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   /* package */ NetworkingModule(
       ReactApplicationContext reactContext,
       @Nullable String defaultUserAgent,
-      OkHttpClient client,
+      OkHttpClientProvider okHttpClientProvider,
       @Nullable List<NetworkInterceptorCreator> networkInterceptorCreators) {
     super(reactContext);
 
-    if (networkInterceptorCreators != null) {
-      OkHttpClient.Builder clientBuilder = client.newBuilder();
-      for (NetworkInterceptorCreator networkInterceptorCreator : networkInterceptorCreators) {
-        clientBuilder.addNetworkInterceptor(networkInterceptorCreator.create());
-      }
-      client = clientBuilder.build();
-    }
-    mClient = client;
+    mClient = createOkHttpClient(okHttpClientProvider, networkInterceptorCreators);
     mCookieHandler = new ForwardingCookieHandler(reactContext);
     mCookieJarContainer = (CookieJarContainer) mClient.cookieJar();
     mShuttingDown = false;
@@ -95,24 +88,46 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     mRequestIds = new HashSet<>();
   }
 
+  private OkHttpClient createOkHttpClient(
+    OkHttpClientProvider okHttpClientProvider,
+    @Nullable List<NetworkInterceptorCreator> networkInterceptorCreators) {
+    OkHttpClient client = okHttpClientProvider == null ? new DefaultOkHttpProvider().get() : okHttpClientProvider.get();
+    if (networkInterceptorCreators != null) {
+      OkHttpClient.Builder clientBuilder = client.newBuilder();
+      for (NetworkInterceptorCreator networkInterceptorCreator : networkInterceptorCreators) {
+        clientBuilder.addNetworkInterceptor(networkInterceptorCreator.create());
+      }
+      client = clientBuilder.build();
+    }
+    return client;
+  }
+
   /**
    * @param context the ReactContext of the application
    * @param defaultUserAgent the User-Agent header that will be set for all requests where the
    * caller does not provide one explicitly
-   * @param client the {@link OkHttpClient} to be used for networking
+   * @param okHttpClientProvider the {@link OkHttpClient} provider to be used for networking
    */
   /* package */ NetworkingModule(
     ReactApplicationContext context,
     @Nullable String defaultUserAgent,
-    OkHttpClient client) {
-    this(context, defaultUserAgent, client, null);
+    OkHttpClientProvider okHttpClientProvider) {
+    this(context, defaultUserAgent, okHttpClientProvider, null);
   }
 
   /**
    * @param context the ReactContext of the application
    */
   public NetworkingModule(final ReactApplicationContext context) {
-    this(context, null, OkHttpClientProvider.createClient(), null);
+    this(context, null, new DefaultOkHttpProvider(), null);
+  }
+
+  /**
+   * @param context the ReactContext of the application
+   * @param okHttpClientProvider to provide OkHttpInstance with different settings
+   */
+  public NetworkingModule(final ReactApplicationContext context, OkHttpClientProvider okHttpClientProvider) {
+    this(context, null, okHttpClientProvider, null);
   }
 
   /**
@@ -123,7 +138,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   public NetworkingModule(
     ReactApplicationContext context,
     List<NetworkInterceptorCreator> networkInterceptorCreators) {
-    this(context, null, OkHttpClientProvider.createClient(), networkInterceptorCreators);
+    this(context, null, new DefaultOkHttpProvider(), networkInterceptorCreators);
   }
 
   /**
@@ -132,7 +147,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * caller does not provide one explicitly
    */
   public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
-    this(context, defaultUserAgent, OkHttpClientProvider.createClient(), null);
+    this(context, defaultUserAgent, new DefaultOkHttpProvider(), null);
   }
 
   @Override
