@@ -30,26 +30,7 @@ static NSString *__nullable _RCTJSONStringifyNoRetry(id __nullable jsonObject, N
     return nil;
   }
 
-  static SEL JSONKitSelector = NULL;
-  static NSSet<Class> *collectionTypes;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    SEL selector = NSSelectorFromString(@"JSONStringWithOptions:error:");
-    if ([NSDictionary instancesRespondToSelector:selector]) {
-      JSONKitSelector = selector;
-      collectionTypes = [NSSet setWithObjects:
-                         [NSArray class], [NSMutableArray class],
-                         [NSDictionary class], [NSMutableDictionary class], nil];
-    }
-  });
-
   @try {
-
-    // Use JSONKit if available and object is not a fragment
-    if (JSONKitSelector && [collectionTypes containsObject:[jsonObject classForCoder]]) {
-      return ((NSString *(*)(id, SEL, int, NSError **))objc_msgSend)(jsonObject, JSONKitSelector, 0, error);
-    }
-
     // Use Foundation JSON method
     NSData *jsonData = [NSJSONSerialization
                         dataWithJSONObject:jsonObject options:(NSJSONWritingOptions)NSJSONReadingAllowFragments
@@ -89,35 +70,7 @@ NSString *__nullable RCTJSONStringify(id __nullable jsonObject, NSError **error)
 
 static id __nullable _RCTJSONParse(NSString *__nullable jsonString, BOOL mutable, NSError **error)
 {
-  static SEL JSONKitSelector = NULL;
-  static SEL JSONKitMutableSelector = NULL;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    SEL selector = NSSelectorFromString(@"objectFromJSONStringWithParseOptions:error:");
-    if ([NSString instancesRespondToSelector:selector]) {
-      JSONKitSelector = selector;
-      JSONKitMutableSelector = NSSelectorFromString(@"mutableObjectFromJSONStringWithParseOptions:error:");
-    }
-  });
-
   if (jsonString) {
-
-    // Use JSONKit if available and string is not a fragment
-    if (JSONKitSelector) {
-      NSInteger length = jsonString.length;
-      for (NSInteger i = 0; i < length; i++) {
-        unichar c = [jsonString characterAtIndex:i];
-        if (strchr("{[", c)) {
-          static const int options = (1 << 2); // loose unicode
-          SEL selector = mutable ? JSONKitMutableSelector : JSONKitSelector;
-          return ((id (*)(id, SEL, int, NSError **))objc_msgSend)(jsonString, selector, options, error);
-        }
-        if (!strchr(" \r\n\t", c)) {
-          break;
-        }
-      }
-    }
-
     // Use Foundation JSON method
     NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     if (!jsonData) {
