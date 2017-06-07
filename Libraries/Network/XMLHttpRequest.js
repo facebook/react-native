@@ -495,9 +495,6 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     if (this._responseType === 'blob') {
       nativeResponseType = 'blob';
     }
-    if (data instanceof Blob) {
-      data = data.data;
-    }
 
     invariant(this._method, 'Request method needs to be defined.');
     invariant(this._url, 'Request URL needs to be defined.');

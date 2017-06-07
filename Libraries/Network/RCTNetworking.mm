@@ -298,6 +298,8 @@ RCT_EXPORT_MODULE()
  *
  * - {"formData": [...]}: list of data payloads that will be combined into a multipart/form-data request
  *
+ * - {"blob": {...}}: an object representing a blob
+ *
  * If successful, the callback be called with a result dictionary containing the following (optional) keys:
  *
  * - @"body" (NSData): the body of the request
@@ -316,6 +318,14 @@ RCT_EXPORT_MODULE()
   NSData *body = [RCTConvert NSData:query[@"string"]];
   if (body) {
     return callback(nil, @{@"body": body});
+  }
+  NSDictionary *blob = [RCTConvert NSDictionary:query[@"blob"]];
+  if (blob) {
+    RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
+    NSData *data = [blobManager resolve:blob];
+    if (data) {
+      return callback(nil, @{@"body": data});
+    }
   }
   NSString *base64String = [RCTConvert NSString:query[@"base64"]];
   if (base64String) {
@@ -436,7 +446,7 @@ RCT_EXPORT_MODULE()
     RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
     NSDictionary *responseData = @{
       @"blobId": [blobManager store:data],
-      @"offset": @0,
+      @"offset": 0,
       @"size": @(data.length),
       @"name": fileName,
       @"type": mimeType,
