@@ -2,7 +2,7 @@
 id: building-for-apple-tv
 title: Building For Apple TV
 layout: docs
-category: Guides (Apple TV)
+category: Guides (iOS)
 permalink: docs/building-for-apple-tv.html
 banner: ejected
 next: native-modules-android
@@ -84,12 +84,10 @@ class Game2048 extends React.Component {
 
 ```
 
-- *TV remote animations*: `RCTTVView` native code implements Apple-recommended parallax animations to help guide the eye as the user navigates through views.  The animations can be disabled or adjusted with new optional view properties. 
+- *TV remote animations*: `RCTTVView` native code implements Apple-recommended parallax animations to help guide the eye as the user navigates through views.  The animations can be disabled or adjusted with new optional view properties.
 
 - *Back navigation with the TV remote menu button*: The `BackHandler` component, originally written to support the Android back button, now also supports back navigation on the Apple TV using the menu button on the TV remote.
 
 - *Known issues*:
 
   - [ListView scrolling](https://github.com/facebook/react-native/issues/12793).  The issue can be easily worked around by setting `removeClippedSubviews` to false in ListView and similar components.  For more discussion of this issue, see [this PR](https://github.com/facebook/react-native/pull/12944).
-
-

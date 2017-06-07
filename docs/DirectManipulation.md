@@ -4,7 +4,7 @@ title: Direct Manipulation
 layout: docs
 category: Guides
 permalink: docs/direct-manipulation.html
-next: performance
+next: colors
 previous: javascript-environment
 ---
 
@@ -267,4 +267,3 @@ Requests focus for the given input or view. The exact behavior triggered will de
 ### blur()
 
 Removes focus from an input or view. This is the opposite of `focus()`.
-

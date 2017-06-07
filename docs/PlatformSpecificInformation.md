@@ -4,8 +4,8 @@ title: Platform Specific Code
 layout: docs
 category: Guides
 permalink: docs/platform-specific-code.html
-next: debugging
-previous: colors
+next: navigation
+previous: more-resources
 ---
 
 When building a cross-platform app, you'll want to re-use as much code as possible. Scenarios may arise where it makes sense for the code to be different, for example you may want to implement separate visual components for iOS and Android.
@@ -72,8 +72,8 @@ On Android, the `Platform` module can also be used to detect the version of the 
 ```javascript
 import { Platform } from 'react-native';
 
-if(Platform.Version === 21){
-  console.log('Running on Lollipop!');
+if (Platform.Version === 25) {
+  console.log('Running on Nougat!');
 }
 ```
 

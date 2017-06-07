@@ -1,29 +1,30 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#include <folly/dynamic.h>
-#include <fb/fbjni.h>
-#include <fb/glog_init.h>
-#include <fb/log.h>
+#include <string>
+
 #include <cxxreact/Executor.h>
 #include <cxxreact/JSCExecutor.h>
 #include <cxxreact/Platform.h>
+#include <jschelpers/JSCHelpers.h>
+#include <fb/fbjni.h>
+#include <fb/glog_init.h>
+#include <fb/log.h>
+#include <folly/dynamic.h>
 #include <jschelpers/Value.h>
+
 #include "CatalystInstanceImpl.h"
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
-#include "JSCPerfLogging.h"
-#include "ProxyExecutor.h"
 #include "JCallback.h"
+#include "JSCPerfLogging.h"
 #include "JSLogging.h"
+#include "ProxyExecutor.h"
+#include "WritableNativeArray.h"
+#include "WritableNativeMap.h"
 
 #ifdef WITH_INSPECTOR
 #include "JInspector.h"
 #endif
-
-#include "WritableNativeMap.h"
-#include "WritableNativeArray.h"
-
-#include <string>
 
 using namespace facebook::jni;
 
@@ -32,6 +33,7 @@ namespace react {
 
 namespace {
 
+// TODO: can we avoid these wrapper classes, and instead specialize the logic in CatalystInstanceImpl
 class JSCJavaScriptExecutorHolder : public HybridClass<JSCJavaScriptExecutorHolder,
                                                        JavaScriptExecutorHolder> {
  public:
@@ -151,19 +153,15 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     gloginit::initialize();
     // Inject some behavior into react/
     ReactMarker::logTaggedMarker = logPerfMarker;
-    PerfLogging::installNativeHooks = addNativePerfLoggingHooks;
-    JSNativeHooks::loggingHook = nativeLoggingHook;
-    JSNativeHooks::nowHook = nativePerformanceNow;
+    JSCNativeHooks::loggingHook = nativeLoggingHook;
+    JSCNativeHooks::nowHook = nativePerformanceNow;
+    JSCNativeHooks::installPerfHooks = addNativePerfLoggingHooks;
     JSCJavaScriptExecutorHolder::registerNatives();
     ProxyJavaScriptExecutorHolder::registerNatives();
     CatalystInstanceImpl::registerNatives();
     CxxModuleWrapperBase::registerNatives();
     CxxModuleWrapper::registerNatives();
     JCxxCallbackImpl::registerNatives();
-    #ifdef WITH_INSPECTOR
-    JInspector::registerNatives();
-    #endif
-
     NativeArray::registerNatives();
     ReadableNativeArray::registerNatives();
     WritableNativeArray::registerNatives();
@@ -171,7 +169,11 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     ReadableNativeMap::registerNatives();
     WritableNativeMap::registerNatives();
     ReadableNativeMapKeySetIterator::registerNatives();
+
+    #ifdef WITH_INSPECTOR
+    JInspector::registerNatives();
+    #endif
   });
 }
 
-}}
+} }
