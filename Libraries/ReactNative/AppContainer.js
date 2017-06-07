@@ -15,6 +15,7 @@
 const EmitterSubscription = require('EmitterSubscription');
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 const React = require('React');
+const PropTypes = require('prop-types');
 const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
@@ -41,7 +42,7 @@ class AppContainer extends React.Component {
   _subscription: ?EmitterSubscription = null;
 
   static childContextTypes = {
-    rootTag: React.PropTypes.number,
+    rootTag: PropTypes.number,
   };
 
   getChildContext(): Context {

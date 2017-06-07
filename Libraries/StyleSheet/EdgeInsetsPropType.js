@@ -13,7 +13,7 @@
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 
-var {PropTypes} = require('React');
+var PropTypes = require('prop-types');
 
 var EdgeInsetsPropType = createStrictShapeTypeChecker({
   top: PropTypes.number,

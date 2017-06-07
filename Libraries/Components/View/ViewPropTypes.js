@@ -16,7 +16,7 @@ const Platform = require('Platform');
 const StyleSheetPropType = require('StyleSheetPropType');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
-const { PropTypes } = require('React');
+const PropTypes = require('prop-types');
 const {
   AccessibilityComponentTypes,
   AccessibilityTraits,

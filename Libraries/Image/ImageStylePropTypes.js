@@ -17,7 +17,7 @@ var ColorPropType = require('ColorPropType');
 var ShadowPropTypesIOS = require('ShadowPropTypesIOS');
 var TransformPropTypes = require('TransformPropTypes');
 
-var ReactPropTypes = require('React').PropTypes;
+var ReactPropTypes = require('prop-types');
 
 var ImageStylePropTypes = {
   ...LayoutPropTypes,

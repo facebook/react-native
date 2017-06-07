@@ -12,7 +12,7 @@
  */
 'use strict';
 
-const {PropTypes, checkPropTypes} = require('React');
+const PropTypes = require('prop-types');
 const RCTCameraRollManager = require('NativeModules').CameraRollManager;
 
 const createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
@@ -218,7 +218,7 @@ class CameraRoll {
    */
   static getPhotos(params) {
     if (__DEV__) {
-      checkPropTypes(
+      PropTypes.checkPropTypes(
         {params: getPhotosParamChecker},
         {params},
         'params',
@@ -233,7 +233,7 @@ class CameraRoll {
       if (__DEV__) {
         const callback = arguments[1];
         successCallback = response => {
-          checkPropTypes(
+          PropTypes.checkPropTypes(
             {response: getPhotosReturnChecker},
             {response},
             'response',
