@@ -20,17 +20,17 @@ import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
-import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.devsupport.JSCHeapCapture;
 import com.facebook.react.devsupport.JSCSamplingProfiler;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
-import com.facebook.react.modules.core.HeadlessJsTaskSupportModule;
+import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
+import com.facebook.react.modules.core.HeadlessJsTaskSupportModule;
 import com.facebook.react.modules.core.JSTimersExecution;
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.modules.core.Timing;
@@ -38,7 +38,6 @@ import com.facebook.react.modules.debug.AnimationsDebugModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
-import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
@@ -210,14 +209,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
 
   @Override
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
-    ReactMarker.logMarker(
-      ReactMarkerConstants.CORE_REACT_PACKAGE_GET_REACT_MODULE_INFO_PROVIDER_START);
     // This has to be done via reflection or we break open source.
-    ReactModuleInfoProvider reactModuleInfoProvider =
-      LazyReactPackage.getReactModuleInfoProviderViaReflection(this);
-    ReactMarker.logMarker(
-      ReactMarkerConstants.CORE_REACT_PACKAGE_GET_REACT_MODULE_INFO_PROVIDER_END);
-    return reactModuleInfoProvider;
+    return LazyReactPackage.getReactModuleInfoProviderViaReflection(this);
   }
 
   private UIManagerModule createUIManager(ReactApplicationContext reactContext) {
