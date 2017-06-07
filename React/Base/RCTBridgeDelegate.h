@@ -19,6 +19,8 @@
  * this should be an absolute URL, e.g. `http://localhost:8081/index.ios.bundle`.
  * When running from a locally bundled JS file, this should be a `file://` url
  * pointing to a path inside the app resources, e.g. `file://.../main.jsbundle`.
+ * If you return nil you need to implement loadSourceForBridge:onProgress:onComplete:
+ * or loadSourceForBridge:withBlock: instead
  */
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge;
 
