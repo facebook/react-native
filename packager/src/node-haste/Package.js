@@ -47,12 +47,25 @@ class Package {
     let main = json.main || 'index';
 
     if (replacements && typeof replacements === 'object') {
-      main =
-        replacements[main] ||
-        replacements[main + '.js'] ||
-        replacements[main + '.json'] ||
-        replacements[main.replace(/(\.js|\.json)$/, '')] ||
-        main;
+      const variants = [main];
+      if (main.slice(0, 2) === './') {
+        variants.push(main.slice(2));
+      } else {
+        variants.push('./' + main);
+      }
+
+      for (const variant of variants) {
+        const winner =
+          replacements[variant] ||
+          replacements[variant + '.js'] ||
+          replacements[variant + '.json'] ||
+          replacements[variant.replace(/(\.js|\.json)$/, '')];
+
+        if (winner) {
+          main = winner;
+          break;
+        }
+      }
     }
 
     /* $FlowFixMe: `getReplacements` doesn't validate the return value. */
