@@ -237,7 +237,8 @@ public class UIImplementation {
    */
   public void synchronouslyUpdateViewOnUIThread(int tag, ReactStylesDiffMap props) {
     UiThreadUtil.assertOnUiThread();
-    mOperationsQueue.getNativeViewHierarchyManager().updateProperties(tag, props);
+    mOperationsQueue.enqueueNonBatchedUpdateProperties(tag, props);
+    mOperationsQueue.dispatchNonBatchedViewUpdates();
   }
 
   protected void handleUpdateView(

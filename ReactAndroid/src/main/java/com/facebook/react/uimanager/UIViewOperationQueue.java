@@ -636,8 +636,15 @@ public class UIViewOperationQueue {
     }
   }
 
-  public void enqueueUpdateProperties(int reactTag, String className, ReactStylesDiffMap props) {
+  public void enqueueUpdateProperties(int reactTag, ReactStylesDiffMap props) {
     mOperations.add(new UpdatePropertiesOperation(reactTag, props));
+  }
+
+  public void enqueueNonBatchedUpdateProperties(int reactTag, ReactStylesDiffMap props) {
+    synchronized (mNonBatchedOperationsLock) {
+      mNonBatchedOperations.addLast(
+        new UpdatePropertiesOperation(reactTag, props));
+    }
   }
 
   public void enqueueUpdateLayout(
@@ -816,6 +823,30 @@ public class UIViewOperationQueue {
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+  }
+
+  /**
+   * Immediately execute all pending non batched operations. Must be called from the UI thread.
+   */
+  /* package */ void dispatchNonBatchedViewUpdates() {
+    UiThreadUtil.assertOnUiThread();
+
+    final UIOperation[] nonBatchedOperations;
+    synchronized (mNonBatchedOperationsLock) {
+      if (!mNonBatchedOperations.isEmpty()) {
+        nonBatchedOperations =
+          mNonBatchedOperations.toArray(new UIOperation[mNonBatchedOperations.size()]);
+        mNonBatchedOperations.clear();
+      } else {
+        nonBatchedOperations = null;
+      }
+    }
+
+    if (nonBatchedOperations != null) {
+      for (UIOperation op : nonBatchedOperations) {
+        op.execute();
+      }
     }
   }
 
