@@ -45,8 +45,8 @@ public class HeadlessJsTaskContext {
   /**
    * remove ReactContext instance
    */
-  public static void clear(){
-    INSTANCES.clear();
+  public static void remove(ReactContext context){
+    INSTANCES.remove(context);
   }
 
   private final WeakReference<ReactContext> mReactContext;

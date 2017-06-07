@@ -25,6 +25,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.jstasks.HeadlessJsTaskContext;
 
 /**
  * Abstract ContextWrapper for Android application or activity {@link Context} and
@@ -245,6 +246,8 @@ public class ReactContext extends ContextWrapper {
     if (mCatalystInstance != null) {
       mCatalystInstance.destroy();
     }
+
+    HeadlessJsTaskContext.remove(this);
   }
 
   /**

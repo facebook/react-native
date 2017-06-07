@@ -305,9 +305,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
             mHybridData.resetNative();
             // Kill non-UI threads from UI thread.
             getReactQueueConfiguration().destroy();
-
-            //clear ReactContext
-            HeadlessJsTaskContext.clear();
           }
         });
       }
