@@ -145,7 +145,10 @@ class CameraRoll {
    *
    * Returns a Promise which will resolve with the new URI.
    */
-  static saveToCameraRoll(tag: string, type?: 'photo' | 'video'): Promise<Object> {
+  static saveToCameraRoll(
+    tag: string,
+    type?: 'photo' | 'video'
+  ): Promise<Object> {
     invariant(
       typeof tag === 'string',
       'CameraRoll.saveToCameraRoll must be a valid string.',
