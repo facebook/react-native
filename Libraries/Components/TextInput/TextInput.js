@@ -398,7 +398,7 @@ const TextInput = React.createClass({
     /**
      * The string that will be rendered before text input has been entered.
      */
-    placeholder: PropTypes.node,
+    placeholder: PropTypes.string,
     /**
      * The text color of the placeholder string.
      */
