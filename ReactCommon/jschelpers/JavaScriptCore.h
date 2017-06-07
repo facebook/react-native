@@ -86,6 +86,7 @@ jsc_poison(JSContextGetGlobalContext JSContextGetGlobalObject JSContextGetGroup 
 // JSEvaluate
 #define JSC_JSEvaluateScript(...) __jsc_wrapper(JSEvaluateScript, __VA_ARGS__)
 #define JSC_JSEvaluateBytecodeBundle(...) __jsc_wrapper(JSEvaluateBytecodeBundle, __VA_ARGS__)
+#define JSC_JSGarbageCollect(...) __jsc_wrapper(JSGarbageCollect, __VA_ARGS__)
 
 jsc_poison(JSCheckScriptSyntax JSEvaluateScript JSEvaluateBytecodeBundle JSGarbageCollect)
 

@@ -219,7 +219,7 @@ bool NativeToJsBridge::isInspectable() {
   return m_executor->isInspectable();
 }
 
-void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {
+void NativeToJsBridge::handleMemoryPressure(JSMemoryPressure pressureLevel) {
   runOnExecutorQueue([=] (JSExecutor* executor) {
     executor->handleMemoryPressure(pressureLevel);
   });

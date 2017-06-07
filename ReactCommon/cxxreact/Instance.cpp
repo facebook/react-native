@@ -15,6 +15,7 @@
 #include "RecoverableError.h"
 #include "SystraceSection.h"
 
+#include <cxxreact/Platform.h>
 #include <cxxreact/JSIndexedRAMBundle.h>
 #include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
@@ -173,7 +174,7 @@ const ModuleRegistry &Instance::getModuleRegistry() const {
 
 ModuleRegistry &Instance::getModuleRegistry() { return *moduleRegistry_; }
 
-void Instance::handleMemoryPressure(int pressureLevel) {
+void Instance::handleMemoryPressure(JSMemoryPressure pressureLevel) {
   nativeToJsBridge_->handleMemoryPressure(pressureLevel);
 }
 

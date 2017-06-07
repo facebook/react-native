@@ -200,6 +200,15 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _reactInstance ? _reactInstance->isInspectable() : NO;
 }
 
+- (void)memWarning
+{
+    auto instance = _reactInstance.get();
+    if (instance) {
+        // there is no deferentiation in iOS between memory warning levels
+        instance->handleMemoryPressure(CRITICAL);
+    }
+}
+
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
 {
   RCTAssertParam(bridge);
@@ -208,6 +217,10 @@ struct RCTInstanceCallback : public InstanceCallback {
                             bundleURL:bridge.bundleURL
                        moduleProvider:bridge.moduleProvider
                         launchOptions:bridge.launchOptions])) {
+      [[NSNotificationCenter defaultCenter] addObserver:self
+                                               selector:@selector(memWarning)
+                                                   name:UIApplicationDidReceiveMemoryWarningNotification
+                                                 object:nil];
     _parentBridge = bridge;
     _performanceLogger = [bridge performanceLogger];
 
@@ -230,6 +243,10 @@ struct RCTInstanceCallback : public InstanceCallback {
     [RCTBridge setCurrentBridge:self];
   }
   return self;
+}
+
+- (void) dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 + (void)runRunLoop

@@ -9,6 +9,7 @@
 #include <string>
 
 #include <cxxreact/NativeModule.h>
+#include <cxxreact/Platform.h>
 #include <folly/dynamic.h>
 
 #ifndef RN_EXPORT
@@ -104,7 +105,7 @@ public:
    */
   virtual std::string getDescription() = 0;
 
-  virtual void handleMemoryPressure(int pressureLevel) {}
+  virtual void handleMemoryPressure(JSMemoryPressure pressureLevel) {}
 
   virtual void destroy() {}
   virtual ~JSExecutor() {}

@@ -76,7 +76,7 @@ public:
   void* getJavaScriptContext();
   bool isInspectable();
 
-  void handleMemoryPressure(int pressureLevel);
+  void handleMemoryPressure(JSMemoryPressure pressureLevel);
 
   /**
    * Synchronously tears down the bridge and the main executor.

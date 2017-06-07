@@ -90,7 +90,7 @@ public:
 
   virtual bool isInspectable() override;
 
-  virtual void handleMemoryPressure(int pressureLevel) override;
+  virtual void handleMemoryPressure(JSMemoryPressure pressureLevel) override;
 
   virtual void destroy() override;
 

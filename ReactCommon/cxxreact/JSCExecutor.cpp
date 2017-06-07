@@ -691,10 +691,11 @@ bool JSCExecutor::isInspectable() {
   return canUseInspector(m_context);
 }
 
-void JSCExecutor::handleMemoryPressure(int pressureLevel) {
-#ifdef WITH_JSC_MEMORY_PRESSURE
-  JSHandleMemoryPressure(
-      this, m_context, static_cast<JSMemoryPressure>(pressureLevel));
+void JSCExecutor::handleMemoryPressure(JSMemoryPressure pressureLevel) {
+#if defined WITH_JSC_MEMORY_PRESSURE
+  JSHandleMemoryPressure(this, m_context, pressureLevel);
+#else
+  JSC_JSGarbageCollect(m_context);
 #endif
 }
 

@@ -68,7 +68,7 @@ public:
   const ModuleRegistry &getModuleRegistry() const;
   ModuleRegistry &getModuleRegistry();
 
-  void handleMemoryPressure(int pressureLevel);
+  void handleMemoryPressure(JSMemoryPressure pressureLevel);
 
 private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);

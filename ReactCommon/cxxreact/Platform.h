@@ -19,6 +19,12 @@
 namespace facebook {
 namespace react {
 
+enum JSMemoryPressure {
+  UI_HIDDEN,
+  MODERATE,
+  CRITICAL,
+};
+
 namespace JSCNativeHooks {
 
 using Hook = JSValueRef(*)(
