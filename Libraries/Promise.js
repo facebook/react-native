@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const prettyFormat = require('pretty-format');
 const Promise = require('fbjs/lib/Promise.native');
 
 const prettyFormat = require('pretty-format');
