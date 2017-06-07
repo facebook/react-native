@@ -5,7 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/handling-touches.html
 next: animations
-previous: more-resources
+previous: components
 ---
 
 Users interact with mobile apps mainly through touch. They can use a combination of gestures, such as tapping on a button, scrolling a list, or zooming on a map.
