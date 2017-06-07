@@ -196,7 +196,7 @@
     "promise": "^7.1.1",
     "prop-types": "^15.5.8",
     "react-clone-referenced-element": "^1.0.1",
-    "react-devtools-core": "^2.3.0",
+    "react-devtools-core": "2.3.1",
     "react-timer-mixin": "^0.13.2",
     "react-transform-hmr": "^1.0.4",
     "rebound": "^0.0.13",
