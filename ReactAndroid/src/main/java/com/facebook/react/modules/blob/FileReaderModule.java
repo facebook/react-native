@@ -70,7 +70,7 @@ public class FileReaderModule extends ReactContextBaseJavaModule {
         sb.append("application/octet-stream");
       }
 
-      sb.append(";bas64,");
+      sb.append(";base64,");
       sb.append(Base64.encodeToString(bytes, Base64.NO_WRAP));
 
       promise.resolve(sb.toString());
