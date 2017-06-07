@@ -4,7 +4,7 @@ title: Components and APIs
 layout: docs
 category: Guides
 permalink: docs/components-and-apis.html
-next: handling-touches
+next: platform-specific-code
 previous: more-resources
 ---
 
