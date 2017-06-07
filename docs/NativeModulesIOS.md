@@ -185,6 +185,8 @@ CalendarManager.findEvents((error, events) => {
 
 A native module should invoke its callback exactly once. It's okay to store the callback and invoke it later. This pattern is often used to wrap iOS APIs that require delegates - see [`RCTAlertManager`](https://github.com/facebook/react-native/blob/master/React/Modules/RCTAlertManager.m) for an example. If the callback is never invoked, some memory is leaked. If both `onSuccess` and `onFail` callbacks are passed, you should only invoke one of them.
 
+For an alternative mechanism for sending data to JavaScript, see [Sending Events to JavaScript](#sending-events-to-javascript). You can use the mechanism to send data twice or more, except for some events should be fired once, for example, `onReady`.
+
 If you want to pass error-like objects to JavaScript, use `RCTMakeError` from [`RCTUtils.h`](https://github.com/facebook/react-native/blob/master/React/Base/RCTUtils.h).  Right now this just passes an Error-shaped dictionary to JavaScript, but we would like to automatically generate real JavaScript `Error` objects in the future.
 
 ## Promises
