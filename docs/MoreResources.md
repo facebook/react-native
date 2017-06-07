@@ -4,8 +4,8 @@ title: More Resources
 layout: docs
 category: The Basics
 permalink: docs/more-resources.html
-next: components
-previous: networking
+next: platform-specific-code
+previous: network
 ---
 
 If you just read through this website, you should be able to build a pretty cool React Native app. But React Native isn't just a product made by one company - it's a community of thousands of developers. So if you're interested in React Native, here's some related stuff you might want to check out.
@@ -34,8 +34,6 @@ The folks who built the app for Facebook's F8 conference in 2016 also [open-sour
 
 [Expo](https://docs.expo.io) is a development environment plus application that focuses on letting you build React Native apps in the Expo development environment, without ever touching Xcode or Android Studio. If you wish React Native was even more JavaScripty and webby, check out Expo.
 
-[Deco](https://www.decoide.org) is an all-in-one development environment specifically designed for React Native. It can automatically set up a new project, search for open source components, and insert them. You can also tweak your app graphically in real time. Check it out if you use macOS.
-
 ## Where React Native People Hang Out
 
 The [React Native Community](https://www.facebook.com/groups/react.native.community) Facebook group has thousands of developers, and it's pretty active. Come there to show off your project, or ask how other people solved similar problems.
@@ -46,4 +44,4 @@ The [React Twitter account](https://twitter.com/reactjs) covers both React and R
 
 There are a lot of [React Native Meetups](http://www.meetup.com/topics/react-native/) that happen around the world. Often there is React Native content in React meetups as well.
 
-Sometimes we have React conferences. We posted the [videos from React.js Conf 2016](https://www.youtube.com/playlist?list=PLb0IAmt7-GS0M8Q95RIc2lOM6nc77q1IY), and we'll probably have more conferences in the future, too. Stay tuned.
+Sometimes we have React conferences. We posted the [videos from React.js Conf 2017](https://www.youtube.com/playlist?list=PLb0IAmt7-GS3fZ46IGFirdqKTIxlws7e0) and [React.js Conf 2016](https://www.youtube.com/playlist?list=PLb0IAmt7-GS0M8Q95RIc2lOM6nc77q1IY), and we'll probably have more conferences in the future, too. Stay tuned. You can also find a list of dedicated React Native conferences [here](http://www.awesome-react-native.com/#conferences).
