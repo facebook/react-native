@@ -4625,6 +4625,55 @@ describe('DependencyGraph', function() {
       });
     });
 
+    it('should work with arbitrary platforms', function() {
+      var root = '/root';
+      setMockFileSystem({
+        root: {
+          'index.foo.js': `
+            /**
+             * @providesModule index
+             */
+             require('./a');
+          `,
+          'a.ios.js': '',
+          'a.android.js': '',
+          'a.foo.js': '',
+          'a.js': '',
+        },
+      });
+
+      var dgraph = DependencyGraph.load({
+        ...defaults,
+        platforms: new Set(['ios','android','foo']),
+        roots: [root],
+      });
+      return getOrderedDependenciesAsJSON(
+        dgraph,
+        '/root/index.foo.js',
+      ).then(function(deps) {
+        expect(deps).toEqual([
+          {
+            id: 'index',
+            path: 'C:\\root\\index.foo.js',
+            dependencies: ['./a'],
+            isAsset: false,
+            isJSON: false,
+            isPolyfill: false,
+            resolution: undefined,
+          },
+          {
+            id: 'C:\\root\\a.foo.js',
+            path: 'C:\\root\\a.foo.js',
+            dependencies: [],
+            isAsset: false,
+            isJSON: false,
+            isPolyfill: false,
+            resolution: undefined,
+          }
+        ]);
+      });
+    });
+
     it('should require package.json', () => {
       var root = '/root';
       setMockFileSystem({
