@@ -155,7 +155,7 @@ function loadModuleImplementation(moduleId, module) {
   // factory to keep any require cycles inside the factory from causing an
   // infinite require loop.
   module.isInitialized = true;
-  const exports = module.exports = {};
+  module.exports = {};
   const {factory, dependencyMap} = module;
   try {
     if (__DEV__) {
@@ -163,7 +163,17 @@ function loadModuleImplementation(moduleId, module) {
       Systrace.beginEvent('JS_require_' + (module.verboseName || moduleId));
     }
 
-    const moduleObject: Module = {exports};
+    const moduleObject = {
+      get id() {
+        return moduleId;
+      },
+      get exports() {
+        return module.exports;
+      },
+      set exports(value) {
+        module.exports = value;
+      }
+    };
     if (__DEV__ && module.hot) {
       moduleObject.hot = module.hot;
     }
@@ -171,7 +181,7 @@ function loadModuleImplementation(moduleId, module) {
     // keep args in sync with with defineModuleCode in
     // packager/src//Resolver/index.js
     // and packager/src//ModuleGraph/worker.js
-    factory(global, require, moduleObject, exports, dependencyMap);
+    factory.call(module.exports, global, require, moduleObject, module.exports, dependencyMap);
 
     // avoid removing factory in DEV mode as it breaks HMR
     if (!__DEV__) {
@@ -184,7 +194,7 @@ function loadModuleImplementation(moduleId, module) {
       // $FlowFixMe: we know that __DEV__ is const and `Systrace` exists
       Systrace.endEvent();
     }
-    return (module.exports = moduleObject.exports);
+    return module.exports;
   } catch (e) {
     module.hasError = true;
     module.error = e;
