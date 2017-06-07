@@ -4,8 +4,8 @@ title: Animations
 layout: docs
 category: Guides
 permalink: docs/animations.html
-next: navigation
-previous: handling-touches
+next: accessibility
+previous: images
 ---
 
 Animations are very important to create a great user experience.

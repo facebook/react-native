@@ -5,7 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/performance.html
 next: gesture-responder-system
-previous: direct-manipulation
+previous: debugging
 ---
 
 A compelling reason for using React Native instead of WebView-based tools is to achieve 60 frames per second and a native look and feel to your apps.
