@@ -51,4 +51,8 @@
   self.backgroundColor = inheritedBackgroundColor;
 }
 
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    return NO;
+}
+
 @end
