@@ -56,7 +56,7 @@ A common pattern to many mobile apps is the scrollable list of items. Users inte
 
 ScrollViews can scroll vertically or horizontally, and can be configured to allow paging through views using swiping gestures by using the `pagingEnabled` props. Swiping horizontally between views can also be implemented on Android using the [ViewPagerAndroid](docs/viewpagerandroid.html) component.
 
-A [ListView](docs/using-a-listview.html) is a special kind of ScrollView that is best suited for displaying long vertical lists of items. It can also display section headers and footers, similar to `UITableView`s on iOS.
+A [FlatList](docs/using-a-listview.html) is a special kind of ScrollView that is best suited for displaying long vertical lists of items. If you want to display section headers and footers, similar to `UITableView`s on iOS, then [SectionList](docs/using-a-listview.html) is the way to go.
 
 ### Pinch-to-zoom
 

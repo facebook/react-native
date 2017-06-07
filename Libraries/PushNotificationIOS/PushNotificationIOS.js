@@ -121,6 +121,7 @@ class PushNotificationIOS {
   _data: Object;
   _alert: string | Object;
   _sound: string;
+  _category: string;
   _badgeCount: number;
   _notificationId: string;
   _isRemote: boolean;
@@ -417,6 +418,7 @@ class PushNotificationIOS {
           this._alert = notifVal.alert;
           this._sound = notifVal.sound;
           this._badgeCount = notifVal.badge;
+          this._category = notifVal.category;
         } else {
           this._data[notifKey] = notifVal;
         }
@@ -427,6 +429,7 @@ class PushNotificationIOS {
       this._sound = nativeNotif.soundName;
       this._alert = nativeNotif.alertBody;
       this._data = nativeNotif.userInfo;
+      this._category = nativeNotif.category;
     }
   }
 
@@ -465,6 +468,13 @@ class PushNotificationIOS {
    */
   getSound(): ?string {
     return this._sound;
+  }
+
+  /**
+   * Gets the category string from the `aps` object
+   */
+  getCategory(): ?string {
+    return this._category;
   }
 
   /**

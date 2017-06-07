@@ -106,7 +106,7 @@ var AdjustingFontSize = React.createClass({
     }
     return (
       <View>
-        <Text lineBreakMode="tail" numberOfLines={1} style={{fontSize: 36, marginVertical:6}}>
+        <Text ellipsizeMode="tail" numberOfLines={1} style={{fontSize: 36, marginVertical: 6}}>
           Truncated text is baaaaad.
         </Text>
         <Text numberOfLines={1} adjustsFontSizeToFit={true} style={{fontSize: 40, marginVertical:6}}>
