@@ -12,7 +12,6 @@ package com.facebook.react.bridge;
 import javax.annotation.Nullable;
 
 import com.facebook.jni.HybridData;
-import com.facebook.soloader.SoLoader;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
@@ -39,7 +38,7 @@ public class ProxyJavaScriptExecutor extends JavaScriptExecutor {
   }
 
   static {
-    SoLoader.loadLibrary(CatalystInstanceImpl.REACT_NATIVE_LIB);
+    ReactBridge.staticInit();
   }
 
   private @Nullable JavaJSExecutor mJavaJSExecutor;

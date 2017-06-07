@@ -11,7 +11,6 @@
  */
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 /**
@@ -19,10 +18,4 @@ const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
  * adding all event listeners directly to RCTNativeAppEventEmitter.
  */
 const RCTNativeAppEventEmitter = RCTDeviceEventEmitter;
-
-BatchedBridge.registerCallableModule(
-  'RCTNativeAppEventEmitter',
-  RCTNativeAppEventEmitter
-);
-
 module.exports = RCTNativeAppEventEmitter;

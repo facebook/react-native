@@ -13,7 +13,6 @@
 
 const BatchedBridge = require('BatchedBridge');
 const BugReporting = require('BugReporting');
-const FrameRateLogger = require('FrameRateLogger');
 const NativeModules = require('NativeModules');
 const ReactNative = require('ReactNative');
 const SceneTracker = require('SceneTracker');
@@ -21,12 +20,6 @@ const SceneTracker = require('SceneTracker');
 const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const renderApplication = require('renderApplication');
-
-if (__DEV__) {
-  // In order to use Cmd+P to record/dump perf data, we need to make sure
-  // this module is available in the bundle
-  require('RCTRenderingPerf');
-}
 
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
@@ -57,8 +50,6 @@ const sections: Runnables = {};
 const tasks: Map<string, TaskProvider> = new Map();
 let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
   (component: ComponentProvider) => component();
-let _frameRateLoggerSceneListener = null;
-
 
 /**
  * <div class="banner-crna-ejected">
@@ -187,11 +178,7 @@ const AppRegistry = {
       'This error can also happen due to a require() error during ' +
       'initialization or failure to call AppRegistry.registerComponent.\n\n'
     );
-    if (!_frameRateLoggerSceneListener) {
-      _frameRateLoggerSceneListener = SceneTracker.addActiveSceneChangedListener(
-        (scene) => FrameRateLogger.setContext(scene.name)
-      );
-    }
+
     SceneTracker.setActiveScene({name: appKey});
     runnables[appKey].run(appParameters);
   },

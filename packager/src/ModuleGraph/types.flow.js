@@ -13,7 +13,7 @@
 import type {FBSourceMap, MappingsMap, SourceMap} from '../lib/SourceMap';
 import type {Ast} from 'babel-core';
 import type {Console} from 'console';
-export type {Transformer} from '../JSTransformer/worker/worker.js';
+export type {Transformer} from '../JSTransformer/worker';
 
 export type BuildResult = {|
   ...GraphResult,

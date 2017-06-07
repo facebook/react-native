@@ -11,7 +11,7 @@
  */
 'use strict';
 
-const EventEmitter = require('EventEmitter');
+const MissingNativeEventEmitterShim = require('MissingNativeEventEmitterShim');
 const NativeEventEmitter = require('NativeEventEmitter');
 const NativeModules = require('NativeModules');
 const RCTAppState = NativeModules.AppState;
@@ -32,8 +32,8 @@ const invariant = require('fbjs/lib/invariant');
  *  - `background` - The app is running in the background. The user is either
  *     in another app or on the home screen
  *  - `inactive` - This is a state that occurs when transitioning between
- *  	 foreground & background, and during periods of inactivity such as
- *  	 entering the Multitasking view or in the event of an incoming call
+ *     foreground & background, and during periods of inactivity such as
+ *     entering the Multitasking view or in the event of an incoming call
  *
  * For more information, see
  * [Apple's documentation](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/TheAppLifeCycle/TheAppLifeCycle.html)
@@ -87,7 +87,7 @@ class AppState extends NativeEventEmitter {
 
   _eventHandlers: Object;
   currentState: ?string;
-  isAvailable: boolean;
+  isAvailable: boolean = true;
 
   constructor() {
     super(RCTAppState);
@@ -176,48 +176,31 @@ class AppState extends NativeEventEmitter {
   }
 }
 
-function throwMissingNativeModule() {
-  invariant(
-    false,
-    'Cannot use AppState module when native RCTAppState is not included in the build.\n' +
-    'Either include it, or check AppState.isAvailable before calling any methods.'
-  );
-}
+if (__DEV__ && !RCTAppState) {
+  class MissingNativeAppStateShim extends MissingNativeEventEmitterShim {
+    constructor() {
+      super('RCTAppState', 'AppState');
+    }
 
-class MissingNativeAppStateShim extends EventEmitter {
-  // AppState
-  isAvailable: boolean = false;
-  currentState: ?string = null;
+    get currentState(): ?string {
+      this.throwMissingNativeModule();
+    }
 
-  addEventListener() {
-    throwMissingNativeModule();
+    addEventListener(...args: Array<any>) {
+      this.throwMissingNativeModule();
+    }
+
+    removeEventListener(...args: Array<any>) {
+      this.throwMissingNativeModule();
+    }
   }
 
-  removeEventListener() {
-    throwMissingNativeModule();
-  }
-
-  // EventEmitter
-  addListener() {
-    throwMissingNativeModule();
-  }
-
-  removeAllListeners() {
-    throwMissingNativeModule();
-  }
-
-  removeSubscription() {
-    throwMissingNativeModule();
-  }
-}
-
-// This module depends on the native `RCTAppState` module. If you don't include it,
-// `AppState.isAvailable` will return `false`, and any method calls will throw.
-// We reassign the class variable to keep the autodoc generator happy.
-if (RCTAppState) {
-  AppState = new AppState();
-} else {
+  // This module depends on the native `RCTAppState` module. If you don't include it,
+  // `AppState.isAvailable` will return `false`, and any method calls will throw.
+  // We reassign the class variable to keep the autodoc generator happy.
   AppState = new MissingNativeAppStateShim();
+} else {
+  AppState = new AppState();
 }
 
 module.exports = AppState;

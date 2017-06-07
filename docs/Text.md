@@ -22,7 +22,7 @@ export default class BoldAndBeautiful extends Component {
 }
 
 // skip this line if using Create React Native App
-AppRegistry.registerComponent('BoldAndBeautiful', () => BoldAndBeautiful);
+AppRegistry.registerComponent('AwesomeProject', () => BoldAndBeautiful);
 ```
 
 Behind the scenes, React Native converts this to a flat `NSAttributedString` or `SpannableString` that contains the following information:
@@ -54,7 +54,7 @@ export default class BlueIsCool extends Component {
 }
 
 // skip this line if using Create React Native App
-AppRegistry.registerComponent('BlueIsCool', () => BlueIsCool);
+AppRegistry.registerComponent('AwesomeProject', () => BlueIsCool);
 ```
 
 > In order to use this feature, you must give the view a `width` and a `height`.

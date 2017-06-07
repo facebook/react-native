@@ -44,7 +44,6 @@
   RCTAssertParam(bridge);
 
   if (self = [super initWithFrame:CGRectZero]) {
-    _contentInset = UIEdgeInsetsZero;
     _bridge = bridge;
     _eventDispatcher = bridge.eventDispatcher;
     _blurOnSubmit = NO;
@@ -203,12 +202,22 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 - (void)setFont:(UIFont *)font
 {
   _textView.font = font;
+  [self setNeedsLayout];
 }
 
-- (void)setContentInset:(UIEdgeInsets)contentInset
+- (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
 {
-  _contentInset = contentInset;
-  _textView.textContainerInset = contentInset;
+  _reactPaddingInsets = reactPaddingInsets;
+  // We apply `paddingInsets` as `_textView`'s `textContainerInset`.
+  _textView.textContainerInset = reactPaddingInsets;
+  [self setNeedsLayout];
+}
+
+- (void)setReactBorderInsets:(UIEdgeInsets)reactBorderInsets
+{
+  _reactBorderInsets = reactBorderInsets;
+  // We apply `borderInsets` as `_textView` layout offset.
+  _textView.frame = UIEdgeInsetsInsetRect(self.bounds, reactBorderInsets);
   [self setNeedsLayout];
 }
 
@@ -270,6 +279,7 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 - (void)setPlaceholder:(NSString *)placeholder
 {
   _textView.placeholderText = placeholder;
+  [self setNeedsLayout];
 }
 
 - (UIColor *)placeholderTextColor
@@ -520,6 +530,13 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
                                eventCount:_nativeEventCount];
 }
 
+#pragma mark - Accessibility
+
+- (UIView *)reactAccessibilityElement
+{
+  return _textView;
+}
+
 #pragma mark - Focus control deledation
 
 - (void)reactFocus
@@ -537,14 +554,15 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   [_textView reactFocusIfNeeded];
 }
 
-#pragma mark - Content size
+#pragma mark - Content Size (in Yoga terms, without any insets)
 
 - (CGSize)contentSize
 {
-  // Returning value does NOT include insets.
+  // Returning value does NOT include border and padding insets.
   CGSize contentSize = self.intrinsicContentSize;
-  contentSize.width -= _contentInset.left + _contentInset.right;
-  contentSize.height -= _contentInset.top + _contentInset.bottom;
+  UIEdgeInsets compoundInsets = self.reactCompoundInsets;
+  contentSize.width -= compoundInsets.left + compoundInsets.right;
+  contentSize.height -= compoundInsets.top + compoundInsets.bottom;
   return contentSize;
 }
 
@@ -570,20 +588,33 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   }
 }
 
-#pragma mark - Layout
+#pragma mark - Layout (in UIKit terms, with all insets)
 
 - (CGSize)intrinsicContentSize
 {
   // Calling `sizeThatFits:` is probably more expensive method to compute
   // content size compare to direct access `_textView.contentSize` property,
   // but seems `sizeThatFits:` returns more reliable and consistent result.
-  // Returning value DOES include insets.
+  // Returning value DOES include border and padding insets.
   return [self sizeThatFits:CGSizeMake(self.bounds.size.width, INFINITY)];
 }
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-  return [_textView sizeThatFits:size];
+  CGFloat compoundHorizontalBorderInset = _reactBorderInsets.left + _reactBorderInsets.right;
+  CGFloat compoundVerticalBorderInset = _reactBorderInsets.top + _reactBorderInsets.bottom;
+
+  size.width -= compoundHorizontalBorderInset;
+  size.height -= compoundVerticalBorderInset;
+
+  // Note: `paddingInsets` already included in `_textView` size
+  // because it was applied as `textContainerInset`.
+  CGSize fittingSize = [_textView sizeThatFits:size];
+
+  fittingSize.width += compoundHorizontalBorderInset;
+  fittingSize.height += compoundVerticalBorderInset;
+
+  return fittingSize;
 }
 
 - (void)layoutSubviews

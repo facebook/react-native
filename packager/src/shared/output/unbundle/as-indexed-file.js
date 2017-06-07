@@ -190,7 +190,7 @@ function buildTableAndContents(
   return [
     fileHeader,
     table,
-    startupCodeBuffer
+    startupCodeBuffer,
   ].concat(moduleBuffers.map(({buffer}) => buffer));
 }
 
