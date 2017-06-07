@@ -199,5 +199,13 @@
     "infoLink": "https://eng.uber.com/ubereats-react-native/",
     "infoTitle": "Powering UberEATS with React Native and Uber Engineering",
     "pinned": false
+  },
+  {
+    "name": "Bag2Bag",
+    "icon": "https://lh3.googleusercontent.com/K7Oxir2qg3y-FUcqDWzHNlPuDvJXrkBhckjIfGM5uvIbgPqUE3aTWWKo1Wsm5auel_Ft=w300-rw",
+    "infoLink": "http://www.bag2bag.in",
+    "infoTitle": "India's first mini-hospitality aggregator used React Native to build an intuitive mobile app",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.ionicframework.projectx956620&hl=en",
+    "pinned": false
   }
 ]
