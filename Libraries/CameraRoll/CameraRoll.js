@@ -147,7 +147,7 @@ class CameraRoll {
    */
   static saveToCameraRoll(
     tag: string,
-    type?: 'photo' | 'video'
+    type?: 'photo' | 'video',
   ): Promise<Object> {
     invariant(
       typeof tag === 'string',
