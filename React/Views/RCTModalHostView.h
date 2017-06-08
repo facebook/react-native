@@ -23,6 +23,7 @@
 @property (nonatomic, copy) NSString *animationType;
 @property (nonatomic, assign, getter=isTransparent) BOOL transparent;
 
+@property (nonatomic, copy) RCTDirectEventBlock onClose;
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
 
 @property (nonatomic, weak) id<RCTModalHostViewInteractor> delegate;
