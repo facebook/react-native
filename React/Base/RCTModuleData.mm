@@ -295,10 +295,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   if (_hasConstantsToExport && !_constantsToExport) {
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData gatherConstants] %@", _moduleClass]), nil);
     (void)[self instance];
-    if (!RCTIsMainQueue()) {
-      RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
-    }
-
+    
     RCTUnsafeExecuteOnMainQueueSync(^{
       self->_constantsToExport = [self->_instance constantsToExport] ?: @{};
     });
