@@ -559,6 +559,7 @@ Run `react-native run-android` inside your React Native project folder:
 ```
 cd AwesomeProject
 react-native run-android
+npm start
 ```
 
 If everything is set up correctly, you should see your new app running in your Android emulator shortly.
