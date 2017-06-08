@@ -194,7 +194,11 @@ public class MainReactPackage extends LazyReactPackage {
       new ModuleSpec(NetworkingModule.class, new Provider<NativeModule>() {
         @Override
         public NativeModule get() {
-          return new NetworkingModule(context);
+          if (mConfig != null && mConfig.getNetworkInterceptorCreators() != null) {
+            return new NetworkingModule(context, mConfig.getNetworkInterceptorCreators());
+          } else {
+            return new NetworkingModule(context);
+          }
         }
       }),
       new ModuleSpec(NetInfoModule.class, new Provider<NativeModule>() {
