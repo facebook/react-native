@@ -734,7 +734,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const visibleLength = this._selectLength(e.nativeEvent.layoutMeasurement);
     const contentLength = this._selectLength(e.nativeEvent.contentSize);
     const offset = this._selectOffset(e.nativeEvent.contentOffset);
-    const dt = Math.max(1, timestamp - this._scrollMetrics.timestamp);
+    const dt = this._scrollMetrics.timestamp
+      ? Math.max(1, timestamp - this._scrollMetrics.timestamp)
+      : 1;
     if (dt > 500 && this._scrollMetrics.dt > 500 && (contentLength > (5 * visibleLength)) &&
         !this._hasWarned.perf) {
       infoLog(
