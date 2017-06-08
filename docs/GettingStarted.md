@@ -452,7 +452,7 @@ changes in the filesystem. It is highly recommended you install it for better pe
 ## Creating a new application
 
 Use the React Native command line interface to generate a new React Native project called "AwesomeProject":
-
+(on Windows10: avoid building the project in "C:\Windows\System32", create and run under "C:\Users\user_name_here")
 ```
 react-native init AwesomeProject
 ```
