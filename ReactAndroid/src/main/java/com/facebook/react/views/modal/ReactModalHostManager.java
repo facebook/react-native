@@ -61,6 +61,11 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
     view.setAnimationType(animationType);
   }
 
+  @ReactProp(name = "softInputMode")
+  public void setSoftInputMode(ReactModalHostView view, String softInputMode) {
+    view.setSoftInputMode(softInputMode);
+  }
+
   @ReactProp(name = "transparent")
   public void setTransparent(ReactModalHostView view, boolean transparent) {
     view.setTransparent(transparent);
