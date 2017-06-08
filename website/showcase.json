@@ -199,5 +199,14 @@
     "infoLink": "https://eng.uber.com/ubereats-react-native/",
     "infoTitle": "Powering UberEATS with React Native and Uber Engineering",
     "pinned": false
+  },
+  {
+    "name": "WallaBee",
+    "icon": "https://wallazee.global.ssl.fastly.net/images/site/logo.png",
+    "linkAppStore": "https://itunes.apple.com/us/app/wallabee-collecting-and-trading-card-game/id1155134198?mt=8",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.wallabee&hl=en",
+    "infoLink": "https://www.wallabeegame.com/",
+    "infoTitle": "WallaBee is 50% Collecting Game, 50% GeoLocation, and 100% Community.",
+    "pinned": false
   }
 ]
