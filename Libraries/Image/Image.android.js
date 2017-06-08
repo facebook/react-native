@@ -142,6 +142,10 @@ var Image = React.createClass({
      */
     onLoadEnd: PropTypes.func,
     /**
+     * Invoked when load fails
+     */
+    onError: PropTypes.func,
+    /**
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
