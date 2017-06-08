@@ -99,6 +99,9 @@ if (!global.process.env.NODE_ENV) {
 // Set up profile
 const Systrace = require('Systrace');
 Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
+if (__DEV__) {
+  global.performance = Systrace.getUserTimingPolyfill();
+}
 
 // Set up console
 const ExceptionsManager = require('ExceptionsManager');
