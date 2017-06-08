@@ -25,7 +25,7 @@ var preset = {
     'transform-es2015-computed-properties',
     'check-es2015-constants',
     'transform-es2015-destructuring',
-    ['transform-es2015-modules-commonjs', { strict: false, allowTopLevelThis: true }],
+    ['transform-es2015-modules-commonjs', { allowTopLevelThis: true }],
     'transform-es2015-parameters',
     'transform-es2015-shorthand-properties',
     'transform-es2015-spread',
