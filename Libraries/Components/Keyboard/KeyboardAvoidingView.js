@@ -59,7 +59,12 @@ const KeyboardAvoidingView = React.createClass({
   propTypes: {
     ...ViewPropTypes,
     behavior: PropTypes.oneOf(['height', 'position', 'padding']),
-
+    
+    /**
+     * The style of the content container(View) when behavior is 'position'.
+     */
+    contentContainerStyle: View.propTypes.style,
+    
     /**
      * The style of the content container(View) when behavior is 'position'.
      */
