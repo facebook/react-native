@@ -68,12 +68,24 @@ RCT_EXPORT_MODULE(BlobModule)
 
 RCT_EXPORT_METHOD(createFromParts:(NSArray<NSDictionary<NSString *, id> *> *)parts withId:(NSString *)blobId)
 {
-  NSMutableData *data = [NSMutableData new];
+    NSMutableData *blob = [NSMutableData new];
+
   for (NSDictionary<NSString *, id> *part in parts) {
-    NSData *partData = [self resolve:part];
-    [data appendData:partData];
+    NSString *type = [RCTConvert NSString:part[@"type"]];
+
+    if ([type isEqualToString:@"blob"]) {
+      NSDictionary *data = [RCTConvert NSDictionary:part[@"data"]];
+      NSData *partData = [self resolve:data];
+      [blob appendData:partData];
+    } else if ([type isEqualToString:@"string"]) {
+      NSData *data = [[RCTConvert NSString:part[@"data"]] dataUsingEncoding:NSUTF8StringEncoding];
+      [blob appendData:data];
+    } else {
+      [NSException raise:@"Invalid type for blob" format:@"%@ is invalid", type];
+    }
   }
-  [self store:data withId:blobId];
+
+  [self store:blob withId:blobId];
 }
 
 RCT_EXPORT_METHOD(release:(NSString *)blobId)

@@ -13,7 +13,6 @@
 'use strict';
 
 const EventTarget = require('event-target-shim');
-const Platform = require('Platform');
 const Blob = require('Blob');
 const { FileReaderModule } = require('NativeModules');
 
@@ -89,10 +88,6 @@ class FileReader extends EventTarget(...READER_EVENTS) {
   }
 
   readAsDataURL(blob: Blob) {
-    if (Platform.OS === 'ios') {
-      throw new Error('FileReader.readAsDataURL is not implemented on iOS');
-    }
-
     this._aborted = false;
 
     FileReaderModule.readAsDataURL(blob.data).then((text: string) => {
@@ -111,10 +106,6 @@ class FileReader extends EventTarget(...READER_EVENTS) {
   }
 
   readAsText(blob: Blob, encoding: string = 'UTF-8') {
-    if (Platform.OS === 'ios') {
-      throw new Error('FileReader.readAsText is not implemented on iOS');
-    }
-
     this._aborted = false;
 
     FileReaderModule.readAsText(blob.data, encoding).then((text: string) => {

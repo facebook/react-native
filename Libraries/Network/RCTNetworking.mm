@@ -446,7 +446,7 @@ RCT_EXPORT_MODULE()
     RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
     NSDictionary *responseData = @{
       @"blobId": [blobManager store:data],
-      @"offset": 0,
+      @"offset": @0,
       @"size": @(data.length),
       @"name": fileName,
       @"type": mimeType,

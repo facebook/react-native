@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5241ACAD1EE8595100F67468 /* RCTFileReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 5241ACAC1EE8595100F67468 /* RCTFileReaderModule.m */; };
+		5241ACAE1EE8595100F67468 /* RCTFileReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 5241ACAC1EE8595100F67468 /* RCTFileReaderModule.m */; };
 		AD9A43C31DFC7126008DC588 /* RCTBlobManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AD9A43C21DFC7126008DC588 /* RCTBlobManager.m */; };
 		ADD01A711E09404A00F6D226 /* RCTBlobManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AD9A43C21DFC7126008DC588 /* RCTBlobManager.m */; };
 /* End PBXBuildFile section */
@@ -24,10 +26,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		358F4ED71D1E81A9004DF814 /* libRCTBlob.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTBlob.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5241ACAB1EE769AD00F67468 /* libRCTBlob-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTBlob-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5241ACAC1EE8595100F67468 /* RCTFileReaderModule.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = RCTFileReaderModule.m; sourceTree = "<group>"; tabWidth = 2; };
+		5241ACAF1EE8598200F67468 /* RCTFileReaderModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTFileReaderModule.h; sourceTree = "<group>"; };
+		52F260D91EE7167300F0B7B4 /* libRCTBlob.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTBlob.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBlobManager.h; sourceTree = "<group>"; };
 		AD9A43C21DFC7126008DC588 /* RCTBlobManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBlobManager.m; sourceTree = "<group>"; };
-		ADD01A681E09402E00F6D226 /* libRCTBlob-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTBlob-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,19 +48,13 @@
 		358F4ECE1D1E81A9004DF814 = {
 			isa = PBXGroup;
 			children = (
+				5241ACAC1EE8595100F67468 /* RCTFileReaderModule.m */,
+				5241ACAF1EE8598200F67468 /* RCTFileReaderModule.h */,
 				AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */,
 				AD9A43C21DFC7126008DC588 /* RCTBlobManager.m */,
-				358F4ED81D1E81A9004DF814 /* Products */,
+				52F260D91EE7167300F0B7B4 /* libRCTBlob.a */,
+				5241ACAB1EE769AD00F67468 /* libRCTBlob-tvOS.a */,
 			);
-			sourceTree = "<group>";
-		};
-		358F4ED81D1E81A9004DF814 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				358F4ED71D1E81A9004DF814 /* libRCTBlob.a */,
-				ADD01A681E09402E00F6D226 /* libRCTBlob-tvOS.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -76,7 +74,7 @@
 			);
 			name = RCTBlob;
 			productName = SLKBlobs;
-			productReference = 358F4ED71D1E81A9004DF814 /* libRCTBlob.a */;
+			productReference = 52F260D91EE7167300F0B7B4 /* libRCTBlob.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		ADD01A671E09402E00F6D226 /* RCTBlob-tvOS */ = {
@@ -91,7 +89,7 @@
 			);
 			name = "RCTBlob-tvOS";
 			productName = "RCTBlob-tvOS";
-			productReference = ADD01A681E09402E00F6D226 /* libRCTBlob-tvOS.a */;
+			productReference = 5241ACAB1EE769AD00F67468 /* libRCTBlob-tvOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -120,7 +118,7 @@
 				en,
 			);
 			mainGroup = 358F4ECE1D1E81A9004DF814;
-			productRefGroup = 358F4ED81D1E81A9004DF814 /* Products */;
+			productRefGroup = 358F4ECE1D1E81A9004DF814;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -135,6 +133,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5241ACAD1EE8595100F67468 /* RCTFileReaderModule.m in Sources */,
 				AD9A43C31DFC7126008DC588 /* RCTBlobManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -143,6 +142,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5241ACAE1EE8595100F67468 /* RCTFileReaderModule.m in Sources */,
 				ADD01A711E09404A00F6D226 /* RCTBlobManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -316,6 +316,7 @@
 				ADD01A701E09402E00F6D226 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
