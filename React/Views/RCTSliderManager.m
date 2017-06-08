@@ -27,6 +27,12 @@ RCT_EXPORT_MODULE()
    forControlEvents:(UIControlEventTouchUpInside |
                      UIControlEventTouchUpOutside |
                      UIControlEventTouchCancel)];
+  UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                                                  initWithTarget:self
+                                                  action:@selector(sliderTap:)
+                                                  ];
+  [slider addGestureRecognizer:tapGestureRecognizer];
+
   return slider;
 }
 
@@ -71,6 +77,23 @@ static void RCTSendSliderEvent(RCTSlider *sender, BOOL continuous)
 
 - (void)sliderTouchEnd:(RCTSlider *)sender
 {
+  RCTSendSliderEvent(sender, NO);
+}
+
+- (void)sliderTap:(UIGestureRecognizer *)tapGestureRecognizer
+{
+  RCTSlider *sender = (RCTSlider *)tapGestureRecognizer.view;
+  
+  if (sender.highlighted) {
+    return;
+  }
+  
+  CGPoint locationInView = [tapGestureRecognizer locationInView:sender];
+  CGFloat delta = (locationInView.x / sender.bounds.size.width) * (sender.maximumValue - sender.minimumValue);
+  CGFloat value = sender.minimumValue + delta;
+  
+  [sender setValue:value animated:YES];
+  
   RCTSendSliderEvent(sender, NO);
 }
 
