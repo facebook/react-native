@@ -137,4 +137,4 @@ class MyScene extends React.Component {
 }
 ```
 
-Check out the [`NavigatorIOS` reference docs](docs/navigatorios.html) to learn more about this component.
+Check out the [`NavigatorIOS` reference docs](docs/navigation.html) to learn more about this component.
