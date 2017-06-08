@@ -81,7 +81,7 @@ export type ConfigT = {
   /**
    * Returns the path to the worker that is used for transformation.
    */
-  getWorkerPath: () => string,
+  getWorkerPath: () => ?string,
 
   /**
    * An optional function that can modify the code and source map of bundle
@@ -135,7 +135,7 @@ const Config = {
     postProcessModules: modules => modules,
     postProcessModulesForBuck: modules => modules,
     transformVariants: () => ({default: {}}),
-    getWorkerPath: () => require.resolve('./worker.js'),
+    getWorkerPath: () => null,
   }: ConfigT),
 
   find(startDir: string): ConfigT {
