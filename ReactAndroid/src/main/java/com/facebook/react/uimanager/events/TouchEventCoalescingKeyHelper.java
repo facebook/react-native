@@ -11,6 +11,9 @@ package com.facebook.react.uimanager.events;
 
 import android.util.SparseIntArray;
 
+import com.facebook.common.logging.FLog;
+import com.facebook.react.common.ReactConstants;
+
 /**
  * Utility for determining coalescing keys for TouchEvents. To preserve proper ordering of events,
  * move events should only be coalesced if there has been no up/down event between them (this
@@ -61,7 +64,9 @@ public class TouchEventCoalescingKeyHelper {
   public void incrementCoalescingKey(long downTime) {
     int currentValue = mDownTimeToCoalescingKey.get((int) downTime, -1);
     if (currentValue == -1) {
-      throw new RuntimeException("Tried to increment non-existent cookie");
+      FLog.w(
+        ReactConstants.TAG,
+        "Unable to coalesce touch event; Tried to increment non-existent cookie");
     }
     mDownTimeToCoalescingKey.put((int) downTime, currentValue + 1);
   }
@@ -72,7 +77,9 @@ public class TouchEventCoalescingKeyHelper {
   public short getCoalescingKey(long downTime) {
     int currentValue = mDownTimeToCoalescingKey.get((int) downTime, -1);
     if (currentValue == -1) {
-      throw new RuntimeException("Tried to get non-existent cookie");
+      FLog.w(
+        ReactConstants.TAG,
+        "Unable to coalesce touch event; Tried to increment non-existent cookie");
     }
     return ((short) (0xffff & currentValue));
   }
