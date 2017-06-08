@@ -224,6 +224,7 @@
   "devDependencies": {
     "babel-eslint": "^7.2.3",
     "eslint": "^3.19.0",
+    "eslint-config-fb-strict": "^20.0.3",
     "eslint-config-fbjs": "^1.1.1",
     "eslint-plugin-babel": "^4.1.1",
     "eslint-plugin-flowtype": "^2.33.0",
