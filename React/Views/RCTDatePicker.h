@@ -11,4 +11,6 @@
 
 @interface RCTDatePicker : UIDatePicker
 
+@property (nonatomic, assign) NSDate* initialDate;
+
 @end
