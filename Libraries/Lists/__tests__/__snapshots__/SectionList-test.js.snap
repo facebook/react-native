@@ -281,6 +281,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
   refreshControl={
     <RefreshControlMock
       onRefresh={[Function]}
+      progressViewOffset={undefined}
       refreshing={false}
     />
   }
