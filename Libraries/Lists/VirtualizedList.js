@@ -194,8 +194,8 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const animated = params ? params.animated : true;
     const veryLast = this.props.getItemCount(this.props.data) - 1;
     const frame = this._getFrameMetricsApprox(veryLast);
-    const offset = frame.offset + frame.length + this._footerLength -
-      this._scrollMetrics.visibleLength;
+    const offset = Math.max(0, frame.offset + frame.length + this._footerLength -
+      this._scrollMetrics.visibleLength);
     this._scrollRef.scrollTo(
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated}
     );
