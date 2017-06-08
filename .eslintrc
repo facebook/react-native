@@ -7,7 +7,7 @@
 
   "env": {
     "es6": true,
-    "jasmine": true,
+    "jasmine": true
   },
 
   "plugins": [
@@ -241,6 +241,6 @@
     "react/prop-types": 0,
     "react/react-in-jsx-scope": 1,
     "react/self-closing-comp": 1,
-    "react/wrap-multilines": 0,
+    "react/wrap-multilines": 0
   }
 }
