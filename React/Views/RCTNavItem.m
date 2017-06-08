@@ -173,4 +173,37 @@
   }
 }
 
+- (id)propertiesChanged {
+  return nil;
+}
+
++ (NSSet *)keyPathsForValuesAffectingPropertiesChanged {
+  // all properties that effects the navigation bar
+  NSString * const properties[] = {
+   @"title",
+   @"titleImage",
+   @"leftButtonIcon",
+   @"leftButtonTitle",
+   @"rightButtonIcon",
+   @"rightButtonTitle",
+   @"backButtonIcon",
+   @"backButtonTitle",
+   @"navigationBarHidden",
+   @"shadowHidden",
+   @"tintColor",
+   @"barTintColor",
+   @"titleTextColor",
+   @"translucent",
+   @"titleImageView",
+   @"backButtonItem",
+   @"leftButtonItem",
+   @"rightButtonItem",
+   @"onLeftButtonPress",
+   @"onRightButtonPress",
+  };
+
+  NSUInteger numProps = (NSUInteger) (sizeof(properties) / sizeof(NSString*));
+  return [NSSet setWithObjects:properties count:numProps];
+}
+
 @end

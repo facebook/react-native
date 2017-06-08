@@ -28,5 +28,6 @@ didMoveToNavigationController:(UINavigationController *)navigationController;
 
 @property (nonatomic, weak) id<RCTWrapperViewControllerNavigationListener> navigationListener;
 @property (nonatomic, strong) RCTNavItem *navItem;
+@property (nonatomic, assign) BOOL navItemObserving;
 
 @end
