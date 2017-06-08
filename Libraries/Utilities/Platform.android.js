@@ -24,7 +24,18 @@ const Platform = {
     const constants = NativeModules.PlatformConstants;
     return constants && constants.isTesting;
   },
-  select: (obj: Object) => 'android' in obj ? obj.android : obj.default,
+  select: (obj: Object): Object => {
+    let retObj: Object = obj.default;
+    const keys = Object.keys(obj).filter(x => x.match(/\bandroid\b/));
+    if (keys.length === 1 && 'android' in obj) {
+      return obj.android;
+    }
+    if (keys.length >= 1) {
+      retObj = keys.reduce( (prev, curr) => ((curr === 'android') ? prev : { ...prev, ...obj[curr] }), {} );
+      if ('android' in obj) { retObj = {...retObj, ...obj.android}; }
+    }
+    return retObj;
+  },
 };
 
 module.exports = Platform;
