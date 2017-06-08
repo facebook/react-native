@@ -90,7 +90,10 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  BOOL opened = [RCTSharedApplication() openURL:URL];
+  BOOL opened = false;
+  if (!RCTRunningInAppExtension()) {
+    opened = [RCTSharedApplication() openURL:URL];
+  }
   if (opened) {
     resolve(nil);
   } else {
