@@ -20,7 +20,9 @@ var {
   TouchableWithoutFeedback,
   TouchableOpacity,
   View,
-  WebView
+  WebView,
+  Platform,
+  Alert,
 } = ReactNative;
 
 var HEADER = '#3b5998';
@@ -281,6 +283,42 @@ class InjectJS extends React.Component {
   }
 }
 
+class SelectMenu extends React.Component {
+  webview = null;
+  renderAndroid() {
+    return (
+      <View>
+        <Text>Webview Selection Not Yet Supported on Android</Text>
+      </View>
+    )
+  }
+  renderIOS() {
+    return (
+      <View>
+        <WebView
+          ref={webview => { this.webview = webview; }}
+          style={{
+            backgroundColor: BGWASH,
+            height: 300,
+          }}
+          selectActions={['Like', 'Share', 'Save', 'Add To Notes']}
+          onSelectAction={this.onSelect.bind(this)}
+          source={{uri: 'https://www.facebook.com'}}
+          scalesPageToFit={true}
+        />
+        <View style={styles.buttons}>
+          <Button text="Inject JS" enabled onPress={this.injectJS} />
+        </View>
+    </View>
+    );
+  }
+  onSelect(event) {
+    Alert('Selection', 'You chose:' + event.nativeEvent.action);
+  }
+  render() {
+    return( Platform.OS === 'ios' ? this.renderIOS() : this.renderAndroid());
+  }
+}
 
 var styles = StyleSheet.create({
   container: {
@@ -464,5 +502,9 @@ exports.examples = [
   {
     title: 'Inject JavaScript',
     render(): React.Element<any> { return <InjectJS />; }
+  },
+  {
+    title: 'Selection Menu',
+    render(): React.Element<any> { return <SelectMenu />; }
   },
 ];

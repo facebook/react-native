@@ -33,6 +33,9 @@ RCT_EXPORT_MODULE()
   return webView;
 }
 
+RCT_EXPORT_VIEW_PROPERTY(onSelectAction, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(selectActions, NSArray<NSString*>*)
+
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)
 RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL)
 RCT_REMAP_VIEW_PROPERTY(scrollEnabled, _webView.scrollView.scrollEnabled, BOOL)

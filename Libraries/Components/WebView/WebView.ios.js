@@ -251,6 +251,37 @@ class WebView extends React.Component {
      * on the first load.
      */
     startInLoadingState: PropTypes.bool,
+
+    /**
+     * selectActions: A string containing the list of actions that will be
+     * displayed in iOS selection menu
+     *
+     * onSelectActions: The event handler that will be invoked if a custom
+     * select action is chosen. The event handler will be invoked with `event'
+     * variable. The chosen action will be available in event.nativeEvent.action.
+     *
+     * Example Usage:
+     *
+     * return ( 
+     *   <WebView
+     *
+     *      source={{uri: 'https://github.com/facebook/react-native'}}
+     *      style={{marginTop: 20}}
+     *      selectActions={['Like', 'Share', 'Save', 'Add To Notes']}
+     *      onSelectAction={this.onSelect.bind(this)}
+     *      onLoadEnd={this.onLoadEnd.bind(this)}
+     *    />
+     * )
+     * ...
+     * ...
+     * onSelect(event) {
+     *    console.log('selected action:', event.nativeEvent.action);
+     * }
+     *
+     */
+     selectActions: PropTypes.arrayOf(PropTypes.string),
+     onSelectAction: PropTypes.func,
+
     /**
      * The style to apply to the `WebView`.
      */
@@ -438,6 +469,8 @@ class WebView extends React.Component {
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this._onLoadingStart}
+        selectActions= {this.props.selectActions || []}
+        onSelectAction={this._onSelectAction}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}
         messagingEnabled={messagingEnabled}
@@ -534,6 +567,14 @@ class WebView extends React.Component {
     );
   };
 
+  registerSelectActions = (actions) => {
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.registerSelectActions,
+      actions
+    );
+  };
+
   /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
@@ -550,6 +591,11 @@ class WebView extends React.Component {
   getWebViewHandle = (): any => {
     return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
   };
+
+  _onSelectAction = (event: Event) => {
+    var onSelectAction = this.props.onSelectAction;
+    onSelectAction && onSelectAction(event);
+  }
 
   _onLoadingStart = (event: Event) => {
     var onLoadStart = this.props.onLoadStart;
