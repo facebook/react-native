@@ -566,7 +566,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   componentDidUpdate() {
-    this._scheduleCellsToRenderUpdate();
+    this._updateCellsToRenderBatcher.schedule();
   }
 
   _averageCellLength = 0;
