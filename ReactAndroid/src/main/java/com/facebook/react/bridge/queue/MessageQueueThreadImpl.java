@@ -179,24 +179,11 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
    * When this method exits, the new MessageQueueThreadImpl is ready to receive events.
    */
   private static MessageQueueThreadImpl startNewBackgroundThread(
-      final String name,
-      long stackSize,
-      QueueThreadExceptionHandler exceptionHandler) {
-    final SimpleSettableFuture<Looper> looperFuture = new SimpleSettableFuture<>();
-    Thread bgThread = new Thread(null,
-        new Runnable() {
-          @Override
-          public void run() {
-            Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
-            Looper.prepare();
-
-            looperFuture.set(Looper.myLooper());
-            Looper.loop();
-          }
-        }, "mqt_" + name, stackSize);
-    bgThread.start();
-
-    Looper myLooper = looperFuture.getOrThrow();
-    return new MessageQueueThreadImpl(name, myLooper, exceptionHandler);
+    final String name,
+    long stackSize,
+    QueueThreadExceptionHandler exceptionHandler) {
+    MessageQueueHandlerThread messageQueueHandlerThread = new MessageQueueHandlerThread("mqt_" + name, stackSize);
+    messageQueueHandlerThread.start();
+    return new MessageQueueThreadImpl(name, messageQueueHandlerThread.getLooper(), exceptionHandler);
   }
 }
