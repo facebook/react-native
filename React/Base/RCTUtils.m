@@ -606,9 +606,7 @@ BOOL RCTIsLocalAssetURL(NSURL *__nullable imageURL)
   if (!name) {
     return NO;
   }
-
-  NSString *extension = [name pathExtension];
-  return [extension isEqualToString:@"png"] || [extension isEqualToString:@"jpg"];
+  return YES;
 }
 
 static NSString *bundleName(NSBundle *bundle)
