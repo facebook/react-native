@@ -10,8 +10,7 @@
 'use strict';
 
 // const MessageQueueTestConfig = require('MessageQueueTestConfig');
-jest.unmock('MessageQueue');
-jest.unmock('defineLazyObjectProperty');
+jest.disableAutomock();
 
 let MessageQueue;
 let MessageQueueTestModule;

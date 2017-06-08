@@ -9,7 +9,7 @@
  */
 'use strict';
 
-jest.unmock('VirtualizeUtils');
+jest.disableAutomock();
 
 const { elementsThatOverlapOffsets, newRangeCount } = require('VirtualizeUtils');
 

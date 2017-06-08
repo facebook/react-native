@@ -9,7 +9,7 @@
 
 'use strict';
 
-jest.unmock('FormData');
+jest.disableAutomock();
 
 const FormData = require('FormData');
 

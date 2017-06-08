@@ -9,7 +9,7 @@
  */
 'use strict';
 
-jest.unmock('truncate');
+jest.disableAutomock();
 
 describe('truncate', () => {
 
