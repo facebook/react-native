@@ -168,7 +168,29 @@ Access it by selecting Perf Monitor from the Debug menu.
 
 For iOS, Instruments is an invaluable tool, and on Android you should learn to use [`systrace`](docs/performance.html#profiling-android-ui-performance-with-systrace).
 
-You can also use [`react-addons-perf`](https://facebook.github.io/react/docs/perf.html) to get insights into where React is spending time when rendering your components.
+You can also use `RCTRenderingPerf` to get insights into where React is spending time when rendering your components.
+
+```
+import PerfMonitor from 'react-native/Libraries/Performance/RCTRenderingPerf'
+
+// enable performance monitoring
+PerfMonitor.toggle()
+
+// start recording render performance
+PerfMonitor.start()
+
+// ...potentially slow code
+
+// stop recording
+PerfMonitor.stop()
+
+// output stats to console
+PerfMonitor.printExclusive()
+PerfMonitor.printInclusive()
+PerfMonitor.printWasted()
+```
+
+For more information on the output of the print functions, see the documentation for [`react-addons-perf`](https://facebook.github.io/react/docs/perf.html).
 
 Another way to profile JavaScript is to use the Chrome profiler while debugging.
 This won't give you accurate results as the code is running in Chrome but will give you a general idea of where bottlenecks might be.
