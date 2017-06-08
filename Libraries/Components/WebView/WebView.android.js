@@ -144,6 +144,16 @@ class WebView extends React.Component {
     scalesPageToFit: PropTypes.bool,
 
     /**
+     * Function that is invoked when a defined URL-scheme has been rejected.
+     */
+    onUrlSchemeRejected: PropTypes.func,
+
+    /**
+     * An array defining rejected URL-schemes.
+     */
+    rejectedUrlSchemes: PropTypes.array,
+
+    /**
      * Sets the user-agent for this WebView. The user-agent can also be set in native using
      * WebViewConfig. This prop will overwrite that config.
      */
@@ -258,6 +268,7 @@ class WebView extends React.Component {
         style={webViewStyles}
         source={resolveAssetSource(source)}
         scalesPageToFit={this.props.scalesPageToFit}
+        rejectedUrlSchemes={this.props.rejectedUrlSchemes}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabled={this.props.javaScriptEnabled}
@@ -271,6 +282,7 @@ class WebView extends React.Component {
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
+        onUrlSchemeRejected={this.onUrlSchemeRejected}
         testID={this.props.testID}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
         allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
@@ -387,6 +399,11 @@ class WebView extends React.Component {
     var {onMessage} = this.props;
     onMessage && onMessage(event);
   }
+
+  onUrlSchemeRejected = (event: Event) => {
+    var onUrlSchemeRejected = this.props.onUrlSchemeRejected;
+    onUrlSchemeRejected && onUrlSchemeRejected(event);
+  };
 }
 
 var RCTWebView = requireNativeComponent('RCTWebView', WebView, {

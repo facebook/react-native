@@ -320,6 +320,16 @@ class WebView extends React.Component {
     scalesPageToFit: PropTypes.bool,
 
     /**
+     * Function that is invoked when a defined URL-scheme has been rejected.
+     */
+    onUrlSchemeRejected: PropTypes.func,
+
+    /**
+     * An array defining rejected URL-schemes.
+     */
+    rejectedUrlSchemes: PropTypes.array,
+
+    /**
      * Function that allows custom handling of any web view requests. Return
      * `true` from the function to continue loading the request and `false`
      * to stop loading.
@@ -431,6 +441,7 @@ class WebView extends React.Component {
         key="webViewKey"
         style={webViewStyles}
         source={resolveAssetSource(source)}
+        rejectedUrlSchemes={this.props.rejectedUrlSchemes}
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
@@ -440,6 +451,7 @@ class WebView extends React.Component {
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}
+        onUrlSchemeRejected={this._onUrlSchemeRejected}
         messagingEnabled={messagingEnabled}
         onMessage={this._onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
@@ -584,6 +596,11 @@ class WebView extends React.Component {
     var {onMessage} = this.props;
     onMessage && onMessage(event);
   }
+
+  _onUrlSchemeRejected = (event: Event) => {
+    var onUrlSchemeRejected = this.props.onUrlSchemeRejected;
+    onUrlSchemeRejected && onUrlSchemeRejected(event);
+  };
 }
 
 var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
@@ -591,6 +608,7 @@ var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
     onLoadingStart: true,
     onLoadingError: true,
     onLoadingFinish: true,
+    onUrlSchemeRejected: true,
     onMessage: true,
     messagingEnabled: PropTypes.bool,
   },
