@@ -554,6 +554,12 @@ The above command will automatically run your app on the iOS Simulator by defaul
 
 ## Running your React Native application
 
+Before running your application, the React packager must be running:
+```
+cd AwesomeProject
+react-native start
+```
+
 Run `react-native run-android` inside your React Native project folder:
 
 ```
