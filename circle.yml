@@ -62,7 +62,7 @@ test:
     # compile native libs with Gradle script, we need bridge for unit and
     # integration tests
     - ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1 -Pcom.android.build.threadPoolSize=1:
-        timeout: 360
+        timeout: 720
 
     # unit tests
     - buck test ReactAndroid/src/test/... --config build.threads=1
@@ -73,7 +73,7 @@ test:
     # build test APK
     - buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
     # run installed apk with tests
-    # - node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
+    - node ./scripts/run-android-ci-instrumentation-tests.js --retries 3 --path ./ReactAndroid/src/androidTest/java/com/facebook/react/tests --package com.facebook.react.tests
 
     # Android e2e test
     # disabled pending on https://our.intern.facebook.com/intern/tasks?t=16912142
