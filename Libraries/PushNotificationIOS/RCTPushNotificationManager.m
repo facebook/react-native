@@ -299,7 +299,7 @@ RCT_EXPORT_METHOD(onFinishRemoteNotification:(NSString *)notificationId fetchRes
  */
 RCT_EXPORT_METHOD(setApplicationIconBadgeNumber:(NSInteger)number)
 {
-  RCTSharedApplication().applicationIconBadgeNumber = number;
+  RCTSharedApplication().applicationIconBadgeNumber = *(number);
 }
 
 /**
