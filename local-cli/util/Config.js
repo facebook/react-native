@@ -10,6 +10,8 @@
  */
 'use strict';
 
+const findSymlinksPaths = require('./findSymlinksPaths');
+
 const blacklist = require('../../packager/blacklist');
 const fs = require('fs');
 const invariant = require('fbjs/lib/invariant');
@@ -93,12 +95,38 @@ export type ConfigT = {
   transformVariants: () => TransformVariants,
 };
 
+function getProjectPath() {
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli[\/\\]util$/)) {
+    // Packager is running from node_modules.
+    // This is the default case for all projects created using 'react-native init'.
+    return path.resolve(__dirname, '../../../..');
+  } else if (__dirname.match(/Pods[\/\\]React[\/\\]packager$/)) {
+    // React Native was installed using CocoaPods.
+    return path.resolve(__dirname, '../../../..');
+  }
+  return path.resolve(__dirname, '../..');
+}
+
+const resolveSymlink = (roots) =>
+  roots.concat(
+    findSymlinksPaths(
+      path.join(getProjectPath(), 'node_modules'),
+      roots
+    )
+  );
+
 const defaultConfig: ConfigT = {
   extraNodeModules: Object.create(null),
   getAssetExts: () => [],
   getBlacklistRE: () => blacklist(),
   getPlatforms: () => [],
-  getProjectRoots: () => [process.cwd()],
+  getProjectRoots: () => {
+    const root = process.env.REACT_NATIVE_APP_ROOT;
+    if (root) {
+      return resolveSymlink([path.resolve(root)]);
+    }
+    return resolveSymlink([getProjectPath()]);
+  },
   getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
   getSourceExts: () => [],
   getTransformModulePath: () => path.resolve(__dirname, '../../packager/transformer'),
