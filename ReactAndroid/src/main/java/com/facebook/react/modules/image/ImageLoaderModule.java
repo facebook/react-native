@@ -95,7 +95,7 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
           }
           CloseableReference<PooledByteBuffer> ref = dataSource.getResult();
           if (ref != null) {
-            EncodedImage image = ref.get();
+            EncodedImage image = new EncodedImage(ref);
             try {
               image.parseMetaData();
               
