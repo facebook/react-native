@@ -8,8 +8,7 @@
  */
 'use strict';
 
-jest.unmock('setNormalizedColorAlpha');
-jest.unmock('normalizeColor');
+jest.disableAutomock();
 
 var setNormalizedColorAlpha = require('setNormalizedColorAlpha');
 var normalizeColor = require('normalizeColor');

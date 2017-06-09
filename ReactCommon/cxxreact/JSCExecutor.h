@@ -15,6 +15,10 @@
 #include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Value.h>
 
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
+
 namespace facebook {
 namespace react {
 
@@ -112,6 +116,8 @@ private:
   void flush();
   void flushQueueImmediate(Value&&);
   void loadModule(uint32_t moduleId);
+
+  String adoptString(std::unique_ptr<const JSBigString>);
 
   template<JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
   void installNativeHook(const char* name);

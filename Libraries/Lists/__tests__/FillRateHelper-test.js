@@ -9,7 +9,7 @@
  */
 'use strict';
 
-jest.unmock('FillRateHelper');
+jest.disableAutomock();
 
 const FillRateHelper = require('FillRateHelper');
 

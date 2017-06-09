@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  */
-jest.unmock('deepFreezeAndThrowOnMutationInDev');
+jest.disableAutomock();
 var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
 
 describe('deepFreezeAndThrowOnMutationInDev', function() {

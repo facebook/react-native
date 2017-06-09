@@ -20,6 +20,25 @@ exports.valid = {
   },
 };
 
+exports.userConfigManifest = {
+  src: {
+    main: {
+      'AndroidManifest.xml': manifest,
+      com: {
+        some: {
+          example: {
+            'Main.java': mainJavaClass,
+            'ReactPackage.java': fs.readFileSync(path.join(__dirname, './files/ReactPackage.java')),
+          },
+        },
+      },
+    },
+    debug: {
+      'AndroidManifest.xml': fs.readFileSync(path.join(__dirname, './files/AndroidManifest-debug.xml')),
+    },
+  },
+};
+
 exports.corrupted = {
   src: {
     'AndroidManifest.xml': manifest,

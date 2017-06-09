@@ -8,8 +8,7 @@
  */
 'use strict';
 
-jest.unmock('MatrixMath');
-jest.unmock('fbjs/lib/invariant');
+jest.disableAutomock();
 
 var MatrixMath = require('MatrixMath');
 

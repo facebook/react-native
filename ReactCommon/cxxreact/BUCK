@@ -1,106 +1,27 @@
-CXX_LIBRARY_COMPILER_FLAGS = []
+include_defs("//ReactCommon/DEFS")
 
-REACT_LIBRARY_EXTRA_COMPILER_FLAGS = []
+CXX_LIBRARY_COMPILER_FLAGS = [
+    "-std=c++14",
+    "-Wall",
+]
 
 if THIS_IS_FBOBJC:
-  include_defs("xplat//configurations/buck/apple/dependency_aggregator_defs")
   inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS
-  CXX_LIBRARY_COMPILER_FLAGS = inherited_buck_flags.get_flag_value('compiler_flags')
-  REACT_LIBRARY_EXTRA_COMPILER_FLAGS = ['-Wno-shadow', '-Wno-missing-prototypes', '-Wno-global-constructors']
+  CXX_LIBRARY_COMPILER_FLAGS += inherited_buck_flags.get_flag_value('compiler_flags')
 
-def kwargs_add(base_kwargs, **new_kwargs):
-  ret_kwargs = dict(base_kwargs)
-  for name, add_value in new_kwargs.iteritems():
-    if name in ret_kwargs:
-      # Don't use +=, it will modify base_kwargs
-      ret_kwargs[name] = ret_kwargs[name] + add_value
-    else:
-      ret_kwargs[name] = add_value
-  return ret_kwargs
-
-if THIS_IS_FBANDROID:
-  include_defs('//ReactAndroid/DEFS')
-
-  def react_library(**kwargs):
-    kwargs = kwargs_add(
-      kwargs,
-      compiler_flags = [
-        '-Wno-pessimizing-move',
-      ],
-      deps = [
-        '//xplat/folly:molly'
-      ])
-
-    cxx_library(
-      name = 'bridge',
-      **kwargs_add(
-        kwargs,
-        preprocessor_flags = [
-          '-DWITH_JSC_EXTRA_TRACING=1',
-          '-DWITH_JSC_MEMORY_PRESSURE=1',
-          '-DWITH_REACT_INTERNAL_SETTINGS=1',
-          '-DWITH_FB_MEMORY_PROFILING=1',
-          '-DWITH_INSPECTOR=1',
-        ],
-        deps = JSC_DEPS,
-        visibility = [
-          # TL;DR: If you depend on this target directly, you're gonna have a
-          # Bad Time(TM).
-          #
-          # `facebook::react::JSCExecutor::initOnJSVMThread` (in `:bridge`) does
-          # some platform-dependant setup. Exactly what setup to do is
-          # determined by some static functors, defined in `Platform.h`, which
-          # are initially `nullptr`. On Android, these functors are properly
-          # assigned as part of `xreact`'s `JNI_OnLoad`.  By depending directly
-          # on the bridge, we can mess up the SO initialisation order, causing
-          # `initOnJSVMThread` to be called before the platform-specific hooks
-          # have been properly initialised. Bad Times(TM).
-          #     -- @ashokmenon (2017/01/03)
-          react_native_target('jni/xreact/jni:jni'),
-          react_native_xplat_target('cxxreact/...'),
-        ],
-      )
-    )
-
-if THIS_IS_FBOBJC:
-
-  if should_use_dependency_aggregation():
-    INSPECTOR_FLAGS = []
-  else:
-    INSPECTOR_FLAGS = [ '-DWITH_INSPECTOR=1', ]
-
-  def react_library(**kwargs):
-    fb_apple_library(
-      name = 'bridge',
-      header_path_prefix = "cxxreact",
-      inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
-      frameworks = [
-        '$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework',
-      ],
-      tests = [
-        react_native_xplat_target('cxxreact/tests:tests')
-      ],
-      **kwargs_add(
-        kwargs,
-        preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS + INSPECTOR_FLAGS,
-        deps = [
-          '//xplat/folly:molly',
-        ],
-        visibility = [ 'PUBLIC' ],
-      )
-    )
-
-cxx_library(
+rn_xplat_cxx_library(
     name = "module",
     compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
-    exported_headers = [
-        "CxxModule.h",
-        "JsArgumentHelpers.h",
-        "JsArgumentHelpers-inl.h",
-    ],
+    exported_headers = subdir_glob(
+        [
+            ("", "CxxModule.h"),
+            ("", "JsArgumentHelpers.h"),
+            ("", "JsArgumentHelpers-inl.h"),
+        ],
+        prefix = "cxxreact",
+    ),
     force_static = True,
-    header_namespace = "cxxreact",
-    labels = ["accounts_for_platform_and_build_mode_flags"],
+    header_namespace = "",
     visibility = [
         "PUBLIC",
     ],
@@ -110,14 +31,35 @@ cxx_library(
     ],
 )
 
-cxx_library(
+rn_xplat_cxx_library(
+    name = "jsbigstring",
+    srcs = [
+        "JSBigString.cpp",
+    ],
+    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
+        "-fexceptions",
+        "-frtti",
+    ],
+    exported_headers = subdir_glob(
+        [("", "JSBigString.h")],
+        prefix = "cxxreact",
+    ),
+    force_static = True,
+    header_namespace = "",
+    visibility = [
+        "PUBLIC",
+    ],
+    xcode_public_headers_symlinks = True,
+    deps = [
+        "//xplat/folly:molly",
+    ],
+)
+
+rn_xplat_cxx_library(
     name = "samplemodule",
     srcs = ["SampleCxxModule.cpp"],
     compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
         "-fno-omit-frame-pointer",
-        "-Wall",
-        "-Werror",
-        "-std=c++1y",
         "-fexceptions",
     ],
     exported_headers = ["SampleCxxModule.h"],
@@ -137,7 +79,6 @@ CXXREACT_PUBLIC_HEADERS = [
     "CxxNativeModule.h",
     "Executor.h",
     "Instance.h",
-    "JSBigString.h",
     "JSBundleType.h",
     "JSCExecutor.h",
     "JSCNativeModules.h",
@@ -154,20 +95,56 @@ CXXREACT_PUBLIC_HEADERS = [
     "SystraceSection.h",
 ]
 
-react_library(
+rn_xplat_cxx_library(
+    name = "bridge",
     srcs = glob(
         ["*.cpp"],
-        excludes = ["SampleCxxModule.cpp"],
+        excludes = [
+            "JSBigString.cpp",
+            "SampleCxxModule.cpp",
+        ],
     ),
-    compiler_flags = [
-        "-Wall",
+    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
         "-fexceptions",
         "-frtti",
-        "-std=c++1y",
-    ] + REACT_LIBRARY_EXTRA_COMPILER_FLAGS,
-    exported_headers = CXXREACT_PUBLIC_HEADERS,
+    ],
+    exported_headers = dict([
+        (
+            "cxxreact/%s" % header,
+            header,
+        )
+        for header in CXXREACT_PUBLIC_HEADERS
+    ]),
+    fbandroid_preprocessor_flags = [
+        "-DWITH_JSC_EXTRA_TRACING=1",
+        "-DWITH_JSC_MEMORY_PRESSURE=1",
+        "-DWITH_REACT_INTERNAL_SETTINGS=1",
+        "-DWITH_FB_MEMORY_PROFILING=1",
+    ],
+    fbandroid_visibility = [
+        # TL;DR: If you depend on this target directly, you're gonna have a
+        # Bad Time(TM).
+        #
+        # `facebook::react::JSCExecutor::initOnJSVMThread` (in `:bridge`) does
+        # some platform-dependant setup. Exactly what setup to do is
+        # determined by some static functors, defined in `Platform.h`, which
+        # are initially `nullptr`. On Android, these functors are properly
+        # assigned as part of `xreact`'s `JNI_OnLoad`.  By depending directly
+        # on the bridge, we can mess up the SO initialisation order, causing
+        # `initOnJSVMThread` to be called before the platform-specific hooks
+        # have been properly initialised. Bad Times(TM).
+        #     -- @ashokmenon (2017/01/03)
+        react_native_target("jni/react/jni:jni"),
+        react_native_xplat_target("cxxreact/..."),
+    ],
+    fbobjc_frameworks = [
+        "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
+    ],
+    fbobjc_inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
+    fbobjc_preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS,
+    fbobjc_visibility = ["PUBLIC"],
     force_static = True,
-    header_namespace = "cxxreact",
+    header_namespace = "",
     headers = glob(
         ["*.h"],
         excludes = CXXREACT_PUBLIC_HEADERS,
@@ -175,12 +152,17 @@ react_library(
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
+    ] + INSPECTOR_FLAGS,
+    tests = [
+        react_native_xplat_target("cxxreact/tests:tests"),
     ],
     xcode_public_headers_symlinks = True,
     deps = [
         ":module",
+        ":jsbigstring",
         "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:molly",
         react_native_xplat_target("jschelpers:jschelpers"),
         react_native_xplat_target("microprofiler:microprofiler"),
-    ],
+    ] + JSC_DEPS,
 )

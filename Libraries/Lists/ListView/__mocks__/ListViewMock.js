@@ -32,9 +32,10 @@ class ListViewMock extends React.Component {
       const rowIDs = allRowIDs[sectionIdx];
       for (let rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
         const rowID = rowIDs[rowIdx];
+        // Row IDs are only unique in a section
         rows.push(
           <StaticRenderer
-            key={rowID}
+            key={'section_' + sectionID + '_row_' + rowID}
             shouldUpdate={true}
             render={this.props.renderRow.bind(
               null,

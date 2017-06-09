@@ -4,7 +4,7 @@ title: Images
 layout: docs
 category: Guides
 permalink: docs/images.html
-next:  colors
+next:  animations
 previous: navigation
 ---
 
@@ -96,9 +96,9 @@ Many of the images you will display in your app will not be available at compile
 ```
 
 ### Network Requests for Images
-  
+
   If you would like to set such things as the HTTP-Verb, Headers or a Body along with the image request, you may do this by defining these properties on the source object:
-  
+
   ```javascript
   <Image source={{
       uri: 'https://facebook.github.io/react/img/logo_og.png',

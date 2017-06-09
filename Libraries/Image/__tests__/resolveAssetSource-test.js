@@ -8,11 +8,7 @@
  */
 'use strict';
 
-jest
-  .unmock('AssetRegistry')
-  .unmock('AssetSourceResolver')
-  .unmock('../resolveAssetSource')
-  .unmock('../../../local-cli/bundle/assetPathUtils');
+jest.disableAutomock();
 
 var AssetRegistry = require('AssetRegistry');
 var Platform = require('Platform');
