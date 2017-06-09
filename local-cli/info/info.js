@@ -9,20 +9,30 @@
 'use strict';
 
 const chalk = require('chalk');
-const execSync = require('child_process').execSync;
+const child_process = require('child_process');
+const execSync = child_process.execSync;
 const os = require('os');
 const osName = require('os-name');
 const pkg = require('../../package.json');
 const yarn = require('../util/yarn');
 
 const info = function() {
-  const npmVersion = execSync('npm -v')
-    .toString()
-    .replace(/(\r\n|\n|\r)/gm, '');
+  let androidStudioVersion;
+  const npmVersion = execSync('npm -v').toString().replace(/(\r\n|\n|\r)/gm, '');
 
   if (process.platform === 'darwin') {
-    var xcodebuildVersion = execSync('/usr/bin/xcodebuild -version')
-      .toString()
+    var xcodebuildVersion = execSync('/usr/bin/xcodebuild -version').toString().split('\n').join(' ');
+
+    androidStudioVersion = child_process
+      .execFileSync(
+        '/usr/libexec/PlistBuddy',
+        [
+          '-c', 'Print:CFBundleShortVersionString',
+          '-c', 'Print:CFBundleVersion',
+          '/Applications/Android Studio.app/Contents/Info.plist',
+        ],
+        { encoding: 'utf8' },
+      )
       .split('\n')
       .join(' ');
   }
@@ -34,6 +44,7 @@ const info = function() {
   console.log('  Yarn: ', chalk.gray(yarn.getYarnVersionIfAvailable()));
   console.log('  npm: ', chalk.gray(npmVersion));
   console.log('  Xcode: ', process.platform === 'darwin' ? chalk.gray(xcodebuildVersion) : 'N/A');
+  console.log('  Android Studio: ', chalk.gray(androidStudioVersion));
 };
 
 module.exports = {
