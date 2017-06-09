@@ -23,6 +23,8 @@ enum ReactMarkerId {
   CREATE_REACT_CONTEXT_STOP,
   JS_BUNDLE_STRING_CONVERT_START,
   JS_BUNDLE_STRING_CONVERT_STOP,
+  NATIVE_MODULE_SETUP_START,
+  NATIVE_MODULE_SETUP_STOP,
 };
 
 using LogTaggedMarker = std::function<void(const ReactMarkerId, const char* tag)>;

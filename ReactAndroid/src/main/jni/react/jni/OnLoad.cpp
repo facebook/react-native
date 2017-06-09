@@ -139,6 +139,12 @@ static void logPerfMarker(const ReactMarker::ReactMarkerId markerId, const char*
     case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
       JReactMarker::logMarker("loadApplicationScript_endStringConvert");
       break;
+    case ReactMarker::NATIVE_MODULE_SETUP_START:
+      JReactMarker::logMarker("NATIVE_MODULE_SETUP_START", tag);
+      break;
+    case ReactMarker::NATIVE_MODULE_SETUP_STOP:
+      JReactMarker::logMarker("NATIVE_MODULE_SETUP_END", tag);
+      break;
     case ReactMarker::NATIVE_REQUIRE_START:
     case ReactMarker::NATIVE_REQUIRE_STOP:
       // These are not used on Android.
