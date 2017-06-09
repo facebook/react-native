@@ -211,7 +211,7 @@
     "temp": "0.8.3",
     "throat": "^3.0.0",
     "uglify-js": "2.7.5",
-    "whatwg-fetch": "^1.0.0",
+    "whatwg-fetch": "^2.0.3",
     "wordwrap": "^1.0.0",
     "write-file-atomic": "^1.2.0",
     "ws": "^1.1.0",
