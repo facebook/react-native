@@ -18,6 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import android.content.res.AssetManager;
+import android.util.Log;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -95,7 +96,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final JavaScriptModuleRegistry jsModuleRegistry,
       final JSBundleLoader jsBundleLoader,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
-    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
+    Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     mHybridData = initHybrid();
 
     mReactQueueConfiguration = ReactQueueConfigurationImpl.create(
@@ -110,7 +111,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mUIBackgroundQueueThread = mReactQueueConfiguration.getUIBackgroundQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
 
-    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
+    Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
     initializeBridge(
       new BridgeCallback(this),
       jsExecutor,
@@ -119,7 +120,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       mUIBackgroundQueueThread,
       mJavaRegistry.getJavaModules(this),
       mJavaRegistry.getCxxModules());
-    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
+    Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
   }
 
   private static class BridgeCallback implements ReactCallback {
@@ -197,6 +198,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public void runJSBundle() {
+    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.runJSBundle()");
     Assertions.assertCondition(!mJSBundleHasLoaded, "JS bundle was already loaded!");
 
     // incrementPendingJSCalls();
@@ -279,6 +281,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
    */
   @Override
   public void destroy() {
+    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() start");
     UiThreadUtil.assertOnUiThread();
 
     if (mDestroyed) {
@@ -304,6 +307,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
             mHybridData.resetNative();
             // Kill non-UI threads from UI thread.
             getReactQueueConfiguration().destroy();
+            Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
           }
         });
       }
@@ -324,6 +328,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @VisibleForTesting
   @Override
   public void initialize() {
+    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.initialize()");
     Assertions.assertCondition(
         !mInitialized,
         "This catalyst instance has already been initialized");
