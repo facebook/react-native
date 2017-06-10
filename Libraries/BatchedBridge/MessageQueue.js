@@ -152,7 +152,8 @@ class MessageQueue {
   }
 
   _getCallableModule(name: string) {
-    return this._lazyCallableModules[name]();
+    const getValue = this._lazyCallableModules[name];
+    return getValue ? getValue() : null;
   }
 
   enqueueNativeCall(moduleID: number, methodID: number, params: Array<any>, onFail: ?Function, onSucc: ?Function) {

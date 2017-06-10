@@ -5,8 +5,8 @@ layout: docs
 category: Guides
 permalink: docs/understanding-cli.html
 banner: ejected
-next: integration-with-existing-apps
-previous: running-on-device
+next: native-modules-ios
+previous: testing
 ---
 
 Though you may have installed the `react-native-cli` via npm as a separate module, it is a shell for accessing the CLI embedded

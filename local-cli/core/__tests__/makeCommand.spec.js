@@ -1,3 +1,4 @@
+jest.disableAutomock();
 var spawnError = false;
 
 jest.setMock('child_process', {

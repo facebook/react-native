@@ -10,7 +10,7 @@
 
 'use strict';
 
-jest.unmock('bezier');
+jest.disableAutomock();
 var bezier = require('bezier');
 
 var identity = function (x) { return x; };

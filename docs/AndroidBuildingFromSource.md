@@ -157,7 +157,7 @@ This will package everything that would typically be included in the `android` d
 
 ## Testing
 
-If you made changes to React Native and submit a pull request, all tests will run on your pull request automatically. To run the tests locally, see [Testing](docs/testing.html).
+If you made changes to React Native and submit a pull request, all tests will run on your pull request automatically. To run the tests locally, see [Running Tests](docs/testing.html).
 
 ## Troubleshooting
 

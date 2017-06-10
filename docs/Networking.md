@@ -160,7 +160,6 @@ var ws = new WebSocket('ws://host.com/path');
 
 ws.onopen = () => {
   // connection opened
-
   ws.send('something'); // send a message
 };
 
@@ -180,6 +179,6 @@ ws.onclose = (e) => {
 };
 ```
 
-## High Five! 
+## High Five!
 
 If you've gotten here by reading linearly through the tutorial, then you are a pretty impressive human being. Congratulations. Next, you might want to check out [all the cool stuff the community does with React Native](docs/more-resources.html).
