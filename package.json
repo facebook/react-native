@@ -11,7 +11,7 @@
     "node": ">=4"
   },
   "jest": {
-    "automock": true,
+    "automock": false,
     "transform": {
       ".*": "./jest/preprocessor.js"
     },
