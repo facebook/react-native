@@ -13,9 +13,10 @@
 
 jest.autoMockOff();
 
-const mockFS = require('mock-fs');
+require('../../__fixtures__/mockFSWorkaround');
 
 const getProjectConfig = require('../../ios').projectConfig;
+const mockFS = require('mock-fs');
 const projects = require('../../__fixtures__/projects');
 
 describe('ios::getProjectConfig', () => {

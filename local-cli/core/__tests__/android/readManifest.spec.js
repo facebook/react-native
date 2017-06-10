@@ -13,10 +13,11 @@
 
 jest.autoMockOff();
 
-const mockFS = require('mock-fs');
+require('../../__fixtures__/mockFSWorkaround');
 
 const findManifest = require('../../android/findManifest');
 const readManifest = require('../../android/readManifest');
+const mockFS = require('mock-fs');
 const mocks = require('../../__fixtures__/android');
 
 describe('android::readManifest', () => {

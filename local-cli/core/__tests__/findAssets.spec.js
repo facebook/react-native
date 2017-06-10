@@ -13,10 +13,9 @@
 
 jest.autoMockOff();
 
-const mockFs = require('mock-fs');
-
 const findAssets = require('../findAssets');
 const dependencies = require('../__fixtures__/dependencies');
+const mockFs = require('mock-fs');
 
 describe('findAssets', () => {
   beforeEach(() => {
