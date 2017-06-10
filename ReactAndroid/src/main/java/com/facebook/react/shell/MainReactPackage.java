@@ -81,6 +81,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.inject.Provider;
 
 /**
@@ -88,7 +89,7 @@ import javax.inject.Provider;
  */
 public class MainReactPackage extends LazyReactPackage {
 
-  private MainPackageConfig mConfig;
+  private @Nullable MainPackageConfig mConfig;
 
   public MainReactPackage() {
   }

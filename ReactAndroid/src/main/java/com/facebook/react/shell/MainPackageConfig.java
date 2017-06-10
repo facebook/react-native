@@ -32,15 +32,15 @@ public class MainPackageConfig {
   public ImagePipelineConfig getFrescoConfig() {
     return mFrescoConfig;
   }
-
-  public OkHttpClientProvider getHttpClientProvider() {
+  
+  public @Nullable OkHttpClientProvider getHttpClientProvider() {
     return mHttpClientProvider;
   }
 
   public static class Builder {
 
     private ImagePipelineConfig mFrescoConfig;
-    private OkHttpClientProvider mHttpClientProvider;
+    private @Nullable  OkHttpClientProvider mHttpClientProvider;
 
     public Builder setFrescoConfig(ImagePipelineConfig frescoConfig) {
       mFrescoConfig = frescoConfig;
@@ -56,7 +56,7 @@ public class MainPackageConfig {
      * This does not configure the networking client the Image JavaScript
      * component uses when fetching images.
      */
-    public Builder setOkHttpClientProvider(OkHttpClientProvider httpClientProvider) {
+    public Builder setHttpClientProvider(@Nullable OkHttpClientProvider httpClientProvider) {
       this.mHttpClientProvider = httpClientProvider;
       return this;
     }
