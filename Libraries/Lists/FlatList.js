@@ -163,6 +163,11 @@ type OptionalProps<ItemT> = {
     viewableItems: Array<ViewToken>,
     changed: Array<ViewToken>,
   }) => void,
+  /**
+   * Set this when offset is needed for the loading indicator to show correctly.
+   * @platform android
+   */
+  progressViewOffset?: number,
   legacyImplementation?: ?boolean,
   /**
    * Set this true while waiting for new data from a refresh.
@@ -325,7 +330,9 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
   }
 
   /**
-   * Scroll to a specific content pixel offset, like a normal `ScrollView`.
+   * Scroll to a specific content pixel offset in the list.
+   *
+   * Check out [scrollToOffset](docs/virtualizedlist.html#scrolltooffset) of VirtualizedList
    */
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     this._listRef.scrollToOffset(params);
@@ -338,6 +345,15 @@ class FlatList<ItemT> extends React.PureComponent<DefaultProps, Props<ItemT>, vo
    */
   recordInteraction() {
     this._listRef.recordInteraction();
+  }
+
+  /**
+   * Displays the scroll indicators momentarily.
+   *
+   * @platform ios
+   */
+  flashScrollIndicators() {
+    this._listRef.flashScrollIndicators();
   }
 
   /**

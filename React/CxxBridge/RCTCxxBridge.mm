@@ -20,7 +20,6 @@
 #import <React/RCTConvert.h>
 #import <React/RCTCxxModule.h>
 #import <React/RCTCxxUtils.h>
-#import <React/RCTDevLoadingView.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTDisplayLink.h>
 #import <React/RCTJavaScriptLoader.h>
@@ -45,6 +44,10 @@
 
 #ifdef WITH_FBSYSTRACE
 #import <React/RCTFBSystrace.h>
+#endif
+
+#if RCT_DEV && __has_include("RCTDevLoadingView.h")
+#import "RCTDevLoadingView.h"
 #endif
 
 @interface RCTCxxBridge : RCTBridge
@@ -94,6 +97,8 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
       case ReactMarker::CREATE_REACT_CONTEXT_STOP:
       case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:
       case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
+      case ReactMarker::NATIVE_MODULE_SETUP_START:
+      case ReactMarker::NATIVE_MODULE_SETUP_STOP:
         // These are not used on iOS.
         break;
     }
@@ -333,7 +338,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       sourceCode = source;
       dispatch_group_leave(prepareBridge);
     } onProgress:^(RCTLoadingProgress *progressData) {
-#ifdef RCT_DEV
+#if RCT_DEV && __has_include("RCTDevLoadingView.h")
       RCTDevLoadingView *loadingView = [weakSelf moduleForClass:[RCTDevLoadingView class]];
       [loadingView updateProgress:progressData];
 #endif
@@ -1065,11 +1070,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
         self->_reactInstance->loadUnbundle(std::move(ramBundle), std::move(scriptStr),
-                                           [[url absoluteString] UTF8String]);
+                                           [[url absoluteString] UTF8String], false);
       }
     } else if (self->_reactInstance) {
       self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
-                                                 [[url absoluteString] UTF8String]);
+                                                 [[url absoluteString] UTF8String], false);
     } else {
       throw std::logic_error("Attempt to call loadApplicationScript: on uninitialized bridge");
     }
@@ -1094,12 +1099,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
-        self->_reactInstance->loadUnbundleSync(std::move(ramBundle), std::move(scriptStr),
-                                               [[url absoluteString] UTF8String]);
+        self->_reactInstance->loadUnbundle(std::move(ramBundle), std::move(scriptStr),
+                                           [[url absoluteString] UTF8String], true);
       }
     } else if (self->_reactInstance) {
-      self->_reactInstance->loadScriptFromStringSync(std::make_unique<NSDataBigString>(script),
-                                                     [[url absoluteString] UTF8String]);
+      self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
+                                                 [[url absoluteString] UTF8String], true);
     } else {
       throw std::logic_error("Attempt to call loadApplicationScriptSync: on uninitialized bridge");
     }

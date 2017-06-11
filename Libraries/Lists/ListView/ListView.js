@@ -292,6 +292,17 @@ var ListView = React.createClass({
     }
   },
 
+  /**
+   * Displays the scroll indicators momentarily.
+   *
+   * @platform ios
+   */
+  flashScrollIndicators: function() {
+    if (this._scrollComponent && this._scrollComponent.flashScrollIndicators) {
+      this._scrollComponent.flashScrollIndicators();
+    }
+  },
+
   setNativeProps: function(props: Object) {
     if (this._scrollComponent) {
       this._scrollComponent.setNativeProps(props);
@@ -497,6 +508,7 @@ var ListView = React.createClass({
       ref: this._setScrollComponentRef,
       onContentSizeChange: this._onContentSizeChange,
       onLayout: this._onLayout,
+      DEPRECATED_sendUpdatedChildFrames: props.onChangeVisibleRows !== undefined,
     }, header, bodyComponents, footer);
   },
 

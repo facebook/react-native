@@ -2,33 +2,47 @@
 
 #pragma once
 
-#include <jschelpers/Value.h>
-#include <jschelpers/JavaScriptCore.h>
-
-#include <stdexcept>
 #include <algorithm>
 #include <functional>
+#include <stdexcept>
+
+#include <jschelpers/JavaScriptCore.h>
+#include <jschelpers/Value.h>
+
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
 
 namespace facebook {
 namespace react {
 
-inline void throwJSExecutionException(const char* msg) {
-  throw JSException(msg);
-}
+class JSException : public std::exception {
+public:
+  explicit JSException(const char* msg)
+    : msg_(msg) {}
 
-template <typename... Args>
-inline void throwJSExecutionException(const char* fmt, Args... args) {
-  int msgSize = snprintf(nullptr, 0, fmt, args...);
-  msgSize = std::min(512, msgSize + 1);
-  char *msg = (char*) alloca(msgSize);
-  snprintf(msg, msgSize, fmt, args...);
-  throw JSException(msg);
-}
+  explicit JSException(JSContextRef ctx, JSValueRef exn, const char* msg) {
+    buildMessage(ctx, exn, nullptr, msg);
+  }
 
-template <typename... Args>
-inline void throwJSExecutionExceptionWithStack(const char* msg, const char* stack) {
-  throw JSException(msg, stack);
-}
+  explicit JSException(JSContextRef ctx, JSValueRef exn, JSStringRef sourceURL) {
+    buildMessage(ctx, exn, sourceURL, nullptr);
+  }
+
+  const std::string& getStack() const {
+    return stack_;
+  }
+
+  virtual const char* what() const noexcept override {
+    return msg_.c_str();
+  }
+
+private:
+  std::string msg_;
+  std::string stack_;
+
+  void buildMessage(JSContextRef ctx, JSValueRef exn, JSStringRef sourceURL, const char* errorMsg);
+};
 
 using JSFunction = std::function<JSValueRef(JSContextRef, JSObjectRef, size_t, const JSValueRef[])>;
 
@@ -37,7 +51,7 @@ JSObjectRef makeFunction(
     const char* name,
     JSFunction function);
 
-void installGlobalFunction(
+RN_EXPORT void installGlobalFunction(
     JSGlobalContextRef ctx,
     const char* name,
     JSFunction function);
@@ -70,11 +84,6 @@ JSValueRef evaluateSourceCode(
     JSSourceCodeRef source,
     JSStringRef sourceURL);
 #endif
-
-void formatAndThrowJSException(
-    JSContextRef ctx,
-    JSValueRef exn,
-    JSStringRef sourceURL);
 
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, const char *exceptionLocation);
 JSValueRef translatePendingCppExceptionToJSError(JSContextRef ctx, JSObjectRef jsFunctionCause);

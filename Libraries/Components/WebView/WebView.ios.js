@@ -286,6 +286,14 @@ class WebView extends React.Component {
     javaScriptEnabled: PropTypes.bool,
 
     /**
+     * Boolean value to enable third party cookies in the `WebView`. Used on
+     * Android Lollipop and above only as third party cookies are enabled by
+     * default on Android Kitkat and below and on iOS. The default value is `true`.
+     * @platform android
+     */
+    thirdPartyCookiesEnabled: PropTypes.bool,
+
+    /**
      * Boolean value to control whether DOM Storage is enabled. Used only in
      * Android.
      * @platform android

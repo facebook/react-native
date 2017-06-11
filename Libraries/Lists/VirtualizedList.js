@@ -20,8 +20,10 @@ const ScrollView = require('ScrollView');
 const View = require('View');
 const ViewabilityHelper = require('ViewabilityHelper');
 
+const flattenStyle = require('flattenStyle');
 const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
+const warning = require('fbjs/lib/warning');
 
 const {computeWindowedRenderLimits} = require('VirtualizeUtils');
 
@@ -119,6 +121,11 @@ type OptionalProps = {
     viewableItems: Array<ViewToken>,
     changed: Array<ViewToken>,
   }) => void,
+  /**
+   * Set this when offset is needed for the loading indicator to show correctly.
+   * @platform android
+   */
+  progressViewOffset?: number,
   /**
    * Set this true while waiting for new data from a refresh.
    */
@@ -236,6 +243,16 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     }
   }
 
+  /**
+   * Scroll to a specific content pixel offset in the list.
+   *
+   * Param `offset` expects the offset to scroll to.
+   * In case of `horizontal` is true, the offset is the x-value,
+   * in any other case the offset is the y-value.
+   *
+   * Param `animated` (`true` by default) defines whether the list
+   * should do an animation while scrolling.
+   */
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     const {animated, offset} = params;
     this._scrollRef.scrollTo(
@@ -246,6 +263,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   recordInteraction() {
     this._viewabilityHelper.recordInteraction();
     this._updateViewableItems(this.props.data);
+  }
+
+  flashScrollIndicators() {
+    this._scrollRef.flashScrollIndicators();
   }
 
   /**
@@ -287,6 +308,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           '`refreshing` prop must be set as a boolean in order to use `onRefresh`, but got `' +
             JSON.stringify(props.refreshing) + '`',
         );
+
         return (
           <ScrollView
             {...props}
@@ -294,6 +316,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
               <RefreshControl
                 refreshing={props.refreshing}
                 onRefresh={props.onRefresh}
+                progressViewOffset={props.progressViewOffset}
               />
             }
           />
@@ -409,6 +432,15 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   };
 
   render() {
+    if (__DEV__) {
+      const flatStyles = flattenStyle(this.props.contentContainerStyle);
+      warning(
+        flatStyles == null || flatStyles.flexWrap !== 'wrap',
+        '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
+          'Consider using `numColumns` with `FlatList` instead.',
+      );
+    }
+
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} = this.props;
     const {data, disableVirtualization, horizontal} = this.props;
     const cells = [];
@@ -709,7 +741,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const visibleLength = this._selectLength(e.nativeEvent.layoutMeasurement);
     const contentLength = this._selectLength(e.nativeEvent.contentSize);
     const offset = this._selectOffset(e.nativeEvent.contentOffset);
-    const dt = Math.max(1, timestamp - this._scrollMetrics.timestamp);
+    const dt = this._scrollMetrics.timestamp
+      ? Math.max(1, timestamp - this._scrollMetrics.timestamp)
+      : 1;
     if (dt > 500 && this._scrollMetrics.dt > 500 && (contentLength > (5 * visibleLength)) &&
         !this._hasWarned.perf) {
       infoLog(
@@ -723,7 +757,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const dOffset = offset - this._scrollMetrics.offset;
     const velocity = dOffset / dt;
     this._scrollMetrics = {contentLength, dt, dOffset, offset, timestamp, velocity, visibleLength};
-    this._updateViewableItems(this.props);
+    this._updateViewableItems(this.props.data);
     if (!this.props) {
       return;
     }

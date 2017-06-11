@@ -425,7 +425,7 @@ var LayoutPropTypes = {
 
   /** `overflow` controls how a children are measured and displayed.
    *  `overflow: hidden` causes views to be clipped while `overflow: scroll`
-   *  causes views to be measured independently of their parents main axis.`
+   *  causes views to be measured independently of their parents main axis.
    *  It works like `overflow` in CSS (default: visible).
    *  See https://developer.mozilla.org/en/docs/Web/CSS/overflow
    *  for more details.
