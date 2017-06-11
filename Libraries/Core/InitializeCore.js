@@ -100,7 +100,9 @@ if (!global.process.env.NODE_ENV) {
 const Systrace = require('Systrace');
 Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
 if (__DEV__) {
-  global.performance = Systrace.getUserTimingPolyfill();
+  if (global.performance === undefined) {
+    global.performance = Systrace.getUserTimingPolyfill();
+  }
 }
 
 // Set up console

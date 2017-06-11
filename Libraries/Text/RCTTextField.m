@@ -42,6 +42,9 @@
     _bridge = bridge;
     _eventDispatcher = bridge.eventDispatcher;
 
+    // `blurOnSubmit` defaults to `true` for <TextInput multiline={false}> by design.
+    _blurOnSubmit = YES;
+
     _textField = [[RCTUITextField alloc] initWithFrame:self.bounds];
     _textField.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
