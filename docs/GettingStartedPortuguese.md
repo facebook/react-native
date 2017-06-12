@@ -366,7 +366,7 @@ Selecione as "SDK Platforms" do SDK Manager, então marque o checkbox próximo a
 
 <block class="native windows mac linux android" />
 
-Next, select the "SDK Tools" tab and check the box next to "Show Package Details" here as well. Look for and expand the "Android SDK Build-Tools" entry, then make sure that `23.0.1` is selected.
+Depois selecione a aba "SDK Tools" e marque o checkbox próximo a "Show Package Details". Olhe a expansão do "Android SDK Build-Tools", então tenha certeza que a `23.0.1` está selecionada.
 
 <block class="native mac android" />
 
@@ -378,7 +378,7 @@ Next, select the "SDK Tools" tab and check the box next to "Show Package Details
 
 <block class="native windows mac linux android" />
 
-Finally, click "Apply" to download and install the Android SDK and related build tools.
+Finalmente clique em "Apply" para realizar o download e instalação da SDK do Android e suas ferramentas relacionadas.
 
 <block class="native mac android" />
 
@@ -390,13 +390,13 @@ Finally, click "Apply" to download and install the Android SDK and related build
 
 <block class="native mac windows linux android" />
 
-#### 3. Configure the ANDROID_HOME environment variable
+#### 3. Configurando a váriavel de ambiente ANDROID_HOME
 
-The React Native tools require some environment variables to be set up in order to build apps with native code.
+As ferramentas do React Native necessitam de algumas váriaveis de ambientes setadas corretamente para criar o aplicativo com código nativo.
 
 <block class="native mac linux android" />
 
-Add the following lines to your `$HOME/.bash_profile` config file:
+Adicione as seguintes linhas no seu arquivo de configuração `$HOME/.bash_profile`:
 
 <block class="native mac android" />
 
@@ -416,80 +416,78 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 <block class="native mac linux android" />
 
-> `.bash_profile` is specific to `bash`. If you're using another shell, you will need to edit the appropriate shell-specific config file.
+>  O `.bash_profile` é especifico do `bash`. Se você usa outro shell, então você precisa editar o arquivo de configuração especifico do seu shell.
 
-Type `source $HOME/.bash_profile` to load the config into your current shell. Verify that ANDROID_HOME has been added to your path by running `echo $PATH`.
+Digite `source $HOME/.bash_profile` para carregar o arquivo de configuração do seu shell atual. Verifique se a váriavel de ambiente ANDROID_HOME foi adicionada ao seu PATH rodando o comando `echo $PATH`.
 
-> Please make sure you use the correct Android SDK path. You can find the actual location of the SDK in the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
+> Por favor tenha certeza que está usando o Path do Android SDK correto. Você pode encontrar o caminho atual da SDK do Android Studio no menu "Preferences", depois ir em **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
 <block class="native windows android" />
 
-Open the System pane under **System and Security** in the Control Panel, then click on **Change settings...**. Open the **Advanced** tab and click on **Environment Variables...**. Click on **New...** to create a new `ANDROID_HOME` user variable that points to the path to your Android SDK:
+Abra o painel do sistema em **System and Security** vá até o painel de controle, então clique em **Change settings...**. Abra a opção **Advanced** e clique em **Environment Variables...**. Clique em **New...** para criar uma nova váriavel `ANDROID_HOME` para o path do seu Android SDK: 
 
 ![ANDROID_HOME Environment Variable](img/AndroidEnvironmentVariableANDROID_HOME.png)
 
-The SDK is installed, by default, at the following location:
+O SDK é instalado por padrão no seguinte diretório:
 
 ```powershell
 c:\Users\YOUR_USERNAME\AppData\Local\Android\Sdk
 ```
+Você pode encontrar o diretório atual do seu SDK no seu Android Studio na aba "Preferences" na opção **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
-You can find the actual location of the SDK in the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
-
-Open a new Command Prompt window to ensure the new environment variable is loaded before proceeding to the next step.
+Abra uma nova janela do prompt de comando para garantir que a nova váriavel de ambiente está carregada antes de seguir para o próximo passo.
 
 <block class="native linux android" />
 
-### Watchman (optional)
+### Watchman (opcional)
 
-Follow the [Watchman installation guide](https://facebook.github.io/watchman/docs/install.html#build-install) to compile and install Watchman from source.
+Siga o [guia de instalação Watchman](https://facebook.github.io/watchman/docs/install.html#build-install) para compilar e instalar o Watchman a partir do código.
 
-> [Watchman](https://facebook.github.io/watchman/docs/install.html) is a tool by Facebook for watching
-changes in the filesystem. It is highly recommended you install it for better performance, but it's alright to skip this if you find the process to be tedious.
+> [Watchman](https://facebook.github.io/watchman/docs/install.html) é uma ferramenta do Facebook para observar as mudanças no seu sistema de arquivo. Nós altamente recomendamos que o instale para uma melhor performance, mas você pode pular essa parte caso ache o processo tedioso.
 
 <block class="native mac ios" />
 
-## Creating a new application
+## Criando uma nova aplicação
 
-Use the React Native command line interface to generate a new React Native project called "AwesomeProject":
+Use as linhas de comando do React Native para gerar um novo projeto em React Native chamado "PrimeiroProjeto"
+
+```
+react-native init PrimeiroProjeto
+```
+
+Isso não é necessário caso você esteja integrandoo o React Native em um projeto já existente, se você "ejetar" da parte "Create React Native App", ou se você está adicionando suporte ao iOS em um projeto em React Native já existente (veja [Plataforma de Código Especifico](docs/platform-specific-code.html)).
+
+<block class="native mac windows linux android" />
+
+## Criando uma nova aplicação
+
+Use os comandos do React Native para gerar um novo projeto em React Native chamado "AwesomeProject":
 
 ```
 react-native init AwesomeProject
 ```
 
-This is not necessary if you are integrating React Native into an existing application, if you "ejected" from Create React Native App, or if you're adding iOS support to an existing React Native project (see [Platform Specific Code](docs/platform-specific-code.html)).
+Isso não é necessário se você estiver integrando o React Native em uma aplicação já existente, se você "ejetar" da "Criação do aplicativo em React Native",  ou se está adicionando suporte a Android em um projeto React Native existente (veja [Plataforma de Código Especifico](docs/platform-specific-code.html)).
 
 <block class="native mac windows linux android" />
 
-## Creating a new application
+## Preparando o aparelho Android
 
-Use the React Native command line interface to generate a new React Native project called "AwesomeProject":
+Você irá precisar de um aparelho Android para rodar o seu aplicativo React Native para Android. Isso pode ser um dispositivo fisico Android, ou mais comumente, você pode usar um Emulador de Android da sua escolha para emular o aparelho Android no seu computador.
 
-```
-react-native init AwesomeProject
-```
+De todo jeito você precisa preparar o seu aparelho para rodar os aplicativos Android para desenvolvimento.
 
-This is not necessary if you are integrating React Native into an existing application, if you "ejected" from Create React Native App, or if you're adding Android support to an existing React Native project (see [Platform Specific Code](docs/platform-specific-code.html)).
+### Usando um dispositivo fisico
 
-<block class="native mac windows linux android" />
+Se você tem um dispositivo Android, você pode usa-lo para o desenvolvimento ao invés de usar o emulador, só precisa plugar o celular no seu computador, usando o cabo USB e seguindo as instruções descritas [aqui](docs/running-on-device.html).
 
-## Preparing the Android device
+### Usando um dispositivo virtual - emulador
 
-You will need an Android device to run your React Native Android app. This can be either a physical Android device, or more commonly, you can use an Android Virtual Device which allows you to emulate an Android device on your computer.
-
-Either way, you will need to prepare the device to run Android apps for development.
-
-### Using a physical device
-
-If you have a physical Android device, you can use it for development in place of an AVD by plugging it in to your computer using a USB cable and following the instructions [here](docs/running-on-device.html).
-
-### Using a virtual device
-
-You can see the list of available Android Virtual Devices (AVDs) by opening the "AVD Manager" from within Android Studio. Look for an icon that looks like this:
+Você pode ver uma lista de "Android Virtual Devices (AVDs) - emuladores" abrindo o "AVD Manager" do seu Android Studio. Procure pelo ícone que se parece com isso: 
 
 ![Android Studio AVD Manager](img/react-native-tools-avd.png)
 
-If you have just installed Android Studio, you will likely need to [create a new AVD](https://developer.android.com/studio/run/managing-avds.html). Select "Create Virtual Device...", then pick any Phone from the list and click "Next".
+Se você já tem instalado somente o Android Studio, você irá precisar de [criar um novo AVD - emulador](https://developer.android.com/studio/run/managing-avds.html). Seelcione a opção "Create Virtual Device...", então escolha um aparelho da lista e clique em "Next".
 
 <block class="native windows android" />
 
@@ -501,11 +499,11 @@ If you have just installed Android Studio, you will likely need to [create a new
 
 <block class="native mac windows linux android" />
 
-Select the "x86 Images" tab, then look for the **Marshmallow** API Level 23, x86_64 ABI image with a Android 6.0 (Google APIs) target.
+Selecione a tela de "x86 Images", então procure por **Marshmallow** API Level 23, x86_64 ABI com o Android 6.0 (Google APIs) marcada.
 
 <block class="native linux android" />
 
-> We recommend configuring [VM acceleration](https://developer.android.com/studio/run/emulator-acceleration.html#vm-linux) on your system to improve performance. Once you've followed those instructions, go back to the AVD Manager.
+> Nós recomendamos configurar a [aceleração de VM](https://developer.android.com/studio/run/emulator-acceleration.html#vm-linux) no seu sistema para melhorar a performance. Uma vez que você tenha seguido essas instruções volte ao AVD Manager.
 
 <block class="native windows android" />
 
