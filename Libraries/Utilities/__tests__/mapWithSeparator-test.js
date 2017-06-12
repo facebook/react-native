@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.unmock('mapWithSeparator');
+jest.disableAutomock();
 
 describe('mapWithSeparator', () => {
   const mapWithSeparator = require('mapWithSeparator');

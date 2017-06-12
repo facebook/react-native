@@ -8,10 +8,7 @@
  */
 'use strict';
 
-jest
-  .unmock('Interpolation')
-  .unmock('Easing')
-  .unmock('normalizeColor');
+jest.disableAutomock();
 
 var Interpolation = require('Interpolation');
 var Easing = require('Easing');

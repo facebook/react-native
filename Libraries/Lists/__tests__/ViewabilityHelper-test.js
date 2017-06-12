@@ -9,7 +9,7 @@
  */
 'use strict';
 
-jest.unmock('ViewabilityHelper');
+jest.disableAutomock();
 
 const ViewabilityHelper = require('ViewabilityHelper');
 

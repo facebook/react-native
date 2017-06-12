@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.unmock('deepDiffer');
+jest.disableAutomock();
 var deepDiffer = require('deepDiffer');
 
 describe('deepDiffer', function() {

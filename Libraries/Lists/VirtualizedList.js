@@ -122,6 +122,11 @@ type OptionalProps = {
     changed: Array<ViewToken>,
   }) => void,
   /**
+   * Set this when offset is needed for the loading indicator to show correctly.
+   * @platform android
+   */
+  progressViewOffset?: number,
+  /**
    * Set this true while waiting for new data from a refresh.
    */
   refreshing?: ?boolean,
@@ -240,11 +245,11 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
 
   /**
    * Scroll to a specific content pixel offset in the list.
-   * 
+   *
    * Param `offset` expects the offset to scroll to.
    * In case of `horizontal` is true, the offset is the x-value,
    * in any other case the offset is the y-value.
-   * 
+   *
    * Param `animated` (`true` by default) defines whether the list
    * should do an animation while scrolling.
    */
@@ -303,6 +308,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           '`refreshing` prop must be set as a boolean in order to use `onRefresh`, but got `' +
             JSON.stringify(props.refreshing) + '`',
         );
+
         return (
           <ScrollView
             {...props}
@@ -310,6 +316,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
               <RefreshControl
                 refreshing={props.refreshing}
                 onRefresh={props.onRefresh}
+                progressViewOffset={props.progressViewOffset}
               />
             }
           />
@@ -734,7 +741,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const visibleLength = this._selectLength(e.nativeEvent.layoutMeasurement);
     const contentLength = this._selectLength(e.nativeEvent.contentSize);
     const offset = this._selectOffset(e.nativeEvent.contentOffset);
-    const dt = Math.max(1, timestamp - this._scrollMetrics.timestamp);
+    const dt = this._scrollMetrics.timestamp
+      ? Math.max(1, timestamp - this._scrollMetrics.timestamp)
+      : 1;
     if (dt > 500 && this._scrollMetrics.dt > 500 && (contentLength > (5 * visibleLength)) &&
         !this._hasWarned.perf) {
       infoLog(
