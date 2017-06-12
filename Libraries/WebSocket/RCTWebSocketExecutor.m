@@ -158,10 +158,7 @@ RCT_EXPORT_MODULE()
 
   dispatch_async(_jsQueue, ^{
     if (!self.valid) {
-      NSError *error = [NSError errorWithDomain:@"WS" code:1 userInfo:@{
-        NSLocalizedDescriptionKey: @"Runtime is not ready for debugging. Make sure Packager server is running."
-      }];
-      callback(error, nil);
+      callback(RCTErrorWithMessage(@"Runtime is not ready for debugging. Make sure Packager server is running."), nil);
       return;
     }
 
@@ -180,8 +177,13 @@ RCT_EXPORT_MODULE()
     @"url": RCTNullIfNil(URL.absoluteString),
     @"inject": _injectedObjects,
   };
-  [self sendMessage:message onReply:^(NSError *error, NSDictionary<NSString *, id> *reply) {
-    onComplete(error);
+  [self sendMessage:message onReply:^(NSError *socketError, NSDictionary<NSString *, id> *reply) {
+    if (socketError) {
+      onComplete(socketError);
+    } else {
+      NSString *error = reply[@"error"];
+      onComplete(error ? RCTErrorWithMessage(error) : nil);
+    }
   }];
 }
 
@@ -218,9 +220,10 @@ RCT_EXPORT_MODULE()
       return;
     }
 
-    NSString *result = reply[@"result"];
-    id objcValue = RCTJSONParse(result, NULL);
-    onComplete(objcValue, nil);
+    NSError *jsonError;
+    id result = RCTJSONParse(reply[@"result"], &jsonError);
+    NSString *error = reply[@"error"];
+    onComplete(result, error ? RCTErrorWithMessage(error) : jsonError);
   }];
 }
 

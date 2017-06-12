@@ -39,7 +39,7 @@ onmessage = (function() {
       try {
         importScripts(message.url);
       } catch (err) {
-        error = JSON.stringify(err);
+        error = err.message;
       }
       sendReply(null /* result */, error);
     },
@@ -66,12 +66,17 @@ onmessage = (function() {
     } else {
       // Other methods get called on the bridge
       var returnValue = [[], [], [], 0];
+      var error;
       try {
         if (typeof __fbBatchedBridge === 'object') {
           returnValue = __fbBatchedBridge[object.method].apply(null, object.arguments);
+        } else {
+          error = 'Failed to call function, __fbBatchedBridge is undefined';
         }
+      } catch (err) {
+        error = err.message;
       } finally {
-        sendReply(JSON.stringify(returnValue));
+        sendReply(JSON.stringify(returnValue), error);
       }
     }
   };
