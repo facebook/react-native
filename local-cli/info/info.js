@@ -50,7 +50,7 @@ const info = function() {
       .toString()
       .replace(/(\r\n|\n|\r)/gm, '');
     const windowsBuildNumber = child_process
-      .execSync(`type "C:\\\\Program File\\\\Android\\\\Android Studio\\\\build.txt"`)
+      .execSync(`type "C:\\\\Program Files\\\\Android\\\\Android Studio\\\\build.txt"`)
       .toString()
       .replace(/(\r\n|\n|\r)/gm, '');
     androidStudioVersion = `${windowsVersion} ${windowsBuildNumber}`;
