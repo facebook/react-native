@@ -21,49 +21,63 @@ const info = function() {
   const npmVersion = execSync('npm -v').toString().replace(/(\r\n|\n|\r)/gm, '');
 
   if (process.platform === 'darwin') {
-    var xcodebuildVersion = execSync('/usr/bin/xcodebuild -version').toString().split('\n').join(' ');
+    try {
+      var xcodebuildVersion = execSync('/usr/bin/xcodebuild -version').toString().split('\n').join(' ');
 
-    androidStudioVersion = child_process
-      .execFileSync(
-        '/usr/libexec/PlistBuddy',
-        [
-          '-c', 'Print:CFBundleShortVersionString',
-          '-c', 'Print:CFBundleVersion',
-          '/Applications/Android Studio.app/Contents/Info.plist',
-        ],
-        { encoding: 'utf8' },
-      )
-      .split('\n')
-      .join(' ');
+      androidStudioVersion = child_process
+        .execFileSync(
+          '/usr/libexec/PlistBuddy',
+          [
+            '-c',
+            'Print:CFBundleShortVersionString',
+            '-c',
+            'Print:CFBundleVersion',
+            '/Applications/Android Studio.app/Contents/Info.plist',
+          ],
+          { encoding: 'utf8' },
+        )
+        .split('\n')
+        .join(' ');
+    } catch (err) {
+      console.log('Android Studio not found in typical install location');
+    }
   } else if (process.platform === 'linux') {
-    const linuxBuildNumber = child_process.execSync('cat /opt/android-studio/build.txt').toString();
-    const linuxVersion = child_process
-      .execSync('cat /opt/android-studio/bin/studio.sh | grep "$Home/.AndroidStudio" | head -1')
-      .toString()
-      .match(/\d\.\d/)[0];
-    androidStudioVersion = `${linuxVersion} ${linuxBuildNumber}`;
+    try {
+      const linuxBuildNumber = child_process.execSync('cat /opt/android-studio/build.txt').toString();
+      const linuxVersion = child_process
+        .execSync('cat /opt/android-studio/bin/studio.sh | grep "$Home/.AndroidStudio" | head -1')
+        .toString()
+        .match(/\d\.\d/)[0];
+      androidStudioVersion = `${linuxVersion} ${linuxBuildNumber}`;
+    } catch (err) {
+      console.log('Android Studio not found in typical install location');
+    }
   } else if (process.platform.startsWith('win')) {
-    const windowsVersion = child_process
-      .execSync(
-        'wmic datafile where name="C:\\\\Program Files\\\\Android\\\\Android Studio\\\\bin\\\\studio.exe" get Version',
-      )
-      .toString()
-      .replace(/(\r\n|\n|\r)/gm, '');
-    const windowsBuildNumber = child_process
-      .execSync(`type "C:\\\\Program Files\\\\Android\\\\Android Studio\\\\build.txt"`)
-      .toString()
-      .replace(/(\r\n|\n|\r)/gm, '');
-    androidStudioVersion = `${windowsVersion} ${windowsBuildNumber}`;
+    try {
+      const windowsVersion = child_process
+        .execSync(
+          'wmic datafile where name="C:\\\\Program Files\\\\Android\\\\Android Studio\\\\bin\\\\studio.exe" get Version',
+        )
+        .toString()
+        .replace(/(\r\n|\n|\r)/gm, '');
+      const windowsBuildNumber = child_process
+        .execSync('type "C:\\\\Program Files\\\\Android\\\\Android Studio\\\\build.txt"')
+        .toString()
+        .replace(/(\r\n|\n|\r)/gm, '');
+      androidStudioVersion = `${windowsVersion} ${windowsBuildNumber}`;
+    } catch (err) {
+      console.log('Android Studio not found in typical install location');
+    }
   }
 
   console.log(chalk.bold('Versions:'));
   console.log('  React Native: ', chalk.gray(pkg.version));
   console.log('  OS: ', chalk.gray(osName(os.platform(), os.release())));
   console.log('  Node: ', chalk.gray(process.version));
-  console.log('  Yarn: ', chalk.gray(yarn.getYarnVersionIfAvailable()));
+  console.log('  Yarn: ', chalk.gray(yarn.getYarnVersionIfAvailable() || 'Not Found'));
   console.log('  npm: ', chalk.gray(npmVersion));
   console.log('  Xcode: ', process.platform === 'darwin' ? chalk.gray(xcodebuildVersion) : 'N/A');
-  console.log('  Android Studio: ', chalk.gray(androidStudioVersion));
+  console.log('  Android Studio: ', chalk.gray(androidStudioVersion || 'Not Found'));
 };
 
 module.exports = {
