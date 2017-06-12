@@ -1,18 +1,18 @@
 # React Native [![Build Status](https://travis-ci.org/facebook/react-native.svg?branch=master)](https://travis-ci.org/facebook/react-native) [![Circle CI](https://circleci.com/gh/facebook/react-native.svg?style=shield)](https://circleci.com/gh/facebook/react-native) [![npm version](https://badge.fury.io/js/react-native.svg)](https://badge.fury.io/js/react-native)
 
-React Native permite vocẽ a crie experiências de plataformas nativas usando uma consistente experiência de desenvolvimento baseado no JavaScript e [React](https://facebook.github.io/react). O foco do React Native é desenvolver de forma eficiente para a todas as plataformas que você deseja - aprenda uma vez, escreva em qualquer lugar. Facebook usa o React Native na produção de multiplos aplicativos e irá continuar investindo no React Native.
+React Native permite você a crie experiências de plataformas nativas usando uma experiência de desenvolvimento consistente baseado no JavaScript e [React](https://facebook.github.io/react). O foco do React Native é desenvolver de forma eficiente para todas as plataformas que você deseja - aprenda uma vez, escreva em qualquer lugar. Facebook usa o React Native na produção de multiplos aplicativos e irá continuar investindo no React Native.
 
 Suporta operações em sistemas >= Android 4.1 (API 16) e >= iOS 8.0. 
  
-- [Iniciando](#getting-started-portuguese)
-- [Conseguindo ajuda](#getting-help)
-- [Documentação](#documentation)
-- [Exemplos](#examples)
-- [Estendendo o React Native](#extending-react-native)
-- [Atualizando](#upgrading)
-- [Abrindo Issues](#opening-issues)
-- [Contribuindo](#contributing)
-- [Licença](#license)
+- [Iniciando](#iniciando)
+- [Conseguindo ajuda](#conseguindo-ajuda)
+- [Documentação](#documentação)
+- [Exemplos](#examplo)
+- [Ampliando o React Native](#ampliando-o-react-native)
+- [Atualizando](#atualizando)
+- [Abrindo Issues](#abrindo-issues)
+- [Contribuindo](#contribuindo)
+- [Licença](#licença)
 
 ## Introdução
 
