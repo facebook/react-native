@@ -151,171 +151,164 @@ Uma vez que você tenha configurado, você pode lançar seu aplicativo em um dis
 
 ### Ressalvas - Confirmar se está correto
 
-Por você não conseguir buildar qualquer código nativo usando o "Creat React Native App" para criar um projeto, não é possível incluir um módulo nativo customizado além das APIs do React Native e componentes que estão disponiveis no aplicativo Expo.
+Como você não constrói qualquer código nativo usando o "Creat React Native App" para criar um projeto, não é possível incluir um módulo nativo customizado além das APIs do React Native e componentes que estão disponiveis no aplicativo Expo.
 
-Because you don't build any native code when using Create React Native App to create a project, it's not possible to include custom native modules beyond the React Native APIs and components that are available in the Expo client app.
+Se você sabe o que será necessário incluir no seu código nativo, 'Create React Native App' ainda é um bom jeito de começar. Nesse caso você só irá precisar eventualmente "[ejetar](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#ejecting-from-create-react-native-app)" para criar suas próprias builds nativas. Se você ejetar, as instruções do "Criando projeto com código nativo" serão requeridas para você continuar trabalhando no seu projeto.
 
-Se você sabe o que será necessário incluir no seu código nativo, 'Create React Native App' ainda é um bom jeito de começar.
+Para criar uma aplicação com React Native você precisa configurar seu projeto com a mais recenter versão que é suportada pelo aplicativo Expo. O aplicativo Expo normalmente ganha suporte a uma nova versão do React Native uma semana após a release e estabilidade serem lançadas. Você pode checar [essa documentação](https://github.com/react-community/create-react-native-app/blob/master/VERSIONS.md) para encontrar quais versões são suportadas.
 
-If you know that you'll eventually need to include your own native code, Create React Native App is still a good way to get started. In that case you'll just need to "[eject](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md#ejecting-from-create-react-native-app)" eventually to create your own native builds. If you do eject, the "Building Projects with Native Code" instructions will be required to continue working on your project.
-
-Create React Native App configures your project to use the most recent React Native version that is supported by the Expo client app. The Expo client app usually gains support for a given React Native version about a week after the React Native version is released as stable. You can check [this document](https://github.com/react-community/create-react-native-app/blob/master/VERSIONS.md) to find out what versions are supported.
-
-If you're integrating React Native into an existing project, you'll want to skip Create React Native App and go directly to setting up the native build environment. Select "Building Projects with Native Code" above for instructions on configuring a native build environment for React Native.
+Se você está integrando o React Native em um projeto existente, você precisa deixar a parte "Criando seu aplicativo React Native" e ir direto para as configurações de ambiente de criação de nativos. Selecione "Criando projetos com código nativo" para instruções de configurações para buildar nativos do React Native.
 
 <block class="native mac windows linux ios android" />
 
-<p>Follow these instructions if you need to build native code in your project. For example, if you are integrating React Native into an existing application, or if you "ejected" from <a href="docs/getting-started.html" onclick="displayTab('guide', 'quickstart')">Create React Native App</a>, you'll need this section.</p>
+<p>Siga essas instruções se você precisa construir código nativo no seu projeto. Por exemplo, se você está integrando o React Native em uma aplicação já existente ou se você precisa "ejetar" [Criando aplicação React Native](#getting-started-portuguese) tudo que você precisa está nessa seção</p>
 
-The instructions are a bit different depending on your development operating system, and whether you want to start developing for iOS or Android. If you want to develop for both iOS and Android, that's fine - you just have to pick
-one to start with, since the setup is a bit different.
+Essa instrução é um pouco diferente dependendo do sistema operacional que você está usando para desenvolver, e se você está inciando o desenvolvimento para Android ou iOS. Se você deseja desenvolver para ambos os sistemas, está tudo bem - você só precisa escolher um pra começar, já que as configurações são um pouco diferentes.
 
 <div class="toggler">
-  <span>Development OS:</span>
+  <span>Sistema operacional usado para o desenvolvimento:</span>
   <a href="javascript:void(0);" class="button-mac" onclick="displayTab('os', 'mac')">macOS</a>
   <a href="javascript:void(0);" class="button-windows" onclick="displayTab('os', 'windows')">Windows</a>
   <a href="javascript:void(0);" class="button-linux" onclick="displayTab('os', 'linux')">Linux</a>
-  <span>Target OS:</span>
+  <span>Sistema escolhido para desenvolver:</span>
   <a href="javascript:void(0);" class="button-ios" onclick="displayTab('platform', 'ios')">iOS</a>
   <a href="javascript:void(0);" class="button-android" onclick="displayTab('platform', 'android')">Android</a>
 </div>
 
 <block class="native linux windows ios" />
 
-## Unsupported
+## Sem suporte
 
-<blockquote><p>A Mac is required to build projects with native code for iOS. You can follow the <a href="docs/getting-started.html" onclick="displayTab('guide', 'quickstart')">Quick Start</a> to learn how to build your app using Create React Native App instead.</p></blockquote>
+<blockquote><p> Um Mac é necessário para buildar projetos em código nativo para iOS. Você pode seguir até <a href="docs/getting-started.html" onclick="displayTab('guide', 'quickstart')">Rápido Inicio</a> para aprender a criar aplicativos usando o React Native.</p></blockquote>
 
 <block class="native mac ios" />
 
-## Installing dependencies
+## Instalando dependencias.
 
-You will need Node, Watchman, the React Native command line interface, and Xcode.
+Você irá precisar do Node, Watchman, comandos do React Native, e Xcode.
 
-While you can use any editor of your choice to develop your app, you will need to install Xcode in order to set up the necessary tooling to build your React Native app for iOS.
+Enquanto isso você pode usar o editor de texto de sua escolha para desenvolver, você só precisa do Xcode instalado para configurações necessárias para buildar o seu aplicativo em React Native para iOS.
 
 <block class="native mac android" />
 
-## Installing dependencies
+## Instalando dependencias.
 
-You will need Node, Watchman, the React Native command line interface, a JDK, and Android Studio.
+Você irá precisar do Node, Watchman, comandos do React Native, a JDK, e Android Studio.
 
 <block class="native linux android" />
 
-## Installing dependencies
+## Instalando dependencias.
 
-You will need Node, the React Native command line interface, a JDK, and Android Studio.
+Você irá precisar do Node, Watchman, comandos do React Native, a JDK, e Android Studio.
 
 <block class="native windows android" />
 
-## Installing dependencies
+## Instalando dependencias.
 
-You will need Node, the React Native command line interface, Python2, a JDK, and Android Studio.
+Você irá precisar do Node, Watchman, comandos do React Native, Python2, a JDK, e Android Studio.
 
 <block class="native mac windows linux android" />
 
-While you can use any editor of your choice to develop your app, you will need to install Android Studio in order to set up the necessary tooling to build your React Native app for Android.
+Enquanto isso você pode usar o editor de texto de sua escolha para desenvolver, você só precisa do Android Studio instalado para configurações necessárias para buildar o seu aplicativo em React Native para Android.
 
 <block class="native mac ios android" />
 
 ### Node, Watchman
 
-We recommend installing Node and Watchman using [Homebrew](http://brew.sh/). Run the following commands in a Terminal after installing Homebrew:
+Nós recomendamos instalar o Node e Watchman usando o [Homebrew](http://brew.sh/). Rode os seguintes comandos no termminal após terminal a instalação do Homebrew:
 
 ```
 brew install node
 brew install watchman
 ```
 
-If you have already installed Node on your system, make sure it is version 4 or newer.
+Se você já tem o Node istalado no seu sistema, tenha certeza que está na versão 4 ou mais recente.
 
-[Watchman](https://facebook.github.io/watchman) is a tool by Facebook for watching changes in the filesystem. It is highly recommended you install it for better performance.
+[Watchman](https://facebook.github.io/watchman) é uma ferramenta do Facebook para acompanhar mudanças em seu sistema. É altamente recomendado você instalar para ter uma melhor perfomance.
 
 <block class="native linux android" />
 
 ### Node
 
-Follow the [installation instructions for your Linux distribution](https://nodejs.org/en/download/package-manager/) to install Node 6 or newer.
+Siga as [instruções de instalação para sua distribuição linux](https://nodejs.org/en/download/package-manager/) para instalar a versão 6 ou mais recente do Node.
 
 <block class='native windows android' />
 
 ### Node, Python2, JDK
 
-We recommend installing Node and Python2 via [Chocolatey](https://chocolatey.org), a popular package manager for Windows.
+Nós recomendamos a instalação do Node e Python2 via [Chocolatey](https://chocolatey.org) um gerenciador de pacotes para Windows popular. 
 
-React Native also requires a recent version of the [Java SE Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), as well as Python 2. Both can be installed using Chocolatey.
+React Native também requer uma versão recente do [Java SE Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) assim como a do Python 2. Ambos podem ser instalados usando o Chocolatey.
 
-Open an Administrator Command Prompt (right click Command Prompt and select "Run as Administrator"), then run the following commands:
+Abra o Prompt de comando em modo Administrador (botão direto no Prompt de comando e selecione "Rode como Administrador"), então rode os seguintes comandos:
 
 ```powershell
 choco install nodejs.install
 choco install python2
 choco install jdk8
 ```
+Se você já tem o Node instalado no seu sistema, tenha certeza que está na versão 4 ou mais recente. Se você já tem o JDK em seu sistema, tenha certeza que está na versão ou mais recente.
 
-If you have already installed Node on your system, make sure it is version 4 or newer. If you already have a JDK on your system, make sure it is version 8 or newer.
-
-> You can find additional installation options on [Node's Downloads page](https://nodejs.org/en/download/).
+> Você pode achar opções de instalações adicionais na [Página de Downloads do Node](https://nodejs.org/en/download/).
 
 <block class="native mac ios android" />
 
-### The React Native CLI
+### O React Native CLI
 
-Node comes with npm, which lets you install the React Native command line interface.
+Node vem com NPM, o que deixa instalar o CLI do React Native.
 
-Run the following command in a Terminal:
+Rode os seguintes comandos no seu terminal:
 
 ```
 npm install -g react-native-cli
 ```
-
-> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
+> Se você receber uma mensagem de erro tipo `Cannot find module 'npmlog'`, tente instalar o NPM diretamente: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
 
 <block class="native windows linux android" />
 
-### The React Native CLI
+### O React Native CLI
 
-Node comes with npm, which lets you install the React Native command line interface.
+Node vem com NPM, o que deixa instalar o CLI do React Native.
 
-Run the following command in a Command Prompt or shell:
+Rode os seguintes comandos no seu Prompt de comando:
 
 ```powershell
 npm install -g react-native-cli
 ```
 
-> If you get an error like `Cannot find module 'npmlog'`, try installing npm directly: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
+> Se você receber uma mensagem de erro tipo `Cannot find module 'npmlog'`, tente instalar o NPM diretamente: `curl -0 -L https://npmjs.org/install.sh | sudo sh`.
 
 <block class="native mac ios" />
 
 ### Xcode
 
-The easiest way to install Xcode is via the [Mac App Store](https://itunes.apple.com/us/app/xcode/id497799835?mt=12). Installing Xcode will also install the iOS Simulator and all the necessary tools to build your iOS app.
+A maneira mais fácil de instalar o Xcode é via [Mac App Store](https://itunes.apple.com/us/app/xcode/id497799835?mt=12). Instalando o Xcode também será instalado o simulador de iOS e todas as ferramentas necessárias para buildar o seu aplicativo em iOS.
 
-If you have already installed Xcode on your system, make sure it is version 8 or higher.
+Se você já tem o Xcode instalado no seu sistema, tenha certeza que está na versão 8 ou superior.
 
-#### Command Line Tools
+#### Ferrmantas de linha de comando
 
-You will also need to install the Xcode Command Line Tools. Open Xcode, then choose "Preferences..." from the Xcode menu. Go to the Locations panel and install the tools by selecting the most recent version in the Command Line Tools dropdown.
+Você também precisa instalar as ferramentas de linha de comando do Xcode. Abra o Xcode, então no menu do Xcode vá em "Preferências...". Vá no painel de localização e instale as ferramentas, selecionando as mais recentes versões de ferramentas de linha de comando.
 
-![Xcode Command Line Tools](img/XcodeCommandLineTools.png)
+![Ferramenta de linha de comando Xcode](img/XcodeCommandLineTools.png)
 
 <block class="native mac linux android" />
 
 ### Java Development Kit
 
-React Native requires a recent version of the Java SE Development Kit (JDK). [Download and install JDK 8 or newer](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) if needed.
+React Native precisa da mais recente versão do Java SE Development Kit (JDK). Caso necessário faça [Download e instale o JDK 8 ou mais recente](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
 
 <block class="native mac linux windows android" />
 
-### Android development environment
+### Ambiente de desenvolvimento Android
 
-Setting up your development environment can be somewhat tedious if you're new to Android development. If you're already familiar with Android development, there are a few things you may need to configure. In either case, please make sure to carefully follow the next few steps.
+Configurar o seu ambiente de desenvolvimento pode ser tedioso se você é novo no desenvolvimento Android. Se você já está familiarizado com o desenvolvimento Android então serão poucas coisas que terá que configurar. Em todo caso, por favor siga corretamente e com cuidado os próximos passos.
 
 <block class="native mac windows linux android" />
 
-#### 1. Install Android Studio
+#### 1. Instale o Android Studio
 
-[Download and install Android Studio](https://developer.android.com/studio/index.html). Choose a "Custom" setup when prompted to select an installation type. Make sure the boxes next to all of the following are checked:
+[Download e instalação do Android Studio](https://developer.android.com/studio/index.html). Escolha a opção de configuração "Custom/Customizada" quando a caixa de seleção do tipo de instalação aparecer, Tenha certeza de marcar as seguintes opções.
 
 <block class="native mac windows android" />
 
@@ -332,31 +325,31 @@ Setting up your development environment can be somewhat tedious if you're new to
 
 <block class="native mac windows linux android" />
 
-Then, click "Next" to install all of these components.
+Então clique em "Next/Próximo" para instalar todos esses componentes.
 
-> If the checkboxes are grayed out, you will have a chance to install these components later on.
+> Se as caixas de seleção (checkboxes) estiverem cinza, você terá a chance de instalar os componentes depois.
 
-Once setup has finalized and you're presented with the Welcome screen, proceed to the next step.
+Uma vez que a configuração tenha terminado, você irá para a tela Inicial, siga o próximo passo.
 
-#### 2. Install the Android SDK
+#### 2. Instale o Android SDK
 
-Android Studio installs the latest Android SDK by default. Building a React Native app with native code, however, requires the `Android 6.0 (Marshmallow)` SDK in particular. Additional Android SDKs can be installed through the SDK Manager in Android Studio.
+O Android Studio instala somente a versão mais recente do Android SDK por padrão. Para criar uma aplicação React Native com código nativo, precisará do `SDK Android 6.0 (Marshmallow)` em especifico, Androids SDKs podem ser instaladas pelo SDK Manager do Android Studio.
 
-The SDK Manager can be accessed from the "Welcome to Android Studio" screen. Click on "Configure", then select "SDK Manager".
+O SDK Manager pode ser acessado pela tela inicial do Android Studio. Clique em Configuração, então selecione "SDK Manager".
 
 <block class="native mac android" />
 
-![Android Studio Welcome](img/AndroidStudioWelcomeMacOS.png)
+![Tela Inicial Android Studio](img/AndroidStudioWelcomeMacOS.png)
 
 <block class="native windows android" />
 
-![Android Studio Welcome](img/AndroidStudioWelcomeWindows.png)
+![Tela inicial Android Studio](img/AndroidStudioWelcomeWindows.png)
 
 <block class="native mac windows linux android" />
 
-> The SDK Manager can also be found within the Android Studio "Preferences" dialog, under **Appearance & Behavior** → **System Settings** → **Android SDK**.
+> O SDK Manager também pode ser encontrado no Android Studio pelo caminho "Preferences", dentro de **Appearance & Behavior** → **System Settings** → **Android SDK**.
 
-Select the "SDK Platforms" tab from within the SDK Manager, then check the box next to "Show Package Details" in the bottom right corner. Look for and expand the `Android 6.0 (Marshmallow)` entry, then make sure the following items are all checked:
+Selecione as "SDK Platforms" do SDK Manager, então marque o checkbox próximo ao "Show Package Details" no canto inferior direito. Olhe para a expansão e selecione o `Android 6.0 (Marshmallow)`, então tenha certeza que todos os itens foram marcados.
 
 - `Google APIs`
 - `Android SDK Platform 23`
