@@ -31,7 +31,15 @@ RCT_EXPORT_METHOD(readAsText:(NSDictionary<NSString *, id> *)blob
     reject(RCTErrorUnspecified,
            [NSString stringWithFormat:@"Unable to resolve data for blob: %@", [RCTConvert NSString:blob[@"blobId"]]], nil);
   } else {
-    NSString *text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSStringEncoding stringEncoding;
+
+    if (encoding == nil) {
+      stringEncoding = NSUTF8StringEncoding;
+    } else {
+      stringEncoding = CFStringConvertEncodingToNSStringEncoding(CFStringConvertIANACharSetNameToEncoding((CFStringRef) encoding));
+    }
+
+    NSString *text = [[NSString alloc] initWithData:data encoding:stringEncoding];
 
     resolve(text);
   }
