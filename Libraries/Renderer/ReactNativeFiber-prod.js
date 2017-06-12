@@ -1597,7 +1597,7 @@ function getStackAddendumByWorkInProgressFiber$1(workInProgress) {
 var ReactFiberComponentTreeHook = {
     getStackAddendumByWorkInProgressFiber: getStackAddendumByWorkInProgressFiber$1,
     describeComponentFrame: describeComponentFrame
-}, REACT_ELEMENT_TYPE = "function" == typeof Symbol && Symbol.for && Symbol.for("react.element") || 60103, ReactElementSymbol = REACT_ELEMENT_TYPE, REACT_COROUTINE_TYPE$1, REACT_YIELD_TYPE$1;
+}, REACT_COROUTINE_TYPE$1, REACT_YIELD_TYPE$1;
 
 "function" == typeof Symbol && Symbol.for ? (REACT_COROUTINE_TYPE$1 = Symbol.for("react.coroutine"), 
 REACT_YIELD_TYPE$1 = Symbol.for("react.yield")) : (REACT_COROUTINE_TYPE$1 = 60104, 
@@ -1628,14 +1628,13 @@ var createCoroutine = function(children, handler, props) {
     isYield: isYield,
     REACT_YIELD_TYPE: REACT_YIELD_TYPE_1,
     REACT_COROUTINE_TYPE: REACT_COROUTINE_TYPE_1
-}, ITERATOR_SYMBOL = "function" == typeof Symbol && Symbol.iterator, FAUX_ITERATOR_SYMBOL = "@@iterator";
+}, REACT_COROUTINE_TYPE = ReactCoroutine.REACT_COROUTINE_TYPE, REACT_YIELD_TYPE = ReactCoroutine.REACT_YIELD_TYPE, REACT_PORTAL_TYPE$1 = ReactPortal.REACT_PORTAL_TYPE, cloneFiber$2 = ReactFiber.cloneFiber, createFiberFromElement$1 = ReactFiber.createFiberFromElement, createFiberFromFragment$1 = ReactFiber.createFiberFromFragment, createFiberFromText$1 = ReactFiber.createFiberFromText, createFiberFromCoroutine$1 = ReactFiber.createFiberFromCoroutine, createFiberFromYield$1 = ReactFiber.createFiberFromYield, createFiberFromPortal$1 = ReactFiber.createFiberFromPortal, isArray = Array.isArray, FunctionalComponent$2 = ReactTypeOfWork.FunctionalComponent, ClassComponent$6 = ReactTypeOfWork.ClassComponent, HostText$3 = ReactTypeOfWork.HostText, HostPortal$3 = ReactTypeOfWork.HostPortal, CoroutineComponent$2 = ReactTypeOfWork.CoroutineComponent, YieldComponent$2 = ReactTypeOfWork.YieldComponent, Fragment$2 = ReactTypeOfWork.Fragment, NoEffect$2 = ReactTypeOfSideEffect.NoEffect, Placement$3 = ReactTypeOfSideEffect.Placement, Deletion$1 = ReactTypeOfSideEffect.Deletion, ITERATOR_SYMBOL = "function" == typeof Symbol && Symbol.iterator, FAUX_ITERATOR_SYMBOL = "@@iterator", REACT_ELEMENT_TYPE = "function" == typeof Symbol && Symbol.for && Symbol.for("react.element") || 60103;
 
 function getIteratorFn(maybeIterable) {
-    var iteratorFn = maybeIterable && (ITERATOR_SYMBOL && maybeIterable[ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL]);
-    if ("function" == typeof iteratorFn) return iteratorFn;
+    if (null === maybeIterable || void 0 === maybeIterable) return null;
+    var iteratorFn = ITERATOR_SYMBOL && maybeIterable[ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL];
+    return "function" == typeof iteratorFn ? iteratorFn : null;
 }
-
-var getIteratorFn_1 = getIteratorFn, REACT_COROUTINE_TYPE = ReactCoroutine.REACT_COROUTINE_TYPE, REACT_YIELD_TYPE = ReactCoroutine.REACT_YIELD_TYPE, REACT_PORTAL_TYPE$1 = ReactPortal.REACT_PORTAL_TYPE, cloneFiber$2 = ReactFiber.cloneFiber, createFiberFromElement$1 = ReactFiber.createFiberFromElement, createFiberFromFragment$1 = ReactFiber.createFiberFromFragment, createFiberFromText$1 = ReactFiber.createFiberFromText, createFiberFromCoroutine$1 = ReactFiber.createFiberFromCoroutine, createFiberFromYield$1 = ReactFiber.createFiberFromYield, createFiberFromPortal$1 = ReactFiber.createFiberFromPortal, isArray = Array.isArray, FunctionalComponent$2 = ReactTypeOfWork.FunctionalComponent, ClassComponent$6 = ReactTypeOfWork.ClassComponent, HostText$3 = ReactTypeOfWork.HostText, HostPortal$3 = ReactTypeOfWork.HostPortal, CoroutineComponent$2 = ReactTypeOfWork.CoroutineComponent, YieldComponent$2 = ReactTypeOfWork.YieldComponent, Fragment$2 = ReactTypeOfWork.Fragment, NoEffect$2 = ReactTypeOfSideEffect.NoEffect, Placement$3 = ReactTypeOfSideEffect.Placement, Deletion$1 = ReactTypeOfSideEffect.Deletion;
 
 function coerceRef(current, element) {
     var mixedRef = element.ref;
@@ -1766,7 +1765,7 @@ function ChildReconciler(shouldClone, shouldTrackSideEffects) {
         }
         if ("object" == typeof newChild && null !== newChild) {
             switch (newChild.$$typeof) {
-              case ReactElementSymbol:
+              case REACT_ELEMENT_TYPE:
                 var _created = createFiberFromElement$1(newChild, returnFiber.internalContextTag, priority);
                 return _created.ref = coerceRef(null, newChild), _created.return = returnFiber, 
                 _created;
@@ -1783,7 +1782,7 @@ function ChildReconciler(shouldClone, shouldTrackSideEffects) {
                 var _created4 = createFiberFromPortal$1(newChild, returnFiber.internalContextTag, priority);
                 return _created4.return = returnFiber, _created4;
             }
-            if (isArray(newChild) || getIteratorFn_1(newChild)) {
+            if (isArray(newChild) || getIteratorFn(newChild)) {
                 var _created5 = createFiberFromFragment$1(newChild, returnFiber.internalContextTag, priority);
                 return _created5.return = returnFiber, _created5;
             }
@@ -1796,7 +1795,7 @@ function ChildReconciler(shouldClone, shouldTrackSideEffects) {
         if ("string" == typeof newChild || "number" == typeof newChild) return null !== key ? null : updateTextNode(returnFiber, oldFiber, "" + newChild, priority);
         if ("object" == typeof newChild && null !== newChild) {
             switch (newChild.$$typeof) {
-              case ReactElementSymbol:
+              case REACT_ELEMENT_TYPE:
                 return newChild.key === key ? updateElement(returnFiber, oldFiber, newChild, priority) : null;
 
               case REACT_COROUTINE_TYPE:
@@ -1808,7 +1807,7 @@ function ChildReconciler(shouldClone, shouldTrackSideEffects) {
               case REACT_PORTAL_TYPE$1:
                 return newChild.key === key ? updatePortal(returnFiber, oldFiber, newChild, priority) : null;
             }
-            if (isArray(newChild) || getIteratorFn_1(newChild)) return null !== key ? null : updateFragment(returnFiber, oldFiber, newChild, priority);
+            if (isArray(newChild) || getIteratorFn(newChild)) return null !== key ? null : updateFragment(returnFiber, oldFiber, newChild, priority);
             throwOnInvalidObjectType(returnFiber, newChild);
         }
         return null;
@@ -1819,7 +1818,7 @@ function ChildReconciler(shouldClone, shouldTrackSideEffects) {
         }
         if ("object" == typeof newChild && null !== newChild) {
             switch (newChild.$$typeof) {
-              case ReactElementSymbol:
+              case REACT_ELEMENT_TYPE:
                 return updateElement(returnFiber, existingChildren.get(null === newChild.key ? newIdx : newChild.key) || null, newChild, priority);
 
               case REACT_COROUTINE_TYPE:
@@ -1831,7 +1830,7 @@ function ChildReconciler(shouldClone, shouldTrackSideEffects) {
               case REACT_PORTAL_TYPE$1:
                 return updatePortal(returnFiber, existingChildren.get(null === newChild.key ? newIdx : newChild.key) || null, newChild, priority);
             }
-            if (isArray(newChild) || getIteratorFn_1(newChild)) {
+            if (isArray(newChild) || getIteratorFn(newChild)) {
                 return updateFragment(returnFiber, existingChildren.get(newIdx) || null, newChild, priority);
             }
             throwOnInvalidObjectType(returnFiber, newChild);
@@ -1872,7 +1871,7 @@ function ChildReconciler(shouldClone, shouldTrackSideEffects) {
         }), resultingFirstChild;
     }
     function reconcileChildrenIterator(returnFiber, currentFirstChild, newChildrenIterable, priority) {
-        var iteratorFn = getIteratorFn_1(newChildrenIterable);
+        var iteratorFn = getIteratorFn(newChildrenIterable);
         invariant("function" == typeof iteratorFn, "An object is not an iterable. This error is likely caused by a bug in " + "React. Please file an issue.");
         var newChildren = iteratorFn.call(newChildrenIterable);
         invariant(null != newChildren, "An iterable object provided no iterator.");
@@ -1986,13 +1985,13 @@ function ChildReconciler(shouldClone, shouldTrackSideEffects) {
     function reconcileChildFibers(returnFiber, currentFirstChild, newChild, priority) {
         var disableNewFiberFeatures = ReactFeatureFlags_1.disableNewFiberFeatures, isObject = "object" == typeof newChild && null !== newChild;
         if (isObject) if (disableNewFiberFeatures) switch (newChild.$$typeof) {
-          case ReactElementSymbol:
+          case REACT_ELEMENT_TYPE:
             return placeSingleChild(reconcileSingleElement(returnFiber, currentFirstChild, newChild, priority));
 
           case REACT_PORTAL_TYPE$1:
             return placeSingleChild(reconcileSinglePortal(returnFiber, currentFirstChild, newChild, priority));
         } else switch (newChild.$$typeof) {
-          case ReactElementSymbol:
+          case REACT_ELEMENT_TYPE:
             return placeSingleChild(reconcileSingleElement(returnFiber, currentFirstChild, newChild, priority));
 
           case REACT_COROUTINE_TYPE:
@@ -2016,7 +2015,7 @@ function ChildReconciler(shouldClone, shouldTrackSideEffects) {
         }
         if ("string" == typeof newChild || "number" == typeof newChild) return placeSingleChild(reconcileSingleTextNode(returnFiber, currentFirstChild, "" + newChild, priority));
         if (isArray(newChild)) return reconcileChildrenArray(returnFiber, currentFirstChild, newChild, priority);
-        if (getIteratorFn_1(newChild)) return reconcileChildrenIterator(returnFiber, currentFirstChild, newChild, priority);
+        if (getIteratorFn(newChild)) return reconcileChildrenIterator(returnFiber, currentFirstChild, newChild, priority);
         if (isObject && throwOnInvalidObjectType(returnFiber, newChild), !disableNewFiberFeatures && void 0 === newChild) switch (returnFiber.tag) {
           case ClassComponent$6:
           case FunctionalComponent$2:
@@ -3569,7 +3568,7 @@ getInspectorDataForViewTag = function() {
 
 var ReactNativeFiberInspector = {
     getInspectorDataForViewTag: getInspectorDataForViewTag
-}, ReactVersion = "16.0.0-alpha.12", ReactNativeFeatureFlags$2 = {
+}, ReactVersion = "16.0.0-alpha.13", ReactNativeFeatureFlags$2 = {
     useFiber: !0
 }, ReactNativeFeatureFlags_1 = ReactNativeFeatureFlags$2, ReactNativeFeatureFlags$3 = Object.freeze({
     default: ReactNativeFeatureFlags_1,

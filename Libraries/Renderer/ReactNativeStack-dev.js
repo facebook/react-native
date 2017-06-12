@@ -1938,13 +1938,7 @@ var ReactHostComponent = {
     createInstanceForText: createInstanceForText,
     isTextComponent: isTextComponent,
     injection: ReactHostComponentInjection
-}, ReactHostComponent_1 = ReactHostComponent, nextDebugID = 1;
-
-function getNextDebugID() {
-    return nextDebugID++;
-}
-
-var getNextDebugID_1 = getNextDebugID, ReactCompositeComponentWrapper = function(element) {
+}, ReactHostComponent_1 = ReactHostComponent, nextDebugID = 1, ReactCompositeComponentWrapper = function(element) {
     this.construct(element);
 };
 
@@ -1973,7 +1967,7 @@ function instantiateReactComponent(node, shouldHaveDebugID) {
         instance.getHostNode || (instance.getHostNode = instance.getNativeNode)) : instance = new ReactCompositeComponentWrapper(element);
     } else "string" == typeof node || "number" == typeof node ? instance = ReactHostComponent_1.createInstanceForText(node) : invariant(!1, "Encountered invalid React node of type %s", typeof node);
     return warning("function" == typeof instance.mountComponent && "function" == typeof instance.receiveComponent && "function" == typeof instance.getHostNode && "function" == typeof instance.unmountComponent, "Only React Components can be mounted."), 
-    instance._mountIndex = 0, instance._mountImage = null, instance._debugID = shouldHaveDebugID ? getNextDebugID_1() : 0, 
+    instance._mountIndex = 0, instance._mountImage = null, instance._debugID = shouldHaveDebugID ? nextDebugID++ : 0, 
     Object.preventExtensions && Object.preventExtensions(instance), instance;
 }
 
@@ -2317,7 +2311,14 @@ var getComponentName_1 = getComponentName, getInspectorDataForViewTag = void 0, 
 };
 
 getInspectorDataForViewTag = function(viewTag) {
-    var component = ReactNativeComponentTree_1.getClosestInstanceFromNode(viewTag), componentHierarchy = getOwnerHierarchy(component), instance = lastNotNativeInstance(componentHierarchy), hierarchy = createHierarchy(componentHierarchy), props = getHostProps(instance), source = instance._currentElement && instance._currentElement._source;
+    var component = ReactNativeComponentTree_1.getClosestInstanceFromNode(viewTag);
+    if (!component) return {
+        hierarchy: [],
+        props: emptyObject,
+        selection: null,
+        source: null
+    };
+    var componentHierarchy = getOwnerHierarchy(component), instance = lastNotNativeInstance(componentHierarchy), hierarchy = createHierarchy(componentHierarchy), props = getHostProps(instance), source = instance._currentElement && instance._currentElement._source;
     return {
         hierarchy: hierarchy,
         props: props,
@@ -2652,7 +2653,9 @@ function escape(key) {
     });
 }
 
-function unescape(key) {
+var unescapeInDev = emptyFunction;
+
+unescapeInDev = function(key) {
     var unescapeRegex = /(=0|=2)/g, unescaperLookup = {
         "=0": "=",
         "=2": ":"
@@ -2660,19 +2663,12 @@ function unescape(key) {
     return ("" + ("." === key[0] && "$" === key[1] ? key.substring(2) : key.substring(1))).replace(unescapeRegex, function(match) {
         return unescaperLookup[match];
     });
-}
+};
 
 var KeyEscapeUtils = {
     escape: escape,
-    unescape: unescape
-}, KeyEscapeUtils_1 = KeyEscapeUtils, REACT_ELEMENT_TYPE = "function" == typeof Symbol && Symbol.for && Symbol.for("react.element") || 60103, ReactElementSymbol = REACT_ELEMENT_TYPE, ITERATOR_SYMBOL = "function" == typeof Symbol && Symbol.iterator, FAUX_ITERATOR_SYMBOL = "@@iterator";
-
-function getIteratorFn(maybeIterable) {
-    var iteratorFn = maybeIterable && (ITERATOR_SYMBOL && maybeIterable[ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL]);
-    if ("function" == typeof iteratorFn) return iteratorFn;
-}
-
-var getIteratorFn_1 = getIteratorFn, getCurrentStackAddendum = ReactGlobalSharedState_1.ReactComponentTreeHook.getCurrentStackAddendum, SEPARATOR = ".", SUBSEPARATOR = ":", didWarnAboutMaps = !1;
+    unescapeInDev: unescapeInDev
+}, KeyEscapeUtils_1 = KeyEscapeUtils, ITERATOR_SYMBOL = "function" == typeof Symbol && Symbol.iterator, FAUX_ITERATOR_SYMBOL = "@@iterator", REACT_ELEMENT_TYPE = "function" == typeof Symbol && Symbol.for && Symbol.for("react.element") || 60103, getCurrentStackAddendum = ReactGlobalSharedState_1.ReactComponentTreeHook.getCurrentStackAddendum, SEPARATOR = ".", SUBSEPARATOR = ":", didWarnAboutMaps = !1;
 
 function getComponentKey(component, index) {
     return component && "object" == typeof component && null != component.key ? KeyEscapeUtils_1.escape(component.key) : index.toString(36);
@@ -2680,13 +2676,13 @@ function getComponentKey(component, index) {
 
 function traverseStackChildrenImpl(children, nameSoFar, callback, traverseContext) {
     var type = typeof children;
-    if ("undefined" !== type && "boolean" !== type || (children = null), null === children || "string" === type || "number" === type || "object" === type && children.$$typeof === ReactElementSymbol) return callback(traverseContext, children, "" === nameSoFar ? SEPARATOR + getComponentKey(children, 0) : nameSoFar), 
+    if ("undefined" !== type && "boolean" !== type || (children = null), null === children || "string" === type || "number" === type || "object" === type && children.$$typeof === REACT_ELEMENT_TYPE) return callback(traverseContext, children, "" === nameSoFar ? SEPARATOR + getComponentKey(children, 0) : nameSoFar), 
     1;
     var child, nextName, subtreeCount = 0, nextNamePrefix = "" === nameSoFar ? SEPARATOR : nameSoFar + SUBSEPARATOR;
     if (Array.isArray(children)) for (var i = 0; i < children.length; i++) child = children[i], 
     nextName = nextNamePrefix + getComponentKey(child, i), subtreeCount += traverseStackChildrenImpl(child, nextName, callback, traverseContext); else {
-        var iteratorFn = getIteratorFn_1(children);
-        if (iteratorFn) {
+        var iteratorFn = ITERATOR_SYMBOL && children[ITERATOR_SYMBOL] || children[FAUX_ITERATOR_SYMBOL];
+        if ("function" == typeof iteratorFn) {
             iteratorFn === children.entries && (warning(didWarnAboutMaps, "Using Maps as children is unsupported and will likely yield " + "unexpected results. Convert it to a sequence/iterable of keyed " + "ReactElements instead.%s", getCurrentStackAddendum()), 
             didWarnAboutMaps = !0);
             for (var step, iterator = iteratorFn.call(children), ii = 0; !(step = iterator.next()).done; ) child = step.value, 
@@ -2712,7 +2708,7 @@ var traverseStackChildren_1 = traverseStackChildren, ReactComponentTreeHook$2;
 function instantiateChild(childInstances, child, name, selfDebugID) {
     var keyUnique = void 0 === childInstances[name];
     ReactComponentTreeHook$2 || (ReactComponentTreeHook$2 = ReactGlobalSharedState_1.ReactComponentTreeHook), 
-    keyUnique || warning(!1, "flattenChildren(...): Encountered two children with the same key, " + "`%s`. Child keys must be unique; when two children share a key, only " + "the first child will be used.%s", KeyEscapeUtils_1.unescape(name), ReactComponentTreeHook$2.getStackAddendumByID(selfDebugID)), 
+    keyUnique || warning(!1, "flattenChildren(...): Encountered two children with the same key, " + "`%s`. Child keys must be unique; when two children share a key, only " + "the first child will be used.%s", KeyEscapeUtils_1.unescapeInDev(name), ReactComponentTreeHook$2.getStackAddendumByID(selfDebugID)), 
     null != child && keyUnique && (childInstances[name] = instantiateReactComponent_1(child, !0));
 }
 
@@ -2757,7 +2753,7 @@ function flattenSingleChildIntoContext(traverseContext, child, name, selfDebugID
     if (traverseContext && "object" == typeof traverseContext) {
         var result = traverseContext, keyUnique = void 0 === result[name];
         ReactComponentTreeHook$3 || (ReactComponentTreeHook$3 = ReactGlobalSharedState_1.ReactComponentTreeHook), 
-        keyUnique || warning(!1, "flattenChildren(...): Encountered two children with the same key, " + "`%s`. Child keys must be unique; when two children share a key, only " + "the first child will be used.%s", KeyEscapeUtils_1.unescape(name), ReactComponentTreeHook$3.getStackAddendumByID(selfDebugID)), 
+        keyUnique || warning(!1, "flattenChildren(...): Encountered two children with the same key, " + "`%s`. Child keys must be unique; when two children share a key, only " + "the first child will be used.%s", KeyEscapeUtils_1.unescapeInDev(name), ReactComponentTreeHook$3.getStackAddendumByID(selfDebugID)), 
         keyUnique && null != child && (result[name] = child);
     }
 }
