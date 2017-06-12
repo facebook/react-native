@@ -72,6 +72,7 @@ const info = function() {
 
   console.log(chalk.bold('Versions:'));
   console.log('  React Native: ', chalk.gray(pkg.version));
+  console.log('  React: ', chalk.gray(pkg.devDependencies.react));
   console.log('  OS: ', chalk.gray(osName(os.platform(), os.release())));
   console.log('  Node: ', chalk.gray(process.version));
   console.log('  Yarn: ', chalk.gray(yarn.getYarnVersionIfAvailable() || 'Not Found'));
