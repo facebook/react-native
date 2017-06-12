@@ -36,16 +36,24 @@ const info = function() {
       .split('\n')
       .join(' ');
   } else if (process.platform === 'linux') {
-    const linuxBuildVersion = child_process.execSync('cat /opt/android-studio/build.txt').toString();
+    const linuxBuildNumber = child_process.execSync('cat /opt/android-studio/build.txt').toString();
     const linuxVersion = child_process
       .execSync('cat /opt/android-studio/bin/studio.sh | grep "$Home/.AndroidStudio" | head -1')
       .toString()
       .match(/\d\.\d/)[0];
-    androidStudioVersion = `${linuxVersion} ${linuxBuildVersion}`;
+    androidStudioVersion = `${linuxVersion} ${linuxBuildNumber}`;
   } else if (process.platform.startsWith('win')) {
-    androidStudioVersion = child_process.execSync(
-      'wmic datafile where name="C:\\Program Files\\Android\\Android Studio\\bin\\studio.exe" get Version /value',
-    );
+    const windowsVersion = child_process
+      .execSync(
+        'wmic datafile where name="C:\\\\Program Files\\\\Android\\\\Android Studio\\\\bin\\\\studio.exe" get Version',
+      )
+      .toString()
+      .replace(/(\r\n|\n|\r)/gm, '');
+    const windowsBuildNumber = child_process
+      .execSync(`type "C:\\\\Program File\\\\Android\\\\Android Studio\\\\build.txt"`)
+      .toString()
+      .replace(/(\r\n|\n|\r)/gm, '');
+    androidStudioVersion = `${windowsVersion} ${windowsBuildNumber}`;
   }
 
   console.log(chalk.bold('Versions:'));
