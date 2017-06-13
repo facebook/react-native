@@ -26,7 +26,7 @@ var _subscriptions = new Map();
 
 var AccessibilityInfo = {
 
-  fetch: function(): Promise {
+  fetch: function(): Promise<*> {
     return new Promise((resolve, reject) => {
       RCTAccessibilityInfo.isTouchExplorationEnabled(
         function(resp) {
