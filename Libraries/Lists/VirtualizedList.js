@@ -8,6 +8,7 @@
  *
  * @providesModule VirtualizedList
  * @flow
+ * @format
  */
 'use strict';
 
@@ -68,8 +69,10 @@ type OptionalProps = {
    * `data` prop, stick it here and treat it immutably.
    */
   extraData?: any,
-  getItemLayout?: (data: any, index: number) =>
-    {length: number, offset: number, index: number}, // e.g. height, y
+  getItemLayout?: (
+    data: any,
+    index: number,
+  ) => {length: number, offset: number, index: number}, // e.g. height, y
   horizontal?: ?boolean,
   /**
    * How many items to render in the initial batch. This should be enough to fill the screen but not
@@ -200,16 +203,22 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const animated = params ? params.animated : true;
     const veryLast = this.props.getItemCount(this.props.data) - 1;
     const frame = this._getFrameMetricsApprox(veryLast);
-    const offset = frame.offset + frame.length + this._footerLength -
+    const offset =
+      frame.offset +
+      frame.length +
+      this._footerLength -
       this._scrollMetrics.visibleLength;
     this._scrollRef.scrollTo(
-      this.props.horizontal ? {x: offset, animated} : {y: offset, animated}
+      this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
   }
 
   // scrollToIndex may be janky without getItemLayout prop
   scrollToIndex(params: {
-    animated?: ?boolean, index: number, viewOffset?: number, viewPosition?: number
+    animated?: ?boolean,
+    index: number,
+    viewOffset?: number,
+    viewPosition?: number,
   }) {
     const {data, horizontal, getItemCount, getItemLayout} = this.props;
     const {animated, index, viewOffset, viewPosition} = params;
@@ -223,16 +232,25 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         'otherwise there is no way to know the location of an arbitrary index.',
     );
     const frame = this._getFrameMetricsApprox(index);
-    const offset = Math.max(
-      0,
-      frame.offset - (viewPosition || 0) * (this._scrollMetrics.visibleLength - frame.length),
-    ) - (viewOffset || 0);
-    this._scrollRef.scrollTo(horizontal ? {x: offset, animated} : {y: offset, animated});
+    const offset =
+      Math.max(
+        0,
+        frame.offset -
+          (viewPosition || 0) *
+            (this._scrollMetrics.visibleLength - frame.length),
+      ) - (viewOffset || 0);
+    this._scrollRef.scrollTo(
+      horizontal ? {x: offset, animated} : {y: offset, animated},
+    );
   }
 
   // scrollToItem may be janky without getItemLayout prop. Required linear scan through items -
   // use scrollToIndex instead if possible.
-  scrollToItem(params: {animated?: ?boolean, item: Item, viewPosition?: number}) {
+  scrollToItem(params: {
+    animated?: ?boolean,
+    item: Item,
+    viewPosition?: number,
+  }) {
     const {item} = params;
     const {data, getItem, getItemCount} = this.props;
     const itemCount = getItemCount(data);
@@ -257,7 +275,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     const {animated, offset} = params;
     this._scrollRef.scrollTo(
-      this.props.horizontal ? {x: offset, animated} : {y: offset, animated}
+      this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
   }
 
@@ -335,12 +353,12 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     invariant(
       !props.onScroll || !props.onScroll.__isNative,
       'Components based on VirtualizedList must be wrapped with Animated.createAnimatedComponent ' +
-      'to support native onScroll events with useNativeDriver',
+        'to support native onScroll events with useNativeDriver',
     );
     invariant(
       !(this._isNestedWithSameOrientation() && props.onViewableItemsChanged),
       'Nesting lists that scroll in the same direction does not support onViewableItemsChanged' +
-        'on the inner list.'
+        'on the inner list.',
     );
 
     this._fillRateHelper = new FillRateHelper(this._getFrameMetrics);
@@ -348,7 +366,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       this._updateCellsToRender,
       this.props.updateCellsBatchingPeriod,
     );
-    this._viewabilityHelper = new ViewabilityHelper(this.props.viewabilityConfig);
+    this._viewabilityHelper = new ViewabilityHelper(
+      this.props.viewabilityConfig,
+    );
     this.state = {
       first: this.props.initialScrollIndex || 0,
       last: Math.min(
@@ -361,7 +381,11 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   componentDidMount() {
     if (this.props.initialScrollIndex) {
       this._initialScrollIndexTimeout = setTimeout(
-        () => this.scrollToIndex({animated: false, index: this.props.initialScrollIndex}),
+        () =>
+          this.scrollToIndex({
+            animated: false,
+            index: this.props.initialScrollIndex,
+          }),
         0,
       );
     }
@@ -380,7 +404,13 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
     // sure we're rendering a reasonable range here.
     this.setState({
-      first: Math.max(0, Math.min(this.state.first, getItemCount(data) - 1 - maxToRenderPerBatch)),
+      first: Math.max(
+        0,
+        Math.min(
+          this.state.first,
+          getItemCount(data) - 1 - maxToRenderPerBatch,
+        ),
+      ),
       last: Math.max(0, Math.min(this.state.last, getItemCount(data) - 1)),
     });
     if (data !== this.props.data || extraData !== this.props.extraData) {
@@ -395,7 +425,13 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     first: number,
     last: number,
   ) {
-    const {ItemSeparatorComponent, data, getItem, getItemCount, keyExtractor} = this.props;
+    const {
+      ItemSeparatorComponent,
+      data,
+      getItem,
+      getItemCount,
+      keyExtractor,
+    } = this.props;
     const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
     const end = getItemCount(data) - 1;
     let prevCellKey;
@@ -417,30 +453,35 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           key={key}
           prevCellKey={prevCellKey}
           onUpdateSeparators={this._onUpdateSeparators}
-          onLayout={(e) => this._onCellLayout(e, key, ii)}
+          onLayout={e => this._onCellLayout(e, key, ii)}
           onUnmount={this._onCellUnmount}
           parentProps={this.props}
-          ref={(ref) => {this._cellRefs[key] = ref;}}
-        />
+          ref={ref => {
+            this._cellRefs[key] = ref;
+          }}
+        />,
       );
       prevCellKey = key;
     }
   }
 
   _onUpdateSeparators = (keys: Array<?string>, newProps: Object) => {
-    keys.forEach((key) => {
+    keys.forEach(key => {
       const ref = key != null && this._cellRefs[key];
       ref && ref.updateSeparatorProps(newProps);
     });
   };
 
-  _isVirtualizationDisabled(): bool {
-    return this.props.disableVirtualization || this._isNestedWithSameOrientation();
+  _isVirtualizationDisabled(): boolean {
+    return (
+      this.props.disableVirtualization || this._isNestedWithSameOrientation()
+    );
   }
 
-  _isNestedWithSameOrientation(): bool {
+  _isNestedWithSameOrientation(): boolean {
     const nestedContext = this.context.virtualizedList;
-    return !!(nestedContext && !!nestedContext.horizontal === !!this.props.horizontal);
+    return !!(nestedContext &&
+      !!nestedContext.horizontal === !!this.props.horizontal);
   }
 
   render() {
@@ -453,7 +494,11 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       );
     }
 
-    const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} = this.props;
+    const {
+      ListEmptyComponent,
+      ListFooterComponent,
+      ListHeaderComponent,
+    } = this.props;
     const {data, horizontal} = this.props;
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
     const cells = [];
@@ -466,7 +511,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       cells.push(
         <View key="$header" onLayout={this._onLayoutHeader}>
           {element}
-        </View>
+        </View>,
       );
     }
     const itemCount = this.props.getItemCount(data);
@@ -477,7 +522,13 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         ? -1
         : this.props.initialNumToRender - 1;
       const {first, last} = this.state;
-      this._pushCells(cells, stickyHeaderIndices, stickyIndicesFromProps, 0, lastInitialIndex);
+      this._pushCells(
+        cells,
+        stickyHeaderIndices,
+        stickyIndicesFromProps,
+        0,
+        lastInitialIndex,
+      );
       const firstAfterInitial = Math.max(lastInitialIndex + 1, first);
       if (!isVirtualizationDisabled && first > lastInitialIndex + 1) {
         let insertedStickySpacer = false;
@@ -488,15 +539,23 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
             if (stickyIndicesFromProps.has(ii + stickyOffset)) {
               const initBlock = this._getFrameMetricsApprox(lastInitialIndex);
               const stickyBlock = this._getFrameMetricsApprox(ii);
-              const leadSpace = stickyBlock.offset - (initBlock.offset + initBlock.length);
+              const leadSpace =
+                stickyBlock.offset - (initBlock.offset + initBlock.length);
               cells.push(
-                <View key="$sticky_lead" style={{[spacerKey]: leadSpace}} />
+                <View key="$sticky_lead" style={{[spacerKey]: leadSpace}} />,
               );
-              this._pushCells(cells, stickyHeaderIndices, stickyIndicesFromProps, ii, ii);
-              const trailSpace = this._getFrameMetricsApprox(first).offset -
+              this._pushCells(
+                cells,
+                stickyHeaderIndices,
+                stickyIndicesFromProps,
+                ii,
+                ii,
+              );
+              const trailSpace =
+                this._getFrameMetricsApprox(first).offset -
                 (stickyBlock.offset + stickyBlock.length);
               cells.push(
-                <View key="$sticky_trail" style={{[spacerKey]: trailSpace}} />
+                <View key="$sticky_trail" style={{[spacerKey]: trailSpace}} />,
               );
               insertedStickySpacer = true;
               break;
@@ -505,18 +564,25 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         }
         if (!insertedStickySpacer) {
           const initBlock = this._getFrameMetricsApprox(lastInitialIndex);
-          const firstSpace = this._getFrameMetricsApprox(first).offset -
+          const firstSpace =
+            this._getFrameMetricsApprox(first).offset -
             (initBlock.offset + initBlock.length);
           cells.push(
-            <View key="$lead_spacer" style={{[spacerKey]: firstSpace}} />
+            <View key="$lead_spacer" style={{[spacerKey]: firstSpace}} />,
           );
         }
       }
-      this._pushCells(cells, stickyHeaderIndices, stickyIndicesFromProps, firstAfterInitial, last);
+      this._pushCells(
+        cells,
+        stickyHeaderIndices,
+        stickyIndicesFromProps,
+        firstAfterInitial,
+        last,
+      );
       if (!this._hasWarned.keys && _usedIndexForKey) {
         console.warn(
           'VirtualizedList: missing keys for items, make sure to specify a key property on each ' +
-          'item or provide a custom keyExtractor.'
+            'item or provide a custom keyExtractor.',
         );
         this._hasWarned.keys = true;
       }
@@ -525,15 +591,16 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         // Without getItemLayout, we limit our tail spacer to the _highestMeasuredFrameIndex to
         // prevent the user for hyperscrolling into un-measured area because otherwise content will
         // likely jump around as it renders in above the viewport.
-        const end = this.props.getItemLayout ?
-          itemCount - 1 :
-          Math.min(itemCount - 1, this._highestMeasuredFrameIndex);
+        const end = this.props.getItemLayout
+          ? itemCount - 1
+          : Math.min(itemCount - 1, this._highestMeasuredFrameIndex);
         const endFrame = this._getFrameMetricsApprox(end);
         const tailSpacerLength =
-          (endFrame.offset + endFrame.length) -
+          endFrame.offset +
+          endFrame.length -
           (lastFrame.offset + lastFrame.length);
         cells.push(
-          <View key="$tail_spacer" style={{[spacerKey]: tailSpacerLength}} />
+          <View key="$tail_spacer" style={{[spacerKey]: tailSpacerLength}} />,
         );
       }
     } else if (ListEmptyComponent) {
@@ -543,7 +610,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       cells.push(
         <View key="$empty" onLayout={this._onLayoutEmpty}>
           {element}
-        </View>
+        </View>,
       );
     }
     if (ListFooterComponent) {
@@ -553,7 +620,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       cells.push(
         <View key="$footer" onLayout={this._onLayoutFooter}>
           {element}
-        </View>
+        </View>,
       );
     }
     const scrollProps = {
@@ -568,7 +635,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       stickyHeaderIndices,
     };
     const ret = React.cloneElement(
-      (this.props.renderScrollComponent || this._defaultRenderScrollComponent)(scrollProps),
+      (this.props.renderScrollComponent || this._defaultRenderScrollComponent)(
+        scrollProps,
+      ),
       {
         ref: this._captureScrollRef,
       },
@@ -596,7 +665,13 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   _frames = {};
   _footerLength = 0;
   _scrollMetrics = {
-    contentLength: 0, dOffset: 0, dt: 10, offset: 0, timestamp: 0, velocity: 0, visibleLength: 0,
+    contentLength: 0,
+    dOffset: 0,
+    dt: 10,
+    offset: 0,
+    timestamp: 0,
+    velocity: 0,
+    visibleLength: 0,
   };
   _scrollRef = (null: any);
   _sentEndForContentLength = 0;
@@ -605,7 +680,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityHelper: ViewabilityHelper;
 
-  _captureScrollRef = (ref) => {
+  _captureScrollRef = ref => {
     this._scrollRef = ref;
   };
 
@@ -617,14 +692,15 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     );
   }
 
-  _defaultRenderScrollComponent = (props) => {
+  _defaultRenderScrollComponent = props => {
     if (this._isNestedWithSameOrientation()) {
       return <View {...props} />;
     } else if (props.onRefresh) {
       invariant(
         typeof props.refreshing === 'boolean',
         '`refreshing` prop must be set as a boolean in order to use `onRefresh`, but got `' +
-          JSON.stringify(props.refreshing) + '`',
+          JSON.stringify(props.refreshing) +
+          '`',
       );
       return (
         <ScrollView
@@ -652,16 +728,21 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       inLayout: true,
     };
     const curr = this._frames[cellKey];
-    if (!curr ||
+    if (
+      !curr ||
       next.offset !== curr.offset ||
       next.length !== curr.length ||
       index !== curr.index
     ) {
       this._totalCellLength += next.length - (curr ? curr.length : 0);
-      this._totalCellsMeasured += (curr ? 0 : 1);
-      this._averageCellLength = this._totalCellLength / this._totalCellsMeasured;
+      this._totalCellsMeasured += curr ? 0 : 1;
+      this._averageCellLength =
+        this._totalCellLength / this._totalCellsMeasured;
       this._frames[cellKey] = next;
-      this._highestMeasuredFrameIndex = Math.max(this._highestMeasuredFrameIndex, index);
+      this._highestMeasuredFrameIndex = Math.max(
+        this._highestMeasuredFrameIndex,
+        index,
+      );
       this._scheduleCellsToRenderUpdate();
     } else {
       this._frames[cellKey].inLayout = true;
@@ -677,26 +758,29 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   };
 
   _onLayout = (e: Object) => {
-    this._scrollMetrics.visibleLength = this._selectLength(e.nativeEvent.layout);
+    this._scrollMetrics.visibleLength = this._selectLength(
+      e.nativeEvent.layout,
+    );
     this.props.onLayout && this.props.onLayout(e);
     this._scheduleCellsToRenderUpdate();
     this._maybeCallOnEndReached();
   };
 
-  _onLayoutEmpty = (e) => {
+  _onLayoutEmpty = e => {
     this.props.onLayout && this.props.onLayout(e);
   };
 
-  _onLayoutFooter = (e) => {
+  _onLayoutFooter = e => {
     this._footerLength = this._selectLength(e.nativeEvent.layout);
   };
 
-  _onLayoutHeader = (e) => {
+  _onLayoutHeader = e => {
     this._headerLength = this._selectLength(e.nativeEvent.layout);
   };
 
   _renderDebugOverlay() {
-    const normalize = this._scrollMetrics.visibleLength / this._scrollMetrics.contentLength;
+    const normalize =
+      this._scrollMetrics.visibleLength / this._scrollMetrics.contentLength;
     const framesInLayout = [];
     const itemCount = this.props.getItemCount(this.props.data);
     for (let ii = 0; ii < itemCount; ii++) {
@@ -712,32 +796,46 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const visLen = this._scrollMetrics.visibleLength;
     const baseStyle = {position: 'absolute', top: 0, right: 0};
     return (
-      <View style={{...baseStyle, bottom: 0, width: 20, borderColor: 'blue', borderWidth: 1}}>
-        {framesInLayout.map((f, ii) =>
-          <View key={'f' + ii} style={{
+      <View
+        style={{
+          ...baseStyle,
+          bottom: 0,
+          width: 20,
+          borderColor: 'blue',
+          borderWidth: 1,
+        }}>
+        {framesInLayout.map((f, ii) => (
+          <View
+            key={'f' + ii}
+            style={{
+              ...baseStyle,
+              left: 0,
+              top: f.offset * normalize,
+              height: f.length * normalize,
+              backgroundColor: 'orange',
+            }}
+          />
+        ))}
+        <View
+          style={{
             ...baseStyle,
             left: 0,
-            top: f.offset * normalize,
-            height: f.length * normalize,
-            backgroundColor: 'orange',
-          }} />
-        )}
-        <View style={{
-          ...baseStyle,
-          left: 0,
-          top: windowTop * normalize,
-          height: windowLen * normalize,
-          borderColor: 'green',
-          borderWidth: 2,
-        }} />
-        <View style={{
-          ...baseStyle,
-          left: 0,
-          top: visTop * normalize,
-          height: visLen * normalize,
-          borderColor: 'red',
-          borderWidth: 2,
-        }} />
+            top: windowTop * normalize,
+            height: windowLen * normalize,
+            borderColor: 'green',
+            borderWidth: 2,
+          }}
+        />
+        <View
+          style={{
+            ...baseStyle,
+            left: 0,
+            top: visTop * normalize,
+            height: visLen * normalize,
+            borderColor: 'red',
+            borderWidth: 2,
+          }}
+        />
       </View>
     );
   }
@@ -751,14 +849,21 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   _maybeCallOnEndReached() {
-    const {data, getItemCount, onEndReached, onEndReachedThreshold} = this.props;
+    const {
+      data,
+      getItemCount,
+      onEndReached,
+      onEndReachedThreshold,
+    } = this.props;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
     const distanceFromEnd = contentLength - visibleLength - offset;
-    if (onEndReached &&
-        this.state.last === getItemCount(data) - 1 &&
-        distanceFromEnd < onEndReachedThreshold * visibleLength &&
-        (this._hasDataChangedSinceEndReached ||
-         this._scrollMetrics.contentLength !== this._sentEndForContentLength)) {
+    if (
+      onEndReached &&
+      this.state.last === getItemCount(data) - 1 &&
+      distanceFromEnd < onEndReachedThreshold * visibleLength &&
+      (this._hasDataChangedSinceEndReached ||
+        this._scrollMetrics.contentLength !== this._sentEndForContentLength)
+    ) {
       // Only call onEndReached once for a given dataset + content length.
       this._hasDataChangedSinceEndReached = false;
       this._sentEndForContentLength = this._scrollMetrics.contentLength;
@@ -786,19 +891,31 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const dt = this._scrollMetrics.timestamp
       ? Math.max(1, timestamp - this._scrollMetrics.timestamp)
       : 1;
-    if (dt > 500 && this._scrollMetrics.dt > 500 && (contentLength > (5 * visibleLength)) &&
-        !this._hasWarned.perf) {
+    if (
+      dt > 500 &&
+      this._scrollMetrics.dt > 500 &&
+      contentLength > 5 * visibleLength &&
+      !this._hasWarned.perf
+    ) {
       infoLog(
         'VirtualizedList: You have a large list that is slow to update - make sure your ' +
-        'renderItem function renders components that follow React performance best practices ' +
-        'like PureComponent, shouldComponentUpdate, etc.',
+          'renderItem function renders components that follow React performance best practices ' +
+          'like PureComponent, shouldComponentUpdate, etc.',
         {dt, prevDt: this._scrollMetrics.dt, contentLength},
       );
       this._hasWarned.perf = true;
     }
     const dOffset = offset - this._scrollMetrics.offset;
     const velocity = dOffset / dt;
-    this._scrollMetrics = {contentLength, dt, dOffset, offset, timestamp, velocity, visibleLength};
+    this._scrollMetrics = {
+      contentLength,
+      dt,
+      dOffset,
+      offset,
+      timestamp,
+      velocity,
+      visibleLength,
+    };
     this._updateViewableItems(this.props.data);
     if (!this.props) {
       return;
@@ -818,13 +935,14 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     let hiPri = false;
     if (first > 0 || last < itemCount - 1) {
       const distTop = offset - this._getFrameMetricsApprox(first).offset;
-      const distBottom = this._getFrameMetricsApprox(last).offset - (offset + visibleLength);
-      const scrollingThreshold = this.props.onEndReachedThreshold * visibleLength / 2;
-      hiPri = (
+      const distBottom =
+        this._getFrameMetricsApprox(last).offset - (offset + visibleLength);
+      const scrollingThreshold =
+        this.props.onEndReachedThreshold * visibleLength / 2;
+      hiPri =
         Math.min(distTop, distBottom) < 0 ||
         (velocity < -2 && distTop < scrollingThreshold) ||
-        (velocity > 2 && distBottom < scrollingThreshold)
-      );
+        (velocity > 2 && distBottom < scrollingThreshold);
     }
     if (hiPri) {
       // Don't worry about interactions when scrolling quickly; focus on filling content as fast
@@ -864,17 +982,22 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     if (!data) {
       return;
     }
-    this.setState((state) => {
+    this.setState(state => {
       let newState;
       if (!isVirtualizationDisabled) {
         newState = computeWindowedRenderLimits(
-          this.props, state, this._getFrameMetricsApprox, this._scrollMetrics,
+          this.props,
+          state,
+          this._getFrameMetricsApprox,
+          this._scrollMetrics,
         );
       } else {
         const {contentLength, offset, visibleLength} = this._scrollMetrics;
         const distanceFromEnd = contentLength - visibleLength - offset;
-        const renderAhead = distanceFromEnd < onEndReachedThreshold * visibleLength ?
-          this.props.maxToRenderPerBatch : 0;
+        const renderAhead = distanceFromEnd <
+          onEndReachedThreshold * visibleLength
+          ? this.props.maxToRenderPerBatch
+          : 0;
         newState = {
           first: 0,
           last: Math.min(state.last + renderAhead, getItemCount(data) - 1),
@@ -891,15 +1014,18 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     return {index, item, key: keyExtractor(item, index), isViewable};
   };
 
-  _getFrameMetricsApprox = (index: number): {length: number, offset: number} => {
+  _getFrameMetricsApprox = (
+    index: number,
+  ): {length: number, offset: number} => {
     const frame = this._getFrameMetrics(index);
-    if (frame && frame.index === index) { // check for invalid frames due to row re-ordering
+    if (frame && frame.index === index) {
+      // check for invalid frames due to row re-ordering
       return frame;
     } else {
       const {getItemLayout} = this.props;
       invariant(
         !getItemLayout,
-        'Should not have to estimate frames when a measurement metrics function is provided'
+        'Should not have to estimate frames when a measurement metrics function is provided',
       );
       return {
         length: this._averageCellLength,
@@ -908,11 +1034,25 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     }
   };
 
-  _getFrameMetrics = (index: number): ?{
-    length: number, offset: number, index: number, inLayout?: boolean,
+  _getFrameMetrics = (
+    index: number,
+  ): ?{
+    length: number,
+    offset: number,
+    index: number,
+    inLayout?: boolean,
   } => {
-    const {data, getItem, getItemCount, getItemLayout, keyExtractor} = this.props;
-    invariant(getItemCount(data) > index, 'Tried to get frame for out of range index ' + index);
+    const {
+      data,
+      getItem,
+      getItemCount,
+      getItemLayout,
+      keyExtractor,
+    } = this.props;
+    invariant(
+      getItemCount(data) > index,
+      'Tried to get frame for out of range index ' + index,
+    );
     const item = getItem(data, index);
     let frame = item && this._frames[keyExtractor(item, index)];
     if (!frame || frame.index !== index) {
@@ -969,20 +1109,29 @@ class CellRenderer extends React.Component {
   _separators = {
     highlight: () => {
       const {cellKey, prevCellKey} = this.props;
-      this.props.onUpdateSeparators([cellKey, prevCellKey], {highlighted: true});
+      this.props.onUpdateSeparators([cellKey, prevCellKey], {
+        highlighted: true,
+      });
     },
     unhighlight: () => {
       const {cellKey, prevCellKey} = this.props;
-      this.props.onUpdateSeparators([cellKey, prevCellKey], {highlighted: false});
+      this.props.onUpdateSeparators([cellKey, prevCellKey], {
+        highlighted: false,
+      });
     },
     updateProps: (select: 'leading' | 'trailing', newProps: Object) => {
       const {cellKey, prevCellKey} = this.props;
-      this.props.onUpdateSeparators([select === 'leading' ? prevCellKey : cellKey], newProps);
+      this.props.onUpdateSeparators(
+        [select === 'leading' ? prevCellKey : cellKey],
+        newProps,
+      );
     },
   };
 
   updateSeparatorProps(newProps: Object) {
-    this.setState(state => ({separatorProps: {...state.separatorProps, ...newProps}}));
+    this.setState(state => ({
+      separatorProps: {...state.separatorProps, ...newProps},
+    }));
   }
 
   componentWillUnmount() {
@@ -990,7 +1139,13 @@ class CellRenderer extends React.Component {
   }
 
   render() {
-    const {ItemSeparatorComponent, fillRateHelper, item, index, parentProps} = this.props;
+    const {
+      ItemSeparatorComponent,
+      fillRateHelper,
+      item,
+      index,
+      parentProps,
+    } = this.props;
     const {renderItem, getItemLayout} = parentProps;
     invariant(renderItem, 'no renderItem!');
     const element = renderItem({
@@ -998,7 +1153,9 @@ class CellRenderer extends React.Component {
       index,
       separators: this._separators,
     });
-    const onLayout = (getItemLayout && !parentProps.debug && !fillRateHelper.enabled())
+    const onLayout = getItemLayout &&
+      !parentProps.debug &&
+      !fillRateHelper.enabled()
       ? undefined
       : this.props.onLayout;
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
@@ -1006,7 +1163,8 @@ class CellRenderer extends React.Component {
     return (
       <View onLayout={onLayout}>
         {element}
-        {ItemSeparatorComponent && <ItemSeparatorComponent {...this.state.separatorProps} />}
+        {ItemSeparatorComponent &&
+          <ItemSeparatorComponent {...this.state.separatorProps} />}
       </View>
     );
   }
