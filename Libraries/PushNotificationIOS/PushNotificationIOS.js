@@ -179,6 +179,17 @@ class PushNotificationIOS {
     Alert: 'UNNotificationPresentationOptionAlert',
   };
 
+  static ActionOption: ActionOption = {
+    AuthenticationRequired: 'UNNotificationActionOptionAuthenticationRequired',
+    Destructive: 'UNNotificationActionOptionDestructive',
+    Foreground: 'UNNotificationActionOptionForeground'
+  };
+
+  static CategoryOption: CategoryOption = {
+    CustomDismissAction: 'UNNotificationCategoryOptionCustomDismissAction',
+    AllowInCarPlay: 'UNNotificationCategoryOptionAllowInCarPlay'
+  };
+
   /**
    * Schedules the localNotification for immediate presentation.
    *
@@ -287,6 +298,11 @@ class PushNotificationIOS {
   static getScheduledLocalNotifications(callback: Function) {
     RCTPushNotificationManager.getScheduledLocalNotifications(callback);
   }
+
+  static setNotificationCategories(categories: [Object]) {
+    RCTPushNotificationManager.setNotificationCategories(categories);
+  }
+  
 
   /**
    * Attaches a listener to remote or local notification events while the app is running
