@@ -19,6 +19,7 @@ const React = require('React');
 const ReactNative = require('ReactNative');
 const RefreshControl = require('RefreshControl');
 const ScrollView = require('ScrollView');
+const StyleSheet = require('StyleSheet');
 const View = require('View');
 const ViewabilityHelper = require('ViewabilityHelper');
 
@@ -29,6 +30,7 @@ const warning = require('fbjs/lib/warning');
 
 const {computeWindowedRenderLimits} = require('VirtualizeUtils');
 
+import type {StyleObj} from 'StyleSheetTypes';
 import type {ViewabilityConfig, ViewToken} from 'ViewabilityHelper';
 
 type Item = any;
@@ -87,6 +89,10 @@ type OptionalProps = {
    * `getItemLayout` to be implemented.
    */
   initialScrollIndex?: ?number,
+  /**
+   * Reverses the direction of scroll. Uses scale transforms of -1.
+   */
+  inverted?: ?boolean,
   keyExtractor: (item: Item, index: number) => string,
   /**
    * Rendered when the list is empty. Can be a React Component Class, a render function, or
@@ -424,6 +430,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     stickyIndicesFromProps: Set<number>,
     first: number,
     last: number,
+    inversionStyle: ?StyleObj,
   ) {
     const {
       ItemSeparatorComponent,
@@ -449,6 +456,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           cellKey={key}
           fillRateHelper={this._fillRateHelper}
           index={ii}
+          inversionStyle={inversionStyle}
           item={item}
           key={key}
           prevCellKey={prevCellKey}
@@ -501,6 +509,11 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     } = this.props;
     const {data, horizontal} = this.props;
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
+    const inversionStyle = this.props.inverted
+      ? this.props.horizontal
+          ? styles.horizontallyInverted
+          : styles.verticallyInverted
+      : null;
     const cells = [];
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
@@ -509,7 +522,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         ? ListHeaderComponent // $FlowFixMe
         : <ListHeaderComponent />;
       cells.push(
-        <View key="$header" onLayout={this._onLayoutHeader}>
+        <View
+          key="$header"
+          onLayout={this._onLayoutHeader}
+          style={inversionStyle}>
           {element}
         </View>,
       );
@@ -528,6 +544,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         stickyIndicesFromProps,
         0,
         lastInitialIndex,
+        inversionStyle,
       );
       const firstAfterInitial = Math.max(lastInitialIndex + 1, first);
       if (!isVirtualizationDisabled && first > lastInitialIndex + 1) {
@@ -550,6 +567,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
                 stickyIndicesFromProps,
                 ii,
                 ii,
+                inversionStyle,
               );
               const trailSpace =
                 this._getFrameMetricsApprox(first).offset -
@@ -578,6 +596,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         stickyIndicesFromProps,
         firstAfterInitial,
         last,
+        inversionStyle,
       );
       if (!this._hasWarned.keys && _usedIndexForKey) {
         console.warn(
@@ -608,7 +627,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         ? ListEmptyComponent // $FlowFixMe
         : <ListEmptyComponent />;
       cells.push(
-        <View key="$empty" onLayout={this._onLayoutEmpty}>
+        <View
+          key="$empty"
+          onLayout={this._onLayoutEmpty}
+          style={inversionStyle}>
           {element}
         </View>,
       );
@@ -618,7 +640,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         ? ListFooterComponent // $FlowFixMe
         : <ListFooterComponent />;
       cells.push(
-        <View key="$footer" onLayout={this._onLayoutFooter}>
+        <View
+          key="$footer"
+          onLayout={this._onLayoutFooter}
+          style={inversionStyle}>
           {element}
         </View>,
       );
@@ -634,6 +659,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       scrollEventThrottle: this.props.scrollEventThrottle, // TODO: Android support
       stickyHeaderIndices,
     };
+    if (inversionStyle) {
+      scrollProps.style = [inversionStyle, this.props.style];
+    }
     const ret = React.cloneElement(
       (this.props.renderScrollComponent || this._defaultRenderScrollComponent)(
         scrollProps,
@@ -1086,6 +1114,7 @@ class CellRenderer extends React.Component {
     cellKey: string,
     fillRateHelper: FillRateHelper,
     index: number,
+    inversionStyle: ?StyleObj,
     item: Item,
     onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
     onUnmount: (cellKey: string) => void,
@@ -1144,6 +1173,7 @@ class CellRenderer extends React.Component {
       fillRateHelper,
       item,
       index,
+      inversionStyle,
       parentProps,
     } = this.props;
     const {renderItem, getItemLayout} = parentProps;
@@ -1161,7 +1191,7 @@ class CellRenderer extends React.Component {
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
     // called explicitly by `ScrollViewStickyHeader`.
     return (
-      <View onLayout={onLayout}>
+      <View onLayout={onLayout} style={inversionStyle}>
         {element}
         {ItemSeparatorComponent &&
           <ItemSeparatorComponent {...this.state.separatorProps} />}
@@ -1169,5 +1199,14 @@ class CellRenderer extends React.Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  verticallyInverted: {
+    transform: [{scaleY: -1}],
+  },
+  horizontallyInverted: {
+    transform: [{scaleX: -1}],
+  },
+});
 
 module.exports = VirtualizedList;

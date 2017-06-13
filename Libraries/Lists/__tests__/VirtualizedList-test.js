@@ -93,10 +93,11 @@ describe('VirtualizedList', () => {
         data={new Array(5).fill().map((_, ii) => ({id: String(ii)}))}
         getItem={(data, index) => data[index]}
         getItemCount={data => data.length}
-        keyExtractor={(item, index) => item.id}
         getItemLayout={({index}) => ({length: 50, offset: index * 50})}
-        refreshing={false}
+        inverted={true}
+        keyExtractor={(item, index) => item.id}
         onRefresh={jest.fn()}
+        refreshing={false}
         renderItem={({item}) => <item value={item.id} />}
       />,
     );

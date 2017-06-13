@@ -61,11 +61,13 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   <View>
     <View
       onLayout={[Function]}
+      style={null}
     >
       <header />
     </View>
     <View
       onLayout={undefined}
+      style={null}
     >
       <View
         style={
@@ -88,6 +90,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={undefined}
+      style={null}
     >
       <View
         style={
@@ -110,6 +113,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={undefined}
+      style={null}
     >
       <View
         style={
@@ -128,6 +132,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={[Function]}
+      style={null}
     >
       <footer />
     </View>
@@ -233,6 +238,7 @@ exports[`FlatList renders simple list 1`] = `
   <View>
     <View
       onLayout={[Function]}
+      style={null}
     >
       <item
         value="i1"
@@ -240,6 +246,7 @@ exports[`FlatList renders simple list 1`] = `
     </View>
     <View
       onLayout={[Function]}
+      style={null}
     >
       <item
         value="i2"
@@ -247,6 +254,7 @@ exports[`FlatList renders simple list 1`] = `
     </View>
     <View
       onLayout={[Function]}
+      style={null}
     >
       <item
         value="i3"
