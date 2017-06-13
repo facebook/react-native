@@ -13,7 +13,7 @@
 
 const log = require('../util/log').out('bundle');
 const Server = require('metro-bundler/build/Server');
-const Terminal = require('metro-bundler/build/lib/TerminalClass');
+const Terminal = require('metro-bundler/build/lib/Terminal');
 const TerminalReporter = require('metro-bundler/build/lib/TerminalReporter');
 const TransformCaching = require('metro-bundler/build/lib/TransformCaching');
 
@@ -38,6 +38,7 @@ function buildBundle(
   args: OutputOptions & {
     assetsDest: mixed,
     entryFile: string,
+    maxWorkers: number,
     resetCache: boolean,
     transformer: string,
   },
@@ -89,6 +90,7 @@ function buildBundle(
       getTransformOptions: config.getTransformOptions,
       globalTransformCache: null,
       hasteImpl: config.hasteImpl,
+      maxWorkers: args.maxWorkers,
       platforms: defaultPlatforms.concat(platforms),
       postMinifyProcess: config.postMinifyProcess,
       postProcessModules: config.postProcessModules,

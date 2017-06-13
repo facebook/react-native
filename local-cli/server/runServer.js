@@ -15,7 +15,7 @@
 require('../../setupBabel')();
 const InspectorProxy = require('./util/inspectorProxy.js');
 const ReactPackager = require('metro-bundler');
-const Terminal = require('metro-bundler/build/lib/TerminalClass');
+const Terminal = require('metro-bundler/build/lib/Terminal');
 
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
@@ -46,6 +46,7 @@ import type {Reporter} from 'metro-bundler/build/lib/reporting';
 export type Args = {|
   +assetExts: $ReadOnlyArray<string>,
   +host: string,
+  +maxWorkers: number,
   +nonPersistent: boolean,
   +platforms: $ReadOnlyArray<string>,
   +port: number,
@@ -160,10 +161,11 @@ function getPackagerServer(args, config) {
     extraNodeModules: config.extraNodeModules,
     getTransformOptions: config.getTransformOptions,
     hasteImpl: config.hasteImpl,
+    maxWorkers: args.maxWorkers,
     platforms: defaultPlatforms.concat(args.platforms),
     polyfillModuleNames: config.getPolyfillModuleNames(),
-    postProcessModules: config.postProcessModules,
     postMinifyProcess: config.postMinifyProcess,
+    postProcessModules: config.postProcessModules,
     projectRoots: args.projectRoots,
     providesModuleNodeModules: providesModuleNodeModules,
     reporter: new LogReporter(terminal),
