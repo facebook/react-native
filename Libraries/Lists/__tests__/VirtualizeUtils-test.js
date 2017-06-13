@@ -11,8 +11,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 const {elementsThatOverlapOffsets, newRangeCount} = require('VirtualizeUtils');
 
 describe('newRangeCount', function() {

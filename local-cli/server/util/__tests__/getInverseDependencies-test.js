@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.disableAutomock().dontMock('../getInverseDependencies');
+jest.dontMock('../getInverseDependencies');
 
 const getInverseDependencies = require('../getInverseDependencies');
 

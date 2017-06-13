@@ -11,8 +11,6 @@
 
 'use strict';
 
-jest.autoMockOff();
-
 let spawnError = false;
 
 jest.setMock('child_process', {

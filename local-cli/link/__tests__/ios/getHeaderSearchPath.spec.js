@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const getHeaderSearchPath = require('../../ios/getHeaderSearchPath');
 const path = require('path');
 

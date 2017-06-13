@@ -9,7 +9,6 @@
 
 'use strict';
 
-jest.autoMockOff();
 jest.mock('fs');
 
 let plistPath = null;

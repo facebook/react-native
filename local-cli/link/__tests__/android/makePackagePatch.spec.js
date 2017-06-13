@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const makePackagePatch = require('../../android/patches/makePackagePatch');
 const applyParams = require('../../android/patches/applyParams');
 

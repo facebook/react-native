@@ -11,8 +11,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 const ViewabilityHelper = require('ViewabilityHelper');
 
 let rowFrames;

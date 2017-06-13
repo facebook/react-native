@@ -8,8 +8,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 var setNormalizedColorAlpha = require('setNormalizedColorAlpha');
 var normalizeColor = require('normalizeColor');
 

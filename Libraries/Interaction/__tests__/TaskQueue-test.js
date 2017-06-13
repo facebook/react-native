@@ -10,8 +10,6 @@
 
 'use strict';
 
-jest.disableAutomock();
-
 function expectToBeCalledOnce(fn) {
   expect(fn.mock.calls.length).toBe(1);
 }

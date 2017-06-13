@@ -11,8 +11,6 @@
 
 'use strict';
 
-jest.autoMockOff();
-
 require('../../__fixtures__/mockFSWorkaround');
 
 const findProject = require('../../ios/findProject');

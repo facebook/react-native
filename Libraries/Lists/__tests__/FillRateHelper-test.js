@@ -11,8 +11,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 const FillRateHelper = require('FillRateHelper');
 
 let rowFramesGlobal;

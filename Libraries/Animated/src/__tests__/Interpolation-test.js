@@ -8,8 +8,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 var Interpolation = require('Interpolation');
 var Easing = require('Easing');
 
