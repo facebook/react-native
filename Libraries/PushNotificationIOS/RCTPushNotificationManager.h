@@ -8,6 +8,7 @@
  */
 
 #import <React/RCTEventEmitter.h>
+#import <UserNotifications/UserNotifications.h>
 
 extern NSString *const RCTRemoteNotificationReceived;
 
@@ -15,13 +16,15 @@ extern NSString *const RCTRemoteNotificationReceived;
 
 typedef void (^RCTRemoteNotificationCallback)(UIBackgroundFetchResult result);
 typedef void (^RCTWillPresentNotificationCallback)(UNNotificationPresentationOptions options);
+typedef void (^RCTNotificationResponseCallback)(void);
 
 #if !TARGET_OS_TV
 + (void)didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
++ (void)didReceiveNotificationResponse:(UNNotificationResponse *)response completionHandler:(RCTNotificationResponseCallback)completionHandler;
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification;
 + (void)didReceiveRemoteNotification:(NSDictionary *)notification fetchCompletionHandler:(RCTRemoteNotificationCallback)completionHandler;
-+ (void)willPresentNotification:(NSDictionary *)notification fetchCompletionHandler:(RCTWillPresentNotificationCallback)completionHandler;
++ (void)willPresentNotification:(UNNotification *)notification showCompletionHandler:(RCTWillPresentNotificationCallback)completionHandler;
 + (void)didReceiveLocalNotification:(UILocalNotification *)notification;
 + (void)didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
 #endif
