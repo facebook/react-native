@@ -21,6 +21,7 @@
 
 NSString *const RCTLocalNotificationReceived = @"LocalNotificationReceived";
 NSString *const RCTRemoteNotificationReceived = @"RemoteNotificationReceived";
+NSString *const RCTNotificationWillPresent = @"NotificationWillPresent";
 NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegistered";
 NSString *const RCTRegisterUserNotificationSettings = @"RegisterUserNotificationSettings";
 
@@ -55,6 +56,8 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
     CLLocationDegrees longitude = [self double:regionDict[@"longitude"]];
     
     CLCircularRegion *region = [[CLCircularRegion alloc] initWithCenter:CLLocationCoordinate2DMake(latitude, longitude) radius:[self double:regionDict[@"radius"]] identifier:[self NSString:regionDict[@"id"]] ?: [[NSUUID new] UUIDString]];
+    
+    return region;
   }
   
   return nil;
@@ -64,6 +67,7 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
 
 @interface RCTPushNotificationManager ()
 @property (nonatomic, strong) NSMutableDictionary *remoteNotificationCallbacks;
+@property (nonatomic, strong) NSMutableDictionary *willPresentNotificationCallbacks;
 @end
 
 @implementation RCTConvert (UILocalNotification)
@@ -162,7 +166,7 @@ RCT_ENUM_CONVERTER(UIBackgroundFetchResult, (@{
     trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:timeInterval repeats:repeats];
   }
   
-  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[RCTConvert NSString:details[@"alertId"]] ?: [NSUUID new].UUIDString content:content trigger:nil];
+  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[RCTConvert NSString:details[@"notificationId"]] ?: [NSUUID new].UUIDString content:content trigger:nil];
   
   return request;
 }
@@ -251,7 +255,7 @@ static NSDictionary *RCTFormatNotificationRequest(UNNotificationRequest *request
   formattedNotificationRequest[@"applicationIconBadgeNumber"] = RCTNullIfNil(request.content.badge);
   formattedNotificationRequest[@"category"] = RCTNullIfNil(request.content.categoryIdentifier);
   formattedNotificationRequest[@"thread-id"] = RCTNullIfNil(request.content.threadIdentifier);
-  formattedNotificationRequest[@"alertId"] = RCTNullIfNil(request.identifier);
+  formattedNotificationRequest[@"notificationId"] = RCTNullIfNil(request.identifier);
   formattedNotificationRequest[@"alertTitle"] = RCTNullIfNil(request.content.title);
   formattedNotificationRequest[@"alertSubtitle"] = RCTNullIfNil(request.content.subtitle);
   
@@ -342,6 +346,10 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(handleRemoteNotificationRegistrationError:)
                                                name:RCTErrorRemoteNotificationRegistrationFailed
                                              object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleWillPresentNotification:)
+                                               name:RCTNotificationWillPresent
+                                             object:nil];
 }
 
 - (void)stopObserving
@@ -404,11 +412,41 @@ RCT_EXPORT_MODULE()
                                                     userInfo:userInfo];
 }
 
++ (void)willPresentNotification:(NSDictionary *)notification showCompletionHandler:(RCTWillPresentNotificationCallback)completionHandler
+{
+  NSDictionary *userInfo = @{@"notification": notification, @"completionHandler": completionHandler};
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTNotificationWillPresent
+                                                      object:self
+                                                    userInfo:userInfo];
+}
+
 + (void)didReceiveLocalNotification:(UILocalNotification *)notification
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTLocalNotificationReceived
                                                       object:self
                                                     userInfo:RCTFormatLocalNotification(notification)];
+}
+
+- (void)handleWillPresentNotification:(NSNotification *)notification
+{
+  NSMutableDictionary *remoteNotification = [RCTFormatNotification(notification.userInfo[@"notification"]) mutableCopy];
+  RCTWillPresentNotificationCallback completionHandler = notification.userInfo[@"completionHandler"];
+  
+  NSString *notificationId = remoteNotification[@"notificationId"];
+  if (!notificationId) {
+    notificationId = [[NSUUID UUID] UUIDString];
+    remoteNotification[@"notificationId"] = notificationId;
+  }
+  
+  if (completionHandler) {
+    if (!self.willPresentNotificationCallbacks) {
+      // Lazy initialization
+      self.willPresentNotificationCallbacks = [NSMutableDictionary dictionary];
+    }
+    self.remoteNotificationCallbacks[notificationId] = completionHandler;
+  }
+  
+  [self sendEventWithName:@"willPresentNotification" body:remoteNotification];
 }
 
 - (void)handleLocalNotificationReceived:(NSNotification *)notification
@@ -621,7 +659,7 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions resolver:(RCTPr
     } else {
       [RCTSharedApplication() registerForRemoteNotifications];
     }
-  }]
+  }];
 }
 
 RCT_EXPORT_METHOD(abandonPermissions)
