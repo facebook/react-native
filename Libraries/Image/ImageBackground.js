@@ -55,6 +55,15 @@ class ImageBackground extends React.Component {
               right: 0,
               top: 0,
               bottom: 0,
+              // Temporary Workaround:
+              // Current (imperfect yet) implementation of <Image> overwrites width and height styles
+              // (which is not quite correct), and these styles conflict with explicitly set styles
+              // of <ImageBackground> and with our internal layout model here.
+              // So, we have to proxy/reapply these styles explicitly for actual <Image> component.
+              // This workaround should be removed after implementing proper support of
+              // intrinsic content size of the <Image>.
+              width: style.width,
+              height: style.height,
             },
             imageStyle,
           ]}
