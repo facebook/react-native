@@ -512,7 +512,9 @@ RCT_EXPORT_MODULE()
   return @[@"localNotificationReceived",
            @"remoteNotificationReceived",
            @"remoteNotificationsRegistered",
-           @"remoteNotificationRegistrationError"];
+           @"remoteNotificationRegistrationError",
+           @"notificationResponseReceived",
+           @"willPresentNotification"];
 }
 
 + (void)didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings *)notificationSettings
