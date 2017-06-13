@@ -15,7 +15,7 @@
 require('../../setupBabel')();
 const InspectorProxy = require('./util/inspectorProxy.js');
 const ReactPackager = require('metro-bundler');
-const Terminal = require('metro-bundler/build/lib/TerminalClass');
+const Terminal = require('metro-bundler/build/lib/Terminal');
 
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
