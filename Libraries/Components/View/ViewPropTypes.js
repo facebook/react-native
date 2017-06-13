@@ -13,10 +13,10 @@
 
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Platform = require('Platform');
+const PropTypes = require('prop-types');
 const StyleSheetPropType = require('StyleSheetPropType');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
-const { PropTypes } = require('React');
 const {
   AccessibilityComponentTypes,
   AccessibilityTraits,

@@ -9,7 +9,7 @@
  */
 'use strict';
 
-jest.unmock('groupByEveryN');
+jest.disableAutomock();
 
 describe('groupByEveryN', () => {
   var groupByEveryN = require('groupByEveryN');

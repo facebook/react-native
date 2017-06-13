@@ -97,6 +97,8 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
       case ReactMarker::CREATE_REACT_CONTEXT_STOP:
       case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:
       case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
+      case ReactMarker::NATIVE_MODULE_SETUP_START:
+      case ReactMarker::NATIVE_MODULE_SETUP_STOP:
         // These are not used on iOS.
         break;
     }

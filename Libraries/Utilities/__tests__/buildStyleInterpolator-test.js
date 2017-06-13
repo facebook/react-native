@@ -9,7 +9,7 @@
  */
 'use strict';
 
-jest.unmock('buildStyleInterpolator');
+jest.disableAutomock();
 
 var buildStyleInterpolator = require('buildStyleInterpolator');
 

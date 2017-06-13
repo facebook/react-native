@@ -11,6 +11,7 @@
 'use strict';
 
 const blacklist = require('metro-bundler/build/blacklist');
+const findSymlinksPaths = require('./findSymlinksPaths');
 const fs = require('fs');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
@@ -81,7 +82,7 @@ export type ConfigT = {
   /**
    * Returns the path to the worker that is used for transformation.
    */
-  getWorkerPath: () => string,
+  getWorkerPath: () => ?string,
 
   /**
    * An optional function that can modify the code and source map of bundle
@@ -111,6 +112,26 @@ export type ConfigT = {
   transformVariants: () => TransformVariants,
 };
 
+function getProjectPath() {
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli[\/\\]util$/)) {
+    // Packager is running from node_modules.
+    // This is the default case for all projects created using 'react-native init'.
+    return path.resolve(__dirname, '../../../..');
+  } else if (__dirname.match(/Pods[\/\\]React[\/\\]packager$/)) {
+    // React Native was installed using CocoaPods.
+    return path.resolve(__dirname, '../../../..');
+  }
+  return path.resolve(__dirname, '../..');
+}
+
+const resolveSymlink = (roots) =>
+  roots.concat(
+    findSymlinksPaths(
+      path.join(getProjectPath(), 'node_modules'),
+      roots
+    )
+  );
+
 /**
  * Module capable of getting the configuration out of a given file.
  *
@@ -126,7 +147,13 @@ const Config = {
     getBlacklistRE: () => blacklist(),
     getPlatforms: () => [],
     getPolyfillModuleNames: () => [],
-    getProjectRoots: () => [process.cwd()],
+    getProjectRoots: () => {
+      const root = process.env.REACT_NATIVE_APP_ROOT;
+      if (root) {
+        return resolveSymlink([path.resolve(root)]);
+      }
+      return resolveSymlink([getProjectPath()]);
+    },
     getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
     getSourceExts: () => [],
     getTransformModulePath: () => require.resolve('metro-bundler/build/transformer.js'),
@@ -135,7 +162,7 @@ const Config = {
     postProcessModules: modules => modules,
     postProcessModulesForBuck: modules => modules,
     transformVariants: () => ({default: {}}),
-    getWorkerPath: () => require.resolve('./worker.js'),
+    getWorkerPath: () => null,
   }: ConfigT),
 
   find(startDir: string): ConfigT {

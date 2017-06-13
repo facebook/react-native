@@ -109,7 +109,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (RCTScrollEvent *)coalesceWithEvent:(RCTScrollEvent *)newEvent
 {
   NSArray<NSDictionary *> *updatedChildFrames = [_userData[@"updatedChildFrames"] arrayByAddingObjectsFromArray:newEvent->_userData[@"updatedChildFrames"]];
-
   if (updatedChildFrames) {
     NSMutableDictionary *userData = [newEvent->_userData mutableCopy];
     userData[@"updatedChildFrames"] = updatedChildFrames;
@@ -338,6 +337,7 @@ static inline BOOL isRectInvalid(CGRect rect) {
     _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
     _automaticallyAdjustContentInsets = YES;
+    _DEPRECATED_sendUpdatedChildFrames = NO;
     _contentInset = UIEdgeInsetsZero;
     _contentSize = CGSizeZero;
     _lastClippedToRect = CGRectNull;
@@ -587,9 +587,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
   [self updateClippedSubviews];
-
   NSTimeInterval now = CACurrentMediaTime();
-
   /**
    * TODO: this logic looks wrong, and it may be because it is. Currently, if _scrollEventThrottle
    * is set to zero (the default), the "didScroll" event is only sent once per scroll, instead of repeatedly
@@ -599,16 +597,18 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
   if (_allowNextScrollNoMatterWhat ||
       (_scrollEventThrottle > 0 && _scrollEventThrottle < (now - _lastScrollDispatchTime))) {
 
-    // Calculate changed frames
-    NSArray<NSDictionary *> *childFrames = [self calculateChildFramesData];
-
-    // Dispatch event
-    RCT_SEND_SCROLL_EVENT(onScroll, (@{@"updatedChildFrames": childFrames}));
+    if (_DEPRECATED_sendUpdatedChildFrames) {
+      // Calculate changed frames
+      RCT_SEND_SCROLL_EVENT(onScroll, (@{@"updatedChildFrames": [self calculateChildFramesData]}));
+    } else {
+      RCT_SEND_SCROLL_EVENT(onScroll, nil);
+    }
 
     // Update dispatch time
     _lastScrollDispatchTime = now;
     _allowNextScrollNoMatterWhat = NO;
   }
+
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidScroll:scrollView);
 }
 
