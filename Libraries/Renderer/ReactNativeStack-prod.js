@@ -2190,27 +2190,10 @@ function escape(key) {
     });
 }
 
-function unescape(key) {
-    var unescapeRegex = /(=0|=2)/g, unescaperLookup = {
-        "=0": "=",
-        "=2": ":"
-    };
-    return ("" + ("." === key[0] && "$" === key[1] ? key.substring(2) : key.substring(1))).replace(unescapeRegex, function(match) {
-        return unescaperLookup[match];
-    });
-}
-
-var KeyEscapeUtils = {
+var unescapeInDev = emptyFunction, KeyEscapeUtils = {
     escape: escape,
-    unescape: unescape
-}, KeyEscapeUtils_1 = KeyEscapeUtils, REACT_ELEMENT_TYPE = "function" == typeof Symbol && Symbol.for && Symbol.for("react.element") || 60103, ReactElementSymbol = REACT_ELEMENT_TYPE, ITERATOR_SYMBOL = "function" == typeof Symbol && Symbol.iterator, FAUX_ITERATOR_SYMBOL = "@@iterator";
-
-function getIteratorFn(maybeIterable) {
-    var iteratorFn = maybeIterable && (ITERATOR_SYMBOL && maybeIterable[ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL]);
-    if ("function" == typeof iteratorFn) return iteratorFn;
-}
-
-var getIteratorFn_1 = getIteratorFn, SEPARATOR = ".", SUBSEPARATOR = ":";
+    unescapeInDev: unescapeInDev
+}, KeyEscapeUtils_1 = KeyEscapeUtils, ITERATOR_SYMBOL = "function" == typeof Symbol && Symbol.iterator, FAUX_ITERATOR_SYMBOL = "@@iterator", REACT_ELEMENT_TYPE = "function" == typeof Symbol && Symbol.for && Symbol.for("react.element") || 60103, SEPARATOR = ".", SUBSEPARATOR = ":";
 
 function getComponentKey(component, index) {
     return component && "object" == typeof component && null != component.key ? KeyEscapeUtils_1.escape(component.key) : index.toString(36);
@@ -2218,13 +2201,13 @@ function getComponentKey(component, index) {
 
 function traverseStackChildrenImpl(children, nameSoFar, callback, traverseContext) {
     var type = typeof children;
-    if ("undefined" !== type && "boolean" !== type || (children = null), null === children || "string" === type || "number" === type || "object" === type && children.$$typeof === ReactElementSymbol) return callback(traverseContext, children, "" === nameSoFar ? SEPARATOR + getComponentKey(children, 0) : nameSoFar), 
+    if ("undefined" !== type && "boolean" !== type || (children = null), null === children || "string" === type || "number" === type || "object" === type && children.$$typeof === REACT_ELEMENT_TYPE) return callback(traverseContext, children, "" === nameSoFar ? SEPARATOR + getComponentKey(children, 0) : nameSoFar), 
     1;
     var child, nextName, subtreeCount = 0, nextNamePrefix = "" === nameSoFar ? SEPARATOR : nameSoFar + SUBSEPARATOR;
     if (Array.isArray(children)) for (var i = 0; i < children.length; i++) child = children[i], 
     nextName = nextNamePrefix + getComponentKey(child, i), subtreeCount += traverseStackChildrenImpl(child, nextName, callback, traverseContext); else {
-        var iteratorFn = getIteratorFn_1(children);
-        if (iteratorFn) for (var step, iterator = iteratorFn.call(children), ii = 0; !(step = iterator.next()).done; ) child = step.value, 
+        var iteratorFn = ITERATOR_SYMBOL && children[ITERATOR_SYMBOL] || children[FAUX_ITERATOR_SYMBOL];
+        if ("function" == typeof iteratorFn) for (var step, iterator = iteratorFn.call(children), ii = 0; !(step = iterator.next()).done; ) child = step.value, 
         nextName = nextNamePrefix + getComponentKey(child, ii++), subtreeCount += traverseStackChildrenImpl(child, nextName, callback, traverseContext); else if ("object" === type) {
             var addendum = "", childrenString = "" + children;
             invariant(!1, "Objects are not valid as a React child (found: %s).%s", "[object Object]" === childrenString ? "object with keys {" + Object.keys(children).join(", ") + "}" : childrenString, addendum);

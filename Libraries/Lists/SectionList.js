@@ -8,6 +8,7 @@
  *
  * @providesModule SectionList
  * @flow
+ * @format
  */
 'use strict';
 
@@ -17,7 +18,9 @@ const React = require('React');
 const VirtualizedSectionList = require('VirtualizedSectionList');
 
 import type {ViewToken} from 'ViewabilityHelper';
-import type {Props as VirtualizedSectionListProps} from 'VirtualizedSectionList';
+import type {
+  Props as VirtualizedSectionListProps,
+} from 'VirtualizedSectionList';
 
 type Item = any;
 
@@ -122,11 +125,14 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    */
   initialNumToRender: number,
   /**
+   * Reverses the direction of scroll. Uses scale transforms of -1.
+   */
+  inverted?: ?boolean,
+  /**
    * Used to extract a unique key for a given item at the specified index. Key is used for caching
    * and as the react key to track item re-ordering. The default extractor checks item.key, then
    * falls back to using the index, like react does.
    */
-
   keyExtractor: (item: Item, index: number) => string,
   /**
    * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
@@ -181,9 +187,9 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   legacyImplementation?: ?boolean,
 };
 
-type Props<SectionT> = RequiredProps<SectionT>
-  & OptionalProps<SectionT>
-  & VirtualizedSectionListProps<SectionT>;
+type Props<SectionT> = RequiredProps<SectionT> &
+  OptionalProps<SectionT> &
+  VirtualizedSectionListProps<SectionT>;
 
 const defaultProps = {
   ...VirtualizedSectionList.defaultProps,
@@ -248,8 +254,7 @@ type DefaultProps = typeof defaultProps;
  *
  */
 class SectionList<SectionT: SectionBase<any>>
-  extends React.PureComponent<DefaultProps, Props<SectionT>, void>
-{
+  extends React.PureComponent<DefaultProps, Props<SectionT>, void> {
   props: Props<SectionT>;
   static defaultProps: DefaultProps = defaultProps;
 
@@ -311,12 +316,16 @@ class SectionList<SectionT: SectionBase<any>>
   }
 
   render() {
-    const List = this.props.legacyImplementation ? MetroListView : VirtualizedSectionList;
+    const List = this.props.legacyImplementation
+      ? MetroListView
+      : VirtualizedSectionList;
     return <List {...this.props} ref={this._captureRef} />;
   }
 
   _wrapperListRef: MetroListView | VirtualizedSectionList<any>;
-  _captureRef = (ref) => { this._wrapperListRef = ref; };
+  _captureRef = ref => {
+    this._wrapperListRef = ref;
+  };
 }
 
 module.exports = SectionList;

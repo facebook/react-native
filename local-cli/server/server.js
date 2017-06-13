@@ -121,5 +121,14 @@ module.exports = {
   }, {
     command: '--verbose',
     description: 'Enables logging',
+  }, {
+    command: '--https',
+    description: 'Enables https connections to the server',
+  }, {
+    command: '--key [path]',
+    description: 'Path to custom SSL key',
+  }, {
+    command: '--cert [path]',
+    description: 'Path to custom SSL cert',
   }],
 };

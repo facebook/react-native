@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var ReactPropTypes = require('React').PropTypes;
+var ReactPropTypes = require('prop-types');
 
 /**
  * React Native's layout system is based on Flexbox and is powered both

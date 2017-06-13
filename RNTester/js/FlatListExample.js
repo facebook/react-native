@@ -55,6 +55,7 @@ class FlatListExample extends React.PureComponent {
     data: genItemData(100),
     debug: false,
     horizontal: false,
+    inverted: false,
     filterText: '',
     fixedHeight: true,
     logViewable: false,
@@ -111,6 +112,7 @@ class FlatListExample extends React.PureComponent {
               {renderSmallSwitchOption(this, 'horizontal')}
               {renderSmallSwitchOption(this, 'fixedHeight')}
               {renderSmallSwitchOption(this, 'logViewable')}
+              {renderSmallSwitchOption(this, 'inverted')}
               {renderSmallSwitchOption(this, 'debug')}
               <Spindicator value={this._scrollPos} />
             </View>
@@ -128,6 +130,7 @@ class FlatListExample extends React.PureComponent {
               undefined
             }
             horizontal={this.state.horizontal}
+            inverted={this.state.inverted}
             key={(this.state.horizontal ? 'h' : 'v') +
               (this.state.fixedHeight ? 'f' : 'd')
             }
