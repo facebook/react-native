@@ -135,4 +135,26 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
     infos[1].separators.unhighlight();
   });
+
+  it('handles nested lists', () => {
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[{key: 'outer0'}, {key: 'outer1'}]}
+        renderItem={(outerInfo) => (
+          <VirtualizedList
+            data={[{key: outerInfo.item.key + ':inner0'}, {key: outerInfo.item.key + ':inner1'}]}
+            horizontal={outerInfo.item.key === 'outer1'}
+            renderItem={(innerInfo) => {
+              return <item title={innerInfo.item.key} />;
+            }}
+            getItem={(data, index) => data[index]}
+            getItemCount={(data) => data.length}
+          />
+        )}
+        getItem={(data, index) => data[index]}
+        getItemCount={(data) => data.length}
+      />
+    );
+    expect(component).toMatchSnapshot();
+  });
 });

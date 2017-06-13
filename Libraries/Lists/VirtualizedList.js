@@ -13,6 +13,7 @@
 
 const Batchinator = require('Batchinator');
 const FillRateHelper = require('FillRateHelper');
+const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
 const RefreshControl = require('RefreshControl');
@@ -139,7 +140,7 @@ type OptionalProps = {
   /**
    * Render a custom scroll component, e.g. with a differently styled `RefreshControl`.
    */
-  renderScrollComponent: (props: Object) => React.Element<any>,
+  renderScrollComponent?: (props: Object) => React.Element<any>,
   /**
    * Amount of time between low-pri item render batches, e.g. for rendering items quite a ways off
    * screen. Similar fill rate/responsiveness tradeoff as `maxToRenderPerBatch`.
@@ -301,34 +302,31 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     },
     maxToRenderPerBatch: 10,
     onEndReachedThreshold: 2, // multiples of length
-    renderScrollComponent: (props: Props) => {
-      if (props.onRefresh) {
-        invariant(
-          typeof props.refreshing === 'boolean',
-          '`refreshing` prop must be set as a boolean in order to use `onRefresh`, but got `' +
-            JSON.stringify(props.refreshing) + '`',
-        );
-
-        return (
-          <ScrollView
-            {...props}
-            refreshControl={
-              <RefreshControl
-                refreshing={props.refreshing}
-                onRefresh={props.onRefresh}
-                progressViewOffset={props.progressViewOffset}
-              />
-            }
-          />
-        );
-      } else {
-        return <ScrollView {...props} />;
-      }
-    },
     scrollEventThrottle: 50,
     updateCellsBatchingPeriod: 50,
     windowSize: 21, // multiples of length
   };
+
+  static contextTypes = {
+    virtualizedList: PropTypes.shape({
+      horizontal: PropTypes.bool,
+    }),
+  };
+
+  static childContextTypes = {
+    virtualizedList: PropTypes.shape({
+      horizontal: PropTypes.bool,
+    }),
+  };
+
+  getChildContext() {
+    return {
+      virtualizedList: {
+        horizontal: this.props.horizontal,
+        // TODO: support nested virtualization and onViewableItemsChanged
+      },
+    };
+  }
 
   state: State;
 
@@ -338,6 +336,11 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       !props.onScroll || !props.onScroll.__isNative,
       'Components based on VirtualizedList must be wrapped with Animated.createAnimatedComponent ' +
       'to support native onScroll events with useNativeDriver',
+    );
+    invariant(
+      !(this._isNestedWithSameOrientation() && props.onViewableItemsChanged),
+      'Nesting lists that scroll in the same direction does not support onViewableItemsChanged' +
+        'on the inner list.'
     );
 
     this._fillRateHelper = new FillRateHelper(this._getFrameMetrics);
@@ -431,6 +434,15 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     });
   };
 
+  _isVirtualizationDisabled(): bool {
+    return this.props.disableVirtualization || this._isNestedWithSameOrientation();
+  }
+
+  _isNestedWithSameOrientation(): bool {
+    const nestedContext = this.context.virtualizedList;
+    return !!(nestedContext && !!nestedContext.horizontal === !!this.props.horizontal);
+  }
+
   render() {
     if (__DEV__) {
       const flatStyles = flattenStyle(this.props.contentContainerStyle);
@@ -442,7 +454,8 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     }
 
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} = this.props;
-    const {data, disableVirtualization, horizontal} = this.props;
+    const {data, horizontal} = this.props;
+    const isVirtualizationDisabled = this._isVirtualizationDisabled();
     const cells = [];
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
     const stickyHeaderIndices = [];
@@ -466,7 +479,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       const {first, last} = this.state;
       this._pushCells(cells, stickyHeaderIndices, stickyIndicesFromProps, 0, lastInitialIndex);
       const firstAfterInitial = Math.max(lastInitialIndex + 1, first);
-      if (!disableVirtualization && first > lastInitialIndex + 1) {
+      if (!isVirtualizationDisabled && first > lastInitialIndex + 1) {
         let insertedStickySpacer = false;
         if (stickyIndicesFromProps.size > 0) {
           const stickyOffset = ListHeaderComponent ? 1 : 0;
@@ -507,7 +520,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         );
         this._hasWarned.keys = true;
       }
-      if (!disableVirtualization && last < itemCount - 1) {
+      if (!isVirtualizationDisabled && last < itemCount - 1) {
         const lastFrame = this._getFrameMetricsApprox(last);
         // Without getItemLayout, we limit our tail spacer to the _highestMeasuredFrameIndex to
         // prevent the user for hyperscrolling into un-measured area because otherwise content will
@@ -543,18 +556,21 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         </View>
       );
     }
+    const scrollProps = {
+      ...this.props,
+      onContentSizeChange: this._onContentSizeChange,
+      onLayout: this._onLayout,
+      onScroll: this._onScroll,
+      onScrollBeginDrag: this._onScrollBeginDrag,
+      onScrollEndDrag: this._onScrollEndDrag,
+      onMomentumScrollEnd: this._onMomentumScrollEnd,
+      scrollEventThrottle: this.props.scrollEventThrottle, // TODO: Android support
+      stickyHeaderIndices,
+    };
     const ret = React.cloneElement(
-      this.props.renderScrollComponent(this.props),
+      (this.props.renderScrollComponent || this._defaultRenderScrollComponent)(scrollProps),
       {
-        onContentSizeChange: this._onContentSizeChange,
-        onLayout: this._onLayout,
-        onScroll: this._onScroll,
-        onScrollBeginDrag: this._onScrollBeginDrag,
-        onScrollEndDrag: this._onScrollEndDrag,
-        onMomentumScrollEnd: this._onMomentumScrollEnd,
         ref: this._captureScrollRef,
-        scrollEventThrottle: this.props.scrollEventThrottle, // TODO: Android support
-        stickyHeaderIndices,
       },
       cells,
     );
@@ -600,6 +616,32 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       this._scrollMetrics,
     );
   }
+
+  _defaultRenderScrollComponent = (props) => {
+    if (this._isNestedWithSameOrientation()) {
+      return <View {...props} />;
+    } else if (props.onRefresh) {
+      invariant(
+        typeof props.refreshing === 'boolean',
+        '`refreshing` prop must be set as a boolean in order to use `onRefresh`, but got `' +
+          JSON.stringify(props.refreshing) + '`',
+      );
+      return (
+        <ScrollView
+          {...props}
+          refreshControl={
+            <RefreshControl
+              refreshing={props.refreshing}
+              onRefresh={props.onRefresh}
+              progressViewOffset={props.progressViewOffset}
+            />
+          }
+        />
+      );
+    } else {
+      return <ScrollView {...props} />;
+    }
+  };
 
   _onCellLayout(e, cellKey, index) {
     const layout = e.nativeEvent.layout;
@@ -816,14 +858,15 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   };
 
   _updateCellsToRender = () => {
-    const {data, disableVirtualization, getItemCount, onEndReachedThreshold} = this.props;
+    const {data, getItemCount, onEndReachedThreshold} = this.props;
+    const isVirtualizationDisabled = this._isVirtualizationDisabled();
     this._updateViewableItems(data);
     if (!data) {
       return;
     }
     this.setState((state) => {
       let newState;
-      if (!disableVirtualization) {
+      if (!isVirtualizationDisabled) {
         newState = computeWindowedRenderLimits(
           this.props, state, this._getFrameMetricsApprox, this._scrollMetrics,
         );

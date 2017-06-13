@@ -1,5 +1,144 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`VirtualizedList handles nested lists 1`] = `
+<RCTScrollView
+  data={
+    Array [
+      Object {
+        "key": "outer0",
+      },
+      Object {
+        "key": "outer1",
+      },
+    ]
+  }
+  disableVirtualization={false}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  horizontal={false}
+  initialNumToRender={10}
+  keyExtractor={[Function]}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onEndReachedThreshold={2}
+  onLayout={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  updateCellsBatchingPeriod={50}
+  windowSize={21}
+>
+  <View>
+    <View
+      onLayout={[Function]}
+    >
+      <View
+        data={
+          Array [
+            Object {
+              "key": "outer0:inner0",
+            },
+            Object {
+              "key": "outer0:inner1",
+            },
+          ]
+        }
+        disableVirtualization={false}
+        getItem={[Function]}
+        getItemCount={[Function]}
+        horizontal={false}
+        initialNumToRender={10}
+        keyExtractor={[Function]}
+        maxToRenderPerBatch={10}
+        onContentSizeChange={[Function]}
+        onEndReachedThreshold={2}
+        onLayout={[Function]}
+        onMomentumScrollEnd={[Function]}
+        onScroll={[Function]}
+        onScrollBeginDrag={[Function]}
+        onScrollEndDrag={[Function]}
+        renderItem={[Function]}
+        scrollEventThrottle={50}
+        stickyHeaderIndices={Array []}
+        updateCellsBatchingPeriod={50}
+        windowSize={21}
+      >
+        <View
+          onLayout={[Function]}
+        >
+          <item
+            title="outer0:inner0"
+          />
+        </View>
+        <View
+          onLayout={[Function]}
+        >
+          <item
+            title="outer0:inner1"
+          />
+        </View>
+      </View>
+    </View>
+    <View
+      onLayout={[Function]}
+    >
+      <RCTScrollView
+        data={
+          Array [
+            Object {
+              "key": "outer1:inner0",
+            },
+            Object {
+              "key": "outer1:inner1",
+            },
+          ]
+        }
+        disableVirtualization={false}
+        getItem={[Function]}
+        getItemCount={[Function]}
+        horizontal={true}
+        initialNumToRender={10}
+        keyExtractor={[Function]}
+        maxToRenderPerBatch={10}
+        onContentSizeChange={[Function]}
+        onEndReachedThreshold={2}
+        onLayout={[Function]}
+        onMomentumScrollEnd={[Function]}
+        onScroll={[Function]}
+        onScrollBeginDrag={[Function]}
+        onScrollEndDrag={[Function]}
+        renderItem={[Function]}
+        scrollEventThrottle={50}
+        stickyHeaderIndices={Array []}
+        updateCellsBatchingPeriod={50}
+        windowSize={21}
+      >
+        <View>
+          <View
+            onLayout={[Function]}
+          >
+            <item
+              title="outer1:inner0"
+            />
+          </View>
+          <View
+            onLayout={[Function]}
+          >
+            <item
+              title="outer1:inner1"
+            />
+          </View>
+        </View>
+      </RCTScrollView>
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
 exports[`VirtualizedList handles separators correctly 1`] = `
 <RCTScrollView
   ItemSeparatorComponent={[Function]}
@@ -31,7 +170,6 @@ exports[`VirtualizedList handles separators correctly 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  renderScrollComponent={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
@@ -110,7 +248,6 @@ exports[`VirtualizedList handles separators correctly 2`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  renderScrollComponent={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
@@ -189,7 +326,6 @@ exports[`VirtualizedList handles separators correctly 3`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  renderScrollComponent={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
@@ -288,7 +424,6 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
   }
   refreshing={false}
   renderItem={[Function]}
-  renderScrollComponent={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
@@ -367,7 +502,6 @@ exports[`VirtualizedList renders empty list 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  renderScrollComponent={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
@@ -398,7 +532,6 @@ exports[`VirtualizedList renders empty list with empty component 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  renderScrollComponent={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
@@ -449,7 +582,6 @@ exports[`VirtualizedList renders list with empty component 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  renderScrollComponent={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
@@ -485,7 +617,6 @@ exports[`VirtualizedList renders null list 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  renderScrollComponent={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
@@ -525,7 +656,6 @@ exports[`VirtualizedList renders simple list 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  renderScrollComponent={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
@@ -581,7 +711,6 @@ exports[`VirtualizedList test getItem functionality where data is not an Array 1
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  renderScrollComponent={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
