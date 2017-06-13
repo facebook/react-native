@@ -90,7 +90,7 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  BOOL opened = [RCTSharedApplication() openURL:URL];
+  BOOL opened = RCTLinkingIOSOpenUrl(URL);
   if (opened) {
     resolve(nil);
   } else {
@@ -114,7 +114,7 @@ RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
   // simply resolving with NO
 
   // This can be expensive, so we deliberately don't call on main thread
-  BOOL canOpen = [RCTSharedApplication() canOpenURL:URL];
+  BOOL canOpen = RCTLinkingIOSCanOpenUrl(URL);
   resolve(@(canOpen));
 }
 

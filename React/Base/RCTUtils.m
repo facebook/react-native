@@ -456,6 +456,22 @@ BOOL RCTRunningInAppExtension(void)
   return [[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"];
 }
 
+BOOL RCTLinkingIOSOpenUrl(NSURL *URL)
+{
+    if (RCTRunningInAppExtension()) {
+        return false;
+    }
+    return [RCTSharedApplication() performSelector:@selector(openURL:) withObject: URL];
+}
+
+BOOL RCTLinkingIOSCanOpenUrl(NSURL *URL)
+{
+      if (RCTRunningInAppExtension()) {
+        return false;
+      }
+    return [RCTSharedApplication() performSelector:@selector(canOpenURL:) withObject: URL];
+}
+
 UIApplication *__nullable RCTSharedApplication(void)
 {
   if (RCTRunningInAppExtension()) {
