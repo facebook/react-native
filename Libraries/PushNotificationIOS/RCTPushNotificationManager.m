@@ -865,33 +865,41 @@ RCT_EXPORT_METHOD(cancelLocalNotifications:(NSDictionary<NSString *, id> *)userI
   }
 }
 
-RCT_EXPORT_METHOD(cancelLocalNotificationsWithIds:(NSArray<NSString *> *)identifiers)
-{
-  [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:identifiers];
-}
-
 RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTResponseSenderBlock)callback)
 {
-  UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-  [notificationCenter getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
-    NSMutableArray<NSDictionary *> *formattedDeliveredNotifications = [NSMutableArray new];
-    for (UNNotification *notification in notifications) {
-      [formattedDeliveredNotifications addObject:RCTFormatNotification(notification)];
-    }
-    callback(@[formattedDeliveredNotifications]);
-  }];
+  if ([UNUserNotificationCenter class]) {
+    UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+    [notificationCenter getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
+      NSMutableArray<NSDictionary *> *formattedDeliveredNotifications = [NSMutableArray new];
+      for (UNNotification *notification in notifications) {
+        [formattedDeliveredNotifications addObject:RCTFormatNotification(notification)];
+      }
+      callback(@[formattedDeliveredNotifications]);
+    }];
+  } else {
+    callback(@[]);
+  }
 }
 
 RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTResponseSenderBlock)callback)
 {
-  UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-  [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
+  if ([UNUserNotificationCenter class]) {
+    UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+    [notificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
+      NSMutableArray<NSDictionary *> *formattedScheduledLocalNotifications = [NSMutableArray new];
+      for (UNNotificationRequest *request in requests) {
+        [formattedScheduledLocalNotifications addObject:RCTFormatNotificationRequest(request)];
+      }
+      callback(@[formattedScheduledLocalNotifications]);
+    }];
+  } else {
+    NSArray<UILocalNotification *> *scheduledLocalNotifications = RCTSharedApplication().scheduledLocalNotifications;
     NSMutableArray<NSDictionary *> *formattedScheduledLocalNotifications = [NSMutableArray new];
-    for (UNNotificationRequest *request in requests) {
-      [formattedScheduledLocalNotifications addObject:RCTFormatNotificationRequest(request)];
+    for (UILocalNotification *notification in scheduledLocalNotifications) {
+      [formattedScheduledLocalNotifications addObject:RCTFormatLocalNotification(notification)];
     }
     callback(@[formattedScheduledLocalNotifications]);
-  }];
+  }
 }
 
 RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
@@ -1030,18 +1038,6 @@ RCT_EXPORT_METHOD(setNotificationCategories:(id)json)
 RCT_EXPORT_METHOD(abandonPermissions)
 {
   [RCTSharedApplication() unregisterForRemoteNotifications];
-}
-
-#elif !TARGET_OS_TV
-
-RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTResponseSenderBlock)callback)
-{
-  NSArray<UILocalNotification *> *scheduledLocalNotifications = RCTSharedApplication().scheduledLocalNotifications;
-  NSMutableArray<NSDictionary *> *formattedScheduledLocalNotifications = [NSMutableArray new];
-  for (UILocalNotification *notification in scheduledLocalNotifications) {
-    [formattedScheduledLocalNotifications addObject:RCTFormatLocalNotification(notification)];
-  }
-  callback(@[formattedScheduledLocalNotifications]);
 }
 
 #elif TARGET_OS_TV //TARGET_OS_TV
