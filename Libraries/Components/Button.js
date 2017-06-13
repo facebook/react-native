@@ -136,7 +136,7 @@ class Button extends React.Component {
 let defaultBlue = '#2196F3';
 if (Platform.OS === 'ios') {
   // Measured default tintColor from iOS 10
-  defaultBlue = '#0C42FD';
+  defaultBlue = '#007AFF';
 }
 
 const styles = StyleSheet.create({

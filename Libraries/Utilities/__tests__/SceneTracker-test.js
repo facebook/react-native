@@ -9,7 +9,7 @@
  */
 'use strict';
 
-jest.unmock('SceneTracker');
+jest.disableAutomock();
 
 const SceneTracker = require('SceneTracker');
 

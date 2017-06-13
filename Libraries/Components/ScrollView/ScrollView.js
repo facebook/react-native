@@ -388,6 +388,15 @@ const ScrollView = React.createClass({
       'always',
       'never',
     ]),
+    /**
+     * When true, ScrollView will emit updateChildFrames data in scroll events,
+     * otherwise will not compute or emit child frame data.  This only exists
+     * to support legacy issues, `onLayout` should be used instead to retrieve
+     * frame data.
+     * The default value is false.
+     * @platform ios
+     */
+    DEPRECATED_sendUpdatedChildFrames: PropTypes.bool,
   },
 
   mixins: [ScrollResponder.Mixin],
@@ -493,6 +502,15 @@ const ScrollView = React.createClass({
   scrollWithoutAnimationTo: function(y: number = 0, x: number = 0) {
     console.warn('`scrollWithoutAnimationTo` is deprecated. Use `scrollTo` instead');
     this.scrollTo({x, y, animated: false});
+  },
+
+  /**
+   * Displays the scroll indicators momentarily.
+   *
+   * @platform ios
+   */
+  flashScrollIndicators: function() {
+    this.getScrollResponder().scrollResponderFlashScrollIndicators();
   },
 
   _getKeyForIndex: function(index, childArray) {
@@ -673,6 +691,9 @@ const ScrollView = React.createClass({
         this.props.alwaysBounceVertical :
         !this.props.horizontal;
 
+    const DEPRECATED_sendUpdatedChildFrames =
+      !!this.props.DEPRECATED_sendUpdatedChildFrames;
+
     const baseStyle = this.props.horizontal ? styles.baseHorizontal : styles.baseVertical;
     const props = {
       ...this.props,
@@ -701,6 +722,7 @@ const ScrollView = React.createClass({
       scrollEventThrottle: hasStickyHeaders ? 1 : this.props.scrollEventThrottle,
       sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ?
         true : false,
+      DEPRECATED_sendUpdatedChildFrames,
     };
 
     const { decelerationRate } = this.props;

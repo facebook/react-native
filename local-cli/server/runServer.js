@@ -14,19 +14,22 @@
 
 require('../../setupBabel')();
 const InspectorProxy = require('./util/inspectorProxy.js');
-const ReactPackager = require('../../packager');
+const ReactPackager = require('metro-bundler');
+const Terminal = require('metro-bundler/build/lib/TerminalClass');
 
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
-const defaultAssetExts = require('../../packager/defaults').assetExts;
-const defaultSourceExts = require('../../packager/defaults').sourceExts;
-const defaultPlatforms = require('../../packager/defaults').platforms;
-const defaultProvidesModuleNodeModules = require('../../packager/defaults')
+const defaultAssetExts = require('metro-bundler/build/defaults').assetExts;
+const defaultSourceExts = require('metro-bundler/build/defaults').sourceExts;
+const defaultPlatforms = require('metro-bundler/build/defaults').platforms;
+const defaultProvidesModuleNodeModules = require('metro-bundler/build/defaults')
   .providesModuleNodeModules;
+const fs = require('fs');
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
 const http = require('http');
+const https = require('https');
 const indexPageMiddleware = require('./middleware/indexPage');
 const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
 const messageSocket = require('./util/messageSocket.js');
@@ -38,7 +41,7 @@ const unless = require('./middleware/unless');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
 import type {ConfigT} from '../util/Config';
-import type {Reporter} from '../../packager/src/lib/reporting';
+import type {Reporter} from 'metro-bundler/build/lib/reporting';
 
 export type Args = {|
   +assetExts: $ReadOnlyArray<string>,
@@ -88,23 +91,32 @@ function runServer(
 
   app.use(connect.logger()).use(connect.errorHandler());
 
-  const serverInstance = http
-    .createServer(app)
-    .listen(args.port, args.host, 511, function() {
-      attachHMRServer({
-        httpServer: serverInstance,
-        path: '/hot',
-        packagerServer,
-      });
+  if (args.https && (!args.key || !args.cert)) {
+    throw new Error('Cannot use https without specifying key and cert options');
+  }
 
-      wsProxy = webSocketProxy.attachToServer(
-        serverInstance,
-        '/debugger-proxy',
-      );
-      ms = messageSocket.attachToServer(serverInstance, '/message');
-      inspectorProxy.attachToServer(serverInstance, '/inspector');
-      readyCallback(packagerServer._reporter);
+  const serverInstance = args.https
+    ? https.createServer(
+        {
+          key: fs.readFileSync(args.key),
+          cert: fs.readFileSync(args.cert),
+        },
+        app,
+      )
+    : http.createServer(app);
+
+  serverInstance.listen(args.port, args.host, 511, function() {
+    attachHMRServer({
+      httpServer: serverInstance,
+      path: '/hot',
+      packagerServer,
     });
+
+    wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
+    ms = messageSocket.attachToServer(serverInstance, '/message');
+    inspectorProxy.attachToServer(serverInstance, '/inspector');
+    readyCallback(packagerServer._reporter);
+  });
   // Disable any kind of automatic timeout behavior for incoming
   // requests in case it takes the packager more than the default
   // timeout of 120 seconds to respond to a request.
@@ -135,9 +147,12 @@ function getPackagerServer(args, config) {
       LogReporter = require(path.resolve(args.customLogReporterPath));
     }
   } else {
-    LogReporter = require('../../packager/src/lib/TerminalReporter');
+    LogReporter = require('metro-bundler/build/lib/TerminalReporter');
   }
 
+  /* $FlowFixMe: Flow is wrong, Node.js docs specify that process.stdout is an
+   * instance of a net.Socket (a local socket, not network). */
+  const terminal = new Terminal(process.stdout);
   return ReactPackager.createServer({
     assetExts: defaultAssetExts.concat(args.assetExts),
     blacklistRE: config.getBlacklistRE(),
@@ -151,12 +166,13 @@ function getPackagerServer(args, config) {
     postMinifyProcess: config.postMinifyProcess,
     projectRoots: args.projectRoots,
     providesModuleNodeModules: providesModuleNodeModules,
-    reporter: new LogReporter(),
+    reporter: new LogReporter(terminal),
     resetCache: args.resetCache,
     sourceExts: defaultSourceExts.concat(args.sourceExts),
     transformModulePath: transformModulePath,
     verbose: args.verbose,
     watch: !args.nonPersistent,
+    workerPath: config.getWorkerPath(),
   });
 }
 
