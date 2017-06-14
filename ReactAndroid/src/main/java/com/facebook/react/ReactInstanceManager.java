@@ -926,7 +926,6 @@ public class ReactInstanceManager {
       reactContext,
       this,
       mLazyNativeModulesEnabled);
-    JavaScriptModuleRegistry.Builder jsModulesBuilder = new JavaScriptModuleRegistry.Builder();
     if (mUseDeveloperSupport) {
       reactContext.setNativeModuleCallExceptionHandler(mDevSupportManager);
     }
@@ -942,7 +941,7 @@ public class ReactInstanceManager {
           mBackBtnHandler,
           mUIImplementationProvider,
           mLazyViewManagersEnabled);
-      processPackage(coreModulesPackage, nativeModuleRegistryBuilder, jsModulesBuilder);
+      processPackage(coreModulesPackage, nativeModuleRegistryBuilder);
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
@@ -953,7 +952,7 @@ public class ReactInstanceManager {
           TRACE_TAG_REACT_JAVA_BRIDGE,
           "createAndProcessCustomReactPackage");
       try {
-        processPackage(reactPackage, nativeModuleRegistryBuilder, jsModulesBuilder);
+        processPackage(reactPackage, nativeModuleRegistryBuilder);
       } finally {
         Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       }
@@ -979,7 +978,6 @@ public class ReactInstanceManager {
         ReactQueueConfigurationSpec.createDefault())
       .setJSExecutor(jsExecutor)
       .setRegistry(nativeModuleRegistry)
-      .setJSModuleRegistry(jsModulesBuilder.build())
       .setJSBundleLoader(jsBundleLoader)
       .setNativeModuleCallExceptionHandler(exceptionHandler);
 
@@ -1010,8 +1008,7 @@ public class ReactInstanceManager {
 
   private void processPackage(
     ReactPackage reactPackage,
-    NativeModuleRegistryBuilder nativeModuleRegistryBuilder,
-    JavaScriptModuleRegistry.Builder jsModulesBuilder) {
+    NativeModuleRegistryBuilder nativeModuleRegistryBuilder) {
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "processPackage")
       .arg("className", reactPackage.getClass().getSimpleName())
       .flush();
@@ -1020,9 +1017,6 @@ public class ReactInstanceManager {
     }
     nativeModuleRegistryBuilder.processPackage(reactPackage);
 
-    for (Class<? extends JavaScriptModule> jsModuleClass : reactPackage.createJSModules()) {
-      jsModulesBuilder.add(jsModuleClass);
-    }
     if (reactPackage instanceof ReactPackageLogger) {
       ((ReactPackageLogger) reactPackage).endProcessPackage();
     }

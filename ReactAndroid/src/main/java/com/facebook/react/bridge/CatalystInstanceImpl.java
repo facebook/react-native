@@ -541,10 +541,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return this;
     }
 
-    public Builder setJSModuleRegistry(JavaScriptModuleRegistry jsModuleRegistry) {
-      return this;
-    }
-
     public Builder setJSBundleLoader(JSBundleLoader jsBundleLoader) {
       mJSBundleLoader = jsBundleLoader;
       return this;

@@ -55,8 +55,7 @@ public class ReactSwipeRefreshLayoutTestCase extends ReactAppInstrumentationTest
   @Override
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
     return super.createReactInstanceSpecForTest()
-        .addNativeModule(mRecordingModule)
-        .addJSModule(SwipeRefreshLayoutTestModule.class);
+      .addNativeModule(mRecordingModule);
   }
 
   public void testRefreshNoScroll() {

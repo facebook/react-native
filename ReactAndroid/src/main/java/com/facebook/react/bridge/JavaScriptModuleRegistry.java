@@ -48,16 +48,6 @@ public final class JavaScriptModuleRegistry {
     return (T) interfaceProxy;
   }
 
-  public static class Builder {
-    public Builder add(Class<? extends JavaScriptModule> moduleInterfaceClass) {
-      return this;
-    }
-
-    public JavaScriptModuleRegistry build() {
-      return new JavaScriptModuleRegistry();
-    }
-  }
-
   private static class JavaScriptModuleInvocationHandler implements InvocationHandler {
     private final CatalystInstance mCatalystInstance;
     private final Class<? extends JavaScriptModule> mModuleInterface;

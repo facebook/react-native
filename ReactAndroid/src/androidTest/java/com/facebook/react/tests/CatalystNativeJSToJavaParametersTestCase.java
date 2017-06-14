@@ -109,7 +109,6 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
         .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
         .addNativeModule(mUIManager)
-        .addJSModule(TestJSToJavaParametersModule.class)
         .build();
   }
 
