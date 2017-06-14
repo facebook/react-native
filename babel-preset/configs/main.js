@@ -10,7 +10,7 @@
 
 var resolvePlugins = require('../lib/resolvePlugins');
 
-var preset = {
+var base = {
   comments: false,
   compact: true,
   plugins: resolvePlugins([
@@ -42,11 +42,17 @@ var preset = {
   ]),
 };
 
-var env = process.env.BABEL_ENV || process.env.NODE_ENV;
-if (!env || env === 'development') {
-  preset.plugins = preset.plugins.concat(
-    resolvePlugins(['transform-react-jsx-source'])
-  );
-}
+var devTools = Object.assign({}, base);
+devTools.plugins = devTools.plugins.concat(
+  resolvePlugins(['transform-react-jsx-source'])
+);
 
-module.exports = preset;
+
+module.exports = function(options) {
+  var withDevTools = options.withDevTools;
+  if (withDevTools == null) {
+    var env = process.env.BABEL_ENV || process.env.NODE_ENV;
+    withDevTools = !env || env === 'development';
+  }
+  return withDevTools ? devTools : base;
+};
