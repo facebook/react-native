@@ -173,7 +173,7 @@ class PushNotificationIOS {
     ResultFailed: 'UIBackgroundFetchResultFailed',
   };
 
-  static PresentationOptions: PresentationOptions = {
+  static PresentationOption: PresentationOption = {
     Badge: 'UNNotificationPresentationOptionBadge',
     Sound: 'UNNotificationPresentationOptionSound',
     Alert: 'UNNotificationPresentationOptionAlert',
@@ -204,7 +204,7 @@ class PushNotificationIOS {
    * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. The default value of this property is 0, which means that no badge is displayed.
    */
   static presentLocalNotification(details: Object, callback: Function) {
-    RCTPushNotificationManager.presentLocalNotification(details, callback ?: () => {});
+    RCTPushNotificationManager.presentLocalNotification(details, callback || function(){});
   }
 
   /**
@@ -223,7 +223,7 @@ class PushNotificationIOS {
    * - `repeatInterval` : The interval to repeat as a string.  Possible values: `minute`, `hour`, `day`, `week`, `month`, `year`.
    */
   static scheduleLocalNotification(details: Object, callback: Function) {
-    RCTPushNotificationManager.scheduleLocalNotification(details, callback ?: () => {});
+    RCTPushNotificationManager.scheduleLocalNotification(details, callback || function(){});
   }
 
   /**
@@ -390,7 +390,7 @@ class PushNotificationIOS {
    */
   static removeEventListener(type: PushNotificationEventName, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification' || type === 'willPresent',
+      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification' || type === 'willPresent' || type === 'response',
       'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
     );
     var listener = _notifHandlers.get(type);
@@ -585,13 +585,13 @@ class PushNotificationIOS {
    *
    * If you do not call this method the notification will not be shown in the foreground.
    */
-  presentForeground(presentationOptions: [Object]) {
+  presentForeground(presentationOptions: [PresentationOption]) {
     if (!this._notificationId || this._showForegroundCompleteCallbackCalled) {
       return;
     }
     this._showForegroundCompleteCallbackCalled = true;
 
-    RCTPushNotificationManager.onPresentForegroundNotification(this._notificationId, )
+    RCTPushNotificationManager.onPresentForegroundNotification(this._notificationId, presentationOptions)
   }
 
   /**
@@ -656,6 +656,20 @@ class PushNotificationIOS {
    */
   getId(): ?string {
     return this._notificationId;
+  }
+
+  /**
+   * Get's the notifcation's title
+   */
+  getTitle(): ?string {
+    return this._title;
+  }
+
+  /**
+   * Get's the notification's subtitle
+   */
+  getSubtitle(): ?string {
+    return this._subtitle;
   }
 }
 

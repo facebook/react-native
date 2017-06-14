@@ -77,7 +77,7 @@ RCT_ENUM_CONVERTER(NSCalendarUnit,
   notification.userInfo = [RCTConvert NSDictionary:details[@"userInfo"]];
   notification.category = [RCTConvert NSString:details[@"category"]];
   notification.repeatInterval = [RCTConvert NSCalendarUnit:details[@"repeatInterval"]];
-  if (details[@"applicationIconBadgeNumber"]) {
+  if (details[@"applicationIconBadgeNumber"] && ![details[@"applicationIconBadgeNumber"] isKindOfClass:[NSNull class]]) {
     notification.applicationIconBadgeNumber = [RCTConvert NSInteger:details[@"applicationIconBadgeNumber"]];
   }
   if (!isSilent) {
@@ -173,7 +173,9 @@ RCT_ENUM_CONVERTER(UIBackgroundFetchResult, (@{
   UNMutableNotificationContent
   *content = [[UNMutableNotificationContent
                alloc] init];
-  content.badge = [RCTConvert NSNumber:details[@"applicationIconBadgeNumber"]];
+  if (details[@"applicationIconBadgeNumber"] && ![details[@"applicationIconBadgeNumber"] isKindOfClass:[NSNull class]]) {
+    content.badge = [RCTConvert NSNumber:details[@"applicationIconBadgeNumber"]];
+  }
   content.body = [RCTConvert NSString:details[@"alertBody"]];
   content.categoryIdentifier = [RCTConvert NSString:details[@"category"]];
   content.title = [RCTConvert NSString:details[@"alertTitle"]];
@@ -227,7 +229,7 @@ RCT_ENUM_CONVERTER(UIBackgroundFetchResult, (@{
     trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:timeInterval repeats:repeats];
   }
   
-  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[RCTConvert NSString:details[@"notificationId"]] ?: [NSUUID new].UUIDString content:content trigger:nil];
+  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[RCTConvert NSString:details[@"notificationId"]] ?: [NSUUID new].UUIDString content:content trigger:trigger];
   
   return request;
 }
