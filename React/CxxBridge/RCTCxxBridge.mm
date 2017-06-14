@@ -1196,6 +1196,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     [RCTFBSystrace registerCallbacks];
     #endif
     RCTProfileInit(self);
+
+    [self enqueueJSCall:@"Systrace" method:@"setEnabled" args:@[@YES] completion:NULL];
   }];
 }
 
@@ -1204,6 +1206,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCTAssertMainQueue();
 
   [self ensureOnJavaScriptThread:^{
+    [self enqueueJSCall:@"Systrace" method:@"setEnabled" args:@[@NO] completion:NULL];
     RCTProfileEnd(self, ^(NSString *log) {
       NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
       callback(logData);
