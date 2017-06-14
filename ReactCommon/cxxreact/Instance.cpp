@@ -115,7 +115,7 @@ void Instance::setGlobalVariable(std::string propName,
 }
 
 void *Instance::getJavaScriptContext() {
-  return nativeToJsBridge_->getJavaScriptContext();
+  return nativeToJsBridge_ ? nativeToJsBridge_->getJavaScriptContext() : nullptr;
 }
 
 void Instance::callJSFunction(std::string&& module, std::string&& method, folly::dynamic&& params) {
