@@ -204,7 +204,7 @@ class PushNotificationIOS {
    * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. The default value of this property is 0, which means that no badge is displayed.
    */
   static presentLocalNotification(details: Object, callback: Function) {
-    RCTPushNotificationManager.presentLocalNotification(details, callback);
+    RCTPushNotificationManager.presentLocalNotification(details, callback ?: () => {});
   }
 
   /**
@@ -223,7 +223,7 @@ class PushNotificationIOS {
    * - `repeatInterval` : The interval to repeat as a string.  Possible values: `minute`, `hour`, `day`, `week`, `month`, `year`.
    */
   static scheduleLocalNotification(details: Object, callback: Function) {
-    RCTPushNotificationManager.scheduleLocalNotification(details, callback);
+    RCTPushNotificationManager.scheduleLocalNotification(details, callback ?: () => {});
   }
 
   /**
