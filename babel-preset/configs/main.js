@@ -40,8 +40,6 @@ var preset = {
     ['transform-es2015-for-of', { loose: true }],
     require('../transforms/transform-symbol-member'),
   ]),
-  retainLines: true,
-  sourceMaps: false,
 };
 
 var env = process.env.BABEL_ENV || process.env.NODE_ENV;
