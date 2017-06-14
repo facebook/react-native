@@ -44,6 +44,17 @@ private:
   void buildMessage(JSContextRef ctx, JSValueRef exn, JSStringRef sourceURL, const char* errorMsg);
 };
 
+namespace ExceptionHandling {
+  struct ExtractedEror {
+    std::string message;
+    // Stacktrace formatted like JS stack
+    // method@filename[:line[:column]]
+    std::string stack;
+  };
+  using PlatformErrorExtractor = std::function<ExtractedEror(const std::exception &ex, const char *context)>;
+  extern PlatformErrorExtractor platformErrorExtractor;
+}
+
 using JSFunction = std::function<JSValueRef(JSContextRef, JSObjectRef, size_t, const JSValueRef[])>;
 
 JSObjectRef makeFunction(
