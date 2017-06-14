@@ -42,7 +42,7 @@ your libs based on `dependencies` and `devDependencies` in your `package.json` f
 
 Link your native dependencies:
 ```bash
-$ react-native link
+$ npm link
 ```
 
 Done! All libraries with native dependencies should be successfully linked to your iOS/Android project.
