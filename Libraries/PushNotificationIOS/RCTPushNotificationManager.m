@@ -277,7 +277,7 @@ RCT_ENUM_CONVERTER(UIBackgroundFetchResult, (@{
     NSArray *actionsArray = [self NSArray:details[@"actions"]];
     NSMutableArray *actions = [NSMutableArray new];
     if (actionsArray) {
-      for (NSDictionary *actionDict in actions) {
+      for (NSDictionary *actionDict in actionsArray) {
         UNNotificationAction *action = [RCTConvert UNNotificationAction:actionDict];
         if (action) {
           [actions addObject:action];
