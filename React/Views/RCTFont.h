@@ -36,5 +36,6 @@
 @interface RCTConvert (RCTFont)
 
 + (UIFont *)UIFont:(id)json;
++ (NSArray<RCTFontVariantDescriptor *> *)RCTFontVariantDescriptorArray:(id)json;
 
 @end

@@ -559,7 +559,23 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
        UIFont *originalFont = [self.attributedString attribute:NSFontAttributeName
                                                        atIndex:range.location
                                                 effectiveRange:&range];
-       UIFont *newFont = [font fontWithSize:originalFont.pointSize * scale];
+       UIFont *newFont;
+       CGFloat newSize = originalFont.pointSize * scale;
+       // Notice: it seems that there is a bug in UIFont:fontWithSize or what,
+       // the font it retuns doesn't come with the font descriptor we set to it
+       // before. As a result, fontVariant will be lost if the font is set by
+       // just result of UIFont:fontWithSize. To solve the problem, we create
+       // the new font with UIFont:fontWithDescriptor:size here to keep our
+       // fontVariant around.
+       if (self.fontVariant) {
+         NSArray *fontFeatures = [RCTConvert RCTFontVariantDescriptorArray:self.fontVariant];
+         UIFontDescriptor *fontDescriptor = [font.fontDescriptor fontDescriptorByAddingAttributes:@{
+           UIFontDescriptorFeatureSettingsAttribute: fontFeatures
+         }];
+         newFont = [UIFont fontWithDescriptor:fontDescriptor size:newSize];
+       } else {
+         newFont = [font fontWithSize:newSize];
+       }
        [textStorage removeAttribute:NSFontAttributeName range:range];
        [textStorage addAttribute:NSFontAttributeName value:newFont range:range];
      }
