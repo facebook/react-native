@@ -10,6 +10,8 @@
  */
 'use strict';
 
+const findSymlinksPaths = require('./findSymlinksPaths');
+
 const blacklist = require('metro-bundler/build/blacklist');
 const findSymlinksPaths = require('./findSymlinksPaths');
 const fs = require('fs');
