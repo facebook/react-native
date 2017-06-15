@@ -103,7 +103,6 @@
 		139D84AF1E273B5600323FB7 /* Bits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D849D1E273B5600323FB7 /* Bits.cpp */; };
 		139D84B01E273B5600323FB7 /* Conv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D849F1E273B5600323FB7 /* Conv.cpp */; };
 		139D84B11E273B5600323FB7 /* dynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D84A21E273B5600323FB7 /* dynamic.cpp */; };
-		139D84B21E273B5600323FB7 /* File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D84A51E273B5600323FB7 /* File.cpp */; };
 		139D84B31E273B5600323FB7 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D84A71E273B5600323FB7 /* json.cpp */; };
 		13A0C2891B74F71200B29F6F /* RCTDevLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 13A0C2861B74F71200B29F6F /* RCTDevLoadingView.m */; };
 		13A0C28A1B74F71200B29F6F /* RCTDevMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = 13A0C2881B74F71200B29F6F /* RCTDevMenu.m */; };
@@ -484,7 +483,6 @@
 		3D383D2F1EBD27B6005632C8 /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887541E2971C500C3C7A1 /* Unicode.cpp */; };
 		3D383D301EBD27B6005632C8 /* demangle.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7F081E25DE3700323FB7 /* demangle.cc */; };
 		3D383D311EBD27B6005632C8 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887521E2971C500C3C7A1 /* Demangle.cpp */; };
-		3D383D321EBD27B6005632C8 /* File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D84A51E273B5600323FB7 /* File.cpp */; };
 		3D383D331EBD27B6005632C8 /* logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EDA1E25DBDC00323FB7 /* logging.cc */; };
 		3D383D341EBD27B6005632C8 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D84A71E273B5600323FB7 /* json.cpp */; };
 		3D383D351EBD27B6005632C8 /* BitsFunctexcept.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F8879C1E29740700C3C7A1 /* BitsFunctexcept.cpp */; };
@@ -1697,8 +1695,6 @@
 		139D84A21E273B5600323FB7 /* dynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dynamic.cpp; path = "folly-2016.09.26.00/folly/dynamic.cpp"; sourceTree = "<group>"; };
 		139D84A31E273B5600323FB7 /* dynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dynamic.h; path = "folly-2016.09.26.00/folly/dynamic.h"; sourceTree = "<group>"; };
 		139D84A41E273B5600323FB7 /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exception.h; path = "folly-2016.09.26.00/folly/Exception.h"; sourceTree = "<group>"; };
-		139D84A51E273B5600323FB7 /* File.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = File.cpp; path = "folly-2016.09.26.00/folly/File.cpp"; sourceTree = "<group>"; };
-		139D84A61E273B5600323FB7 /* File.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = File.h; path = "folly-2016.09.26.00/folly/File.h"; sourceTree = "<group>"; };
 		139D84A71E273B5600323FB7 /* json.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = json.cpp; path = "folly-2016.09.26.00/folly/json.cpp"; sourceTree = "<group>"; };
 		139D84A81E273B5600323FB7 /* json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = json.h; path = "folly-2016.09.26.00/folly/json.h"; sourceTree = "<group>"; };
 		139D84A91E273B5600323FB7 /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Memory.h; path = "folly-2016.09.26.00/folly/Memory.h"; sourceTree = "<group>"; };
@@ -2150,8 +2146,6 @@
 				139D84A21E273B5600323FB7 /* dynamic.cpp */,
 				139D84A31E273B5600323FB7 /* dynamic.h */,
 				139D84A41E273B5600323FB7 /* Exception.h */,
-				139D84A51E273B5600323FB7 /* File.cpp */,
-				139D84A61E273B5600323FB7 /* File.h */,
 				139D84A71E273B5600323FB7 /* json.cpp */,
 				139D84A81E273B5600323FB7 /* json.h */,
 				139D84A91E273B5600323FB7 /* Memory.h */,
@@ -3514,7 +3508,6 @@
 				13F8875A1E2971D400C3C7A1 /* Unicode.cpp in Sources */,
 				139D7F091E25DE3700323FB7 /* demangle.cc in Sources */,
 				13F887581E2971D400C3C7A1 /* Demangle.cpp in Sources */,
-				139D84B21E273B5600323FB7 /* File.cpp in Sources */,
 				139D7F021E25DE1100323FB7 /* logging.cc in Sources */,
 				139D84B31E273B5600323FB7 /* json.cpp in Sources */,
 				13F8879F1E29741900C3C7A1 /* BitsFunctexcept.cpp in Sources */,
@@ -3653,7 +3646,6 @@
 				3D383D2F1EBD27B6005632C8 /* Unicode.cpp in Sources */,
 				3D383D301EBD27B6005632C8 /* demangle.cc in Sources */,
 				3D383D311EBD27B6005632C8 /* Demangle.cpp in Sources */,
-				3D383D321EBD27B6005632C8 /* File.cpp in Sources */,
 				3D383D331EBD27B6005632C8 /* logging.cc in Sources */,
 				3D383D341EBD27B6005632C8 /* json.cpp in Sources */,
 				3D383D351EBD27B6005632C8 /* BitsFunctexcept.cpp in Sources */,
