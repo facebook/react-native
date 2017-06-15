@@ -11,16 +11,19 @@
 
 #import <React/RCTBridge.h>
 
-@interface RCTBridge (JavaScriptCore)
+@protocol RCTJSEnvironment <NSObject>
 
 /**
  * The JSContext used by the bridge.
  */
 @property (nonatomic, readonly, strong) JSContext *jsContext;
-
 /**
  * The raw JSGlobalContextRef used by the bridge.
  */
 @property (nonatomic, readonly, assign) JSGlobalContextRef jsContextRef;
+
+@end
+
+@interface RCTBridge (RCTJSEnvironment) <RCTJSEnvironment>
 
 @end

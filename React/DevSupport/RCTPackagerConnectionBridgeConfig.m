@@ -11,6 +11,7 @@
 
 #import <React/RCTBridge.h>
 
+#import "RCTJSEnvironment.h"
 #import "RCTReloadPackagerMethod.h"
 #import "RCTSamplingProfilerPackagerMethod.h"
 
@@ -48,7 +49,7 @@
 {
   return @{
            @"reload": [[RCTReloadPackagerMethod alloc] initWithBridge:_bridge],
-           @"pokeSamplingProfiler": [[RCTSamplingProfilerPackagerMethod alloc] initWithBridge:_bridge]
+           @"pokeSamplingProfiler": [[RCTSamplingProfilerPackagerMethod alloc] initWithJSEnvironment:_bridge]
            };
 }
 

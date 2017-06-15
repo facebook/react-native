@@ -15,12 +15,12 @@
 
 #import <jschelpers/JavaScriptCore.h>
 
-#import "RCTBridge+JavaScriptCore.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
 #import "RCTInspectorDevServerHelper.h"
 #import "RCTJSCSamplingProfiler.h"
+#import "RCTJSEnvironment.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
