@@ -430,7 +430,7 @@ RCT_EXPORT_METHOD(toggleElementInspector)
     return;
   }
 
-  _packagerConnection = [[RCTPackagerConnection alloc] initWithBridge:_bridge];
+  _packagerConnection = [RCTPackagerConnection connectionForBridge:_bridge];
 #endif
 }
 

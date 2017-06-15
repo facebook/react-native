@@ -1059,6 +1059,12 @@
 		AC70D2E91DE489E4002E6351 /* RCTJavaScriptLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */; };
 		B233E6EA1D2D845D00BC68BA /* RCTI18nManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */; };
 		B95154321D1B34B200FE7B80 /* RCTActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B95154311D1B34B200FE7B80 /* RCTActivityIndicatorView.m */; };
+		C6194AAC1EF156280034D062 /* RCTPackagerConnectionBridgeConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = C6194AA91EF156280034D062 /* RCTPackagerConnectionBridgeConfig.h */; };
+		C6194AAD1EF156280034D062 /* RCTPackagerConnectionBridgeConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = C6194AA91EF156280034D062 /* RCTPackagerConnectionBridgeConfig.h */; };
+		C6194AAE1EF156280034D062 /* RCTPackagerConnectionBridgeConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = C6194AAA1EF156280034D062 /* RCTPackagerConnectionBridgeConfig.m */; };
+		C6194AAF1EF156280034D062 /* RCTPackagerConnectionBridgeConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = C6194AAA1EF156280034D062 /* RCTPackagerConnectionBridgeConfig.m */; };
+		C6194AB01EF156280034D062 /* RCTPackagerConnectionConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = C6194AAB1EF156280034D062 /* RCTPackagerConnectionConfig.h */; };
+		C6194AB11EF156280034D062 /* RCTPackagerConnectionConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = C6194AAB1EF156280034D062 /* RCTPackagerConnectionConfig.h */; };
 		CF2731C01E7B8DE40044CA4F /* RCTDeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CF2731BE1E7B8DE40044CA4F /* RCTDeviceInfo.h */; };
 		CF2731C11E7B8DE40044CA4F /* RCTDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CF2731BF1E7B8DE40044CA4F /* RCTDeviceInfo.m */; };
 		CF2731C21E7B8DEF0044CA4F /* RCTDeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CF2731BE1E7B8DE40044CA4F /* RCTDeviceInfo.h */; };
@@ -1976,6 +1982,9 @@
 		B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTI18nManager.m; sourceTree = "<group>"; };
 		B95154301D1B34B200FE7B80 /* RCTActivityIndicatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTActivityIndicatorView.h; sourceTree = "<group>"; };
 		B95154311D1B34B200FE7B80 /* RCTActivityIndicatorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTActivityIndicatorView.m; sourceTree = "<group>"; };
+		C6194AA91EF156280034D062 /* RCTPackagerConnectionBridgeConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPackagerConnectionBridgeConfig.h; sourceTree = "<group>"; };
+		C6194AAA1EF156280034D062 /* RCTPackagerConnectionBridgeConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPackagerConnectionBridgeConfig.m; sourceTree = "<group>"; };
+		C6194AAB1EF156280034D062 /* RCTPackagerConnectionConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPackagerConnectionConfig.h; sourceTree = "<group>"; };
 		CF2731BE1E7B8DE40044CA4F /* RCTDeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDeviceInfo.h; sourceTree = "<group>"; };
 		CF2731BF1E7B8DE40044CA4F /* RCTDeviceInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDeviceInfo.m; sourceTree = "<group>"; };
 		E3BBC8EB1ADE6F47001BBD81 /* RCTTextDecorationLineType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTTextDecorationLineType.h; sourceTree = "<group>"; };
@@ -2415,6 +2424,9 @@
 				3D7BFD0C1EA8E351008DFB7A /* RCTPackagerClient.m */,
 				3D7BFD0F1EA8E351008DFB7A /* RCTPackagerConnection.h */,
 				3D7BFD101EA8E351008DFB7A /* RCTPackagerConnection.m */,
+				C6194AA91EF156280034D062 /* RCTPackagerConnectionBridgeConfig.h */,
+				C6194AAA1EF156280034D062 /* RCTPackagerConnectionBridgeConfig.m */,
+				C6194AAB1EF156280034D062 /* RCTPackagerConnectionConfig.h */,
 				3D7BFD111EA8E351008DFB7A /* RCTReloadPackagerMethod.h */,
 				3D7BFD121EA8E351008DFB7A /* RCTReloadPackagerMethod.m */,
 				3D7BFD131EA8E351008DFB7A /* RCTSamplingProfilerPackagerMethod.h */,
@@ -2738,6 +2750,7 @@
 				3D302F5E1DF828F800D6DDAE /* RCTI18nManager.h in Headers */,
 				3D302F5F1DF828F800D6DDAE /* RCTI18nUtil.h in Headers */,
 				3D302F601DF828F800D6DDAE /* RCTKeyboardObserver.h in Headers */,
+				C6194AB11EF156280034D062 /* RCTPackagerConnectionConfig.h in Headers */,
 				3D302F611DF828F800D6DDAE /* RCTRedBox.h in Headers */,
 				3D302F621DF828F800D6DDAE /* RCTSourceCode.h in Headers */,
 				3D302F631DF828F800D6DDAE /* RCTStatusBarManager.h in Headers */,
@@ -2767,6 +2780,7 @@
 				3D302F7F1DF828F800D6DDAE /* RCTNavigatorManager.h in Headers */,
 				130443DD1E401AF500D93A67 /* RCTConvert+Transform.h in Headers */,
 				3D302F801DF828F800D6DDAE /* RCTNavItem.h in Headers */,
+				C6194AAD1EF156280034D062 /* RCTPackagerConnectionBridgeConfig.h in Headers */,
 				3D302F811DF828F800D6DDAE /* RCTNavItemManager.h in Headers */,
 				135A9C061E7B0F7800587AEB /* RCTJSCHelpers.h in Headers */,
 				3D302F841DF828F800D6DDAE /* RCTPointerEvents.h in Headers */,
@@ -3014,6 +3028,7 @@
 				3D80DA511DF820620028D040 /* RCTEventEmitter.h in Headers */,
 				59A7B9FD1E577DBF0068EDBF /* RCTRootContentView.h in Headers */,
 				3D80DA521DF820620028D040 /* RCTExceptionsManager.h in Headers */,
+				C6194AAC1EF156280034D062 /* RCTPackagerConnectionBridgeConfig.h in Headers */,
 				3D80DA531DF820620028D040 /* RCTI18nManager.h in Headers */,
 				3D7BFD2F1EA8E3FA008DFB7A /* RCTSRWebSocket.h in Headers */,
 				3D80DA541DF820620028D040 /* RCTI18nUtil.h in Headers */,
@@ -3028,6 +3043,7 @@
 				3D80DA5E1DF820620028D040 /* RCTProfile.h in Headers */,
 				3D80DA5F1DF820620028D040 /* RCTActivityIndicatorView.h in Headers */,
 				3D80DA601DF820620028D040 /* RCTActivityIndicatorViewManager.h in Headers */,
+				C6194AB01EF156280034D062 /* RCTPackagerConnectionConfig.h in Headers */,
 				CF2731C01E7B8DE40044CA4F /* RCTDeviceInfo.h in Headers */,
 				3D80DA611DF820620028D040 /* RCTAnimationType.h in Headers */,
 				3D80DA621DF820620028D040 /* RCTAutoInsetsProtocol.h in Headers */,
@@ -3513,6 +3529,7 @@
 				3D80D91B1DF6F8200028D040 /* RCTPlatform.m in Sources */,
 				2DD0EFE11DA84F2800B0C975 /* RCTStatusBarManager.m in Sources */,
 				2D3B5EC91D9B095C00451313 /* RCTBorderDrawing.m in Sources */,
+				C6194AAF1EF156280034D062 /* RCTPackagerConnectionBridgeConfig.m in Sources */,
 				2D3B5E991D9B089A00451313 /* RCTDisplayLink.m in Sources */,
 				2D3B5EA11D9B08B600451313 /* RCTModuleData.mm in Sources */,
 				2D3B5EEA1D9B09CD00451313 /* RCTTabBar.m in Sources */,
@@ -3846,6 +3863,7 @@
 				83CBBA601A601EAA00E9B192 /* RCTBridge.m in Sources */,
 				590D7BFF1EBD458B00D8A370 /* RCTShadowView+Layout.m in Sources */,
 				13C156061AB1A2840079392D /* RCTWebViewManager.m in Sources */,
+				C6194AAE1EF156280034D062 /* RCTPackagerConnectionBridgeConfig.m in Sources */,
 				58114A161AAE854800E7D092 /* RCTPicker.m in Sources */,
 				137327E81AA5CF210034F82E /* RCTTabBarItem.m in Sources */,
 				83A1FE8C1B62640A00BE0E65 /* RCTModalHostView.m in Sources */,
