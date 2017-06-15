@@ -90,7 +90,7 @@ function buildAndRun(args) {
       'utf8'
     ).match(/package="(.+?)"/)[1];
 
-  const packageNameWithSuffix = args.appIdSuffix ? packageName + '.' + args.appIdSuffix : packageName;
+  const packageNameWithSuffix = args.appId ? args.appId : args.appIdSuffix ? packageName + '.' + args.appIdSuffix : packageName;
 
   const adbPath = getAdbPath();
   if (args.deviceId) {
@@ -292,6 +292,10 @@ module.exports = {
     command: '--appFolder [string]',
     description: 'Specify a different application folder name for the android source.',
     default: 'app',
+  }, {
+    command: '--appId [string]',
+    description: 'Specify an applicationId to launch after build.',
+    default: '',
   }, {
     command: '--appIdSuffix [string]',
     description: 'Specify an applicationIdSuffix to launch after build.',
