@@ -1202,10 +1202,10 @@ class CellRenderer extends React.Component {
 
 const styles = StyleSheet.create({
   verticallyInverted: {
-    transform: [{scaleY: -1}],
+    transform: [{scaleY: -1}, {perspective: 1000}],
   },
   horizontallyInverted: {
-    transform: [{scaleX: -1}],
+    transform: [{scaleX: -1}, {perspective: 1000}],
   },
 });
 
