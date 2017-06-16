@@ -18,6 +18,7 @@
 #import "RCTDivisionAnimatedNode.h"
 #import "RCTEventAnimation.h"
 #import "RCTFrameAnimation.h"
+#import "RCTDecayAnimation.h"
 #import "RCTInterpolationAnimatedNode.h"
 #import "RCTModuloAnimatedNode.h"
 #import "RCTMultiplicationAnimatedNode.h"
@@ -134,6 +135,22 @@
   }
 }
 
+- (void)restoreDefaultValues:(nonnull NSNumber *)nodeTag
+{
+  RCTAnimatedNode *node = _animationNodes[nodeTag];
+  // Restoring default values needs to happen before UIManager operations so it is
+  // possible the node hasn't been created yet if it is being connected and
+  // disconnected in the same batch. In that case we don't need to restore
+  // default values since it will never actually update the view.
+  if (node == nil) {
+    return;
+  }
+  if (![node isKindOfClass:[RCTPropsAnimatedNode class]]) {
+    RCTLogError(@"Not a props node.");
+  }
+  [(RCTPropsAnimatedNode *)node restoreDefaultValues];
+}
+
 - (void)dropAnimatedNode:(nonnull NSNumber *)tag
 {
   RCTAnimatedNode *node = _animationNodes[tag];
@@ -221,6 +238,11 @@
                                                      forNode:valueNode
                                                     callBack:callBack];
 
+  } else if ([type isEqual:@"decay"]) {
+    animationDriver = [[RCTDecayAnimation alloc] initWithId:animationId
+                                                     config:config
+                                                    forNode:valueNode
+                                                   callBack:callBack];
   } else {
     RCTLogError(@"Unsupported animation type: %@", config[@"type"]);
     return;

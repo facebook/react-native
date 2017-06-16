@@ -111,7 +111,7 @@ function _multiplyTransform(
  * Note that validation on the string is done in `_validateTransform()`.
  */
 function _convertToRadians(value: string): number {
-  var floatValue = parseFloat(value, 10);
+  var floatValue = parseFloat(value);
   return value.indexOf('rad') > -1 ? floatValue : floatValue * Math.PI / 180;
 }
 

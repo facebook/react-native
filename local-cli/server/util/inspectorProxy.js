@@ -48,6 +48,8 @@ const WebSocket = require('ws');
 const debug = require('debug')('RNP:InspectorProxy');
 const launchChrome = require('./launchChrome');
 
+import type {Server as HTTPSServer} from 'https';
+
 type DevicePage = {
   id: string,
   title: string,
@@ -94,7 +96,9 @@ type Address = {
   port: number,
 };
 
-const DEVICE_TIMEOUT = 5000;
+type Server = http.Server | HTTPSServer;
+
+const DEVICE_TIMEOUT = 30000;
 
 // FIXME: This is the url we want to use as it more closely matches the actual protocol we use.
 // However, it's broken in Chrome 54+ due to it using 'KeyboardEvent.keyIdentifier'.
@@ -162,9 +166,9 @@ class Device {
         this._handlers.delete(name);
         reject(new Error('Timeout waiting for device'));
       }, DEVICE_TIMEOUT);
-      this._handlers.set(name, (...args) => {
+      this._handlers.set(name, arg => {
         clearTimeout(timerId);
-        fulfill(...args);
+        fulfill(arg);
       });
     });
     this._send({event: name});
@@ -280,7 +284,7 @@ class InspectorProxy {
     this._devicesCounter = 0;
   }
 
-  attachToServer(server: http.Server, pathPrefix: string) {
+  attachToServer(server: Server, pathPrefix: string) {
     this._createPageHandler(server, pathPrefix + '/page');
     this._createDeviceHandler(server, pathPrefix + '/device');
     this._createPagesListHandler(server, pathPrefix + '/');
@@ -324,7 +328,7 @@ class InspectorProxy {
     }
   }
 
-  _createDeviceHandler(server: http.Server, path: string) {
+  _createDeviceHandler(server: Server, path: string) {
     const wss = new WebSocket.Server({
       server,
       path,
@@ -347,7 +351,7 @@ class InspectorProxy {
     });
   }
 
-  _createPageHandler(server: http.Server, path: string) {
+  _createPageHandler(server: Server, path: string) {
     const wss = new WebSocket.Server({
       server,
       path,
@@ -373,7 +377,7 @@ class InspectorProxy {
     });
   }
 
-  _createPagesJsonHandler(server: http.Server, path: string) {
+  _createPagesJsonHandler(server: Server, path: string) {
     server.on('request', (request: http.IncomingMessage, response: http.ServerResponse) => {
       if (request.url === path) {
         this._getPages(server.address()).then((result: Array<Page>) => {
@@ -387,7 +391,7 @@ class InspectorProxy {
     });
   }
 
-  _createPagesListHandler(server: http.Server, path: string) {
+  _createPagesListHandler(server: Server, path: string) {
     server.on('request', (request: http.IncomingMessage, response: http.ServerResponse) => {
       if (request.url === path) {
         this._getPages(server.address()).then((result: Array<Page>) => {

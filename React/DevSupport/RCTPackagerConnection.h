@@ -14,14 +14,17 @@
 #if RCT_DEV
 
 @class RCTBridge;
+@protocol RCTPackagerClientMethod;
+@protocol RCTPackagerConnectionConfig;
 
 /**
  * Encapsulates connection to React Native packager
  */
 @interface RCTPackagerConnection : NSObject
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
-- (void)connect;
++ (instancetype)connectionForBridge:(RCTBridge *)bridge;
+- (instancetype)initWithConfig:(id<RCTPackagerConnectionConfig>)config;
+- (void)addHandler:(id<RCTPackagerClientMethod>)handler forMethod:(NSString *)name;
 
 @end
 

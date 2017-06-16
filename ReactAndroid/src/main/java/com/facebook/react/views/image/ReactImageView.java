@@ -20,10 +20,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Animatable;
@@ -32,8 +30,6 @@ import android.net.Uri;
 import android.widget.Toast;
 
 import com.facebook.common.util.UriUtil;
-import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.yoga.YogaConstants;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.controller.ControllerListener;
@@ -54,15 +50,17 @@ import com.facebook.imagepipeline.request.Postprocessor;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.uimanager.FloatUtil;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
+import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ImageSource;
 import com.facebook.react.views.imagehelper.MultiSourceHelper;
-import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
+import com.facebook.yoga.YogaConstants;
 
 /**
  * Wrapper class around Fresco's GenericDraweeView, enabling persisting props across multiple view
@@ -85,34 +83,9 @@ public class ReactImageView extends GenericDraweeView {
    * Because the postprocessor uses a modified bitmap, that would just get cropped in
    * 'cover' mode, so we fall back to Fresco's normal implementation.
    */
-  private static final Matrix sMatrix = new Matrix();
-  private static final Matrix sInverse = new Matrix();
   private ImageResizeMethod mResizeMethod = ImageResizeMethod.AUTO;
 
   private class RoundedCornerPostprocessor extends BasePostprocessor {
-
-    void getRadii(Bitmap source, float[] computedCornerRadii, float[] mappedRadii) {
-      mScaleType.getTransform(
-            sMatrix,
-            new Rect(0, 0, source.getWidth(), source.getHeight()),
-            source.getWidth(),
-            source.getHeight(),
-            0.0f,
-            0.0f);
-        sMatrix.invert(sInverse);
-
-        mappedRadii[0] = sInverse.mapRadius(computedCornerRadii[0]);
-        mappedRadii[1] = mappedRadii[0];
-
-        mappedRadii[2] = sInverse.mapRadius(computedCornerRadii[1]);
-        mappedRadii[3] = mappedRadii[2];
-
-        mappedRadii[4] = sInverse.mapRadius(computedCornerRadii[2]);
-        mappedRadii[5] = mappedRadii[4];
-
-        mappedRadii[6] = sInverse.mapRadius(computedCornerRadii[3]);
-        mappedRadii[7] = mappedRadii[6];
-    }
 
     @Override
     public void process(Bitmap output, Bitmap source) {
@@ -131,15 +104,11 @@ public class ReactImageView extends GenericDraweeView {
       paint.setShader(new BitmapShader(source, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
       Canvas canvas = new Canvas(output);
 
-      float[] radii = new float[8];
-
-      getRadii(source, sComputedCornerRadii, radii);
-
       Path pathForBorderRadius = new Path();
 
       pathForBorderRadius.addRoundRect(
           new RectF(0, 0, source.getWidth(), source.getHeight()),
-          radii,
+          sComputedCornerRadii,
           Path.Direction.CW);
 
       canvas.drawPath(pathForBorderRadius, paint);

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -18,5 +18,5 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public interface YogaLogger {
   @DoNotStrip
-  void log(YogaLogLevel level, String message);
+  void log(YogaNode node, YogaLogLevel level, String message);
 }

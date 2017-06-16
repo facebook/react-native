@@ -88,20 +88,6 @@ public class CompositeReactPackage extends ReactInstancePackage {
    * {@inheritDoc}
    */
   @Override
-  public List<Class<? extends JavaScriptModule>> createJSModules() {
-    final Set<Class<? extends JavaScriptModule>> moduleSet = new HashSet<>();
-    for (ReactPackage reactPackage: mChildReactPackages) {
-      for (Class<? extends JavaScriptModule> jsModule: reactPackage.createJSModules()) {
-        moduleSet.add(jsModule);
-      }
-    }
-    return new ArrayList(moduleSet);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     final Map<String, ViewManager> viewManagerMap = new HashMap<>();
     for (ReactPackage reactPackage: mChildReactPackages) {

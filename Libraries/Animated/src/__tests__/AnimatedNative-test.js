@@ -9,7 +9,6 @@
 'use strict';
 
 jest
-  .disableAutomock()
   .setMock('Text', {})
   .setMock('View', {})
   .setMock('Image', {})
@@ -55,11 +54,6 @@ describe('Native Animated', () => {
     nativeAnimatedModule.startListeningToAnimatedNodeValue = jest.fn();
     nativeAnimatedModule.stopAnimation = jest.fn();
     nativeAnimatedModule.stopListeningToAnimatedNodeValue = jest.fn();
-
-    // jest environment doesn't have cancelAnimationFrame :(
-    if (!global.cancelAnimationFrame) {
-      global.cancelAnimationFrame = jest.fn();
-    }
   });
 
   describe('Animated Value', () => {

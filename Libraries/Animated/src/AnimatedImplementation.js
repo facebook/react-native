@@ -1138,12 +1138,12 @@ class AnimatedInterpolation extends AnimatedWithChildren {
         return value;
       }
       if (/deg$/.test(value)) {
-        const degrees = parseFloat(value, 10) || 0;
+        const degrees = parseFloat(value) || 0;
         const radians = degrees * Math.PI / 180.0;
         return radians;
       } else {
         // Assume radians
-        return parseFloat(value, 10) || 0;
+        return parseFloat(value) || 0;
       }
     });
   }
@@ -1218,9 +1218,9 @@ class AnimatedDivision extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
     this._b.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -1266,9 +1266,9 @@ class AnimatedMultiplication extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
     this._b.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -1309,8 +1309,8 @@ class AnimatedModulo extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -1356,8 +1356,8 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
+    super.__makeNative();
   }
 
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {
@@ -1839,10 +1839,16 @@ function createAnimatedComponent(Component: any): any {
     }
 
     render() {
+      const props = this._propsAnimated.__getValue();
       return (
         <Component
-          {...this._propsAnimated.__getValue()}
+          {...props}
           ref={this._setComponentRef}
+          // The native driver updates views directly through the UI thread so we
+          // have to make sure the view doesn't get optimized away because it cannot
+          // go through the NativeViewHierachyManager since it operates on the shadow
+          // thread.
+          collapsable={this._propsAnimated.__isNative ? false : props.collapsable}
         />
       );
     }
@@ -2738,10 +2744,13 @@ module.exports = {
    * [Origami](https://facebook.github.io/origami/).  Tracks velocity state to
    * create fluid motions as the `toValue` updates, and can be chained together.
    *
-   * Config is an object that may have the following options:
+   * Config is an object that may have the following options. Note that you can
+   * only define bounciness/speed or tension/friction but not both:
    *
    *   - `friction`: Controls "bounciness"/overshoot.  Default 7.
    *   - `tension`: Controls speed.  Default 40.
+   *   - `speed`: Controls speed of the animation. Default 12.
+   *   - `bounciness`: Controls bounciness. Default 8.
    *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   spring,

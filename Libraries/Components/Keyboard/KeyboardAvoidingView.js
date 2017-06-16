@@ -14,8 +14,8 @@
 const Keyboard = require('Keyboard');
 const LayoutAnimation = require('LayoutAnimation');
 const Platform = require('Platform');
-const React = require('React');
 const PropTypes = require('prop-types');
+const React = require('React');
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
@@ -93,12 +93,11 @@ const KeyboardAvoidingView = React.createClass({
       return 0;
     }
 
-    const y1 = Math.max(frame.y, keyboardFrame.screenY - this.props.keyboardVerticalOffset);
-    const y2 = Math.min(frame.y + frame.height, keyboardFrame.screenY + keyboardFrame.height - this.props.keyboardVerticalOffset);
-    if (frame.y > keyboardFrame.screenY) {
-      return frame.y + frame.height - keyboardFrame.screenY - this.props.keyboardVerticalOffset;
-    }
-    return Math.max(y2 - y1, 0);
+    const keyboardY = keyboardFrame.screenY - this.props.keyboardVerticalOffset;
+
+    // Calculate the displacement needed for the view such that it
+    // no longer overlaps with the keyboard
+    return Math.max(frame.y + frame.height - keyboardY, 0);
   },
 
   onKeyboardChange(event: ?KeyboardChangeEvent) {

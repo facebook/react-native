@@ -58,24 +58,33 @@ export type PushNotificationEventName = $Enum<{
 }>;
 
 /**
+ * <div class="banner-crna-ejected">
+ *   <h3>Projects with Native Code Only</h3>
+ *   <p>
+ *     This section only applies to projects made with <code>react-native init</code>
+ *     or to those made with Create React Native App which have since ejected. For
+ *     more information about ejecting, please see
+ *     the <a href="https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md" target="_blank">guide</a> on
+ *     the Create React Native App repository.
+ *   </p>
+ * </div>
+ *
  * Handle push notifications for your app, including permission handling and
  * icon badge number.
  *
  * To get up and running, [configure your notifications with Apple](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6)
- * and your server-side system. To get an idea, [this is the Parse guide](https://parse.com/tutorials/ios-push-notifications).
+ * and your server-side system.
  *
  * [Manually link](docs/linking-libraries-ios.html#manual-linking) the PushNotificationIOS library
  *
  * - Add the following to your Project: `node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj`
  * - Add the following to `Link Binary With Libraries`: `libRCTPushNotification.a`
- * - Add the following to your `Header Search Paths`:
- * `$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS` and set the search to `recursive`
  *
  * Finally, to enable support for `notification` and `register` events you need to augment your AppDelegate.
  *
  * At the top of your `AppDelegate.m`:
  *
- *   `#import "RCTPushNotificationManager.h"`
+ *   `#import <React/RCTPushNotificationManager.h>`
  *
  * And then in your AppDelegate implementation add the following:
  *
@@ -112,6 +121,7 @@ class PushNotificationIOS {
   _data: Object;
   _alert: string | Object;
   _sound: string;
+  _category: string;
   _badgeCount: number;
   _notificationId: string;
   _isRemote: boolean;
@@ -131,6 +141,7 @@ class PushNotificationIOS {
    * - `alertBody` : The message displayed in the notification alert.
    * - `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
    * - `soundName` : The sound played when the notification is fired (optional).
+   * - `isSilent`  : If true, the notification will appear without sound (optional).
    * - `category`  : The category of this notification, required for actionable notifications (optional).
    * - `userInfo`  : An optional object containing additional notification data.
    * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. The default value of this property is 0, which means that no badge is displayed.
@@ -148,6 +159,7 @@ class PushNotificationIOS {
    * - `alertBody` : The message displayed in the notification alert.
    * - `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
    * - `soundName` : The sound played when the notification is fired (optional).
+   * - `isSilent`  : If true, the notification will appear without sound (optional).
    * - `category`  : The category of this notification, required for actionable notifications (optional).
    * - `userInfo` : An optional object containing additional notification data.
    * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. Setting the number to 0 removes the icon badge.
@@ -406,6 +418,7 @@ class PushNotificationIOS {
           this._alert = notifVal.alert;
           this._sound = notifVal.sound;
           this._badgeCount = notifVal.badge;
+          this._category = notifVal.category;
         } else {
           this._data[notifKey] = notifVal;
         }
@@ -416,6 +429,7 @@ class PushNotificationIOS {
       this._sound = nativeNotif.soundName;
       this._alert = nativeNotif.alertBody;
       this._data = nativeNotif.userInfo;
+      this._category = nativeNotif.category;
     }
   }
 
@@ -454,6 +468,13 @@ class PushNotificationIOS {
    */
   getSound(): ?string {
     return this._sound;
+  }
+
+  /**
+   * Gets the category string from the `aps` object
+   */
+  getCategory(): ?string {
+    return this._category;
   }
 
   /**

@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const makeBuildPatch = require('../../android/patches/makeBuildPatch');
 const name = 'test';
 

@@ -8,8 +8,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 const processTransform = require('processTransform');
 
 describe('processTransform', () => {

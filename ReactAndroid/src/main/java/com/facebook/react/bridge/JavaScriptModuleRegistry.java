@@ -11,108 +11,89 @@ package com.facebook.react.bridge;
 
 import javax.annotation.Nullable;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.WeakHashMap;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.build.ReactBuildConfig;
 
 /**
- * Class responsible for holding all the {@link JavaScriptModule}s registered to this
- * {@link CatalystInstance}. Uses Java proxy objects to dispatch method calls on JavaScriptModules
- * to the bridge using the corresponding module and method ids so the proper function is executed in
- * JavaScript.
+ * Class responsible for holding all the {@link JavaScriptModule}s.  Uses Java proxy objects
+ * to dispatch method calls on JavaScriptModules to the bridge using the corresponding
+ * module and method ids so the proper function is executed in JavaScript.
  */
-public class JavaScriptModuleRegistry {
-  private final WeakHashMap<ExecutorToken, HashMap<Class<? extends JavaScriptModule>, JavaScriptModule>> mModuleInstances;
-  private final HashMap<Class<? extends JavaScriptModule>, JavaScriptModuleRegistration> mModuleRegistrations;
+public final class JavaScriptModuleRegistry {
+  private final HashMap<Class<? extends JavaScriptModule>, JavaScriptModule> mModuleInstances;
 
-  public JavaScriptModuleRegistry(List<JavaScriptModuleRegistration> config) {
-    mModuleInstances = new WeakHashMap<>();
-    mModuleRegistrations = new HashMap<>();
-    for (JavaScriptModuleRegistration registration : config) {
-      mModuleRegistrations.put(registration.getModuleInterface(), registration);
-    }
+  public JavaScriptModuleRegistry() {
+    mModuleInstances = new HashMap<>();
   }
 
   public synchronized <T extends JavaScriptModule> T getJavaScriptModule(
-    CatalystInstance instance,
-    ExecutorToken executorToken,
-    Class<T> moduleInterface) {
-    HashMap<Class<? extends JavaScriptModule>, JavaScriptModule> instancesForContext =
-        mModuleInstances.get(executorToken);
-    if (instancesForContext == null) {
-      instancesForContext = new HashMap<>();
-      mModuleInstances.put(executorToken, instancesForContext);
-    }
-
-    JavaScriptModule module = instancesForContext.get(moduleInterface);
+      CatalystInstance instance,
+      Class<T> moduleInterface) {
+    JavaScriptModule module = mModuleInstances.get(moduleInterface);
     if (module != null) {
       return (T) module;
     }
 
-    JavaScriptModuleRegistration registration =
-        Assertions.assertNotNull(
-            mModuleRegistrations.get(moduleInterface),
-            "JS module " + moduleInterface.getSimpleName() + " hasn't been registered!");
     JavaScriptModule interfaceProxy = (JavaScriptModule) Proxy.newProxyInstance(
         moduleInterface.getClassLoader(),
         new Class[]{moduleInterface},
-        new JavaScriptModuleInvocationHandler(executorToken, instance, registration));
-    instancesForContext.put(moduleInterface, interfaceProxy);
+        new JavaScriptModuleInvocationHandler(instance, moduleInterface));
+    mModuleInstances.put(moduleInterface, interfaceProxy);
     return (T) interfaceProxy;
   }
 
-  public static class Builder {
-    private List<JavaScriptModuleRegistration> mModules =
-      new ArrayList<JavaScriptModuleRegistration>();
-
-    public Builder add(Class<? extends JavaScriptModule> moduleInterfaceClass) {
-      mModules.add(new JavaScriptModuleRegistration(moduleInterfaceClass));
-      return this;
-    }
-
-    public JavaScriptModuleRegistry build() {
-      return new JavaScriptModuleRegistry(mModules);
-    }
-  }
-
   private static class JavaScriptModuleInvocationHandler implements InvocationHandler {
-
-    private final WeakReference<ExecutorToken> mExecutorToken;
     private final CatalystInstance mCatalystInstance;
-    private final JavaScriptModuleRegistration mModuleRegistration;
+    private final Class<? extends JavaScriptModule> mModuleInterface;
+    private @Nullable String mName;
 
     public JavaScriptModuleInvocationHandler(
-        ExecutorToken executorToken,
         CatalystInstance catalystInstance,
-        JavaScriptModuleRegistration moduleRegistration) {
-      mExecutorToken = new WeakReference<>(executorToken);
+        Class<? extends JavaScriptModule> moduleInterface) {
       mCatalystInstance = catalystInstance;
-      mModuleRegistration = moduleRegistration;
+      mModuleInterface = moduleInterface;
+
+      if (ReactBuildConfig.DEBUG) {
+        Set<String> methodNames = new HashSet<>();
+        for (Method method : mModuleInterface.getDeclaredMethods()) {
+          if (!methodNames.add(method.getName())) {
+            throw new AssertionError(
+              "Method overloading is unsupported: " + mModuleInterface.getName() +
+                "#" + method.getName());
+          }
+        }
+      }
+    }
+
+    private String getJSModuleName() {
+      if (mName == null) {
+        // With proguard obfuscation turned on, proguard apparently (poorly) emulates inner
+        // classes or something because Class#getSimpleName() no longer strips the outer
+        // class name. We manually strip it here if necessary.
+        String name = mModuleInterface.getSimpleName();
+        int dollarSignIndex = name.lastIndexOf('$');
+        if (dollarSignIndex != -1) {
+          name = name.substring(dollarSignIndex + 1);
+        }
+
+        // getting the class name every call is expensive, so cache it
+        mName = name;
+      }
+      return mName;
     }
 
     @Override
     public @Nullable Object invoke(Object proxy, Method method, @Nullable Object[] args) throws Throwable {
-      ExecutorToken executorToken = mExecutorToken.get();
-      if (executorToken == null) {
-        FLog.w(ReactConstants.TAG, "Dropping JS call, ExecutorToken went away...");
-        return null;
-      }
-      NativeArray jsArgs = args != null ? Arguments.fromJavaArgs(args) : new WritableNativeArray();
-      mCatalystInstance.callFunction(
-        executorToken,
-        mModuleRegistration.getName(),
-        method.getName(),
-        jsArgs
-      );
+      NativeArray jsArgs = args != null
+        ? Arguments.fromJavaArgs(args)
+        : new WritableNativeArray();
+      mCatalystInstance.callFunction(getJSModuleName(), method.getName(), jsArgs);
       return null;
     }
   }

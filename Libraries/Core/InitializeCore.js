@@ -99,6 +99,11 @@ if (!global.process.env.NODE_ENV) {
 // Set up profile
 const Systrace = require('Systrace');
 Systrace.setEnabled(global.__RCTProfileIsProfiling || false);
+if (__DEV__) {
+  if (global.performance === undefined) {
+    global.performance = Systrace.getUserTimingPolyfill();
+  }
+}
 
 // Set up console
 const ExceptionsManager = require('ExceptionsManager');
@@ -106,17 +111,17 @@ ExceptionsManager.installConsoleErrorReporter();
 
 // TODO: Move these around to solve the cycle in a cleaner way
 const BatchedBridge = require('BatchedBridge');
-BatchedBridge.registerCallableModule('Systrace', require('Systrace'));
-BatchedBridge.registerCallableModule('JSTimersExecution', require('JSTimersExecution'));
-BatchedBridge.registerCallableModule('HeapCapture', require('HeapCapture'));
-BatchedBridge.registerCallableModule('SamplingProfiler', require('SamplingProfiler'));
+BatchedBridge.registerLazyCallableModule('Systrace', () => require('Systrace'));
+BatchedBridge.registerLazyCallableModule('JSTimersExecution', () => require('JSTimersExecution'));
+BatchedBridge.registerLazyCallableModule('HeapCapture', () => require('HeapCapture'));
+BatchedBridge.registerLazyCallableModule('SamplingProfiler', () => require('SamplingProfiler'));
+BatchedBridge.registerLazyCallableModule('RCTLog', () => require('RCTLog'));
 
 if (__DEV__) {
-  BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));
+  if (!global.__RCTProfileIsProfiling) {
+    BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));
+  }
 }
-
-// RCTLog needs to register with BatchedBridge
-require('RCTLog');
 
 // Set up error handler
 if (!global.__fbDisableExceptionsManager) {
@@ -203,23 +208,27 @@ defineProperty(global, 'Set', () => require('Set'), true);
 
 // Set up devtools
 if (__DEV__) {
-  // not when debugging in chrome
-  // TODO(t12832058) This check is broken
-  if (!window.document) {
-    require('setupDevtools');
+  if (!global.__RCTProfileIsProfiling) {
+    // not when debugging in chrome
+    // TODO(t12832058) This check is broken
+    if (!window.document) {
+      require('setupDevtools');
+    }
+
+    require('RCTDebugComponentOwnership');
+
+    // In order to use Cmd+P to record/dump perf data, we need to make sure
+    // this module is available in the bundle
+    require('RCTRenderingPerf');
+
+    // Set up inspector
+    const JSInspector = require('JSInspector');
+    JSInspector.registerAgent(require('NetworkAgent'));
   }
-
-  require('RCTDebugComponentOwnership');
-}
-
-// Set up inspector
-if (__DEV__) {
-  const JSInspector = require('JSInspector');
-  JSInspector.registerAgent(require('NetworkAgent'));
 }
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
 // been initialized before requiring them.
-require('RCTDeviceEventEmitter');
-require('RCTNativeAppEventEmitter');
-require('PerformanceLogger');
+BatchedBridge.registerLazyCallableModule('RCTDeviceEventEmitter', () => require('RCTDeviceEventEmitter'));
+BatchedBridge.registerLazyCallableModule('RCTNativeAppEventEmitter', () => require('RCTNativeAppEventEmitter'));
+BatchedBridge.registerLazyCallableModule('PerformanceLogger', () => require('PerformanceLogger'));
