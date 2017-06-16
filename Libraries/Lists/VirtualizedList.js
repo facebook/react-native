@@ -1204,7 +1204,7 @@ class CellRenderer extends React.Component {
 const verticalTransform = [{scaleY: -1}];
 const horizontalTransform = [{scaleX: -1}];
 
-if(Platform.OS === 'android') {
+if (Platform.OS === 'android') {
   verticalTransform.push({perspective: 1});
   horizontalTransform.push({perspective: 1});
 }
