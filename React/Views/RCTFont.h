@@ -11,6 +11,8 @@
 
 #import <React/RCTConvert.h>
 
+typedef NSDictionary RCTFontVariantDescriptor;
+
 @interface RCTFont : NSObject
 
 /**
