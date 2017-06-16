@@ -27,7 +27,7 @@ const NativeModules = require('NativeModules');
  *
  * As a browser polyfill, you can get the current device language using
  * `navigator.language` and `navigator.languages`.
- * 
+ *
  * This API is provided because Android doesn't reload your application after a
  * language change.
  *
@@ -47,6 +47,6 @@ let LocaleAndroid = {
   getAsync(): Promise<string> {
     return NativeModules.Languages.getAsync();
   }
-}
+};
 
 module.exports = LocaleAndroid;

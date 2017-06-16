@@ -14,10 +14,7 @@
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  Text,
-  View,
-} = ReactNative;
+var {Text} = ReactNative;
 
 exports.framework = 'React';
 exports.title = 'Languages';
