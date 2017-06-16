@@ -40,6 +40,7 @@ import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.i18nmanager.I18nManagerModule;
 import com.facebook.react.modules.image.ImageLoaderModule;
 import com.facebook.react.modules.intent.IntentModule;
+import com.facebook.react.modules.languages.LanguagesModule;
 import com.facebook.react.modules.location.LocationModule;
 import com.facebook.react.modules.netinfo.NetInfoModule;
 import com.facebook.react.modules.network.NetworkingModule;
@@ -177,6 +178,12 @@ public class MainReactPackage extends LazyReactPackage {
         @Override
         public NativeModule get() {
           return new IntentModule(context);
+        }
+      }),
+      new ModuleSpec(LanguagesModule.class, new Provider<NativeModule>() {
+        @Override
+        public NativeModule get() {
+          return new LanguagesModule(context);
         }
       }),
       new ModuleSpec(LocationModule.class, new Provider<NativeModule>() {

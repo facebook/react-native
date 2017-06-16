@@ -83,6 +83,7 @@ const ReactNative = {
   get Keyboard() { return require('Keyboard'); },
   get LayoutAnimation() { return require('LayoutAnimation'); },
   get Linking() { return require('Linking'); },
+  get LocaleAndroid() { return require('LocaleAndroid'); },
   get NativeEventEmitter() { return require('NativeEventEmitter'); },
   get NetInfo() { return require('NetInfo'); },
   get PanResponder() { return require('PanResponder'); },

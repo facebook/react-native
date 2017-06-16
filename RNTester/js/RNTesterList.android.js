@@ -161,12 +161,20 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('./ImageEditingExample'),
   },
   {
+    key: 'LanguagesExample',
+    module: require('./LanguagesExample'),
+  },
+  {
     key: 'LayoutEventsExample',
     module: require('./LayoutEventsExample'),
   },
   {
     key: 'LinkingExample',
     module: require('./LinkingExample'),
+  },
+  {
+    key: 'LocaleExampleAndroid',
+    module: require('./LocaleExampleAndroid'),
   },
   {
     key: 'LayoutAnimationExample',
