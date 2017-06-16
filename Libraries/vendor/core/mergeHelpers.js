@@ -1,19 +1,40 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
+ * @generated SignedSource<<b68d78236d45828b3f7f7fcc740782a9>>
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * !! This file is a check-in of a static_upstream project!      !!
+ * !!                                                            !!
+ * !! You should not modify this file directly. Instead:         !!
+ * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
+ * !!    the latest version from upstream.                       !!
+ * !! 2) Make your changes, test them, etc.                      !!
+ * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
+ * !!    static_upstream.                                        !!
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ *
+ * Copyright 2013-2014 Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * @providesModule mergeHelpers
  *
  * requiresPolyfills: Array.isArray
  */
 
-'use strict';
+"use strict";
 
 var invariant = require('fbjs/lib/invariant');
+var keyMirror = require('fbjs/lib/keyMirror');
 
 /**
  * Maximum number of levels to traverse. Will catch circular structures.
@@ -23,12 +44,12 @@ var MAX_MERGE_DEPTH = 36;
 
 /**
  * We won't worry about edge cases like new String('x') or new Boolean(true).
- * Functions and Dates are considered terminals, and arrays are not.
+ * Functions are considered terminals, and arrays are not.
  * @param {*} o The item/object/value to test.
  * @return {boolean} true iff the argument is a terminal.
  */
 var isTerminal = function(o) {
-  return typeof o !== 'object' || o instanceof Date || o === null;
+  return typeof o !== 'object' || o === null;
 };
 
 var mergeHelpers = {
@@ -129,11 +150,10 @@ var mergeHelpers = {
    * - `indexByIndex`: The result is achieved by recursively deep merging at
    *   each index. (not yet supported.)
    */
-  ArrayStrategies: {
-    Clobber: 'Clobber',
-    Concat: 'Concat',
-    IndexByIndex: 'IndexByIndex',
-  },
+  ArrayStrategies: keyMirror({
+    Clobber: true,
+    IndexByIndex: true
+  })
 
 };
 
