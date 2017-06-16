@@ -26,7 +26,7 @@ function elementsThatOverlapOffsets(
   const out = [];
   for (let ii = 0; ii < itemCount; ii++) {
     const frame = getFrameMetrics(ii);
-    const trailingOffset = frame.offset + frame.length;
+    const trailingOffset = frame.offset + Math.max(0, frame.length - 1);
     for (let kk = 0; kk < offsets.length; kk++) {
       if (out[kk] == null && trailingOffset >= offsets[kk]) {
         out[kk] = ii;
@@ -88,7 +88,7 @@ function computeWindowedRenderLimits(
   // in the direction of scroll. Total overscan area is capped, which should cap memory consumption
   // too.
   const visibleBegin = Math.max(0, offset);
-  const visibleEnd = visibleBegin + visibleLength;
+  const visibleEnd = visibleBegin + Math.max(0, visibleLength - 1);
   const overscanLength = (windowSize - 1) * visibleLength;
 
   // Considering velocity seems to introduce more churn than it's worth.
