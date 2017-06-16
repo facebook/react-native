@@ -1200,12 +1200,20 @@ class CellRenderer extends React.Component {
   }
 }
 
+const verticalTransform = [{scaleY: -1}];
+const horizontalTransform = [{scaleX: -1}];
+
+if(Platform.OS === 'android') {
+  verticalTransform.push({perspective: 1});
+  horizontalTransform.push({perspective: 1});
+}
+
 const styles = StyleSheet.create({
   verticallyInverted: {
-    transform: [{scaleY: -1}, {perspective: 1000}],
+    transform: verticalTransform,
   },
   horizontallyInverted: {
-    transform: [{scaleX: -1}, {perspective: 1000}],
+    transform: horizontalTransform,
   },
 });
 
