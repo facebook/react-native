@@ -1,7 +1,7 @@
 include_defs("//ReactAndroid/DEFS")
 
 android_library(
-    name = "intent",
+    name = "languages",
     srcs = glob(["**/*.java"]),
     visibility = [
         "PUBLIC",
