@@ -22,6 +22,7 @@ const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 const ViewabilityHelper = require('ViewabilityHelper');
+const Platform = require('Platform');
 
 const flattenStyle = require('flattenStyle');
 const infoLog = require('infoLog');
