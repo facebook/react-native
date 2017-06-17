@@ -56,7 +56,7 @@ not show any changes.</li><li><code>keyExtractor</code> tells the list to use th
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span></div><p>This is a convenience wrapper around <a href="docs/virtualizedlist.html" target="_blank"><code>&lt;VirtualizedList&gt;</code></a>,
-and thus inherits it&#x27;s props (as well as those of <code>ScrollView</code>) that aren&#x27;t explicitly listed
+and thus inherits its props (as well as those of <code>ScrollView</code>) that aren&#x27;t explicitly listed
 here, along with the following caveats:</p><ul><li>Internal state is not preserved when content scrolls out of the render window. Make sure all
 your data is captured in the item data or external stores like Flux, Redux, or Relay.</li><li>This is a <code>PureComponent</code> which means that it will not re-render if <code>props</code> remain shallow-
 equal. Make sure that everything your <code>renderItem</code> function depends on is passed as a prop
