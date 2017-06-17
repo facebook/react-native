@@ -10,18 +10,20 @@
  */
 'use strict';
 
-const blacklist = require('../../packager/blacklist');
+const blacklist = require('metro-bundler/build/blacklist');
+const findSymlinksPaths = require('./findSymlinksPaths');
 const fs = require('fs');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 
-const {providesModuleNodeModules} = require('../../packager/defaults');
+const {providesModuleNodeModules} = require('metro-bundler/build/defaults');
 
 const RN_CLI_CONFIG = 'rn-cli.config.js';
 
-import type {GetTransformOptions, PostMinifyProcess, PostProcessModules} from '../../packager/src/Bundler';
-import type {HasteImpl} from '../../packager/src/node-haste/Module';
-import type {TransformVariants} from '../../packager/src/ModuleGraph/types.flow';
+import type {GetTransformOptions, PostMinifyProcess, PostProcessModules} from 'metro-bundler/build/Bundler';
+import type {HasteImpl} from 'metro-bundler/build/node-haste/Module';
+import type {TransformVariants} from 'metro-bundler/build/ModuleGraph/types.flow';
+import type {PostProcessModules as PostProcessModulesForBuck} from 'metro-bundler/build/ModuleGraph/types.flow.js';
 
 /**
  * Configuration file of the CLI.
@@ -40,6 +42,12 @@ export type ConfigT = {
    * packager on a given platform.
    */
   getBlacklistRE(): RegExp,
+
+  /**
+   * Specify any additional polyfill modules that should be processed
+   * before regular module loading.
+   */
+ getPolyfillModuleNames: () => Array<string>,
 
   /**
    * Specify any additional platforms to be used by the packager.
@@ -72,6 +80,11 @@ export type ConfigT = {
   getTransformOptions: GetTransformOptions,
 
   /**
+   * Returns the path to the worker that is used for transformation.
+   */
+  getWorkerPath: () => ?string,
+
+  /**
    * An optional function that can modify the code and source map of bundle
    * after the minifaction took place.
    */
@@ -84,6 +97,12 @@ export type ConfigT = {
   postProcessModules: PostProcessModules,
 
   /**
+   * Same as `postProcessModules` but for the Buck worker. Eventually we do want
+   * to unify both variants.
+   */
+  postProcessModulesForBuck: PostProcessModulesForBuck,
+
+  /**
    * A module that exports:
    * - a `getHasteName(filePath)` method that returns `hasteName` for module at
    *  `filePath`, or undefined if `filePath` is not a haste module.
@@ -93,50 +112,105 @@ export type ConfigT = {
   transformVariants: () => TransformVariants,
 };
 
-const defaultConfig: ConfigT = {
-  extraNodeModules: Object.create(null),
-  getAssetExts: () => [],
-  getBlacklistRE: () => blacklist(),
-  getPlatforms: () => [],
-  getProjectRoots: () => [process.cwd()],
-  getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
-  getSourceExts: () => [],
-  getTransformModulePath: () => path.resolve(__dirname, '../../packager/transformer'),
-  getTransformOptions: async () => ({}),
-  postMinifyProcess: x => x,
-  postProcessModules: modules => modules,
-  transformVariants: () => ({default: {}}),
-};
+function getProjectPath() {
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli[\/\\]util$/)) {
+    // Packager is running from node_modules.
+    // This is the default case for all projects created using 'react-native init'.
+    return path.resolve(__dirname, '../../../..');
+  } else if (__dirname.match(/Pods[\/\\]React[\/\\]packager$/)) {
+    // React Native was installed using CocoaPods.
+    return path.resolve(__dirname, '../../../..');
+  }
+  return path.resolve(__dirname, '../..');
+}
+
+const resolveSymlink = (roots) =>
+  roots.concat(
+    findSymlinksPaths(
+      path.join(getProjectPath(), 'node_modules'),
+      roots
+    )
+  );
 
 /**
  * Module capable of getting the configuration out of a given file.
  *
  * The function will return all the default configuration, as specified by the
- * `defaultConfig` param overriden by those found on `rn-cli.config.js` files, if any. If no
+ * `DEFAULTS` param overriden by those found on `rn-cli.config.js` files, if any. If no
  * default config is provided and no configuration can be found in the directory
  * hierarchy, an error will be thrown.
  */
 const Config = {
+  DEFAULTS: ({
+    extraNodeModules: Object.create(null),
+    getAssetExts: () => [],
+    getBlacklistRE: () => blacklist(),
+    getPlatforms: () => [],
+    getPolyfillModuleNames: () => [],
+    getProjectRoots: () => {
+      const root = process.env.REACT_NATIVE_APP_ROOT;
+      if (root) {
+        return resolveSymlink([path.resolve(root)]);
+      }
+      return resolveSymlink([getProjectPath()]);
+    },
+    getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
+    getSourceExts: () => [],
+    getTransformModulePath: () => require.resolve('metro-bundler/build/transformer.js'),
+    getTransformOptions: async () => ({}),
+    postMinifyProcess: x => x,
+    postProcessModules: modules => modules,
+    postProcessModulesForBuck: modules => modules,
+    transformVariants: () => ({default: {}}),
+    getWorkerPath: () => null,
+  }: ConfigT),
+
   find(startDir: string): ConfigT {
+    return Config.findCustom(startDir, Config.DEFAULTS);
+  },
+
+  /**
+   * This allows a callsite to grab a config that may have custom fields or
+   * a different version of the config. In that case the defaults have to be
+   * specified explicitely.
+   */
+  findCustom<TConfig: {}>(startDir: string, defaults: TConfig): TConfig {
+    return Config.findWithPathCustom(startDir, defaults).config;
+  },
+
+  findWithPath(startDir: string): {config: ConfigT, projectPath: string} {
+    return Config.findWithPathCustom(startDir, Config.DEFAULTS);
+  },
+
+  findWithPathCustom<TConfig: {}>(startDir: string, defaults: TConfig): {config: TConfig, projectPath: string} {
     const configPath = findConfigPath(startDir);
     invariant(
       configPath,
       `Can't find "${RN_CLI_CONFIG}" file in any parent folder of "${startDir}"`,
     );
-    return this.loadFile(configPath, startDir);
+    const projectPath = path.dirname(configPath);
+    return {config: Config.loadFileCustom(configPath, defaults), projectPath};
   },
 
   findOptional(startDir: string): ConfigT {
+    return Config.findOptionalCustom(startDir, Config.DEFAULTS);
+  },
+
+  findOptionalCustom<TConfig: {}>(startDir: string, defaults: TConfig): TConfig {
     const configPath = findConfigPath(startDir);
     return configPath
-      ? this.loadFile(configPath, startDir)
-      : {...defaultConfig};
+      ? Config.loadFileCustom(configPath, defaults)
+      : {...defaults};
   },
 
   loadFile(pathToConfig: string): ConfigT {
+    return Config.loadFileCustom(pathToConfig, Config.DEFAULTS);
+  },
+
+  loadFileCustom<TConfig: {}>(pathToConfig: string, defaults: TConfig): TConfig {
     //$FlowFixMe: necessary dynamic require
     const config: {} = require(pathToConfig);
-    return {...defaultConfig, ...config};
+    return {...defaults, ...config};
   },
 };
 

@@ -11,19 +11,16 @@
 'use strict';
 
 const babel = require('babel-core');
-const babelRegisterOnly = require('../packager/babelRegisterOnly');
+const babelRegisterOnly = require('metro-bundler/build/babelRegisterOnly');
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
-const path = require('path');
+const transformer = require('metro-bundler/build/transformer.js');
 
 const nodeFiles = RegExp([
   '/local-cli/',
-  '/packager/(?!src/Resolver/polyfills/)',
 ].join('|'));
 const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
 babelRegisterOnly([]);
-// has to be required after setting up babelRegisterOnly
-const transformer = require('../packager/transformer.js');
 
 module.exports = {
   process(src/*: string*/, file/*: string*/) {
@@ -34,17 +31,23 @@ module.exports = {
       ).code;
     }
 
-    return transformer.transform(src, file, {
-      dev: true,
-      inlineRequires: true,
-      platform: '',
-      projectRoot: '',
+    return transformer.transform({
+      filename: file,
+      localPath: file,
+      options: {
+        dev: true,
+        inlineRequires: true,
+        platform: '',
+        projectRoot: '',
+        retainLines: true,
+      },
+      src,
     }).code;
   },
 
   getCacheKey: createCacheKeyFunction([
     __filename,
-    path.join(__dirname, '../packager/transformer.js'),
+    require.resolve('metro-bundler/build/transformer.js'),
     require.resolve('babel-core/package.json'),
   ]),
 };

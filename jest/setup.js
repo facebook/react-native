@@ -10,9 +10,9 @@
 
 const mockComponent = require.requireActual('./mockComponent');
 
-require.requireActual('../packager/src/Resolver/polyfills/babelHelpers.js');
-require.requireActual('../packager/src/Resolver/polyfills/Object.es7.js');
-require.requireActual('../packager/src/Resolver/polyfills/error-guard');
+require.requireActual('metro-bundler/build/Resolver/polyfills/babelHelpers.js');
+require.requireActual('metro-bundler/build/Resolver/polyfills/Object.es7.js');
+require.requireActual('metro-bundler/build/Resolver/polyfills/error-guard');
 
 global.__DEV__ = true;
 
@@ -124,7 +124,7 @@ const mockNativeModules = {
   },
   ImageLoader: {
     getSize: jest.fn(
-      (uri, success) => process.nextTick(() => success(320, 240))
+      (url) => new Promise(() => ({width: 320, height: 240}))
     ),
     prefetchImage: jest.fn(),
   },
@@ -156,6 +156,24 @@ const mockNativeModules = {
     addListener: jest.fn(),
     removeListeners: jest.fn(),
   },
+  PushNotificationManager: {
+    presentLocalNotification: jest.fn(),
+    scheduleLocalNotification: jest.fn(),
+    cancelAllLocalNotifications: jest.fn(),
+    removeAllDeliveredNotifications: jest.fn(),
+    getDeliveredNotifications: jest.fn(callback => process.nextTick(() => [])),
+    removeDeliveredNotifications: jest.fn(),
+    setApplicationIconBadgeNumber: jest.fn(),
+    getApplicationIconBadgeNumber: jest.fn(callback => process.nextTick(() => callback(0))),
+    cancelLocalNotifications: jest.fn(),
+    getScheduledLocalNotifications: jest.fn(callback => process.nextTick(() => callback())),
+    requestPermissions: jest.fn(() => Promise.resolve({alert: true, badge: true, sound: true})),
+    abandonPermissions: jest.fn(),
+    checkPermissions: jest.fn(callback => process.nextTick(() => callback({alert: true, badge: true, sound: true}))),
+    getInitialNotification: jest.fn(() => Promise.resolve(null)),
+    addListener: jest.fn(),
+    removeListeners: jest.fn(),
+  },
   SourceCode: {
     scriptURL: null,
   },
@@ -172,6 +190,12 @@ const mockNativeModules = {
     deleteTimer: jest.fn(),
   },
   UIManager: {
+    AndroidViewPager: {
+      Commands: {
+        setPage: jest.fn(),
+        setPageWithoutAnimation: jest.fn(),
+      },
+    },
     blur: jest.fn(),
     createView: jest.fn(),
     dispatchViewManagerCommand: jest.fn(),

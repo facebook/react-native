@@ -1,6 +1,6 @@
 ---
 id: using-a-listview
-title: Using a ListView
+title: Using List Views
 layout: docs
 category: The Basics
 permalink: docs/using-a-listview.html
@@ -8,45 +8,102 @@ next: network
 previous: using-a-scrollview
 ---
 
-The `ListView` component displays a scrolling list of changing, but similarly structured, data.
+React Native provides a suite of components for presenting lists of data. Generally, you'll want to use either [FlatList](docs/flatlist.html) or [SectionList](docs/sectionlist.html).
 
-`ListView` works well for long lists of data, where the number of items might change over time. Unlike the more generic [`ScrollView`](docs/using-a-scrollview.html), the `ListView` only renders elements that are currently showing on the screen, not all the elements at once.
+The `FlatList` component displays a scrolling list of changing, but similarly structured, data. `FlatList` works well for long lists of data, where the number of items might change over time. Unlike the more generic [`ScrollView`](docs/using-a-scrollview.html), the `FlatList` only renders elements that are currently showing on the screen, not all the elements at once.
 
-The `ListView` component requires two props: `dataSource` and `renderRow`. `dataSource` is the source of information for the list. `renderRow` takes one item from the source and returns a formatted component to render.
+The `FlatList` component requires two props: `data` and `renderItem`. `data` is the source of information for the list. `renderItem` takes one item from the source and returns a formatted component to render.
 
-This example creates a simple `ListView` of hardcoded data. It first initializes the `dataSource` that will be used to populate the `ListView`. Each item in the `dataSource` is then rendered as a `Text` component. Finally it renders the `ListView` and all `Text` components.
+This example creates a simple `FlatList` of hardcoded data. Each item in the `data` props is rendered as a `Text` component. The `FlatListBasics` component then renders the `FlatList` and all `Text` components.
 
-> A `rowHasChanged` function is required to use `ListView`. Here we just say a row has changed if the row we are on is not the same as the previous row.
-
-```ReactNativeWebPlayer
+```SnackPlayer?name=FlatList%20Basics
 import React, { Component } from 'react';
-import { AppRegistry, ListView, Text, View } from 'react-native';
+import { AppRegistry, FlatList, StyleSheet, Text, View } from 'react-native';
 
-class ListViewBasics extends Component {
-  // Initialize the hardcoded data
-  constructor(props) {
-    super(props);
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    this.state = {
-      dataSource: ds.cloneWithRows([
-        'John', 'Joel', 'James', 'Jimmy', 'Jackson', 'Jillian', 'Julie', 'Devin'
-      ])
-    };
-  }
+export default class FlatListBasics extends Component {
   render() {
     return (
-      <View style={{flex: 1, paddingTop: 22}}>
-        <ListView
-          dataSource={this.state.dataSource}
-          renderRow={(rowData) => <Text>{rowData}</Text>}
+      <View style={styles.container}>
+        <FlatList
+          data={[
+            {key: 'Devin'},
+            {key: 'Jackson'},
+            {key: 'James'},
+            {key: 'Joel'},
+            {key: 'John'},
+            {key: 'Jillian'},
+            {key: 'Jimmy'},
+            {key: 'Julie'},
+          ]}
+          renderItem={({item}) => <Text style={styles.item}>{item.key}</Text>}
         />
       </View>
     );
   }
 }
 
-// App registration and rendering
-AppRegistry.registerComponent('ListViewBasics', () => ListViewBasics);
+const styles = StyleSheet.create({
+  container: {
+   flex: 1,
+   paddingTop: 22
+  },
+  item: {
+    padding: 10,
+    fontSize: 18,
+    height: 44,
+  },
+})
+
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => FlatListBasics);
 ```
 
-One of the most common uses for a `ListView` is displaying data that you fetch from a server. To do that, you will need to [learn about networking in React Native](docs/network.html).
+If you want to render a set of data broken into logical sections, maybe with section headers, similar to `UITableView`s on iOS, then a [SectionList](docs/sectionlist.html) is the way to go.
+
+```SnackPlayer?name=SectionList%20Basics
+import React, { Component } from 'react';
+import { AppRegistry, SectionList, StyleSheet, Text, View } from 'react-native';
+
+export default class SectionListBasics extends Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <SectionList
+          sections={[
+            {title: 'D', data: ['Devin']},
+            {title: 'J', data: ['Jackson', 'James', 'Jillian', 'Jimmy', 'Joel', 'John', 'Julie']},
+          ]}
+          renderItem={({item}) => <Text style={styles.item}>{item}</Text>}
+          renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
+        />
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+   flex: 1,
+   paddingTop: 22
+  },
+  sectionHeader: {
+    paddingTop: 2,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 2,
+    fontSize: 14,
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(247,247,247,1.0)',
+  },
+  item: {
+    padding: 10,
+    fontSize: 18,
+    height: 44,
+  },
+})
+
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => SectionListBasics);
+```
+
+One of the most common uses for a list view is displaying data that you fetch from a server. To do that, you will need to [learn about networking in React Native](docs/network.html).

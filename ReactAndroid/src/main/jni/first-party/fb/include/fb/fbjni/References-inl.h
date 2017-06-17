@@ -486,22 +486,25 @@ template<typename T, typename RefType>
 auto dynamic_ref_cast(const RefType& ref) ->
 enable_if_t<IsPlainJniReference<T>(), decltype(static_ref_cast<T>(ref))>
 {
-  if (! ref) {
+  if (!ref) {
     return decltype(static_ref_cast<T>(ref))();
   }
 
-  std::string target_class_name{jtype_traits<T>::base_name()};
+  static alias_ref<jclass> target_class = findClassStatic(jtype_traits<T>::base_name().c_str());
+  if (!target_class) {
+    throwNewJavaException("java/lang/ClassCastException",
+                          "Could not find class %s.",
+                          jtype_traits<T>::base_name().c_str());
 
-  // If not found, will throw an exception.
-  alias_ref<jclass> target_class = findClassStatic(target_class_name.c_str());
+  }
 
   local_ref<jclass> source_class = ref->getClass();
 
-  if ( ! source_class->isAssignableFrom(target_class)) {
+  if (!target_class->isAssignableFrom(source_class)) {
     throwNewJavaException("java/lang/ClassCastException",
                           "Tried to cast from %s to %s.",
                           source_class->toString().c_str(),
-                          target_class_name.c_str());
+                          jtype_traits<T>::base_name().c_str());
   }
 
   return static_ref_cast<T>(ref);

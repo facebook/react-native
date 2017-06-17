@@ -15,11 +15,12 @@
 
 #import <jschelpers/JavaScriptCore.h>
 
-#import "RCTBridge+JavaScriptCore.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
+#import "RCTInspectorDevServerHelper.h"
 #import "RCTJSCSamplingProfiler.h"
+#import "RCTJSEnvironment.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
@@ -141,7 +142,6 @@ RCT_EXPORT_MODULE()
 {
   if (self = [super init]) {
     _dataSource = dataSource;
-    [self _configurePackagerConnection];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(jsLoaded:)
@@ -154,6 +154,27 @@ RCT_EXPORT_MODULE()
     });
   }
   return self;
+}
+
+- (void)setBridge:(RCTBridge *)bridge
+{
+  RCTAssert(_bridge == nil, @"RCTDevSettings module should not be reused");
+  _bridge = bridge;
+  [self _configurePackagerConnection];
+
+#if RCT_DEV
+  // we need this dispatch back to the main thread because even though this
+  // is executed on the main thread, at this point the bridge is not yet
+  // finished with its initialisation. But it does finish by the time it
+  // relinquishes control of the main thread, so only queue on the JS thread
+  // after the current main thread operation is done.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [bridge dispatchBlock:^{
+      [RCTInspectorDevServerHelper connectForContext:bridge.jsContextRef
+                                       withBundleURL:bridge.bundleURL];
+    } queue:RCTJSThread];
+  });
+#endif
 }
 
 - (dispatch_queue_t)methodQueue
@@ -409,7 +430,7 @@ RCT_EXPORT_METHOD(toggleElementInspector)
     return;
   }
 
-  _packagerConnection = [[RCTPackagerConnection alloc] initWithBridge:_bridge];
+  _packagerConnection = [RCTPackagerConnection connectionForBridge:_bridge];
 #endif
 }
 

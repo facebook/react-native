@@ -65,8 +65,6 @@
 namespace facebook {
 namespace react {
 
-using namespace detail;
-
 namespace {
 
 template<JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
@@ -81,11 +79,13 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
         JSValueRef *exception) {
       try {
         auto executor = Object::getGlobalObject(ctx).getPrivate<JSCExecutor>();
-        return (executor->*method)(argumentCount, arguments);
+        if (executor && executor->getJavaScriptContext()) { // Executor not invalidated
+          return (executor->*method)(argumentCount, arguments);
+        }
       } catch (...) {
         *exception = translatePendingCppExceptionToJSError(ctx, function);
-        return Value::makeUndefined(ctx);
       }
+      return Value::makeUndefined(ctx);
     }
   };
 
@@ -102,11 +102,13 @@ inline JSObjectGetPropertyCallback exceptionWrapMethod() {
          JSValueRef *exception) {
       try {
         auto executor = Object::getGlobalObject(ctx).getPrivate<JSCExecutor>();
-        return (executor->*method)(object, propertyName);
+        if (executor && executor->getJavaScriptContext()) { // Executor not invalidated
+          return (executor->*method)(object, propertyName);
+        }
       } catch (...) {
         *exception = translatePendingCppExceptionToJSError(ctx, object);
-        return Value::makeUndefined(ctx);
       }
+      return Value::makeUndefined(ctx);
     }
   };
 
@@ -182,7 +184,7 @@ static bool canUseInspector(JSContextRef context) {
 #endif
 
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
-  SystraceSection s("JSCExecutor.initOnJSVMThread");
+  SystraceSection s("JSCExecutor::initOnJSVMThread");
 
   #if defined(__APPLE__)
   const bool useCustomJSC = m_jscConfig.getDefault("UseCustomJSC", false).getBool();
@@ -200,13 +202,13 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   // Create a custom global class, so we can store data in it later using JSObjectSetPrivate
   JSClassRef globalClass = nullptr;
   {
-    SystraceSection s("JSClassCreate");
+    SystraceSection s_("JSClassCreate");
     JSClassDefinition definition = kJSClassDefinitionEmpty;
     definition.attributes |= kJSClassAttributeNoAutomaticPrototype;
     globalClass = JSC_JSClassCreate(useCustomJSC, &definition);
   }
   {
-    SystraceSection s("JSGlobalContextCreateInGroup");
+    SystraceSection s_("JSGlobalContextCreateInGroup");
     m_context = JSC_JSGlobalContextCreateInGroup(useCustomJSC, nullptr, globalClass);
   }
   JSC_JSClassRelease(useCustomJSC, globalClass);
@@ -224,8 +226,8 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
 
-  installGlobalFunction(m_context, "nativeLoggingHook", JSNativeHooks::loggingHook);
-  installGlobalFunction(m_context, "nativePerformanceNow", JSNativeHooks::nowHook);
+  installGlobalFunction(m_context, "nativeLoggingHook", JSCNativeHooks::loggingHook);
+  installGlobalFunction(m_context, "nativePerformanceNow", JSCNativeHooks::nowHook);
 
   #if DEBUG
   installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
@@ -240,7 +242,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   addNativeTracingLegacyHooks(m_context);
   #endif
 
-  PerfLogging::installNativeHooks(m_context);
+  JSCNativeHooks::installPerfHooks(m_context);
 
   #if defined(__APPLE__) || defined(WITH_JSC_EXTRA_TRACING)
   if (JSC_JSSamplingProfilerEnabled(m_context)) {
@@ -258,17 +260,19 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
 }
 
 void JSCExecutor::terminateOnJSVMThread() {
+  JSGlobalContextRef context = m_context;
+  m_context = nullptr;
+  Object::getGlobalObject(context).setPrivate(nullptr);
   m_nativeModules.reset();
 
 #ifdef WITH_INSPECTOR
-  if (canUseInspector(m_context)) {
+  if (canUseInspector(context)) {
     IInspector* pInspector = JSC_JSInspectorGetInstance(true);
-    pInspector->unregisterGlobalContext(m_context);
+    pInspector->unregisterGlobalContext(context);
   }
 #endif
 
-  JSC_JSGlobalContextRelease(m_context);
-  m_context = nullptr;
+  JSC_JSGlobalContextRelease(context);
 }
 
 #ifdef WITH_FBJSCEXTENSIONS
@@ -348,25 +352,23 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
     JSValueRef jsError;
     JSValueRef result = JSC_JSEvaluateBytecodeBundle(m_context, NULL, sourceFD, jsSourceURL, &jsError);
     if (result == nullptr) {
-      formatAndThrowJSException(m_context, jsError, jsSourceURL);
+      throw JSException(m_context, jsError, jsSourceURL);
     }
   } else
 #endif
   {
-    #ifdef WITH_FBSYSTRACE
-    fbsystrace_begin_section(
-      TRACE_TAG_REACT_CXX_BRIDGE,
-      "JSCExecutor::loadApplicationScript-createExpectingAscii");
-    #endif
-
-    ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_START);
-    String jsScript = jsStringFromBigString(m_context, *script);
-    ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP);
-
+    String jsScript;
+    {
+      SystraceSection s_("JSCExecutor::loadApplicationScript-createExpectingAscii");
+      ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_START);
+      jsScript = adoptString(std::move(script));
+      ReactMarker::logMarker(ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP);
+    }
     #ifdef WITH_FBSYSTRACE
     fbsystrace_end_section(TRACE_TAG_REACT_CXX_BRIDGE);
     #endif
 
+    SystraceSection s_("JSCExecutor::loadApplicationScript-evaluateScript");
     evaluateScript(m_context, jsScript, jsSourceURL);
   }
 
@@ -394,7 +396,7 @@ void JSCExecutor::bindBridge() throw(JSException) {
         batchedBridgeValue = requireBatchedBridge.asObject().callAsFunction({});
       }
       if (batchedBridgeValue.isUndefined()) {
-        throwJSExecutionException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
+        throw JSException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
       }
     }
 
@@ -457,9 +459,9 @@ void JSCExecutor::flush() {
 
 void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
   SystraceSection s("JSCExecutor::callFunction");
+
   // This weird pattern is because Value is not default constructible.
   // The lambda is inlined, so there's no overhead.
-
   auto result = [&] {
     try {
       if (!m_callFunctionReturnResultAndFlushedQueueJS) {
@@ -524,14 +526,26 @@ Value JSCExecutor::callFunctionSyncWithValue(
 
 void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {
   try {
-    SystraceSection s("JSCExecutor.setGlobalVariable",
-                      "propName", propName);
-
-    auto valueToInject = Value::fromJSON(m_context, jsStringFromBigString(m_context, *jsonValue));
+    SystraceSection s("JSCExecutor::setGlobalVariable", "propName", propName);
+    auto valueToInject = Value::fromJSON(adoptString(std::move(jsonValue)));
     Object::getGlobalObject(m_context).setProperty(propName.c_str(), valueToInject);
   } catch (...) {
     std::throw_with_nested(std::runtime_error("Error setting global variable: " + propName));
   }
+}
+
+String JSCExecutor::adoptString(std::unique_ptr<const JSBigString> script) {
+#if defined(WITH_FBJSCEXTENSIONS)
+  const JSBigString* string = script.release();
+  auto jsString = JSStringCreateAdoptingExternal(string->c_str(), string->size(), (void*)string, [](void* s) {
+    delete static_cast<JSBigString*>(s);
+  });
+  return String::adopt(m_context, jsString);
+#else
+  return script->isAscii()
+    ? String::createExpectingAscii(m_context, script->c_str(), script->size())
+    : String(m_context, script->c_str());
+#endif
 }
 
 void* JSCExecutor::getJavaScriptContext() {
@@ -617,7 +631,7 @@ JSValueRef JSCExecutor::nativeRequire(
   }
 
   double moduleId = Value(m_context, arguments[0]).asNumber();
-  if (moduleId <= 0) {
+  if (moduleId < 0) {
     throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ",
       Value(m_context, arguments[0]).toString().str()));
   }

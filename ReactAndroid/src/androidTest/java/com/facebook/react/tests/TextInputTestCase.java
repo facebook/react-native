@@ -248,7 +248,6 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
   @Override
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
     return super.createReactInstanceSpecForTest()
-        .addJSModule(TextInputTestModule.class)
         .addNativeModule(mRecordingModule);
   }
 
