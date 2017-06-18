@@ -17,7 +17,7 @@ const LanguagesEventEmitter = new NativeEventEmitter(Languages);
 
 const invariant = require('fbjs/lib/invariant');
 
-type LanguagesEventType = 'languagesDidChange';
+type LanguagesEventType = 'change';
 
 type LanguagesEventData = {
   language: string,
@@ -45,7 +45,7 @@ type LanguagesEventHandler = () => void;
  * after a device language change.
  *
  * ### Usage
- * 
+ *
  * ```
  * LanguagesAndroid.addEventListener('change', () => {
  *   alert(navigator.language);
@@ -87,7 +87,7 @@ class LanguagesAndroid {
     handler: LanguagesEventHandler
   ) {
     invariant(
-      type === 'change',
+      ['change'].indexOf(type) !== -1,
       'Trying to subscribe to unknown event: "%s"', type
     );
     if (type === 'change') {
@@ -106,7 +106,7 @@ class LanguagesAndroid {
     handler: LanguagesEventHandler
   ) {
     invariant(
-      type === 'change',
+      ['change'].indexOf(type) !== -1,
       'Trying to remove listener for unknown event: "%s"', type
     );
     if (type === 'change' && this._eventHandlers.has(handler)) {
