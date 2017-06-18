@@ -173,10 +173,6 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('./LinkingExample'),
   },
   {
-    key: 'LocaleExampleAndroid',
-    module: require('./LocaleExampleAndroid'),
-  },
-  {
     key: 'LayoutAnimationExample',
     module: require('./LayoutAnimationExample'),
   },

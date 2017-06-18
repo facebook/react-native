@@ -14,13 +14,17 @@
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {Text} = ReactNative;
+var {
+  LanguagesAndroid,
+  Platform,
+  Text,
+} = ReactNative;
 
 exports.framework = 'React';
 exports.title = 'Languages';
 exports.description = 'Device languages';
 
-exports.examples = [
+const examples = [
   {
     title: 'navigator.language',
     render: function(): React.Element<any> {
@@ -32,5 +36,23 @@ exports.examples = [
     render: function(): React.Element<any> {
       return <Text>{JSON.stringify(navigator.languages)}</Text>;
     },
-  }
+  },
+  {
+    title: 'LanguagesAndroid change event listener',
+    render: function(): React.Element<any> {
+      return <Text>{`The current language is ${navigator.language}`}</Text>;
+    },
+  },
 ];
+
+if (Platform.OS === 'android') {
+  LanguagesAndroid.addEventListener('change', () => {
+    examples[2].render = function(): React.Element<any> {
+      return (
+        <Text>{`Language has been changed to ${navigator.language}`}</Text>
+      );
+    };
+  });
+}
+
+exports.examples = examples;
