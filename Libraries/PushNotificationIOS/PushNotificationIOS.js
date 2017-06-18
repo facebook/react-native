@@ -122,6 +122,7 @@ class PushNotificationIOS {
   _alert: string | Object;
   _sound: string;
   _category: string;
+  _contentAvailable: number;
   _badgeCount: number;
   _notificationId: string;
   _isRemote: boolean;
@@ -419,6 +420,7 @@ class PushNotificationIOS {
           this._sound = notifVal.sound;
           this._badgeCount = notifVal.badge;
           this._category = notifVal.category;
+          this._contentAvailable = notifVal['content-available'];
         } else {
           this._data[notifKey] = notifVal;
         }
@@ -482,6 +484,13 @@ class PushNotificationIOS {
    */
   getAlert(): ?string | ?Object {
     return this._alert;
+  }
+
+  /**
+   * Gets the content-available number from the `aps` object
+   */
+  getContentAvailable(): ?number {
+    return this._contentAvailable;
   }
 
   /**
