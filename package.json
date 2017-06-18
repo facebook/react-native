@@ -230,7 +230,7 @@
     "jest": "^20.0.4",
     "jest-repl": "^20.0.4",
     "jest-runtime": "^20.0.4",
-    "mock-fs": "^4.3.0",
+    "mock-fs": "^4.4.1",
     "react": "16.0.0-alpha.12",
     "react-test-renderer": "16.0.0-alpha.12",
     "shelljs": "0.6.0",

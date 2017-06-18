@@ -11,8 +11,6 @@
 
 'use strict';
 
-require('../../__fixtures__/mockFSWorkaround');
-
 const findProject = require('../../ios/findProject');
 const mockFS = require('mock-fs');
 const projects = require('../../__fixtures__/projects');
