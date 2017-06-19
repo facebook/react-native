@@ -24,6 +24,8 @@ const NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
 const NOTIF_REGISTRATION_ERROR_EVENT = 'remoteNotificationRegistrationError';
 const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
 
+export type ContentAvailable = 1 | null | void;
+
 export type FetchResult = {
   NewData: string,
   NoData: string,
@@ -122,7 +124,7 @@ class PushNotificationIOS {
   _alert: string | Object;
   _sound: string;
   _category: string;
-  _contentAvailable: number;
+  _contentAvailable: ContentAvailable;
   _badgeCount: number;
   _notificationId: string;
   _isRemote: boolean;
@@ -489,7 +491,7 @@ class PushNotificationIOS {
   /**
    * Gets the content-available number from the `aps` object
    */
-  getContentAvailable(): ?number {
+  getContentAvailable(): ContentAvailable {
     return this._contentAvailable;
   }
 
