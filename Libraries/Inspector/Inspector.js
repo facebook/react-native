@@ -26,7 +26,7 @@ const UIManager = require('UIManager');
 const View = require('View');
 
 const emptyObject = require('fbjs/lib/emptyObject');
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 
 export type ReactRenderer = {
   getInspectorDataForViewTag: (viewTag: number) => Object,
