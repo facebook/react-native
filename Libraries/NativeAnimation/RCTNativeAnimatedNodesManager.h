@@ -9,16 +9,17 @@
 
 #import <Foundation/Foundation.h>
 
+#import <RCTAnimation/RCTValueAnimatedNode.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUIManager.h>
-
-#import "RCTValueAnimatedNode.h"
 
 @interface RCTNativeAnimatedNodesManager : NSObject
 
 - (nonnull instancetype)initWithUIManager:(nonnull RCTUIManager *)uiManager;
 
 - (void)updateAnimations;
+
+- (void)stepAnimations:(nonnull CADisplayLink *)displaylink;
 
 // graph
 
@@ -34,6 +35,8 @@
 - (void)connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
                           viewTag:(nonnull NSNumber *)viewTag
                          viewName:(nonnull NSString *)viewName;
+
+- (void)restoreDefaultValues:(nonnull NSNumber *)nodeTag;
 
 - (void)disconnectAnimatedNodeFromView:(nonnull NSNumber *)nodeTag
                                viewTag:(nonnull NSNumber *)viewTag;
@@ -80,7 +83,6 @@
 - (void)startListeningToAnimatedNodeValue:(nonnull NSNumber *)tag
                             valueObserver:(nonnull id<RCTValueAnimatedNodeObserver>)valueObserver;
 
-- (void)stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag
-                           valueObserver:(nonnull id<RCTValueAnimatedNodeObserver>)valueObserver;
+- (void)stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag;
 
 @end

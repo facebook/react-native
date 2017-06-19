@@ -110,49 +110,38 @@
 
 - (NSInteger)reactZIndex
 {
-  return [objc_getAssociatedObject(self, _cmd) integerValue];
+  return self.layer.zPosition;
 }
 
 - (void)setReactZIndex:(NSInteger)reactZIndex
 {
-  objc_setAssociatedObject(self, @selector(reactZIndex), @(reactZIndex), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  self.layer.zPosition = reactZIndex;
 }
 
-- (NSArray<UIView *> *)sortedReactSubviews
+- (NSArray<UIView *> *)reactZIndexSortedSubviews
 {
-  NSArray *subviews = objc_getAssociatedObject(self, _cmd);
-  if (!subviews) {
-    // Check if sorting is required - in most cases it won't be
-    BOOL sortingRequired = NO;
-    for (UIView *subview in self.reactSubviews) {
-      if (subview.reactZIndex != 0) {
-        sortingRequired = YES;
-        break;
-      }
+  // Check if sorting is required - in most cases it won't be.
+  BOOL sortingRequired = NO;
+  for (UIView *subview in self.subviews) {
+    if (subview.reactZIndex != 0) {
+      sortingRequired = YES;
+      break;
     }
-    subviews = sortingRequired ? [self.reactSubviews sortedArrayUsingComparator:^NSComparisonResult(UIView *a, UIView *b) {
-      if (a.reactZIndex > b.reactZIndex) {
-        return NSOrderedDescending;
-      } else {
-        // ensure sorting is stable by treating equal zIndex as ascending so
-        // that original order is preserved
-        return NSOrderedAscending;
-      }
-    }] : self.reactSubviews;
-    objc_setAssociatedObject(self, _cmd, subviews, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   }
-  return subviews;
-}
-
-// private method, used to reset sort
-- (void)clearSortedSubviews
-{
-  objc_setAssociatedObject(self, @selector(sortedReactSubviews), nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  return sortingRequired ? [self.reactSubviews sortedArrayUsingComparator:^NSComparisonResult(UIView *a, UIView *b) {
+    if (a.reactZIndex > b.reactZIndex) {
+      return NSOrderedDescending;
+    } else {
+      // Ensure sorting is stable by treating equal zIndex as ascending so
+      // that original order is preserved.
+      return NSOrderedAscending;
+    }
+  }] : self.subviews;
 }
 
 - (void)didUpdateReactSubviews
 {
-  for (UIView *subview in self.sortedReactSubviews) {
+  for (UIView *subview in self.reactSubviews) {
     [self addSubview:subview];
   }
 }
@@ -212,13 +201,72 @@
 }
 
 /**
- * Responder overrides - to be deprecated.
+ * Focus manipulation.
  */
-- (void)reactWillMakeFirstResponder {};
-- (void)reactDidMakeFirstResponder {};
-- (BOOL)reactRespondsToTouch:(__unused UITouch *)touch
+- (BOOL)reactIsFocusNeeded
 {
-  return YES;
+  return [(NSNumber *)objc_getAssociatedObject(self, @selector(reactIsFocusNeeded)) boolValue];
+}
+
+- (void)setReactIsFocusNeeded:(BOOL)isFocusNeeded
+{
+  objc_setAssociatedObject(self, @selector(reactIsFocusNeeded), @(isFocusNeeded), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (void)reactFocus {
+  if (![self becomeFirstResponder]) {
+    self.reactIsFocusNeeded = YES;
+  }
+}
+
+- (void)reactFocusIfNeeded {
+  if (self.reactIsFocusNeeded) {
+    if ([self becomeFirstResponder]) {
+      self.reactIsFocusNeeded = NO;
+    }
+  }
+}
+
+- (void)reactBlur {
+  [self resignFirstResponder];
+}
+
+#pragma mark - Layout
+
+- (UIEdgeInsets)reactBorderInsets
+{
+  CGFloat borderWidth = self.layer.borderWidth;
+  return UIEdgeInsetsMake(borderWidth, borderWidth, borderWidth, borderWidth);
+}
+
+- (UIEdgeInsets)reactPaddingInsets
+{
+  return UIEdgeInsetsZero;
+}
+
+- (UIEdgeInsets)reactCompoundInsets
+{
+  UIEdgeInsets borderInsets = self.reactBorderInsets;
+  UIEdgeInsets paddingInsets = self.reactPaddingInsets;
+
+  return UIEdgeInsetsMake(
+    borderInsets.top + paddingInsets.top,
+    borderInsets.left + paddingInsets.left,
+    borderInsets.bottom + paddingInsets.bottom,
+    borderInsets.right + paddingInsets.right
+  );
+}
+
+- (CGRect)reactContentFrame
+{
+  return UIEdgeInsetsInsetRect(self.bounds, self.reactCompoundInsets);
+}
+
+#pragma mark - Accessiblity
+
+- (UIView *)reactAccessibilityElement
+{
+  return self;
 }
 
 @end

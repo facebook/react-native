@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -18,5 +18,5 @@ public interface YogaBaselineFunction {
    * default to the computed height of the node.
    */
   @DoNotStrip
-  float baseline(YogaNodeAPI node, float width, float height);
+  float baseline(YogaNode node, float width, float height);
 }

@@ -8,8 +8,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 const {OS} = require('Platform');
 const processColor = require('processColor');
 

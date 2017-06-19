@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const sinon = require('sinon');
 const promiseWaterfall = require('../promiseWaterfall');
 

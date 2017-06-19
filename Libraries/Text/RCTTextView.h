@@ -12,7 +12,7 @@
 #import <React/RCTView.h>
 #import <React/UIView+React.h>
 
-@class RCTEventDispatcher;
+@class RCTBridge;
 
 @interface RCTTextView : RCTView <UITextViewDelegate>
 
@@ -21,13 +21,16 @@
 @property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, assign) BOOL clearTextOnFocus;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
-@property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, strong) UIColor *placeholderTextColor;
+@property (nonatomic, copy) NSString *placeholder;
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, strong) NSNumber *maxLength;
+@property (nonatomic, assign, readonly) CGSize contentSize;
+@property (nonatomic, assign) UIEdgeInsets reactPaddingInsets;
+@property (nonatomic, assign) UIEdgeInsets reactBorderInsets;
 
 @property (nonatomic, copy) RCTDirectEventBlock onChange;
 @property (nonatomic, copy) RCTDirectEventBlock onContentSizeChange;
@@ -35,7 +38,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onTextInput;
 @property (nonatomic, copy) RCTDirectEventBlock onScroll;
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 - (void)performTextUpdate;
 

@@ -14,36 +14,41 @@ namespace facebook {
 namespace react {
 
 namespace ReactMarker {
-using LogMarker = std::function<void(const std::string&)>;
-extern LogMarker logMarker;
+
+enum ReactMarkerId {
+  NATIVE_REQUIRE_START,
+  NATIVE_REQUIRE_STOP,
+  RUN_JS_BUNDLE_START,
+  RUN_JS_BUNDLE_STOP,
+  CREATE_REACT_CONTEXT_STOP,
+  JS_BUNDLE_STRING_CONVERT_START,
+  JS_BUNDLE_STRING_CONVERT_STOP,
+  NATIVE_MODULE_SETUP_START,
+  NATIVE_MODULE_SETUP_STOP,
 };
 
-namespace WebWorkerUtil {
-using WebWorkerQueueFactory = std::function<std::unique_ptr<MessageQueueThread>(int id, MessageQueueThread* ownerMessageQueue)>;
-extern WebWorkerQueueFactory createWebWorkerThread;
+using LogTaggedMarker = std::function<void(const ReactMarkerId, const char* tag)>;
+extern LogTaggedMarker logTaggedMarker;
 
-using LoadScriptFromAssets = std::function<std::unique_ptr<const JSBigString>(const std::string& assetName)>;
-extern LoadScriptFromAssets loadScriptFromAssets;
+extern void logMarker(const ReactMarkerId markerId);
 
-using LoadScriptFromNetworkSync = std::function<std::string(const std::string& url, const std::string& tempfileName)>;
-extern LoadScriptFromNetworkSync loadScriptFromNetworkSync;
-};
+}
 
-namespace PerfLogging {
-using InstallNativeHooks = std::function<void(JSGlobalContextRef)>;
-extern InstallNativeHooks installNativeHooks;
-};
+namespace JSCNativeHooks {
 
-namespace JSNativeHooks {
-  using Hook = JSValueRef (*) (
-      JSContextRef ctx,
-      JSObjectRef function,
-      JSObjectRef thisObject,
-      size_t argumentCount,
-      const JSValueRef arguments[],
-      JSValueRef *exception);
-  extern Hook loggingHook;
-  extern Hook nowHook;
+using Hook = JSValueRef(*)(
+  JSContextRef ctx,
+  JSObjectRef function,
+  JSObjectRef thisObject,
+  size_t argumentCount,
+  const JSValueRef arguments[],
+  JSValueRef *exception);
+extern Hook loggingHook;
+extern Hook nowHook;
+
+using ConfigurationHook = std::function<void(JSGlobalContextRef)>;
+extern ConfigurationHook installPerfHooks;
+
 }
 
 } }

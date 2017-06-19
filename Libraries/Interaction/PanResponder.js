@@ -77,7 +77,7 @@ const currentCentroidY = TouchHistoryMath.currentCentroidY;
  *       onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
  *
  *       onPanResponderGrant: (evt, gestureState) => {
- *         // The guesture has started. Show visual feedback so the user knows
+ *         // The gesture has started. Show visual feedback so the user knows
  *         // what is happening!
  *
  *         // gestureState.d{x,y} will be set to zero now
@@ -116,7 +116,7 @@ const currentCentroidY = TouchHistoryMath.currentCentroidY;
  * ### Working Example
  *
  * To see it in action, try the
- * [PanResponder example in UIExplorer](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/js/PanResponderExample.js)
+ * [PanResponder example in RNTester](https://github.com/facebook/react-native/blob/master/RNTester/js/PanResponderExample.js)
  */
 
 const PanResponder = {

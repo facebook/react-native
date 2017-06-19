@@ -9,12 +9,14 @@
 
 package com.facebook.react.flat;
 
-import javax.annotation.Nullable;
-
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 
+import javax.annotation.Nullable;
+
 public final class RCTImageViewManager extends FlatViewManager {
+
+  /* package */ static final String REACT_CLASS = "RCTImageView";
 
   private @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
@@ -32,7 +34,7 @@ public final class RCTImageViewManager extends FlatViewManager {
 
   @Override
   public String getName() {
-    return "RCTImageView";
+    return REACT_CLASS;
   }
 
   @Override

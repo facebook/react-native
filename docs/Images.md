@@ -4,7 +4,7 @@ title: Images
 layout: docs
 category: Guides
 permalink: docs/images.html
-next:  colors
+next:  animations
 previous: navigation
 ---
 
@@ -67,7 +67,9 @@ Note that image sources required this way include size (width, height) info for 
 
 ## Static Non-Image Resources
 
-The `require` syntax described above can be used to statically include audio, video or document files in your project as well. Most common file types are supported including `.mp3`, `.wav`, `.mp4`, `.mov`, `.html` and `.pdf` (see the [packager defaults](https://github.com/facebook/react-native/blob/master/packager/defaults.js) file for the full list).
+The `require` syntax described above can be used to statically include audio, video or document files in your project as well. Most common file types are supported including `.mp3`, `.wav`, `.mp4`, `.mov`, `.html` and `.pdf`. See [packager defaults](https://github.com/facebook/metro-bundler/blob/master/packages/metro-bundler/src/defaults.js#L13-L18) for the full list.
+
+You can add support for other types by creating a packager config file (see the [packager config file](https://github.com/facebook/react-native/blob/master/local-cli/util/Config.js#L34-L39) for the full list of configuration options).
 
 A caveat is that videos must use absolute positioning instead of `flexGrow`, since size info is not currently passed for non-image assets. This limitation doesn't occur for videos that are linked directly into Xcode or the Assets folder for Android.
 
@@ -95,6 +97,22 @@ Many of the images you will display in your app will not be available at compile
 <Image source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}} />
 ```
 
+### Network Requests for Images
+
+  If you would like to set such things as the HTTP-Verb, Headers or a Body along with the image request, you may do this by defining these properties on the source object:
+
+  ```javascript
+  <Image source={{
+      uri: 'https://facebook.github.io/react/img/logo_og.png',
+      method: 'POST',
+      headers: {
+        Pragma: 'no-cache'
+      },
+      body: 'Your Body goes here'
+    }}
+    style={{width: 400, height: 400}} />
+  ```
+
 ### Cache Control (iOS Only)
 
 In some cases you might only want to display an image if it is already in the local cache, i.e. a low resolution placeholder until a higher resolution is available. In other cases you do not care if the image is outdated and are willing to display an outdated image to save bandwidth. The `cache` source property gives you control over how the network layer interacts with the cache.
@@ -113,7 +131,7 @@ and the load is considered to have failed.
 ```javascript
 <Image source={{uri: 'https://facebook.github.io/react/img/logo_og.png', cache: 'only-if-cached'}}
        style={{width: 400, height: 400}} />
-````
+```
 
 ## Local Filesystem Images
 

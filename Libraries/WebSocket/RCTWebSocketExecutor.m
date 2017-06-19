@@ -54,18 +54,8 @@ RCT_EXPORT_MODULE()
 - (void)setUp
 {
   if (!_url) {
-    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
-
-    // TODO t16297016: this seems to be unused, remove?
-    NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"];
-    if (!port) {
-      port = [[[_bridge bundleURL] port] integerValue] ?: 8081;
-    }
-
-    NSString *host = [[_bridge bundleURL] host];
-    if (!host) {
-      host = @"localhost";
-    }
+    NSInteger port = [[[_bridge bundleURL] port] integerValue] ?: 8081;
+    NSString *host = [[_bridge bundleURL] host] ?: @"localhost";
     NSString *URLString = [NSString stringWithFormat:@"http://%@:%zd/debugger-proxy?role=client", host, port];
     _url = [RCTConvert NSURL:URLString];
   }
@@ -168,10 +158,7 @@ RCT_EXPORT_MODULE()
 
   dispatch_async(_jsQueue, ^{
     if (!self.valid) {
-      NSError *error = [NSError errorWithDomain:@"WS" code:1 userInfo:@{
-        NSLocalizedDescriptionKey: @"Runtime is not ready for debugging. Make sure Packager server is running."
-      }];
-      callback(error, nil);
+      callback(RCTErrorWithMessage(@"Runtime is not ready for debugging. Make sure Packager server is running."), nil);
       return;
     }
 
@@ -190,8 +177,13 @@ RCT_EXPORT_MODULE()
     @"url": RCTNullIfNil(URL.absoluteString),
     @"inject": _injectedObjects,
   };
-  [self sendMessage:message onReply:^(NSError *error, NSDictionary<NSString *, id> *reply) {
-    onComplete(error);
+  [self sendMessage:message onReply:^(NSError *socketError, NSDictionary<NSString *, id> *reply) {
+    if (socketError) {
+      onComplete(socketError);
+    } else {
+      NSString *error = reply[@"error"];
+      onComplete(error ? RCTErrorWithMessage(error) : nil);
+    }
   }];
 }
 
@@ -228,9 +220,10 @@ RCT_EXPORT_MODULE()
       return;
     }
 
-    NSString *result = reply[@"result"];
-    id objcValue = RCTJSONParse(result, NULL);
-    onComplete(objcValue, nil);
+    NSError *jsonError;
+    id result = RCTJSONParse(reply[@"result"], &jsonError);
+    NSString *error = reply[@"error"];
+    onComplete(result, error ? RCTErrorWithMessage(error) : jsonError);
   }];
 }
 

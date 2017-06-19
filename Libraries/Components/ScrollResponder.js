@@ -12,18 +12,20 @@
 'use strict';
 
 var Dimensions = require('Dimensions');
-var Platform = require('Platform');
+var FrameRateLogger = require('FrameRateLogger');
 var Keyboard = require('Keyboard');
 var ReactNative = require('ReactNative');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
 var UIManager = require('UIManager');
-var warning = require('fbjs/lib/warning');
-
-var { getInstanceFromNode } = require('ReactNativeComponentTree');
-var { ScrollViewManager } = require('NativeModules');
 
 var invariant = require('fbjs/lib/invariant');
+var nullthrows = require('fbjs/lib/nullthrows');
+var performanceNow = require('fbjs/lib/performanceNow');
+var warning = require('fbjs/lib/warning');
+
+var { ScrollViewManager } = require('NativeModules');
+var { getInstanceFromNode } = require('ReactNativeComponentTree');
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
@@ -295,6 +297,7 @@ var ScrollResponderMixin = {
    * Invoke this from an `onScrollBeginDrag` event.
    */
   scrollResponderHandleScrollBeginDrag: function(e: Event) {
+    FrameRateLogger.beginScroll(); // TODO: track all scrolls after implementing onScrollEndAnimation
     this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
   },
 
@@ -302,6 +305,16 @@ var ScrollResponderMixin = {
    * Invoke this from an `onScrollEndDrag` event.
    */
   scrollResponderHandleScrollEndDrag: function(e: Event) {
+    const {velocity} = e.nativeEvent;
+    // - If we are animating, then this is a "drag" that is stopping the scrollview and momentum end
+    //   will fire.
+    // - If velocity is non-zero, then the interaction will stop when momentum scroll ends or
+    //   another drag starts and ends.
+    // - If we don't get velocity, better to stop the interaction twice than not stop it.
+    if (!this.scrollResponderIsAnimating() &&
+        (!velocity || velocity.x === 0 && velocity.y === 0)) {
+      FrameRateLogger.endScroll();
+    }
     this.props.onScrollEndDrag && this.props.onScrollEndDrag(e);
   },
 
@@ -309,7 +322,7 @@ var ScrollResponderMixin = {
    * Invoke this from an `onMomentumScrollBegin` event.
    */
   scrollResponderHandleMomentumScrollBegin: function(e: Event) {
-    this.state.lastMomentumScrollBeginTime = Date.now();
+    this.state.lastMomentumScrollBeginTime = performanceNow();
     this.props.onMomentumScrollBegin && this.props.onMomentumScrollBegin(e);
   },
 
@@ -317,7 +330,8 @@ var ScrollResponderMixin = {
    * Invoke this from an `onMomentumScrollEnd` event.
    */
   scrollResponderHandleMomentumScrollEnd: function(e: Event) {
-    this.state.lastMomentumScrollEndTime = Date.now();
+    FrameRateLogger.endScroll();
+    this.state.lastMomentumScrollEndTime = performanceNow();
     this.props.onMomentumScrollEnd && this.props.onMomentumScrollEnd(e);
   },
 
@@ -358,7 +372,7 @@ var ScrollResponderMixin = {
    * a touch has just started or ended.
    */
   scrollResponderIsAnimating: function(): boolean {
-    var now = Date.now();
+    var now = performanceNow();
     var timeSinceLastMomentumScrollEnd = now - this.state.lastMomentumScrollEndTime;
     var isAnimating = timeSinceLastMomentumScrollEnd < IS_ANIMATING_TOUCH_START_THRESHOLD_MS ||
       this.state.lastMomentumScrollEndTime < this.state.lastMomentumScrollBeginTime;
@@ -398,7 +412,7 @@ var ScrollResponderMixin = {
       ({x, y, animated} = x || {});
     }
     UIManager.dispatchViewManagerCommand(
-      this.scrollResponderGetScrollableNode(),
+      nullthrows(this.scrollResponderGetScrollableNode()),
       UIManager.RCTScrollView.Commands.scrollTo,
       [x || 0, y || 0, animated !== false],
     );
@@ -449,6 +463,16 @@ var ScrollResponderMixin = {
       console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');
     }
     ScrollViewManager.zoomToRect(this.scrollResponderGetScrollableNode(), rect, animated !== false);
+  },
+
+  /**
+   * Displays the scroll indicators momentarily.
+   *
+   * @platform ios
+   */
+  scrollResponderFlashScrollIndicators: function() {
+    invariant(ScrollViewManager && ScrollViewManager.flashScrollIndicators, 'flashScrollIndicators is not implemented');
+    ScrollViewManager.flashScrollIndicators(this.scrollResponderGetScrollableNode());
   },
 
   /**

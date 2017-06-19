@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const getDependencyConfig = require('../getDependencyConfig');
 const sinon = require('sinon');
 

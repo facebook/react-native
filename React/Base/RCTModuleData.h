@@ -15,9 +15,15 @@
 @protocol RCTBridgeModule;
 @class RCTBridge;
 
+typedef id<RCTBridgeModule>(^RCTBridgeModuleProvider)(void);
+
 @interface RCTModuleData : NSObject <RCTInvalidating>
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
+                             bridge:(RCTBridge *)bridge;
+
+- (instancetype)initWithModuleClass:(Class)moduleClass
+                     moduleProvider:(RCTBridgeModuleProvider)moduleProvider
                              bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
@@ -39,6 +45,11 @@
  * time it is called and then memoize the results.
  */
 @property (nonatomic, copy, readonly) NSArray<id<RCTBridgeMethod>> *methods;
+
+/**
+ * Returns the module's constants, if it exports any
+ */
+@property (nonatomic, copy, readonly) NSDictionary<NSString *, id> *exportedConstants;
 
 /**
  * Returns YES if module instance has already been initialized; NO otherwise.

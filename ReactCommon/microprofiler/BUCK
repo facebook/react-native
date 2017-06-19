@@ -1,3 +1,5 @@
+include_defs("//ReactCommon/DEFS")
+
 cxx_library(
     name = "microprofiler",
     srcs = [
@@ -19,6 +21,6 @@ cxx_library(
     ],
     xcode_public_headers_symlinks = True,
     deps = [
-        "//xplat/third-party/glog:glog",
+        GLOG_DEP,
     ],
 )
