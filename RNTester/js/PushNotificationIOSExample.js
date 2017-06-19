@@ -117,11 +117,8 @@ class NotificationExample extends React.Component {
   }
 
   _onRemoteNotification(notification) {
-    const result = `Alert message: ${notification.getMessage()}
-     badge: ${notification.getBadgeCount()}
-      sound: ${notification.getSound()}
-       category: ${notification.getCategory()}
-        content-available: ${notification.getContentAvailable()}`;
+    const result = `Alert message: ${notification.getMessage()}\n badge: ${notification.getBadgeCount()}\n sound: ${notification.getSound()}\n`
+      + `category: ${notification.getCategory()}\n content-available: ${notification.getContentAvailable()}`;
 
     AlertIOS.alert(
       'Push Notification Received',
