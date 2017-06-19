@@ -72,11 +72,13 @@ class NotificationExample extends React.Component {
 
   _sendNotification() {
     require('RCTDeviceEventEmitter').emit('remoteNotificationReceived', {
+      remote: true,
       aps: {
         alert: 'Sample notification',
         badge: '+1',
         sound: 'default',
-        category: 'REACT_NATIVE'
+        category: 'REACT_NATIVE',
+        'content-available': 1,
       },
     });
   }
@@ -115,9 +117,15 @@ class NotificationExample extends React.Component {
   }
 
   _onRemoteNotification(notification) {
+    const result = `Message: ${notification.getMessage()};\n
+      badge: ${notification.getBadgeCount()};\n
+      sound: ${notification.getSound()};\n
+      category: ${notification.getCategory()};\n
+      content-available: ${notification.getContentAvailable()}.`;
+
     AlertIOS.alert(
       'Push Notification Received',
-      'Alert message: ' + notification.getMessage(),
+      result,
       [{
         text: 'Dismiss',
         onPress: null,
