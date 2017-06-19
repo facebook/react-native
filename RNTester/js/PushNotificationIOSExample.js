@@ -78,7 +78,7 @@ class NotificationExample extends React.Component {
         badge: '+1',
         sound: 'default',
         category: 'REACT_NATIVE',
-        'content-available': 1
+        'content-available': 1,
       },
     });
   }
