@@ -9,8 +9,6 @@
  */
 'use strict';
 
-jest.unmock('buildStyleInterpolator');
-
 var buildStyleInterpolator = require('buildStyleInterpolator');
 
 var validateEmpty = function(interpolator, value, validator) {

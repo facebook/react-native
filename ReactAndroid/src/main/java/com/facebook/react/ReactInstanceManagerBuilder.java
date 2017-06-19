@@ -46,6 +46,7 @@ public class ReactInstanceManagerBuilder {
   protected @Nullable DevBundleDownloadListener mDevBundleDownloadListener;
   protected boolean mSetupReactContextInBackground;
   protected boolean mUseSeparateUIBackgroundThread;
+  protected int mMinNumShakes = 1;
 
   /* package protected */ ReactInstanceManagerBuilder() {
   }
@@ -207,6 +208,11 @@ public class ReactInstanceManagerBuilder {
    return this;
   }
 
+  public ReactInstanceManagerBuilder setMinNumShakes(int minNumShakes) {
+    mMinNumShakes = minNumShakes;
+    return this;
+  }
+
   /**
    * Instantiates a new {@link ReactInstanceManager}.
    * Before calling {@code build}, the following must be called:
@@ -240,7 +246,8 @@ public class ReactInstanceManagerBuilder {
       mCurrentActivity,
       mDefaultHardwareBackBtnHandler,
       (mJSBundleLoader == null && mJSBundleAssetUrl != null) ?
-        JSBundleLoader.createAssetLoader(mApplication, mJSBundleAssetUrl) : mJSBundleLoader,
+        JSBundleLoader.createAssetLoader(mApplication, mJSBundleAssetUrl, false /*Asynchronous*/) :
+        mJSBundleLoader,
       mJSMainModuleName,
       mPackages,
       mUseDeveloperSupport,
@@ -254,6 +261,7 @@ public class ReactInstanceManagerBuilder {
       mLazyViewManagersEnabled,
       mDevBundleDownloadListener,
       mSetupReactContextInBackground,
-      mUseSeparateUIBackgroundThread);
+      mUseSeparateUIBackgroundThread,
+      mMinNumShakes);
   }
 }

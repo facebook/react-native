@@ -21,6 +21,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
+import com.facebook.react.common.DebugServerException;
 
 import org.json.JSONException;
 import org.json.JSONObject;

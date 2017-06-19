@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @format
  */
 'use strict';
 
@@ -18,8 +19,8 @@ const StaticRenderer = require('StaticRenderer');
 class ListViewMock extends React.Component {
   static latestRef: ?ListViewMock;
   static defaultProps = {
-    renderScrollComponent: (props) => <ScrollView {...props} />,
-  }
+    renderScrollComponent: props => <ScrollView {...props} />,
+  };
   componentDidMount() {
     ListViewMock.latestRef = this;
   }
@@ -32,17 +33,18 @@ class ListViewMock extends React.Component {
       const rowIDs = allRowIDs[sectionIdx];
       for (let rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
         const rowID = rowIDs[rowIdx];
+        // Row IDs are only unique in a section
         rows.push(
           <StaticRenderer
-            key={rowID}
+            key={'section_' + sectionID + '_row_' + rowID}
             shouldUpdate={true}
             render={this.props.renderRow.bind(
               null,
               dataSource.getRowData(sectionIdx, rowIdx),
               sectionID,
-              rowID
+              rowID,
             )}
-          />
+          />,
         );
       }
     }

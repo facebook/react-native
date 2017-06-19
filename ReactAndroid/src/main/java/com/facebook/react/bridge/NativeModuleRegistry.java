@@ -15,12 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JSInstance;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.OnBatchCompleteListener;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMarker;
-import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.systrace.Systrace;
 
 /**
@@ -89,7 +83,7 @@ public class NativeModuleRegistry {
         "NativeModuleRegistry_notifyJSInstanceInitialized");
     try {
       for (ModuleHolder module : mModules.values()) {
-        module.initialize();
+        module.markInitializable();
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -99,7 +93,7 @@ public class NativeModuleRegistry {
 
   public void onBatchComplete() {
     for (ModuleHolder moduleHolder : mBatchCompleteListenerModules) {
-      if (moduleHolder.isInitialized()) {
+      if (moduleHolder.hasInstance()) {
         ((OnBatchCompleteListener) moduleHolder.getModule()).onBatchComplete();
       }
     }

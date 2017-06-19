@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const xcode = require('xcode');
 const pbxFile = require('xcode/lib/pbxFile');
 const addFileToProject = require('../../ios/addFileToProject');

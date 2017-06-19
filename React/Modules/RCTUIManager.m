@@ -409,6 +409,12 @@ BOOL RCTIsUIManagerQueue()
   return _viewRegistry[reactTag];
 }
 
+- (RCTShadowView *)shadowViewForReactTag:(NSNumber *)reactTag
+{
+  RCTAssertUIManagerQueue();
+  return _shadowViewRegistry[reactTag];
+}
+
 - (void)setAvailableSize:(CGSize)availableSize forRootView:(UIView *)rootView
 {
   RCTAssertMainQueue();

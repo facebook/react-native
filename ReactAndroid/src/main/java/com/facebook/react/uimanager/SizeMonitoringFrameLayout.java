@@ -52,5 +52,4 @@ public class SizeMonitoringFrameLayout extends FrameLayout {
       mOnSizeChangedListener.onSizeChanged(w, h, oldw, oldh);
     }
   }
-
 }

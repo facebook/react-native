@@ -33,7 +33,8 @@ public class DevSupportManagerFactory {
       Context applicationContext,
       ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
       @Nullable String packagerPathForJSBundleName,
-      boolean enableOnCreate) {
+      boolean enableOnCreate,
+      int minNumShakes) {
 
     return create(
       applicationContext,
@@ -41,7 +42,8 @@ public class DevSupportManagerFactory {
       packagerPathForJSBundleName,
       enableOnCreate,
       null,
-      null);
+      null,
+      minNumShakes);
   }
 
   public static DevSupportManager create(
@@ -50,7 +52,8 @@ public class DevSupportManagerFactory {
     @Nullable String packagerPathForJSBundleName,
     boolean enableOnCreate,
     @Nullable RedBoxHandler redBoxHandler,
-    @Nullable DevBundleDownloadListener devBundleDownloadListener) {
+    @Nullable DevBundleDownloadListener devBundleDownloadListener,
+    int minNumShakes) {
     if (!enableOnCreate) {
       return new DisabledDevSupportManager();
     }
@@ -72,14 +75,16 @@ public class DevSupportManagerFactory {
           String.class,
           boolean.class,
           RedBoxHandler.class,
-          DevBundleDownloadListener.class);
+          DevBundleDownloadListener.class,
+          int.class);
       return (DevSupportManager) constructor.newInstance(
         applicationContext,
         reactInstanceCommandsHandler,
         packagerPathForJSBundleName,
         true,
         redBoxHandler,
-        devBundleDownloadListener);
+        devBundleDownloadListener,
+        minNumShakes);
     } catch (Exception e) {
       throw new RuntimeException(
         "Requested enabled DevSupportManager, but DevSupportManagerImpl class was not found" +
@@ -87,5 +92,4 @@ public class DevSupportManagerFactory {
         e);
     }
   }
-
 }

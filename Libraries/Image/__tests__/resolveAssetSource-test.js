@@ -8,12 +8,6 @@
  */
 'use strict';
 
-jest
-  .unmock('AssetRegistry')
-  .unmock('AssetSourceResolver')
-  .unmock('../resolveAssetSource')
-  .unmock('../../../local-cli/bundle/assetPathUtils');
-
 var AssetRegistry = require('AssetRegistry');
 var Platform = require('Platform');
 var NativeModules = require('NativeModules');

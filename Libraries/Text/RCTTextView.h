@@ -21,7 +21,6 @@
 @property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, assign) BOOL clearTextOnFocus;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
-@property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, strong) UIColor *placeholderTextColor;
@@ -30,6 +29,8 @@
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, strong) NSNumber *maxLength;
 @property (nonatomic, assign, readonly) CGSize contentSize;
+@property (nonatomic, assign) UIEdgeInsets reactPaddingInsets;
+@property (nonatomic, assign) UIEdgeInsets reactBorderInsets;
 
 @property (nonatomic, copy) RCTDirectEventBlock onChange;
 @property (nonatomic, copy) RCTDirectEventBlock onContentSizeChange;

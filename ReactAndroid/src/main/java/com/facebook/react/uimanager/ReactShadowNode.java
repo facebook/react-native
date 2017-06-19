@@ -452,6 +452,23 @@ public class ReactShadowNode {
     return mTotalNativeChildren;
   }
 
+  public boolean isDescendantOf(ReactShadowNode ancestorNode) {
+    ReactShadowNode parentNode = getParent();
+
+    boolean isDescendant = false;
+
+    while (parentNode != null) {
+      if (parentNode == ancestorNode) {
+        isDescendant = true;
+        break;
+      } else {
+        parentNode = parentNode.getParent();
+      }
+    }
+
+    return isDescendant;
+  }
+
   /**
    * Returns the offset within the native children owned by all layout-only nodes in the subtree
    * rooted at this node for the given child. Put another way, this returns the number of native
@@ -777,11 +794,37 @@ public class ReactShadowNode {
 
   @Override
   public String toString() {
-    if (mYogaNode != null) {
-      return mYogaNode.toString();
+    StringBuilder sb = new StringBuilder();
+    toStringWithIndentation(sb, 0);
+    return sb.toString();
+  }
+
+  private void toStringWithIndentation(StringBuilder result, int level) {
+    // Spaces and tabs are dropped by IntelliJ logcat integration, so rely on __ instead.
+    for (int i = 0; i < level; ++i) {
+      result.append("__");
     }
 
-    return getClass().getSimpleName() + " (virtual node)";
+    result
+      .append(getClass().getSimpleName())
+      .append(" ");
+    if (mYogaNode != null) {
+      result
+        .append(getLayoutWidth())
+        .append(",")
+        .append(getLayoutHeight());
+    } else {
+      result.append("(virtual node)");
+    }
+    result.append("\n");
+
+    if (getChildCount() == 0) {
+      return;
+    }
+
+    for (int i = 0; i < getChildCount(); i++) {
+      getChildAt(i).toStringWithIndentation(result, level + 1);
+    }
   }
 
   public void dispose() {

@@ -183,6 +183,37 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   [_uiManager verify];
 }
 
+- (void)testFramesAnimationLoop
+{
+  [self createSimpleAnimatedView:@1000 withOpacity:0];
+  NSArray<NSNumber *> *frames = @[@0, @0.2, @0.4, @0.6, @0.8, @1];
+  [_nodesManager startAnimatingNode:@1
+                            nodeTag:@1
+                             config:@{@"type": @"frames", @"frames": frames, @"toValue": @1, @"iterations": @5}
+                        endCallback:nil];
+
+  for (NSUInteger it = 0; it < 5; it++) {
+    for (NSNumber *frame in frames) {
+      [[_uiManager expect] synchronouslyUpdateViewOnUIThread:@1000
+                                                    viewName:@"UIView"
+                                                       props:RCTPropChecker(@"opacity", frame)];
+      [_nodesManager stepAnimations:_displayLink];
+      [_uiManager verify];
+    }
+  }
+
+  [[_uiManager expect] synchronouslyUpdateViewOnUIThread:@1000
+                                                viewName:@"UIView"
+                                                   props:RCTPropChecker(@"opacity", @1)];
+
+  [_nodesManager stepAnimations:_displayLink];
+  [_uiManager verify];
+
+  [[_uiManager reject] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
+  [_nodesManager stepAnimations:_displayLink];
+  [_uiManager verify];
+}
+
 - (void)testNodeValueListenerIfNotListening
 {
   NSNumber *nodeId = @1;
@@ -371,6 +402,62 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 
   // The animation should have reset 4 times.
   XCTAssertEqual(numberOfResets, 4u);
+
+  [[_uiManager reject] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
+  [_nodesManager stepAnimations:_displayLink];
+  [_uiManager verify];
+}
+
+- (void)testSpringAnimationLoop
+{
+  [self createSimpleAnimatedView:@1000 withOpacity:0];
+  [_nodesManager startAnimatingNode:@1
+                            nodeTag:@1
+                             config:@{@"type": @"spring",
+                                      @"iterations": @5,
+                                      @"friction": @7,
+                                      @"tension": @40,
+                                      @"initialVelocity": @0,
+                                      @"toValue": @1,
+                                      @"restSpeedThreshold": @0.001,
+                                      @"restDisplacementThreshold": @0.001,
+                                      @"overshootClamping": @NO}
+                        endCallback:nil];
+
+  BOOL didComeToRest = NO;
+  CGFloat previousValue = 0;
+  NSUInteger numberOfResets = 0;
+  __block CGFloat currentValue;
+  [[[_uiManager stub] andDo:^(NSInvocation *invocation) {
+    __unsafe_unretained NSDictionary<NSString *, NSNumber *> *props;
+    [invocation getArgument:&props atIndex:4];
+    currentValue = props[@"opacity"].doubleValue;
+  }] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
+
+  // Run for 3 seconds five times.
+  for (NSUInteger i = 0; i < 3 * 60 * 5; i++) {
+    [_nodesManager stepAnimations:_displayLink];
+
+    if (!didComeToRest) {
+      // Verify that animation step is relatively small.
+      XCTAssertLessThan(fabs(currentValue - previousValue), 0.1);
+    }
+
+    // Test to see if it reset after coming to rest
+    if (didComeToRest && currentValue == 0) {
+      didComeToRest = NO;
+      numberOfResets++;
+    }
+
+    // Record that the animation did come to rest when it rests on toValue.
+    didComeToRest = fabs(currentValue - 1) < 0.001 && fabs(currentValue - previousValue) < 0.001;
+
+    previousValue = currentValue;
+  }
+
+  // Verify that value reset 4 times after finishing a full animation and is currently resting.
+  XCTAssertEqual(numberOfResets, 4u);
+  XCTAssertTrue(didComeToRest);
 
   [[_uiManager reject] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
   [_nodesManager stepAnimations:_displayLink];

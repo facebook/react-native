@@ -57,7 +57,8 @@ std::vector<MethodDescriptor> CxxNativeModule::getMethods() {
   std::vector<MethodDescriptor> descs;
   for (auto& method : methods_) {
     assert(method.func || method.syncFunc);
-    descs.emplace_back(method.name, method.func ? "async" : "sync");
+    auto methodType = method.func ? (method.callbacks == 2 ? "promise" : "async") : "sync";
+    descs.emplace_back(method.name, methodType);
   }
   return descs;
 }

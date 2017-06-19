@@ -14,6 +14,7 @@
 
 var ColorPropType = require('ColorPropType');
 var React = require('React');
+var ReactPropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 const ViewPropTypes = require('ViewPropTypes');
@@ -21,8 +22,6 @@ var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var processColor = require('processColor');
 var requireNativeComponent = require('requireNativeComponent');
-
-var ReactPropTypes = React.PropTypes;
 
 var REF_PICKER = 'picker';
 var MODE_DROPDOWN = 'dropdown';

@@ -672,26 +672,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         return;
       }
 
-      // TODO: remove contentSize from onTextChanged entirely now that onChangeContentSize exists?
-      int contentWidth = mEditText.getWidth();
-      int contentHeight = mEditText.getHeight();
-
-      // Use instead size of text content within EditText when available
-      if (mEditText.getLayout() != null) {
-        contentWidth = mEditText.getCompoundPaddingLeft() + mEditText.getLayout().getWidth() +
-          mEditText.getCompoundPaddingRight();
-        contentHeight = mEditText.getCompoundPaddingTop() + mEditText.getLayout().getHeight() +
-          mEditText.getCompoundPaddingTop();
-      }
-
       // The event that contains the event counter and updates it must be sent first.
       // TODO: t7936714 merge these events
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
               mEditText.getId(),
               s.toString(),
-              PixelUtil.toDIPFromPixel(contentWidth),
-              PixelUtil.toDIPFromPixel(contentHeight),
               mEditText.incrementAndGetEventCounter()));
 
       mEventDispatcher.dispatchEvent(

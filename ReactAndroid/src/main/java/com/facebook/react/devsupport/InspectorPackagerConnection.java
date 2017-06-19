@@ -19,13 +19,9 @@ import com.facebook.react.bridge.Inspector;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
-import okhttp3.ws.WebSocket;
-import okhttp3.ws.WebSocketCall;
-import okhttp3.ws.WebSocketListener;
-import okio.Buffer;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -175,11 +171,12 @@ public class InspectorPackagerConnection {
     return payload;
   }
 
-  private class Connection implements WebSocketListener {
+  private class Connection extends WebSocketListener {
     private static final int RECONNECT_DELAY_MS = 2000;
 
     private final String mUrl;
 
+    private OkHttpClient mHttpClient;
     private @Nullable WebSocket mWebSocket;
     private final Handler mHandler;
     private boolean mClosed;
@@ -196,9 +193,9 @@ public class InspectorPackagerConnection {
     }
 
     @Override
-    public void onFailure(IOException e, Response response) {
+    public void onFailure(WebSocket webSocket, Throwable t, Response response) {
       if (mWebSocket != null) {
-        abort("Websocket exception", e);
+        abort("Websocket exception", t);
       }
       if (!mClosed) {
         reconnect();
@@ -206,22 +203,16 @@ public class InspectorPackagerConnection {
     }
 
     @Override
-    public void onMessage(ResponseBody message) throws IOException {
+    public void onMessage(WebSocket webSocket, String text) {
       try {
-        handleProxyMessage(new JSONObject(message.string()));
-      } catch (JSONException e) {
-        throw new IOException(e);
-      } finally {
-        message.close();
+        handleProxyMessage(new JSONObject(text));
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
 
     @Override
-    public void onPong(Buffer payload) {
-    }
-
-    @Override
-    public void onClose(int code, String reason) {
+    public void onClosed(WebSocket webSocket, int code, String reason) {
       mWebSocket = null;
       closeAllConnections();
       if (!mClosed) {
@@ -233,15 +224,16 @@ public class InspectorPackagerConnection {
       if (mClosed) {
         throw new IllegalStateException("Can't connect closed client");
       }
-      OkHttpClient httpClient = new OkHttpClient.Builder()
-          .connectTimeout(10, TimeUnit.SECONDS)
-          .writeTimeout(10, TimeUnit.SECONDS)
-          .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
-          .build();
+      if (mHttpClient == null) {
+        mHttpClient = new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
+            .build();
+      }
 
       Request request = new Request.Builder().url(mUrl).build();
-      WebSocketCall call = WebSocketCall.create(httpClient, request);
-      call.enqueue(this);
+      mHttpClient.newWebSocket(request, this);
     }
 
     private void reconnect() {
@@ -270,7 +262,7 @@ public class InspectorPackagerConnection {
       if (mWebSocket != null) {
         try {
           mWebSocket.close(1000, "End of session");
-        } catch (IOException e) {
+        } catch (Exception e) {
           // swallow, no need to handle it here
         }
         mWebSocket = null;
@@ -285,8 +277,8 @@ public class InspectorPackagerConnection {
             return null;
           }
           try {
-            sockets[0].sendMessage(RequestBody.create(WebSocket.TEXT, object.toString()));
-          } catch (IOException e) {
+            sockets[0].send(object.toString());
+          } catch (Exception e) {
             FLog.w(TAG, "Couldn't send event to packager", e);
           }
           return null;
@@ -304,7 +296,7 @@ public class InspectorPackagerConnection {
       if (mWebSocket != null) {
         try {
           mWebSocket.close(1000, "End of session");
-        } catch (IOException e) {
+        } catch (Exception e) {
           // swallow, no need to handle it here
         }
         mWebSocket = null;

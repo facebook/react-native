@@ -82,6 +82,11 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 - (UIView *)viewForReactTag:(NSNumber *)reactTag;
 
 /**
+ * Gets the shadow view associated with a reactTag.
+ */
+- (RCTShadowView *)shadowViewForReactTag:(NSNumber *)reactTag;
+
+/**
  * Set the available size (`availableSize` property) for a root view.
  * This might be used in response to changes in external layout constraints.
  * This value will be directly trasmitted to layout engine and defines how big viewport is;
