@@ -165,7 +165,9 @@ for more details.</p></div></div><div class="prop"><h4 class="propTitle"><a clas
  causes views to be measured independently of their parents main axis.
  It works like <code>overflow</code> in CSS (default: visible).
  See <a href="https://developer.mozilla.org/en/docs/Web/CSS/overflow">https://developer.mozilla.org/en/docs/Web/CSS/overflow</a>
- for more details.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="padding"></a>padding?: <span class="propType">ReactPropTypes.oneOfType([
+ for more details.
+ <code>overflow: visible</code> only works on iOS. On Android, all views will clip
+ their children.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="padding"></a>padding?: <span class="propType">ReactPropTypes.oneOfType([
   ReactPropTypes.number,
   ReactPropTypes.string,
 ])</span> <a class="hash-link" href="docs/layout-props.html#padding">#</a></h4><div><p>Setting <code>padding</code> has the same effect as setting each of
