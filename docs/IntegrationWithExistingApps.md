@@ -6,7 +6,7 @@ category: Guides
 permalink: docs/integration-with-existing-apps.html
 banner: ejected
 next: running-on-device
-previous: testing
+previous: colors
 ---
 
 <style>

@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const path = require('path');
 const isInstalled = require('../../ios/isInstalled');
 

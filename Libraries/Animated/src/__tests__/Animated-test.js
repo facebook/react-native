@@ -8,8 +8,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 var Animated = require('Animated');
 describe('Animated tests', () => {
   beforeEach(() => {

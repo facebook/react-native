@@ -71,7 +71,6 @@ public class ViewRenderingTestCase extends ReactIntegrationTestCase {
         .addNativeModule(new DeviceInfoModule(getContext()))
         .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
-        .addJSModule(ViewRenderingTestModule.class)
         .build();
 
     mRootView = new ReactRootView(getContext());

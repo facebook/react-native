@@ -12,27 +12,21 @@ package com.facebook.react;
 import javax.inject.Provider;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.devsupport.JSCHeapCapture;
 import com.facebook.react.devsupport.JSCSamplingProfiler;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
-import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
 import com.facebook.react.modules.core.HeadlessJsTaskSupportModule;
-import com.facebook.react.modules.core.JSTimersExecution;
-import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.modules.core.Timing;
 import com.facebook.react.modules.debug.AnimationsDebugModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
@@ -42,7 +36,6 @@ import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.debug.DebugComponentOwnershipModule;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.systrace.Systrace;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END;
@@ -185,26 +178,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
     }
 
     return moduleSpecList;
-  }
-
-  @Override
-  public List<Class<? extends JavaScriptModule>> createJSModules() {
-    List<Class<? extends JavaScriptModule>> jsModules = new ArrayList<>(Arrays.asList(
-        DeviceEventManagerModule.RCTDeviceEventEmitter.class,
-        JSTimersExecution.class,
-        RCTEventEmitter.class,
-        RCTNativeAppEventEmitter.class,
-        AppRegistry.class,
-        com.facebook.react.bridge.Systrace.class,
-        HMRClient.class));
-
-    if (ReactBuildConfig.DEBUG) {
-      jsModules.add(DebugComponentOwnershipModule.RCTDebugComponentOwnership.class);
-      jsModules.add(JSCHeapCapture.HeapCapture.class);
-      jsModules.add(JSCSamplingProfiler.SamplingProfiler.class);
-    }
-
-    return jsModules;
   }
 
   @Override

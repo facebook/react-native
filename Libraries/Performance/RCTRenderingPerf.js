@@ -11,9 +11,6 @@
  */
 'use strict';
 
-var ReactDebugTool = require('ReactDebugTool');
-var ReactPerf = require('ReactPerf');
-
 var invariant = require('fbjs/lib/invariant');
 var performanceNow = require('fbjs/lib/performanceNow');
 
@@ -24,22 +21,6 @@ type perfModule = {
 
 var perfModules = [];
 var enabled = false;
-var lastRenderStartTime = 0;
-var totalRenderDuration = 0;
-
-var RCTRenderingPerfDevtool = {
-  onBeginLifeCycleTimer(debugID, timerType) {
-    if (timerType === 'render') {
-      lastRenderStartTime = performanceNow();
-    }
-  },
-  onEndLifeCycleTimer(debugID, timerType) {
-    if (timerType === 'render') {
-      var lastRenderDuration = performanceNow() - lastRenderStartTime;
-      totalRenderDuration += lastRenderDuration;
-    }
-  },
-};
 
 var RCTRenderingPerf = {
   // Once perf is enabled, it stays enabled
@@ -53,8 +34,6 @@ var RCTRenderingPerf = {
       return;
     }
 
-    ReactPerf.start();
-    ReactDebugTool.addHook(RCTRenderingPerfDevtool);
     perfModules.forEach((module) => module.start());
   },
 
@@ -62,15 +41,6 @@ var RCTRenderingPerf = {
     if (!enabled) {
       return;
     }
-
-    ReactPerf.stop();
-    ReactPerf.printInclusive();
-    ReactPerf.printWasted();
-    ReactDebugTool.removeHook(RCTRenderingPerfDevtool);
-
-    console.log(`Total time spent in render(): ${totalRenderDuration.toFixed(2)} ms`);
-    lastRenderStartTime = 0;
-    totalRenderDuration = 0;
 
     perfModules.forEach((module) => module.stop());
   },
