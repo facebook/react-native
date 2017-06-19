@@ -155,8 +155,8 @@ public class DevLoadingViewController {
   }
 
   private boolean isWindowPermissionGranted() {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-      (Settings.canDrawOverlays(mContext) ||
-      PackageManager.PERMISSION_GRANTED == mContext.checkSelfPermission(SYSTEM_ALERT_WINDOW));
+    return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+      Settings.canDrawOverlays(mContext) ||
+      PackageManager.PERMISSION_GRANTED == mContext.checkSelfPermission(SYSTEM_ALERT_WINDOW);
   }
 }
