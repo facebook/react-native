@@ -13,6 +13,7 @@
 'use strict';
 
 const EmitterSubscription = require('EmitterSubscription');
+const PropTypes = require('prop-types');
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 const React = require('React');
 const ReactNative = require('ReactNative');
@@ -41,7 +42,7 @@ class AppContainer extends React.Component {
   _subscription: ?EmitterSubscription = null;
 
   static childContextTypes = {
-    rootTag: React.PropTypes.number,
+    rootTag: PropTypes.number,
   };
 
   getChildContext(): Context {
