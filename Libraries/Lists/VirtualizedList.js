@@ -22,6 +22,7 @@ const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 const ViewabilityHelper = require('ViewabilityHelper');
+const Platform = require('Platform');
 
 const flattenStyle = require('flattenStyle');
 const infoLog = require('infoLog');
@@ -1224,12 +1225,20 @@ class CellRenderer extends React.Component {
   }
 }
 
+const verticalTransform = [{scaleY: -1}];
+const horizontalTransform = [{scaleX: -1}];
+
+if (Platform.OS === 'android') {
+  verticalTransform.push({perspective: 1});
+  horizontalTransform.push({perspective: 1});
+}
+
 const styles = StyleSheet.create({
   verticallyInverted: {
-    transform: [{scaleY: -1}],
+    transform: verticalTransform,
   },
   horizontallyInverted: {
-    transform: [{scaleX: -1}],
+    transform: horizontalTransform,
   },
 });
 
