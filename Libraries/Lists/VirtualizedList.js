@@ -1097,6 +1097,19 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     if (!frame || frame.index !== index) {
       if (getItemLayout) {
         frame = getItemLayout(data, index);
+        if (__DEV__) {
+          const frameType = PropTypes.shape({
+            length: PropTypes.number.isRequired,
+            offset: PropTypes.number.isRequired,
+            index: PropTypes.number.isRequired,
+          }).isRequired;
+          PropTypes.checkPropTypes(
+            {frame: frameType},
+            {frame},
+            'frame',
+            'VirtualizedList.getItemLayout'
+          );
+        }
       }
     }
     return frame;
