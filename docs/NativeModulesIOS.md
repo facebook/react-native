@@ -235,7 +235,7 @@ The native module should not have any assumptions about what thread it is being 
 }
 ```
 
-Similarly, if an operation may take a long time to complete, the native module should not block and can specify it's own queue to run operations on. For example, the `RCTAsyncLocalStorage` module creates it's own queue so the React queue isn't blocked waiting on potentially slow disk access:
+Similarly, if an operation may take a long time to complete, the native module should not block and can specify it's own queue to run operations on. For example, the `RCTAsyncLocalStorage` module creates its own queue so the React queue isn't blocked waiting on potentially slow disk access:
 
 ```objectivec
 - (dispatch_queue_t)methodQueue

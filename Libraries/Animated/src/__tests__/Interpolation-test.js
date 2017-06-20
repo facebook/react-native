@@ -8,11 +8,6 @@
  */
 'use strict';
 
-jest
-  .unmock('Interpolation')
-  .unmock('Easing')
-  .unmock('normalizeColor');
-
 var Interpolation = require('Interpolation');
 var Easing = require('Easing');
 

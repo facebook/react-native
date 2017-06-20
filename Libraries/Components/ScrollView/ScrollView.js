@@ -388,6 +388,15 @@ const ScrollView = React.createClass({
       'always',
       'never',
     ]),
+    /**
+     * When true, ScrollView will emit updateChildFrames data in scroll events,
+     * otherwise will not compute or emit child frame data.  This only exists
+     * to support legacy issues, `onLayout` should be used instead to retrieve
+     * frame data.
+     * The default value is false.
+     * @platform ios
+     */
+    DEPRECATED_sendUpdatedChildFrames: PropTypes.bool,
   },
 
   mixins: [ScrollResponder.Mixin],
@@ -667,7 +676,13 @@ const ScrollView = React.createClass({
         {...contentSizeChangeProps}
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
-        removeClippedSubviews={this.props.removeClippedSubviews}
+        removeClippedSubviews={
+          // Subview clipping causes issues with sticky headers on Android and
+          // would be hard to fix properly in a performant way.
+          Platform.OS === 'android' && hasStickyHeaders ?
+            false :
+            this.props.removeClippedSubviews
+        }
         collapsable={false}>
         {children}
       </ScrollContentContainerViewClass>;
@@ -681,6 +696,9 @@ const ScrollView = React.createClass({
       this.props.alwaysBounceVertical !== undefined ?
         this.props.alwaysBounceVertical :
         !this.props.horizontal;
+
+    const DEPRECATED_sendUpdatedChildFrames =
+      !!this.props.DEPRECATED_sendUpdatedChildFrames;
 
     const baseStyle = this.props.horizontal ? styles.baseHorizontal : styles.baseVertical;
     const props = {
@@ -710,6 +728,7 @@ const ScrollView = React.createClass({
       scrollEventThrottle: hasStickyHeaders ? 1 : this.props.scrollEventThrottle,
       sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ?
         true : false,
+      DEPRECATED_sendUpdatedChildFrames,
     };
 
     const { decelerationRate } = this.props;

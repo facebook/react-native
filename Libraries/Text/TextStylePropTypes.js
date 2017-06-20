@@ -11,8 +11,8 @@
  */
 'use strict';
 
-const ReactPropTypes = require('React').PropTypes;
 const ColorPropType = require('ColorPropType');
+const ReactPropTypes = require('prop-types');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
 const TextStylePropTypes = {

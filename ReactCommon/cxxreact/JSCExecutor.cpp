@@ -226,8 +226,8 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
 
-  installGlobalFunction(m_context, "nativeLoggingHook", JSNativeHooks::loggingHook);
-  installGlobalFunction(m_context, "nativePerformanceNow", JSNativeHooks::nowHook);
+  installGlobalFunction(m_context, "nativeLoggingHook", JSCNativeHooks::loggingHook);
+  installGlobalFunction(m_context, "nativePerformanceNow", JSCNativeHooks::nowHook);
 
   #if DEBUG
   installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
@@ -242,7 +242,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   addNativeTracingLegacyHooks(m_context);
   #endif
 
-  PerfLogging::installNativeHooks(m_context);
+  JSCNativeHooks::installPerfHooks(m_context);
 
   #if defined(__APPLE__) || defined(WITH_JSC_EXTRA_TRACING)
   if (JSC_JSSamplingProfilerEnabled(m_context)) {

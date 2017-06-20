@@ -8,9 +8,6 @@
  */
 'use strict';
 
-jest.unmock('MatrixMath');
-jest.unmock('fbjs/lib/invariant');
-
 var MatrixMath = require('MatrixMath');
 
 function degreesToRadians(degrees) {
