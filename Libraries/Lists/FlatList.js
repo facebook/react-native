@@ -388,6 +388,12 @@ class FlatList<ItemT>
     }
   }
 
+  setNativeProps(props: Object) {
+    if (this._listRef) {
+      this._listRef.setNativeProps(props);
+    }
+  }
+
   componentWillMount() {
     this._checkProps(this.props);
   }
