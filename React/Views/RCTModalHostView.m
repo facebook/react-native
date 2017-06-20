@@ -168,7 +168,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
 - (void)setTransparent:(BOOL)transparent
 {
-  if (_transparent == transparent) {
+  if (self.isTransparent != transparent) {
     return;
   }
 
