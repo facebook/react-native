@@ -313,6 +313,12 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     }
   }
 
+  setNativeProps(props: Object) {
+    if (this._scrollRef) {
+      this._scrollRef.setNativeProps(props);
+    }
+  }
+
   static defaultProps = {
     disableVirtualization: false,
     horizontal: false,
