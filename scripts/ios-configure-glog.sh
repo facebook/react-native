@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+PLATFORM_NAME="${PLATFORM_NAME:-iphoneos}"
+CURRENT_ARCH="${CURRENT_ARCH:-armv7}"
+
 export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
 export CXX="$CC"
 
