@@ -184,16 +184,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
     if (perspectiveArray.length > PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX) {
       float invertedCameraDistance = (float) perspectiveArray[PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX];
-      if (invertedCameraDistance < 0) {
-        float cameraDistance = -1 / invertedCameraDistance;
-        float scale = DisplayMetricsHolder.getScreenDisplayMetrics().density;
-
-        // The following converts the matrix's perspective to a camera distance
-        // such that the camera perspective looks the same on Android and iOS
-        float normalizedCameraDistance = scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
-
-        view.setCameraDistance(normalizedCameraDistance);
+      if (invertedCameraDistance == 0) {
+        // Default camera distance, before scale multiplier (1280)
+        invertedCameraDistance = 0.00078125f;
       }
+      float cameraDistance = -1 / invertedCameraDistance;
+      float scale = DisplayMetricsHolder.getScreenDisplayMetrics().density;
+
+      // The following converts the matrix's perspective to a camera distance
+      // such that the camera perspective looks the same on Android and iOS
+      float normalizedCameraDistance = scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
+      view.setCameraDistance(normalizedCameraDistance);
+
     }
   }
 
