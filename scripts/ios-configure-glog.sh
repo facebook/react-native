@@ -7,6 +7,11 @@ if [ -z "$ACTION" ] || [ -z "$BUILD_DIR" ]; then
   export CXX="$CC"
 fi
 
+# Remove automake symlink if it exists
+if [ -h "test-driver" ]; then
+    rm test-driver
+fi
+
 ./configure --host arm-apple-darwin
 
 # Fix build for tvOS
