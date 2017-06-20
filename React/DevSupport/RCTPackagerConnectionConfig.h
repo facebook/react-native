@@ -7,15 +7,16 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <React/RCTPackagerClient.h>
-
-@protocol RCTJSEnvironment;
+#import <React/RCTDefines.h>
 
 #if RCT_DEV // Only supported in dev mode
 
-@interface RCTSamplingProfilerPackagerMethod : NSObject <RCTPackagerClientMethod>
+@protocol RCTPackagerClientMethod;
 
-- (instancetype)initWithJSEnvironment:(id<RCTJSEnvironment>)jsEnvironment;
+@protocol RCTPackagerConnectionConfig
+
+@property (nonatomic, copy, readonly) NSURL *packagerURL;
+@property (nonatomic, copy, readonly) NSDictionary<NSString *, id<RCTPackagerClientMethod>> *defaultPackagerMethods;
 
 @end
 

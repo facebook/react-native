@@ -95,6 +95,11 @@ class MetroListView extends React.Component {
   getListRef() {
     return this._listRef;
   }
+  setNativeProps(props: Object) {
+    if (this._listRef) {
+      this._listRef.setNativeProps(props);
+    }
+  }
   static defaultProps: DefaultProps = {
     keyExtractor: (item, index) => item.key || String(index),
     renderScrollComponent: (props: Props) => {

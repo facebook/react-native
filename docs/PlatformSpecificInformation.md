@@ -77,6 +77,19 @@ if (Platform.Version === 25) {
 }
 ```
 
+### Detecting the iOS version
+
+On iOS, the `Version` is a result of `-[UIDevice systemVersion]`, which is a string with the current version of the operating system. An example of the system version is "10.3". For example, to detect the major version number on iOS:
+
+```javascript
+import { Platform } from 'react-native';
+
+const majorVersionIOS = parseInt(Platform.Version, 10);
+if (majorVersionIOS <= 9) {
+  console.log('Work around a change in behavior'); 
+}
+```
+
 ## Platform-specific extensions
 
 When your platform-specific code is more complex, you should consider splitting the code out into separate files. React Native will detect when a file has a `.ios.` or `.android.` extension and load the relevant platform file when required from other components.

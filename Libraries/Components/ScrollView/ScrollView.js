@@ -676,7 +676,13 @@ const ScrollView = React.createClass({
         {...contentSizeChangeProps}
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
-        removeClippedSubviews={this.props.removeClippedSubviews}
+        removeClippedSubviews={
+          // Subview clipping causes issues with sticky headers on Android and
+          // would be hard to fix properly in a performant way.
+          Platform.OS === 'android' && hasStickyHeaders ?
+            false :
+            this.props.removeClippedSubviews
+        }
         collapsable={false}>
         {children}
       </ScrollContentContainerViewClass>;

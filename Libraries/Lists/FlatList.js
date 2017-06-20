@@ -287,7 +287,7 @@ type DefaultProps = typeof defaultProps;
  *     }
  *
  * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist.html),
- * and thus inherits it's props (as well as those of `ScrollView`) that aren't explicitly listed
+ * and thus inherits its props (as well as those of `ScrollView`) that aren't explicitly listed
  * here, along with the following caveats:
  *
  * - Internal state is not preserved when content scrolls out of the render window. Make sure all
@@ -385,6 +385,12 @@ class FlatList<ItemT>
   getScrollableNode() {
     if (this._listRef) {
       return this._listRef.getScrollableNode();
+    }
+  }
+
+  setNativeProps(props: Object) {
+    if (this._listRef) {
+      this._listRef.setNativeProps(props);
     }
   }
 

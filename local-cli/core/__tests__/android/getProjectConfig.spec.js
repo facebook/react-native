@@ -11,8 +11,6 @@
 
 'use strict';
 
-require('../../__fixtures__/mockFSWorkaround');
-
 const getProjectConfig = require('../../android').projectConfig;
 const mockFS = require('mock-fs');
 const mocks = require('../../__fixtures__/android');
