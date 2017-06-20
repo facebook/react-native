@@ -313,6 +313,12 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     }
   }
 
+  setNativeProps(props: Object) {
+    if (this._scrollRef) {
+      this._scrollRef.setNativeProps(props);
+    }
+  }
+
   static defaultProps = {
     disableVirtualization: false,
     horizontal: false,
@@ -972,7 +978,12 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         (velocity < -2 && distTop < scrollingThreshold) ||
         (velocity > 2 && distBottom < scrollingThreshold);
     }
-    if (hiPri) {
+    // Only trigger high-priority updates if we've actually rendered cells,
+    // and with that size estimate, accurately compute how many cells we should render.
+    // Otherwise, it would just render as many cells as it can (of zero dimension),
+    // each time through attempting to render more (limited by maxToRenderPerBatch),
+    // starving the renderer from actually laying out the objects and computing _averageCellLength.
+    if (hiPri && this._averageCellLength) {
       // Don't worry about interactions when scrolling quickly; focus on filling content as fast
       // as possible.
       this._updateCellsToRenderBatcher.dispose({abort: true});
@@ -1086,6 +1097,19 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     if (!frame || frame.index !== index) {
       if (getItemLayout) {
         frame = getItemLayout(data, index);
+        if (__DEV__) {
+          const frameType = PropTypes.shape({
+            length: PropTypes.number.isRequired,
+            offset: PropTypes.number.isRequired,
+            index: PropTypes.number.isRequired,
+          }).isRequired;
+          PropTypes.checkPropTypes(
+            {frame: frameType},
+            {frame},
+            'frame',
+            'VirtualizedList.getItemLayout'
+          );
+        }
       }
     }
     return frame;
