@@ -151,6 +151,7 @@ public class ReactInstanceManager {
   private final boolean mSetupReactContextInBackgroundEnabled;
   private final boolean mUseSeparateUIBackgroundThread;
   private final int mMinNumShakes;
+  private final boolean mManuallyEnableDevSupport;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -225,7 +226,8 @@ public class ReactInstanceManager {
     @Nullable DevBundleDownloadListener devBundleDownloadListener,
     boolean setupReactContextInBackgroundEnabled,
     boolean useSeparateUIBackgroundThread,
-    int minNumShakes) {
+    int minNumShakes,
+    boolean manuallyEnableDevSupport) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -257,6 +259,7 @@ public class ReactInstanceManager {
     mSetupReactContextInBackgroundEnabled = setupReactContextInBackgroundEnabled;
     mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
     mMinNumShakes = minNumShakes;
+    mManuallyEnableDevSupport = manuallyEnableDevSupport;
 
     CoreModulesPackage coreModulesPackage =
       new CoreModulesPackage(
@@ -483,7 +486,7 @@ public class ReactInstanceManager {
     UiThreadUtil.assertOnUiThread();
 
     mDefaultBackButtonImpl = null;
-    if (mUseDeveloperSupport) {
+    if (mUseDeveloperSupport && !mManuallyEnableDevSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
     }
 
@@ -525,7 +528,7 @@ public class ReactInstanceManager {
     UiThreadUtil.assertOnUiThread();
 
     mDefaultBackButtonImpl = defaultBackButtonImpl;
-    if (mUseDeveloperSupport) {
+    if (mUseDeveloperSupport && !mManuallyEnableDevSupport) {
       mDevSupportManager.setDevSupportEnabled(true);
     }
 
@@ -543,7 +546,7 @@ public class ReactInstanceManager {
   public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
 
-    if (mUseDeveloperSupport) {
+    if (mUseDeveloperSupport && !mManuallyEnableDevSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
     }
 
@@ -572,7 +575,7 @@ public class ReactInstanceManager {
   public void destroy() {
     UiThreadUtil.assertOnUiThread();
 
-    if (mUseDeveloperSupport) {
+    if (mUseDeveloperSupport && !mManuallyEnableDevSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
     }
 
