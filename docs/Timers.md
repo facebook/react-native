@@ -4,7 +4,7 @@ title: Timers
 layout: docs
 category: Guides
 permalink: docs/timers.html
-next: javascript-environment
+next: debugging
 previous: accessibility
 ---
 

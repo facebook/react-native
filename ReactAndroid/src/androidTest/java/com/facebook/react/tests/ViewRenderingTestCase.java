@@ -23,7 +23,6 @@ import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
@@ -72,11 +71,10 @@ public class ViewRenderingTestCase extends ReactIntegrationTestCase {
         .addNativeModule(new DeviceInfoModule(getContext()))
         .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
-        .addJSModule(ViewRenderingTestModule.class)
         .build();
 
     mRootView = new ReactRootView(getContext());
-    mRootTag = uiManager.addMeasuredRootView(mRootView);
+    mRootTag = uiManager.addRootView(mRootView);
   }
 
   public void testViewRenderedWithCorrectProperties() {

@@ -77,8 +77,7 @@ public class TimePickerDialogTestCase extends ReactAppInstrumentationTestCase {
   @Override
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
     return super.createReactInstanceSpecForTest()
-        .addNativeModule(mRecordingModule)
-        .addJSModule(TimePickerDialogTestModule.class);
+        .addNativeModule(mRecordingModule);
   }
 
   @Override

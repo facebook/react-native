@@ -65,8 +65,6 @@
 namespace facebook {
 namespace react {
 
-using namespace detail;
-
 namespace {
 
 template<JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
@@ -81,11 +79,13 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
         JSValueRef *exception) {
       try {
         auto executor = Object::getGlobalObject(ctx).getPrivate<JSCExecutor>();
-        return (executor->*method)(argumentCount, arguments);
+        if (executor && executor->getJavaScriptContext()) { // Executor not invalidated
+          return (executor->*method)(argumentCount, arguments);
+        }
       } catch (...) {
         *exception = translatePendingCppExceptionToJSError(ctx, function);
-        return Value::makeUndefined(ctx);
       }
+      return Value::makeUndefined(ctx);
     }
   };
 
@@ -102,11 +102,13 @@ inline JSObjectGetPropertyCallback exceptionWrapMethod() {
          JSValueRef *exception) {
       try {
         auto executor = Object::getGlobalObject(ctx).getPrivate<JSCExecutor>();
-        return (executor->*method)(object, propertyName);
+        if (executor && executor->getJavaScriptContext()) { // Executor not invalidated
+          return (executor->*method)(object, propertyName);
+        }
       } catch (...) {
         *exception = translatePendingCppExceptionToJSError(ctx, object);
-        return Value::makeUndefined(ctx);
       }
+      return Value::makeUndefined(ctx);
     }
   };
 
@@ -224,8 +226,8 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
 
-  installGlobalFunction(m_context, "nativeLoggingHook", JSNativeHooks::loggingHook);
-  installGlobalFunction(m_context, "nativePerformanceNow", JSNativeHooks::nowHook);
+  installGlobalFunction(m_context, "nativeLoggingHook", JSCNativeHooks::loggingHook);
+  installGlobalFunction(m_context, "nativePerformanceNow", JSCNativeHooks::nowHook);
 
   #if DEBUG
   installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
@@ -240,7 +242,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   addNativeTracingLegacyHooks(m_context);
   #endif
 
-  PerfLogging::installNativeHooks(m_context);
+  JSCNativeHooks::installPerfHooks(m_context);
 
   #if defined(__APPLE__) || defined(WITH_JSC_EXTRA_TRACING)
   if (JSC_JSSamplingProfilerEnabled(m_context)) {
@@ -258,17 +260,19 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
 }
 
 void JSCExecutor::terminateOnJSVMThread() {
+  JSGlobalContextRef context = m_context;
+  m_context = nullptr;
+  Object::getGlobalObject(context).setPrivate(nullptr);
   m_nativeModules.reset();
 
 #ifdef WITH_INSPECTOR
-  if (canUseInspector(m_context)) {
+  if (canUseInspector(context)) {
     IInspector* pInspector = JSC_JSInspectorGetInstance(true);
-    pInspector->unregisterGlobalContext(m_context);
+    pInspector->unregisterGlobalContext(context);
   }
 #endif
 
-  JSC_JSGlobalContextRelease(m_context);
-  m_context = nullptr;
+  JSC_JSGlobalContextRelease(context);
 }
 
 #ifdef WITH_FBJSCEXTENSIONS
@@ -348,7 +352,7 @@ void JSCExecutor::loadApplicationScript(std::unique_ptr<const JSBigString> scrip
     JSValueRef jsError;
     JSValueRef result = JSC_JSEvaluateBytecodeBundle(m_context, NULL, sourceFD, jsSourceURL, &jsError);
     if (result == nullptr) {
-      formatAndThrowJSException(m_context, jsError, jsSourceURL);
+      throw JSException(m_context, jsError, jsSourceURL);
     }
   } else
 #endif
@@ -392,7 +396,7 @@ void JSCExecutor::bindBridge() throw(JSException) {
         batchedBridgeValue = requireBatchedBridge.asObject().callAsFunction({});
       }
       if (batchedBridgeValue.isUndefined()) {
-        throwJSExecutionException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
+        throw JSException("Could not get BatchedBridge, make sure your bundle is packaged correctly");
       }
     }
 
@@ -523,8 +527,7 @@ Value JSCExecutor::callFunctionSyncWithValue(
 void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {
   try {
     SystraceSection s("JSCExecutor::setGlobalVariable", "propName", propName);
-
-    auto valueToInject = Value::fromJSON(m_context, adoptString(std::move(jsonValue)));
+    auto valueToInject = Value::fromJSON(adoptString(std::move(jsonValue)));
     Object::getGlobalObject(m_context).setProperty(propName.c_str(), valueToInject);
   } catch (...) {
     std::throw_with_nested(std::runtime_error("Error setting global variable: " + propName));
@@ -628,7 +631,7 @@ JSValueRef JSCExecutor::nativeRequire(
   }
 
   double moduleId = Value(m_context, arguments[0]).asNumber();
-  if (moduleId <= 0) {
+  if (moduleId < 0) {
     throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ",
       Value(m_context, arguments[0]).toString().str()));
   }

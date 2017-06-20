@@ -4,7 +4,7 @@ title: Handling Text Input
 layout: docs
 category: The Basics
 permalink: docs/handling-text-input.html
-next: using-a-scrollview
+next: handling-touches
 previous: flexbox
 ---
 
@@ -41,7 +41,7 @@ export default class PizzaTranslator extends Component {
 }
 
 // skip this line if using Create React Native App
-AppRegistry.registerComponent('PizzaTranslator', () => PizzaTranslator);
+AppRegistry.registerComponent('AwesomeProject', () => PizzaTranslator);
 ```
 
 In this example, we store `text` in the state, because it changes over time.

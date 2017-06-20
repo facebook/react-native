@@ -16,9 +16,12 @@
 const JSTimersExecution = require('JSTimersExecution');
 const Platform = require('Platform');
 
+const performanceNow = require('fbjs/lib/performanceNow');
+
 const {Timing} = require('NativeModules');
 
 import type {JSTimerType} from 'JSTimersExecution';
+import type {ExtendedError} from 'parseErrorStack';
 
 // Returns a free index if one is available, and the next consecutive index otherwise.
 function _getFreeIndex(): number {
@@ -37,9 +40,9 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
   JSTimersExecution.types[freeIndex] = type;
   if (__DEV__) {
     const parseErrorStack = require('parseErrorStack');
-    const e = (new Error() : any);
-    e.framesToPop = 1;
-    const stack = parseErrorStack(e);
+    const error : ExtendedError = new Error();
+    error.framesToPop = 1;
+    const stack = parseErrorStack(error);
     if (stack) {
       JSTimersExecution.identifiers[freeIndex] = stack.shift();
     }
@@ -131,14 +134,43 @@ const JSTimers = {
   /**
    * @param {function} func Callback to be invoked every frame and provided
    * with time remaining in frame.
+   * @param {?object} options
    */
-  requestIdleCallback: function(func : Function) {
+  requestIdleCallback: function(func : Function, options : ?Object) {
     if (JSTimersExecution.requestIdleCallbacks.length === 0) {
       Timing.setSendIdleEvents(true);
     }
 
-    const id = _allocateCallback(func, 'requestIdleCallback');
+    const timeout = options && options.timeout;
+    const id = _allocateCallback(
+      timeout != null ?
+        deadline => {
+          const timeoutId = JSTimersExecution.requestIdleCallbackTimeouts.get(id);
+          if (timeoutId) {
+            JSTimers.clearTimeout(timeoutId);
+            JSTimersExecution.requestIdleCallbackTimeouts.delete(id);
+          }
+          return func(deadline);
+        } :
+        func,
+      'requestIdleCallback'
+    );
     JSTimersExecution.requestIdleCallbacks.push(id);
+
+    if (timeout != null) {
+      const timeoutId = JSTimers.setTimeout(() => {
+        const index = JSTimersExecution.requestIdleCallbacks.indexOf(id);
+        if (index > -1) {
+          JSTimersExecution.requestIdleCallbacks.splice(index, 1);
+          JSTimersExecution.callTimer(id, performanceNow(), true);
+        }
+        JSTimersExecution.requestIdleCallbackTimeouts.delete(id);
+        if (JSTimersExecution.requestIdleCallbacks.length === 0) {
+          Timing.setSendIdleEvents(false);
+        }
+      }, timeout);
+      JSTimersExecution.requestIdleCallbackTimeouts.set(id, timeoutId);
+    }
     return id;
   },
 
@@ -147,6 +179,12 @@ const JSTimers = {
     const index = JSTimersExecution.requestIdleCallbacks.indexOf(timerID);
     if (index !== -1) {
       JSTimersExecution.requestIdleCallbacks.splice(index, 1);
+    }
+
+    const timeoutId = JSTimersExecution.requestIdleCallbackTimeouts.get(timerID);
+    if (timeoutId) {
+      JSTimers.clearTimeout(timeoutId);
+      JSTimersExecution.requestIdleCallbackTimeouts.delete(timerID);
     }
 
     if (JSTimersExecution.requestIdleCallbacks.length === 0) {
