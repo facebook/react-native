@@ -13,7 +13,7 @@
 
 var deprecatedPropType = require('deprecatedPropType');
 
-var ReactPropTypes = require('React').PropTypes;
+var ReactPropTypes = require('prop-types');
 
 var TransformMatrixPropType = function(
   props : Object,
