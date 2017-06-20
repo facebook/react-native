@@ -25,6 +25,9 @@ function fetch_and_unpack () {
              exit 1
          fi
          cd "$dir"
+         if [ -h "test-driver" ]; then
+             rm test-driver
+         fi
          eval "${cmd:-true}")
     fi
 }
