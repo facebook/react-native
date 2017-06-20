@@ -95,30 +95,30 @@ const _isConnectedSubscriptions = new Map();
  *   handleFirstConnectivityChange
  * );
  * ```
- * 
+ *
  * ### ConnectionType enum
- * 
+ *
  * `ConnectionType` describes the type of connection the device is using to communicate with the network.
- * 
+ *
  * Cross platform values for `ConnectionType`:
  * - `none` - device is offline
  * - `wifi` - device is online and connected via wifi, or is the iOS simulator
  * - `cellular` - device is connected via Edge, 3G, WiMax, or LTE
  * - `unknown` - error case and the network status is unknown
- * 
+ *
  * Android-only values for `ConnectionType`:
  * - `bluetooth` - device is connected via Bluetooth
  * - `ethernet` - device is connected via Ethernet
  * - `wimax` - device is connected via WiMAX
  *
  * ### EffectiveConnectionType enum
- * 
+ *
  * Cross platform values for `EffectiveConnectionType`:
  * - `2g`
- * - `3g` 
- * - `4g` 
- * - `unknown` 
- * 
+ * - `3g`
+ * - `4g`
+ * - `unknown`
+ *
  * ### Android
  *
  * To request network info, you need to add the following line to your
@@ -163,17 +163,17 @@ const _isConnectedSubscriptions = new Map();
  *   handleFirstConnectivityChange
  * );
  * ```
- * 
+ *
  * ### Connectivity Types (deprecated)
- * 
+ *
  * The following connectivity types are deprecated. They're used by the deprecated APIs `fetch` and the `change` event.
- * 
+ *
  * iOS connectivity types (deprecated):
  * - `none` - device is offline
  * - `wifi` - device is online and connected via wifi, or is the iOS simulator
  * - `cell` - device is connected via Edge, 3G, WiMax, or LTE
  * - `unknown` - error case and the network status is unknown
- * 
+ *
  * Android connectivity types (deprecated).
  * - `NONE` - device is offline
  * - `BLUETOOTH` - The Bluetooth data connection.
@@ -194,7 +194,7 @@ const _isConnectedSubscriptions = new Map();
 const NetInfo = {
   /**
    * Adds an event handler. Supported events:
-   * 
+   *
    * - `connectionchange`: Fires when the network status changes. The argument to the event
    *   handler is an object with keys:
    *   - `type`: A `ConnectionType` (listed above)
@@ -219,7 +219,7 @@ const NetInfo = {
         }
       );
     } else if (eventName === 'change') {
-      console.warn(`NetInfo's 'change' event is deprecated. Listen to the 'connectionchange' event instead.`);
+      console.warn('NetInfo\'s "change" event is deprecated. Listen to the "connectionchange" event instead.');
 
       listener = NetInfoEventEmitter.addListener(
         DEVICE_CONNECTIVITY_EVENT,
@@ -228,7 +228,7 @@ const NetInfo = {
         }
       );
     } else {
-      console.warn(`Trying to subscribe to unknown event: "${type}"`);
+      console.warn('Trying to subscribe to unknown event: "' + eventName + '"');
       return {
         remove: () => {}
       };
@@ -274,7 +274,7 @@ const NetInfo = {
       return {
         type: resp.connectionType,
         effectiveType: resp.effectiveConnectionType,
-      }
+      };
     });
   },
 
