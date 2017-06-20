@@ -52,7 +52,7 @@ Before we write the code to fetch actual Rotten Tomatoes data let's mock some da
 
 ```javascript
 var MOCKED_MOVIES_DATA = [
-  {title: 'Title', year: '2015', posters: {thumbnail: 'http://i.imgur.com/UePbdph.jpg'}},
+  {title: 'Title', year: '2015', posters: {thumbnail: 'https://i.imgur.com/UePbdph.jpg'}},
 ];
 ```
 
