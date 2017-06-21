@@ -87,6 +87,20 @@
   [subview removeFromSuperview];
 }
 
+#pragma mark - Display
+
+- (YGDisplay)reactDisplay
+{
+  return self.isHidden ? YGDisplayNone : YGDisplayFlex;
+}
+
+- (void)setReactDisplay:(YGDisplay)display
+{
+  self.hidden = display == YGDisplayNone;
+}
+
+#pragma mark - Layout Direction
+
 - (UIUserInterfaceLayoutDirection)reactLayoutDirection
 {
   if ([self respondsToSelector:@selector(semanticContentAttribute)]) {
@@ -107,6 +121,8 @@
     objc_setAssociatedObject(self, @selector(reactLayoutDirection), @(layoutDirection), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   }
 }
+
+#pragma mark - zIndex
 
 - (NSInteger)reactZIndex
 {

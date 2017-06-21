@@ -98,6 +98,7 @@ public class DevServerHelper {
 
   public interface PackagerCommandListener {
     void onPackagerReloadCommand();
+    void onPackagerDevMenuCommand();
     void onCaptureHeapCommand(final Responder responder);
     void onPokeSamplingProfilerCommand(final Responder responder);
   }
@@ -143,6 +144,12 @@ public class DevServerHelper {
           @Override
           public void onNotification(@Nullable Object params) {
             commandListener.onPackagerReloadCommand();
+          }
+        });
+        handlers.put("devMenu", new NotificationOnlyHandler() {
+          @Override
+          public void onNotification(@Nullable Object params) {
+            commandListener.onPackagerDevMenuCommand();
           }
         });
         handlers.put("captureHeap", new RequestOnlyHandler() {

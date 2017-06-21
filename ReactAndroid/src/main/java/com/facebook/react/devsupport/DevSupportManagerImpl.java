@@ -683,6 +683,16 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
+  public void onPackagerDevMenuCommand() {
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        showDevOptionsDialog();
+      }
+    });
+  }
+
+  @Override
   public void onCaptureHeapCommand(final Responder responder) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override

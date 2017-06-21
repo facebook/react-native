@@ -257,6 +257,7 @@ RCT_VIEW_BORDER_RADIUS_PROPERTY(TopRight)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomLeft)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomRight)
 
+RCT_REMAP_VIEW_PROPERTY(display, reactDisplay, YGDisplay)
 RCT_REMAP_VIEW_PROPERTY(zIndex, reactZIndex, NSInteger)
 
 #pragma mark - ShadowView properties
