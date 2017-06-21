@@ -69,6 +69,12 @@ public interface CatalystInstance
   Collection<NativeModule> getNativeModules();
 
   /**
+   * This method permits a CatalystInstance to extend the known
+   * Native modules. This provided registry contains only the new modules to load.
+   */
+  void extendNativeModules(NativeModuleRegistry modules);
+
+  /**
    * Adds a idle listener for this Catalyst instance. The listener will receive notifications
    * whenever the bridge transitions from idle to busy and vice-versa, where the busy state is
    * defined as there being some non-zero number of calls to JS that haven't resolved via a

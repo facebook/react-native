@@ -73,6 +73,7 @@ class Instance {
 
   std::shared_ptr<InstanceCallback> callback_;
   std::unique_ptr<NativeToJsBridge> nativeToJsBridge_;
+  std::shared_ptr<ModuleRegistry> moduleRegistry_;
 
   std::mutex m_syncMutex;
   std::condition_variable m_syncCV;

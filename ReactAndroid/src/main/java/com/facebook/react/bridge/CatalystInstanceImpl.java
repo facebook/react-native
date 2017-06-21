@@ -157,6 +157,26 @@ public class CatalystInstanceImpl implements CatalystInstance {
     }
   }
 
+  /**
+   * This method and the native below permits a CatalystInstance to extend the known
+   * Native modules. This registry contains only the new modules to load. The
+   * registry {@code mNativeModuleRegistry} updates internally to contain all the new modules, and generates
+   * the new registry for extracting just the new collections.
+   */
+  @Override
+  public void extendNativeModules(NativeModuleRegistry modules) {
+    //Extend the Java-visible registry of modules
+    mNativeModuleRegistry.registerModules(modules);
+    Collection<JavaModuleWrapper> javaModules = modules.getJavaModules(this);
+    Collection<ModuleHolder> cxxModules = modules.getCxxModules();
+    //Extend the Cxx-visible registry of modules wrapped in appropriate interfaces
+    jniExtendNativeModules(javaModules, cxxModules);
+  }
+
+  private native void jniExtendNativeModules(
+    Collection<JavaModuleWrapper> javaModules,
+    Collection<ModuleHolder> cxxModules);
+
   private native void initializeBridge(
       ReactCallback callback,
       JavaScriptExecutor jsExecutor,
