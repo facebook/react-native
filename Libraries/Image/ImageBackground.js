@@ -14,6 +14,7 @@
 
 const Image = require('Image');
 const React = require('React');
+const StyleSheet = require('StyleSheet');
 const View = require('View');
 
 /**
@@ -49,12 +50,8 @@ class ImageBackground extends React.Component {
         <Image
           {...props}
           style={[
+            StyleSheet.absoluteFill,
             {
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
               // Temporary Workaround:
               // Current (imperfect yet) implementation of <Image> overwrites width and height styles
               // (which is not quite correct), and these styles conflict with explicitly set styles

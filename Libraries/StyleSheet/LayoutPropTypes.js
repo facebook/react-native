@@ -32,7 +32,10 @@ var LayoutPropTypes = {
    *  It works similarly to `display` in CSS, but only support 'flex' and 'none'.
    *  'flex' is the default.
    */
-  display: ReactPropTypes.string,
+  display: ReactPropTypes.oneOf([
+    'none',
+    'flex',
+  ]),
 
   /** `width` sets the width of this component.
    *
@@ -429,6 +432,8 @@ var LayoutPropTypes = {
    *  It works like `overflow` in CSS (default: visible).
    *  See https://developer.mozilla.org/en/docs/Web/CSS/overflow
    *  for more details.
+   *  `overflow: visible` only works on iOS. On Android, all views will clip
+   *  their children.
    */
   overflow: ReactPropTypes.oneOf([
     'visible',

@@ -69,6 +69,13 @@
     "pinned": true
   },
   {
+    "name": "UberEATS",
+    "icon": "http://is5.mzstatic.com/image/thumb/Purple111/v4/5f/e9/00/5fe90072-c9ce-87c3-bdfe-8611f9325f0e/source/175x175bb.jpg",
+    "infoLink": "https://eng.uber.com/ubereats-react-native/",
+    "infoTitle": "Powering UberEATS with React Native and Uber Engineering",
+    "pinned": true
+  },
+  {
     "name": "Baidu Mobile (手机百度)",
     "icon": "http://a3.mzstatic.com/us/r30/Purple62/v4/90/7c/9b/907c9b4e-556d-1a45-45d4-0ea801719abd/icon175x175.png",
     "linkPlayStore": "http://shouji.baidu.com/software/9896302.html",
@@ -194,10 +201,12 @@
     "pinned": false
   },
   {
-    "name": "UberEATS",
-    "icon": "http://is5.mzstatic.com/image/thumb/Purple111/v4/5f/e9/00/5fe90072-c9ce-87c3-bdfe-8611f9325f0e/source/175x175bb.jpg",
-    "infoLink": "https://eng.uber.com/ubereats-react-native/",
-    "infoTitle": "Powering UberEATS with React Native and Uber Engineering",
+    "name": "Wix.com",
+    "icon": "http://is3.mzstatic.com/image/thumb/Purple127/v4/2e/57/7c/2e577c81-6de3-4a23-516c-31200401471a/source/350x350bb.jpg",
+    "linkAppStore": "https://itunes.apple.com/us/app/wix-com/id1099748482?mt=8",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.wix.android&hl=en",
+    "infoLink": "https://www.youtube.com/watch?v=abSNo2P9mMM",
+    "infoTitle": "Building a React Native App for 80 Million Users",
     "pinned": false
   }
 ]
