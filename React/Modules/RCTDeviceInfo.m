@@ -106,6 +106,7 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 - (void)_interfaceOrientationDidChange
 {
+#if !TARGET_OS_TV
   UIInterfaceOrientation nextOrientation = [RCTSharedApplication() statusBarOrientation];
 
   // Update when we go from portrait to landscape, or landscape to portrait
@@ -121,6 +122,7 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
       }
 
   _currentInterfaceOrientation = nextOrientation;
+#endif
 }
 
 
