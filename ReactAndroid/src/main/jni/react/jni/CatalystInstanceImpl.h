@@ -52,6 +52,10 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
       jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules);
 
+  void extendNativeModules(
+    jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
+    jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules);
+
   /**
    * Sets the source URL of the underlying bridge without loading any JS code.
    */
@@ -74,6 +78,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   // This should be the only long-lived strong reference, but every C++ class
   // will have a weak reference.
   std::shared_ptr<Instance> instance_;
+  std::shared_ptr<ModuleRegistry> moduleRegistry_;
   std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
   std::shared_ptr<JMessageQueueThread> uiBackgroundMessageQueue_;
 };

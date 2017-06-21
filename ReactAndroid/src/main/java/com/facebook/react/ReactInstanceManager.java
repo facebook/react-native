@@ -287,6 +287,7 @@ public class ReactInstanceManager {
    *
    * Called from UI thread.
    */
+  @ThreadConfined(UI)
   public void createReactContextInBackground() {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.createReactContextInBackground()");
     Assertions.assertCondition(
@@ -297,6 +298,33 @@ public class ReactInstanceManager {
 
     mHasStartedCreatingInitialContext = true;
     recreateReactContextInBackgroundInner();
+  }
+
+  @ThreadConfined(UI)
+  public void registerAdditionalPackages(List<ReactPackage> packages) {
+    if (packages == null || packages.isEmpty()) {
+      return;
+    }
+
+    // CatalystInstance hasn't been created, so add packages for later evaluation
+    if (!hasStartedCreatingInitialContext()) {
+      for (ReactPackage p : packages) {
+        if (!mPackages.contains(p)) {
+          mPackages.add(p);
+        }
+      }
+      return;
+    }
+
+    ReactContext context = getCurrentReactContext();
+    CatalystInstance catalystInstance = context != null ? context.getCatalystInstance() : null;
+
+    Assertions.assertNotNull(catalystInstance, "CatalystInstance null after hasStartedCreatingInitialContext true.");
+
+    final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
+
+    NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, packages, true);
+    catalystInstance.extendNativeModules(nativeModuleRegistry);
   }
 
   /**
@@ -806,7 +834,6 @@ public class ReactInstanceManager {
     if (!mSetupReactContextInBackgroundEnabled) {
       UiThreadUtil.assertOnUiThread();
     }
-    Assertions.assertCondition(mCurrentReactContext == null);
     mCurrentReactContext = Assertions.assertNotNull(reactContext);
     CatalystInstance catalystInstance =
       Assertions.assertNotNull(reactContext.getCatalystInstance());
@@ -922,56 +949,23 @@ public class ReactInstanceManager {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.createReactContext()");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START);
     final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
-    NativeModuleRegistryBuilder nativeModuleRegistryBuilder = new NativeModuleRegistryBuilder(
-      reactContext,
-      this,
-      mLazyNativeModulesEnabled);
+
     if (mUseDeveloperSupport) {
       reactContext.setNativeModuleCallExceptionHandler(mDevSupportManager);
     }
 
-    ReactMarker.logMarker(PROCESS_PACKAGES_START);
-    Systrace.beginSection(
-        TRACE_TAG_REACT_JAVA_BRIDGE,
-        "createAndProcessCoreModulesPackage");
-    try {
-      CoreModulesPackage coreModulesPackage =
-        new CoreModulesPackage(
-          this,
-          mBackBtnHandler,
-          mUIImplementationProvider,
-          mLazyViewManagersEnabled);
-      processPackage(coreModulesPackage, nativeModuleRegistryBuilder);
-    } finally {
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-    }
-
-    // TODO(6818138): Solve use-case of native/js modules overriding
-    for (ReactPackage reactPackage : mPackages) {
-      Systrace.beginSection(
-          TRACE_TAG_REACT_JAVA_BRIDGE,
-          "createAndProcessCustomReactPackage");
-      try {
-        processPackage(reactPackage, nativeModuleRegistryBuilder);
-      } finally {
-        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-      }
-    }
-    ReactMarker.logMarker(PROCESS_PACKAGES_END);
-
-    ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_START);
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "buildNativeModuleRegistry");
-    NativeModuleRegistry nativeModuleRegistry;
-    try {
-       nativeModuleRegistry = nativeModuleRegistryBuilder.build();
-    } finally {
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-      ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_END);
-    }
+    CoreModulesPackage coreModulesPackage =
+      new CoreModulesPackage(
+        this,
+        mBackBtnHandler,
+        mUIImplementationProvider,
+        mLazyViewManagersEnabled);
+    mPackages.add(coreModulesPackage);
+    NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, mPackages, false);
 
     NativeModuleCallExceptionHandler exceptionHandler = mNativeModuleCallExceptionHandler != null
-        ? mNativeModuleCallExceptionHandler
-        : mDevSupportManager;
+      ? mNativeModuleCallExceptionHandler
+      : mDevSupportManager;
     CatalystInstanceImpl.Builder catalystInstanceBuilder = new CatalystInstanceImpl.Builder()
       .setReactQueueConfigurationSpec(mUseSeparateUIBackgroundThread ?
         ReactQueueConfigurationSpec.createWithSeparateUIBackgroundThread() :
@@ -1004,6 +998,49 @@ public class ReactInstanceManager {
     catalystInstance.runJSBundle();
 
     return reactContext;
+  }
+
+  private NativeModuleRegistry processPackages(
+    ReactApplicationContext reactContext,
+    List<ReactPackage> packages,
+    boolean checkAndUpdatePackageMembership) {
+    NativeModuleRegistryBuilder nativeModuleRegistryBuilder = new NativeModuleRegistryBuilder(
+      reactContext,
+      this,
+      mLazyNativeModulesEnabled);
+
+    ReactMarker.logMarker(PROCESS_PACKAGES_START);
+
+    // TODO(6818138): Solve use-case of native modules overriding
+    for (ReactPackage reactPackage : packages) {
+      if (checkAndUpdatePackageMembership && mPackages.contains(reactPackage)) {
+        continue;
+      }
+      Systrace.beginSection(
+        TRACE_TAG_REACT_JAVA_BRIDGE,
+        "createAndProcessCustomReactPackage");
+      try {
+        if (checkAndUpdatePackageMembership) {
+          mPackages.add(reactPackage);
+        }
+        processPackage(reactPackage, nativeModuleRegistryBuilder);
+      } finally {
+        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      }
+    }
+    ReactMarker.logMarker(PROCESS_PACKAGES_END);
+
+    ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_START);
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "buildNativeModuleRegistry");
+    NativeModuleRegistry nativeModuleRegistry;
+    try {
+      nativeModuleRegistry = nativeModuleRegistryBuilder.build();
+    } finally {
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_END);
+    }
+
+    return nativeModuleRegistry;
   }
 
   private void processPackage(

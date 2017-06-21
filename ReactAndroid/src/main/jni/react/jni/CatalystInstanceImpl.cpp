@@ -97,6 +97,7 @@ void CatalystInstanceImpl::registerNatives() {
   registerHybrid({
     makeNativeMethod("initHybrid", CatalystInstanceImpl::initHybrid),
     makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
+    makeNativeMethod("jniExtendNativeModules", CatalystInstanceImpl::extendNativeModules),
     makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
     makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),
     makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
@@ -147,18 +148,32 @@ void CatalystInstanceImpl::initializeBridge(
   // don't need jsModuleDescriptions any more, all the way up and down the
   // stack.
 
+  moduleRegistry_ = std::make_shared<ModuleRegistry>(
+    buildNativeModuleList(
+       std::weak_ptr<Instance>(instance_),
+       javaModules,
+       cxxModules,
+       moduleMessageQueue_,
+       uiBackgroundMessageQueue_));
+
   instance_->initializeBridge(
     folly::make_unique<JInstanceCallback>(
     callback,
     uiBackgroundMessageQueue_ != NULL ? uiBackgroundMessageQueue_ : moduleMessageQueue_),
     jseh->getExecutorFactory(),
     folly::make_unique<JMessageQueueThread>(jsQueue),
-    buildModuleRegistry(
-      std::weak_ptr<Instance>(instance_),
-      javaModules,
-      cxxModules,
-      moduleMessageQueue_,
-      uiBackgroundMessageQueue_));
+    moduleRegistry_);
+}
+
+void CatalystInstanceImpl::extendNativeModules(
+    jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
+    jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules) {
+  moduleRegistry_->registerModules(buildNativeModuleList(
+    std::weak_ptr<Instance>(instance_),
+    javaModules,
+    cxxModules,
+    moduleMessageQueue_,
+    uiBackgroundMessageQueue_));
 }
 
 void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {

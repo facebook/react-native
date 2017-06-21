@@ -197,8 +197,8 @@ public class ReactInstanceManagerBuilder {
 
   public ReactInstanceManagerBuilder setUseSeparateUIBackgroundThread(
     boolean useSeparateUIBackgroundThread) {
-   mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
-   return this;
+    mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
+    return this;
   }
 
   public ReactInstanceManagerBuilder setMinNumShakes(int minNumShakes) {
