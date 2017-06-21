@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
+#import <yoga/YGEnums.h>
 
 @class RCTShadowView;
 
@@ -29,6 +30,13 @@
  * Defaults to `LeftToRight` in case of ambiguity.
  */
 @property (nonatomic, assign) UIUserInterfaceLayoutDirection reactLayoutDirection;
+
+/**
+ * Yoga `display` style property. Can be `flex` or `none`.
+ * Defaults to `flex`.
+ * May be used to temporary hide the view in a very efficient way.
+ */
+@property (nonatomic, assign) YGDisplay reactDisplay;
 
 /**
  * The z-index of the view.
