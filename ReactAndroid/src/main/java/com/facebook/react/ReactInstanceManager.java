@@ -960,7 +960,7 @@ public class ReactInstanceManager {
         mBackBtnHandler,
         mUIImplementationProvider,
         mLazyViewManagersEnabled);
-    mPackages.add(coreModulesPackage);
+    mPackages.add(0,coreModulesPackage);
     NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, mPackages, false);
 
     NativeModuleCallExceptionHandler exceptionHandler = mNativeModuleCallExceptionHandler != null
