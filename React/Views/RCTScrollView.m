@@ -525,11 +525,9 @@ static inline void RCTApplyTranformationAccordingLayoutDirection(UIView *view, U
   BOOL isHorizontal = [self isHorizontal:_scrollView];
   CGPoint offset;
   if (isHorizontal) {
-    CGFloat offsetX = _scrollView.contentSize.width - _scrollView.bounds.size.width;
-    offset = CGPointMake(MAX(offsetX, 0), 0);
+    offset = CGPointMake(fmax(_scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right, 0), 0);
   } else {
-    CGFloat offsetY = _scrollView.contentSize.height - _scrollView.bounds.size.height;
-    offset = CGPointMake(0, MAX(offsetY, 0));
+    offset = CGPointMake(0, fmax(_scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom, 0));
   }
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
     // Ensure at least one scroll event will fire
