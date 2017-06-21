@@ -53,6 +53,10 @@ public class PackagerConnectionSettings {
     return host;
   }
 
+  public String getInspectorServerHost() {
+    return AndroidInfoHelpers.getInspectorProxyHost();
+  }
+
   public @Nullable String getPackageName() {
     return mPackageName;
   }
