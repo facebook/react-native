@@ -25,6 +25,11 @@
 - (void)removeReactSubview:(UIView *)subview NS_REQUIRES_SUPER;
 
 /**
+ * The native id of the view, used to locate view from native codes
+ */
+@property (nonatomic, copy) NSString *nativeID;
+
+/**
  * Layout direction of the view.
  * Internally backed to `semanticContentAttribute` property.
  * Defaults to `LeftToRight` in case of ambiguity.
