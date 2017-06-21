@@ -12,7 +12,7 @@ At [Shoutem](https://shoutem.github.io/), we've been fortunate enough to work wi
 
 ## Monthly meeting
 
-On `6/14/2017` we had the first session of the monthly meeting. The mission for React Native monthly is simple and straightforward: **improve the React Native community**. Presenting teams efforts eases collaboration between teams done offline from the meeting.
+On `6/14/2017` we had the first session of the monthly meeting. The mission for React Native monthly is simple and straightforward: **improve the React Native community**. Presenting team's efforts eases collaboration between teams done offline from the meeting.
 
 ## Teams
 
