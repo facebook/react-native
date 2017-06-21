@@ -93,20 +93,19 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
   });
 }
 
+#if !TARGET_OS_TV
+
 - (void)interfaceOrientationDidChange
 {
-#if !TARGET_OS_TV
   __weak typeof(self) weakSelf = self;
   RCTExecuteOnMainQueue(^{
     [weakSelf _interfaceOrientationDidChange];
   });
-#endif
 }
 
 
 - (void)_interfaceOrientationDidChange
 {
-#if !TARGET_OS_TV
   UIInterfaceOrientation nextOrientation = [RCTSharedApplication() statusBarOrientation];
 
   // Update when we go from portrait to landscape, or landscape to portrait
@@ -122,8 +121,9 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
       }
 
   _currentInterfaceOrientation = nextOrientation;
-#endif
 }
+
+#endif // TARGET_OS_TV
 
 
 @end
