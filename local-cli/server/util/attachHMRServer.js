@@ -17,6 +17,7 @@ const url = require('url');
 
 import type {ResolutionResponse} from './getInverseDependencies';
 import type {Server as HTTPServer} from 'http';
+import type {Server as HTTPSServer} from 'https';
 
 const blacklist = [
   'Libraries/Utilities/HMRClient.js',
@@ -57,7 +58,7 @@ type PackagerServer<TModule> = {
 };
 
 type HMROptions<TModule> = {
-  httpServer: HTTPServer,
+  httpServer: HTTPServer | HTTPSServer,
   packagerServer: PackagerServer<TModule>,
   path: string,
 };

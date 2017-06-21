@@ -9,7 +9,7 @@
 
 'use strict';
 
-jest.disableAutomock().dontMock('../parseIOSDevicesList');
+jest.dontMock('../parseIOSDevicesList');
 var parseIOSDevicesList = require('../parseIOSDevicesList');
 
 describe('parseIOSDevicesList', () => {

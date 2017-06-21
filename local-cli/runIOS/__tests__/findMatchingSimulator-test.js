@@ -9,7 +9,7 @@
  */
 'use strict';
 
-jest.disableAutomock().dontMock('../findMatchingSimulator');
+jest.dontMock('../findMatchingSimulator');
 
 const findMatchingSimulator = require('../findMatchingSimulator');
 

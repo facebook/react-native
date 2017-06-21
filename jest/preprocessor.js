@@ -39,6 +39,7 @@ module.exports = {
         inlineRequires: true,
         platform: '',
         projectRoot: '',
+        retainLines: true,
       },
       src,
     }).code;

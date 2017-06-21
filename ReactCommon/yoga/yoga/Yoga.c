@@ -2278,6 +2278,16 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       }
     }
 
+    // The total flex factor needs to be floored to 1.
+    if (totalFlexGrowFactors > 0 && totalFlexGrowFactors < 1) {
+      totalFlexGrowFactors = 1;
+    }
+
+    // The total flex shrink factor needs to be floored to 1.
+    if (totalFlexShrinkScaledFactors > 0 && totalFlexShrinkScaledFactors < 1) {
+      totalFlexShrinkScaledFactors = 1;
+    }
+
     // If we don't need to measure the cross axis, we can skip the entire flex
     // step.
     const bool canSkipFlex = !performLayout && measureModeCrossDim == YGMeasureModeExactly;

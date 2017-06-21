@@ -8,8 +8,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 var PlatformIOS = require('../Platform.ios');
 var PlatformAndroid = require('../Platform.android');
 

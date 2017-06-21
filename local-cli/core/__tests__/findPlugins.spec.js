@@ -11,8 +11,6 @@
 
 'use strict';
 
-jest.autoMockOff();
-
 const findPlugins = require('../findPlugins');
 const path = require('path');
 

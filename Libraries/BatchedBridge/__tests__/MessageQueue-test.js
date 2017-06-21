@@ -9,9 +9,6 @@
  */
 'use strict';
 
-// const MessageQueueTestConfig = require('MessageQueueTestConfig');
-jest.disableAutomock();
-
 let MessageQueue;
 let MessageQueueTestModule;
 let queue;

@@ -16,10 +16,12 @@
 const JSTimersExecution = require('JSTimersExecution');
 const Platform = require('Platform');
 
-const {Timing} = require('NativeModules');
 const performanceNow = require('fbjs/lib/performanceNow');
 
+const {Timing} = require('NativeModules');
+
 import type {JSTimerType} from 'JSTimersExecution';
+import type {ExtendedError} from 'parseErrorStack';
 
 // Returns a free index if one is available, and the next consecutive index otherwise.
 function _getFreeIndex(): number {
@@ -38,9 +40,9 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
   JSTimersExecution.types[freeIndex] = type;
   if (__DEV__) {
     const parseErrorStack = require('parseErrorStack');
-    const e = (new Error() : any);
-    e.framesToPop = 1;
-    const stack = parseErrorStack(e);
+    const error : ExtendedError = new Error();
+    error.framesToPop = 1;
+    const stack = parseErrorStack(error);
     if (stack) {
       JSTimersExecution.identifiers[freeIndex] = stack.shift();
     }

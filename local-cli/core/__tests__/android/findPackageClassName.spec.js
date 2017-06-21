@@ -11,10 +11,6 @@
 
 'use strict';
 
-jest.autoMockOff();
-
-require('../../__fixtures__/mockFSWorkaround');
-
 const findPackageClassName = require('../../android/findPackageClassName');
 const mockFS = require('mock-fs');
 const mocks = require('../../__fixtures__/android');

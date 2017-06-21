@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.disableAutomock().dontMock('../getAssetDestPathIOS');
+jest.dontMock('../getAssetDestPathIOS');
 
 const getAssetDestPathIOS = require('../getAssetDestPathIOS');
 
