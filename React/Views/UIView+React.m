@@ -27,6 +27,16 @@
   objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+- (NSNumber *)nativeID
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setNativeID:(NSNumber *)nativeID
+{
+  objc_setAssociatedObject(self, @selector(nativeID), nativeID, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
 #if RCT_DEV
 
 - (RCTShadowView *)_DEBUG_reactShadowView
@@ -87,6 +97,20 @@
   [subview removeFromSuperview];
 }
 
+#pragma mark - Display
+
+- (YGDisplay)reactDisplay
+{
+  return self.isHidden ? YGDisplayNone : YGDisplayFlex;
+}
+
+- (void)setReactDisplay:(YGDisplay)display
+{
+  self.hidden = display == YGDisplayNone;
+}
+
+#pragma mark - Layout Direction
+
 - (UIUserInterfaceLayoutDirection)reactLayoutDirection
 {
   if ([self respondsToSelector:@selector(semanticContentAttribute)]) {
@@ -107,6 +131,8 @@
     objc_setAssociatedObject(self, @selector(reactLayoutDirection), @(layoutDirection), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   }
 }
+
+#pragma mark - zIndex
 
 - (NSInteger)reactZIndex
 {
