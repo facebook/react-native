@@ -2,12 +2,24 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog/</id>
     <title>React Native Blog</title>
-    <updated>2017-03-13T00:00:00Z</updated>
+    <updated>2017-06-21T00:00:00Z</updated>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog/"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
     <rights>Copyright © 2017 Facebook Inc.</rights>
     <generator>Feed for Node.js</generator>
+    <entry>
+        <title type="html"><![CDATA[React Native Monthly #1]]></title>
+        <id>https://facebook.github.io/react-native/blog/2017/06/21/react-native-monthly-1.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/06/21/react-native-monthly-1.html">
+        </link>
+        <updated>2017-06-21T00:00:00Z</updated>
+        <summary type="html"><![CDATA[At Shoutem, we've been fortunate enough to work with React Native from its very beginnings. We decided we wanted to be part of the amazing community from day one. Soon enough, we realized it's almost impossible to keep up with the pace the community was growing and improving. That's why we decided to organize a monthly meeting where all major React Native contributors can briefly present what their efforts and plans are.]]></summary>
+        <author>
+            <name>Tomislav Tenodi</name>
+            <uri>https://github.com/tenodi</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Introducing Create React Native App]]></title>
         <id>https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html</id>
