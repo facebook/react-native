@@ -165,9 +165,16 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   if (!YGNodeGetHasNewLayout(node)) {
     return;
   }
-  YGNodeSetHasNewLayout(node, false);
 
   RCTAssert(!YGNodeIsDirty(node), @"Attempt to get layout metrics from dirtied Yoga node.");
+
+  YGNodeSetHasNewLayout(node, false);
+
+  if (YGNodeStyleGetDisplay(node) == YGDisplayNone) {
+    // If the node is hidden (has `display: none;`), its (and its descendants)
+    // layout metrics are invalid and/or dirtied, so we have to stop here.
+    return;
+  }
 
 #if RCT_DEBUG
   // This works around a breaking change in Yoga layout where setting flexBasis needs to be set explicitly, instead of relying on flex to propagate.
