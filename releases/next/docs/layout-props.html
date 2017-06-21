@@ -50,7 +50,10 @@ for more details.</p></div></div><div class="prop"><h4 class="propTitle"><a clas
 ])</span> <a class="hash-link" href="docs/layout-props.html#bottom">#</a></h4><div><p><code>bottom</code> is the number of logical pixels to offset the bottom edge of
  this component.</p><p> It works similarly to <code>bottom</code> in CSS, but in React Native you
  must use points or percentages. Ems and other units are not supported.</p><p> See <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/bottom">https://developer.mozilla.org/en-US/docs/Web/CSS/bottom</a>
- for more details of how <code>bottom</code> affects layout.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="display"></a>display?: <span class="propType">ReactPropTypes.string</span> <a class="hash-link" href="docs/layout-props.html#display">#</a></h4><div><p><code>display</code> sets the display type of this component.</p><p> It works similarly to <code>display</code> in CSS, but only support &#x27;flex&#x27; and &#x27;none&#x27;.
+ for more details of how <code>bottom</code> affects layout.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="display"></a>display?: <span class="propType">ReactPropTypes.oneOf([
+  &#x27;none&#x27;,
+  &#x27;flex&#x27;,
+])</span> <a class="hash-link" href="docs/layout-props.html#display">#</a></h4><div><p><code>display</code> sets the display type of this component.</p><p> It works similarly to <code>display</code> in CSS, but only support &#x27;flex&#x27; and &#x27;none&#x27;.
  &#x27;flex&#x27; is the default.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="flex"></a>flex?: <span class="propType">ReactPropTypes.number</span> <a class="hash-link" href="docs/layout-props.html#flex">#</a></h4><div><p>In React Native <code>flex</code> does not work the same way that it does in CSS.
  <code>flex</code> is a number rather than a string, and it works
  according to the <code>Yoga</code> library
