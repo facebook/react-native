@@ -33,6 +33,8 @@ const invariant = require('fbjs/lib/invariant');
 const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');
 
+import type {NativeMethodsMixinType} from 'ReactNativeTypes';
+
 /**
  * Component that wraps platform ScrollView while providing
  * integration with touch locking "responder" system.
@@ -592,8 +594,8 @@ const ScrollView = React.createClass({
     this._scrollViewRef = ref;
   },
 
-  _innerViewRef: (null: ?View),
-  _setInnerViewRef: function(ref: ?View) {
+  _innerViewRef: (null: ?NativeMethodsMixinType),
+  _setInnerViewRef: function(ref: ?NativeMethodsMixinType) {
     this._innerViewRef = ref;
   },
 
@@ -825,6 +827,7 @@ if (Platform.OS === 'android') {
     (ScrollView: ReactClass<any>),
     nativeOnlyProps,
   );
+  // $FlowFixMe (bvaughn) Update ComponentInterface in ViewPropTypes to include a string type (for Fiber host components) in a follow-up.
   RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);
 }
 
