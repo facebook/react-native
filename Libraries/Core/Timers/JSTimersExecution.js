@@ -45,7 +45,7 @@ const JSTimersExecution = {
   timerIDs: ([] : Array<?number>),
   immediates: [],
   requestIdleCallbacks: [],
-  requestIdleCallbackTimeouts: (new Map() : Map<number, number>),
+  requestIdleCallbackTimeouts: ({} : {[number]: number}),
   identifiers: ([] : Array<null | {methodName: string}>),
 
   errors: (null : ?Array<Error>),

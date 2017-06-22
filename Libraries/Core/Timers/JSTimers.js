@@ -145,10 +145,10 @@ const JSTimers = {
     const id = _allocateCallback(
       timeout != null ?
         deadline => {
-          const timeoutId = JSTimersExecution.requestIdleCallbackTimeouts.get(id);
+          const timeoutId = JSTimersExecution.requestIdleCallbackTimeouts[id];
           if (timeoutId) {
             JSTimers.clearTimeout(timeoutId);
-            JSTimersExecution.requestIdleCallbackTimeouts.delete(id);
+            JSTimersExecution.requestIdleCallbackTimeouts[id];
           }
           return func(deadline);
         } :
@@ -164,12 +164,12 @@ const JSTimers = {
           JSTimersExecution.requestIdleCallbacks.splice(index, 1);
           JSTimersExecution.callTimer(id, performanceNow(), true);
         }
-        JSTimersExecution.requestIdleCallbackTimeouts.delete(id);
+        delete JSTimersExecution.requestIdleCallbackTimeouts[id];
         if (JSTimersExecution.requestIdleCallbacks.length === 0) {
           Timing.setSendIdleEvents(false);
         }
       }, timeout);
-      JSTimersExecution.requestIdleCallbackTimeouts.set(id, timeoutId);
+      JSTimersExecution.requestIdleCallbackTimeouts[id] = timeoutId;
     }
     return id;
   },
@@ -181,10 +181,10 @@ const JSTimers = {
       JSTimersExecution.requestIdleCallbacks.splice(index, 1);
     }
 
-    const timeoutId = JSTimersExecution.requestIdleCallbackTimeouts.get(timerID);
+    const timeoutId = JSTimersExecution.requestIdleCallbackTimeouts[timerID];
     if (timeoutId) {
       JSTimers.clearTimeout(timeoutId);
-      JSTimersExecution.requestIdleCallbackTimeouts.delete(timerID);
+      delete JSTimersExecution.requestIdleCallbackTimeouts[timerID];
     }
 
     if (JSTimersExecution.requestIdleCallbacks.length === 0) {
