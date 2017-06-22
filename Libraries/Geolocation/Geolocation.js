@@ -175,7 +175,7 @@ var Geolocation = {
       for (var ii = 0; ii < subscriptions.length; ii++) {
         var sub = subscriptions[ii];
         if (sub) {
-          warning('Called stopObserving with existing subscriptions.');
+          warning(false, 'Called stopObserving with existing subscriptions.');
           sub[0].remove();
           // array element refinements not yet enabled in Flow
           var sub1 = sub[1]; sub1 && sub1.remove();

@@ -14,9 +14,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +26,6 @@ import android.os.Handler;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
@@ -98,6 +95,7 @@ public class DevServerHelper {
 
   public interface PackagerCommandListener {
     void onPackagerReloadCommand();
+    void onPackagerDevMenuCommand();
     void onCaptureHeapCommand(final Responder responder);
     void onPokeSamplingProfilerCommand(final Responder responder);
   }
@@ -143,6 +141,12 @@ public class DevServerHelper {
           @Override
           public void onNotification(@Nullable Object params) {
             commandListener.onPackagerReloadCommand();
+          }
+        });
+        handlers.put("devMenu", new NotificationOnlyHandler() {
+          @Override
+          public void onNotification(@Nullable Object params) {
+            commandListener.onPackagerDevMenuCommand();
           }
         });
         handlers.put("captureHeap", new RequestOnlyHandler() {
@@ -309,7 +313,7 @@ public class DevServerHelper {
     return String.format(
         Locale.US,
         INSPECTOR_DEVICE_URL_FORMAT,
-        mSettings.getPackagerConnectionSettings().getDebugServerHost(),
+        mSettings.getPackagerConnectionSettings().getInspectorServerHost(),
         AndroidInfoHelpers.getFriendlyDeviceName());
   }
 

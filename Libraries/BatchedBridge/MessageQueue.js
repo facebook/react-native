@@ -15,7 +15,6 @@
 'use strict';
 
 const ErrorUtils = require('ErrorUtils');
-const JSTimersExecution = require('JSTimersExecution');
 const Systrace = require('Systrace');
 
 const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
@@ -40,6 +39,9 @@ const MIN_TIME_BETWEEN_FLUSHES_MS = 5;
 const TRACE_TAG_REACT_APPS = 1 << 17;
 
 const DEBUG_INFO_LIMIT = 32;
+
+// Work around an initialization order issue
+let JSTimers = null;
 
 class MessageQueue {
   _lazyCallableModules: {[key: string]: void => Object};
@@ -235,8 +237,11 @@ class MessageQueue {
   }
 
   __callImmediates() {
-    Systrace.beginEvent('JSTimersExecution.callImmediates()');
-    JSTimersExecution.callImmediates();
+    Systrace.beginEvent('JSTimers.callImmediates()');
+    if (!JSTimers) {
+      JSTimers = require('JSTimers');
+    }
+    JSTimers.callImmediates();
     Systrace.endEvent();
   }
 

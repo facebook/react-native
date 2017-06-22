@@ -71,7 +71,7 @@
       return nil;
     }
     size = [self CGSize:json];
-    scale = [self CGFloat:json[@"scale"]] ?: [self BOOL:json[@"deprecated"]] ? 0.0 : 1.0;
+    scale = [self CGFloat:json[@"scale"]] ?: 1.0;
     packagerAsset = [self BOOL:json[@"__packager_asset"]];
   } else if ([json isKindOfClass:[NSString class]]) {
     request = [self NSURLRequest:json];

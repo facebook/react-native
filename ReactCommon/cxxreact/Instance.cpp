@@ -32,11 +32,12 @@ void Instance::initializeBridge(
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry) {
   callback_ = std::move(callback);
+  moduleRegistry_ = std::move(moduleRegistry);
 
   jsQueue->runOnQueueSync(
-    [this, &jsef, moduleRegistry, jsQueue] () mutable {
+    [this, &jsef, jsQueue] () mutable {
       nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
-          jsef.get(), moduleRegistry, jsQueue, callback_);
+          jsef.get(), moduleRegistry_, jsQueue, callback_);
 
       std::lock_guard<std::mutex> lock(m_syncMutex);
       m_syncReady = true;
