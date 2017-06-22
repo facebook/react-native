@@ -55,12 +55,12 @@ describe('elementsThatOverlapOffsets', function() {
     const offsets = [150, 250, 900];
     const frames = [
       {offset: 0, length: 50},
-      {offset: 50, length: 200},
+      {offset: 50, length: 200}, // Doesn't actually hit the 250 offset, since it only goes to pixel 249
       {offset: 250, length: 600},
       {offset: 850, length: 100},
       {offset: 950, length: 150},
     ];
-    expect(elementsThatOverlapOffsets(offsets, frames.length, (ii) => frames[ii])).toEqual([1,1,3]);
+    expect(elementsThatOverlapOffsets(offsets, frames.length, (ii) => frames[ii])).toEqual([1,2,3]);
   });
   it('handles out of bounds', function() {
     const offsets = [150, 900];
@@ -70,5 +70,14 @@ describe('elementsThatOverlapOffsets', function() {
       {offset: 250, length: 100},
     ];
     expect(elementsThatOverlapOffsets(offsets, frames.length, (ii) => frames[ii])).toEqual([1]);
+  });
+  it('handles edge case', function() {
+    const offsets = [100, 199, 200];
+    const frames = [
+      {offset: 0, length: 100},
+      {offset: 100, length: 100},
+      {offset: 200, length: 100},
+    ];
+    expect(elementsThatOverlapOffsets(offsets, frames.length, (ii) => frames[ii])).toEqual([1, 1, 2]);
   });
 });

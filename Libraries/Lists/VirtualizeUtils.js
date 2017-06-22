@@ -100,6 +100,8 @@ function computeWindowedRenderLimits(
   const overscanEnd = Math.max(0, visibleEnd + leadFactor * overscanLength);
 
   // Find the indices that correspond to the items at the render boundaries we're targetting.
+  // visibleBegin and visibleEnd represent the first and last visible pixel,
+  // so first and last represent the first and last visible component, as well.
   let [overscanFirst, first, last, overscanLast] = elementsThatOverlapOffsets(
     [overscanBegin, visibleBegin, visibleEnd, overscanEnd],
     props.getItemCount(props.data),
