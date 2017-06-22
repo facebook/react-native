@@ -70,6 +70,8 @@ const SwipeableRow = React.createClass({
   propTypes: {
     children: PropTypes.any,
     isOpen: PropTypes.bool,
+    preventSwipeLeft: PropTypes.bool,
+    preventSwipeRight: PropTypes.bool,
     maxSwipeDistance: PropTypes.number.isRequired,
     onOpen: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
@@ -106,6 +108,8 @@ const SwipeableRow = React.createClass({
   getDefaultProps(): Object {
     return {
       isOpen: false,
+      preventSwipeLeft: false,
+      preventSwipeRight: false,
       maxSwipeDistance: 0,
       onOpen: emptyFunction,
       onClose: emptyFunction,
@@ -327,6 +331,12 @@ const SwipeableRow = React.createClass({
 
   // Ignore swipes due to user's finger moving slightly when tapping
   _isValidSwipe(gestureState: Object): boolean {
+    if (this.props.preventSwipeLeft && gestureState.dx < 0) {
+      return false;
+    }
+    if (this.props.preventSwipeRight && gestureState.dx > 0) {
+      return false;
+    }
     return Math.abs(gestureState.dx) > HORIZONTAL_SWIPE_DISTANCE_THRESHOLD;
   },
 
