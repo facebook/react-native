@@ -29,31 +29,58 @@ import okhttp3.TlsVersion;
  */
 public class OkHttpClientProvider {
 
-  // Centralized OkHttpClient for all networking requests.
-  private static @Nullable OkHttpClient sClient;
+  public interface IProvider {
+    OkHttpClient create();
+
+    OkHttpClient get();
+  }
+
+  public static class DefaultProvider implements OkHttpClientProvider.IProvider {
+    // Centralized OkHttpClient for all networking requests.
+    private @Nullable OkHttpClient client;
+
+    @Override
+    public OkHttpClient create() {
+      // No timeouts by default
+      OkHttpClient.Builder client = new OkHttpClient.Builder()
+        .connectTimeout(0, TimeUnit.MILLISECONDS)
+        .readTimeout(0, TimeUnit.MILLISECONDS)
+        .writeTimeout(0, TimeUnit.MILLISECONDS)
+        .cookieJar(new ReactCookieJarContainer());
+
+      return enableTls12OnPreLollipop(client).build();
+    }
+
+    @Override
+    public OkHttpClient get() {
+      if (client == null) {
+        client = create();
+      }
+      return client;
+    }
+  }
+
+  private static @Nullable OkHttpClientProvider.IProvider sPprovider;
+
+  private static OkHttpClientProvider.IProvider getProvider() {
+    if (sPprovider == null) {
+      sPprovider = new DefaultProvider();
+    }
+    return sPprovider;
+  }
+
+  // okhttp3 OkHttpClientProvider.IProvider is immutable
+  // This allows app to init an OkHttpClientProvider.IProvider with custom settings.
+  public static void replaceProvider(OkHttpClientProvider.IProvider provider) {
+    sPprovider = provider;
+  }
 
   public static OkHttpClient getOkHttpClient() {
-    if (sClient == null) {
-      sClient = createClient();
-    }
-    return sClient;
-  }
-  
-  // okhttp3 OkHttpClient is immutable
-  // This allows app to init an OkHttpClient with custom settings.
-  public static void replaceOkHttpClient(OkHttpClient client) {
-    sClient = client;
+    return getProvider().get();
   }
 
   public static OkHttpClient createClient() {
-    // No timeouts by default
-    OkHttpClient.Builder client = new OkHttpClient.Builder()
-      .connectTimeout(0, TimeUnit.MILLISECONDS)
-      .readTimeout(0, TimeUnit.MILLISECONDS)
-      .writeTimeout(0, TimeUnit.MILLISECONDS)
-      .cookieJar(new ReactCookieJarContainer());
-
-    return enableTls12OnPreLollipop(client).build();
+    return getProvider().create();
   }
 
   /*
