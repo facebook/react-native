@@ -1054,7 +1054,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCTAssertJSThread();
 
   if (_reactInstance) {
-    _reactInstance->callJSFunction("JSTimersExecution", "callTimers",
+    _reactInstance->callJSFunction("JSTimers", "callTimers",
                                    folly::dynamic::array(folly::dynamic::array([timer doubleValue])));
   }
 }

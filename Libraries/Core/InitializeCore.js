@@ -112,7 +112,7 @@ ExceptionsManager.installConsoleErrorReporter();
 // TODO: Move these around to solve the cycle in a cleaner way
 const BatchedBridge = require('BatchedBridge');
 BatchedBridge.registerLazyCallableModule('Systrace', () => require('Systrace'));
-BatchedBridge.registerLazyCallableModule('JSTimersExecution', () => require('JSTimers'));
+BatchedBridge.registerLazyCallableModule('JSTimers', () => require('JSTimers'));
 BatchedBridge.registerLazyCallableModule('HeapCapture', () => require('HeapCapture'));
 BatchedBridge.registerLazyCallableModule('SamplingProfiler', () => require('SamplingProfiler'));
 BatchedBridge.registerLazyCallableModule('RCTLog', () => require('RCTLog'));
