@@ -1010,7 +1010,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       // ensureOnJavaScriptThread may execute immediately, so use jsMessageThread, to make sure
       // the block is invoked after callJSFunction
       if (completion) {
-        self->_jsMessageThread->runOnQueue(completion);
+        if (self->_jsMessageThread) {
+          self->_jsMessageThread->runOnQueue(completion);
+        } else {
+          RCTLogWarn(@"Can't invoke completion without messageThread");
+        }
       }
     }
   }];
