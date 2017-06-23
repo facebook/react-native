@@ -467,7 +467,7 @@ class FlatList<ItemT>
   };
 
   _getItemCount = (data: ?Array<ItemT>): number => {
-    return data ? Math.ceil(data.length / this.props.numColumns) : 0;
+    return (data && data.length) ? Math.ceil(data.length / this.props.numColumns) : 0;
   };
 
   _keyExtractor = (items: ItemT | Array<ItemT>, index: number) => {
