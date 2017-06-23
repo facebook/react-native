@@ -7,8 +7,8 @@
 #include <mutex>
 #include <unordered_map>
 
-#include <cxxreact/Executor.h>
 #include <cxxreact/JSCNativeModules.h>
+#include <cxxreact/JSExecutor.h>
 #include <folly/Optional.h>
 #include <folly/json.h>
 #include <jschelpers/JSCHelpers.h>

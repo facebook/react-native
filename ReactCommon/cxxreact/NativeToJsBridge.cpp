@@ -2,19 +2,21 @@
 
 #include "NativeToJsBridge.h"
 
-#ifdef WITH_FBSYSTRACE
-#include <fbsystrace.h>
-using fbsystrace::FbSystraceAsyncFlow;
-#endif
-
 #include <folly/json.h>
 #include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
 
 #include "Instance.h"
-#include "ModuleRegistry.h"
-#include "Platform.h"
+#include "JSBigString.h"
 #include "SystraceSection.h"
+#include "MethodCall.h"
+#include "JSModulesUnbundle.h"
+#include "MessageQueueThread.h"
+
+#ifdef WITH_FBSYSTRACE
+#include <fbsystrace.h>
+using fbsystrace::FbSystraceAsyncFlow;
+#endif
 
 namespace facebook {
 namespace react {

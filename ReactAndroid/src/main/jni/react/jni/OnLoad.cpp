@@ -2,10 +2,10 @@
 
 #include <string>
 
-#include <cxxreact/Executor.h>
+#include <jschelpers/JSCHelpers.h>
+#include <cxxreact/JSExecutor.h>
 #include <cxxreact/JSCExecutor.h>
 #include <cxxreact/Platform.h>
-#include <jschelpers/JSCHelpers.h>
 #include <fb/fbjni.h>
 #include <fb/glog_init.h>
 #include <fb/log.h>
