@@ -18,6 +18,8 @@ function getChromeAppName(): string {
     return 'google chrome';
   case 'win32':
     return 'chrome';
+  case 'linux':
+    return 'chromium';
   default:
     return 'google-chrome';
   }
