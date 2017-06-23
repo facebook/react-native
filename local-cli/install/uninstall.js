@@ -18,26 +18,42 @@ const spawnOpts = {
 
 log.heading = 'rnpm-install';
 
-function uninstall(args, config) {
+function uninstall(args, config, options) {
   const name = args[0];
 
-  var res = spawnSync('react-native', ['unlink', name], spawnOpts);
+  let res;
+  if (!options.plugin) {
+    res = spawnSync('react-native', ['unlink', name], spawnOpts);
+
+    if (res.status) {
+      process.exit(res.status);
+    }
+  }
+
+  if (options.plugin) {
+    res = PackageManager.removeDev(name);
+  } else {
+    res = PackageManager.remove(name);
+  }
 
   if (res.status) {
     process.exit(res.status);
   }
 
-  res = PackageManager.remove(name);
-
-  if (res.status) {
-    process.exit(res.status);
+  if (options.plugin) {
+    log.info(`Plugin ${name} has been successfully uninstalled`);
+  } else {
+    log.info(`Module ${name} has been successfully uninstalled & unlinked`);
   }
-
-  log.info(`Module ${name} has been successfully uninstalled & unlinked`);
 }
 
 module.exports = {
   func: uninstall,
   description: 'uninstall and unlink native dependencies',
   name: 'uninstall <packageName>',
+  options: [{
+    command: '--plugin',
+    description: 'signals that the target is a plugin',
+    default: false,
+  }],
 };
