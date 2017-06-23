@@ -112,7 +112,7 @@ ExceptionsManager.installConsoleErrorReporter();
 // TODO: Move these around to solve the cycle in a cleaner way
 const BatchedBridge = require('BatchedBridge');
 BatchedBridge.registerLazyCallableModule('Systrace', () => require('Systrace'));
-BatchedBridge.registerLazyCallableModule('JSTimersExecution', () => require('JSTimersExecution'));
+BatchedBridge.registerLazyCallableModule('JSTimers', () => require('JSTimers'));
 BatchedBridge.registerLazyCallableModule('HeapCapture', () => require('HeapCapture'));
 BatchedBridge.registerLazyCallableModule('SamplingProfiler', () => require('SamplingProfiler'));
 BatchedBridge.registerLazyCallableModule('RCTLog', () => require('RCTLog'));
@@ -216,10 +216,6 @@ if (__DEV__) {
     }
 
     require('RCTDebugComponentOwnership');
-
-    // In order to use Cmd+P to record/dump perf data, we need to make sure
-    // this module is available in the bundle
-    require('RCTRenderingPerf');
 
     // Set up inspector
     const JSInspector = require('JSInspector');

@@ -255,6 +255,14 @@ public class ReactInstanceManager {
     mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
     mMinNumShakes = minNumShakes;
 
+    CoreModulesPackage coreModulesPackage =
+      new CoreModulesPackage(
+        this,
+        mBackBtnHandler,
+        mUIImplementationProvider,
+        mLazyViewManagersEnabled);
+    mPackages.add(0, coreModulesPackage);
+
     // Instantiate ReactChoreographer in UI thread.
     ReactChoreographer.initialize();
   }
@@ -954,13 +962,6 @@ public class ReactInstanceManager {
       reactContext.setNativeModuleCallExceptionHandler(mDevSupportManager);
     }
 
-    CoreModulesPackage coreModulesPackage =
-      new CoreModulesPackage(
-        this,
-        mBackBtnHandler,
-        mUIImplementationProvider,
-        mLazyViewManagersEnabled);
-    mPackages.add(0,coreModulesPackage);
     NativeModuleRegistry nativeModuleRegistry = processPackages(reactContext, mPackages, false);
 
     NativeModuleCallExceptionHandler exceptionHandler = mNativeModuleCallExceptionHandler != null
