@@ -836,12 +836,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           ScrollEventType.SCROLL,
           horiz,
           vert,
-          0f, // can't get x velocity
-          0f, // can't get y velocity
           0, // can't get content width
           0, // can't get content height
           mReactEditText.getWidth(),
-          mReactEditText.getHeight());
+          mReactEditText.getHeight()
+        );
 
         mEventDispatcher.dispatchEvent(event);
 

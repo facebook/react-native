@@ -29,19 +29,16 @@ public class ReactScrollViewHelper {
   /**
    * Shared by {@link ReactScrollView} and {@link ReactHorizontalScrollView}.
    */
-  public static void emitScrollEvent(ViewGroup scrollView, float xVelocity, float yVelocity) {
-    emitScrollEvent(scrollView, ScrollEventType.SCROLL, xVelocity, yVelocity);
+  public static void emitScrollEvent(ViewGroup scrollView) {
+    emitScrollEvent(scrollView, ScrollEventType.SCROLL);
   }
 
   public static void emitScrollBeginDragEvent(ViewGroup scrollView) {
     emitScrollEvent(scrollView, ScrollEventType.BEGIN_DRAG);
   }
 
-  public static void emitScrollEndDragEvent(
-      ViewGroup scrollView,
-      float xVelocity,
-      float yVelocity) {
-    emitScrollEvent(scrollView, ScrollEventType.END_DRAG, xVelocity, yVelocity);
+  public static void emitScrollEndDragEvent(ViewGroup scrollView) {
+    emitScrollEvent(scrollView, ScrollEventType.END_DRAG);
   }
 
   public static void emitScrollMomentumBeginEvent(ViewGroup scrollView) {
@@ -53,14 +50,6 @@ public class ReactScrollViewHelper {
   }
 
   private static void emitScrollEvent(ViewGroup scrollView, ScrollEventType scrollEventType) {
-    emitScrollEvent(scrollView, scrollEventType, 0, 0);
-  }
-
-  private static void emitScrollEvent(
-      ViewGroup scrollView,
-      ScrollEventType scrollEventType,
-      float xVelocity,
-      float yVelocity) {
     View contentView = scrollView.getChildAt(0);
 
     if (contentView == null) {
@@ -74,8 +63,6 @@ public class ReactScrollViewHelper {
             scrollEventType,
             scrollView.getScrollX(),
             scrollView.getScrollY(),
-            xVelocity,
-            yVelocity,
             contentView.getWidth(),
             contentView.getHeight(),
             scrollView.getWidth(),
