@@ -43,7 +43,7 @@ public class HeadlessJsTaskContext {
   }
 
   /**
-   * remove ReactContext instance
+   * Remove ReactContext instance.
    */
   public static void remove(ReactContext context){
     INSTANCES.remove(context);
