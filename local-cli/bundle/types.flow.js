@@ -10,4 +10,4 @@
  */
 'use strict';
 
-export type {OutputOptions, RequestOptions} from 'metro-bundler/build/shared/types.flow';
+export type {OutputOptions, RequestOptions} from 'metro-bundler/src/shared/types.flow';
