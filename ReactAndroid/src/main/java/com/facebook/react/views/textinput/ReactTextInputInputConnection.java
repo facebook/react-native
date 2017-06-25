@@ -9,7 +9,8 @@
 
 package com.facebook.react.views.textinput;
 
-import android.support.annotation.Nullable;
+import javax.annotation.Nullable;
+
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
@@ -124,11 +125,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       }
     }
     else {
-      if (mComposedText != null) {
-        key = mComposedText;
-      } else {
-        key = keyValueFromString(mCommittedText);
-      }
+      key = mComposedText != null ? mComposedText : mCommittedText;
     }
     key = keyValueFromString(key);
     mEventDispatcher.dispatchEvent(

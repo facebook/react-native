@@ -29,7 +29,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputConnectionWrapper;
 import android.widget.TextView;
 
 import com.facebook.yoga.YogaConstants;
