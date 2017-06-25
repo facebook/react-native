@@ -35,6 +35,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputConnectionWrapper;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -81,6 +83,7 @@ public class ReactEditText extends EditText {
   private @Nullable SelectionWatcher mSelectionWatcher;
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
   private @Nullable ScrollWatcher mScrollWatcher;
+  private final InputConnectionWrapper mInputConnectionWrapper;
   private final InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
 
@@ -88,7 +91,7 @@ public class ReactEditText extends EditText {
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
 
-  public ReactEditText(Context context) {
+  public ReactEditText(Context context, InputConnectionWrapper inputConnection) {
     super(context);
     setFocusableInTouchMode(false);
 
@@ -108,6 +111,13 @@ public class ReactEditText extends EditText {
     mStagedInputType = getInputType();
     mKeyListener = new InternalKeyListener();
     mScrollWatcher = null;
+    mInputConnectionWrapper = inputConnection;
+  }
+
+  @Override
+  public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+    mInputConnectionWrapper.setTarget(super.onCreateInputConnection(outAttrs));
+    return mInputConnectionWrapper;
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
