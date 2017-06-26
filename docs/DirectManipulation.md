@@ -98,25 +98,17 @@ Composite components are not backed by a native view, so you cannot call
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-class MyButton extends React.Component {
-  render() {
-    return (
-      <View>
-        <Text>{this.props.label}</Text>
-      </View>
-    )
-  }
-}
+const MyButton = () => (
+  <View>
+    <Text>{this.props.label}</Text>
+  </View>
+);
 
-export default class App extends React.Component {
-  render() {
-    return (
-      <TouchableOpacity>
-        <MyButton label="Press me!" />
-      </TouchableOpacity>
-    )
-  }
-}
+export const App = () => (
+  <TouchableOpacity>
+    <MyButton label="Press me!" />
+  </TouchableOpacity>
+);
 ```
 
 If you run this you will immediately see this error: `Touchable child
@@ -153,15 +145,11 @@ class MyButton extends React.Component {
   }
 }
 
-export default class App extends React.Component {
-  render() {
-    return (
-      <TouchableOpacity>
-        <MyButton label="Press me!" />
-      </TouchableOpacity>
-    )
-  }
-}
+export const App = () => (
+  <TouchableOpacity>
+    <MyButton label="Press me!" />
+  </TouchableOpacity>
+);
 ```
 
 You can now use `MyButton` inside of `TouchableOpacity`! A sidenote for

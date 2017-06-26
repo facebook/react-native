@@ -55,11 +55,11 @@ In order for this to work, the image name in `require` has to be known staticall
 <Image source={require('./my-icon.png')} />
 
 // BAD
-var icon = this.props.active ? 'my-icon-active' : 'my-icon-inactive';
+const icon = this.props.active ? 'my-icon-active' : 'my-icon-inactive';
 <Image source={require('./' + icon + '.png')} />
 
 // GOOD
-var icon = this.props.active ? require('./my-icon-active.png') : require('./my-icon-inactive.png');
+const icon = this.props.active ? require('./my-icon-active.png') : require('./my-icon-inactive.png');
 <Image source={icon} />
 ```
 

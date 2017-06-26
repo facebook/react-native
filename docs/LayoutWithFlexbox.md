@@ -19,21 +19,17 @@ You will normally use a combination of `flexDirection`, `alignItems`, and `justi
 Adding `flexDirection` to a component's `style` determines the **primary axis** of its layout. Should the children be organized horizontally (`row`) or vertically (`column`)? The default is `column`.
 
 ```ReactNativeWebPlayer
-import React, { Component } from 'react';
+import React from 'react';
 import { AppRegistry, View } from 'react-native';
 
-export default class FlexDirectionBasics extends Component {
-  render() {
-    return (
-      // Try setting `flexDirection` to `column`.
-      <View style={{flex: 1, flexDirection: 'row'}}>
-        <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
-        <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
-        <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
-      </View>
-    );
-  }
-};
+const FlexDirectionBasics = () => (
+  // Try setting `flexDirection` to `column`.
+  <View style={{flex: 1, flexDirection: 'row'}}>
+    <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
+    <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
+    <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
+  </View>
+);
 
 // skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () => FlexDirectionBasics);
@@ -44,26 +40,22 @@ AppRegistry.registerComponent('AwesomeProject', () => FlexDirectionBasics);
 Adding `justifyContent` to a component's style determines the **distribution** of children along the **primary axis**. Should children be distributed at the start, the center, the end, or spaced evenly? Available options are `flex-start`, `center`, `flex-end`, `space-around`, and `space-between`.
 
 ```ReactNativeWebPlayer
-import React, { Component } from 'react';
+import React from 'react';
 import { AppRegistry, View } from 'react-native';
 
-export default class JustifyContentBasics extends Component {
-  render() {
-    return (
-      // Try setting `justifyContent` to `center`.
-      // Try setting `flexDirection` to `row`.
-      <View style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-      }}>
-        <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
-        <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
-        <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
-      </View>
-    );
-  }
-};
+const JustifyContentBasics = () => (
+  // Try setting `justifyContent` to `center`.
+  // Try setting `flexDirection` to `row`.
+  <View style={{
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  }}>
+    <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
+    <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
+    <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
+  </View>
+);
 
 // skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () => JustifyContentBasics);
@@ -76,28 +68,24 @@ Adding `alignItems` to a component's style determines the **alignment** of child
 > For `stretch` to have an effect, children must not have a fixed dimension along the secondary axis. In the following example, setting `alignItems: stretch` does nothing until the `width: 50` is removed from the children.
 
 ```ReactNativeWebPlayer
-import React, { Component } from 'react';
+import React from 'react';
 import { AppRegistry, View } from 'react-native';
 
-export default class AlignItemsBasics extends Component {
-  render() {
-    return (
-      // Try setting `alignItems` to 'flex-start'
-      // Try setting `justifyContent` to `flex-end`.
-      // Try setting `flexDirection` to `row`.
-      <View style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-        <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
-        <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
-        <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
-      </View>
-    );
-  }
-};
+const AlignItemsBasics = () => (
+  // Try setting `alignItems` to 'flex-start'
+  // Try setting `justifyContent` to `flex-end`.
+  // Try setting `flexDirection` to `row`.
+  <View style={{
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }}>
+    <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
+    <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
+    <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
+  </View>
+);
 
 // skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () => AlignItemsBasics);

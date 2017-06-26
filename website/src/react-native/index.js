@@ -62,24 +62,20 @@ const index = React.createClass({
 
             <Prism>
 
-{`import React, { Component } from 'react';
+{`import React from 'react';
 import { Text, View } from 'react-native';
 
-class WhyReactNativeIsSoGreat extends Component {
-  render() {
-    return (
-      <View>
-        <Text>
-          If you like React on the web, you'll like React Native.
-        </Text>
-        <Text>
-          You just use native components like 'View' and 'Text',
-          instead of web components like 'div' and 'span'.
-        </Text>
-      </View>
-    );
-  }
-}`}
+const WhyReactNativeIsSoGreat = () => (
+  <View>
+    <Text>
+      If you like React on the web, you'll like React Native.
+    </Text>
+    <Text>
+      You just use native components like 'View' and 'Text',
+      instead of web components like 'div' and 'span'.
+    </Text>
+  </View>
+)`}
             </Prism>
 
             <h2>A React Native app is a real mobile app</h2>
@@ -88,28 +84,24 @@ class WhyReactNativeIsSoGreat extends Component {
             </p>
 
             <Prism>
-{`import React, { Component } from 'react';
+{`import React from 'react';
 import { Image, ScrollView, Text } from 'react-native';
 
-class AwkwardScrollingImageWithText extends Component {
-  render() {
-    return (
-      <ScrollView>
-        <Image source={{uri: 'https://i.chzbgr.com/full/7345954048/h7E2C65F9/'}} />
-        <Text>
-          On iOS, a React Native ScrollView uses a native UIScrollView.
-          On Android, it uses a native ScrollView.
+const AwkwardScrollingImageWithText = () => (
+  <ScrollView>
+    <Image source={{uri: 'https://i.chzbgr.com/full/7345954048/h7E2C65F9/'}} />
+    <Text>
+      On iOS, a React Native ScrollView uses a native UIScrollView.
+      On Android, it uses a native ScrollView.
 
-          On iOS, a React Native Image uses a native UIImageView.
-          On Android, it uses a native ImageView.
+      On iOS, a React Native Image uses a native UIImageView.
+      On Android, it uses a native ImageView.
 
-          React Native wraps the fundamental native components, giving you
-          the performance of a native app, plus the clean design of React.
-        </Text>
-      </ScrollView>
-    );
-  }
-}`}
+      React Native wraps the fundamental native components, giving you
+      the performance of a native app, plus the clean design of React.
+    </Text>
+  </ScrollView>
+)`}
             </Prism>
 
             <h2>Don't waste time recompiling</h2>
@@ -125,23 +117,19 @@ class AwkwardScrollingImageWithText extends Component {
             </p>
 
             <Prism>
-{`import React, { Component } from 'react';
+{`import React from 'react';
 import { Text, View } from 'react-native';
 import { TheGreatestComponentInTheWorld } from './your-native-code';
 
-class SomethingFast extends Component {
-  render() {
-    return (
-      <View>
-        <TheGreatestComponentInTheWorld />
-        <Text>
-          TheGreatestComponentInTheWorld could use native Objective-C,
-          Java, or Swift - the product development process is the same.
-        </Text>
-      </View>
-    );
-  }
-}`}
+const SomethingFast = () =>(
+  <View>
+    <TheGreatestComponentInTheWorld />
+    <Text>
+      TheGreatestComponentInTheWorld could use native Objective-C,
+      Java, or Swift - the product development process is the same.
+    </Text>
+  </View>
+)`}
             </Prism>
           </div>
 

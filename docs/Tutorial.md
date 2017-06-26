@@ -18,16 +18,12 @@ Let's do this thing.
 In accordance with the ancient traditions of our people, we must first build an app that does nothing except say "Hello world". Here it is:
 
 ```ReactNativeWebPlayer
-import React, { Component } from 'react';
+import React from 'react';
 import { AppRegistry, Text } from 'react-native';
 
-export default class HelloWorldApp extends Component {
-  render() {
-    return (
-      <Text>Hello world!</Text>
-    );
-  }
-}
+const HelloWorldApp = () => (
+  <Text>Hello world!</Text>
+);
 
 // skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () => HelloWorldApp);

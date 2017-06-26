@@ -88,11 +88,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { requireNativeComponent } from 'react-native';
 
-class MapView extends React.Component {
-  render() {
-    return <RNTMap {...this.props} />;
-  }
-}
+const MapView = props => <RNTMap {...props} />
 
 MapView.propTypes = {
   /**
@@ -105,7 +101,7 @@ MapView.propTypes = {
   pitchEnabled: PropTypes.bool,
 };
 
-var RNTMap = requireNativeComponent('RNTMap', MapView);
+const RNTMap = requireNativeComponent('RNTMap', MapView);
 
 module.exports = MapView;
 ```
@@ -205,7 +201,7 @@ MapView.propTypes = {
 // MyApp.js
 
   render() {
-    var region = {
+    const region = {
       latitude: 37.48,
       longitude: -122.16,
       latitudeDelta: 0.1,
@@ -221,7 +217,7 @@ Here you can see that the shape of the region is explicit in the JS documentatio
 Sometimes you'll have some special properties that you need to expose for the native component, but don't actually want them as part of the API for the associated React component.  For example, `Switch` has a custom `onChange` handler for the raw native event, and exposes an `onValueChange` handler property that is invoked with just the boolean value rather than the raw event.  Since you don't want these native only properties to be part of the API, you don't want to put them in `propTypes`, but if you don't you'll get an error.  The solution is simply to call them out via the `nativeOnly` option, e.g.
 
 ```javascript
-var RCTSwitch = requireNativeComponent('RCTSwitch', Switch, {
+const RCTSwitch = requireNativeComponent('RCTSwitch', Switch, {
   nativeOnly: { onChange: true }
 });
 ```
@@ -361,7 +357,7 @@ Since all our native react views are subclasses of `UIView`, most style attribut
 import { UIManager } from 'react-native';
 var RCTDatePickerIOSConsts = UIManager.RCTDatePicker.Constants;
 ...
-  render: function() {
+  render() {
     return (
       <View style={this.props.style}>
         <RCTDatePickerIOS
@@ -374,7 +370,7 @@ var RCTDatePickerIOSConsts = UIManager.RCTDatePicker.Constants;
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   rkDatePickerIOS: {
     height: RCTDatePickerIOSConsts.ComponentHeight,
     width: RCTDatePickerIOSConsts.ComponentWidth,
