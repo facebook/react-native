@@ -11,13 +11,13 @@
 'use strict';
 
 const opn = require('opn');
-const execSync = require('child_process').execSync
+const execSync = require('child_process').execSync;
 
 function commandExistsUnixSync (commandName, callback) {
   try {
     var stdout = execSync('command -v ' + commandName +
           ' 2>/dev/null' +
-          ' && { echo >&1 \'' + commandName + ' found\'; exit 0; }')
+          ' && { echo >&1 \'' + commandName + ' found\'; exit 0; }');
     return !!stdout;
   } catch (error) {
     return false;
@@ -32,9 +32,9 @@ function getChromeAppName(): string {
     return 'chrome';
   case 'linux':
     if (commandExistsUnixSync('google-chrome')) {
-      return 'google-chrome'
+      return 'google-chrome';
     } else {
-      return 'chromium'
+      return 'chromium';
     }
   default:
     return 'google-chrome';
