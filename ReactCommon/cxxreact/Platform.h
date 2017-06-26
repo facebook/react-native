@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-#include <cxxreact/Executor.h>
+#include <cxxreact/JSExecutor.h>
 #include <cxxreact/MessageQueueThread.h>
 #include <jschelpers/JavaScriptCore.h>
 

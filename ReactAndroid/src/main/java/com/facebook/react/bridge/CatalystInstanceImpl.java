@@ -393,26 +393,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mNativeModuleRegistry.getAllModules();
   }
 
-  private native void handleMemoryPressureUiHidden();
-  private native void handleMemoryPressureModerate();
-  private native void handleMemoryPressureCritical();
+  private native void jniHandleMemoryPressure(int level);
 
   @Override
   public void handleMemoryPressure(MemoryPressure level) {
     if (mDestroyed) {
       return;
     }
-    switch (level) {
-      case UI_HIDDEN:
-        handleMemoryPressureUiHidden();
-        break;
-      case MODERATE:
-        handleMemoryPressureModerate();
-        break;
-      case CRITICAL:
-        handleMemoryPressureCritical();
-        break;
-    }
+    jniHandleMemoryPressure(level.ordinal());
   }
 
   /**

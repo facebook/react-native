@@ -238,12 +238,10 @@ We recommend installing Node and Python2 via [Chocolatey](https://chocolatey.org
 
 React Native also requires a recent version of the [Java SE Development Kit (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), as well as Python 2. Both can be installed using Chocolatey.
 
-Open an Administrator Command Prompt (right click Command Prompt and select "Run as Administrator"), then run the following commands:
+Open an Administrator Command Prompt (right click Command Prompt and select "Run as Administrator"), then run the following command:
 
 ```powershell
-choco install nodejs.install
-choco install python2
-choco install jdk8
+choco install -y nodejs.install python2 jdk8
 ```
 
 If you have already installed Node on your system, make sure it is version 4 or newer. If you already have a JDK on your system, make sure it is version 8 or newer.

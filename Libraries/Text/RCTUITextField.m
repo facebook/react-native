@@ -94,6 +94,14 @@
   return [self textRectForBounds:bounds];
 }
 
+#pragma mark - Overrides
+
+- (void)paste:(id)sender
+{
+  [super paste:sender];
+  _textWasPasted = YES;
+}
+
 #pragma mark - Layout
 
 - (CGSize)intrinsicContentSize

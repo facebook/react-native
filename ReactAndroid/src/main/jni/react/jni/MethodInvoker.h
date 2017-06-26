@@ -4,9 +4,9 @@
 
 #include <vector>
 
+#include <cxxreact/JSExecutor.h>
 #include <fb/fbjni.h>
 #include <folly/dynamic.h>
-#include <cxxreact/Executor.h>
 
 namespace facebook {
 namespace react {

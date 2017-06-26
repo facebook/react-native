@@ -15,7 +15,8 @@
 #import <React/RCTLog.h>
 #import <React/RCTProfile.h>
 #import <React/RCTUtils.h>
-#import <cxxreact/Executor.h>
+#import <cxxreact/JSBigString.h>
+#import <cxxreact/JSExecutor.h>
 #import <cxxreact/MessageQueueThread.h>
 #import <cxxreact/ModuleRegistry.h>
 #import <folly/json.h>
@@ -91,7 +92,7 @@ public:
   }
 
   void setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle>) override {
-    RCTLogWarn(@"Unbundle is not supported in RCTObjcExecutor");
+    RCTAssert(NO, @"Unbundle is not supported in RCTObjcExecutor");
   }
 
   void callFunction(const std::string &module, const std::string &method,

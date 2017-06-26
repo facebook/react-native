@@ -3,10 +3,10 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
-#include <cxxreact/NativeModule.h>
+#include <cxxreact/JSExecutor.h>
 #include <folly/Optional.h>
 #include <folly/dynamic.h>
 

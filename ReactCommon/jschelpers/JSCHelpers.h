@@ -72,7 +72,7 @@ JSObjectRef makeFunction(
     const char* name,
     JSObjectCallAsFunctionCallback callback);
 
-void installGlobalFunction(
+RN_EXPORT void installGlobalFunction(
     JSGlobalContextRef ctx,
     const char* name,
     JSObjectCallAsFunctionCallback callback);
