@@ -1026,12 +1026,24 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this.setState(state => {
       let newState;
       if (!isVirtualizationDisabled) {
-        newState = computeWindowedRenderLimits(
-          this.props,
-          state,
-          this._getFrameMetricsApprox,
-          this._scrollMetrics,
-        );
+        // If we run this with bogus data, we'll force-render window {first: 0, last: 0},
+        // and wipe out the initialNumToRender rendered elements.
+        // So let's wait until the scroll view metrics have been set up. And until then,
+        // we will trust the initialNumToRender suggestion
+        if (this._scrollMetrics.visibleLength) {
+          // If we have a non-zero initialScrollIndex and run this before we've scrolled,
+          // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
+          // So let's wait until we've scrolled the view to the right place. And until then,
+          // we will trust the initialScrollIndex suggestion.
+          if (!this.props.initialScrollIndex || this._scrollMetrics.offset) {
+            newState = computeWindowedRenderLimits(
+              this.props,
+              state,
+              this._getFrameMetricsApprox,
+              this._scrollMetrics,
+            );
+          }
+        }
       } else {
         const {contentLength, offset, visibleLength} = this._scrollMetrics;
         const distanceFromEnd = contentLength - visibleLength - offset;

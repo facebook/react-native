@@ -9,6 +9,7 @@ namespace facebook {
 namespace react {
 
 class Instance;
+class MessageQueueThread;
 
 std::function<void(folly::dynamic)> makeCallback(
   std::weak_ptr<Instance> instance, const folly::dynamic& callbackId);

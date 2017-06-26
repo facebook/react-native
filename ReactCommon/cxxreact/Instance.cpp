@@ -2,10 +2,14 @@
 
 #include "Instance.h"
 
-#include "Executor.h"
+#include "JSExecutor.h"
 #include "MethodCall.h"
 #include "RecoverableError.h"
 #include "SystraceSection.h"
+#include "MessageQueueThread.h"
+#include "NativeToJsBridge.h"
+#include "JSBigString.h"
+#include "JSModulesUnbundle.h"
 
 #include <folly/json.h>
 #include <folly/Memory.h>

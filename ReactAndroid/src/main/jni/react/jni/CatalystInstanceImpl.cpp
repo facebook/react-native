@@ -5,21 +5,19 @@
 #include <mutex>
 #include <condition_variable>
 
-#include <folly/dynamic.h>
-#include <folly/Memory.h>
-
-#include <fb/log.h>
-
-#include <jni/Countable.h>
-#include <jni/LocalReference.h>
-
+#include <cxxreact/CxxNativeModule.h>
 #include <cxxreact/Instance.h>
+#include <cxxreact/JSBigString.h>
 #include <cxxreact/JSBundleType.h>
 #include <cxxreact/JSIndexedRAMBundle.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/RecoverableError.h>
 #include <cxxreact/ModuleRegistry.h>
-#include <cxxreact/CxxNativeModule.h>
+#include <fb/log.h>
+#include <folly/dynamic.h>
+#include <folly/Memory.h>
+#include <jni/Countable.h>
+#include <jni/LocalReference.h>
 
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"

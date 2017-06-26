@@ -148,8 +148,8 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 - (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion;
 
 /**
- * Finds a view that is tagged with {@param nativeId} as its nativeID prop
- * with the associated {@param rootTag} root tag view hierarchy. Returns the
+ * Finds a view that is tagged with nativeID as its nativeID prop
+ * with the associated rootTag root tag view hierarchy. Returns the
  * view if found, nil otherwise.
  *
  * @param nativeID the id reference to native component relative to root view.

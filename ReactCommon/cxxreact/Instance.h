@@ -2,17 +2,24 @@
 
 #pragma once
 
+#include <condition_variable>
 #include <memory>
 
-#include <cxxreact/ModuleRegistry.h>
-#include <cxxreact/NativeModule.h>
 #include <cxxreact/NativeToJsBridge.h>
-#include <folly/dynamic.h>
+#include <jschelpers/Value.h>
+
+namespace folly {
+  struct dynamic;
+}
 
 namespace facebook {
 namespace react {
 
+class JSBigString;
 class JSExecutorFactory;
+class JSModulesUnbundle;
+class MessageQueueThread;
+class ModuleRegistry;
 
 struct InstanceCallback {
   virtual ~InstanceCallback() {}
@@ -48,7 +55,7 @@ class Instance {
   void *getJavaScriptContext();
   void callJSFunction(std::string&& module, std::string&& method, folly::dynamic&& params);
   void callJSCallback(uint64_t callbackId, folly::dynamic&& params);
-  MethodCallResult callSerializableNativeHook(unsigned int moduleId, unsigned int methodId, folly::dynamic&& args);
+
   // This method is experimental, and may be modified or removed.
   template <typename T>
   Value callFunctionSync(const std::string& module, const std::string& method, T&& args) {
@@ -80,5 +87,4 @@ class Instance {
   bool m_syncReady = false;
 };
 
-}
-}
+} }

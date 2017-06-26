@@ -19,10 +19,7 @@
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
 
-#ifdef WITH_INSPECTOR
-#include <jschelpers/InspectorInterfaces.h>
-#endif
-
+#include "JSBigString.h"
 #include "JSBundleType.h"
 #include "Platform.h"
 #include "SystraceSection.h"
@@ -32,6 +29,10 @@
 #include "JSModulesUnbundle.h"
 #include "ModuleRegistry.h"
 #include "RecoverableError.h"
+
+#ifdef WITH_INSPECTOR
+#include <jschelpers/InspectorInterfaces.h>
+#endif
 
 #if defined(WITH_JSC_EXTRA_TRACING) || (DEBUG && defined(WITH_FBSYSTRACE))
 #include "JSCTracing.h"

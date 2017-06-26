@@ -9,6 +9,7 @@
 
 #include "JsArgumentHelpers.h"
 #include "SystraceSection.h"
+#include "MessageQueueThread.h"
 
 using facebook::xplat::module::CxxModule;
 
