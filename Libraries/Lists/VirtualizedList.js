@@ -437,6 +437,8 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       data,
       getItem,
       getItemCount,
+      horizontal,
+      inverted,
       keyExtractor,
     } = this.props;
     const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
@@ -455,8 +457,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           ItemSeparatorComponent={ii < end ? ItemSeparatorComponent : undefined}
           cellKey={key}
           fillRateHelper={this._fillRateHelper}
+          horizontal={horizontal}
           index={ii}
           inversionStyle={inversionStyle}
+          inverted={inverted}
           item={item}
           key={key}
           prevCellKey={prevCellKey}
@@ -1118,8 +1122,10 @@ class CellRenderer extends React.Component {
     ItemSeparatorComponent: ?ReactClass<*>,
     cellKey: string,
     fillRateHelper: FillRateHelper,
+    horizontal: ?boolean,
     index: number,
     inversionStyle: ?StyleObj,
+    inverted: ?boolean,
     item: Item,
     onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
     onUnmount: (cellKey: string) => void,
@@ -1176,9 +1182,11 @@ class CellRenderer extends React.Component {
     const {
       ItemSeparatorComponent,
       fillRateHelper,
+      horizontal,
       item,
       index,
       inversionStyle,
+      inverted,
       parentProps,
     } = this.props;
     const {renderItem, getItemLayout} = parentProps;
@@ -1188,6 +1196,13 @@ class CellRenderer extends React.Component {
       index,
       separators: this._separators,
     });
+    const cellStyle = inverted
+      ? horizontal
+          ? { flexDirection: 'row-reverse' }
+          : { flexDirection: 'column-reverse' }
+      : horizontal
+          ? { flexDirection: 'row' }
+          : { flexDirection: 'column' };
     const onLayout = getItemLayout &&
       !parentProps.debug &&
       !fillRateHelper.enabled()
@@ -1196,7 +1211,7 @@ class CellRenderer extends React.Component {
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
     // called explicitly by `ScrollViewStickyHeader`.
     return (
-      <View onLayout={onLayout} style={inversionStyle}>
+      <View onLayout={onLayout} style={[cellStyle, inversionStyle]}>
         {element}
         {ItemSeparatorComponent &&
           <ItemSeparatorComponent {...this.state.separatorProps} />}
