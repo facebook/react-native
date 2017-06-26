@@ -20,6 +20,7 @@ const StyleSheet = require('StyleSheet');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 
+const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
@@ -36,7 +37,7 @@ type Event = Object;
  * source of truth.
  */
 // $FlowFixMe(>=0.41.0)
-const DatePickerIOS = React.createClass({
+const DatePickerIOS = createReactClass({
   // TOOD: Put a better type for _picker
   _picker: (undefined: ?$FlowFixMe),
 

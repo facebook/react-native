@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 const PropTypes = require('prop-types');
 var ReactNative = require('react-native');
 var {
@@ -71,7 +72,7 @@ var propTypes = {
 
 };
 
-var CameraRollView = React.createClass({
+var CameraRollView = createReactClass({
   // $FlowFixMe(>=0.41.0)
   propTypes: propTypes,
 

@@ -23,6 +23,7 @@ var TVEventHandler = require('TVEventHandler');
 var View = require('View');
 var ViewPropTypes = require('ViewPropTypes');
 
+var createReactClass = require('create-react-class');
 var invariant = require('fbjs/lib/invariant');
 var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
@@ -304,7 +305,7 @@ type Event = Object;
  * is pushed.
  *
  */
-var NavigatorIOS = React.createClass({
+var NavigatorIOS = createReactClass({
 
   propTypes: {
 

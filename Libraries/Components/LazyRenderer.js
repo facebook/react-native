@@ -11,10 +11,11 @@
 'use strict';
 
 var React = require('React');
+var createReactClass = require('create-react-class');
 var PropTypes = require('prop-types');
 var TimerMixin = require('react-timer-mixin');
 
-var LazyRenderer = React.createClass({
+var LazyRenderer = createReactClass({
   mixin: [TimerMixin],
 
   propTypes: {

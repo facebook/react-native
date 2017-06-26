@@ -16,6 +16,7 @@ var PropTypes = require('prop-types');
 var ViewPropTypes = require('ViewPropTypes');
 var ColorPropType = require('ColorPropType');
 
+var createReactClass = require('create-react-class');
 var requireNativeComponent = require('requireNativeComponent');
 
 var STYLE_ATTRIBUTES = [
@@ -63,7 +64,7 @@ var indeterminateType = function(props, propName, componentName, ...rest) {
  * },
  * ```
  */
-var ProgressBarAndroid = React.createClass({
+var ProgressBarAndroid = createReactClass({
   propTypes: {
     ...ViewPropTypes,
     /**

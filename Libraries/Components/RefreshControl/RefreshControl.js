@@ -18,6 +18,7 @@ const React = require('React');
 const PropTypes = require('prop-types');
 const ViewPropTypes = require('ViewPropTypes');
 
+const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
 if (Platform.OS === 'android') {
@@ -72,7 +73,7 @@ if (Platform.OS === 'android') {
  * in the `onRefresh` function otherwise the refresh indicator will stop immediately.
  */
 // $FlowFixMe(>=0.41.0)
-const RefreshControl = React.createClass({
+const RefreshControl = createReactClass({
   statics: {
     SIZE: RefreshLayoutConsts.SIZE,
   },

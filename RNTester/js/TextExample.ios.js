@@ -13,6 +13,7 @@
 
 const Platform = require('Platform');
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {
   Image,
@@ -72,7 +73,7 @@ class AttributeToggler extends React.Component {
   }
 }
 
-var AdjustingFontSize = React.createClass({
+var AdjustingFontSize = createReactClass({
   getInitialState: function() {
     return {dynamicText:'', shouldRender: true,};
   },

@@ -10,6 +10,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var RCTNativeAppEventEmitter = require('RCTNativeAppEventEmitter');
 var Subscribable = require('Subscribable');
@@ -22,7 +23,7 @@ var reactViewHeight = 222;
 
 var finalState = false;
 
-var SizeFlexibilityUpdateTest = React.createClass({
+var SizeFlexibilityUpdateTest = createReactClass({
   mixins: [Subscribable.Mixin],
 
   componentWillMount: function() {
