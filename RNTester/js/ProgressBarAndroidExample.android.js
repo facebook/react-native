@@ -13,12 +13,13 @@
 
 var ProgressBar = require('ProgressBarAndroid');
 var React = require('React');
+var createReactClass = require('create-react-class');
 var RNTesterBlock = require('RNTesterBlock');
 var RNTesterPage = require('RNTesterPage');
 
 var TimerMixin = require('react-timer-mixin');
 
-var MovingBar = React.createClass({
+var MovingBar = createReactClass({
   mixins: [TimerMixin],
 
   getInitialState: function() {

@@ -17,6 +17,7 @@ const EventEmitter = require('EventEmitter');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
+const createReactClass = require('create-react-class');
 const PropTypes = require('prop-types');
 const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
@@ -168,7 +169,7 @@ const DataDetectorTypes = [
  *
  */
 // $FlowFixMe(>=0.41.0)
-const TextInput = React.createClass({
+const TextInput = createReactClass({
   statics: {
     /* TODO(brentvatne) docs are needed for this */
     State: TextInputState,

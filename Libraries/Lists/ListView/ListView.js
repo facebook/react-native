@@ -25,6 +25,7 @@ var TimerMixin = require('react-timer-mixin');
 var View = require('View');
 
 var cloneReferencedElement = require('react-clone-referenced-element');
+var createReactClass = require('create-react-class');
 var isEmpty = require('isEmpty');
 var merge = require('merge');
 
@@ -85,7 +86,7 @@ var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
  *    rendering rows.
  */
 
-var ListView = React.createClass({
+var ListView = createReactClass({
   _childFrames: ([]: Array<Object>),
   _sentEndForContentLength: (null: ?number),
   _scrollComponent: (null: any),

@@ -25,6 +25,7 @@ var View = require('View');
 var ViewPropTypes = require('ViewPropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
+var createReactClass = require('create-react-class');
 var filterObject = require('fbjs/lib/filterObject');
 var flattenStyle = require('flattenStyle');
 var merge = require('merge');
@@ -76,7 +77,7 @@ var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
 var ViewStyleKeys = new Set(Object.keys(ViewStylePropTypes));
 var ImageSpecificStyleKeys = new Set(Object.keys(ImageStylePropTypes).filter(x => !ViewStyleKeys.has(x)));
 
-var Image = React.createClass({
+var Image = createReactClass({
   propTypes: {
     ...ViewPropTypes,
     style: StyleSheetPropType(ImageStylePropTypes),

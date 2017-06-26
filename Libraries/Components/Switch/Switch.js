@@ -19,6 +19,7 @@ const PropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
 const ViewPropTypes = require('ViewPropTypes');
 
+var createReactClass = require('create-react-class');
 var requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
@@ -38,7 +39,7 @@ type DefaultProps = {
  * @keyword toggle
  */
 // $FlowFixMe(>=0.41.0)
-var Switch = React.createClass({
+var Switch = createReactClass({
   propTypes: {
     ...ViewPropTypes,
     /**

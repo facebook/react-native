@@ -24,6 +24,7 @@ var ViewPropTypes = require('ViewPropTypes');
 
 var DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
 
+var createReactClass = require('create-react-class');
 var dismissKeyboard = require('dismissKeyboard');
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -67,7 +68,7 @@ var DRAWER_STATES = [
  * },
  * ```
  */
-var DrawerLayoutAndroid = React.createClass({
+var DrawerLayoutAndroid = createReactClass({
   statics: {
     positions: DrawerConsts.DrawerPosition,
   },

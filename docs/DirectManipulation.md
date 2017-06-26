@@ -123,7 +123,7 @@ If you run this you will immediately see this error: `Touchable child
 must either be native or forward setNativeProps to a native component`.
 This occurs because `MyButton` isn't directly backed by a native view
 whose opacity should be set. You can think about it like this: if you
-define a component with `React.createClass` you would not expect to be
+define a component with `createReactClass` you would not expect to be
 able to set a style prop on it and have that work - you would need to
 pass the style prop down to a child, unless you are wrapping a native
 component. Similarly, we are going to forward `setNativeProps` to a
