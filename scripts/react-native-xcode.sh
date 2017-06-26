@@ -12,14 +12,9 @@
 
 case "$CONFIGURATION" in
   *Debug*)
-    # Speed up build times by skipping the creation of the offline package for debug
-    # builds on the simulator since the packager is supposed to be running anyways.
-    if [[ "$PLATFORM_NAME" == *simulator ]]; then
-      echo "Skipping bundling for Simulator platform"
-      exit 0;
-    fi
-
-    DEV=true
+    # Speed up build times by skipping the creation of the offline package.
+    echo "Skipping bundling for Debug (since the packager is supposed to be running)"
+    exit 0;
     ;;
   "")
     echo "$0 must be invoked by Xcode"
