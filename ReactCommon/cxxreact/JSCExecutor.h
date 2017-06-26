@@ -83,9 +83,9 @@ public:
   virtual void startProfiler(const std::string &titleString) override;
   virtual void stopProfiler(const std::string &titleString, const std::string &filename) override;
 
-  virtual void handleMemoryPressureUiHidden() override;
-  virtual void handleMemoryPressureModerate() override;
-  virtual void handleMemoryPressureCritical() override;
+#ifdef WITH_JSC_MEMORY_PRESSURE
+  virtual void handleMemoryPressure(int pressureLevel) override;
+#endif
 
   virtual void destroy() override;
 

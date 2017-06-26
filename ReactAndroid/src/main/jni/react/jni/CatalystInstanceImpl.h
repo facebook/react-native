@@ -68,9 +68,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   void setGlobalVariable(std::string propName,
                          std::string&& jsonValue);
   jlong getJavaScriptContext();
-  void handleMemoryPressureUiHidden();
-  void handleMemoryPressureModerate();
-  void handleMemoryPressureCritical();
+  void handleMemoryPressure(int pressureLevel);
   jboolean supportsProfiling();
   void startProfiler(const std::string& title);
   void stopProfiler(const std::string& title, const std::string& filename);

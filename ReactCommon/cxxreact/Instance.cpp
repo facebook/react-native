@@ -134,17 +134,11 @@ void Instance::callJSCallback(uint64_t callbackId, folly::dynamic&& params) {
   nativeToJsBridge_->invokeCallback((double) callbackId, std::move(params));
 }
 
-void Instance::handleMemoryPressureUiHidden() {
-  nativeToJsBridge_->handleMemoryPressureUiHidden();
+#ifdef WITH_JSC_MEMORY_PRESSURE
+void Instance::handleMemoryPressure(int pressureLevel) {
+  nativeToJsBridge_->handleMemoryPressure(pressureLevel);
 }
-
-void Instance::handleMemoryPressureModerate() {
-  nativeToJsBridge_->handleMemoryPressureModerate();
-}
-
-void Instance::handleMemoryPressureCritical() {
-  nativeToJsBridge_->handleMemoryPressureCritical();
-}
+#endif
 
 } // namespace react
 } // namespace facebook

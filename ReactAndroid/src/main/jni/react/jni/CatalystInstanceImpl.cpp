@@ -103,9 +103,7 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("jniCallJSCallback", CatalystInstanceImpl::jniCallJSCallback),
     makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
     makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
-    makeNativeMethod("handleMemoryPressureUiHidden", CatalystInstanceImpl::handleMemoryPressureUiHidden),
-    makeNativeMethod("handleMemoryPressureModerate", CatalystInstanceImpl::handleMemoryPressureModerate),
-    makeNativeMethod("handleMemoryPressureCritical", CatalystInstanceImpl::handleMemoryPressureCritical),
+    makeNativeMethod("jniHandleMemoryPressure", CatalystInstanceImpl::handleMemoryPressure),
     makeNativeMethod("supportsProfiling", CatalystInstanceImpl::supportsProfiling),
     makeNativeMethod("startProfiler", CatalystInstanceImpl::startProfiler),
     makeNativeMethod("stopProfiler", CatalystInstanceImpl::stopProfiler),
@@ -262,16 +260,10 @@ jlong CatalystInstanceImpl::getJavaScriptContext() {
   return (jlong) (intptr_t) instance_->getJavaScriptContext();
 }
 
-void CatalystInstanceImpl::handleMemoryPressureUiHidden() {
-  instance_->handleMemoryPressureUiHidden();
-}
-
-void CatalystInstanceImpl::handleMemoryPressureModerate() {
-  instance_->handleMemoryPressureModerate();
-}
-
-void CatalystInstanceImpl::handleMemoryPressureCritical() {
-  instance_->handleMemoryPressureCritical();
+void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  instance_->handleMemoryPressure(pressureLevel);
+  #endif
 }
 
 jboolean CatalystInstanceImpl::supportsProfiling() {

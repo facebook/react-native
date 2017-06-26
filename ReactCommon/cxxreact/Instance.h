@@ -63,9 +63,9 @@ class Instance {
     return nativeToJsBridge_->callFunctionSync(module, method, std::forward<T>(args));
   }
 
-  void handleMemoryPressureUiHidden();
-  void handleMemoryPressureModerate();
-  void handleMemoryPressureCritical();
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  void handleMemoryPressure(int pressureLevel);
+  #endif
 
  private:
   void callNativeModules(folly::dynamic&& calls, bool isEndOfBatch);
