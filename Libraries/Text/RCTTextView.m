@@ -273,23 +273,23 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 
 - (NSString *)placeholder
 {
-  return _textView.placeholderText;
+  return _textView.placeholder;
 }
 
 - (void)setPlaceholder:(NSString *)placeholder
 {
-  _textView.placeholderText = placeholder;
+  _textView.placeholder = placeholder;
   [self setNeedsLayout];
 }
 
-- (UIColor *)placeholderTextColor
+- (UIColor *)placeholderColor
 {
-  return _textView.placeholderTextColor;
+  return _textView.placeholderColor;
 }
 
-- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
+- (void)setPlaceholderColor:(UIColor *)placeholderColor
 {
-  _textView.placeholderTextColor = placeholderTextColor;
+  _textView.placeholderColor = placeholderColor;
 }
 
 - (void)setAutocorrectionType:(UITextAutocorrectionType)autocorrectionType

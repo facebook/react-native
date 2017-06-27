@@ -23,7 +23,7 @@ static UIFont *defaultPlaceholderFont()
   return [UIFont systemFontOfSize:17];
 }
 
-static UIColor *defaultPlaceholderTextColor()
+static UIColor *defaultPlaceholderColor()
 {
   // Default placeholder color from UITextField.
   return [UIColor colorWithRed:0 green:0 blue:0.0980392 alpha:0.22];
@@ -40,7 +40,7 @@ static UIColor *defaultPlaceholderTextColor()
     _placeholderView = [[UILabel alloc] initWithFrame:self.bounds];
     _placeholderView.isAccessibilityElement = NO;
     _placeholderView.numberOfLines = 0;
-    _placeholderView.textColor = defaultPlaceholderTextColor();
+    _placeholderView.textColor = defaultPlaceholderColor();
     [self addSubview:_placeholderView];
   }
 
@@ -61,11 +61,11 @@ static UIColor *defaultPlaceholderTextColor()
     [accessibilityLabel appendString:superAccessibilityLabel];
   }
   
-  if (self.placeholderText.length > 0 && self.text.length == 0) {
+  if (self.placeholder.length > 0 && self.text.length == 0) {
     if (accessibilityLabel.length > 0) {
       [accessibilityLabel appendString:@" "];
     }
-    [accessibilityLabel appendString:self.placeholderText];
+    [accessibilityLabel appendString:self.placeholder];
   }
   
   return accessibilityLabel;
@@ -73,16 +73,16 @@ static UIColor *defaultPlaceholderTextColor()
 
 #pragma mark - Properties
 
-- (void)setPlaceholderText:(NSString *)placeholderText
+- (void)setPlaceholder:(NSString *)placeholder
 {
-  _placeholderText = placeholderText;
-  _placeholderView.text = _placeholderText;
+  _placeholder = placeholder;
+  _placeholderView.text = _placeholder;
 }
 
-- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
+- (void)setPlaceholderColor:(UIColor *)placeholderColor
 {
-  _placeholderTextColor = placeholderTextColor;
-  _placeholderView.textColor = _placeholderTextColor ?: defaultPlaceholderTextColor();
+  _placeholderColor = placeholderColor;
+  _placeholderView.textColor = _placeholderColor ?: defaultPlaceholderColor();
 }
 
 - (void)textDidChange
@@ -148,8 +148,8 @@ static UIColor *defaultPlaceholderTextColor()
   CGSize textSize = [self fixedSizeThatFits:size];
 
   UIEdgeInsets padddingInsets = self.textContainerInset;
-  NSString *placeholderText = self.placeholderText ?: @"";
-  CGSize placeholderSize = [placeholderText sizeWithAttributes:@{NSFontAttributeName: self.font ?: defaultPlaceholderFont()}];
+  NSString *placeholder = self.placeholder ?: @"";
+  CGSize placeholderSize = [placeholder sizeWithAttributes:@{NSFontAttributeName: self.font ?: defaultPlaceholderFont()}];
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
   placeholderSize.width += padddingInsets.left + padddingInsets.right;
   placeholderSize.height += padddingInsets.top + padddingInsets.bottom;
@@ -186,7 +186,7 @@ static UIColor *defaultPlaceholderTextColor()
 
 - (void)invalidatePlaceholderVisibility
 {
-  BOOL isVisible = _placeholderText.length != 0 && self.text.length == 0;
+  BOOL isVisible = _placeholder.length != 0 && self.text.length == 0;
   _placeholderView.hidden = !isVisible;
 }
 

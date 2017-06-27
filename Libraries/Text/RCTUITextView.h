@@ -20,8 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithCoder:(NSCoder *)aDecoder NS_UNAVAILABLE;
 
 @property (nonatomic, assign, readonly) BOOL textWasPasted;
-@property (nonatomic, copy, nullable) NSString *placeholderText;
-@property (nonatomic, assign, nullable) UIColor *placeholderTextColor;
+@property (nonatomic, copy, nullable) NSString *placeholder;
+@property (nonatomic, strong, nullable) UIColor *placeholderColor;
 
 @end
 
