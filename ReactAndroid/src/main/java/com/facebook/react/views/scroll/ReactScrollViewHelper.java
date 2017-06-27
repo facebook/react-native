@@ -15,10 +15,14 @@ import android.view.ViewGroup;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.views.view.ReactViewGroup;
+
+import java.util.ArrayList;
 
 /**
  * Helper class that deals with emitting Scroll Events.
  */
+
 public class ReactScrollViewHelper {
 
   public static final long MOMENTUM_DELAY = 20;
@@ -29,8 +33,27 @@ public class ReactScrollViewHelper {
   /**
    * Shared by {@link ReactScrollView} and {@link ReactHorizontalScrollView}.
    */
-  public static void emitScrollEvent(ViewGroup scrollView) {
-    emitScrollEvent(scrollView, ScrollEventType.SCROLL);
+  public static void emitScrollEvent(ViewGroup scrollView, ArrayList<ChildFrame> childFrames) {
+    View contentView = scrollView.getChildAt(0);
+
+    if (contentView == null) {
+      return;
+    }
+
+    ReactContext reactContext = (ReactContext) scrollView.getContext();
+    reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
+            ScrollEvent.obtain(
+                    scrollView.getId(),
+                    ScrollEventType.SCROLL,
+                    scrollView.getScrollX(),
+                    scrollView.getScrollY(),
+                    contentView.getWidth(),
+                    contentView.getHeight(),
+                    scrollView.getWidth(),
+                    scrollView.getHeight(),
+                    childFrames
+            )
+    );
   }
 
   public static void emitScrollBeginDragEvent(ViewGroup scrollView) {

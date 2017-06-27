@@ -29,6 +29,9 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.views.view.ReactViewBackgroundDrawable;
+import com.facebook.react.views.view.ReactViewGroup;
+
+import java.util.ArrayList;
 
 /**
  * Similar to {@link ReactScrollView} but only supports horizontal scrolling.
@@ -117,7 +120,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
       mActivelyScrolling = true;
 
-      ReactScrollViewHelper.emitScrollEvent(this);
+      ReactScrollViewHelper.emitScrollEvent(this, null);
     }
   }
 

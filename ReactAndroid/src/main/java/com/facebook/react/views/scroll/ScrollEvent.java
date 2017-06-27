@@ -12,11 +12,13 @@ package com.facebook.react.views.scroll;
 import javax.annotation.Nullable;
 
 import java.lang.Override;
+import java.util.ArrayList;
 
 import android.support.v4.util.Pools;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.events.Event;
@@ -37,30 +39,58 @@ public class ScrollEvent extends Event<ScrollEvent> {
   private int mScrollViewWidth;
   private int mScrollViewHeight;
   private @Nullable ScrollEventType mScrollEventType;
+  private @Nullable ArrayList<ChildFrame> mUpdatedChildFrames = new ArrayList<>();
 
   public static ScrollEvent obtain(
-      int viewTag,
-      ScrollEventType scrollEventType,
-      int scrollX,
-      int scrollY,
-      int contentWidth,
-      int contentHeight,
-      int scrollViewWidth,
-      int scrollViewHeight) {
-    ScrollEvent event = EVENTS_POOL.acquire();
-    if (event == null) {
-      event = new ScrollEvent();
-    }
-    event.init(
-        viewTag,
-        scrollEventType,
-        scrollX,
-        scrollY,
-        contentWidth,
-        contentHeight,
-        scrollViewWidth,
-        scrollViewHeight);
-    return event;
+    int viewTag,
+    ScrollEventType scrollEventType,
+    int scrollX,
+    int scrollY,
+    int contentWidth,
+    int contentHeight,
+    int scrollViewWidth,
+    int scrollViewHeight) {
+      ScrollEvent event = EVENTS_POOL.acquire();
+      if (event == null) {
+        event = new ScrollEvent();
+      }
+      event.init(
+          viewTag,
+          scrollEventType,
+          scrollX,
+          scrollY,
+          contentWidth,
+          contentHeight,
+          scrollViewWidth,
+          scrollViewHeight);
+      return event;
+  }
+
+  public static ScrollEvent obtain(
+    int viewTag,
+    ScrollEventType scrollEventType,
+    int scrollX,
+    int scrollY,
+    int contentWidth,
+    int contentHeight,
+    int scrollViewWidth,
+    int scrollViewHeight,
+    ArrayList<ChildFrame> updatedChildFrames) {
+      ScrollEvent event = EVENTS_POOL.acquire();
+      if (event == null) {
+        event = new ScrollEvent();
+      }
+      event.init(
+              viewTag,
+              scrollEventType,
+              scrollX,
+              scrollY,
+              contentWidth,
+              contentHeight,
+              scrollViewWidth,
+              scrollViewHeight,
+              updatedChildFrames);
+      return event;
   }
 
   @Override
@@ -72,22 +102,38 @@ public class ScrollEvent extends Event<ScrollEvent> {
   }
 
   private void init(
-      int viewTag,
-      ScrollEventType scrollEventType,
-      int scrollX,
-      int scrollY,
-      int contentWidth,
-      int contentHeight,
-      int scrollViewWidth,
-      int scrollViewHeight) {
-    super.init(viewTag);
-    mScrollEventType = scrollEventType;
-    mScrollX = scrollX;
-    mScrollY = scrollY;
-    mContentWidth = contentWidth;
-    mContentHeight = contentHeight;
-    mScrollViewWidth = scrollViewWidth;
-    mScrollViewHeight = scrollViewHeight;
+    int viewTag,
+    ScrollEventType scrollEventType,
+    int scrollX,
+    int scrollY,
+    int contentWidth,
+    int contentHeight,
+    int scrollViewWidth,
+    int scrollViewHeight) {
+      super.init(viewTag);
+      mScrollEventType = scrollEventType;
+      mScrollX = scrollX;
+      mScrollY = scrollY;
+      mContentWidth = contentWidth;
+      mContentHeight = contentHeight;
+      mScrollViewWidth = scrollViewWidth;
+      mScrollViewHeight = scrollViewHeight;
+  }
+
+  private void init(
+    int viewTag,
+    ScrollEventType scrollEventType,
+    int scrollX,
+    int scrollY,
+    int contentWidth,
+    int contentHeight,
+    int scrollViewWidth,
+    int scrollViewHeight,
+    ArrayList<ChildFrame> updatedChildFrames) {
+      init(viewTag, scrollEventType, scrollX, scrollY, contentWidth, contentHeight, scrollViewWidth, scrollViewHeight);
+      if (updatedChildFrames != null) {
+        mUpdatedChildFrames.addAll(updatedChildFrames);
+      }
   }
 
   @Override
@@ -134,11 +180,29 @@ public class ScrollEvent extends Event<ScrollEvent> {
     layoutMeasurement.putDouble("width", PixelUtil.toDIPFromPixel(mScrollViewWidth));
     layoutMeasurement.putDouble("height", PixelUtil.toDIPFromPixel(mScrollViewHeight));
 
+    WritableArray updatedFrames = Arguments.createArray();
+
+    if (mUpdatedChildFrames != null) {
+      for (int i = 0; i < mUpdatedChildFrames.size(); i++) {
+        ChildFrame childFrame = mUpdatedChildFrames.get(i);
+
+        WritableMap map = Arguments.createMap();
+        map.putInt("index", childFrame.index);
+        map.putDouble("height", PixelUtil.toDIPFromPixel(childFrame.height));
+        map.putDouble("width", PixelUtil.toDIPFromPixel(childFrame.width));
+        map.putDouble("x", PixelUtil.toDIPFromPixel(childFrame.x));
+        map.putDouble("y", PixelUtil.toDIPFromPixel(childFrame.y));
+
+        updatedFrames.pushMap(map);
+      }
+    }
+
     WritableMap event = Arguments.createMap();
     event.putMap("contentInset", contentInset);
     event.putMap("contentOffset", contentOffset);
     event.putMap("contentSize", contentSize);
     event.putMap("layoutMeasurement", layoutMeasurement);
+    event.putArray("updatedChildFrames", updatedFrames);
 
     event.putInt("target", getViewTag());
     event.putBoolean("responderIgnoreScroll", true);
