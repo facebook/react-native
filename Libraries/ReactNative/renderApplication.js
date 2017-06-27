@@ -7,16 +7,17 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule renderApplication
+ * @format
  * @flow
  */
 
 'use strict';
 
-var AppContainer = require('AppContainer');
-var React = require('React');
-var ReactNative = require('ReactNative');
+const AppContainer = require('AppContainer');
+const React = require('React');
+const ReactNative = require('ReactNative');
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
 require('BackHandler');
@@ -24,20 +25,16 @@ require('BackHandler');
 function renderApplication<Props: Object>(
   RootComponent: ReactClass<Props>,
   initialProps: Props,
-  rootTag: any
+  rootTag: any,
+  WrapperComponent?: ?ReactClass<*>,
 ) {
-  invariant(
-    rootTag,
-    'Expect to have a valid rootTag, instead got ', rootTag
-  );
+  invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
+
   ReactNative.render(
-    <AppContainer rootTag={rootTag}>
-      <RootComponent
-        {...initialProps}
-        rootTag={rootTag}
-      />
+    <AppContainer rootTag={rootTag} wrapperComponent={WrapperComponent}>
+      <RootComponent {...initialProps} rootTag={rootTag} />
     </AppContainer>,
-    rootTag
+    rootTag,
   );
 }
 

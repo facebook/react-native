@@ -93,14 +93,14 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
   });
 }
 
+#if !TARGET_OS_TV
+
 - (void)interfaceOrientationDidChange
 {
-#if !TARGET_OS_TV
   __weak typeof(self) weakSelf = self;
   RCTExecuteOnMainQueue(^{
     [weakSelf _interfaceOrientationDidChange];
   });
-#endif
 }
 
 
@@ -122,6 +122,8 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
   _currentInterfaceOrientation = nextOrientation;
 }
+
+#endif // TARGET_OS_TV
 
 
 @end

@@ -12,7 +12,7 @@
 
 #import <React/RCTDefines.h>
 #import <React/RCTJavaScriptExecutor.h>
-#include <cxxreact/Executor.h>
+#import <cxxreact/JSExecutor.h>
 
 namespace facebook {
 namespace react {

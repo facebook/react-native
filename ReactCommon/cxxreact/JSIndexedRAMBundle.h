@@ -5,16 +5,15 @@
 #include <fstream>
 #include <memory>
 
-#include <cxxreact/Executor.h>
-#include <cxxreact/JSBundleType.h>
 #include <cxxreact/JSModulesUnbundle.h>
 
 namespace facebook {
 namespace react {
 
 class JSBigString;
+class JSBigBufferString;
 
-class JSIndexedRAMBundle : public facebook::react::JSModulesUnbundle {
+class JSIndexedRAMBundle : public JSModulesUnbundle {
 public:
   // Throws std::runtime_error on failure.
   JSIndexedRAMBundle(const char *sourceURL);

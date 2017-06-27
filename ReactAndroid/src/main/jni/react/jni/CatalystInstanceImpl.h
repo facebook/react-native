@@ -52,6 +52,10 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
       jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules);
 
+  void extendNativeModules(
+    jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
+    jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules);
+
   /**
    * Sets the source URL of the underlying bridge without loading any JS code.
    */
@@ -64,9 +68,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   void setGlobalVariable(std::string propName,
                          std::string&& jsonValue);
   jlong getJavaScriptContext();
-  void handleMemoryPressureUiHidden();
-  void handleMemoryPressureModerate();
-  void handleMemoryPressureCritical();
+  void handleMemoryPressure(int pressureLevel);
   jboolean supportsProfiling();
   void startProfiler(const std::string& title);
   void stopProfiler(const std::string& title, const std::string& filename);
@@ -74,6 +76,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   // This should be the only long-lived strong reference, but every C++ class
   // will have a weak reference.
   std::shared_ptr<Instance> instance_;
+  std::shared_ptr<ModuleRegistry> moduleRegistry_;
   std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
   std::shared_ptr<JMessageQueueThread> uiBackgroundMessageQueue_;
 };
