@@ -728,17 +728,40 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             // Any 'Enter' action will do
             if ((actionId & EditorInfo.IME_MASK_ACTION) > 0 ||
                 actionId == EditorInfo.IME_NULL) {
-              EventDispatcher eventDispatcher =
-                  reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-              eventDispatcher.dispatchEvent(
-                  new ReactTextInputSubmitEditingEvent(
-                      editText.getId(),
-                      editText.getText().toString()));
-              // if blurOnSubmit is false, and isMultiline, go to new line
-              // if blurOnSubmit is true, prioritise blur
-              if (!editText.getBlurOnSubmit() && (editText.getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0) {
-                return false;
+              boolean blurOnSubmit = editText.getBlurOnSubmit();
+              boolean isMultiline = ((editText.getInputType() &
+                InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0);
+              boolean shouldDispatchSubmitEvent = false;
+              boolean shouldClearFocus = false;
+              boolean returnValue = false;
+
+              // blurOnSubmit && isMultiline => generate submit event; blur; return true;
+              // !blurOnSubmit && isMultiline => return false; (Perform default behaviour.)
+              // blurOnSubmit && !isMultiline => generate submit event; blur; return true;
+              // !blurOnSubmit && !isMultiline => return true; (Shallow <Enter>.)
+              if (blurOnSubmit) {
+                shouldClearFocus = true;
+                shouldDispatchSubmitEvent = true;
+                returnValue = true;
+              } else {
+                if (isMultiline) {
+                  returnValue = false;
+                } else {
+                  returnValue = true;
+                }
               }
+              if (shouldDispatchSubmitEvent) {
+                EventDispatcher eventDispatcher =
+                    reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+                eventDispatcher.dispatchEvent(
+                    new ReactTextInputSubmitEditingEvent(
+                        editText.getId(),
+                        editText.getText().toString()));
+              }
+              if (shouldClearFocus) {
+                editText.clearFocus();
+              }
+              return returnValue;
             }
 
             if (editText.getBlurOnSubmit()) {
