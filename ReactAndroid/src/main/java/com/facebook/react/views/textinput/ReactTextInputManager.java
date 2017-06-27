@@ -735,21 +735,19 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               boolean shouldClearFocus = false;
               boolean returnValue = false;
 
-              // blurOnSubmit && isMultiline => generate submit event; blur; return true;
-              // !blurOnSubmit && isMultiline => return false; (Perform default behaviour.)
-              // blurOnSubmit && !isMultiline => generate submit event; blur; return true;
-              // !blurOnSubmit && !isMultiline => return true; (Shallow <Enter>.)
+              // Motivation:
+              // * blurOnSubmit && isMultiline => Generate `submit` event; clear focus; prevent default behaviour (return true);
+              // * blurOnSubmit && !isMultiline => Generate `submit` event; clear focus; prevent default behaviour (return true);
+              // * !blurOnSubmit && isMultiline => Perform default behaviour (return false);
+              // * !blurOnSubmit && !isMultiline => Prevent default behaviour (return true).
               if (blurOnSubmit) {
                 shouldClearFocus = true;
                 shouldDispatchSubmitEvent = true;
                 returnValue = true;
               } else {
-                if (isMultiline) {
-                  returnValue = false;
-                } else {
-                  returnValue = true;
-                }
+                returnValue = !isMultiline;
               }
+              
               if (shouldDispatchSubmitEvent) {
                 EventDispatcher eventDispatcher =
                     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
@@ -758,14 +756,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                         editText.getId(),
                         editText.getText().toString()));
               }
+              
               if (shouldClearFocus) {
                 editText.clearFocus();
               }
+              
               return returnValue;
-            }
-
-            if (editText.getBlurOnSubmit()) {
-              editText.clearFocus();
             }
 
             return true;
