@@ -9,12 +9,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import <RCTText/RCTBackedTextInputViewProtocol.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 /*
  * Just regular UITextField... but much better!
  */
-@interface RCTUITextField : UITextField
+@interface RCTUITextField : UITextField <RCTBackedTextInputViewProtocol>
 
 - (instancetype)initWithCoder:(NSCoder *)decoder NS_UNAVAILABLE;
 

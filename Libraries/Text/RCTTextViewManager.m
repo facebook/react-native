@@ -33,6 +33,13 @@ RCT_EXPORT_MODULE()
   return [[RCTTextView alloc] initWithBridge:self.bridge];
 }
 
+#pragma mark - Unified <TextInput> properties
+
+RCT_REMAP_VIEW_PROPERTY(placeholder, backedTextInputView.placeholder, NSString)
+RCT_REMAP_VIEW_PROPERTY(placeholderTextColor, backedTextInputView.placeholderColor, UIColor)
+
+#pragma mark - Multiline <TextInput> (aka TextView) specific properties
+
 RCT_REMAP_VIEW_PROPERTY(autoCapitalize, textView.autocapitalizationType, UITextAutocapitalizationType)
 RCT_REMAP_VIEW_PROPERTY(autoCorrect, autocorrectionType, UITextAutocorrectionType)
 RCT_REMAP_VIEW_PROPERTY(spellCheck, spellCheckingType, UITextSpellCheckingType)
@@ -50,8 +57,6 @@ RCT_EXPORT_VIEW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onSelectionChange, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onScroll, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onTextInput, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(placeholder, NSString)
-RCT_REMAP_VIEW_PROPERTY(placeholderTextColor, placeholderColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(returnKeyType, textView.returnKeyType, UIReturnKeyType)
 RCT_REMAP_VIEW_PROPERTY(secureTextEntry, textView.secureTextEntry, BOOL)
 RCT_REMAP_VIEW_PROPERTY(selectionColor, tintColor, UIColor)

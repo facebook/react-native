@@ -9,22 +9,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import <RCTText/RCTBackedTextInputViewProtocol.h>
+@protocol RCTBackedTextInputViewProtocol <UITextInput>
 
-NS_ASSUME_NONNULL_BEGIN
-
-/*
- * Just regular UITextView... but much better!
- */
-@interface RCTUITextView : UITextView <RCTBackedTextInputViewProtocol>
-
-- (instancetype)initWithFrame:(CGRect)frame textContainer:(nullable NSTextContainer *)textContainer NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder *)aDecoder NS_UNAVAILABLE;
-
-@property (nonatomic, assign, readonly) BOOL textWasPasted;
+@property (nonatomic, copy, nullable) NSString *text;
+@property (nonatomic, strong, nullable) UIColor *textColor;
 @property (nonatomic, copy, nullable) NSString *placeholder;
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;
+@property (nonatomic, assign, readonly) BOOL textWasPasted;
+@property (nonatomic, strong, nullable) UIFont *font;
 
 @end
-
-NS_ASSUME_NONNULL_END

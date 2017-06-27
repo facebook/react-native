@@ -68,6 +68,11 @@
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
+- (id<RCTBackedTextInputViewProtocol>)backedTextInputView
+{
+  return _textView;
+}
+
 #pragma mark - RCTComponent
 
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)index
@@ -269,27 +274,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
     RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
   }
-}
-
-- (NSString *)placeholder
-{
-  return _textView.placeholder;
-}
-
-- (void)setPlaceholder:(NSString *)placeholder
-{
-  _textView.placeholder = placeholder;
-  [self setNeedsLayout];
-}
-
-- (UIColor *)placeholderColor
-{
-  return _textView.placeholderColor;
-}
-
-- (void)setPlaceholderColor:(UIColor *)placeholderColor
-{
-  _textView.placeholderColor = placeholderColor;
 }
 
 - (void)setAutocorrectionType:(UITextAutocorrectionType)autocorrectionType

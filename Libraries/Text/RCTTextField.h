@@ -9,6 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <RCTText/RCTBackedTextInputViewProtocol.h>
 #import <React/RCTComponent.h>
 #import <React/RCTView.h>
 
@@ -16,6 +17,8 @@
 @class RCTUITextField;
 
 @interface RCTTextField : RCTView
+
+@property (nonatomic, readonly) id<RCTBackedTextInputViewProtocol> backedTextInputView;
 
 @property (nonatomic, assign) BOOL caretHidden;
 @property (nonatomic, assign) BOOL selectTextOnFocus;

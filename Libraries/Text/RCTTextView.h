@@ -9,12 +9,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import <RCTText/RCTBackedTextInputViewProtocol.h>
 #import <React/RCTView.h>
 #import <React/UIView+React.h>
 
 @class RCTBridge;
 
 @interface RCTTextView : RCTView <UITextViewDelegate>
+
+@property (nonatomic, readonly) id<RCTBackedTextInputViewProtocol> backedTextInputView;
 
 @property (nonatomic, assign) UITextAutocorrectionType autocorrectionType;
 @property (nonatomic, assign) UITextSpellCheckingType spellCheckingType;

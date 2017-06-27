@@ -76,6 +76,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_textField removeObserver:self forKeyPath:@"selectedTextRange"];
 }
 
+- (id<RCTBackedTextInputViewProtocol>)backedTextInputView
+{
+  return _textField;
+}
+
 - (void)sendKeyValueForString:(NSString *)string
 {
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeKeyPress

@@ -27,6 +27,8 @@
 		58B511D01A9E6C5C00147676 /* RCTShadowText.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B511CB1A9E6C5C00147676 /* RCTShadowText.m */; };
 		58B511D11A9E6C5C00147676 /* RCTTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B511CD1A9E6C5C00147676 /* RCTTextManager.m */; };
 		58B512161A9E6EFF00147676 /* RCTText.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B512141A9E6EFF00147676 /* RCTText.m */; };
+		599DF25F1F0306660079B53E /* RCTBackedTextInputViewProtocol.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599DF25D1F0304B30079B53E /* RCTBackedTextInputViewProtocol.h */; };
+		599DF2611F0306C30079B53E /* RCTBackedTextInputViewProtocol.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599DF25D1F0304B30079B53E /* RCTBackedTextInputViewProtocol.h */; };
 		59AF89AA1EDCBCC700F004B1 /* RCTUITextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 59AF89A91EDCBCC700F004B1 /* RCTUITextField.m */; };
 		59AF89AB1EDCBCC700F004B1 /* RCTUITextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 59AF89A91EDCBCC700F004B1 /* RCTUITextField.m */; };
 		59B125C91E6E4E15004E2A67 /* RCTUITextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 59B125C81E6E4E15004E2A67 /* RCTUITextView.m */; };
@@ -38,6 +40,31 @@
 		AF3225F91DE5574F00D3E7E7 /* RCTConvert+Text.m in Sources */ = {isa = PBXBuildFile; fileRef = AF3225F81DE5574F00D3E7E7 /* RCTConvert+Text.m */; };
 		AF3225FA1DE5574F00D3E7E7 /* RCTConvert+Text.m in Sources */ = {isa = PBXBuildFile; fileRef = AF3225F81DE5574F00D3E7E7 /* RCTConvert+Text.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		599DF25E1F0306540079B53E /* Copy Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/RCTText;
+			dstSubfolderSpec = 16;
+			files = (
+				599DF25F1F0306660079B53E /* RCTBackedTextInputViewProtocol.h in Copy Headers */,
+			);
+			name = "Copy Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		599DF2601F0306AD0079B53E /* Copy Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/RCTText;
+			dstSubfolderSpec = 16;
+			files = (
+				599DF2611F0306C30079B53E /* RCTBackedTextInputViewProtocol.h in Copy Headers */,
+			);
+			name = "Copy Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		131B6ABC1AF0CD0600FFC3E0 /* RCTTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTextView.h; sourceTree = "<group>"; };
@@ -62,6 +89,7 @@
 		58B511CD1A9E6C5C00147676 /* RCTTextManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTextManager.m; sourceTree = "<group>"; };
 		58B512141A9E6EFF00147676 /* RCTText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTText.m; sourceTree = "<group>"; };
 		58B512151A9E6EFF00147676 /* RCTText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTText.h; sourceTree = "<group>"; };
+		599DF25D1F0304B30079B53E /* RCTBackedTextInputViewProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBackedTextInputViewProtocol.h; sourceTree = "<group>"; };
 		59AF89A81EDCBCC700F004B1 /* RCTUITextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTUITextField.h; sourceTree = "<group>"; };
 		59AF89A91EDCBCC700F004B1 /* RCTUITextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUITextField.m; sourceTree = "<group>"; };
 		59B125C71E6E4E15004E2A67 /* RCTUITextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTUITextView.h; sourceTree = "<group>"; };
@@ -79,6 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				58B5119C1A9E6C1200147676 /* Products */,
+				599DF25D1F0304B30079B53E /* RCTBackedTextInputViewProtocol.h */,
 				AF3225F71DE5574F00D3E7E7 /* RCTConvert+Text.h */,
 				AF3225F81DE5574F00D3E7E7 /* RCTConvert+Text.m */,
 				58B511C61A9E6C5C00147676 /* RCTRawTextManager.h */,
@@ -130,6 +159,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D2A28831D9B048500D4039D /* Build configuration list for PBXNativeTarget "RCTText-tvOS" */;
 			buildPhases = (
+				599DF2601F0306AD0079B53E /* Copy Headers */,
 				2D2A28771D9B048500D4039D /* Sources */,
 			);
 			buildRules = (
@@ -145,6 +175,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 58B511AF1A9E6C1300147676 /* Build configuration list for PBXNativeTarget "RCTText" */;
 			buildPhases = (
+				599DF25E1F0306540079B53E /* Copy Headers */,
 				58B511971A9E6C1200147676 /* Sources */,
 			);
 			buildRules = (

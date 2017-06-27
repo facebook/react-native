@@ -33,12 +33,17 @@ RCT_EXPORT_MODULE()
   return [[RCTTextField alloc] initWithBridge:self.bridge];
 }
 
+#pragma mark - Unified <TextInput> properties
+
+RCT_REMAP_VIEW_PROPERTY(placeholder, backedTextInputView.placeholder, NSString)
+RCT_REMAP_VIEW_PROPERTY(placeholderTextColor, backedTextInputView.placeholderColor, UIColor)
+
+#pragma mark - Singleline <TextInput> (aka TextField) specific properties
+
 RCT_REMAP_VIEW_PROPERTY(caretHidden, textField.caretHidden, BOOL)
 RCT_REMAP_VIEW_PROPERTY(autoCorrect, textField.autocorrectionType, UITextAutocorrectionType)
 RCT_REMAP_VIEW_PROPERTY(spellCheck, textField.spellCheckingType, UITextSpellCheckingType)
 RCT_REMAP_VIEW_PROPERTY(editable, textField.enabled, BOOL)
-RCT_REMAP_VIEW_PROPERTY(placeholder, textField.placeholder, NSString)
-RCT_REMAP_VIEW_PROPERTY(placeholderTextColor, textField.placeholderColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(selection, RCTTextSelection)
 RCT_EXPORT_VIEW_PROPERTY(text, NSString)
 RCT_EXPORT_VIEW_PROPERTY(maxLength, NSNumber)
