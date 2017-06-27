@@ -9,13 +9,13 @@
 
 #import <React/RCTPackagerClient.h>
 
-@class RCTBridge;
+@protocol RCTJSEnvironment;
 
 #if RCT_DEV // Only supported in dev mode
 
 @interface RCTSamplingProfilerPackagerMethod : NSObject <RCTPackagerClientMethod>
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
+- (instancetype)initWithJSEnvironment:(id<RCTJSEnvironment>)jsEnvironment;
 
 @end
 

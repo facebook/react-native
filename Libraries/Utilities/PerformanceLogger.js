@@ -8,13 +8,15 @@
  *
  * @providesModule PerformanceLogger
  * @flow
+ * @format
  */
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
 const Systrace = require('Systrace');
 
-const performanceNow = global.nativePerformanceNow || require('fbjs/lib/performanceNow');
+const infoLog = require('infoLog');
+const performanceNow =
+  global.nativePerformanceNow || require('fbjs/lib/performanceNow');
 
 type Timespan = {
   description?: string,
@@ -23,9 +25,9 @@ type Timespan = {
   endTime?: number,
 };
 
-let timespans: {[key:string]: Timespan} = {};
-let extras: {[key:string]: any} = {};
-const cookies: {[key:string]: number} = {};
+let timespans: {[key: string]: Timespan} = {};
+let extras: {[key: string]: any} = {};
+const cookies: {[key: string]: number} = {};
 
 const PRINT_TO_CONSOLE = false;
 
@@ -37,9 +39,9 @@ const PerformanceLogger = {
   addTimespan(key: string, lengthInMs: number, description?: string) {
     if (timespans[key]) {
       if (__DEV__) {
-        console.log(
+        infoLog(
           'PerformanceLogger: Attempting to add a timespan that already exists ',
-          key
+          key,
         );
       }
       return;
@@ -54,7 +56,7 @@ const PerformanceLogger = {
   startTimespan(key: string, description?: string) {
     if (timespans[key]) {
       if (__DEV__) {
-        console.log(
+        infoLog(
           'PerformanceLogger: Attempting to start a timespan that already exists ',
           key,
         );
@@ -68,7 +70,7 @@ const PerformanceLogger = {
     };
     cookies[key] = Systrace.beginAsyncEvent(key);
     if (__DEV__ && PRINT_TO_CONSOLE) {
-      console.log('PerformanceLogger.js', 'start: ' + key);
+      infoLog('PerformanceLogger.js', 'start: ' + key);
     }
   },
 
@@ -76,7 +78,7 @@ const PerformanceLogger = {
     const timespan = timespans[key];
     if (!timespan || !timespan.startTime) {
       if (__DEV__) {
-        console.log(
+        infoLog(
           'PerformanceLogger: Attempting to end a timespan that has not started ',
           key,
         );
@@ -85,9 +87,9 @@ const PerformanceLogger = {
     }
     if (timespan.endTime) {
       if (__DEV__) {
-        console.log(
+        infoLog(
           'PerformanceLogger: Attempting to end a timespan that has already ended ',
-          key
+          key,
         );
       }
       return;
@@ -96,7 +98,7 @@ const PerformanceLogger = {
     timespan.endTime = performanceNow();
     timespan.totalTime = timespan.endTime - (timespan.startTime || 0);
     if (__DEV__ && PRINT_TO_CONSOLE) {
-      console.log('PerformanceLogger.js', 'end: ' + key);
+      infoLog('PerformanceLogger.js', 'end: ' + key);
     }
 
     Systrace.endAsyncEvent(key, cookies[key]);
@@ -142,18 +144,18 @@ const PerformanceLogger = {
   logTimespans() {
     for (const key in timespans) {
       if (timespans[key].totalTime) {
-        console.log(key + ': ' + timespans[key].totalTime + 'ms');
+        infoLog(key + ': ' + timespans[key].totalTime + 'ms');
       }
     }
   },
 
   addTimespans(newTimespans: Array<number>, labels: Array<string>) {
-    for (let i = 0, l = newTimespans.length; i < l; i += 2) {
-      const label = labels[i / 2];
+    for (let ii = 0, l = newTimespans.length; ii < l; ii += 2) {
+      const label = labels[ii / 2];
       PerformanceLogger.addTimespan(
         label,
-        (newTimespans[i + 1] - newTimespans[i]),
-        label
+        newTimespans[ii + 1] - newTimespans[ii],
+        label,
       );
     }
   },
@@ -161,9 +163,9 @@ const PerformanceLogger = {
   setExtra(key: string, value: any) {
     if (extras[key]) {
       if (__DEV__) {
-        console.log(
+        infoLog(
           'PerformanceLogger: Attempting to set an extra that already exists ',
-          key
+          {key, currentValue: extras[key], attemptedValue: value},
         );
       }
       return;
@@ -173,12 +175,7 @@ const PerformanceLogger = {
 
   getExtras() {
     return extras;
-  }
+  },
 };
-
-BatchedBridge.registerCallableModule(
-  'PerformanceLogger',
-  PerformanceLogger
-);
 
 module.exports = PerformanceLogger;

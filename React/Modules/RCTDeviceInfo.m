@@ -67,7 +67,7 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 - (void)invalidate
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
+  RCTExecuteOnMainQueue(^{
     self->_bridge = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
   });
@@ -82,18 +82,30 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 - (void)didReceiveNewContentSizeMultiplier
 {
-  // Report the event across the bridge.
+  RCTBridge *bridge = _bridge;
+  RCTExecuteOnMainQueue(^{
+    // Report the event across the bridge.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                              body:RCTExportedDimensions(_bridge)];
+    [bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
+                                        body:RCTExportedDimensions(bridge)];
 #pragma clang diagnostic pop
+  });
 }
 
+#if !TARGET_OS_TV
 
 - (void)interfaceOrientationDidChange
 {
-#if !TARGET_OS_TV
+  __weak typeof(self) weakSelf = self;
+  RCTExecuteOnMainQueue(^{
+    [weakSelf _interfaceOrientationDidChange];
+  });
+}
+
+
+- (void)_interfaceOrientationDidChange
+{
   UIInterfaceOrientation nextOrientation = [RCTSharedApplication() statusBarOrientation];
 
   // Update when we go from portrait to landscape, or landscape to portrait
@@ -109,8 +121,9 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
       }
 
   _currentInterfaceOrientation = nextOrientation;
-#endif
 }
+
+#endif // TARGET_OS_TV
 
 
 @end

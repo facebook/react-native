@@ -2,19 +2,21 @@
 
 #include "NativeToJsBridge.h"
 
-#ifdef WITH_FBSYSTRACE
-#include <fbsystrace.h>
-using fbsystrace::FbSystraceAsyncFlow;
-#endif
-
 #include <folly/json.h>
 #include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
 
 #include "Instance.h"
-#include "ModuleRegistry.h"
-#include "Platform.h"
+#include "JSBigString.h"
 #include "SystraceSection.h"
+#include "MethodCall.h"
+#include "JSModulesUnbundle.h"
+#include "MessageQueueThread.h"
+
+#ifdef WITH_FBSYSTRACE
+#include <fbsystrace.h>
+using fbsystrace::FbSystraceAsyncFlow;
+#endif
 
 namespace facebook {
 namespace react {
@@ -199,23 +201,13 @@ void NativeToJsBridge::stopProfiler(const std::string& title, const std::string&
   });
 }
 
-void NativeToJsBridge::handleMemoryPressureUiHidden() {
+#ifdef WITH_JSC_MEMORY_PRESSURE
+void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {
   runOnExecutorQueue([=] (JSExecutor* executor) {
-    executor->handleMemoryPressureUiHidden();
+    executor->handleMemoryPressure(pressureLevel);
   });
 }
-
-void NativeToJsBridge::handleMemoryPressureModerate() {
-  runOnExecutorQueue([=] (JSExecutor* executor) {
-    executor->handleMemoryPressureModerate();
-  });
-}
-
-void NativeToJsBridge::handleMemoryPressureCritical() {
-  runOnExecutorQueue([=] (JSExecutor* executor) {
-    executor->handleMemoryPressureCritical();
-  });
-}
+#endif
 
 void NativeToJsBridge::destroy() {
   // All calls made through runOnExecutorQueue have an early exit if

@@ -9,6 +9,8 @@
 
 package com.facebook.react.bridge;
 
+import java.util.HashMap;
+
 /**
  * Interface for a map that allows typed access to its members. Used to pass parameters from JS to
  * Java.
@@ -26,4 +28,6 @@ public interface ReadableMap {
   Dynamic getDynamic(String name);
   ReadableType getType(String name);
   ReadableMapKeySetIterator keySetIterator();
+  HashMap<String, Object> toHashMap();
+
 }

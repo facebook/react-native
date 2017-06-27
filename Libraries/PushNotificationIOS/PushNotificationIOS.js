@@ -24,6 +24,8 @@ const NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
 const NOTIF_REGISTRATION_ERROR_EVENT = 'remoteNotificationRegistrationError';
 const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
 
+export type ContentAvailable = 1 | null | void;
+
 export type FetchResult = {
   NewData: string,
   NoData: string,
@@ -121,6 +123,8 @@ class PushNotificationIOS {
   _data: Object;
   _alert: string | Object;
   _sound: string;
+  _category: string;
+  _contentAvailable: ContentAvailable;
   _badgeCount: number;
   _notificationId: string;
   _isRemote: boolean;
@@ -140,6 +144,7 @@ class PushNotificationIOS {
    * - `alertBody` : The message displayed in the notification alert.
    * - `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
    * - `soundName` : The sound played when the notification is fired (optional).
+   * - `isSilent`  : If true, the notification will appear without sound (optional).
    * - `category`  : The category of this notification, required for actionable notifications (optional).
    * - `userInfo`  : An optional object containing additional notification data.
    * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. The default value of this property is 0, which means that no badge is displayed.
@@ -157,6 +162,7 @@ class PushNotificationIOS {
    * - `alertBody` : The message displayed in the notification alert.
    * - `alertAction` : The "action" displayed beneath an actionable notification. Defaults to "view";
    * - `soundName` : The sound played when the notification is fired (optional).
+   * - `isSilent`  : If true, the notification will appear without sound (optional).
    * - `category`  : The category of this notification, required for actionable notifications (optional).
    * - `userInfo` : An optional object containing additional notification data.
    * - `applicationIconBadgeNumber` (optional) : The number to display as the app's icon badge. Setting the number to 0 removes the icon badge.
@@ -415,6 +421,8 @@ class PushNotificationIOS {
           this._alert = notifVal.alert;
           this._sound = notifVal.sound;
           this._badgeCount = notifVal.badge;
+          this._category = notifVal.category;
+          this._contentAvailable = notifVal['content-available'];
         } else {
           this._data[notifKey] = notifVal;
         }
@@ -425,6 +433,7 @@ class PushNotificationIOS {
       this._sound = nativeNotif.soundName;
       this._alert = nativeNotif.alertBody;
       this._data = nativeNotif.userInfo;
+      this._category = nativeNotif.category;
     }
   }
 
@@ -466,10 +475,24 @@ class PushNotificationIOS {
   }
 
   /**
+   * Gets the category string from the `aps` object
+   */
+  getCategory(): ?string {
+    return this._category;
+  }
+
+  /**
    * Gets the notification's main message from the `aps` object
    */
   getAlert(): ?string | ?Object {
     return this._alert;
+  }
+
+  /**
+   * Gets the content-available number from the `aps` object
+   */
+  getContentAvailable(): ContentAvailable {
+    return this._contentAvailable;
   }
 
   /**

@@ -60,6 +60,10 @@ public class ReactQueueConfigurationImpl implements ReactQueueConfiguration {
    * is destroyed so that we shut down the proper queue threads.
    */
   public void destroy() {
+    if (mUIBackgroundQueueThread != null &&
+      mUIBackgroundQueueThread.getLooper() != Looper.getMainLooper()) {
+      mUIBackgroundQueueThread.quitSynchronous();
+    }
     if (mNativeModulesQueueThread.getLooper() != Looper.getMainLooper()) {
       mNativeModulesQueueThread.quitSynchronous();
     }

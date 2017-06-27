@@ -1714,7 +1714,7 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
          child->layout.measuredDimensions[dim[crossAxis]]) /
         2.0f;
   } else if (!YGNodeIsLeadingPosDefined(child, crossAxis) &&
-             YGNodeAlignItem(node, child) == YGAlignFlexEnd) {
+             ((YGNodeAlignItem(node, child) == YGAlignFlexEnd) ^ (node->style.flexWrap == YGWrapWrapReverse))) {
     child->layout.position[leading[crossAxis]] = (node->layout.measuredDimensions[dim[crossAxis]] -
                                                   child->layout.measuredDimensions[dim[crossAxis]]);
   }
@@ -1736,8 +1736,13 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(const YGNodeRef node,
   const float marginAxisRow = YGNodeMarginForAxis(node, YGFlexDirectionRow, availableWidth);
   const float marginAxisColumn = YGNodeMarginForAxis(node, YGFlexDirectionColumn, availableWidth);
 
-  const float innerWidth = availableWidth - marginAxisRow - paddingAndBorderAxisRow;
-  const float innerHeight = availableHeight - marginAxisColumn - paddingAndBorderAxisColumn;
+  // We want to make sure we don't call measure with negative size
+  const float innerWidth = YGFloatIsUndefined(availableWidth)
+                            ? availableWidth
+                            : fmaxf(0, availableWidth - marginAxisRow - paddingAndBorderAxisRow);
+  const float innerHeight = YGFloatIsUndefined(availableHeight)
+                            ? availableHeight
+                            : fmaxf(0, availableHeight - marginAxisColumn - paddingAndBorderAxisColumn);
 
   if (widthMeasureMode == YGMeasureModeExactly && heightMeasureMode == YGMeasureModeExactly) {
     // Don't bother sizing the text if both dimensions are already defined.
@@ -2232,9 +2237,7 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         const float childMarginMainAxis = YGNodeMarginForAxis(child, mainAxis, availableInnerWidth);
         const float flexBasisWithMaxConstraints =
             fminf(YGResolveValue(&child->style.maxDimensions[dim[mainAxis]], mainAxisParentSize),
-                  fmaxf(YGResolveValue(&child->style.minDimensions[dim[mainAxis]],
-                                       mainAxisParentSize),
-                        child->layout.computedFlexBasis));
+                        child->layout.computedFlexBasis);
         const float flexBasisWithMinAndMaxConstraints =
             fmaxf(YGResolveValue(&child->style.minDimensions[dim[mainAxis]], mainAxisParentSize),
                   flexBasisWithMaxConstraints);
@@ -2252,15 +2255,13 @@ static void YGNodelayoutImpl(const YGNodeRef node,
 
         sizeConsumedOnCurrentLineIncludingMinConstraint +=
             flexBasisWithMinAndMaxConstraints + childMarginMainAxis;
-        sizeConsumedOnCurrentLine += flexBasisWithMaxConstraints + childMarginMainAxis;
+        sizeConsumedOnCurrentLine += flexBasisWithMinAndMaxConstraints + childMarginMainAxis;
         itemsOnLine++;
 
         if (YGNodeIsFlex(child)) {
           totalFlexGrowFactors += YGResolveFlexGrow(child);
 
-          // Unlike the grow factor, the shrink factor is scaled relative to the
-          // child
-          // dimension.
+          // Unlike the grow factor, the shrink factor is scaled relative to the child dimension.
           totalFlexShrinkScaledFactors +=
               -YGNodeResolveFlexShrink(child) * child->layout.computedFlexBasis;
         }
@@ -2275,6 +2276,16 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         currentRelativeChild = child;
         child->nextChild = NULL;
       }
+    }
+
+    // The total flex factor needs to be floored to 1.
+    if (totalFlexGrowFactors > 0 && totalFlexGrowFactors < 1) {
+      totalFlexGrowFactors = 1;
+    }
+
+    // The total flex shrink factor needs to be floored to 1.
+    if (totalFlexShrinkScaledFactors > 0 && totalFlexShrinkScaledFactors < 1) {
+      totalFlexShrinkScaledFactors = 1;
     }
 
     // If we don't need to measure the cross axis, we can skip the entire flex
@@ -3143,19 +3154,19 @@ static float YGRoundValueToPixelGrid(const float value,
                                      const float pointScaleFactor,
                                      const bool forceCeil,
                                      const bool forceFloor) {
-  float fractial = fmodf(value, pointScaleFactor);
+  float scaledValue = value * pointScaleFactor;
+  float fractial = fmodf(scaledValue, 1.0);
   if (YGFloatsEqual(fractial, 0)) {
     // Still remove fractial as fractial could be  extremely small.
-    return value - fractial;
-  }
-  
-  if (forceCeil) {
-    return value - fractial + pointScaleFactor;
+    scaledValue = scaledValue - fractial;
+  } else if (forceCeil) {
+    scaledValue = scaledValue - fractial + 1.0;
   } else if (forceFloor) {
-    return value - fractial;
+    scaledValue = scaledValue - fractial;
   } else {
-    return value - fractial + (fractial >= pointScaleFactor / 2.0f ? pointScaleFactor : 0);
+    scaledValue = scaledValue - fractial + (fractial >= 0.5f ? 1.0 : 0);
   }
+  return scaledValue / pointScaleFactor;
 }
 
 bool YGNodeCanUseCachedMeasurement(const YGMeasureMode widthMode,
@@ -3422,7 +3433,7 @@ void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInP
     // Zero is used to skip rounding
     config->pointScaleFactor = 0.0f;
   } else {
-    config->pointScaleFactor = 1.0f / pixelsInPoint;
+    config->pointScaleFactor = pixelsInPoint;
   }
 }
 
@@ -3455,11 +3466,22 @@ static void YGRoundToPixelGrid(const YGNodeRef node,
   node->layout.position[YGEdgeTop] =
       YGRoundValueToPixelGrid(nodeTop, pointScaleFactor, false, textRounding);
 
+  const bool hasFractionalWidth = !YGFloatsEqual(fmodf(nodeWidth, 1.0), 0);
+  const bool hasFractionalHeight = !YGFloatsEqual(fmodf(nodeHeight, 1.0), 0);
+
   node->layout.dimensions[YGDimensionWidth] =
-      YGRoundValueToPixelGrid(absoluteNodeRight, pointScaleFactor, textRounding, false) -
+      YGRoundValueToPixelGrid(
+          absoluteNodeRight,
+          pointScaleFactor,
+          (textRounding && hasFractionalWidth),
+          (textRounding && !hasFractionalWidth)) -
       YGRoundValueToPixelGrid(absoluteNodeLeft, pointScaleFactor, false, textRounding);
   node->layout.dimensions[YGDimensionHeight] =
-      YGRoundValueToPixelGrid(absoluteNodeBottom, pointScaleFactor, textRounding, false) -
+      YGRoundValueToPixelGrid(
+          absoluteNodeBottom,
+          pointScaleFactor,
+          (textRounding && hasFractionalHeight),
+          (textRounding && !hasFractionalHeight)) -
       YGRoundValueToPixelGrid(absoluteNodeTop, pointScaleFactor, false, textRounding);
 
   const uint32_t childCount = YGNodeListCount(node->children);

@@ -133,4 +133,16 @@ NSError *tryAndReturnError(const std::function<void()>& func) {
   }
 }
 
+NSString *deriveSourceURL(NSURL *url) {
+  NSString *sourceUrl;
+  if (url.isFileURL) {
+    // Url will contain only path to resource (i.g. file:// will be removed)
+    sourceUrl = url.path;
+  } else {
+    // Url will include protocol (e.g. http://)
+    sourceUrl = url.absoluteString;
+  }
+  return sourceUrl ?: @"";
+}
+
 } }

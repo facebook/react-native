@@ -8,6 +8,7 @@
  *
  * @providesModule VirtualizeUtils
  * @flow
+ * @format
  */
 'use strict';
 
@@ -33,7 +34,8 @@ function elementsThatOverlapOffsets(
         if (kk === offsets.length - 1) {
           invariant(
             out.length === offsets.length,
-            'bad offsets input, should be in increasing order ' + JSON.stringify(offsets)
+            'bad offsets input, should be in increasing order ' +
+              JSON.stringify(offsets),
           );
           return out;
         }
@@ -53,11 +55,15 @@ function newRangeCount(
   prev: {first: number, last: number},
   next: {first: number, last: number},
 ): number {
-  return (next.last - next.first + 1) -
+  return (
+    next.last -
+    next.first +
+    1 -
     Math.max(
       0,
-      1 + Math.min(next.last, prev.last) - Math.max(next.first, prev.first)
-    );
+      1 + Math.min(next.last, prev.last) - Math.max(next.first, prev.first),
+    )
+  );
 }
 
 /**
@@ -75,7 +81,12 @@ function computeWindowedRenderLimits(
   },
   prev: {first: number, last: number},
   getFrameMetricsApprox: (index: number) => {length: number, offset: number},
-  scrollMetrics: {dt: number, offset: number, velocity: number, visibleLength: number},
+  scrollMetrics: {
+    dt: number,
+    offset: number,
+    velocity: number,
+    visibleLength: number,
+  },
 ): {first: number, last: number} {
   const {data, getItemCount, maxToRenderPerBatch, windowSize} = props;
   const itemCount = getItemCount(data);
@@ -94,9 +105,14 @@ function computeWindowedRenderLimits(
   // Considering velocity seems to introduce more churn than it's worth.
   const leadFactor = 0.5; // Math.max(0, Math.min(1, velocity / 25 + 0.5));
 
-  const fillPreference = velocity > 1 ? 'after' : (velocity < -1 ? 'before' : 'none');
+  const fillPreference = velocity > 1
+    ? 'after'
+    : velocity < -1 ? 'before' : 'none';
 
-  const overscanBegin = Math.max(0, visibleBegin - (1 - leadFactor) * overscanLength);
+  const overscanBegin = Math.max(
+    0,
+    visibleBegin - (1 - leadFactor) * overscanLength,
+  );
   const overscanEnd = Math.max(0, visibleEnd + leadFactor * overscanLength);
 
   // Find the indices that correspond to the items at the render boundaries we're targetting.
@@ -107,8 +123,10 @@ function computeWindowedRenderLimits(
   );
   overscanFirst = overscanFirst == null ? 0 : overscanFirst;
   first = first == null ? Math.max(0, overscanFirst) : first;
-  overscanLast = overscanLast == null ? (itemCount - 1) : overscanLast;
-  last = last == null ? Math.min(overscanLast, first + maxToRenderPerBatch - 1) : last;
+  overscanLast = overscanLast == null ? itemCount - 1 : overscanLast;
+  last = last == null
+    ? Math.min(overscanLast, first + maxToRenderPerBatch - 1)
+    : last;
   const visible = {first, last};
 
   // We want to limit the number of new cells we're rendering per batch so that we can fill the
@@ -124,9 +142,11 @@ function computeWindowedRenderLimits(
     }
     const maxNewCells = newCellCount >= maxToRenderPerBatch;
     const firstWillAddMore = first <= prev.first || first > prev.last;
-    const firstShouldIncrement = first > overscanFirst && (!maxNewCells || !firstWillAddMore);
+    const firstShouldIncrement =
+      first > overscanFirst && (!maxNewCells || !firstWillAddMore);
     const lastWillAddMore = last >= prev.last || last < prev.first;
-    const lastShouldIncrement = last < overscanLast && (!maxNewCells || !lastWillAddMore);
+    const lastShouldIncrement =
+      last < overscanLast && (!maxNewCells || !lastWillAddMore);
     if (maxNewCells && !firstShouldIncrement && !lastShouldIncrement) {
       // We only want to stop if we've hit maxNewCells AND we cannot increment first or last
       // without rendering new items. This let's us preserve as many already rendered items as
@@ -134,29 +154,45 @@ function computeWindowedRenderLimits(
       // possible.
       break;
     }
-    if (firstShouldIncrement &&
-        !(fillPreference === 'after' && lastShouldIncrement && lastWillAddMore)) {
+    if (
+      firstShouldIncrement &&
+      !(fillPreference === 'after' && lastShouldIncrement && lastWillAddMore)
+    ) {
       if (firstWillAddMore) {
         newCellCount++;
       }
       first--;
     }
-    if (lastShouldIncrement &&
-        !(fillPreference === 'before' && firstShouldIncrement && firstWillAddMore)) {
+    if (
+      lastShouldIncrement &&
+      !(fillPreference === 'before' && firstShouldIncrement && firstWillAddMore)
+    ) {
       if (lastWillAddMore) {
         newCellCount++;
       }
       last++;
     }
   }
-  if (!(
-    last >= first &&
-    first >= 0 && last < itemCount &&
-    first >= overscanFirst && last <= overscanLast &&
-    first <= visible.first && last >= visible.last
-  )) {
-    throw new Error('Bad window calculation ' +
-      JSON.stringify({first, last, itemCount, overscanFirst, overscanLast, visible}));
+  if (
+    !(last >= first &&
+      first >= 0 &&
+      last < itemCount &&
+      first >= overscanFirst &&
+      last <= overscanLast &&
+      first <= visible.first &&
+      last >= visible.last)
+  ) {
+    throw new Error(
+      'Bad window calculation ' +
+        JSON.stringify({
+          first,
+          last,
+          itemCount,
+          overscanFirst,
+          overscanLast,
+          visible,
+        }),
+    );
   }
   return {first, last};
 }

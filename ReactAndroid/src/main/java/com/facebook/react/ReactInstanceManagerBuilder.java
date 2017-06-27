@@ -44,6 +44,7 @@ public class ReactInstanceManagerBuilder {
   protected boolean mLazyViewManagersEnabled;
   protected boolean mSetupReactContextInBackground;
   protected boolean mUseSeparateUIBackgroundThread;
+  protected int mMinNumShakes = 1;
 
   /* package protected */ ReactInstanceManagerBuilder() {
   }
@@ -196,8 +197,13 @@ public class ReactInstanceManagerBuilder {
 
   public ReactInstanceManagerBuilder setUseSeparateUIBackgroundThread(
     boolean useSeparateUIBackgroundThread) {
-   mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
-   return this;
+    mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder setMinNumShakes(int minNumShakes) {
+    mMinNumShakes = minNumShakes;
+    return this;
   }
 
   /**
@@ -233,7 +239,8 @@ public class ReactInstanceManagerBuilder {
       mCurrentActivity,
       mDefaultHardwareBackBtnHandler,
       (mJSBundleLoader == null && mJSBundleAssetUrl != null) ?
-        JSBundleLoader.createAssetLoader(mApplication, mJSBundleAssetUrl) : mJSBundleLoader,
+        JSBundleLoader.createAssetLoader(mApplication, mJSBundleAssetUrl, false /*Asynchronous*/) :
+        mJSBundleLoader,
       mJSMainModuleName,
       mPackages,
       mUseDeveloperSupport,
@@ -246,6 +253,7 @@ public class ReactInstanceManagerBuilder {
       mLazyNativeModulesEnabled,
       mLazyViewManagersEnabled,
       mSetupReactContextInBackground,
-      mUseSeparateUIBackgroundThread);
+      mUseSeparateUIBackgroundThread,
+      mMinNumShakes);
   }
 }
