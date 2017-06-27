@@ -157,9 +157,6 @@ class SomethingFast extends Component {
               Thousands of apps are using React Native, from established Fortune 500 companies to hot new startups. If you're curious to see what can be accomplished with React Native, check out these apps!
             </p>
             <AppList apps={pinnedApps} />
-            <p className="footnote">
-              Some of these are hybrid native/React Native apps.
-            </p>
             <div className="buttons-unit">
               <a href="/react-native/showcase.html" className="button">More React Native apps</a>
             </div>
