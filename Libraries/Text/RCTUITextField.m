@@ -71,6 +71,16 @@
                                                                attributes:attributes];
 }
 
+- (BOOL)isEditable
+{
+  return self.userInteractionEnabled;
+}
+
+- (void)setEditable:(BOOL)editable
+{
+  self.userInteractionEnabled = editable;
+}
+
 #pragma mark - Caret Manipulation
 
 - (CGRect)caretRectForPosition:(UITextPosition *)position
