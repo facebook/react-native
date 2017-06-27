@@ -443,7 +443,7 @@ h1, h2, h3, h4 {
   line-height: 40px; }
 
 h1 {
-  font-size: 39px; }
+  font-size: 40px; }
 
 h2 {
   font-size: 31px; }
@@ -506,6 +506,9 @@ html * {
   color-profile: sRGB;
   rendering-intent: auto; }
 
+.content {
+  font-size: 18px;
+}
 .subHeader {
   font-size: 21px;
   font-weight: 300;
@@ -605,7 +608,9 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   text-decoration: none; }
 
 .nav-main .nav-site-wrapper {
-  display: inline; }
+  display: inline;
+  float: right;
+}
 
 .nav-main .nav-site-internal {
   margin: 0 0 0 20px; }
@@ -719,7 +724,7 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   padding-bottom: 0; }
   .nav-docs-section h3 {
     color: white;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 400;
     line-height: 20px;
     margin-top: 0;
@@ -928,7 +933,8 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   margin-bottom: 60px; }
 
 .docs-nextprev {
-  *zoom: 1; }
+  *zoom: 1;
+}
 
 .docs-nextprev:before, .docs-nextprev:after {
   content: " ";
@@ -1002,7 +1008,7 @@ h2 {
 .docs-prevnext {
   min-width: 320px;
   max-width: 640px;
-  margin: 0 auto 40px;
+  margin: 40px auto;
   padding-bottom: 20px; }
 
 .button {
@@ -1534,7 +1540,7 @@ table.versions {
 
 .edit-page-block {
   padding: 5px;
-  margin-bottom: 40px;
+  margin: 40px auto;
   font-size: 12px;
   color: #887766;
   text-align: center;
@@ -1987,7 +1993,7 @@ article li {
   padding: 9px 18px;
   border-radius: 4px;
   text-align: center;
-  font-size: 12px; }
+}
 
 .btn a {
   text-decoration: none !important; }
@@ -2019,7 +2025,7 @@ article li {
 footer.nav-footer {
   box-sizing: border-box;
   border: none;
-  font-weight: 300;
+  font-weight: normal;
   color: #202020;
   font-size: 15px;
   line-height: 24px;
@@ -2085,7 +2091,8 @@ footer .sitemap h6,
 footer .sitemap h5 > a,
 footer .sitemap h6 > a {
   color: #05A5D1;
-  font-weight: 900; }
+  font-size: 15px;
+}
 
 footer .sitemap h5 > a,
 footer .sitemap h6 > a {
