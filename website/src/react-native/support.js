@@ -141,7 +141,7 @@ var support = React.createClass({
               >
                 open source
               </a>
-              ! If you want to contribute, take a look at the
+              ! If you want to contribute, read the <a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">contributor guidelines</a>, then take a look at the
               {' '}
               <a
                 href="https://github.com/facebook/react-native/wiki/Roadmap"

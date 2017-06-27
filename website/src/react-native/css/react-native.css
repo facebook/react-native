@@ -2019,7 +2019,7 @@ article li {
 footer.nav-footer {
   box-sizing: border-box;
   border: none;
-  font-weight: 300;
+  font-weight: normal;
   color: #202020;
   font-size: 15px;
   line-height: 24px;
@@ -2085,7 +2085,8 @@ footer .sitemap h6,
 footer .sitemap h5 > a,
 footer .sitemap h6 > a {
   color: #05A5D1;
-  font-weight: 900; }
+  font-size: 15px;
+}
 
 footer .sitemap h5 > a,
 footer .sitemap h6 > a {

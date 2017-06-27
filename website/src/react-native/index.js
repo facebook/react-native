@@ -47,7 +47,7 @@ const index = React.createClass({
         <Hero title="React Native" subtitle="Learn once, write anywhere: Build mobile apps with React">
           <div className="buttons-unit">
             <a href="docs/getting-started.html" className="button">Get Started</a>
-            <a href="docs/tutorial.html" className="button">Take the Tutorial</a>
+            <a href="docs/tutorial.html" className="button">Learn the Basics</a>
           </div>
         </Hero>
 
@@ -114,7 +114,7 @@ class AwkwardScrollingImageWithText extends Component {
 
             <h2>Don't waste time recompiling</h2>
             <p>
-              React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With hot reloading, you can even run new code while retaining your application state. Give it a try - it's a magical experience.
+              React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With <a href="/react-native/blog/2016/03/24/introducing-hot-reloading.html">Hot Reloading</a>, you can even run new code while retaining your application state. Give it a try - it's a magical experience.
             </p>
             <br />
             <img src="https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif" />
