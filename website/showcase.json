@@ -208,5 +208,14 @@
     "infoLink": "https://www.youtube.com/watch?v=abSNo2P9mMM",
     "infoTitle": "Building a React Native App for 80 Million Users",
     "pinned": false
+  },
+  {
+    "name": "Socky by Ola Mundo",
+    "icon": "https://s3.amazonaws.com/olamundomedia/Graphic+Assets/AppIcons/ReactNativeShowcase/showcase-175-175.png",
+    "linkAppStore": "https://itunes.apple.com/us/app/ola-mundo-pa-speaks-language/id1173325530?ls=1&mt=8",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.olamundoreact&hl=en",
+    "infoLink": "https://medium.com/@alexpavtoulov/how-react-native-is-saving-humanity-313b536079ab",
+    "infoTitle": "Crafting a React Native App for Kids with Autism",
+    "pinned": false
   }
 ]
