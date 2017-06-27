@@ -155,4 +155,64 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   [self.backedTextInputView reactFocusIfNeeded];
 }
 
+#pragma mark - Custom Input Accessory View
+
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  [self invalidateInputAccessoryView];
+}
+
+- (void)invalidateInputAccessoryView
+{
+#if !TARGET_OS_TV
+  UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
+  UIKeyboardType keyboardType = textInputView.keyboardType;
+
+  // These keyboard types (all are number pads) don't have a "Done" button by default,
+  // so we create an `inputAccessoryView` with this button for them.
+  BOOL shouldHaveInputAccesoryView =
+    (
+      keyboardType == UIKeyboardTypeNumberPad ||
+      keyboardType == UIKeyboardTypePhonePad ||
+      keyboardType == UIKeyboardTypeDecimalPad ||
+      keyboardType == UIKeyboardTypeASCIICapableNumberPad
+    ) &&
+    textInputView.returnKeyType == UIReturnKeyDone;
+
+  BOOL hasInputAccesoryView = textInputView.inputAccessoryView != nil;
+
+  if (hasInputAccesoryView == shouldHaveInputAccesoryView) {
+    return;
+  }
+
+  if (shouldHaveInputAccesoryView) {
+    UIToolbar *toolbarView = [[UIToolbar alloc] init];
+    [toolbarView sizeToFit];
+    UIBarButtonItem *flexibleSpace =
+      [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                    target:nil
+                                                    action:nil];
+    UIBarButtonItem *doneButton =
+      [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                    target:self
+                                                    action:@selector(handleInputAccessoryDoneButton)];
+    toolbarView.items = @[flexibleSpace, doneButton];
+    textInputView.inputAccessoryView = toolbarView;
+  }
+  else {
+    textInputView.inputAccessoryView = nil;
+  }
+
+  // We have to call `reloadInputViews` for focused text inputs to update an accessory view.
+  if (textInputView.isFirstResponder) {
+    [textInputView reloadInputViews];
+  }
+#endif
+}
+
+- (void)handleInputAccessoryDoneButton
+{
+  [self.backedTextInputView endEditing:YES];
+}
+
 @end
