@@ -13,48 +13,44 @@ The [ScrollView](docs/scrollview.html) is a generic scrolling container that can
 This example creates a vertical `ScrollView` with both images and text mixed together.
 
 ```ReactNativeWebPlayer
-import React, { Component } from 'react';
+import React from 'react';
 import { AppRegistry, ScrollView, Image, Text } from 'react-native';
 
-export default class IScrolledDownAndWhatHappenedNextShockedMe extends Component {
-  render() {
-      return (
-        <ScrollView>
-          <Text style={{fontSize:96}}>Scroll me plz</Text>
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Text style={{fontSize:96}}>If you like</Text>
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Text style={{fontSize:96}}>Scrolling down</Text>
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Text style={{fontSize:96}}>What's the best</Text>
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Text style={{fontSize:96}}>Framework around?</Text>
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Image source={require('./img/favicon.png')} />
-          <Text style={{fontSize:80}}>React Native</Text>
-        </ScrollView>
-    );
-  }
-}
+const IScrolledDownAndWhatHappenedNextShockedMe = () => (
+    <ScrollView>
+      <Text style={{fontSize:96}}>Scroll me plz</Text>
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Text style={{fontSize:96}}>If you like</Text>
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Text style={{fontSize:96}}>Scrolling down</Text>
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Text style={{fontSize:96}}>What's the best</Text>
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Text style={{fontSize:96}}>Framework around?</Text>
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Image source={require('./img/favicon.png')} />
+      <Text style={{fontSize:80}}>React Native</Text>
+    </ScrollView>
+);
 
 // skip these lines if using Create React Native App
 AppRegistry.registerComponent(

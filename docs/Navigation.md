@@ -92,19 +92,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, NavigatorIOS, Text, View } from 'react-native';
 
-export default class NavigatorIOSApp extends React.Component {
-  render() {
-    return (
-      <NavigatorIOS
-        initialRoute={{
-          component: MyScene,
-          title: 'My Initial Scene',
-        }}
-        style={{flex: 1}}
-      />
-    )
-  }
-}
+const NavigatorIOSApp = () => (
+  <NavigatorIOS
+    initialRoute={{
+      component: MyScene,
+      title: 'My Initial Scene',
+    }}
+    style={{flex: 1}}
+  />
+);
 
 class MyScene extends React.Component {
   static propTypes = {
