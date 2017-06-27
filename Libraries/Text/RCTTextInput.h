@@ -29,4 +29,12 @@
 
 @property (nonatomic, readonly) UIView<RCTBackedTextInputViewProtocol> *backedTextInputView;
 
+@property (nonatomic, assign) UIEdgeInsets reactPaddingInsets;
+@property (nonatomic, assign) UIEdgeInsets reactBorderInsets;
+@property (nonatomic, assign, readonly) CGSize contentSize;
+
+@property (nonatomic, copy) RCTDirectEventBlock onContentSizeChange;
+
+- (void)invalidateContentSize;
+
 @end

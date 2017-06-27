@@ -13,9 +13,12 @@
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTUtils.h>
+#import <React/RCTUIManager.h>
 #import <React/UIView+React.h>
 
-@implementation RCTTextInput
+@implementation RCTTextInput {
+  CGSize _previousContentSize;
+}
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
@@ -37,6 +40,95 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   RCTAssert(NO, @"-[RCTTextInput backedTextInputView] must be implemented in subclass.");
   return nil;
+}
+
+#pragma mark - Properties
+
+- (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
+{
+  _reactPaddingInsets = reactPaddingInsets;
+  // We apply `paddingInsets` as `backedTextInputView`'s `textContainerInset`.
+  self.backedTextInputView.textContainerInset = reactPaddingInsets;
+  [self setNeedsLayout];
+}
+
+- (void)setReactBorderInsets:(UIEdgeInsets)reactBorderInsets
+{
+  _reactBorderInsets = reactBorderInsets;
+  // We apply `borderInsets` as `backedTextInputView` layout offset.
+  self.backedTextInputView.frame = UIEdgeInsetsInsetRect(self.bounds, reactBorderInsets);
+  [self setNeedsLayout];
+}
+
+#pragma mark - Content Size (in Yoga terms, without any insets)
+
+- (CGSize)contentSize
+{
+  CGSize contentSize = self.intrinsicContentSize;
+  UIEdgeInsets compoundInsets = self.reactCompoundInsets;
+  contentSize.width -= compoundInsets.left + compoundInsets.right;
+  contentSize.height -= compoundInsets.top + compoundInsets.bottom;
+  // Returning value does NOT include border and padding insets.
+  return contentSize;
+}
+
+- (void)invalidateContentSize
+{
+  // Updates `contentSize` property and notifies Yoga about the change, if necessary.
+  CGSize contentSize = self.contentSize;
+
+  if (CGSizeEqualToSize(_previousContentSize, contentSize)) {
+    return;
+  }
+  _previousContentSize = contentSize;
+
+  [_bridge.uiManager setIntrinsicContentSize:contentSize forView:self];
+
+  if (_onContentSizeChange) {
+    _onContentSizeChange(@{
+      @"contentSize": @{
+        @"height": @(contentSize.height),
+        @"width": @(contentSize.width),
+      },
+      @"target": self.reactTag,
+    });
+  }
+}
+
+#pragma mark - Layout (in UIKit terms, with all insets)
+
+- (CGSize)intrinsicContentSize
+{
+  CGSize size = self.backedTextInputView.intrinsicContentSize;
+  size.width += _reactBorderInsets.left + _reactBorderInsets.right;
+  size.height += _reactBorderInsets.top + _reactBorderInsets.bottom;
+  // Returning value DOES include border and padding insets.
+  return size;
+}
+
+- (CGSize)sizeThatFits:(CGSize)size
+{
+  CGFloat compoundHorizontalBorderInset = _reactBorderInsets.left + _reactBorderInsets.right;
+  CGFloat compoundVerticalBorderInset = _reactBorderInsets.top + _reactBorderInsets.bottom;
+
+  size.width -= compoundHorizontalBorderInset;
+  size.height -= compoundVerticalBorderInset;
+
+  // Note: `paddingInsets` was already included in `backedTextInputView` size
+  // because it was applied as `textContainerInset`.
+  CGSize fittingSize = [self.backedTextInputView sizeThatFits:size];
+
+  fittingSize.width += compoundHorizontalBorderInset;
+  fittingSize.height += compoundVerticalBorderInset;
+
+  // Returning value DOES include border and padding insets.
+  return fittingSize;
+}
+
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+  [self invalidateContentSize];
 }
 
 #pragma mark - Accessibility

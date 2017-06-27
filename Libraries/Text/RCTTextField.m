@@ -87,22 +87,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 #pragma mark - Properties
 
-- (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
-{
-  _reactPaddingInsets = reactPaddingInsets;
-  // We apply `paddingInsets` as `_textField`'s `textContainerInset`.
-  _textField.textContainerInset = reactPaddingInsets;
-  [self setNeedsLayout];
-}
-
-- (void)setReactBorderInsets:(UIEdgeInsets)reactBorderInsets
-{
-  _reactBorderInsets = reactBorderInsets;
-  // We apply `borderInsets` as `_textView` layout offset.
-  _textField.frame = UIEdgeInsetsInsetRect(self.bounds, reactBorderInsets);
-  [self setNeedsLayout];
-}
-
 - (void)setSelection:(RCTTextSelection *)selection
 {
   if (!selection) {
@@ -238,65 +222,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       },
     });
   }
-}
-
-#pragma mark - Content Size (in Yoga terms, without any insets)
-
-- (CGSize)contentSize
-{
-  // Returning value does NOT include border and padding insets.
-  CGSize contentSize = self.intrinsicContentSize;
-  UIEdgeInsets compoundInsets = self.reactCompoundInsets;
-  contentSize.width -= compoundInsets.left + compoundInsets.right;
-  contentSize.height -= compoundInsets.top + compoundInsets.bottom;
-  return contentSize;
-}
-
-- (void)invalidateContentSize
-{
-  CGSize contentSize = self.contentSize;
-
-  if (CGSizeEqualToSize(_previousContentSize, contentSize)) {
-    return;
-  }
-  _previousContentSize = contentSize;
-
-  [_bridge.uiManager setIntrinsicContentSize:contentSize forView:self];
-}
-
-#pragma mark - Layout (in UIKit terms, with all insets)
-
-- (CGSize)intrinsicContentSize
-{
-  // Returning value DOES include border and padding insets.
-  CGSize size = _textField.intrinsicContentSize;
-  size.width += _reactBorderInsets.left + _reactBorderInsets.right;
-  size.height += _reactBorderInsets.top + _reactBorderInsets.bottom;
-  return size;
-}
-
-- (CGSize)sizeThatFits:(CGSize)size
-{
-  CGFloat compoundHorizontalBorderInset = _reactBorderInsets.left + _reactBorderInsets.right;
-  CGFloat compoundVerticalBorderInset = _reactBorderInsets.top + _reactBorderInsets.bottom;
-
-  size.width -= compoundHorizontalBorderInset;
-  size.height -= compoundVerticalBorderInset;
-
-  // Note: `paddingInsets` already included in `_textView` size
-  // because it was applied as `textContainerInset`.
-  CGSize fittingSize = [_textField sizeThatFits:size];
-
-  fittingSize.width += compoundHorizontalBorderInset;
-  fittingSize.height += compoundVerticalBorderInset;
-
-  return fittingSize;
-}
-
-- (void)layoutSubviews
-{
-  [super layoutSubviews];
-  [self invalidateContentSize];
 }
 
 #pragma mark - UITextFieldDelegate

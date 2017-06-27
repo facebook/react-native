@@ -29,12 +29,8 @@
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, strong) NSNumber *maxLength;
-@property (nonatomic, assign, readonly) CGSize contentSize;
-@property (nonatomic, assign) UIEdgeInsets reactPaddingInsets;
-@property (nonatomic, assign) UIEdgeInsets reactBorderInsets;
 
 @property (nonatomic, copy) RCTDirectEventBlock onChange;
-@property (nonatomic, copy) RCTDirectEventBlock onContentSizeChange;
 @property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
 @property (nonatomic, copy) RCTDirectEventBlock onTextInput;
 @property (nonatomic, copy) RCTDirectEventBlock onScroll;

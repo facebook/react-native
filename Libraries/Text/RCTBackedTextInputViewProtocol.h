@@ -17,5 +17,6 @@
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;
 @property (nonatomic, assign, readonly) BOOL textWasPasted;
 @property (nonatomic, strong, nullable) UIFont *font;
+@property (nonatomic, assign) UIEdgeInsets textContainerInset;
 
 @end

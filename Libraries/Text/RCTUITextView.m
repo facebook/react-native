@@ -132,6 +132,23 @@ static UIColor *defaultPlaceholderColor()
 
 #pragma mark - Layout
 
+- (CGFloat)preferredMaxLayoutWidth
+{
+  return _preferredMaxLayoutWidth ?: self.placeholderSize.width;
+}
+
+- (CGSize)placeholderSize
+{
+  UIEdgeInsets textContainerInset = self.textContainerInset;
+  NSString *placeholder = self.placeholder ?: @"";
+  CGSize placeholderSize = [placeholder sizeWithAttributes:@{NSFontAttributeName: self.font ?: defaultPlaceholderFont()}];
+  placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
+  placeholderSize.width += textContainerInset.left + textContainerInset.right;
+  placeholderSize.height += textContainerInset.top + textContainerInset.bottom;
+  // Returning size DOES contain `textContainerInset` (aka `padding`; as `sizeThatFits:` does).
+  return placeholderSize;
+}
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];
@@ -142,18 +159,17 @@ static UIColor *defaultPlaceholderColor()
   _placeholderView.frame = textFrame;
 }
 
+- (CGSize)intrinsicContentSize
+{
+  return [self sizeThatFits:CGSizeMake(self.preferredMaxLayoutWidth, INFINITY)];
+}
+
 - (CGSize)sizeThatFits:(CGSize)size
 {
   // Returned fitting size depends on text size and placeholder size.
   CGSize textSize = [self fixedSizeThatFits:size];
-
-  UIEdgeInsets padddingInsets = self.textContainerInset;
-  NSString *placeholder = self.placeholder ?: @"";
-  CGSize placeholderSize = [placeholder sizeWithAttributes:@{NSFontAttributeName: self.font ?: defaultPlaceholderFont()}];
-  placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
-  placeholderSize.width += padddingInsets.left + padddingInsets.right;
-  placeholderSize.height += padddingInsets.top + padddingInsets.bottom;
-
+  CGSize placeholderSize = self.placeholderSize;
+  // Returning size DOES contain `textContainerInset`.
   return CGSizeMake(MAX(textSize.width, placeholderSize.width), MAX(textSize.height, placeholderSize.height));
 }
 

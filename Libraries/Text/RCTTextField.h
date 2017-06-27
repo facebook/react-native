@@ -22,8 +22,6 @@
 @property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, strong) NSNumber *maxLength;
-@property (nonatomic, assign) UIEdgeInsets reactPaddingInsets;
-@property (nonatomic, assign) UIEdgeInsets reactBorderInsets;
 
 @property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
 
