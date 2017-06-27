@@ -8,6 +8,10 @@
 #include <cxxreact/NativeToJsBridge.h>
 #include <jschelpers/Value.h>
 
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
+
 namespace folly {
   struct dynamic;
 }
@@ -28,7 +32,7 @@ struct InstanceCallback {
   virtual void decrementPendingJSCalls() = 0;
 };
 
-class Instance {
+class RN_EXPORT Instance {
  public:
   ~Instance();
   void initializeBridge(
