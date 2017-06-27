@@ -95,7 +95,7 @@ class AwkwardScrollingImageWithText extends Component {
   render() {
     return (
       <ScrollView>
-        <Image source={{uri: 'https://i.chzbgr.com/full/7345954048/h7E2C65F9/'}} />
+        <Image source={{uri: 'https://i.chzbgr.com/full/7345954048/h7E2C65F9/'}} style={{width: 360, height: 203}}/>
         <Text>
           On iOS, a React Native ScrollView uses a native UIScrollView.
           On Android, it uses a native ScrollView.
