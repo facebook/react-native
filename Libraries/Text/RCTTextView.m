@@ -253,26 +253,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   }
 }
 
-- (void)setAutocorrectionType:(UITextAutocorrectionType)autocorrectionType
-{
-  _textView.autocorrectionType = autocorrectionType;
-}
-
-- (UITextAutocorrectionType)autocorrectionType
-{
-  return _textView.autocorrectionType;
-}
-
-- (void)setSpellCheckingType:(UITextSpellCheckingType)spellCheckingType
-{
-  _textView.spellCheckingType = spellCheckingType;
-}
-
-- (UITextSpellCheckingType)spellCheckingType
-{
-  return _textView.spellCheckingType;
-}
-
 #pragma mark - UITextViewDelegate
 
 - (BOOL)textView:(RCTUITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
