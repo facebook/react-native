@@ -16,7 +16,7 @@
 namespace facebook {
 namespace react {
 
-class JSException : public std::exception {
+class RN_EXPORT JSException : public std::exception {
 public:
   explicit JSException(const char* msg)
     : msg_(msg) {}
