@@ -9,15 +9,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import <RCTText/RCTBackedTextInputViewProtocol.h>
+#import <RCTText/RCTTextInput.h>
 #import <React/RCTView.h>
 #import <React/UIView+React.h>
 
 @class RCTBridge;
 
-@interface RCTTextView : RCTView <UITextViewDelegate>
-
-@property (nonatomic, readonly) id<RCTBackedTextInputViewProtocol> backedTextInputView;
+@interface RCTTextView : RCTTextInput <UITextViewDelegate>
 
 @property (nonatomic, assign) UITextAutocorrectionType autocorrectionType;
 @property (nonatomic, assign) UITextSpellCheckingType spellCheckingType;
@@ -40,8 +38,6 @@
 @property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
 @property (nonatomic, copy) RCTDirectEventBlock onTextInput;
 @property (nonatomic, copy) RCTDirectEventBlock onScroll;
-
-- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 - (void)performTextUpdate;
 

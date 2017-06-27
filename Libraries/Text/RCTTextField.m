@@ -25,8 +25,6 @@
 
 @implementation RCTTextField
 {
-  RCTBridge *_bridge;
-  RCTEventDispatcher *_eventDispatcher;
   NSInteger _nativeEventCount;
   BOOL _submitted;
   UITextRange *_previousSelectionRange;
@@ -36,11 +34,8 @@
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
-  if (self = [super initWithFrame:CGRectZero]) {
+  if (self = [super initWithBridge:bridge]) {
     RCTAssertParam(bridge);
-
-    _bridge = bridge;
-    _eventDispatcher = bridge.eventDispatcher;
 
     // `blurOnSubmit` defaults to `true` for <TextInput multiline={false}> by design.
     _blurOnSubmit = YES;
@@ -363,30 +358,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                      text:self.text
                                       key:nil
                                eventCount:_nativeEventCount];
-}
-
-#pragma mark - Accessibility
-
-- (UIView *)reactAccessibilityElement
-{
-  return _textField;
-}
-
-#pragma mark - Focus control deledation
-
-- (void)reactFocus
-{
-  [_textField reactFocus];
-}
-
-- (void)reactBlur
-{
-  [_textField reactBlur];
-}
-
-- (void)didMoveToWindow
-{
-  [_textField reactFocusIfNeeded];
 }
 
 @end

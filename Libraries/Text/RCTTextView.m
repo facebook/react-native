@@ -22,9 +22,6 @@
 
 @implementation RCTTextView
 {
-  RCTBridge *_bridge;
-  RCTEventDispatcher *_eventDispatcher;
-
   RCTUITextView *_textView;
   RCTText *_richTextView;
   NSAttributedString *_pendingAttributedText;
@@ -43,9 +40,7 @@
 {
   RCTAssertParam(bridge);
 
-  if (self = [super initWithFrame:CGRectZero]) {
-    _bridge = bridge;
-    _eventDispatcher = bridge.eventDispatcher;
+  if (self = [super initWithBridge:bridge]) {
     _blurOnSubmit = NO;
 
     _textView = [[RCTUITextView alloc] initWithFrame:self.bounds];
@@ -512,30 +507,6 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
                                      text:nil
                                       key:nil
                                eventCount:_nativeEventCount];
-}
-
-#pragma mark - Accessibility
-
-- (UIView *)reactAccessibilityElement
-{
-  return _textView;
-}
-
-#pragma mark - Focus control deledation
-
-- (void)reactFocus
-{
-  [_textView reactFocus];
-}
-
-- (void)reactBlur
-{
-  [_textView reactBlur];
-}
-
-- (void)didMoveToWindow
-{
-  [_textView reactFocusIfNeeded];
 }
 
 #pragma mark - Content Size (in Yoga terms, without any insets)
