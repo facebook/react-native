@@ -605,7 +605,9 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   text-decoration: none; }
 
 .nav-main .nav-site-wrapper {
-  display: inline; }
+  display: inline;
+  float: right;
+}
 
 .nav-main .nav-site-internal {
   margin: 0 0 0 20px; }
