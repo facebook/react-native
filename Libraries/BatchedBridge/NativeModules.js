@@ -119,7 +119,7 @@ function createErrorFromErrorData(errorData: {message: string}): ExtendedError {
   const {
     message,
     ...extraErrorInfo
-  } = errorData;
+  } = errorData || {};
   const error : ExtendedError = new Error(message);
   error.framesToPop = 1;
   return Object.assign(error, extraErrorInfo);

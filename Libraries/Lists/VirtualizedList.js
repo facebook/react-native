@@ -209,11 +209,13 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const animated = params ? params.animated : true;
     const veryLast = this.props.getItemCount(this.props.data) - 1;
     const frame = this._getFrameMetricsApprox(veryLast);
-    const offset =
+    const offset = Math.max(
+      0,
       frame.offset +
-      frame.length +
-      this._footerLength -
-      this._scrollMetrics.visibleLength;
+        frame.length +
+        this._footerLength -
+        this._scrollMetrics.visibleLength,
+    );
     this._scrollRef.scrollTo(
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
@@ -310,6 +312,12 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       return this._scrollRef.getScrollableNode();
     } else {
       return ReactNative.findNodeHandle(this._scrollRef);
+    }
+  }
+
+  setNativeProps(props: Object) {
+    if (this._scrollRef) {
+      this._scrollRef.setNativeProps(props);
     }
   }
 
@@ -1018,12 +1026,24 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this.setState(state => {
       let newState;
       if (!isVirtualizationDisabled) {
-        newState = computeWindowedRenderLimits(
-          this.props,
-          state,
-          this._getFrameMetricsApprox,
-          this._scrollMetrics,
-        );
+        // If we run this with bogus data, we'll force-render window {first: 0, last: 0},
+        // and wipe out the initialNumToRender rendered elements.
+        // So let's wait until the scroll view metrics have been set up. And until then,
+        // we will trust the initialNumToRender suggestion
+        if (this._scrollMetrics.visibleLength) {
+          // If we have a non-zero initialScrollIndex and run this before we've scrolled,
+          // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
+          // So let's wait until we've scrolled the view to the right place. And until then,
+          // we will trust the initialScrollIndex suggestion.
+          if (!this.props.initialScrollIndex || this._scrollMetrics.offset) {
+            newState = computeWindowedRenderLimits(
+              this.props,
+              state,
+              this._getFrameMetricsApprox,
+              this._scrollMetrics,
+            );
+          }
+        }
       } else {
         const {contentLength, offset, visibleLength} = this._scrollMetrics;
         const distanceFromEnd = contentLength - visibleLength - offset;
@@ -1091,6 +1111,19 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     if (!frame || frame.index !== index) {
       if (getItemLayout) {
         frame = getItemLayout(data, index);
+        if (__DEV__) {
+          const frameType = PropTypes.shape({
+            length: PropTypes.number.isRequired,
+            offset: PropTypes.number.isRequired,
+            index: PropTypes.number.isRequired,
+          }).isRequired;
+          PropTypes.checkPropTypes(
+            {frame: frameType},
+            {frame},
+            'frame',
+            'VirtualizedList.getItemLayout'
+          );
+        }
       }
     }
     return frame;

@@ -7,27 +7,21 @@
 #include <map>
 #include <vector>
 
-#include <cxxreact/Executor.h>
 #include <cxxreact/JSCExecutor.h>
-#include <cxxreact/JSModulesUnbundle.h>
-#include <cxxreact/MessageQueueThread.h>
-#include <cxxreact/MethodCall.h>
-#include <cxxreact/NativeModule.h>
-#include <folly/dynamic.h>
-#include <jschelpers/Value.h>
+#include <cxxreact/JSExecutor.h>
 
 namespace folly {
-
 struct dynamic;
-
 }
 
 namespace facebook {
 namespace react {
 
-class ModuleRegistry;
-class JsToNativeBridge;
 struct InstanceCallback;
+class JSModulesUnbundle;
+class JsToNativeBridge;
+class MessageQueueThread;
+class ModuleRegistry;
 
 // This class manages calls from native code to JS.  It also manages
 // executors and their threads.  All functions here can be called from
@@ -109,9 +103,10 @@ public:
   bool supportsProfiling();
   void startProfiler(const std::string& title);
   void stopProfiler(const std::string& title, const std::string& filename);
-  void handleMemoryPressureUiHidden();
-  void handleMemoryPressureModerate();
-  void handleMemoryPressureCritical();
+
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  void handleMemoryPressure(int pressureLevel);
+  #endif
 
   /**
    * Synchronously tears down the bridge and the main executor.

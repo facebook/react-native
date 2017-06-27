@@ -19,10 +19,7 @@
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
 
-#ifdef WITH_INSPECTOR
-#include <jschelpers/InspectorInterfaces.h>
-#endif
-
+#include "JSBigString.h"
 #include "JSBundleType.h"
 #include "Platform.h"
 #include "SystraceSection.h"
@@ -32,6 +29,10 @@
 #include "JSModulesUnbundle.h"
 #include "ModuleRegistry.h"
 #include "RecoverableError.h"
+
+#ifdef WITH_INSPECTOR
+#include <jschelpers/InspectorInterfaces.h>
+#endif
 
 #if defined(WITH_JSC_EXTRA_TRACING) || (DEBUG && defined(WITH_FBSYSTRACE))
 #include "JSCTracing.h"
@@ -578,23 +579,11 @@ void JSCExecutor::stopProfiler(const std::string &titleString, const std::string
   #endif
 }
 
-void JSCExecutor::handleMemoryPressureUiHidden() {
-  #ifdef WITH_JSC_MEMORY_PRESSURE
-  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::UI_HIDDEN);
-  #endif
+#ifdef WITH_JSC_MEMORY_PRESSURE
+void JSCExecutor::handleMemoryPressure(int pressureLevel) {
+  JSHandleMemoryPressure(this, m_context, static_cast<JSMemoryPressure>(pressureLevel));
 }
-
-void JSCExecutor::handleMemoryPressureModerate() {
-  #ifdef WITH_JSC_MEMORY_PRESSURE
-  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::MODERATE);
-  #endif
-}
-
-void JSCExecutor::handleMemoryPressureCritical() {
-  #ifdef WITH_JSC_MEMORY_PRESSURE
-  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::CRITICAL);
-  #endif
-}
+#endif
 
 void JSCExecutor::flushQueueImmediate(Value&& queue) {
   auto queueStr = queue.toJSONString();

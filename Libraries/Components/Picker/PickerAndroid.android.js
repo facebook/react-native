@@ -52,7 +52,7 @@ class PickerAndroid extends React.Component {
   static propTypes = {
     ...ViewPropTypes,
     style: pickerStyleType,
-    selectedValue: React.PropTypes.any,
+    selectedValue: ReactPropTypes.any,
     enabled: ReactPropTypes.bool,
     mode: ReactPropTypes.oneOf(['dialog', 'dropdown']),
     onValueChange: ReactPropTypes.func,
