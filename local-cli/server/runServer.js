@@ -128,8 +128,8 @@ function getPackagerServer(args, config) {
   const transformModulePath = args.transformer
     ? path.resolve(args.transformer)
     : typeof config.getTransformModulePath === 'function'
-        ? config.getTransformModulePath()
-        : undefined;
+      ? config.getTransformModulePath()
+      : undefined;
 
   const providesModuleNodeModules =
     args.providesModuleNodeModules || defaultProvidesModuleNodeModules;

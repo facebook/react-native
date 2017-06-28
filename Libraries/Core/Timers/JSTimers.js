@@ -456,8 +456,7 @@ const JSTimers = {
    */
   callImmediates() {
     errors = null;
-    while (JSTimers.callImmediatesPass()) {
-    }
+    while (JSTimers.callImmediatesPass()) {}
     if (errors) {
       errors.forEach(error =>
         JSTimers.setTimeout(() => {
