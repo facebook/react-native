@@ -38,7 +38,7 @@ type RequiredProps<ItemT> = {
    *           onShowUnderlay={separators.highlight}
    *           onHideUnderlay={separators.unhighlight}>
    *           <View style={{backgroundColor: 'white'}}>
-   *             <Text>{item.title}}</Text>
+   *             <Text>{item.title}</Text>
    *           </View>
    *         </TouchableHighlight>
    *       )}
