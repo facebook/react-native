@@ -97,8 +97,9 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
     mAnimatedFrameCallback = new GuardedFrameCallback(reactContext) {
       @Override
       protected void doFrameGuarded(final long frameTimeNanos) {
-        if (mNodesManager.hasActiveAnimations()) {
-          mNodesManager.runUpdates(frameTimeNanos);
+        NativeAnimatedNodesManager nodesManager = getNodesManager();
+        if (nodesManager.hasActiveAnimations()) {
+          nodesManager.runUpdates(frameTimeNanos);
         }
 
         // TODO: Would be great to avoid adding this callback in case there are no active animations
@@ -115,9 +116,8 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
   @Override
   public void initialize() {
     ReactApplicationContext reactCtx = getReactApplicationContext();
-    reactCtx.addLifecycleEventListener(this);
     UIManagerModule uiManager = reactCtx.getNativeModule(UIManagerModule.class);
-    mNodesManager = new NativeAnimatedNodesManager(uiManager);
+    reactCtx.addLifecycleEventListener(this);
     uiManager.addUIManagerListener(this);
   }
 
@@ -138,16 +138,18 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
     uiManager.prependUIBlock(new UIBlock() {
       @Override
       public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        NativeAnimatedNodesManager nodesManager = getNodesManager();
         for (UIThreadOperation operation : preOperations) {
-          operation.execute(mNodesManager);
+          operation.execute(nodesManager);
         }
       }
     });
     uiManager.addUIBlock(new UIBlock() {
       @Override
       public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        NativeAnimatedNodesManager nodesManager = getNodesManager();
         for (UIThreadOperation operation : operations) {
-          operation.execute(mNodesManager);
+          operation.execute(nodesManager);
         }
       }
     });
@@ -166,6 +168,15 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
   @Override
   public String getName() {
     return NAME;
+  }
+
+  private NativeAnimatedNodesManager getNodesManager() {
+    if (mNodesManager == null) {
+      UIManagerModule uiManager = getReactApplicationContext().getNativeModule(UIManagerModule.class);
+      mNodesManager = new NativeAnimatedNodesManager(uiManager);
+    }
+
+    return mNodesManager;
   }
 
   private void clearFrameCallback() {
