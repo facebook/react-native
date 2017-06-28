@@ -31,7 +31,7 @@ function renderApplication<Props: Object>(
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
   ReactNative.render(
-    <AppContainer rootTag={rootTag} wrapperComponent={WrapperComponent}>
+    <AppContainer rootTag={rootTag} WrapperComponent={WrapperComponent}>
       <RootComponent {...initialProps} rootTag={rootTag} />
     </AppContainer>,
     rootTag,

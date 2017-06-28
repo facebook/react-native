@@ -24,11 +24,11 @@ const View = require('View');
 type Context = {
   rootTag: number,
 };
-type Props = {
+type Props = {|
   children?: React.Children,
   rootTag: number,
   WrapperComponent?: ?ReactClass<*>,
-};
+|};
 type State = {
   inspector: ?React.Element<*>,
   mainKey: number,
