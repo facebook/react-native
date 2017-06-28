@@ -9,8 +9,6 @@
 
 'use strict';
 
-jest.autoMockOff();
-
 const applyParams = require('../../android/patches/applyParams');
 
 describe('applyParams', () => {

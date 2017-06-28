@@ -19,11 +19,7 @@ var warning = require("fbjs/lib/warning"), RCTEventEmitter = require("RCTEventEm
 
 require("prop-types/checkPropTypes");
 
-var shallowEqual = require("fbjs/lib/shallowEqual");
-
-require("ReactNativeFeatureFlags");
-
-var deepDiffer = require("deepDiffer"), flattenStyle = require("flattenStyle"), TextInputState = require("TextInputState");
+var shallowEqual = require("fbjs/lib/shallowEqual"), deepDiffer = require("deepDiffer"), flattenStyle = require("flattenStyle"), TextInputState = require("TextInputState");
 
 require("deepFreezeAndThrowOnMutationInDev");
 
@@ -1590,12 +1586,7 @@ Object.assign(ReactCompositeComponentWrapper.prototype, ReactCompositeComponent_
     _instantiateReactComponent: instantiateReactComponent
 });
 
-var instantiateReactComponent_1 = instantiateReactComponent, DevOnlyStubShim = null, ReactNativeFeatureFlags$2 = {
-    useFiber: !1
-}, ReactNativeFeatureFlags_1 = ReactNativeFeatureFlags$2, ReactNativeFeatureFlags$3 = Object.freeze({
-    default: ReactNativeFeatureFlags_1,
-    __moduleExports: ReactNativeFeatureFlags_1
-}), ReactNativeFeatureFlags$1 = ReactNativeFeatureFlags$3 && ReactNativeFeatureFlags_1 || ReactNativeFeatureFlags$3, injectedFindNode = ReactNativeFeatureFlags$1.useFiber ? function(fiber) {
+var instantiateReactComponent_1 = instantiateReactComponent, DevOnlyStubShim = null, ReactNativeFeatureFlags = require("ReactNativeFeatureFlags"), injectedFindNode = ReactNativeFeatureFlags.useFiber ? function(fiber) {
     return DevOnlyStubShim.findHostInstance(fiber);
 } : function(instance) {
     return instance;
@@ -2048,7 +2039,7 @@ function _inherits(subClass, superClass) {
     }), superClass && (Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass);
 }
 
-var mountSafeCallback = NativeMethodsMixinUtils.mountSafeCallback, findNumericNodeHandle = ReactNativeFeatureFlags$1.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack, ReactNativeComponent = function(_React$Component) {
+var ReactNativeFeatureFlags$1 = require("ReactNativeFeatureFlags"), mountSafeCallback = NativeMethodsMixinUtils.mountSafeCallback, findNumericNodeHandle = ReactNativeFeatureFlags$1.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack, ReactNativeComponent = function(_React$Component) {
     _inherits(ReactNativeComponent, _React$Component);
     function ReactNativeComponent() {
         return _classCallCheck$1(this, ReactNativeComponent), _possibleConstructorReturn(this, _React$Component.apply(this, arguments));
@@ -2096,7 +2087,7 @@ var injectedSetNativeProps = void 0;
 
 injectedSetNativeProps = ReactNativeFeatureFlags$1.useFiber ? setNativePropsFiber : setNativePropsStack;
 
-var ReactNativeComponent_1 = ReactNativeComponent, mountSafeCallback$2 = NativeMethodsMixinUtils.mountSafeCallback, findNumericNodeHandle$1 = ReactNativeFeatureFlags$1.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack, NativeMethodsMixin = {
+var ReactNativeComponent_1 = ReactNativeComponent, ReactNativeFeatureFlags$2 = require("ReactNativeFeatureFlags"), mountSafeCallback$2 = NativeMethodsMixinUtils.mountSafeCallback, findNumericNodeHandle$1 = ReactNativeFeatureFlags$2.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack, NativeMethodsMixin = {
     measure: function(callback) {
         UIManager.measure(findNumericNodeHandle$1(this), mountSafeCallback$2(this, callback));
     },
@@ -2143,7 +2134,7 @@ function setNativePropsStack$1(componentOrHandle, nativeProps) {
 
 var injectedSetNativeProps$1 = void 0;
 
-injectedSetNativeProps$1 = ReactNativeFeatureFlags$1.useFiber ? setNativePropsFiber$1 : setNativePropsStack$1;
+injectedSetNativeProps$1 = ReactNativeFeatureFlags$2.useFiber ? setNativePropsFiber$1 : setNativePropsStack$1;
 
 var NativeMethodsMixin_1 = NativeMethodsMixin, TouchHistoryMath = {
     centroidDimension: function(touchHistory, touchesChangedAfter, isXAxis, ofCurrent) {
@@ -2190,27 +2181,10 @@ function escape(key) {
     });
 }
 
-function unescape(key) {
-    var unescapeRegex = /(=0|=2)/g, unescaperLookup = {
-        "=0": "=",
-        "=2": ":"
-    };
-    return ("" + ("." === key[0] && "$" === key[1] ? key.substring(2) : key.substring(1))).replace(unescapeRegex, function(match) {
-        return unescaperLookup[match];
-    });
-}
-
-var KeyEscapeUtils = {
+var unescapeInDev = emptyFunction, KeyEscapeUtils = {
     escape: escape,
-    unescape: unescape
-}, KeyEscapeUtils_1 = KeyEscapeUtils, REACT_ELEMENT_TYPE = "function" == typeof Symbol && Symbol.for && Symbol.for("react.element") || 60103, ReactElementSymbol = REACT_ELEMENT_TYPE, ITERATOR_SYMBOL = "function" == typeof Symbol && Symbol.iterator, FAUX_ITERATOR_SYMBOL = "@@iterator";
-
-function getIteratorFn(maybeIterable) {
-    var iteratorFn = maybeIterable && (ITERATOR_SYMBOL && maybeIterable[ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL]);
-    if ("function" == typeof iteratorFn) return iteratorFn;
-}
-
-var getIteratorFn_1 = getIteratorFn, SEPARATOR = ".", SUBSEPARATOR = ":";
+    unescapeInDev: unescapeInDev
+}, KeyEscapeUtils_1 = KeyEscapeUtils, ITERATOR_SYMBOL = "function" == typeof Symbol && Symbol.iterator, FAUX_ITERATOR_SYMBOL = "@@iterator", REACT_ELEMENT_TYPE = "function" == typeof Symbol && Symbol.for && Symbol.for("react.element") || 60103, SEPARATOR = ".", SUBSEPARATOR = ":";
 
 function getComponentKey(component, index) {
     return component && "object" == typeof component && null != component.key ? KeyEscapeUtils_1.escape(component.key) : index.toString(36);
@@ -2218,13 +2192,13 @@ function getComponentKey(component, index) {
 
 function traverseStackChildrenImpl(children, nameSoFar, callback, traverseContext) {
     var type = typeof children;
-    if ("undefined" !== type && "boolean" !== type || (children = null), null === children || "string" === type || "number" === type || "object" === type && children.$$typeof === ReactElementSymbol) return callback(traverseContext, children, "" === nameSoFar ? SEPARATOR + getComponentKey(children, 0) : nameSoFar), 
+    if ("undefined" !== type && "boolean" !== type || (children = null), null === children || "string" === type || "number" === type || "object" === type && children.$$typeof === REACT_ELEMENT_TYPE) return callback(traverseContext, children, "" === nameSoFar ? SEPARATOR + getComponentKey(children, 0) : nameSoFar), 
     1;
     var child, nextName, subtreeCount = 0, nextNamePrefix = "" === nameSoFar ? SEPARATOR : nameSoFar + SUBSEPARATOR;
     if (Array.isArray(children)) for (var i = 0; i < children.length; i++) child = children[i], 
     nextName = nextNamePrefix + getComponentKey(child, i), subtreeCount += traverseStackChildrenImpl(child, nextName, callback, traverseContext); else {
-        var iteratorFn = getIteratorFn_1(children);
-        if (iteratorFn) for (var step, iterator = iteratorFn.call(children), ii = 0; !(step = iterator.next()).done; ) child = step.value, 
+        var iteratorFn = ITERATOR_SYMBOL && children[ITERATOR_SYMBOL] || children[FAUX_ITERATOR_SYMBOL];
+        if ("function" == typeof iteratorFn) for (var step, iterator = iteratorFn.call(children), ii = 0; !(step = iterator.next()).done; ) child = step.value, 
         nextName = nextNamePrefix + getComponentKey(child, ii++), subtreeCount += traverseStackChildrenImpl(child, nextName, callback, traverseContext); else if ("object" === type) {
             var addendum = "", childrenString = "" + children;
             invariant(!1, "Objects are not valid as a React child (found: %s).%s", "[object Object]" === childrenString ? "object with keys {" + Object.keys(children).join(", ") + "}" : childrenString, addendum);
@@ -2485,7 +2459,7 @@ var ReactNativeBaseComponent_1 = ReactNativeBaseComponent, createReactNativeComp
     return Constructor.displayName = viewConfig.uiViewClassName, Constructor.viewConfig = viewConfig, 
     Constructor.propTypes = viewConfig.propTypes, Constructor.prototype = new ReactNativeBaseComponent_1(viewConfig), 
     Constructor.prototype.constructor = Constructor, Constructor;
-}, createReactNativeComponentClassStack_1 = createReactNativeComponentClassStack, createReactNativeComponentClass = ReactNativeFeatureFlags$1.useFiber ? DevOnlyStubShim : createReactNativeComponentClassStack_1, findNumericNodeHandle$2 = ReactNativeFeatureFlags$1.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack;
+}, createReactNativeComponentClassStack_1 = createReactNativeComponentClassStack, ReactNativeFeatureFlags$3 = require("ReactNativeFeatureFlags"), createReactNativeComponentClass = ReactNativeFeatureFlags$3.useFiber ? DevOnlyStubShim : createReactNativeComponentClassStack_1, ReactNativeFeatureFlags$4 = require("ReactNativeFeatureFlags"), findNumericNodeHandle$2 = ReactNativeFeatureFlags$4.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack;
 
 function takeSnapshot(view, options) {
     return "number" != typeof view && "window" !== view && (view = findNumericNodeHandle$2(view) || "window"), 
@@ -2498,7 +2472,7 @@ ReactNativeInjection.inject(), ReactNativeStackInjection.inject();
 
 var render = function(element, mountInto, callback) {
     return ReactNativeMount_1.renderComponent(element, mountInto, callback);
-}, ReactNative = {
+}, ReactNativeStack = {
     NativeComponent: ReactNativeComponent_1,
     hasReactNativeInitialized: !1,
     findNodeHandle: findNumericNodeHandleStack,
@@ -2532,6 +2506,6 @@ var render = function(element, mountInto, callback) {
     getInspectorDataForViewTag: ReactNativeStackInspector.getInspectorDataForViewTag
 });
 
-var ReactNativeStack = ReactNative;
+var ReactNativeStackEntry = ReactNativeStack;
 
-module.exports = ReactNativeStack;
+module.exports = ReactNativeStackEntry;

@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -180,7 +181,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
     if (mIsAttachedToInstance) {
-      getViewTreeObserver().removeOnGlobalLayoutListener(getCustomGlobalLayoutListener());
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        getViewTreeObserver().removeOnGlobalLayoutListener(getCustomGlobalLayoutListener());
+      } else {
+        getViewTreeObserver().removeGlobalOnLayoutListener(getCustomGlobalLayoutListener());
+      }
     }
   }
 

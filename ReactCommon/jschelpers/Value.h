@@ -12,12 +12,12 @@
 #include <jschelpers/Unicode.h>
 #include <jschelpers/noncopyable.h>
 
-namespace facebook {
-namespace react {
-
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
+
+namespace facebook {
+namespace react {
 
 class Value;
 
@@ -315,7 +315,9 @@ public:
 
   RN_EXPORT String toString() const;
 
-  RN_EXPORT static Value makeError(JSContextRef ctx, const char *error);
+  // Create an error, optionally adding an additional number of lines to the stack.
+  // Stack must be empty or newline terminated.
+  RN_EXPORT static Value makeError(JSContextRef ctx, const char *error, const char *stack = nullptr);
 
   static Value makeNumber(JSContextRef ctx, double value) {
     return Value(ctx, JSC_JSValueMakeNumber(ctx, value));

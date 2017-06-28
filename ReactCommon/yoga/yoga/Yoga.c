@@ -2278,6 +2278,16 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       }
     }
 
+    // The total flex factor needs to be floored to 1.
+    if (totalFlexGrowFactors > 0 && totalFlexGrowFactors < 1) {
+      totalFlexGrowFactors = 1;
+    }
+
+    // The total flex shrink factor needs to be floored to 1.
+    if (totalFlexShrinkScaledFactors > 0 && totalFlexShrinkScaledFactors < 1) {
+      totalFlexShrinkScaledFactors = 1;
+    }
+
     // If we don't need to measure the cross axis, we can skip the entire flex
     // step.
     const bool canSkipFlex = !performLayout && measureModeCrossDim == YGMeasureModeExactly;
@@ -3456,11 +3466,22 @@ static void YGRoundToPixelGrid(const YGNodeRef node,
   node->layout.position[YGEdgeTop] =
       YGRoundValueToPixelGrid(nodeTop, pointScaleFactor, false, textRounding);
 
+  const bool hasFractionalWidth = !YGFloatsEqual(fmodf(nodeWidth, 1.0), 0);
+  const bool hasFractionalHeight = !YGFloatsEqual(fmodf(nodeHeight, 1.0), 0);
+
   node->layout.dimensions[YGDimensionWidth] =
-      YGRoundValueToPixelGrid(absoluteNodeRight, pointScaleFactor, textRounding, false) -
+      YGRoundValueToPixelGrid(
+          absoluteNodeRight,
+          pointScaleFactor,
+          (textRounding && hasFractionalWidth),
+          (textRounding && !hasFractionalWidth)) -
       YGRoundValueToPixelGrid(absoluteNodeLeft, pointScaleFactor, false, textRounding);
   node->layout.dimensions[YGDimensionHeight] =
-      YGRoundValueToPixelGrid(absoluteNodeBottom, pointScaleFactor, textRounding, false) -
+      YGRoundValueToPixelGrid(
+          absoluteNodeBottom,
+          pointScaleFactor,
+          (textRounding && hasFractionalHeight),
+          (textRounding && !hasFractionalHeight)) -
       YGRoundValueToPixelGrid(absoluteNodeTop, pointScaleFactor, false, textRounding);
 
   const uint32_t childCount = YGNodeListCount(node->children);

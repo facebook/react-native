@@ -2,10 +2,10 @@
 
 #include <string>
 
-#include <cxxreact/Executor.h>
+#include <jschelpers/JSCHelpers.h>
+#include <cxxreact/JSExecutor.h>
 #include <cxxreact/JSCExecutor.h>
 #include <cxxreact/Platform.h>
-#include <jschelpers/JSCHelpers.h>
 #include <fb/fbjni.h>
 #include <fb/glog_init.h>
 #include <fb/log.h>
@@ -139,11 +139,47 @@ static void logPerfMarker(const ReactMarker::ReactMarkerId markerId, const char*
     case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
       JReactMarker::logMarker("loadApplicationScript_endStringConvert");
       break;
+    case ReactMarker::NATIVE_MODULE_SETUP_START:
+      JReactMarker::logMarker("NATIVE_MODULE_SETUP_START", tag);
+      break;
+    case ReactMarker::NATIVE_MODULE_SETUP_STOP:
+      JReactMarker::logMarker("NATIVE_MODULE_SETUP_END", tag);
+      break;
     case ReactMarker::NATIVE_REQUIRE_START:
     case ReactMarker::NATIVE_REQUIRE_STOP:
       // These are not used on Android.
       break;
   }
+}
+
+static ExceptionHandling::ExtractedEror extractJniError(const std::exception& ex, const char *context) {
+  auto jniEx = dynamic_cast<const jni::JniException *>(&ex);
+  if (!jniEx) {
+    return {};
+  }
+
+  auto stackTrace = jniEx->getThrowable()->getStackTrace();
+  std::ostringstream stackStr;
+  for (int i = 0, count = stackTrace->size(); i < count; ++i) {
+    auto frame = stackTrace->getElement(i);
+
+    auto methodName = folly::to<std::string>(frame->getClassName(), ".",
+      frame->getMethodName());
+
+    // Cut off stack traces at the Android looper, to keep them simple
+    if (methodName == "android.os.Looper.loop") {
+      break;
+    }
+
+    stackStr << std::move(methodName) << '@' << frame->getFileName();
+    if (frame->getLineNumber() > 0) {
+      stackStr << ':' << frame->getLineNumber();
+    }
+    stackStr << std::endl;
+  }
+
+  auto msg = folly::to<std::string>("Java exception in '", context, "'\n\n", jniEx->what());
+  return {.message = msg, .stack = stackStr.str()};
 }
 
 }
@@ -153,6 +189,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     gloginit::initialize();
     // Inject some behavior into react/
     ReactMarker::logTaggedMarker = logPerfMarker;
+    ExceptionHandling::platformErrorExtractor = extractJniError;
     JSCNativeHooks::loggingHook = nativeLoggingHook;
     JSCNativeHooks::nowHook = nativePerformanceNow;
     JSCNativeHooks::installPerfHooks = addNativePerfLoggingHooks;

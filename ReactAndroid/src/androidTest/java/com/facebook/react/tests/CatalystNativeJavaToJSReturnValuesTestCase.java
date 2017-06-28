@@ -126,7 +126,6 @@ public class CatalystNativeJavaToJSReturnValuesTestCase extends ReactIntegration
         .addNativeModule(new DeviceInfoModule(getContext()))
         .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
-        .addJSModule(TestJavaToJSReturnValuesModule.class)
         .addNativeModule(mUIManager)
         .addNativeModule(new TestModule())
         .build();

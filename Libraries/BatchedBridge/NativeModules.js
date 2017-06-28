@@ -15,6 +15,8 @@ const BatchedBridge = require('BatchedBridge');
 
 const invariant = require('fbjs/lib/invariant');
 
+import type {ExtendedError} from 'parseErrorStack';
+
 type ModuleConfig = [
   string, /* name */
   ?Object, /* constants */
@@ -113,13 +115,13 @@ function arrayContains<T>(array: Array<T>, value: T): boolean {
   return array.indexOf(value) !== -1;
 }
 
-function createErrorFromErrorData(errorData: {message: string}): Error {
+function createErrorFromErrorData(errorData: {message: string}): ExtendedError {
   const {
     message,
     ...extraErrorInfo
-  } = errorData;
-  const error = new Error(message);
-  (error:any).framesToPop = 1;
+  } = errorData || {};
+  const error : ExtendedError = new Error(message);
+  error.framesToPop = 1;
   return Object.assign(error, extraErrorInfo);
 }
 

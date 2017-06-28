@@ -8,8 +8,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 var AssetRegistry = require('AssetRegistry');
 var Platform = require('Platform');
 var NativeModules = require('NativeModules');

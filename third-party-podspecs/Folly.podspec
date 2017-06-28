@@ -13,14 +13,15 @@ Pod::Spec.new do |spec|
   spec.dependency 'GLog'
   spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
   spec.header_mappings_dir = 'folly'
-  spec.source_files = 'folly/*.h',
-                      'folly/Bits.cpp',
+  spec.source_files = 'folly/Bits.cpp',
                       'folly/Conv.cpp',
                       'folly/Demangle.cpp',
                       'folly/StringBase.cpp',
                       'folly/Unicode.cpp',
                       'folly/dynamic.cpp',
                       'folly/json.cpp'
+  # workaround for https://github.com/facebook/react-native/issues/14326
+  spec.preserve_paths = 'folly/*.h'
   spec.libraries           = "stdc++"
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
