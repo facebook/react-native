@@ -116,7 +116,7 @@ const Text = React.createClass({
      *
      * > `clip` is working only for iOS
      */
-    ellipsizeMode: PropTypes.oneOf(['head', 'middle', 'tail', 'clip']),
+    ellipsizeMode: PropTypes.oneOf(['head', 'middle', 'tail', 'clip', 'wordWrapping']),
     /**
      * Used to truncate the text with an ellipsis after computing the text
      * layout, including line wrapping, such that the total number of lines
