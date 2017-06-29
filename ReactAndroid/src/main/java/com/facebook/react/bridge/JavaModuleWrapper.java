@@ -122,10 +122,8 @@ public class JavaModuleWrapper {
     return mDescs;
   }
 
-  // TODO mhorowitz: make this return NativeMap, which requires moving
-  // NativeMap out of OnLoad.
   @DoNotStrip
-  public @Nullable NativeArray getConstants() {
+  public @Nullable NativeMap getConstants() {
     if (!mModuleHolder.getHasConstants()) {
       return null;
     }
@@ -145,9 +143,7 @@ public class JavaModuleWrapper {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "create WritableNativeMap");
     ReactMarker.logMarker(CONVERT_CONSTANTS_START, moduleName);
     try {
-      WritableNativeArray array = new WritableNativeArray();
-      array.pushMap(Arguments.makeNativeMap(map));
-      return array;
+      return Arguments.makeNativeMap(map);
     } finally {
       ReactMarker.logMarker(CONVERT_CONSTANTS_END);
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
