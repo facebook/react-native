@@ -8,81 +8,40 @@
  */
 'use strict';
 
-const chalk = require('chalk');
-const child_process = require('child_process');
-const execSync = child_process.execSync;
-const os = require('os');
-const osName = require('os-name');
-const pkg = require('../../package.json');
-const yarn = require('../util/yarn');
+const envinfo = require('envinfo');
 
 const info = function() {
-  let androidStudioVersion;
-  const npmVersion = execSync('npm -v').toString().replace(/(\r\n|\n|\r)/gm, '');
+  const args = Array.prototype.slice.call(arguments)[2];
 
-  if (process.platform === 'darwin') {
-    try {
-      var xcodebuildVersion = execSync('/usr/bin/xcodebuild -version').toString().split('\n').join(' ');
-
-      androidStudioVersion = child_process
-        .execFileSync(
-          '/usr/libexec/PlistBuddy',
-          [
-            '-c',
-            'Print:CFBundleShortVersionString',
-            '-c',
-            'Print:CFBundleVersion',
-            '/Applications/Android Studio.app/Contents/Info.plist',
-          ],
-          { encoding: 'utf8' },
-        )
-        .split('\n')
-        .join(' ');
-    } catch (err) {
-      console.log('Android Studio not found in typical install location');
-    }
-  } else if (process.platform === 'linux') {
-    try {
-      const linuxBuildNumber = child_process.execSync('cat /opt/android-studio/build.txt').toString();
-      const linuxVersion = child_process
-        .execSync('cat /opt/android-studio/bin/studio.sh | grep "$Home/.AndroidStudio" | head -1')
-        .toString()
-        .match(/\d\.\d/)[0];
-      androidStudioVersion = `${linuxVersion} ${linuxBuildNumber}`;
-    } catch (err) {
-      console.log('Android Studio not found in typical install location');
-    }
-  } else if (process.platform.startsWith('win')) {
-    try {
-      const windowsVersion = child_process
-        .execSync(
-          'wmic datafile where name="C:\\\\Program Files\\\\Android\\\\Android Studio\\\\bin\\\\studio.exe" get Version',
-        )
-        .toString()
-        .replace(/(\r\n|\n|\r)/gm, '');
-      const windowsBuildNumber = child_process
-        .execSync('type "C:\\\\Program Files\\\\Android\\\\Android Studio\\\\build.txt"')
-        .toString()
-        .replace(/(\r\n|\n|\r)/gm, '');
-      androidStudioVersion = `${windowsVersion} ${windowsBuildNumber}`;
-    } catch (err) {
-      console.log('Android Studio not found in typical install location');
-    }
+  try {
+    envinfo.print({
+      packages: typeof args.packages === 'string' ? ['react', 'react-native'].concat(args.packages.split(',')) : args.packages
+    });
+  } catch (error) {
+    console.log('Error: unable to print environment info');
+    console.log(error);
   }
-
-  console.log(chalk.bold('Versions:'));
-  console.log('  React Native: ', chalk.gray(pkg.version));
-  console.log('  React: ', chalk.gray(pkg.devDependencies.react));
-  console.log('  OS: ', chalk.gray(osName(os.platform(), os.release())));
-  console.log('  Node: ', chalk.gray(process.version));
-  console.log('  Yarn: ', chalk.gray(yarn.getYarnVersionIfAvailable() || 'Not Found'));
-  console.log('  npm: ', chalk.gray(npmVersion));
-  console.log('  Xcode: ', process.platform === 'darwin' ? chalk.gray(xcodebuildVersion) : 'N/A');
-  console.log('  Android Studio: ', chalk.gray(androidStudioVersion || 'Not Found'));
-};
+}
 
 module.exports = {
   name: 'info',
   description: 'Get relevant version info about OS, toolchain and libraries',
+  options: [
+    {
+      command: '--packages [string]',
+      description: 'Which packages from your package.json to include, in addition to the default React Native and React versions.',
+      default: ['react', 'react-native']
+    },
+  ],
+  examples: [
+    {
+      desc: 'Get standard version info',
+      cmd: 'react-native info',
+    },
+    {
+      desc: 'Get standard version info & specified package versions',
+      cmd: 'react-native info --packages jest,eslint,babel-polyfill',
+    }
+  ],
   func: info,
 };
