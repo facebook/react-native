@@ -147,7 +147,7 @@ const mockNativeModules = {
     getInitialURL: jest.fn(
       () => new Promise((resolve) => resolve())
     ),
-    removeEventListener: jest.fn()
+    removeEventListener: jest.fn(),
   },
   LocationObserver: {
     getCurrentPosition: jest.fn(),
@@ -164,8 +164,8 @@ const mockNativeModules = {
       fetch: jest.fn(
         () => new Promise((resolve) => resolve())
       ),
-      addEventListener: jest.fn()
-    }
+      addEventListener: jest.fn(),
+    },
   },
   Networking: {
     sendRequest: jest.fn(),
