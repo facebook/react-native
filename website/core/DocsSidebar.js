@@ -8,9 +8,10 @@
  *
  * @providesModule DocsSidebar
  */
+'use strict';
 
-var React = require('React');
 var Metadata = require('Metadata');
+var React = require('React');
 
 var DocsSidebar = React.createClass({
   getCategories: function() {
@@ -82,8 +83,8 @@ var DocsSidebar = React.createClass({
               {category.links.map((metadata) =>
                 <li key={metadata.id}>
                   <a
+                    style={{marginLeft: 10}}
                     target={metadata.permalink.match(/^https?:/) && '_blank'}
-                    style={{marginLeft: metadata.indent ? 20 : 0}}
                     className={metadata.id === this.props.metadata.id ? 'active' : ''}
                     href={this.getLink(metadata)}>
                     {metadata.title}

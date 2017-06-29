@@ -9,9 +9,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTInvalidating.h"
-#import "RCTModalHostViewManager.h"
-#import "RCTView.h"
+#import <React/RCTInvalidating.h>
+#import <React/RCTModalHostViewManager.h>
+#import <React/RCTView.h>
 
 @class RCTBridge;
 @class RCTModalHostViewController;
@@ -21,6 +21,7 @@
 @interface RCTModalHostView : UIView <RCTInvalidating>
 
 @property (nonatomic, copy) NSString *animationType;
+@property (nonatomic, assign) UIModalPresentationStyle presentationStyle;
 @property (nonatomic, assign, getter=isTransparent) BOOL transparent;
 
 @property (nonatomic, copy) RCTDirectEventBlock onShow;

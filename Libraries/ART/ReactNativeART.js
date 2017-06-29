@@ -15,10 +15,12 @@ var Path = require('ARTSerializablePath');
 var Transform = require('art/core/transform');
 
 var React = require('React');
+var PropTypes = require('prop-types');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var merge = require('merge');
+var invariant = require('fbjs/lib/invariant');
 
 // Diff Helpers
 
@@ -137,6 +139,14 @@ function childrenAsString(children) {
 // Surface - Root node of all ART
 
 class Surface extends React.Component {
+  static childContextTypes = {
+    isInSurface: PropTypes.bool,
+  };
+
+  getChildContext() {
+    return { isInSurface: true };
+  }
+
   render() {
     var props = this.props;
     var w = extractNumber(props.width, 0);
@@ -203,8 +213,16 @@ function extractOpacity(props) {
 // ReactART.
 
 class Group extends React.Component {
+  static contextTypes = {
+    isInSurface: PropTypes.bool.isRequired,
+  };
+
   render() {
     var props = this.props;
+    invariant(
+      this.context.isInSurface,
+      'ART: <Group /> must be a child of a <Surface />'
+    );
     return (
       <NativeGroup
         opacity={extractOpacity(props)}
@@ -439,11 +457,12 @@ function extractFont(font) {
   }
   var fontFamily = extractSingleFontFamily(font.fontFamily);
   var fontSize = +font.fontSize || 12;
+  var fontWeight = font.fontWeight != null ? font.fontWeight.toString() : '400';
   return {
     // Normalize
     fontFamily: fontFamily,
     fontSize: fontSize,
-    fontWeight: font.fontWeight,
+    fontWeight: fontWeight,
     fontStyle: font.fontStyle,
   };
 }

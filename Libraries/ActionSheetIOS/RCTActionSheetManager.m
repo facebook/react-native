@@ -9,11 +9,11 @@
 
 #import "RCTActionSheetManager.h"
 
-#import "RCTConvert.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
-#import "RCTBridge.h"
-#import "RCTUIManager.h"
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTUtils.h>
 
 @interface RCTActionSheetManager () <UIActionSheetDelegate>
 @end

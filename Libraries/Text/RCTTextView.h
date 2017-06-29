@@ -9,31 +9,31 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTView.h"
-#import "UIView+React.h"
+#import <RCTText/RCTTextInput.h>
+#import <React/RCTView.h>
+#import <React/UIView+React.h>
 
-@class RCTEventDispatcher;
+@class RCTBridge;
 
-@interface RCTTextView : RCTView <UITextViewDelegate>
+@interface RCTTextView : RCTTextInput <UITextViewDelegate>
 
-@property (nonatomic, assign) BOOL autoCorrect;
+@property (nonatomic, assign) UITextAutocorrectionType autocorrectionType;
+@property (nonatomic, assign) UITextSpellCheckingType spellCheckingType;
 @property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, assign) BOOL clearTextOnFocus;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
-@property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, strong) UIColor *placeholderTextColor;
+@property (nonatomic, copy) NSString *placeholder;
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, strong) NSNumber *maxLength;
 
 @property (nonatomic, copy) RCTDirectEventBlock onChange;
-@property (nonatomic, copy) RCTDirectEventBlock onContentSizeChange;
 @property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
 @property (nonatomic, copy) RCTDirectEventBlock onTextInput;
-
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
+@property (nonatomic, copy) RCTDirectEventBlock onScroll;
 
 - (void)performTextUpdate;
 

@@ -1,29 +1,23 @@
 /**
- * @generated SignedSource<<4425c6f5a34b56ee4707e090f43fd075>>
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
- * Copyright 2004-present Facebook. All Rights Reserved.
- *
+ * @providesModule guid
+ */
+
+/* eslint-disable no-bitwise */
+
+'use strict';
+
+/**
  * Module that provides a function for creating a unique identifier.
  * The returned value does not conform to the GUID standard, but should
  * be globally unique in the context of the browser.
- *
- * @providesModule guid
- *
  */
-
-/*jshint bitwise: false*/
-
 function guid() {
   return 'f' + (Math.random() * (1 << 30)).toString(16).replace('.', '');
 }

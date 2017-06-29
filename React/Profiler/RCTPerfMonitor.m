@@ -16,16 +16,20 @@
 #import <mach/mach.h>
 
 #import "RCTBridge.h"
-#import "RCTDevMenu.h"
+#import "RCTDevSettings.h"
 #import "RCTFPSGraph.h"
 #import "RCTInvalidating.h"
 #import "RCTJavaScriptExecutor.h"
-#import "RCTJSCExecutor.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTRootView.h"
 #import "RCTUIManager.h"
+#import "RCTBridge+Private.h"
+#import "RCTUtils.h"
 
-static NSString *const RCTPerfMonitorKey = @"RCTPerfMonitorKey";
+#if __has_include("RCTDevMenu.h")
+#import "RCTDevMenu.h"
+#endif
+
 static NSString *const RCTPerfMonitorCellIdentifier = @"RCTPerfMonitorCellIdentifier";
 
 static CGFloat const RCTPerfMonitorBarHeight = 50;
@@ -73,11 +77,11 @@ static vm_size_t RCTGetResidentMemorySize(void)
   return info.resident_size;
 }
 
-@class RCTDevMenuItem;
-
 @interface RCTPerfMonitor : NSObject <RCTBridgeModule, RCTInvalidating, UITableViewDataSource, UITableViewDelegate>
 
+#if __has_include("RCTDevMenu.h")
 @property (nonatomic, strong, readonly) RCTDevMenuItem *devMenuItem;
+#endif
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *gestureRecognizer;
 @property (nonatomic, strong, readonly) UIView *container;
 @property (nonatomic, strong, readonly) UILabel *memory;
@@ -92,7 +96,9 @@ static vm_size_t RCTGetResidentMemorySize(void)
 @end
 
 @implementation RCTPerfMonitor {
+#if __has_include("RCTDevMenu.h")
   RCTDevMenuItem *_devMenuItem;
+#endif
   UIPanGestureRecognizer *_gestureRecognizer;
   UIView *_container;
   UILabel *_memory;
@@ -141,7 +147,9 @@ RCT_EXPORT_MODULE()
 {
   _bridge = bridge;
 
+#if __has_include("RCTDevMenu.h")
   [_bridge.devMenu addItem:self.devMenuItem];
+#endif
 }
 
 - (void)invalidate
@@ -149,26 +157,31 @@ RCT_EXPORT_MODULE()
   [self hide];
 }
 
+#if __has_include("RCTDevMenu.h")
 - (RCTDevMenuItem *)devMenuItem
 {
   if (!_devMenuItem) {
     __weak __typeof__(self) weakSelf = self;
+    __weak RCTDevSettings *devSettings = self.bridge.devSettings;
     _devMenuItem =
-      [RCTDevMenuItem toggleItemWithKey:RCTPerfMonitorKey
-                                  title:@"Show Perf Monitor"
-                          selectedTitle:@"Hide Perf Monitor"
-                                handler:
-                                ^(BOOL selected) {
-                                  if (selected) {
-                                    [weakSelf show];
-                                  } else {
-                                    [weakSelf hide];
-                                  }
-                                }];
+    [RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
+      return (devSettings.isPerfMonitorShown) ?
+        @"Hide Perf Monitor" :
+        @"Show Perf Monitor";
+    } handler:^{
+      if (devSettings.isPerfMonitorShown) {
+        [weakSelf hide];
+        devSettings.isPerfMonitorShown = NO;
+      } else {
+        [weakSelf show];
+        devSettings.isPerfMonitorShown = YES;
+      }
+    }];
   }
 
   return _devMenuItem;
 }
+#endif
 
 - (UIPanGestureRecognizer *)gestureRecognizer
 {
@@ -309,7 +322,7 @@ RCT_EXPORT_MODULE()
 
   [self updateStats];
 
-  UIWindow *window = [UIApplication sharedApplication].delegate.window;
+  UIWindow *window = RCTSharedApplication().delegate.window;
   [window addSubview:self.container];
 
 
@@ -318,23 +331,21 @@ RCT_EXPORT_MODULE()
   [_uiDisplayLink addToRunLoop:[NSRunLoop mainRunLoop]
                        forMode:NSRunLoopCommonModes];
 
-  id<RCTJavaScriptExecutor> executor = [_bridge valueForKey:@"javaScriptExecutor"];
-  if ([executor isKindOfClass:[RCTJSCExecutor class]]) {
-    self.container.frame = (CGRect) {
-      self.container.frame.origin, {
-        self.container.frame.size.width + 44,
-        self.container.frame.size.height
-      }
-    };
-    [self.container addSubview:self.jsGraph];
-    [self.container addSubview:self.jsGraphLabel];
-    [executor executeBlockOnJavaScriptQueue:^{
-      self->_jsDisplayLink = [CADisplayLink displayLinkWithTarget:self
-                                                   selector:@selector(threadUpdate:)];
-      [self->_jsDisplayLink addToRunLoop:[NSRunLoop currentRunLoop]
-                           forMode:NSRunLoopCommonModes];
-    }];
-  }
+  self.container.frame = (CGRect) {
+    self.container.frame.origin, {
+      self.container.frame.size.width + 44,
+      self.container.frame.size.height
+    }
+  };
+  [self.container addSubview:self.jsGraph];
+  [self.container addSubview:self.jsGraphLabel];
+
+  [_bridge dispatchBlock:^{
+    self->_jsDisplayLink = [CADisplayLink displayLinkWithTarget:self
+                                                       selector:@selector(threadUpdate:)];
+    [self->_jsDisplayLink addToRunLoop:[NSRunLoop currentRunLoop]
+                               forMode:NSRunLoopCommonModes];
+  } queue:RCTJSThread];
 }
 
 - (void)hide
@@ -420,7 +431,7 @@ RCT_EXPORT_MODULE()
   static NSRegularExpression *GCRegex;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    NSString *pattern = @"\\[GC: (Eden|Full)Collection, (?:Skipped copying|Did copy), ([\\d\\.]+) (\\wb), ([\\d.]+) (\\ws)\\]";
+    NSString *pattern = @"\\[GC: [\\d\\.]+ \\wb => (Eden|Full)Collection, (?:Skipped copying|Did copy), ([\\d\\.]+) \\wb, [\\d.]+ \\ws\\]";
     GCRegex = [NSRegularExpression regularExpressionWithPattern:pattern
                                                         options:0
                                                           error:nil];
@@ -487,10 +498,12 @@ RCT_EXPORT_MODULE()
 
 - (void)tap
 {
+  [self loadPerformanceLoggerData];
   if (CGRectIsEmpty(_storedMonitorFrame)) {
     _storedMonitorFrame = CGRectMake(0, 20, self.container.window.frame.size.width, RCTPerfMonitorExpandHeight);
     [self.container addSubview:self.metrics];
-    [self loadPerformanceLoggerData];
+  } else {
+    [_metrics reloadData];
   }
 
   [UIView animateWithDuration:.25 animations:^{

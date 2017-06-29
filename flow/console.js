@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
@@ -7,7 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @nolint
  */
+
+/* eslint-disable */
 
 declare module 'console' {
   declare function assert(value: any, ...message: any): void;
@@ -23,6 +26,7 @@ declare module 'console' {
   declare function trace(first: any, ...rest: any): void;
   declare function warn(...data: any): void;
   declare class Console {
+    constructor(stdout: stream$Writable, stdin?: stream$Writable): void;
     assert(value: any, ...message: any): void,
     dir(
       obj: Object,

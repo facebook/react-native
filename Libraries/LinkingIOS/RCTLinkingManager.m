@@ -9,15 +9,29 @@
 
 #import "RCTLinkingManager.h"
 
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
-#import "RCTUtils.h"
+#import <React/RCTBridge.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTUtils.h>
 
 NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
+
+
+static void postNotificationWithURL(NSURL *URL, id sender)
+{
+  NSDictionary<NSString *, id> *payload = @{@"url": URL.absoluteString};
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
+                                                        object:sender
+                                                      userInfo:payload];
+}
 
 @implementation RCTLinkingManager
 
 RCT_EXPORT_MODULE()
+
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
 
 - (void)startObserving
 {
@@ -37,15 +51,20 @@ RCT_EXPORT_MODULE()
   return @[@"url"];
 }
 
++ (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)URL
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+  postNotificationWithURL(URL, self);
+  return YES;
+}
+
 + (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)URL
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation
 {
-  NSDictionary<NSString *, id> *payload = @{@"url": URL.absoluteString};
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
-                                                      object:self
-                                                    userInfo:payload];
+  postNotificationWithURL(URL, self);
   return YES;
 }
 

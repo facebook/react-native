@@ -1,4 +1,4 @@
-  /**
+/**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -11,13 +11,17 @@ package com.facebook.react.uimanager;
 
 import javax.annotation.Nullable;
 
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import android.content.ComponentCallbacks2;
+import android.content.res.Configuration;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.PerformanceCounter;
@@ -66,9 +70,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
  *                consider implementing a pool
  * TODO(5483063): Don't dispatch the view hierarchy at the end of a batch if no UI changes occurred
  */
-@ReactModule(name = "RKUIManager")
+@ReactModule(name = UIManagerModule.NAME)
 public class UIManagerModule extends ReactContextBaseJavaModule implements
     OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter {
+
+  protected static final String NAME = "UIManager";
 
   // Keep in sync with ReactIOSTagHandles JS module - see that file for an explanation on why the
   // increment here is 10
@@ -78,6 +84,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private final EventDispatcher mEventDispatcher;
   private final Map<String, Object> mModuleConstants;
   private final UIImplementation mUIImplementation;
+  private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
 
   private int mNextRootViewTag = 1;
   private int mBatchId = 0;
@@ -85,11 +92,12 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public UIManagerModule(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagerList,
-      UIImplementationProvider uiImplementationProvider) {
+      UIImplementationProvider uiImplementationProvider,
+      boolean lazyViewManagersEnabled) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mEventDispatcher = new EventDispatcher(reactContext);
-    mModuleConstants = createConstants(viewManagerList);
+    mModuleConstants = createConstants(viewManagerList, lazyViewManagersEnabled);
     mUIImplementation = uiImplementationProvider
       .createUIImplementation(reactContext, viewManagerList, mEventDispatcher);
 
@@ -106,12 +114,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   @Override
   public String getName() {
-    return "RKUIManager";
+    return NAME;
   }
 
   @Override
   public Map<String, Object> getConstants() {
     return mModuleConstants;
+  }
+
+  @Override
+  public void initialize() {
+    getReactApplicationContext().registerComponentCallbacks(mMemoryTrimCallback);
   }
 
   @Override
@@ -133,13 +146,21 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
     mEventDispatcher.onCatalystInstanceDestroyed();
+
+    getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
+    YogaNodePool.get().clear();
+    ViewManagerPropertyUpdater.clear();
   }
 
-  private static Map<String, Object> createConstants(List<ViewManager> viewManagerList) {
+  private static Map<String, Object> createConstants(
+    List<ViewManager> viewManagerList,
+    boolean lazyViewManagersEnabled) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
     try {
-      return UIManagerModuleConstantsHelper.createConstants(viewManagerList);
+      return UIManagerModuleConstantsHelper.createConstants(
+        viewManagerList,
+        lazyViewManagersEnabled);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
@@ -160,10 +181,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * Note that this must be called after getWidth()/getHeight() actually return something. See
    * CatalystApplicationFragment as an example.
    *
-   * TODO(6242243): Make addMeasuredRootView thread safe
+   * TODO(6242243): Make addRootView thread safe
    * NB: this method is horribly not-thread-safe.
    */
-  public int addMeasuredRootView(final SizeMonitoringFrameLayout rootView) {
+  public int addRootView(final SizeMonitoringFrameLayout rootView) {
+    Systrace.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+      "UIManagerModule.addRootView");
     final int tag = mNextRootViewTag;
     mNextRootViewTag += ROOT_VIEW_TAG_INCREMENT;
 
@@ -171,8 +195,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     final int height;
     // If LayoutParams sets size explicitly, we can use that. Otherwise get the size from the view.
     if (rootView.getLayoutParams() != null &&
-        rootView.getLayoutParams().width > 0 &&
-        rootView.getLayoutParams().height > 0) {
+      rootView.getLayoutParams().width > 0 &&
+      rootView.getLayoutParams().height > 0) {
       width = rootView.getLayoutParams().width;
       height = rootView.getLayoutParams().height;
     } else {
@@ -180,8 +204,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       height = rootView.getHeight();
     }
 
+    final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     final ThemedReactContext themedRootContext =
-        new ThemedReactContext(getReactApplicationContext(), rootView.getContext());
+      new ThemedReactContext(reactApplicationContext, rootView.getContext());
 
     mUIImplementation.registerRootView(rootView, tag, width, height, themedRootContext);
 
@@ -189,16 +214,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       new SizeMonitoringFrameLayout.OnSizeChangedListener() {
         @Override
         public void onSizeChanged(final int width, final int height, int oldW, int oldH) {
-          getReactApplicationContext().runOnNativeModulesQueueThread(
-            new Runnable() {
+          reactApplicationContext.runUIBackgroundRunnable(
+            new GuardedRunnable(reactApplicationContext) {
               @Override
-              public void run() {
+              public void runGuarded() {
                 updateNodeSize(tag, width, height);
               }
             });
         }
       });
 
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return tag;
   }
 
@@ -208,7 +234,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
-    getReactApplicationContext().assertOnNativeModulesQueueThread();
+    getReactApplicationContext().assertOnUIBackgroundOrNativeModulesThread();
 
     mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight);
   }
@@ -388,6 +414,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   /**
+   *  Check if the first shadow node is the descendant of the second shadow node
+   */
+  @ReactMethod
+  public void viewIsDescendantOf(
+      final int reactTag,
+      final int ancestorReactTag,
+      final Callback callback) {
+    mUIImplementation.viewIsDescendantOf(reactTag, ancestorReactTag, callback);
+  }
+
+  /**
    * Registers a new Animation that can then be added to a View using {@link #addAnimation}.
    */
   public void registerAnimation(Animation animation) {
@@ -548,5 +585,26 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    */
   public int resolveRootTagFromReactTag(int reactTag) {
     return mUIImplementation.resolveRootTagFromReactTag(reactTag);
+  }
+
+  /**
+   * Listener that drops the CSSNode pool on low memory when the app is backgrounded.
+   */
+  private class MemoryTrimCallback implements ComponentCallbacks2 {
+
+    @Override
+    public void onTrimMemory(int level) {
+      if (level >= TRIM_MEMORY_MODERATE) {
+        YogaNodePool.get().clear();
+      }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+    }
+
+    @Override
+    public void onLowMemory() {
+    }
   }
 }

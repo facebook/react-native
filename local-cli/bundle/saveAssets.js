@@ -8,6 +8,7 @@
  */
 'use strict';
 
+const filterPlatformAssetScales = require('./filterPlatformAssetScales');
 const fs = require('fs');
 const getAssetDestPathAndroid = require('./getAssetDestPathAndroid');
 const getAssetDestPathIOS = require('./getAssetDestPathIOS');
@@ -31,9 +32,8 @@ function saveAssets(
 
   const filesToCopy = Object.create(null); // Map src -> dest
   assets
-    .filter(asset => !asset.deprecated)
     .forEach(asset =>
-      asset.scales.forEach((scale, idx) => {
+      filterPlatformAssetScales(platform, asset.scales).forEach((scale, idx) => {
         const src = asset.files[idx];
         const dest = path.join(assetsDest, getAssetDestPath(asset, scale));
         filesToCopy[src] = dest;

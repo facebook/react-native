@@ -13,12 +13,13 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTImageLoader.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
+
 #import "RCTAssetsLibraryRequestHandler.h"
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTImageLoader.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
 
 @implementation RCTConvert (ALAssetGroup)
 
@@ -209,8 +210,8 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
           }];
         }
       }];
-    } 
-  
+    }
+
     if (!group) {
       // Sometimes the enumeration continues even if we set stop above, so we guard against resolving the promise
       // multiple times here.

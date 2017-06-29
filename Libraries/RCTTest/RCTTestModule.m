@@ -9,11 +9,12 @@
 
 #import "RCTTestModule.h"
 
+#import <React/RCTAssert.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
+
 #import "FBSnapshotTestController.h"
-#import "RCTAssert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTLog.h"
-#import "RCTUIManager.h"
 
 @implementation RCTTestModule {
   NSMutableDictionary<NSString *, NSNumber *> *_snapshotCounter;
@@ -50,6 +51,9 @@ RCT_EXPORT_METHOD(verifySnapshot:(RCTResponseSenderBlock)callback)
                                                    selector:self->_testSelector
                                                  identifier:identifier
                                                       error:&error];
+    if (!success) {
+      RCTLogInfo(@"Failed to verify snapshot %@ (error: %@)", identifier, error);
+    }
     callback(@[@(success)]);
   }];
 }

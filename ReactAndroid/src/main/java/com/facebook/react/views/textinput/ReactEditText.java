@@ -19,6 +19,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
@@ -33,6 +34,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -74,8 +76,11 @@ public class ReactEditText extends EditText {
   private int mStagedInputType;
   private boolean mContainsImages;
   private boolean mBlurOnSubmit;
+  private boolean mDisableFullscreen;
+  private @Nullable String mReturnKeyType;
   private @Nullable SelectionWatcher mSelectionWatcher;
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
+  private @Nullable ScrollWatcher mScrollWatcher;
   private final InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
 
@@ -97,10 +102,12 @@ public class ReactEditText extends EditText {
     mIsSettingTextFromJS = false;
     mIsJSSettingFocus = false;
     mBlurOnSubmit = true;
+    mDisableFullscreen = false;
     mListeners = null;
     mTextWatcherDelegator = null;
     mStagedInputType = getInputType();
     mKeyListener = new InternalKeyListener();
+    mScrollWatcher = null;
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
@@ -167,6 +174,15 @@ public class ReactEditText extends EditText {
   }
 
   @Override
+  protected void onScrollChanged(int horiz, int vert, int oldHoriz, int oldVert) {
+    super.onScrollChanged(horiz, vert, oldHoriz, oldVert);
+
+    if (mScrollWatcher != null) {
+      mScrollWatcher.onScrollChanged(horiz, vert, oldHoriz, oldVert);
+    }
+  }
+
+  @Override
   public void clearFocus() {
     setFocusableInTouchMode(false);
     super.clearFocus();
@@ -215,6 +231,10 @@ public class ReactEditText extends EditText {
     mContentSizeWatcher = contentSizeWatcher;
   }
 
+  public void setScrollWatcher(ScrollWatcher scrollWatcher) {
+    mScrollWatcher = scrollWatcher;
+  }
+
   @Override
   public void setSelection(int start, int end) {
     // Skip setting the selection if the text wasn't set because of an out of date value.
@@ -252,6 +272,24 @@ public class ReactEditText extends EditText {
 
   public boolean getBlurOnSubmit() {
     return mBlurOnSubmit;
+  }
+
+  public void setDisableFullscreenUI(boolean disableFullscreenUI) {
+    mDisableFullscreen = disableFullscreenUI;
+    updateImeOptions();
+  }
+
+  public boolean getDisableFullscreenUI() {
+    return mDisableFullscreen;
+  }
+
+  public void setReturnKeyType(String returnKeyType) {
+    mReturnKeyType = returnKeyType;
+    updateImeOptions();
+  }
+
+  public String getReturnKeyType() {
+    return mReturnKeyType;
   }
 
   /*protected*/ int getStagedInputType() {
@@ -318,6 +356,11 @@ public class ReactEditText extends EditText {
     mIsSettingTextFromJS = true;
     getText().replace(0, length(), spannableStringBuilder);
     mIsSettingTextFromJS = false;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (getBreakStrategy() != reactTextUpdate.getTextBreakStrategy()) {
+        setBreakStrategy(reactTextUpdate.getTextBreakStrategy());
+      }
+    }
   }
 
   /**
@@ -405,6 +448,42 @@ public class ReactEditText extends EditText {
       gravityVertical = mDefaultGravityVertical;
     }
     setGravity((getGravity() & ~Gravity.VERTICAL_GRAVITY_MASK) | gravityVertical);
+  }
+
+  private void updateImeOptions() {
+    // Default to IME_ACTION_DONE
+    int returnKeyFlag = EditorInfo.IME_ACTION_DONE;
+    if (mReturnKeyType != null) {
+      switch (mReturnKeyType) {
+        case "go":
+          returnKeyFlag = EditorInfo.IME_ACTION_GO;
+          break;
+        case "next":
+          returnKeyFlag = EditorInfo.IME_ACTION_NEXT;
+          break;
+        case "none":
+          returnKeyFlag = EditorInfo.IME_ACTION_NONE;
+          break;
+        case "previous":
+          returnKeyFlag = EditorInfo.IME_ACTION_PREVIOUS;
+          break;
+        case "search":
+          returnKeyFlag = EditorInfo.IME_ACTION_SEARCH;
+          break;
+        case "send":
+          returnKeyFlag = EditorInfo.IME_ACTION_SEND;
+          break;
+        case "done":
+          returnKeyFlag = EditorInfo.IME_ACTION_DONE;
+          break;
+      }
+    }
+
+    if (mDisableFullscreen) {
+      setImeOptions(returnKeyFlag | EditorInfo.IME_FLAG_NO_FULLSCREEN);
+    } else {
+      setImeOptions(returnKeyFlag);
+    }
   }
 
   @Override
@@ -549,6 +628,10 @@ public class ReactEditText extends EditText {
         for (TextWatcher listener : mListeners) {
           listener.onTextChanged(s, start, before, count);
         }
+      }
+
+      if (mContentSizeWatcher != null) {
+        mContentSizeWatcher.onLayout();
       }
     }
 

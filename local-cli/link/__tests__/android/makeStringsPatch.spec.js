@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const makeStringsPatch = require('../../android/patches/makeStringsPatch');
 
 describe('makeStringsPatch', () => {

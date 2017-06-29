@@ -5,11 +5,11 @@
 namespace facebook {
 namespace react {
 
-String jsStringFromBigString(const JSBigString& bigstr) {
+String jsStringFromBigString(JSContextRef ctx, const JSBigString& bigstr) {
   if (bigstr.isAscii()) {
-    return String::createExpectingAscii(bigstr.c_str(), bigstr.size());
+    return String::createExpectingAscii(ctx, bigstr.c_str(), bigstr.size());
   } else {
-    return String(bigstr.c_str());
+    return String(ctx, bigstr.c_str());
   }
 }
 

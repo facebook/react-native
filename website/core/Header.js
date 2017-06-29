@@ -8,13 +8,17 @@
  *
  * @providesModule Header
  */
+'use strict';
 
 var React = require('React');
+
+var PropTypes = require('prop-types');
+
 var slugify = require('slugify');
 
 var Header = React.createClass({
   contextTypes: {
-    permalink: React.PropTypes.string
+    permalink: PropTypes.string
   },
 
   render: function() {
@@ -23,7 +27,7 @@ var Header = React.createClass({
     var base = this.context.permalink || '';
     return (
       <H {...this.props}>
-        <a className="anchor" name={slug}></a>
+        <a className="anchor" name={slug} />
         {this.props.children}
         {' '}<a className="hash-link" href={base + '#' + slug}>#</a>
       </H>

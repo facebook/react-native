@@ -2,12 +2,11 @@
 
 package com.facebook.react;
 
-import javax.annotation.Nullable;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -17,10 +16,13 @@ import android.widget.Toast;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionListener;
+
+import javax.annotation.Nullable;
 
 /**
  * Delegate class for {@link ReactActivity} and {@link ReactFragmentActivity}. You can subclass this
@@ -28,6 +30,10 @@ import com.facebook.react.modules.core.PermissionListener;
  * class doesn't implement {@link ReactApplication}.
  */
 public class ReactActivityDelegate {
+
+  private final int REQUEST_OVERLAY_PERMISSION_CODE = 1111;
+  private static final String REDBOX_PERMISSION_GRANTED_MESSAGE =
+    "Overlay permissions have been granted.";
   private static final String REDBOX_PERMISSION_MESSAGE =
     "Overlay permissions needs to be granted in order for react native apps to run in dev mode";
 
@@ -38,6 +44,7 @@ public class ReactActivityDelegate {
   private @Nullable ReactRootView mReactRootView;
   private @Nullable DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
   private @Nullable PermissionListener mPermissionListener;
+  private @Nullable Callback mPermissionsCallback;
 
   public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
     mActivity = activity;
@@ -77,17 +84,19 @@ public class ReactActivityDelegate {
   }
 
   protected void onCreate(Bundle savedInstanceState) {
-    if (getReactNativeHost().getUseDeveloperSupport() && Build.VERSION.SDK_INT >= 23) {
+    boolean needsOverlayPermission = false;
+    if (getReactNativeHost().getUseDeveloperSupport() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       // Get permission to show redbox in dev builds.
       if (!Settings.canDrawOverlays(getContext())) {
-        Intent serviceIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-        getContext().startActivity(serviceIntent);
+        needsOverlayPermission = true;
+        Intent serviceIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getContext().getPackageName()));
         FLog.w(ReactConstants.TAG, REDBOX_PERMISSION_MESSAGE);
         Toast.makeText(getContext(), REDBOX_PERMISSION_MESSAGE, Toast.LENGTH_LONG).show();
+        ((Activity) getContext()).startActivityForResult(serviceIntent, REQUEST_OVERLAY_PERMISSION_CODE);
       }
     }
 
-    if (mMainComponentName != null) {
+    if (mMainComponentName != null && !needsOverlayPermission) {
       loadApp(mMainComponentName);
     }
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
@@ -117,6 +126,11 @@ public class ReactActivityDelegate {
         getPlainActivity(),
         (DefaultHardwareBackBtnHandler) getPlainActivity());
     }
+
+    if (mPermissionsCallback != null) {
+      mPermissionsCallback.invoke();
+      mPermissionsCallback = null;
+    }
   }
 
   protected void onDestroy() {
@@ -133,6 +147,16 @@ public class ReactActivityDelegate {
     if (getReactNativeHost().hasInstance()) {
       getReactNativeHost().getReactInstanceManager()
         .onActivityResult(getPlainActivity(), requestCode, resultCode, data);
+    } else {
+      // Did we request overlay permissions?
+      if (requestCode == REQUEST_OVERLAY_PERMISSION_CODE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Settings.canDrawOverlays(getContext())) {
+          if (mMainComponentName != null) {
+            loadApp(mMainComponentName);
+          }
+          Toast.makeText(getContext(), REDBOX_PERMISSION_GRANTED_MESSAGE, Toast.LENGTH_LONG).show();
+        }
+      }
     }
   }
 
@@ -178,13 +202,17 @@ public class ReactActivityDelegate {
   }
 
   public void onRequestPermissionsResult(
-    int requestCode,
-    String[] permissions,
-    int[] grantResults) {
-    if (mPermissionListener != null &&
-      mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
-      mPermissionListener = null;
-    }
+    final int requestCode,
+    final String[] permissions,
+    final int[] grantResults) {
+    mPermissionsCallback = new Callback() {
+      @Override
+      public void invoke(Object... args) {
+        if (mPermissionListener != null && mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+          mPermissionListener = null;
+        }
+      }
+    };
   }
 
   private Context getContext() {

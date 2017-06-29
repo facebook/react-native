@@ -9,10 +9,10 @@
 
 #import <UIKit/UIScrollView.h>
 
-#import "RCTAutoInsetsProtocol.h"
-#import "RCTEventDispatcher.h"
-#import "RCTScrollableProtocol.h"
-#import "RCTView.h"
+#import <React/RCTAutoInsetsProtocol.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTScrollableProtocol.h>
+#import <React/RCTView.h>
 
 @protocol UIScrollViewDelegate;
 
@@ -42,11 +42,11 @@
 
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
+@property (nonatomic, assign) BOOL DEPRECATED_sendUpdatedChildFrames;
 @property (nonatomic, assign) NSTimeInterval scrollEventThrottle;
 @property (nonatomic, assign) BOOL centerContent;
 @property (nonatomic, assign) int snapToInterval;
 @property (nonatomic, copy) NSString *snapToAlignment;
-@property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
 
 // NOTE: currently these event props are only declared so we can export the
 // event names to JS - we don't call the blocks directly because scroll events

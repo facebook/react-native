@@ -1,0 +1,18 @@
+cxx_library(
+    name = "yoga",
+    srcs = glob(["yoga/*.c"]),
+    compiler_flags = [
+        "-fno-omit-frame-pointer",
+        "-fexceptions",
+        "-Wall",
+        "-Werror",
+        "-std=c99",
+        "-O3",
+    ],
+    exported_headers = glob(["yoga/*.h"]),
+    force_static = True,
+    header_namespace = "",
+    visibility = ["PUBLIC"],
+    deps = [
+    ],
+)

@@ -9,15 +9,16 @@
 
 package com.facebook.react.views.slider;
 
-import java.util.Map;
-
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 
-import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
+import com.facebook.react.R;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -26,6 +27,12 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureOutput;
+import com.facebook.yoga.YogaNode;
+
+import java.util.Map;
 
 /**
  * Manages instances of {@code ReactSlider}.
@@ -39,7 +46,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
   private static final String REACT_CLASS = "RCTSlider";
 
   static class ReactSliderShadowNode extends LayoutShadowNode implements
-      CSSNodeAPI.MeasureFunction {
+      YogaMeasureFunction {
 
     private int mWidth;
     private int mHeight;
@@ -51,11 +58,11 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
     @Override
     public long measure(
-        CSSNodeAPI node,
+        YogaNode node,
         float width,
-        CSSMeasureMode widthMode,
+        YogaMeasureMode widthMode,
         float height,
-        CSSMeasureMode heightMode) {
+        YogaMeasureMode heightMode) {
       if (!mMeasured) {
         SeekBar reactSlider = new ReactSlider(getThemedContext(), null, STYLE);
         final int spec = View.MeasureSpec.makeMeasureSpec(
@@ -67,7 +74,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
         mMeasured = true;
       }
 
-      return MeasureOutput.make(mWidth, mHeight);
+      return YogaMeasureOutput.make(mWidth, mHeight);
     }
   }
 
@@ -79,7 +86,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSliderEvent(
                   seekbar.getId(),
-                  ((ReactSlider)seekbar).toRealProgress(progress),
+                  ((ReactSlider) seekbar).toRealProgress(progress),
                   fromUser));
         }
 
@@ -93,7 +100,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSlidingCompleteEvent(
                   seekbar.getId(),
-                  ((ReactSlider)seekbar).toRealProgress(seekbar.getProgress())));
+                  ((ReactSlider) seekbar).toRealProgress(seekbar.getProgress())));
         }
       };
 
@@ -142,6 +149,37 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
   @ReactProp(name = "step", defaultDouble = 0d)
   public void setStep(ReactSlider view, double value) {
     view.setStep(value);
+  }
+
+  @ReactProp(name = "thumbTintColor", customType = "Color")
+  public void setThumbTintColor(ReactSlider view, Integer color) {
+    if (color == null) {
+      view.getThumb().clearColorFilter();
+    } else {
+      view.getThumb().setColorFilter(color, PorterDuff.Mode.SRC_IN);
+    }
+  }
+
+  @ReactProp(name = "minimumTrackTintColor", customType = "Color")
+  public void setMinimumTrackTintColor(ReactSlider view, Integer color) {
+    LayerDrawable drawable = (LayerDrawable) view.getProgressDrawable().getCurrent();
+    Drawable background = drawable.findDrawableByLayerId(android.R.id.background);
+    if (color == null) {
+      background.clearColorFilter();
+    } else {
+      background.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+    }
+  }
+
+  @ReactProp(name = "maximumTrackTintColor", customType = "Color")
+  public void setMaximumTrackTintColor(ReactSlider view, Integer color) {
+    LayerDrawable drawable = (LayerDrawable) view.getProgressDrawable().getCurrent();
+    Drawable progress = drawable.findDrawableByLayerId(android.R.id.progress);
+    if (color == null) {
+      progress.clearColorFilter();
+    } else {
+      progress.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+    }
   }
 
   @Override

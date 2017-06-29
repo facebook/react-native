@@ -11,6 +11,9 @@ package com.facebook.react.uimanager;
 
 import javax.annotation.Nullable;
 
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
@@ -22,8 +25,6 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.facebook.react.uimanager.ReactPropAnnotationSetterTest.ViewManagerUpdatesReceiver;
-import static com.facebook.react.uimanager.ReactPropAnnotationSetterTest.buildStyles;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -40,6 +41,25 @@ public class ReactPropForShadowNodeSetterTest {
 
   @Rule
   public PowerMockRule rule = new PowerMockRule();
+
+  public interface ViewManagerUpdatesReceiver {
+    void onBooleanSetterCalled(boolean value);
+    void onIntSetterCalled(int value);
+    void onDoubleSetterCalled(double value);
+    void onFloatSetterCalled(float value);
+    void onStringSetterCalled(String value);
+    void onBoxedBooleanSetterCalled(Boolean value);
+    void onBoxedIntSetterCalled(Integer value);
+    void onArraySetterCalled(ReadableArray value);
+    void onMapSetterCalled(ReadableMap value);
+    void onFloatGroupPropSetterCalled(int index, float value);
+    void onIntGroupPropSetterCalled(int index, int value);
+    void onBoxedIntGroupPropSetterCalled(int index, Integer value);
+  }
+
+  public static ReactStylesDiffMap buildStyles(Object... keysAndValues) {
+    return new ReactStylesDiffMap(JavaOnlyMap.of(keysAndValues));
+  }
 
   private class ShadowViewUnderTest extends ReactShadowNode {
 
@@ -65,8 +85,8 @@ public class ReactPropForShadowNodeSetterTest {
     }
 
     @ReactPropGroup(names = {
-        "floatGroupPropFirst",
-        "floatGroupPropSecond",
+      "floatGroupPropFirst",
+      "floatGroupPropSecond",
     })
     public void setFloatGroupProp(int index, float value) {
       mViewManagerUpdatesReceiver.onFloatGroupPropSetterCalled(index, value);

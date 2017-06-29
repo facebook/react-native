@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include "Platform.h"
+
 namespace facebook {
 namespace react {
 
@@ -11,7 +13,11 @@ JSCNativeModules::JSCNativeModules(std::shared_ptr<ModuleRegistry> moduleRegistr
   m_moduleRegistry(std::move(moduleRegistry)) {}
 
 JSValueRef JSCNativeModules::getModule(JSContextRef context, JSStringRef jsName) {
-  std::string moduleName = String::ref(jsName).str();
+  if (!m_moduleRegistry) {
+    return nullptr;
+  }
+
+  std::string moduleName = String::ref(context, jsName).str();
 
   const auto it = m_objects.find(moduleName);
   if (it != m_objects.end()) {
@@ -20,7 +26,8 @@ JSValueRef JSCNativeModules::getModule(JSContextRef context, JSStringRef jsName)
 
   auto module = createModule(moduleName, context);
   if (!module.hasValue()) {
-    return JSValueMakeUndefined(context);
+    // Allow lookup to continue in the objects own properties, which allows for overrides of NativeModules
+    return nullptr;
   }
 
   // Protect since we'll be holding on to this value, even though JS may not
@@ -36,14 +43,12 @@ void JSCNativeModules::reset() {
 }
 
 folly::Optional<Object> JSCNativeModules::createModule(const std::string& name, JSContextRef context) {
+  ReactMarker::logTaggedMarker(ReactMarker::NATIVE_MODULE_SETUP_START, name.c_str());
+
   if (!m_genNativeModuleJS) {
     auto global = Object::getGlobalObject(context);
     m_genNativeModuleJS = global.getProperty("__fbGenNativeModule").asObject();
     m_genNativeModuleJS->makeProtected();
-
-    // Initialize the module name list, otherwise getModuleConfig won't work
-    // TODO (pieterdb): fix this in ModuleRegistry
-    m_moduleRegistry->moduleNames();
   }
 
   auto result = m_moduleRegistry->getConfig(name);
@@ -53,11 +58,15 @@ folly::Optional<Object> JSCNativeModules::createModule(const std::string& name, 
 
   Value moduleInfo = m_genNativeModuleJS->callAsFunction({
     Value::fromDynamic(context, result->config),
-    JSValueMakeNumber(context, result->index)
+    Value::makeNumber(context, result->index)
   });
   CHECK(!moduleInfo.isNull()) << "Module returned from genNativeModule is null";
 
-  return moduleInfo.asObject().getProperty("module").asObject();
+  folly::Optional<Object> module(moduleInfo.asObject().getProperty("module").asObject());
+
+  ReactMarker::logTaggedMarker(ReactMarker::NATIVE_MODULE_SETUP_STOP, name.c_str());
+
+  return module;
 }
 
 } }

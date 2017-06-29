@@ -11,6 +11,8 @@
  */
 'use strict';
 
+const invariant = require('fbjs/lib/invariant');
+
 type RelayProfiler = {
   attachProfileHandler(
     name: string,
@@ -29,52 +31,97 @@ const TRACE_TAG_JSC_CALLS = 1 << 27;
 
 let _enabled = false;
 let _asyncCookie = 0;
+const _markStack = [];
+let _markStackIndex = -1;
 
-const ReactSystraceDevtool = __DEV__ ? {
-  onBeforeMountComponent(debugID) {
-    const displayName = require('react/lib/ReactComponentTreeDevtool').getDisplayName(debugID);
-    Systrace.beginEvent(`ReactReconciler.mountComponent(${displayName})`);
+// Implements a subset of User Timing API necessary for React measurements.
+// https://developer.mozilla.org/en-US/docs/Web/API/User_Timing_API
+const REACT_MARKER = '\u269B';
+const userTimingPolyfill = {
+  mark(markName: string) {
+    if (__DEV__) {
+      if (_enabled) {
+        _markStackIndex++;
+        _markStack[_markStackIndex] = markName;
+        let systraceLabel = markName;
+        // Since perf measurements are a shared namespace in User Timing API,
+        // we prefix all React results with a React emoji.
+        if (markName[0] === REACT_MARKER) {
+          // This is coming from React.
+          // Removing component IDs keeps trace colors stable.
+          const indexOfId = markName.lastIndexOf(' (#');
+          const cutoffIndex = indexOfId !== -1 ? indexOfId : markName.length;
+          // Also cut off the emoji because it breaks Systrace
+          systraceLabel = markName.slice(2, cutoffIndex);
+        }
+        Systrace.beginEvent(systraceLabel);
+      }
+    }
   },
-  onMountComponent(debugID) {
-    Systrace.endEvent();
+  measure(measureName: string, startMark: ?string, endMark: ?string) {
+    if (__DEV__) {
+      if (_enabled) {
+        invariant(
+          typeof measureName === 'string' &&
+          typeof startMark === 'string' &&
+          typeof endMark === 'undefined',
+          'Only performance.measure(string, string) overload is supported.'
+        );
+        const topMark = _markStack[_markStackIndex];
+        invariant(
+          startMark === topMark,
+          'There was a mismatching performance.measure() call. ' +
+          'Expected "%s" but got "%s."',
+          topMark,
+          startMark,
+        );
+        _markStackIndex--;
+        // We can't use more descriptive measureName because Systrace doesn't
+        // let us edit labels post factum.
+        Systrace.endEvent();
+      }
+    }
   },
-  onBeforeUpdateComponent(debugID) {
-    const displayName = require('react/lib/ReactComponentTreeDevtool').getDisplayName(debugID);
-    Systrace.beginEvent(`ReactReconciler.updateComponent(${displayName})`);
+  clearMarks(markName: string) {
+    if (__DEV__) {
+      if (_enabled) {
+        if (_markStackIndex === -1) {
+          return;
+        }
+        if (markName === _markStack[_markStackIndex]) {
+          // React uses this for "cancelling" started measurements.
+          // Systrace doesn't support deleting measurements, so we just stop them.
+          userTimingPolyfill.measure(markName, markName);
+        }
+      }
+    }
   },
-  onUpdateComponent(debugID) {
-    Systrace.endEvent();
+  clearMeasures() {
+    // React calls this to avoid memory leaks in browsers, but we don't keep
+    // measurements anyway.
   },
-  onBeforeUnmountComponent(debugID) {
-    const displayName = require('react/lib/ReactComponentTreeDevtool').getDisplayName(debugID);
-    Systrace.beginEvent(`ReactReconciler.unmountComponent(${displayName})`);
-  },
-  onUnmountComponent(debugID) {
-    Systrace.endEvent();
-  },
-  onBeginLifeCycleTimer(debugID, timerType) {
-    const displayName = require('react/lib/ReactComponentTreeDevtool').getDisplayName(debugID);
-    Systrace.beginEvent(`${displayName}.${timerType}()`);
-  },
-  onEndLifeCycleTimer(debugID, timerType) {
-    Systrace.endEvent();
-  },
-} : null;
+};
 
 const Systrace = {
+  getUserTimingPolyfill() {
+    return userTimingPolyfill;
+  },
+
   setEnabled(enabled: boolean) {
     if (_enabled !== enabled) {
       if (__DEV__) {
         if (enabled) {
           global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JSC_CALLS);
-          require('ReactDebugTool').addDevtool(ReactSystraceDevtool);
         } else {
           global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JSC_CALLS);
-          require('ReactDebugTool').removeDevtool(ReactSystraceDevtool);
         }
       }
       _enabled = enabled;
     }
+  },
+
+  isEnabled(): boolean {
+    return _enabled;
   },
 
   /**
@@ -213,7 +260,7 @@ if (__DEV__) {
   // other files. Therefore, calls to `require('moduleId')` are not replaced
   // with numeric IDs
   // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
-  require.Systrace = Systrace;
+  (require: any).Systrace = Systrace;
 }
 
 module.exports = Systrace;

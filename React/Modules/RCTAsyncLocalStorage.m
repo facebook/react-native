@@ -219,7 +219,7 @@ RCT_EXPORT_MODULE()
   RCTAssertThread(RCTGetMethodQueue(), @"Must be executed on storage thread");
 
 #if TARGET_OS_TV
-  RCTLogWarn(@"Persistent storage is not supported on tvOS, your data may be removed at any point.")
+  RCTLogWarn(@"Persistent storage is not supported on tvOS, your data may be removed at any point.");
 #endif
 
   NSError *error = nil;

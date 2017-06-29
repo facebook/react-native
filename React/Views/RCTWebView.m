@@ -96,6 +96,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_webView stringByEvaluatingJavaScriptFromString:source];
 }
 
+- (void)injectJavaScript:(NSString *)script
+{
+  [_webView stringByEvaluatingJavaScriptFromString:script];
+}
+
 - (void)setSource:(NSDictionary *)source
 {
   if (![_source isEqualToDictionary:source]) {
@@ -259,6 +264,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       // a new URL in the WebView before the previous one came back. We can just
       // ignore these since they aren't real errors.
       // http://stackoverflow.com/questions/1024748/how-do-i-fix-nsurlerrordomain-error-999-in-iphone-3-0-os
+      return;
+    }
+
+    if ([error.domain isEqualToString:@"WebKitErrorDomain"] && error.code == 102) {
+      // Error code 102 "Frame load interrupted" is raised by the UIWebView if
+      // its delegate returns FALSE from webView:shouldStartLoadWithRequest:navigationType
+      // when the URL is from an http redirect. This is a common pattern when
+      // implementing OAuth with a WebView.
       return;
     }
 

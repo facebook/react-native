@@ -9,8 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "RCTBridgeMethod.h"
-#import "RCTNullability.h"
+#import <React/RCTBridgeMethod.h>
+#import <React/RCTNullability.h>
 
 @class RCTBridge;
 
@@ -29,6 +29,7 @@
 
 - (instancetype)initWithMethodSignature:(NSString *)objCMethodName
                           JSMethodName:(NSString *)JSMethodName
+                                 isSync:(BOOL)isSync
                            moduleClass:(Class)moduleClass NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -146,18 +146,11 @@ RCT_EXPORT_MODULE()
 {
   [_observersLock lock];
 
-  BOOL eventHandled = NO;
   for (id<RCTEventDispatcherObserver> observer in _observers) {
-    if ([observer eventDispatcherWillDispatchEvent:event]) {
-      eventHandled = YES;
-    }
+    [observer eventDispatcherWillDispatchEvent:event];
   }
 
   [_observersLock unlock];
-
-  if (eventHandled) {
-    return;
-  }
 
   [_eventQueueLock lock];
 

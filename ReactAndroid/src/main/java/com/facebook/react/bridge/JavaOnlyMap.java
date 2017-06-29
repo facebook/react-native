@@ -89,6 +89,11 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   }
 
   @Override
+  public Dynamic getDynamic(String name) {
+    return DynamicFromMap.create(this, name);
+  }
+
+  @Override
   public ReadableType getType(String name) {
     Object value = mBackingMap.get(name);
     if (value == null) {
@@ -103,6 +108,8 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
       return ReadableType.Map;
     } else if (value instanceof ReadableArray) {
       return ReadableType.Array;
+    } else if (value instanceof Dynamic) {
+      return ((Dynamic) value).getType();
     } else {
       throw new IllegalArgumentException("Invalid value " + value.toString() + " for key " + name +
         "contained in JavaOnlyMap");
@@ -164,6 +171,11 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   @Override
   public void putArray(String key, WritableArray value) {
     mBackingMap.put(key, value);
+  }
+
+  @Override
+  public HashMap<String, Object> toHashMap() {
+    return new HashMap<String, Object>(mBackingMap);
   }
 
   @Override

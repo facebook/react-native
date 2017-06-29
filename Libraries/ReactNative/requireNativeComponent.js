@@ -46,7 +46,7 @@ function requireNativeComponent(
   viewName: string,
   componentInterface?: ?ComponentInterface,
   extraConfig?: ?{nativeOnly?: Object},
-): Function {
+): ReactClass<any> | string {
   const viewConfig = UIManager[viewName];
   if (!viewConfig || !viewConfig.NativeProps) {
     warning(false, 'Native component for "%s" does not exist', viewName);
@@ -55,7 +55,20 @@ function requireNativeComponent(
 
   viewConfig.uiViewClassName = viewName;
   viewConfig.validAttributes = {};
-  viewConfig.propTypes = componentInterface && componentInterface.propTypes;
+
+  // ReactNative `View.propTypes` have been deprecated in favor of
+  // `ViewPropTypes`. In their place a temporary getter has been added with a
+  // deprecated warning message. Avoid triggering that warning here by using
+  // temporary workaround, __propTypesSecretDontUseThesePlease.
+  // TODO (bvaughn) Revert this particular change any time after April 1
+  if (componentInterface) {
+    viewConfig.propTypes =
+      typeof componentInterface.__propTypesSecretDontUseThesePlease === 'object'
+        ? componentInterface.__propTypesSecretDontUseThesePlease
+        : componentInterface.propTypes;
+  } else {
+    viewConfig.propTypes = null;
+  }
 
   // The ViewConfig doesn't contain any props inherited from the view manager's
   // superclass, so we manually merge in the RCTView ones. Other inheritance
@@ -101,7 +114,7 @@ function requireNativeComponent(
   return createReactNativeComponentClass(viewConfig);
 }
 
-var TypeToDifferMap = {
+const TypeToDifferMap = {
   // iOS Types
   CATransform3D: matricesDiffer,
   CGPoint: pointsDiffer,
@@ -111,11 +124,11 @@ var TypeToDifferMap = {
   // (not yet implemented)
 };
 
-function processColorArray(colors: []): [] {
+function processColorArray(colors: ?Array<any>): ?Array<?number> {
   return colors && colors.map(processColor);
 }
 
-var TypeToProcessorMap = {
+const TypeToProcessorMap = {
   // iOS Types
   CGColor: processColor,
   CGColorArray: processColorArray,

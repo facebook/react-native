@@ -18,9 +18,11 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
 
@@ -31,6 +33,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.views.view.ReactViewBackgroundDrawable;
 
 /**
  * A simple subclass of ScrollView that doesn't dispatch measure and layout to its children and has
@@ -39,13 +42,14 @@ import com.facebook.infer.annotation.Assertions;
  * <p>ReactScrollView only supports vertical scrolling. For horizontal scrolling,
  * use {@link ReactHorizontalScrollView}.
  */
-public class ReactScrollView extends ScrollView implements ReactClippingViewGroup {
+public class ReactScrollView extends ScrollView implements ReactClippingViewGroup, ViewGroup.OnHierarchyChangeListener, View.OnLayoutChangeListener {
 
   private static Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
   private final OverScroller mScroller;
+  private final VelocityHelper mVelocityHelper = new VelocityHelper();
 
   private @Nullable Rect mClippingRect;
   private boolean mDoneFlinging;
@@ -58,6 +62,8 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
+  private View mContentView;
+  private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
 
   public ReactScrollView(ReactContext context) {
     this(context, null);
@@ -98,6 +104,9 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     } else {
       mScroller = null;
     }
+
+    setOnHierarchyChangeListener(this);
+    setScrollBarStyle(SCROLLBARS_OUTSIDE_OVERLAY);
   }
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
@@ -156,7 +165,10 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         mDoneFlinging = false;
       }
 
-      ReactScrollViewHelper.emitScrollEvent(this);
+      ReactScrollViewHelper.emitScrollEvent(
+        this,
+        mOnScrollDispatchHelper.getXFlingVelocity(),
+        mOnScrollDispatchHelper.getYFlingVelocity());
     }
   }
 
@@ -183,12 +195,17 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       return false;
     }
 
+    mVelocityHelper.calculateVelocity(ev);
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_UP && mDragging) {
-      ReactScrollViewHelper.emitScrollEndDragEvent(this);
+      ReactScrollViewHelper.emitScrollEndDragEvent(
+        this,
+        mVelocityHelper.getXVelocity(),
+        mVelocityHelper.getYVelocity());
       mDragging = false;
       disableFpsListener();
     }
+
     return super.onTouchEvent(ev);
   }
 
@@ -299,6 +316,12 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     return mFpsListener != null && mScrollPerfTag != null && !mScrollPerfTag.isEmpty();
   }
 
+  private int getMaxScrollY() {
+    int contentHeight = mContentView.getHeight();
+    int viewportHeight = getHeight() - getPaddingBottom() - getPaddingTop();
+    return Math.max(0, contentHeight - viewportHeight);
+  }
+
   @Override
   public void draw(Canvas canvas) {
     if (mEndFillColor != Color.TRANSPARENT) {
@@ -327,9 +350,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       // more information.
 
       if (!mScroller.isFinished() && mScroller.getCurrY() != mScroller.getFinalY()) {
-        int scrollRange = Math.max(
-          0,
-          getChildAt(0).getHeight() - (getHeight() - getPaddingBottom() - getPaddingTop()));
+        int scrollRange = getMaxScrollY();
         if (scrollY >= scrollRange) {
           mScroller.abortAnimation();
           scrollY = scrollRange;
@@ -340,5 +361,80 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     }
 
     super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
+  }
+
+  @Override
+  public void onChildViewAdded(View parent, View child) {
+    mContentView = child;
+    mContentView.addOnLayoutChangeListener(this);
+  }
+
+  @Override
+  public void onChildViewRemoved(View parent, View child) {
+    mContentView.removeOnLayoutChangeListener(this);
+    mContentView = null;
+  }
+
+  /**
+   * Called when a mContentView's layout has changed. Fixes the scroll position if it's too large
+   * after the content resizes. Without this, the user would see a blank ScrollView when the scroll
+   * position is larger than the ScrollView's max scroll position after the content shrinks.
+   */
+  @Override
+  public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+    if (mContentView == null) {
+      return;
+    }
+
+    int currentScrollY = getScrollY();
+    int maxScrollY = getMaxScrollY();
+    if (currentScrollY > maxScrollY) {
+      scrollTo(getScrollX(), maxScrollY);
+    }
+  }
+
+  public void setBackgroundColor(int color) {
+    if (color == Color.TRANSPARENT && mReactBackgroundDrawable == null) {
+      // don't do anything, no need to allocate ReactBackgroundDrawable for transparent background
+    } else {
+      getOrCreateReactViewBackground().setColor(color);
+    }
+  }
+
+  public void setBorderWidth(int position, float width) {
+    getOrCreateReactViewBackground().setBorderWidth(position, width);
+  }
+
+  public void setBorderColor(int position, float color, float alpha) {
+    getOrCreateReactViewBackground().setBorderColor(position, color, alpha);
+  }
+
+  public void setBorderRadius(float borderRadius) {
+    getOrCreateReactViewBackground().setRadius(borderRadius);
+  }
+
+  public void setBorderRadius(float borderRadius, int position) {
+    getOrCreateReactViewBackground().setRadius(borderRadius, position);
+  }
+
+  public void setBorderStyle(@Nullable String style) {
+    getOrCreateReactViewBackground().setBorderStyle(style);
+  }
+
+  private ReactViewBackgroundDrawable getOrCreateReactViewBackground() {
+    if (mReactBackgroundDrawable == null) {
+      mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
+      Drawable backgroundDrawable = getBackground();
+      super.setBackground(null);  // required so that drawable callback is cleared before we add the
+      // drawable back as a part of LayerDrawable
+      if (backgroundDrawable == null) {
+        super.setBackground(mReactBackgroundDrawable);
+      } else {
+        LayerDrawable layerDrawable =
+            new LayerDrawable(new Drawable[]{mReactBackgroundDrawable, backgroundDrawable});
+        super.setBackground(layerDrawable);
+      }
+    }
+    return mReactBackgroundDrawable;
   }
 }

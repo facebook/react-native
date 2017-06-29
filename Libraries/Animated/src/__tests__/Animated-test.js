@@ -8,8 +8,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 var Animated = require('Animated');
 describe('Animated tests', () => {
   beforeEach(() => {
@@ -33,7 +31,11 @@ describe('Animated tests', () => {
               outputRange: [100, 200],
             })},
             {scale: anim},
-          ]
+          ],
+          shadowOffset: {
+            width: anim,
+            height: anim,
+          },
         }
       }, callback);
 
@@ -47,6 +49,10 @@ describe('Animated tests', () => {
             {translateX: 100},
             {scale: 0},
           ],
+          shadowOffset: {
+            width: 0,
+            height: 0,
+          },
         },
       });
 
@@ -62,6 +68,10 @@ describe('Animated tests', () => {
             {translateX: 150},
             {scale: 0.5},
           ],
+          shadowOffset: {
+            width: 0.5,
+            height: 0.5,
+          },
         },
       });
 
@@ -99,11 +109,6 @@ describe('Animated tests', () => {
 
 
     it('stops animation when detached', () => {
-      // jest environment doesn't have cancelAnimationFrame :(
-      if (!global.cancelAnimationFrame) {
-        global.cancelAnimationFrame = jest.fn();
-      }
-
       var anim = new Animated.Value(0);
       var callback = jest.fn();
 
@@ -210,6 +215,183 @@ describe('Animated tests', () => {
 
       anim1.start.mock.calls[0][0]({finished: false});
 
+      expect(cb).toBeCalledWith({finished: false});
+    });
+  });
+
+  describe('Animated Loop', () => {
+
+    it('loops indefinitely if config not specified', () => {
+      var animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      var cb = jest.fn();
+
+      var loop = Animated.loop(animation);
+
+      expect(animation.start).not.toBeCalled();
+
+      loop.start(cb);
+
+      expect(animation.start).toBeCalled();
+      expect(animation.reset).toHaveBeenCalledTimes(1);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+      expect(animation.reset).toHaveBeenCalledTimes(2);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 2
+      expect(animation.reset).toHaveBeenCalledTimes(3);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 3
+      expect(animation.reset).toHaveBeenCalledTimes(4);
+      expect(cb).not.toBeCalled();
+    });
+
+    it('loops indefinitely if iterations is -1', () => {
+      var animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      var cb = jest.fn();
+
+      var loop = Animated.loop(animation, { iterations: -1 });
+
+      expect(animation.start).not.toBeCalled();
+
+      loop.start(cb);
+
+      expect(animation.start).toBeCalled();
+      expect(animation.reset).toHaveBeenCalledTimes(1);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+      expect(animation.reset).toHaveBeenCalledTimes(2);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 2
+      expect(animation.reset).toHaveBeenCalledTimes(3);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 3
+      expect(animation.reset).toHaveBeenCalledTimes(4);
+      expect(cb).not.toBeCalled();
+    });
+
+    it('loops indefinitely if iterations not specified', () => {
+      var animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      var cb = jest.fn();
+
+      var loop = Animated.loop(animation, { anotherKey: 'value' });
+
+      expect(animation.start).not.toBeCalled();
+
+      loop.start(cb);
+
+      expect(animation.start).toBeCalled();
+      expect(animation.reset).toHaveBeenCalledTimes(1);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+      expect(animation.reset).toHaveBeenCalledTimes(2);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 2
+      expect(animation.reset).toHaveBeenCalledTimes(3);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 3
+      expect(animation.reset).toHaveBeenCalledTimes(4);
+      expect(cb).not.toBeCalled();
+    });
+
+    it('loops three times if iterations is 3', () => {
+      var animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      var cb = jest.fn();
+
+      var loop = Animated.loop(animation, { iterations: 3 });
+
+      expect(animation.start).not.toBeCalled();
+
+      loop.start(cb);
+
+      expect(animation.start).toBeCalled();
+      expect(animation.reset).toHaveBeenCalledTimes(1);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+      expect(animation.reset).toHaveBeenCalledTimes(2);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 2
+      expect(animation.reset).toHaveBeenCalledTimes(3);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 3
+      expect(animation.reset).toHaveBeenCalledTimes(3);
+      expect(cb).toBeCalledWith({finished: true});
+    });
+
+    it('does not loop if iterations is 1', () => {
+      var animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      var cb = jest.fn();
+
+      var loop = Animated.loop(animation, { iterations: 1 });
+
+      expect(animation.start).not.toBeCalled();
+
+      loop.start(cb);
+
+      expect(animation.start).toBeCalled();
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+      expect(cb).toBeCalledWith({finished: true});
+    });
+
+    it('does not animate if iterations is 0', () => {
+      var animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      var cb = jest.fn();
+
+      var loop = Animated.loop(animation, { iterations: 0 });
+
+      expect(animation.start).not.toBeCalled();
+
+      loop.start(cb);
+
+      expect(animation.start).not.toBeCalled();
+      expect(cb).toBeCalledWith({ finished: true });
+    });
+
+    it('supports interrupting an indefinite loop', () => {
+      var animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      var cb = jest.fn();
+
+      Animated.loop(animation).start(cb);
+      expect(animation.start).toBeCalled();
+      expect(animation.reset).toHaveBeenCalledTimes(1);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+      expect(animation.reset).toHaveBeenCalledTimes(2);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: false}); // Interrupt loop
+      expect(animation.reset).toHaveBeenCalledTimes(2);
+      expect(cb).toBeCalledWith({finished: false});
+    });
+
+    it('supports stopping loop', () => {
+      var animation = {start: jest.fn(), stop: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      var cb = jest.fn();
+
+      var loop = Animated.loop(animation);
+      loop.start(cb);
+      loop.stop();
+
+      expect(animation.start).toBeCalled();
+      expect(animation.reset).toHaveBeenCalledTimes(1);
+      expect(animation.stop).toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: false}); // Interrupt loop
+      expect(animation.reset).toHaveBeenCalledTimes(1);
       expect(cb).toBeCalledWith({finished: false});
     });
   });
@@ -352,6 +534,22 @@ describe('Animated tests', () => {
       expect(value.__getValue()).toBe(42);
       expect(listener.mock.calls.length).toBe(1);
       expect(listener).toBeCalledWith({foo: 42});
+    });
+    it('should call forked event listeners', () => {
+      var value = new Animated.Value(0);
+      var listener = jest.fn();
+      var handler = Animated.event(
+        [{foo: value}],
+        {listener},
+      );
+      var listener2 = jest.fn();
+      var forkedHandler = Animated.forkEvent(handler, listener2);
+      forkedHandler({foo: 42});
+      expect(value.__getValue()).toBe(42);
+      expect(listener.mock.calls.length).toBe(1);
+      expect(listener).toBeCalledWith({foo: 42});
+      expect(listener2.mock.calls.length).toBe(1);
+      expect(listener2).toBeCalledWith({foo: 42});
     });
   });
 

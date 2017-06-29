@@ -31,6 +31,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
+import android.provider.MediaStore.Video;
 import android.text.TextUtils;
 
 import com.facebook.common.logging.FLog;
@@ -56,8 +57,10 @@ import com.facebook.react.module.annotations.ReactModule;
  * {@link NativeModule} that allows JS to interact with the photos on the device (i.e.
  * {@link MediaStore.Images}).
  */
-@ReactModule(name = "RKCameraRollManager")
+@ReactModule(name = CameraRollManager.NAME)
 public class CameraRollManager extends ReactContextBaseJavaModule {
+
+  protected static final String NAME = "CameraRollManager";
 
   private static final String ERROR_UNABLE_TO_LOAD = "E_UNABLE_TO_LOAD";
   private static final String ERROR_UNABLE_TO_LOAD_PERMISSION = "E_UNABLE_TO_LOAD_PERMISSION";
@@ -100,7 +103,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "RKCameraRollManager";
+    return NAME;
   }
 
   /**
@@ -113,25 +116,21 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void saveToCameraRoll(String uri, String type, Promise promise) {
-    MediaType parsedType = type.equals("video") ? MediaType.VIDEO : MediaType.PHOTO;
-    new SaveToCameraRoll(getReactApplicationContext(), Uri.parse(uri), parsedType, promise)
+    new SaveToCameraRoll(getReactApplicationContext(), Uri.parse(uri), promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  private enum MediaType { PHOTO, VIDEO };
   private static class SaveToCameraRoll extends GuardedAsyncTask<Void, Void> {
 
     private final Context mContext;
     private final Uri mUri;
     private final Promise mPromise;
-    private final MediaType mType;
 
-    public SaveToCameraRoll(ReactContext context, Uri uri, MediaType type, Promise promise) {
+    public SaveToCameraRoll(ReactContext context, Uri uri, Promise promise) {
       super(context);
       mContext = context;
       mUri = uri;
       mPromise = promise;
-      mType = type;
     }
 
     @Override
@@ -139,9 +138,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       File source = new File(mUri.getPath());
       FileChannel input = null, output = null;
       try {
-        File exportDir = (mType == MediaType.PHOTO)
-          ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-          : Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+        File exportDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
         exportDir.mkdirs();
         if (!exportDir.isDirectory()) {
           mPromise.reject(ERROR_UNABLE_TO_LOAD, "External media storage directory not available");
@@ -217,6 +214,10 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
    *            mimeType (optional): restrict returned images to a specific mimetype (e.g.
    *            image/jpeg)
    *          </li>
+   *          <li>
+   *            assetType (optional): chooses between either photos or videos from the camera roll.
+   *            Valid values are "Photos" or "Videos". Defaults to photos.
+   *          </li>
    *        </ul>
    * @param promise the Promise to be resolved when the photos are loaded; for a format of the
    *        parameters passed to this callback, see {@code getPhotosReturnChecker} in CameraRoll.js
@@ -226,6 +227,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     int first = params.getInt("first");
     String after = params.hasKey("after") ? params.getString("after") : null;
     String groupName = params.hasKey("groupName") ? params.getString("groupName") : null;
+    String assetType = params.hasKey("assetType") ? params.getString("assetType") : null;
     ReadableArray mimeTypes = params.hasKey("mimeTypes")
         ? params.getArray("mimeTypes")
         : null;
@@ -239,6 +241,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
           after,
           groupName,
           mimeTypes,
+          assetType,
           promise)
           .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
@@ -250,6 +253,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     private final @Nullable String mGroupName;
     private final @Nullable ReadableArray mMimeTypes;
     private final Promise mPromise;
+    private final @Nullable String mAssetType;
 
     private GetPhotosTask(
         ReactContext context,
@@ -257,6 +261,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
         @Nullable String after,
         @Nullable String groupName,
         @Nullable ReadableArray mimeTypes,
+        @Nullable String assetType,
         Promise promise) {
       super(context);
       mContext = context;
@@ -265,6 +270,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       mGroupName = groupName;
       mMimeTypes = mimeTypes;
       mPromise = promise;
+      mAssetType = assetType;
     }
 
     @Override
@@ -293,8 +299,12 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       // setting a limit at all), but it works because this specific ContentProvider is backed by
       // an SQLite DB and forwards parameters to it without doing any parsing / validation.
       try {
+        Uri assetURI =
+            mAssetType != null && mAssetType.equals("Videos") ? Video.Media.EXTERNAL_CONTENT_URI :
+                Images.Media.EXTERNAL_CONTENT_URI;
+
         Cursor photos = resolver.query(
-            Images.Media.EXTERNAL_CONTENT_URI,
+            assetURI,
             PROJECTION,
             selection.toString(),
             selectionArgs.toArray(new String[selectionArgs.size()]),

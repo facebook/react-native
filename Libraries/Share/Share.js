@@ -12,12 +12,14 @@
 'use strict';
 
 const Platform = require('Platform');
+
+const invariant = require('fbjs/lib/invariant');
+const processColor = require('processColor');
+
 const {
   ActionSheetManager,
   ShareModule
 } = require('NativeModules');
-const invariant = require('fbjs/lib/invariant');
-const processColor = require('processColor');
 
 type Content = { title?: string, message: string } | { title?: string, url: string };
 type Options = { dialogTitle?: string, excludeActivityTypes?: Array<string>, tintColor?: string };
@@ -59,7 +61,7 @@ class Share {
   static share(content: Content, options: Options = {}): Promise<Object> {
     invariant(
       typeof content === 'object' && content !== null,
-      'Content must a valid object'
+      'Content to share must be a valid object'
     );
     invariant(
       typeof content.url === 'string' || typeof content.message === 'string',

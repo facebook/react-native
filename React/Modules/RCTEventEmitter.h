@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 
 /**
  * RCTEventEmitter is an abstract base class to be used for modules that emit
@@ -37,5 +37,8 @@
  */
 - (void)startObserving;
 - (void)stopObserving;
+
+- (void)addListener:(NSString *)eventName;
+- (void)removeListeners:(NSInteger)count;
 
 @end

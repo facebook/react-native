@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 
 typedef NS_ENUM(NSInteger, RCTTextEventType)
 {
@@ -58,10 +58,9 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 /**
  * Called before dispatching an event, on the same thread the event was
- * dispatched from. Return YES if the event was handled and must not be
- * sent to JS.
+ * dispatched from.
  */
-- (BOOL)eventDispatcherWillDispatchEvent:(id<RCTEvent>)event;
+- (void)eventDispatcherWillDispatchEvent:(id<RCTEvent>)event;
 
 @end
 

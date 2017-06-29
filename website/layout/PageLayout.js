@@ -8,14 +8,16 @@
  *
  * @providesModule PageLayout
  */
+'use strict';
 
-var React = require('React');
-var Site = require('Site');
 var Marked = require('Marked');
+var React = require('React');
+var PropTypes = require('prop-types');
+var Site = require('Site');
 
 var support = React.createClass({
   childContextTypes: {
-    permalink: React.PropTypes.string
+    permalink: PropTypes.string
   },
 
   getChildContext: function() {

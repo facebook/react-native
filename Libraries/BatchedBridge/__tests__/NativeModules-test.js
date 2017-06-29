@@ -9,10 +9,12 @@
  */
 'use strict';
 
-jest.unmock('BatchedBridge');
-jest.unmock('defineLazyObjectProperty');
-jest.unmock('MessageQueue');
-jest.unmock('NativeModules');
+jest
+  .enableAutomock()
+  .unmock('BatchedBridge')
+  .unmock('defineLazyObjectProperty')
+  .unmock('MessageQueue')
+  .unmock('NativeModules');
 
 let BatchedBridge;
 let NativeModules;
@@ -40,7 +42,7 @@ const assertQueue = (flushedQueue, index, moduleID, methodID, params) => {
 // [ ] Remote invocation throws if not supplying an error callback.
 describe('MessageQueue', function() {
   beforeEach(function() {
-    jest.resetModuleRegistry();
+    jest.resetModules();
 
     global.__fbBatchedBridgeConfig = require('MessageQueueTestConfig');
     BatchedBridge = require('BatchedBridge');

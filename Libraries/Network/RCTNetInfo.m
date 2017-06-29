@@ -9,9 +9,9 @@
 
 #import "RCTNetInfo.h"
 
-#import "RCTAssert.h"
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
+#import <React/RCTAssert.h>
+#import <React/RCTBridge.h>
+#import <React/RCTEventDispatcher.h>
 
 static NSString *const RCTReachabilityStateUnknown = @"unknown";
 static NSString *const RCTReachabilityStateNone = @"none";

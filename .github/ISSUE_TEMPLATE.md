@@ -1,21 +1,118 @@
-We use GitHub Issues for bugs.
+<!--
+  PLEASE DON'T DELETE THIS TEMPLATE UNTIL YOU HAVE READ THE FIRST SECTION.
+-->
 
-If you have a non-bug question, ask on Stack Overflow: http://stackoverflow.com/questions/tagged/react-native
+### Is this a bug report?
 
-If you have a feature request, post it on Product Pains: https://productpains.com/product/react-native/
+(write your answer here)
 
---- Please use this template, and delete everything above this line before submitting your issue --- 
+<!--
+  If you answered "Yes":
 
-### Description
+    We expect that it will take you about 30 minutes to produce a high-quality bug report.
+    While this may seem like a lot, putting care into issues helps us fix them faster.
+    For bug reports, it is REQUIRED to fill the rest of this template, or the issue will be closed.
 
-[FILL THIS OUT: Explain what you did, what you expected to happen, and what actually happens.]
+  If you answered "No":
 
-### Reproduction
+    We use GitHub Issues exclusively for tracking bugs in React Native. If you're looking for help,
+    check out the How to Get In Touch section of the following guide: 
+    https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md#how-to-get-in-touch
 
-[FILL THIS OUT: Try to reproduce your bug on rnplay.org and provide a link. If you can't reproduce the bug on rnplay.org, provide a sample project.]
+  Now scroll below!
+-->
 
-### Additional Information
 
-* React Native version: [FILL THIS OUT]
-* Platform: [FILL THIS OUT: iOS, Android, or both?]
-* Operating System: [FILL THIS OUT: MacOS, Linux, or Windows?]
+### Have you read the Bugs section of the Contributing to React Native Guide?
+
+(Write your answer here.)
+
+<!--
+  Please read through the bug reporting guidelines thoroughly:
+  https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md#bugs
+-->
+
+### Environment
+
+<!--
+  Please fill in all the relevant fields by running these commands in terminal.
+-->
+
+1. `react-native -v`:
+2. `node -v`:
+3. `npm -v`:
+4. `yarn --version` (if you use Yarn):
+
+Then, specify:
+
+1. Target Platform (e.g. iOS, Android):
+2. Development Operating System (e.g. macOS Sierra, Windows 10):
+3. Build tools (Xcode or Android Studio version, iOS or Android SDK version, if relevant):
+
+
+### Steps to Reproduce
+
+<!--
+  How would you describe your issue to someone who doesn’t know you or your project?
+  Try to write a sequence of steps that anybody can repeat to see the issue.
+-->
+
+(Write your steps here:)
+
+1.
+2.
+3.
+
+### Expected Behavior
+
+<!--
+  How did you expect your project to behave?
+  It’s fine if you’re not sure your understanding is correct.
+  Just write down what you thought would happen.
+-->
+
+(Write what you thought would happen.)
+
+### Actual Behavior
+
+<!--
+  Did something go wrong?
+  Is something broken, or not behaving as you expected?
+  Describe this section in detail, and attach screenshots if possible.
+-->
+
+(Write what happened. Add screenshots!)
+
+### Reproducible Demo
+
+<!--
+  Please share a project that reproduces the issue.
+  There are two ways to do it:
+
+    * Create a new app using https://snack.expo.io/ and try to reproduce the issue in it.
+      This is useful if you roughly know where the problem is, or can’t share the real code.
+
+    * Or, copy your app and remove things until you’re left with the minimal reproducible demo.
+      This is useful for finding the root cause. You may then optionally create a Snack.
+
+  This is a good guide to creating bug demos: https://stackoverflow.com/help/mcve
+  Once you’re done, copy and paste the link to the Snack or a public GitHub repository below:
+-->
+
+(Paste the link to an example project and exact instructions to reproduce the issue.)
+
+<!--
+  What happens if you skip this step?
+
+  Someone will read your bug report, and maybe will be able to help you,
+  but it’s unlikely that it will get much attention from the team. Eventually,
+  the issue will likely get closed in favor of issues that have reproducible demos.
+
+  Please remember that:
+
+    * Issues without reproducible demos have a very low priority.
+    * The person fixing the bug would have to do that anyway. Please be respectful of their time.
+    * You might figure out the issues yourself as you work on extracting it.
+
+  Thanks for helping us help you!
+-->

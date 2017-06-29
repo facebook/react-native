@@ -11,25 +11,26 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
 var ImageResizeMode = require('ImageResizeMode');
 var ImageStylePropTypes = require('ImageStylePropTypes');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+var NativeMethodsMixin = require('NativeMethodsMixin');
+var NativeModules = require('NativeModules');
 var React = require('React');
+var PropTypes = require('prop-types');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+var Set = require('Set');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
+var ViewPropTypes = require('ViewPropTypes');
+var ViewStylePropTypes = require('ViewStylePropTypes');
 
+var filterObject = require('fbjs/lib/filterObject');
 var flattenStyle = require('flattenStyle');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
-var Set = require('Set');
-var filterObject = require('fbjs/lib/filterObject');
 
-var PropTypes = React.PropTypes;
 var {
   ImageLoader,
 } = NativeModules;
@@ -77,12 +78,16 @@ var ImageSpecificStyleKeys = new Set(Object.keys(ImageStylePropTypes).filter(x =
 
 var Image = React.createClass({
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     style: StyleSheetPropType(ImageStylePropTypes),
    /**
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or a static image
      * resource (which should be wrapped in the `require('./path/to/image.png')` function).
+     *
+     * `headers` is an object representing the HTTP headers to send along with the request
+     * for a remote image.
+     *
      * This prop can also contain several remote `uri`, specified together with
      * their width and height. The native side will then choose the best `uri` to display
      * based on the measured size of the image container.
@@ -90,6 +95,7 @@ var Image = React.createClass({
     source: PropTypes.oneOfType([
       PropTypes.shape({
         uri: PropTypes.string,
+        headers: PropTypes.objectOf(PropTypes.string),
       }),
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
@@ -101,6 +107,10 @@ var Image = React.createClass({
           height: PropTypes.number,
         }))
     ]),
+    /**
+    * blurRadius: the blur radius of the blur filter added to the image
+    */
+    blurRadius: PropTypes.number,
     /**
      * similarly to `source`, this property represents the resource used to render
      * the loading indicator for the image, displayed until image is ready to be
@@ -119,6 +129,10 @@ var Image = React.createClass({
      * Invoked on load start
      */
     onLoadStart: PropTypes.func,
+    /**
+     * Invoked on load error
+     */
+    onError: PropTypes.func,
     /**
      * Invoked when load completes successfully
      */
@@ -179,7 +193,7 @@ var Image = React.createClass({
     getSize(
       url: string,
       success: (width: number, height: number) => void,
-      failure: (error: any) => void,
+      failure?: (error: any) => void,
     ) {
       return ImageLoader.getSize(url)
         .then(function(sizes) {
@@ -216,7 +230,14 @@ var Image = React.createClass({
      */
     async queryCache(urls: Array<string>): Promise<Map<string, 'memory' | 'disk'>> {
       return await ImageLoader.queryCache(urls);
-    }
+    },
+
+    /**
+     * Resolves an asset reference into an object which has the properties `uri`, `width`,
+     * and `height`. The input may either be a number (opaque type returned by
+     * require('./foo.png')) or an `ImageSource` like { uri: '<http location || file path>' }
+     */
+    resolveAssetSource: resolveAssetSource,
   },
 
   mixins: [NativeMethodsMixin],
@@ -254,7 +275,7 @@ var Image = React.createClass({
   },
 
   contextTypes: {
-    isInAParentText: React.PropTypes.bool
+    isInAParentText: PropTypes.bool
   },
 
   render: function() {
@@ -284,11 +305,12 @@ var Image = React.createClass({
         sources = source;
       }
 
-      const {onLoadStart, onLoad, onLoadEnd} = this.props;
+      const {onLoadStart, onLoad, onLoadEnd, onError} = this.props;
       const nativeProps = merge(this.props, {
         style,
-        shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd),
+        shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
         src: sources,
+        headers: source.headers,
         loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
       });
 
@@ -335,6 +357,7 @@ var styles = StyleSheet.create({
 var cfg = {
   nativeOnly: {
     src: true,
+    headers: true,
     loadingIndicatorSrc: true,
     shouldNotifyLoadEvents: true,
   },

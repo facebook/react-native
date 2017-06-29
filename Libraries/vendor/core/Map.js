@@ -1,27 +1,24 @@
 /**
- * @generated SignedSource<<375749f44ce7c0f681fc1297943eaf74>>
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
- * Copyright 2013-2014 Facebook, Inc.
  * @providesModule Map
  * @preventMunge
  * @typechecks
  */
 
+/* eslint-disable no-extend-native, no-shadow-restricted-names */
+
+'use strict';
+
+var _shouldPolyfillES6Collection = require('_shouldPolyfillES6Collection');
 var guid = require('guid');
 var isNode = require('fbjs/lib/isNode');
 var toIterator = require('toIterator');
-var _shouldPolyfillES6Collection = require('_shouldPolyfillES6Collection');
 
 module.exports = (function(global, undefined) {
   // Since our implementation is spec-compliant for the most part we can safely
@@ -298,7 +295,7 @@ module.exports = (function(global, undefined) {
      * @param {string} kind
      */
     constructor(map, kind) {
-      if (!(isObject(map) && map['_mapData'])) {
+      if (!(isObject(map) && map._mapData)) {
         throw new TypeError('Object is not a map.');
       }
 
@@ -330,7 +327,7 @@ module.exports = (function(global, undefined) {
         return createIterResultObject(undefined, true);
       }
 
-      var entries = map['_mapData'];
+      var entries = map._mapData;
 
       while (index < entries.length) {
         var record = entries[index];
@@ -360,7 +357,7 @@ module.exports = (function(global, undefined) {
   // 23.1.5.2.2
   MapIterator.prototype[toIterator.ITERATOR_SYMBOL] = function() {
     return this;
-  }
+  };
 
   /**
    * Helper Functions.
@@ -515,7 +512,7 @@ module.exports = (function(global, undefined) {
     try {
       Object.defineProperty({}, 'x', {});
       return true;
-    } catch(e) {
+    } catch (e) {
       return false;
     }
   })();
@@ -573,7 +570,7 @@ module.exports = (function(global, undefined) {
      * @param {object|array|function|regexp} o
      * @return {number}
      */
-    return function getHash(o) {
+    return function getHash(o) { // eslint-disable-line no-shadow
       if (o[hashProperty]) {
         return o[hashProperty];
       } else if (!isES5 &&
@@ -623,4 +620,4 @@ module.exports = (function(global, undefined) {
   })();
 
   return Map;
-})(/* jslint evil: true */ Function('return this')());
+})(Function('return this')()); // eslint-disable-line no-new-func

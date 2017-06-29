@@ -9,22 +9,18 @@
 
 #import "RCTTextManager.h"
 
-//Internally we reference a separate library. See https://github.com/facebook/react-native/pull/9544
-#if __has_include(<CSSLayout/CSSLayout.h>)
-#import <CSSLayout/CSSLayout.h>
-#else
-#import "CSSLayout.h"
-#endif
+#import <React/RCTAccessibilityManager.h>
+#import <React/RCTAssert.h>
+#import <React/RCTConvert.h>
+#import <React/RCTLog.h>
+#import <React/RCTShadowView+Layout.h>
+#import <React/UIView+React.h>
+#import <yoga/Yoga.h>
 
-#import "RCTAccessibilityManager.h"
-#import "RCTAssert.h"
-#import "RCTConvert.h"
-#import "RCTLog.h"
 #import "RCTShadowRawText.h"
 #import "RCTShadowText.h"
 #import "RCTText.h"
 #import "RCTTextView.h"
-#import "UIView+React.h"
 
 static void collectDirtyNonTextDescendants(RCTShadowText *shadowView, NSMutableArray *nonTextDescendants) {
   for (RCTShadowView *child in shadowView.reactSubviews) {
@@ -40,7 +36,7 @@ static void collectDirtyNonTextDescendants(RCTShadowText *shadowView, NSMutableA
 
 @interface RCTShadowText (Private)
 
-- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(CSSMeasureMode)widthMode;
+- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(YGMeasureMode)widthMode;
 
 @end
 
@@ -84,6 +80,7 @@ RCT_EXPORT_SHADOW_PROPERTY(textShadowRadius, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(textShadowColor, UIColor)
 RCT_EXPORT_SHADOW_PROPERTY(adjustsFontSizeToFit, BOOL)
 RCT_EXPORT_SHADOW_PROPERTY(minimumFontScale, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(selectable, BOOL)
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry
 {

@@ -17,7 +17,7 @@ create an image, you can use a prop named `source` to control what image it show
 import React, { Component } from 'react';
 import { AppRegistry, Image } from 'react-native';
 
-class Bananas extends Component {
+export default class Bananas extends Component {
   render() {
     let pic = {
       uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'
@@ -28,7 +28,8 @@ class Bananas extends Component {
   }
 }
 
-AppRegistry.registerComponent('Bananas', () => Bananas);
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => Bananas);
 ```
 
 Notice that `{pic}` is surrounded by braces, to embed the variable `pic` into JSX. You can put any JavaScript expression inside braces in JSX.
@@ -49,7 +50,7 @@ class Greeting extends Component {
   }
 }
 
-class LotsOfGreetings extends Component {
+export default class LotsOfGreetings extends Component {
   render() {
     return (
       <View style={{alignItems: 'center'}}>
@@ -61,13 +62,14 @@ class LotsOfGreetings extends Component {
   }
 }
 
-AppRegistry.registerComponent('LotsOfGreetings', () => LotsOfGreetings);
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => LotsOfGreetings);
 ```
 
 Using `name` as a prop lets us customize the `Greeting` component, so we can reuse that component for each of our greetings. This example also uses the `Greeting` component in JSX, just like the built-in components. The power to do this is what makes React so cool - if you find yourself wishing that you had a different set of UI primitives to work with, you just invent new ones.
 
-The other new thing going on here is the [`View`](/react-native/docs/view.html) component. A [`View`](/react-native/docs/view.html) is useful
+The other new thing going on here is the [`View`](docs/view.html) component. A [`View`](docs/view.html) is useful
 as a container for other components, to help control style and layout.
 
-With `props` and the basic [`Text`](/react-native/docs/text.html), [`Image`](/react-native/docs/image.html), and [`View`](/react-native/docs/view.html) components, you can
-build a wide variety of static screens. To learn how to make your app change over time, you need to [learn about State](/react-native/docs/state.html).
+With `props` and the basic [`Text`](docs/text.html), [`Image`](docs/image.html), and [`View`](docs/view.html) components, you can
+build a wide variety of static screens. To learn how to make your app change over time, you need to [learn about State](docs/state.html).

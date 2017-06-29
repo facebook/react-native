@@ -10,13 +10,15 @@
 // switchview because switch is a keyword
 package com.facebook.react.views.switchview;
 
+import android.graphics.PorterDuff;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
-import com.facebook.csslayout.CSSMeasureMode;
-import com.facebook.csslayout.CSSNodeAPI;
-import com.facebook.csslayout.MeasureOutput;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNode;
+import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.SimpleViewManager;
@@ -33,7 +35,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
   private static final String REACT_CLASS = "AndroidSwitch";
 
   static class ReactSwitchShadowNode extends LayoutShadowNode implements
-      CSSNodeAPI.MeasureFunction {
+      YogaMeasureFunction {
 
     private int mWidth;
     private int mHeight;
@@ -45,11 +47,11 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
 
     @Override
     public long measure(
-        CSSNodeAPI node,
+        YogaNode node,
         float width,
-        CSSMeasureMode widthMode,
+        YogaMeasureMode widthMode,
         float height,
-        CSSMeasureMode heightMode) {
+        YogaMeasureMode heightMode) {
       if (!mMeasured) {
         // Create a switch with the default config and measure it; since we don't (currently)
         // support setting custom switch text, this is fine, as all switches will measure the same
@@ -64,7 +66,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
         mMeasured = true;
       }
 
-      return MeasureOutput.make(mWidth, mHeight);
+      return YogaMeasureOutput.make(mWidth, mHeight);
     }
   }
 
@@ -114,6 +116,24 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     view.setOnCheckedChangeListener(null);
     view.setOn(on);
     view.setOnCheckedChangeListener(ON_CHECKED_CHANGE_LISTENER);
+  }
+
+  @ReactProp(name = "thumbTintColor", customType = "Color")
+  public void setThumbTintColor(ReactSwitch view, Integer color) {
+    if (color == null) {
+      view.getThumbDrawable().clearColorFilter();
+    } else {
+      view.getThumbDrawable().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+    }
+  }
+
+  @ReactProp(name = "trackTintColor", customType = "Color")
+  public void setTrackTintColor(ReactSwitch view, Integer color) {
+    if (color == null) {
+      view.getTrackDrawable().clearColorFilter();
+    } else {
+      view.getTrackDrawable().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+    }
   }
 
   @Override

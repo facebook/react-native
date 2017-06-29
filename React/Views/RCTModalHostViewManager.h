@@ -7,9 +7,15 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTViewManager.h"
+#import <React/RCTInvalidating.h>
+#import <React/RCTViewManager.h>
+#import <React/RCTConvert.h>
 
-#import "RCTInvalidating.h"
+@interface RCTConvert (RCTModalHostView)
+
++ (UIModalPresentationStyle)UIModalPresentationStyle:(id)json;
+
+@end
 
 typedef void (^RCTModalViewInteractionBlock)(UIViewController *reactViewController, UIViewController *viewController, BOOL animated, dispatch_block_t completionBlock);
 

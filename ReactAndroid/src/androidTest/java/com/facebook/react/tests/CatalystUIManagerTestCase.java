@@ -21,9 +21,10 @@ import android.widget.TextView;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.modules.appstate.AppStateModule;
+import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
@@ -64,7 +65,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
     final DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
     rootView.setLayoutParams(
         new FrameLayout.LayoutParams(metrics.widthPixels, metrics.heightPixels));
-    uiManager.addMeasuredRootView(rootView);
+    uiManager.addRootView(rootView);
     // We add the root view by posting to the main thread so wait for that to complete so that the
     // root view tag is added to the view
     waitForIdleSync();
@@ -82,7 +83,8 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
     uiManager = new UIManagerModule(
         getContext(),
         viewManagers,
-        new UIImplementationProvider());
+        new UIImplementationProvider(),
+        false);
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -94,8 +96,9 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
     jsModule = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(uiManager)
         .addNativeModule(new AndroidInfoModule())
+        .addNativeModule(new DeviceInfoModule(getContext()))
+        .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
-        .addJSModule(UIManagerTestModule.class)
         .build()
         .getJSModule(UIManagerTestModule.class);
   }
@@ -223,7 +226,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
 
   public void _testCenteredText(String text) {
     ReactRootView rootView = new ReactRootView(getContext());
-    int rootTag = uiManager.addMeasuredRootView(rootView);
+    int rootTag = uiManager.addRootView(rootView);
 
     jsModule.renderCenteredTextViewTestApplication(rootTag, text);
     waitForBridgeAndUIIdle();

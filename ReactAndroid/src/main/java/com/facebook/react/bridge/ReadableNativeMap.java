@@ -11,10 +11,8 @@ package com.facebook.react.bridge;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.soloader.SoLoader;
 
 import java.util.HashMap;
-
 
 /**
  * Implementation of a read-only map in native memory. This will generally be constructed and filled
@@ -50,10 +48,16 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   public native ReadableType getType(String name);
 
   @Override
+  public Dynamic getDynamic(String name) {
+    return DynamicFromMap.create(this, name);
+  }
+
+  @Override
   public ReadableMapKeySetIterator keySetIterator() {
     return new ReadableNativeMapKeySetIterator(this);
   }
 
+  @Override
   public HashMap<String, Object> toHashMap() {
     ReadableMapKeySetIterator iterator = keySetIterator();
     HashMap<String, Object> hashMap = new HashMap<>();

@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Picture;
@@ -23,12 +24,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.ViewGroup.LayoutParams;
+import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
+import android.webkit.WebSettings;
+import android.webkit.CookieManager;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
@@ -94,6 +98,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public static final int COMMAND_RELOAD = 3;
   public static final int COMMAND_STOP_LOADING = 4;
   public static final int COMMAND_POST_MESSAGE = 5;
+  public static final int COMMAND_INJECT_JAVASCRIPT = 6;
 
   // Use `webView.loadUrl("about:blank")` to reliably reset the view
   // state and release page resources (including any running JavaScript).
@@ -102,7 +107,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   private WebViewConfig mWebViewConfig;
   private @Nullable WebView.PictureListener mPictureListener;
 
-  private static class ReactWebViewClient extends WebViewClient {
+  protected static class ReactWebViewClient extends WebViewClient {
 
     private boolean mLastLoadFailed = false;
 
@@ -133,12 +138,16 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         if (url.startsWith("http://") || url.startsWith("https://") ||
-            url.startsWith("file://")) {
+            url.startsWith("file://") || url.equals("about:blank")) {
           return false;
         } else {
-          Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-          view.getContext().startActivity(intent);
+          try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            view.getContext().startActivity(intent);
+          } catch (ActivityNotFoundException e) {
+            FLog.w(ReactConstants.TAG, "activity not found to handle uri scheme for: " + url, e);
+          }
           return true;
         }
     }
@@ -202,7 +211,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
    * Subclass of {@link WebView} that implements {@link LifecycleEventListener} interface in order
    * to call {@link WebView#destroy} on activty destroy event and also to clear the client
    */
-  private static class ReactWebView extends WebView implements LifecycleEventListener {
+  protected static class ReactWebView extends WebView implements LifecycleEventListener {
     private @Nullable String injectedJS;
     private boolean messagingEnabled = false;
 
@@ -326,6 +335,15 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     ReactWebView webView = new ReactWebView(reactContext);
     webView.setWebChromeClient(new WebChromeClient() {
       @Override
+      public boolean onConsoleMessage(ConsoleMessage message) {
+        if (ReactBuildConfig.DEBUG) {
+          return super.onConsoleMessage(message);
+        }
+        // Ignore console logs in non debug builds.
+        return true;
+      }
+
+      @Override
       public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
         callback.invoke(origin, true, false);
       }
@@ -334,6 +352,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     mWebViewConfig.configWebView(webView);
     webView.getSettings().setBuiltInZoomControls(true);
     webView.getSettings().setDisplayZoomControls(false);
+    webView.getSettings().setDomStorageEnabled(true);
 
     // Fixes broken full-screen modals/galleries due to body height being 0.
     webView.setLayoutParams(
@@ -350,6 +369,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "javaScriptEnabled")
   public void setJavaScriptEnabled(WebView view, boolean enabled) {
     view.getSettings().setJavaScriptEnabled(enabled);
+  }
+
+  @ReactProp(name = "thirdPartyCookiesEnabled")
+  public void setThirdPartyCookiesEnabled(WebView view, boolean enabled) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      CookieManager.getInstance().setAcceptThirdPartyCookies(view, enabled);
+    }
   }
 
   @ReactProp(name = "scalesPageToFit")
@@ -378,6 +404,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "allowUniversalAccessFromFileURLs")
   public void setAllowUniversalAccessFromFileURLs(WebView view, boolean allow) {
     view.getSettings().setAllowUniversalAccessFromFileURLs(allow);
+  }
+  
+  @ReactProp(name = "saveFormDataDisabled")
+  public void setSaveFormDataDisabled(WebView view, boolean disable) {
+    view.getSettings().setSaveFormData(!disable);
   }
 
   @ReactProp(name = "injectedJavaScript")
@@ -459,6 +490,19 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
   }
 
+  @ReactProp(name = "mixedContentMode")
+  public void setMixedContentMode(WebView view, @Nullable String mixedContentMode) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (mixedContentMode == null || "never".equals(mixedContentMode)) {
+        view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
+      } else if ("always".equals(mixedContentMode)) {
+        view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+      } else if ("compatibility".equals(mixedContentMode)) {
+        view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+      } 
+    }
+  }
+
   @Override
   protected void addEventEmitters(ThemedReactContext reactContext, WebView view) {
     // Do not register default touch emitter and let WebView implementation handle touches
@@ -472,7 +516,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         "goForward", COMMAND_GO_FORWARD,
         "reload", COMMAND_RELOAD,
         "stopLoading", COMMAND_STOP_LOADING,
-        "postMessage", COMMAND_POST_MESSAGE);
+        "postMessage", COMMAND_POST_MESSAGE,
+        "injectJavaScript", COMMAND_INJECT_JAVASCRIPT
+      );
   }
 
   @Override
@@ -494,10 +540,23 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         try {
           JSONObject eventInitDict = new JSONObject();
           eventInitDict.put("data", args.getString(0));
-          root.loadUrl("javascript:(document.dispatchEvent(new MessageEvent('message', " + eventInitDict.toString() + ")))");
+          root.loadUrl("javascript:(function () {" +
+            "var event;" +
+            "var data = " + eventInitDict.toString() + ";" +
+            "try {" +
+              "event = new MessageEvent('message', data);" +
+            "} catch (e) {" +
+              "event = document.createEvent('MessageEvent');" +
+              "event.initMessageEvent('message', true, true, data.data, data.origin, data.lastEventId, data.source);" +
+            "}" +
+            "document.dispatchEvent(event);" +
+          "})();");
         } catch (JSONException e) {
           throw new RuntimeException(e);
         }
+        break;
+      case COMMAND_INJECT_JAVASCRIPT:
+        root.loadUrl("javascript:" + args.getString(0));
         break;
     }
   }
