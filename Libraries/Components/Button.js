@@ -97,25 +97,25 @@ class Button extends React.Component {
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
-    const Touchable = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
-    if (color && Platform.OS === 'ios') {
-      textStyles.push({color: color});
-    } else if (color) {
-      buttonStyles.push({backgroundColor: color});
+    if (color) {
+      if (Platform.OS === 'ios') {
+        textStyles.push({color: color});
+      } else {
+        buttonStyles.push({backgroundColor: color});
+      }
     }
+    const accessibilityTraits = ['button'];
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
       textStyles.push(styles.textDisabled);
+      accessibilityTraits.push('disabled');
     }
     invariant(
       typeof title === 'string',
       'The title prop of a Button must be a string',
     );
     const formattedTitle = Platform.OS === 'android' ? title.toUpperCase() : title;
-    const accessibilityTraits = ['button'];
-    if (disabled) {
-      accessibilityTraits.push('disabled');
-    }
+    const Touchable = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
     return (
       <Touchable
         accessibilityComponentType="button"
@@ -132,32 +132,27 @@ class Button extends React.Component {
   }
 }
 
-// Material design blue from https://material.google.com/style/color.html#color-color-palette
-let defaultBlue = '#2196F3';
-if (Platform.OS === 'ios') {
-  // Measured default tintColor from iOS 10
-  defaultBlue = '#007AFF';
-}
-
 const styles = StyleSheet.create({
   button: Platform.select({
     ios: {},
     android: {
       elevation: 4,
-      backgroundColor: defaultBlue,
+      // Material design blue from https://material.google.com/style/color.html#color-color-palette
+      backgroundColor: '#2196F3',
       borderRadius: 2,
     },
   }),
   text: Platform.select({
     ios: {
-      color: defaultBlue,
+      // iOS blue from https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/
+      color: '#007AFF',
       textAlign: 'center',
       padding: 8,
       fontSize: 18,
     },
     android: {
-      textAlign: 'center',
       color: 'white',
+      textAlign: 'center',
       padding: 8,
       fontWeight: '500',
     },

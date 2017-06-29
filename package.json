@@ -226,7 +226,7 @@
     "eslint-plugin-babel": "^4.1.1",
     "eslint-plugin-flowtype": "^2.33.0",
     "eslint-plugin-react": "^7.0.1",
-    "flow-bin": "^0.48.0",
+    "flow-bin": "^0.49.1",
     "jest": "^20.0.4",
     "jest-repl": "^20.0.4",
     "jest-runtime": "^20.0.4",
