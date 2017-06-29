@@ -51,7 +51,10 @@ public class BundleDownloader {
       final String bundleURL) {
     final Request request = new Request.Builder()
         .url(bundleURL)
-        .addHeader("Accept", "multipart/mixed")
+        // FIXME: there is a bug that makes MultipartStreamReader to never find the end of the
+        // multipart message. This temporarily disables the multipart mode to work around it, but
+        // it means there is no progress bar displayed in the React Native overlay anymore.
+        //.addHeader("Accept", "multipart/mixed")
         .build();
     mDownloadBundleFromURLCall = Assertions.assertNotNull(mClient.newCall(request));
     mDownloadBundleFromURLCall.enqueue(new Callback() {

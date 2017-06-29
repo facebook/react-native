@@ -14,16 +14,16 @@ const path = require('path');
 
 /**
  * Gets package's class name (class that implements ReactPackage)
- * by searching for its declaration in all Java files present in the folder
+ * by searching for its declaration in all Java/Kotlin files present in the folder
  *
- * @param {String} folder Folder to find java files
+ * @param {String} folder Folder to find java/kt files
  */
 module.exports = function getPackageClassName(folder) {
-  const files = glob.sync('**/*.java', { cwd: folder });
+  const files = glob.sync('**/+(*.java|*.kt)', { cwd: folder });
 
   const packages = files
     .map(filePath => fs.readFileSync(path.join(folder, filePath), 'utf8'))
-    .map(file => file.match(/class (.*) implements ReactPackage/))
+    .map(file => file.match(/class (.*) +(implements|:) ReactPackage/))
     .filter(match => match);
 
   return packages.length ? packages[0][1] : null;
