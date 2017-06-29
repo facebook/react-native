@@ -367,6 +367,10 @@ class WebView extends React.Component {
     ]),
   };
 
+  static defaultProps = {
+    scalesPageToFit: true,
+  };
+
   state = {
     viewState: WebViewState.IDLE,
     lastErrorEvent: (null: ?ErrorEvent),
