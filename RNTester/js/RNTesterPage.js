@@ -11,8 +11,8 @@
  */
 'use strict';
 
-var React = require('react');
 var PropTypes = require('prop-types');
+var React = require('react');
 var ReactNative = require('react-native');
 var {
   ScrollView,
@@ -37,7 +37,7 @@ class RNTesterPage extends React.Component {
     var ContentWrapper;
     var wrapperProps = {};
     if (this.props.noScroll) {
-      ContentWrapper = (View: ReactClass<any>);
+      ContentWrapper = ((View: any): ReactClass<any>);
     } else {
       ContentWrapper = (ScrollView: ReactClass<any>);
       // $FlowFixMe found when converting React.createClass to ES6

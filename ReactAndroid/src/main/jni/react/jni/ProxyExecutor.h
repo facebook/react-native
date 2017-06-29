@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <cxxreact/Executor.h>
+#include <cxxreact/JSExecutor.h>
 #include <fb/fbjni.h>
 #include <jni.h>
 #include <jni/GlobalReference.h>

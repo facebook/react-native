@@ -15,7 +15,6 @@
 'use strict';
 
 const ErrorUtils = require('ErrorUtils');
-const JSTimersExecution = require('JSTimersExecution');
 const Systrace = require('Systrace');
 
 const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
@@ -40,6 +39,9 @@ const MIN_TIME_BETWEEN_FLUSHES_MS = 5;
 const TRACE_TAG_REACT_APPS = 1 << 17;
 
 const DEBUG_INFO_LIMIT = 32;
+
+// Work around an initialization order issue
+let JSTimers = null;
 
 class MessageQueue {
   _lazyCallableModules: {[key: string]: void => Object};
@@ -152,7 +154,8 @@ class MessageQueue {
   }
 
   _getCallableModule(name: string) {
-    return this._lazyCallableModules[name]();
+    const getValue = this._lazyCallableModules[name];
+    return getValue ? getValue() : null;
   }
 
   enqueueNativeCall(moduleID: number, methodID: number, params: Array<any>, onFail: ?Function, onSucc: ?Function) {
@@ -234,8 +237,11 @@ class MessageQueue {
   }
 
   __callImmediates() {
-    Systrace.beginEvent('JSTimersExecution.callImmediates()');
-    JSTimersExecution.callImmediates();
+    Systrace.beginEvent('JSTimers.callImmediates()');
+    if (!JSTimers) {
+      JSTimers = require('JSTimers');
+    }
+    JSTimers.callImmediates();
     Systrace.endEvent();
   }
 

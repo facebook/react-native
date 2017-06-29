@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const xcode = require('xcode');
 const getGroup = require('../../ios/getGroup');
 const path = require('path');

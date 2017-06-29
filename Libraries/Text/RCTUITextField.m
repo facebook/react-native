@@ -71,6 +71,16 @@
                                                                attributes:attributes];
 }
 
+- (BOOL)isEditable
+{
+  return self.userInteractionEnabled;
+}
+
+- (void)setEditable:(BOOL)editable
+{
+  self.userInteractionEnabled = editable;
+}
+
 #pragma mark - Caret Manipulation
 
 - (CGRect)caretRectForPosition:(UITextPosition *)position
@@ -92,6 +102,14 @@
 - (CGRect)editingRectForBounds:(CGRect)bounds
 {
   return [self textRectForBounds:bounds];
+}
+
+#pragma mark - Overrides
+
+- (void)paste:(id)sender
+{
+  [super paste:sender];
+  _textWasPasted = YES;
 }
 
 #pragma mark - Layout

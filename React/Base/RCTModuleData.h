@@ -58,13 +58,26 @@ typedef id<RCTBridgeModule>(^RCTBridgeModuleProvider)(void);
 
 /**
  * Returns YES if module instance must be created on the main thread.
+ * May be overriden by "allowOffMainQueueRegistration".
  */
 @property (nonatomic, assign, readonly) BOOL requiresMainQueueSetup;
 
 /**
  * Returns YES if module has constants to export.
+ * May be overriden by "allowOffMainQueueRegistration".
  */
 @property (nonatomic, assign, readonly) BOOL hasConstantsToExport;
+
+/**
+ * If set to YES, it will force both setup and constants export process
+ * to explicitly happen off the main queue.
+ * Overrides "requiresMainQueueSetup" & "hasConstantsToExport"
+ * Defaults to NO.
+ *
+ * @experimental
+ */
+
+@property (nonatomic, assign) BOOL allowOffMainQueueRegistration;
 
 /**
  * Returns the current module instance. Note that this will init the instance

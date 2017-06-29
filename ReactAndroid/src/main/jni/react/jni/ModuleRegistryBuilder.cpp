@@ -29,7 +29,7 @@ xplat::module::CxxModule::Provider ModuleHolder::getProvider() const {
   };
 }
 
-std::unique_ptr<ModuleRegistry> buildModuleRegistry(
+std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
     std::weak_ptr<Instance> winstance,
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
     jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules,
@@ -60,11 +60,7 @@ std::unique_ptr<ModuleRegistry> buildModuleRegistry(
                              winstance, cm->getName(), cm->getProvider(), moduleMessageQueue));
     }
   }
-  if (modules.empty()) {
-    return nullptr;
-  } else {
-    return folly::make_unique<ModuleRegistry>(std::move(modules));
-  }
+  return modules;
 }
 
 }}

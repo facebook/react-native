@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
+ * @format
  */
 'use strict';
 
@@ -18,8 +19,8 @@ const StaticRenderer = require('StaticRenderer');
 class ListViewMock extends React.Component {
   static latestRef: ?ListViewMock;
   static defaultProps = {
-    renderScrollComponent: (props) => <ScrollView {...props} />,
-  }
+    renderScrollComponent: props => <ScrollView {...props} />,
+  };
   componentDidMount() {
     ListViewMock.latestRef = this;
   }
@@ -41,9 +42,9 @@ class ListViewMock extends React.Component {
               null,
               dataSource.getRowData(sectionIdx, rowIdx),
               sectionID,
-              rowID
+              rowID,
             )}
-          />
+          />,
         );
       }
     }

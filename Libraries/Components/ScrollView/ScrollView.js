@@ -32,6 +32,9 @@ const flattenStyle = require('flattenStyle');
 const invariant = require('fbjs/lib/invariant');
 const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');
+const warning = require('fbjs/lib/warning');
+
+import type {NativeMethodsMixinType} from 'ReactNativeTypes';
 
 /**
  * Component that wraps platform ScrollView while providing
@@ -311,8 +314,10 @@ const ScrollView = React.createClass({
     /**
      * When set, causes the scroll view to stop at multiples of the value of
      * `snapToInterval`. This can be used for paginating through children
-     * that have lengths smaller than the scroll view. Used in combination
-     * with `snapToAlignment`.
+     * that have lengths smaller than the scroll view. Typically used in
+     * combination with `snapToAlignment` and `decelerationRate="fast"`.
+     * Overrides less configurable `pagingEnabled` prop.
+     *
      * @platform ios
      */
     snapToInterval: PropTypes.number,
@@ -388,6 +393,15 @@ const ScrollView = React.createClass({
       'always',
       'never',
     ]),
+    /**
+     * When true, ScrollView will emit updateChildFrames data in scroll events,
+     * otherwise will not compute or emit child frame data.  This only exists
+     * to support legacy issues, `onLayout` should be used instead to retrieve
+     * frame data.
+     * The default value is false.
+     * @platform ios
+     */
+    DEPRECATED_sendUpdatedChildFrames: PropTypes.bool,
   },
 
   mixins: [ScrollResponder.Mixin],
@@ -583,8 +597,8 @@ const ScrollView = React.createClass({
     this._scrollViewRef = ref;
   },
 
-  _innerViewRef: (null: ?View),
-  _setInnerViewRef: function(ref: ?View) {
+  _innerViewRef: (null: ?NativeMethodsMixinType),
+  _setInnerViewRef: function(ref: ?NativeMethodsMixinType) {
     this._innerViewRef = ref;
   },
 
@@ -594,6 +608,10 @@ const ScrollView = React.createClass({
     if (Platform.OS === 'ios') {
       ScrollViewClass = RCTScrollView;
       ScrollContentContainerViewClass = RCTScrollContentView;
+      warning(
+        !this.props.snapToInterval || !this.props.pagingEnabled,
+        'snapToInterval is currently ignored when pagingEnabled is true.'
+      );
     } else if (Platform.OS === 'android') {
       if (this.props.horizontal) {
         ScrollViewClass = AndroidHorizontalScrollView;
@@ -667,7 +685,13 @@ const ScrollView = React.createClass({
         {...contentSizeChangeProps}
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
-        removeClippedSubviews={this.props.removeClippedSubviews}
+        removeClippedSubviews={
+          // Subview clipping causes issues with sticky headers on Android and
+          // would be hard to fix properly in a performant way.
+          Platform.OS === 'android' && hasStickyHeaders ?
+            false :
+            this.props.removeClippedSubviews
+        }
         collapsable={false}>
         {children}
       </ScrollContentContainerViewClass>;
@@ -681,6 +705,9 @@ const ScrollView = React.createClass({
       this.props.alwaysBounceVertical !== undefined ?
         this.props.alwaysBounceVertical :
         !this.props.horizontal;
+
+    const DEPRECATED_sendUpdatedChildFrames =
+      !!this.props.DEPRECATED_sendUpdatedChildFrames;
 
     const baseStyle = this.props.horizontal ? styles.baseHorizontal : styles.baseVertical;
     const props = {
@@ -710,6 +737,7 @@ const ScrollView = React.createClass({
       scrollEventThrottle: hasStickyHeaders ? 1 : this.props.scrollEventThrottle,
       sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ?
         true : false,
+      DEPRECATED_sendUpdatedChildFrames,
     };
 
     const { decelerationRate } = this.props;
@@ -806,6 +834,7 @@ if (Platform.OS === 'android') {
     (ScrollView: ReactClass<any>),
     nativeOnlyProps,
   );
+  // $FlowFixMe (bvaughn) Update ComponentInterface in ViewPropTypes to include a string type (for Fiber host components) in a follow-up.
   RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);
 }
 

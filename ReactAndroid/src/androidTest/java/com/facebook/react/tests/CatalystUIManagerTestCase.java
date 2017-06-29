@@ -99,7 +99,6 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
         .addNativeModule(new DeviceInfoModule(getContext()))
         .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
-        .addJSModule(UIManagerTestModule.class)
         .build()
         .getJSModule(UIManagerTestModule.class);
   }

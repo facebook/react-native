@@ -4,8 +4,8 @@ title: Debugging
 layout: docs
 category: Guides
 permalink: docs/debugging.html
-next: accessibility
-previous: platform-specific-code
+next: performance
+previous: timers
 ---
 
 ## Enabling Keyboard Shortcuts

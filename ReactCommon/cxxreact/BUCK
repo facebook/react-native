@@ -11,7 +11,7 @@ if THIS_IS_FBOBJC:
 
 rn_xplat_cxx_library(
     name = "module",
-    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
+    header_namespace = "",
     exported_headers = subdir_glob(
         [
             ("", "CxxModule.h"),
@@ -20,8 +20,8 @@ rn_xplat_cxx_library(
         ],
         prefix = "cxxreact",
     ),
+    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
     force_static = True,
-    header_namespace = "",
     visibility = [
         "PUBLIC",
     ],
@@ -36,16 +36,16 @@ rn_xplat_cxx_library(
     srcs = [
         "JSBigString.cpp",
     ],
-    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
-        "-fexceptions",
-        "-frtti",
-    ],
+    header_namespace = "",
     exported_headers = subdir_glob(
         [("", "JSBigString.h")],
         prefix = "cxxreact",
     ),
+    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
+        "-fexceptions",
+        "-frtti",
+    ],
     force_static = True,
-    header_namespace = "",
     visibility = [
         "PUBLIC",
     ],
@@ -58,12 +58,12 @@ rn_xplat_cxx_library(
 rn_xplat_cxx_library(
     name = "samplemodule",
     srcs = ["SampleCxxModule.cpp"],
+    header_namespace = "",
+    exported_headers = ["SampleCxxModule.h"],
     compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
         "-fno-omit-frame-pointer",
         "-fexceptions",
     ],
-    exported_headers = ["SampleCxxModule.h"],
-    header_namespace = "",
     soname = "libxplat_react_module_samplemodule.so",
     visibility = [
         "PUBLIC",
@@ -77,9 +77,9 @@ rn_xplat_cxx_library(
 
 CXXREACT_PUBLIC_HEADERS = [
     "CxxNativeModule.h",
-    "Executor.h",
     "Instance.h",
     "JSBundleType.h",
+    "JSExecutor.h",
     "JSCExecutor.h",
     "JSCNativeModules.h",
     "JSIndexedRAMBundle.h",
@@ -104,10 +104,11 @@ rn_xplat_cxx_library(
             "SampleCxxModule.cpp",
         ],
     ),
-    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
-        "-fexceptions",
-        "-frtti",
-    ],
+    headers = glob(
+        ["*.h"],
+        excludes = CXXREACT_PUBLIC_HEADERS,
+    ),
+    header_namespace = "",
     exported_headers = dict([
         (
             "cxxreact/%s" % header,
@@ -115,6 +116,10 @@ rn_xplat_cxx_library(
         )
         for header in CXXREACT_PUBLIC_HEADERS
     ]),
+    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
+        "-fexceptions",
+        "-frtti",
+    ],
     fbandroid_preprocessor_flags = [
         "-DWITH_JSC_EXTRA_TRACING=1",
         "-DWITH_JSC_MEMORY_PRESSURE=1",
@@ -144,11 +149,6 @@ rn_xplat_cxx_library(
     fbobjc_preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS,
     fbobjc_visibility = ["PUBLIC"],
     force_static = True,
-    header_namespace = "",
-    headers = glob(
-        ["*.h"],
-        excludes = CXXREACT_PUBLIC_HEADERS,
-    ),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
