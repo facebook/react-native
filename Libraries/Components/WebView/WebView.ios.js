@@ -368,7 +368,7 @@ class WebView extends React.Component {
   };
 
   static defaultProps = {
-    scalesPageToFit: true
+    scalesPageToFit: true,
   };
 
   state = {
