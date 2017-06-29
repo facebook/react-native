@@ -207,8 +207,8 @@ const ScrollView = React.createClass({
      */
     keyboardDismissMode: PropTypes.oneOf([
       'none', // default
-      'interactive',
-      'on-drag',
+      'interactive', // iOS-only
+      'on-drag', // Cross-platform
     ]),
     /**
      * Determines when the keyboard should stay visible after a tap.
