@@ -17,7 +17,7 @@ const xsel = path.join(__dirname, 'external/xsel');
 fs.chmodSync(xsel, '0755');
 /**
  * Copy the content to host system clipboard.
- * This is only supported on Mac and Windows for now.
+ * This is supported on Mac, Windows, and Linux platforms.
  */
 function copyToClipBoard(content) {
   switch (process.platform) {
