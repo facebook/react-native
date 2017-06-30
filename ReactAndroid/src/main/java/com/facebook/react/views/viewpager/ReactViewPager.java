@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
- *
+ * <p>
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
@@ -29,6 +29,15 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
  * to add children nodes according to react views hierarchy.
  */
 public class ReactViewPager extends ViewPager {
+
+  private float mPageWidth = 1.f;
+
+  public void setPageWidth(float pageWidth) {
+    if (pageWidth > 0 && pageWidth <= 1) {
+      this.mPageWidth = pageWidth;
+      getAdapter().notifyDataSetChanged();
+    }
+  }
 
   private class Adapter extends PagerAdapter {
 
@@ -94,6 +103,11 @@ public class ReactViewPager extends ViewPager {
     }
 
     @Override
+    public float getPageWidth(int position) {
+      return mPageWidth;
+    }
+
+    @Override
     public int getItemPosition(Object object) {
       // if we've removed all views, we want to return POSITION_NONE intentionally
       return mIsViewPagerInIntentionallyInconsistentState || !mViews.contains(object) ?
@@ -123,14 +137,14 @@ public class ReactViewPager extends ViewPager {
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
       mEventDispatcher.dispatchEvent(
-          new PageScrollEvent(getId(), position, positionOffset));
+        new PageScrollEvent(getId(), position, positionOffset));
     }
 
     @Override
     public void onPageSelected(int position) {
       if (!mIsCurrentItemFromJs) {
         mEventDispatcher.dispatchEvent(
-            new PageSelectedEvent(getId(), position));
+          new PageSelectedEvent(getId(), position));
       }
     }
 

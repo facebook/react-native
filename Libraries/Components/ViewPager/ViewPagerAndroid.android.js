@@ -75,6 +75,7 @@ class ViewPagerAndroid extends React.Component {
     onPageScrollStateChanged?: Function,
     onPageSelected?: Function,
     pageMargin?: number,
+    pageWidth?: number,
     keyboardDismissMode?: 'none' | 'on-drag',
     scrollEnabled?: boolean,
   };
@@ -121,6 +122,12 @@ class ViewPagerAndroid extends React.Component {
      * edge-to-edge.
      */
     pageMargin: PropTypes.number,
+
+    /**
+     * The proportional width for the given page. As the percentage of the
+     * ViewPagerAndroid's measured width from (0.f-1.f]
+     */
+    pageWidth: PropTypes.number,
 
     /**
      * Determines whether the keyboard gets dismissed in response to a drag.

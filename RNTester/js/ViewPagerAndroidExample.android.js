@@ -160,6 +160,7 @@ class ViewPagerAndroidExample extends React.Component {
           onPageSelected={this.onPageSelected}
           onPageScrollStateChanged={this.onPageScrollStateChanged}
           pageMargin={10}
+          pageWidth={0.8}
           ref={viewPager => { this.viewPager = viewPager; }}>
           {pages}
         </ViewPagerAndroid>
