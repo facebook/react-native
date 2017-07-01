@@ -30,17 +30,21 @@ static BOOL isStreamTaskSupported() {
 @implementation RCTMultipartDataTask {
   NSURL *_url;
   RCTMultipartDataTaskCallback _partHandler;
+  RCTMultipartProgressCallback _progressHandler;
   NSInteger _statusCode;
   NSDictionary *_headers;
   NSString *_boundary;
   NSMutableData *_data;
 }
 
-- (instancetype)initWithURL:(NSURL *)url partHandler:(RCTMultipartDataTaskCallback)partHandler
+- (instancetype)initWithURL:(NSURL *)url
+                partHandler:(RCTMultipartDataTaskCallback)partHandler
+            progressHandler:(RCTMultipartProgressCallback)progressHandler
 {
   if (self = [super init]) {
     _url = url;
     _partHandler = [partHandler copy];
+    _progressHandler = [progressHandler copy];
   }
   return self;
 }
@@ -119,7 +123,7 @@ didBecomeInputStream:(NSInputStream *)inputStream
 
   BOOL completed = [reader readAllParts:^(NSDictionary *headers, NSData *content, BOOL done) {
     partHandler(statusCode, headers, content, nil, done);
-  }];
+  } progressCallback:_progressHandler];
   if (!completed) {
     partHandler(statusCode, nil, nil, [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:nil], YES);
   }
