@@ -643,10 +643,6 @@ static NSBundle *bundleForPath(NSString *key)
 
 UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
 {
-  if (!RCTIsLocalAssetURL(imageURL)) {
-    return nil;
-  }
-
   NSString *imageName = RCTBundlePathForURL(imageURL);
 
   NSBundle *bundle = nil;
@@ -665,6 +661,15 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
     image = [UIImage imageNamed:imageName];
   }
 
+  if (!image) {
+    // Attempt to load from the file system
+    NSString *filePath = imageURL.path;
+    if (filePath.pathExtension.length == 0) {
+      filePath = [filePath stringByAppendingPathExtension:@"png"];
+    }
+    image = [UIImage imageWithContentsOfFile:filePath];
+  }
+
   if (!image && !bundle) {
     // We did not find the image in the mainBundle, check in other shipped frameworks.
     NSArray<NSURL *> *possibleFrameworks = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:[[NSBundle mainBundle] privateFrameworksURL]
@@ -680,7 +685,6 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
       }
     }
   }
-
   return image;
 }
 
