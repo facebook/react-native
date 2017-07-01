@@ -348,6 +348,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       }
 
       @Override
+      public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+        callback.invoke(origin, true, false);
+      }
+
+      @Override
       public void onProgressChanged(WebView view, int newProgress) {
         super.onProgressChanged(view, newProgress);
 
@@ -361,12 +366,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           new TopLoadingFinishEvent(
             view.getId(),
             event));
-      }
-    });
-
-      @Override
-      public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-        callback.invoke(origin, true, false);
       }
     });
     reactContext.addLifecycleEventListener(webView);
