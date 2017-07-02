@@ -101,7 +101,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
     if (!_setupComplete && _bridge.valid) {
       if (!_instance) {
-        if (RCT_DEBUG && _requiresMainQueueSetup) {
+        if (RCT_DEBUG && _requiresMainQueueSetup && !_allowOffMainQueueRegistration) {
           RCTAssertMainQueue();
         }
         RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] Create module", nil);
@@ -222,7 +222,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 {
   if (!_setupComplete) {
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData instanceForClass:%@]", _moduleClass]), nil);
-    if (_requiresMainQueueSetup) {
+    if (_requiresMainQueueSetup && !_allowOffMainQueueRegistration) {
       // The chances of deadlock here are low, because module init very rarely
       // calls out to other threads, however we can't control when a module might
       // get accessed by client code during bridge setup, and a very low risk of
@@ -295,13 +295,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   if (_hasConstantsToExport && !_constantsToExport) {
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData gatherConstants] %@", _moduleClass]), nil);
     (void)[self instance];
-    if (!RCTIsMainQueue()) {
-      RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
-    }
+    if (_allowOffMainQueueRegistration) {
+      _constantsToExport = [_instance constantsToExport] ?: @{};
+    } else {
+      if (!RCTIsMainQueue()) {
+        RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
+      }
 
-    RCTUnsafeExecuteOnMainQueueSync(^{
-      self->_constantsToExport = [self->_instance constantsToExport] ?: @{};
-    });
+      RCTUnsafeExecuteOnMainQueueSync(^{
+        self->_constantsToExport = [self->_instance constantsToExport] ?: @{};
+      });
+    }
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
 }

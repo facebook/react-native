@@ -239,6 +239,7 @@ class BlurOnSubmitExample extends React.Component {
           ref="4"
           style={styles.default}
           keyboardType="numeric"
+          returnKeyType="done"
           placeholder="blurOnSubmit = false"
           blurOnSubmit={false}
           onSubmitEditing={() => this.focusNextField('5')}

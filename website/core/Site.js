@@ -204,11 +204,11 @@ var Site = React.createClass({
                   <a href="docs/getting-started.html">
                     Getting Started
                   </a>
-                  <a href="docs/tutorial.html">Tutorial</a>
+                  <a href="docs/tutorial.html">Learn the Basics</a>
                   <a
-                    href="docs/integration-with-existing-apps.html"
+                    href="docs/components-and-apis.html"
                   >
-                    Integration With Existing Apps
+                    Components and APIs
                   </a>
                   <a href="docs/more-resources.html">
                     More Resources
@@ -221,13 +221,13 @@ var Site = React.createClass({
                     </a>
                   </h5>
                   <a href="/react-native/showcase.html">
-                    Showcase
+                    Who's using React Native?
                   </a>
                   <a
                     href="http://www.meetup.com/topics/react-native/"
                     target="_blank"
                   >
-                    Upcoming Events
+                    Meetups
                   </a>
                   <a
                     href="https://www.facebook.com/groups/react.native.community"
@@ -276,17 +276,30 @@ var Site = React.createClass({
                   <h5>More</h5>
                   <a href="/react-native/blog">Blog</a>
                   <a
-                    href="https://github.com/facebook/react-native"
-                    target="_blank"
-                  >
-                    GitHub
-                  </a>
-                  <a
                     href="http://facebook.github.io/react/"
                     target="_blank"
                   >
                     React
                   </a>
+                  <a
+                    href="https://github.com/facebook/react-native"
+                    target="_blank"
+                  >
+                    GitHub
+                  </a>
+                  <div className="githubButton">
+                    <a
+                      className="github-button"
+                      href="https://github.com/facebook/react-native"
+                      data-icon="octicon-star"
+                      data-count-href="/facebook/react-native/stargazers"
+                      data-count-api="/repos/facebook/react-native#stargazers_count"
+                      data-count-aria-label="# stargazers on GitHub"
+                      aria-label="Star facebook/react-native on GitHub"
+                    >
+                      Star
+                    </a>
+                  </div>
                 </div>
               </section>
               <section className="newsletter">
@@ -404,6 +417,11 @@ var Site = React.createClass({
           <script
             type="text/javascript"
             src="https://snack.expo.io/embed.js"
+          />
+          <script
+            async
+            defer
+            src="https://buttons.github.io/buttons.js"
           />
         </body>
       </html>

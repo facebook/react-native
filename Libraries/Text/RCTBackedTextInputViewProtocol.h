@@ -9,23 +9,15 @@
 
 #import <UIKit/UIKit.h>
 
-#import <RCTText/RCTBackedTextInputViewProtocol.h>
+@protocol RCTBackedTextInputViewProtocol <UITextInput>
 
-NS_ASSUME_NONNULL_BEGIN
-
-/*
- * Just regular UITextField... but much better!
- */
-@interface RCTUITextField : UITextField <RCTBackedTextInputViewProtocol>
-
-- (instancetype)initWithCoder:(NSCoder *)decoder NS_UNAVAILABLE;
-
-@property (nonatomic, assign) BOOL caretHidden;
-@property (nonatomic, assign, readonly) BOOL textWasPasted;
+@property (nonatomic, copy, nullable) NSString *text;
+@property (nonatomic, strong, nullable) UIColor *textColor;
+@property (nonatomic, copy, nullable) NSString *placeholder;
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;
+@property (nonatomic, assign, readonly) BOOL textWasPasted;
+@property (nonatomic, strong, nullable) UIFont *font;
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
-@property (nonatomic, assign, getter=isEditable) BOOL editable;
+@property (nonatomic, strong, nullable) UIView *inputAccessoryView;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -53,6 +53,7 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.devsupport.RedBoxHandler;
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.modules.appregistry.AppRegistry;
@@ -221,6 +222,7 @@ public class ReactInstanceManager {
     @Nullable RedBoxHandler redBoxHandler,
     boolean lazyNativeModulesEnabled,
     boolean lazyViewManagersEnabled,
+    @Nullable DevBundleDownloadListener devBundleDownloadListener,
     boolean setupReactContextInBackgroundEnabled,
     boolean useSeparateUIBackgroundThread,
     int minNumShakes) {
@@ -242,6 +244,7 @@ public class ReactInstanceManager {
         mJSMainModuleName,
         useDeveloperSupport,
         redBoxHandler,
+        devBundleDownloadListener,
         minNumShakes);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;

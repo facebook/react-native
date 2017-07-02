@@ -10,6 +10,10 @@
 #include <cxxreact/MessageQueueThread.h>
 #include <jschelpers/JavaScriptCore.h>
 
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
+
 namespace facebook {
 namespace react {
 
@@ -28,7 +32,7 @@ enum ReactMarkerId {
 };
 
 using LogTaggedMarker = std::function<void(const ReactMarkerId, const char* tag)>;
-extern LogTaggedMarker logTaggedMarker;
+extern RN_EXPORT LogTaggedMarker logTaggedMarker;
 
 extern void logMarker(const ReactMarkerId markerId);
 
@@ -43,11 +47,11 @@ using Hook = JSValueRef(*)(
   size_t argumentCount,
   const JSValueRef arguments[],
   JSValueRef *exception);
-extern Hook loggingHook;
-extern Hook nowHook;
+extern RN_EXPORT Hook loggingHook;
+extern RN_EXPORT Hook nowHook;
 
 using ConfigurationHook = std::function<void(JSGlobalContextRef)>;
-extern ConfigurationHook installPerfHooks;
+extern RN_EXPORT ConfigurationHook installPerfHooks;
 
 }
 
