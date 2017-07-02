@@ -18,15 +18,21 @@ module.exports = function linkAssetsIOS(files, projectConfig) {
 
   createGroupWithMessage(project, 'Resources');
 
-  const fonts = (assets.font || [])
-    .map(asset =>
-      project.addResourceFile(
-        path.relative(projectConfig.sourceDir, asset),
-        { target: project.getFirstTarget().uuid }
+  function addResourceFile(f) {
+    return (f || [])
+      .map(asset =>
+        project.addResourceFile(
+          path.relative(projectConfig.sourceDir, asset),
+          { target: project.getFirstTarget().uuid }
+        )
       )
-    )
-    .filter(file => file)   // xcode returns false if file is already there
-    .map(file => file.basename);
+      .filter(file => file)   // xcode returns false if file is already there
+      .map(file => file.basename);
+  }
+
+  addResourceFile(assets.image);
+
+  const fonts = addResourceFile(assets.font);
 
   const existingFonts = (plist.UIAppFonts || []);
   const allFonts = [...existingFonts, ...fonts];
