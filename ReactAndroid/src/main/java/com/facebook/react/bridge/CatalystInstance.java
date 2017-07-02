@@ -27,6 +27,9 @@ public interface CatalystInstance
     extends MemoryPressureListener, JSInstance {
   void runJSBundle();
 
+  // Returns the status of running the JS bundle; waits for an answer if runJSBundle is running
+  boolean hasRunJSBundle();
+
   /**
    * Return the source URL of the JS Bundle that was run, or {@code null} if no JS
    * bundle has been run yet.
@@ -64,6 +67,12 @@ public interface CatalystInstance
   <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface);
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
   Collection<NativeModule> getNativeModules();
+
+  /**
+   * This method permits a CatalystInstance to extend the known
+   * Native modules. This provided registry contains only the new modules to load.
+   */
+  void extendNativeModules(NativeModuleRegistry modules);
 
   /**
    * Adds a idle listener for this Catalyst instance. The listener will receive notifications

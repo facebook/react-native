@@ -13,10 +13,10 @@
 
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Platform = require('Platform');
+const PropTypes = require('prop-types');
 const StyleSheetPropType = require('StyleSheetPropType');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
-const { PropTypes } = require('React');
 const {
   AccessibilityComponentTypes,
   AccessibilityTraits,
@@ -218,8 +218,6 @@ module.exports = {
    * Used to locate this view from native classes.
    *
    * > This disables the 'layout-only view removal' optimization for this view!
-   *
-   * @platform android
    */
   nativeID: PropTypes.string,
 

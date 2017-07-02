@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const xcode = require('xcode');
 const mapHeaderSearchPaths = require('../../ios/mapHeaderSearchPaths');
 const path = require('path');

@@ -4,10 +4,32 @@ const path = require('path');
 const manifest = fs.readFileSync(path.join(__dirname, './files/AndroidManifest.xml'));
 const mainJavaClass = fs.readFileSync(path.join(__dirname, './files/Main.java'));
 
-exports.valid = {
+function generateValidFileStructure(classFileName) {
+  return {
+    src: {
+      'AndroidManifest.xml': manifest,
+      main: {
+        com: {
+          some: {
+            example: {
+              'Main.java': mainJavaClass,
+              [classFileName]: fs.readFileSync(path.join(__dirname, `./files/${classFileName}`)),
+            },
+          },
+        },
+      },
+    },
+  };
+}
+
+exports.valid = generateValidFileStructure('ReactPackage.java');
+
+exports.validKotlin = generateValidFileStructure('ReactPackage.kt');
+
+exports.userConfigManifest = {
   src: {
-    'AndroidManifest.xml': manifest,
     main: {
+      'AndroidManifest.xml': manifest,
       com: {
         some: {
           example: {
@@ -16,6 +38,9 @@ exports.valid = {
           },
         },
       },
+    },
+    debug: {
+      'AndroidManifest.xml': fs.readFileSync(path.join(__dirname, './files/AndroidManifest-debug.xml')),
     },
   },
 };

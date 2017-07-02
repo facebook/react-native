@@ -142,6 +142,9 @@ const Image = React.createClass({
      * The native side will then choose the best `uri` to display based on the
      * measured size of the image container. A `cache` property can be added to
      * control how networked request interacts with the local cache.
+     *
+     * The currently supported formats are `png`, `jpg`, `jpeg`, `bmp`, `gif`,
+     * `webp` (Android only), `psd` (iOS only).
      */
     source: ImageSourcePropType,
     /**

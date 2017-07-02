@@ -21,6 +21,7 @@
 #import <React/RCTUtils.h>
 #import <React/RCTWebSocketObserverProtocol.h>
 
+#import "RCTPackagerConnectionBridgeConfig.h"
 #import "RCTReloadPackagerMethod.h"
 #import "RCTSamplingProfilerPackagerMethod.h"
 
@@ -30,19 +31,22 @@
 @end
 
 @implementation RCTPackagerConnection {
-  RCTBridge *_bridge;
+  NSURL *_packagerURL;
   RCTReconnectingWebSocket *_socket;
   NSMutableDictionary<NSString *, id<RCTPackagerClientMethod>> *_handlers;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
++ (instancetype)connectionForBridge:(RCTBridge *)bridge
+{
+  RCTPackagerConnectionBridgeConfig *config = [[RCTPackagerConnectionBridgeConfig alloc] initWithBridge:bridge];
+  return [[[self class] alloc] initWithConfig:config];
+}
+
+- (instancetype)initWithConfig:(id<RCTPackagerConnectionConfig>)config
 {
   if (self = [super init]) {
-    _bridge = bridge;
-
-    _handlers = [NSMutableDictionary new];
-    _handlers[@"reload"] = [[RCTReloadPackagerMethod alloc] initWithBridge:bridge];
-    _handlers[@"pokeSamplingProfiler"] = [[RCTSamplingProfilerPackagerMethod alloc] initWithBridge:bridge];
+    _packagerURL = [config packagerURL];
+    _handlers = [[config defaultPackagerMethods] mutableCopy];
 
     [self connect];
   }
@@ -53,7 +57,7 @@
 {
   RCTAssertMainQueue();
 
-  NSURL *url = [self packagerURL];
+  NSURL *url = _packagerURL;
   if (!url) {
     return;
   }
@@ -76,23 +80,6 @@
 
   webSocket.delegate = self;
 }
-
-- (NSURL *)packagerURL
-{
-  NSString *host = [_bridge.bundleURL host];
-  NSString *scheme = [_bridge.bundleURL scheme];
-  if (!host) {
-    host = @"localhost";
-    scheme = @"http";
-  }
-
-  NSNumber *port = [_bridge.bundleURL port];
-  if (!port) {
-    port = @8081; // Packager default port
-  }
-  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/message?role=ios-rn-rctdevmenu", scheme, host, port]];
-}
-
 
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forMethod:(NSString *)name
 {

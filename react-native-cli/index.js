@@ -26,6 +26,9 @@
 // The only reason to modify this file is to add more warnings and
 // troubleshooting information for the `react-native init` command.
 //
+// To allow for graceful failure on older node versions, this file should
+// retain ES5 compatibility.
+//
 // Do not make breaking changes! We absolutely don't want to have to
 // tell people to update their global version of react-native-cli.
 //
@@ -87,7 +90,7 @@ function getYarnVersionIfAvailable() {
   try {
     // execSync returns a Buffer -> convert to string
     if (process.platform.startsWith('win')) {
-      yarnVersion = (execSync('yarn --version').toString() || '').trim();
+      yarnVersion = (execSync('yarn --version 2> NUL').toString() || '').trim();
     } else {
       yarnVersion = (execSync('yarn --version 2>/dev/null').toString() || '').trim();
     }
@@ -266,9 +269,9 @@ function getInstallPackage(rnPackage) {
 }
 
 function run(root, projectName, options) {
-  const rnPackage = options.version; // e.g. '0.38' or '/path/to/archive.tgz'
-  const forceNpmClient = options.npm;
-  const yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
+  var rnPackage = options.version; // e.g. '0.38' or '/path/to/archive.tgz'
+  var forceNpmClient = options.npm;
+  var yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
   var installCommand;
   if (options.installCommand) {
     // In CI environments it can be useful to provide a custom command,

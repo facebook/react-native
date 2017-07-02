@@ -9,8 +9,6 @@
  */
 'use strict';
 
-jest.unmock('SceneTracker');
-
 const SceneTracker = require('SceneTracker');
 
 describe('setActiveScene', function() {

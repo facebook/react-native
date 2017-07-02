@@ -69,13 +69,20 @@
     "pinned": true
   },
   {
+    "name": "UberEATS",
+    "icon": "http://is5.mzstatic.com/image/thumb/Purple111/v4/5f/e9/00/5fe90072-c9ce-87c3-bdfe-8611f9325f0e/source/175x175bb.jpg",
+    "infoLink": "https://eng.uber.com/ubereats-react-native/",
+    "infoTitle": "Powering UberEATS with React Native and Uber Engineering",
+    "pinned": false
+  },
+  {
     "name": "Baidu Mobile (手机百度)",
     "icon": "http://a3.mzstatic.com/us/r30/Purple62/v4/90/7c/9b/907c9b4e-556d-1a45-45d4-0ea801719abd/icon175x175.png",
     "linkPlayStore": "http://shouji.baidu.com/software/9896302.html",
     "linkAppStore": "https://itunes.apple.com/us/app/%E6%89%8B%E6%9C%BA%E7%99%BE%E5%BA%A6-%E7%99%BE%E5%BA%A6%E4%B8%80%E4%B8%8B%E4%BD%A0%E5%B0%B1%E5%BE%97%E5%88%B0/id382201985?mt=8",
     "infoLink": "http://baike.baidu.com/link?url=TW8YhcVN4tO_Jz5VqMclCjGhf12EEqMD_TeVC6efe2REZlx80r6T0dX96hdmNl36XogLyExXzrvFU9rFeqxg_K",
     "infoTitle": "Baidu Mobile is a search engine used by over 600 million people in China",
-    "pinned": true
+    "pinned": false
   },
   {
     "name": "Bloomberg",
@@ -84,7 +91,7 @@
     "linkPlayStore": "https://play.google.com/store/apps/details?id=com.bloomberg.android.plus&hl=en",
     "infoLink": "https://www.techatbloomberg.com/blog/bloomberg-used-react-native-develop-new-consumer-app/",
     "infoTitle": "How Bloomberg Used React Native to Develop its new Consumer App",
-    "pinned": true
+    "pinned": false
   },
   {
     "name": "Vogue",
@@ -92,7 +99,7 @@
     "linkAppStore": "https://itunes.apple.com/app/apple-store/id1087973225?pt=45076&ct=site-promo&mt=8",
     "infoLink": "http://www.vogue.com/app",
     "infoTitle": "",
-    "pinned": true
+    "pinned": false
   },
   {
     "name": "li.st",
@@ -100,15 +107,15 @@
     "linkPlayStore": "https://play.google.com/store/apps/details?id=st.li.listapp",
     "infoLink": "https://www.youtube.com/watch?v=cI9bDvDEsYE",
     "infoTitle": "Building li.st for Android with React Native",
-    "pinned": true
+    "pinned": false
   },
   {
     "name": "Discord",
     "icon": "http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg",
-    "linkAppStore":  "https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8",
-    "infoLink": "https://discord.engineering/react-native-deep-dive-91fd5e949933#.5jnqftgof",
+    "linkAppStore": "https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8",
+    "infoLink": "https://blog.discordapp.com/using-react-native-one-year-later-91fd5e949933",
     "infoTitle": "Using React Native: One Year Later",
-    "pinned": true
+    "pinned": false
   },
   {
     "name": "Gyroscope",
@@ -116,7 +123,7 @@
     "linkAppStore": "https://itunes.apple.com/app/apple-store/id1104085053?pt=117927205&ct=website&mt=8",
     "infoLink": "https://blog.gyrosco.pe/building-the-app-1dac1a97d253",
     "infoTitle": "Building a visualization experience with React Native",
-    "pinned": true
+    "pinned": false
   },
   {
     "name": "Townske",
@@ -124,7 +131,7 @@
     "linkAppStore": "https://itunes.apple.com/us/app/townske-stunning-city-guides/id1018136179?ls=1&mt=8",
     "infoLink": "https://hackernoon.com/townske-app-in-react-native-6ad557de7a7c",
     "infoTitle": "The experience of a web developer building an app using React Native",
-    "pinned": true
+    "pinned": false
   },
   {
     "name": "SoundCloud Pulse",
@@ -194,10 +201,12 @@
     "pinned": false
   },
   {
-    "name": "UberEATS",
-    "icon": "http://is5.mzstatic.com/image/thumb/Purple111/v4/5f/e9/00/5fe90072-c9ce-87c3-bdfe-8611f9325f0e/source/175x175bb.jpg",
-    "infoLink": "https://eng.uber.com/ubereats-react-native/",
-    "infoTitle": "Powering UberEATS with React Native and Uber Engineering",
+    "name": "Wix.com",
+    "icon": "http://is3.mzstatic.com/image/thumb/Purple127/v4/2e/57/7c/2e577c81-6de3-4a23-516c-31200401471a/source/350x350bb.jpg",
+    "linkAppStore": "https://itunes.apple.com/us/app/wix-com/id1099748482?mt=8",
+    "linkPlayStore": "https://play.google.com/store/apps/details?id=com.wix.android&hl=en",
+    "infoLink": "https://www.youtube.com/watch?v=abSNo2P9mMM",
+    "infoTitle": "Building a React Native App for 80 Million Users",
     "pinned": false
   }
 ]

@@ -1,11 +1,11 @@
 ---
 id: colors
-title: Colors
+title: Color Reference
 layout: docs
 category: Guides
 permalink: docs/colors.html
-next: platform-specific-code
-previous: images
+next: integration-with-existing-apps
+previous: direct-manipulation
 ---
 
 Components in React Native are [styled using JavaScript](docs/style.html). Color properties usually match how [CSS works on the web](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).

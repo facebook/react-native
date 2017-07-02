@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const groupFilesByType = require('../groupFilesByType');
 
 describe('groupFilesByType', () => {

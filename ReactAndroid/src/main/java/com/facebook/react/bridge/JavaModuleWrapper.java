@@ -122,36 +122,35 @@ public class JavaModuleWrapper {
     return mDescs;
   }
 
-  // TODO mhorowitz: make this return NativeMap, which requires moving
-  // NativeMap out of OnLoad.
   @DoNotStrip
-  public @Nullable NativeArray getConstants() {
+  public @Nullable NativeMap getConstants() {
     if (!mModuleHolder.getHasConstants()) {
       return null;
     }
-    BaseJavaModule baseJavaModule = getModule();
-    ReactMarker.logMarker(GET_CONSTANTS_START, getName());
-    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "Map constants")
-      .arg("moduleName", getName())
+
+    final String moduleName = getName();
+    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "JavaModuleWrapper.getConstants")
+      .arg("moduleName", moduleName)
       .flush();
+    ReactMarker.logMarker(GET_CONSTANTS_START, moduleName);
+
+    BaseJavaModule baseJavaModule = getModule();
+
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "module.getConstants");
     Map<String, Object> map = baseJavaModule.getConstants();
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
-    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "WritableNativeMap constants")
-      .arg("moduleName", getName())
-      .flush();
-    ReactMarker.logMarker(CONVERT_CONSTANTS_START, getName());
-    WritableNativeMap writableNativeMap;
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "create WritableNativeMap");
+    ReactMarker.logMarker(CONVERT_CONSTANTS_START, moduleName);
     try {
-      writableNativeMap = Arguments.makeNativeMap(map);
+      return Arguments.makeNativeMap(map);
     } finally {
+      ReactMarker.logMarker(CONVERT_CONSTANTS_END);
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+
+      ReactMarker.logMarker(GET_CONSTANTS_END);
+      SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
-    WritableNativeArray array = new WritableNativeArray();
-    array.pushMap(writableNativeMap);
-    ReactMarker.logMarker(CONVERT_CONSTANTS_END);
-    ReactMarker.logMarker(GET_CONSTANTS_END);
-    return array;
   }
 
   @DoNotStrip

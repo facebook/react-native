@@ -29,9 +29,12 @@ import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 
+import org.junit.Ignore;
+
 /**
  * Test marshalling return values from Java to JS
  */
+@Ignore("Fix prop types and view managers.")
 public class CatalystNativeJavaToJSReturnValuesTestCase extends ReactIntegrationTestCase {
 
   private interface TestJavaToJSReturnValuesModule extends JavaScriptModule {
@@ -123,7 +126,6 @@ public class CatalystNativeJavaToJSReturnValuesTestCase extends ReactIntegration
         .addNativeModule(new DeviceInfoModule(getContext()))
         .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
-        .addJSModule(TestJavaToJSReturnValuesModule.class)
         .addNativeModule(mUIManager)
         .addNativeModule(new TestModule())
         .build();

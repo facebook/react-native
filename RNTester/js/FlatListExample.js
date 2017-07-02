@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const Alert = require('Alert');
 const React = require('react');
 const ReactNative = require('react-native');
 const {
@@ -54,6 +55,7 @@ class FlatListExample extends React.PureComponent {
     data: genItemData(100),
     debug: false,
     horizontal: false,
+    inverted: false,
     filterText: '',
     fixedHeight: true,
     logViewable: false,
@@ -110,6 +112,7 @@ class FlatListExample extends React.PureComponent {
               {renderSmallSwitchOption(this, 'horizontal')}
               {renderSmallSwitchOption(this, 'fixedHeight')}
               {renderSmallSwitchOption(this, 'logViewable')}
+              {renderSmallSwitchOption(this, 'inverted')}
               {renderSmallSwitchOption(this, 'debug')}
               <Spindicator value={this._scrollPos} />
             </View>
@@ -127,6 +130,7 @@ class FlatListExample extends React.PureComponent {
               undefined
             }
             horizontal={this.state.horizontal}
+            inverted={this.state.inverted}
             key={(this.state.horizontal ? 'h' : 'v') +
               (this.state.fixedHeight ? 'f' : 'd')
             }
@@ -160,7 +164,7 @@ class FlatListExample extends React.PureComponent {
       data: state.data.concat(genItemData(100, state.data.length)),
     }));
   };
-  _onRefresh = () => alert('onRefresh: nothing to refresh :P');
+  _onRefresh = () => Alert.alert('onRefresh: nothing to refresh :P');
   _renderItemComponent = ({item, separators}) => {
     return (
       <ItemComponent

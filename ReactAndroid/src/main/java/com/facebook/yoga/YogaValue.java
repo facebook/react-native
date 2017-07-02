@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -15,6 +15,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 public class YogaValue {
   static final YogaValue UNDEFINED = new YogaValue(YogaConstants.UNDEFINED, YogaUnit.UNDEFINED);
   static final YogaValue ZERO = new YogaValue(0, YogaUnit.POINT);
+  static final YogaValue AUTO = new YogaValue(YogaConstants.UNDEFINED, YogaUnit.AUTO);
 
   public final float value;
   public final YogaUnit unit;
@@ -59,5 +60,25 @@ public class YogaValue {
       default:
         throw new IllegalStateException();
     }
+  }
+
+  public static YogaValue parse(String s) {
+    if (s == null) {
+      return null;
+    }
+
+    if ("undefined".equals(s)) {
+      return UNDEFINED;
+    }
+
+    if ("auto".equals(s)) {
+      return AUTO;
+    }
+
+    if (s.endsWith("%")) {
+      return new YogaValue(Float.parseFloat(s.substring(0, s.length() - 1)), YogaUnit.PERCENT);
+    }
+
+    return new YogaValue(Float.parseFloat(s), YogaUnit.POINT);
   }
 }

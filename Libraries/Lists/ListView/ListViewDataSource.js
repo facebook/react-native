@@ -8,6 +8,7 @@
  *
  * @providesModule ListViewDataSource
  * @flow
+ * @format
  */
 'use strict';
 
@@ -18,26 +19,26 @@ var warning = require('fbjs/lib/warning');
 function defaultGetRowData(
   dataBlob: any,
   sectionID: number | string,
-  rowID: number | string
+  rowID: number | string,
 ): any {
   return dataBlob[sectionID][rowID];
 }
 
 function defaultGetSectionHeaderData(
   dataBlob: any,
-  sectionID: number | string
+  sectionID: number | string,
 ): any {
   return dataBlob[sectionID];
 }
 
-type differType = (data1: any, data2: any) => bool;
+type differType = (data1: any, data2: any) => boolean;
 
 type ParamType = {
   rowHasChanged: differType,
   getRowData?: ?typeof defaultGetRowData,
   sectionHeaderHasChanged?: ?differType,
   getSectionHeaderData?: ?typeof defaultGetSectionHeaderData,
-}
+};
 
 /**
  * Provides efficient data processing and access to the
@@ -74,7 +75,6 @@ type ParamType = {
  */
 
 class ListViewDataSource {
-
   /**
    * You can provide custom extraction and `hasChanged` functions for section
    * headers and rows.  If absent, data will be extracted with the
@@ -103,7 +103,7 @@ class ListViewDataSource {
   constructor(params: ParamType) {
     invariant(
       params && typeof params.rowHasChanged === 'function',
-      'Must provide a rowHasChanged function.'
+      'Must provide a rowHasChanged function.',
     );
     this._rowHasChanged = params.rowHasChanged;
     this._getRowData = params.getRowData || defaultGetRowData;
@@ -138,10 +138,10 @@ class ListViewDataSource {
    * handle merging of old and new data separately and then pass that into
    * this function as the `dataBlob`.
    */
-   cloneWithRows(
-       dataBlob: $ReadOnlyArray<any> | {+[key: string]: any},
-       rowIdentities: ?$ReadOnlyArray<string>
-   ): ListViewDataSource {
+  cloneWithRows(
+    dataBlob: $ReadOnlyArray<any> | {+[key: string]: any},
+    rowIdentities: ?$ReadOnlyArray<string>,
+  ): ListViewDataSource {
     var rowIds = rowIdentities ? [[...rowIdentities]] : null;
     if (!this._sectionHeaderHasChanged) {
       this._sectionHeaderHasChanged = () => false;
@@ -161,17 +161,19 @@ class ListViewDataSource {
    * Note: this returns a new object!
    */
   cloneWithRowsAndSections(
-      dataBlob: any,
-      sectionIdentities: ?Array<string>,
-      rowIdentities: ?Array<Array<string>>
+    dataBlob: any,
+    sectionIdentities: ?Array<string>,
+    rowIdentities: ?Array<Array<string>>,
   ): ListViewDataSource {
     invariant(
       typeof this._sectionHeaderHasChanged === 'function',
-      'Must provide a sectionHeaderHasChanged function with section data.'
+      'Must provide a sectionHeaderHasChanged function with section data.',
     );
     invariant(
-      !sectionIdentities || !rowIdentities || sectionIdentities.length === rowIdentities.length,
-      'row and section ids lengths must be the same'
+      !sectionIdentities ||
+        !rowIdentities ||
+        sectionIdentities.length === rowIdentities.length,
+      'row and section ids lengths must be the same',
     );
 
     var newSource = new ListViewDataSource({
@@ -190,7 +192,7 @@ class ListViewDataSource {
       newSource.rowIdentities = rowIdentities;
     } else {
       newSource.rowIdentities = [];
-      newSource.sectionIdentities.forEach((sectionID) => {
+      newSource.sectionIdentities.forEach(sectionID => {
         newSource.rowIdentities.push(Object.keys(dataBlob[sectionID]));
       });
     }
@@ -199,7 +201,7 @@ class ListViewDataSource {
     newSource._calculateDirtyArrays(
       this._dataBlob,
       this.sectionIdentities,
-      this.rowIdentities
+      this.rowIdentities,
     );
 
     return newSource;
@@ -210,16 +212,18 @@ class ListViewDataSource {
   }
 
   getRowAndSectionCount(): number {
-   return (this._cachedRowCount + this.sectionIdentities.length);
+    return this._cachedRowCount + this.sectionIdentities.length;
   }
 
   /**
    * Returns if the row is dirtied and needs to be rerendered
    */
-  rowShouldUpdate(sectionIndex: number, rowIndex: number): bool {
+  rowShouldUpdate(sectionIndex: number, rowIndex: number): boolean {
     var needsUpdate = this._dirtyRows[sectionIndex][rowIndex];
-    warning(needsUpdate !== undefined,
-      'missing dirtyBit for section, row: ' + sectionIndex + ', ' + rowIndex);
+    warning(
+      needsUpdate !== undefined,
+      'missing dirtyBit for section, row: ' + sectionIndex + ', ' + rowIndex,
+    );
     return needsUpdate;
   }
 
@@ -231,7 +235,7 @@ class ListViewDataSource {
     var rowID = this.rowIdentities[sectionIndex][rowIndex];
     warning(
       sectionID !== undefined && rowID !== undefined,
-      'rendering invalid section, row: ' + sectionIndex + ', ' + rowIndex
+      'rendering invalid section, row: ' + sectionIndex + ', ' + rowIndex,
     );
     return this._getRowData(this._dataBlob, sectionID, rowID);
   }
@@ -282,10 +286,12 @@ class ListViewDataSource {
   /**
    * Returns if the section header is dirtied and needs to be rerendered
    */
-  sectionHeaderShouldUpdate(sectionIndex: number): bool {
+  sectionHeaderShouldUpdate(sectionIndex: number): boolean {
     var needsUpdate = this._dirtySections[sectionIndex];
-    warning(needsUpdate !== undefined,
-      'missing dirtyBit for section: ' + sectionIndex);
+    warning(
+      needsUpdate !== undefined,
+      'missing dirtyBit for section: ' + sectionIndex,
+    );
     return needsUpdate;
   }
 
@@ -297,8 +303,10 @@ class ListViewDataSource {
       return null;
     }
     var sectionID = this.sectionIdentities[sectionIndex];
-    warning(sectionID !== undefined,
-      'renderSection called on invalid section: ' + sectionIndex);
+    warning(
+      sectionID !== undefined,
+      'renderSection called on invalid section: ' + sectionIndex,
+    );
     return this._getSectionHeaderData(this._dataBlob, sectionID);
   }
 
@@ -312,8 +320,8 @@ class ListViewDataSource {
   _sectionHeaderHasChanged: ?differType;
 
   _dataBlob: any;
-  _dirtyRows: Array<Array<bool>>;
-  _dirtySections: Array<bool>;
+  _dirtyRows: Array<Array<boolean>>;
+  _dirtySections: Array<boolean>;
   _cachedRowCount: number;
 
   // These two 'protected' variables are accessed by ListView to iterate over
@@ -324,7 +332,7 @@ class ListViewDataSource {
   _calculateDirtyArrays(
     prevDataBlob: any,
     prevSectionIDs: Array<string>,
-    prevRowIDs: Array<Array<string>>
+    prevRowIDs: Array<Array<string>>,
   ): void {
     // construct a hashmap of the existing (old) id arrays
     var prevSectionsHash = keyedDictionaryFromArray(prevSectionIDs);
@@ -333,7 +341,7 @@ class ListViewDataSource {
       var sectionID = prevSectionIDs[ii];
       warning(
         !prevRowsHash[sectionID],
-        'SectionID appears more than once: ' + sectionID
+        'SectionID appears more than once: ' + sectionID,
       );
       prevRowsHash[sectionID] = keyedDictionaryFromArray(prevRowIDs[ii]);
     }
@@ -351,13 +359,17 @@ class ListViewDataSource {
       if (!dirty && sectionHeaderHasChanged) {
         dirty = sectionHeaderHasChanged(
           this._getSectionHeaderData(prevDataBlob, sectionID),
-          this._getSectionHeaderData(this._dataBlob, sectionID)
+          this._getSectionHeaderData(this._dataBlob, sectionID),
         );
       }
       this._dirtySections.push(!!dirty);
 
       this._dirtyRows[sIndex] = [];
-      for (var rIndex = 0; rIndex < this.rowIdentities[sIndex].length; rIndex++) {
+      for (
+        var rIndex = 0;
+        rIndex < this.rowIdentities[sIndex].length;
+        rIndex++
+      ) {
         var rowID = this.rowIdentities[sIndex][rIndex];
         // dirty if the section is new, row is new or _rowHasChanged is true
         dirty =
@@ -365,7 +377,7 @@ class ListViewDataSource {
           !prevRowsHash[sectionID][rowID] ||
           this._rowHasChanged(
             this._getRowData(prevDataBlob, sectionID, rowID),
-            this._getRowData(this._dataBlob, sectionID, rowID)
+            this._getRowData(this._dataBlob, sectionID, rowID),
           );
         this._dirtyRows[sIndex].push(!!dirty);
       }
@@ -394,6 +406,5 @@ function keyedDictionaryFromArray(arr) {
   }
   return result;
 }
-
 
 module.exports = ListViewDataSource;

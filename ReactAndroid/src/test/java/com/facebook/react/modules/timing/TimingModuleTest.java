@@ -16,7 +16,7 @@ import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.modules.core.ChoreographerCompat;
-import com.facebook.react.modules.core.JSTimersExecution;
+import com.facebook.react.modules.core.JSTimers;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.core.Timing;
 
@@ -51,7 +51,7 @@ public class TimingModuleTest {
   private PostFrameCallbackHandler mPostFrameCallbackHandler;
   private PostFrameIdleCallbackHandler mIdlePostFrameCallbackHandler;
   private long mCurrentTimeNs;
-  private JSTimersExecution mJSTimersMock;
+  private JSTimers mJSTimersMock;
 
   @Rule
   public PowerMockRule rule = new PowerMockRule();
@@ -97,8 +97,8 @@ public class TimingModuleTest {
         any(ChoreographerCompat.FrameCallback.class));
 
     mTiming = new Timing(reactContext, mock(DevSupportManager.class));
-    mJSTimersMock = mock(JSTimersExecution.class);
-    when(reactContext.getJSModule(JSTimersExecution.class)).thenReturn(mJSTimersMock);
+    mJSTimersMock = mock(JSTimers.class);
+    when(reactContext.getJSModule(JSTimers.class)).thenReturn(mJSTimersMock);
 
     doAnswer(new Answer() {
       @Override

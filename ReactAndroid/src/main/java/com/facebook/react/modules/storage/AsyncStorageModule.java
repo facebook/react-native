@@ -25,7 +25,6 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.SetBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.common.ModuleDataCleaner;
 
@@ -95,7 +94,7 @@ public final class AsyncStorageModule
         }
 
         String[] columns = {KEY_COLUMN, VALUE_COLUMN};
-        HashSet<String> keysRemaining = SetBuilder.newHashSet();
+        HashSet<String> keysRemaining = new HashSet<>();
         WritableArray data = Arguments.createArray();
         for (int keyStart = 0; keyStart < keys.size(); keyStart += MAX_SQL_KEYS) {
           int keyCount = Math.min(keys.size() - keyStart, MAX_SQL_KEYS);

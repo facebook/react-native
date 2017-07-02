@@ -9,7 +9,6 @@
 'use strict';
 
 jest
-  .disableAutomock()
   .setMock('Text', {})
   .setMock('View', {})
   .setMock('Image', {})

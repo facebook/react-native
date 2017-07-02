@@ -22,33 +22,23 @@
 
 @implementation RCTTextView
 {
-  RCTBridge *_bridge;
-  RCTEventDispatcher *_eventDispatcher;
-
   RCTUITextView *_textView;
   RCTText *_richTextView;
   NSAttributedString *_pendingAttributedText;
 
   UITextRange *_previousSelectionRange;
-  NSUInteger _previousTextLength;
-  CGFloat _previousContentHeight;
   NSString *_predictedText;
 
   BOOL _blockTextShouldChange;
   BOOL _nativeUpdatesInFlight;
   NSInteger _nativeEventCount;
-
-  CGSize _previousContentSize;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   RCTAssertParam(bridge);
 
-  if (self = [super initWithFrame:CGRectZero]) {
-    _contentInset = UIEdgeInsetsZero;
-    _bridge = bridge;
-    _eventDispatcher = bridge.eventDispatcher;
+  if (self = [super initWithBridge:bridge]) {
     _blurOnSubmit = NO;
 
     _textView = [[RCTUITextView alloc] initWithFrame:self.bounds];
@@ -70,6 +60,11 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+- (id<RCTBackedTextInputViewProtocol>)backedTextInputView
+{
+  return _textView;
+}
 
 #pragma mark - RCTComponent
 
@@ -205,12 +200,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 - (void)setFont:(UIFont *)font
 {
   _textView.font = font;
-}
-
-- (void)setContentInset:(UIEdgeInsets)contentInset
-{
-  _contentInset = contentInset;
-  _textView.textContainerInset = contentInset;
   [self setNeedsLayout];
 }
 
@@ -262,46 +251,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
     RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
   }
-}
-
-- (NSString *)placeholder
-{
-  return _textView.placeholderText;
-}
-
-- (void)setPlaceholder:(NSString *)placeholder
-{
-  _textView.placeholderText = placeholder;
-}
-
-- (UIColor *)placeholderTextColor
-{
-  return _textView.placeholderTextColor;
-}
-
-- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
-{
-  _textView.placeholderTextColor = placeholderTextColor;
-}
-
-- (void)setAutocorrectionType:(UITextAutocorrectionType)autocorrectionType
-{
-  _textView.autocorrectionType = autocorrectionType;
-}
-
-- (UITextAutocorrectionType)autocorrectionType
-{
-  return _textView.autocorrectionType;
-}
-
-- (void)setSpellCheckingType:(UITextSpellCheckingType)spellCheckingType
-{
-  _textView.spellCheckingType = spellCheckingType;
-}
-
-- (UITextSpellCheckingType)spellCheckingType
-{
-  return _textView.spellCheckingType;
 }
 
 #pragma mark - UITextViewDelegate
@@ -490,31 +439,12 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   _nativeUpdatesInFlight = NO;
   _nativeEventCount++;
 
-  // TODO: t16435709 This part will be removed soon.
   if (!self.reactTag || !_onChange) {
     return;
   }
 
-  // When the context size increases, iOS updates the contentSize twice; once
-  // with a lower height, then again with the correct height. To prevent a
-  // spurious event from being sent, we track the previous, and only send the
-  // update event if it matches our expectation that greater text length
-  // should result in increased height. This assumption is, of course, not
-  // necessarily true because shorter text might include more linebreaks, but
-  // in practice this works well enough.
-  NSUInteger textLength = textView.text.length;
-  CGFloat contentHeight = textView.contentSize.height;
-  if (textLength >= _previousTextLength) {
-    contentHeight = MAX(contentHeight, _previousContentHeight);
-  }
-  _previousTextLength = textLength;
-  _previousContentHeight = contentHeight;
   _onChange(@{
     @"text": self.text,
-    @"contentSize": @{
-      @"height": @(contentHeight),
-      @"width": @(textView.contentSize.width)
-    },
     @"target": self.reactTag,
     @"eventCount": @(_nativeEventCount),
   });
@@ -539,78 +469,6 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
                                      text:nil
                                       key:nil
                                eventCount:_nativeEventCount];
-}
-
-#pragma mark - Focus control deledation
-
-- (void)reactFocus
-{
-  [_textView reactFocus];
-}
-
-- (void)reactBlur
-{
-  [_textView reactBlur];
-}
-
-- (void)didMoveToWindow
-{
-  [_textView reactFocusIfNeeded];
-}
-
-#pragma mark - Content size
-
-- (CGSize)contentSize
-{
-  // Returning value does NOT include insets.
-  CGSize contentSize = self.intrinsicContentSize;
-  contentSize.width -= _contentInset.left + _contentInset.right;
-  contentSize.height -= _contentInset.top + _contentInset.bottom;
-  return contentSize;
-}
-
-- (void)invalidateContentSize
-{
-  CGSize contentSize = self.contentSize;
-
-  if (CGSizeEqualToSize(_previousContentSize, contentSize)) {
-    return;
-  }
-  _previousContentSize = contentSize;
-
-  [_bridge.uiManager setIntrinsicContentSize:contentSize forView:self];
-
-  if (_onContentSizeChange) {
-    _onContentSizeChange(@{
-      @"contentSize": @{
-        @"height": @(contentSize.height),
-        @"width": @(contentSize.width),
-      },
-      @"target": self.reactTag,
-    });
-  }
-}
-
-#pragma mark - Layout
-
-- (CGSize)intrinsicContentSize
-{
-  // Calling `sizeThatFits:` is probably more expensive method to compute
-  // content size compare to direct access `_textView.contentSize` property,
-  // but seems `sizeThatFits:` returns more reliable and consistent result.
-  // Returning value DOES include insets.
-  return [self sizeThatFits:CGSizeMake(self.bounds.size.width, INFINITY)];
-}
-
-- (CGSize)sizeThatFits:(CGSize)size
-{
-  return [_textView sizeThatFits:size];
-}
-
-- (void)layoutSubviews
-{
-  [super layoutSubviews];
-  [self invalidateContentSize];
 }
 
 #pragma mark - UIScrollViewDelegate
