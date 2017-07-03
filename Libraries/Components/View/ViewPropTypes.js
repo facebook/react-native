@@ -218,8 +218,6 @@ module.exports = {
    * Used to locate this view from native classes.
    *
    * > This disables the 'layout-only view removal' optimization for this view!
-   *
-   * @platform android
    */
   nativeID: PropTypes.string,
 

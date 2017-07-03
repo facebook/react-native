@@ -43,6 +43,7 @@ export type Registry = {
   sections: Array<string>,
   runnables: Runnables,
 };
+export type WrapperComponentProvider = any => ReactClass<*>;
 
 const runnables: Runnables = {};
 let runCount = 1;
@@ -50,6 +51,8 @@ const sections: Runnables = {};
 const tasks: Map<string, TaskProvider> = new Map();
 let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
   (component: ComponentProvider) => component();
+
+let wrapperComponentProvider: ?WrapperComponentProvider;
 
 /**
  * <div class="banner-crna-ejected">
@@ -78,6 +81,10 @@ let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
  * `require`d.
  */
 const AppRegistry = {
+  setWrapperComponentProvider(provider: WrapperComponentProvider) {
+    wrapperComponentProvider = provider;
+  },
+
   registerConfig(config: Array<AppConfig>): void {
     config.forEach((appConfig) => {
       if (appConfig.run) {
@@ -109,7 +116,8 @@ const AppRegistry = {
         renderApplication(
           componentProviderInstrumentationHook(componentProvider),
           appParameters.initialProps,
-          appParameters.rootTag
+          appParameters.rootTag,
+          wrapperComponentProvider && wrapperComponentProvider(appParameters),
         )
     };
     if (section) {

@@ -39,7 +39,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
 
   protected static final String NAME = "Timing";
 
-  // These timing contants should be kept in sync with the ones in `JSTimersExecution.js`.
+  // These timing contants should be kept in sync with the ones in `JSTimers.js`.
   // The minimum time in milliseconds left in the frame to call idle callbacks.
   private static final float IDLE_CALLBACK_FRAME_DEADLINE_MS = 1.f;
   // The total duration of a frame in milliseconds, this assumes that devices run at 60 fps.
@@ -99,7 +99,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
       }
 
       if (mTimersToCall != null) {
-        getReactApplicationContext().getJSModule(JSTimersExecution.class).callTimers(mTimersToCall);
+        getReactApplicationContext().getJSModule(JSTimers.class).callTimers(mTimersToCall);
         mTimersToCall = null;
       }
 
@@ -157,7 +157,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
       }
 
       if (sendIdleEvents) {
-        getReactApplicationContext().getJSModule(JSTimersExecution.class)
+        getReactApplicationContext().getJSModule(JSTimers.class)
             .callIdleCallbacks(absoluteFrameStartTime);
       }
 
@@ -337,7 +337,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     if (mDevSupportManager.getDevSupportEnabled()) {
       long driftTime = Math.abs(remoteTime - deviceTime);
       if (driftTime > 60000) {
-        getReactApplicationContext().getJSModule(JSTimersExecution.class)
+        getReactApplicationContext().getJSModule(JSTimers.class)
           .emitTimeDriftWarning(
             "Debugger and device times have drifted by more than 60s. Please correct this by " +
             "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine.");
@@ -349,7 +349,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     if (duration == 0 && !repeat) {
       WritableArray timerToCall = Arguments.createArray();
       timerToCall.pushInt(callbackID);
-      getReactApplicationContext().getJSModule(JSTimersExecution.class)
+      getReactApplicationContext().getJSModule(JSTimers.class)
         .callTimers(timerToCall);
       return;
     }

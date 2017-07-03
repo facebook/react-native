@@ -107,7 +107,7 @@ The very final step is to create the JavaScript module that defines the interfac
 ```js
 // ImageView.js
 
-import { PropTypes } from 'react';
+import PropTypes from 'prop-types';
 import { requireNativeComponent, View } from 'react-native';
 
 var iface = {
@@ -168,7 +168,7 @@ MyCustomView.propTypes = {
   /**
    * Callback that is called continuously when the user is dragging the map.
    */
-  onChangeMessage: React.PropTypes.func,
+  onChangeMessage: PropTypes.func,
   ...
 };
 

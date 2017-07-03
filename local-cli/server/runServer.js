@@ -15,16 +15,16 @@
 require('../../setupBabel')();
 const InspectorProxy = require('./util/inspectorProxy.js');
 const ReactPackager = require('metro-bundler');
-const Terminal = require('metro-bundler/build/lib/Terminal');
+const Terminal = require('metro-bundler/src/lib/Terminal');
 
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
-const defaultAssetExts = require('metro-bundler/build/defaults').assetExts;
-const defaultSourceExts = require('metro-bundler/build/defaults').sourceExts;
-const defaultPlatforms = require('metro-bundler/build/defaults').platforms;
-const defaultProvidesModuleNodeModules = require('metro-bundler/build/defaults')
+const defaultAssetExts = require('metro-bundler/src/defaults').assetExts;
+const defaultSourceExts = require('metro-bundler/src/defaults').sourceExts;
+const defaultPlatforms = require('metro-bundler/src/defaults').platforms;
+const defaultProvidesModuleNodeModules = require('metro-bundler/src/defaults')
   .providesModuleNodeModules;
 const fs = require('fs');
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
@@ -41,7 +41,7 @@ const unless = require('./middleware/unless');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
 import type {ConfigT} from '../util/Config';
-import type {Reporter} from 'metro-bundler/build/lib/reporting';
+import type {Reporter} from 'metro-bundler/src/lib/reporting';
 
 export type Args = {|
   +assetExts: $ReadOnlyArray<string>,
@@ -128,8 +128,8 @@ function getPackagerServer(args, config) {
   const transformModulePath = args.transformer
     ? path.resolve(args.transformer)
     : typeof config.getTransformModulePath === 'function'
-        ? config.getTransformModulePath()
-        : undefined;
+      ? config.getTransformModulePath()
+      : undefined;
 
   const providesModuleNodeModules =
     args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
@@ -148,7 +148,7 @@ function getPackagerServer(args, config) {
       LogReporter = require(path.resolve(args.customLogReporterPath));
     }
   } else {
-    LogReporter = require('metro-bundler/build/lib/TerminalReporter');
+    LogReporter = require('metro-bundler/src/lib/TerminalReporter');
   }
 
   /* $FlowFixMe: Flow is wrong, Node.js docs specify that process.stdout is an
