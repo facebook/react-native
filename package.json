@@ -74,6 +74,7 @@
     ],
     "unmockedModulePathPatterns": [
       "node_modules/react/",
+      "node_modules/regenerator-runtime/",
       "Libraries/Renderer",
       "promise",
       "source-map",
