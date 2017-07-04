@@ -111,12 +111,13 @@ const Text = React.createClass({
      * - `tail` - The line is displayed so that the beginning fits in the container and the
      * missing text at the end of the line is indicated by an ellipsis glyph. e.g., "abcd..."
      * - `clip` - Lines are not drawn past the edge of the text container.
+     * - `wordWrapping` - Wrapping occurs at word boundaries, unless the word itself doesn’t fit on a single line.
      *
      * The default is `tail`.
      *
-     * > `clip` is working only for iOS
+     * > `clip` and `wordWrapping` works only for iOS and tvOS
      */
-    ellipsizeMode: PropTypes.oneOf(['head', 'middle', 'tail', 'clip']),
+    ellipsizeMode: PropTypes.oneOf(['head', 'middle', 'tail', 'clip', 'wordWrapping']),
     /**
      * Used to truncate the text with an ellipsis after computing the text
      * layout, including line wrapping, such that the total number of lines
