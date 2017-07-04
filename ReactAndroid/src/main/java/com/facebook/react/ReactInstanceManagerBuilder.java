@@ -47,6 +47,7 @@ public class ReactInstanceManagerBuilder {
   protected boolean mSetupReactContextInBackground;
   protected boolean mUseSeparateUIBackgroundThread;
   protected int mMinNumShakes = 1;
+  protected boolean mEnableSplitPackage;
 
   /* package protected */ ReactInstanceManagerBuilder() {
   }
@@ -213,6 +214,11 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setEnableSplitPackage(boolean enableSplitPackage) {
+    mEnableSplitPackage = enableSplitPackage;
+    return this;
+  }
+
   /**
    * Instantiates a new {@link ReactInstanceManager}.
    * Before calling {@code build}, the following must be called:
@@ -262,6 +268,7 @@ public class ReactInstanceManagerBuilder {
       mDevBundleDownloadListener,
       mSetupReactContextInBackground,
       mUseSeparateUIBackgroundThread,
-      mMinNumShakes);
+      mMinNumShakes,
+      mEnableSplitPackage);
   }
 }

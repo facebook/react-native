@@ -223,7 +223,8 @@ public class ReactInstanceManager {
     @Nullable DevBundleDownloadListener devBundleDownloadListener,
     boolean setupReactContextInBackgroundEnabled,
     boolean useSeparateUIBackgroundThread,
-    int minNumShakes) {
+    int minNumShakes,
+    boolean splitPackagesEnabled) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -256,7 +257,7 @@ public class ReactInstanceManager {
     mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
     mMinNumShakes = minNumShakes;
 
-    if (true) { // TODO Change to a QE-determined experiment variable in separate commit
+    if (!splitPackagesEnabled) {
       CoreModulesPackage coreModulesPackage =
         new CoreModulesPackage(
           this,
