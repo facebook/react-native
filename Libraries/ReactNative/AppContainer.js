@@ -24,11 +24,11 @@ const View = require('View');
 type Context = {
   rootTag: number,
 };
-type Props = {
+type Props = {|
   children?: React.Children,
   rootTag: number,
   WrapperComponent?: ?ReactClass<*>,
-};
+|};
 type State = {
   inspector: ?React.Element<*>,
   mainKey: number,
@@ -111,7 +111,11 @@ class AppContainer extends React.Component {
 
     const Wrapper = this.props.WrapperComponent;
     if (Wrapper) {
-      innerView = <Wrapper>{innerView}</Wrapper>;
+      innerView = (
+        <Wrapper>
+          {innerView}
+        </Wrapper>
+      );
     }
     return (
       <View style={styles.appContainer} pointerEvents="box-none">

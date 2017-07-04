@@ -19,9 +19,8 @@ function renderMyListItem(info: {item: {title: string}, index: number}) {
   return <span />;
 }
 
-const renderMyHeader = ({section}: {section: {fooNumber: number} & Object}) => (
-  <span />
-);
+const renderMyHeader = ({section}: {section: {fooNumber: number} & Object}) =>
+  <span />;
 
 module.exports = {
   testGoodDataWithGoodItem() {

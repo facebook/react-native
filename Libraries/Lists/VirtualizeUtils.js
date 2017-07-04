@@ -105,9 +105,8 @@ function computeWindowedRenderLimits(
   // Considering velocity seems to introduce more churn than it's worth.
   const leadFactor = 0.5; // Math.max(0, Math.min(1, velocity / 25 + 0.5));
 
-  const fillPreference = velocity > 1
-    ? 'after'
-    : velocity < -1 ? 'before' : 'none';
+  const fillPreference =
+    velocity > 1 ? 'after' : velocity < -1 ? 'before' : 'none';
 
   const overscanBegin = Math.max(
     0,
@@ -124,9 +123,10 @@ function computeWindowedRenderLimits(
   overscanFirst = overscanFirst == null ? 0 : overscanFirst;
   first = first == null ? Math.max(0, overscanFirst) : first;
   overscanLast = overscanLast == null ? itemCount - 1 : overscanLast;
-  last = last == null
-    ? Math.min(overscanLast, first + maxToRenderPerBatch - 1)
-    : last;
+  last =
+    last == null
+      ? Math.min(overscanLast, first + maxToRenderPerBatch - 1)
+      : last;
   const visible = {first, last};
 
   // We want to limit the number of new cells we're rendering per batch so that we can fill the
@@ -174,13 +174,15 @@ function computeWindowedRenderLimits(
     }
   }
   if (
-    !(last >= first &&
+    !(
+      last >= first &&
       first >= 0 &&
       last < itemCount &&
       first >= overscanFirst &&
       last <= overscanLast &&
       first <= visible.first &&
-      last >= visible.last)
+      last >= visible.last
+    )
   ) {
     throw new Error(
       'Bad window calculation ' +

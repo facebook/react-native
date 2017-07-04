@@ -525,8 +525,8 @@ var ListView = createReactClass({
         ref: this._setScrollComponentRef,
         onContentSizeChange: this._onContentSizeChange,
         onLayout: this._onLayout,
-        DEPRECATED_sendUpdatedChildFrames: typeof props.onChangeVisibleRows !==
-          undefined,
+        DEPRECATED_sendUpdatedChildFrames:
+          typeof props.onChangeVisibleRows !== undefined,
       },
       header,
       bodyComponents,

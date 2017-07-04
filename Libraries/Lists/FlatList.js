@@ -304,8 +304,11 @@ type DefaultProps = typeof defaultProps;
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
-class FlatList<ItemT>
-  extends React.PureComponent<DefaultProps, Props<ItemT>, void> {
+class FlatList<ItemT> extends React.PureComponent<
+  DefaultProps,
+  Props<ItemT>,
+  void,
+> {
   static defaultProps: DefaultProps = defaultProps;
   props: Props<ItemT>;
   /**

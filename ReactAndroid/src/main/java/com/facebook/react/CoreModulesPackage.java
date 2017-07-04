@@ -42,8 +42,13 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_START;
-
 /**
+ * This module should be removed following the completion of an experiment into splitting this into
+ * three modules to allow for more light-weight instantiations of the bridge without UIManager
+ * The core modules are now in BridgeCorePackage
+ * The debug modules are now in DebugCorePackage
+ * The UI manager is in ReactNativeCorePackage
+ *
  * Package defining core framework modules (e.g. UIManager). It should be used for modules that
  * require special integration with other framework parts (e.g. with the list of packages to load
  * view managers from).
