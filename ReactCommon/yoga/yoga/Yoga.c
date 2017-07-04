@@ -3471,8 +3471,8 @@ static void YGRoundToPixelGrid(const YGNodeRef node,
   node->layout.position[YGEdgeTop] =
       YGRoundValueToPixelGrid(nodeTop, pointScaleFactor, false, textRounding);
 
-  const bool hasFractionalWidth = !YGFloatsEqual(fmodf(nodeWidth, 1.0), 0);
-  const bool hasFractionalHeight = !YGFloatsEqual(fmodf(nodeHeight, 1.0), 0);
+  const bool hasFractionalWidth = !YGFloatsEqual(fmodf(nodeWidth, 1 / pointScaleFactor), 0);
+  const bool hasFractionalHeight = !YGFloatsEqual(fmodf(nodeHeight, 1 / pointScaleFactor), 0);
 
   node->layout.dimensions[YGDimensionWidth] =
       YGRoundValueToPixelGrid(
