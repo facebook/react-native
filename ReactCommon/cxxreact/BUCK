@@ -134,7 +134,7 @@ rn_xplat_cxx_library(
         # some platform-dependant setup. Exactly what setup to do is
         # determined by some static functors, defined in `Platform.h`, which
         # are initially `nullptr`. On Android, these functors are properly
-        # assigned as part of `xreact`'s `JNI_OnLoad`.  By depending directly
+        # assigned as part of `react/jni`'s `JNI_OnLoad`.  By depending directly
         # on the bridge, we can mess up the SO initialisation order, causing
         # `initOnJSVMThread` to be called before the platform-specific hooks
         # have been properly initialised. Bad Times(TM).
