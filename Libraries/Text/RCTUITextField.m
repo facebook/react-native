@@ -73,12 +73,12 @@
 
 - (BOOL)isEditable
 {
-  return self.userInteractionEnabled;
+  return self.isEnabled;
 }
 
 - (void)setEditable:(BOOL)editable
 {
-  self.userInteractionEnabled = editable;
+  self.enabled = editable;
 }
 
 #pragma mark - Caret Manipulation

@@ -54,6 +54,7 @@ typedef struct YGLayout {
 
   uint32_t computedFlexBasisGeneration;
   float computedFlexBasis;
+  bool hadOverflow;
 
   // Instead of recomputing the entire layout every single time, we
   // cache some information to break early when nothing changed
@@ -192,6 +193,7 @@ static YGNode gYGNodeDefaults = {
             .lastParentDirection = (YGDirection) -1,
             .nextCachedMeasurementsIndex = 0,
             .computedFlexBasis = YGUndefined,
+            .hadOverflow = false,
             .measuredDimensions = YG_DEFAULT_DIMENSION_VALUES,
 
             .cachedLayout =
@@ -782,6 +784,7 @@ YG_NODE_LAYOUT_PROPERTY_IMPL(float, Bottom, position[YGEdgeBottom]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Width, dimensions[YGDimensionWidth]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Height, dimensions[YGDimensionHeight]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(YGDirection, Direction, direction);
+YG_NODE_LAYOUT_PROPERTY_IMPL(bool, HadOverflow, hadOverflow);
 
 YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Margin, margin);
 YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Border, border);
@@ -2574,12 +2577,14 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                              performLayout && !requiresStretchLayout,
                              "flex",
                              config);
+        node->layout.hadOverflow = node->layout.hadOverflow || currentRelativeChild->layout.hadOverflow;
 
         currentRelativeChild = currentRelativeChild->nextChild;
       }
     }
 
     remainingFreeSpace = originalRemainingFreeSpace + deltaFreeSpace;
+    node->layout.hadOverflow = node->layout.hadOverflow || (remainingFreeSpace < 0);
 
     // STEP 6: MAIN-AXIS JUSTIFICATION & CROSS-AXIS SIZE DETERMINATION
 
