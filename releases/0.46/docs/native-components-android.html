@@ -31,7 +31,7 @@
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span></div><h2><a class="anchor" name="5-implement-the-javascript-module"></a>5. Implement the JavaScript module <a class="hash-link" href="docs/native-components-android.html#5-implement-the-javascript-module">#</a></h2><p>The very final step is to create the JavaScript module that defines the interface layer between Java and JavaScript for the users of your new view. Much of the effort is handled by internal React code in Java and JavaScript and all that is left for you is to describe the <code>propTypes</code>.</p><div class="prism language-js"><span class="token comment" spellcheck="true">// ImageView.js
 </span>
-<span class="token keyword">import</span> <span class="token punctuation">{</span> PropTypes <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&#x27;react&#x27;</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> PropTypes <span class="token keyword">from</span> <span class="token string">&#x27;prop-types&#x27;</span><span class="token punctuation">;</span>
 <span class="token keyword">import</span> <span class="token punctuation">{</span> requireNativeComponent<span class="token punctuation">,</span> View <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> iface <span class="token operator">=</span> <span class="token punctuation">{</span>
@@ -76,7 +76,7 @@ MyCustomView<span class="token punctuation">.</span>propTypes <span class="token
   <span class="token comment" spellcheck="true">/**
    * Callback that is called continuously when the user is dragging the map.
    */</span>
-  onChangeMessage<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>func<span class="token punctuation">,</span>
+  onChangeMessage<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>func<span class="token punctuation">,</span>
   <span class="token operator">...</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
