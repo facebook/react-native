@@ -9,9 +9,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <RCTText/RCTTextInput.h>
 #import <React/RCTView.h>
 #import <React/UIView+React.h>
+
+#import "RCTTextInput.h"
 
 @class RCTBridge;
 
