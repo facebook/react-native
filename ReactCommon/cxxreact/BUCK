@@ -25,7 +25,6 @@ rn_xplat_cxx_library(
     visibility = [
         "PUBLIC",
     ],
-    xcode_public_headers_symlinks = True,
     deps = [
         "//xplat/folly:molly",
     ],
@@ -49,7 +48,6 @@ rn_xplat_cxx_library(
     visibility = [
         "PUBLIC",
     ],
-    xcode_public_headers_symlinks = True,
     deps = [
         "//xplat/folly:molly",
     ],
@@ -68,7 +66,6 @@ rn_xplat_cxx_library(
     visibility = [
         "PUBLIC",
     ],
-    xcode_public_headers_symlinks = True,
     deps = [
         ":module",
         "//xplat/folly:molly",
@@ -156,7 +153,6 @@ rn_xplat_cxx_library(
     tests = [
         react_native_xplat_target("cxxreact/tests:tests"),
     ],
-    xcode_public_headers_symlinks = True,
     deps = [
         ":module",
         ":jsbigstring",
