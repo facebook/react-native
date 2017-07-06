@@ -708,7 +708,9 @@ const TextInput = React.createClass({
     const props = Object.assign({}, this.props);
     props.style = [this.props.style];
     props.autoCapitalize =
-      UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
+      UIManager.AndroidTextInput.Constants.AutoCapitalizationType[
+        this.props.autoCapitalize || 'sentences'
+      ];
     var children = this.props.children;
     var childCount = 0;
     React.Children.forEach(children, () => ++childCount);
