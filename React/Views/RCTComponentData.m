@@ -41,7 +41,7 @@ typedef NSMutableDictionary<NSString *, RCTPropBlock> RCTPropBlockDictionary;
     _viewPropBlocks = [NSMutableDictionary new];
     _shadowPropBlocks = [NSMutableDictionary new];
 
-    _name = [self moduleNameForClass:managerClass];
+    _name = moduleNameForClass(managerClass);
 
     _implementsUIBlockToAmendWithShadowViewRegistry = NO;
     Class cls = _managerClass;
@@ -430,7 +430,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     @"propTypes": propTypes,
     @"directEvents": directEvents,
     @"bubblingEvents": bubblingEvents,
-    @"baseModuleName": superClass != [NSObject class] ? [self moduleNameForClass:superClass] : [NSNull null]
+    @"baseModuleName": superClass == [NSObject class] ? (id)kCFNull : moduleNameForClass(superClass)
   };
 }
 
@@ -442,7 +442,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
   return nil;
 }
 
-- (NSString *)moduleNameForClass:(Class)managerClass
+static NSString *moduleNameForClass(Class managerClass)
 {
   // Hackety hack, this partially re-implements RCTBridgeModuleNameForClass
   // We want to get rid of RCT and RK prefixes, but a lot of JS code still references
