@@ -4,9 +4,11 @@ const getProjectDependencies = require('./getProjectDependencies');
 const unregisterDependencyAndroid = require('./android/unregisterNativeModule');
 const unregisterDependencyWindows = require('./windows/unregisterNativeModule');
 const unregisterDependencyIOS = require('./ios/unregisterNativeModule');
+const unregisterDependencyPods = require('./pods/unregisterNativeModule');
 const isInstalledAndroid = require('./android/isInstalled');
 const isInstalledWindows = require('./windows/isInstalled');
 const isInstalledIOS = require('./ios/isInstalled');
+const isInstalledPods = require('./pods/isInstalled');
 const unlinkAssetsAndroid = require('./android/unlinkAssets');
 const unlinkAssetsIOS = require('./ios/unlinkAssets');
 const getDependencyConfig = require('./getDependencyConfig');
@@ -65,16 +67,21 @@ const unlinkDependencyIOS = (iOSProject, dependency, packageName, iOSDependencie
     return;
   }
 
-  const isInstalled = isInstalledIOS(iOSProject, dependency.ios);
-
-  if (!isInstalled) {
+  const isIosInstalled = isInstalledIOS(iOSProject, dependency.ios);
+  const isPodInstalled = isInstalledPods(iOSProject, packageName)
+  if (!isIosInstalled && !isPodInstalled) {
     log.info(`iOS module ${packageName} is not installed`);
     return;
   }
 
   log.info(`Unlinking ${packageName} ios dependency`);
-
-  unregisterDependencyIOS(dependency.ios, iOSProject, iOSDependencies);
+  
+  if(isIosInstalled) {
+    unregisterDependencyIOS(dependency.ios, iOSProject, iOSDependencies);
+  }
+  else if(isPodInstalled) {
+    unregisterDependencyPods(packageName, iOSProject)
+  }
 
   log.info(`iOS module ${packageName} has been successfully unlinked`);
 };
