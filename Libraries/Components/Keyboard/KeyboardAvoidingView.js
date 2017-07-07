@@ -13,6 +13,7 @@
 
 const Keyboard = require('Keyboard');
 const LayoutAnimation = require('LayoutAnimation');
+const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const PropTypes = require('prop-types');
 const React = require('React');
@@ -44,7 +45,7 @@ const viewRef = 'VIEW';
  */
 // $FlowFixMe(>=0.41.0)
 const KeyboardAvoidingView = React.createClass({
-  mixins: [TimerMixin],
+  mixins: [NativeMethodsMixin, TimerMixin],
 
   propTypes: {
     ...ViewPropTypes,
@@ -77,8 +78,7 @@ const KeyboardAvoidingView = React.createClass({
   subscriptions: ([]: Array<EmitterSubscription>),
   frame: (null: ?ViewLayout),
 
-  relativeKeyboardHeight(keyboardFrame: ScreenRect): number {
-    const frame = this.frame;
+  relativeKeyboardHeight(keyboardFrame: ScreenRect, frame: Rect): number {
     if (!frame || !keyboardFrame) {
       return 0;
     }
@@ -97,18 +97,22 @@ const KeyboardAvoidingView = React.createClass({
     }
 
     const {duration, easing, endCoordinates} = event;
-    const height = this.relativeKeyboardHeight(endCoordinates);
 
-    if (duration && easing) {
-      LayoutAnimation.configureNext({
-        duration: duration,
-        update: {
+    this.measureInWindow((x, y, width, height) => {
+      const frame = {x, y, width, height};
+      const keyboardHeight = this.relativeKeyboardHeight(endCoordinates, frame);
+
+      if (duration && easing) {
+        LayoutAnimation.configureNext({
           duration: duration,
-          type: LayoutAnimation.Types[easing] || 'keyboard',
-        },
-      });
-    }
-    this.setState({bottom: height});
+          update: {
+            duration: duration,
+            type: LayoutAnimation.Types[easing] || 'keyboard',
+          },
+        });
+      }
+      this.setState({bottom: keyboardHeight});
+    });
   },
 
   onLayout(event: ViewLayoutEvent) {
