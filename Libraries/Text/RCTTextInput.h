@@ -9,8 +9,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import <RCTText/RCTBackedTextInputViewProtocol.h>
 #import <React/RCTView.h>
+
+#import "RCTBackedTextInputViewProtocol.h"
 
 @class RCTBridge;
 @class RCTEventDispatcher;
