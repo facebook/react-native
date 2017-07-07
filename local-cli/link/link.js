@@ -20,9 +20,11 @@ const promiseWaterfall = require('./promiseWaterfall');
 const registerDependencyAndroid = require('./android/registerNativeModule');
 const registerDependencyWindows = require('./windows/registerNativeModule');
 const registerDependencyIOS = require('./ios/registerNativeModule');
+const registerDependencyPods = require('./pods/registerNativeModule');
 const isInstalledAndroid = require('./android/isInstalled');
 const isInstalledWindows = require('./windows/isInstalled');
 const isInstalledIOS = require('./ios/isInstalled');
+const isInstalledPods = require('./pods/isInstalled');
 const copyAssetsAndroid = require('./android/copyAssets');
 const copyAssetsIOS = require('./ios/copyAssets');
 const getProjectDependencies = require('./getProjectDependencies');
@@ -96,17 +98,19 @@ const linkDependencyIOS = (iOSProject, dependency) => {
     return;
   }
 
-  const isInstalled = isInstalledIOS(iOSProject, dependency.config.ios);
-
+  const isInstalled = isInstalledIOS(iOSProject, dependency.config.ios) || isInstalledPods(iOSProject, dependency.name)
   if (isInstalled) {
     log.info(chalk.grey(`iOS module ${dependency.name} is already linked`));
     return;
   }
 
   log.info(`Linking ${dependency.name} ios dependency`);
-
-  registerDependencyIOS(dependency.config.ios, iOSProject);
-
+  if (iOSProject.podfile && dependency.config.ios.podspec) {
+    registerDependencyPods(dependency.name, iOSProject);
+  }
+  else {
+    registerDependencyIOS(dependency.config.ios, iOSProject);
+  }
   log.info(`iOS module ${dependency.name} has been successfully linked`);
 };
 
@@ -146,7 +150,7 @@ function link(args: Array<string>, config: RNConfig) {
     );
     return Promise.reject(err);
   }
-
+ 
   let packageName = args[0];
   // Check if install package by specific version (eg. package@latest)
   if (packageName !== undefined) {
