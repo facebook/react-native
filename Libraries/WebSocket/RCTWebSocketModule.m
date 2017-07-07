@@ -8,13 +8,13 @@
  */
 
 #import "RCTWebSocketModule.h"
+#import "RCTSRWebSocket.h"
+#import "RCTBlobManager.h"
 
 #import <objc/runtime.h>
 
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
-
-#import "RCTSRWebSocket.h"
 
 @implementation RCTSRWebSocket (React)
 
@@ -37,6 +37,7 @@
 @implementation RCTWebSocketModule
 {
     NSMutableDictionary<NSNumber *, RCTSRWebSocket *> *_sockets;
+    NSMutableSet<NSNumber *> *_blobsEnabled;
 }
 
 RCT_EXPORT_MODULE()
@@ -99,6 +100,27 @@ RCT_EXPORT_METHOD(sendBinary:(NSString *)base64String socketID:(nonnull NSNumber
   [_sockets[socketID] send:message];
 }
 
+RCT_EXPORT_METHOD(sendBlob:(NSDictionary *)blob socketID:(nonnull NSNumber *)socketID)
+{
+  RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
+  NSData *data = [blobManager resolve:blob];
+  // Unfortunately we don't have access to the WebSocket object, so we have to
+  // convert it to base64 and send it through the existing method :(
+  [self sendBinary:[data base64EncodedStringWithOptions:0] socketID:socketID];
+}
+
+RCT_EXPORT_METHOD(setBinaryType:(NSString *)binaryType socketID:(nonnull NSNumber *)socketID)
+{
+  if (!_blobsEnabled) {
+    _blobsEnabled = [NSMutableSet new];
+  }
+  if ([binaryType isEqualToString:@"blob"]) {
+    [_blobsEnabled addObject:socketID];
+  } else {
+    [_blobsEnabled removeObject:socketID];
+  }
+}
+
 RCT_EXPORT_METHOD(ping:(nonnull NSNumber *)socketID)
 {
   [_sockets[socketID] sendPing:NULL];
@@ -114,10 +136,25 @@ RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
 {
-  BOOL binary = [message isKindOfClass:[NSData class]];
+  NSString *type = @"text";
+  if ([message isKindOfClass:[NSData class]]) {
+    if (_blobsEnabled && [_blobsEnabled containsObject:webSocket.reactTag]) {
+      RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
+      message = @{
+        @"blobId": [blobManager store:message],
+        @"offset": @0,
+        @"size": @(((NSData *)message).length),
+      };
+      type = @"blob";
+    } else {
+      message = [message base64EncodedStringWithOptions:0];
+      type = @"binary";
+    }
+  }
+
   [self sendEventWithName:@"websocketMessage" body:@{
-    @"data": binary ? [message base64EncodedStringWithOptions:0] : message,
-    @"type": binary ? @"binary" : @"text",
+    @"data": message,
+    @"type": type,
     @"id": webSocket.reactTag
   }];
 }
