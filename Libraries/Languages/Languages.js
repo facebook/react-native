@@ -9,14 +9,14 @@
  * @providesModule Languages
  * @flow
  */
-"use strict";
+'use strict';
 
-const NativeEventEmitter = require("NativeEventEmitter");
-const NativeModules = require("NativeModules");
-const Platform = require("Platform");
-const invariant = require("fbjs/lib/invariant");
+const NativeEventEmitter = require('NativeEventEmitter');
+const NativeModules = require('NativeModules');
+const invariant = require('fbjs/lib/invariant');
+const Platform = require('Platform');
 
-type LanguagesEventType = "change";
+type LanguagesEventType = 'change';
 
 type LanguagesEventData = {
   language: string,
@@ -64,13 +64,13 @@ class Languages {
     this.language = NativeModules.Languages.language;
     this.languages = NativeModules.Languages.languages;
 
-    if (Platform.OS === "android") {
+    if (Platform.OS === 'android') {
       this._nativeEventEmitter = new NativeEventEmitter(
         NativeModules.Languages
       );
 
       this._nativeEventEmitter.addListener(
-        "languagesDidChange",
+        'languagesDidChange',
         (eventData: LanguagesEventData) => {
           navigator.language = eventData.language;
           navigator.languages = eventData.languages;
@@ -99,10 +99,10 @@ class Languages {
    */
   addEventListener(type: LanguagesEventType, handler: LanguagesEventHandler) {
     invariant(
-      type === "change",
+      type === 'change',
       'Trying to subscribe to unknown event: "%s"', type
     );
-    if (type === "change" && this._nativeEventEmitter) {
+    if (type === 'change' && this._nativeEventEmitter) {
       this._eventHandlers.add(handler);
     }
   }
@@ -120,10 +120,10 @@ class Languages {
     handler: LanguagesEventHandler
   ) {
     invariant(
-      type === "change",
+      type === 'change',
       'Trying to remove listener for unknown event: "%s"', type
     );
-    if (type === "change" && this._eventHandlers.has(handler)) {
+    if (type === 'change' && this._eventHandlers.has(handler)) {
       this._eventHandlers.delete(handler);
     }
   }
