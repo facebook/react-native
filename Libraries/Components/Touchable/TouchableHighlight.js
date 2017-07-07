@@ -25,6 +25,7 @@ var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 
+var createReactClass = require('create-react-class');
 var ensureComponentIsNative = require('ensureComponentIsNative');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var keyOf = require('fbjs/lib/keyOf');
@@ -68,7 +69,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * ```
  */
 
-var TouchableHighlight = React.createClass({
+var TouchableHighlight = createReactClass({
   propTypes: {
     ...TouchableWithoutFeedback.propTypes,
     /**

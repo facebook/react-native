@@ -10,6 +10,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var RCTNativeAppEventEmitter = require('RCTNativeAppEventEmitter');
 var Subscribable = require('Subscribable');
@@ -24,7 +25,7 @@ var reactViewHeight = 102;
 var newReactViewWidth = 201;
 var newReactViewHeight = 202;
 
-var ReactContentSizeUpdateTest = React.createClass({
+var ReactContentSizeUpdateTest = createReactClass({
   mixins: [Subscribable.Mixin,
            TimerMixin],
 

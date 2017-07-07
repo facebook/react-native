@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {
   PanResponder,
@@ -21,7 +22,7 @@ var {
 
 var CIRCLE_SIZE = 80;
 
-var PanResponderExample = React.createClass({
+var PanResponderExample = createReactClass({
 
   statics: {
     title: 'PanResponder Sample',

@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {
   ProgressViewIOS,
@@ -20,7 +21,7 @@ var {
 } = ReactNative;
 var TimerMixin = require('react-timer-mixin');
 
-var ProgressViewExample = React.createClass({
+var ProgressViewExample = createReactClass({
   mixins: [TimerMixin],
 
   getInitialState() {

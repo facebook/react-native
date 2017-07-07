@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var TimerMixin = require('react-timer-mixin');
 var {
@@ -22,7 +23,7 @@ var {
 
 var TestManager = NativeModules.TestManager || NativeModules.SnapshotTestManager;
 
-var TextUpdateTest = React.createClass({
+var TextUpdateTest = createReactClass({
   mixins: [TimerMixin],
   getInitialState: function() {
     return {seeMore: true};

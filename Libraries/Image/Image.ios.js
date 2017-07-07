@@ -23,6 +23,7 @@ const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
 
+const createReactClass = require('create-react-class');
 const flattenStyle = require('flattenStyle');
 const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
@@ -126,7 +127,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *
  */
 // $FlowFixMe(>=0.41.0)
-const Image = React.createClass({
+const Image = createReactClass({
   propTypes: {
     /**
      * > `ImageResizeMode` is an `Enum` for different image resizing modes, set via the

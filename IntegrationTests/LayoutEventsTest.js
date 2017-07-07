@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {
   Image,
@@ -58,7 +59,7 @@ type State = {
   containerStyle?: Style,
 };
 
-var LayoutEventsTest = React.createClass({
+var LayoutEventsTest = createReactClass({
   getInitialState(): State {
     return {
       didAnimation: false,

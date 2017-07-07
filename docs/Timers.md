@@ -64,7 +64,7 @@ This library does not ship with React Native - in order to use it on your projec
 ```javascript
 import TimerMixin from 'react-timer-mixin';
 
-var Component = React.createClass({
+var Component = createReactClass({
   mixins: [TimerMixin],
   componentDidMount: function() {
     this.setTimeout(
