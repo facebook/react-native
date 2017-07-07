@@ -197,8 +197,8 @@ if (navigator === undefined) {
 // see https://github.com/facebook/react-native/issues/10881
 defineProperty(navigator, 'product', () => 'ReactNative', true);
 defineProperty(navigator, 'geolocation', () => require('Geolocation'));
-defineProperty(navigator, 'language', () => require('NativeModules').Languages.language);
-defineProperty(navigator, 'languages', () => require('NativeModules').Languages.languages);
+defineProperty(navigator, 'language', () => require('Languages').language);
+defineProperty(navigator, 'languages', () => require('Languages').languages);
 
 // Set up collections
 // We can't make these lazy because `Map` checks for `global.Map` (which wouldc

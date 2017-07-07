@@ -1041,8 +1041,6 @@
 		657734931EE8356100A0E9EA /* RCTInspector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6577348B1EE8354A00A0E9EA /* RCTInspector.mm */; };
 		657734941EE8356100A0E9EA /* RCTInspectorPackagerConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 6577348C1EE8354A00A0E9EA /* RCTInspectorPackagerConnection.h */; };
 		657734951EE8356100A0E9EA /* RCTInspectorPackagerConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 6577348D1EE8354A00A0E9EA /* RCTInspectorPackagerConnection.m */; };
-		66FCBAD01EF462D60022FFE3 /* RCTLanguages.h in Headers */ = {isa = PBXBuildFile; fileRef = 66FCBACE1EF462D60022FFE3 /* RCTLanguages.h */; };
-		66FCBAD11EF462D60022FFE3 /* RCTLanguages.m in Sources */ = {isa = PBXBuildFile; fileRef = 66FCBACF1EF462D60022FFE3 /* RCTLanguages.m */; };
 		68EFE4EE1CF6EB3900A1DE13 /* RCTBundleURLProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */; };
 		830A229E1A66C68A008503DA /* RCTRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 830A229D1A66C68A008503DA /* RCTRootView.m */; };
 		83392EB31B6634E10013B15F /* RCTModalHostViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 83392EB21B6634E10013B15F /* RCTModalHostViewController.m */; };
@@ -1938,8 +1936,6 @@
 		6577348B1EE8354A00A0E9EA /* RCTInspector.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RCTInspector.mm; path = Inspector/RCTInspector.mm; sourceTree = "<group>"; };
 		6577348C1EE8354A00A0E9EA /* RCTInspectorPackagerConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTInspectorPackagerConnection.h; path = Inspector/RCTInspectorPackagerConnection.h; sourceTree = "<group>"; };
 		6577348D1EE8354A00A0E9EA /* RCTInspectorPackagerConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCTInspectorPackagerConnection.m; path = Inspector/RCTInspectorPackagerConnection.m; sourceTree = "<group>"; };
-		66FCBACE1EF462D60022FFE3 /* RCTLanguages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTLanguages.h; sourceTree = "<group>"; };
-		66FCBACF1EF462D60022FFE3 /* RCTLanguages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTLanguages.m; sourceTree = "<group>"; };
 		68EFE4EC1CF6EB3000A1DE13 /* RCTBundleURLProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBundleURLProvider.h; sourceTree = "<group>"; };
 		68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBundleURLProvider.m; sourceTree = "<group>"; };
 		6A15FB0C1BDF663500531DFB /* RCTRootViewInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootViewInternal.h; sourceTree = "<group>"; };
@@ -2186,8 +2182,6 @@
 				369123E01DDC75850095B341 /* RCTJSCSamplingProfiler.m */,
 				13D9FEEC1CDCD93000158BD7 /* RCTKeyboardObserver.h */,
 				13D9FEED1CDCD93000158BD7 /* RCTKeyboardObserver.m */,
-				66FCBACE1EF462D60022FFE3 /* RCTLanguages.h */,
-				66FCBACF1EF462D60022FFE3 /* RCTLanguages.m */,
 				13F17A831B8493E5007D4C75 /* RCTRedBox.h */,
 				13F17A841B8493E5007D4C75 /* RCTRedBox.m */,
 				000E6CE91AB0E97F000CDF4D /* RCTSourceCode.h */,
@@ -3031,7 +3025,6 @@
 				3D80DA5A1DF820620028D040 /* RCTUIManager.h in Headers */,
 				3D80DA5B1DF820620028D040 /* RCTFPSGraph.h in Headers */,
 				3D80DA5D1DF820620028D040 /* RCTMacros.h in Headers */,
-				66FCBAD01EF462D60022FFE3 /* RCTLanguages.h in Headers */,
 				3D80DA5E1DF820620028D040 /* RCTProfile.h in Headers */,
 				3D80DA5F1DF820620028D040 /* RCTActivityIndicatorView.h in Headers */,
 				3D80DA601DF820620028D040 /* RCTActivityIndicatorViewManager.h in Headers */,
@@ -3874,7 +3867,6 @@
 				13B0801C1A69489C00A75B9A /* RCTNavItem.m in Sources */,
 				83CBBA691A601EF300E9B192 /* RCTEventDispatcher.m in Sources */,
 				83A1FE8F1B62643A00BE0E65 /* RCTModalHostViewManager.m in Sources */,
-				66FCBAD11EF462D60022FFE3 /* RCTLanguages.m in Sources */,
 				13E0674A1A70F434002CDEE1 /* RCTUIManager.m in Sources */,
 				1384E2091E806D4E00545659 /* RCTNativeModule.mm in Sources */,
 				391E86A41C623EC800009732 /* RCTTouchEvent.m in Sources */,

@@ -7,9 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <UIKit/UIKit.h>
-
 #import "RCTLanguages.h"
+
+#import <UIKit/UIKit.h>
 
 @implementation RCTLanguages
 
@@ -19,13 +19,13 @@ RCT_EXPORT_MODULE();
 
 - (NSMutableArray *)ensureLanguageTags:(NSArray *)languages
 {
-  NSMutableArray *newLanguages = [NSMutableArray array];
+  NSMutableArray *sanitizedLanguages = [NSMutableArray array];
 
   for (id language in languages) {
-    [newLanguages addObject:[language stringByReplacingOccurrencesOfString:@"_" withString:@"-"]];
+    [sanitizedLanguages addObject:[language stringByReplacingOccurrencesOfString:@"_" withString:@"-"]];
   }
 
-  return newLanguages;
+  return sanitizedLanguages;
 }
 
 #pragma mark - Public API

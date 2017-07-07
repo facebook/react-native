@@ -31,7 +31,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 /**
- * Module that exposes Android Constants to JS.
+ * Native module that exposes devices languages to JS.
  */
 @ReactModule(name = "Languages")
 public class LanguagesModule extends ReactContextBaseJavaModule {
@@ -63,6 +63,11 @@ public class LanguagesModule extends ReactContextBaseJavaModule {
     return constants;
   }
 
+  private String getLanguage() {
+    return toLanguageTag(getReactApplicationContext()
+        .getResources().getConfiguration().locale);
+  }
+
   private String toLanguageTag(Locale locale) {
     StringBuilder builder = new StringBuilder();
     builder.append(locale.getLanguage());
@@ -75,23 +80,18 @@ public class LanguagesModule extends ReactContextBaseJavaModule {
     return builder.toString();
   }
 
-  private String getLanguage() {
-    return toLanguageTag(getReactApplicationContext()
-        .getResources().getConfiguration().locale);
-  }
-
   private void registerReceiver() {
     IntentFilter filter = new IntentFilter(Intent.ACTION_LOCALE_CHANGED);
     getReactApplicationContext().registerReceiver(mLanguagesBroadcastReceiver, filter);
   }
 
   private void sendLanguagesChangedEvent() {
+    WritableMap languagesMap = Arguments.createMap();
     String language = getLanguage();
     WritableArray languages = Arguments.createArray();
-    WritableMap languagesMap = Arguments.createMap();
 
     languages.pushString(language);
-
+    
     languagesMap.putString("language", language);
     languagesMap.putArray("languages", languages);
 

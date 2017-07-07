@@ -6,22 +6,21 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule LanguagesAndroid
+ * @providesModule Languages
  * @flow
  */
-'use strict';
+"use strict";
 
-const NativeEventEmitter = require('NativeEventEmitter');
-const Languages = require('NativeModules').Languages;
-const LanguagesEventEmitter = new NativeEventEmitter(Languages);
+const NativeEventEmitter = require("NativeEventEmitter");
+const NativeModules = require("NativeModules");
+const Platform = require("Platform");
+const invariant = require("fbjs/lib/invariant");
 
-const invariant = require('fbjs/lib/invariant');
-
-type LanguagesEventType = 'change';
+type LanguagesEventType = "change";
 
 type LanguagesEventData = {
   language: string,
-  languages: Array<string>,
+  languages: Array<string>
 };
 
 type LanguagesEventHandler = () => void;
@@ -41,56 +40,69 @@ type LanguagesEventHandler = () => void;
  * As a browser polyfill, you can get the current device language using
  * `navigator.language` and `navigator.languages` on iOS and android.
  *
- * This API is provided only because Android doesn't reload your application
- * after a device language change.
+ * This EventListener API is provided only because Android doesn't reload your
+ * application after a device language change.
  *
  * ### Usage
  *
  * ```
- * LanguagesAndroid.addEventListener('change', () => {
+ * Languages.addEventListener('change', () => {
  *   alert(navigator.language);
  * });
  * ```
  */
 
-class LanguagesAndroid {
+class Languages {
 
+  _nativeEventEmitter: ?NativeEventEmitter;
   _eventHandlers: Set<LanguagesEventHandler>;
+  language: string;
+  languages: Array<string>;
 
   constructor() {
     this._eventHandlers = new Set();
+    this.language = NativeModules.Languages.language;
+    this.languages = NativeModules.Languages.languages;
 
-    LanguagesEventEmitter.addListener(
-      'languagesDidChange',
-      (eventData: LanguagesEventData) => {
-        navigator.language = eventData.language;
-        navigator.languages = eventData.languages;
+    if (Platform.OS === "android") {
+      this._nativeEventEmitter = new NativeEventEmitter(
+        NativeModules.Languages
+      );
 
-        this._eventHandlers.forEach(handler => {
-          handler();
-        });
-      }
-    );
+      this._nativeEventEmitter.addListener(
+        "languagesDidChange",
+        (eventData: LanguagesEventData) => {
+          navigator.language = eventData.language;
+          navigator.languages = eventData.languages;
+
+          this.language = eventData.language;
+          this.languages = eventData.languages;
+
+          this._eventHandlers.forEach(handler => {
+            handler();
+          });
+        }
+      );
+    }
   }
 
   /**
-   * Add a handler to LanguagesAndroid changes by listening to the `change` event
+   * Add a handler to Languages changes by listening to the `change` event
    * type and providing the handler.
    *
-   * @param {string} type The `event` is the string that identifies the event you're listening for.  The
-   * only one available is `change`.
+   * @param {string} type The `event` is the string that identifies the event you're listening for.
+   * The only one available is `change`.
    *
    * @param {function} handler function to be called when the event fires.
+   * 
+   * @platform android
    */
-  addEventListener(
-    type: LanguagesEventType,
-    handler: LanguagesEventHandler
-  ) {
+  addEventListener(type: LanguagesEventType, handler: LanguagesEventHandler) {
     invariant(
-      ['change'].indexOf(type) !== -1,
+      type === "change",
       'Trying to subscribe to unknown event: "%s"', type
     );
-    if (type === 'change') {
+    if (type === "change" && this._nativeEventEmitter) {
       this._eventHandlers.add(handler);
     }
   }
@@ -100,19 +112,21 @@ class LanguagesAndroid {
    *
    * @param {string} type The `event` is the string that identifies the event you're listening for.
    * @param {function} handler function to be called when the event fires.
+   * 
+   * @platform android
    */
   removeEventListener(
     type: LanguagesEventType,
     handler: LanguagesEventHandler
   ) {
     invariant(
-      ['change'].indexOf(type) !== -1,
+      type === "change",
       'Trying to remove listener for unknown event: "%s"', type
     );
-    if (type === 'change' && this._eventHandlers.has(handler)) {
+    if (type === "change" && this._eventHandlers.has(handler)) {
       this._eventHandlers.delete(handler);
     }
   }
 }
 
-module.exports = new LanguagesAndroid();
+module.exports = new Languages();
