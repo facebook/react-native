@@ -60,6 +60,14 @@ import { requireNativeComponent } from 'react-native';
 module.exports = requireNativeComponent('RNTMap', null);
 ```
 
+**Note:** When rendering, don't forget to stretch the view, otherwise you'll be staring at a blank screen.
+
+```javascript
+  render() {
+    return <MapView style={{flex: 1}} />;
+  }
+```
+
 This is now a fully-functioning native map view component in JavaScript, complete with pinch-zoom and other native gesture support.  We can't really control it from JavaScript yet, though :(
 
 ## Properties
