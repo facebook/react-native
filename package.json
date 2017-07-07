@@ -149,7 +149,7 @@
     "babel-polyfill": "^6.20.0",
     "babel-preset-es2015-node": "^6.1.1",
     "babel-preset-fbjs": "^2.1.4",
-    "babel-preset-react-native": "^2.1.0",
+    "babel-preset-react-native": "^2.0.0",
     "babel-register": "^6.24.1",
     "babel-runtime": "^6.23.0",
     "babel-traverse": "^6.24.1",
