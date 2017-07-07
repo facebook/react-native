@@ -39,6 +39,7 @@ var THUMB_URLS = [
 ];
 
 var ListViewGridLayoutExample = createReactClass({
+  displayName: 'ListViewGridLayoutExample',
 
   statics: {
     title: '<ListView> - Grid Layout',

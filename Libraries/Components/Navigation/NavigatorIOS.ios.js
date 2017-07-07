@@ -306,6 +306,7 @@ type Event = Object;
  *
  */
 var NavigatorIOS = createReactClass({
+  displayName: 'NavigatorIOS',
 
   propTypes: {
 

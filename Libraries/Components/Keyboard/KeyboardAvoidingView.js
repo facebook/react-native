@@ -55,6 +55,7 @@ const viewRef = 'VIEW';
  */
 // $FlowFixMe(>=0.41.0)
 const KeyboardAvoidingView = createReactClass({
+  displayName: 'KeyboardAvoidingView',
   mixins: [TimerMixin],
 
   propTypes: {

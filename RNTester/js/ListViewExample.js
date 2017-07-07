@@ -26,6 +26,7 @@ var {
 var RNTesterPage = require('./RNTesterPage');
 
 var ListViewSimpleExample = createReactClass({
+  displayName: 'ListViewSimpleExample',
   statics: {
     title: '<ListView>',
     description: 'Performant, scrollable list of data.'

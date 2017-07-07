@@ -74,6 +74,7 @@ if (Platform.OS === 'android') {
  */
 // $FlowFixMe(>=0.41.0)
 const RefreshControl = createReactClass({
+  displayName: 'RefreshControl',
   statics: {
     SIZE: RefreshLayoutConsts.SIZE,
   },

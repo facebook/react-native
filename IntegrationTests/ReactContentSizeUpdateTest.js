@@ -26,6 +26,7 @@ var newReactViewWidth = 201;
 var newReactViewHeight = 202;
 
 var ReactContentSizeUpdateTest = createReactClass({
+  displayName: 'ReactContentSizeUpdateTest',
   mixins: [Subscribable.Mixin,
            TimerMixin],
 

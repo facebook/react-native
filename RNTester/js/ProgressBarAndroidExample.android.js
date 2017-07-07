@@ -20,6 +20,7 @@ var RNTesterPage = require('RNTesterPage');
 var TimerMixin = require('react-timer-mixin');
 
 var MovingBar = createReactClass({
+  displayName: 'MovingBar',
   mixins: [TimerMixin],
 
   getInitialState: function() {

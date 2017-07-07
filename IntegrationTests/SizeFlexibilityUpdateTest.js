@@ -24,6 +24,7 @@ var reactViewHeight = 222;
 var finalState = false;
 
 var SizeFlexibilityUpdateTest = createReactClass({
+  displayName: 'SizeFlexibilityUpdateTest',
   mixins: [Subscribable.Mixin],
 
   componentWillMount: function() {

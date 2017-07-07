@@ -38,6 +38,7 @@ type DefaultProps = {
  * Displays a circular loading indicator.
  */
 const ActivityIndicator = createReactClass({
+  displayName: 'ActivityIndicator',
   mixins: [NativeMethodsMixin],
 
   propTypes: {

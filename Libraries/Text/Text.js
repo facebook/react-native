@@ -98,6 +98,7 @@ const viewConfig = {
 
 // $FlowFixMe(>=0.41.0)
 const Text = createReactClass({
+  displayName: 'Text',
   propTypes: {
     /**
      * When `numberOfLines` is set, this prop defines how text will be truncated.

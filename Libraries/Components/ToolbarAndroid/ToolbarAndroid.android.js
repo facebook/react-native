@@ -67,6 +67,7 @@ var optionalImageSource = PropTypes.oneOfType([
  * [0]: https://developer.android.com/reference/android/support/v7/widget/Toolbar.html
  */
 var ToolbarAndroid = createReactClass({
+  displayName: 'ToolbarAndroid',
   mixins: [NativeMethodsMixin],
 
   propTypes: {

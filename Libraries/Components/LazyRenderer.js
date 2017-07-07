@@ -16,6 +16,7 @@ var PropTypes = require('prop-types');
 var TimerMixin = require('react-timer-mixin');
 
 var LazyRenderer = createReactClass({
+  displayName: 'LazyRenderer',
   mixin: [TimerMixin],
 
   propTypes: {

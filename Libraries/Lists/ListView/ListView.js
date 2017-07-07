@@ -87,6 +87,7 @@ var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
  */
 
 var ListView = createReactClass({
+  displayName: 'ListView',
   _childFrames: ([]: Array<Object>),
   _sentEndForContentLength: (null: ?number),
   _scrollComponent: (null: any),

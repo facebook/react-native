@@ -24,6 +24,7 @@ var {
 var TestManager = NativeModules.TestManager || NativeModules.SnapshotTestManager;
 
 var TextUpdateTest = createReactClass({
+  displayName: 'TextUpdateTest',
   mixins: [TimerMixin],
   getInitialState: function() {
     return {seeMore: true};

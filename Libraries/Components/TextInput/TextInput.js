@@ -170,6 +170,7 @@ const DataDetectorTypes = [
  */
 // $FlowFixMe(>=0.41.0)
 const TextInput = createReactClass({
+  displayName: 'TextInput',
   statics: {
     /* TODO(brentvatne) docs are needed for this */
     State: TextInputState,

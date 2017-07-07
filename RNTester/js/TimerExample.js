@@ -113,6 +113,7 @@ class RequestIdleCallbackTester extends React.Component {
 }
 
 var TimerTester = createReactClass({
+  displayName: 'TimerTester',
   mixins: [TimerMixin],
 
   _ii: 0,

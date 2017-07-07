@@ -40,6 +40,7 @@ type DefaultProps = {
  */
 // $FlowFixMe(>=0.41.0)
 var Switch = createReactClass({
+  displayName: 'Switch',
   propTypes: {
     ...ViewPropTypes,
     /**

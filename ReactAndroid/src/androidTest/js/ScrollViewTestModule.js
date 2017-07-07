@@ -66,6 +66,7 @@ var onItemPress = function(itemNumber) {
 };
 
 var ScrollViewTestApp = createReactClass({
+  displayName: 'ScrollViewTestApp',
   getInitialState: getInitialState,
   onScroll: onScroll,
   onItemPress: onItemPress,
@@ -92,6 +93,7 @@ var ScrollViewTestApp = createReactClass({
 });
 
 var HorizontalScrollViewTestApp = createReactClass({
+  displayName: 'HorizontalScrollViewTestApp',
   getInitialState: getInitialState,
   onScroll: onScroll,
   onItemPress: onItemPress,

@@ -22,6 +22,7 @@ var {
 var TimerMixin = require('react-timer-mixin');
 
 var ProgressViewExample = createReactClass({
+  displayName: 'ProgressViewExample',
   mixins: [TimerMixin],
 
   getInitialState() {

@@ -69,6 +69,7 @@ var DRAWER_STATES = [
  * ```
  */
 var DrawerLayoutAndroid = createReactClass({
+  displayName: 'DrawerLayoutAndroid',
   statics: {
     positions: DrawerConsts.DrawerPosition,
   },

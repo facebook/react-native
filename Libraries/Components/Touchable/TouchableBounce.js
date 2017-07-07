@@ -37,6 +37,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  */
 // $FlowFixMe(>=0.41.0)
 var TouchableBounce = createReactClass({
+  displayName: 'TouchableBounce',
   mixins: [Touchable.Mixin, NativeMethodsMixin],
 
   propTypes: {

@@ -60,6 +60,7 @@ type State = {
 };
 
 var LayoutEventsTest = createReactClass({
+  displayName: 'LayoutEventsTest',
   getInitialState(): State {
     return {
       didAnimation: false,

@@ -26,6 +26,7 @@ var requireNativeComponent = require('requireNativeComponent');
  */
 // $FlowFixMe(>=0.41.0)
 var ProgressViewIOS = createReactClass({
+  displayName: 'ProgressViewIOS',
   mixins: [NativeMethodsMixin],
 
   propTypes: {

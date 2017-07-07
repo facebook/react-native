@@ -65,6 +65,7 @@ var indeterminateType = function(props, propName, componentName, ...rest) {
  * ```
  */
 var ProgressBarAndroid = createReactClass({
+  displayName: 'ProgressBarAndroid',
   propTypes: {
     ...ViewPropTypes,
     /**

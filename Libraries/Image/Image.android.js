@@ -78,6 +78,7 @@ var ViewStyleKeys = new Set(Object.keys(ViewStylePropTypes));
 var ImageSpecificStyleKeys = new Set(Object.keys(ImageStylePropTypes).filter(x => !ViewStyleKeys.has(x)));
 
 var Image = createReactClass({
+  displayName: 'Image',
   propTypes: {
     ...ViewPropTypes,
     style: StyleSheetPropType(ImageStylePropTypes),

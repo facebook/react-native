@@ -31,6 +31,7 @@ type Event = Object;
  */
 // $FlowFixMe(>=0.41.0)
 var Slider = createReactClass({
+  displayName: 'Slider',
   mixins: [NativeMethodsMixin],
 
   propTypes: {

@@ -71,6 +71,7 @@ const requireNativeComponent = require('requireNativeComponent');
  */
 // $FlowFixMe(>=0.41.0)
 const ScrollView = createReactClass({
+  displayName: 'ScrollView',
   propTypes: {
     ...ViewPropTypes,
     /**

@@ -128,6 +128,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
  */
 // $FlowFixMe(>=0.41.0)
 const Image = createReactClass({
+  displayName: 'Image',
   propTypes: {
     /**
      * > `ImageResizeMode` is an `Enum` for different image resizing modes, set via the

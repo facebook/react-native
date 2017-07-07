@@ -24,6 +24,7 @@ var {
 var { TestModule  } = ReactNative.NativeModules;
 
 var TimersTest = createReactClass({
+  displayName: 'TimersTest',
   mixins: [TimerMixin],
 
   _nextTest: () => {},

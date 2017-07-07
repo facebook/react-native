@@ -38,6 +38,7 @@ type Event = Object;
  */
 // $FlowFixMe(>=0.41.0)
 const DatePickerIOS = createReactClass({
+  displayName: 'DatePickerIOS',
   // TOOD: Put a better type for _picker
   _picker: (undefined: ?$FlowFixMe),
 

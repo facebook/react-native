@@ -74,6 +74,7 @@ class AttributeToggler extends React.Component {
 }
 
 var AdjustingFontSize = createReactClass({
+  displayName: 'AdjustingFontSize',
   getInitialState: function() {
     return {dynamicText:'', shouldRender: true,};
   },

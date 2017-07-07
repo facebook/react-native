@@ -23,6 +23,7 @@ var {
 var CIRCLE_SIZE = 80;
 
 var PanResponderExample = createReactClass({
+  displayName: 'PanResponderExample',
 
   statics: {
     title: 'PanResponder Sample',

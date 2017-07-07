@@ -27,6 +27,7 @@ var {
 var RNTesterPage = require('./RNTesterPage');
 
 var SwipeableListViewSimpleExample = createReactClass({
+  displayName: 'SwipeableListViewSimpleExample',
   statics: {
     title: '<SwipeableListView>',
     description: 'Performant, scrollable, swipeable list of data.'

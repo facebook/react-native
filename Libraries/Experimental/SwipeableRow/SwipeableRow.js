@@ -63,6 +63,7 @@ const RIGHT_SWIPE_THRESHOLD = 30 * SLOW_SPEED_SWIPE_FACTOR;
  * to use this component separately.
  */
 const SwipeableRow = createReactClass({
+  displayName: 'SwipeableRow',
   _panResponder: {},
   _previousLeft: CLOSED_LEFT_POSITION,
 

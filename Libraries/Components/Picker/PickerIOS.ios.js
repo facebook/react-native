@@ -27,6 +27,7 @@ var itemStylePropType = StyleSheetPropType(TextStylePropTypes);
 var requireNativeComponent = require('requireNativeComponent');
 
 var PickerIOS = createReactClass({
+  displayName: 'PickerIOS',
   mixins: [NativeMethodsMixin],
 
   propTypes: {

@@ -31,6 +31,7 @@ const IMAGE_PREFETCH_URL = 'http://origami.design/public/images/bird-logo.png?r=
 var prefetchTask = Image.prefetch(IMAGE_PREFETCH_URL);
 
 var NetworkImageCallbackExample = createReactClass({
+  displayName: 'NetworkImageCallbackExample',
   getInitialState: function() {
     return {
       events: [],
