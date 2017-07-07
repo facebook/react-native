@@ -303,6 +303,7 @@ type DefaultProps = typeof defaultProps;
  * - By default, the list looks for a `key` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
+ * Also inherets [ScrollView Props](docs/scrollview.html#props).
  */
 class FlatList<ItemT> extends React.PureComponent<
   DefaultProps,
