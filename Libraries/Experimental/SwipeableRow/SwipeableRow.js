@@ -20,6 +20,7 @@ const StyleSheet = require('StyleSheet');
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
 
+const createReactClass = require('create-react-class');
 const emptyFunction = require('fbjs/lib/emptyFunction');
 
 const IS_RTL = I18nManager.isRTL;
@@ -61,7 +62,8 @@ const RIGHT_SWIPE_THRESHOLD = 30 * SLOW_SPEED_SWIPE_FACTOR;
  * used in a normal ListView. See the renderRow for SwipeableListView to see how
  * to use this component separately.
  */
-const SwipeableRow = React.createClass({
+const SwipeableRow = createReactClass({
+  displayName: 'SwipeableRow',
   _panResponder: {},
   _previousLeft: CLOSED_LEFT_POSITION,
 

@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const createReactClass = require('create-react-class');
 const Keyboard = require('Keyboard');
 const LayoutAnimation = require('LayoutAnimation');
 const Platform = require('Platform');
@@ -43,7 +44,8 @@ const viewRef = 'VIEW';
  * It can automatically adjust either its position or bottom padding based on the position of the keyboard.
  */
 // $FlowFixMe(>=0.41.0)
-const KeyboardAvoidingView = React.createClass({
+const KeyboardAvoidingView = createReactClass({
+  displayName: 'KeyboardAvoidingView',
   mixins: [TimerMixin],
 
   propTypes: {

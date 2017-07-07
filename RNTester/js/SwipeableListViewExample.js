@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {
   Image,
@@ -25,7 +26,8 @@ var {
 
 var RNTesterPage = require('./RNTesterPage');
 
-var SwipeableListViewSimpleExample = React.createClass({
+var SwipeableListViewSimpleExample = createReactClass({
+  displayName: 'SwipeableListViewSimpleExample',
   statics: {
     title: '<SwipeableListView>',
     description: 'Performant, scrollable, swipeable list of data.'
