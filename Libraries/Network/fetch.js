@@ -10,6 +10,9 @@
  * @nolint
  *
  */
+
+ /* eslint-disable */
+
 'use strict';
 
 import 'whatwg-fetch';
