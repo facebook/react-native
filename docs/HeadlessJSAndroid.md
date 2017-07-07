@@ -52,7 +52,7 @@ public class MyTaskService extends HeadlessJsTaskService {
 
 Now, whenever you [start your service][0], e.g. as a periodic task or in response to some system event / broadcast, JS will spin up, run your task, then spin down.
 
-Remember to add the service to AndroidManifest file
+Remember to add the service to your `AndroidManifest` file:
 
 ```
 <service android:name="com.example.MyTaskService" />
