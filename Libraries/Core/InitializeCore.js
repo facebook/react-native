@@ -138,15 +138,6 @@ defineProperty(global, 'Set', () => require('Set'), true);
 // ERROR: Event loop not supported.
 defineProperty(global, 'Promise', () => require('Promise'));
 
-// Set up regenerator.
-defineProperty(global, 'regeneratorRuntime', () => {
-  // The require just sets up the global, so make sure when we first
-  // invoke it the global does not exist
-  delete global.regeneratorRuntime;
-  require('regenerator-runtime/runtime');
-  return global.regeneratorRuntime;
-});
-
 // Set up timers
 const defineLazyTimer = name => {
   defineProperty(global, name, () => require('JSTimers')[name]);
