@@ -28,7 +28,8 @@ Pod::Spec.new do |spec|
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\"" }
 
   # Pinning to the same version as React.podspec.
-  spec.platform = :ios, '8.0'
+  spec.ios.deployment_target   = "8.0"
+  spec.tvos.deployment_target  = "9.0"
 
   spec.subspec "detail" do |ss|
     ss.header_dir = 'folly/detail'

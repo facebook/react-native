@@ -36,7 +36,8 @@ Pod::Spec.new do |s|
   s.source                  = source
   s.default_subspec         = "Core"
   s.requires_arc            = true
-  s.platform                = :ios, "8.0"
+  s.ios.deployment_target   = "8.0"
+  s.tvos.deployment_target  = "9.0"
   s.pod_target_xcconfig     = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
   s.preserve_paths          = "package.json", "LICENSE", "LICENSE-docs", "PATENTS"
   s.cocoapods_version       = ">= 1.2.0"
@@ -45,6 +46,7 @@ Pod::Spec.new do |s|
     ss.dependency             "Yoga", "#{package["version"]}.React"
     ss.source_files         = "React/**/*.{c,h,m,mm,S}"
     ss.exclude_files        = "**/__tests__/*", "IntegrationTests/*", "React/DevSupport/*", "React/**/RCTTVView.*", "ReactCommon/yoga/*", "React/Cxx*/*", "React/Base/RCTBatchedBridge.mm", "React/Executors/*"
+    ss.tvos.exclude_files   = "React/**/RCTClipboard.*", "React/**/RCTDatePicker.*", "React/**/RCTDatePickerManager.*", "React/**/RCTPicker.*", "React/**/RCTPickerManager.*", "React/**/RCTRefreshControl.*", "React/**/RCTRefreshControlManager.*", "React/**/RCTSlider.*", "React/**/RCTSliderManager.*", "React/**/RCTRefreshControlManager.*", "React/**/RCTSwitch.*", "React/**/RCTSwitchManager.*", "React/**/RCTWebView.*", "React/**/RCTWebViewManager.*"
     ss.framework            = "JavaScriptCore"
     ss.libraries            = "stdc++"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
@@ -73,7 +75,7 @@ Pod::Spec.new do |s|
 
   s.subspec "tvOS" do |ss|
     ss.dependency             "React/Core"
-    ss.source_files         = "React/**/RCTTVView.{h, m}"
+    ss.source_files         = "React/**/RCTTVView.{h,m}"
   end
 
   s.subspec "jschelpers_legacy" do |ss|

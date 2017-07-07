@@ -34,7 +34,8 @@ Pod::Spec.new do |spec|
   ]
 
   # Pinning to the same version as React.podspec.
-  spec.platform = :ios, "8.0"
+  spec.ios.deployment_target   = "8.0"
+  spec.tvos.deployment_target  = "9.0"
 
   # Set this environment variable when not using the `:path` option to install the pod.
   # E.g. when publishing this spec to a spec repo.
