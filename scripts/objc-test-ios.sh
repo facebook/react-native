@@ -15,7 +15,7 @@ cd "$ROOT"
 
 SCHEME="RNTester"
 SDK="iphonesimulator"
-DESTINATION="platform=iOS Simulator,name=iPhone 5s,OS=10.1"
+DESTINATION="platform=iOS Simulator,name=iPhone 5s,OS=10.3.1"
 
-# If there is a "test" argument, pass it to the test script.
+# If there's a "test" argument, pass it to the test script.
 . ./scripts/objc-test.sh $1
