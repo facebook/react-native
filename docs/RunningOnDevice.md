@@ -260,7 +260,7 @@ Open the **Report navigator** tab, select the last **Build** and search for `xip
 
 #### 3. Network/router configuration
 
-React native uses the wildcard DNS service **xip.io** to address your device. Some routers have security features to prevent DNS Servers to resolve anything in the local IP range.
+React Native uses the wildcard DNS service **xip.io** to address your device. Some routers have security features to prevent DNS Servers to resolve anything in the local IP range.
 
 Now check if you are able to resolve the xip.io address, by running `nslookup`.
 
