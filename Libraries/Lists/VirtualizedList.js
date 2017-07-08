@@ -957,8 +957,11 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       offset,
       timestamp,
       velocity,
-      visibleLength,
+      this._scrollMetrics.visibleLength,
     };
+    if (visibleLength) {
+        this._scrollMetrics.visibleLength = visibleLength;
+    }
     this._updateViewableItems(this.props.data);
     if (!this.props) {
       return;
