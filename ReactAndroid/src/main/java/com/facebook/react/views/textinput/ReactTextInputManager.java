@@ -725,11 +725,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         new TextView.OnEditorActionListener() {
           @Override
           public boolean onEditorAction(TextView v, int actionId, KeyEvent keyEvent) {
-            // Any 'Enter' action will do, except next and previous
-            if (((actionId & EditorInfo.IME_MASK_ACTION) > 0 &&
-                actionId != EditorInfo.IME_ACTION_NEXT &&
-                actionId != EditorInfo.IME_ACTION_PREVIOUS) ||
-                actionId == EditorInfo.IME_NULL) {
+            boolean isAnyEnterActionOtherThanNextOrPrevious = (
+              (actionId & EditorInfo.IME_MASK_ACTION) > 0 &&
+              actionId != EditorInfo.IME_ACTION_NEXT &&
+              actionId != EditorInfo.IME_ACTION_PREVIOUS
+            ) || actionId == EditorInfo.IME_NULL;
+
+            if (isAnyEnterActionOtherThanNextOrPrevious) {
               boolean blurOnSubmit = editText.getBlurOnSubmit();
               boolean isMultiline = ((editText.getInputType() &
                 InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0);
