@@ -725,7 +725,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         new TextView.OnEditorActionListener() {
           @Override
           public boolean onEditorAction(TextView v, int actionId, KeyEvent keyEvent) {
-            // Any 'Enter' action will do
+            // Any 'Enter' action will do, except next and previous
             if (((actionId & EditorInfo.IME_MASK_ACTION) > 0 &&
                 actionId != EditorInfo.IME_ACTION_NEXT &&
                 actionId != EditorInfo.IME_ACTION_PREVIOUS) ||
@@ -749,7 +749,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               } else {
                 returnValue = !isMultiline;
               }
-              
+
               if (shouldDispatchSubmitEvent) {
                 EventDispatcher eventDispatcher =
                     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
@@ -758,11 +758,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                         editText.getId(),
                         editText.getText().toString()));
               }
-              
+
               if (shouldClearFocus) {
                 editText.clearFocus();
               }
-              
+
               return returnValue;
             }
 
