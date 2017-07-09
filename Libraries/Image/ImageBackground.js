@@ -16,6 +16,7 @@ const Image = require('Image');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
+const ensureComponentIsNative = require('ensureComponentIsNative');
 
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
@@ -42,11 +43,24 @@ const View = require('View');
  * ```
  */
 class ImageBackground extends React.Component {
+  setNativeProps(props: Object) {
+    if (this._viewRef) {
+      ensureComponentIsNative(this._viewRef);
+      this._viewRef.setNativeProps(props);
+    }
+  }
+
+  _viewRef: View;
+
+  _captureRef = ref => {
+    this._viewRef = ref;
+  };
+
   render() {
     const {children, style, imageStyle, imageRef, ...props} = this.props;
 
     return (
-      <View style={style}>
+      <View style={style} ref={this._captureRef}>
         <Image
           {...props}
           style={[
