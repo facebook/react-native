@@ -217,6 +217,13 @@ class ViewabilityHelper {
   }
 
   /**
+   * clean-up cached _viewableIndices to evaluate changed items on next update
+   */
+  flushViewableIndices() {
+    this._viewableIndices.length = 0;
+  }
+
+  /**
    * Records that an interaction has happened even if there has been no scroll.
    */
   recordInteraction() {

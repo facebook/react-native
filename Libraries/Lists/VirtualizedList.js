@@ -430,6 +430,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     });
     if (data !== this.props.data || extraData !== this.props.extraData) {
       this._hasDataChangedSinceEndReached = true;
+
+      // clear the viewableIndices cache to also trigger
+      // the onViewableItemsChanged callback with the new data
+      this._viewabilityHelper.flushViewableIndices();
     }
   }
 
