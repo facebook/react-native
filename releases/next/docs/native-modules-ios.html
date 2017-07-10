@@ -2,7 +2,7 @@
 </span><span class="token macro">#<span class="token directive">import</span> &lt;React/RCTBridgeModule.h&gt;</span>
 
 <span class="token keyword">@interface</span> <span class="token class-name">CalendarManager</span> <span class="token punctuation">:</span> NSObject <span class="token operator">&lt;</span>RCTBridgeModule<span class="token operator">&gt;</span>
-<span class="token keyword">@end</span></div><p>In addition to implementing the <code>RCTBridgeModule</code> protocol, your class must also include the <code>RCT_EXPORT_MODULE()</code> macro. This takes an optional argument that specifies the name that the module will be accessible as in your JavaScript code (more on this later). If you do not specify a name, the JavaScript module name will match the Objective-C class name.</p><div class="prism language-objectivec"><span class="token comment" spellcheck="true">// CalendarManager.m
+<span class="token keyword">@end</span></div><p>In addition to implementing the <code>RCTBridgeModule</code> protocol, your class must also include the <code>RCT_EXPORT_MODULE()</code> macro. This takes an optional argument that specifies the name that the module will be accessible as in your JavaScript code (more on this later). If you do not specify a name, the JavaScript module name will match the Objective-C class name. If the Objective-C class name begins with RCT, the JavaScript module name will exclude the RCT prefix.</p><div class="prism language-objectivec"><span class="token comment" spellcheck="true">// CalendarManager.m
 </span><span class="token keyword">@implementation</span> CalendarManager
 <span class="token comment" spellcheck="true">
 // To export a module named CalendarManager
