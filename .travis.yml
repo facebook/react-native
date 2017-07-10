@@ -14,6 +14,17 @@ script:
   - if [[ "$TEST_TYPE" = e2e-objc ]]; then node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3; fi
   - if [[ ( "$TEST_TYPE" = podspecs ) && ( "$TRAVIS_PULL_REQUEST" = "false" ) ]]; then gem install cocoapods && travis_wait 30 ./scripts/process-podspecs.sh; fi
 
+after_failure:
+  - echo 'launchPackager.command.log'
+  - echo '=============================='
+  - cat launchPackager.command.log
+  - echo '=============================='
+  - echo ''
+  - echo 'launchWebSocketServer.command'
+  - echo '=============================='
+  - cat launchWebSocketServer.command.log
+  - echo '=============================='
+
 cache:
   - cocoapods
   - yarn

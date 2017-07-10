@@ -37,7 +37,7 @@ trap cleanup EXIT
 if [ "$1" = "test" ]; then
 
 # Start the packager
-./scripts/launchPackager.command &> 'launchPackage.command.log' &
+./scripts/launchPackager.command &> 'launchPackager.command.log' &
 # Start the WebSocket test server
 ./IntegrationTests/launchWebSocketServer.command &> 'launchWebSocketServer.command.log' &
 
@@ -77,9 +77,9 @@ xcodebuild \
 
 fi
 
-echo 'launchPackage.command.log'
+echo 'launchPackager.command.log'
 echo '=============================='
-cat launchPackage.command.log
+cat launchPackager.command.log
 echo '=============================='
 echo ''
 echo 'launchWebSocketServer.command'
