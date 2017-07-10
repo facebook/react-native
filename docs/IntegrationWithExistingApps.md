@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
 });
 
 // Module name
-AppRegistry.registerComponent('AwesomeProject', () => RNHighScores);
+AppRegistry.registerComponent('MyReactNativeApp', () => RNHighScores);
 ```
 
 > `RNHighScores` is the name of your module that will be used when you add a view to React Native from within your iOS application.
