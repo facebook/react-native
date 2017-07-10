@@ -430,7 +430,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     @"propTypes": propTypes,
     @"directEvents": directEvents,
     @"bubblingEvents": bubblingEvents,
-    @"baseModuleName": superClass == [NSObject class] ? (id)kCFNull : moduleNameForClass(superClass)
+    @"baseModuleName": superClass == [NSObject class] ? [NSNull null] : moduleNameForClass(superClass)
   };
 }
 
