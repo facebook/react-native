@@ -48,5 +48,6 @@ struct ValueEncoder<NSArray *> {
 };
 
 NSError *tryAndReturnError(const std::function<void()>& func);
+NSString *deriveSourceURL(NSURL *url);
 
 } }

@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.disableAutomock().dontMock('../findXcodeProject');
+jest.dontMock('../findXcodeProject');
 
 const findXcodeProject = require('../findXcodeProject');
 

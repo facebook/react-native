@@ -11,8 +11,6 @@
 
 'use strict';
 
-jest.autoMockOff();
-
 const findAssets = require('../findAssets');
 const dependencies = require('../__fixtures__/dependencies');
 const mockFs = require('mock-fs');

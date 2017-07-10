@@ -95,6 +95,11 @@ class MetroListView extends React.Component {
   getListRef() {
     return this._listRef;
   }
+  setNativeProps(props: Object) {
+    if (this._listRef) {
+      this._listRef.setNativeProps(props);
+    }
+  }
   static defaultProps: DefaultProps = {
     keyExtractor: (item, index) => item.key || String(index),
     renderScrollComponent: (props: Props) => {
@@ -178,9 +183,8 @@ class MetroListView extends React.Component {
     );
     return renderSectionHeader({section});
   };
-  _renderSeparator = (sID, rID) => (
-    <this.props.SeparatorComponent key={sID + rID} />
-  );
+  _renderSeparator = (sID, rID) =>
+    <this.props.SeparatorComponent key={sID + rID} />;
 }
 
 module.exports = MetroListView;

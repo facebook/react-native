@@ -209,11 +209,13 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const animated = params ? params.animated : true;
     const veryLast = this.props.getItemCount(this.props.data) - 1;
     const frame = this._getFrameMetricsApprox(veryLast);
-    const offset =
+    const offset = Math.max(
+      0,
       frame.offset +
-      frame.length +
-      this._footerLength -
-      this._scrollMetrics.visibleLength;
+        frame.length +
+        this._footerLength -
+        this._scrollMetrics.visibleLength,
+    );
     this._scrollRef.scrollTo(
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
@@ -313,6 +315,12 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     }
   }
 
+  setNativeProps(props: Object) {
+    if (this._scrollRef) {
+      this._scrollRef.setNativeProps(props);
+    }
+  }
+
   static defaultProps = {
     disableVirtualization: false,
     horizontal: false,
@@ -377,10 +385,11 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     );
     this.state = {
       first: this.props.initialScrollIndex || 0,
-      last: Math.min(
-        this.props.getItemCount(this.props.data),
-        (this.props.initialScrollIndex || 0) + this.props.initialNumToRender,
-      ) - 1,
+      last:
+        Math.min(
+          this.props.getItemCount(this.props.data),
+          (this.props.initialScrollIndex || 0) + this.props.initialNumToRender,
+        ) - 1,
     };
   }
 
@@ -488,8 +497,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
 
   _isNestedWithSameOrientation(): boolean {
     const nestedContext = this.context.virtualizedList;
-    return !!(nestedContext &&
-      !!nestedContext.horizontal === !!this.props.horizontal);
+    return !!(
+      nestedContext && !!nestedContext.horizontal === !!this.props.horizontal
+    );
   }
 
   render() {
@@ -511,8 +521,8 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
     const inversionStyle = this.props.inverted
       ? this.props.horizontal
-          ? styles.horizontallyInverted
-          : styles.verticallyInverted
+        ? styles.horizontallyInverted
+        : styles.verticallyInverted
       : null;
     const cells = [];
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
@@ -672,7 +682,12 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       cells,
     );
     if (this.props.debug) {
-      return <View style={{flex: 1}}>{ret}{this._renderDebugOverlay()}</View>;
+      return (
+        <View style={{flex: 1}}>
+          {ret}
+          {this._renderDebugOverlay()}
+        </View>
+      );
     } else {
       return ret;
     }
@@ -832,7 +847,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           borderColor: 'blue',
           borderWidth: 1,
         }}>
-        {framesInLayout.map((f, ii) => (
+        {framesInLayout.map((f, ii) =>
           <View
             key={'f' + ii}
             style={{
@@ -842,8 +857,8 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
               height: f.length * normalize,
               backgroundColor: 'orange',
             }}
-          />
-        ))}
+          />,
+        )}
         <View
           style={{
             ...baseStyle,
@@ -972,7 +987,12 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
         (velocity < -2 && distTop < scrollingThreshold) ||
         (velocity > 2 && distBottom < scrollingThreshold);
     }
-    if (hiPri) {
+    // Only trigger high-priority updates if we've actually rendered cells,
+    // and with that size estimate, accurately compute how many cells we should render.
+    // Otherwise, it would just render as many cells as it can (of zero dimension),
+    // each time through attempting to render more (limited by maxToRenderPerBatch),
+    // starving the renderer from actually laying out the objects and computing _averageCellLength.
+    if (hiPri && this._averageCellLength) {
       // Don't worry about interactions when scrolling quickly; focus on filling content as fast
       // as possible.
       this._updateCellsToRenderBatcher.dispose({abort: true});
@@ -1013,19 +1033,31 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     this.setState(state => {
       let newState;
       if (!isVirtualizationDisabled) {
-        newState = computeWindowedRenderLimits(
-          this.props,
-          state,
-          this._getFrameMetricsApprox,
-          this._scrollMetrics,
-        );
+        // If we run this with bogus data, we'll force-render window {first: 0, last: 0},
+        // and wipe out the initialNumToRender rendered elements.
+        // So let's wait until the scroll view metrics have been set up. And until then,
+        // we will trust the initialNumToRender suggestion
+        if (this._scrollMetrics.visibleLength) {
+          // If we have a non-zero initialScrollIndex and run this before we've scrolled,
+          // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
+          // So let's wait until we've scrolled the view to the right place. And until then,
+          // we will trust the initialScrollIndex suggestion.
+          if (!this.props.initialScrollIndex || this._scrollMetrics.offset) {
+            newState = computeWindowedRenderLimits(
+              this.props,
+              state,
+              this._getFrameMetricsApprox,
+              this._scrollMetrics,
+            );
+          }
+        }
       } else {
         const {contentLength, offset, visibleLength} = this._scrollMetrics;
         const distanceFromEnd = contentLength - visibleLength - offset;
-        const renderAhead = distanceFromEnd <
-          onEndReachedThreshold * visibleLength
-          ? this.props.maxToRenderPerBatch
-          : 0;
+        const renderAhead =
+          distanceFromEnd < onEndReachedThreshold * visibleLength
+            ? this.props.maxToRenderPerBatch
+            : 0;
         newState = {
           first: 0,
           last: Math.min(state.last + renderAhead, getItemCount(data) - 1),
@@ -1086,6 +1118,19 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     if (!frame || frame.index !== index) {
       if (getItemLayout) {
         frame = getItemLayout(data, index);
+        if (__DEV__) {
+          const frameType = PropTypes.shape({
+            length: PropTypes.number.isRequired,
+            offset: PropTypes.number.isRequired,
+            index: PropTypes.number.isRequired,
+          }).isRequired;
+          PropTypes.checkPropTypes(
+            {frame: frameType},
+            {frame},
+            'frame',
+            'VirtualizedList.getItemLayout',
+          );
+        }
       }
     }
     return frame;
@@ -1183,11 +1228,10 @@ class CellRenderer extends React.Component {
       index,
       separators: this._separators,
     });
-    const onLayout = getItemLayout &&
-      !parentProps.debug &&
-      !fillRateHelper.enabled()
-      ? undefined
-      : this.props.onLayout;
+    const onLayout =
+      getItemLayout && !parentProps.debug && !fillRateHelper.enabled()
+        ? undefined
+        : this.props.onLayout;
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
     // called explicitly by `ScrollViewStickyHeader`.
     return (

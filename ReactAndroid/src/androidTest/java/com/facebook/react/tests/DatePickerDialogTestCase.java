@@ -80,8 +80,7 @@ public class DatePickerDialogTestCase extends ReactAppInstrumentationTestCase {
   @Override
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
     return super.createReactInstanceSpecForTest()
-        .addNativeModule(mRecordingModule)
-        .addJSModule(DatePickerDialogTestModule.class);
+        .addNativeModule(mRecordingModule);
   }
 
   @Override

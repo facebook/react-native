@@ -837,7 +837,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertJSThread();
   [_javaScriptExecutor executeAsyncBlockOnJavaScriptQueue:^{
-    [self _actuallyInvokeAndProcessModule:@"JSTimersExecution"
+    [self _actuallyInvokeAndProcessModule:@"JSTimers"
                                    method:@"callTimers"
                                 arguments:@[@[timer]]];
   }];

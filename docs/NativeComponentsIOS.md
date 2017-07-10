@@ -84,6 +84,7 @@ This isn't very well documented though - in order to know what properties are av
 
 ```javascript
 // MapView.js
+import PropTypes from 'prop-types';
 import React from 'react';
 import { requireNativeComponent } from 'react-native';
 
@@ -101,7 +102,7 @@ MapView.propTypes = {
    * angle is ignored and the map is always displayed as if the user
    * is looking straight down onto it.
    */
-  pitchEnabled: React.PropTypes.bool,
+  pitchEnabled: PropTypes.bool,
 };
 
 var RNTMap = requireNativeComponent('RNTMap', MapView);
@@ -177,7 +178,7 @@ MapView.propTypes = {
    * angle is ignored and the map is always displayed as if the user
    * is looking straight down onto it.
    */
-  pitchEnabled: React.PropTypes.bool,
+  pitchEnabled: PropTypes.bool,
 
   /**
    * The region to be displayed by the map.
@@ -185,19 +186,19 @@ MapView.propTypes = {
    * The region is defined by the center coordinates and the span of
    * coordinates to display.
    */
-  region: React.PropTypes.shape({
+  region: PropTypes.shape({
     /**
      * Coordinates for the center of the map.
      */
-    latitude: React.PropTypes.number.isRequired,
-    longitude: React.PropTypes.number.isRequired,
+    latitude: PropTypes.number.isRequired,
+    longitude: PropTypes.number.isRequired,
 
     /**
      * Distance between the minimum and the maximum latitude/longitude
      * to be displayed.
      */
-    latitudeDelta: React.PropTypes.number.isRequired,
-    longitudeDelta: React.PropTypes.number.isRequired,
+    latitudeDelta: PropTypes.number.isRequired,
+    longitudeDelta: PropTypes.number.isRequired,
   }),
 };
 
@@ -323,7 +324,7 @@ MapView.propTypes = {
   /**
    * Callback that is called continuously when the user is dragging the map.
    */
-  onChange: React.PropTypes.func,
+  onChange: PropTypes.func,
   ...
 };
 

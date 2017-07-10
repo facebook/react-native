@@ -27,11 +27,15 @@ const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
+const createReactClass = require('create-react-class');
 const dismissKeyboard = require('dismissKeyboard');
 const flattenStyle = require('flattenStyle');
 const invariant = require('fbjs/lib/invariant');
 const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');
+const warning = require('fbjs/lib/warning');
+
+import type {NativeMethodsMixinType} from 'ReactNativeTypes';
 
 /**
  * Component that wraps platform ScrollView while providing
@@ -69,7 +73,8 @@ const requireNativeComponent = require('requireNativeComponent');
  * supports out of the box.
  */
 // $FlowFixMe(>=0.41.0)
-const ScrollView = React.createClass({
+const ScrollView = createReactClass({
+  displayName: 'ScrollView',
   propTypes: {
     ...ViewPropTypes,
     /**
@@ -311,8 +316,10 @@ const ScrollView = React.createClass({
     /**
      * When set, causes the scroll view to stop at multiples of the value of
      * `snapToInterval`. This can be used for paginating through children
-     * that have lengths smaller than the scroll view. Used in combination
-     * with `snapToAlignment`.
+     * that have lengths smaller than the scroll view. Typically used in
+     * combination with `snapToAlignment` and `decelerationRate="fast"`.
+     * Overrides less configurable `pagingEnabled` prop.
+     *
      * @platform ios
      */
     snapToInterval: PropTypes.number,
@@ -592,8 +599,8 @@ const ScrollView = React.createClass({
     this._scrollViewRef = ref;
   },
 
-  _innerViewRef: (null: ?View),
-  _setInnerViewRef: function(ref: ?View) {
+  _innerViewRef: (null: ?NativeMethodsMixinType),
+  _setInnerViewRef: function(ref: ?NativeMethodsMixinType) {
     this._innerViewRef = ref;
   },
 
@@ -603,6 +610,10 @@ const ScrollView = React.createClass({
     if (Platform.OS === 'ios') {
       ScrollViewClass = RCTScrollView;
       ScrollContentContainerViewClass = RCTScrollContentView;
+      warning(
+        !this.props.snapToInterval || !this.props.pagingEnabled,
+        'snapToInterval is currently ignored when pagingEnabled is true.'
+      );
     } else if (Platform.OS === 'android') {
       if (this.props.horizontal) {
         ScrollViewClass = AndroidHorizontalScrollView;
@@ -676,7 +687,13 @@ const ScrollView = React.createClass({
         {...contentSizeChangeProps}
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
-        removeClippedSubviews={this.props.removeClippedSubviews}
+        removeClippedSubviews={
+          // Subview clipping causes issues with sticky headers on Android and
+          // would be hard to fix properly in a performant way.
+          Platform.OS === 'android' && hasStickyHeaders ?
+            false :
+            this.props.removeClippedSubviews
+        }
         collapsable={false}>
         {children}
       </ScrollContentContainerViewClass>;
@@ -819,6 +836,7 @@ if (Platform.OS === 'android') {
     (ScrollView: ReactClass<any>),
     nativeOnlyProps,
   );
+  // $FlowFixMe (bvaughn) Update ComponentInterface in ViewPropTypes to include a string type (for Fiber host components) in a follow-up.
   RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);
 }
 

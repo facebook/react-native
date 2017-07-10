@@ -8,8 +8,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 var Easing = require('Easing');
 describe('Easing', () => {
   it('should work with linear', () => {

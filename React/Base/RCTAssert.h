@@ -94,12 +94,6 @@ typedef void (^RCTFatalHandler)(NSError *error);
 @"This function must not be called on the main queue")
 
 /**
- * Deprecated, do not use
- */
-#define RCTAssertMainThread() RCTAssertMainQueue()
-#define RCTAssertNotMainThread() RCTAssertNotMainQueue()
-
-/**
  * These methods get and set the current assert function called by the RCTAssert
  * macros. You can use these to replace the standard behavior with custom assert
  * functionality.

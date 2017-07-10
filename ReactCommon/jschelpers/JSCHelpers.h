@@ -16,7 +16,7 @@
 namespace facebook {
 namespace react {
 
-class JSException : public std::exception {
+class RN_EXPORT JSException : public std::exception {
 public:
   explicit JSException(const char* msg)
     : msg_(msg) {}
@@ -44,6 +44,17 @@ private:
   void buildMessage(JSContextRef ctx, JSValueRef exn, JSStringRef sourceURL, const char* errorMsg);
 };
 
+namespace ExceptionHandling {
+  struct ExtractedEror {
+    std::string message;
+    // Stacktrace formatted like JS stack
+    // method@filename[:line[:column]]
+    std::string stack;
+  };
+  using PlatformErrorExtractor = std::function<ExtractedEror(const std::exception &ex, const char *context)>;
+  extern PlatformErrorExtractor platformErrorExtractor;
+}
+
 using JSFunction = std::function<JSValueRef(JSContextRef, JSObjectRef, size_t, const JSValueRef[])>;
 
 JSObjectRef makeFunction(
@@ -61,7 +72,7 @@ JSObjectRef makeFunction(
     const char* name,
     JSObjectCallAsFunctionCallback callback);
 
-void installGlobalFunction(
+RN_EXPORT void installGlobalFunction(
     JSGlobalContextRef ctx,
     const char* name,
     JSObjectCallAsFunctionCallback callback);

@@ -32,6 +32,8 @@ public class ModuleHolder {
 
   private static final AtomicInteger sInstanceKeyCounter = new AtomicInteger(1);
 
+  private final int mInstanceKey = sInstanceKeyCounter.getAndIncrement();
+
   private final String mName;
   private final boolean mCanOverrideExistingModule;
   private final boolean mHasConstants;
@@ -149,8 +151,7 @@ public class ModuleHolder {
 
   private NativeModule create() {
     SoftAssertions.assertCondition(mModule == null, "Creating an already created module.");
-    int instanceKey = sInstanceKeyCounter.getAndIncrement();
-    ReactMarker.logMarker(CREATE_MODULE_START, mName, instanceKey);
+    ReactMarker.logMarker(CREATE_MODULE_START, mName, mInstanceKey);
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ModuleHolder.createModule")
       .arg("name", mName)
       .flush();
@@ -169,7 +170,7 @@ public class ModuleHolder {
         doInitialize(module);
       }
     } finally {
-      ReactMarker.logMarker(CREATE_MODULE_END, instanceKey);
+      ReactMarker.logMarker(CREATE_MODULE_END, mInstanceKey);
       SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
     return module;
@@ -179,7 +180,7 @@ public class ModuleHolder {
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ModuleHolder.initialize")
       .arg("name", mName)
       .flush();
-    ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_START, mName);
+    ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_START, mName, mInstanceKey);
     try {
       boolean shouldInitialize = false;
       // Check to see if another thread is initializing the object, if not claim the responsibility
@@ -198,7 +199,7 @@ public class ModuleHolder {
         }
       }
     } finally {
-      ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_END);
+      ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_END, mInstanceKey);
       SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
   }

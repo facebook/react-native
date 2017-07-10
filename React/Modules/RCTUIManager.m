@@ -23,6 +23,8 @@
 #import "RCTConvert.h"
 #import "RCTDefines.h"
 #import "RCTEventDispatcher.h"
+#import "RCTLayoutAnimation.h"
+#import "RCTLayoutAnimationGroup.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTModuleMethod.h"
@@ -55,160 +57,6 @@ NSString *const RCTUIManagerDidRegisterRootViewNotification = @"RCTUIManagerDidR
 NSString *const RCTUIManagerDidRemoveRootViewNotification = @"RCTUIManagerDidRemoveRootViewNotification";
 NSString *const RCTUIManagerRootViewKey = @"RCTUIManagerRootViewKey";
 
-@interface RCTAnimation : NSObject
-
-@property (nonatomic, readonly) NSTimeInterval duration;
-@property (nonatomic, readonly) NSTimeInterval delay;
-@property (nonatomic, readonly, copy) NSString *property;
-@property (nonatomic, readonly) CGFloat springDamping;
-@property (nonatomic, readonly) CGFloat initialVelocity;
-@property (nonatomic, readonly) RCTAnimationType animationType;
-
-@end
-
-static UIViewAnimationCurve _currentKeyboardAnimationCurve;
-
-@implementation RCTAnimation
-
-static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnimationType type)
-{
-  switch (type) {
-    case RCTAnimationTypeLinear:
-      return UIViewAnimationOptionCurveLinear;
-    case RCTAnimationTypeEaseIn:
-      return UIViewAnimationOptionCurveEaseIn;
-    case RCTAnimationTypeEaseOut:
-      return UIViewAnimationOptionCurveEaseOut;
-    case RCTAnimationTypeEaseInEaseOut:
-      return UIViewAnimationOptionCurveEaseInOut;
-    case RCTAnimationTypeKeyboard:
-      // http://stackoverflow.com/questions/18870447/how-to-use-the-default-ios7-uianimation-curve
-      return (UIViewAnimationOptions)(_currentKeyboardAnimationCurve << 16);
-    default:
-      RCTLogError(@"Unsupported animation type %zd", type);
-      return UIViewAnimationOptionCurveEaseInOut;
-  }
-}
-
-// Use a custom initialization function rather than implementing `+initialize` so that we can control
-// when the initialization code runs. `+initialize` runs immediately before the first message is sent
-// to the class which may be too late for us. By this time, we may have missed some
-// `UIKeyboardWillChangeFrameNotification`s.
-+ (void)initializeStatics
-{
-#if !TARGET_OS_TV
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillChangeFrame:)
-                                                name:UIKeyboardWillChangeFrameNotification
-                                               object:nil];
-  });
-#endif
-}
-
-+ (void)keyboardWillChangeFrame:(NSNotification *)notification
-{
-#if !TARGET_OS_TV
-  NSDictionary *userInfo = notification.userInfo;
-  _currentKeyboardAnimationCurve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
-#endif
-}
-
-- (instancetype)initWithDuration:(NSTimeInterval)duration dictionary:(NSDictionary *)config
-{
-  if (!config) {
-    return nil;
-  }
-
-  if ((self = [super init])) {
-    _property = [RCTConvert NSString:config[@"property"]];
-
-    _duration = [RCTConvert NSTimeInterval:config[@"duration"]] ?: duration;
-    if (_duration > 0.0 && _duration < 0.01) {
-      RCTLogError(@"RCTLayoutAnimation expects timings to be in ms, not seconds.");
-      _duration = _duration * 1000.0;
-    }
-
-    _delay = [RCTConvert NSTimeInterval:config[@"delay"]];
-    if (_delay > 0.0 && _delay < 0.01) {
-      RCTLogError(@"RCTLayoutAnimation expects timings to be in ms, not seconds.");
-      _delay = _delay * 1000.0;
-    }
-
-    _animationType = [RCTConvert RCTAnimationType:config[@"type"]];
-    if (_animationType == RCTAnimationTypeSpring) {
-      _springDamping = [RCTConvert CGFloat:config[@"springDamping"]];
-      _initialVelocity = [RCTConvert CGFloat:config[@"initialVelocity"]];
-    }
-  }
-  return self;
-}
-
-- (void)performAnimations:(void (^)(void))animations
-      withCompletionBlock:(void (^)(BOOL completed))completionBlock
-{
-  if (_animationType == RCTAnimationTypeSpring) {
-
-    [UIView animateWithDuration:_duration
-                          delay:_delay
-         usingSpringWithDamping:_springDamping
-          initialSpringVelocity:_initialVelocity
-                        options:UIViewAnimationOptionBeginFromCurrentState
-                     animations:animations
-                     completion:completionBlock];
-
-  } else {
-
-    UIViewAnimationOptions options = UIViewAnimationOptionBeginFromCurrentState |
-      UIViewAnimationOptionsFromRCTAnimationType(_animationType);
-
-    [UIView animateWithDuration:_duration
-                          delay:_delay
-                        options:options
-                     animations:animations
-                     completion:completionBlock];
-  }
-}
-
-@end
-
-@interface RCTLayoutAnimation : NSObject
-
-@property (nonatomic, copy) NSDictionary *config;
-@property (nonatomic, strong) RCTAnimation *createAnimation;
-@property (nonatomic, strong) RCTAnimation *updateAnimation;
-@property (nonatomic, strong) RCTAnimation *deleteAnimation;
-@property (nonatomic, copy) RCTResponseSenderBlock callback;
-
-@end
-
-@implementation RCTLayoutAnimation
-
-- (instancetype)initWithDictionary:(NSDictionary *)config callback:(RCTResponseSenderBlock)callback
-{
-  if (!config) {
-    return nil;
-  }
-
-  if ((self = [super init])) {
-    _config = [config copy];
-    NSTimeInterval duration = [RCTConvert NSTimeInterval:config[@"duration"]];
-    if (duration > 0.0 && duration < 0.01) {
-      RCTLogError(@"RCTLayoutAnimation expects timings to be in ms, not seconds.");
-      duration = duration * 1000.0;
-    }
-
-    _createAnimation = [[RCTAnimation alloc] initWithDuration:duration dictionary:config[@"create"]];
-    _updateAnimation = [[RCTAnimation alloc] initWithDuration:duration dictionary:config[@"update"]];
-    _deleteAnimation = [[RCTAnimation alloc] initWithDuration:duration dictionary:config[@"delete"]];
-    _callback = callback;
-  }
-  return self;
-}
-
-@end
-
 @implementation RCTUIManager
 {
   // Root views are only mutated on the shadow queue
@@ -216,8 +64,7 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
   NSMutableArray<RCTViewManagerUIBlock> *_pendingUIBlocks;
 
   // Animation
-  RCTLayoutAnimation *_layoutAnimation; // Main thread only
-  NSMutableSet<UIView *> *_viewsToBeDeleted; // Main thread only
+  RCTLayoutAnimationGroup *_layoutAnimationGroup; // Main thread only
 
   NSMutableDictionary<NSNumber *, RCTShadowView *> *_shadowViewRegistry; // RCT thread only
   NSMutableDictionary<NSNumber *, UIView *> *_viewRegistry; // Main thread only
@@ -308,8 +155,6 @@ RCT_EXPORT_MODULE()
   _bridgeTransactionListeners = [NSMutableSet new];
   _observerCoordinator = [RCTUIManagerObserverCoordinator new];
 
-  _viewsToBeDeleted = [NSMutableSet new];
-
   // Get view managers from bridge
   NSMutableDictionary *componentDataByName = [NSMutableDictionary new];
   for (Class moduleClass in _bridge.moduleClasses) {
@@ -326,7 +171,7 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:_bridge.accessibilityManager];
-  [RCTAnimation initializeStatics];
+  [RCTLayoutAnimation initializeStatics];
 }
 
 dispatch_queue_t RCTGetUIManagerQueue(void)
@@ -433,6 +278,33 @@ BOOL RCTIsUIManagerQueue()
   });
 }
 
+/**
+ * TODO(yuwang): implement the nativeID functionality in a more efficient way
+ *               instead of searching the whole view tree
+ */
+- (UIView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag
+{
+  RCTAssertMainQueue();
+  UIView *view = [self viewForReactTag:rootTag];
+  return [self _lookupViewForNativeID:nativeID inView:view];
+}
+
+- (UIView *)_lookupViewForNativeID:(NSString *)nativeID inView:(UIView *)view
+{
+  RCTAssertMainQueue();
+  if (view != nil && [nativeID isEqualToString:view.nativeID]) {
+    return view;
+  }
+
+  for (UIView *subview in view.subviews) {
+    UIView *targetView = [self _lookupViewForNativeID:nativeID inView:subview];
+    if (targetView != nil) {
+      return targetView;
+    }
+  }
+  return nil;
+}
+
 - (void)setSize:(CGSize)size forView:(UIView *)view
 {
   RCTAssertMainQueue();
@@ -532,6 +404,19 @@ BOOL RCTIsUIManagerQueue()
   [_pendingUIBlocks insertObject:block atIndex:0];
 }
 
+- (void)setNextLayoutAnimationGroup:(RCTLayoutAnimationGroup *)layoutAnimationGroup
+{
+  RCTAssertMainQueue();
+
+  if (_layoutAnimationGroup && ![_layoutAnimationGroup isEqual:layoutAnimationGroup]) {
+    RCTLogWarn(@"Warning: Overriding previous layout animation with new one before the first began:\n%@ -> %@.",
+      [_layoutAnimationGroup description],
+      [layoutAnimationGroup description]);
+  }
+
+  _layoutAnimationGroup = layoutAnimationGroup;
+}
+
 - (RCTViewManagerUIBlock)uiBlockWithLayoutUpdateForRootView:(RCTRootShadowView *)rootShadowView
 {
   RCTAssert(!RCTIsMainQueue(), @"Should be called on shadow queue");
@@ -622,7 +507,7 @@ BOOL RCTIsUIManagerQueue()
   return ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
 
     const RCTFrameData *frameDataArray = (const RCTFrameData *)framesData.bytes;
-    RCTLayoutAnimation *layoutAnimation = uiManager->_layoutAnimation;
+    RCTLayoutAnimationGroup *layoutAnimationGroup = uiManager->_layoutAnimationGroup;
 
     __block NSUInteger completionsCalled = 0;
 
@@ -636,18 +521,18 @@ BOOL RCTIsUIManagerQueue()
       BOOL isHidden = frameData.isHidden;
       UIUserInterfaceLayoutDirection layoutDirection = frameData.layoutDirection;
       BOOL isNew = frameData.isNew;
-      RCTAnimation *updateAnimation = isNew ? nil : layoutAnimation.updateAnimation;
+      RCTLayoutAnimation *updatingLayoutAnimation = isNew ? nil : layoutAnimationGroup.updatingLayoutAnimation;
       BOOL shouldAnimateCreation = isNew && !frameData.parentIsNew;
-      RCTAnimation *createAnimation = shouldAnimateCreation ? layoutAnimation.createAnimation : nil;
+      RCTLayoutAnimation *creatingLayoutAnimation = shouldAnimateCreation ? layoutAnimationGroup.creatingLayoutAnimation : nil;
 
       void (^completion)(BOOL) = ^(BOOL finished) {
         completionsCalled++;
-        if (layoutAnimation.callback && completionsCalled == count) {
-          layoutAnimation.callback(@[@(finished)]);
+        if (layoutAnimationGroup.callback && completionsCalled == count) {
+          layoutAnimationGroup.callback(@[@(finished)]);
 
           // It's unsafe to call this callback more than once, so we nil it out here
           // to make sure that doesn't happen.
-          layoutAnimation.callback = nil;
+          layoutAnimationGroup.callback = nil;
         }
       };
 
@@ -660,7 +545,7 @@ BOOL RCTIsUIManagerQueue()
       }
 
       RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
-      if (createAnimation) {
+      if (creatingLayoutAnimation) {
 
         // Animate view creation
         [view reactSetFrame:frame];
@@ -668,17 +553,17 @@ BOOL RCTIsUIManagerQueue()
         CATransform3D finalTransform = view.layer.transform;
         CGFloat finalOpacity = view.layer.opacity;
 
-        NSString *property = createAnimation.property;
+        NSString *property = creatingLayoutAnimation.property;
         if ([property isEqualToString:@"scaleXY"]) {
           view.layer.transform = CATransform3DMakeScale(0, 0, 0);
         } else if ([property isEqualToString:@"opacity"]) {
           view.layer.opacity = 0.0;
         } else {
           RCTLogError(@"Unsupported layout animation createConfig property %@",
-                      createAnimation.property);
+                      creatingLayoutAnimation.property);
         }
 
-        [createAnimation performAnimations:^{
+        [creatingLayoutAnimation performAnimations:^{
           if ([property isEqualToString:@"scaleXY"]) {
             view.layer.transform = finalTransform;
           } else if ([property isEqualToString:@"opacity"]) {
@@ -689,10 +574,10 @@ BOOL RCTIsUIManagerQueue()
           }
         } withCompletionBlock:completion];
 
-      } else if (updateAnimation) {
+      } else if (updatingLayoutAnimation) {
 
         // Animate view update
-        [updateAnimation performAnimations:^{
+        [updatingLayoutAnimation performAnimations:^{
           [view reactSetFrame:frame];
           if (updateBlock) {
             updateBlock(self, viewRegistry);
@@ -711,7 +596,7 @@ BOOL RCTIsUIManagerQueue()
     }
 
     // Clean up
-    uiManager->_layoutAnimation = nil;
+    uiManager->_layoutAnimationGroup = nil;
   };
 }
 
@@ -796,10 +681,10 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
  */
 - (void)_removeChildren:(NSArray<UIView *> *)children
           fromContainer:(UIView *)container
-          withAnimation:(RCTLayoutAnimation *)animation
+          withAnimation:(RCTLayoutAnimationGroup *)animation
 {
   RCTAssertMainQueue();
-  RCTAnimation *deleteAnimation = animation.deleteAnimation;
+  RCTLayoutAnimation *deletingLayoutAnimation = animation.deletingLayoutAnimation;
 
   __block NSUInteger completionsCalled = 0;
   for (UIView *removedChild in children) {
@@ -807,8 +692,7 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
     void (^completion)(BOOL) = ^(BOOL finished) {
       completionsCalled++;
 
-      [self->_viewsToBeDeleted removeObject:removedChild];
-      [container removeReactSubview:removedChild];
+      [removedChild removeFromSuperview];
 
       if (animation.callback && completionsCalled == children.count) {
         animation.callback(@[@(finished)]);
@@ -819,21 +703,31 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
       }
     };
 
-    [_viewsToBeDeleted addObject:removedChild];
+    // Hack: At this moment we have two contradict intents.
+    // First one: We want to delete the view from view hierarchy.
+    // Second one: We want to animate this view, which implies the existence of this view in the hierarchy.
+    // So, we have to remove this view from React's view hierarchy but postpone removing from UIKit's hierarchy.
+    // Here the problem: the default implementation of `-[UIView removeReactSubview:]` also removes the view from UIKit's hierarchy.
+    // So, let's temporary restore the view back after removing.
+    // To do so, we have to memorize original `superview` (which can differ from `container`) and an index of removed view.
+    UIView *originalSuperview = removedChild.superview;
+    NSUInteger *originalIndex = [originalSuperview.subviews indexOfObject:removedChild];
+    [container removeReactSubview:removedChild];
+    [originalSuperview insertSubview:removedChild atIndex:originalIndex];
 
-    // Disable user interaction while the view is animating since JS won't receive
-    // the view events anyway.
+    // Disable user interaction while the view is animating
+    // since the view is (conseptually) deleted and not supposed to be interactive.
     removedChild.userInteractionEnabled = NO;
 
-    NSString *property = deleteAnimation.property;
-    [deleteAnimation performAnimations:^{
+    NSString *property = deletingLayoutAnimation.property;
+    [deletingLayoutAnimation performAnimations:^{
       if ([property isEqualToString:@"scaleXY"]) {
         removedChild.layer.transform = CATransform3DMakeScale(0.001, 0.001, 0.001);
       } else if ([property isEqualToString:@"opacity"]) {
         removedChild.layer.opacity = 0.0;
       } else {
         RCTLogError(@"Unsupported layout animation createConfig property %@",
-                    deleteAnimation.property);
+                    deletingLayoutAnimation.property);
       }
     } withCompletionBlock:completion];
   }
@@ -958,10 +852,10 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
     [self _childrenToRemoveFromContainer:container atIndices:moveFromIndices];
 
   BOOL isUIViewRegistry = ((id)registry == (id)_viewRegistry);
-  if (isUIViewRegistry && _layoutAnimation.deleteAnimation) {
+  if (isUIViewRegistry && _layoutAnimationGroup.deletingLayoutAnimation) {
     [self _removeChildren:(NSArray<UIView *> *)permanentlyRemovedChildren
             fromContainer:(UIView *)container
-            withAnimation:_layoutAnimation];
+            withAnimation:_layoutAnimationGroup];
   } else {
     [self _removeChildren:permanentlyRemovedChildren fromContainer:container];
   }
@@ -974,6 +868,7 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
   for (NSInteger index = 0, length = temporarilyRemovedChildren.count; index < length; index++) {
     destinationsToChildrenToAdd[moveToIndices[index]] = temporarilyRemovedChildren[index];
   }
+
   for (NSInteger index = 0, length = addAtIndices.count; index < length; index++) {
     id<RCTComponent> view = registry[addChildReactTags[index]];
     if (view) {
@@ -984,22 +879,8 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
   NSArray<NSNumber *> *sortedIndices =
     [destinationsToChildrenToAdd.allKeys sortedArrayUsingSelector:@selector(compare:)];
   for (NSNumber *reactIndex in sortedIndices) {
-    NSInteger insertAtIndex = reactIndex.integerValue;
-
-    // When performing a delete animation, views are not removed immediately
-    // from their container so we need to offset the insertion index if a view
-    // that will be removed appears earlier than the view we are inserting.
-    if (isUIViewRegistry && _viewsToBeDeleted.count > 0) {
-      for (NSInteger index = 0; index < insertAtIndex; index++) {
-        UIView *subview = ((UIView *)container).reactSubviews[index];
-        if ([_viewsToBeDeleted containsObject:subview]) {
-          insertAtIndex++;
-        }
-      }
-    }
-
     [container insertReactSubview:destinationsToChildrenToAdd[reactIndex]
-                          atIndex:insertAtIndex];
+                          atIndex:reactIndex.integerValue];
   }
 }
 
@@ -1560,18 +1441,12 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
                   withCallback:(RCTResponseSenderBlock)callback
                   errorCallback:(__unused RCTResponseSenderBlock)errorCallback)
 {
-  RCTLayoutAnimation *currentAnimation = _layoutAnimation;
+  RCTLayoutAnimationGroup *layoutAnimationGroup =
+    [[RCTLayoutAnimationGroup alloc] initWithConfig:config
+                                           callback:callback];
 
-  if (currentAnimation && ![config isEqualToDictionary:currentAnimation.config]) {
-    RCTLogWarn(@"Warning: Overriding previous layout animation with new one before the first began:\n%@ -> %@.", currentAnimation.config, config);
-  }
-
-  RCTLayoutAnimation *nextLayoutAnimation = [[RCTLayoutAnimation alloc] initWithDictionary:config
-                                                               callback:callback];
-
-  // Set up next layout animation
   [self addUIBlock:^(RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    uiManager->_layoutAnimation = nextLayoutAnimation;
+    [uiManager setNextLayoutAnimationGroup:layoutAnimationGroup];
   }];
 }
 

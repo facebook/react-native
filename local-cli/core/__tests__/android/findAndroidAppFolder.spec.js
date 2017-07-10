@@ -11,8 +11,6 @@
 
 'use strict';
 
-jest.autoMockOff();
-
 const findAndroidAppFolder = require('../../android/findAndroidAppFolder');
 const mockFS = require('mock-fs');
 const mocks = require('../../__fixtures__/android');

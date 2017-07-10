@@ -8,8 +8,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 var MatrixMath = require('MatrixMath');
 
 function degreesToRadians(degrees) {

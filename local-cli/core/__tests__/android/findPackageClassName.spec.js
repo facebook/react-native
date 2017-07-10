@@ -11,10 +11,6 @@
 
 'use strict';
 
-jest.autoMockOff();
-
-require('../../__fixtures__/mockFSWorkaround');
-
 const findPackageClassName = require('../../android/findPackageClassName');
 const mockFS = require('mock-fs');
 const mocks = require('../../__fixtures__/android');
@@ -23,14 +19,25 @@ describe('android::findPackageClassName', () => {
   beforeAll(() => {
     mockFS({
       empty: {},
-      flat: {
+      flatJava: {
         android: mocks.valid,
+      },
+      flatKotlin: {
+        android: mocks.validKotlin,
       },
     });
   });
 
   it('returns manifest content if file exists in the folder', () => {
-    expect(typeof findPackageClassName('flat')).toBe('string');
+    expect(typeof findPackageClassName('flatJava')).toBe('string');
+  });
+
+  it('returns the name of the java class implementing ReactPackage', () => {
+    expect(findPackageClassName('flatJava')).toBe('SomeExampleJavaPackage');
+  });
+
+  it('returns the name of the kotlin class implementing ReactPackage', () => {
+    expect(findPackageClassName('flatKotlin')).toBe('SomeExampleKotlinPackage');
   });
 
   it('returns `null` if there are no matches', () => {
