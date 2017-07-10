@@ -37,9 +37,9 @@ trap cleanup EXIT
 if [ "$1" = "test" ]; then
 
 # Start the packager
-open "./scripts/launchPackager.command" || echo "Can't start packager automatically"
+./scripts/launchPackager.command &> 'launchPackage.command.log' &
 # Start the WebSocket test server
-open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
+./IntegrationTests/launchWebSocketServer.command &> 'launchWebSocketServer.command.log' &
 
 # Preload the RNTesterApp bundle for better performance in integration tests
 sleep 20
@@ -76,3 +76,13 @@ xcodebuild \
   build
 
 fi
+
+echo 'launchPackage.command.log'
+echo '=============================='
+cat launchPackage.command.log
+echo '=============================='
+echo ''
+echo 'launchWebSocketServer.command'
+echo '=============================='
+cat launchWebSocketServer.command.log
+echo '=============================='
