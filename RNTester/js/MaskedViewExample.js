@@ -15,6 +15,7 @@ const React = require('react');
 const RNTesterBlock = require('RNTesterBlock');
 const RNTesterPage = require('RNTesterPage');
 const {
+  Animated,
   Image,
   MaskedViewIOS,
   StyleSheet,
@@ -26,6 +27,44 @@ class MaskedViewExample extends React.Component {
   static title = '<MaskedViewIOS>';
   static description = 'Renders the child view with a mask specified in the `renderMask` prop.';
 
+  state = {
+    alternateChildren: true,
+  };
+
+  _maskRotateAnimatedValue = new Animated.Value(0);
+  _maskScaleAnimatedValue = new Animated.Value(1);
+
+  componentDidMount() {
+    setInterval(() => {
+      this.setState(state => ({
+        alternateChildren: !state.alternateChildren,
+      }));
+    }, 1000);
+
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(this._maskScaleAnimatedValue, {
+          toValue: 1.3,
+          timing: 750,
+          useNativeDriver: true,
+        }),
+        Animated.timing(this._maskScaleAnimatedValue, {
+          toValue: 1,
+          timing: 750,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    Animated.loop(
+      Animated.timing(this._maskRotateAnimatedValue, {
+        toValue: 360,
+        timing: 2000,
+        useNativeDriver: true,
+      })
+    ).start();
+  }
+
   render() {
     return (
       <RNTesterPage title="<MaskedViewIOS>">
@@ -33,13 +72,15 @@ class MaskedViewExample extends React.Component {
           <View style={{ width: 300, height: 300, alignSelf: 'center' }}>
             <MaskedViewIOS
               style={{ flex: 1 }}
-              renderMask={() =>
+              maskElement={
                 <View style={styles.maskContainerStyle}>
                   <Text style={styles.maskTextStyle}>
                     Basic Mask
                   </Text>
-                </View>}>
+                </View>
+              }>
               <View style={{ flex: 1, backgroundColor: 'blue' }} />
+              <View style={{ flex: 1, backgroundColor: 'red' }} />
             </MaskedViewIOS>
           </View>
         </RNTesterBlock>
@@ -53,13 +94,14 @@ class MaskedViewExample extends React.Component {
             }}>
             <MaskedViewIOS
               style={{ flex: 1 }}
-              renderMask={() =>
+              maskElement={
                 <View style={styles.maskContainerStyle}>
                   <Image
                     style={{ height: 200, width: 200 }}
                     source={require('./imageMask.png')}
                   />
-                </View>}>
+                </View>
+              }>
               <View style={styles.maskContainerStyle}>
                 <Image
                   resizeMode="cover"
@@ -70,6 +112,65 @@ class MaskedViewExample extends React.Component {
                   }}
                 />
               </View>
+            </MaskedViewIOS>
+          </View>
+        </RNTesterBlock>
+        <RNTesterBlock title="Animated Mask">
+          <View style={{ width: 300, height: 300, alignSelf: 'center' }}>
+            <MaskedViewIOS
+              style={{ flex: 1 }}
+              maskElement={
+                <Animated.View
+                  style={[
+                    styles.maskContainerStyle,
+                    { transform: [{ scale: this._maskScaleAnimatedValue }] },
+                  ]}>
+                  <Text style={styles.maskTextStyle}>
+                    Basic Mask
+                  </Text>
+                </Animated.View>
+              }>
+              <Animated.View
+                style={{
+                  flex: 1,
+                  transform: [
+                    {
+                      rotate: this._maskRotateAnimatedValue.interpolate({
+                        inputRange: [0, 360],
+                        outputRange: ['0deg', '360deg'],
+                      }),
+                    },
+                  ],
+                }}>
+                <View style={{ flex: 1, backgroundColor: 'blue' }} />
+                <View style={{ flex: 1, backgroundColor: 'red' }} />
+              </Animated.View>
+            </MaskedViewIOS>
+          </View>
+        </RNTesterBlock>
+        <RNTesterBlock title="Mask w/ Changing Children">
+          <View style={{ width: 300, height: 300, alignSelf: 'center' }}>
+            <MaskedViewIOS
+              style={{ flex: 1 }}
+              maskElement={
+                <View style={styles.maskContainerStyle}>
+                  <Text style={styles.maskTextStyle}>
+                    Basic Mask
+                  </Text>
+                </View>
+              }>
+              {this.state.alternateChildren
+                ? [
+                    <View
+                      key={1}
+                      style={{ flex: 1, backgroundColor: 'blue' }}
+                    />,
+                    <View
+                      key={2}
+                      style={{ flex: 1, backgroundColor: 'red' }}
+                    />,
+                  ]
+                : null}
             </MaskedViewIOS>
           </View>
         </RNTesterBlock>
