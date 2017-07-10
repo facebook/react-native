@@ -22,6 +22,7 @@ const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 const Touchable = require('Touchable');
 
+const createReactClass = require('create-react-class');
 const createReactNativeComponentClass = require('createReactNativeComponentClass');
 const mergeFast = require('mergeFast');
 const processColor = require('processColor');
@@ -96,7 +97,8 @@ const viewConfig = {
  */
 
 // $FlowFixMe(>=0.41.0)
-const Text = React.createClass({
+const Text = createReactClass({
+  displayName: 'Text',
   propTypes: {
     /**
      * When `numberOfLines` is set, this prop defines how text will be truncated.
@@ -179,7 +181,6 @@ const Text = React.createClass({
     testID: PropTypes.string,
     /**
      * Used to locate this view from native code.
-     * @platform android
      */
     nativeID: PropTypes.string,
     /**

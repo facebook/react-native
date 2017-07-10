@@ -48,8 +48,8 @@ var DocsLayout = React.createClass({
             {(metadata.banner === 'ejected') ? <EjectBanner/> : null}
             <Marked>{content}</Marked>
             <div className="docs-prevnext">
-              {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
-              {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}
+              {metadata.previous && <a className="docs-prev btn" href={'docs/' + metadata.previous + '.html#content'}>&larr; Previous</a>}
+              {metadata.next && <a className="docs-next btn" href={'docs/' + metadata.next + '.html#content'}>Continue Reading &rarr;</a>}
             </div>
             <Footer path={'docs/' + metadata.filename} />
           </div>

@@ -5,32 +5,17 @@
 #include <memory>
 #include <string>
 
-#include <cxxreact/JSBigString.h>
-#include <folly/Optional.h>
+#include <cxxreact/NativeModule.h>
 #include <folly/dynamic.h>
-
-#ifndef RN_EXPORT
-#define RN_EXPORT __attribute__((visibility("default")))
-#endif
 
 namespace facebook {
 namespace react {
 
-#define UNPACKED_JS_SOURCE_PATH_SUFFIX "/bundle.js"
-#define UNPACKED_META_PATH_SUFFIX "/bundle.meta"
-#define UNPACKED_BYTECODE_SUFFIX "/bundle.bytecode"
-
-enum {
-  UNPACKED_JS_SOURCE = (1 << 0),
-  UNPACKED_BYTECODE = (1 << 1),
-};
-
+class JSBigString;
 class JSExecutor;
 class JSModulesUnbundle;
 class MessageQueueThread;
 class ModuleRegistry;
-
-using MethodCallResult = folly::Optional<folly::dynamic>;
 
 // This interface describes the delegate interface required by
 // Executor implementations to call from JS into native code.
@@ -92,11 +77,11 @@ public:
   }
   virtual void startProfiler(const std::string &titleString) {}
   virtual void stopProfiler(const std::string &titleString, const std::string &filename) {}
-  virtual void handleMemoryPressureUiHidden() {}
-  virtual void handleMemoryPressureModerate() {}
-  virtual void handleMemoryPressureCritical() {
-    handleMemoryPressureModerate();
-  }
+
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  virtual void handleMemoryPressure(int pressureLevel) {}
+  #endif
+
   virtual void destroy() {}
   virtual ~JSExecutor() {}
 };

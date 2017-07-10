@@ -17,7 +17,6 @@ var HeaderLinks = React.createClass({
   linksInternal: [
     {section: 'docs', href: 'docs/getting-started.html', text: 'Docs', target: '.nav-docs'},
     {section: 'support', href: '/react-native/support.html', text: 'Help'},
-    {section: 'showcase', href: '/react-native/showcase.html', text: 'Showcase'},
     {section: 'blog', href: '/react-native/blog/', text: 'Blog'},
   ],
   linksExternal: [

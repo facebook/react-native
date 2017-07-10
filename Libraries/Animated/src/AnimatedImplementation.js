@@ -1218,9 +1218,9 @@ class AnimatedDivision extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
     this._b.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -1266,9 +1266,9 @@ class AnimatedMultiplication extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
     this._b.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -1309,8 +1309,8 @@ class AnimatedModulo extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -1356,8 +1356,8 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
+    super.__makeNative();
   }
 
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {

@@ -59,6 +59,7 @@ RCT_EXTERN NSString *const RCTUIManagerDidRemoveRootViewNotification;
  */
 RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 
+@class RCTLayoutAnimationGroup;
 @class RCTUIManagerObserverCoordinator;
 
 /**
@@ -116,6 +117,13 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 - (void)setBackgroundColor:(UIColor *)color forView:(UIView *)view;
 
 /**
+ * Sets up layout animation which will perform on next layout pass.
+ * The animation will affect only one next layout pass.
+ * Must be called on the main queue.
+ */
+- (void)setNextLayoutAnimationGroup:(RCTLayoutAnimationGroup *)layoutAnimationGroup;
+
+/**
  * Schedule a block to be executed on the UI thread. Useful if you need to execute
  * view logic after all currently queued view updates have completed.
  */
@@ -146,6 +154,16 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  *
  */
 - (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^)(UIView *view))completion;
+
+/**
+ * Finds a view that is tagged with nativeID as its nativeID prop
+ * with the associated rootTag root tag view hierarchy. Returns the
+ * view if found, nil otherwise.
+ *
+ * @param nativeID the id reference to native component relative to root view.
+ * @param rootTag the react tag of root view hierarchy from which to find the view.
+ */
+- (UIView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag;
 
 /**
  * The view that is currently first responder, according to the JS context.

@@ -7,20 +7,16 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.common;
+#import "RCTPackagerConnectionConfig.h"
 
-import java.util.HashSet;
+#if RCT_DEV // Only supported in dev mode
 
-/**
- * Utility class for creating sets
- */
-public class SetBuilder {
+@class RCTBridge;
 
-  /**
-   * Creates an instance of {@code HashSet}
-   */
-  public static <E> HashSet<E> newHashSet() {
-    return new HashSet<E>();
-  }
+@interface RCTPackagerConnectionBridgeConfig : NSObject <RCTPackagerConnectionConfig>
 
-}
+- (instancetype)initWithBridge:(RCTBridge *)bridge;
+
+@end
+
+#endif

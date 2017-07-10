@@ -14,6 +14,7 @@
 
 var ColorPropType = require('ColorPropType');
 var React = require('React');
+var ReactPropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 const ViewPropTypes = require('ViewPropTypes');
@@ -21,8 +22,6 @@ var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var processColor = require('processColor');
 var requireNativeComponent = require('requireNativeComponent');
-
-var ReactPropTypes = React.PropTypes;
 
 var REF_PICKER = 'picker';
 var MODE_DROPDOWN = 'dropdown';
@@ -53,7 +52,7 @@ class PickerAndroid extends React.Component {
   static propTypes = {
     ...ViewPropTypes,
     style: pickerStyleType,
-    selectedValue: React.PropTypes.any,
+    selectedValue: ReactPropTypes.any,
     enabled: ReactPropTypes.bool,
     mode: ReactPropTypes.oneOf(['dialog', 'dropdown']),
     onValueChange: ReactPropTypes.func,

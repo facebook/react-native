@@ -11,9 +11,9 @@
  */
 'use strict';
 
-var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
+var PropTypes = require('prop-types');
 
-var {PropTypes} = require('React');
+var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 
 var EdgeInsetsPropType = createStrictShapeTypeChecker({
   top: PropTypes.number,
