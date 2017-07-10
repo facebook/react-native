@@ -1396,6 +1396,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
      // Add native props
      NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
      moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
+     moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
 
      // Add direct events
      for (NSString *eventName in viewConfig[@"directEvents"]) {
