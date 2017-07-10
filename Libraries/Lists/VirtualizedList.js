@@ -235,7 +235,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       `scrollToIndex out of range: ${index} vs ${getItemCount(data) - 1}`,
     );
     invariant(
-      getItemLayout || index < this._highestMeasuredFrameIndex,
+      getItemLayout || index <= this._highestMeasuredFrameIndex,
       'scrollToIndex should be used in conjunction with getItemLayout, ' +
         'otherwise there is no way to know the location of an arbitrary index.',
     );
