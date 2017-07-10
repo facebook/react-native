@@ -229,9 +229,18 @@ RCT_EXPORT_MODULE()
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
   request.HTTPMethod = [RCTConvert NSString:RCTNilIfNull(query[@"method"])].uppercaseString ?: @"GET";
 
+  BOOL withCredentials = [RCTConvert BOOL:query[@"withCredentials"]];
+
   // Load and set the cookie header.
-  NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:URL];
-  request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+  // If a request is made with `withCredentials: true`, leave cookie management up to
+  // request.HTTPShouldHandleCookies = true, otherwise load from NSHTTPCookieStorage.
+  if (withCredentials) {
+    request.HTTPShouldHandleCookies = YES;
+  } else {
+    NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:URL];
+    request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+  }
+
 
   // Set supplied headers.
   NSDictionary *headers = [RCTConvert NSDictionary:query[@"headers"]];
@@ -242,7 +251,6 @@ RCT_EXPORT_MODULE()
   }];
 
   request.timeoutInterval = [RCTConvert NSTimeInterval:query[@"timeout"]];
-  request.HTTPShouldHandleCookies = [RCTConvert BOOL:query[@"withCredentials"]];
   NSDictionary<NSString *, id> *data = [RCTConvert NSDictionary:RCTNilIfNull(query[@"data"])];
   NSString *trackingName = data[@"trackingName"];
   if (trackingName) {
