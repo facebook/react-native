@@ -8,26 +8,23 @@
  */
 
 #import "RCTMaskedView.h"
+#import "UIView+React.h"
 
-@implementation RCTMaskedView {
-  UIView *_reactMaskView;
-}
+@implementation RCTMaskedView
 
-- (void) layoutSubviews
+- (void)didUpdateReactSubviews
 {
-  [super layoutSubviews];
+  [super didUpdateReactSubviews];
+ 
+  // We have to reset the maskView to nil in case the mask
+  // element changes -- iOS requires it to be fully reset.
+  self.maskView = nil;
   
-  // When a mask is set on this view, we need to make sure
-  // the mask view isn't in the view hierarchy (iOS won't use
-  // the view as a mask if it exists in the view hierarchy).
-  // Then reset the `maskView` property to make sure that
-  // the mask is set correctly.
-  if (_reactMaskView != nil) {
-    if (_reactMaskView.superview != nil) {
-      [_reactMaskView removeFromSuperview];
-    }
-    self.maskView = _reactMaskView;
-  }
+  // RCTMaskedView expects that the first subview rendered is the mask.
+  UIView *maskView = [self.reactSubviews firstObject];
+  // It needs to be removed from the superview before it can be set as a mask.
+  [maskView removeFromSuperview];
+  self.maskView = maskView;
 }
 
 - (void)displayLayer:(CALayer *)layer
@@ -35,11 +32,6 @@
   // RCTView uses displayLayer to do border rendering.
   // We don't need to do that in RCTMaskedView, so we
   // stub this method and override the default implementation.
-}
-
-- (void)setReactMaskView:(UIView*)view
-{
-  _reactMaskView = view;
 }
 
 @end

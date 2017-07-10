@@ -20,16 +20,4 @@ RCT_EXPORT_MODULE()
   return [RCTMaskedView new];
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(maskRef, NSNumber, RCTMaskedView)
-{
-  NSNumber *maskRefTag = [RCTConvert NSNumber:json];
-  UIView *maskView = [self.bridge.uiManager viewForReactTag:maskRefTag];  
-  if (maskView != nil) {
-    [view setReactMaskView:maskView];
-  } else {
-    [view setReactMaskView:nil];
-    view.maskView = defaultView.maskView;
-  }
-}
-
 @end

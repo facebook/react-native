@@ -12,6 +12,4 @@
 
 @interface RCTMaskedView : RCTView
 
-- (void)setReactMaskView:(UIView*)view;
-
 @end
