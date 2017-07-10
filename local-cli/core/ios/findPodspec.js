@@ -24,6 +24,6 @@ module.exports = function findPodfile(folder) {
       podspecFile = podspecs[toSelect];
     }
   }
-  return path.join(folder, podspecFile);
 
+  return podspecFile.replace('.podspec', '');
 };

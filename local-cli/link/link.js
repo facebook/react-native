@@ -98,7 +98,7 @@ const linkDependencyIOS = (iOSProject, dependency) => {
     return;
   }
 
-  const isInstalled = isInstalledIOS(iOSProject, dependency.config.ios) || isInstalledPods(iOSProject, dependency.name)
+  const isInstalled = isInstalledIOS(iOSProject, dependency.config.ios) || isInstalledPods(iOSProject, dependency.config.ios);
   if (isInstalled) {
     log.info(chalk.grey(`iOS module ${dependency.name} is already linked`));
     return;
@@ -106,7 +106,7 @@ const linkDependencyIOS = (iOSProject, dependency) => {
 
   log.info(`Linking ${dependency.name} ios dependency`);
   if (iOSProject.podfile && dependency.config.ios.podspec) {
-    registerDependencyPods(dependency.name, iOSProject);
+    registerDependencyPods(dependency, iOSProject);
   }
   else {
     registerDependencyIOS(dependency.config.ios, iOSProject);

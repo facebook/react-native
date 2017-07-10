@@ -2,8 +2,8 @@
 
 const readPodfile = require('./readPodfile');
 
-module.exports = function isInstalled(iOSProject, dependencyName) {
-  const dependencyRegExp = new RegExp('pod\\s+\'' + dependencyName + '\'', 'g');
+module.exports = function isInstalled(iOSProject, dependencyConfig) {
+  const dependencyRegExp = new RegExp('pod\\s+\'' + dependencyConfig.podspec + '\'', 'g');
   const podLines = readPodfile(iOSProject.podfile);
   for (let i = 0, len = podLines.length; i < len; i++) {
     const match = podLines[i].match(dependencyRegExp);
