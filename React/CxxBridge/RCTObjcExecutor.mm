@@ -50,7 +50,7 @@ public:
       }
 
       m_jsThread->runOnQueue([this, json]{
-        m_delegate->callNativeModules(*this, [RCTConvert folly_dynamic:json], true);
+        m_delegate->callNativeModules(*this, convertIdToFollyDynamic(json), true);
       });
     };
 
