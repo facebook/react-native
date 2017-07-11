@@ -50,7 +50,7 @@ test:
 
   override:
     # Run Danger against PRs.
-    - if [[ $CI_PULL_REQUEST ]]; then DANGER_GITHUB_API_TOKEN=$DANGER_GITHUB_API_TOKEN npm run danger; fi
+    - if [[ $CI_PULL_REQUEST ]]; then DANGER_GITHUB_API_TOKEN="5fc403da51e5e05666e1e3ae6380190178a1cdb3" npm run danger; fi
     # eslint bot. This GitHub token grants public_repo access scope.
     - cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
     - npm run lint
