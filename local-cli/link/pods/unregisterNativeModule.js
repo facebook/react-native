@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const removePodEntry = require('./removePodEntry')
 
 /**
  * Unregister native module IOS with CocoaPods
@@ -8,9 +9,7 @@ const fs = require('fs');
 module.exports = function unregisterNativeModule(dependencyConfig, iOSProject) {
 
   const podContent = fs.readFileSync(iOSProject.podfile, 'utf8');
-  // this regex should catch line(s) with full pod definition
-  const podRegex = new RegExp("\\n( |\\t)*pod\\s+(\"|')" + dependencyConfig.podspec + "(\"|')(,\\s*:[a-z]+\\s*=>\\s*((\"|').*?(\"|')|\\[[\\s\\S]*?\\]))*\\n", 'g');
-  const removed = podContent.replace(podRegex, '\n');
+  const removed = removePodEntry(podContent, dependencyConfig.podspec);
   fs.writeFileSync(iOSProject.podfile, removed);
 
 };
