@@ -9,8 +9,8 @@
 'use strict';
 
 const findProject = require('./findProject');
-const findPodfile = require('./findPodfile');
-const findPodspec = require('./findPodspec');
+const findPodfilePath = require('./findPodfilePath');
+const findPodspecName = require('./findPodspecName');
 const path = require('path');
 
 /**
@@ -46,8 +46,8 @@ exports.projectConfig = function projectConfigIOS(folder, userConfig) {
     sourceDir: path.dirname(projectPath),
     folder: folder,
     pbxprojPath: path.join(projectPath, 'project.pbxproj'),
-    podfile: findPodfile(projectPath),
-    podspec: findPodspec(folder),
+    podfile: findPodfilePath(projectPath),
+    podspec: findPodspecName(folder),
     projectPath: projectPath,
     projectName: path.basename(projectPath),
     libraryFolder: userConfig.libraryFolder || 'Libraries',
