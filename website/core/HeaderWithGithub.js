@@ -13,6 +13,8 @@
 var H = require('Header');
 var React = require('React');
 
+var PropTypes = require('prop-types');
+
 function getGitHubPath(path) {
   return  'https://github.com/facebook/react-native/blob/master/' + path;
 }
@@ -20,7 +22,7 @@ function getGitHubPath(path) {
 var HeaderWithGithub = React.createClass({
 
   contextTypes: {
-    version: React.PropTypes.string
+    version: PropTypes.string
   },
 
   render: function() {

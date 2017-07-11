@@ -109,7 +109,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (RCTScrollEvent *)coalesceWithEvent:(RCTScrollEvent *)newEvent
 {
   NSArray<NSDictionary *> *updatedChildFrames = [_userData[@"updatedChildFrames"] arrayByAddingObjectsFromArray:newEvent->_userData[@"updatedChildFrames"]];
-
   if (updatedChildFrames) {
     NSMutableDictionary *userData = [newEvent->_userData mutableCopy];
     userData[@"updatedChildFrames"] = updatedChildFrames;
@@ -326,10 +325,6 @@ static inline BOOL isRectInvalid(CGRect rect) {
   uint16_t _coalescingKey;
   NSString *_lastEmittedEventName;
   NSHashTable *_scrollListeners;
-  // The last non-zero value of translationAlongAxis from scrollViewWillEndDragging.
-  // Tells if user was scrolling forward or backward and is used to determine a correct
-  // snap index when the user stops scrolling with a tap on the scroll view.
-  CGFloat _lastNonZeroTranslationAlongAxis;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -342,6 +337,7 @@ static inline BOOL isRectInvalid(CGRect rect) {
     _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
     _automaticallyAdjustContentInsets = YES;
+    _DEPRECATED_sendUpdatedChildFrames = NO;
     _contentInset = UIEdgeInsetsZero;
     _contentSize = CGSizeZero;
     _lastClippedToRect = CGRectNull;
@@ -529,9 +525,11 @@ static inline void RCTApplyTranformationAccordingLayoutDirection(UIView *view, U
   BOOL isHorizontal = [self isHorizontal:_scrollView];
   CGPoint offset;
   if (isHorizontal) {
-    offset = CGPointMake(_scrollView.contentSize.width - _scrollView.bounds.size.width, 0);
+    CGFloat offsetX = _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right;
+    offset = CGPointMake(fmax(offsetX, 0), 0);
   } else {
-    offset = CGPointMake(0, _scrollView.contentSize.height - _scrollView.bounds.size.height);
+    CGFloat offsetY = _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom;
+    offset = CGPointMake(0, fmax(offsetY, 0));
   }
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
     // Ensure at least one scroll event will fire
@@ -589,9 +587,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
   [self updateClippedSubviews];
-
   NSTimeInterval now = CACurrentMediaTime();
-
   /**
    * TODO: this logic looks wrong, and it may be because it is. Currently, if _scrollEventThrottle
    * is set to zero (the default), the "didScroll" event is only sent once per scroll, instead of repeatedly
@@ -601,16 +597,18 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
   if (_allowNextScrollNoMatterWhat ||
       (_scrollEventThrottle > 0 && _scrollEventThrottle < (now - _lastScrollDispatchTime))) {
 
-    // Calculate changed frames
-    NSArray<NSDictionary *> *childFrames = [self calculateChildFramesData];
-
-    // Dispatch event
-    RCT_SEND_SCROLL_EVENT(onScroll, (@{@"updatedChildFrames": childFrames}));
+    if (_DEPRECATED_sendUpdatedChildFrames) {
+      // Calculate changed frames
+      RCT_SEND_SCROLL_EVENT(onScroll, (@{@"updatedChildFrames": [self calculateChildFramesData]}));
+    } else {
+      RCT_SEND_SCROLL_EVENT(onScroll, nil);
+    }
 
     // Update dispatch time
     _lastScrollDispatchTime = now;
     _allowNextScrollNoMatterWhat = NO;
   }
+
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidScroll:scrollView);
 }
 
@@ -667,32 +665,27 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
     BOOL isHorizontal = [self isHorizontal:scrollView];
 
     // What is the current offset?
+    CGFloat velocityAlongAxis = isHorizontal ? velocity.x : velocity.y;
     CGFloat targetContentOffsetAlongAxis = isHorizontal ? targetContentOffset->x : targetContentOffset->y;
-
-    // Which direction is the scroll travelling?
-    CGPoint translation = [scrollView.panGestureRecognizer translationInView:scrollView];
-    CGFloat translationAlongAxis = isHorizontal ? translation.x : translation.y;
 
     // Offset based on desired alignment
     CGFloat frameLength = isHorizontal ? self.frame.size.width : self.frame.size.height;
     CGFloat alignmentOffset = 0.0f;
-    if ([self.snapToAlignment  isEqualToString: @"center"]) {
+    if ([self.snapToAlignment isEqualToString: @"center"]) {
       alignmentOffset = (frameLength * 0.5f) + (snapToIntervalF * 0.5f);
-    } else if ([self.snapToAlignment  isEqualToString: @"end"]) {
+    } else if ([self.snapToAlignment isEqualToString: @"end"]) {
       alignmentOffset = frameLength;
     }
 
     // Pick snap point based on direction and proximity
-    NSInteger snapIndex = floor((targetContentOffsetAlongAxis + alignmentOffset) / snapToIntervalF);
-    BOOL isScrollingForward = translationAlongAxis < 0;
-    BOOL wasScrollingForward = translationAlongAxis == 0 && _lastNonZeroTranslationAlongAxis < 0;
-    if (isScrollingForward || wasScrollingForward) {
-      snapIndex = snapIndex + 1;
-    }
-    if (translationAlongAxis != 0) {
-      _lastNonZeroTranslationAlongAxis = translationAlongAxis;
-    }
-    CGFloat newTargetContentOffset = ( snapIndex * snapToIntervalF ) - alignmentOffset;
+    CGFloat fractionalIndex = (targetContentOffsetAlongAxis + alignmentOffset) / snapToIntervalF;
+    NSInteger snapIndex =
+      velocityAlongAxis > 0.0 ?
+        ceil(fractionalIndex) :
+      velocityAlongAxis < 0.0 ?
+        floor(fractionalIndex) :
+        round(fractionalIndex);
+    CGFloat newTargetContentOffset = (snapIndex * snapToIntervalF) - alignmentOffset;
 
     // Set new targetContentOffset
     if (isHorizontal) {

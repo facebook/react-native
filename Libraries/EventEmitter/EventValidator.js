@@ -11,8 +11,6 @@
  */
 'use strict';
 
-const copyProperties = require('copyProperties');
-
 /**
  * EventValidator is designed to validate event types to make it easier to catch
  * common mistakes. It accepts a map of all of the different types of events
@@ -37,7 +35,7 @@ const EventValidator = {
     const eventTypes = Object.keys(types);
     const emitterWithValidation = Object.create(emitter);
 
-    copyProperties(emitterWithValidation, {
+    Object.assign(emitterWithValidation, {
       emit: function emit(type, a, b, c, d, e, _) {
         assertAllowsEventType(type, eventTypes);
         return emitter.emit.call(this, type, a, b, c, d, e, _);

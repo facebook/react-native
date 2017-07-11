@@ -83,7 +83,7 @@ import com.facebook.react.uimanager.events.TouchEventType;
         .build();
   }
 
-  public static Map<String, Object> getConstants(float fontScale) {
+  public static Map<String, Object> getConstants() {
     HashMap<String, Object> constants = new HashMap<String, Object>();
     constants.put(
         "UIView",
@@ -96,10 +96,6 @@ import com.facebook.react.uimanager.events.TouchEventType;
                 ImageView.ScaleType.CENTER_CROP.ordinal(),
                 "ScaleAspectCenter",
                 ImageView.ScaleType.CENTER_INSIDE.ordinal())));
-
-    constants.put(
-        "Dimensions",
-        getDimensionsConstants(fontScale));
 
     constants.put(
         "StyleConstants",
@@ -132,30 +128,5 @@ import com.facebook.react.uimanager.events.TouchEventType;
           AccessibilityEvent.TYPE_VIEW_CLICKED));
 
     return constants;
-  }
-
-  public static WritableMap getDimensionsConstants(float fontScale) {
-    DisplayMetrics windowDisplayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics();
-    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
-
-    WritableMap windowDisplayMetricsMap = Arguments.createMap();
-    windowDisplayMetricsMap.putInt("width", windowDisplayMetrics.widthPixels);
-    windowDisplayMetricsMap.putInt("height", windowDisplayMetrics.heightPixels);
-    windowDisplayMetricsMap.putDouble("scale", windowDisplayMetrics.density);
-    windowDisplayMetricsMap.putDouble("fontScale", fontScale);
-    windowDisplayMetricsMap.putDouble("densityDpi", windowDisplayMetrics.densityDpi);
-
-    WritableMap screenDisplayMetricsMap = Arguments.createMap();
-    screenDisplayMetricsMap.putInt("width", screenDisplayMetrics.widthPixels);
-    screenDisplayMetricsMap.putInt("height", screenDisplayMetrics.heightPixels);
-    screenDisplayMetricsMap.putDouble("scale", screenDisplayMetrics.density);
-    screenDisplayMetricsMap.putDouble("fontScale", fontScale);
-    screenDisplayMetricsMap.putDouble("densityDpi", screenDisplayMetrics.densityDpi);
-
-    WritableMap dimensionsMap = Arguments.createMap();
-    dimensionsMap.putMap("windowPhysicalPixels", windowDisplayMetricsMap);
-    dimensionsMap.putMap("screenPhysicalPixels", screenDisplayMetricsMap);
-    
-    return dimensionsMap;
   }
 }

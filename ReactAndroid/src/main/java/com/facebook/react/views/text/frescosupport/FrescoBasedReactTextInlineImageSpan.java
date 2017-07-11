@@ -141,6 +141,7 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
           .setImageRequest(imageRequest)
           .build();
       mDraweeHolder.setController(draweeController);
+      mDraweeControllerBuilder.reset();
 
       mDrawable = mDraweeHolder.getTopLevelDrawable();
       mDrawable.setBounds(0, 0, mWidth, mHeight);

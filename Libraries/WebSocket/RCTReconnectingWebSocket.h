@@ -23,6 +23,7 @@
 
 - (instancetype)initWithURL:(NSURL *)url;
 @property (nonatomic, weak) id<RCTWebSocketProtocolDelegate> delegate;
+- (void)send:(id)data;
 - (void)start;
 - (void)stop;
 

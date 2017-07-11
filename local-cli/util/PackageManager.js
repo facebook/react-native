@@ -15,11 +15,6 @@ const spawnOpts = {
   stdin: 'inherit',
 };
 
-const projectDir = process.cwd();
-const isYarnAvailable =
-  yarn.getYarnVersionIfAvailable() &&
-  yarn.isGlobalCliUsingYarn(projectDir);
-
 /**
  * Execute npm or yarn command
  *
@@ -29,6 +24,11 @@ const isYarnAvailable =
  */
 function callYarnOrNpm(yarnCommand, npmCommand) {
   let command;
+
+  const projectDir = process.cwd();
+  const isYarnAvailable =
+    yarn.getYarnVersionIfAvailable() &&
+    yarn.isGlobalCliUsingYarn(projectDir);
 
   if (isYarnAvailable) {
     command = yarnCommand;

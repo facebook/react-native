@@ -267,6 +267,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       return;
     }
 
+    if ([error.domain isEqualToString:@"WebKitErrorDomain"] && error.code == 102) {
+      // Error code 102 "Frame load interrupted" is raised by the UIWebView if
+      // its delegate returns FALSE from webView:shouldStartLoadWithRequest:navigationType
+      // when the URL is from an http redirect. This is a common pattern when
+      // implementing OAuth with a WebView.
+      return;
+    }
+
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
     [event addEntriesFromDictionary:@{
       @"domain": error.domain,

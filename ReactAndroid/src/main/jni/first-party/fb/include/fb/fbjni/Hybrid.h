@@ -29,9 +29,57 @@ public:
 
 struct FBEXPORT HybridData : public JavaClass<HybridData> {
   constexpr static auto kJavaDescriptor = "Lcom/facebook/jni/HybridData;";
-  void setNativePointer(std::unique_ptr<BaseHybridClass> new_value);
-  BaseHybridClass* getNativePointer();
   static local_ref<HybridData> create();
+};
+
+class HybridDestructor : public JavaClass<HybridDestructor> {
+  public:
+    static auto constexpr kJavaDescriptor = "Lcom/facebook/jni/HybridData$Destructor;";
+
+  template <typename T=detail::BaseHybridClass>
+  T* getNativePointer() {
+    static auto pointerField = javaClassStatic()->getField<jlong>("mNativePointer");
+    auto* value = reinterpret_cast<detail::BaseHybridClass*>(getFieldValue(pointerField));
+    if (!value) {
+      throwNewJavaException("java/lang/NullPointerException", "java.lang.NullPointerException");
+    }
+    return value;
+  }
+
+  template <typename T=detail::BaseHybridClass>
+  void setNativePointer(std::unique_ptr<T> new_value) {
+    static auto pointerField = javaClassStatic()->getField<jlong>("mNativePointer");
+    auto old_value = std::unique_ptr<T>(reinterpret_cast<T*>(getFieldValue(pointerField)));
+    if (new_value && old_value) {
+        FBCRASH("Attempt to set C++ native pointer twice");
+    }
+    setFieldValue(pointerField, reinterpret_cast<jlong>(new_value.release()));
+  }
+};
+
+template<typename T>
+detail::BaseHybridClass* getNativePointer(T t) {
+  return getHolder(t)->getNativePointer();
+}
+
+template<typename T>
+void setNativePointer(T t, std::unique_ptr<detail::BaseHybridClass> new_value) {
+  getHolder(t)->setNativePointer(std::move(new_value));
+}
+
+template<typename T>
+local_ref<HybridDestructor> getHolder(T t) {
+  static auto holderField = t->getClass()->template getField<HybridDestructor::javaobject>("mDestructor");
+  return t->getFieldValue(holderField);
+}
+
+// JavaClass for HybridClassBase
+struct FBEXPORT HybridClassBase : public JavaClass<HybridClassBase> {
+  constexpr static auto kJavaDescriptor = "Lcom/facebook/jni/HybridClassBase;";
+
+  static bool isHybridClassBase(alias_ref<jclass> jclass) {
+    return HybridClassBase::javaClassStatic()->isAssignableFrom(jclass);
+  }
 };
 
 template <typename Base, typename Enabled = void>
@@ -139,13 +187,18 @@ protected:
 
   static local_ref<detail::HybridData> makeHybridData(std::unique_ptr<T> cxxPart) {
     auto hybridData = detail::HybridData::create();
-    hybridData->setNativePointer(std::move(cxxPart));
+    setNativePointer(hybridData, std::move(cxxPart));
     return hybridData;
   }
 
   template <typename... Args>
   static local_ref<detail::HybridData> makeCxxInstance(Args&&... args) {
     return makeHybridData(std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
+  }
+
+  template <typename... Args>
+  static void setCxxInstance(alias_ref<jhybridobject> o, Args&&... args) {
+    setNativePointer(o, std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
   }
 
 public:
@@ -161,11 +214,23 @@ public:
   // C++ object fails, or any JNI methods throw.
   template <typename... Args>
   static local_ref<JavaPart> newObjectCxxArgs(Args&&... args) {
-    auto hybridData = makeCxxInstance(std::forward<Args>(args)...);
-    return JavaPart::newInstance(hybridData);
+    static bool isHybrid = detail::HybridClassBase::isHybridClassBase(javaClassStatic());
+    auto cxxPart = std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+
+    local_ref<JavaPart> result;
+    if (isHybrid) {
+      result = JavaPart::newInstance();
+      setNativePointer(result, std::move(cxxPart));
+    }
+    else {
+      auto hybridData = makeHybridData(std::move(cxxPart));
+      result = JavaPart::newInstance(hybridData);
+    }
+
+    return result;
   }
 
-  // TODO? Create reusable interface for Allocatable classes and use it to
+ // TODO? Create reusable interface for Allocatable classes and use it to
   // strengthen type-checking (and possibly provide a default
   // implementation of allocate().)
   template <typename... Args>
@@ -195,17 +260,25 @@ public:
 
 template <typename T, typename B>
 inline T* HybridClass<T, B>::JavaPart::cthis() {
-  static auto field =
-    HybridClass<T, B>::JavaPart::javaClassStatic()->template getField<detail::HybridData::javaobject>("mHybridData");
-  auto hybridData = this->getFieldValue(field);
-  if (!hybridData) {
-    throwNewJavaException("java/lang/NullPointerException", "java.lang.NullPointerException");
+  detail::BaseHybridClass* result = 0;
+  static bool isHybrid = detail::HybridClassBase::isHybridClassBase(this->getClass());
+  if (isHybrid) {
+    result = getNativePointer(this);
+  } else {
+    static auto field =
+      HybridClass<T, B>::JavaPart::javaClassStatic()->template getField<detail::HybridData::javaobject>("mHybridData");
+    auto hybridData = this->getFieldValue(field);
+    if (!hybridData) {
+      throwNewJavaException("java/lang/NullPointerException", "java.lang.NullPointerException");
+    }
+
+    result = getNativePointer(hybridData);
   }
-  // I'd like to use dynamic_cast here, but -fno-rtti is the default.
-  T* value = static_cast<T*>(hybridData->getNativePointer());
+
   // This would require some serious programmer error.
-  FBASSERTMSGF(value != 0, "Incorrect C++ type in hybrid field");
-  return value;
+  FBASSERTMSGF(result != 0, "Incorrect C++ type in hybrid field");
+  // I'd like to use dynamic_cast here, but -fno-rtti is the default.
+  return static_cast<T*>(result);
 };
 
 template <typename T, typename B>

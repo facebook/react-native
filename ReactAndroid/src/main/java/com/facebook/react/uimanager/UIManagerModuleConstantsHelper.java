@@ -43,9 +43,8 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
    */
   /* package */ static Map<String, Object> createConstants(
     List<ViewManager> viewManagers,
-    boolean lazyViewManagersEnabled,
-    float fontScale) {
-    Map<String, Object> constants = UIManagerModuleConstants.getConstants(fontScale);
+    boolean lazyViewManagersEnabled) {
+    Map<String, Object> constants = UIManagerModuleConstants.getConstants();
     Map bubblingEventTypesConstants = UIManagerModuleConstants.getBubblingEventTypeConstants();
     Map directEventTypesConstants = UIManagerModuleConstants.getDirectEventTypeConstants();
 

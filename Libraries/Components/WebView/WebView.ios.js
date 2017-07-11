@@ -14,11 +14,13 @@
 var ActivityIndicator = require('ActivityIndicator');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
+var PropTypes = require('prop-types');
 var ReactNative = require('ReactNative');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var UIManager = require('UIManager');
 var View = require('View');
+var ViewPropTypes = require('ViewPropTypes');
 var ScrollView = require('ScrollView');
 
 var deprecatedPropType = require('deprecatedPropType');
@@ -28,7 +30,6 @@ var processDecelerationRate = require('processDecelerationRate');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 
-var PropTypes = React.PropTypes;
 var RCTWebViewManager = require('NativeModules').WebViewManager;
 
 var BGWASH = 'rgba(255,255,255,0.8)';
@@ -117,7 +118,7 @@ class WebView extends React.Component {
   static NavigationType = NavigationType;
 
   static propTypes = {
-    ...View.propTypes,
+    ...ViewPropTypes,
 
     html: deprecatedPropType(
       PropTypes.string,
@@ -253,7 +254,7 @@ class WebView extends React.Component {
     /**
      * The style to apply to the `WebView`.
      */
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
 
     /**
      * Determines the types of data converted to clickable URLs in the web view’s content.
@@ -283,6 +284,14 @@ class WebView extends React.Component {
      * @platform android
      */
     javaScriptEnabled: PropTypes.bool,
+
+    /**
+     * Boolean value to enable third party cookies in the `WebView`. Used on
+     * Android Lollipop and above only as third party cookies are enabled by
+     * default on Android Kitkat and below and on iOS. The default value is `true`.
+     * @platform android
+     */
+    thirdPartyCookiesEnabled: PropTypes.bool,
 
     /**
      * Boolean value to control whether DOM Storage is enabled. Used only in
@@ -356,6 +365,10 @@ class WebView extends React.Component {
       'always',
       'compatibility'
     ]),
+  };
+
+  static defaultProps = {
+    scalesPageToFit: true,
   };
 
   state = {

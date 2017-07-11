@@ -27,7 +27,7 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
 // Private designated initializer
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
                        bundleURL:(NSURL *)bundleURL
-                  moduleProvider:(RCTBridgeModuleProviderBlock)block
+                  moduleProvider:(RCTBridgeModuleListProvider)block
                    launchOptions:(NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
 
 // Used for the profiler flow events between JS and native
@@ -61,7 +61,7 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
  * The block that creates the modules' instances to be added to the bridge.
  * Exposed for the RCTBatchedBridge
  */
-@property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
+@property (nonatomic, copy, readonly) RCTBridgeModuleListProvider moduleProvider;
 
 /**
  * Used by RCTDevMenu to override the `hot` param of the current bundleURL.
@@ -78,6 +78,12 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
  * JS VM outside of React Native. Use with care!
  */
 @property (nonatomic, weak, readonly) id<RCTJavaScriptExecutor> javaScriptExecutor;
+
+/**
+ * Used by RCTModuleData
+ */
+
+@property (nonatomic, weak, readonly) RCTBridge *parentBridge;
 
 /**
  * Used by RCTModuleData

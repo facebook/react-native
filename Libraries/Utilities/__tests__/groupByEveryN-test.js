@@ -9,8 +9,6 @@
  */
 'use strict';
 
-jest.unmock('groupByEveryN');
-
 describe('groupByEveryN', () => {
   var groupByEveryN = require('groupByEveryN');
 

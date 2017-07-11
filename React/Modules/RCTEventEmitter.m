@@ -78,10 +78,10 @@ RCT_EXPORT_METHOD(addListener:(NSString *)eventName)
     RCTLogError(@"`%@` is not a supported event type for %@. Supported events are: `%@`",
                 eventName, [self class], [[self supportedEvents] componentsJoinedByString:@"`, `"]);
   }
-  if (_listenerCount == 0) {
+  _listenerCount++;
+  if (_listenerCount == 1) {
     [self startObserving];
   }
-  _listenerCount++;
 }
 
 RCT_EXPORT_METHOD(removeListeners:(NSInteger)count)
@@ -89,10 +89,10 @@ RCT_EXPORT_METHOD(removeListeners:(NSInteger)count)
   if (RCT_DEBUG && count > _listenerCount) {
     RCTLogError(@"Attempted to remove more %@ listeners than added", [self class]);
   }
-  if (count == _listenerCount) {
+  _listenerCount = MAX(_listenerCount - count, 0);
+  if (_listenerCount == 0) {
     [self stopObserving];
   }
-  _listenerCount -= count;
 }
 
 @end

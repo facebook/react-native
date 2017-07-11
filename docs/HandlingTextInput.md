@@ -4,7 +4,7 @@ title: Handling Text Input
 layout: docs
 category: The Basics
 permalink: docs/handling-text-input.html
-next: using-a-scrollview
+next: handling-touches
 previous: flexbox
 ---
 
@@ -18,7 +18,7 @@ as "🍕🍕🍕".
 import React, { Component } from 'react';
 import { AppRegistry, Text, TextInput, View } from 'react-native';
 
-class PizzaTranslator extends Component {
+export default class PizzaTranslator extends Component {
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -40,7 +40,8 @@ class PizzaTranslator extends Component {
   }
 }
 
-AppRegistry.registerComponent('PizzaTranslator', () => PizzaTranslator);
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => PizzaTranslator);
 ```
 
 In this example, we store `text` in the state, because it changes over time.

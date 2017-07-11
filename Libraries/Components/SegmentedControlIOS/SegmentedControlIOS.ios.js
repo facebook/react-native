@@ -13,12 +13,12 @@
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
+var PropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
-var View = require('View');
+var ViewPropTypes = require('ViewPropTypes');
 
+var createReactClass = require('create-react-class');
 var requireNativeComponent = require('requireNativeComponent');
-
-var PropTypes = React.PropTypes;
 
 type DefaultProps = {
   values: Array<string>,
@@ -50,11 +50,12 @@ type Event = Object;
  * ````
  */
 // $FlowFixMe(>=0.41.0)
-var SegmentedControlIOS = React.createClass({
+var SegmentedControlIOS = createReactClass({
+  displayName: 'SegmentedControlIOS',
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     /**
      * The labels for the control's segment buttons, in order.
      */

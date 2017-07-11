@@ -71,6 +71,10 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   readyState: number = CONNECTING;
   url: ?string;
 
+  // This module depends on the native `RCTWebSocketModule` module. If you don't include it,
+  // `WebSocket.isAvailable` will return `false`, and WebSocket constructor will throw an error
+  static isAvailable: boolean = !!RCTWebSocketModule;
+
   constructor(url: string, protocols: ?string | ?Array<string>, options: ?{origin?: string}) {
     super();
     if (typeof protocols === 'string') {
@@ -79,6 +83,11 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
 
     if (!Array.isArray(protocols)) {
       protocols = null;
+    }
+
+    if (!WebSocket.isAvailable) {
+      throw new Error('Cannot initialize WebSocket module. ' +
+      'Native module RCTWebSocketModule is missing.');
     }
 
     this._eventEmitter = new NativeEventEmitter(RCTWebSocketModule);

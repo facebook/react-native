@@ -11,12 +11,15 @@
  */
 'use strict';
 
-var ReactNativePropRegistry = require('ReactNativePropRegistry');
 var invariant = require('fbjs/lib/invariant');
+var ReactNativePropRegistry;
 
 import type { StyleObj } from 'StyleSheetTypes';
 
 function getStyle(style) {
+  if (ReactNativePropRegistry === undefined) {
+    ReactNativePropRegistry = require('ReactNativePropRegistry');
+  }
   if (typeof style === 'number') {
     return ReactNativePropRegistry.getByID(style);
   }
