@@ -1,10 +1,11 @@
-//
-//  RCTMessageActivityItemProvider.m
-//  RCTActionSheet
-//
-//  Created by Poon Kwok Cheung on 11/7/2017.
-//  Copyright © 2017 Facebook. All rights reserved.
-//
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 #import "RCTMessageActivityItemProvider.h"
 
@@ -13,7 +14,7 @@
 
 - (id) activityViewController:(UIActivityViewController *)activityViewController itemForActivityType:(NSString *)activityType
 {
-  if([activityType isEqualToString:@"net.whatsapp.WhatsApp.ShareExtension"]) {
+  if ([activityType isEqualToString:@"net.whatsapp.WhatsApp.ShareExtension"]) {
     return [self.message stringByReplacingOccurrencesOfString:@"\n" withString:@"<br/>"];
   }
   return self.message;
