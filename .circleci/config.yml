@@ -8,6 +8,8 @@ jobs:
       ADB_INSTALL_TIMEOUT: 10
       GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
 
+    working_directory: ~/react-native
+    
     branches:
       ignore:
         - gh-pages # list of branches to ignore
