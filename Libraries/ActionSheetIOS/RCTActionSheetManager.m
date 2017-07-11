@@ -14,6 +14,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
+#import "RCTMessageActivityItemProvider.h"
 
 @interface RCTActionSheetManager () <UIActionSheetDelegate>
 @end
@@ -131,7 +132,9 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   NSMutableArray<id> *items = [NSMutableArray array];
   NSString *message = [RCTConvert NSString:options[@"message"]];
   if (message) {
-    [items addObject:message];
+    RCTMessageActivityItemProvider * messageItem = [[RCTMessageActivityItemProvider alloc] initWithPlaceholderItem:@""];
+    messageItem.message = message;
+    [items addObject:messageItem];
   }
   NSURL *URL = [RCTConvert NSURL:options[@"url"]];
   if (URL) {

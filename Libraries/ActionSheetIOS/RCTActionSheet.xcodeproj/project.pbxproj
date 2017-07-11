@@ -8,12 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		14C644C41AB0DFC900DE3C65 /* RCTActionSheetManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 14C644C21AB0DFC900DE3C65 /* RCTActionSheetManager.m */; };
+		84BA329A1F14EACE00ADEFCA /* RCTMessageActivityItemProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 84BA32991F14EACE00ADEFCA /* RCTMessageActivityItemProvider.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRCTActionSheet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTActionSheet.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		14C644C11AB0DFC900DE3C65 /* RCTActionSheetManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTActionSheetManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		14C644C21AB0DFC900DE3C65 /* RCTActionSheetManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTActionSheetManager.m; sourceTree = "<group>"; };
+		84BA32981F14EACE00ADEFCA /* RCTMessageActivityItemProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTMessageActivityItemProvider.h; sourceTree = "<group>"; };
+		84BA32991F14EACE00ADEFCA /* RCTMessageActivityItemProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTMessageActivityItemProvider.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -30,6 +33,8 @@
 			children = (
 				14C644C11AB0DFC900DE3C65 /* RCTActionSheetManager.h */,
 				14C644C21AB0DFC900DE3C65 /* RCTActionSheetManager.m */,
+				84BA32981F14EACE00ADEFCA /* RCTMessageActivityItemProvider.h */,
+				84BA32991F14EACE00ADEFCA /* RCTMessageActivityItemProvider.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			indentWidth = 2;
@@ -90,6 +95,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84BA329A1F14EACE00ADEFCA /* RCTMessageActivityItemProvider.m in Sources */,
 				14C644C41AB0DFC900DE3C65 /* RCTActionSheetManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
