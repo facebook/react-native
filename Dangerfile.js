@@ -6,7 +6,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-const { danger, fail, markdown, warn } = require('danger');
+// Removed require
 const fs = require('fs');
 const includes = require('lodash.includes');
 
@@ -35,11 +35,11 @@ if (editsBlogPost) {
 
 // Fails if the description is too short.
 if (danger.github.pr.body.length < 10) {
-  fail(":grey_question: This pull request needs a description.")
+  fail(':grey_question: This pull request needs a description.')
 }
 
 // Warns if the PR title contains [WIP]
-const isWIP = includes(danger.github.pr.title, "[WIP]")
+const isWIP = includes(danger.github.pr.title, '[WIP]')
 if (isWIP) {
   const message = ':construction_worker: Work In Progress';
   const idea = 'Do not merge yet.';
@@ -56,14 +56,14 @@ if (packageChanged) {
 }
 
 // Warns if a test plan is missing.
-if (!danger.github.pr.body.toLowerCase().includes("test plan")) {
+if (!danger.github.pr.body.toLowerCase().includes('test plan')) {
   const message = ':clipboard: Test Plan';
   const idea = 'This PR appears to be missing a Test Plan';
   warn(`${message} - <i>${idea}</i>`);
 }
 
 // Tags the React Native team is the PR is submitted by a core contributor
-const taskforce = fs.readFileSync("bots/IssueCommands.txt").split("\n")[0].split(":")[1];
+const taskforce = fs.readFileSync('bots/IssueCommands.txt', 'utf8').split('\n')[0].split(':')[1];
 const isSubmittedByTaskforce = includes(taskforce, danger.github.pr.user.login);
 if (isSubmittedByTaskforce) {
   markdown(`This PR has been submitted by a core contributor. Notifying @facebook/react-native.`);
