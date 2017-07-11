@@ -385,10 +385,11 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     );
     this.state = {
       first: this.props.initialScrollIndex || 0,
-      last: Math.min(
-        this.props.getItemCount(this.props.data),
-        (this.props.initialScrollIndex || 0) + this.props.initialNumToRender,
-      ) - 1,
+      last:
+        Math.min(
+          this.props.getItemCount(this.props.data),
+          (this.props.initialScrollIndex || 0) + this.props.initialNumToRender,
+        ) - 1,
     };
   }
 
@@ -496,8 +497,9 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
 
   _isNestedWithSameOrientation(): boolean {
     const nestedContext = this.context.virtualizedList;
-    return !!(nestedContext &&
-      !!nestedContext.horizontal === !!this.props.horizontal);
+    return !!(
+      nestedContext && !!nestedContext.horizontal === !!this.props.horizontal
+    );
   }
 
   render() {
@@ -519,8 +521,8 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
     const inversionStyle = this.props.inverted
       ? this.props.horizontal
-          ? styles.horizontallyInverted
-          : styles.verticallyInverted
+        ? styles.horizontallyInverted
+        : styles.verticallyInverted
       : null;
     const cells = [];
     const stickyIndicesFromProps = new Set(this.props.stickyHeaderIndices);
@@ -680,7 +682,12 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       cells,
     );
     if (this.props.debug) {
-      return <View style={{flex: 1}}>{ret}{this._renderDebugOverlay()}</View>;
+      return (
+        <View style={{flex: 1}}>
+          {ret}
+          {this._renderDebugOverlay()}
+        </View>
+      );
     } else {
       return ret;
     }
@@ -840,7 +847,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
           borderColor: 'blue',
           borderWidth: 1,
         }}>
-        {framesInLayout.map((f, ii) => (
+        {framesInLayout.map((f, ii) =>
           <View
             key={'f' + ii}
             style={{
@@ -850,8 +857,8 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
               height: f.length * normalize,
               backgroundColor: 'orange',
             }}
-          />
-        ))}
+          />,
+        )}
         <View
           style={{
             ...baseStyle,
@@ -1047,10 +1054,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       } else {
         const {contentLength, offset, visibleLength} = this._scrollMetrics;
         const distanceFromEnd = contentLength - visibleLength - offset;
-        const renderAhead = distanceFromEnd <
-          onEndReachedThreshold * visibleLength
-          ? this.props.maxToRenderPerBatch
-          : 0;
+        const renderAhead =
+          distanceFromEnd < onEndReachedThreshold * visibleLength
+            ? this.props.maxToRenderPerBatch
+            : 0;
         newState = {
           first: 0,
           last: Math.min(state.last + renderAhead, getItemCount(data) - 1),
@@ -1121,7 +1128,7 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
             {frame: frameType},
             {frame},
             'frame',
-            'VirtualizedList.getItemLayout'
+            'VirtualizedList.getItemLayout',
           );
         }
       }
@@ -1221,11 +1228,10 @@ class CellRenderer extends React.Component {
       index,
       separators: this._separators,
     });
-    const onLayout = getItemLayout &&
-      !parentProps.debug &&
-      !fillRateHelper.enabled()
-      ? undefined
-      : this.props.onLayout;
+    const onLayout =
+      getItemLayout && !parentProps.debug && !fillRateHelper.enabled()
+        ? undefined
+        : this.props.onLayout;
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
     // called explicitly by `ScrollViewStickyHeader`.
     return (

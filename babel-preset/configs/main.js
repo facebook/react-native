@@ -38,6 +38,7 @@ var base = {
     'transform-react-jsx',
     'transform-regenerator',
     ['transform-es2015-for-of', { loose: true }],
+    require('../transforms/transform-regenerator-runtime-insertion'),
     require('../transforms/transform-symbol-member'),
   ]),
 };
