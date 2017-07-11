@@ -20,6 +20,7 @@ const StyleSheet = require('StyleSheet');
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
 
+const createReactClass = require('create-react-class');
 const emptyFunction = require('fbjs/lib/emptyFunction');
 
 const IS_RTL = I18nManager.isRTL;
@@ -61,7 +62,8 @@ const RIGHT_SWIPE_THRESHOLD = 30 * SLOW_SPEED_SWIPE_FACTOR;
  * used in a normal ListView. See the renderRow for SwipeableListView to see how
  * to use this component separately.
  */
-const SwipeableRow = React.createClass({
+const SwipeableRow = createReactClass({
+  displayName: 'SwipeableRow',
   _panResponder: {},
   _previousLeft: CLOSED_LEFT_POSITION,
 
@@ -70,6 +72,8 @@ const SwipeableRow = React.createClass({
   propTypes: {
     children: PropTypes.any,
     isOpen: PropTypes.bool,
+    preventSwipeLeft: PropTypes.bool,
+    preventSwipeRight: PropTypes.bool,
     maxSwipeDistance: PropTypes.number.isRequired,
     onOpen: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
@@ -106,6 +110,8 @@ const SwipeableRow = React.createClass({
   getDefaultProps(): Object {
     return {
       isOpen: false,
+      preventSwipeLeft: false,
+      preventSwipeRight: false,
       maxSwipeDistance: 0,
       onOpen: emptyFunction,
       onClose: emptyFunction,
@@ -333,6 +339,12 @@ const SwipeableRow = React.createClass({
 
   // Ignore swipes due to user's finger moving slightly when tapping
   _isValidSwipe(gestureState: Object): boolean {
+    if (this.props.preventSwipeLeft && gestureState.dx < 0) {
+      return false;
+    }
+    if (this.props.preventSwipeRight && gestureState.dx > 0) {
+      return false;
+    }
     return Math.abs(gestureState.dx) > HORIZONTAL_SWIPE_DISTANCE_THRESHOLD;
   },
 

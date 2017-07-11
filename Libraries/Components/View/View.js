@@ -19,6 +19,7 @@ const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const ViewPropTypes = require('ViewPropTypes');
 
+const createReactClass = require('create-react-class');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
 
@@ -73,7 +74,8 @@ export type Props = ViewProps;
  *   - `touches` - Array of all current touches on the screen.
  */
 // $FlowFixMe(>=0.41.0)
-const View = React.createClass({
+const View = createReactClass({
+  displayName: 'View',
   // TODO: We should probably expose the mixins, viewConfig, and statics publicly. For example,
   // one of the props is of type AccessibilityComponentType. That is defined as a const[] above,
   // but it is not rendered by the docs, since `statics` below is not rendered. So its Possible
