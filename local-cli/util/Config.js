@@ -94,7 +94,7 @@ export type ConfigT = {
    * An optional list of polyfills to include in the bundle. The list defaults
    * to a set of common polyfills for Number, String, Array, Object...
    */
-  polyfills: Array<string>,
+  getPolyfills: ({platform: string}) => Array<string>,
 
   /**
    * An optional function that can modify the code and source map of bundle
@@ -177,7 +177,7 @@ const Config = {
     getSourceExts: () => [],
     getTransformModulePath: () => require.resolve('metro-bundler/src/transformer.js'),
     getTransformOptions: async () => ({}),
-    polyfills: [
+    getPolyfills: ({platform}) => [
       require.resolve('../../Libraries/polyfills/Object.es6.js'),
       require.resolve('../../Libraries/polyfills/console.js'),
       require.resolve('../../Libraries/polyfills/error-guard.js'),
@@ -239,6 +239,7 @@ const Config = {
   },
 
   loadFileCustom<TConfig: {}>(pathToConfig: string, defaults: TConfig): TConfig {
+    // $FlowFixMe: necessary dynamic require
     const config: {} = require(pathToConfig);
     return {...defaults, ...config};
   },
