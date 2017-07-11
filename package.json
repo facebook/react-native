@@ -127,7 +127,7 @@
     "test-android-instrumentation": "npm run test-android-build && npm run test-android-run-instrumentation",
     "test-android-unit": "npm run test-android-build && npm run test-android-run-unit",
     "test-android-e2e": "npm run test-android-build && npm run test-android-run-e2e",
-    "danger": "node ./danger/node_modules/.bin/danger"
+    "danger": "node ./node_modules/.bin/danger"
   },
   "bin": {
     "react-native": "local-cli/wrong-react-native.js"
