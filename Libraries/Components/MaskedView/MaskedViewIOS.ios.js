@@ -90,7 +90,7 @@ class MaskedViewIOS extends React.Component {
 
     return (
       <RCTMaskedView {...otherViewProps}>
-        <View pointerEvents="none" style={[StyleSheet.absoluteFill]}>
+        <View pointerEvents="none" style={StyleSheet.absoluteFill}>
           {maskElement}
         </View>
         {children}

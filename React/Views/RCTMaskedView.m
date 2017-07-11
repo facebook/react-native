@@ -8,23 +8,21 @@
  */
 
 #import "RCTMaskedView.h"
-#import "UIView+React.h"
+#import <React/UIView+React.h>
 
 @implementation RCTMaskedView
 
 - (void)didUpdateReactSubviews
 {
-  [super didUpdateReactSubviews];
- 
-  // We have to reset the maskView to nil in case the mask
-  // element changes -- iOS requires it to be fully reset.
-  self.maskView = nil;
-  
   // RCTMaskedView expects that the first subview rendered is the mask.
   UIView *maskView = [self.reactSubviews firstObject];
-  // It needs to be removed from the superview before it can be set as a mask.
-  [maskView removeFromSuperview];
   self.maskView = maskView;
+
+  // Add the other subviews to the view hierarchy
+  for (NSUInteger i = 1; i < self.reactSubviews.count; i++) {
+    UIView *subview = [self.reactSubviews objectAtIndex:i];
+    [self addSubview:subview];
+  }
 }
 
 - (void)displayLayer:(CALayer *)layer

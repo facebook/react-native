@@ -8,7 +8,7 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "RCTView.h"
+#import <React/RCTView.h>
 
 @interface RCTMaskedView : RCTView
 
