@@ -1,7 +1,7 @@
 'use strict';
 
 const fs = require('fs');
-const removePodEntry = require('./removePodEntry')
+const removePodEntry = require('./removePodEntry');
 
 /**
  * Unregister native module IOS with CocoaPods

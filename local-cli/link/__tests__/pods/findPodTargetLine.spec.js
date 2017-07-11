@@ -6,7 +6,7 @@ const readPodfile = require('../../pods/readPodfile');
 
 const PODFILES_PATH = path.join(__dirname, '../../__fixtures__/pods');
 
-describe('pods::findLineToAddPod', () => {
+describe('pods::findPodTargetLine', () => {
   it('returns null if file is not Podfile', () => {
     const podfile = readPodfile(path.join(PODFILES_PATH, '../Info.plist'));
     expect(findPodTargetLine(podfile, 'name')).toBeNull();

@@ -6,7 +6,7 @@ const readPodfile = require('../../pods/readPodfile');
 
 const PODFILES_PATH = path.join(__dirname, '../../__fixtures__/pods');
 
-describe('pods::findLineToAddPod', () => {
+describe('pods::removePodEntry', () => {
   it('should remove one line from Podfile with TestPod', () => {
     const { podfileContent, podLinesCount } = readTestPodFile('PodfileSimple');
     const podFileWithRemoved = removePodEntry(podfileContent, 'TestPod');
