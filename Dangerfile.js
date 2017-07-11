@@ -6,6 +6,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+const { danger, fail, markdown, warn } = require('danger');
 const fs = require('fs');
 const includes = require('lodash.includes');
 
