@@ -59,6 +59,7 @@ RCT_EXTERN NSString *const RCTUIManagerDidRemoveRootViewNotification;
  */
 RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 
+@class RCTLayoutAnimationGroup;
 @class RCTUIManagerObserverCoordinator;
 
 /**
@@ -114,6 +115,13 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  * native code you will need to call this method.
  */
 - (void)setBackgroundColor:(UIColor *)color forView:(UIView *)view;
+
+/**
+ * Sets up layout animation which will perform on next layout pass.
+ * The animation will affect only one next layout pass.
+ * Must be called on the main queue.
+ */
+- (void)setNextLayoutAnimationGroup:(RCTLayoutAnimationGroup *)layoutAnimationGroup;
 
 /**
  * Schedule a block to be executed on the UI thread. Useful if you need to execute

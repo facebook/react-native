@@ -3,4 +3,4 @@
 **/staticBundle.js
 **/main.js
 Libraries/vendor/**/*
-packager/src/worker-farm/**/*
+Libraries/Renderer/*

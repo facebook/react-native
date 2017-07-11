@@ -18,9 +18,7 @@ const React = require('React');
 const VirtualizedSectionList = require('VirtualizedSectionList');
 
 import type {ViewToken} from 'ViewabilityHelper';
-import type {
-  Props as VirtualizedSectionListProps,
-} from 'VirtualizedSectionList';
+import type {Props as VirtualizedSectionListProps} from 'VirtualizedSectionList';
 
 type Item = any;
 
@@ -253,8 +251,11 @@ type DefaultProps = typeof defaultProps;
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
-class SectionList<SectionT: SectionBase<any>>
-  extends React.PureComponent<DefaultProps, Props<SectionT>, void> {
+class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
+  DefaultProps,
+  Props<SectionT>,
+  void,
+> {
   props: Props<SectionT>;
   static defaultProps: DefaultProps = defaultProps;
 

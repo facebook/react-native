@@ -1,6 +1,6 @@
 ---
 id: tutorial
-title: Tutorial
+title: Learn the Basics
 layout: docs
 category: The Basics
 permalink: docs/tutorial.html

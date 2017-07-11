@@ -90,7 +90,7 @@ using namespace facebook::react;
     };
   }
 
-  folly::dynamic args = [RCTConvert folly_dynamic:arguments];
+  folly::dynamic args = convertIdToFollyDynamic(arguments);
   args.resize(args.size() - _method->callbacks);
 
   try {

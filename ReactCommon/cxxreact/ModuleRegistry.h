@@ -10,6 +10,10 @@
 #include <folly/Optional.h>
 #include <folly/dynamic.h>
 
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
+
 namespace facebook {
 namespace react {
 
@@ -20,7 +24,7 @@ struct ModuleConfig {
   folly::dynamic config;
 };
 
-class ModuleRegistry {
+class RN_EXPORT ModuleRegistry {
  public:
   // not implemented:
   // onBatchComplete: see https://our.intern.facebook.com/intern/tasks/?t=5279396

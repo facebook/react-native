@@ -1,0 +1,6 @@
+docs/* @hramos
+blog/* @hramos
+website/* @hramos
+website/showcase.json @hramos
+package.json @hramos @ericnakagawa
+website/package.json @hramos @ericnakagawa
