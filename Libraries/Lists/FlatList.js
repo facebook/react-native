@@ -223,67 +223,70 @@ type DefaultProps = typeof defaultProps;
  *       renderItem={({item}) => <Text>{item.key}</Text>}
  *     />
  *
- * More complex example demonstrating `PureComponent` usage for perf optimization and avoiding bugs.
+ * More complex, multi-select example demonstrating `PureComponent` usage for perf optimization and avoiding bugs.
  *
  * - By binding the `onPressItem` handler, the props will remain `===` and `PureComponent` will
  *   prevent wasteful re-renders unless the actual `id`, `selected`, or `title` props change, even
- *   if the inner `SomeOtherWidget` has no such optimizations.
+ *   if the components rendered in `MyListItem` did not have such optimizations.
  * - By passing `extraData={this.state}` to `FlatList` we make sure `FlatList` itself will re-render
  *   when the `state.selected` changes. Without setting this prop, `FlatList` would not know it
  *   needs to re-render any items because it is also a `PureComponent` and the prop comparison will
  *   not show any changes.
- * - `keyExtractor` tells the list to use the `id`s for the react keys.
+ * - `keyExtractor` tells the list to use the `id`s for the react keys instead of the default `key` property.
  *
  *
  *     class MyListItem extends React.PureComponent {
- *       _onPress = () => {
- *         this.props.onPressItem(this.props.id);
- *       };
+ *         _onPress = () => {
+ *             this.props.onPressItem(this.props.id);
+ *         };
  *
- *       render() {
- *         return (
- *           <SomeOtherWidget
- *             {...this.props}
- *             onPress={this._onPress}
- *           />
- *         )
- *       }
+ *         render() {
+ *             const textColor = this.props.selected ? "red" : "black";
+ *             return (
+ *                 <TouchableOpacity onPress={this._onPress}>
+ *                     <View>
+ *                         <Text style={{ color: textColor }}>
+ *                             {this.props.title}
+ *                         </Text>
+ *                     </View>
+ *                 </TouchableOpacity>
+ *             );
+ *         }
  *     }
  *
- *     class MyList extends React.PureComponent {
- *       state = {selected: (new Map(): Map<string, boolean>)};
+ *     class MultiSelectList extends React.PureComponent {
+ *         state = { selected: (new Map(): Map<string, boolean>) };
  *
- *       _keyExtractor = (item, index) => item.id;
+ *         _keyExtractor = (item, index) => item.id;
  *
- *       _onPressItem = (id: string) => {
- *         // updater functions are preferred for transactional updates
- *         this.setState((state) => {
- *           // copy the map rather than modifying state.
- *           const selected = new Map(state.selected);
- *           selected.set(id, !selected.get(id)); // toggle
- *           return {selected};
- *         });
- *       };
+ *         _onPressItem = (id: string) => {
+ *             // updater functions are preferred for transactional updates
+ *             this.setState(state => {
+ *                 // copy the map rather than modifying state.
+ *                 const selected = new Map(state.selected);
+ *                 selected.set(id, !selected.get(id)); // toggle
+ *                 return { selected };
+ *             });
+ *         };
  *
- *       _renderItem = ({item}) => (
- *         <MyListItem
- *           id={item.id}
- *           onPressItem={this._onPressItem}
- *           selected={!!this.state.selected.get(item.id)}
- *           title={item.title}
- *         />
- *       );
+ *         _renderItem = ({ item }) =>
+ *             <MyListItem
+ *                 id={item.id}
+ *                 onPressItem={this._onPressItem}
+ *                 selected={!!this.state.selected.get(item.id)}
+ *                 title={item.title}
+ *             />;
  *
- *       render() {
- *         return (
- *           <FlatList
- *             data={this.props.data}
- *             extraData={this.state}
- *             keyExtractor={this._keyExtractor}
- *             renderItem={this._renderItem}
- *           />
- *         );
- *       }
+ *         render() {
+ *             return (
+ *                 <FlatList
+ *                     data={this.props.data}
+ *                     extraData={this.state}
+ *                     keyExtractor={this._keyExtractor}
+ *                     renderItem={this._renderItem}
+ *                 />
+ *             );
+ *         }
  *     }
  *
  * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist.html),
