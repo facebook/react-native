@@ -2825,9 +2825,9 @@ module.exports = {
    *
    *```javascript
    *  onScroll={Animated.event(
-   *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}]
+   *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}],
    *    {listener},          // Optional async listener
-   *  )
+   *  )}
    *  ...
    *  onPanResponderMove: Animated.event([
    *    null,                // raw event arg ignored
