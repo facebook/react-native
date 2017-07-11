@@ -75,7 +75,7 @@ ReactNativeBaseComponent.js</a>.</p><h2><a class="anchor" name="composite-compon
 must either be native or forward setNativeProps to a native component</code>.
 This occurs because <code>MyButton</code> isn&#x27;t directly backed by a native view
 whose opacity should be set. You can think about it like this: if you
-define a component with <code>React.createClass</code> you would not expect to be
+define a component with <code>createReactClass</code> you would not expect to be
 able to set a style prop on it and have that work - you would need to
 pass the style prop down to a child, unless you are wrapping a native
 component. Similarly, we are going to forward <code>setNativeProps</code> to a
