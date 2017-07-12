@@ -2041,6 +2041,9 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     return;
   }
 
+  // Reset layout flags, as they could have changed.
+  node->layout.hadOverflow = false;
+
   // STEP 1: CALCULATE VALUES FOR REMAINDER OF ALGORITHM
   const YGFlexDirection mainAxis = YGResolveFlexDirection(node->style.flexDirection, direction);
   const YGFlexDirection crossAxis = YGFlexDirectionCross(mainAxis, direction);
@@ -2577,14 +2580,14 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                              performLayout && !requiresStretchLayout,
                              "flex",
                              config);
-        node->layout.hadOverflow = node->layout.hadOverflow || currentRelativeChild->layout.hadOverflow;
+        node->layout.hadOverflow |= currentRelativeChild->layout.hadOverflow;
 
         currentRelativeChild = currentRelativeChild->nextChild;
       }
     }
 
     remainingFreeSpace = originalRemainingFreeSpace + deltaFreeSpace;
-    node->layout.hadOverflow = node->layout.hadOverflow || (remainingFreeSpace < 0);
+    node->layout.hadOverflow |= (remainingFreeSpace < 0);
 
     // STEP 6: MAIN-AXIS JUSTIFICATION & CROSS-AXIS SIZE DETERMINATION
 

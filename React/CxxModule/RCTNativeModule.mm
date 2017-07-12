@@ -14,6 +14,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCxxUtils.h>
 #import <React/RCTFollyConvert.h>
+#import <React/RCTLog.h>
 #import <React/RCTProfile.h>
 #import <React/RCTUtils.h>
 
@@ -49,7 +50,7 @@ folly::dynamic RCTNativeModule::getConstants() {
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
     @"[RCTNativeModule getConstants] moduleData.exportedConstants", nil);
   NSDictionary *constants = m_moduleData.exportedConstants;
-  folly::dynamic ret = [RCTConvert folly_dynamic:constants];
+  folly::dynamic ret = convertIdToFollyDynamic(constants);
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   return ret;
 }
