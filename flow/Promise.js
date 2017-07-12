@@ -7,7 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
- * @nolint
  */
 
 // These annotations are copy/pasted from the built-in Flow definitions for
