@@ -31,18 +31,36 @@ function cleanup {
 }
 trap cleanup EXIT
 
+# Wait for the package to start
+function waitForPackager {
+  local -i max_attempts=60
+  local -i attempt_num=1
+
+  until $(curl -s http://localhost:8081/status | grep "packager-status:running" -q); do
+    if (( attempt_num == max_attempts )); then
+      echo "Packager didn't respond in time. No more attempts left."
+      exit 1
+    else
+      (( attempt_num++ ))
+      echo "Packager didn't respond. Retrying for attempt number $attempt_num..."
+      sleep 1
+    fi
+  done
+}
+
 # If first argument is "test", actually start the packager and run tests.
 # Otherwise, just build RNTester for tvOS and exit
 
 if [ "$1" = "test" ]; then
 
 # Start the packager
-./scripts/launchPackager.command &> 'launchPackager.command.log' &
+open "./scripts/launchPackager.command" || echo "Can't start packager automatically"
 # Start the WebSocket test server
-./IntegrationTests/launchWebSocketServer.command &> 'launchWebSocketServer.command.log' &
+open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
+
+waitForPackager
 
 # Preload the RNTesterApp bundle for better performance in integration tests
-sleep 20
 curl 'http://localhost:8081/RNTester/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o temp.bundle
 rm temp.bundle
 curl 'http://localhost:8081/RNTester/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' -o temp.bundle
@@ -76,13 +94,3 @@ xcodebuild \
   build
 
 fi
-
-echo 'launchPackager.command.log'
-echo '=============================='
-cat launchPackager.command.log
-echo '=============================='
-echo ''
-echo 'launchWebSocketServer.command'
-echo '=============================='
-cat launchWebSocketServer.command.log
-echo '=============================='
