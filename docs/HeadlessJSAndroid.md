@@ -52,6 +52,12 @@ public class MyTaskService extends HeadlessJsTaskService {
 
 Now, whenever you [start your service][0], e.g. as a periodic task or in response to some system event / broadcast, JS will spin up, run your task, then spin down.
 
+Remember to add the service to your `AndroidManifest` file:
+
+```
+<service android:name="com.example.MyTaskService" />
+```
+
 ## Caveats
 
 * By default, your app will crash if you try to run a task while the app is in the foreground. This is to prevent developers from shooting themselves in the foot by doing a lot of work in a task and slowing the UI. There is a way around this.

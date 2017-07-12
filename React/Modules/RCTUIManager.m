@@ -65,7 +65,6 @@ NSString *const RCTUIManagerRootViewKey = @"RCTUIManagerRootViewKey";
 
   // Animation
   RCTLayoutAnimationGroup *_layoutAnimationGroup; // Main thread only
-  NSMutableSet<UIView *> *_viewsToBeDeleted; // Main thread only
 
   NSMutableDictionary<NSNumber *, RCTShadowView *> *_shadowViewRegistry; // RCT thread only
   NSMutableDictionary<NSNumber *, UIView *> *_viewRegistry; // Main thread only
@@ -155,8 +154,6 @@ RCT_EXPORT_MODULE()
 
   _bridgeTransactionListeners = [NSMutableSet new];
   _observerCoordinator = [RCTUIManagerObserverCoordinator new];
-
-  _viewsToBeDeleted = [NSMutableSet new];
 
   // Get view managers from bridge
   NSMutableDictionary *componentDataByName = [NSMutableDictionary new];
@@ -695,8 +692,7 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
     void (^completion)(BOOL) = ^(BOOL finished) {
       completionsCalled++;
 
-      [self->_viewsToBeDeleted removeObject:removedChild];
-      [container removeReactSubview:removedChild];
+      [removedChild removeFromSuperview];
 
       if (animation.callback && completionsCalled == children.count) {
         animation.callback(@[@(finished)]);
@@ -707,10 +703,20 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
       }
     };
 
-    [_viewsToBeDeleted addObject:removedChild];
+    // Hack: At this moment we have two contradict intents.
+    // First one: We want to delete the view from view hierarchy.
+    // Second one: We want to animate this view, which implies the existence of this view in the hierarchy.
+    // So, we have to remove this view from React's view hierarchy but postpone removing from UIKit's hierarchy.
+    // Here the problem: the default implementation of `-[UIView removeReactSubview:]` also removes the view from UIKit's hierarchy.
+    // So, let's temporary restore the view back after removing.
+    // To do so, we have to memorize original `superview` (which can differ from `container`) and an index of removed view.
+    UIView *originalSuperview = removedChild.superview;
+    NSUInteger *originalIndex = [originalSuperview.subviews indexOfObject:removedChild];
+    [container removeReactSubview:removedChild];
+    [originalSuperview insertSubview:removedChild atIndex:originalIndex];
 
-    // Disable user interaction while the view is animating since JS won't receive
-    // the view events anyway.
+    // Disable user interaction while the view is animating
+    // since the view is (conseptually) deleted and not supposed to be interactive.
     removedChild.userInteractionEnabled = NO;
 
     NSString *property = deletingLayoutAnimation.property;
@@ -862,6 +868,7 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
   for (NSInteger index = 0, length = temporarilyRemovedChildren.count; index < length; index++) {
     destinationsToChildrenToAdd[moveToIndices[index]] = temporarilyRemovedChildren[index];
   }
+
   for (NSInteger index = 0, length = addAtIndices.count; index < length; index++) {
     id<RCTComponent> view = registry[addChildReactTags[index]];
     if (view) {
@@ -872,22 +879,8 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
   NSArray<NSNumber *> *sortedIndices =
     [destinationsToChildrenToAdd.allKeys sortedArrayUsingSelector:@selector(compare:)];
   for (NSNumber *reactIndex in sortedIndices) {
-    NSInteger insertAtIndex = reactIndex.integerValue;
-
-    // When performing a delete animation, views are not removed immediately
-    // from their container so we need to offset the insertion index if a view
-    // that will be removed appears earlier than the view we are inserting.
-    if (isUIViewRegistry && _viewsToBeDeleted.count > 0) {
-      for (NSInteger index = 0; index < insertAtIndex; index++) {
-        UIView *subview = ((UIView *)container).reactSubviews[index];
-        if ([_viewsToBeDeleted containsObject:subview]) {
-          insertAtIndex++;
-        }
-      }
-    }
-
     [container insertReactSubview:destinationsToChildrenToAdd[reactIndex]
-                          atIndex:insertAtIndex];
+                          atIndex:reactIndex.integerValue];
   }
 }
 
@@ -1403,6 +1396,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
      // Add native props
      NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
      moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
+     moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
 
      // Add direct events
      for (NSString *eventName in viewConfig[@"directEvents"]) {

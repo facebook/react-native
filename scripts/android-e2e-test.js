@@ -1,6 +1,11 @@
-'use strict';
-
 /**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * Used in run-ci-e2e-test.js and executed in Travis and Circle CI.
  * E2e test that verifies that init app can be installed, compiled, started and Hot Module reloading and Chrome debugging work.
  * For other examples of appium refer to: https://github.com/appium/sample-code/tree/master/sample-code/examples/node and
@@ -19,6 +24,10 @@
  * - buck build android/app
  * - node ../node_modules/.bin/_mocha ../android-e2e-test.js
  */
+
+ /* eslint-env mocha */
+
+'use strict';
 
 const wd = require('wd');
 const path = require('path');

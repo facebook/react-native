@@ -13,7 +13,6 @@
 'use strict';
 
 require('../../setupBabel')();
-const InspectorProxy = require('./util/inspectorProxy.js');
 const ReactPackager = require('metro-bundler');
 const Terminal = require('metro-bundler/src/lib/Terminal');
 
@@ -37,7 +36,6 @@ const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInE
 const path = require('path');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
-const unless = require('./middleware/unless');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
 import type {ConfigT} from '../util/Config';
@@ -69,7 +67,6 @@ function runServer(
   const packagerServer = getPackagerServer(args, config);
   startedCallback(packagerServer._reporter);
 
-  const inspectorProxy = new InspectorProxy();
   const app = connect()
     .use(loadRawBodyMiddleware)
     .use(connect.compress())
@@ -83,9 +80,6 @@ function runServer(
     .use(systraceProfileMiddleware)
     .use(cpuProfilerMiddleware)
     .use(indexPageMiddleware)
-    .use(
-      unless('/inspector', inspectorProxy.processRequest.bind(inspectorProxy)),
-    )
     .use(packagerServer.processRequest.bind(packagerServer));
 
   args.projectRoots.forEach(root => app.use(connect.static(root)));
@@ -115,7 +109,6 @@ function runServer(
 
     wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
     ms = messageSocket.attachToServer(serverInstance, '/message');
-    inspectorProxy.attachToServer(serverInstance, '/inspector');
     readyCallback(packagerServer._reporter);
   });
   // Disable any kind of automatic timeout behavior for incoming
@@ -164,6 +157,7 @@ function getPackagerServer(args, config) {
     maxWorkers: args.maxWorkers,
     platforms: defaultPlatforms.concat(args.platforms),
     polyfillModuleNames: config.getPolyfillModuleNames(),
+    getPolyfills: config.getPolyfills,
     postMinifyProcess: config.postMinifyProcess,
     postProcessModules: config.postProcessModules,
     projectRoots: args.projectRoots,

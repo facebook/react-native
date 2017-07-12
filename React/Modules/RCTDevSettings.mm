@@ -18,7 +18,6 @@
 #import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
-#import "RCTInspectorDevServerHelper.h"
 #import "RCTJSCSamplingProfiler.h"
 #import "RCTJSEnvironment.h"
 #import "RCTLog.h"
@@ -42,6 +41,12 @@ NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 #if ENABLE_PACKAGER_CONNECTION
 #import "RCTPackagerConnection.h"
+#endif
+
+#define ENABLE_INSPECTOR RCT_DEV && __has_include("RCTInspectorDevServerHelper")
+
+#if ENABLE_INSPECTOR
+#import "RCTInspectorDevServerHelper.h"
 #endif
 
 #if RCT_DEV
@@ -162,7 +167,7 @@ RCT_EXPORT_MODULE()
   _bridge = bridge;
   [self _configurePackagerConnection];
 
-#if RCT_DEV
+#if ENABLE_INSPECTOR
   // we need this dispatch back to the main thread because even though this
   // is executed on the main thread, at this point the bridge is not yet
   // finished with its initialisation. But it does finish by the time it

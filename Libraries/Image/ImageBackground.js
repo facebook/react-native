@@ -17,6 +17,10 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
+const ensureComponentIsNative = require('ensureComponentIsNative');
+
+import type {NativeMethodsMixinType} from 'ReactNativeTypes';
+
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
  *
@@ -42,11 +46,26 @@ const View = require('View');
  * ```
  */
 class ImageBackground extends React.Component {
+  setNativeProps(props: Object) {
+    // Work-around flow
+    const viewRef = this._viewRef;
+    if (viewRef) {
+      ensureComponentIsNative(viewRef);
+      viewRef.setNativeProps(props);
+    }
+  }
+
+  _viewRef: ?NativeMethodsMixinType = null;
+
+  _captureRef = ref => {
+    this._viewRef = ref;
+  };
+
   render() {
     const {children, style, imageStyle, imageRef, ...props} = this.props;
 
     return (
-      <View style={style}>
+      <View style={style} ref={this._captureRef}>
         <Image
           {...props}
           style={[

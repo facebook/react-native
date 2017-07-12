@@ -9,9 +9,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <RCTText/RCTTextInput.h>
 #import <React/RCTComponent.h>
 #import <React/RCTView.h>
+
+#import "RCTTextInput.h"
 
 @class RCTUITextField;
 

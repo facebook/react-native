@@ -27,6 +27,7 @@ const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
+const createReactClass = require('create-react-class');
 const dismissKeyboard = require('dismissKeyboard');
 const flattenStyle = require('flattenStyle');
 const invariant = require('fbjs/lib/invariant');
@@ -72,7 +73,8 @@ import type {NativeMethodsMixinType} from 'ReactNativeTypes';
  * supports out of the box.
  */
 // $FlowFixMe(>=0.41.0)
-const ScrollView = React.createClass({
+const ScrollView = createReactClass({
+  displayName: 'ScrollView',
   propTypes: {
     ...ViewPropTypes,
     /**
@@ -257,6 +259,8 @@ const ScrollView = React.createClass({
      * When true, the scroll view stops on multiples of the scroll view's size
      * when scrolling. This can be used for horizontal pagination. The default
      * value is false.
+     *
+     * Note: Vertical pagination is not supported on Android.
      */
     pagingEnabled: PropTypes.bool,
     /**
