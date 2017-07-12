@@ -87,8 +87,8 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "jschelpers_legacy" do |ss|
-    ss.source_files         = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper}.{cpp,h}", "ReactCommon/jschelpers/systemJSCWrapper.cpp"
-    ss.private_header_files = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper}.h"
+    ss.source_files         = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper,InspectorInterfaces}.{cpp,h}", "ReactCommon/jschelpers/systemJSCWrapper.cpp"
+    ss.private_header_files = "ReactCommon/jschelpers/{JavaScriptCore,JSCWrapper,InspectorInterfaces}.h"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
     ss.framework            = "JavaScriptCore"
   end
