@@ -116,7 +116,7 @@
   "scripts": {
     "test": "jest",
     "flow": "flow",
-    "lint": "eslint RNTester/ Libraries/",
+    "lint": "eslint .",
     "start": "/usr/bin/env bash -c './scripts/packager.sh \"$@\" || true' --",
     "test-android-setup": "docker pull containership/android-base:latest",
     "test-android-build": "docker build -t react/android -f ContainerShip/Dockerfile.android .",

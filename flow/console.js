@@ -10,8 +10,6 @@
  * @nolint
  */
 
-/* eslint-disable */
-
 declare module 'console' {
   declare function assert(value: any, ...message: any): void;
   declare function dir(

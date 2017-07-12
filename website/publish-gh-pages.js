@@ -9,6 +9,7 @@
 'use strict';
 
 var semverCmp = require('semver-compare');
+/*eslint-disable no-undef */
 require(`shelljs/global`);
 
 const CIRCLE_BRANCH = process.env.CIRCLE_BRANCH;
