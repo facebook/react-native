@@ -62,8 +62,7 @@ var TouchableOpacity = createReactClass({
      * Determines what the opacity of the wrapped view should be when touch is
      * active. Defaults to 0.2.
      */
-    activeOpacity: PropTypes.number,
-    focusedOpacity: PropTypes.number,
+    activeOpacity: PropTypes.number
     /**
      * Apple TV parallax effects
      */
@@ -72,8 +71,7 @@ var TouchableOpacity = createReactClass({
 
   getDefaultProps: function() {
     return {
-      activeOpacity: 0.2,
-      focusedOpacity: 0.7,
+      activeOpacity: 0.2
     };
   },
 
@@ -163,10 +161,6 @@ var TouchableOpacity = createReactClass({
       this._getChildStyleOpacityWithDefault(),
       duration
     );
-  },
-
-  _opacityFocused: function() {
-    this.setOpacityTo(this.props.focusedOpacity);
   },
 
   _getChildStyleOpacityWithDefault: function() {
