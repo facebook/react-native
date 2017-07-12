@@ -3474,8 +3474,12 @@ static void YGRoundToPixelGrid(const YGNodeRef node,
   node->layout.position[YGEdgeTop] =
       YGRoundValueToPixelGrid(nodeTop, pointScaleFactor, false, textRounding);
 
-  const bool hasFractionalWidth = !YGFloatsEqual(fmodf(nodeWidth, 1 / pointScaleFactor), 0);
-  const bool hasFractionalHeight = !YGFloatsEqual(fmodf(nodeHeight, 1 / pointScaleFactor), 0);
+  // We multiply dimension by scale factor and if the result is close to the whole number, we don't have any fraction
+  // To verify if the result is close to whole number we want to check both floor and ceil numbers
+  const bool hasFractionalWidth = !YGFloatsEqual(fmodf(nodeWidth * pointScaleFactor, 1.0), 0) &&
+                                  !YGFloatsEqual(fmodf(nodeWidth * pointScaleFactor, 1.0), 1.0);
+  const bool hasFractionalHeight = !YGFloatsEqual(fmodf(nodeHeight * pointScaleFactor, 1.0), 0) &&
+                                   !YGFloatsEqual(fmodf(nodeHeight * pointScaleFactor, 1.0), 1.0);
 
   node->layout.dimensions[YGDimensionWidth] =
       YGRoundValueToPixelGrid(
