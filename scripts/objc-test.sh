@@ -33,7 +33,7 @@ trap cleanup EXIT
 
 # Wait for the package to start
 function waitForPackager {
-  local -i max_attempts=60
+  local -i max_attempts=300
   local -i attempt_num=1
 
   until $(curl -s http://localhost:8081/status | grep "packager-status:running" -q); do
