@@ -5,6 +5,8 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @format
  */
 'use strict';
 
@@ -25,7 +27,10 @@ var base = {
     'transform-es2015-computed-properties',
     'check-es2015-constants',
     'transform-es2015-destructuring',
-    ['transform-es2015-modules-commonjs', { strict: false, allowTopLevelThis: true }],
+    [
+      'transform-es2015-modules-commonjs',
+      {strict: false, allowTopLevelThis: true},
+    ],
     'transform-es2015-parameters',
     'transform-es2015-shorthand-properties',
     'transform-es2015-spread',
@@ -37,7 +42,7 @@ var base = {
     'transform-react-display-name',
     'transform-react-jsx',
     'transform-regenerator',
-    ['transform-es2015-for-of', { loose: true }],
+    ['transform-es2015-for-of', {loose: true}],
     require('../transforms/transform-regenerator-runtime-insertion'),
     require('../transforms/transform-symbol-member'),
   ]),
@@ -45,9 +50,8 @@ var base = {
 
 var devTools = Object.assign({}, base);
 devTools.plugins = devTools.plugins.concat(
-  resolvePlugins(['transform-react-jsx-source'])
+  resolvePlugins(['transform-react-jsx-source']),
 );
-
 
 module.exports = function(options) {
   var withDevTools = options.withDevTools;

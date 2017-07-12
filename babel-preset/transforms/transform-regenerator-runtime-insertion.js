@@ -6,6 +6,8 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
+ *
+ * @format
  */
 
 'use strict';
@@ -98,9 +100,9 @@ module.exports = function() {
                 t.identifier('regeneratorRuntime'),
                 t.callExpression(t.identifier('require'), [
                   t.stringLiteral(NAME),
-                ])
-              )
-            ])
+                ]),
+              ),
+            ]),
           );
         }
       },

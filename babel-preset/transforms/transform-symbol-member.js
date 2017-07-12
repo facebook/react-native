@@ -1,5 +1,7 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
+ *
+ * @format
  */
 
 'use strict';
@@ -34,16 +36,12 @@ module.exports = function symbolMember(babel) {
           t.conditionalExpression(
             t.binaryExpression(
               '===',
-              t.unaryExpression(
-                'typeof',
-                t.identifier('Symbol'),
-                true
-              ),
-              t.stringLiteral('function')
+              t.unaryExpression('typeof', t.identifier('Symbol'), true),
+              t.stringLiteral('function'),
             ),
             node,
-            t.stringLiteral(`@@${node.property.name}`)
-          )
+            t.stringLiteral(`@@${node.property.name}`),
+          ),
         );
 
         // We should stop to avoid infinite recursion, since Babel
@@ -57,8 +55,10 @@ module.exports = function symbolMember(babel) {
 function isAppropriateMember(path) {
   let node = path.node;
 
-  return path.parentPath.type !== 'AssignmentExpression' &&
+  return (
+    path.parentPath.type !== 'AssignmentExpression' &&
     node.object.type === 'Identifier' &&
     node.object.name === 'Symbol' &&
-    node.property.type === 'Identifier';
+    node.property.type === 'Identifier'
+  );
 }

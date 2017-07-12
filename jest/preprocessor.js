@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @flow
+ * @format
  */
 
 /* eslint-env node */
@@ -17,22 +17,18 @@ const babel = require('babel-core');
 const babelRegisterOnly = require('metro-bundler/src/babelRegisterOnly');
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
 
-const nodeFiles = RegExp([
-  '/local-cli/',
-  '/metro-bundler/',
-].join('|'));
+const nodeFiles = RegExp(['/local-cli/', '/metro-bundler/'].join('|'));
 const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
 babelRegisterOnly([]);
 
 const transformer = require('metro-bundler/src/transformer.js');
 module.exports = {
-  process(src/*: string*/, file/*: string*/) {
-    if (nodeFiles.test(file)) { // node specific transforms only
-      return babel.transform(
-        src,
-        Object.assign({filename: file}, nodeOptions)
-      ).code;
+  process(src, file) {
+    if (nodeFiles.test(file)) {
+      // node specific transforms only
+      return babel.transform(src, Object.assign({filename: file}, nodeOptions))
+        .code;
     }
 
     return transformer.transform({
