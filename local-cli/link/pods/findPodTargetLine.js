@@ -3,7 +3,8 @@
 module.exports = function findPodTargetLine(podLines, projectName) {
 
   const targetName = projectName.replace('.xcodeproj', '');
-  const targetRegex = new RegExp('target \'' + targetName + '\' do', 'g');
+  //match first target definition in file: target 'target_name' do
+  const targetRegex = new RegExp('target (\'|\")' + targetName + '(\'|\") do', 'g');
   for (let i = 0, len = podLines.length; i < len; i++) {
     const match = podLines[i].match(targetRegex);
     if (match) {
