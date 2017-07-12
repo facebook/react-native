@@ -38,14 +38,16 @@ function waitForPackager {
 
   until $(curl -s http://localhost:8081/status | grep "packager-status:running" -q); do
     if (( attempt_num == max_attempts )); then
-      echo "Packager didn't respond in time. No more attempts left."
+      echo "Packager did not respond in time. No more attempts left."
       exit 1
     else
       (( attempt_num++ ))
-      echo "Packager didn't respond. Retrying for attempt number $attempt_num..."
+      echo "Packager did not respond. Retrying for attempt number $attempt_num..."
       sleep 1
     fi
   done
+
+  echo "Packager is ready!"
 }
 
 # If first argument is "test", actually start the packager and run tests.
@@ -59,6 +61,8 @@ open "./scripts/launchPackager.command" || echo "Can't start packager automatica
 open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
 
 waitForPackager
+
+sleep 20
 
 # Preload the RNTesterApp bundle for better performance in integration tests
 curl 'http://localhost:8081/RNTester/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o temp.bundle
