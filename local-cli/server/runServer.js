@@ -157,6 +157,7 @@ function getPackagerServer(args, config) {
     maxWorkers: args.maxWorkers,
     platforms: defaultPlatforms.concat(args.platforms),
     polyfillModuleNames: config.getPolyfillModuleNames(),
+    getPolyfills: config.getPolyfills,
     postMinifyProcess: config.postMinifyProcess,
     postProcessModules: config.postProcessModules,
     projectRoots: args.projectRoots,

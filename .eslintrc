@@ -1,4 +1,6 @@
 {
+  "root": true,
+
   "parser": "babel-eslint",
 
   "ecmaFeatures": {
@@ -11,6 +13,8 @@
   },
 
   "plugins": [
+    "flowtype",
+    "prettier",
     "react"
   ],
 
@@ -49,33 +53,17 @@
     "setTimeout": false,
     "window": false,
     "XMLHttpRequest": false,
-    "pit": false,
-
-    // Flow global types.
-    "ReactComponent": false,
-    "ReactClass": false,
-    "ReactElement": false,
-    "ReactPropsCheckType": false,
-    "ReactPropsChainableTypeChecker": false,
-    "ReactPropTypes": false,
-    "SyntheticEvent": false,
-    "$Either": false,
-    "$All": false,
-    "$ArrayBufferView": false,
-    "$Tuple": false,
-    "$Supertype": false,
-    "$Subtype": false,
-    "$Shape": false,
-    "$Diff": false,
-    "$Keys": false,
-    "$Enum": false,
-    "$Exports": false,
-    "$FlowIssue": false,
-    "$FlowFixMe": false,
-    "$FixMe": false
+    "pit": false
   },
 
   "rules": {
+  // Flow Plugin
+  // The following rules are made available via `eslint-plugin-flowtype`
+    "flowtype/define-flow-type": 1,
+    "flowtype/use-flow-type": 1,
+
+  // General
+
     "comma-dangle": 0,               // disallow trailing commas in object literals
     "no-cond-assign": 1,             // disallow assignment in conditional expressions
     "no-console": 0,                 // disallow use of console (off by default in the node environment)
@@ -176,6 +164,10 @@
     "no-restricted-modules": 1,      // restrict usage of specified node modules (off by default)
     "no-sync": 0,                    // disallow use of synchronous methods (off by default)
 
+  // Prettier Plugin
+  // https://github.com/prettier/eslint-plugin-prettier
+    "prettier/prettier": [2, "fb", "@format"],
+
   // Stylistic Issues
   // These rules are purely matters of style and are quite subjective.
 
@@ -241,6 +233,6 @@
     "react/prop-types": 0,
     "react/react-in-jsx-scope": 1,
     "react/self-closing-comp": 1,
-    "react/wrap-multilines": 0,
+    "react/wrap-multilines": 0
   }
 }

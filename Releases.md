@@ -3,13 +3,22 @@ https://github.com/facebook/react-native/releases
 
 ## Release schedule
 
-| Version | RC release          | Stable release |
-| ------- | ------------------- | -------------- |
-| 0.38.0  | week of November 7  | November 21    |
-| 0.39.0  | week of November 21 | December 2     |
-| 0.40.0  | 1st of December     | 1st of January |
-| 0.41.0  | 1st of January      | 1st of February|
-| ...     | ...                 | ...            |
+| Version | RC release          | Stable release   |
+| ------- | ------------------- | ---------------- |
+| 0.38.0  | week of November 7  | November 21      |
+| 0.39.0  | week of November 21 | December 2       |
+| 0.40.0  | 1st of December     | 1st of January   |
+| 0.41.0  | 1st of January      | 1st of February  |
+| 0.42.0  | 1st of February     | 1st of March     |
+| 0.43.0  | 1st of March        | 1st of April     |
+| 0.44.0  | 1st of April        | 1st of May       |
+| 0.45.0  | 1st of May          | 1st of June      |
+| 0.46.0  | 1st of June         | 1st of July      |
+| 0.47.0  | 1st of July         | 1st of August    |
+| 0.48.0  | 1st of August       | 1st of September |
+| 0.49.0  | 1st of September    | 1st of October   |
+| 0.50.0  | 1st of October      | 1st of November  |
+| ...     | ...                 | ...              |
 
 -------------------
 ## How to cut a new release branch
@@ -17,7 +26,7 @@ https://github.com/facebook/react-native/releases
 #### Prerequisites
 
 The following are required for the local test suite to run:
-- Mac OS X with [Android dev environment set up](https://github.com/facebook/react-native/blob/master/ReactAndroid/README.md)
+- macOS with [Android dev environment set up](https://github.com/facebook/react-native/blob/master/ReactAndroid/README.md)
 - At least 0.2.0 [react-native-cli](https://www.npmjs.com/package/react-native-cli) installed globally
 
 #### Check everything works
@@ -42,14 +51,14 @@ Run:
 
 ```bash
 git checkout -b <version_you_are_releasing>-stable
-# e.g. git checkout -b 0.22-stable
+# e.g. git checkout -b 0.50-stable
 
 ./scripts/bump-oss-version.js <exact-version_you_are_releasing>
-# e.g. ./scripts/bump-oss-version.js 0.22.0-rc
+# e.g. ./scripts/bump-oss-version.js 0.50.0-rc
 # You can use the --remote option to specify a Git remote other than the default "origin"
 ```
 
-Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.22.0-rc`) and tag `next` meaning that this version will not be installed for users by default.
+Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.50.0-rc`) and tag `next` meaning that this version will not be installed for users by default.
 
 Go to [Circle CI](https://circleci.com/gh/facebook/react-native), look for your branch on the left side and look the npm publish step.
 
@@ -58,8 +67,9 @@ Go to [Circle CI](https://circleci.com/gh/facebook/react-native), look for your 
 Write the release notes, or post in [React Native Core Contributors](https://www.facebook.com/groups/reactnativeoss/) that the RC is ready to find a voluteer. You can also use [react-native-release-notes](https://github.com/knowbody/react-native-release-notes) to generate a draft of release notes.
 
 To go through all the commits that went into a release, one way is to use the GitHub compare view:
+
 ```
-https://github.com/facebook/react-native/compare/0.21-stable...0.22-stable
+https://github.com/facebook/react-native/compare/0.49-stable...0.50-stable
 ```
 
 **Note**: This only shows **250** commits, if there are more use git.
@@ -67,12 +77,13 @@ https://github.com/facebook/react-native/compare/0.21-stable...0.22-stable
 When making a list of changes, ignore docs, showcase updates and minor typos.
 
 Sometimes commit messages might be really short / confusing - try rewording them where it makes sense. Below are few examples:
+
 - `Fix logging reported by RUN_JS_BUNDLE` -> `Fix systrace logging of RUN_JS_BUNDLE event`
 - `Fixes hot code reloading issue` -> `Fix an edge case in hot module reloading`
 
 Before posting the list of changes, consider asking one of contributors for their opinion. Once everything is ready, post the release notes: https://github.com/facebook/react-native/releases
 
-**Important**: For release candiate releases, make sure to check "This is a pre-release"
+**Important**: For release candidate releases, make sure to check "This is a pre-release".
 
 #### Update `Breaking Changes` document
 
@@ -86,22 +97,22 @@ Tweet about it! Link to release notes and say "please report issues" and link to
 
 ## IMPORTANT: Track bug reports from the community during the following month, ping owners to get them fixed
 
-A good way to do this is to create a github issue and post about it so people can report bugs. Examples: [#6087](https://github.com/facebook/react-native/issues/6087), [#5201](https://github.com/facebook/react-native/issues/5201)
+A good way to do this is to create a github issue and post about it so people can report bugs. Examples: [#14840](https://github.com/facebook/react-native/issues/14840), [#6087](https://github.com/facebook/react-native/issues/6087), [#5201](https://github.com/facebook/react-native/issues/5201)
 
 **Only cherry-pick small and non-risky bug fixes**. **Don't pick new features into the release** as this greatly increases the risk of something breaking. The main point of the RC is to let people to use it for a month and fix the most serious bugs.
 
 -------------------
 
-## How to release an RC update (e.g. 0.28.0-rc.1, 0.28.0-rc.2)
+## How to release an RC update (e.g. 0.50.0-rc.1, 0.50.0-rc.2)
 
 After cherry-picking 1-2 bug fixes, it is a good idea to do a new RC release so that people can test again. Having a few RC releases can also help people bisect in case we cherry-pick a bad commit by mistake.
 
 ```bash
 git checkout 0.version_you_are_releasing-stable
-# e.g. git checkout 0.22-stable
+# e.g. git checkout 0.50-stable
 
 git pull origin 0.version_you_are_releasing-stable
-# e.g. git pull origin 0.22-stable
+# e.g. git pull origin 0.50-stable
 
 # Cherry-pick those commits
 git cherry-pick commitHash1
@@ -114,12 +125,12 @@ If everything worked:
 
 ```bash
 ./scripts/bump-oss-version.js <exact_version_you_are_releasing>
-# e.g. ./scripts/bump-oss-version.js 0.28.0-rc.1
+# e.g. ./scripts/bump-oss-version.js 0.50.0-rc.1
 ````
 
 -------------------
 
-## How to do the final release (e.g. 0.22.0, 0.22.1)
+## How to do the final release (e.g. 0.50.0, 0.50.1)
 
 Roughly a month after the branch cut (see the release schedule above) it's time to promote the last RC to a real release.
 
@@ -127,10 +138,10 @@ Once all bugfixes have been cherry-picked and you're sure the release is solid (
 
 ```bash
 git checkout 0.version_you_are_releasing-stable
-# e.g. git checkout 0.22-stable
+# e.g. git checkout 0.50-stable
 
 git pull origin 0.version_you_are_releasing-stable
-# e.g. git pull origin 0.22-stable
+# e.g. git pull origin 0.50-stable
 
 # Cherry-pick those commits, if any
 git cherry-pick commitHash1
@@ -143,14 +154,14 @@ If everything worked:
 
 ```bash
 ./scripts/bump-oss-version.js <exact_version_you_are_releasing>
-# e.g. ./scripts/bump-oss-version.js 0.22.0
+# e.g. ./scripts/bump-oss-version.js 0.50.0
 ```
 
 #### Update the release notes
 
 Once you see the version in the top left corner of the website has been updated:
 Move the release notes to the tag you've just created. We want single release notes per version,
-for example if there is v0.22.0-rc and later we release v0.22.0, the release notes should live on v0.22.0:
+for example if there is v0.50.0-rc and later we release v0.50.0, the release notes should live on v0.50.0:
 https://github.com/facebook/react-native/tags
 
 For non-RC releases: Uncheck the box "This is a pre-release" and publish the notes.

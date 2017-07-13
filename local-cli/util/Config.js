@@ -91,6 +91,12 @@ export type ConfigT = {
   getWorkerPath: () => ?string,
 
   /**
+   * An optional list of polyfills to include in the bundle. The list defaults
+   * to a set of common polyfills for Number, String, Array, Object...
+   */
+  getPolyfills: ({platform: string}) => Array<string>,
+
+  /**
    * An optional function that can modify the code and source map of bundle
    * after the minifaction took place. (Function applied per module).
    */
@@ -171,6 +177,17 @@ const Config = {
     getSourceExts: () => [],
     getTransformModulePath: () => require.resolve('metro-bundler/src/transformer.js'),
     getTransformOptions: async () => ({}),
+    getPolyfills: ({platform}) => [
+      require.resolve('../../Libraries/polyfills/Object.es6.js'),
+      require.resolve('../../Libraries/polyfills/console.js'),
+      require.resolve('../../Libraries/polyfills/error-guard.js'),
+      require.resolve('../../Libraries/polyfills/Number.es6.js'),
+      require.resolve('../../Libraries/polyfills/String.prototype.es6.js'),
+      require.resolve('../../Libraries/polyfills/Array.prototype.es6.js'),
+      require.resolve('../../Libraries/polyfills/Array.es6.js'),
+      require.resolve('../../Libraries/polyfills/Object.es7.js'),
+      require.resolve('../../Libraries/polyfills/babelHelpers.js'),
+    ],
     postMinifyProcess: x => x,
     postProcessModules: modules => modules,
     postProcessModulesForBuck: modules => modules,
@@ -222,7 +239,7 @@ const Config = {
   },
 
   loadFileCustom<TConfig: {}>(pathToConfig: string, defaults: TConfig): TConfig {
-    //$FlowFixMe: necessary dynamic require
+    // $FlowFixMe: necessary dynamic require
     const config: {} = require(pathToConfig);
     return {...defaults, ...config};
   },
