@@ -45,16 +45,21 @@
 
 Then, specify:
 
-1. Target Platform (e.g. iOS, Android):
-2. Development Operating System (e.g. macOS Sierra, Windows 10):
-3. Build tools (Xcode or Android Studio version, iOS or Android SDK version, if relevant):
+<!-- (What platform are you building for? Choose any from iOS, Android, AppleTV.) -->
+- Target Platform: 
 
+<!-- Which operating system are you using? Specify macOS, Windows, or Linux, along with specific release versions -->
+- Development Operating System: 
+
+<!-- Include any additional relevant information. Are you using Xcode or Android Studio to build native code? Is the issue specific to a particular iOS or Android SDK? -->
+- Build tools:
 
 ### Steps to Reproduce
 
 <!--
   How would you describe your issue to someone who doesn’t know you or your project?
   Try to write a sequence of steps that anybody can repeat to see the issue.
+  Be specific! If the bug cannot be reproduced, your issue may be closed.
 -->
 
 (Write your steps here:)
@@ -79,6 +84,7 @@ Then, specify:
   Did something go wrong?
   Is something broken, or not behaving as you expected?
   Describe this section in detail, and attach screenshots if possible.
+  Don't just say "it doesn't work"!
 -->
 
 (Write what happened. Add screenshots!)

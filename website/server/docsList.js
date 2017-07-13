@@ -18,6 +18,7 @@ const components = [
   '../Libraries/Image/Image.ios.js',
   '../Libraries/Components/Keyboard/KeyboardAvoidingView.js',
   '../Libraries/Lists/ListView/ListView.js',
+  '../Libraries/Components/MaskedView/MaskedViewIOS.ios.js',
   '../Libraries/Modal/Modal.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
   '../Libraries/Components/Picker/Picker.js',

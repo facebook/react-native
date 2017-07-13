@@ -7,10 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
- * @nolint
  */
-
-/* eslint-disable */
 
 // These annotations are copy/pasted from the built-in Flow definitions for
 // Native Map.
