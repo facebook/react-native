@@ -22,9 +22,6 @@
 
 @implementation RCTTextView
 {
-  RCTBridge *_bridge;
-  RCTEventDispatcher *_eventDispatcher;
-
   RCTUITextView *_textView;
   RCTText *_richTextView;
   NSAttributedString *_pendingAttributedText;
@@ -35,17 +32,13 @@
   BOOL _blockTextShouldChange;
   BOOL _nativeUpdatesInFlight;
   NSInteger _nativeEventCount;
-
-  CGSize _previousContentSize;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   RCTAssertParam(bridge);
 
-  if (self = [super initWithFrame:CGRectZero]) {
-    _bridge = bridge;
-    _eventDispatcher = bridge.eventDispatcher;
+  if (self = [super initWithBridge:bridge]) {
     _blurOnSubmit = NO;
 
     _textView = [[RCTUITextView alloc] initWithFrame:self.bounds];
@@ -67,6 +60,11 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+- (id<RCTBackedTextInputViewProtocol>)backedTextInputView
+{
+  return _textView;
+}
 
 #pragma mark - RCTComponent
 
@@ -205,22 +203,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   [self setNeedsLayout];
 }
 
-- (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
-{
-  _reactPaddingInsets = reactPaddingInsets;
-  // We apply `paddingInsets` as `_textView`'s `textContainerInset`.
-  _textView.textContainerInset = reactPaddingInsets;
-  [self setNeedsLayout];
-}
-
-- (void)setReactBorderInsets:(UIEdgeInsets)reactBorderInsets
-{
-  _reactBorderInsets = reactBorderInsets;
-  // We apply `borderInsets` as `_textView` layout offset.
-  _textView.frame = UIEdgeInsetsInsetRect(self.bounds, reactBorderInsets);
-  [self setNeedsLayout];
-}
-
 - (void)setSelection:(RCTTextSelection *)selection
 {
   if (!selection) {
@@ -269,47 +251,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
     RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
   }
-}
-
-- (NSString *)placeholder
-{
-  return _textView.placeholderText;
-}
-
-- (void)setPlaceholder:(NSString *)placeholder
-{
-  _textView.placeholderText = placeholder;
-  [self setNeedsLayout];
-}
-
-- (UIColor *)placeholderTextColor
-{
-  return _textView.placeholderTextColor;
-}
-
-- (void)setPlaceholderTextColor:(UIColor *)placeholderTextColor
-{
-  _textView.placeholderTextColor = placeholderTextColor;
-}
-
-- (void)setAutocorrectionType:(UITextAutocorrectionType)autocorrectionType
-{
-  _textView.autocorrectionType = autocorrectionType;
-}
-
-- (UITextAutocorrectionType)autocorrectionType
-{
-  return _textView.autocorrectionType;
-}
-
-- (void)setSpellCheckingType:(UITextSpellCheckingType)spellCheckingType
-{
-  _textView.spellCheckingType = spellCheckingType;
-}
-
-- (UITextSpellCheckingType)spellCheckingType
-{
-  return _textView.spellCheckingType;
 }
 
 #pragma mark - UITextViewDelegate
@@ -528,92 +469,6 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
                                      text:nil
                                       key:nil
                                eventCount:_nativeEventCount];
-}
-
-#pragma mark - Focus control deledation
-
-- (void)reactFocus
-{
-  [_textView reactFocus];
-}
-
-- (void)reactBlur
-{
-  [_textView reactBlur];
-}
-
-- (void)didMoveToWindow
-{
-  [_textView reactFocusIfNeeded];
-}
-
-#pragma mark - Content Size (in Yoga terms, without any insets)
-
-- (CGSize)contentSize
-{
-  // Returning value does NOT include border and padding insets.
-  CGSize contentSize = self.intrinsicContentSize;
-  UIEdgeInsets compoundInsets = self.reactCompoundInsets;
-  contentSize.width -= compoundInsets.left + compoundInsets.right;
-  contentSize.height -= compoundInsets.top + compoundInsets.bottom;
-  return contentSize;
-}
-
-- (void)invalidateContentSize
-{
-  CGSize contentSize = self.contentSize;
-
-  if (CGSizeEqualToSize(_previousContentSize, contentSize)) {
-    return;
-  }
-  _previousContentSize = contentSize;
-
-  [_bridge.uiManager setIntrinsicContentSize:contentSize forView:self];
-
-  if (_onContentSizeChange) {
-    _onContentSizeChange(@{
-      @"contentSize": @{
-        @"height": @(contentSize.height),
-        @"width": @(contentSize.width),
-      },
-      @"target": self.reactTag,
-    });
-  }
-}
-
-#pragma mark - Layout (in UIKit terms, with all insets)
-
-- (CGSize)intrinsicContentSize
-{
-  // Calling `sizeThatFits:` is probably more expensive method to compute
-  // content size compare to direct access `_textView.contentSize` property,
-  // but seems `sizeThatFits:` returns more reliable and consistent result.
-  // Returning value DOES include border and padding insets.
-  return [self sizeThatFits:CGSizeMake(self.bounds.size.width, INFINITY)];
-}
-
-- (CGSize)sizeThatFits:(CGSize)size
-{
-  CGFloat compoundHorizontalBorderInset = _reactBorderInsets.left + _reactBorderInsets.right;
-  CGFloat compoundVerticalBorderInset = _reactBorderInsets.top + _reactBorderInsets.bottom;
-
-  size.width -= compoundHorizontalBorderInset;
-  size.height -= compoundVerticalBorderInset;
-
-  // Note: `paddingInsets` already included in `_textView` size
-  // because it was applied as `textContainerInset`.
-  CGSize fittingSize = [_textView sizeThatFits:size];
-
-  fittingSize.width += compoundHorizontalBorderInset;
-  fittingSize.height += compoundVerticalBorderInset;
-
-  return fittingSize;
-}
-
-- (void)layoutSubviews
-{
-  [super layoutSubviews];
-  [self invalidateContentSize];
 }
 
 #pragma mark - UIScrollViewDelegate

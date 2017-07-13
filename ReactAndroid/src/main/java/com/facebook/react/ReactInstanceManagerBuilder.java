@@ -15,6 +15,7 @@ import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -42,8 +43,12 @@ public class ReactInstanceManagerBuilder {
   protected @Nullable RedBoxHandler mRedBoxHandler;
   protected boolean mLazyNativeModulesEnabled;
   protected boolean mLazyViewManagersEnabled;
+  protected @Nullable DevBundleDownloadListener mDevBundleDownloadListener;
   protected boolean mSetupReactContextInBackground;
   protected boolean mUseSeparateUIBackgroundThread;
+  protected int mMinNumShakes = 1;
+  protected boolean mEnableSplitPackage;
+  protected boolean mUseOnlyDefaultPackages;
 
   /* package protected */ ReactInstanceManagerBuilder() {
   }
@@ -188,6 +193,11 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setDevBundleDownloadListener(@Nullable DevBundleDownloadListener listener) {
+    mDevBundleDownloadListener = listener;
+    return this;
+  }
+
   public ReactInstanceManagerBuilder setSetupReactContextInBackgroundEnabled(
     boolean setupReactContextInBackground) {
     mSetupReactContextInBackground = setupReactContextInBackground;
@@ -196,8 +206,23 @@ public class ReactInstanceManagerBuilder {
 
   public ReactInstanceManagerBuilder setUseSeparateUIBackgroundThread(
     boolean useSeparateUIBackgroundThread) {
-   mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
-   return this;
+    mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder setMinNumShakes(int minNumShakes) {
+    mMinNumShakes = minNumShakes;
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder setEnableSplitPackage(boolean enableSplitPackage) {
+    mEnableSplitPackage = enableSplitPackage;
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder setUseOnlyDefaultPackages(boolean useOnlyDefaultPackages) {
+    mUseOnlyDefaultPackages = useOnlyDefaultPackages;
+    return this;
   }
 
   /**
@@ -246,7 +271,11 @@ public class ReactInstanceManagerBuilder {
       mRedBoxHandler,
       mLazyNativeModulesEnabled,
       mLazyViewManagersEnabled,
+      mDevBundleDownloadListener,
       mSetupReactContextInBackground,
-      mUseSeparateUIBackgroundThread);
+      mUseSeparateUIBackgroundThread,
+      mMinNumShakes,
+      mEnableSplitPackage,
+      mUseOnlyDefaultPackages);
   }
 }

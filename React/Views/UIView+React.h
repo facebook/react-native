@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
+#import <yoga/YGEnums.h>
 
 @class RCTShadowView;
 
@@ -24,11 +25,23 @@
 - (void)removeReactSubview:(UIView *)subview NS_REQUIRES_SUPER;
 
 /**
+ * The native id of the view, used to locate view from native codes
+ */
+@property (nonatomic, copy) NSString *nativeID;
+
+/**
  * Layout direction of the view.
  * Internally backed to `semanticContentAttribute` property.
  * Defaults to `LeftToRight` in case of ambiguity.
  */
 @property (nonatomic, assign) UIUserInterfaceLayoutDirection reactLayoutDirection;
+
+/**
+ * Yoga `display` style property. Can be `flex` or `none`.
+ * Defaults to `flex`.
+ * May be used to temporary hide the view in a very efficient way.
+ */
+@property (nonatomic, assign) YGDisplay reactDisplay;
 
 /**
  * The z-index of the view.
@@ -85,6 +98,15 @@
 @property (nonatomic, readonly) UIEdgeInsets reactPaddingInsets;
 @property (nonatomic, readonly) UIEdgeInsets reactCompoundInsets;
 @property (nonatomic, readonly) CGRect reactContentFrame;
+
+/**
+ * The (sub)view which represents this view in terms of accessibility.
+ * ViewManager will apply all accessibility properties directly to this view.
+ * May be overriten in view subclass which needs to be accessiblitywise
+ * transparent in favour of some subview.
+ * Defaults to `self`.
+ */
+@property (nonatomic, readonly) UIView *reactAccessibilityElement;
 
 #if RCT_DEV
 

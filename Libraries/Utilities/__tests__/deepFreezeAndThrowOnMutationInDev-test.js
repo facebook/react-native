@@ -7,7 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  */
-jest.unmock('deepFreezeAndThrowOnMutationInDev');
 var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
 
 describe('deepFreezeAndThrowOnMutationInDev', function() {
@@ -79,7 +78,9 @@ describe('deepFreezeAndThrowOnMutationInDev', function() {
     var o = {oldKey: 'value'};
     deepFreezeAndThrowOnMutationInDev(o);
     expect(() => { o.newKey = 'value'; })
-      .toThrowError('Can\'t add property newKey, object is not extensible');
+      .toThrowError(
+        /(Cannot|Can't) add property newKey, object is not extensible/
+      );
     expect(o.newKey).toBe(undefined);
   });
 

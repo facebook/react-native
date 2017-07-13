@@ -54,6 +54,7 @@ typedef struct YGLayout {
 
   uint32_t computedFlexBasisGeneration;
   float computedFlexBasis;
+  bool hadOverflow;
 
   // Instead of recomputing the entire layout every single time, we
   // cache some information to break early when nothing changed
@@ -192,6 +193,7 @@ static YGNode gYGNodeDefaults = {
             .lastParentDirection = (YGDirection) -1,
             .nextCachedMeasurementsIndex = 0,
             .computedFlexBasis = YGUndefined,
+            .hadOverflow = false,
             .measuredDimensions = YG_DEFAULT_DIMENSION_VALUES,
 
             .cachedLayout =
@@ -782,6 +784,7 @@ YG_NODE_LAYOUT_PROPERTY_IMPL(float, Bottom, position[YGEdgeBottom]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Width, dimensions[YGDimensionWidth]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Height, dimensions[YGDimensionHeight]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(YGDirection, Direction, direction);
+YG_NODE_LAYOUT_PROPERTY_IMPL(bool, HadOverflow, hadOverflow);
 
 YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Margin, margin);
 YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Border, border);
@@ -1714,7 +1717,7 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
          child->layout.measuredDimensions[dim[crossAxis]]) /
         2.0f;
   } else if (!YGNodeIsLeadingPosDefined(child, crossAxis) &&
-             (YGNodeAlignItem(node, child) == YGAlignFlexEnd || node->style.flexWrap == YGWrapWrapReverse)) {
+             ((YGNodeAlignItem(node, child) == YGAlignFlexEnd) ^ (node->style.flexWrap == YGWrapWrapReverse))) {
     child->layout.position[leading[crossAxis]] = (node->layout.measuredDimensions[dim[crossAxis]] -
                                                   child->layout.measuredDimensions[dim[crossAxis]]);
   }
@@ -2038,6 +2041,9 @@ static void YGNodelayoutImpl(const YGNodeRef node,
     return;
   }
 
+  // Reset layout flags, as they could have changed.
+  node->layout.hadOverflow = false;
+
   // STEP 1: CALCULATE VALUES FOR REMAINDER OF ALGORITHM
   const YGFlexDirection mainAxis = YGResolveFlexDirection(node->style.flexDirection, direction);
   const YGFlexDirection crossAxis = YGFlexDirectionCross(mainAxis, direction);
@@ -2276,6 +2282,16 @@ static void YGNodelayoutImpl(const YGNodeRef node,
         currentRelativeChild = child;
         child->nextChild = NULL;
       }
+    }
+
+    // The total flex factor needs to be floored to 1.
+    if (totalFlexGrowFactors > 0 && totalFlexGrowFactors < 1) {
+      totalFlexGrowFactors = 1;
+    }
+
+    // The total flex shrink factor needs to be floored to 1.
+    if (totalFlexShrinkScaledFactors > 0 && totalFlexShrinkScaledFactors < 1) {
+      totalFlexShrinkScaledFactors = 1;
     }
 
     // If we don't need to measure the cross axis, we can skip the entire flex
@@ -2564,12 +2580,14 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                              performLayout && !requiresStretchLayout,
                              "flex",
                              config);
+        node->layout.hadOverflow |= currentRelativeChild->layout.hadOverflow;
 
         currentRelativeChild = currentRelativeChild->nextChild;
       }
     }
 
     remainingFreeSpace = originalRemainingFreeSpace + deltaFreeSpace;
+    node->layout.hadOverflow |= (remainingFreeSpace < 0);
 
     // STEP 6: MAIN-AXIS JUSTIFICATION & CROSS-AXIS SIZE DETERMINATION
 
@@ -3456,11 +3474,26 @@ static void YGRoundToPixelGrid(const YGNodeRef node,
   node->layout.position[YGEdgeTop] =
       YGRoundValueToPixelGrid(nodeTop, pointScaleFactor, false, textRounding);
 
+  // We multiply dimension by scale factor and if the result is close to the whole number, we don't have any fraction
+  // To verify if the result is close to whole number we want to check both floor and ceil numbers
+  const bool hasFractionalWidth = !YGFloatsEqual(fmodf(nodeWidth * pointScaleFactor, 1.0), 0) &&
+                                  !YGFloatsEqual(fmodf(nodeWidth * pointScaleFactor, 1.0), 1.0);
+  const bool hasFractionalHeight = !YGFloatsEqual(fmodf(nodeHeight * pointScaleFactor, 1.0), 0) &&
+                                   !YGFloatsEqual(fmodf(nodeHeight * pointScaleFactor, 1.0), 1.0);
+
   node->layout.dimensions[YGDimensionWidth] =
-      YGRoundValueToPixelGrid(absoluteNodeRight, pointScaleFactor, textRounding, false) -
+      YGRoundValueToPixelGrid(
+          absoluteNodeRight,
+          pointScaleFactor,
+          (textRounding && hasFractionalWidth),
+          (textRounding && !hasFractionalWidth)) -
       YGRoundValueToPixelGrid(absoluteNodeLeft, pointScaleFactor, false, textRounding);
   node->layout.dimensions[YGDimensionHeight] =
-      YGRoundValueToPixelGrid(absoluteNodeBottom, pointScaleFactor, textRounding, false) -
+      YGRoundValueToPixelGrid(
+          absoluteNodeBottom,
+          pointScaleFactor,
+          (textRounding && hasFractionalHeight),
+          (textRounding && !hasFractionalHeight)) -
       YGRoundValueToPixelGrid(absoluteNodeTop, pointScaleFactor, false, textRounding);
 
   const uint32_t childCount = YGNodeListCount(node->children);

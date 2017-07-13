@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -78,8 +79,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
   private int mRootViewTag;
-  private boolean mWasMeasured = false;
-  private boolean mIsAttachedToInstance = false;
+  private boolean mIsAttachedToInstance;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
 
   public ReactRootView(Context context) {
@@ -102,7 +102,6 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         MeasureSpec.getSize(widthMeasureSpec),
         MeasureSpec.getSize(heightMeasureSpec));
 
-      mWasMeasured = true;
       // Check if we were waiting for onMeasure to attach the root view.
       if (mReactInstanceManager != null && !mIsAttachedToInstance) {
         attachToReactInstanceManager();
@@ -182,7 +181,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
     if (mIsAttachedToInstance) {
-      getViewTreeObserver().removeOnGlobalLayoutListener(getCustomGlobalLayoutListener());
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        getViewTreeObserver().removeOnGlobalLayoutListener(getCustomGlobalLayoutListener());
+      } else {
+        getViewTreeObserver().removeGlobalOnLayoutListener(getCustomGlobalLayoutListener());
+      }
     }
   }
 
@@ -222,12 +225,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         mReactInstanceManager.createReactContextInBackground();
       }
 
-      // We need to wait for the initial onMeasure, if this view has not yet been measured, we set
-      // which will make this view startReactApplication itself to instance manager once onMeasure
-      // is called.
-      if (mWasMeasured) {
-        attachToReactInstanceManager();
-      }
+      attachToReactInstanceManager();
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
@@ -303,13 +301,12 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   }
 
   /**
-   * Is used by unit test to setup mWasMeasured and mIsAttachedToWindow flags, that will let this
+   * Is used by unit test to setup mIsAttachedToWindow flags, that will let this
    * view to be properly attached to catalyst instance by startReactApplication call
    */
   @VisibleForTesting
   /* package */ void simulateAttachForTesting() {
     mIsAttachedToInstance = true;
-    mWasMeasured = true;
   }
 
   private CustomGlobalLayoutListener getCustomGlobalLayoutListener() {
@@ -327,7 +324,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       }
 
       mIsAttachedToInstance = true;
-      Assertions.assertNotNull(mReactInstanceManager).attachMeasuredRootView(this);
+      Assertions.assertNotNull(mReactInstanceManager).attachRootView(this);
       getViewTreeObserver().addOnGlobalLayoutListener(getCustomGlobalLayoutListener());
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -362,6 +359,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     private int mDeviceRotation = 0;
 
     /* package */ CustomGlobalLayoutListener() {
+      DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(getContext().getApplicationContext());
       mVisibleViewArea = new Rect();
       mMinKeyboardHeightDetected = (int) PixelUtil.toPixelFromDIP(60);
     }

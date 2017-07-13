@@ -51,6 +51,7 @@ test:
   override:
     # eslint bot. This GitHub token grants public_repo access scope.
     - cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
+    - npm run lint
     # JS tests for dependencies installed with npm3
     - npm run flow -- check
     - npm test -- --maxWorkers=1
@@ -69,7 +70,7 @@ test:
 
     # integration tests
     # build JS bundle for instrumentation tests
-    - REACT_NATIVE_MAX_WORKERS=1 node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+    - node local-cli/cli.js bundle --max-workers 1 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
     # build test APK
     - buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
     # run installed apk with tests
@@ -82,6 +83,9 @@ test:
     # testing docs generation
     - cd website && npm test
     - cd website && node ./server/generate.js
+    # if website can be built, deploy regardless of test failures
+    - if [[ ($CIRCLE_BRANCH =~ .*-stable || $CIRCLE_BRANCH == "master") && $CIRCLE_PROJECT_USERNAME == "facebook" && -z $CI_PULL_REQUEST && -z $CIRCLE_PR_USERNAME ]]; then git config --global user.email "reactjs-bot@users.noreply.github.com" && git config --global user.name "Website Deployment Script" && echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc && cd website && GIT_USER=reactjs-bot npm run gh-pages; fi
+
   post:
     # copy test report for Circle CI to display
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
@@ -93,12 +97,12 @@ test:
 deployment:
   stable:
     branch: [/.*-stable/, /master/]
+    owner: facebook
     commands:
-      # generate docs website
       - git config --global user.email "reactjs-bot@users.noreply.github.com"
       - git config --global user.name "Website Deployment Script"
       - echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
-      - cd website && GIT_USER=reactjs-bot npm run gh-pages
+      # publish to npm
       - node ./scripts/publish-npm.js
 
 experimental:

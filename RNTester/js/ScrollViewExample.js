@@ -14,6 +14,7 @@
 var React = require('react');
 var ReactNative = require('react-native');
 var {
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -51,6 +52,13 @@ exports.examples = [
           onPress={() => { _scrollView.scrollToEnd({animated: true}); }}>
           <Text>Scroll to bottom</Text>
         </TouchableOpacity>
+        { Platform.OS === 'ios' ?
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => { _scrollView.flashScrollIndicators(); }}>
+            <Text>Flash scroll indicators</Text>
+          </TouchableOpacity>
+          : null }
       </View>
     );
   }
@@ -81,6 +89,13 @@ exports.examples = [
             onPress={() => { _scrollView.scrollToEnd({animated: true}); }}>
             <Text>Scroll to end</Text>
           </TouchableOpacity>
+          { Platform.OS === 'ios' ?
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => { _scrollView.flashScrollIndicators(); }}>
+              <Text>Flash scroll indicators</Text>
+            </TouchableOpacity>
+            : null }
         </View>
       );
     }

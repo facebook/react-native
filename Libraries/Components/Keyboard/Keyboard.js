@@ -100,7 +100,9 @@ let Keyboard = {
    * - `keyboardDidChangeFrame`
    *
    * Note that if you set `android:windowSoftInputMode` to `adjustResize`  or `adjustNothing`,
-   * only `keyboardDidShow` and `keyboardDidHide` events will available on Android.
+   * only `keyboardDidShow` and `keyboardDidHide` events will be available on Android.
+   * `keyboardWillShow` as well as `keyboardWillHide` are generally not available on Android
+   * since there is no native corresponding event.
    *
    * @param {function} callback function to be called when the event fires.
    */

@@ -14,7 +14,12 @@
 
 const Image = require('Image');
 const React = require('React');
+const StyleSheet = require('StyleSheet');
 const View = require('View');
+
+const ensureComponentIsNative = require('ensureComponentIsNative');
+
+import type {NativeMethodsMixinType} from 'ReactNativeTypes';
 
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
@@ -41,19 +46,44 @@ const View = require('View');
  * ```
  */
 class ImageBackground extends React.Component {
+  setNativeProps(props: Object) {
+    // Work-around flow
+    const viewRef = this._viewRef;
+    if (viewRef) {
+      ensureComponentIsNative(viewRef);
+      viewRef.setNativeProps(props);
+    }
+  }
+
+  _viewRef: ?NativeMethodsMixinType = null;
+
+  _captureRef = ref => {
+    this._viewRef = ref;
+  };
+
   render() {
-    const {children, style, ...props} = this.props;
+    const {children, style, imageStyle, imageRef, ...props} = this.props;
+
     return (
-      <View style={style}>
+      <View style={style} ref={this._captureRef}>
         <Image
           {...props}
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
-          }}
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              // Temporary Workaround:
+              // Current (imperfect yet) implementation of <Image> overwrites width and height styles
+              // (which is not quite correct), and these styles conflict with explicitly set styles
+              // of <ImageBackground> and with our internal layout model here.
+              // So, we have to proxy/reapply these styles explicitly for actual <Image> component.
+              // This workaround should be removed after implementing proper support of
+              // intrinsic content size of the <Image>.
+              width: style.width,
+              height: style.height,
+            },
+            imageStyle,
+          ]}
+          ref={imageRef}
         />
         {children}
       </View>

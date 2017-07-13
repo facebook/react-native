@@ -176,6 +176,7 @@ public class InspectorPackagerConnection {
 
     private final String mUrl;
 
+    private OkHttpClient mHttpClient;
     private @Nullable WebSocket mWebSocket;
     private final Handler mHandler;
     private boolean mClosed;
@@ -223,14 +224,16 @@ public class InspectorPackagerConnection {
       if (mClosed) {
         throw new IllegalStateException("Can't connect closed client");
       }
-      OkHttpClient httpClient = new OkHttpClient.Builder()
-          .connectTimeout(10, TimeUnit.SECONDS)
-          .writeTimeout(10, TimeUnit.SECONDS)
-          .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
-          .build();
+      if (mHttpClient == null) {
+        mHttpClient = new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
+            .build();
+      }
 
       Request request = new Request.Builder().url(mUrl).build();
-      httpClient.newWebSocket(request, this);
+      mHttpClient.newWebSocket(request, this);
     }
 
     private void reconnect() {

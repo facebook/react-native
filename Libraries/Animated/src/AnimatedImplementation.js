@@ -1218,9 +1218,9 @@ class AnimatedDivision extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
     this._b.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -1266,9 +1266,9 @@ class AnimatedMultiplication extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
     this._b.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -1309,8 +1309,8 @@ class AnimatedModulo extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -1356,8 +1356,8 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
+    super.__makeNative();
   }
 
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {
@@ -2744,10 +2744,13 @@ module.exports = {
    * [Origami](https://facebook.github.io/origami/).  Tracks velocity state to
    * create fluid motions as the `toValue` updates, and can be chained together.
    *
-   * Config is an object that may have the following options:
+   * Config is an object that may have the following options. Note that you can
+   * only define bounciness/speed or tension/friction but not both:
    *
    *   - `friction`: Controls "bounciness"/overshoot.  Default 7.
    *   - `tension`: Controls speed.  Default 40.
+   *   - `speed`: Controls speed of the animation. Default 12.
+   *   - `bounciness`: Controls bounciness. Default 8.
    *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   spring,
@@ -2822,9 +2825,9 @@ module.exports = {
    *
    *```javascript
    *  onScroll={Animated.event(
-   *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}]
+   *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}],
    *    {listener},          // Optional async listener
-   *  )
+   *  )}
    *  ...
    *  onPanResponderMove: Animated.event([
    *    null,                // raw event arg ignored

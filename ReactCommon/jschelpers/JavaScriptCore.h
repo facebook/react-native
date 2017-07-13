@@ -75,8 +75,9 @@ jsc_poison(JSContextGroupCreate JSContextGroupRelease JSContextGroupRetain
 // JSContext
 #define JSC_JSContextGetGlobalContext(...) __jsc_wrapper(JSContextGetGlobalContext, __VA_ARGS__)
 #define JSC_JSContextGetGlobalObject(...) __jsc_wrapper(JSContextGetGlobalObject, __VA_ARGS__)
+#define JSC_FBJSContextStartGCTimers(...) __jsc_wrapper(FBJSContextStartGCTimers, __VA_ARGS__)
 
-jsc_poison(JSContextGetGlobalContext JSContextGetGlobalObject JSContextGetGroup)
+jsc_poison(JSContextGetGlobalContext JSContextGetGlobalObject JSContextGetGroup FBJSContextStartGCTimers)
 
 // JSEvaluate
 #define JSC_JSEvaluateScript(...) __jsc_wrapper(JSEvaluateScript, __VA_ARGS__)
@@ -184,7 +185,8 @@ jsc_poison(JSSamplingProfilerEnabled JSPokeSamplingProfiler
            JSStartSamplingProfilingOnMainJSCThread)
 
 #define JSC_JSInspectorGetInstance(...) __jsc_bool_wrapper(JSInspectorGetInstance, __VA_ARGS__)
-jsc_poison(JSInspectorGetInstance)
+// no need to poison JSInspectorGetInstance because it's not defined for System JSC / standard SDK header
+// jsc_poison(JSInspectorGetInstance)
 
 
 #define JSC_configureJSCForIOS(...) __jsc_bool_wrapper(configureJSCForIOS, __VA_ARGS__)

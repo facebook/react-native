@@ -25,7 +25,7 @@ Vending a view is simple:
 - Add the `RCT_EXPORT_MODULE()` marker macro.
 - Implement the `-(UIView *)view` method.
 
-```objective-c
+```objectivec
 // RNTMapManager.m
 #import <MapKit/MapKit.h>
 
@@ -66,7 +66,7 @@ This is now a fully-functioning native map view component in JavaScript, complet
 
 The first thing we can do to make this component more usable is to bridge over some native properties. Let's say we want to be able to disable pitch control and specify the visible region.  Disabling pitch is a simple boolean, so we add this one line:
 
-```objective-c
+```objectivec
 // RNTMapManager.m
 RCT_EXPORT_VIEW_PROPERTY(pitchEnabled, BOOL)
 ```
@@ -84,6 +84,7 @@ This isn't very well documented though - in order to know what properties are av
 
 ```javascript
 // MapView.js
+import PropTypes from 'prop-types';
 import React from 'react';
 import { requireNativeComponent } from 'react-native';
 
@@ -101,7 +102,7 @@ MapView.propTypes = {
    * angle is ignored and the map is always displayed as if the user
    * is looking straight down onto it.
    */
-  pitchEnabled: React.PropTypes.bool,
+  pitchEnabled: PropTypes.bool,
 };
 
 var RNTMap = requireNativeComponent('RNTMap', MapView);
@@ -113,9 +114,9 @@ Now we have a nicely documented wrapper component that is easy to work with.  No
 
 Next, let's add the more complex `region` prop.  We start by adding the native code:
 
-```objective-c
+```objectivec
 // RNTMapManager.m
-RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RNTMap)
+RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, MKMapView)
 {
   [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
 }
@@ -123,24 +124,23 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RNTMap)
 
 Ok, this is more complicated than the simple `BOOL` case we had before.  Now we have a `MKCoordinateRegion` type that needs a conversion function, and we have custom code so that the view will animate when we set the region from JS.  Within the function body that we provide, `json` refers to the raw value that has been passed from JS.  There is also a `view` variable which gives us access to the manager's view instance, and a `defaultView` that we use to reset the property back to the default value if JS sends us a null sentinel.
 
-You could write any conversion function you want for your view - here is the implementation for `MKCoordinateRegion` via two categories on `RCTConvert`:
+You could write any conversion function you want for your view - here is the implementation for `MKCoordinateRegion` via a category on `RCTConvert`. It uses an already existing category of ReactNative `RCTConvert+CoreLocation`:
 
-```objective-c
-@implementation RCTConvert(CoreLocation)
+```objectivec
+// RCTConvert+Mapkit.h
+#import <MapKit/MapKit.h>
+#import <React/RCTConvert.h>
 
-RCT_CONVERTER(CLLocationDegrees, CLLocationDegrees, doubleValue);
-RCT_CONVERTER(CLLocationDistance, CLLocationDistance, doubleValue);
+@interface RCTConvert (Mapkit)
 
-+ (CLLocationCoordinate2D)CLLocationCoordinate2D:(id)json
-{
-  json = [self NSDictionary:json];
-  return (CLLocationCoordinate2D){
-    [self CLLocationDegrees:json[@"latitude"]],
-    [self CLLocationDegrees:json[@"longitude"]]
-  };
-}
++ (MKCoordinateSpan)MKCoordinateSpan:(id)json;
++ (MKCoordinateRegion)MKCoordinateRegion:(id)json;
 
 @end
+
+// RCTConvert+Mapkit.m
+#import <CoreLocation/CoreLocation.h>
+#import <React/RCTConvert+CoreLocation.h>
 
 @implementation RCTConvert(MapKit)
 
@@ -160,6 +160,8 @@ RCT_CONVERTER(CLLocationDistance, CLLocationDistance, doubleValue);
     [self MKCoordinateSpan:json]
   };
 }
+
+@end
 ```
 
 These conversion functions are designed to safely process any JSON that the JS might throw at them by displaying "RedBox" errors and returning standard initialization values when missing keys or other developer errors are encountered.
@@ -177,7 +179,7 @@ MapView.propTypes = {
    * angle is ignored and the map is always displayed as if the user
    * is looking straight down onto it.
    */
-  pitchEnabled: React.PropTypes.bool,
+  pitchEnabled: PropTypes.bool,
 
   /**
    * The region to be displayed by the map.
@@ -185,19 +187,19 @@ MapView.propTypes = {
    * The region is defined by the center coordinates and the span of
    * coordinates to display.
    */
-  region: React.PropTypes.shape({
+  region: PropTypes.shape({
     /**
      * Coordinates for the center of the map.
      */
-    latitude: React.PropTypes.number.isRequired,
-    longitude: React.PropTypes.number.isRequired,
+    latitude: PropTypes.number.isRequired,
+    longitude: PropTypes.number.isRequired,
 
     /**
      * Distance between the minimum and the maximum latitude/longitude
      * to be displayed.
      */
-    latitudeDelta: React.PropTypes.number.isRequired,
-    longitudeDelta: React.PropTypes.number.isRequired,
+    latitudeDelta: PropTypes.number.isRequired,
+    longitudeDelta: PropTypes.number.isRequired,
   }),
 };
 
@@ -229,7 +231,7 @@ var RCTSwitch = requireNativeComponent('RCTSwitch', Switch, {
 
 So now we have a native map component that we can control easily from JS, but how do we deal with events from the user, like pinch-zooms or panning to change the visible region?  The key is to declare an event handler property on `RNTMapManager`, make it a delegate for all the views it vends, and forward events to JS by calling the event handler block from the native view.  This looks like so (simplified from the full implementation):
 
-```objective-c
+```objectivec
 // RNTMap.h
 
 #import <MapKit/MapKit.h>
@@ -243,7 +245,7 @@ So now we have a native map component that we can control easily from JS, but ho
 @end
 ```
 
-```objective-c
+```objectivec
 // RNTMap.m
 
 #import "RNTMap.h"
@@ -253,7 +255,7 @@ So now we have a native map component that we can control easily from JS, but ho
 @end
 ```
 
-```objective-c
+```objectivec
 // RNTMapManager.m
 
 #import "RNTMapManager.h"
@@ -323,7 +325,7 @@ MapView.propTypes = {
   /**
    * Callback that is called continuously when the user is dragging the map.
    */
-  onChange: React.PropTypes.func,
+  onChange: PropTypes.func,
   ...
 };
 
@@ -347,7 +349,7 @@ class MapViewExample extends React.Component {
 }
 
 // Module name
-AppRegistry.registerComponent('MapViewExample', () => MapViewExample);
+AppRegistry.registerComponent('AwesomeProject', () => MapViewExample);
 ```
 
 ## Styles
@@ -383,7 +385,7 @@ var styles = StyleSheet.create({
 
 The `RCTDatePickerIOSConsts` constants are exported from native by grabbing the actual frame of the native component like so:
 
-```objective-c
+```objectivec
 // RCTDatePickerManager.m
 
 - (NSDictionary *)constantsToExport

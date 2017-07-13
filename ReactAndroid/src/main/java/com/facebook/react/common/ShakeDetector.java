@@ -11,6 +11,8 @@ package com.facebook.react.common;
 
 import javax.annotation.Nullable;
 
+import java.util.concurrent.TimeUnit;
+
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -23,11 +25,21 @@ import com.facebook.infer.annotation.Assertions;
  */
 public class ShakeDetector implements SensorEventListener {
 
-  private static final int MAX_SAMPLES = 25;
-  private static final int MIN_TIME_BETWEEN_SAMPLES_MS = 20;
-  private static final int VISIBLE_TIME_RANGE_MS = 500;
+  //only record and consider the last MAX_SAMPLES number of data points
+  private static final int MAX_SAMPLES = 40;
+  //collect sensor data in this interval (nanoseconds)
+  private static final long MIN_TIME_BETWEEN_SAMPLES_NS =
+    TimeUnit.NANOSECONDS.convert(20, TimeUnit.MILLISECONDS);
+  //expected duration of one shake in nanoseconds
+  private static final long VISIBLE_TIME_RANGE_NS =
+    TimeUnit.NANOSECONDS.convert(250, TimeUnit.MILLISECONDS);
+  //minimum amount of force on accelerometer sensor to constitute a shake
   private static final int MAGNITUDE_THRESHOLD = 25;
-  private static final int PERCENT_OVER_THRESHOLD_FOR_SHAKE = 66;
+  //this percentage of data points must have at least the force of MAGNITUDE_THRESHOLD
+  private static final int PERCENT_OVER_THRESHOLD_FOR_SHAKE = 60;
+  //number of nanoseconds to listen for and count shakes
+  private static final float SHAKING_WINDOW_NS =
+    TimeUnit.NANOSECONDS.convert(3, TimeUnit.SECONDS);
 
   public static interface ShakeListener {
     void onShake();
@@ -38,11 +50,20 @@ public class ShakeDetector implements SensorEventListener {
   @Nullable private SensorManager mSensorManager;
   private long mLastTimestamp;
   private int mCurrentIndex;
+  private int mNumShakes;
+  private long mLastShakeTimestamp;
   @Nullable private double[] mMagnitudes;
   @Nullable private long[] mTimestamps;
+  //number of shakes required to trigger onShake()
+  private int mMinNumShakes;
 
   public ShakeDetector(ShakeListener listener) {
+    this(listener, 1);
+  }
+
+  public ShakeDetector(ShakeListener listener, int minNumShakes) {
     mShakeListener = listener;
+    mMinNumShakes = minNumShakes;
   }
 
   /**
@@ -57,8 +78,9 @@ public class ShakeDetector implements SensorEventListener {
       mCurrentIndex = 0;
       mMagnitudes = new double[MAX_SAMPLES];
       mTimestamps = new long[MAX_SAMPLES];
-
       mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+      mNumShakes = 0;
+      mLastShakeTimestamp = 0;
     }
   }
 
@@ -74,7 +96,7 @@ public class ShakeDetector implements SensorEventListener {
 
   @Override
   public void onSensorChanged(SensorEvent sensorEvent) {
-    if (sensorEvent.timestamp - mLastTimestamp < MIN_TIME_BETWEEN_SAMPLES_MS) {
+    if (sensorEvent.timestamp - mLastTimestamp < MIN_TIME_BETWEEN_SAMPLES_NS) {
       return;
     }
 
@@ -106,16 +128,27 @@ public class ShakeDetector implements SensorEventListener {
     int total = 0;
     for (int i = 0; i < MAX_SAMPLES; i++) {
       int index = (mCurrentIndex - i + MAX_SAMPLES) % MAX_SAMPLES;
-      if (currentTimestamp - mTimestamps[index] < VISIBLE_TIME_RANGE_MS) {
+      if (currentTimestamp - mTimestamps[index] < VISIBLE_TIME_RANGE_NS) {
         total++;
         if (mMagnitudes[index] >= MAGNITUDE_THRESHOLD) {
           numOverThreshold++;
         }
       }
     }
-
     if (((double) numOverThreshold) / total > PERCENT_OVER_THRESHOLD_FOR_SHAKE / 100.0) {
-      mShakeListener.onShake();
+      if (currentTimestamp - mLastShakeTimestamp >= VISIBLE_TIME_RANGE_NS) {
+        mNumShakes++;
+      }
+      mLastShakeTimestamp = currentTimestamp;
+      if (mNumShakes >= mMinNumShakes) {
+        mNumShakes = 0;
+        mLastShakeTimestamp = 0;
+        mShakeListener.onShake();
+      }
+    }
+    if (currentTimestamp - mLastShakeTimestamp > SHAKING_WINDOW_NS) {
+      mNumShakes = 0;
+      mLastShakeTimestamp = 0;
     }
   }
 }

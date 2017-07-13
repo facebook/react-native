@@ -19,10 +19,7 @@
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
 
-#ifdef WITH_INSPECTOR
-#include <jschelpers/InspectorInterfaces.h>
-#endif
-
+#include "JSBigString.h"
 #include "JSBundleType.h"
 #include "Platform.h"
 #include "SystraceSection.h"
@@ -32,6 +29,10 @@
 #include "JSModulesUnbundle.h"
 #include "ModuleRegistry.h"
 #include "RecoverableError.h"
+
+#ifdef WITH_INSPECTOR
+#include <jschelpers/InspectorInterfaces.h>
+#endif
 
 #if defined(WITH_JSC_EXTRA_TRACING) || (DEBUG && defined(WITH_FBSYSTRACE))
 #include "JSCTracing.h"
@@ -79,11 +80,13 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
         JSValueRef *exception) {
       try {
         auto executor = Object::getGlobalObject(ctx).getPrivate<JSCExecutor>();
-        return (executor->*method)(argumentCount, arguments);
+        if (executor && executor->getJavaScriptContext()) { // Executor not invalidated
+          return (executor->*method)(argumentCount, arguments);
+        }
       } catch (...) {
         *exception = translatePendingCppExceptionToJSError(ctx, function);
-        return Value::makeUndefined(ctx);
       }
+      return Value::makeUndefined(ctx);
     }
   };
 
@@ -100,11 +103,13 @@ inline JSObjectGetPropertyCallback exceptionWrapMethod() {
          JSValueRef *exception) {
       try {
         auto executor = Object::getGlobalObject(ctx).getPrivate<JSCExecutor>();
-        return (executor->*method)(object, propertyName);
+        if (executor && executor->getJavaScriptContext()) { // Executor not invalidated
+          return (executor->*method)(object, propertyName);
+        }
       } catch (...) {
         *exception = translatePendingCppExceptionToJSError(ctx, object);
-        return Value::makeUndefined(ctx);
       }
+      return Value::makeUndefined(ctx);
     }
   };
 
@@ -222,8 +227,8 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
 
-  installGlobalFunction(m_context, "nativeLoggingHook", JSNativeHooks::loggingHook);
-  installGlobalFunction(m_context, "nativePerformanceNow", JSNativeHooks::nowHook);
+  installGlobalFunction(m_context, "nativeLoggingHook", JSCNativeHooks::loggingHook);
+  installGlobalFunction(m_context, "nativePerformanceNow", JSCNativeHooks::nowHook);
 
   #if DEBUG
   installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
@@ -238,7 +243,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   addNativeTracingLegacyHooks(m_context);
   #endif
 
-  PerfLogging::installNativeHooks(m_context);
+  JSCNativeHooks::installPerfHooks(m_context);
 
   #if defined(__APPLE__) || defined(WITH_JSC_EXTRA_TRACING)
   if (JSC_JSSamplingProfilerEnabled(m_context)) {
@@ -256,17 +261,19 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
 }
 
 void JSCExecutor::terminateOnJSVMThread() {
+  JSGlobalContextRef context = m_context;
+  m_context = nullptr;
+  Object::getGlobalObject(context).setPrivate(nullptr);
   m_nativeModules.reset();
 
 #ifdef WITH_INSPECTOR
-  if (canUseInspector(m_context)) {
+  if (canUseInspector(context)) {
     IInspector* pInspector = JSC_JSInspectorGetInstance(true);
-    pInspector->unregisterGlobalContext(m_context);
+    pInspector->unregisterGlobalContext(context);
   }
 #endif
 
-  JSC_JSGlobalContextRelease(m_context);
-  m_context = nullptr;
+  JSC_JSGlobalContextRelease(context);
 }
 
 #ifdef WITH_FBJSCEXTENSIONS
@@ -521,8 +528,7 @@ Value JSCExecutor::callFunctionSyncWithValue(
 void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) {
   try {
     SystraceSection s("JSCExecutor::setGlobalVariable", "propName", propName);
-
-    auto valueToInject = Value::fromJSON(m_context, adoptString(std::move(jsonValue)));
+    auto valueToInject = Value::fromJSON(adoptString(std::move(jsonValue)));
     Object::getGlobalObject(m_context).setProperty(propName.c_str(), valueToInject);
   } catch (...) {
     std::throw_with_nested(std::runtime_error("Error setting global variable: " + propName));
@@ -573,23 +579,11 @@ void JSCExecutor::stopProfiler(const std::string &titleString, const std::string
   #endif
 }
 
-void JSCExecutor::handleMemoryPressureUiHidden() {
-  #ifdef WITH_JSC_MEMORY_PRESSURE
-  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::UI_HIDDEN);
-  #endif
+#ifdef WITH_JSC_MEMORY_PRESSURE
+void JSCExecutor::handleMemoryPressure(int pressureLevel) {
+  JSHandleMemoryPressure(this, m_context, static_cast<JSMemoryPressure>(pressureLevel));
 }
-
-void JSCExecutor::handleMemoryPressureModerate() {
-  #ifdef WITH_JSC_MEMORY_PRESSURE
-  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::MODERATE);
-  #endif
-}
-
-void JSCExecutor::handleMemoryPressureCritical() {
-  #ifdef WITH_JSC_MEMORY_PRESSURE
-  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::CRITICAL);
-  #endif
-}
+#endif
 
 void JSCExecutor::flushQueueImmediate(Value&& queue) {
   auto queueStr = queue.toJSONString();

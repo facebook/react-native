@@ -181,13 +181,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * Note that this must be called after getWidth()/getHeight() actually return something. See
    * CatalystApplicationFragment as an example.
    *
-   * TODO(6242243): Make addMeasuredRootView thread safe
+   * TODO(6242243): Make addRootView thread safe
    * NB: this method is horribly not-thread-safe.
    */
-  public int addMeasuredRootView(final SizeMonitoringFrameLayout rootView) {
+  public int addRootView(final SizeMonitoringFrameLayout rootView) {
     Systrace.beginSection(
       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-      "UIManagerModule.addMeasuredRootView");
+      "UIManagerModule.addRootView");
     final int tag = mNextRootViewTag;
     mNextRootViewTag += ROOT_VIEW_TAG_INCREMENT;
 
@@ -195,8 +195,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     final int height;
     // If LayoutParams sets size explicitly, we can use that. Otherwise get the size from the view.
     if (rootView.getLayoutParams() != null &&
-        rootView.getLayoutParams().width > 0 &&
-        rootView.getLayoutParams().height > 0) {
+      rootView.getLayoutParams().width > 0 &&
+      rootView.getLayoutParams().height > 0) {
       width = rootView.getLayoutParams().width;
       height = rootView.getLayoutParams().height;
     } else {
@@ -206,7 +206,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     final ThemedReactContext themedRootContext =
-        new ThemedReactContext(reactApplicationContext, rootView.getContext());
+      new ThemedReactContext(reactApplicationContext, rootView.getContext());
 
     mUIImplementation.registerRootView(rootView, tag, width, height, themedRootContext);
 

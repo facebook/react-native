@@ -2,17 +2,28 @@
 
 #pragma once
 
+#include <condition_variable>
 #include <memory>
 
-#include <cxxreact/ModuleRegistry.h>
-#include <cxxreact/NativeModule.h>
 #include <cxxreact/NativeToJsBridge.h>
-#include <folly/dynamic.h>
+#include <jschelpers/Value.h>
+
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
+
+namespace folly {
+  struct dynamic;
+}
 
 namespace facebook {
 namespace react {
 
+class JSBigString;
 class JSExecutorFactory;
+class JSModulesUnbundle;
+class MessageQueueThread;
+class ModuleRegistry;
 
 struct InstanceCallback {
   virtual ~InstanceCallback() {}
@@ -21,7 +32,7 @@ struct InstanceCallback {
   virtual void decrementPendingJSCalls() = 0;
 };
 
-class Instance {
+class RN_EXPORT Instance {
  public:
   ~Instance();
   void initializeBridge(
@@ -48,7 +59,7 @@ class Instance {
   void *getJavaScriptContext();
   void callJSFunction(std::string&& module, std::string&& method, folly::dynamic&& params);
   void callJSCallback(uint64_t callbackId, folly::dynamic&& params);
-  MethodCallResult callSerializableNativeHook(unsigned int moduleId, unsigned int methodId, folly::dynamic&& args);
+
   // This method is experimental, and may be modified or removed.
   template <typename T>
   Value callFunctionSync(const std::string& module, const std::string& method, T&& args) {
@@ -56,9 +67,9 @@ class Instance {
     return nativeToJsBridge_->callFunctionSync(module, method, std::forward<T>(args));
   }
 
-  void handleMemoryPressureUiHidden();
-  void handleMemoryPressureModerate();
-  void handleMemoryPressureCritical();
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  void handleMemoryPressure(int pressureLevel);
+  #endif
 
  private:
   void callNativeModules(folly::dynamic&& calls, bool isEndOfBatch);
@@ -73,11 +84,11 @@ class Instance {
 
   std::shared_ptr<InstanceCallback> callback_;
   std::unique_ptr<NativeToJsBridge> nativeToJsBridge_;
+  std::shared_ptr<ModuleRegistry> moduleRegistry_;
 
   std::mutex m_syncMutex;
   std::condition_variable m_syncCV;
   bool m_syncReady = false;
 };
 
-}
-}
+} }

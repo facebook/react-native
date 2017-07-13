@@ -10,19 +10,26 @@
  */
 'use strict';
 
-const blacklist = require('../../packager/blacklist');
+const blacklist = require('metro-bundler/src/blacklist');
+const findSymlinksPaths = require('./findSymlinksPaths');
 const fs = require('fs');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 
-const {providesModuleNodeModules} = require('../../packager/defaults');
+const {providesModuleNodeModules} = require('metro-bundler/src/defaults');
 
 const RN_CLI_CONFIG = 'rn-cli.config.js';
 
-import type {GetTransformOptions, PostMinifyProcess, PostProcessModules} from '../../packager/src/Bundler';
-import type {HasteImpl} from '../../packager/src/node-haste/Module';
-import type {TransformVariants} from '../../packager/src/ModuleGraph/types.flow';
-import type {PostProcessModules as PostProcessModulesForBuck} from '../../packager/src/ModuleGraph/types.flow.js';
+import type {
+  GetTransformOptions,
+  PostMinifyProcess,
+  PostProcessModules,
+  // $FlowFixMe: Exported by metro bundler
+  PostProcessBundleSourcemap
+} from 'metro-bundler/src/Bundler';
+import type {HasteImpl} from 'metro-bundler/src/node-haste/Module';
+import type {TransformVariants} from 'metro-bundler/src/ModuleGraph/types.flow';
+import type {PostProcessModules as PostProcessModulesForBuck} from 'metro-bundler/src/ModuleGraph/types.flow.js';
 
 /**
  * Configuration file of the CLI.
@@ -81,11 +88,17 @@ export type ConfigT = {
   /**
    * Returns the path to the worker that is used for transformation.
    */
-  getWorkerPath: () => string,
+  getWorkerPath: () => ?string,
+
+  /**
+   * An optional list of polyfills to include in the bundle. The list defaults
+   * to a set of common polyfills for Number, String, Array, Object...
+   */
+  getPolyfills: ({platform: string}) => Array<string>,
 
   /**
    * An optional function that can modify the code and source map of bundle
-   * after the minifaction took place.
+   * after the minifaction took place. (Function applied per module).
    */
   postMinifyProcess: PostMinifyProcess,
 
@@ -94,6 +107,13 @@ export type ConfigT = {
    * finalized.
    */
   postProcessModules: PostProcessModules,
+
+  /**
+   * An optional function that can modify the code and source map of the bundle
+   * before it is written. Applied once for the entire bundle, only works if
+   * output is a plainBundle.
+   */
+  postProcessBundleSourcemap: PostProcessBundleSourcemap,
 
   /**
    * Same as `postProcessModules` but for the Buck worker. Eventually we do want
@@ -111,58 +131,117 @@ export type ConfigT = {
   transformVariants: () => TransformVariants,
 };
 
-const defaultConfig: ConfigT = {
-  extraNodeModules: Object.create(null),
-  getAssetExts: () => [],
-  getBlacklistRE: () => blacklist(),
-  getPlatforms: () => [],
-  getPolyfillModuleNames: () => [],
-  getProjectRoots: () => [process.cwd()],
-  getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
-  getSourceExts: () => [],
-  getTransformModulePath: () => path.resolve(__dirname, '../../packager/transformer.js'),
-  getTransformOptions: async () => ({}),
-  postMinifyProcess: x => x,
-  postProcessModules: modules => modules,
-  postProcessModulesForBuck: modules => modules,
-  transformVariants: () => ({default: {}}),
-  getWorkerPath: () => require.resolve('./worker.js'),
-};
+function getProjectPath() {
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli[\/\\]util$/)) {
+    // Packager is running from node_modules.
+    // This is the default case for all projects created using 'react-native init'.
+    return path.resolve(__dirname, '../../../..');
+  } else if (__dirname.match(/Pods[\/\\]React[\/\\]packager$/)) {
+    // React Native was installed using CocoaPods.
+    return path.resolve(__dirname, '../../../..');
+  }
+  return path.resolve(__dirname, '../..');
+}
+
+const resolveSymlink = (roots) =>
+  roots.concat(
+    findSymlinksPaths(
+      path.join(getProjectPath(), 'node_modules'),
+      roots
+    )
+  );
 
 /**
  * Module capable of getting the configuration out of a given file.
  *
  * The function will return all the default configuration, as specified by the
- * `defaultConfig` param overriden by those found on `rn-cli.config.js` files, if any. If no
+ * `DEFAULTS` param overriden by those found on `rn-cli.config.js` files, if any. If no
  * default config is provided and no configuration can be found in the directory
  * hierarchy, an error will be thrown.
  */
 const Config = {
+  DEFAULTS: ({
+    extraNodeModules: Object.create(null),
+    getAssetExts: () => [],
+    getBlacklistRE: () => blacklist(),
+    getPlatforms: () => [],
+    getPolyfillModuleNames: () => [],
+    getProjectRoots: () => {
+      const root = process.env.REACT_NATIVE_APP_ROOT;
+      if (root) {
+        return resolveSymlink([path.resolve(root)]);
+      }
+      return resolveSymlink([getProjectPath()]);
+    },
+    getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
+    getSourceExts: () => [],
+    getTransformModulePath: () => require.resolve('metro-bundler/src/transformer.js'),
+    getTransformOptions: async () => ({}),
+    getPolyfills: ({platform}) => [
+      require.resolve('../../Libraries/polyfills/Object.es6.js'),
+      require.resolve('../../Libraries/polyfills/console.js'),
+      require.resolve('../../Libraries/polyfills/error-guard.js'),
+      require.resolve('../../Libraries/polyfills/Number.es6.js'),
+      require.resolve('../../Libraries/polyfills/String.prototype.es6.js'),
+      require.resolve('../../Libraries/polyfills/Array.prototype.es6.js'),
+      require.resolve('../../Libraries/polyfills/Array.es6.js'),
+      require.resolve('../../Libraries/polyfills/Object.es7.js'),
+      require.resolve('../../Libraries/polyfills/babelHelpers.js'),
+    ],
+    postMinifyProcess: x => x,
+    postProcessModules: modules => modules,
+    postProcessModulesForBuck: modules => modules,
+    postProcessBundleSourcemap: ({code, map, outFileName}) => ({code, map}),
+    transformVariants: () => ({default: {}}),
+    getWorkerPath: () => null,
+  }: ConfigT),
+
   find(startDir: string): ConfigT {
-    return this.findWithPath(startDir).config;
+    return Config.findCustom(startDir, Config.DEFAULTS);
+  },
+
+  /**
+   * This allows a callsite to grab a config that may have custom fields or
+   * a different version of the config. In that case the defaults have to be
+   * specified explicitely.
+   */
+  findCustom<TConfig: {}>(startDir: string, defaults: TConfig): TConfig {
+    return Config.findWithPathCustom(startDir, defaults).config;
   },
 
   findWithPath(startDir: string): {config: ConfigT, projectPath: string} {
+    return Config.findWithPathCustom(startDir, Config.DEFAULTS);
+  },
+
+  findWithPathCustom<TConfig: {}>(startDir: string, defaults: TConfig): {config: TConfig, projectPath: string} {
     const configPath = findConfigPath(startDir);
     invariant(
       configPath,
       `Can't find "${RN_CLI_CONFIG}" file in any parent folder of "${startDir}"`,
     );
     const projectPath = path.dirname(configPath);
-    return {config: this.loadFile(configPath, startDir), projectPath};
+    return {config: Config.loadFileCustom(configPath, defaults), projectPath};
   },
 
   findOptional(startDir: string): ConfigT {
+    return Config.findOptionalCustom(startDir, Config.DEFAULTS);
+  },
+
+  findOptionalCustom<TConfig: {}>(startDir: string, defaults: TConfig): TConfig {
     const configPath = findConfigPath(startDir);
     return configPath
-      ? this.loadFile(configPath, startDir)
-      : {...defaultConfig};
+      ? Config.loadFileCustom(configPath, defaults)
+      : {...defaults};
   },
 
   loadFile(pathToConfig: string): ConfigT {
-    //$FlowFixMe: necessary dynamic require
+    return Config.loadFileCustom(pathToConfig, Config.DEFAULTS);
+  },
+
+  loadFileCustom<TConfig: {}>(pathToConfig: string, defaults: TConfig): TConfig {
+    // $FlowFixMe: necessary dynamic require
     const config: {} = require(pathToConfig);
-    return {...defaultConfig, ...config};
+    return {...defaults, ...config};
   },
 };
 

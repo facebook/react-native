@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {
   AlertIOS,
@@ -52,6 +53,10 @@ class RequestIdleCallbackTester extends React.Component {
           Burn CPU inside of requestIdleCallback
         </RNTesterButton>
 
+        <RNTesterButton onPress={this._runWithTimeout.bind(this)}>
+          Run requestIdleCallback with timeout option
+        </RNTesterButton>
+
         <RNTesterButton onPress={this._runBackground}>
           Run background task
         </RNTesterButton>
@@ -78,6 +83,16 @@ class RequestIdleCallbackTester extends React.Component {
     });
   };
 
+  _runWithTimeout = () => {
+    cancelIdleCallback(this._idleTimer);
+    this._idleTimer = requestIdleCallback((deadline) => {
+      this.setState({
+        message: `${deadline.timeRemaining()}ms remaining in frame, it did timeout: ${deadline.didTimeout ? 'yes' : 'no'}`
+      });
+    }, { timeout: 100 });
+    burnCPU(100);
+  };
+
   _runBackground = () => {
     cancelIdleCallback(this._idleTimer);
     const handler = (deadline) => {
@@ -97,7 +112,8 @@ class RequestIdleCallbackTester extends React.Component {
   };
 }
 
-var TimerTester = React.createClass({
+var TimerTester = createReactClass({
+  displayName: 'TimerTester',
   mixins: [TimerMixin],
 
   _ii: 0,

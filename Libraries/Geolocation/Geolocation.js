@@ -20,6 +20,9 @@ const warning = require('fbjs/lib/warning');
 
 const LocationEventEmitter = new NativeEventEmitter(RCTLocationObserver);
 
+const Platform = require('Platform');
+const PermissionsAndroid = require('PermissionsAndroid');
+
 var subscriptions = [];
 var updatesEnabled = false;
 
@@ -87,7 +90,7 @@ var Geolocation = {
    * On Android, if the location is cached this can return almost immediately,
    * or it will request an update which might take a while.
    */
-  getCurrentPosition: function(
+  getCurrentPosition: async function(
     geo_success: Function,
     geo_error?: Function,
     geo_options?: GeoOptions
@@ -96,11 +99,27 @@ var Geolocation = {
       typeof geo_success === 'function',
       'Must provide a valid geo_success callback.'
     );
-    RCTLocationObserver.getCurrentPosition(
-      geo_options || {},
-      geo_success,
-      geo_error || logError
-    );
+    let hasPermission = true;
+    // Supports Android's new permission model. For Android older devices,
+    // it's always on.
+    if (Platform.OS === 'android' && Platform.Version >= 23) {
+      hasPermission = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+      if (!hasPermission) {
+        const status = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        );
+        hasPermission = status === PermissionsAndroid.RESULTS.GRANTED;
+      }
+    }
+    if (hasPermission) {
+      RCTLocationObserver.getCurrentPosition(
+        geo_options || {},
+        geo_success,
+        geo_error || logError,
+      );
+    }
   },
 
   /*
@@ -156,7 +175,7 @@ var Geolocation = {
       for (var ii = 0; ii < subscriptions.length; ii++) {
         var sub = subscriptions[ii];
         if (sub) {
-          warning('Called stopObserving with existing subscriptions.');
+          warning(false, 'Called stopObserving with existing subscriptions.');
           sub[0].remove();
           // array element refinements not yet enabled in Flow
           var sub1 = sub[1]; sub1 && sub1.remove();
