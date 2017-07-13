@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {
   Image,
@@ -37,7 +38,8 @@ var THUMB_URLS = [
   require('./Thumbnails/victory.png'),
 ];
 
-var ListViewGridLayoutExample = React.createClass({
+var ListViewGridLayoutExample = createReactClass({
+  displayName: 'ListViewGridLayoutExample',
 
   statics: {
     title: '<ListView> - Grid Layout',

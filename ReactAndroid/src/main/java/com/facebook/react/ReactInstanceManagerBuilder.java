@@ -48,6 +48,7 @@ public class ReactInstanceManagerBuilder {
   protected boolean mUseSeparateUIBackgroundThread;
   protected int mMinNumShakes = 1;
   protected boolean mEnableSplitPackage;
+  protected boolean mUseOnlyDefaultPackages;
 
   /* package protected */ ReactInstanceManagerBuilder() {
   }
@@ -219,6 +220,11 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setUseOnlyDefaultPackages(boolean useOnlyDefaultPackages) {
+    mUseOnlyDefaultPackages = useOnlyDefaultPackages;
+    return this;
+  }
+
   /**
    * Instantiates a new {@link ReactInstanceManager}.
    * Before calling {@code build}, the following must be called:
@@ -269,6 +275,7 @@ public class ReactInstanceManagerBuilder {
       mSetupReactContextInBackground,
       mUseSeparateUIBackgroundThread,
       mMinNumShakes,
-      mEnableSplitPackage);
+      mEnableSplitPackage,
+      mUseOnlyDefaultPackages);
   }
 }

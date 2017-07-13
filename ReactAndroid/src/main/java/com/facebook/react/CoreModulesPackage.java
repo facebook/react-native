@@ -35,7 +35,6 @@ import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
-import com.facebook.react.uimanager.debug.DebugComponentOwnershipModule;
 import com.facebook.systrace.Systrace;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END;
@@ -65,7 +64,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
     UIManagerModule.class,
     DeviceInfoModule.class,
     // Debug only
-    DebugComponentOwnershipModule.class,
     JSCHeapCapture.class,
     JSCSamplingProfiler.class,
   }
@@ -159,13 +157,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_
       }));
 
     if (ReactBuildConfig.DEBUG) {
-      moduleSpecList.add(
-        new ModuleSpec(DebugComponentOwnershipModule.class, new Provider<NativeModule>() {
-          @Override
-          public NativeModule get() {
-            return new DebugComponentOwnershipModule(reactContext);
-          }
-        }));
       moduleSpecList.add(
         new ModuleSpec(JSCHeapCapture.class, new Provider<NativeModule>() {
           @Override

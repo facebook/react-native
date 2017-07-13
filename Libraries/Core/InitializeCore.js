@@ -216,8 +216,6 @@ if (__DEV__) {
       require('setupDevtools');
     }
 
-    require('RCTDebugComponentOwnership');
-
     // Set up inspector
     const JSInspector = require('JSInspector');
     JSInspector.registerAgent(require('NetworkAgent'));

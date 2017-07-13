@@ -224,7 +224,8 @@ public class ReactInstanceManager {
     boolean setupReactContextInBackgroundEnabled,
     boolean useSeparateUIBackgroundThread,
     int minNumShakes,
-    boolean splitPackagesEnabled) {
+    boolean splitPackagesEnabled,
+    boolean useOnlyDefaultPackages) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -267,14 +268,16 @@ public class ReactInstanceManager {
       mPackages.add(coreModulesPackage);
     } else {
       mPackages.add(new BridgeCorePackage(this, mBackBtnHandler));
-      if (mUseDeveloperSupport) {
-        mPackages.add(new DebugCorePackage());
+      if (!useOnlyDefaultPackages) {
+        if (mUseDeveloperSupport) {
+          mPackages.add(new DebugCorePackage());
+        }
+        mPackages.add(
+          new ReactNativeCorePackage(
+            this,
+            mUIImplementationProvider,
+            mLazyViewManagersEnabled));
       }
-      mPackages.add(
-        new ReactNativeCorePackage(
-          this,
-          mUIImplementationProvider,
-          mLazyViewManagersEnabled));
     }
     mPackages.addAll(packages);
 
