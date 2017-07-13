@@ -5,8 +5,6 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @format
  */
 'use strict';
 
@@ -19,9 +17,7 @@ require.requireActual('metro-bundler/src/Resolver/polyfills/error-guard');
 global.__DEV__ = true;
 
 global.Promise = require.requireActual('promise');
-global.regeneratorRuntime = require.requireActual(
-  'regenerator-runtime/runtime',
-);
+global.regeneratorRuntime = require.requireActual('regenerator-runtime/runtime');
 
 global.requestAnimationFrame = function(callback) {
   setTimeout(callback, 0);
@@ -30,7 +26,9 @@ global.cancelAnimationFrame = function(id) {
   clearTimeout(id);
 };
 
-jest.mock('setupDevtools').mock('npmlog');
+jest
+  .mock('setupDevtools')
+  .mock('npmlog');
 
 // there's a __mock__ for it.
 jest.setMock('ErrorUtils', require('ErrorUtils'));
@@ -44,7 +42,10 @@ jest
   .mock('View', () => mockComponent('View'))
   .mock('RefreshControl', () => require.requireMock('RefreshControlMock'))
   .mock('ScrollView', () => require.requireMock('ScrollViewMock'))
-  .mock('ActivityIndicator', () => mockComponent('ActivityIndicator'))
+  .mock(
+    'ActivityIndicator',
+    () => mockComponent('ActivityIndicator'),
+  )
   .mock('ListView', () => require.requireMock('ListViewMock'))
   .mock('ListViewDataSource', () => {
     const DataSource = require.requireActual('ListViewDataSource');
@@ -54,9 +55,9 @@ jest
         // Ensure this doesn't throw.
         try {
           Object.keys(dataBlob).forEach(key => {
-            this.items +=
-              dataBlob[key] &&
-              (dataBlob[key].length || dataBlob[key].size || 0);
+            this.items += dataBlob[key] && (
+              dataBlob[key].length || dataBlob[key].size || 0
+            );
           });
         } catch (e) {
           this.items = 'unknown';
@@ -78,18 +79,10 @@ const mockNativeModules = {
     addEventListener: jest.fn(),
   },
   AsyncLocalStorage: {
-    multiGet: jest.fn((keys, callback) =>
-      process.nextTick(() => callback(null, [])),
-    ),
-    multiSet: jest.fn((entries, callback) =>
-      process.nextTick(() => callback(null)),
-    ),
-    multiRemove: jest.fn((keys, callback) =>
-      process.nextTick(() => callback(null)),
-    ),
-    multiMerge: jest.fn((entries, callback) =>
-      process.nextTick(() => callback(null)),
-    ),
+    multiGet: jest.fn((keys, callback) => process.nextTick(() => callback(null, []))),
+    multiSet: jest.fn((entries, callback) => process.nextTick(() => callback(null))),
+    multiRemove: jest.fn((keys, callback) => process.nextTick(() => callback(null))),
+    multiMerge: jest.fn((entries, callback) => process.nextTick(() => callback(null))),
     clear: jest.fn(callback => process.nextTick(() => callback(null))),
     getAllKeys: jest.fn(callback => process.nextTick(() => callback(null, []))),
   },
@@ -130,12 +123,14 @@ const mockNativeModules = {
     }),
   },
   ImageLoader: {
-    getSize: jest.fn(url => new Promise(() => ({width: 320, height: 240}))),
+    getSize: jest.fn(
+      (url) => new Promise(() => ({width: 320, height: 240}))
+    ),
     prefetchImage: jest.fn(),
   },
   ImageViewManager: {
-    getSize: jest.fn((uri, success) =>
-      process.nextTick(() => success(320, 240)),
+    getSize: jest.fn(
+      (uri, success) => process.nextTick(() => success(320, 240))
     ),
     prefetchImage: jest.fn(),
   },
@@ -145,9 +140,13 @@ const mockNativeModules = {
   },
   Linking: {
     openURL: jest.fn(),
-    canOpenURL: jest.fn(() => new Promise(resolve => resolve(true))),
+    canOpenURL: jest.fn(
+      () => new Promise((resolve) => resolve(true))
+    ),
     addEventListener: jest.fn(),
-    getInitialURL: jest.fn(() => new Promise(resolve => resolve())),
+    getInitialURL: jest.fn(
+      () => new Promise((resolve) => resolve())
+    ),
     removeEventListener: jest.fn(),
   },
   LocationObserver: {
@@ -157,10 +156,14 @@ const mockNativeModules = {
   },
   ModalFullscreenViewManager: {},
   NetInfo: {
-    fetch: jest.fn(() => new Promise(resolve => resolve())),
+    fetch: jest.fn(
+      () => new Promise((resolve) => resolve())
+    ),
     addEventListener: jest.fn(),
     isConnected: {
-      fetch: jest.fn(() => new Promise(resolve => resolve())),
+      fetch: jest.fn(
+        () => new Promise((resolve) => resolve())
+      ),
       addEventListener: jest.fn(),
     },
   },
@@ -178,20 +181,12 @@ const mockNativeModules = {
     getDeliveredNotifications: jest.fn(callback => process.nextTick(() => [])),
     removeDeliveredNotifications: jest.fn(),
     setApplicationIconBadgeNumber: jest.fn(),
-    getApplicationIconBadgeNumber: jest.fn(callback =>
-      process.nextTick(() => callback(0)),
-    ),
+    getApplicationIconBadgeNumber: jest.fn(callback => process.nextTick(() => callback(0))),
     cancelLocalNotifications: jest.fn(),
-    getScheduledLocalNotifications: jest.fn(callback =>
-      process.nextTick(() => callback()),
-    ),
-    requestPermissions: jest.fn(() =>
-      Promise.resolve({alert: true, badge: true, sound: true}),
-    ),
+    getScheduledLocalNotifications: jest.fn(callback => process.nextTick(() => callback())),
+    requestPermissions: jest.fn(() => Promise.resolve({alert: true, badge: true, sound: true})),
     abandonPermissions: jest.fn(),
-    checkPermissions: jest.fn(callback =>
-      process.nextTick(() => callback({alert: true, badge: true, sound: true})),
-    ),
+    checkPermissions: jest.fn(callback => process.nextTick(() => callback({alert: true, badge: true, sound: true}))),
     getInitialNotification: jest.fn(() => Promise.resolve(null)),
     addListener: jest.fn(),
     removeListeners: jest.fn(),
@@ -271,6 +266,9 @@ jest
 jest.doMock('requireNativeComponent', () => {
   const React = require('react');
 
-  return viewName => props =>
-    React.createElement(viewName, props, props.children);
+  return viewName => props => React.createElement(
+    viewName,
+    props,
+    props.children,
+  );
 });
