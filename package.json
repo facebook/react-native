@@ -99,6 +99,7 @@
     "jest-preset.json",
     "jest",
     "lib",
+    "rn-get-polyfills.js",
     "setupBabel.js",
     "Libraries",
     "LICENSE",
