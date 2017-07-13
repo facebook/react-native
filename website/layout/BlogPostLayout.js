@@ -31,7 +31,6 @@ var BlogPostLayout = React.createClass({
         authorTwitter={this.props.metadata.authorTwitter}
         image={this.props.metadata.hero ? 'https://facebook.github.io' + this.props.metadata.hero : 'https://facebook.github.io/react-native/img/opengraph.png' }
         >
-        <Hero title="React Native Blog" subtitle="Stay up-to-date with the latest React Native news and events." />
         <section className="content wrap documentationContent">
           <BlogPost
             post={this.props.metadata}

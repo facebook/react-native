@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 
-import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -82,13 +81,51 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
   }
 
   private final Object mOperationsCopyLock = new Object();
-  private @Nullable GuardedFrameCallback mAnimatedFrameCallback;
-  private @Nullable ReactChoreographer mReactChoreographer;
+  private final GuardedFrameCallback mAnimatedFrameCallback;
+  private final ReactChoreographer mReactChoreographer;
   private ArrayList<UIThreadOperation> mOperations = new ArrayList<>();
   private volatile @Nullable ArrayList<UIThreadOperation> mReadyOperations = null;
 
+  private @Nullable NativeAnimatedNodesManager mNodesManager;
+
   public NativeAnimatedModule(ReactApplicationContext reactContext) {
     super(reactContext);
+
+    mReactChoreographer = ReactChoreographer.getInstance();
+    mAnimatedFrameCallback = new GuardedFrameCallback(reactContext) {
+      @Override
+      protected void doFrameGuarded(final long frameTimeNanos) {
+        if (mNodesManager == null) {
+          UIManagerModule uiManager = getReactApplicationContext()
+            .getNativeModule(UIManagerModule.class);
+          mNodesManager = new NativeAnimatedNodesManager(uiManager);
+        }
+
+        ArrayList<UIThreadOperation> operations;
+        synchronized (mOperationsCopyLock) {
+          operations = mReadyOperations;
+          mReadyOperations = null;
+        }
+
+        if (operations != null) {
+          for (int i = 0, size = operations.size(); i < size; i++) {
+            operations.get(i).execute(mNodesManager);
+          }
+        }
+
+        if (mNodesManager.hasActiveAnimations()) {
+          mNodesManager.runUpdates(frameTimeNanos);
+        }
+
+        // TODO: Would be great to avoid adding this callback in case there are no active animations
+        // and no outstanding tasks on the operations queue. Apparently frame callbacks can only
+        // be posted from the UI thread and therefore we cannot schedule them directly from
+        // @ReactMethod methods
+        Assertions.assertNotNull(mReactChoreographer).postFrameCallback(
+          ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
+          mAnimatedFrameCallback);
+      }
+    };
   }
 
   @Override
@@ -98,44 +135,6 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
 
   @Override
   public void onHostResume() {
-    if (mReactChoreographer == null) {
-      // Safe to acquire choreographer here, as onHostResume() is invoked from UI thread.
-      mReactChoreographer = ReactChoreographer.getInstance();
-
-      ReactApplicationContext reactCtx = getReactApplicationContext();
-      UIManagerModule uiManager = reactCtx.getNativeModule(UIManagerModule.class);
-
-      final NativeAnimatedNodesManager nodesManager = new NativeAnimatedNodesManager(uiManager);
-      mAnimatedFrameCallback = new GuardedFrameCallback(reactCtx) {
-        @Override
-        protected void doFrameGuarded(final long frameTimeNanos) {
-
-          ArrayList<UIThreadOperation> operations;
-          synchronized (mOperationsCopyLock) {
-            operations = mReadyOperations;
-            mReadyOperations = null;
-          }
-
-          if (operations != null) {
-            for (int i = 0, size = operations.size(); i < size; i++) {
-              operations.get(i).execute(nodesManager);
-            }
-          }
-
-          if (nodesManager.hasActiveAnimations()) {
-            nodesManager.runUpdates(frameTimeNanos);
-          }
-
-          // TODO: Would be great to avoid adding this callback in case there are no active animations
-          // and no outstanding tasks on the operations queue. Apparently frame callbacks can only
-          // be posted from the UI thread and therefore we cannot schedule them directly from
-          // @ReactMethod methods
-          Assertions.assertNotNull(mReactChoreographer).postFrameCallback(
-            ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
-            mAnimatedFrameCallback);
-        }
-      };
-    }
     enqueueFrameCallback();
   }
 
@@ -162,10 +161,6 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
 
   @Override
   public void onHostPause() {
-    if (mReactChoreographer == null) {
-      FLog.e(NAME, "Called NativeAnimated.onHostPause() with a null ReactChoreographer.");
-      return;
-    }
     clearFrameCallback();
   }
 

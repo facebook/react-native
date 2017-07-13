@@ -14,6 +14,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTFont.h>
 #import <React/RCTLog.h>
+#import <React/RCTShadowView+Layout.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 

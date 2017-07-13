@@ -45,7 +45,7 @@ Link your native dependencies:
 $ react-native link
 ```
 
-Done! All libraries with a native dependencies should be successfully linked to your iOS/Android project.
+Done! All libraries with native dependencies should be successfully linked to your iOS/Android project.
 
 ### Manual linking
 

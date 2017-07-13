@@ -10,7 +10,9 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypesException;
@@ -19,6 +21,7 @@ import javax.lang.model.util.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,18 +152,31 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
         String keyString = nativeModule + ".class";
 
         TypeElement typeElement = mElements.getTypeElement(nativeModule);
+        if (typeElement == null) {
+          throw new ReactModuleSpecException(
+            keyString + " not found by ReactModuleSpecProcessor. " +
+            "Did you misspell the module?");
+        }
         ReactModule reactModule = typeElement.getAnnotation(ReactModule.class);
         if (reactModule == null) {
           throw new ReactModuleSpecException(
             keyString + " not found by ReactModuleSpecProcessor. " +
             "Did you forget to add the @ReactModule annotation to the native module?");
         }
+
+        List<? extends Element> elements = typeElement.getEnclosedElements();
+        boolean hasConstants = false;
+        if (elements != null) {
+          hasConstants = elements.stream()
+            .anyMatch((Element m) -> m.getKind() == ElementKind.METHOD && m.getSimpleName().contentEquals("getConstants"));
+        }
+
         String valueString = new StringBuilder()
           .append("new ReactModuleInfo(")
           .append("\"").append(reactModule.name()).append("\"").append(", ")
           .append(reactModule.canOverrideExistingModule()).append(", ")
-          .append(reactModule.supportsWebWorkers()).append(", ")
-          .append(reactModule.needsEagerInit())
+          .append(reactModule.needsEagerInit()).append(", ")
+          .append(hasConstants)
           .append(")")
           .toString();
 

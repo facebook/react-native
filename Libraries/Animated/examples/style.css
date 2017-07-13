@@ -14,8 +14,8 @@ html, h1, h2 {
   height: 50px;
   position: absolute;
   display: inline-block;
-  box-shadow: 0px 1px 2px #999;
-  text-shadow: 0px 1px 2px #999;
+  box-shadow: 0 1px 2px #999;
+  text-shadow: 0 1px 2px #999;
   background-image: url(pic1.jpg);
   background-size: cover;
   line-height: 80px;
@@ -34,7 +34,7 @@ html, h1, h2 {
 }
 
 div.code {
-  box-shadow: 0px 1px 2px #999;
+  box-shadow: 0 1px 2px #999;
   width: 600px;
   padding: 5px;
   position: relative;

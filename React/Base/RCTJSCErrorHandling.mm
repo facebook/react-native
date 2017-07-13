@@ -13,6 +13,7 @@
 
 #import "RCTAssert.h"
 #import "RCTJSStackFrame.h"
+#import "RCTLog.h"
 
 NSString *const RCTJSExceptionUnsymbolicatedStackTraceKey = @"RCTJSExceptionUnsymbolicatedStackTraceKey";
 
@@ -25,7 +26,9 @@ NSError *RCTNSErrorFromJSError(JSValue *exception)
     userInfo[NSLocalizedFailureReasonErrorKey] = exceptionMessage;
   }
   NSString *const stack = [exception[@"stack"] toString];
-  if ([stack length]) {
+  if ([@"undefined" isEqualToString:stack]) {
+    RCTLogWarn(@"Couldn't get stack trace for %@:%@", exception[@"sourceURL"], exception[@"line"]);
+  } else if ([stack length]) {
     NSArray<RCTJSStackFrame *> *const unsymbolicatedFrames = [RCTJSStackFrame stackFramesWithLines:stack];
     userInfo[RCTJSStackTraceKey] = unsymbolicatedFrames;
   }

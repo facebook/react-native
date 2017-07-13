@@ -20,7 +20,6 @@ function setRequestId(id){
 }
 
 jest
-  .disableAutomock()
   .dontMock('event-target-shim')
   .setMock('NativeModules', {
     Networking: {

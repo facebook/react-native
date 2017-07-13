@@ -132,6 +132,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     } else if ([self.animationType isEqualToString:@"slide"]) {
       _modalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     }
+    if (self.presentationStyle != UIModalPresentationNone) {
+      _modalViewController.modalPresentationStyle = self.presentationStyle;
+    }
     [_delegate presentModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = YES;
   }
@@ -165,6 +168,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
 - (void)setTransparent:(BOOL)transparent
 {
+  if (self.isTransparent != transparent) {
+    return;
+  }
+
   _modalViewController.modalPresentationStyle = transparent ? UIModalPresentationOverFullScreen : UIModalPresentationFullScreen;
 }
 

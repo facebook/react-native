@@ -86,28 +86,30 @@ function buildAndRun(args) {
     : './gradlew';
 
   const packageName = fs.readFileSync(
-      'app/src/main/AndroidManifest.xml',
+      `${args.appFolder}/src/main/AndroidManifest.xml`,
       'utf8'
     ).match(/package="(.+?)"/)[1];
+
+  const packageNameWithSuffix = args.appIdSuffix ? packageName + '.' + args.appIdSuffix : packageName;
 
   const adbPath = getAdbPath();
   if (args.deviceId) {
     if (isString(args.deviceId)) {
-        runOnSpecificDevice(args, cmd, packageName, adbPath);
+        runOnSpecificDevice(args, cmd, packageNameWithSuffix, packageName, adbPath);
     } else {
       console.log(chalk.red('Argument missing for parameter --deviceId'));
     }
   } else {
-    runOnAllDevices(args, cmd, packageName, adbPath);
+    runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath);
   }
 }
 
-function runOnSpecificDevice(args, gradlew, packageName, adbPath) {
+function runOnSpecificDevice(args, gradlew, packageNameWithSuffix, packageName, adbPath) {
   let devices = adb.getDevices();
   if (devices && devices.length > 0) {
     if (devices.indexOf(args.deviceId) !== -1) {
       buildApk(gradlew);
-      installAndLaunchOnDevice(args, args.deviceId, packageName, adbPath);
+      installAndLaunchOnDevice(args, args.deviceId, packageNameWithSuffix, packageName, adbPath);
     } else {
       console.log('Could not find device with the id: "' + args.deviceId + '".');
       console.log('Choose one of the following:');
@@ -133,7 +135,7 @@ function buildApk(gradlew) {
 
 function tryInstallAppOnDevice(args, device) {
   try {
-    const pathToApk = 'app/build/outputs/apk/app-debug.apk';
+    const pathToApk = `${args.appFolder}/build/outputs/apk/${args.appFolder}-debug.apk`;
     const adbPath = getAdbPath();
     const adbArgs = ['-s', device, 'install', pathToApk];
     console.log(chalk.bold(
@@ -150,9 +152,9 @@ function tryInstallAppOnDevice(args, device) {
   }
 }
 
-function tryLaunchAppOnDevice(device, packageName, adbPath, mainActivity) {
+function tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, mainActivity) {
   try {
-    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.' + mainActivity];
+    const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageNameWithSuffix + '/' + packageName + '.' + mainActivity];
     console.log(chalk.bold(
       `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
     ));
@@ -164,13 +166,13 @@ function tryLaunchAppOnDevice(device, packageName, adbPath, mainActivity) {
   }
 }
 
-function installAndLaunchOnDevice(args, selectedDevice, packageName, adbPath) {
+function installAndLaunchOnDevice(args, selectedDevice, packageNameWithSuffix, packageName, adbPath) {
   tryRunAdbReverse(selectedDevice);
   tryInstallAppOnDevice(args, selectedDevice);
-  tryLaunchAppOnDevice(selectedDevice, packageName, adbPath, args.mainActivity);
+  tryLaunchAppOnDevice(selectedDevice, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
 }
 
-function runOnAllDevices(args, cmd, packageName, adbPath){
+function runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath){
   try {
     const gradleArgs = [];
     if (args.variant) {
@@ -215,14 +217,14 @@ function runOnAllDevices(args, cmd, packageName, adbPath){
     if (devices && devices.length > 0) {
       devices.forEach((device) => {
         tryRunAdbReverse(device);
-        tryLaunchAppOnDevice(device, packageName, adbPath, args.mainActivity);
+        tryLaunchAppOnDevice(device, packageNameWithSuffix, packageName, adbPath, args.mainActivity);
       });
     } else {
       try {
         // If we cannot execute based on adb devices output, fall back to
         // shell am start
         const fallbackAdbArgs = [
-          'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
+          'shell', 'am', 'start', '-n', packageNameWithSuffix + '/' + packageName + '.MainActivity'
         ];
         console.log(chalk.bold(
           `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
@@ -245,9 +247,9 @@ function startServerInNewWindow() {
   const scriptFile = /^win/.test(process.platform) ?
     'launchPackager.bat' :
     'launchPackager.command';
-  const packagerDir = path.resolve(__dirname, '..', '..', 'packager');
-  const launchPackagerScript = path.resolve(packagerDir, scriptFile);
-  const procConfig = {cwd: packagerDir};
+  const scriptsDir = path.resolve(__dirname, '..', '..', 'scripts');
+  const launchPackagerScript = path.resolve(scriptsDir, scriptFile);
+  const procConfig = {cwd: scriptsDir};
 
   if (process.platform === 'darwin') {
     if (yargV.open) {
@@ -286,6 +288,14 @@ module.exports = {
     description: '--flavor has been deprecated. Use --variant instead',
   }, {
     command: '--variant [string]',
+  }, {
+    command: '--appFolder [string]',
+    description: 'Specify a different application folder name for the android source.',
+    default: 'app',
+  }, {
+    command: '--appIdSuffix [string]',
+    description: 'Specify an applicationIdSuffix to launch after build.',
+    default: '',
   }, {
     command: '--main-activity [string]',
     description: 'Name of the activity to start',

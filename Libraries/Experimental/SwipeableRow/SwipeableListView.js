@@ -12,11 +12,15 @@
 'use strict';
 
 const ListView = require('ListView');
+const PropTypes = require('prop-types');
 const React = require('React');
 const SwipeableListViewDataSource = require('SwipeableListViewDataSource');
 const SwipeableRow = require('SwipeableRow');
 
-const {PropTypes} = React;
+type DefaultProps = {
+  bounceFirstRowOnMount: boolean,
+  renderQuickActions: Function,
+};
 
 type Props = {
   bounceFirstRowOnMount: boolean,
@@ -49,7 +53,7 @@ type State = {
  * - It can bounce the 1st row of the list so users know it's swipeable
  * - More to come
  */
-class SwipeableListView extends React.Component {
+class SwipeableListView extends React.Component<DefaultProps, Props, State> {
   props: Props;
   state: State;
 

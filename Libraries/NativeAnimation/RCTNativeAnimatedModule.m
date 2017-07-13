@@ -28,7 +28,7 @@ RCT_EXPORT_MODULE();
 {
   [_nodesManager stopAnimationLoop];
   [self.bridge.eventDispatcher removeDispatchObserver:self];
-  [self.bridge.uiManager removeUIManagerObserver:self];
+  [self.bridge.uiManager.observerCoordinator removeObserver:self];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -48,7 +48,7 @@ RCT_EXPORT_MODULE();
   _preOperations = [NSMutableArray new];
 
   [bridge.eventDispatcher addDispatchObserver:self];
-  [bridge.uiManager addUIManagerObserver:self];
+  [bridge.uiManager.observerCoordinator addObserver:self];
 }
 
 #pragma mark -- API
@@ -136,10 +136,10 @@ RCT_EXPORT_METHOD(connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
 RCT_EXPORT_METHOD(disconnectAnimatedNodeFromView:(nonnull NSNumber *)nodeTag
                   viewTag:(nonnull NSNumber *)viewTag)
 {
-  // Disconnecting a view also restores its default values so we have to make
-  // sure this happens before views get updated with their new props. This is
-  // why we enqueue this on the pre-operations queue.
   [self addPreOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
+    [nodesManager restoreDefaultValues:nodeTag];
+  }];
+  [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager disconnectAnimatedNodeFromView:nodeTag viewTag:viewTag];
   }];
 }
@@ -195,6 +195,8 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 {
   [_preOperations addObject:operation];
 }
+
+#pragma mark - RCTUIManagerObserver
 
 - (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)uiManager
 {

@@ -14,12 +14,13 @@
 var ActivityIndicator = require('ActivityIndicator');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
+var PropTypes = require('prop-types');
 var ReactNative = require('ReactNative');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var UIManager = require('UIManager');
 var View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
+var ViewPropTypes = require('ViewPropTypes');
 var ScrollView = require('ScrollView');
 
 var deprecatedPropType = require('deprecatedPropType');
@@ -29,7 +30,6 @@ var processDecelerationRate = require('processDecelerationRate');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 
-var PropTypes = React.PropTypes;
 var RCTWebViewManager = require('NativeModules').WebViewManager;
 
 var BGWASH = 'rgba(255,255,255,0.8)';
@@ -286,6 +286,14 @@ class WebView extends React.Component {
     javaScriptEnabled: PropTypes.bool,
 
     /**
+     * Boolean value to enable third party cookies in the `WebView`. Used on
+     * Android Lollipop and above only as third party cookies are enabled by
+     * default on Android Kitkat and below and on iOS. The default value is `true`.
+     * @platform android
+     */
+    thirdPartyCookiesEnabled: PropTypes.bool,
+
+    /**
      * Boolean value to control whether DOM Storage is enabled. Used only in
      * Android.
      * @platform android
@@ -357,6 +365,10 @@ class WebView extends React.Component {
       'always',
       'compatibility'
     ]),
+  };
+
+  static defaultProps = {
+    scalesPageToFit: true,
   };
 
   state = {

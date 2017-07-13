@@ -8,6 +8,9 @@
  */
 
 #import <React/RCTBridge.h>
+#import <React/RCTDefines.h>
+
+@protocol RCTPackagerClientMethod;
 
 /**
  * An abstraction for a key-value store to manage RCTDevSettings behavior.
@@ -93,6 +96,12 @@
  * Whether JSC profiling is enabled.
  */
 @property (nonatomic, assign) BOOL isJSCProfilingEnabled;
+
+#if RCT_DEV
+
+- (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name;
+
+#endif
 
 @end
 

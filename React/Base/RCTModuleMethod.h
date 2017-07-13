@@ -29,6 +29,7 @@
 
 - (instancetype)initWithMethodSignature:(NSString *)objCMethodName
                           JSMethodName:(NSString *)JSMethodName
+                                 isSync:(BOOL)isSync
                            moduleClass:(Class)moduleClass NS_DESIGNATED_INITIALIZER;
 
 @end

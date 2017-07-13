@@ -5,7 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/performance.html
 next: gesture-responder-system
-previous: direct-manipulation
+previous: debugging
 ---
 
 A compelling reason for using React Native instead of WebView-based tools is to achieve 60 frames per second and a native look and feel to your apps.
@@ -73,6 +73,17 @@ This is unavoidable: a lot more work needs to be done at runtime to provide you 
 When running a bundled app, these statements can cause a big bottleneck in the JavaScript thread.
 This includes calls from debugging libraries such as [redux-logger](https://github.com/evgenyrodionov/redux-logger),
 so make sure to remove them before bundling.
+You can also use this [babel plugin](https://babeljs.io/docs/plugins/transform-remove-console/) that removes all the `console.*` calls. You need to install it first with `npm i babel-plugin-transform-remove-console --save`, and then edit the `.babelrc` file under your project directory like this:
+```json
+{
+  "env": {
+    "production": {
+      "plugins": ["transform-remove-console"]
+    }
+  }
+}
+```
+This will automatically remove all `console.*` calls in the release (production) versions of your project.
 
 ### `ListView` initial rendering is too slow or scroll performance is bad for large lists
 
@@ -96,7 +107,7 @@ One case where I have used this is for animating in a modal (sliding down from t
 
 Caveats:
 
-- LayoutAnimation only works for fire-and-forget animations ("static" animations) -- if it must be be interruptible, you will need to use `Animated`.
+- LayoutAnimation only works for fire-and-forget animations ("static" animations) -- if it must be interruptible, you will need to use `Animated`.
 
 ### Moving a view on the screen (scrolling, translating, rotating) drops UI thread FPS
 
@@ -175,7 +186,7 @@ The first step for debugging this jank is to answer the fundamental question of 
 For that, we'll be using a standard Android profiling tool called `systrace`.
 
 `systrace` is a standard Android marker-based profiling tool (and is installed when you install the Android platform-tools package).
-Profiled code blocks are surrounded by markers start/end markers which are then visualized in a colorful chart format.
+Profiled code blocks are surrounded by start/end markers which are then visualized in a colorful chart format.
 Both the Android SDK and React Native framework provide standard markers that you can visualize.
 
 #### 1. Collecting a trace
@@ -311,7 +322,7 @@ And many times, you'll want to look into [shouldComponentUpdate](https://faceboo
 
 If you identified a native UI problem, there are usually two scenarios:
 
-1. the UI you're trying to draw each frame involves to much work on the GPU, or
+1. the UI you're trying to draw each frame involves too much work on the GPU, or
 2. You're constructing new UI during the animation/interaction (e.g. loading in new content during a scroll).
 
 ##### Too much GPU work

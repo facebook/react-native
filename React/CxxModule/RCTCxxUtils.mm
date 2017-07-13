@@ -12,46 +12,21 @@
 #import <React/RCTFollyConvert.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
-#include <cxxreact/CxxNativeModule.h>
-#include <jschelpers/Value.h>
+#import <cxxreact/CxxNativeModule.h>
+#import <jschelpers/Value.h>
 
 #import "DispatchMessageQueueThread.h"
 #import "RCTCxxModule.h"
 #import "RCTNativeModule.h"
 
-using namespace facebook::react;
-
-@implementation RCTConvert (folly)
-
-+ (folly::dynamic)folly_dynamic:(id)json;
-{
-  if (json == nil || json == (id)kCFNull) {
-    return nullptr;
-  } else {
-    folly::dynamic dyn = convertIdToFollyDynamic(json);
-     if (dyn == nil) {
-       RCTAssert(false, @"RCTConvert input json is of an impossible type");
-     }
-     return dyn;
-  }
-}
-
-@end
-
 namespace facebook {
 namespace react {
 
-std::shared_ptr<ModuleRegistry> buildModuleRegistry(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance)
+std::vector<std::unique_ptr<NativeModule>> createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance)
 {
   std::vector<std::unique_ptr<NativeModule>> nativeModules;
   for (RCTModuleData *moduleData in modules) {
     if ([moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
-      // If a module does not support automatic instantiation, and
-      // wasn't provided as an extra module, it may not have an
-      // instance.  If so, skip it.
-      if (![moduleData hasInstance]) {
-        continue;
-      }
       nativeModules.emplace_back(std::make_unique<CxxNativeModule>(
         instance,
         [moduleData.name UTF8String],
@@ -61,8 +36,7 @@ std::shared_ptr<ModuleRegistry> buildModuleRegistry(NSArray<RCTModuleData *> *mo
       nativeModules.emplace_back(std::make_unique<RCTNativeModule>(bridge, moduleData));
     }
   }
-
-  return std::make_shared<ModuleRegistry>(std::move(nativeModules));
+  return nativeModules;
 }
 
 JSContext *contextForGlobalContextRef(JSGlobalContextRef contextRef)
@@ -116,7 +90,8 @@ static NSError *errorWithException(const std::exception &e)
   return [NSError errorWithDomain:RCTErrorDomain code:1 userInfo:errorInfo];
 }
 
-NSError *tryAndReturnError(const std::function<void()>& func) {
+NSError *tryAndReturnError(const std::function<void()>& func)
+{
   try {
     @try {
       func();
@@ -138,6 +113,19 @@ NSError *tryAndReturnError(const std::function<void()>& func) {
     // 32-bit platforms, so we catch those with id exceptions above.
     return RCTErrorWithMessage(@"non-std C++ exception");
   }
+}
+
+NSString *deriveSourceURL(NSURL *url)
+{
+  NSString *sourceUrl;
+  if (url.isFileURL) {
+    // Url will contain only path to resource (i.g. file:// will be removed)
+    sourceUrl = url.path;
+  } else {
+    // Url will include protocol (e.g. http://)
+    sourceUrl = url.absoluteString;
+  }
+  return sourceUrl ?: @"";
 }
 
 } }

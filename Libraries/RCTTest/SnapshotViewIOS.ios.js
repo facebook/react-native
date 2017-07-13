@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('React');
+const PropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
 var { TestModule } = require('NativeModules');
 var UIManager = require('UIManager');
@@ -31,9 +32,9 @@ class SnapshotViewIOS extends React.Component {
   static propTypes = {
     ...ViewPropTypes,
     // A callback when the Snapshot view is ready to be compared
-    onSnapshotReady : React.PropTypes.func,
+    onSnapshotReady : PropTypes.func,
     // A name to identify the individual instance to the SnapshotView
-    testIdentifier : React.PropTypes.string,
+    testIdentifier : PropTypes.string,
   };
 
   onDefaultAction = (event: Object) => {

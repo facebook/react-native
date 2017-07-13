@@ -14,10 +14,10 @@
 const deprecatedPropType = require('deprecatedPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Platform = require('Platform');
+const PropTypes = require('prop-types');
 const StyleSheetPropType = require('StyleSheetPropType');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
-const { PropTypes } = require('React');
 const {
   AccessibilityComponentTypes,
   AccessibilityTraits,
@@ -34,7 +34,62 @@ if (Platform.isTVOS) {
   TVViewPropTypes = require('TVViewPropTypes');
 }
 
+import type {
+  AccessibilityComponentType,
+  AccessibilityTrait,
+} from 'ViewAccessibility';
+import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
+import type {TVViewProps} from 'TVViewPropTypes';
+
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
+
+export type ViewLayout = {
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+}
+
+export type ViewLayoutEvent = {
+  nativeEvent: {
+    layout: ViewLayout,
+  }
+}
+
+// There's no easy way to create a different type if(Platform.isTVOS):
+// so we must include TVViewProps
+export type ViewProps = {
+  accessible?: bool,
+  accessibilityLabel?: React$PropType$Primitive<any>,
+  accessibilityComponentType?: AccessibilityComponentType,
+  accessibilityLiveRegion?: 'none' | 'polite' | 'assertive',
+  importantForAccessibility?: 'auto'| 'yes'| 'no'| 'no-hide-descendants',
+  accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
+  accessibilityViewIsModal?: bool,
+  onAccessibilityTap?: Function,
+  onMagicTap?: Function,
+  testID?: string,
+  nativeID?: string,
+  onLayout?: (event: ViewLayoutEvent) => void,
+  onResponderGrant?: Function,
+  onResponderMove?: Function,
+  onResponderReject?: Function,
+  onResponderRelease?: Function,
+  onResponderTerminate?: Function,
+  onResponderTerminationRequest?: Function,
+  onStartShouldSetResponder?: Function,
+  onStartShouldSetResponderCapture?: Function,
+  onMoveShouldSetResponder?: Function,
+  onMoveShouldSetResponderCapture?: Function,
+  hitSlop?: EdgeInsetsProp,
+  pointerEvents?: 'box-none'| 'none'| 'box-only'| 'auto',
+  style?: stylePropType,
+  removeClippedSubviews?: bool,
+  renderToHardwareTextureAndroid?: bool,
+  shouldRasterizeIOS?: bool,
+  collapsable?: bool,
+  needsOffscreenAlphaCompositing?: bool,
+} & TVViewProps;
 
 module.exports = {
   ...TVViewPropTypes,
@@ -179,6 +234,13 @@ module.exports = {
    * > This disables the 'layout-only view removal' optimization for this view!
    */
   testID: PropTypes.string,
+
+  /**
+   * Used to locate this view from native classes.
+   *
+   * > This disables the 'layout-only view removal' optimization for this view!
+   */
+  nativeID: PropTypes.string,
 
   /**
    * For most touch interactions, you'll simply want to wrap your component in

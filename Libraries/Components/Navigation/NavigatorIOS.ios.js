@@ -15,14 +15,15 @@ var EventEmitter = require('EventEmitter');
 var Image = require('Image');
 var RCTNavigatorManager = require('NativeModules').NavigatorManager;
 var React = require('React');
+var PropTypes = require('prop-types');
 var ReactNative = require('ReactNative');
 var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var TVEventHandler = require('TVEventHandler');
 var View = require('View');
+var ViewPropTypes = require('ViewPropTypes');
 
-const ViewPropTypes = require('ViewPropTypes');
-
+var createReactClass = require('create-react-class');
 var invariant = require('fbjs/lib/invariant');
 var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
@@ -30,8 +31,6 @@ var requireNativeComponent = require('requireNativeComponent');
 const keyMirror = require('fbjs/lib/keyMirror');
 
 var TRANSITIONER_REF = 'transitionerRef';
-
-var PropTypes = React.PropTypes;
 
 var __uid = 0;
 function getuid() {
@@ -134,7 +133,7 @@ type Event = Object;
  * animations and behavior from UIKIt.
  *
  * As the name implies, it is only available on iOS. Take a look at
- * [`React Navigation`](https://reactnavigation.org/) for a cross-platform 
+ * [`React Navigation`](https://reactnavigation.org/) for a cross-platform
  * solution in JavaScript, or check out either of these components for native
  * solutions: [native-navigation](http://airbnb.io/native-navigation/),
  * [react-native-navigation](https://github.com/wix/react-native-navigation).
@@ -306,7 +305,8 @@ type Event = Object;
  * is pushed.
  *
  */
-var NavigatorIOS = React.createClass({
+var NavigatorIOS = createReactClass({
+  displayName: 'NavigatorIOS',
 
   propTypes: {
 
@@ -436,7 +436,7 @@ var NavigatorIOS = React.createClass({
       titleTextColor: PropTypes.string,
 
        /**
-       * Bboolean value that indicates whether the navigation bar is
+       * Boolean value that indicates whether the navigation bar is
        * translucent.
        */
       translucent: PropTypes.bool,
@@ -589,8 +589,8 @@ var NavigatorIOS = React.createClass({
   },
 
   childContextTypes: {
-    onFocusRequested: React.PropTypes.func,
-    focusEmitter: React.PropTypes.instanceOf(EventEmitter),
+    onFocusRequested: PropTypes.func,
+    focusEmitter: PropTypes.instanceOf(EventEmitter),
   },
 
   _tryLockNavigator: function(cb: () => void) {

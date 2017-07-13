@@ -9,7 +9,7 @@
  */
 'use strict';
 
-jest.unmock('InteractionMixin');
+jest.enableAutomock().unmock('InteractionMixin');
 
 describe('InteractionMixin', () => {
   var InteractionManager;
