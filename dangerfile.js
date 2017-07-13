@@ -47,15 +47,15 @@ if (danger.github.pr.body.length < 10) {
 const isWIP = includes(danger.github.pr.title, '[WIP]')
 if (isWIP) {
   const message = ':construction_worker: Work In Progress';
-  const idea = 'Do not merge yet.';
+  const idea = 'This PR appears to be a work in progress, and may not be ready to be merged yet.';
   warn(`${message} - <i>${idea}</i>`);
 }
 
 // Warns if there are changes to package.json, and tags the team.
 const packageChanged = includes(danger.git.modified_files, 'package.json');
 if (packageChanged) {
-  const message = ':lock: Changes were made to package.json';
-  const idea = 'This will require a manual import by a Facebook employee.';
+  const message = ':lock: package.json';
+  const idea = 'Changes were made to package.json. This will require a manual import by a Facebook employee.';
   warn(`${message} - <i>${idea}</i>`);
   markdown(`This PR requires attention from the @facebook/react-native team.`);
 }
@@ -77,9 +77,16 @@ if (!includesTestPlan && !editsDocs) {
   warn(`${message} - <i>${idea}</i>`);
 }
 
-// Tags the React Native team is the PR is submitted by a core contributor
+// Tags PRs that have been submitted by a core contributor.
 const taskforce = fs.readFileSync('bots/IssueCommands.txt', 'utf8').split('\n')[0].split(':')[1];
 const isSubmittedByTaskforce = includes(taskforce, danger.github.pr.user.login);
 if (isSubmittedByTaskforce) {
-  markdown(`This PR has been submitted by a core contributor. Notifying @facebook/react-native.`);
+  markdown(`This PR has been submitted by a core contributor.`);
+}
+
+const isBotsCommandsFile = path => includes(path, 'bots/IssueCommands.txt');
+if (isBotsCommandsFile) {
+  const message = ':exclamation: Bots';
+  const idea = 'This PR appears to modify the list of people that may issue commands to the GitHub bot.';
+  warn(`${message} - <i>${idea}</i>`);
 }
