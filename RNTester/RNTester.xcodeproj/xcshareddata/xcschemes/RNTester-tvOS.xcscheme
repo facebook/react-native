@@ -34,6 +34,20 @@
                ReferencedContainer = "container:RNTester.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "2DD323A41DA2DD8B000FE1B8"
+               BuildableName = "RNTester-tvOSUnitTests.xctest"
+               BlueprintName = "RNTester-tvOSUnitTests"
+               ReferencedContainer = "container:RNTester.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -42,16 +56,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2DD323A41DA2DD8B000FE1B8"
-               BuildableName = "RNTester-tvOSUnitTests.xctest"
-               BlueprintName = "RNTester-tvOSUnitTests"
-               ReferencedContainer = "container:RNTester.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
          <TestableReference
             skipped = "NO">
             <BuildableReference

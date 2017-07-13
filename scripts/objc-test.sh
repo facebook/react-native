@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -ex -o pipefail
 
 # Script used to run iOS and tvOS tests.
 # Environment variables are used to configure what test to run.
@@ -31,9 +31,9 @@ function cleanup {
 }
 trap cleanup EXIT
 
-# If first argument is "test", actually start the packager and run tests.
-# Otherwise, just build RNTester for tvOS and exit
+export RCT_NO_LAUNCH_PACKAGER=1
 
+# If first argument is "test", start the packager and warm it up
 if [ "$1" = "test" ]; then
 
 # Start the packager
@@ -52,27 +52,29 @@ rm temp.bundle
 curl 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o temp.bundle
 rm temp.bundle
 
-# Run tests
-# TODO: We use xcodebuild because xctool would stall when collecting info about
-# the tests before running them. Switch back when this issue with xctool has
-# been resolved.
+# Build for testing
 xcodebuild \
+  -project "RNTester/RNTester.xcodeproj" \
+  -scheme $SCHEME \
+  -sdk $SDK \
+  build-for-testing | \
+tee xcodebuild.log | xcpretty
+
+xctool \
   -project "RNTester/RNTester.xcodeproj" \
   -scheme $SCHEME \
   -sdk $SDK \
   -destination "$DESTINATION" \
-  build test
+  run-tests
 
 else
 
-# Don't run tests. No need to pass -destination to xcodebuild.
-# TODO: We use xcodebuild because xctool would stall when collecting info about
-# the tests before running them. Switch back when this issue with xctool has
-# been resolved.
+# Build
 xcodebuild \
   -project "RNTester/RNTester.xcodeproj" \
   -scheme $SCHEME \
   -sdk $SDK \
-  build
+  build-for-testing | \
+tee xcodebuild.log | xcpretty
 
 fi
