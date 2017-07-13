@@ -111,7 +111,11 @@ class AppContainer extends React.Component {
 
     const Wrapper = this.props.WrapperComponent;
     if (Wrapper) {
-      innerView = <Wrapper>{innerView}</Wrapper>;
+      innerView = (
+        <Wrapper>
+          {innerView}
+        </Wrapper>
+      );
     }
     return (
       <View style={styles.appContainer} pointerEvents="box-none">

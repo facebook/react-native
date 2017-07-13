@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <RCTText/RCTBackedTextInputViewProtocol.h>
+#import "RCTBackedTextInputViewProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

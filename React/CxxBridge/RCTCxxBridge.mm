@@ -29,6 +29,7 @@
 #import <React/RCTProfile.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTUtils.h>
+#import <React/RCTFollyConvert.h>
 #import <cxxreact/CxxNativeModule.h>
 #import <cxxreact/Instance.h>
 #import <cxxreact/JSBundleType.h>
@@ -1005,7 +1006,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
     if (self->_reactInstance) {
       self->_reactInstance->callJSFunction([module UTF8String], [method UTF8String],
-                                           [RCTConvert folly_dynamic:args ?: @[]]);
+                                           convertIdToFollyDynamic(args ?: @[]));
 
       // ensureOnJavaScriptThread may execute immediately, so use jsMessageThread, to make sure
       // the block is invoked after callJSFunction
@@ -1041,7 +1042,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     RCTProfileEndFlowEvent();
 
     if (self->_reactInstance) {
-      self->_reactInstance->callJSCallback([cbID unsignedLongLongValue], [RCTConvert folly_dynamic:args ?: @[]]);
+      self->_reactInstance->callJSCallback([cbID unsignedLongLongValue], convertIdToFollyDynamic(args ?: @[]));
     }
   }];
 }

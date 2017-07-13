@@ -116,7 +116,7 @@ Next, let's add the more complex `region` prop.  We start by adding the native c
 
 ```objectivec
 // RNTMapManager.m
-RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RNTMap)
+RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, MKMapView)
 {
   [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
 }
@@ -124,24 +124,23 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RNTMap)
 
 Ok, this is more complicated than the simple `BOOL` case we had before.  Now we have a `MKCoordinateRegion` type that needs a conversion function, and we have custom code so that the view will animate when we set the region from JS.  Within the function body that we provide, `json` refers to the raw value that has been passed from JS.  There is also a `view` variable which gives us access to the manager's view instance, and a `defaultView` that we use to reset the property back to the default value if JS sends us a null sentinel.
 
-You could write any conversion function you want for your view - here is the implementation for `MKCoordinateRegion` via two categories on `RCTConvert`:
+You could write any conversion function you want for your view - here is the implementation for `MKCoordinateRegion` via a category on `RCTConvert`. It uses an already existing category of ReactNative `RCTConvert+CoreLocation`:
 
 ```objectivec
-@implementation RCTConvert(CoreLocation)
+// RCTConvert+Mapkit.h
+#import <MapKit/MapKit.h>
+#import <React/RCTConvert.h>
 
-RCT_CONVERTER(CLLocationDegrees, CLLocationDegrees, doubleValue);
-RCT_CONVERTER(CLLocationDistance, CLLocationDistance, doubleValue);
+@interface RCTConvert (Mapkit)
 
-+ (CLLocationCoordinate2D)CLLocationCoordinate2D:(id)json
-{
-  json = [self NSDictionary:json];
-  return (CLLocationCoordinate2D){
-    [self CLLocationDegrees:json[@"latitude"]],
-    [self CLLocationDegrees:json[@"longitude"]]
-  };
-}
++ (MKCoordinateSpan)MKCoordinateSpan:(id)json;
++ (MKCoordinateRegion)MKCoordinateRegion:(id)json;
 
 @end
+
+// RCTConvert+Mapkit.m
+#import <CoreLocation/CoreLocation.h>
+#import <React/RCTConvert+CoreLocation.h>
 
 @implementation RCTConvert(MapKit)
 
@@ -161,6 +160,8 @@ RCT_CONVERTER(CLLocationDistance, CLLocationDistance, doubleValue);
     [self MKCoordinateSpan:json]
   };
 }
+
+@end
 ```
 
 These conversion functions are designed to safely process any JSON that the JS might throw at them by displaying "RedBox" errors and returning standard initialization values when missing keys or other developer errors are encountered.

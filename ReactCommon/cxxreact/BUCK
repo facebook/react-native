@@ -25,7 +25,6 @@ rn_xplat_cxx_library(
     visibility = [
         "PUBLIC",
     ],
-    xcode_public_headers_symlinks = True,
     deps = [
         "//xplat/folly:molly",
     ],
@@ -49,7 +48,6 @@ rn_xplat_cxx_library(
     visibility = [
         "PUBLIC",
     ],
-    xcode_public_headers_symlinks = True,
     deps = [
         "//xplat/folly:molly",
     ],
@@ -68,7 +66,6 @@ rn_xplat_cxx_library(
     visibility = [
         "PUBLIC",
     ],
-    xcode_public_headers_symlinks = True,
     deps = [
         ":module",
         "//xplat/folly:molly",
@@ -134,7 +131,7 @@ rn_xplat_cxx_library(
         # some platform-dependant setup. Exactly what setup to do is
         # determined by some static functors, defined in `Platform.h`, which
         # are initially `nullptr`. On Android, these functors are properly
-        # assigned as part of `xreact`'s `JNI_OnLoad`.  By depending directly
+        # assigned as part of `react/jni`'s `JNI_OnLoad`.  By depending directly
         # on the bridge, we can mess up the SO initialisation order, causing
         # `initOnJSVMThread` to be called before the platform-specific hooks
         # have been properly initialised. Bad Times(TM).
@@ -156,7 +153,6 @@ rn_xplat_cxx_library(
     tests = [
         react_native_xplat_target("cxxreact/tests:tests"),
     ],
-    xcode_public_headers_symlinks = True,
     deps = [
         ":module",
         ":jsbigstring",
