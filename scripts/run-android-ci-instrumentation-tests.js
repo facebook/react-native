@@ -28,10 +28,6 @@ const {
    ls,
 } = require('shelljs');
 
-console.log(echo, exec, exit, ls);
-
-exit(0);
-
 const argv = require('yargs').argv;
 const numberOfRetries = argv.retries || 1;
 const tryExecNTimes = require('./try-n-times');
