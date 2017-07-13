@@ -20,7 +20,7 @@ if (addsDocs || editsDocs) {
 
 const isBlogFile = path => includes(path, 'blog/');
 
-// Flags new blog posts.
+// Flags new blog posts. Note that mentions will not be parsed as the access token we're using does not belong to the Facebook org (on purpose)
 const addsBlogPost = danger.git.created_files.filter(isBlogFile).length > 0;
 if (addsBlogPost) {
   const message = ':memo: Blog post';
@@ -55,7 +55,7 @@ if (isWIP) {
 const packageChanged = includes(danger.git.modified_files, 'package.json');
 if (packageChanged) {
   const message = ':lock: Changes were made to package.json';
-  const idea = 'This will require a manual import. Once approved, a Facebook employee should import the PR, then run `yarn add` for any new packages.';
+  const idea = 'This will require a manual import by a Facebook employee.';
   warn(`${message} - <i>${idea}</i>`);
   markdown(`This PR requires attention from the @facebook/react-native team.`);
 }
