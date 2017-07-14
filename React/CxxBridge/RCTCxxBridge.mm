@@ -288,6 +288,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       [self.delegate shouldBridgeUseCustomJSC:self];
     // The arg is a cache dir.  It's not used with standard JSC.
     executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
+      ("OwnerIdentity", "ReactNative")
       ("UseCustomJSC", (bool)useCustomJSC)
 #if RCT_PROFILE
       ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
