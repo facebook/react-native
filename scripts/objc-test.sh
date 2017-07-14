@@ -56,7 +56,7 @@ function waitForMetro {
 if [ "$1" = "test" ]; then
 
 # Start the packager
-./scripts/packager.sh --maxWorkers=1 &
+./scripts/packager.sh --max-workers=1 &
 
 # Start the WebSocket test server
 open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
@@ -75,6 +75,8 @@ rm temp.bundle
 curl 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o temp.bundle
 rm temp.bundle
 
+
+exit 1
 # Run tests
 # TODO: We use xcodebuild because xctool would stall when collecting info about
 # the tests before running them. Switch back when this issue with xctool has
