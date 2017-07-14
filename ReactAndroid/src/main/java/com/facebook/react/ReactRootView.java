@@ -357,6 +357,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
     private int mKeyboardHeight = 0;
     private int mDeviceRotation = 0;
+    private DisplayMetrics mWindowMetrics = new DisplayMetrics();
+    private DisplayMetrics mScreenMetrics = new DisplayMetrics();
 
     /* package */ CustomGlobalLayoutListener() {
       DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(getContext().getApplicationContext());
@@ -372,6 +374,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       }
       checkForKeyboardEvents();
       checkForDeviceOrientationChanges();
+      checkForDeviceDimensionsChanges();
     }
 
     private void checkForKeyboardEvents() {
@@ -404,11 +407,35 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         return;
       }
       mDeviceRotation = rotation;
-      // It's important to repopulate DisplayMetrics and export them before emitting the
-      // orientation change event, so that the Dimensions object returns the correct new values.
-      DisplayMetricsHolder.initDisplayMetrics(getContext());
-      emitUpdateDimensionsEvent();
       emitOrientationChanged(rotation);
+    }
+
+    private void checkForDeviceDimensionsChanges() {
+      // Get current display metrics.
+      DisplayMetricsHolder.initDisplayMetrics(getContext());
+      // Check changes to both window and screen display metrics since they may not update at the same time.
+      if (!areMetricsEqual(mWindowMetrics, DisplayMetricsHolder.getWindowDisplayMetrics())
+          || !areMetricsEqual(mScreenMetrics, DisplayMetricsHolder.getScreenDisplayMetrics())) {
+        mWindowMetrics.setTo(DisplayMetricsHolder.getWindowDisplayMetrics());
+        mScreenMetrics.setTo(DisplayMetricsHolder.getScreenDisplayMetrics());
+        emitUpdateDimensionsEvent();
+      }
+    }
+
+    private boolean areMetricsEqual(DisplayMetrics displayMetrics, DisplayMetrics otherMetrics) {
+      if (Build.VERSION.SDK_INT >= 17) {
+        return displayMetrics.equals(otherMetrics);
+      } else {
+        // DisplayMetrics didn't have an equals method before API 17.
+        // Check all public fields manually.
+        return displayMetrics.widthPixels == otherMetrics.widthPixels
+          && displayMetrics.heightPixels == otherMetrics.heightPixels
+          && displayMetrics.density == otherMetrics.density
+          && displayMetrics.densityDpi == otherMetrics.densityDpi
+          && displayMetrics.scaledDensity == otherMetrics.scaledDensity
+          && displayMetrics.xdpi == otherMetrics.xdpi
+          && displayMetrics.ydpi == otherMetrics.ydpi;
+      }
     }
 
     private void emitOrientationChanged(final int newRotation) {
