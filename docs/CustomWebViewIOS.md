@@ -142,13 +142,14 @@ Once these are exposed, you can reference them in your custom web view class.
 To use your custom web view, you'll need to create a class for it. Your class must:
 
 * Export all the prop types from `WebView.propTypes`
-* Return a `WebView` component with the prop `nativeComponent` set to your native component (see below)
+* Return a `WebView` component with the prop `nativeConfig.component` set to your native component (see below)
 
 To get your native component, you must use `requireNativeComponent`: the same as for regular custom components. However, you must pass in an extra third argument, `WebView.extraNativeComponentConfig`. This third argument contains prop types that are only required for native code.
 
 ```js
 import { Component } from 'react';
-import { WebView, requireNativeComponent } from 'react-native';
+import { WebView, requireNativeComponent, NativeModules } from 'react-native';
+const { CustomWebViewManager } = NativeModules; 
 
 export default class CustomWebView extends Component {
   static propTypes = WebView.propTypes
@@ -157,7 +158,10 @@ export default class CustomWebView extends Component {
     return (
       <WebView
         {...this.props}
-        nativeComponent={RCTCustomWebView}
+        nativeConfig={{ 
+          component: RCTCustomWebView,
+          viewManager: CustomWebViewManager
+        }}
       />
     );
   }
@@ -170,7 +174,7 @@ const RCTCustomWebView = requireNativeComponent(
 );
 ```
 
-If you want to add custom props to your native component, you can use `nativeComponentProps` on the web view.
+If you want to add custom props to your native component, you can use `nativeConfig.props` on the web view. For iOS, you should also set the `nativeConfig.viewManager` prop with your custom WebView ViewManager as in the example above.
 
 For events, the event handler must always be set to a function. This means it isn't safe to use the event handler directly from `this.props`, as the user might not have provided one. The standard approach is to create a event handler in your class, and then invoking the event handler given in `this.props` if it exists.
 
@@ -197,10 +201,13 @@ export default class CustomWebView extends Component {
     return (
       <WebView
         {...this.props}
-        nativeComponent={RCTCustomWebView}
-        nativeComponentProps={{
-          finalUrl: this.props.finalUrl,
-          onNavigationCompleted: this._onNavigationCompleted,
+        nativeConfig={{
+          component: RCTCustomWebView,
+          props: {
+            finalUrl: this.props.finalUrl,
+            onNavigationCompleted: this._onNavigationCompleted,
+          },
+          viewManager: CustomWebViewManager
         }}
       />
     );
