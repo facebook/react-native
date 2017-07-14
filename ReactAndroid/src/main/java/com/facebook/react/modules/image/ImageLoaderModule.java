@@ -9,31 +9,39 @@
 
 package com.facebook.react.modules.image;
 
-import javax.annotation.Nullable;
-
+import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.util.Pair;
 import android.util.SparseArray;
 
 import com.facebook.common.executors.CallerThreadExecutor;
-import com.facebook.common.references.CloseableReference;
+import com.facebook.common.util.UriUtil;
 import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
 import com.facebook.datasource.DataSubscriber;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipeline;
-import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.imageutils.BitmapUtil;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
+import javax.annotation.Nullable;
 
 @ReactModule(name = "ImageLoader")
 public class ImageLoaderModule extends ReactContextBaseJavaModule implements
@@ -79,45 +87,60 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
     }
 
     Uri uri = Uri.parse(uriString);
-    ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri).build();
 
-    DataSource<CloseableReference<CloseableImage>> dataSource =
-      Fresco.getImagePipeline().fetchDecodedImage(request, mCallerContext);
+    new DecodeDimensionsTask(getReactApplicationContext(), uri, promise)
+      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+  }
 
-    DataSubscriber<CloseableReference<CloseableImage>> dataSubscriber =
-      new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
-        @Override
-        protected void onNewResultImpl(
-            DataSource<CloseableReference<CloseableImage>> dataSource) {
-          if (!dataSource.isFinished()) {
-            return;
+  private static class DecodeDimensionsTask extends GuardedAsyncTask<Void, Void> {
+
+    private final Context mContext;
+    private final Uri mUri;
+    private final Promise mPromise;
+
+    private DecodeDimensionsTask(ReactContext reactContext, Uri uri, Promise promise) {
+      super(reactContext);
+      mContext = reactContext;
+      mUri = uri;
+      mPromise = promise;
+    }
+
+    @Override
+    protected void doInBackgroundGuarded(Void... params) {
+      InputStream inputStream = null;
+      try {
+        if (UriUtil.isLocalFileUri(mUri) || UriUtil.isLocalContentUri(mUri)) {
+          inputStream = mContext.getContentResolver().openInputStream(mUri);
+        } else if (UriUtil.isNetworkUri(mUri)) {
+          inputStream = new URL(mUri.toString()).openStream();
+        } else if (UriUtil.isLocalAssetUri(mUri)) {
+          inputStream = mContext.getAssets().open(mUri.getPath().substring(1));
+        } else if (UriUtil.isLocalResourceUri(mUri)) {
+          inputStream = mContext.getResources().openRawResource(Integer.parseInt(mUri.getPath().substring(1)));
+        }
+        if (inputStream != null) {
+          final Pair<Integer, Integer> size = BitmapUtil.decodeDimensions(inputStream);
+          if (size != null && size.first > 0 && size.second > 0) {
+            WritableMap sizes = Arguments.createMap();
+            sizes.putInt("width", size.first);
+            sizes.putInt("height", size.second);
+            mPromise.resolve(sizes);
           }
-          CloseableReference<CloseableImage> ref = dataSource.getResult();
-          if (ref != null) {
-            try {
-              CloseableImage image = ref.get();
-
-              WritableMap sizes = Arguments.createMap();
-              sizes.putInt("width", image.getWidth());
-              sizes.putInt("height", image.getHeight());
-
-              promise.resolve(sizes);
-            } catch (Exception e) {
-              promise.reject(ERROR_GET_SIZE_FAILURE, e);
-            } finally {
-              CloseableReference.closeSafely(ref);
-            }
-          } else {
-            promise.reject(ERROR_GET_SIZE_FAILURE);
+        } else {
+          mPromise.reject(ERROR_GET_SIZE_FAILURE, "Open file failed");
+        }
+      } catch (IOException e) {
+        mPromise.reject(ERROR_GET_SIZE_FAILURE, e);
+      } finally {
+        if (inputStream != null) {
+          try {
+            inputStream.close();
+          } catch (IOException e) {
+            // Do nothing
           }
         }
-
-        @Override
-        protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
-          promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.getFailureCause());
-        }
-      };
-    dataSource.subscribe(dataSubscriber, CallerThreadExecutor.getInstance());
+      }
+    }
   }
 
   /**
