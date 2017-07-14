@@ -152,6 +152,7 @@ function getPackagerServer(args, config) {
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
     extraNodeModules: config.extraNodeModules,
+    getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
     hasteImpl: config.hasteImpl,
     maxWorkers: args.maxWorkers,

@@ -1718,19 +1718,18 @@ function _classCallCheck(instance, Constructor) {
 }
 
 var CallbackQueue = function() {
-    function CallbackQueue(arg) {
-        _classCallCheck(this, CallbackQueue), this._callbacks = null, this._contexts = null, 
-        this._arg = arg;
+    function CallbackQueue() {
+        _classCallCheck(this, CallbackQueue), this._callbacks = null, this._contexts = null;
     }
     return CallbackQueue.prototype.enqueue = function(callback, context) {
         this._callbacks = this._callbacks || [], this._callbacks.push(callback), this._contexts = this._contexts || [], 
         this._contexts.push(context);
     }, CallbackQueue.prototype.notifyAll = function() {
-        var callbacks = this._callbacks, contexts = this._contexts, arg = this._arg;
+        var callbacks = this._callbacks, contexts = this._contexts;
         if (callbacks && contexts) {
             invariant(callbacks.length === contexts.length, "Mismatched list of contexts in callback queue"), 
             this._callbacks = null, this._contexts = null;
-            for (var i = 0; i < callbacks.length; i++) validateCallback_1(callbacks[i]), callbacks[i].call(contexts[i], arg);
+            for (var i = 0; i < callbacks.length; i++) validateCallback_1(callbacks[i]), callbacks[i].call(contexts[i]);
             callbacks.length = 0, contexts.length = 0;
         }
     }, CallbackQueue.prototype.checkpoint = function() {
@@ -1752,7 +1751,7 @@ var CallbackQueue = function() {
 }, TRANSACTION_WRAPPERS$2 = [ ON_DOM_READY_QUEUEING ];
 
 function ReactNativeReconcileTransaction() {
-    this.reinitializeTransaction(), this.reactMountReady = CallbackQueue_1.getPooled(null);
+    this.reinitializeTransaction(), this.reactMountReady = CallbackQueue_1.getPooled();
 }
 
 var Mixin = {
