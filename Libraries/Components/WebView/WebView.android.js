@@ -45,6 +45,14 @@ var defaultRenderLoading = () => (
  * Renders a native WebView.
  */
 class WebView extends React.Component {
+  static get extraNativeComponentConfig() {
+    return {
+      nativeOnly: {
+        messagingEnabled: PropTypes.bool,
+      },
+    };
+  }
+
   static propTypes = {
     ...ViewPropTypes,
     renderError: PropTypes.func,
@@ -195,6 +203,18 @@ class WebView extends React.Component {
      * @platform android
      */
     saveFormDataDisabled: PropTypes.bool,
+    
+    /**
+     * Override the native component used to render the WebView. Enables a custom native
+     * WebView which uses the same JavaScript as the original WebView.
+     */
+    nativeComponent: PropTypes.any,
+
+    /**
+     * Set props directly on the native component WebView. Enables custom props which the
+     * original WebView doesn't pass through.
+     */
+    nativeComponentProps: PropTypes.object
   };
 
   static defaultProps = {
@@ -251,8 +271,11 @@ class WebView extends React.Component {
       console.warn('WebView: `source.body` is not supported when using GET.');
     }
 
+    let NativeWebView = this.props.nativeComponent || RCTWebView;
+
     var webView =
-      <RCTWebView
+      <NativeWebView
+        {...this.props.nativeComponentProps}
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
@@ -389,11 +412,7 @@ class WebView extends React.Component {
   }
 }
 
-var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
-  nativeOnly: {
-    messagingEnabled: PropTypes.bool,
-  },
-});
+var RCTWebView = requireNativeComponent('RCTWebView', WebView, WebView.extraNativeComponentConfig);
 
 var styles = StyleSheet.create({
   container: {

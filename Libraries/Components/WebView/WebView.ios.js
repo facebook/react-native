@@ -116,6 +116,17 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
 class WebView extends React.Component {
   static JSNavigationScheme = JSNavigationScheme;
   static NavigationType = NavigationType;
+  static get extraNativeComponentConfig() {
+    return {
+      nativeOnly: {
+        onLoadingStart: true,
+        onLoadingError: true,
+        onLoadingFinish: true,
+        onMessage: true,
+        messagingEnabled: PropTypes.bool,
+      },
+    };
+  }
 
   static propTypes = {
     ...ViewPropTypes,
@@ -365,6 +376,18 @@ class WebView extends React.Component {
       'always',
       'compatibility'
     ]),
+    
+    /**
+     * Override the native component used to render the WebView. Enables a custom native
+     * WebView which uses the same JavaScript as the original WebView.
+     */
+    nativeComponent: PropTypes.any,
+
+    /**
+     * Set props directly on the native component WebView. Enables custom props which the
+     * original WebView doesn't pass through.
+     */
+    nativeComponentProps: PropTypes.object
   };
 
   static defaultProps = {
@@ -429,8 +452,11 @@ class WebView extends React.Component {
 
     const messagingEnabled = typeof this.props.onMessage === 'function';
 
+    let NativeWebView = this.props.nativeComponent || RCTWebView;
+
     var webView =
-      <RCTWebView
+      <NativeWebView
+        {...this.props.nativeComponentProps}
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
@@ -590,15 +616,7 @@ class WebView extends React.Component {
   }
 }
 
-var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
-  nativeOnly: {
-    onLoadingStart: true,
-    onLoadingError: true,
-    onLoadingFinish: true,
-    onMessage: true,
-    messagingEnabled: PropTypes.bool,
-  },
-});
+var RCTWebView = requireNativeComponent('RCTWebView', WebView, WebView.extraNativeComponentConfig);
 
 var styles = StyleSheet.create({
   container: {

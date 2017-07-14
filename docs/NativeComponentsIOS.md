@@ -5,7 +5,7 @@ layout: docs
 category: Guides (iOS)
 permalink: docs/native-components-ios.html
 banner: ejected
-next: linking-libraries-ios
+next: custom-webview-ios
 previous: native-modules-ios
 ---
 

@@ -367,6 +367,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 
 - (NSDictionary<NSString *, id> *)viewConfig
 {
+  NSMutableDictionary *propTypes = [NSMutableDictionary new];
   NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
   NSMutableArray<NSString *> *directEvents = [NSMutableArray new];
 
@@ -379,42 +380,47 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     }
   }
 #pragma clang diagnostic pop
-
-  unsigned int count = 0;
-  NSMutableDictionary *propTypes = [NSMutableDictionary new];
-  Method *methods = class_copyMethodList(object_getClass(_managerClass), &count);
-  for (unsigned int i = 0; i < count; i++) {
-    SEL selector = method_getName(methods[i]);
-    const char *selectorName = sel_getName(selector);
-    if (strncmp(selectorName, "propConfig", strlen("propConfig")) != 0) {
-      continue;
+  
+  Class superClass = _managerClass;
+  while (superClass && superClass != [RCTViewManager class]) {
+    if ([superClass isSubclassOfClass:[RCTViewManager class]]) {
+      unsigned int count = 0;
+      Method *methods = class_copyMethodList(object_getClass(superClass), &count);
+      for (unsigned int i = 0; i < count; i++) {
+        SEL selector = method_getName(methods[i]);
+        const char *selectorName = sel_getName(selector);
+        if (strncmp(selectorName, "propConfig", strlen("propConfig")) != 0) {
+          continue;
+        }
+        
+        // We need to handle both propConfig_* and propConfigShadow_* methods
+        const char *underscorePos = strchr(selectorName + strlen("propConfig"), '_');
+        if (!underscorePos) {
+          continue;
+        }
+        
+        NSString *name = @(underscorePos + 1);
+        NSString *type = ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(superClass, selector)[0];
+        if (RCT_DEBUG && propTypes[name] && ![propTypes[name] isEqualToString:type]) {
+          RCTLogError(@"Property '%@' of component '%@' redefined from '%@' "
+                      "to '%@'", name, _name, propTypes[name], type);
+        }
+        
+        if ([type isEqualToString:@"RCTBubblingEventBlock"]) {
+          [bubblingEvents addObject:RCTNormalizeInputEventName(name)];
+          propTypes[name] = @"BOOL";
+        } else if ([type isEqualToString:@"RCTDirectEventBlock"]) {
+          [directEvents addObject:RCTNormalizeInputEventName(name)];
+          propTypes[name] = @"BOOL";
+        } else {
+          propTypes[name] = type;
+        }
+      }
+      free(methods);
     }
-
-    // We need to handle both propConfig_* and propConfigShadow_* methods
-    const char *underscorePos = strchr(selectorName + strlen("propConfig"), '_');
-    if (!underscorePos) {
-      continue;
-    }
-
-    NSString *name = @(underscorePos + 1);
-    NSString *type = ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(_managerClass, selector)[0];
-    if (RCT_DEBUG && propTypes[name] && ![propTypes[name] isEqualToString:type]) {
-      RCTLogError(@"Property '%@' of component '%@' redefined from '%@' "
-                  "to '%@'", name, _name, propTypes[name], type);
-    }
-
-    if ([type isEqualToString:@"RCTBubblingEventBlock"]) {
-      [bubblingEvents addObject:RCTNormalizeInputEventName(name)];
-      propTypes[name] = @"BOOL";
-    } else if ([type isEqualToString:@"RCTDirectEventBlock"]) {
-      [directEvents addObject:RCTNormalizeInputEventName(name)];
-      propTypes[name] = @"BOOL";
-    } else {
-      propTypes[name] = type;
-    }
+    superClass = [superClass superclass];
   }
-  free(methods);
-
+  
 #if RCT_DEBUG
   for (NSString *event in bubblingEvents) {
     if ([directEvents containsObject:event]) {
