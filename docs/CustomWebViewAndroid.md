@@ -143,15 +143,15 @@ public class NavigationCompletedEvent extends Event<NavigationCompletedEvent> {
 protected static class CustomWebViewClient extends ReactWebViewClient {
   @Override
   public boolean shouldOverrideUrlLoading(WebView view, String url) {
-    boolean allowed = super.shouldOverrideUrlLoading(view, url);
+    boolean shouldOverride = super.shouldOverrideUrlLoading(view, url);
     String finalUrl = ((CustomWebView) view).getFinalUrl();
 
-    if (allowed && url != null && finalUrl != null && Object.equals(url, finalUrl)) {
+    if (!shouldOverride && url != null && finalUrl != null && new String(url).equals(finalUrl)) {
       final WritableMap params = Arguments.createMap();
       dispatchEvent(view, new NavigationCompletedEvent(view.getId(), params));
     }
 
-    return allowed;
+    return shouldOverride;
   }
 }
 ```
@@ -185,7 +185,7 @@ To use your custom web view, you'll need to create a class for it. Your class mu
 To get your native component, you must use `requireNativeComponent`: the same as for regular custom components. However, you must pass in an extra third argument, `WebView.extraNativeComponentConfig`. This third argument contains prop types that are only required for native code.
 
 ```js
-import { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { WebView, requireNativeComponent } from 'react-native';
 
 export default class CustomWebView extends Component {

@@ -118,6 +118,10 @@ Once these are exposed, you can reference them in your custom web view class.
 
 ```objc
 // RCTCustomWebView.m
+
+// Remember to import the category file.
+#import "RCTWebView+Custom.h"
+
 - (BOOL)webView:(__unused UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType
 {
@@ -147,7 +151,7 @@ To use your custom web view, you'll need to create a class for it. Your class mu
 To get your native component, you must use `requireNativeComponent`: the same as for regular custom components. However, you must pass in an extra third argument, `WebView.extraNativeComponentConfig`. This third argument contains prop types that are only required for native code.
 
 ```js
-import { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { WebView, requireNativeComponent, NativeModules } from 'react-native';
 const { CustomWebViewManager } = NativeModules; 
 
