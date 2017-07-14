@@ -32,6 +32,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
   private static final String PROP_OPACITY = "opacity";
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
+  private static final String PROP_VIEW_LAYER_TYPE = "viewLayerTypeAndroid";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
   private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
   private static final String PROP_ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
@@ -89,6 +90,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
       // Make sure we mount this FlatShadowNode to a View if any of these properties are present.
       if (styles.hasKey(PROP_OPACITY) ||
           styles.hasKey(PROP_RENDER_TO_HARDWARE_TEXTURE) ||
+          styles.hasKey(PROP_VIEW_LAYER_TYPE) ||
           styles.hasKey(PROP_TEST_ID) ||
           styles.hasKey(PROP_ACCESSIBILITY_LABEL) ||
           styles.hasKey(PROP_ACCESSIBILITY_COMPONENT_TYPE) ||
