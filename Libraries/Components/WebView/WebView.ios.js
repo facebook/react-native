@@ -381,13 +381,22 @@ class WebView extends React.Component {
      * Override the native component used to render the WebView. Enables a custom native
      * WebView which uses the same JavaScript as the original WebView.
      */
-    nativeComponent: PropTypes.any,
-
-    /**
-     * Set props directly on the native component WebView. Enables custom props which the
-     * original WebView doesn't pass through.
-     */
-    nativeComponentProps: PropTypes.object
+    nativeConfig: PropTypes.shape({
+      /*
+       * The native component used to render the WebView.
+       */
+      component: PropTypes.any,
+      /*
+       * Set props directly on the native component WebView. Enables custom props which the
+       * original WebView doesn't pass through.
+       */
+      props: PropTypes.object,
+      /*
+       * Set the ViewManager to use for communcation with the native side.
+       * @platform ios
+       */
+      viewManager: PropTypes.object,
+    }),
   };
 
   static defaultProps = {
@@ -435,10 +444,14 @@ class WebView extends React.Component {
       webViewStyles.push(styles.hidden);
     }
 
+    const nativeConfig = this.props.nativeConfig || {};
+
+    const viewManager = nativeConfig.viewManager || RCTWebViewManager;
+
     var onShouldStartLoadWithRequest = this.props.onShouldStartLoadWithRequest && ((event: Event) => {
       var shouldStart = this.props.onShouldStartLoadWithRequest &&
         this.props.onShouldStartLoadWithRequest(event.nativeEvent);
-      RCTWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
+      viewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
 
     var decelerationRate = processDecelerationRate(this.props.decelerationRate);
@@ -452,11 +465,10 @@ class WebView extends React.Component {
 
     const messagingEnabled = typeof this.props.onMessage === 'function';
 
-    let NativeWebView = this.props.nativeComponent || RCTWebView;
+    const NativeWebView = nativeConfig.component || RCTWebView;
 
     var webView =
       <NativeWebView
-        {...this.props.nativeComponentProps}
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
@@ -477,6 +489,7 @@ class WebView extends React.Component {
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
         dataDetectorTypes={this.props.dataDetectorTypes}
+        {...nativeConfig.props}
       />;
 
     return (

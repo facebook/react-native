@@ -208,13 +208,22 @@ class WebView extends React.Component {
      * Override the native component used to render the WebView. Enables a custom native
      * WebView which uses the same JavaScript as the original WebView.
      */
-    nativeComponent: PropTypes.any,
-
-    /**
-     * Set props directly on the native component WebView. Enables custom props which the
-     * original WebView doesn't pass through.
-     */
-    nativeComponentProps: PropTypes.object
+    nativeConfig: PropTypes.shape({
+      /*
+       * The native component used to render the WebView.
+       */
+      component: PropTypes.any,
+      /*
+       * Set props directly on the native component WebView. Enables custom props which the
+       * original WebView doesn't pass through.
+       */
+      props: PropTypes.object,
+      /*
+       * Set the ViewManager to use for communcation with the native side.
+       * @platform ios
+       */
+      viewManager: PropTypes.object,
+    }),
   };
 
   static defaultProps = {
@@ -271,11 +280,12 @@ class WebView extends React.Component {
       console.warn('WebView: `source.body` is not supported when using GET.');
     }
 
-    let NativeWebView = this.props.nativeComponent || RCTWebView;
+    const nativeConfig = this.props.nativeConfig || {};
+
+    let NativeWebView = nativeConfig.component || RCTWebView;
 
     var webView =
       <NativeWebView
-        {...this.props.nativeComponentProps}
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
@@ -299,6 +309,7 @@ class WebView extends React.Component {
         allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
         mixedContentMode={this.props.mixedContentMode}
         saveFormDataDisabled={this.props.saveFormDataDisabled}
+        {...nativeConfig.props}
       />;
 
     return (
