@@ -1,5 +1,8 @@
 docs/* @hramos
 blog/* @hramos
+Libraries/Animated/* @janicduplessis
+Libraries/NativeAnimation/* @janicduplessis
+ReactAndroid/src/main/java/com/facebook/react/animated/* @janicduplessis
 website/* @hramos
 website/showcase.json @hramos
 package.json @hramos @ericnakagawa
