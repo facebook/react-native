@@ -33,6 +33,7 @@
 #import "RCTRootShadowView.h"
 #import "RCTRootViewInternal.h"
 #import "RCTScrollableProtocol.h"
+#import "RCTShadowView+Hierarchy.h"
 #import "RCTShadowView.h"
 #import "RCTUIManagerObserverCoordinator.h"
 #import "RCTUtils.h"
@@ -1462,7 +1463,7 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
   }
 
   dispatch_async(RCTGetUIManagerQueue(), ^{
-    NSNumber *rootTag = [self _rootTagForReactTag:reactTag];
+    NSNumber *rootTag = [self shadowViewForReactTag:reactTag].rootView.reactTag;
     dispatch_async(dispatch_get_main_queue(), ^{
       UIView *rootView = nil;
       if (rootTag != nil) {
@@ -1471,32 +1472,6 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
       completion(rootView);
     });
   });
-}
-
-- (NSNumber *)_rootTagForReactTag:(NSNumber *)reactTag
-{
-  RCTAssert(!RCTIsMainQueue(), @"Should be called on shadow queue");
-
-  if (reactTag == nil) {
-    return nil;
-  }
-
-  if (RCTIsReactRootView(reactTag)) {
-    return reactTag;
-  }
-
-  NSNumber *rootTag = nil;
-  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
-  while (shadowView) {
-    RCTShadowView *parent = [shadowView reactSuperview];
-    if (!parent && RCTIsReactRootView(shadowView.reactTag)) {
-      rootTag = shadowView.reactTag;
-      break;
-    }
-    shadowView = parent;
-  }
-
-  return rootTag;
 }
 
 static UIView *_jsResponder;
