@@ -33,7 +33,7 @@ trap cleanup EXIT
 
 # Wait for the package to start
 function waitForMetro {
-  local -i max_attempts=300
+  local -i max_attempts=60
   local -i attempt_num=1
 
   until $(curl -s http://localhost:8081/status | grep "packager-status:running" -q); do
@@ -62,8 +62,6 @@ if [ "$1" = "test" ]; then
 open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
 
 waitForMetro
-
-sleep 20
 
 # Preload the RNTesterApp bundle for better performance in integration tests
 curl 'http://localhost:8081/RNTester/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o temp.bundle
