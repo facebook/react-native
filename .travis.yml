@@ -6,6 +6,7 @@ install:
   - nvm install 7
   - rm -Rf "${TMPDIR}/jest_preprocess_cache"
   - brew install yarn --ignore-dependencies
+  - brew install watchman
   - yarn install
 
 script:

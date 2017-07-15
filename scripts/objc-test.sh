@@ -32,22 +32,22 @@ function cleanup {
 trap cleanup EXIT
 
 # Wait for the package to start
-function waitForPackager {
+function waitForMetro {
   local -i max_attempts=60
   local -i attempt_num=1
 
   until $(curl -s http://localhost:8081/status | grep "packager-status:running" -q); do
     if (( attempt_num == max_attempts )); then
-      echo "Packager did not respond in time. No more attempts left."
+      echo "Metro did not respond in time. No more attempts left."
       exit 1
     else
       (( attempt_num++ ))
-      echo "Packager did not respond. Retrying for attempt number $attempt_num..."
+      echo "Metro did not respond. Retrying for attempt number $attempt_num..."
       sleep 1
     fi
   done
 
-  echo "Packager is ready!"
+  echo "Metro is ready!"
 }
 
 # If first argument is "test", actually start the packager and run tests.
@@ -56,11 +56,12 @@ function waitForPackager {
 if [ "$1" = "test" ]; then
 
 # Start the packager
-open "./scripts/launchPackager.command" || echo "Can't start packager automatically"
+./scripts/packager.sh --max-workers=1 &
+
 # Start the WebSocket test server
 open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
 
-waitForPackager
+waitForMetro
 
 # Preload the RNTesterApp bundle for better performance in integration tests
 curl 'http://localhost:8081/RNTester/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o temp.bundle
