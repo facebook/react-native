@@ -31,6 +31,25 @@ function cleanup {
 }
 trap cleanup EXIT
 
+# Wait for the package to start
+function waitForPackager {
+  local -i max_attempts=60
+  local -i attempt_num=1
+
+  until $(curl -s http://localhost:8081/status | grep "packager-status:running" -q); do
+    if (( attempt_num == max_attempts )); then
+      echo "Packager did not respond in time. No more attempts left."
+      exit 1
+    else
+      (( attempt_num++ ))
+      echo "Packager did not respond. Retrying for attempt number $attempt_num..."
+      sleep 1
+    fi
+  done
+
+  echo "Packager is ready!"
+}
+
 # If first argument is "test", actually start the packager and run tests.
 # Otherwise, just build RNTester for tvOS and exit
 
@@ -41,8 +60,9 @@ open "./scripts/launchPackager.command" || echo "Can't start packager automatica
 # Start the WebSocket test server
 open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
 
+waitForPackager
+
 # Preload the RNTesterApp bundle for better performance in integration tests
-sleep 20
 curl 'http://localhost:8081/RNTester/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o temp.bundle
 rm temp.bundle
 curl 'http://localhost:8081/RNTester/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' -o temp.bundle

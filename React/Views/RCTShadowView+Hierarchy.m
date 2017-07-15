@@ -6,17 +6,18 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-'use strict';
+#import "RCTShadowView+Hierarchy.h"
 
-const getPolyfills = require('./rn-get-polyfills');
+@implementation RCTShadowView (Hierarchy)
 
-/**
- * This cli config is needed for development purposes, e.g. for running
- * integration tests during local development or on CI services.
- */
-module.exports = {
-  extraNodeModules: {
-    'react-native': __dirname,
-  },
-  getPolyfills,
-};
+- (nullable RCTRootShadowView *)rootView
+{
+  RCTShadowView *view = self;
+  while (view != nil && ![view isKindOfClass:[RCTRootShadowView class]]) {
+    view = view.superview;
+  }
+
+  return (RCTRootShadowView *)view;
+}
+
+@end

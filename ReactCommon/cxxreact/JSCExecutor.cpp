@@ -219,8 +219,9 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
 
 #ifdef WITH_INSPECTOR
   if (canUseInspector(m_context)) {
+    const std::string ownerId = m_jscConfig.getDefault("OwnerIdentity", "main").getString();
     IInspector* pInspector = JSC_JSInspectorGetInstance(true);
-    pInspector->registerGlobalContext("main", m_context);
+    pInspector->registerGlobalContext(ownerId, m_context);
   }
 #endif
 

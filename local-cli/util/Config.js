@@ -13,6 +13,7 @@
 const blacklist = require('metro-bundler/src/blacklist');
 const findSymlinksPaths = require('./findSymlinksPaths');
 const fs = require('fs');
+const getPolyfills = require('../../rn-get-polyfills');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 
@@ -94,7 +95,7 @@ export type ConfigT = {
    * An optional list of polyfills to include in the bundle. The list defaults
    * to a set of common polyfills for Number, String, Array, Object...
    */
-  getPolyfills: ({platform: string}) => Array<string>,
+  getPolyfills: ({platform: ?string}) => $ReadOnlyArray<string>,
 
   /**
    * An optional function that can modify the code and source map of bundle
@@ -177,17 +178,7 @@ const Config = {
     getSourceExts: () => [],
     getTransformModulePath: () => require.resolve('metro-bundler/src/transformer.js'),
     getTransformOptions: async () => ({}),
-    getPolyfills: ({platform}) => [
-      require.resolve('../../Libraries/polyfills/Object.es6.js'),
-      require.resolve('../../Libraries/polyfills/console.js'),
-      require.resolve('../../Libraries/polyfills/error-guard.js'),
-      require.resolve('../../Libraries/polyfills/Number.es6.js'),
-      require.resolve('../../Libraries/polyfills/String.prototype.es6.js'),
-      require.resolve('../../Libraries/polyfills/Array.prototype.es6.js'),
-      require.resolve('../../Libraries/polyfills/Array.es6.js'),
-      require.resolve('../../Libraries/polyfills/Object.es7.js'),
-      require.resolve('../../Libraries/polyfills/babelHelpers.js'),
-    ],
+    getPolyfills,
     postMinifyProcess: x => x,
     postProcessModules: modules => modules,
     postProcessModulesForBuck: modules => modules,
