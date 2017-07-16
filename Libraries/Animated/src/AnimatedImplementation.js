@@ -459,6 +459,7 @@ type SpringAnimationConfig = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
+  delay?: number,
 };
 
 type SpringAnimationConfigSingle = AnimationConfig & {
@@ -471,6 +472,7 @@ type SpringAnimationConfigSingle = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
+  delay?: number,
 };
 
 function withDefault<T>(value: ?T, defaultValue: T): T {
@@ -492,6 +494,7 @@ class SpringAnimation extends Animation {
   _toValue: any;
   _tension: number;
   _friction: number;
+  _delay: number;
   _lastTime: number;
   _onUpdate: (value: number) => void;
   _animationFrame: any;
@@ -508,6 +511,7 @@ class SpringAnimation extends Animation {
     this._initialVelocity = config.velocity;
     this._lastVelocity = withDefault(config.velocity, 0);
     this._toValue = config.toValue;
+    this._delay = withDefault(config.delay, 0);
     this._useNativeDriver = shouldUseNativeDriver(config);
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
     this.__iterations = config.iterations !== undefined ? config.iterations : 1;
@@ -571,10 +575,22 @@ class SpringAnimation extends Animation {
         this._initialVelocity !== null) {
       this._lastVelocity = this._initialVelocity;
     }
-    if (this._useNativeDriver) {
-      this.__startNativeAnimation(animatedValue);
+
+    //  If this._delay is more than 0 then we call the funtions with a setTimeout.
+    //  Then we check again whether we want to start the animation using
+    // the native driver or not. Kinda hairy ...
+    if (this._delay) {
+      if (this._useNativeDriver) {
+        this._delayTimeout = setTimeout(() => this.__startNativeAnimation(animatedValue), this._delay);
+      } else {
+        this._delayTimeout = setTimeout(this.onUpdate.bind(this), this._delay);
+      }
     } else {
-      this.onUpdate();
+      if (this._useNativeDriver) {
+        this.__startNativeAnimation(animatedValue);
+      } else {
+        this.onUpdate();
+      }
     }
   }
 
@@ -685,6 +701,7 @@ class SpringAnimation extends Animation {
   stop(): void {
     super.stop();
     this.__active = false;
+    clearTimeout(this._delayTimeout)
     global.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
   }
