@@ -52,22 +52,18 @@ var Settings = {
   },
 
   _sendObservations(body: Object) {
-    const bodyKeys = Object.keys(body);
-    const keys = Object.keys(this._settings);
+    const watchedKeys = new Set(subscriptions.reduce((keys, subscription) => {
+      return subscription.keys.concat(subscription.keys);
+    }, []));
 
-    // Deletions
-    keys.forEach((key) => {
-      if (bodyKeys.indexOf(key) === -1) {
-        const newValue = body[key];
-        this._checkValue(key, newValue)
-      }
-    });
-
-    // Additions and modifications
-    bodyKeys.forEach((key) => {
+    watchedKeys.forEach((key) => {
       const newValue = body[key];
       this._checkValue(key, newValue);
     });
+
+    this._settings = {
+      ...body,
+    };
   },
 
   _checkValue(key: String, newValue: mixed) {
