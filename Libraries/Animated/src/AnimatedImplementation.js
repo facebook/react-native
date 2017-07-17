@@ -577,21 +577,19 @@ class SpringAnimation extends Animation {
       this._lastVelocity = this._initialVelocity;
     }
 
-    //  If this._delay is more than 0 then we call the funtions with a setTimeout.
-    //  Then we check again whether we want to start the animation using
-    // the native driver or not. Kinda hairy ...
-    if (this._delay) {
-      if (this._useNativeDriver) {
-        this._timeout = setTimeout(() => this.__startNativeAnimation(animatedValue), this._delay);
-      } else {
-        this._timeout = setTimeout(this.onUpdate.bind(this), this._delay);
-      }
-    } else {
+    var start = () => {
       if (this._useNativeDriver) {
         this.__startNativeAnimation(animatedValue);
       } else {
         this.onUpdate();
       }
+    }
+
+    //  If this._delay is more than 0, we start after the timeout.
+    if (this._delay) {
+        this._timeout = setTimeout(start, this._delay);
+    } else {
+      start()
     }
   }
 
