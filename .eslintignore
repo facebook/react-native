@@ -4,3 +4,5 @@
 **/main.js
 Libraries/vendor/**/*
 packager/src/worker-farm/**/*
+danger/dangerfile.js
+
