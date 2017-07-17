@@ -18,9 +18,7 @@ const React = require('React');
 const VirtualizedSectionList = require('VirtualizedSectionList');
 
 import type {ViewToken} from 'ViewabilityHelper';
-import type {
-  Props as VirtualizedSectionListProps,
-} from 'VirtualizedSectionList';
+import type {Props as VirtualizedSectionListProps} from 'VirtualizedSectionList';
 
 type Item = any;
 
@@ -131,7 +129,8 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   /**
    * Used to extract a unique key for a given item at the specified index. Key is used for caching
    * and as the react key to track item re-ordering. The default extractor checks item.key, then
-   * falls back to using the index, like react does.
+   * falls back to using the index, like react does. Note that this sets keys for each item, but 
+   * each overall section still needs its own key.
    */
   keyExtractor: (item: Item, index: number) => string,
   /**
@@ -253,8 +252,11 @@ type DefaultProps = typeof defaultProps;
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
-class SectionList<SectionT: SectionBase<any>>
-  extends React.PureComponent<DefaultProps, Props<SectionT>, void> {
+class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
+  DefaultProps,
+  Props<SectionT>,
+  void,
+> {
   props: Props<SectionT>;
   static defaultProps: DefaultProps = defaultProps;
 

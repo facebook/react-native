@@ -29,6 +29,7 @@
 #import <React/RCTProfile.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTUtils.h>
+#import <React/RCTFollyConvert.h>
 #import <cxxreact/CxxNativeModule.h>
 #import <cxxreact/Instance.h>
 #import <cxxreact/JSBundleType.h>
@@ -287,6 +288,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       [self.delegate shouldBridgeUseCustomJSC:self];
     // The arg is a cache dir.  It's not used with standard JSC.
     executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
+      ("OwnerIdentity", "ReactNative")
       ("UseCustomJSC", (bool)useCustomJSC)
 #if RCT_PROFILE
       ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
@@ -649,7 +651,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       continue;
     }
 
-    if (moduleData.requiresMainQueueSetup || moduleData.hasConstantsToExport) {
+    if (moduleData.requiresMainQueueSetup) {
       // Modules that need to be set up on the main thread cannot be initialized
       // lazily when required without doing a dispatch_sync to the main thread,
       // which can result in deadlock. To avoid this, we initialize all of these
@@ -1005,7 +1007,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
     if (self->_reactInstance) {
       self->_reactInstance->callJSFunction([module UTF8String], [method UTF8String],
-                                           [RCTConvert folly_dynamic:args ?: @[]]);
+                                           convertIdToFollyDynamic(args ?: @[]));
 
       // ensureOnJavaScriptThread may execute immediately, so use jsMessageThread, to make sure
       // the block is invoked after callJSFunction
@@ -1041,7 +1043,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     RCTProfileEndFlowEvent();
 
     if (self->_reactInstance) {
-      self->_reactInstance->callJSCallback([cbID unsignedLongLongValue], [RCTConvert folly_dynamic:args ?: @[]]);
+      self->_reactInstance->callJSCallback([cbID unsignedLongLongValue], convertIdToFollyDynamic(args ?: @[]));
     }
   }];
 }

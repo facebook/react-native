@@ -16,7 +16,7 @@ using namespace facebook::react;
 
 // This is a port of the Android impl, at
 // react-native-github/ReactAndroid/src/main/java/com/facebook/react/bridge/Inspector.java
-// react-native-github/ReactAndroid/src/main/jni/xreact/jni/JInspector.cpp
+// react-native-github/ReactAndroid/src/main/jni/react/jni/JInspector.cpp
 // please keep consistent :)
 
 class RemoteConnection : public IRemoteConnection {

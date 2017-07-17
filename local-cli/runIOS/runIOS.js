@@ -161,7 +161,7 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launc
       if (productNameMatch && productNameMatch.length && productNameMatch.length > 1) {
         return resolve(productNameMatch[1]);//0 is the full match, 1 is the app name
       }
-      return buildProcess.error? reject(error) : resolve();
+      return buildProcess.error? reject(buildProcess.error) : resolve();
     });
   });
 }

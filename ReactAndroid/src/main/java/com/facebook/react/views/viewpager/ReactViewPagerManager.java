@@ -120,4 +120,9 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
   public void setPageMargin(ReactViewPager pager, float margin) {
     pager.setPageMargin((int) PixelUtil.toPixelFromDIP(margin));
   }
+
+  @ReactProp(name = "peekEnabled", defaultBoolean = false)
+  public void setPeekEnabled(ReactViewPager pager, boolean peekEnabled) {
+    pager.setClipToPadding(!peekEnabled);
+  }
 }

@@ -13,6 +13,7 @@
 const blacklist = require('metro-bundler/src/blacklist');
 const findSymlinksPaths = require('./findSymlinksPaths');
 const fs = require('fs');
+const getPolyfills = require('../../rn-get-polyfills');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 
@@ -89,6 +90,12 @@ export type ConfigT = {
    * Returns the path to the worker that is used for transformation.
    */
   getWorkerPath: () => ?string,
+
+  /**
+   * An optional list of polyfills to include in the bundle. The list defaults
+   * to a set of common polyfills for Number, String, Array, Object...
+   */
+  getPolyfills: ({platform: ?string}) => $ReadOnlyArray<string>,
 
   /**
    * An optional function that can modify the code and source map of bundle
@@ -171,6 +178,7 @@ const Config = {
     getSourceExts: () => [],
     getTransformModulePath: () => require.resolve('metro-bundler/src/transformer.js'),
     getTransformOptions: async () => ({}),
+    getPolyfills,
     postMinifyProcess: x => x,
     postProcessModules: modules => modules,
     postProcessModulesForBuck: modules => modules,
@@ -222,7 +230,7 @@ const Config = {
   },
 
   loadFileCustom<TConfig: {}>(pathToConfig: string, defaults: TConfig): TConfig {
-    //$FlowFixMe: necessary dynamic require
+    // $FlowFixMe: necessary dynamic require
     const config: {} = require(pathToConfig);
     return {...defaults, ...config};
   },

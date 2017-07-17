@@ -223,7 +223,7 @@ target 'NumberTileGame' do
     # Add any other subspecs you want to use in your project
   ]
   # Explicitly include Yoga if you are using RN >= 0.42.0
-  pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
+  pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
 
 end
 ```
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
 });
 
 // Module name
-AppRegistry.registerComponent('AwesomeProject', () => RNHighScores);
+AppRegistry.registerComponent('MyReactNativeApp', () => RNHighScores);
 ```
 
 > `RNHighScores` is the name of your module that will be used when you add a view to React Native from within your iOS application.
@@ -627,7 +627,7 @@ var styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('AwesomeProject', () => HelloWorld);
+AppRegistry.registerComponent('MyReactNativeApp', () => HelloWorld);
 ```
 
 ##### 3. Configure permissions for development error overlay
