@@ -10,11 +10,21 @@
 # This script is supposed to be invoked as part of Xcode build process
 # and relies on environment variables (including PWD) set by Xcode
 
+if [[ "$SKIP_BUNDLING" ]]; then
+  echo "SKIP_BUNDLING enabled; skipping."
+  exit 0;
+fi
+
 case "$CONFIGURATION" in
   *Debug*)
-    # Speed up build times by skipping the creation of the offline package.
-    echo "Skipping bundling for Debug (since the packager is supposed to be running)"
-    exit 0;
+    if [[ "$FORCE_BUNDLING" ]]; then
+      echo "FORCE_BUNDLING enabled; bundling even in Debug."
+    else
+      echo "Skipping bundling in Debug (since the packager bundles for you). Use the FORCE_BUNDLING flag if you want to change this behavior."
+      exit 0;
+    fi
+
+    DEV=true
     ;;
   "")
     echo "$0 must be invoked by Xcode"
