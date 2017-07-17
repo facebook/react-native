@@ -587,9 +587,9 @@ class SpringAnimation extends Animation {
 
     //  If this._delay is more than 0, we start after the timeout.
     if (this._delay) {
-        this._timeout = setTimeout(start, this._delay);
+      this._timeout = setTimeout(start, this._delay);
     } else {
-      start()
+      start();
     }
   }
 
