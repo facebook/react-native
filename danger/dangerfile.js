@@ -6,11 +6,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-// Removed require
 const fs = require('fs');
-
-// As danger's deps are inside a sub-folder, need to resolve via relative paths
-const includes = require('lodash.includes/index');
+const includes = require('lodash.includes');
 
 const isDocsFile = path => includes(path, 'docs/');
 const editsDocs = danger.git.modified_files.filter(isDocsFile).length > 0;
