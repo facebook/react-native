@@ -15,6 +15,7 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTImageStoreManager.h>
+#import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
 
@@ -120,13 +121,90 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 
   // This is a newly taken image, and doesn't have a URL yet.
   // We need to save it to the image store first.
-  UIImage *originalImage = info[UIImagePickerControllerOriginalImage];
+  UIImage *originalImage = [self fixOrientation: info[UIImagePickerControllerOriginalImage]];
 
   // WARNING: Using ImageStoreManager may cause a memory leak because the
   // image isn't automatically removed from store once we're done using it.
   [_bridge.imageStoreManager storeImage:originalImage withBlock:^(NSString *tempImageTag) {
     [self _dismissPicker:picker args:tempImageTag ? @[tempImageTag, height, width] : nil];
   }];
+}
+
+- (UIImage *)fixOrientation:(UIImage *)aImage {
+  
+  // No-op if the orientation is already correct
+  if (aImage.imageOrientation == UIImageOrientationUp)
+    return aImage;
+  
+  // We need to calculate the proper transformation to make the image upright.
+  // We do it in 2 steps: Rotate if Left/Right/Down, and then flip if Mirrored.
+  CGAffineTransform transform = CGAffineTransformIdentity;
+  
+  switch (aImage.imageOrientation) {
+    case UIImageOrientationDown:
+    case UIImageOrientationDownMirrored:
+      transform = CGAffineTransformTranslate(transform, aImage.size.width, aImage.size.height);
+      transform = CGAffineTransformRotate(transform, M_PI);
+      break;
+      
+    case UIImageOrientationLeft:
+    case UIImageOrientationLeftMirrored:
+      transform = CGAffineTransformTranslate(transform, aImage.size.width, 0);
+      transform = CGAffineTransformRotate(transform, M_PI_2);
+      break;
+      
+    case UIImageOrientationRight:
+    case UIImageOrientationRightMirrored:
+      transform = CGAffineTransformTranslate(transform, 0, aImage.size.height);
+      transform = CGAffineTransformRotate(transform, -M_PI_2);
+      break;
+    default:
+      break;
+  }
+  
+  switch (aImage.imageOrientation) {
+    case UIImageOrientationUpMirrored:
+    case UIImageOrientationDownMirrored:
+      transform = CGAffineTransformTranslate(transform, aImage.size.width, 0);
+      transform = CGAffineTransformScale(transform, -1, 1);
+      break;
+      
+    case UIImageOrientationLeftMirrored:
+    case UIImageOrientationRightMirrored:
+      transform = CGAffineTransformTranslate(transform, aImage.size.height, 0);
+      transform = CGAffineTransformScale(transform, -1, 1);
+      break;
+    default:
+      break;
+  }
+  
+  // Now we draw the underlying CGImage into a new context, applying the transform
+  // calculated above.
+  CGContextRef ctx = CGBitmapContextCreate(NULL, aImage.size.width, aImage.size.height,
+                                           CGImageGetBitsPerComponent(aImage.CGImage), 0,
+                                           CGImageGetColorSpace(aImage.CGImage),
+                                           CGImageGetBitmapInfo(aImage.CGImage));
+  CGContextConcatCTM(ctx, transform);
+  switch (aImage.imageOrientation) {
+    case UIImageOrientationLeft:
+    case UIImageOrientationLeftMirrored:
+    case UIImageOrientationRight:
+    case UIImageOrientationRightMirrored:
+      // Grr...
+      CGContextDrawImage(ctx, CGRectMake(0,0,aImage.size.height,aImage.size.width), aImage.CGImage);
+      break;
+      
+    default:
+      CGContextDrawImage(ctx, CGRectMake(0,0,aImage.size.width,aImage.size.height), aImage.CGImage);
+      break;
+  }
+  
+  // And now we just create a new UIImage from the drawing context
+  CGImageRef cgimg = CGBitmapContextCreateImage(ctx);
+  UIImage *img = [UIImage imageWithCGImage:cgimg];
+  CGContextRelease(ctx);
+  CGImageRelease(cgimg);
+  return img;
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
