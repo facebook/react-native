@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#if !TARGET_OS_TV
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
@@ -17,3 +19,5 @@
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 
 @end
+
+#endif

@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#if !TARGET_OS_TV
+
 #import "RCTDatePickerManager.h"
 
 #import "RCTBridge.h"
@@ -43,3 +45,5 @@ RCT_REMAP_VIEW_PROPERTY(mode, datePickerMode, UIDatePickerMode)
 RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
 
 @end
+
+#endif

@@ -7,6 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#if !TARGET_OS_TV
+
 #import "RCTRefreshControlManager.h"
 
 #import "RCTRefreshControl.h"
@@ -27,3 +29,5 @@ RCT_EXPORT_VIEW_PROPERTY(title, NSString)
 RCT_EXPORT_VIEW_PROPERTY(titleColor, UIColor)
 
 @end
+
+#endif

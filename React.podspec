@@ -36,7 +36,7 @@ Pod::Spec.new do |s|
   s.source                  = source
   s.default_subspec         = "Core"
   s.requires_arc            = true
-  s.platform                = :ios, "8.0"
+  s.platforms               = { :ios => "8.0", :tvos => "9.2" }
   s.pod_target_xcconfig     = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
   s.preserve_paths          = "package.json", "LICENSE", "LICENSE-docs", "PATENTS"
   s.cocoapods_version       = ">= 1.2.0"
@@ -48,7 +48,6 @@ Pod::Spec.new do |s|
                               "IntegrationTests/*",
                               "React/DevSupport/*",
                               "React/Inspector/*",
-                              "React/**/RCTTVView.*",
                               "ReactCommon/yoga/*",
                               "React/Cxx*/*",
                               "React/Base/RCTBatchedBridge.mm",

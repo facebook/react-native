@@ -10,7 +10,7 @@ Pod::Spec.new do |spec|
   spec.source = { :git => 'https://github.com/google/glog.git',
                   :tag => "v#{spec.version}" }
   spec.module_name = 'glog'
-  spec.source_files = 'src/glog/*.h',
+  spec.source_files = 'src/**/*.h',
                       'src/demangle.cc',
                       'src/logging.cc',
                       'src/raw_logging.cc',
@@ -18,15 +18,13 @@ Pod::Spec.new do |spec|
                       'src/symbolize.cc',
                       'src/utilities.cc',
                       'src/vlog_is_on.cc'
-  # workaround for https://github.com/facebook/react-native/issues/14326
-  spec.preserve_paths = 'src/*.h',
-                        'src/base/*.h'
   spec.exclude_files       = "src/windows/**/*"
+  spec.public_header_files = "src/glog/*.h"
   spec.libraries           = "stdc++"
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src" }
 
   # Pinning to the same version as React.podspec.
-  spec.platform = :ios, "8.0"
+  spec.platforms = { :ios => "8.0", :tvos => "9.2" }
 
 end
