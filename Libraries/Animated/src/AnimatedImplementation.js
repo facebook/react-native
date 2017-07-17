@@ -495,6 +495,7 @@ class SpringAnimation extends Animation {
   _tension: number;
   _friction: number;
   _delay: number;
+  _timeout: any;
   _lastTime: number;
   _onUpdate: (value: number) => void;
   _animationFrame: any;
@@ -581,9 +582,9 @@ class SpringAnimation extends Animation {
     // the native driver or not. Kinda hairy ...
     if (this._delay) {
       if (this._useNativeDriver) {
-        this._delayTimeout = setTimeout(() => this.__startNativeAnimation(animatedValue), this._delay);
+        this._timeout = setTimeout(() => this.__startNativeAnimation(animatedValue), this._delay);
       } else {
-        this._delayTimeout = setTimeout(this.onUpdate.bind(this), this._delay);
+        this._timeout = setTimeout(this.onUpdate.bind(this), this._delay);
       }
     } else {
       if (this._useNativeDriver) {
@@ -701,7 +702,7 @@ class SpringAnimation extends Animation {
   stop(): void {
     super.stop();
     this.__active = false;
-    clearTimeout(this._delayTimeout)
+    clearTimeout(this._timeout);
     global.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
   }
