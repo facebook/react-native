@@ -583,7 +583,7 @@ class SpringAnimation extends Animation {
       } else {
         this.onUpdate();
       }
-    }
+    };
 
     //  If this._delay is more than 0, we start after the timeout.
     if (this._delay) {
