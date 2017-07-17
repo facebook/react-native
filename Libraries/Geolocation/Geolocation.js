@@ -31,6 +31,7 @@ type GeoOptions = {
   maximumAge: number,
   enableHighAccuracy: bool,
   distanceFilter: number,
+  locationAuthorizationIOS: string,
 }
 
 /**
@@ -185,5 +186,9 @@ var Geolocation = {
     }
   }
 };
+
+Geolocation.IOS_AUTHORIZATIONS = {};
+Geolocation.IOS_AUTHORIZATIONS.WHEN_IN_USE = "locationAuthorizationWhenInUse";
+Geolocation.IOS_AUTHORIZATIONS.ALWAYS = "locationAuthorizationAlways";
 
 module.exports = Geolocation;
