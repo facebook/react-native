@@ -10,7 +10,7 @@
 const fs = require('fs');
 
 // As danger's deps are inside a sub-folder, need to resolve via relative paths
-const includes = require('./danger/node_modules/lodash.includes/index');
+const includes = require('lodash.includes/index');
 
 const isDocsFile = path => includes(path, 'docs/');
 const editsDocs = danger.git.modified_files.filter(isDocsFile).length > 0;
@@ -80,7 +80,7 @@ if (!includesTestPlan && !editsDocs) {
 }
 
 // Tags PRs that have been submitted by a core contributor.
-const taskforce = fs.readFileSync('bots/IssueCommands.txt', 'utf8').split('\n')[0].split(':')[1];
+const taskforce = fs.readFileSync('../bots/IssueCommands.txt', 'utf8').split('\n')[0].split(':')[1];
 const isSubmittedByTaskforce = includes(taskforce, danger.github.pr.user.login);
 if (isSubmittedByTaskforce) {
   markdown(`This PR has been submitted by a core contributor.`);

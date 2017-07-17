@@ -34,12 +34,15 @@ dependencies:
     - npm install
     # for eslint bot
     - npm install github@0.2.4
+    # for website, danger
     - cd website && npm install
+    - cd danger && npm install
   cache_directories:
     - "ReactAndroid/build/downloads"
     - "/home/ubuntu/buck"
     - "website/node_modules"
     - "node_modules"
+    - "danger/node_modules"
 
 test:
   pre:

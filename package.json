@@ -126,8 +126,7 @@
     "test-android-all": "npm run test-android-build && npm run test-android-run-unit && npm run test-android-run-instrumentation && npm run test-android-run-e2e",
     "test-android-instrumentation": "npm run test-android-build && npm run test-android-run-instrumentation",
     "test-android-unit": "npm run test-android-build && npm run test-android-run-unit",
-    "test-android-e2e": "npm run test-android-build && npm run test-android-run-e2e",
-    "danger": "node ./node_modules/.bin/danger"
+    "test-android-e2e": "npm run test-android-build && npm run test-android-run-e2e"
   },
   "bin": {
     "react-native": "local-cli/wrong-react-native.js"
@@ -221,7 +220,6 @@
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
-    "danger": "^0.21.2",
     "eslint": "^3.19.0",
     "eslint-config-fb-strict": "^20.0.3",
     "eslint-config-fbjs": "^1.1.1",

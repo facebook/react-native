@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "danger": "node ./node_modules/.bin/danger"
+  },
+  "devDependencies": {
+    "danger": "^0.21.2",
+    "babel-jest": "20.1.0-alpha.3",
+    "lodash.includes": "^4.3.0"
+  }
+}
