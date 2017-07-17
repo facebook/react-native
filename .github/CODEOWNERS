@@ -7,3 +7,6 @@ website/* @facebook/react-native
 website/showcase.json @facebook/react-native
 package.json @facebook/react-native
 website/package.json @facebook/react-native
+local-cli/core/* @grabbou @kureev
+local-cli/link/* @grabbou @kureev
+local-cli/unlink/* @grabbou @kureev
