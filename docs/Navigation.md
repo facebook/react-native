@@ -1,11 +1,6 @@
 ---
 id: navigation
 title: Navigating Between Screens
-layout: docs
-category: Guides
-permalink: docs/navigation.html
-next: images
-previous: platform-specific-code
 ---
 
 Mobile apps are rarely made up of a single screen. Managing the presentation of, and transition between, multiple screens is typically handled by what is known as a navigator.
@@ -99,6 +94,7 @@ export default class NavigatorIOSApp extends React.Component {
         initialRoute={{
           component: MyScene,
           title: 'My Initial Scene',
+          passProps: {index: 1},
         }}
         style={{flex: 1}}
       />
@@ -108,7 +104,9 @@ export default class NavigatorIOSApp extends React.Component {
 
 class MyScene extends React.Component {
   static propTypes = {
-    title: PropTypes.string.isRequired,
+    route: PropTypes.shape({
+      title: PropTypes.string.isRequired
+    }),
     navigator: PropTypes.object.isRequired,
   }
 
@@ -116,10 +114,13 @@ class MyScene extends React.Component {
     super(props, context);
     this._onForward = this._onForward.bind(this);
   }
-
+  
   _onForward() {
+    let nextIndex = ++this.props.index;
     this.props.navigator.push({
+      component: MyScene,
       title: 'Scene ' + nextIndex,
+      passProps: {index: nextIndex}
     });
   }
 

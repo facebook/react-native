@@ -1,11 +1,6 @@
 ---
 id: accessibility
 title: Accessibility
-layout: docs
-category: Guides
-permalink: docs/accessibility.html
-next: timers
-previous: animations
 ---
 
 ## Native App Accessibility (iOS and Android)

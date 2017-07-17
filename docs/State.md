@@ -1,11 +1,6 @@
 ---
 id: state
 title: State
-layout: docs
-category: The Basics
-permalink: docs/state.html
-next: style
-previous: props
 ---
 
 There are two types of data that control a component: `props` and `state`. `props` are set by the parent and they are fixed throughout the lifetime of a component. For data that is going to change, we have to use `state`.

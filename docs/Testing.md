@@ -1,20 +1,22 @@
 ---
 id: testing
-title: Running Tests and Contributing
-layout: docs
-category: Guides
-permalink: docs/testing.html
-next: understanding-cli
-previous: upgrading
+title: Testing your Changes
 ---
 
-This document is about running tests on React Native itself. If you're interested in testing a React Native app, check out the [React Native Tutorial](http://facebook.github.io/jest/docs/tutorial-react-native.html) on the Jest website.
+This document is about testing your changes to React Native as a [contributor](docs/contributing.html). If you're interested in testing a React Native app, check out the [React Native Tutorial](http://facebook.github.io/jest/docs/tutorial-react-native.html) on the Jest website.
 
-The React Native repo has several tests you can run to verify you haven't caused a regression with your PR.  These tests are run with the [Travis](https://travis-ci.org/facebook/react-native/builds) and [CircleCI](https://circleci.com/gh/facebook/react-native) continuous integration systems, which will automatically annotate pull requests with the test results.
+The React Native repo has several tests you can run to verify you haven't caused a regression with your PR.  These tests are run with the [Travis](https://travis-ci.org/facebook/react-native/builds) and [Circle](https://circleci.com/gh/facebook/react-native) continuous integration systems, which will automatically annotate pull requests with the test results.
 
 Whenever you are fixing a bug or adding new functionality to React Native, you should add a test that covers it. Depending on the change you're making, there are different types of tests that may be appropriate.
 
-## JavaScript Tests
+- [JavaScript](docs/testing.html#javascript)
+- [Android](docs/testing.html#android)
+- [iOS](docs/testing.html#ios)
+- [Apple TV](docs/testing.html#apple-tv)
+- [End-to-end tests](docs/testing.html#end-to-end-tests)
+- [Website](docs/testing.html#website)
+
+## JavaScript
 
 ### Jest
 

@@ -57,3 +57,6 @@ node_modules
 
 /coverage
 /third-party
+
+/website/src
+/website/build

@@ -1,0 +1,16 @@
+---
+id: datepickerios
+title: DatePickerIOS
+sidebar: api
+category: Components
+permalink: docs/datepickerios.html
+---
+<div><div><p>Use <code>DatePickerIOS</code> to render a date/time picker (selector) on iOS.  This is
+a controlled component, so you must hook in to the <code>onDateChange</code> callback
+and update the <code>date</code> prop in order for the component to update, otherwise
+the user's change will be reverted immediately to reflect <code>props.date</code> as the
+source of truth.</p></div><h3><a class="anchor" name="props"></a>Props <a class="hash-link" href="docs/datepickerios.html#props">#</a></h3><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="viewproptypes"></a><a href="docs/viewproptypes.html#props">ViewPropTypes props...</a> <a class="hash-link" href="docs/datepickerios.html#viewproptypes">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="date"></a>date: <span class="propType">Date</span> <a class="hash-link" href="docs/datepickerios.html#date">#</a></h4><div><p>The currently selected date.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="maximumdate"></a>maximumDate?: <span class="propType">Date</span> <a class="hash-link" href="docs/datepickerios.html#maximumdate">#</a></h4><div><p>Maximum date.</p><p>Restricts the range of possible date/time values.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="minimumdate"></a>minimumDate?: <span class="propType">Date</span> <a class="hash-link" href="docs/datepickerios.html#minimumdate">#</a></h4><div><p>Minimum date.</p><p>Restricts the range of possible date/time values.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="minuteinterval"></a>minuteInterval?: <span class="propType">enum(1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30)</span> <a class="hash-link" href="docs/datepickerios.html#minuteinterval">#</a></h4><div><p>The interval at which minutes can be selected.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="mode"></a>mode?: <span class="propType">enum('date', 'time', 'datetime')</span> <a class="hash-link" href="docs/datepickerios.html#mode">#</a></h4><div><p>The date picker mode.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="ondatechange"></a>onDateChange: <span class="propType">function</span> <a class="hash-link" href="docs/datepickerios.html#ondatechange">#</a></h4><div><p>Date change handler.</p><p>This is called when the user changes the date or time in the UI.
+The first and only argument is a Date object representing the new
+date and time.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="timezoneoffsetinminutes"></a>timeZoneOffsetInMinutes?: <span class="propType">number</span> <a class="hash-link" href="docs/datepickerios.html#timezoneoffsetinminutes">#</a></h4><div><p>Timezone offset in minutes.</p><p>By default, the date picker will use the device's timezone. With this
+parameter, it is possible to force a certain timezone offset. For
+instance, to show times in Pacific Standard Time, pass -7 * 60.</p></div></div></div></div>

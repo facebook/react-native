@@ -1,11 +1,6 @@
 ---
 id: props
 title: Props
-layout: docs
-category: The Basics
-permalink: docs/props.html
-next: state
-previous: tutorial
 ---
 
 Most components can be customized when they are created, with different parameters. These creation parameters are called `props`.

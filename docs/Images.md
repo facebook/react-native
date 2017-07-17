@@ -1,11 +1,6 @@
 ---
 id: images
 title: Images
-layout: docs
-category: Guides
-permalink: docs/images.html
-next:  animations
-previous: navigation
 ---
 
 ## Static Image Resources
@@ -186,13 +181,15 @@ On the user side, this lets you annotate the object with useful attributes such 
 
 ## Background Image via Nesting
 
-A common feature request from developers familiar with the web is `background-image`. To handle this use case, simply create a normal `<Image>` component and add whatever children to it you would like to layer on top of it.
+A common feature request from developers familiar with the web is `background-image`. To handle this use case, you can use the `<ImageBackground>` component, which has the same props as `<Image>`, and add whatever children to it you would like to layer on top of it.
+
+You might not want to use `<ImageBackground>` in some cases, since the implementation is very simple. Refer to `<ImageBackground>`'s [source code](https://github.com/facebook/react-native/blob/master/Libraries/Image/ImageBackground.js) for more insight, and create your own custom component when needed.
 
 ```javascript
 return (
-  <Image source={...}>
+  <ImageBackground source={...}>
     <Text>Inside</Text>
-  </Image>
+  </ImageBackground>
 );
 ```
 

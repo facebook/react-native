@@ -1,11 +1,6 @@
 ---
 id: upgrading
 title: Upgrading to new React Native versions
-layout: docs
-category: Guides
-permalink: docs/upgrading.html
-next: testing
-previous: running-on-device
 ---
 
 Upgrading to new versions of React Native will give you access to more APIs, views, developer tools and other goodies. Upgrading requires a small amount of effort, but we try to make it easy for you. The instructions are a bit different depending on whether you used `create-react-native-app` or `react-native init` to create your project.
