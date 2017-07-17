@@ -187,6 +187,11 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
           CLLocation *loc = [result valueForProperty:ALAssetPropertyLocation];
           NSDate *date = [result valueForProperty:ALAssetPropertyDate];
           NSString *filename = [result defaultRepresentation].filename;
+          int64_t duration = 0;
+          if ([[result valueForProperty:ALAssetPropertyType] isEqualToString:ALAssetTypeVideo]) {
+            duration = [[result valueForProperty:ALAssetPropertyDuration] intValue];
+          }
+
           [assets addObject:@{
             @"node": @{
               @"type": [result valueForProperty:ALAssetPropertyType],
@@ -197,6 +202,7 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
                 @"height": @(dimensions.height),
                 @"width": @(dimensions.width),
                 @"isStored": @YES,
+                @"playableDuration": @(duration),
               },
               @"timestamp": @(date.timeIntervalSince1970),
               @"location": loc ? @{

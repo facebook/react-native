@@ -1,9 +1,9 @@
-docs/* @hramos
-blog/* @hramos
+docs/* @facebook/react-native
+blog/* @facebook/react-native
 Libraries/Animated/* @janicduplessis
 Libraries/NativeAnimation/* @janicduplessis
 ReactAndroid/src/main/java/com/facebook/react/animated/* @janicduplessis
-website/* @hramos
-website/showcase.json @hramos
-package.json @hramos @ericnakagawa
-website/package.json @hramos @ericnakagawa
+website/* @facebook/react-native
+website/showcase.json @facebook/react-native
+package.json @facebook/react-native
+website/package.json @facebook/react-native

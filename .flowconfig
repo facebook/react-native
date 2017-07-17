@@ -19,6 +19,9 @@
 ; "node_modules/react-native" but in the source repo it is in the root
 .*/Libraries/react-native/React.js
 
+; Ignore polyfills
+.*/Libraries/polyfills/.*
+
 [include]
 
 [libs]
