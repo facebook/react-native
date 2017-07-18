@@ -82,16 +82,7 @@ All we need now is to apply this patch to your source files. While the old `reac
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-<<<<<<< ours
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/HockeySDK.embeddedframework",
-					"$(PROJECT_DIR)/HockeySDK-iOS/HockeySDK.embeddedframework",
-				);
-=======
 				CURRENT_PROJECT_VERSION = 1;
->>>>>>> theirs
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
