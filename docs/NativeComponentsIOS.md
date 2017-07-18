@@ -61,6 +61,10 @@ module.exports = requireNativeComponent('RNTMap', null);
 
 // MyApp.js
 
+import MapView from './MapView.js';
+
+...
+
 render() {
   return <MapView style={{ flex: 1 }} />;
 } 
