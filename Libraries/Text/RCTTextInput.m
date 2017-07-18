@@ -97,6 +97,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   return YES;
 }
 
+- (void)textInputDidBeginEditing
+{
+  if (_clearTextOnFocus) {
+    self.backedTextInputView.text = @"";
+  }
+
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
+                                 reactTag:self.reactTag
+                                     text:self.backedTextInputView.text
+                                      key:nil
+                               eventCount:_nativeEventCount];
+}
+
 - (BOOL)textInputShouldReturn
 {
   return _blurOnSubmit;

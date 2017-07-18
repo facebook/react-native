@@ -329,19 +329,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   }
 }
 
-- (void)textInputDidBeginEditing
-{
-  if (_clearTextOnFocus) {
-    _backedTextInput.text = @"";
-  }
-
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
-                                 reactTag:self.reactTag
-                                     text:nil
-                                      key:nil
-                               eventCount:_nativeEventCount];
-}
-
 static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange, NSRange *secondRange)
 {
   NSInteger firstMismatch = -1;

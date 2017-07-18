@@ -162,15 +162,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self sendSelectionEvent];
 }
 
-- (void)textInputDidBeginEditing
-{
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
-                                 reactTag:self.reactTag
-                                     text:_backedTextInput.text
-                                      key:nil
-                               eventCount:_nativeEventCount];
-}
-
 - (BOOL)textInputShouldEndEditing
 {
   _finalText = _backedTextInput.text;

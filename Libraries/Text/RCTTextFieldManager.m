@@ -49,17 +49,17 @@ RCT_REMAP_VIEW_PROPERTY(secureTextEntry, backedTextInputView.secureTextEntry, BO
 RCT_REMAP_VIEW_PROPERTY(selectionColor, backedTextInputView.tintColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(spellCheck, backedTextInputView.spellCheckingType, UITextSpellCheckingType)
 RCT_REMAP_VIEW_PROPERTY(textAlign, backedTextInputView.textAlignment, NSTextAlignment)
+RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(maxLength, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(selectTextOnFocus, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(selection, RCTTextSelection)
+RCT_EXPORT_VIEW_PROPERTY(text, NSString)
 
 #pragma mark - Singleline <TextInput> (aka TextField) specific properties
 
 RCT_REMAP_VIEW_PROPERTY(caretHidden, backedTextInputView.caretHidden, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(selection, RCTTextSelection)
-RCT_EXPORT_VIEW_PROPERTY(text, NSString)
-RCT_EXPORT_VIEW_PROPERTY(maxLength, NSNumber)
 RCT_REMAP_VIEW_PROPERTY(clearButtonMode, backedTextInputView.clearButtonMode, UITextFieldViewMode)
-RCT_REMAP_VIEW_PROPERTY(clearTextOnFocus, backedTextInputView.clearsOnBeginEditing, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(selectTextOnFocus, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onSelectionChange, RCTDirectEventBlock)
 RCT_CUSTOM_VIEW_PROPERTY(fontSize, NSNumber, RCTTextField)
 {
