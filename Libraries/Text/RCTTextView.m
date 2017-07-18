@@ -373,26 +373,6 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   });
 }
 
-- (BOOL)textInputShouldEndEditing
-{
-  return YES;
-}
-
-- (void)textInputDidEndEditing
-{
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
-                                 reactTag:self.reactTag
-                                     text:_backedTextInput.text
-                                      key:nil
-                               eventCount:_nativeEventCount];
-
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
-                                 reactTag:self.reactTag
-                                     text:nil
-                                      key:nil
-                               eventCount:_nativeEventCount];
-}
-
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView

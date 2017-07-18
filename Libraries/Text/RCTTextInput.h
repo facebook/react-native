@@ -56,5 +56,7 @@
 - (BOOL)textInputShouldReturn;
 - (void)textInputDidReturn;
 - (void)textInputDidChangeSelection;
+- (BOOL)textInputShouldEndEditing;
+- (void)textInputDidEndEditing;
 
 @end

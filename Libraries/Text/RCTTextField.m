@@ -137,24 +137,4 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                eventCount:_nativeEventCount];
 }
 
-- (BOOL)textInputShouldEndEditing
-{
-  return YES;
-}
-
-- (void)textInputDidEndEditing
-{
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
-                                 reactTag:self.reactTag
-                                     text:self.text
-                                      key:nil
-                               eventCount:_nativeEventCount];
-
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
-                                 reactTag:self.reactTag
-                                     text:_backedTextInput.text
-                                      key:nil
-                               eventCount:_nativeEventCount];
-}
-
 @end
