@@ -166,6 +166,7 @@
     "create-react-class": "^15.5.2",
     "debug": "^2.2.0",
     "denodeify": "^1.2.1",
+    "envinfo": "^3.0.0",
     "errno": ">=0.1.1 <0.2.0-0",
     "event-target-shim": "^1.0.5",
     "fbjs": "0.8.12",
