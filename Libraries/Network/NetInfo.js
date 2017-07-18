@@ -22,7 +22,7 @@ const NetInfoEventEmitter = new NativeEventEmitter(RCTNetInfo);
 const DEVICE_CONNECTIVITY_EVENT = 'networkStatusDidChange';
 
 type ChangeEventName = $Enum<{
-  connectionchange: string,
+  connectionChange: string,
   change: string,
 }>;
 
@@ -80,18 +80,18 @@ const _isConnectedSubscriptions = new Map();
  * NetInfo exposes info about online/offline status
  *
  * ```
- * NetInfo.getConnection().then((connection) => {
+ * NetInfo.getConnectionInfo().then((connection) => {
  *   console.log('Initial, type: ' + connection.type + ', effectiveType: ' + connection.effectiveType);
  * });
  * function handleFirstConnectivityChange(connection) {
  *   console.log('First change, type: ' + connection.type + ', effectiveType: ' + connection.effectiveType);
  *   NetInfo.removeEventListener(
- *     'connectionchange',
+ *     'connectionChange',
  *     handleFirstConnectivityChange
  *   );
  * }
  * NetInfo.addEventListener(
- *   'connectionchange',
+ *   'connectionChange',
  *   handleFirstConnectivityChange
  * );
  * ```
@@ -195,11 +195,11 @@ const NetInfo = {
   /**
    * Adds an event handler. Supported events:
    *
-   * - `connectionchange`: Fires when the network status changes. The argument to the event
+   * - `connectionChange`: Fires when the network status changes. The argument to the event
    *   handler is an object with keys:
    *   - `type`: A `ConnectionType` (listed above)
    *   - `effectiveType`: An `EffectiveConnectionType` (listed above)
-   * - `change`: This event is deprecated. Listen to `connectionchange` instead. Fires when
+   * - `change`: This event is deprecated. Listen to `connectionChange` instead. Fires when
    *   the network status changes. The argument to the event handler is one of the deprecated
    *   connectivity types listed above.
    */
@@ -208,7 +208,7 @@ const NetInfo = {
     handler: Function
   ): {remove: () => void} {
     let listener;
-    if (eventName === 'connectionchange') {
+    if (eventName === 'connectionChange') {
       listener = NetInfoEventEmitter.addListener(
         DEVICE_CONNECTIVITY_EVENT,
         (appStateData) => {
@@ -219,7 +219,7 @@ const NetInfo = {
         }
       );
     } else if (eventName === 'change') {
-      console.warn('NetInfo\'s "change" event is deprecated. Listen to the "connectionchange" event instead.');
+      console.warn('NetInfo\'s "change" event is deprecated. Listen to the "connectionChange" event instead.');
 
       listener = NetInfoEventEmitter.addListener(
         DEVICE_CONNECTIVITY_EVENT,
@@ -256,11 +256,11 @@ const NetInfo = {
   },
 
   /**
-   * This function is deprecated. Use `getConnection` instead. Returns a promise that
+   * This function is deprecated. Use `getConnectionInfo` instead. Returns a promise that
    * resolves with one of the deprecated connectivity types listed above.
    */
   fetch(): Promise<any> {
-    console.warn('NetInfo.fetch() is deprecated. Use NetInfo.getConnection() instead.');
+    console.warn('NetInfo.fetch() is deprecated. Use NetInfo.getConnectionInfo() instead.');
     return RCTNetInfo.getCurrentConnectivity().then(resp => resp.network_info);
   },
 
@@ -269,7 +269,7 @@ const NetInfo = {
    * whose values are a `ConnectionType` and an `EffectiveConnectionType`, (described above),
    * respectively.
    */
-  getConnection(): Promise<any> {
+  getConnectionInfo(): Promise<any> {
     return RCTNetInfo.getCurrentConnectivity().then(resp => {
       return {
         type: resp.connectionType,
