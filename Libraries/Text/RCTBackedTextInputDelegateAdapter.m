@@ -18,23 +18,18 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 @implementation RCTBackedTextFieldDelegateAdapter {
   __weak UITextField<RCTBackedTextInputViewProtocol> *_backedTextInput;
-  __unsafe_unretained UITextField<RCTBackedTextInputViewProtocol> *_unsafeBackedTextInput;
   BOOL _textDidChangeIsComing;
+  UITextRange *_previousSelectedTextRange;
 }
 
 - (instancetype)initWithTextField:(UITextField<RCTBackedTextInputViewProtocol> *)backedTextInput
 {
   if (self = [super init]) {
     _backedTextInput = backedTextInput;
-    _unsafeBackedTextInput = backedTextInput;
     backedTextInput.delegate = self;
 
     [_backedTextInput addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
     [_backedTextInput addTarget:self action:@selector(textFieldDidEndEditingOnExit) forControlEvents:UIControlEventEditingDidEndOnExit];
-
-    // We have to use `unsafe_unretained` pointer to `backedTextInput` for subscribing (and especially unsubscribing) for it
-    // because `weak` pointers do not KVO complient, unfortunately.
-    [_unsafeBackedTextInput addObserver:self forKeyPath:@"selectedTextRange" options:0 context:TextFieldSelectionObservingContext];
   }
 
   return self;
@@ -44,7 +39,6 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 {
   [_backedTextInput removeTarget:self action:nil forControlEvents:UIControlEventEditingChanged];
   [_backedTextInput removeTarget:self action:nil forControlEvents:UIControlEventEditingDidEndOnExit];
-  [_unsafeBackedTextInput removeObserver:self forKeyPath:@"selectedTextRange" context:TextFieldSelectionObservingContext];
 }
 
 #pragma mark - UITextFieldDelegate
@@ -85,30 +79,9 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   return result;
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
+- (BOOL)textFieldShouldReturn:(__unused UITextField *)textField
 {
   return [_backedTextInput.textInputDelegate textInputShouldReturn];
-}
-
-#pragma mark - Key Value Observing
-
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(nullable id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context
-{
-  if (context == TextFieldSelectionObservingContext) {
-    if ([keyPath isEqualToString:@"selectedTextRange"]) {
-      [_backedTextInput.textInputDelegate textInputDidChangeSelection];
-    }
-
-    return;
-  }
-
-  [super observeValueForKeyPath:keyPath
-                       ofObject:object
-                         change:change
-                        context:context];
 }
 
 #pragma mark - UIControlEventEditing* Family Events
@@ -117,6 +90,9 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 {
   _textDidChangeIsComing = NO;
   [_backedTextInput.textInputDelegate textInputDidChange];
+
+  // `selectedTextRangeWasSet` isn't triggered during typing.
+  [self textFieldProbablyDidChangeSelection];
 }
 
 - (void)textFieldDidEndEditingOnExit
@@ -134,6 +110,30 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   return YES;
 }
 
+#pragma mark - Public Interface
+
+- (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(UITextRange *)textRange
+{
+  _previousSelectedTextRange = textRange;
+}
+
+- (void)selectedTextRangeWasSet
+{
+  [self textFieldProbablyDidChangeSelection];
+}
+
+#pragma mark - Generalization
+
+- (void)textFieldProbablyDidChangeSelection
+{
+  if ([_backedTextInput.selectedTextRange isEqual:_previousSelectedTextRange]) {
+    return;
+  }
+
+  _previousSelectedTextRange = _backedTextInput.selectedTextRange;
+  [_backedTextInput.textInputDelegate textInputDidChangeSelection];
+}
+
 @end
 
 #pragma mark - RCTBackedTextViewDelegateAdapter (for UITextView)
@@ -144,6 +144,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 @implementation RCTBackedTextViewDelegateAdapter {
   __weak UITextView<RCTBackedTextInputViewProtocol> *_backedTextInput;
   BOOL _textDidChangeIsComing;
+  UITextRange *_previousSelectedTextRange;
 }
 
 - (instancetype)initWithTextView:(UITextView<RCTBackedTextInputViewProtocol> *)backedTextInput
@@ -211,6 +212,25 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textViewDidChangeSelection:(__unused UITextView *)textView
 {
+  [self textViewProbablyDidChangeSelection];
+}
+
+#pragma mark - Public Interface
+
+- (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(UITextRange *)textRange
+{
+  _previousSelectedTextRange = textRange;
+}
+
+#pragma mark - Generalization
+
+- (void)textViewProbablyDidChangeSelection
+{
+  if ([_backedTextInput.selectedTextRange isEqual:_previousSelectedTextRange]) {
+    return;
+  }
+
+  _previousSelectedTextRange = _backedTextInput.selectedTextRange;
   [_backedTextInput.textInputDelegate textInputDidChangeSelection];
 }
 

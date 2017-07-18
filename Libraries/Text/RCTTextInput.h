@@ -15,12 +15,12 @@
 
 @class RCTBridge;
 @class RCTEventDispatcher;
+@class RCTTextSelection;
 
 @interface RCTTextInput : RCTView {
 @protected
   RCTBridge *_bridge;
   RCTEventDispatcher *_eventDispatcher;
-  UITextRange *_previousSelectionRange;
   NSInteger _nativeEventCount;
   NSInteger _mostRecentEventCount;
   BOOL _blurOnSubmit;
@@ -39,11 +39,13 @@
 @property (nonatomic, assign, readonly) CGSize contentSize;
 
 @property (nonatomic, copy) RCTDirectEventBlock onContentSizeChange;
+@property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
 
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) BOOL clearTextOnFocus;
+@property (nonatomic, copy) RCTTextSelection *selection;
 
 - (void)invalidateContentSize;
 
@@ -53,5 +55,6 @@
 - (void)textInputDidBeginEditing;
 - (BOOL)textInputShouldReturn;
 - (void)textInputDidReturn;
+- (void)textInputDidChangeSelection;
 
 @end

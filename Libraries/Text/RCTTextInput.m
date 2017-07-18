@@ -62,6 +62,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   [self setNeedsLayout];
 }
 
+- (RCTTextSelection *)selection
+{
+  id<RCTBackedTextInputViewProtocol> backedTextInput = self.backedTextInputView;
+  UITextRange *selectedTextRange = backedTextInput.selectedTextRange;
+  return [[RCTTextSelection new] initWithStart:[backedTextInput offsetFromPosition:backedTextInput.beginningOfDocument toPosition:selectedTextRange.start]
+                                           end:[backedTextInput offsetFromPosition:backedTextInput.beginningOfDocument toPosition:selectedTextRange.end]];
+}
+
 - (void)setSelection:(RCTTextSelection *)selection
 {
   if (!selection) {
@@ -70,15 +78,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   id<RCTBackedTextInputViewProtocol> backedTextInput = self.backedTextInputView;
 
-  UITextRange *currentSelection = backedTextInput.selectedTextRange;
+  UITextRange *previousSelectedTextRange = backedTextInput.selectedTextRange;
   UITextPosition *start = [backedTextInput positionFromPosition:backedTextInput.beginningOfDocument offset:selection.start];
   UITextPosition *end = [backedTextInput positionFromPosition:backedTextInput.beginningOfDocument offset:selection.end];
   UITextRange *selectedTextRange = [backedTextInput textRangeFromPosition:start toPosition:end];
 
   NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
-  if (eventLag == 0 && ![currentSelection isEqual:selectedTextRange]) {
-    _previousSelectionRange = selectedTextRange;
-    backedTextInput.selectedTextRange = selectedTextRange;
+  if (eventLag == 0 && ![previousSelectedTextRange isEqual:selectedTextRange]) {
+    [backedTextInput setSelectedTextRange:selectedTextRange notifyDelegate:NO];
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
     RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", backedTextInput.text, eventLag);
   }
@@ -122,6 +129,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                                      text:self.backedTextInputView.text
                                       key:nil
                                eventCount:_nativeEventCount];
+}
+
+- (void)textInputDidChangeSelection
+{
+  if (!_onSelectionChange) {
+    return;
+  }
+
+  RCTTextSelection *selection = self.selection;
+  _onSelectionChange(@{
+    @"selection": @{
+      @"start": @(selection.start),
+      @"end": @(selection.end),
+    },
+  });
 }
 
 #pragma mark - Content Size (in Yoga terms, without any insets)

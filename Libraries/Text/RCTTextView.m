@@ -184,7 +184,8 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
     NSInteger offsetFromEnd = oldTextLength - start;
     NSInteger newOffset = _backedTextInput.attributedText.length - offsetFromEnd;
     UITextPosition *position = [_backedTextInput positionFromPosition:_backedTextInput.beginningOfDocument offset:newOffset];
-    _backedTextInput.selectedTextRange = [_backedTextInput textRangeFromPosition:position toPosition:position];
+    [_backedTextInput setSelectedTextRange:[_backedTextInput textRangeFromPosition:position toPosition:position]
+                            notifyDelegate:YES];
   }
 
   [_backedTextInput layoutIfNeeded];
@@ -228,7 +229,8 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
       NSInteger offsetFromEnd = oldTextLength - start;
       NSInteger newOffset = text.length - offsetFromEnd;
       UITextPosition *position = [_backedTextInput positionFromPosition:_backedTextInput.beginningOfDocument offset:newOffset];
-      _backedTextInput.selectedTextRange = [_backedTextInput textRangeFromPosition:position toPosition:position];
+      [_backedTextInput setSelectedTextRange:[_backedTextInput textRangeFromPosition:position toPosition:position]
+                              notifyDelegate:YES];
     }
 
     [self invalidateContentSize];
@@ -271,7 +273,8 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
         // Collapse selection at end of insert to match normal paste behavior
         UITextPosition *insertEnd = [_backedTextInput positionFromPosition:_backedTextInput.beginningOfDocument
                                                             offset:(range.location + allowedLength)];
-        _backedTextInput.selectedTextRange = [_backedTextInput textRangeFromPosition:insertEnd toPosition:insertEnd];
+        [_backedTextInput setSelectedTextRange:[_backedTextInput textRangeFromPosition:insertEnd toPosition:insertEnd]
+                                notifyDelegate:YES];
 
         [self textInputDidChange];
       }
@@ -307,26 +310,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   }
 
   return YES;
-}
-
-- (void)textInputDidChangeSelection
-{
-  if (_onSelectionChange &&
-      _backedTextInput.selectedTextRange != _previousSelectionRange &&
-      ![_backedTextInput.selectedTextRange isEqual:_previousSelectionRange]) {
-
-    _previousSelectionRange = _backedTextInput.selectedTextRange;
-
-    UITextRange *selection = _backedTextInput.selectedTextRange;
-    NSInteger start = [_backedTextInput offsetFromPosition:_backedTextInput.beginningOfDocument toPosition:selection.start];
-    NSInteger end = [_backedTextInput offsetFromPosition:_backedTextInput.beginningOfDocument toPosition:selection.end];
-    _onSelectionChange(@{
-      @"selection": @{
-        @"start": @(start),
-        @"end": @(end),
-      },
-    });
-  }
 }
 
 static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange, NSRange *secondRange)

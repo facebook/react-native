@@ -21,6 +21,4 @@
 @property (nonatomic, assign) BOOL caretHidden;
 @property (nonatomic, strong) NSNumber *maxLength;
 
-@property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
-
 @end

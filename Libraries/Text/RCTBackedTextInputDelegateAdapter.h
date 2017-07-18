@@ -18,6 +18,9 @@
 
 - (instancetype)initWithTextField:(UITextField<RCTBackedTextInputViewProtocol> *)backedTextInput;
 
+- (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(UITextRange *)textRange;
+- (void)selectedTextRangeWasSet;
+
 @end
 
 #pragma mark - RCTBackedTextViewDelegateAdapter (for UITextView)
@@ -25,5 +28,7 @@
 @interface RCTBackedTextViewDelegateAdapter : NSObject
 
 - (instancetype)initWithTextView:(UITextView<RCTBackedTextInputViewProtocol> *)backedTextInput;
+
+- (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(UITextRange *)textRange;
 
 @end

@@ -86,32 +86,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       NSInteger offsetFromEnd = oldTextLength - offsetStart;
       NSInteger newOffset = text.length - offsetFromEnd;
       UITextPosition *position = [_backedTextInput positionFromPosition:_backedTextInput.beginningOfDocument offset:newOffset];
-      _backedTextInput.selectedTextRange = [_backedTextInput textRangeFromPosition:position toPosition:position];
+      [_backedTextInput setSelectedTextRange:[_backedTextInput textRangeFromPosition:position toPosition:position]
+                              notifyDelegate:YES];
     }
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
     RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", _backedTextInput.text, eventLag);
-  }
-}
-
-#pragma mark - Events
-
-- (void)sendSelectionEvent
-{
-  if (_onSelectionChange &&
-      _backedTextInput.selectedTextRange != _previousSelectionRange &&
-      ![_backedTextInput.selectedTextRange isEqual:_previousSelectionRange]) {
-
-    _previousSelectionRange = _backedTextInput.selectedTextRange;
-
-    UITextRange *selection = _backedTextInput.selectedTextRange;
-    NSInteger start = [_backedTextInput offsetFromPosition:[_backedTextInput beginningOfDocument] toPosition:selection.start];
-    NSInteger end = [_backedTextInput offsetFromPosition:[_backedTextInput beginningOfDocument] toPosition:selection.end];
-    _onSelectionChange(@{
-      @"selection": @{
-        @"start": @(start),
-        @"end": @(end),
-      },
-    });
   }
 }
 
@@ -137,7 +116,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
         // Collapse selection at end of insert to match normal paste behavior.
         UITextPosition *insertEnd = [_backedTextInput positionFromPosition:_backedTextInput.beginningOfDocument
                                                               offset:(range.location + allowedLength)];
-        _backedTextInput.selectedTextRange = [_backedTextInput textRangeFromPosition:insertEnd toPosition:insertEnd];
+        [_backedTextInput setSelectedTextRange:[_backedTextInput textRangeFromPosition:insertEnd toPosition:insertEnd]
+                                notifyDelegate:YES];
         [self textInputDidChange];
       }
       return NO;
@@ -155,10 +135,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                      text:_backedTextInput.text
                                       key:nil
                                eventCount:_nativeEventCount];
-
-  // selectedTextRange observer isn't triggered when you type even though the
-  // cursor position moves, so we send event again here.
-  [self sendSelectionEvent];
 }
 
 - (BOOL)textInputShouldEndEditing
@@ -179,11 +155,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                      text:_backedTextInput.text
                                       key:nil
                                eventCount:_nativeEventCount];
-}
-
-- (void)textInputDidChangeSelection
-{
-  [self sendSelectionEvent];
 }
 
 @end
