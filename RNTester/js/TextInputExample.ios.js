@@ -823,6 +823,24 @@ exports.examples = [
               placeholder="Placeholder defines intrinsic size"
             />
           </View>
+          <View>
+            <TextInput
+              style={{
+                fontSize: 16,
+                backgroundColor: '#eeeeee',
+                borderColor: '#666666',
+                borderWidth: 5,
+                borderTopWidth: 20,
+                borderRadius: 10,
+                borderBottomRightRadius: 20,
+                padding: 10,
+                paddingTop: 20,
+              }}
+              testID="multiline_textinput_with_flex"
+              multiline={true}
+              placeholder="Placeholder defines intrinsic size"
+            />
+          </View>
         </View>
       );
     }

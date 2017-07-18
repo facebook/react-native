@@ -22,6 +22,7 @@
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
 @property (nonatomic, strong, nullable) UIView *inputAccessoryView;
 @property (nonatomic, weak, nullable) id<RCTBackedTextInputDelegate> textInputDelegate;
+@property (nonatomic, readonly) CGSize contentSize;
 
 // This protocol disallows direct access to `selectedTextRange` property because
 // unwise usage of it can break the `delegate` behavior. So, we always have to
