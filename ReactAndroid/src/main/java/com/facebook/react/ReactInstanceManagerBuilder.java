@@ -11,13 +11,13 @@ import android.app.Activity;
 import android.app.Application;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
-import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
-import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
 
@@ -44,7 +44,6 @@ public class ReactInstanceManagerBuilder {
   protected boolean mLazyNativeModulesEnabled;
   protected boolean mLazyViewManagersEnabled;
   protected @Nullable DevBundleDownloadListener mDevBundleDownloadListener;
-  protected boolean mSetupReactContextInBackground;
   protected boolean mUseSeparateUIBackgroundThread;
   protected int mMinNumShakes = 1;
   protected boolean mEnableSplitPackage;
@@ -193,14 +192,9 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
-  public ReactInstanceManagerBuilder setDevBundleDownloadListener(@Nullable DevBundleDownloadListener listener) {
+  public ReactInstanceManagerBuilder setDevBundleDownloadListener(
+    @Nullable DevBundleDownloadListener listener) {
     mDevBundleDownloadListener = listener;
-    return this;
-  }
-
-  public ReactInstanceManagerBuilder setSetupReactContextInBackgroundEnabled(
-    boolean setupReactContextInBackground) {
-    mSetupReactContextInBackground = setupReactContextInBackground;
     return this;
   }
 
@@ -272,7 +266,6 @@ public class ReactInstanceManagerBuilder {
       mLazyNativeModulesEnabled,
       mLazyViewManagersEnabled,
       mDevBundleDownloadListener,
-      mSetupReactContextInBackground,
       mUseSeparateUIBackgroundThread,
       mMinNumShakes,
       mEnableSplitPackage,

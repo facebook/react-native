@@ -288,6 +288,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       [self.delegate shouldBridgeUseCustomJSC:self];
     // The arg is a cache dir.  It's not used with standard JSC.
     executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
+      ("OwnerIdentity", "ReactNative")
       ("UseCustomJSC", (bool)useCustomJSC)
 #if RCT_PROFILE
       ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
@@ -650,7 +651,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       continue;
     }
 
-    if (moduleData.requiresMainQueueSetup || moduleData.hasConstantsToExport) {
+    if (moduleData.requiresMainQueueSetup) {
       // Modules that need to be set up on the main thread cannot be initialized
       // lazily when required without doing a dispatch_sync to the main thread,
       // which can result in deadlock. To avoid this, we initialize all of these
