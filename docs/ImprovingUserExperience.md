@@ -8,17 +8,19 @@ next: timers
 previous: accessibility
 ---
 
-Building apps for mobile platforms is nuanced.
+Building apps for mobile platforms is nuanced, there are many little details that developers coming from a web background often do not consider. This guide is intended to explain some of these nuances and demonstrate how you might factor them in to your application.
 
 > We are improving and adding more details to this page. If you'd like to help out, chime in at [react-native/14979](https://github.com/facebook/react-native/issues/14979).
 
-## Make tappable areas larger
 
-On mobile phone it's hard to be very precise when pressing buttons. Make sure all interactive elements are 44x44 or larger. One way to do this is to leave enough space for the element, `padding`, `minWidth` and `minHeight` style values can be useful for that. Alternatively, you can use [`hitSlop` prop](docs/touchablewithoutfeedback.html#hitslop) to increase interactive area without affecting the layout. Here's a demo:
+## Topics index
 
-<video src="img/hitslop.mp4" autoplay loop width="320" height="120"></video>
+- [Configure text inputs](#configure-text-inputs)
+- [Make tappable areas larger](#make-tappable-areas-larger)
+- [Use Android Ripple](#use-android-ripple)
+- [Learn More](#learn-more)
 
-[Try it on your phone](https://snack.expo.io/rJPwCt4HZ)
+-------------------------------------------------------------------------------
 
 ## Configure text inputs
 
@@ -35,6 +37,22 @@ Check out [`TextInput` docs](docs/textinput.html) for more configuration options
 <video src="img/textinput.mp4" autoplay loop width="320" height="430"></video>
 
 [Try it on your phone](https://snack.expo.io/H1iGt2vSW)
+
+## Make tappable areas larger
+
+On mobile phones it's hard to be very precise when pressing buttons. Make sure all interactive elements are 44x44 or larger. One way to do this is to leave enough space for the element, `padding`, `minWidth` and `minHeight` style values can be useful for that. Alternatively, you can use [`hitSlop` prop](docs/touchablewithoutfeedback.html#hitslop) to increase interactive area without affecting the layout. Here's a demo:
+
+<video src="img/hitslop.mp4" autoplay loop width="320" height="120"></video>
+
+[Try it on your phone](https://snack.expo.io/rJPwCt4HZ)
+
+## Use Android Ripple
+
+Android API 21+ uses the material design ripple to provide user with feedback when they touch an interactable area on the screen. React Native exposes this through the [`TouchableNativeFeedback` component](docs/docs/touchablenativefeedback.html). Using this touchable effect instead of opacity or highlight will often make your app feel much more fitting on the platform. That said, you need to be careful when using it because it doesn't work on iOS or on Android API < 21, so you will need to fallback to using one of the other Touchable components on iOS. You can use a library like [react-native-platform-touchable](https://github.com/react-community/react-native-platform-touchable) to handle the platform differences for you.
+
+<video src="img/ripple.mp4" autoplay loop width="320"></video>
+
+[Try it on your phone](https://snack.expo.io/SJywqe3rZ)
 
 # Learn more
 
