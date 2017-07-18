@@ -73,6 +73,11 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   return [_backedTextInput.textInputDelegate textInputShouldChangeTextInRange:range replacementText:string];
 }
 
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+  return [_backedTextInput.textInputDelegate textInputShouldReturn];
+}
+
 #pragma mark - Key Value Observing
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -103,7 +108,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textFieldDidEndEditingOnExit
 {
-  [_backedTextInput.textInputDelegate textInputDidEndEditingOnExit];
+  [_backedTextInput.textInputDelegate textInputDidReturn];
 }
 
 #pragma mark - UIKeyboardInput (private UIKit protocol)
@@ -161,6 +166,15 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (BOOL)textView:(__unused UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
+  // Custom implementation of `textInputShouldReturn` and `textInputDidReturn` pair for `UITextView`.
+  if (!_backedTextInput.textWasPasted && [text isEqualToString:@"\n"]) {
+    if ([_backedTextInput.textInputDelegate textInputShouldReturn]) {
+      [_backedTextInput.textInputDelegate textInputDidReturn];
+      [_backedTextInput endEditing:NO];
+      return NO;
+    }
+  }
+
   return [_backedTextInput.textInputDelegate textInputShouldChangeTextInRange:range replacementText:text];
 }
 

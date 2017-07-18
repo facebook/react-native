@@ -20,7 +20,6 @@
 
 @property (nonatomic, assign) BOOL caretHidden;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
-@property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, strong) NSNumber *maxLength;
 
 @property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;

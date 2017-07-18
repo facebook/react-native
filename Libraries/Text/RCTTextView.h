@@ -20,7 +20,6 @@
 
 @property (nonatomic, assign) UITextAutocorrectionType autocorrectionType;
 @property (nonatomic, assign) UITextSpellCheckingType spellCheckingType;
-@property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, assign) BOOL clearTextOnFocus;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;

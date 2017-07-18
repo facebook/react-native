@@ -35,8 +35,6 @@
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   if (self = [super initWithBridge:bridge]) {
-    RCTAssertParam(bridge);
-
     // `blurOnSubmit` defaults to `true` for <TextInput multiline={false}> by design.
     _blurOnSubmit = YES;
 
@@ -189,12 +187,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (BOOL)textInputShouldEndEditing
 {
   _finalText = _backedTextInput.text;
-
-  if (_submitted) {
-    _submitted = NO;
-    return _blurOnSubmit;
-  }
-
   return YES;
 }
 
@@ -215,16 +207,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
-                                 reactTag:self.reactTag
-                                     text:_backedTextInput.text
-                                      key:nil
-                               eventCount:_nativeEventCount];
-}
-
-- (void)textInputDidEndEditingOnExit
-{
-  _submitted = YES;
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
                                  reactTag:self.reactTag
                                      text:_backedTextInput.text
                                       key:nil

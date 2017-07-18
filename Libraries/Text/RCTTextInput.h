@@ -23,6 +23,7 @@
   UITextRange *_previousSelectionRange;
   NSInteger _nativeEventCount;
   NSInteger _mostRecentEventCount;
+  BOOL _blurOnSubmit;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
@@ -40,7 +41,13 @@
 @property (nonatomic, copy) RCTDirectEventBlock onContentSizeChange;
 
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
+@property (nonatomic, assign) BOOL blurOnSubmit;
 
 - (void)invalidateContentSize;
+
+// Temporary exposure of particial `RCTBackedTextInputDelegate` support.
+// In the future all methods of the protocol should move to this class.
+- (BOOL)textInputShouldReturn;
+- (void)textInputDidReturn;
 
 @end

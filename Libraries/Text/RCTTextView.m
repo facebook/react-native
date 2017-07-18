@@ -41,6 +41,7 @@
   RCTAssertParam(bridge);
 
   if (self = [super initWithBridge:bridge]) {
+    // `blurOnSubmit` defaults to `false` for <TextInput multiline={true}> by design.
     _blurOnSubmit = NO;
 
     _backedTextInput = [[RCTUITextView alloc] initWithFrame:self.bounds];
@@ -246,27 +247,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
                                        text:nil
                                         key:text
                                  eventCount:_nativeEventCount];
-
-    if (_blurOnSubmit && [text isEqualToString:@"\n"]) {
-      // TODO: the purpose of blurOnSubmit on RCTextField is to decide if the
-      // field should lose focus when return is pressed or not. We're cheating a
-      // bit here by using it on RCTextView to decide if return character should
-      // submit the form, or be entered into the field.
-      //
-      // The reason this is cheating is because there's no way to specify that
-      // you want the return key to be swallowed *and* have the field retain
-      // focus (which was what blurOnSubmit was originally for). For the case
-      // where _blurOnSubmit = YES, this is still the correct and expected
-      // behavior though, so we'll leave the don't-blur-or-add-newline problem
-      // to be solved another day.
-      [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
-                                     reactTag:self.reactTag
-                                         text:self.text
-                                          key:nil
-                                   eventCount:_nativeEventCount];
-      [_backedTextInput resignFirstResponder];
-      return NO;
-    }
   }
 
   // So we need to track that there is a native update in flight just in case JS manages to come back around and update
@@ -433,7 +413,6 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   });
 }
 
-
 - (BOOL)textInputShouldEndEditing
 {
   return YES;
@@ -458,11 +437,6 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
                                      text:nil
                                       key:nil
                                eventCount:_nativeEventCount];
-}
-
-- (void)textInputDidEndEditingOnExit
-{
-  // Do nothing.
 }
 
 #pragma mark - UIScrollViewDelegate

@@ -84,6 +84,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 }
 
+#pragma mark - RCTBackedTextInputDelegate
+
+- (BOOL)textInputShouldReturn
+{
+  return _blurOnSubmit;
+}
+
+- (void)textInputDidReturn
+{
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
+                                 reactTag:self.reactTag
+                                     text:self.backedTextInputView.text
+                                      key:nil
+                               eventCount:_nativeEventCount];
+}
+
 #pragma mark - Content Size (in Yoga terms, without any insets)
 
 - (CGSize)contentSize
