@@ -397,12 +397,6 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 
 - (void)textInputDidEndEditing
 {
-  if (_nativeUpdatesInFlight) {
-    // iOS does't call `textViewDidChange:` delegate method if the change was happened because of autocorrection
-    // which was triggered by loosing focus. So, we call it manually.
-    [self textInputDidChange];
-  }
-
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
                                  reactTag:self.reactTag
                                      text:_backedTextInput.text

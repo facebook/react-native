@@ -28,7 +28,6 @@
 {
   RCTUITextField *_backedTextInput;
   BOOL _submitted;
-  NSString *_finalText;
   CGSize _previousContentSize;
 }
 
@@ -164,7 +163,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (BOOL)textInputShouldEndEditing
 {
-  _finalText = _backedTextInput.text;
   return YES;
 }
 
@@ -175,14 +173,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                      text:self.text
                                       key:nil
                                eventCount:_nativeEventCount];
-
-  if (![_finalText isEqualToString:_backedTextInput.text]) {
-    _finalText = nil;
-    // iOS does't send event `UIControlEventEditingChanged` if the change was happened because of autocorrection
-    // which was triggered by loosing focus. We assume that if `text` was changed in the middle of loosing focus process,
-    // we did not receive that event. So, we call `textFieldDidChange` manually.
-    [self textInputDidChange];
-  }
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
                                  reactTag:self.reactTag
