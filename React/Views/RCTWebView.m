@@ -7,8 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#if !TARGET_OS_TV
-
 #import "RCTWebView.h"
 
 #import <UIKit/UIKit.h>
@@ -324,5 +322,3 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 
 @end
-
-#endif

@@ -7,8 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#if !TARGET_OS_TV
-
 #import "RCTWebViewManager.h"
 
 #import "RCTBridge.h"
@@ -160,5 +158,3 @@ RCT_EXPORT_METHOD(startLoadWithResult:(BOOL)result lockIdentifier:(NSInteger)loc
 }
 
 @end
-
-#endif

@@ -7,8 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#if !TARGET_OS_TV
-
 #import <React/RCTView.h>
 
 @class RCTWebView;
@@ -48,5 +46,3 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 - (void)injectJavaScript:(NSString *)script;
 
 @end
-
-#endif

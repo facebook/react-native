@@ -7,8 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#if !TARGET_OS_TV
-
 #import "RCTSliderManager.h"
 
 #import "RCTBridge.h"
@@ -98,5 +96,3 @@ RCT_CUSTOM_VIEW_PROPERTY(disabled, BOOL, RCTSlider)
 }
 
 @end
-
-#endif

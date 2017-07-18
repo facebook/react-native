@@ -7,12 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#if !TARGET_OS_TV
-
 #import <React/RCTViewManager.h>
 
 @interface RCTRefreshControlManager : RCTViewManager
 
 @end
-
-#endif

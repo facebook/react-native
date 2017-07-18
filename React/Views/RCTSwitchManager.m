@@ -7,8 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#if !TARGET_OS_TV
-
 #import "RCTSwitchManager.h"
 
 #import "RCTBridge.h"
@@ -54,5 +52,3 @@ RCT_CUSTOM_VIEW_PROPERTY(disabled, BOOL, RCTSwitch)
 }
 
 @end
-
-#endif
