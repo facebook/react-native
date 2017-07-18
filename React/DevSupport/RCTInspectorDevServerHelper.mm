@@ -30,9 +30,10 @@ static NSString *getDebugServerHost(NSURL *bundleURL)
 
 static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 {
+  NSString *escapedText = [[[UIDevice currentDevice] name] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
   return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@",
                                                         getDebugServerHost(bundleURL),
-                                                        [[UIDevice currentDevice] name]]];
+                                                        escapedText]];
 }
 
 
