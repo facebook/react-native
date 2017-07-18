@@ -95,12 +95,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (BOOL)textInputShouldBeginEditing
 {
-  if (_selectTextOnFocus) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self.backedTextInputView selectAll:nil];
-    });
-  }
-
   return YES;
 }
 
@@ -108,6 +102,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   if (_clearTextOnFocus) {
     self.backedTextInputView.text = @"";
+  }
+
+  if (_selectTextOnFocus) {
+    [self.backedTextInputView selectAll:nil];
   }
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
