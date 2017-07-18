@@ -325,7 +325,10 @@ static inline BOOL isRectInvalid(CGRect rect) {
     return;
   }
 
+  // Preserving `contentOffset` between layout passes.
+  CGPoint originalOffset = self.contentOffset;
   [super setFrame:frame];
+  self.contentOffset = originalOffset;
 }
 
 #if !TARGET_OS_TV
@@ -362,6 +365,7 @@ static inline BOOL isRectInvalid(CGRect rect) {
   if ((self = [super initWithFrame:CGRectZero])) {
     _eventDispatcher = eventDispatcher;
     _scrollView = [[RCTCustomScrollView alloc] initWithFrame:CGRectZero];
+    _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
     _automaticallyAdjustContentInsets = YES;
@@ -465,10 +469,6 @@ static inline void RCTApplyTranformationAccordingLayoutDirection(UIView *view, U
   [super layoutSubviews];
   RCTAssert(self.subviews.count == 1, @"we should only have exactly one subview");
   RCTAssert([self.subviews lastObject] == _scrollView, @"our only subview should be a scrollview");
-
-  CGPoint originalOffset = _scrollView.contentOffset;
-  _scrollView.frame = self.bounds;
-  _scrollView.contentOffset = originalOffset;
 
 #if !TARGET_OS_TV
   // Adjust the refresh control frame if the scrollview layout changes.
