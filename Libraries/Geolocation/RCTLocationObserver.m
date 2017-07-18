@@ -32,7 +32,7 @@ typedef struct {
   double maximumAge;
   double accuracy;
   double distanceFilter;
-  bool useSignificantChanges;
+  BOOL useSignificantChanges;
 } RCTLocationOptions;
 
 @implementation RCTConvert (RCTLocationOptions)
@@ -125,7 +125,6 @@ RCT_EXPORT_MODULE()
     [_locationManager stopUpdatingLocation];
 
   _locationManager.delegate = nil;
-  _usingSignificantChanges = NO;
 }
 
 - (dispatch_queue_t)methodQueue
@@ -146,14 +145,12 @@ RCT_EXPORT_MODULE()
 
   _locationManager.distanceFilter  = distanceFilter;
   _locationManager.desiredAccuracy = desiredAccuracy;
+  _usingSignificantChanges = useSignificantChanges;
+  
   // Start observing location
-  if (useSignificantChanges) {
-    [_locationManager startMonitoringSignificantLocationChanges];
-    _usingSignificantChanges = YES;
-  } else {
+  _usingSignificantChanges ?
+    [_locationManager startMonitoringSignificantLocationChanges] :
     [_locationManager startUpdatingLocation];
-    _usingSignificantChanges = NO;
-  }
 }
 
 #pragma mark - Timeout handler
