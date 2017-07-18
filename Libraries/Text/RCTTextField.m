@@ -162,11 +162,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self sendSelectionEvent];
 }
 
-- (BOOL)textInputShouldBeginEditing
-{
-  return YES;
-}
-
 - (void)textInputDidBeginEditing
 {
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
@@ -174,14 +169,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                      text:_backedTextInput.text
                                       key:nil
                                eventCount:_nativeEventCount];
-
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (self->_selectTextOnFocus) {
-      [self->_backedTextInput selectAll:nil];
-    }
-
-    [self sendSelectionEvent];
-  });
 }
 
 - (BOOL)textInputShouldEndEditing

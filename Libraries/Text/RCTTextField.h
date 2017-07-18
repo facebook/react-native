@@ -19,7 +19,6 @@
 @interface RCTTextField : RCTTextInput
 
 @property (nonatomic, assign) BOOL caretHidden;
-@property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, strong) NSNumber *maxLength;
 
 @property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;

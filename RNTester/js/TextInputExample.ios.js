@@ -684,6 +684,24 @@ exports.examples = [
               selectTextOnFocus={true}
             />
           </WithLabel>
+          <WithLabel label="clearTextOnFocus (multiline)">
+            <TextInput
+              placeholder="text is cleared on focus"
+              defaultValue="text is cleared on focus"
+              style={styles.default}
+              clearTextOnFocus={true}
+              multiline={true}
+            />
+          </WithLabel>
+          <WithLabel label="selectTextOnFocus (multiline)">
+            <TextInput
+              placeholder="text is selected on focus"
+              defaultValue="text is selected on focus"
+              style={styles.default}
+              selectTextOnFocus={true}
+              multiline={true}
+            />
+          </WithLabel>
         </View>
       );
     }

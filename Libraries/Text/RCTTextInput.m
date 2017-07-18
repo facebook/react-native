@@ -86,6 +86,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 #pragma mark - RCTBackedTextInputDelegate
 
+- (BOOL)textInputShouldBeginEditing
+{
+  if (_selectTextOnFocus) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.backedTextInputView selectAll:nil];
+    });
+  }
+
+  return YES;
+}
+
 - (BOOL)textInputShouldReturn
 {
   return _blurOnSubmit;

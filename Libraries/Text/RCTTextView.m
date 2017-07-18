@@ -329,16 +329,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   }
 }
 
-- (BOOL)textInputShouldBeginEditing
-{
-  if (_selectTextOnFocus) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self->_backedTextInput selectAll:nil];
-    });
-  }
-  return YES;
-}
-
 - (void)textInputDidBeginEditing
 {
   if (_clearTextOnFocus) {

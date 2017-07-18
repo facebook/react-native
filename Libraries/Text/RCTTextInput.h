@@ -42,11 +42,13 @@
 
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, assign) BOOL blurOnSubmit;
+@property (nonatomic, assign) BOOL selectTextOnFocus;
 
 - (void)invalidateContentSize;
 
 // Temporary exposure of particial `RCTBackedTextInputDelegate` support.
 // In the future all methods of the protocol should move to this class.
+- (BOOL)textInputShouldBeginEditing;
 - (BOOL)textInputShouldReturn;
 - (void)textInputDidReturn;
 
