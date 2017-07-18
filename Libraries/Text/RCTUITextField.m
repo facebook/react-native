@@ -12,7 +12,11 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
-@implementation RCTUITextField
+#import "RCTBackedTextInputDelegateAdapter.h"
+
+@implementation RCTUITextField {
+  RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -21,6 +25,8 @@
                                              selector:@selector(_textDidChange)
                                                  name:UITextFieldTextDidChangeNotification
                                                object:self];
+
+    _textInputDelegateAdapter = [[RCTBackedTextFieldDelegateAdapter alloc] initWithTextField:self];
   }
 
   return self;

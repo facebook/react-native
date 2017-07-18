@@ -26,6 +26,4 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
 
-@property (nonatomic, strong) RCTUITextField *textField;
-
 @end

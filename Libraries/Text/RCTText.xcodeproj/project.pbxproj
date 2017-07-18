@@ -27,6 +27,8 @@
 		58B511D01A9E6C5C00147676 /* RCTShadowText.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B511CB1A9E6C5C00147676 /* RCTShadowText.m */; };
 		58B511D11A9E6C5C00147676 /* RCTTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B511CD1A9E6C5C00147676 /* RCTTextManager.m */; };
 		58B512161A9E6EFF00147676 /* RCTText.m in Sources */ = {isa = PBXBuildFile; fileRef = 58B512141A9E6EFF00147676 /* RCTText.m */; };
+		598F41261F145D4900B8495B /* RCTBackedTextInputDelegateAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 598F41251F145D4900B8495B /* RCTBackedTextInputDelegateAdapter.m */; };
+		598F41271F145D4900B8495B /* RCTBackedTextInputDelegateAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 598F41251F145D4900B8495B /* RCTBackedTextInputDelegateAdapter.m */; };
 		599DF25F1F0306660079B53E /* RCTBackedTextInputViewProtocol.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599DF25D1F0304B30079B53E /* RCTBackedTextInputViewProtocol.h */; };
 		599DF2611F0306C30079B53E /* RCTBackedTextInputViewProtocol.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 599DF25D1F0304B30079B53E /* RCTBackedTextInputViewProtocol.h */; };
 		599DF2641F03076D0079B53E /* RCTTextInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 599DF2631F03076D0079B53E /* RCTTextInput.m */; };
@@ -95,6 +97,9 @@
 		58B511CD1A9E6C5C00147676 /* RCTTextManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTextManager.m; sourceTree = "<group>"; };
 		58B512141A9E6EFF00147676 /* RCTText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTText.m; sourceTree = "<group>"; };
 		58B512151A9E6EFF00147676 /* RCTText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTText.h; sourceTree = "<group>"; };
+		598F41231F145D4900B8495B /* RCTBackedTextInputDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBackedTextInputDelegate.h; sourceTree = "<group>"; };
+		598F41241F145D4900B8495B /* RCTBackedTextInputDelegateAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBackedTextInputDelegateAdapter.h; sourceTree = "<group>"; };
+		598F41251F145D4900B8495B /* RCTBackedTextInputDelegateAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBackedTextInputDelegateAdapter.m; sourceTree = "<group>"; };
 		599DF25D1F0304B30079B53E /* RCTBackedTextInputViewProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBackedTextInputViewProtocol.h; sourceTree = "<group>"; };
 		599DF2621F03076D0079B53E /* RCTTextInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTextInput.h; sourceTree = "<group>"; };
 		599DF2631F03076D0079B53E /* RCTTextInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTextInput.m; sourceTree = "<group>"; };
@@ -115,6 +120,9 @@
 			isa = PBXGroup;
 			children = (
 				58B5119C1A9E6C1200147676 /* Products */,
+				598F41231F145D4900B8495B /* RCTBackedTextInputDelegate.h */,
+				598F41241F145D4900B8495B /* RCTBackedTextInputDelegateAdapter.h */,
+				598F41251F145D4900B8495B /* RCTBackedTextInputDelegateAdapter.m */,
 				599DF25D1F0304B30079B53E /* RCTBackedTextInputViewProtocol.h */,
 				AF3225F71DE5574F00D3E7E7 /* RCTConvert+Text.h */,
 				AF3225F81DE5574F00D3E7E7 /* RCTConvert+Text.m */,
@@ -244,6 +252,7 @@
 				2D3B5F361D9B106F00451313 /* RCTShadowText.m in Sources */,
 				2D3B5F3B1D9B106F00451313 /* RCTTextView.m in Sources */,
 				59AF89AB1EDCBCC700F004B1 /* RCTUITextField.m in Sources */,
+				598F41271F145D4900B8495B /* RCTBackedTextInputDelegateAdapter.m in Sources */,
 				2D3B5F3A1D9B106F00451313 /* RCTTextFieldManager.m in Sources */,
 				599DF2651F03076D0079B53E /* RCTTextInput.m in Sources */,
 				2D3B5F341D9B103100451313 /* RCTRawTextManager.m in Sources */,
@@ -267,6 +276,7 @@
 				19FC5C851D41A4120090108F /* RCTTextSelection.m in Sources */,
 				1362F1001B4D51F400E06D8C /* RCTTextField.m in Sources */,
 				59AF89AA1EDCBCC700F004B1 /* RCTUITextField.m in Sources */,
+				598F41261F145D4900B8495B /* RCTBackedTextInputDelegateAdapter.m in Sources */,
 				58B512161A9E6EFF00147676 /* RCTText.m in Sources */,
 				599DF2641F03076D0079B53E /* RCTTextInput.m in Sources */,
 				1362F1011B4D51F400E06D8C /* RCTTextFieldManager.m in Sources */,

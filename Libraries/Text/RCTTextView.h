@@ -16,7 +16,7 @@
 
 @class RCTBridge;
 
-@interface RCTTextView : RCTTextInput <UITextViewDelegate>
+@interface RCTTextView : RCTTextInput
 
 @property (nonatomic, assign) UITextAutocorrectionType autocorrectionType;
 @property (nonatomic, assign) UITextSpellCheckingType spellCheckingType;

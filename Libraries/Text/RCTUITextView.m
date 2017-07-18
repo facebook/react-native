@@ -12,10 +12,13 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
+#import "RCTBackedTextInputDelegateAdapter.h"
+
 @implementation RCTUITextView
 {
   UILabel *_placeholderView;
   UITextView *_detachedTextView;
+  RCTBackedTextViewDelegateAdapter *_textInputDelegateAdapter;
 }
 
 static UIFont *defaultPlaceholderFont()
@@ -42,6 +45,8 @@ static UIColor *defaultPlaceholderColor()
     _placeholderView.numberOfLines = 0;
     _placeholderView.textColor = defaultPlaceholderColor();
     [self addSubview:_placeholderView];
+
+    _textInputDelegateAdapter = [[RCTBackedTextViewDelegateAdapter alloc] initWithTextView:self];
   }
 
   return self;

@@ -9,6 +9,8 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol RCTBackedTextInputDelegate;
+
 @protocol RCTBackedTextInputViewProtocol <UITextInput>
 
 @property (nonatomic, copy, nullable) NSString *text;
@@ -19,5 +21,6 @@
 @property (nonatomic, strong, nullable) UIFont *font;
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
 @property (nonatomic, strong, nullable) UIView *inputAccessoryView;
+@property (nonatomic, weak, nullable) id<RCTBackedTextInputDelegate> textInputDelegate;
 
 @end

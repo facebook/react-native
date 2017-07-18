@@ -82,7 +82,7 @@ RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTTextView)
 RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
 
 #if !TARGET_OS_TV
-RCT_REMAP_VIEW_PROPERTY(dataDetectorTypes, textView.dataDetectorTypes, UIDataDetectorTypes)
+RCT_REMAP_VIEW_PROPERTY(dataDetectorTypes, backedTextInputView.dataDetectorTypes, UIDataDetectorTypes)
 #endif
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView
