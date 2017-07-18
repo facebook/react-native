@@ -28,7 +28,6 @@
 @property (nonatomic, strong) UIColor *placeholderTextColor;
 @property (nonatomic, copy) NSString *placeholder;
 @property (nonatomic, strong) UIFont *font;
-@property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, strong) NSNumber *maxLength;
 
 @property (nonatomic, copy) RCTDirectEventBlock onChange;

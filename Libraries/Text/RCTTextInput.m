@@ -16,6 +16,8 @@
 #import <React/RCTUIManager.h>
 #import <React/UIView+React.h>
 
+#import "RCTTextSelection.h"
+
 @implementation RCTTextInput {
   CGSize _previousContentSize;
 }
@@ -58,6 +60,28 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // We apply `borderInsets` as `backedTextInputView` layout offset.
   self.backedTextInputView.frame = UIEdgeInsetsInsetRect(self.bounds, reactBorderInsets);
   [self setNeedsLayout];
+}
+
+- (void)setSelection:(RCTTextSelection *)selection
+{
+  if (!selection) {
+    return;
+  }
+
+  id<RCTBackedTextInputViewProtocol> backedTextInput = self.backedTextInputView;
+
+  UITextRange *currentSelection = backedTextInput.selectedTextRange;
+  UITextPosition *start = [backedTextInput positionFromPosition:backedTextInput.beginningOfDocument offset:selection.start];
+  UITextPosition *end = [backedTextInput positionFromPosition:backedTextInput.beginningOfDocument offset:selection.end];
+  UITextRange *selectedTextRange = [backedTextInput textRangeFromPosition:start toPosition:end];
+
+  NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
+  if (eventLag == 0 && ![currentSelection isEqual:selectedTextRange]) {
+    _previousSelectionRange = selectedTextRange;
+    backedTextInput.selectedTextRange = selectedTextRange;
+  } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
+    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", backedTextInput.text, eventLag);
+  }
 }
 
 #pragma mark - Content Size (in Yoga terms, without any insets)

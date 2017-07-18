@@ -20,6 +20,9 @@
 @protected
   RCTBridge *_bridge;
   RCTEventDispatcher *_eventDispatcher;
+  UITextRange *_previousSelectionRange;
+  NSInteger _nativeEventCount;
+  NSInteger _mostRecentEventCount;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
@@ -35,6 +38,8 @@
 @property (nonatomic, assign, readonly) CGSize contentSize;
 
 @property (nonatomic, copy) RCTDirectEventBlock onContentSizeChange;
+
+@property (nonatomic, assign) NSInteger mostRecentEventCount;
 
 - (void)invalidateContentSize;
 

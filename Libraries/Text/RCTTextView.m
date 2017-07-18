@@ -30,12 +30,10 @@
   RCTText *_richTextView;
   NSAttributedString *_pendingAttributedText;
 
-  UITextRange *_previousSelectionRange;
   NSString *_predictedText;
 
   BOOL _blockTextShouldChange;
   BOOL _nativeUpdatesInFlight;
-  NSInteger _nativeEventCount;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -206,26 +204,6 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
 {
   _backedTextInput.font = font;
   [self setNeedsLayout];
-}
-
-- (void)setSelection:(RCTTextSelection *)selection
-{
-  if (!selection) {
-    return;
-  }
-
-  UITextRange *currentSelection = _backedTextInput.selectedTextRange;
-  UITextPosition *start = [_backedTextInput positionFromPosition:_backedTextInput.beginningOfDocument offset:selection.start];
-  UITextPosition *end = [_backedTextInput positionFromPosition:_backedTextInput.beginningOfDocument offset:selection.end];
-  UITextRange *selectedTextRange = [_backedTextInput textRangeFromPosition:start toPosition:end];
-
-  NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
-  if (eventLag == 0 && ![currentSelection isEqual:selectedTextRange]) {
-    _previousSelectionRange = selectedTextRange;
-    _backedTextInput.selectedTextRange = selectedTextRange;
-  } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
-    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
-  }
 }
 
 - (NSString *)text
