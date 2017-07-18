@@ -8,6 +8,9 @@
 ; Ignore the website subdir
 <PROJECT_ROOT>/website/.*
 
+; Ignore the Dangerfile
+<PROJECT_ROOT>/danger/dangerfile.js
+
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
