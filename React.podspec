@@ -52,6 +52,14 @@ Pod::Spec.new do |s|
                               "React/Cxx*/*",
                               "React/Base/RCTBatchedBridge.mm",
                               "React/Executors/*"
+    ss.ios.exclude_files    = "React/**/RCTTVView.*"
+    ss.tvos.exclude_files   = "React/Modules/RCTClipboard*",
+                              "React/Views/RCTDatePicker*",
+                              "React/Views/RCTPicker*",
+                              "React/Views/RCTRefreshControl*",
+                              "React/Views/RCTSlider*",
+                              "React/Views/RCTSwitch*",
+                              "React/Views/RCTWebView*"
     ss.header_dir           = "React"
     ss.framework            = "JavaScriptCore"
     ss.libraries            = "stdc++"
