@@ -325,10 +325,22 @@ static inline BOOL isRectInvalid(CGRect rect) {
     return;
   }
 
-  // Preserving `contentOffset` between layout passes.
+  // Preserving and revalidating `contentOffset`.
   CGPoint originalOffset = self.contentOffset;
+
   [super setFrame:frame];
-  self.contentOffset = originalOffset;
+
+  UIEdgeInsets contentInset = self.contentInset;
+  CGSize contentSize = self.contentSize;
+  CGSize fullContentSize = CGSizeMake(
+    contentSize.width + contentInset.left + contentInset.right,
+    contentSize.height + contentInset.top + contentInset.bottom);
+
+  CGSize boundsSize = self.bounds.size;
+
+  self.contentOffset = CGPointMake(
+    MAX(0, MIN(originalOffset.x, fullContentSize.width - boundsSize.width)),
+    MAX(0, MIN(originalOffset.y, fullContentSize.height - boundsSize.height)));
 }
 
 #if !TARGET_OS_TV
