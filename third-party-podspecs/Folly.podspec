@@ -31,5 +31,5 @@ Pod::Spec.new do |spec|
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\"" }
 
   # Pinning to the same version as React.podspec.
-  spec.platform = :ios, '8.0'
+  spec.platforms = { :ios => "8.0", :tvos => "9.2" }
 end
