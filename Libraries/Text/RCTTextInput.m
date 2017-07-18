@@ -64,10 +64,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (CGSize)contentSize
 {
-  CGSize contentSize = self.intrinsicContentSize;
-  UIEdgeInsets compoundInsets = self.reactCompoundInsets;
-  contentSize.width -= compoundInsets.left + compoundInsets.right;
-  contentSize.height -= compoundInsets.top + compoundInsets.bottom;
+  CGSize contentSize = self.backedTextInputView.contentSize;
+  UIEdgeInsets reactPaddingInsets = self.reactPaddingInsets;
+  contentSize.width -= reactPaddingInsets.left + reactPaddingInsets.right;
+  contentSize.height -= reactPaddingInsets.top + reactPaddingInsets.bottom;
   // Returning value does NOT include border and padding insets.
   return contentSize;
 }

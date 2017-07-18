@@ -19,5 +19,6 @@
 @property (nonatomic, strong, nullable) UIFont *font;
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
 @property (nonatomic, strong, nullable) UIView *inputAccessoryView;
+@property (nonatomic, readonly) CGSize contentSize;
 
 @end

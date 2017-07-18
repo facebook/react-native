@@ -134,6 +134,7 @@ static UIColor *defaultPlaceholderColor()
 
 - (CGFloat)preferredMaxLayoutWidth
 {
+  // Returning size DOES contain `textContainerInset` (aka `padding`).
   return _preferredMaxLayoutWidth ?: self.placeholderSize.width;
 }
 
@@ -149,6 +150,18 @@ static UIColor *defaultPlaceholderColor()
   return placeholderSize;
 }
 
+- (CGSize)contentSize
+{
+  CGSize contentSize = super.contentSize;
+  CGSize placeholderSize = self.placeholderSize;
+  // When a text input is empty, it actually displays a placehoder.
+  // So, we have to consider `placeholderSize` as a minimum `contentSize`.
+  // Returning size DOES contain `textContainerInset` (aka `padding`).
+  return CGSizeMake(
+    MAX(contentSize.width, placeholderSize.width),
+    MAX(contentSize.height, placeholderSize.height));
+}
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];
@@ -161,6 +174,7 @@ static UIColor *defaultPlaceholderColor()
 
 - (CGSize)intrinsicContentSize
 {
+  // Returning size DOES contain `textContainerInset` (aka `padding`).
   return [self sizeThatFits:CGSizeMake(self.preferredMaxLayoutWidth, INFINITY)];
 }
 
@@ -169,7 +183,7 @@ static UIColor *defaultPlaceholderColor()
   // Returned fitting size depends on text size and placeholder size.
   CGSize textSize = [self fixedSizeThatFits:size];
   CGSize placeholderSize = self.placeholderSize;
-  // Returning size DOES contain `textContainerInset`.
+  // Returning size DOES contain `textContainerInset` (aka `padding`).
   return CGSizeMake(MAX(textSize.width, placeholderSize.width), MAX(textSize.height, placeholderSize.height));
 }
 

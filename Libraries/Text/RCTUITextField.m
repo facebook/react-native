@@ -114,6 +114,12 @@
 
 #pragma mark - Layout
 
+- (CGSize)contentSize
+{
+  // Returning size DOES contain `textContainerInset` (aka `padding`).
+  return self.intrinsicContentSize;
+}
+
 - (CGSize)intrinsicContentSize
 {
   // Note: `placeholder` defines intrinsic size for `<TextInput>`.
@@ -122,11 +128,13 @@
   size = CGSizeMake(RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height));
   size.width += _textContainerInset.left + _textContainerInset.right;
   size.height += _textContainerInset.top + _textContainerInset.bottom;
+  // Returning size DOES contain `textContainerInset` (aka `padding`).
   return size;
 }
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
+  // All size values here contain `textContainerInset` (aka `padding`).
   CGSize intrinsicSize = self.intrinsicContentSize;
   return CGSizeMake(MIN(size.width, intrinsicSize.width), MIN(size.height, intrinsicSize.height));
 }
