@@ -16,6 +16,7 @@ Building apps for mobile platforms is nuanced, there are many little details tha
 ## Topics index
 
 - [Configure text inputs](#configure-text-inputs)
+- [Manage layout when keyboard is visible](#manage-layout-when-keyboard-is-visible)
 - [Make tappable areas larger](#make-tappable-areas-larger)
 - [Use Android Ripple](#use-android-ripple)
 - [Learn More](#learn-more)
@@ -37,6 +38,14 @@ Check out [`TextInput` docs](docs/textinput.html) for more configuration options
 <video src="img/textinput.mp4" autoplay loop width="320" height="430"></video>
 
 [Try it on your phone](https://snack.expo.io/H1iGt2vSW)
+
+## Manage layout when keyboard is visible
+
+Software keyboard takes almost half of the screen. If you have interactive elements that can get covered by the keyboard, make sure they are still accessible by using `KeyboardAvoidingView` ([see docs](docs/keyboardavoidingview.html)).
+
+<video src="img/keyboardavoidingview.mp4" autoplay loop width="320" height="448"></video>
+
+[Try it on your phone](https://snack.expo.io/ryxRkwnrW)
 
 ## Make tappable areas larger
 
