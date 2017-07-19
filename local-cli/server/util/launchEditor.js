@@ -67,6 +67,8 @@ function getArgumentsForLineNumber(editor, fileName, lineNumber, workspace) {
       return ['+' + lineNumber, fileName];
     case 'rmate':
     case 'mate':
+    case 'webstorm.exe':
+    case 'webstorm64.exe':
     case 'mine':
       return ['--line', lineNumber, fileName];
     case 'code':
