@@ -36,12 +36,14 @@ RCT_ENUM_CONVERTER(UIScrollViewIndicatorStyle, (@{
   @"white": @(UIScrollViewIndicatorStyleWhite),
 }), UIScrollViewIndicatorStyleDefault, integerValue)
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0
 RCT_ENUM_CONVERTER(UIScrollViewContentInsetAdjustmentBehavior, (@{
   @"automatic": @(UIScrollViewContentInsetAdjustmentAutomatic),
   @"scrollableAxes": @(UIScrollViewContentInsetAdjustmentScrollableAxes),
   @"never": @(UIScrollViewContentInsetAdjustmentNever),
   @"always": @(UIScrollViewContentInsetAdjustmentAlways),
 }), UIScrollViewContentInsetAdjustmentNever, integerValue)
+#endif
 
 @end
 
@@ -88,7 +90,9 @@ RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollBegin, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollEnd, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onScrollAnimationEnd, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(DEPRECATED_sendUpdatedChildFrames, BOOL)
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0
 RCT_EXPORT_VIEW_PROPERTY(contentInsetAdjustmentBehavior, UIScrollViewContentInsetAdjustmentBehavior)
+#endif
 
 // overflow is used both in css-layout as well as by react-native. In css-layout
 // we always want to treat overflow as scroll but depending on what the overflow

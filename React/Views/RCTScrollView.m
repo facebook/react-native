@@ -358,7 +358,9 @@ static inline BOOL isRectInvalid(CGRect rect) {
     // doesn't do weird things to UIScrollView insets automatically
     // and keeps it as an opt-in behavior.
     if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-      _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+      #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0
+        _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+      #endif
     }
     
     _automaticallyAdjustContentInsets = YES;
@@ -908,6 +910,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScroll
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
 RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIEdgeInsets);
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0
 - (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior
 {
   // `contentInsetAdjustmentBehavior` is available since iOS 11.
@@ -917,6 +920,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
     _scrollView.contentOffset = contentOffset;
   }
 }
+#endif
 
 - (void)sendScrollEventWithName:(NSString *)eventName
                      scrollView:(UIScrollView *)scrollView
