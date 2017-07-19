@@ -12,7 +12,6 @@
 var remoteModulesConfig = [
   ['RemoteModule1',null,['remoteMethod','promiseMethod'],[]],
   ['RemoteModule2',null,['remoteMethod','promiseMethod'],[]],
-  ['Timing',null,['callImmediates']],
 ];
 
 var MessageQueueTestConfig = {

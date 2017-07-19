@@ -478,10 +478,4 @@ const JSTimers = {
   },
 };
 
-if (!Timing) {
-  console.warn("Timing native module is not available, can't set timers.");
-  // $FlowFixMe: we can assume timers are generally available
-  module.exports = ({}: typeof JSTimers);
-} else {
-  module.exports = JSTimers;
-}
+module.exports = JSTimers;
