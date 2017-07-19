@@ -18,6 +18,10 @@ One common question is how to handle the "state" of your React Native applicatio
 
 If you're looking for a library that does a specific thing, check out [Awesome React Native](http://www.awesome-react-native.com/), a curated list of components that also has demos, articles, and other stuff.
 
+## Installing dependencies
+
+You can simply run `npm install library`, then use `import moment from 'moment';` in your code to import a JS Node library.
+
 ## Example Apps
 
 There are some [example apps on GitHub](https://github.com/ReactNativeNews/React-Native-Apps). You can run the apps on a simulator or device, and you can see the source code for these apps, which is neat.
