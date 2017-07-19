@@ -10,6 +10,7 @@ React/Modules/* @shergin @javache
 React/CxxBridge/* @javache
 React/Executors/* @javache
 ReactAndroid/src/main/java/com/facebook/react/animated/* @janicduplessis
+ReactCommon/* @javache
 website/* @facebook/react-native
 website/showcase.json @facebook/react-native
 package.json @facebook/react-native
