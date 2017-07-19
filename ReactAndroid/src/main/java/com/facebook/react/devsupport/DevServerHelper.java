@@ -80,7 +80,7 @@ public class DevServerHelper {
   private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
   private static final String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
-  private static final String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s";
+  private static final String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s&app=%s";
   private static final String SYMBOLICATE_URL_FORMAT = "http://%s/symbolicate";
   private static final String OPEN_STACK_FRAME_URL_FORMAT = "http://%s/open-stack-frame";
 
@@ -317,7 +317,8 @@ public class DevServerHelper {
         Locale.US,
         INSPECTOR_DEVICE_URL_FORMAT,
         mSettings.getPackagerConnectionSettings().getInspectorServerHost(),
-        AndroidInfoHelpers.getFriendlyDeviceName());
+        AndroidInfoHelpers.getFriendlyDeviceName(),
+        mPackageName);
   }
 
   public BundleDownloader getBundleDownloader() {
