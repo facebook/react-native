@@ -10,12 +10,13 @@
  * @flow
  */
 
+const PropTypes = require('prop-types');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 const requireNativeComponent = require('requireNativeComponent');
-const ReactPropTypes = React.PropTypes;
+const ReactPropTypes = PropTypes;
 
 import type { ViewProps } from 'ViewPropTypes';
 
