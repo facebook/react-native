@@ -320,7 +320,7 @@ class FlatList<ItemT> extends React.PureComponent<
   }
 
   /**
-   * Scrolls to the item at a the specified index such that it is positioned in the viewable area
+   * Scrolls to the item at the specified index such that it is positioned in the viewable area
    * such that `viewPosition` 0 places it at the top, 1 at the bottom, and 0.5 centered in the
    * middle. `viewOffset` is a fixed number of pixels to offset the final target position.
    *
