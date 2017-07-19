@@ -2,6 +2,13 @@ docs/* @facebook/react-native
 blog/* @facebook/react-native
 Libraries/Animated/* @janicduplessis
 Libraries/NativeAnimation/* @janicduplessis
+Libraries/Image/* @shergin
+Libraries/Text/* @shergin
+React/Base/* @shergin @javache
+React/Views/* @shergin @javache
+React/Modules/* @shergin @javache
+React/CxxBridge/* @javache
+React/Executors/* @javache
 ReactAndroid/src/main/java/com/facebook/react/animated/* @janicduplessis
 website/* @facebook/react-native
 website/showcase.json @facebook/react-native
