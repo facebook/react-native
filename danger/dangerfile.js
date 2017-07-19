@@ -95,8 +95,8 @@ if (isSubmittedByTaskforce) {
 }
 
 // Warns if the bots whitelist file is updated.
-const isBotsCommandsFile = path => includes(path, 'bots/IssueCommands.txt');
-if (isBotsCommandsFile) {
+const issueCommandsFileModified = includes(danger.git.modified_files, 'bots/IssueCommands.txt');
+if (issueCommandsFileModified) {
   const message = ':exclamation: Bots';
   const idea = 'This PR appears to modify the list of people that may issue commands to the ' +
     'GitHub bot.';
