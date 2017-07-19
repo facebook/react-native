@@ -104,6 +104,11 @@ public class LocationModule extends ReactContextBaseJavaModule {
     }
   }
 
+  @ReactMethod
+  public void setRNConfiguration(ReadableMap config) {
+    // No supported configuration options on Android.
+  }
+
   /**
    * Get the current position. This can return almost immediately if the location is cached or
    * request an update, which might take a while.
