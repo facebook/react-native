@@ -18,6 +18,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeMethod.h>
 #import <React/RCTConvert.h>
+#import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTCxxModule.h>
 #import <React/RCTCxxUtils.h>
 #import <React/RCTDevSettings.h>
@@ -279,21 +280,28 @@ struct RCTInstanceCallback : public InstanceCallback {
   // This doesn't really do anything.  The real work happens in initializeBridge.
   _reactInstance.reset(new Instance);
 
-  // Prepare executor factory (shared_ptr for copy into block)
   __weak RCTCxxBridge *weakSelf = self;
+
+  // Prepare executor factory (shared_ptr for copy into block)
   std::shared_ptr<JSExecutorFactory> executorFactory;
   if (!self.executorClass) {
-    BOOL useCustomJSC =
-      [self.delegate respondsToSelector:@selector(shouldBridgeUseCustomJSC:)] &&
-      [self.delegate shouldBridgeUseCustomJSC:self];
-    // The arg is a cache dir.  It's not used with standard JSC.
-    executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
-      ("OwnerIdentity", "ReactNative")
-      ("UseCustomJSC", (bool)useCustomJSC)
-#if RCT_PROFILE
-      ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
-#endif
-    ));
+    if ([self.delegate conformsToProtocol:@protocol(RCTCxxBridgeDelegate)]) {
+      id<RCTCxxBridgeDelegate> cxxDelegate = (id<RCTCxxBridgeDelegate>) self.delegate;
+      executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
+    }
+    if (!executorFactory) {
+      BOOL useCustomJSC =
+        [self.delegate respondsToSelector:@selector(shouldBridgeUseCustomJSC:)] &&
+        [self.delegate shouldBridgeUseCustomJSC:self];
+      // The arg is a cache dir.  It's not used with standard JSC.
+      executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
+        ("OwnerIdentity", "ReactNative")
+        ("UseCustomJSC", (bool)useCustomJSC)
+  #if RCT_PROFILE
+        ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
+  #endif
+      ));
+    }
   } else {
     id<RCTJavaScriptExecutor> objcExecutor = [self moduleForClass:self.executorClass];
     executorFactory.reset(new RCTObjcExecutorFactory(objcExecutor, ^(NSError *error) {
