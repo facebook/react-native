@@ -229,7 +229,7 @@ var RCTSwitch = requireNativeComponent('RCTSwitch', Switch, {
 
 ## Events
 
-So now we have a native map component that we can control easily from JS, but how do we deal with events from the user, like pinch-zooms or panning to change the visible region?  The key is to declare an event handler property on `RNTMapManager`, make it a delegate for all the views it vends, and forward events to JS by calling the event handler block from the native view.  This looks like so (simplified from the full implementation):
+So now we have a native map component that we can control easily from JS, but how do we deal with events from the user, like pinch-zooms or panning to change the visible region?  The key is to declare an event handler property on `RNTMapManager`, make it a delegate for all the views it vends, and forward events to JS by calling the event handler block from the native view. Event handler properties are required to be prefixed with `on`, e.g. `onEvent`. This looks like so (simplified from the full implementation):
 
 ```objectivec
 // RNTMap.h
