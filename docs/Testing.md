@@ -5,7 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/testing.html
 next: understanding-cli
-previous: upgrading
+previous: contributing
 ---
 
 This document is about running tests on React Native itself. If you're interested in testing a React Native app, check out the [React Native Tutorial](http://facebook.github.io/jest/docs/tutorial-react-native.html) on the Jest website.
