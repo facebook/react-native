@@ -4,7 +4,7 @@ title: Upgrading to new React Native versions
 layout: docs
 category: Guides
 permalink: docs/upgrading.html
-next: testing
+next: contributing
 previous: running-on-device
 ---
 

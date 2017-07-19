@@ -6,7 +6,7 @@ category: Guides (iOS)
 permalink: docs/native-modules-ios.html
 banner: ejected
 next: native-components-ios
-previous: upgrading
+previous: testing
 ---
 
 Sometimes an app needs access to platform API, and React Native doesn't have a corresponding module yet. Maybe you want to reuse some existing Objective-C, Swift or C++ code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.

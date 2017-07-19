@@ -226,9 +226,6 @@
           var parent = hashLinks[i].parentElement;
           while (parent) {
             if (parent.tagName === 'BLOCK') {
-              var gettingStartedGuideType = null;
-              var devOS = null;
-              var targetPlatform = null;
               // Could be more than one target os and dev platform, but just choose some sort of order
               // of priority here.
 
