@@ -360,7 +360,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
             try {
               // If JS wants progress updates during the download, and it requested a text response,
               // periodically send response data updates to JS.
-              if (useIncrementalUpdates && responseType.equals("text")) {
+              if (useIncrementalUpdates && responseType != null && responseType.equals("text")) {
                 readWithProgress(eventEmitter, requestId, responseBody);
                 ResponseUtil.onRequestSuccess(eventEmitter, requestId);
                 return;
@@ -368,7 +368,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
               // Otherwise send the data in one big chunk, in the format that JS requested.
               String responseString = "";
-              if (responseType.equals("text")) {
+              if (responseType != null && responseType.equals("text") && responseBody != null) {
                 responseString = responseBody.string();
               } else if (responseType.equals("base64")) {
                 responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
