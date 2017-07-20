@@ -19,19 +19,16 @@
 
 #import <cxxreact/JSBundleType.h>
 #import <jschelpers/JavaScriptCore.h>
-
-#import "JSCSamplingProfiler.h"
-#import "RCTAssert.h"
-#import "RCTBridge+Private.h"
-#import "RCTDefines.h"
-#import "RCTDevSettings.h"
-#import "RCTJSCErrorHandling.h"
-#import "RCTJSCProfiler.h"
-#import "RCTJavaScriptLoader.h"
-#import "RCTLog.h"
-#import "RCTPerformanceLogger.h"
-#import "RCTProfile.h"
-#import "RCTUtils.h"
+#import <React/RCTAssert.h>
+#import <React/RCTBridge+Private.h>
+#import <React/RCTDefines.h>
+#import <React/RCTDevSettings.h>
+#import <React/RCTJSCErrorHandling.h>
+#import <React/RCTJavaScriptLoader.h>
+#import <React/RCTLog.h>
+#import <React/RCTPerformanceLogger.h>
+#import <React/RCTProfile.h>
+#import <React/RCTUtils.h>
 
 #if (RCT_PROFILE || RCT_DEV) && __has_include("RCTDevMenu.h")
 #import "RCTDevMenu.h"
@@ -39,8 +36,6 @@
 
 NSString *const RCTJSCThreadName = @"com.facebook.react.JavaScript";
 NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
-RCT_EXTERN NSString *const RCTFBJSContextClassKey = @"_RCTFBJSContextClassKey";
-RCT_EXTERN NSString *const RCTFBJSValueClassKey = @"_RCTFBJSValueClassKey";
 
 struct __attribute__((packed)) ModuleData {
   uint32_t offset;
@@ -167,34 +162,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 RCT_EXPORT_MODULE()
 
-#if RCT_DEV
-static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
-{
-#if __has_include("RCTDevMenu.h")
-  __weak RCTBridge *weakBridge = bridge;
-  __weak RCTDevSettings *devSettings = bridge.devSettings;
-  if (RCTJSCProfilerIsSupported()) {
-    [bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      return devSettings.isJSCProfilingEnabled ? @"Stop Profiling" : @"Start Profiling";
-    } handler:^{
-      BOOL shouldStart = !devSettings.isJSCProfilingEnabled;
-      devSettings.isJSCProfilingEnabled = shouldStart;
-      if (shouldStart != RCTJSCProfilerIsProfiling(context)) {
-        if (shouldStart) {
-          RCTJSCProfilerStart(context);
-        } else {
-          NSString *outputFile = RCTJSCProfilerStop(context);
-          NSData *profileData = [NSData dataWithContentsOfFile:outputFile options:NSDataReadingMappedIfSafe error:NULL];
-          RCTProfileSendResult(weakBridge, @"cpu-profile", profileData);
-        }
-      }
-    }]];
-  }
-#endif
-}
-
-#endif
-
 + (void)runRunLoopThread
 {
   @autoreleasepool {
@@ -282,11 +249,9 @@ static NSThread *newJavaScriptThread(void)
 
 - (RCTJavaScriptContext *)context
 {
-  RCTAssertThread(_javaScriptThread, @"Must be called on JS thread.");
   if (!self.isValid) {
     return nil;
   }
-  RCTAssert(_context != nil, @"Fetching context while valid, but before it is created");
   return _context;
 }
 
@@ -332,12 +297,6 @@ static NSThread *newJavaScriptThread(void)
                                                           object:context];
 
       installBasicSynchronousHooksOnContext(context);
-    }
-
-    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
-    if (!threadDictionary[RCTFBJSContextClassKey] || !threadDictionary[RCTFBJSValueClassKey]) {
-      threadDictionary[RCTFBJSContextClassKey] = JSC_JSContext(contextRef);
-      threadDictionary[RCTFBJSValueClassKey] = JSC_JSValue(contextRef);
     }
 
     RCTFBQuickPerformanceLoggerConfigureHooks(context.JSGlobalContextRef);
@@ -431,8 +390,6 @@ static NSThread *newJavaScriptThread(void)
 #endif
 
 #if RCT_DEV
-    RCTInstallJSCProfiler(self->_bridge, context.JSGlobalContextRef);
-
     // Inject handler used by HMR
     context[@"nativeInjectHMRUpdate"] = ^(NSString *sourceCode, NSString *sourceCodeURL) {
       RCTJSCExecutor *strongSelf = weakSelf;

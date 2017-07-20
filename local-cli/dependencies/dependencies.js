@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const ReactPackager = require('../../packager/react-packager');
+const ReactPackager = require('metro-bundler');
 
 const denodeify = require('denodeify');
 const fs = require('fs');
@@ -33,6 +33,7 @@ function dependencies(argv, config, args, packagerInstance) {
     transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
     verbose: config.verbose,
+    workerPath: config.getWorkerPath(),
   };
 
   const relativePath = packageOpts.projectRoots.map(root =>
@@ -45,6 +46,9 @@ function dependencies(argv, config, args, packagerInstance) {
   const options = {
     platform: args.platform,
     entryFile: relativePath,
+    dev: args.dev,
+    minify: !args.dev,
+    generateSourceMaps: !args.dev,
   };
 
   const writeToFile = args.output;
@@ -92,6 +96,17 @@ module.exports = {
     }, {
       command: '--transformer [path]',
       description: 'Specify a custom transformer to be used'
+    }, {
+      command: '--max-workers [number]',
+      description: 'Specifies the maximum number of workers the worker-pool ' +
+        'will spawn for transforming files. This defaults to the number of the ' +
+        'cores available on your machine.',
+      parse: (workers: string) => Number(workers),
+    }, {
+      command: '--dev [boolean]',
+      description: 'If false, skip all dev-only code path',
+      parse: (val) => val === 'false' ? false : true,
+      default: true,
     }, {
       command: '--verbose',
       description: 'Enables logging',

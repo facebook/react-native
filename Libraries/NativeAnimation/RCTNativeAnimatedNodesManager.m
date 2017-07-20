@@ -11,23 +11,22 @@
 
 #import <React/RCTConvert.h>
 
+#import "RCTAdditionAnimatedNode.h"
 #import "RCTAnimatedNode.h"
 #import "RCTAnimationDriver.h"
-#import "RCTEventAnimation.h"
-
-#import "RCTAdditionAnimatedNode.h"
-#import "RCTInterpolationAnimatedNode.h"
 #import "RCTDiffClampAnimatedNode.h"
 #import "RCTDivisionAnimatedNode.h"
+#import "RCTEventAnimation.h"
+#import "RCTFrameAnimation.h"
+#import "RCTDecayAnimation.h"
+#import "RCTInterpolationAnimatedNode.h"
 #import "RCTModuloAnimatedNode.h"
 #import "RCTMultiplicationAnimatedNode.h"
-#import "RCTModuloAnimatedNode.h"
 #import "RCTPropsAnimatedNode.h"
+#import "RCTSpringAnimation.h"
 #import "RCTStyleAnimatedNode.h"
 #import "RCTTransformAnimatedNode.h"
 #import "RCTValueAnimatedNode.h"
-#import "RCTFrameAnimation.h"
-#import "RCTSpringAnimation.h"
 
 @implementation RCTNativeAnimatedNodesManager
 {
@@ -136,6 +135,22 @@
   }
 }
 
+- (void)restoreDefaultValues:(nonnull NSNumber *)nodeTag
+{
+  RCTAnimatedNode *node = _animationNodes[nodeTag];
+  // Restoring default values needs to happen before UIManager operations so it is
+  // possible the node hasn't been created yet if it is being connected and
+  // disconnected in the same batch. In that case we don't need to restore
+  // default values since it will never actually update the view.
+  if (node == nil) {
+    return;
+  }
+  if (![node isKindOfClass:[RCTPropsAnimatedNode class]]) {
+    RCTLogError(@"Not a props node.");
+  }
+  [(RCTPropsAnimatedNode *)node restoreDefaultValues];
+}
+
 - (void)dropAnimatedNode:(nonnull NSNumber *)tag
 {
   RCTAnimatedNode *node = _animationNodes[tag];
@@ -209,7 +224,7 @@
   RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)_animationNodes[nodeTag];
 
   NSString *type = config[@"type"];
-  id<RCTAnimationDriver>animationDriver;
+  id<RCTAnimationDriver> animationDriver;
 
   if ([type isEqual:@"frames"]) {
     animationDriver = [[RCTFrameAnimation alloc] initWithId:animationId
@@ -223,6 +238,11 @@
                                                      forNode:valueNode
                                                     callBack:callBack];
 
+  } else if ([type isEqual:@"decay"]) {
+    animationDriver = [[RCTDecayAnimation alloc] initWithId:animationId
+                                                     config:config
+                                                    forNode:valueNode
+                                                   callBack:callBack];
   } else {
     RCTLogError(@"Unsupported animation type: %@", config[@"type"]);
     return;
@@ -235,9 +255,9 @@
 
 - (void)stopAnimation:(nonnull NSNumber *)animationId
 {
-  for (id<RCTAnimationDriver>driver in _activeAnimations) {
+  for (id<RCTAnimationDriver> driver in _activeAnimations) {
     if ([driver.animationId isEqual:animationId]) {
-      [driver removeAnimation];
+      [driver stopAnimation];
       [_activeAnimations removeObject:driver];
       break;
     }
@@ -327,11 +347,10 @@
 }
 
 - (void)stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag
-                           valueObserver:(id<RCTValueAnimatedNodeObserver>)valueObserver
 {
   RCTAnimatedNode *node = _animationNodes[tag];
   if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
-    ((RCTValueAnimatedNode *)node).valueObserver = valueObserver;
+    ((RCTValueAnimatedNode *)node).valueObserver = nil;
   }
 }
 
@@ -341,7 +360,7 @@
 - (void)startAnimationLoopIfNeeded
 {
   if (!_displayLink && _activeAnimations.count > 0) {
-    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(stepAnimations)];
+    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(stepAnimations:)];
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
   }
 }
@@ -361,17 +380,18 @@
   }
 }
 
-- (void)stepAnimations
+- (void)stepAnimations:(CADisplayLink *)displaylink
 {
-  for (id<RCTAnimationDriver>animationDriver in _activeAnimations) {
-    [animationDriver stepAnimation];
+  NSTimeInterval time = displaylink.timestamp;
+  for (id<RCTAnimationDriver> animationDriver in _activeAnimations) {
+    [animationDriver stepAnimationWithTime:time];
   }
 
   [self updateAnimations];
 
-  for (id<RCTAnimationDriver>animationDriver in [_activeAnimations copy]) {
+  for (id<RCTAnimationDriver> animationDriver in [_activeAnimations copy]) {
     if (animationDriver.animationHasFinished) {
-      [animationDriver removeAnimation];
+      [animationDriver stopAnimation];
       [_activeAnimations removeObject:animationDriver];
     }
   }

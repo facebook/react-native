@@ -97,6 +97,7 @@ type AnimationConfig = {
   isInteraction?: bool,
   useNativeDriver?: bool,
   onComplete?: ?EndCallback,
+  iterations?: number,
 };
 
 // Important note: start() and stop() will only be called at most once.
@@ -107,6 +108,7 @@ class Animation {
   __isInteraction: bool;
   __nativeId: number;
   __onEnd: ?EndCallback;
+  __iterations: number;
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
@@ -228,7 +230,7 @@ function _flush(rootNode: AnimatedValue): void {
   animatedStyles.forEach(animatedStyle => animatedStyle.update());
 }
 
-type TimingAnimationConfig =  AnimationConfig & {
+type TimingAnimationConfig = AnimationConfig & {
   toValue: number | AnimatedValue | {x: number, y: number} | AnimatedValueXY,
   easing?: (value: number) => number,
   duration?: number,
@@ -271,6 +273,7 @@ class TimingAnimation extends Animation {
     this._easing = config.easing !== undefined ? config.easing : easeInOut();
     this._duration = config.duration !== undefined ? config.duration : 500;
     this._delay = config.delay !== undefined ? config.delay : 0;
+    this.__iterations = config.iterations !== undefined ? config.iterations : 1;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
     this._useNativeDriver = shouldUseNativeDriver(config);
   }
@@ -286,7 +289,7 @@ class TimingAnimation extends Animation {
       type: 'frames',
       frames,
       toValue: this._toValue,
-      delay: this._delay
+      iterations: this.__iterations,
     };
   }
 
@@ -386,6 +389,7 @@ class DecayAnimation extends Animation {
     this._velocity = config.velocity;
     this._useNativeDriver = shouldUseNativeDriver(config);
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
+    this.__iterations = config.iterations !== undefined ? config.iterations : 1;
   }
 
   __getNativeAnimationConfig() {
@@ -393,6 +397,7 @@ class DecayAnimation extends Animation {
       type: 'decay',
       deceleration: this._deceleration,
       velocity: this._velocity,
+      iterations: this.__iterations,
     };
   }
 
@@ -454,6 +459,7 @@ type SpringAnimationConfig = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
+  delay?: number,
 };
 
 type SpringAnimationConfigSingle = AnimationConfig & {
@@ -466,6 +472,7 @@ type SpringAnimationConfigSingle = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
+  delay?: number,
 };
 
 function withDefault<T>(value: ?T, defaultValue: T): T {
@@ -487,6 +494,8 @@ class SpringAnimation extends Animation {
   _toValue: any;
   _tension: number;
   _friction: number;
+  _delay: number;
+  _timeout: any;
   _lastTime: number;
   _onUpdate: (value: number) => void;
   _animationFrame: any;
@@ -503,8 +512,10 @@ class SpringAnimation extends Animation {
     this._initialVelocity = config.velocity;
     this._lastVelocity = withDefault(config.velocity, 0);
     this._toValue = config.toValue;
+    this._delay = withDefault(config.delay, 0);
     this._useNativeDriver = shouldUseNativeDriver(config);
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
+    this.__iterations = config.iterations !== undefined ? config.iterations : 1;
 
     var springConfig;
     if (config.bounciness !== undefined || config.speed !== undefined) {
@@ -536,6 +547,7 @@ class SpringAnimation extends Animation {
       friction: this._friction,
       initialVelocity: withDefault(this._initialVelocity, this._lastVelocity),
       toValue: this._toValue,
+      iterations: this.__iterations,
     };
   }
 
@@ -564,10 +576,20 @@ class SpringAnimation extends Animation {
         this._initialVelocity !== null) {
       this._lastVelocity = this._initialVelocity;
     }
-    if (this._useNativeDriver) {
-      this.__startNativeAnimation(animatedValue);
+
+    var start = () => {
+      if (this._useNativeDriver) {
+        this.__startNativeAnimation(animatedValue);
+      } else {
+        this.onUpdate();
+      }
+    };
+
+    //  If this._delay is more than 0, we start after the timeout.
+    if (this._delay) {
+      this._timeout = setTimeout(start, this._delay);
     } else {
-      this.onUpdate();
+      start();
     }
   }
 
@@ -678,6 +700,7 @@ class SpringAnimation extends Animation {
   stop(): void {
     super.stop();
     this.__active = false;
+    clearTimeout(this._timeout);
     global.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
   }
@@ -695,6 +718,7 @@ var _uniqueId = 1;
  */
 class AnimatedValue extends AnimatedWithChildren {
   _value: number;
+  _startingValue: number;
   _offset: number;
   _animation: ?Animation;
   _tracking: ?Animated;
@@ -703,7 +727,7 @@ class AnimatedValue extends AnimatedWithChildren {
 
   constructor(value: number) {
     super();
-    this._value = value;
+    this._startingValue = this._value = value;
     this._offset = 0;
     this._animation = null;
     this._listeners = {};
@@ -844,6 +868,14 @@ class AnimatedValue extends AnimatedWithChildren {
     this._animation && this._animation.stop();
     this._animation = null;
     callback && callback(this.__getValue());
+  }
+
+  /**
+  * Stops any animation and resets the value to its original
+  */
+  resetAnimation(callback?: ?(value: number) => void): void {
+    this.stopAnimation(callback);
+    this._value = this._startingValue;
   }
 
   /**
@@ -1013,6 +1045,12 @@ class AnimatedValueXY extends AnimatedWithChildren {
     };
   }
 
+  resetAnimation(callback?: (value: {x: number, y: number}) => void): void {
+    this.x.resetAnimation();
+    this.y.resetAnimation();
+    callback && callback(this.__getValue());
+  }
+
   stopAnimation(callback?: (value: {x: number, y: number}) => void): void {
     this.x.stopAnimation();
     this.y.stopAnimation();
@@ -1086,6 +1124,11 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     this._interpolation = Interpolation.create(config);
   }
 
+  __makeNative() {
+    this._parent.__makeNative();
+    super.__makeNative();
+  }
+
   __getValue(): number | string {
     var parentValue: number = this._parent.__getValue();
     invariant(
@@ -1116,12 +1159,12 @@ class AnimatedInterpolation extends AnimatedWithChildren {
         return value;
       }
       if (/deg$/.test(value)) {
-        const degrees = parseFloat(value, 10) || 0;
+        const degrees = parseFloat(value) || 0;
         const radians = degrees * Math.PI / 180.0;
         return radians;
       } else {
         // Assume radians
-        return parseFloat(value, 10) || 0;
+        return parseFloat(value) || 0;
       }
     });
   }
@@ -1196,9 +1239,9 @@ class AnimatedDivision extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
     this._b.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -1244,9 +1287,9 @@ class AnimatedMultiplication extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
     this._b.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -1287,8 +1330,8 @@ class AnimatedModulo extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -1305,6 +1348,7 @@ class AnimatedModulo extends AnimatedWithChildren {
 
   __detach(): void {
     this._a.__removeChild(this);
+    super.__detach();
   }
 
   __getNativeConfig(): any {
@@ -1333,8 +1377,8 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
+    super.__makeNative();
   }
 
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {
@@ -1355,6 +1399,7 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
 
   __detach(): void {
     this._a.__removeChild(this);
+    super.__detach();
   }
 
   __getNativeConfig(): any {
@@ -1438,6 +1483,7 @@ class AnimatedTransform extends AnimatedWithChildren {
         }
       }
     });
+    super.__detach();
   }
 
   __getNativeConfig(): any {
@@ -1485,32 +1531,48 @@ class AnimatedStyle extends AnimatedWithChildren {
     this._style = style;
   }
 
-  __getValue(): Object {
-    var style = {};
-    for (var key in this._style) {
-      var value = this._style[key];
+  // Recursively get values for nested styles (like iOS's shadowOffset)
+  __walkStyleAndGetValues(style) {
+    const updatedStyle = {};
+    for (const key in style) {
+      const value = style[key];
       if (value instanceof Animated) {
         if (!value.__isNative) {
           // We cannot use value of natively driven nodes this way as the value we have access from
           // JS may not be up to date.
-          style[key] = value.__getValue();
+          updatedStyle[key] = value.__getValue();
         }
+      } else if (value && !Array.isArray(value) && typeof value === 'object') {
+        // Support animating nested values (for example: shadowOffset.height)
+        updatedStyle[key] = this.__walkStyleAndGetValues(value);
       } else {
-        style[key] = value;
+        updatedStyle[key] = value;
       }
     }
-    return style;
+    return updatedStyle;
+  }
+
+  __getValue(): Object {
+    return this.__walkStyleAndGetValues(this._style);
+  }
+
+  // Recursively get animated values for nested styles (like iOS's shadowOffset)
+  __walkStyleAndGetAnimatedValues(style) {
+    const updatedStyle = {};
+    for (const key in style) {
+      const value = style[key];
+      if (value instanceof Animated) {
+        updatedStyle[key] = value.__getAnimatedValue();
+      } else if (value && !Array.isArray(value) && typeof value === 'object') {
+        // Support animating nested values (for example: shadowOffset.height)
+        updatedStyle[key] = this.__walkStyleAndGetAnimatedValues(value);
+      }
+    }
+    return updatedStyle;
   }
 
   __getAnimatedValue(): Object {
-    var style = {};
-    for (var key in this._style) {
-      var value = this._style[key];
-      if (value instanceof Animated) {
-        style[key] = value.__getAnimatedValue();
-      }
-    }
-    return style;
+    return this.__walkStyleAndGetAnimatedValues(this._style);
   }
 
   __attach(): void {
@@ -1529,6 +1591,7 @@ class AnimatedStyle extends AnimatedWithChildren {
         value.__removeChild(this);
       }
     }
+    super.__detach();
   }
 
   __makeNative() {
@@ -1651,7 +1714,9 @@ class AnimatedProps extends Animated {
   }
 
   setNativeView(animatedView: any): void {
-    invariant(this._animatedView === undefined, 'Animated view already set.');
+    if (this._animatedView === animatedView) {
+      return;
+    }
     this._animatedView = animatedView;
     if (this.__isNative) {
       this.__connectAnimatedView();
@@ -1690,7 +1755,9 @@ class AnimatedProps extends Animated {
 function createAnimatedComponent(Component: any): any {
   class AnimatedComponent extends React.Component {
     _component: any;
+    _prevComponent: any;
     _propsAnimated: AnimatedProps;
+    _eventDetachers: Array<Function> = [];
     _setComponentRef: Function;
 
     constructor(props: Object) {
@@ -1700,7 +1767,7 @@ function createAnimatedComponent(Component: any): any {
 
     componentWillUnmount() {
       this._propsAnimated && this._propsAnimated.__detach();
-      this._detachNativeEvents(this.props);
+      this._detachNativeEvents();
     }
 
     setNativeProps(props) {
@@ -1713,42 +1780,28 @@ function createAnimatedComponent(Component: any): any {
 
     componentDidMount() {
       this._propsAnimated.setNativeView(this._component);
-
-      this._attachNativeEvents(this.props);
+      this._attachNativeEvents();
     }
 
-    _attachNativeEvents(newProps) {
-      if (newProps !== this.props) {
-        this._detachNativeEvents(this.props);
-      }
-
+    _attachNativeEvents() {
       // Make sure to get the scrollable node for components that implement
       // `ScrollResponder.Mixin`.
-      const ref = this._component.getScrollableNode ?
+      const scrollableNode = this._component.getScrollableNode ?
         this._component.getScrollableNode() :
         this._component;
 
-      for (const key in newProps) {
-        const prop = newProps[key];
+      for (const key in this.props) {
+        const prop = this.props[key];
         if (prop instanceof AnimatedEvent && prop.__isNative) {
-          prop.__attach(ref, key);
+           prop.__attach(scrollableNode, key);
+           this._eventDetachers.push(() => prop.__detach(scrollableNode, key));
         }
       }
     }
 
-    _detachNativeEvents(props) {
-      // Make sure to get the scrollable node for components that implement
-      // `ScrollResponder.Mixin`.
-      const ref = this._component.getScrollableNode ?
-        this._component.getScrollableNode() :
-        this._component;
-
-      for (const key in props) {
-        const prop = props[key];
-        if (prop instanceof AnimatedEvent && prop.__isNative) {
-          prop.__detach(ref, key);
-        }
-      }
+    _detachNativeEvents() {
+      this._eventDetachers.forEach(remove => remove());
+      this._eventDetachers = [];
     }
 
     _attachProps(nextProps) {
@@ -1781,10 +1834,6 @@ function createAnimatedComponent(Component: any): any {
         callback,
       );
 
-      if (this._component) {
-        this._propsAnimated.setNativeView(this._component);
-      }
-
       // When you call detach, it removes the element from the parent list
       // of children. If it goes to 0, then the parent also detaches itself
       // and so on.
@@ -1796,21 +1845,37 @@ function createAnimatedComponent(Component: any): any {
       oldPropsAnimated && oldPropsAnimated.__detach();
     }
 
-    componentWillReceiveProps(nextProps) {
-      this._attachProps(nextProps);
-      this._attachNativeEvents(nextProps);
+    componentWillReceiveProps(newProps) {
+      this._attachProps(newProps);
+    }
+
+    componentDidUpdate(prevProps) {
+      if (this._component !== this._prevComponent) {
+        this._propsAnimated.setNativeView(this._component);
+      }
+      if (this._component !== this._prevComponent || prevProps !== this.props) {
+        this._detachNativeEvents();
+        this._attachNativeEvents();
+      }
     }
 
     render() {
+      const props = this._propsAnimated.__getValue();
       return (
         <Component
-          {...this._propsAnimated.__getValue()}
+          {...props}
           ref={this._setComponentRef}
+          // The native driver updates views directly through the UI thread so we
+          // have to make sure the view doesn't get optimized away because it cannot
+          // go through the NativeViewHierachyManager since it operates on the shadow
+          // thread.
+          collapsable={this._propsAnimated.__isNative ? false : props.collapsable}
         />
       );
     }
 
     _setComponentRef(c) {
+      this._prevComponent = this._component;
       this._component = c;
     }
 
@@ -1820,14 +1885,24 @@ function createAnimatedComponent(Component: any): any {
       return this._component;
     }
   }
+
+  // ReactNative `View.propTypes` have been deprecated in favor of
+  // `ViewPropTypes`. In their place a temporary getter has been added with a
+  // deprecated warning message. Avoid triggering that warning here by using
+  // temporary workaround, __propTypesSecretDontUseThesePlease.
+  // TODO (bvaughn) Revert this particular change any time after April 1
+  var propTypes =
+    Component.__propTypesSecretDontUseThesePlease ||
+    Component.propTypes;
+
   AnimatedComponent.propTypes = {
     style: function(props, propName, componentName) {
-      if (!Component.propTypes) {
+      if (!propTypes) {
         return;
       }
 
       for (var key in ViewStylePropTypes) {
-        if (!Component.propTypes[key] && props[key] !== undefined) {
+        if (!propTypes[key] && props[key] !== undefined) {
           console.warn(
             'You are setting the style `{ ' + key + ': ... }` as a prop. You ' +
             'should nest it in a style object. ' +
@@ -1888,6 +1963,9 @@ class AnimatedTracking extends Animated {
 type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void,
   stop: () => void,
+  reset: () => void,
+  _startNativeLoop: (iterations?: number) => void,
+  _isUsingNativeDriver: () => boolean,
 };
 
 var add = function(
@@ -1965,16 +2043,18 @@ var spring = function(
   value: AnimatedValue | AnimatedValueXY,
   config: SpringAnimationConfig,
 ): CompositeAnimation {
-  return maybeVectorAnim(value, config, spring) || {
-    start: function(callback?: ?EndCallback): void {
-      callback = _combineCallbacks(callback, config);
-      var singleValue: any = value;
-      var singleConfig: any = config;
+  var start = function(
+    animatedValue: AnimatedValue | AnimatedValueXY,
+    configuration: SpringAnimationConfig,
+    callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, configuration);
+      var singleValue: any = animatedValue;
+      var singleConfig: any = configuration;
       singleValue.stopTracking();
-      if (config.toValue instanceof Animated) {
+      if (configuration.toValue instanceof Animated) {
         singleValue.track(new AnimatedTracking(
           singleValue,
-          config.toValue,
+          configuration.toValue,
           SpringAnimation,
           singleConfig,
           callback
@@ -1982,11 +2062,28 @@ var spring = function(
       } else {
         singleValue.animate(new SpringAnimation(singleConfig), callback);
       }
+  };
+  return maybeVectorAnim(value, config, spring) || {
+    start: function(callback?: ?EndCallback): void {
+      start(value, config, callback);
     },
 
     stop: function(): void {
       value.stopAnimation();
     },
+
+    reset: function(): void {
+      value.resetAnimation();
+    },
+
+    _startNativeLoop: function(iterations?: number): void {
+      var singleConfig = { ...config, iterations };
+      start(value, singleConfig);
+    },
+
+    _isUsingNativeDriver: function(): boolean {
+      return config.useNativeDriver || false;
+    }
   };
 };
 
@@ -1994,16 +2091,18 @@ var timing = function(
   value: AnimatedValue | AnimatedValueXY,
   config: TimingAnimationConfig,
 ): CompositeAnimation {
-  return maybeVectorAnim(value, config, timing) || {
-    start: function(callback?: ?EndCallback): void {
-      callback = _combineCallbacks(callback, config);
-      var singleValue: any = value;
-      var singleConfig: any = config;
+  var start = function(
+    animatedValue: AnimatedValue | AnimatedValueXY,
+    configuration: TimingAnimationConfig,
+    callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, configuration);
+      var singleValue: any = animatedValue;
+      var singleConfig: any = configuration;
       singleValue.stopTracking();
-      if (config.toValue instanceof Animated) {
+      if (configuration.toValue instanceof Animated) {
         singleValue.track(new AnimatedTracking(
           singleValue,
-          config.toValue,
+          configuration.toValue,
           TimingAnimation,
           singleConfig,
           callback
@@ -2011,11 +2110,29 @@ var timing = function(
       } else {
         singleValue.animate(new TimingAnimation(singleConfig), callback);
       }
+  };
+
+  return maybeVectorAnim(value, config, timing) || {
+    start: function(callback?: ?EndCallback): void {
+      start(value, config, callback);
     },
 
     stop: function(): void {
       value.stopAnimation();
     },
+
+    reset: function(): void {
+      value.resetAnimation();
+    },
+
+    _startNativeLoop: function(iterations?: number): void {
+      var singleConfig = { ...config, iterations };
+      start(value, singleConfig);
+    },
+
+    _isUsingNativeDriver: function(): boolean {
+      return config.useNativeDriver || false;
+    }
   };
 };
 
@@ -2023,18 +2140,38 @@ var decay = function(
   value: AnimatedValue | AnimatedValueXY,
   config: DecayAnimationConfig,
 ): CompositeAnimation {
-  return maybeVectorAnim(value, config, decay) || {
-    start: function(callback?: ?EndCallback): void {
-      callback = _combineCallbacks(callback, config);
-      var singleValue: any = value;
-      var singleConfig: any = config;
+  var start = function(
+    animatedValue: AnimatedValue | AnimatedValueXY,
+    configuration: DecayAnimationConfig,
+    callback?: ?EndCallback): void {
+      callback = _combineCallbacks(callback, configuration);
+      var singleValue: any = animatedValue;
+      var singleConfig: any = configuration;
       singleValue.stopTracking();
       singleValue.animate(new DecayAnimation(singleConfig), callback);
+  };
+
+  return maybeVectorAnim(value, config, decay) || {
+    start: function(callback?: ?EndCallback): void {
+      start(value, config, callback);
     },
 
     stop: function(): void {
       value.stopAnimation();
     },
+
+    reset: function(): void {
+      value.resetAnimation();
+    },
+
+    _startNativeLoop: function(iterations?: number): void {
+      var singleConfig = { ...config, iterations };
+      start(value, singleConfig);
+    },
+
+    _isUsingNativeDriver: function(): boolean {
+      return config.useNativeDriver || false;
+    }
   };
 };
 
@@ -2071,6 +2208,23 @@ var sequence = function(
       if (current < animations.length) {
         animations[current].stop();
       }
+    },
+
+    reset: function() {
+      animations.forEach((animation, idx) => {
+        if (idx <= current) {
+          animation.reset();
+        }
+      });
+      current = 0;
+    },
+
+    _startNativeLoop: function() {
+      throw new Error('Loops run using the native driver cannot contain Animated.sequence animations');
+    },
+
+    _isUsingNativeDriver: function(): boolean {
+      return false;
     }
   };
 };
@@ -2122,6 +2276,22 @@ var parallel = function(
         !hasEnded[idx] && animation.stop();
         hasEnded[idx] = true;
       });
+    },
+
+    reset: function(): void {
+      animations.forEach((animation, idx) => {
+        animation.reset();
+        hasEnded[idx] = false;
+        doneCount = 0;
+      });
+    },
+
+    _startNativeLoop: function() {
+      throw new Error('Loops run using the native driver cannot contain Animated.parallel animations');
+    },
+
+    _isUsingNativeDriver: function(): boolean {
+      return false;
     }
   };
 
@@ -2143,6 +2313,59 @@ var stagger = function(
       animation,
     ]);
   }));
+};
+
+type LoopAnimationConfig = { iterations: number };
+
+var loop = function(
+  animation: CompositeAnimation,
+  { iterations = -1 }: LoopAnimationConfig = {},
+): CompositeAnimation {
+  var isFinished = false;
+  var iterationsSoFar = 0;
+  return {
+    start: function(callback?: ?EndCallback) {
+      var restart = function(result: EndResult = {finished: true}): void {
+        if (isFinished ||
+            (iterationsSoFar === iterations) ||
+            (result.finished === false)) {
+          callback && callback(result);
+        } else {
+          iterationsSoFar++;
+          animation.reset();
+          animation.start(restart);
+        }
+      };
+      if (!animation || iterations === 0) {
+        callback && callback({finished: true});
+      } else {
+        if (animation._isUsingNativeDriver()) {
+          animation._startNativeLoop(iterations);
+        } else {
+          restart(); // Start looping recursively on the js thread
+        }
+      }
+    },
+
+    stop: function(): void {
+      isFinished = true;
+      animation.stop();
+    },
+
+    reset: function(): void {
+      iterationsSoFar = 0;
+      isFinished = false;
+      animation.reset();
+    },
+
+    _startNativeLoop: function() {
+      throw new Error('Loops run using the native driver cannot contain Animated.loop animations');
+    },
+
+    _isUsingNativeDriver: function(): boolean {
+      return animation._isUsingNativeDriver();
+    }
+  };
 };
 
 type Mapping = {[key: string]: Mapping} | AnimatedValue;
@@ -2198,9 +2421,30 @@ function attachNativeEvent(viewRef: any, eventName: string, argMapping: Array<?M
   };
 }
 
+function forkEvent(event: ?AnimatedEvent | ?Function, listener: Function): AnimatedEvent | Function {
+  if (!event) {
+    return listener;
+  } else if (event instanceof AnimatedEvent) {
+    event.__addListener(listener);
+    return event;
+  } else {
+    return (...args) => {
+      typeof event === 'function' && event(...args);
+      listener(...args);
+    };
+  }
+}
+
+function unforkEvent(event: ?AnimatedEvent | ?Function, listener: Function): void {
+  if (event && event instanceof AnimatedEvent) {
+    event.__removeListener(listener);
+  }
+}
+
 class AnimatedEvent {
   _argMapping: Array<?Mapping>;
-  _listener: ?Function;
+  _listeners: Array<Function> = [];
+  _callListeners: Function;
   _attachedEvent: ?{
     detach: () => void,
   };
@@ -2211,13 +2455,24 @@ class AnimatedEvent {
     config?: EventConfig = {}
   ) {
     this._argMapping = argMapping;
-    this._listener = config.listener;
+    if (config.listener) {
+      this.__addListener(config.listener);
+    }
+    this._callListeners = this._callListeners.bind(this);
     this._attachedEvent = null;
     this.__isNative = shouldUseNativeDriver(config);
 
     if (__DEV__) {
       this._validateMapping();
     }
+  }
+
+  __addListener(callback: Function): void {
+    this._listeners.push(callback);
+  }
+
+  __removeListener(callback: Function): void {
+    this._listeners = this._listeners.filter((listener) => listener !== callback);
   }
 
   __attach(viewRef, eventName) {
@@ -2234,7 +2489,7 @@ class AnimatedEvent {
 
   __getHandler() {
     if (this.__isNative) {
-      return this._listener;
+      return this._callListeners;
     }
 
     return (...args) => {
@@ -2253,11 +2508,12 @@ class AnimatedEvent {
           traverse(mapping, args[idx], 'arg' + idx);
         });
       }
-
-      if (this._listener) {
-        this._listener.apply(null, args);
-      }
+      this._callListeners(...args);
     };
+  }
+
+  _callListeners(...args) {
+    this._listeners.forEach(listener => listener(...args));
   }
 
   _validateMapping() {
@@ -2509,10 +2765,13 @@ module.exports = {
    * [Origami](https://facebook.github.io/origami/).  Tracks velocity state to
    * create fluid motions as the `toValue` updates, and can be chained together.
    *
-   * Config is an object that may have the following options:
+   * Config is an object that may have the following options. Note that you can
+   * only define bounciness/speed or tension/friction but not both:
    *
    *   - `friction`: Controls "bounciness"/overshoot.  Default 7.
    *   - `tension`: Controls speed.  Default 40.
+   *   - `speed`: Controls speed of the animation. Default 12.
+   *   - `bounciness`: Controls bounciness. Default 8.
    *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   spring,
@@ -2573,6 +2832,13 @@ module.exports = {
    * sequence with successive delays.  Nice for doing trailing effects.
    */
   stagger,
+  /**
+  * Loops a given animation continuously, so that each time it reaches the
+  * end, it resets and begins again from the start. Can specify number of
+  * times to loop using the key 'iterations' in the config. Will loop without
+  * blocking the UI thread if the child animation is set to 'useNativeDriver'.
+  */
+  loop,
 
   /**
    * Takes an array of mappings and extracts values from each arg accordingly,
@@ -2580,9 +2846,9 @@ module.exports = {
    *
    *```javascript
    *  onScroll={Animated.event(
-   *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}]
+   *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}],
    *    {listener},          // Optional async listener
-   *  )
+   *  )}
    *  ...
    *  onPanResponderMove: Animated.event([
    *    null,                // raw event arg ignored
@@ -2607,6 +2873,13 @@ module.exports = {
    * `Animated.event` with `useNativeDrive: true` if possible.
    */
   attachNativeEvent,
+
+  /**
+   * Advanced imperative API for snooping on animated events that are passed in through props. Use
+   * values directly where possible.
+   */
+  forkEvent,
+  unforkEvent,
 
   __PropsOnlyForTests: AnimatedProps,
 };

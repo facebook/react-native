@@ -4,8 +4,9 @@ title: Understanding the CLI
 layout: docs
 category: Guides
 permalink: docs/understanding-cli.html
-next: upgrading
-previous: performance
+banner: ejected
+next: native-modules-ios
+previous: testing
 ---
 
 Though you may have installed the `react-native-cli` via npm as a separate module, it is a shell for accessing the CLI embedded
@@ -35,4 +36,3 @@ module.exports = {
 ### Parameters
 
 The command name identifies the parameters that a command would expect.  When the command parameter is surrounded by greater-than, less-than symbols `< >`, this indicates that the parameter is expected.  When a parameter is surrounded by brackets `[ ]`, this indicates that the parameter is optional.
-

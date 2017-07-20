@@ -4,6 +4,7 @@ title: Linking Libraries
 layout: docs
 category: Guides (iOS)
 permalink: docs/linking-libraries-ios.html
+banner: ejected
 next: running-on-simulator-ios
 previous: native-components-ios
 ---
@@ -44,7 +45,7 @@ Link your native dependencies:
 $ react-native link
 ```
 
-Done! All libraries with a native dependencies should be successfully linked to your iOS/Android project.
+Done! All libraries with native dependencies should be successfully linked to your iOS/Android project.
 
 ### Manual linking
 

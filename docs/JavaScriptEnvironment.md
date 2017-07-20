@@ -4,8 +4,8 @@ title: JavaScript Environment
 layout: docs
 category: Guides
 permalink: docs/javascript-environment.html
-next: navigation
-previous: testing
+next: direct-manipulation
+previous: gesture-responder-system
 ---
 
 ## JavaScript Runtime

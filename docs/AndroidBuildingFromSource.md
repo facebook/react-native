@@ -4,6 +4,7 @@ title: Building React Native from source
 layout: docs
 category: Guides (Android)
 permalink: docs/android-building-from-source.html
+banner: ejected
 next: activityindicator
 previous: android-ui-performance
 ---
@@ -142,9 +143,21 @@ gradle.projectsLoaded {
 }
 ```
 
+## Building for Maven/Nexus deployment
+
+If you find that you need to push up a locally compiled React Native .aar and related files to a remote Nexus repository, you can.
+
+Start by following the `Point Gradle to your Android SDK` section of this page. Once you do this, assuming you have Gradle configured properly, you can then run the following command from the root of your React Native checkout to build and package all required files:
+
+```
+./gradlew ReactAndroid:installArchives
+```
+
+This will package everything that would typically be included in the `android` directory of your `node_modules/react-native/` installation in the root directory of your React Native checkout.
+
 ## Testing
 
-If you made changes to React Native and submit a pull request, all tests will run on your pull request automatically. To run the tests locally, see [Testing](docs/testing.html).
+If you made changes to React Native and submit a pull request, all tests will run on your pull request automatically. To run the tests locally, see [Running Tests](docs/testing.html).
 
 ## Troubleshooting
 

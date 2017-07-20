@@ -8,8 +8,6 @@
  */
 'use strict';
 
-jest.disableAutomock();
-
 var flattenStyle = require('flattenStyle');
 
 describe('flattenStyle', () => {

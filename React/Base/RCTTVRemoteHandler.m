@@ -143,7 +143,7 @@
   [_tvRemoteGestureRecognizers addObject:recognizer];
 }
 
-- (void)sendAppleTVEvent:(NSString *)eventType toView:(UIView *)v
+- (void)sendAppleTVEvent:(NSString *)eventType toView:(__unused UIView *)v
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
                                                       object:@{@"eventType":eventType}];

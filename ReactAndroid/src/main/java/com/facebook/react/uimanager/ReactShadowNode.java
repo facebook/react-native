@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 
 import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaDisplay;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaConstants;
@@ -78,12 +79,18 @@ public class ReactShadowNode {
   private final float[] mPadding = new float[Spacing.ALL + 1];
   private final boolean[] mPaddingIsPercent = new boolean[Spacing.ALL + 1];
   private final YogaNode mYogaNode;
+  private static YogaConfig sYogaConfig;
 
   public ReactShadowNode() {
     if (!isVirtual()) {
       YogaNode node = YogaNodePool.get().acquire();
+      if (sYogaConfig == null) {
+        sYogaConfig = new YogaConfig();
+        sYogaConfig.setPointScaleFactor(0f);
+        sYogaConfig.setUseLegacyStretchBehaviour(true);
+      }
       if (node == null) {
-        node = new YogaNode();
+        node = new YogaNode(sYogaConfig);
       }
       mYogaNode = node;
       Arrays.fill(mPadding, YogaConstants.UNDEFINED);
@@ -372,7 +379,7 @@ public class ReactShadowNode {
   }
 
   public final boolean hasNewLayout() {
-    return mYogaNode == null ? false : mYogaNode.hasNewLayout();
+    return mYogaNode != null && mYogaNode.hasNewLayout();
   }
 
   public final void markLayoutSeen() {
@@ -443,6 +450,23 @@ public class ReactShadowNode {
 
   public final int getTotalNativeChildren() {
     return mTotalNativeChildren;
+  }
+
+  public boolean isDescendantOf(ReactShadowNode ancestorNode) {
+    ReactShadowNode parentNode = getParent();
+
+    boolean isDescendant = false;
+
+    while (parentNode != null) {
+      if (parentNode == ancestorNode) {
+        isDescendant = true;
+        break;
+      } else {
+        parentNode = parentNode.getParent();
+      }
+    }
+
+    return isDescendant;
   }
 
   /**
@@ -770,7 +794,37 @@ public class ReactShadowNode {
 
   @Override
   public String toString() {
-    return mYogaNode.toString();
+    StringBuilder sb = new StringBuilder();
+    toStringWithIndentation(sb, 0);
+    return sb.toString();
+  }
+
+  private void toStringWithIndentation(StringBuilder result, int level) {
+    // Spaces and tabs are dropped by IntelliJ logcat integration, so rely on __ instead.
+    for (int i = 0; i < level; ++i) {
+      result.append("__");
+    }
+
+    result
+      .append(getClass().getSimpleName())
+      .append(" ");
+    if (mYogaNode != null) {
+      result
+        .append(getLayoutWidth())
+        .append(",")
+        .append(getLayoutHeight());
+    } else {
+      result.append("(virtual node)");
+    }
+    result.append("\n");
+
+    if (getChildCount() == 0) {
+      return;
+    }
+
+    for (int i = 0; i < getChildCount(); i++) {
+      getChildAt(i).toStringWithIndentation(result, level + 1);
+    }
   }
 
   public void dispose() {

@@ -8,17 +8,18 @@
  */
 'use strict';
 
-var Hero = require('Hero');
-var Prism = require('Prism');
-var React = require('React');
-var Site = require('Site');
-var Metadata = require('Metadata');
+const Hero = require('Hero');
+const Metadata = require('Metadata');
+const Prism = require('Prism');
+const React = require('React');
+const ShowcaseAppIcon = require('ShowcaseAppIcon');
+const Site = require('Site');
 
 const pinnedApps = Metadata.showcaseApps.filter(app => {
   return app.pinned;
 });
 
-var AppList = React.createClass({
+const AppList = React.createClass({
   render: function() {
     return (
       <div>
@@ -30,36 +31,23 @@ var AppList = React.createClass({
   _renderApp: function(app, i) {
     return (
       <div className="showcase" key={i}>
-        {this._renderIcon(app)}
+        <ShowcaseAppIcon
+          iconUri={app.icon}
+          name={app.name}
+          linkUri={app.infoLink} />
       </div>
-    );
-  },
-
-  _renderIcon: function(app) {
-    return (
-      <a href={app.infoLink}>
-        <img src={app.icon} alt={app.name} />
-      </a>
-    );
-  },
-
-  _renderTitle: function(app) {
-    return (
-      <a href={app.infoLink}>
-        <h3>{app.name}</h3>
-      </a>
     );
   },
 });
 
-var index = React.createClass({
+const index = React.createClass({
   render: function() {
     return (
       <Site>
         <Hero title="React Native" subtitle="Learn once, write anywhere: Build mobile apps with React">
           <div className="buttons-unit">
             <a href="docs/getting-started.html" className="button">Get Started</a>
-            <a href="docs/tutorial.html" className="button">Take the Tutorial</a>
+            <a href="docs/tutorial.html" className="button">Learn the Basics</a>
           </div>
         </Hero>
 
@@ -107,7 +95,10 @@ class AwkwardScrollingImageWithText extends Component {
   render() {
     return (
       <ScrollView>
-        <Image source={{uri: 'https://i.chzbgr.com/full/7345954048/h7E2C65F9/'}} />
+        <Image
+          source={{uri: 'https://i.chzbgr.com/full/7345954048/h7E2C65F9/'}}
+          style={{width: 320, height:180}}
+        />
         <Text>
           On iOS, a React Native ScrollView uses a native UIScrollView.
           On Android, it uses a native ScrollView.
@@ -126,7 +117,7 @@ class AwkwardScrollingImageWithText extends Component {
 
             <h2>Don't waste time recompiling</h2>
             <p>
-              React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With hot reloading, you can even run new code while retaining your application state. Give it a try - it's a magical experience.
+              React Native lets you build your app faster. Instead of recompiling, you can reload your app instantly. With <a href="/react-native/blog/2016/03/24/introducing-hot-reloading.html">Hot Reloading</a>, you can even run new code while retaining your application state. Give it a try - it's a magical experience.
             </p>
             <br />
             <img src="https://media.giphy.com/media/13WZniThXy0hSE/giphy.gif" />
@@ -169,9 +160,6 @@ class SomethingFast extends Component {
               Thousands of apps are using React Native, from established Fortune 500 companies to hot new startups. If you're curious to see what can be accomplished with React Native, check out these apps!
             </p>
             <AppList apps={pinnedApps} />
-            <p className="footnote">
-              Some of these are hybrid native/React Native apps.
-            </p>
             <div className="buttons-unit">
               <a href="/react-native/showcase.html" className="button">More React Native apps</a>
             </div>

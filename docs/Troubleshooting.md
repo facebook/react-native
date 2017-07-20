@@ -10,17 +10,21 @@ These are some common issues you may run into while setting up React Native. If 
 
 ### Port already in use
 
-The React Native packager runs on port 8081. If another process is already using that port (such as McAfee Antivirus on Windows), you can either terminate that process, or change the port that the packager uses.
+The React Native packager runs on port 8081. If another process is already using that port, you can either terminate that process, or change the port that the packager uses.
 
 #### Terminating a process on port 8081
 
 Run the following command on a Mac to find the id for the process that is listening on port 8081:
 
-`$ sudo lsof -i :8081`
+```
+$ sudo lsof -i :8081
+```
 
 Then run the following to terminate the process:
 
-`$ kill -9 <PID>`
+```
+$ kill -9 <PID>
+```
 
 On Windows you can find the process using port 8081 using [Resource Monitor](https://stackoverflow.com/questions/48198/how-can-you-find-out-which-process-is-listening-on-a-port-on-windows) and stop it using Task Manager.
 
@@ -32,11 +36,11 @@ You can configure the packager to use a port other than 8081 by using the `port`
 $ react-native start --port=8088
 ```
 
-You will also need to update your applications to load the JavaScript bundle from the new port. Open the in-app [Developer menu](docs/debugging.html#accessing-the-in-app-developer-menu), then go to **Dev Settings** → **Debug server host for device** and replace 8081 with your port of choice.
+You will also need to update your applications to load the JavaScript bundle from the new port.
 
 ### NPM locking error
 
-If you encounter an error such as "npm WARN locking Error: EACCES" while using the React Native CLI, try running the following:
+If you encounter an error such as `npm WARN locking Error: EACCES` while using the React Native CLI, try running the following:
 
 ```
 sudo chown -R $USER ~/.npm
@@ -92,4 +96,12 @@ If you run into issues where running `react-native init` hangs in your system, t
 
 ```
 react-native init --verbose
+```
+
+## Unable to start react-native package manager (on Linux)
+### Case 1: Error "code":"ENOSPC","errno":"ENOSPC"
+
+Issue caused by the number of directories [inotify](https://github.com/guard/listen/wiki/Increasing-the-amount-of-inotify-watchers) (used by watchman on Linux) can monitor. To solve it, just run this command in your terminal window
+```
+echo fs.inotify.max_user_watches=582222 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 ```

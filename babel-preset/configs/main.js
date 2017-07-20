@@ -10,7 +10,7 @@
 
 var resolvePlugins = require('../lib/resolvePlugins');
 
-module.exports = {
+var base = {
   comments: false,
   compact: true,
   plugins: resolvePlugins([
@@ -38,13 +38,22 @@ module.exports = {
     'transform-react-jsx',
     'transform-regenerator',
     ['transform-es2015-for-of', { loose: true }],
+    require('../transforms/transform-regenerator-runtime-insertion'),
     require('../transforms/transform-symbol-member'),
   ]),
-  env: {
-    development: {
-      plugins: resolvePlugins(['transform-react-jsx-source']),
-    },
-  },
-  retainLines: true,
-  sourceMaps: false,
+};
+
+var devTools = Object.assign({}, base);
+devTools.plugins = devTools.plugins.concat(
+  resolvePlugins(['transform-react-jsx-source'])
+);
+
+
+module.exports = function(options) {
+  var withDevTools = options.withDevTools;
+  if (withDevTools == null) {
+    var env = process.env.BABEL_ENV || process.env.NODE_ENV;
+    withDevTools = !env || env === 'development';
+  }
+  return withDevTools ? devTools : base;
 };

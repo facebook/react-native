@@ -12,10 +12,10 @@
 /**
  * This script tests that React Native end to end installation/bootstrap works for different platforms
  * Available arguments:
- * --ios - to test only ios application end to end
- * --tvos - to test only tvOS application end to end
- * --android - to test only android application end to end
- * --js - to test that JS in the application is compilable
+ * --ios - 'react-native init' and check iOS app doesn't redbox
+ * --tvos - 'react-native init' and check tvOS app doesn't redbox
+ * --android - 'react-native init' and check Android app doesn't redbox
+ * --js - 'react-native init' and only check the packager returns a bundle
  * --skip-cli-install - to skip react-native-cli global installation (for local debugging)
  * --retries [num] - how many times to retry possible flaky commands: npm install and running tests, default 1
  */
@@ -113,22 +113,21 @@ try {
     cd('..');
     exec('keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"');
 
-    echo(`Starting packager server, ${SERVER_PID}`);
+    echo(`Starting appium server, ${APPIUM_PID}`);
     const appiumProcess = spawn('node', ['./node_modules/.bin/appium']);
     APPIUM_PID = appiumProcess.pid;
-    echo(`Starting appium server, ${APPIUM_PID}`);
-    echo('Building app');
+
+    echo('Building the app');
     if (exec('buck build android/app').code) {
       echo('could not execute Buck build, is it installed and in PATH?');
       exitCode = 1;
       throw Error(exitCode);
     }
-    const packagerEnv = Object.create(process.env);
-    packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
+
+    echo(`Starting packager server, ${SERVER_PID}`);
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
-    const packagerProcess = spawn('npm', ['start'], {
-      // stdio: 'inherit',
-      env: packagerEnv
+    const packagerProcess = spawn('npm', ['start', '--', '--max-workers 1'], {
+      env: process.env
     });
     SERVER_PID = packagerProcess.pid;
     // wait a bit to allow packager to startup
@@ -191,12 +190,12 @@ try {
 
   if (argv.js) {
     // Check the packager produces a bundle (doesn't throw an error)
-    if (exec('REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js').code) {
+    if (exec('react-native bundle --max-workers 1 --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js').code) {
       echo('Could not build Android bundle');
       exitCode = 1;
       throw Error(exitCode);
     }
-    if (exec('REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js').code) {
+    if (exec('react-native --max-workers 1 bundle --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js').code) {
       echo('Could not build iOS bundle');
       exitCode = 1;
       throw Error(exitCode);

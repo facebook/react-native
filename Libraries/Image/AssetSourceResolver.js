@@ -13,8 +13,8 @@
 
 export type ResolvedAssetSource = {
   __packager_asset: boolean,
-  width: number,
-  height: number,
+  width: ?number,
+  height: ?number,
   uri: string,
   scale: number,
 };

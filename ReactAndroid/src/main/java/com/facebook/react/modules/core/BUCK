@@ -15,5 +15,6 @@ android_library(
         react_native_target("java/com/facebook/react/devsupport:interfaces"),
         react_native_target("java/com/facebook/react/jstasks:jstasks"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
+        react_native_target("java/com/facebook/react/util:util"),
     ],
 )

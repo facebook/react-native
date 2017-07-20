@@ -30,10 +30,11 @@ def react_native_integration_tests_target(path):
 def react_native_dep(path):
   return '//ReactAndroid/src/main/' + path
 
-JSC_DEPS = [
+JSC_INTERNAL_DEPS = [
   '//native/third-party/jsc:jsc',
   '//native/third-party/jsc:jsc_legacy_profiler',
 ]
+JSC_DEPS = JSC_INTERNAL_DEPS
 
 YOGA_TARGET = '//ReactAndroid/src/main/java/com/facebook:yoga'
 FBGLOGINIT_TARGET = '//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit'
@@ -45,38 +46,28 @@ original_android_library=android_library
 def android_library(
   name,
   deps=[],
-  annotation_processors=[],
-  annotation_processor_deps=[],
+  plugins=[],
   *args,
   **kwargs):
 
   if react_native_target('java/com/facebook/react/uimanager/annotations:annotations') in deps and name != 'processing':
-    react_property_processors = [
-      'com.facebook.react.processing.ReactPropertyProcessor',
-    ]
-    react_property_processor_deps = [
+    react_property_plugins = [
       react_native_target('java/com/facebook/react/processing:processing'),
     ]
 
-    annotation_processors = list(set(annotation_processors + react_property_processors))
-    annotation_processor_deps = list(set(annotation_processor_deps + react_property_processor_deps))
+    plugins = list(set(plugins + react_property_plugins))
 
   if react_native_target('java/com/facebook/react/module/annotations:annotations') in deps and name != 'processing':
-    react_module_processors = [
-      'com.facebook.react.module.processing.ReactModuleSpecProcessor',
-    ]
-    react_module_processor_deps = [
+    react_module_plugins = [
       react_native_target('java/com/facebook/react/module/processing:processing'),
     ]
 
-    annotation_processors = list(set(annotation_processors + react_module_processors))
-    annotation_processor_deps = list(set(annotation_processor_deps + react_module_processor_deps))
+    plugins = list(set(plugins + react_module_plugins))
 
   original_android_library(
     name=name,
     deps=deps,
-    annotation_processors=annotation_processors,
-    annotation_processor_deps=annotation_processor_deps,
+    plugins=plugins,
     *args,
     **kwargs)
 
@@ -116,3 +107,7 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
     srcs = srcs,
     vm_args = vm_args + extra_vm_args,
     *args, **kwargs)
+
+original_cxx_library = cxx_library
+def cxx_library(allow_jni_merging=None, **kwargs):
+    original_cxx_library(**kwargs)

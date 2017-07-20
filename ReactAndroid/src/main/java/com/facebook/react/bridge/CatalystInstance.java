@@ -23,8 +23,12 @@ import com.facebook.react.common.annotations.VisibleForTesting;
  * Java APIs be invokable from JavaScript as well.
  */
 @DoNotStrip
-public interface CatalystInstance extends MemoryPressureListener {
+public interface CatalystInstance
+    extends MemoryPressureListener, JSInstance {
   void runJSBundle();
+
+  // Returns the status of running the JS bundle; waits for an answer if runJSBundle is running
+  boolean hasRunJSBundle();
 
   /**
    * Return the source URL of the JS Bundle that was run, or {@code null} if no JS
@@ -34,11 +38,12 @@ public interface CatalystInstance extends MemoryPressureListener {
 
   // This is called from java code, so it won't be stripped anyway, but proguard will rename it,
   // which this prevents.
-  @DoNotStrip
-  void invokeCallback(ExecutorToken executorToken, final int callbackID, final NativeArray arguments);
+  @Override @DoNotStrip
+  void invokeCallback(
+      int callbackID,
+      NativeArray arguments);
   @DoNotStrip
   void callFunction(
-      ExecutorToken executorToken,
       String module,
       String method,
       NativeArray arguments);
@@ -59,10 +64,15 @@ public interface CatalystInstance extends MemoryPressureListener {
   ReactQueueConfiguration getReactQueueConfiguration();
 
   <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface);
-  <T extends JavaScriptModule> T getJSModule(ExecutorToken executorToken, Class<T> jsInterface);
   <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface);
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
   Collection<NativeModule> getNativeModules();
+
+  /**
+   * This method permits a CatalystInstance to extend the known
+   * Native modules. This provided registry contains only the new modules to load.
+   */
+  void extendNativeModules(NativeModuleRegistry modules);
 
   /**
    * Adds a idle listener for this Catalyst instance. The listener will receive notifications
@@ -77,10 +87,6 @@ public interface CatalystInstance extends MemoryPressureListener {
    * {@link #addBridgeIdleDebugListener}
    */
   void removeBridgeIdleDebugListener(NotThreadSafeBridgeIdleDebugListener listener);
-
-  boolean supportsProfiling();
-  void startProfiler(String title);
-  void stopProfiler(String title, String filename);
 
   @VisibleForTesting
   void setGlobalVariable(String propName, String jsonValue);

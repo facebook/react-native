@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const getHeadersInFolder = require('../../ios/getHeadersInFolder');
 
 describe('ios::getHeadersInFolder', () => {

@@ -32,7 +32,16 @@ function verifyPropTypes(
     componentInterface.name ||
     'unknown';
 
-  if (!componentInterface.propTypes) {
+  // ReactNative `View.propTypes` have been deprecated in favor of
+  // `ViewPropTypes`. In their place a temporary getter has been added with a
+  // deprecated warning message. Avoid triggering that warning here by using
+  // temporary workaround, __propTypesSecretDontUseThesePlease.
+  // TODO (bvaughn) Revert this particular change any time after April 1
+  var propTypes =
+    (componentInterface : any).__propTypesSecretDontUseThesePlease ||
+    componentInterface.propTypes;
+
+  if (!propTypes) {
     throw new Error(
       '`' + componentName + '` has no propTypes defined`'
     );
@@ -40,11 +49,11 @@ function verifyPropTypes(
 
   var nativeProps = viewConfig.NativeProps;
   for (var prop in nativeProps) {
-    if (!componentInterface.propTypes[prop] &&
+    if (!propTypes[prop] &&
         !ReactNativeStyleAttributes[prop] &&
         (!nativePropsToIgnore || !nativePropsToIgnore[prop])) {
       var message;
-      if (componentInterface.propTypes.hasOwnProperty(prop)) {
+      if (propTypes.hasOwnProperty(prop)) {
         message = '`' + componentName + '` has incorrectly defined propType for native prop `' +
         viewConfig.uiViewClassName + '.' + prop + '` of native type `' + nativeProps[prop];
       } else {

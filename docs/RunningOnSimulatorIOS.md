@@ -4,6 +4,7 @@ title: Running On Simulator
 layout: docs
 category: Guides (iOS)
 permalink: docs/running-on-simulator-ios.html
+banner: ejected
 next: communication-ios
 previous: linking-libraries-ios
 ---

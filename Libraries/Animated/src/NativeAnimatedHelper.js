@@ -93,9 +93,9 @@ const API = {
     assertNativeAnimatedModule();
     NativeAnimatedModule.addAnimatedEventToView(viewTag, eventName, eventMapping);
   },
-  removeAnimatedEventFromView(viewTag: ?number, eventName: string) {
+  removeAnimatedEventFromView(viewTag: ?number, eventName: string, animatedNodeTag: ?number) {
     assertNativeAnimatedModule();
-    NativeAnimatedModule.removeAnimatedEventFromView(viewTag, eventName);
+    NativeAnimatedModule.removeAnimatedEventFromView(viewTag, eventName, animatedNodeTag);
   }
 };
 

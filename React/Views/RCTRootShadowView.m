@@ -13,10 +13,6 @@
 
 @implementation RCTRootShadowView
 
-/**
- * Init the RCTRootShadowView with RTL status.
- * Returns a RTL CSS layout if isRTL is true (Default is LTR CSS layout).
- */
 - (instancetype)init
 {
   self = [super init];

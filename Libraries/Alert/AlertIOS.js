@@ -61,7 +61,7 @@ export type AlertButtonStyle = $Enum<{
  * @property {Function=} onPress Callback function when button pressed
  * @property {AlertButtonStyle=} style Button style
  */
-type ButtonsArray = Array<{
+export type ButtonsArray = Array<{
   /**
    * Button label
    */

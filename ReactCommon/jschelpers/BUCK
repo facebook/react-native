@@ -1,4 +1,7 @@
+include_defs("//ReactCommon/DEFS")
+
 EXPORTED_HEADERS = [
+    "InspectorInterfaces.h",
     "JavaScriptCore.h",
     "JSCHelpers.h",
     "JSCWrapper.h",
@@ -7,51 +10,57 @@ EXPORTED_HEADERS = [
     "Value.h",
 ]
 
-if THIS_IS_FBANDROID:
-  include_defs('//ReactAndroid/DEFS')
-
-  cxx_library(
-    name = 'jschelpers',
+rn_xplat_cxx_library(
+    name = "jscinternalhelpers",
+    srcs = glob(
+        ["*.cpp"],
+        excludes = ["systemJSCWrapper.cpp"],
+    ),
+    compiler_flags = [
+        "-Wall",
+        "-fexceptions",
+        "-fvisibility=hidden",
+        "-std=c++1y",
+    ],
+    exported_headers = dict([
+        (
+            "jschelpers/%s" % header,
+            header,
+        )
+        for header in EXPORTED_HEADERS
+    ]),
+    fbobjc_inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
     force_static = True,
-    compiler_flags = [
-      '-Wall',
-      '-fexceptions',
-      '-fvisibility=hidden',
-      '-std=c++1y',
-    ],
-    exported_headers = EXPORTED_HEADERS,
-    headers = glob(['*.h'], excludes=EXPORTED_HEADERS),
-    header_namespace = 'jschelpers',
-    srcs = glob(['*.cpp']),
-    deps = JSC_DEPS + [
-      '//xplat/folly:molly',
-    ],
+    header_namespace = "",
+    headers = glob(
+        ["*.h"],
+        excludes = EXPORTED_HEADERS,
+    ),
     visibility = [
-      'PUBLIC',
+        "PUBLIC",
     ],
-  )
+    deps = JSC_INTERNAL_DEPS + [
+        "//xplat/folly:molly",
+    ],
+)
 
-if THIS_IS_FBOBJC:
-  ios_library(
-    name = 'jschelpers',
-    inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
+rn_xplat_cxx_library(
+    name = "jschelpers",
+    srcs = [],
     compiler_flags = [
-      '-Wall',
-      '-fexceptions',
-      '-fvisibility=hidden',
-      '-std=c++1y',
+        "-Wall",
+        "-fexceptions",
+        "-fvisibility=hidden",
+        "-std=c++1y",
     ],
-    exported_headers = EXPORTED_HEADERS,
-    headers = glob(['*.h'], excludes=EXPORTED_HEADERS),
-    header_namespace = 'jschelpers',
-    srcs = glob(['*.cpp']),
-    frameworks = [
-      '$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework',
+    fbobjc_frameworks = [
+        "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
     ],
-    deps = [
-      '//xplat/folly:molly',
-    ],
+    fbobjc_inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
+    fbobjc_srcs = ["systemJSCWrapper.cpp"],
+    force_static = True,
     visibility = [
-      'PUBLIC',
+        "PUBLIC",
     ],
-  )
+    deps = [":jscinternalhelpers"],
+)

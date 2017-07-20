@@ -14,13 +14,12 @@ const components = [
   '../Libraries/Components/Button.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
   '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
-  '../Libraries/CustomComponents/Lists/FlatList.js',
+  '../Libraries/Lists/FlatList.js',
   '../Libraries/Image/Image.ios.js',
   '../Libraries/Components/Keyboard/KeyboardAvoidingView.js',
-  '../Libraries/CustomComponents/ListView/ListView.js',
-  '../Libraries/Components/MapView/MapView.js',
+  '../Libraries/Lists/ListView/ListView.js',
+  '../Libraries/Components/MaskedView/MaskedViewIOS.ios.js',
   '../Libraries/Modal/Modal.js',
-  '../Libraries/CustomComponents/Navigator/Navigator.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
   '../Libraries/Components/Picker/Picker.js',
   '../Libraries/Components/Picker/PickerIOS.ios.js',
@@ -28,7 +27,7 @@ const components = [
   '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
   '../Libraries/Components/RefreshControl/RefreshControl.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
-  '../Libraries/CustomComponents/Lists/SectionList.js',
+  '../Libraries/Lists/SectionList.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
   '../Libraries/Components/Slider/Slider.js',
   '../Libraries/RCTTest/SnapshotViewIOS.ios.js',
@@ -45,7 +44,7 @@ const components = [
   '../Libraries/Components/Touchable/TouchableWithoutFeedback.js',
   '../Libraries/Components/View/View.js',
   '../Libraries/Components/ViewPager/ViewPagerAndroid.android.js',
-  '../Libraries/CustomComponents/Lists/VirtualizedList.js',
+  '../Libraries/Lists/VirtualizedList.js',
   '../Libraries/Components/WebView/WebView.ios.js',
 ];
 
@@ -59,7 +58,9 @@ const apis = [
   '../Libraries/ReactNative/AppRegistry.js',
   '../Libraries/AppState/AppState.js',
   '../Libraries/Storage/AsyncStorage.js',
-  '../Libraries/Utilities/BackAndroid.android.js',
+  '../Libraries/Utilities/BackAndroid.js',
+  '../Libraries/Utilities/BackHandler.ios.js',
+  '../Libraries/Utilities/BackHandler.android.js',
   '../Libraries/CameraRoll/CameraRoll.js',
   '../Libraries/Components/Clipboard/Clipboard.js',
   '../Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js',
@@ -73,8 +74,7 @@ const apis = [
   '../Libraries/Components/Keyboard/Keyboard.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/Linking/Linking.js',
-  '../Libraries/CustomComponents/ListView/ListViewDataSource.js',
-  '../Libraries/Renderer/src/renderers/native/NativeMethodsMixin.js',
+  '../Libraries/Lists/ListView/ListViewDataSource.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/Interaction/PanResponder.js',
   '../Libraries/PermissionsAndroid/PermissionsAndroid.js',
@@ -91,21 +91,26 @@ const apis = [
   '../Libraries/Vibration/VibrationIOS.ios.js',
 ];
 
-const stylesWithPermalink = [
-  '../Libraries/StyleSheet/LayoutPropTypes.js',
-  '../Libraries/StyleSheet/TransformPropTypes.js',
-  '../Libraries/Components/View/ShadowPropTypesIOS.js',
-];
-
 const stylesForEmbed = [
   '../Libraries/Components/View/ViewStylePropTypes.js',
   '../Libraries/Text/TextStylePropTypes.js',
   '../Libraries/Image/ImageStylePropTypes.js',
 ];
 
+const stylesWithPermalink = [
+  '../Libraries/StyleSheet/LayoutPropTypes.js',
+  '../Libraries/StyleSheet/TransformPropTypes.js',
+  '../Libraries/Components/View/ShadowPropTypesIOS.js',
+  '../Libraries/Components/View/ViewPropTypes.js',
+  ...stylesForEmbed,
+];
+
+const viewPropTypes = '../Libraries/Components/View/ViewPropTypes.js';
+
 module.exports = {
   components,
   apis,
   stylesWithPermalink,
   stylesForEmbed,
+  viewPropTypes,
 };

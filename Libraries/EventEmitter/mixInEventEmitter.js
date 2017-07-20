@@ -14,9 +14,7 @@
 const EventEmitter = require('EventEmitter');
 const EventEmitterWithHolding = require('EventEmitterWithHolding');
 const EventHolder = require('EventHolder');
-const EventValidator = require('EventValidator');
 
-const copyProperties = require('copyProperties');
 const invariant = require('fbjs/lib/invariant');
 const keyOf = require('fbjs/lib/keyOf');
 
@@ -63,13 +61,13 @@ function mixInEventEmitter(cls: Function | Object, types: Object) {
   // Keep track of the provided types, union the types if they already exist,
   // which allows for prototype subclasses to provide more types.
   if (target.hasOwnProperty(TYPES_KEY)) {
-    copyProperties(target.__types, types);
+    Object.assign(target.__types, types);
   } else if (target.__types) {
-    target.__types = copyProperties({}, target.__types, types);
+    target.__types = Object.assign({}, target.__types, types);
   } else {
     target.__types = types;
   }
-  copyProperties(target, EventEmitterMixin);
+  Object.assign(target, EventEmitterMixin);
 }
 
 const EventEmitterMixin = {
@@ -120,7 +118,10 @@ const EventEmitterMixin = {
   __getEventEmitter: function() {
     if (!this.__eventEmitter) {
       let emitter = new EventEmitter();
-      emitter = EventValidator.addValidation(emitter, this.__types);
+      if (__DEV__) {
+        const EventValidator = require('EventValidator');
+        emitter = EventValidator.addValidation(emitter, this.__types);
+      }
 
       const holder = new EventHolder();
       this.__eventEmitter = new EventEmitterWithHolding(emitter, holder);

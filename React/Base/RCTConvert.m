@@ -736,7 +736,7 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
     // thread safe, so we'll pick the lesser of two evils here and block rather
     // than run the risk of crashing
     RCTLogWarn(@"Calling [RCTConvert UIImage:] on a background thread is not recommended");
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
       image = [self UIImage:json];
     });
     return image;
@@ -745,18 +745,9 @@ RCT_ENUM_CONVERTER(RCTAnimationType, (@{
   NSURL *URL = imageSource.request.URL;
   NSString *scheme = URL.scheme.lowercaseString;
   if ([scheme isEqualToString:@"file"]) {
-    NSString *assetName = RCTBundlePathForURL(URL);
-    image = assetName ? [UIImage imageNamed:assetName] : nil;
+    image = RCTImageFromLocalAssetURL(URL);
     if (!image) {
-      // Attempt to load from the file system
-      NSString *filePath = URL.path;
-      if (filePath.pathExtension.length == 0) {
-        filePath = [filePath stringByAppendingPathExtension:@"png"];
-      }
-      image = [UIImage imageWithContentsOfFile:filePath];
-      if (!image) {
-        RCTLogConvertError(json, @"an image. File not found.");
-      }
+      RCTLogConvertError(json, @"an image. File not found.");
     }
   } else if ([scheme isEqualToString:@"data"]) {
     image = [UIImage imageWithData:[NSData dataWithContentsOfURL:URL]];
