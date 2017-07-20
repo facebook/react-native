@@ -18,9 +18,24 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
+typedef NS_ENUM(NSInteger, StorageLocation) {
+  Documents,
+  ApplicationSupport
+};
+
+@implementation RCTConvert (StorageLocation)
+
+RCT_ENUM_CONVERTER(StorageLocation, (@{
+  @"documents": @(Documents),
+  @"applicationSupport": @(ApplicationSupport),
+}), Documents, integerValue)
+
+@end
+
 static NSString *const RCTStorageDirectory = @"RCTAsyncLocalStorage_V1";
 static NSString *const RCTManifestFileName = @"manifest.json";
 static const NSUInteger RCTInlineValueThreshold = 1024;
+static StorageLocation storageLocation = Documents;
 
 #pragma mark - Static helper functions
 
@@ -66,11 +81,16 @@ static NSString *RCTGetStorageDirectory()
 {
   static NSString *storageDirectory = nil;
   static dispatch_once_t onceToken;
+
+  NSSearchPathDirectory searchDir = NSDocumentDirectory;
+  if (storageLocation == ApplicationSupport)
+    searchDir = NSApplicationSupportDirectory;
+
   dispatch_once(&onceToken, ^{
 #if TARGET_OS_TV
     storageDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
 #else
-    storageDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+    storageDirectory = NSSearchPathForDirectoriesInDomains(searchDir, NSUserDomainMask, YES).firstObject;
 #endif
     storageDirectory = [storageDirectory stringByAppendingPathComponent:RCTStorageDirectory];
   });
@@ -169,6 +189,14 @@ RCT_EXPORT_MODULE()
 {
   return RCTGetMethodQueue();
 }
+
+- (NSDictionary *)constantsToExport
+{
+  return @{
+    @"documents": @(Documents),
+    @"applicationSupport": @(ApplicationSupport)
+  };
+};
 
 - (void)clearAllData
 {
@@ -451,6 +479,11 @@ RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
   } else {
     callback(@[(id)kCFNull, _manifest.allKeys]);
   }
+}
+
+RCT_EXPORT_METHOD(setStorageLocation:(StorageLocation)location)
+{
+  storageLocation = location;
 }
 
 @end
