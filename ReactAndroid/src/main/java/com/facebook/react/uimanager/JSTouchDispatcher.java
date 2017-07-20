@@ -116,14 +116,21 @@ public class JSTouchDispatcher {
       mGestureStartTime = TouchEvent.UNSET;
     } else if (action == MotionEvent.ACTION_MOVE) {
       // Update pointer position for current gesture
+      float[] moveTargetCoordinates = new float[2];
+      TouchTargetHelper.findTargetTagAndCoordinatesForTouch(
+        ev.getX(),
+        ev.getY(),
+        mRootViewGroup,
+        moveTargetCoordinates,
+        null);
       eventDispatcher.dispatchEvent(
         TouchEvent.obtain(
           mTargetTag,
           TouchEventType.MOVE,
           ev,
           mGestureStartTime,
-          mTargetCoordinates[0],
-          mTargetCoordinates[1],
+          moveTargetCoordinates[0],
+          moveTargetCoordinates[1],
           mTouchEventCoalescingKeyHelper));
     } else if (action == MotionEvent.ACTION_POINTER_DOWN) {
       // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
