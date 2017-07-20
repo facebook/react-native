@@ -44,14 +44,15 @@
     objectInitMethod = [NSObject instanceMethodForSelector:@selector(init)];
   });
 
-  // If a module overrides `init` then we must assume that it expects to be
-  // initialized on the main thread, because it may need to access UIKit.
-  _requiresMainQueueSetup = !_instance &&
-  [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
-
   // If a module overrides `constantsToExport` then we must assume that it
   // must be called on the main thread, because it may need to access UIKit.
   _hasConstantsToExport = [_moduleClass instancesRespondToSelector:@selector(constantsToExport)];
+
+  // If a module overrides `init` then we must assume that it expects to be
+  // initialized on the main thread, because it may need to access UIKit.
+  const BOOL hasCustomInit = !_instance && [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
+
+  _requiresMainQueueSetup = _hasConstantsToExport || hasCustomInit;
 }
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
@@ -295,13 +296,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   if (_hasConstantsToExport && !_constantsToExport) {
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData gatherConstants] %@", _moduleClass]), nil);
     (void)[self instance];
-    if (!RCTIsMainQueue()) {
-      RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
-    }
+    if (!_requiresMainQueueSetup) {
+      _constantsToExport = [_instance constantsToExport] ?: @{};
+    } else {
+      if (!RCTIsMainQueue()) {
+        RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
+      }
 
-    RCTUnsafeExecuteOnMainQueueSync(^{
-      self->_constantsToExport = [self->_instance constantsToExport] ?: @{};
-    });
+      RCTUnsafeExecuteOnMainQueueSync(^{
+        self->_constantsToExport = [self->_instance constantsToExport] ?: @{};
+      });
+    }
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
 }

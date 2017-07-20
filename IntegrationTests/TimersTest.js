@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var TimerMixin = require('react-timer-mixin');
 
@@ -22,7 +23,8 @@ var {
 } = ReactNative;
 var { TestModule  } = ReactNative.NativeModules;
 
-var TimersTest = React.createClass({
+var TimersTest = createReactClass({
+  displayName: 'TimersTest',
   mixins: [TimerMixin],
 
   _nextTest: () => {},

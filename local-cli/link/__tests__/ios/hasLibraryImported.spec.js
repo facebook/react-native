@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const xcode = require('xcode');
 const hasLibraryImported = require('../../ios/hasLibraryImported');
 const path = require('path');

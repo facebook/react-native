@@ -81,8 +81,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                    code:RCTJavaScriptLoaderErrorNoScriptURL
                                userInfo:@{NSLocalizedDescriptionKey:
                                             [NSString stringWithFormat:@"No script URL provided. Make sure the packager is "
-                                             @"running or you have embedded a JS bundle in your application bundle."
-                                             @"unsanitizedScriptURLString:(%@)", unsanitizedScriptURLString]}];
+                                             @"running or you have embedded a JS bundle in your application bundle.\n\n"
+                                             @"unsanitizedScriptURLString = %@", unsanitizedScriptURLString]}];
     }
     return nil;
   }

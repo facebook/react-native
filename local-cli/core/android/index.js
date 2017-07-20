@@ -29,7 +29,9 @@ exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
 
   const sourceDir = path.join(folder, src);
   const isFlat = sourceDir.indexOf('app') === -1;
-  const manifestPath = findManifest(sourceDir);
+  const manifestPath = userConfig.manifestPath
+    ? path.join(sourceDir, userConfig.manifestPath)
+    : findManifest(sourceDir);
 
   if (!manifestPath) {
     return null;
@@ -38,6 +40,11 @@ exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
   const manifest = readManifest(manifestPath);
 
   const packageName = userConfig.packageName || getPackageName(manifest);
+
+  if (!packageName) {
+    throw new Error(`Package name not found in ${manifestPath}`);
+  }
+
   const packageFolder = userConfig.packageFolder ||
     packageName.replace(/\./g, path.sep);
 
@@ -92,7 +99,9 @@ exports.dependencyConfig = function dependencyConfigAndroid(folder, userConfig) 
   }
 
   const sourceDir = path.join(folder, src);
-  const manifestPath = findManifest(sourceDir);
+  const manifestPath = userConfig.manifestPath
+    ? path.join(sourceDir, userConfig.manifestPath)
+    : findManifest(sourceDir);
 
   if (!manifestPath) {
     return null;

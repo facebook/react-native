@@ -2,15 +2,17 @@
 
 #include "JSLoader.h"
 
+#include <android/asset_manager_jni.h>
+#include <cxxreact/JSBigString.h>
+#include <fb/fbjni.h>
+#include <fb/log.h>
 #include <folly/Conv.h>
 #include <folly/Memory.h>
-#include <android/asset_manager_jni.h>
-#include <fb/fbjni.h>
 #include <fstream>
 #include <sstream>
 #include <streambuf>
 #include <string>
-#include <fb/log.h>
+
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
 using fbsystrace::FbSystraceSection;

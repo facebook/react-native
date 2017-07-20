@@ -11,11 +11,13 @@
  */
 'use strict';
 
+import type {ExtendedError} from 'parseErrorStack';
+
 /**
  * Handles the developer-visible aspect of errors and exceptions
  */
 let exceptionID = 0;
-function reportException(e: Error, isFatal: bool) {
+function reportException(e: ExtendedError, isFatal: bool) {
   const {ExceptionsManager} = require('NativeModules');
   if (ExceptionsManager) {
     const parseErrorStack = require('parseErrorStack');
@@ -84,7 +86,7 @@ function reactConsoleErrorHandler() {
       // (Note: Logic duplicated in polyfills/console.js.)
       return;
     }
-    const error : any = new Error('console.error: ' + str);
+    const error : ExtendedError = new Error('console.error: ' + str);
     error.framesToPop = 1;
     reportException(error, /* isFatal */ false);
   }

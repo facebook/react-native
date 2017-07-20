@@ -15,11 +15,7 @@ var invariant = require("fbjs/lib/invariant");
 
 require("InitializeCore");
 
-var warning = require("fbjs/lib/warning"), RCTEventEmitter = require("RCTEventEmitter"), emptyFunction = require("fbjs/lib/emptyFunction"), UIManager = require("UIManager"), React = require("react"), ExecutionEnvironment = require("fbjs/lib/ExecutionEnvironment"), performanceNow = require("fbjs/lib/performanceNow"), emptyObject = require("fbjs/lib/emptyObject"), checkPropTypes = require("prop-types/checkPropTypes"), shallowEqual = require("fbjs/lib/shallowEqual");
-
-require("ReactNativeFeatureFlags");
-
-var deepDiffer = require("deepDiffer"), flattenStyle = require("flattenStyle"), TextInputState = require("TextInputState"), deepFreezeAndThrowOnMutationInDev = require("deepFreezeAndThrowOnMutationInDev"), instanceCache = {}, instanceProps = {};
+var warning = require("fbjs/lib/warning"), RCTEventEmitter = require("RCTEventEmitter"), emptyFunction = require("fbjs/lib/emptyFunction"), UIManager = require("UIManager"), React = require("react"), ExecutionEnvironment = require("fbjs/lib/ExecutionEnvironment"), performanceNow = require("fbjs/lib/performanceNow"), emptyObject = require("fbjs/lib/emptyObject"), checkPropTypes = require("prop-types/checkPropTypes"), shallowEqual = require("fbjs/lib/shallowEqual"), deepDiffer = require("deepDiffer"), flattenStyle = require("flattenStyle"), TextInputState = require("TextInputState"), deepFreezeAndThrowOnMutationInDev = require("deepFreezeAndThrowOnMutationInDev"), instanceCache = {}, instanceProps = {};
 
 function getRenderedHostOrTextFromComponent(component) {
     for (var rendered; rendered = component._renderedComponent; ) component = rendered;
@@ -76,9 +72,9 @@ var ReactNativeComponentTree = {
 function recomputePluginOrdering() {
     if (eventPluginOrder) for (var pluginName in namesToPlugins) {
         var pluginModule = namesToPlugins[pluginName], pluginIndex = eventPluginOrder.indexOf(pluginName);
-        if (invariant(pluginIndex > -1, "EventPluginRegistry: Cannot inject event plugins that do not exist in " + "the plugin ordering, `%s`.", pluginName),
+        if (invariant(pluginIndex > -1, "EventPluginRegistry: Cannot inject event plugins that do not exist in " + "the plugin ordering, `%s`.", pluginName), 
         !EventPluginRegistry.plugins[pluginIndex]) {
-            invariant(pluginModule.extractEvents, "EventPluginRegistry: Event plugins must implement an `extractEvents` " + "method, but `%s` does not.", pluginName),
+            invariant(pluginModule.extractEvents, "EventPluginRegistry: Event plugins must implement an `extractEvents` " + "method, but `%s` does not.", pluginName), 
             EventPluginRegistry.plugins[pluginIndex] = pluginModule;
             var publishedEvents = pluginModule.eventTypes;
             for (var eventName in publishedEvents) invariant(publishEventForPlugin(publishedEvents[eventName], pluginModule, eventName), "EventPluginRegistry: Failed to publish event `%s` for plugin `%s`.", eventName, pluginName);
@@ -87,7 +83,7 @@ function recomputePluginOrdering() {
 }
 
 function publishEventForPlugin(dispatchConfig, pluginModule, eventName) {
-    invariant(!EventPluginRegistry.eventNameDispatchConfigs.hasOwnProperty(eventName), "EventPluginHub: More than one plugin attempted to publish the same " + "event name, `%s`.", eventName),
+    invariant(!EventPluginRegistry.eventNameDispatchConfigs.hasOwnProperty(eventName), "EventPluginHub: More than one plugin attempted to publish the same " + "event name, `%s`.", eventName), 
     EventPluginRegistry.eventNameDispatchConfigs[eventName] = dispatchConfig;
     var phasedRegistrationNames = dispatchConfig.phasedRegistrationNames;
     if (phasedRegistrationNames) {
@@ -97,15 +93,15 @@ function publishEventForPlugin(dispatchConfig, pluginModule, eventName) {
         }
         return !0;
     }
-    return !!dispatchConfig.registrationName && (publishRegistrationName(dispatchConfig.registrationName, pluginModule, eventName),
+    return !!dispatchConfig.registrationName && (publishRegistrationName(dispatchConfig.registrationName, pluginModule, eventName), 
     !0);
 }
 
 function publishRegistrationName(registrationName, pluginModule, eventName) {
-    invariant(!EventPluginRegistry.registrationNameModules[registrationName], "EventPluginHub: More than one plugin attempted to publish the same " + "registration name, `%s`.", registrationName),
+    invariant(!EventPluginRegistry.registrationNameModules[registrationName], "EventPluginHub: More than one plugin attempted to publish the same " + "registration name, `%s`.", registrationName), 
     EventPluginRegistry.registrationNameModules[registrationName] = pluginModule, EventPluginRegistry.registrationNameDependencies[registrationName] = pluginModule.eventTypes[eventName].dependencies;
     var lowerCasedName = registrationName.toLowerCase();
-    EventPluginRegistry.possibleRegistrationNames[lowerCasedName] = registrationName,
+    EventPluginRegistry.possibleRegistrationNames[lowerCasedName] = registrationName, 
     "onDoubleClick" === registrationName && (EventPluginRegistry.possibleRegistrationNames.ondblclick = registrationName);
 }
 
@@ -116,14 +112,14 @@ var EventPluginRegistry = {
     registrationNameDependencies: {},
     possibleRegistrationNames: {},
     injectEventPluginOrder: function(injectedEventPluginOrder) {
-        invariant(!eventPluginOrder, "EventPluginRegistry: Cannot inject event plugin ordering more than " + "once. You are likely trying to load more than one copy of React."),
+        invariant(!eventPluginOrder, "EventPluginRegistry: Cannot inject event plugin ordering more than " + "once. You are likely trying to load more than one copy of React."), 
         eventPluginOrder = Array.prototype.slice.call(injectedEventPluginOrder), recomputePluginOrdering();
     },
     injectEventPluginsByName: function(injectedNamesToPlugins) {
         var isOrderingDirty = !1;
         for (var pluginName in injectedNamesToPlugins) if (injectedNamesToPlugins.hasOwnProperty(pluginName)) {
             var pluginModule = injectedNamesToPlugins[pluginName];
-            namesToPlugins.hasOwnProperty(pluginName) && namesToPlugins[pluginName] === pluginModule || (invariant(!namesToPlugins[pluginName], "EventPluginRegistry: Cannot inject two different event plugins " + "using the same name, `%s`.", pluginName),
+            namesToPlugins.hasOwnProperty(pluginName) && namesToPlugins[pluginName] === pluginModule || (invariant(!namesToPlugins[pluginName], "EventPluginRegistry: Cannot inject two different event plugins " + "using the same name, `%s`.", pluginName), 
             namesToPlugins[pluginName] = pluginModule, isOrderingDirty = !0);
         }
         isOrderingDirty && recomputePluginOrdering();
@@ -149,7 +145,7 @@ if ("undefined" != typeof window && "function" == typeof window.dispatchEvent &&
         }, evtType = "react-" + (name || "invokeguardedcallback") + "-" + depth;
         window.addEventListener("error", onFakeEventError), fakeNode.addEventListener(evtType, boundFunc, !1);
         var evt = document.createEvent("Event");
-        return evt.initEvent(evtType, !1, !1), fakeNode.dispatchEvent(evt), fakeNode.removeEventListener(evtType, boundFunc, !1),
+        return evt.initEvent(evtType, !1, !1), fakeNode.dispatchEvent(evt), fakeNode.removeEventListener(evtType, boundFunc, !1), 
         window.removeEventListener("error", onFakeEventError), depth--, fakeEventError;
     };
 }
@@ -162,7 +158,7 @@ var rethrowCaughtError = function() {
 }, ReactErrorUtils = {
     injection: {
         injectErrorUtils: function(injectedErrorUtils) {
-            invariant("function" == typeof injectedErrorUtils.invokeGuardedCallback, "Injected invokeGuardedCallback() must be a function."),
+            invariant("function" == typeof injectedErrorUtils.invokeGuardedCallback, "Injected invokeGuardedCallback() must be a function."), 
             invokeGuardedCallback = injectedErrorUtils.invokeGuardedCallback;
         }
     },
@@ -203,7 +199,7 @@ validateEventDispatches = function(event) {
 
 function executeDispatch(event, simulated, listener, inst) {
     var type = event.type || "unknown-event";
-    event.currentTarget = EventPluginUtils.getNodeFromInstance(inst), ReactErrorUtils_1.invokeGuardedCallbackAndCatchFirstError(type, listener, void 0, event),
+    event.currentTarget = EventPluginUtils.getNodeFromInstance(inst), ReactErrorUtils_1.invokeGuardedCallbackAndCatchFirstError(type, listener, void 0, event), 
     event.currentTarget = null;
 }
 
@@ -229,10 +225,10 @@ function executeDispatchesInOrderStopAtTrue(event) {
 function executeDirectDispatch(event) {
     validateEventDispatches(event);
     var dispatchListener = event._dispatchListeners, dispatchInstance = event._dispatchInstances;
-    invariant(!Array.isArray(dispatchListener), "executeDirectDispatch(...): Invalid `event`."),
+    invariant(!Array.isArray(dispatchListener), "executeDirectDispatch(...): Invalid `event`."), 
     event.currentTarget = dispatchListener ? EventPluginUtils.getNodeFromInstance(dispatchInstance) : null;
     var res = dispatchListener ? dispatchListener(event) : null;
-    return event.currentTarget = null, event._dispatchListeners = null, event._dispatchInstances = null,
+    return event.currentTarget = null, event._dispatchListeners = null, event._dispatchInstances = null, 
     res;
 }
 
@@ -261,8 +257,8 @@ var EventPluginUtils = {
 }, EventPluginUtils_1 = EventPluginUtils;
 
 function accumulateInto(current, next) {
-    return invariant(null != next, "accumulateInto(...): Accumulated items must not be null or undefined."),
-    null == current ? next : Array.isArray(current) ? Array.isArray(next) ? (current.push.apply(current, next),
+    return invariant(null != next, "accumulateInto(...): Accumulated items must not be null or undefined."), 
+    null == current ? next : Array.isArray(current) ? Array.isArray(next) ? (current.push.apply(current, next), 
     current) : (current.push(next), current) : Array.isArray(next) ? [ current ].concat(next) : [ current, next ];
 }
 
@@ -323,7 +319,7 @@ var EventPluginHub = {
             var _props = currentElement.props;
             if (listener = _props[registrationName], shouldPreventMouseEvent(registrationName, currentElement.type, _props)) return null;
         }
-        return invariant(!listener || "function" == typeof listener, "Expected %s listener to be a function, instead got type %s", registrationName, typeof listener),
+        return invariant(!listener || "function" == typeof listener, "Expected %s listener to be a function, instead got type %s", registrationName, typeof listener), 
         listener;
     },
     extractEvents: function(topLevelType, targetInst, nativeEvent, nativeEventTarget) {
@@ -341,8 +337,8 @@ var EventPluginHub = {
     },
     processEventQueue: function(simulated) {
         var processingEventQueue = eventQueue;
-        eventQueue = null, simulated ? forEachAccumulated_1(processingEventQueue, executeDispatchesAndReleaseSimulated) : forEachAccumulated_1(processingEventQueue, executeDispatchesAndReleaseTopLevel),
-        invariant(!eventQueue, "processEventQueue(): Additional events were enqueued while processing " + "an event queue. Support for this has not yet been implemented."),
+        eventQueue = null, simulated ? forEachAccumulated_1(processingEventQueue, executeDispatchesAndReleaseSimulated) : forEachAccumulated_1(processingEventQueue, executeDispatchesAndReleaseTopLevel), 
+        invariant(!eventQueue, "processEventQueue(): Additional events were enqueued while processing " + "an event queue. Support for this has not yet been implemented."), 
         ReactErrorUtils_1.rethrowCaughtError();
     }
 }, EventPluginHub_1 = EventPluginHub, ReactTypeOfWork = {
@@ -402,7 +398,7 @@ function traverseTwoPhase(inst, fn, arg) {
 }
 
 function traverseEnterLeave(from, to, fn, argFrom, argTo) {
-    for (var common = from && to ? getLowestCommonAncestor(from, to) : null, pathFrom = []; from && from !== common; ) pathFrom.push(from),
+    for (var common = from && to ? getLowestCommonAncestor(from, to) : null, pathFrom = []; from && from !== common; ) pathFrom.push(from), 
     from = getParent(from);
     for (var pathTo = []; to && to !== common; ) pathTo.push(to), to = getParent(to);
     var i;
@@ -426,7 +422,7 @@ function listenerAtPhase(inst, event, propagationPhase) {
 function accumulateDirectionalDispatches(inst, phase, event) {
     warning(inst, "Dispatching inst must not be null");
     var listener = listenerAtPhase(inst, event, phase);
-    listener && (event._dispatchListeners = accumulateInto_1(event._dispatchListeners, listener),
+    listener && (event._dispatchListeners = accumulateInto_1(event._dispatchListeners, listener), 
     event._dispatchInstances = accumulateInto_1(event._dispatchInstances, inst));
 }
 
@@ -444,7 +440,7 @@ function accumulateTwoPhaseDispatchesSingleSkipTarget(event) {
 function accumulateDispatches(inst, ignoredDirection, event) {
     if (inst && event && event.dispatchConfig.registrationName) {
         var registrationName = event.dispatchConfig.registrationName, listener = getListener(inst, registrationName);
-        listener && (event._dispatchListeners = accumulateInto_1(event._dispatchListeners, listener),
+        listener && (event._dispatchListeners = accumulateInto_1(event._dispatchListeners, listener), 
         event._dispatchInstances = accumulateInto_1(event._dispatchInstances, inst));
     }
 }
@@ -504,12 +500,12 @@ var EventPropagators = {
     return new Klass(a1, a2, a3, a4);
 }, standardReleaser = function(instance) {
     var Klass = this;
-    invariant(instance instanceof Klass, "Trying to release an instance into a pool of a different type."),
+    invariant(instance instanceof Klass, "Trying to release an instance into a pool of a different type."), 
     instance.destructor(), Klass.instancePool.length < Klass.poolSize && Klass.instancePool.push(instance);
 }, DEFAULT_POOL_SIZE = 10, DEFAULT_POOLER = oneArgumentPooler, addPoolingTo = function(CopyConstructor, pooler) {
     var NewKlass = CopyConstructor;
-    return NewKlass.instancePool = [], NewKlass.getPooled = pooler || DEFAULT_POOLER,
-    NewKlass.poolSize || (NewKlass.poolSize = DEFAULT_POOL_SIZE), NewKlass.release = standardReleaser,
+    return NewKlass.instancePool = [], NewKlass.getPooled = pooler || DEFAULT_POOLER, 
+    NewKlass.poolSize || (NewKlass.poolSize = DEFAULT_POOL_SIZE), NewKlass.release = standardReleaser, 
     NewKlass;
 }, PooledClass = {
     addPoolingTo: addPoolingTo,
@@ -532,7 +528,7 @@ var EventPropagators = {
 };
 
 function SyntheticEvent(dispatchConfig, targetInst, nativeEvent, nativeEventTarget) {
-    delete this.nativeEvent, delete this.preventDefault, delete this.stopPropagation,
+    delete this.nativeEvent, delete this.preventDefault, delete this.stopPropagation, 
     this.dispatchConfig = dispatchConfig, this._targetInst = targetInst, this.nativeEvent = nativeEvent;
     var Interface = this.constructor.Interface;
     for (var propName in Interface) if (Interface.hasOwnProperty(propName)) {
@@ -541,7 +537,7 @@ function SyntheticEvent(dispatchConfig, targetInst, nativeEvent, nativeEventTarg
         normalize ? this[propName] = normalize(nativeEvent) : "target" === propName ? this.target = nativeEventTarget : this[propName] = nativeEvent[propName];
     }
     var defaultPrevented = null != nativeEvent.defaultPrevented ? nativeEvent.defaultPrevented : !1 === nativeEvent.returnValue;
-    return this.isDefaultPrevented = defaultPrevented ? emptyFunction.thatReturnsTrue : emptyFunction.thatReturnsFalse,
+    return this.isDefaultPrevented = defaultPrevented ? emptyFunction.thatReturnsTrue : emptyFunction.thatReturnsFalse, 
     this.isPropagationStopped = emptyFunction.thatReturnsFalse, this;
 }
 
@@ -549,12 +545,12 @@ Object.assign(SyntheticEvent.prototype, {
     preventDefault: function() {
         this.defaultPrevented = !0;
         var event = this.nativeEvent;
-        event && (event.preventDefault ? event.preventDefault() : "unknown" != typeof event.returnValue && (event.returnValue = !1),
+        event && (event.preventDefault ? event.preventDefault() : "unknown" != typeof event.returnValue && (event.returnValue = !1), 
         this.isDefaultPrevented = emptyFunction.thatReturnsTrue);
     },
     stopPropagation: function() {
         var event = this.nativeEvent;
-        event && (event.stopPropagation ? event.stopPropagation() : "unknown" != typeof event.cancelBubble && (event.cancelBubble = !0),
+        event && (event.stopPropagation ? event.stopPropagation() : "unknown" != typeof event.cancelBubble && (event.cancelBubble = !0), 
         this.isPropagationStopped = emptyFunction.thatReturnsTrue);
     },
     persist: function() {
@@ -565,30 +561,30 @@ Object.assign(SyntheticEvent.prototype, {
         var Interface = this.constructor.Interface;
         for (var propName in Interface) Object.defineProperty(this, propName, getPooledWarningPropertyDefinition(propName, Interface[propName]));
         for (var i = 0; i < shouldBeReleasedProperties.length; i++) this[shouldBeReleasedProperties[i]] = null;
-        Object.defineProperty(this, "nativeEvent", getPooledWarningPropertyDefinition("nativeEvent", null)),
-        Object.defineProperty(this, "preventDefault", getPooledWarningPropertyDefinition("preventDefault", emptyFunction)),
+        Object.defineProperty(this, "nativeEvent", getPooledWarningPropertyDefinition("nativeEvent", null)), 
+        Object.defineProperty(this, "preventDefault", getPooledWarningPropertyDefinition("preventDefault", emptyFunction)), 
         Object.defineProperty(this, "stopPropagation", getPooledWarningPropertyDefinition("stopPropagation", emptyFunction));
     }
-}), SyntheticEvent.Interface = EventInterface, isProxySupported && (SyntheticEvent = new Proxy(SyntheticEvent, {
+}), SyntheticEvent.Interface = EventInterface, SyntheticEvent.augmentClass = function(Class, Interface) {
+    var Super = this, E = function() {};
+    E.prototype = Super.prototype;
+    var prototype = new E();
+    Object.assign(prototype, Class.prototype), Class.prototype = prototype, Class.prototype.constructor = Class, 
+    Class.Interface = Object.assign({}, Super.Interface, Interface), Class.augmentClass = Super.augmentClass, 
+    PooledClass_1.addPoolingTo(Class, PooledClass_1.fourArgumentPooler);
+}, isProxySupported && (SyntheticEvent = new Proxy(SyntheticEvent, {
     construct: function(target, args) {
         return this.apply(target, Object.create(target.prototype), args);
     },
     apply: function(constructor, that, args) {
         return new Proxy(constructor.apply(that, args), {
             set: function(target, prop, value) {
-                return "isPersistent" === prop || target.constructor.Interface.hasOwnProperty(prop) || -1 !== shouldBeReleasedProperties.indexOf(prop) || (warning(didWarnForAddedNewProperty || target.isPersistent(), "This synthetic event is reused for performance reasons. If you're " + "seeing this, you're adding a new property in the synthetic event object. " + "The property is never released. See " + "https://fb.me/react-event-pooling for more information."),
+                return "isPersistent" === prop || target.constructor.Interface.hasOwnProperty(prop) || -1 !== shouldBeReleasedProperties.indexOf(prop) || (warning(didWarnForAddedNewProperty || target.isPersistent(), "This synthetic event is reused for performance reasons. If you're " + "seeing this, you're adding a new property in the synthetic event object. " + "The property is never released. See " + "https://fb.me/react-event-pooling for more information."), 
                 didWarnForAddedNewProperty = !0), target[prop] = value, !0;
             }
         });
     }
-})), SyntheticEvent.augmentClass = function(Class, Interface) {
-    var Super = this, E = function() {};
-    E.prototype = Super.prototype;
-    var prototype = new E();
-    Object.assign(prototype, Class.prototype), Class.prototype = prototype, Class.prototype.constructor = Class,
-    Class.Interface = Object.assign({}, Super.Interface, Interface), Class.augmentClass = Super.augmentClass,
-    PooledClass_1.addPoolingTo(Class, PooledClass_1.fourArgumentPooler);
-}, PooledClass_1.addPoolingTo(SyntheticEvent, PooledClass_1.fourArgumentPooler);
+})), PooledClass_1.addPoolingTo(SyntheticEvent, PooledClass_1.fourArgumentPooler);
 
 var SyntheticEvent_1 = SyntheticEvent;
 
@@ -600,11 +596,11 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
         get: get
     };
     function set(val) {
-        return warn(isFunction ? "setting the method" : "setting the property", "This is effectively a no-op"),
+        return warn(isFunction ? "setting the method" : "setting the property", "This is effectively a no-op"), 
         val;
     }
     function get() {
-        return warn(isFunction ? "accessing the method" : "accessing the property", isFunction ? "This is a no-op function" : "This is set to null"),
+        return warn(isFunction ? "accessing the method" : "accessing the property", isFunction ? "This is a no-op function" : "This is set to null"), 
         getVal;
     }
     function warn(action, result) {
@@ -622,7 +618,7 @@ var _extends = Object.assign || function(target) {
 
 for (var bubblingTypeName in customBubblingEventTypes) allTypesByEventName[bubblingTypeName] = customBubblingEventTypes[bubblingTypeName];
 
-for (var directTypeName in customDirectEventTypes) warning(!customBubblingEventTypes[directTypeName], "Event cannot be both direct and bubbling: %s", directTypeName),
+for (var directTypeName in customDirectEventTypes) warning(!customBubblingEventTypes[directTypeName], "Event cannot be both direct and bubbling: %s", directTypeName), 
 allTypesByEventName[directTypeName] = customDirectEventTypes[directTypeName];
 
 var ReactNativeBridgeEventPlugin = {
@@ -673,7 +669,7 @@ function restoreStateOfTarget(target) {
             var props = EventPluginUtils_1.getFiberCurrentPropsFromNode(internalInstance.stateNode);
             return void fiberHostComponent.restoreControlledState(internalInstance.stateNode, internalInstance.type, props);
         }
-        invariant("function" == typeof internalInstance.restoreControlledState, "The internal instance must be a React host component."),
+        invariant("function" == typeof internalInstance.restoreControlledState, "The internal instance must be a React host component."), 
         internalInstance.restoreControlledState();
     }
 }
@@ -762,7 +758,7 @@ var ReactGenericBatchingInjection = {
             var touch = changedTouches[jj];
             touch.changedTouches = changedTouches, touch.touches = touches;
             var nativeEvent = touch, rootNodeID = null, target = nativeEvent.target;
-            null !== target && void 0 !== target && (target < ReactNativeTagHandles_1.tagsStartAt ? warning(!1, "A view is reporting that a touch occurred on tag zero.") : rootNodeID = target),
+            null !== target && void 0 !== target && (target < ReactNativeTagHandles_1.tagsStartAt ? warning(!1, "A view is reporting that a touch occurred on tag zero.") : rootNodeID = target), 
             ReactNativeEventEmitter._receiveRootNodeIDEvent(rootNodeID, eventTopLevelType, nativeEvent);
         }
     }
@@ -812,38 +808,38 @@ function createTouchRecord(touch) {
 }
 
 function resetTouchRecord(touchRecord, touch) {
-    touchRecord.touchActive = !0, touchRecord.startPageX = touch.pageX, touchRecord.startPageY = touch.pageY,
-    touchRecord.startTimeStamp = timestampForTouch(touch), touchRecord.currentPageX = touch.pageX,
-    touchRecord.currentPageY = touch.pageY, touchRecord.currentTimeStamp = timestampForTouch(touch),
-    touchRecord.previousPageX = touch.pageX, touchRecord.previousPageY = touch.pageY,
+    touchRecord.touchActive = !0, touchRecord.startPageX = touch.pageX, touchRecord.startPageY = touch.pageY, 
+    touchRecord.startTimeStamp = timestampForTouch(touch), touchRecord.currentPageX = touch.pageX, 
+    touchRecord.currentPageY = touch.pageY, touchRecord.currentTimeStamp = timestampForTouch(touch), 
+    touchRecord.previousPageX = touch.pageX, touchRecord.previousPageY = touch.pageY, 
     touchRecord.previousTimeStamp = timestampForTouch(touch);
 }
 
 function getTouchIdentifier(_ref) {
     var identifier = _ref.identifier;
-    return invariant(null != identifier, "Touch object is missing identifier."), warning(identifier <= MAX_TOUCH_BANK, "Touch identifier %s is greater than maximum supported %s which causes " + "performance issues backfilling array locations for all of the indices.", identifier, MAX_TOUCH_BANK),
+    return invariant(null != identifier, "Touch object is missing identifier."), warning(identifier <= MAX_TOUCH_BANK, "Touch identifier %s is greater than maximum supported %s which causes " + "performance issues backfilling array locations for all of the indices.", identifier, MAX_TOUCH_BANK), 
     identifier;
 }
 
 function recordTouchStart(touch) {
     var identifier = getTouchIdentifier(touch), touchRecord = touchBank[identifier];
-    touchRecord ? resetTouchRecord(touchRecord, touch) : touchBank[identifier] = createTouchRecord(touch),
+    touchRecord ? resetTouchRecord(touchRecord, touch) : touchBank[identifier] = createTouchRecord(touch), 
     touchHistory.mostRecentTimeStamp = timestampForTouch(touch);
 }
 
 function recordTouchMove(touch) {
     var touchRecord = touchBank[getTouchIdentifier(touch)];
-    touchRecord ? (touchRecord.touchActive = !0, touchRecord.previousPageX = touchRecord.currentPageX,
-    touchRecord.previousPageY = touchRecord.currentPageY, touchRecord.previousTimeStamp = touchRecord.currentTimeStamp,
-    touchRecord.currentPageX = touch.pageX, touchRecord.currentPageY = touch.pageY,
+    touchRecord ? (touchRecord.touchActive = !0, touchRecord.previousPageX = touchRecord.currentPageX, 
+    touchRecord.previousPageY = touchRecord.currentPageY, touchRecord.previousTimeStamp = touchRecord.currentTimeStamp, 
+    touchRecord.currentPageX = touch.pageX, touchRecord.currentPageY = touch.pageY, 
     touchRecord.currentTimeStamp = timestampForTouch(touch), touchHistory.mostRecentTimeStamp = timestampForTouch(touch)) : console.error("Cannot record touch move without a touch start.\n" + "Touch Move: %s\n", "Touch Bank: %s", printTouch(touch), printTouchBank());
 }
 
 function recordTouchEnd(touch) {
     var touchRecord = touchBank[getTouchIdentifier(touch)];
-    touchRecord ? (touchRecord.touchActive = !1, touchRecord.previousPageX = touchRecord.currentPageX,
-    touchRecord.previousPageY = touchRecord.currentPageY, touchRecord.previousTimeStamp = touchRecord.currentTimeStamp,
-    touchRecord.currentPageX = touch.pageX, touchRecord.currentPageY = touch.pageY,
+    touchRecord ? (touchRecord.touchActive = !1, touchRecord.previousPageX = touchRecord.currentPageX, 
+    touchRecord.previousPageY = touchRecord.currentPageY, touchRecord.previousTimeStamp = touchRecord.currentTimeStamp, 
+    touchRecord.currentPageX = touch.pageX, touchRecord.currentPageY = touch.pageY, 
     touchRecord.currentTimeStamp = timestampForTouch(touch), touchHistory.mostRecentTimeStamp = timestampForTouch(touch)) : console.error("Cannot record touch end without a touch start.\n" + "Touch End: %s\n", "Touch Bank: %s", printTouch(touch), printTouchBank());
 }
 
@@ -858,14 +854,14 @@ function printTouch(touch) {
 
 function printTouchBank() {
     var printed = JSON.stringify(touchBank.slice(0, MAX_TOUCH_BANK));
-    return touchBank.length > MAX_TOUCH_BANK && (printed += " (original size: " + touchBank.length + ")"),
+    return touchBank.length > MAX_TOUCH_BANK && (printed += " (original size: " + touchBank.length + ")"), 
     printed;
 }
 
 var ResponderTouchHistoryStore = {
     recordTouchTrack: function(topLevelType, nativeEvent) {
-        if (isMoveish$2(topLevelType)) nativeEvent.changedTouches.forEach(recordTouchMove); else if (isStartish$2(topLevelType)) nativeEvent.changedTouches.forEach(recordTouchStart),
-        touchHistory.numberActiveTouches = nativeEvent.touches.length, 1 === touchHistory.numberActiveTouches && (touchHistory.indexOfSingleActiveTouch = nativeEvent.touches[0].identifier); else if (isEndish$2(topLevelType) && (nativeEvent.changedTouches.forEach(recordTouchEnd),
+        if (isMoveish$2(topLevelType)) nativeEvent.changedTouches.forEach(recordTouchMove); else if (isStartish$2(topLevelType)) nativeEvent.changedTouches.forEach(recordTouchStart), 
+        touchHistory.numberActiveTouches = nativeEvent.touches.length, 1 === touchHistory.numberActiveTouches && (touchHistory.indexOfSingleActiveTouch = nativeEvent.touches[0].identifier); else if (isEndish$2(topLevelType) && (nativeEvent.changedTouches.forEach(recordTouchEnd), 
         touchHistory.numberActiveTouches = nativeEvent.touches.length, 1 === touchHistory.numberActiveTouches)) {
             for (var i = 0; i < touchBank.length; i++) {
                 var touchTrackToCheck = touchBank[i];
@@ -882,7 +878,7 @@ var ResponderTouchHistoryStore = {
 }, ResponderTouchHistoryStore_1 = ResponderTouchHistoryStore;
 
 function accumulate(current, next) {
-    return invariant(null != next, "accumulate(...): Accumulated items must be not be null or undefined."),
+    return invariant(null != next, "accumulate(...): Accumulated items must be not be null or undefined."), 
     null == current ? next : Array.isArray(current) ? current.concat(next) : Array.isArray(next) ? [ current ].concat(next) : [ current, next ];
 }
 
@@ -944,24 +940,24 @@ function setResponderAndExtractTransfer(topLevelType, targetInst, nativeEvent, n
     var shouldSetEventType = isStartish$1(topLevelType) ? eventTypes.startShouldSetResponder : isMoveish$1(topLevelType) ? eventTypes.moveShouldSetResponder : "topSelectionChange" === topLevelType ? eventTypes.selectionChangeShouldSetResponder : eventTypes.scrollShouldSetResponder, bubbleShouldSetFrom = responderInst ? ReactTreeTraversal.getLowestCommonAncestor(responderInst, targetInst) : targetInst, skipOverBubbleShouldSetFrom = bubbleShouldSetFrom === responderInst, shouldSetEvent = ResponderSyntheticEvent_1.getPooled(shouldSetEventType, bubbleShouldSetFrom, nativeEvent, nativeEventTarget);
     shouldSetEvent.touchHistory = ResponderTouchHistoryStore_1.touchHistory, skipOverBubbleShouldSetFrom ? EventPropagators_1.accumulateTwoPhaseDispatchesSkipTarget(shouldSetEvent) : EventPropagators_1.accumulateTwoPhaseDispatches(shouldSetEvent);
     var wantsResponderInst = executeDispatchesInOrderStopAtTrue$1(shouldSetEvent);
-    if (shouldSetEvent.isPersistent() || shouldSetEvent.constructor.release(shouldSetEvent),
+    if (shouldSetEvent.isPersistent() || shouldSetEvent.constructor.release(shouldSetEvent), 
     !wantsResponderInst || wantsResponderInst === responderInst) return null;
     var extracted, grantEvent = ResponderSyntheticEvent_1.getPooled(eventTypes.responderGrant, wantsResponderInst, nativeEvent, nativeEventTarget);
     grantEvent.touchHistory = ResponderTouchHistoryStore_1.touchHistory, EventPropagators_1.accumulateDirectDispatches(grantEvent);
     var blockHostResponder = !0 === executeDirectDispatch$1(grantEvent);
     if (responderInst) {
         var terminationRequestEvent = ResponderSyntheticEvent_1.getPooled(eventTypes.responderTerminationRequest, responderInst, nativeEvent, nativeEventTarget);
-        terminationRequestEvent.touchHistory = ResponderTouchHistoryStore_1.touchHistory,
+        terminationRequestEvent.touchHistory = ResponderTouchHistoryStore_1.touchHistory, 
         EventPropagators_1.accumulateDirectDispatches(terminationRequestEvent);
         var shouldSwitch = !hasDispatches$1(terminationRequestEvent) || executeDirectDispatch$1(terminationRequestEvent);
-        if (terminationRequestEvent.isPersistent() || terminationRequestEvent.constructor.release(terminationRequestEvent),
+        if (terminationRequestEvent.isPersistent() || terminationRequestEvent.constructor.release(terminationRequestEvent), 
         shouldSwitch) {
             var terminateEvent = ResponderSyntheticEvent_1.getPooled(eventTypes.responderTerminate, responderInst, nativeEvent, nativeEventTarget);
-            terminateEvent.touchHistory = ResponderTouchHistoryStore_1.touchHistory, EventPropagators_1.accumulateDirectDispatches(terminateEvent),
+            terminateEvent.touchHistory = ResponderTouchHistoryStore_1.touchHistory, EventPropagators_1.accumulateDirectDispatches(terminateEvent), 
             extracted = accumulate_1(extracted, [ grantEvent, terminateEvent ]), changeResponder(wantsResponderInst, blockHostResponder);
         } else {
             var rejectEvent = ResponderSyntheticEvent_1.getPooled(eventTypes.responderReject, wantsResponderInst, nativeEvent, nativeEventTarget);
-            rejectEvent.touchHistory = ResponderTouchHistoryStore_1.touchHistory, EventPropagators_1.accumulateDirectDispatches(rejectEvent),
+            rejectEvent.touchHistory = ResponderTouchHistoryStore_1.touchHistory, EventPropagators_1.accumulateDirectDispatches(rejectEvent), 
             extracted = accumulate_1(extracted, rejectEvent);
         }
     } else extracted = accumulate_1(extracted, grantEvent), changeResponder(wantsResponderInst, blockHostResponder);
@@ -992,7 +988,7 @@ var ResponderEventPlugin = {
     eventTypes: eventTypes,
     extractEvents: function(topLevelType, targetInst, nativeEvent, nativeEventTarget) {
         if (isStartish$1(topLevelType)) trackedTouchCount += 1; else if (isEndish$1(topLevelType)) {
-            if (!(trackedTouchCount >= 0)) return console.error("Ended a touch event which was not counted in `trackedTouchCount`."),
+            if (!(trackedTouchCount >= 0)) return console.error("Ended a touch event which was not counted in `trackedTouchCount`."), 
             null;
             trackedTouchCount -= 1;
         }
@@ -1000,17 +996,17 @@ var ResponderEventPlugin = {
         var extracted = canTriggerTransfer(topLevelType, targetInst, nativeEvent) ? setResponderAndExtractTransfer(topLevelType, targetInst, nativeEvent, nativeEventTarget) : null, isResponderTouchStart = responderInst && isStartish$1(topLevelType), isResponderTouchMove = responderInst && isMoveish$1(topLevelType), isResponderTouchEnd = responderInst && isEndish$1(topLevelType), incrementalTouch = isResponderTouchStart ? eventTypes.responderStart : isResponderTouchMove ? eventTypes.responderMove : isResponderTouchEnd ? eventTypes.responderEnd : null;
         if (incrementalTouch) {
             var gesture = ResponderSyntheticEvent_1.getPooled(incrementalTouch, responderInst, nativeEvent, nativeEventTarget);
-            gesture.touchHistory = ResponderTouchHistoryStore_1.touchHistory, EventPropagators_1.accumulateDirectDispatches(gesture),
+            gesture.touchHistory = ResponderTouchHistoryStore_1.touchHistory, EventPropagators_1.accumulateDirectDispatches(gesture), 
             extracted = accumulate_1(extracted, gesture);
         }
         var isResponderTerminate = responderInst && "topTouchCancel" === topLevelType, isResponderRelease = responderInst && !isResponderTerminate && isEndish$1(topLevelType) && noResponderTouches(nativeEvent), finalTouch = isResponderTerminate ? eventTypes.responderTerminate : isResponderRelease ? eventTypes.responderRelease : null;
         if (finalTouch) {
             var finalEvent = ResponderSyntheticEvent_1.getPooled(finalTouch, responderInst, nativeEvent, nativeEventTarget);
-            finalEvent.touchHistory = ResponderTouchHistoryStore_1.touchHistory, EventPropagators_1.accumulateDirectDispatches(finalEvent),
+            finalEvent.touchHistory = ResponderTouchHistoryStore_1.touchHistory, EventPropagators_1.accumulateDirectDispatches(finalEvent), 
             extracted = accumulate_1(extracted, finalEvent), changeResponder(null);
         }
         var numberActiveTouches = ResponderTouchHistoryStore_1.touchHistory.numberActiveTouches;
-        return ResponderEventPlugin.GlobalInteractionHandler && numberActiveTouches !== previousActiveTouches && ResponderEventPlugin.GlobalInteractionHandler.onChange(numberActiveTouches),
+        return ResponderEventPlugin.GlobalInteractionHandler && numberActiveTouches !== previousActiveTouches && ResponderEventPlugin.GlobalInteractionHandler.onChange(numberActiveTouches), 
         previousActiveTouches = numberActiveTouches, extracted;
     },
     GlobalResponderHandler: null,
@@ -1026,8 +1022,8 @@ var ResponderEventPlugin = {
 }, ResponderEventPlugin_1 = ResponderEventPlugin;
 
 function inject() {
-    RCTEventEmitter.register(ReactNativeEventEmitter_1), EventPluginHub_1.injection.injectEventPluginOrder(ReactNativeEventPluginOrder_1),
-    EventPluginUtils_1.injection.injectComponentTree(ReactNativeComponentTree_1), ResponderEventPlugin_1.injection.injectGlobalResponderHandler(ReactNativeGlobalResponderHandler_1),
+    RCTEventEmitter.register(ReactNativeEventEmitter_1), EventPluginHub_1.injection.injectEventPluginOrder(ReactNativeEventPluginOrder_1), 
+    EventPluginUtils_1.injection.injectComponentTree(ReactNativeComponentTree_1), ResponderEventPlugin_1.injection.injectGlobalResponderHandler(ReactNativeGlobalResponderHandler_1), 
     EventPluginHub_1.injection.injectEventPluginsByName({
         ResponderEventPlugin: ResponderEventPlugin_1,
         ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin_1
@@ -1079,7 +1075,7 @@ var ReactGlobalSharedState_1 = ReactGlobalSharedState, ReactComponentTreeHook = 
     try {
         fn.call(context, arg1, arg2, arg3, arg4, arg5);
     } catch (e) {
-        warning(didHookThrowForEvent[event], "Exception thrown by hook while handling %s: %s", event, e + "\n" + e.stack),
+        warning(didHookThrowForEvent[event], "Exception thrown by hook while handling %s: %s", event, e + "\n" + e.stack), 
         didHookThrowForEvent[event] = !0;
     }
 }, emitEvent = function(event, arg1, arg2, arg3, arg4, arg5) {
@@ -1103,7 +1099,7 @@ var ReactGlobalSharedState_1 = ReactGlobalSharedState, ReactComponentTreeHook = 
     }, {});
 }, resetMeasurements = function() {
     var previousStartTime = currentFlushStartTime, previousMeasurements = currentFlushMeasurements, previousOperations = ReactHostOperationHistoryHook_1.getHistory();
-    if (0 === currentFlushNesting) return currentFlushStartTime = 0, currentFlushMeasurements = [],
+    if (0 === currentFlushNesting) return currentFlushStartTime = 0, currentFlushMeasurements = [], 
     void clearHistory();
     if (previousMeasurements.length || previousOperations.length) {
         var registeredIDs = ReactComponentTreeHook.getRegisteredIDs();
@@ -1118,16 +1114,16 @@ var ReactGlobalSharedState_1 = ReactGlobalSharedState, ReactComponentTreeHook = 
 }, checkDebugID = function(debugID) {
     arguments.length > 1 && void 0 !== arguments[1] && arguments[1] && 0 === debugID || debugID || warning(!1, "ReactDebugTool: debugID may not be empty.");
 }, beginLifeCycleTimer = function(debugID, timerType) {
-    0 !== currentFlushNesting && (currentTimerType && !lifeCycleTimerHasWarned && (warning(!1, "There is an internal error in the React performance measurement code." + "\n\nDid not expect %s timer to start while %s timer is still in " + "progress for %s instance.", timerType, currentTimerType || "no", debugID === currentTimerDebugID ? "the same" : "another"),
-    lifeCycleTimerHasWarned = !0), currentTimerStartTime = performanceNow(), currentTimerNestedFlushDuration = 0,
+    0 !== currentFlushNesting && (currentTimerType && !lifeCycleTimerHasWarned && (warning(!1, "There is an internal error in the React performance measurement code." + "\n\nDid not expect %s timer to start while %s timer is still in " + "progress for %s instance.", timerType, currentTimerType || "no", debugID === currentTimerDebugID ? "the same" : "another"), 
+    lifeCycleTimerHasWarned = !0), currentTimerStartTime = performanceNow(), currentTimerNestedFlushDuration = 0, 
     currentTimerDebugID = debugID, currentTimerType = timerType);
 }, endLifeCycleTimer = function(debugID, timerType) {
-    0 !== currentFlushNesting && (currentTimerType === timerType || lifeCycleTimerHasWarned || (warning(!1, "There is an internal error in the React performance measurement code. " + "We did not expect %s timer to stop while %s timer is still in " + "progress for %s instance. Please report this as a bug in React.", timerType, currentTimerType || "no", debugID === currentTimerDebugID ? "the same" : "another"),
+    0 !== currentFlushNesting && (currentTimerType === timerType || lifeCycleTimerHasWarned || (warning(!1, "There is an internal error in the React performance measurement code. " + "We did not expect %s timer to stop while %s timer is still in " + "progress for %s instance. Please report this as a bug in React.", timerType, currentTimerType || "no", debugID === currentTimerDebugID ? "the same" : "another"), 
     lifeCycleTimerHasWarned = !0), isProfiling && currentFlushMeasurements.push({
         timerType: timerType,
         instanceID: debugID,
         duration: performanceNow() - currentTimerStartTime - currentTimerNestedFlushDuration
-    }), currentTimerStartTime = 0, currentTimerNestedFlushDuration = 0, currentTimerDebugID = null,
+    }), currentTimerStartTime = 0, currentTimerNestedFlushDuration = 0, currentTimerDebugID = null, 
     currentTimerType = null);
 }, pauseCurrentLifeCycleTimer = function() {
     var currentTimer = {
@@ -1136,11 +1132,11 @@ var ReactGlobalSharedState_1 = ReactGlobalSharedState, ReactComponentTreeHook = 
         debugID: currentTimerDebugID,
         timerType: currentTimerType
     };
-    lifeCycleTimerStack.push(currentTimer), currentTimerStartTime = 0, currentTimerNestedFlushDuration = 0,
+    lifeCycleTimerStack.push(currentTimer), currentTimerStartTime = 0, currentTimerNestedFlushDuration = 0, 
     currentTimerDebugID = null, currentTimerType = null;
 }, resumeCurrentLifeCycleTimer = function() {
     var _lifeCycleTimerStack$ = lifeCycleTimerStack.pop(), startTime = _lifeCycleTimerStack$.startTime, nestedFlushStartTime = _lifeCycleTimerStack$.nestedFlushStartTime, debugID = _lifeCycleTimerStack$.debugID, timerType = _lifeCycleTimerStack$.timerType, nestedFlushDuration = performanceNow() - nestedFlushStartTime;
-    currentTimerStartTime = startTime, currentTimerNestedFlushDuration += nestedFlushDuration,
+    currentTimerStartTime = startTime, currentTimerNestedFlushDuration += nestedFlushDuration, 
     currentTimerDebugID = debugID, currentTimerType = timerType;
 }, lastMarkTimeStamp = 0, canUsePerformanceMeasure = "undefined" != typeof performance && "function" == typeof performance.mark && "function" == typeof performance.clearMarks && "function" == typeof performance.measure && "function" == typeof performance.clearMeasures, shouldMark = function(debugID) {
     if (!isProfiling || !canUsePerformanceMeasure) return !1;
@@ -1167,14 +1163,14 @@ ReactDebugTool$1 = {
         hooks.push(hook);
     },
     removeHook: function(hook) {
-        for (var i = 0; i < hooks.length; i++) hooks[i] === hook && (hooks.splice(i, 1),
+        for (var i = 0; i < hooks.length; i++) hooks[i] === hook && (hooks.splice(i, 1), 
         i--);
     },
     isProfiling: function() {
         return isProfiling;
     },
     beginProfiling: function() {
-        isProfiling || (isProfiling = !0, flushHistory.length = 0, resetMeasurements(),
+        isProfiling || (isProfiling = !0, flushHistory.length = 0, resetMeasurements(), 
         ReactDebugTool$1.addHook(ReactHostOperationHistoryHook_1));
     },
     endProfiling: function() {
@@ -1190,11 +1186,11 @@ ReactDebugTool$1 = {
         resetMeasurements(), currentFlushNesting--, resumeCurrentLifeCycleTimer(), emitEvent("onEndFlush");
     },
     onBeginLifeCycleTimer: function(debugID, timerType) {
-        checkDebugID(debugID), emitEvent("onBeginLifeCycleTimer", debugID, timerType), markBegin(debugID, timerType),
+        checkDebugID(debugID), emitEvent("onBeginLifeCycleTimer", debugID, timerType), markBegin(debugID, timerType), 
         beginLifeCycleTimer(debugID, timerType);
     },
     onEndLifeCycleTimer: function(debugID, timerType) {
-        checkDebugID(debugID), endLifeCycleTimer(debugID, timerType), markEnd(debugID, timerType),
+        checkDebugID(debugID), endLifeCycleTimer(debugID, timerType), markEnd(debugID, timerType), 
         emitEvent("onEndLifeCycleTimer", debugID, timerType);
     },
     onBeginProcessingChildContext: function() {
@@ -1213,7 +1209,7 @@ ReactDebugTool$1 = {
         checkDebugID(debugID), childDebugIDs.forEach(checkDebugID), emitEvent("onSetChildren", debugID, childDebugIDs);
     },
     onBeforeMountComponent: function(debugID, element, parentDebugID) {
-        checkDebugID(debugID), checkDebugID(parentDebugID, !0), emitEvent("onBeforeMountComponent", debugID, element, parentDebugID),
+        checkDebugID(debugID), checkDebugID(parentDebugID, !0), emitEvent("onBeforeMountComponent", debugID, element, parentDebugID), 
         markBegin(debugID, "mount");
     },
     onMountComponent: function(debugID) {
@@ -1265,7 +1261,7 @@ var ReactOwner = {
         if (owner && owner.tag === ClassComponent) {
             var inst = owner.stateNode;
             (inst.refs === emptyObject ? inst.refs = {} : inst.refs)[ref] = component.getPublicInstance();
-        } else invariant(isValidOwner(owner), "addComponentAsRefTo(...): Only a ReactOwner can have refs. You might " + "be adding a ref to a component that was not created inside a component's " + "`render` method, or you have multiple copies of React loaded " + "(details: https://fb.me/react-refs-must-have-owner)."),
+        } else invariant(isValidOwner(owner), "addComponentAsRefTo(...): Only a ReactOwner can have refs. You might " + "be adding a ref to a component that was not created inside a component's " + "`render` method, or you have multiple copies of React loaded " + "(details: https://fb.me/react-refs-must-have-owner)."), 
         owner.attachRef(ref, component);
     },
     removeComponentAsRefFrom: function(component, ref, owner) {
@@ -1289,8 +1285,8 @@ function attachRef(ref, component, owner) {
         var info = "", ownerName = void 0;
         owner && ("function" == typeof owner.getName && (ownerName = owner.getName()), ownerName && (info += "\n\nCheck the render method of `" + ownerName + "`."));
         var warningKey = ownerName || component._debugID, element = component._currentElement;
-        element && element._source && (warningKey = element._source.fileName + ":" + element._source.lineNumber),
-        warnedAboutStatelessRefs[warningKey] || (warnedAboutStatelessRefs[warningKey] = !0,
+        element && element._source && (warningKey = element._source.fileName + ":" + element._source.lineNumber), 
+        warnedAboutStatelessRefs[warningKey] || (warnedAboutStatelessRefs[warningKey] = !0, 
         warning$2(!1, "Stateless function components cannot be given refs. " + "Attempts to access this ref will fail.%s%s", info, ReactComponentTreeHook$1.getStackAddendumByID(component._debugID)));
     }
     "function" == typeof ref ? ref(component.getPublicInstance()) : ReactOwner_1.addComponentAsRefTo(component, ref, owner);
@@ -1307,10 +1303,10 @@ ReactRef.attachRefs = function(instance, element) {
     }
 }, ReactRef.shouldUpdateRefs = function(prevElement, nextElement) {
     var prevRef = null, prevOwner = null;
-    null !== prevElement && "object" == typeof prevElement && (prevRef = prevElement.ref,
+    null !== prevElement && "object" == typeof prevElement && (prevRef = prevElement.ref, 
     prevOwner = prevElement._owner);
     var nextRef = null, nextOwner = null;
-    return null !== nextElement && "object" == typeof nextElement && (nextRef = nextElement.ref,
+    return null !== nextElement && "object" == typeof nextElement && (nextRef = nextElement.ref, 
     nextOwner = nextElement._owner), prevRef !== nextRef || "string" == typeof nextRef && nextOwner !== prevOwner;
 }, ReactRef.detachRefs = function(instance, element) {
     if (null !== element && "object" == typeof element) {
@@ -1329,16 +1325,16 @@ var ReactReconciler = {
     mountComponent: function(internalInstance, transaction, hostParent, hostContainerInfo, context, parentDebugID) {
         0 !== internalInstance._debugID && ReactInstrumentation.debugTool.onBeforeMountComponent(internalInstance._debugID, internalInstance._currentElement, parentDebugID);
         var markup = internalInstance.mountComponent(transaction, hostParent, hostContainerInfo, context, parentDebugID);
-        return internalInstance._currentElement && null != internalInstance._currentElement.ref && transaction.getReactMountReady().enqueue(attachRefs, internalInstance),
-        0 !== internalInstance._debugID && ReactInstrumentation.debugTool.onMountComponent(internalInstance._debugID),
+        return internalInstance._currentElement && null != internalInstance._currentElement.ref && transaction.getReactMountReady().enqueue(attachRefs, internalInstance), 
+        0 !== internalInstance._debugID && ReactInstrumentation.debugTool.onMountComponent(internalInstance._debugID), 
         markup;
     },
     getHostNode: function(internalInstance) {
         return internalInstance.getHostNode();
     },
     unmountComponent: function(internalInstance, safely, skipLifecycle) {
-        0 !== internalInstance._debugID && ReactInstrumentation.debugTool.onBeforeUnmountComponent(internalInstance._debugID),
-        ReactRef_1.detachRefs(internalInstance, internalInstance._currentElement), internalInstance.unmountComponent(safely, skipLifecycle),
+        0 !== internalInstance._debugID && ReactInstrumentation.debugTool.onBeforeUnmountComponent(internalInstance._debugID), 
+        ReactRef_1.detachRefs(internalInstance, internalInstance._currentElement), internalInstance.unmountComponent(safely, skipLifecycle), 
         0 !== internalInstance._debugID && ReactInstrumentation.debugTool.onUnmountComponent(internalInstance._debugID);
     },
     receiveComponent: function(internalInstance, nextElement, transaction, context) {
@@ -1346,14 +1342,14 @@ var ReactReconciler = {
         if (nextElement !== prevElement || context !== internalInstance._context) {
             0 !== internalInstance._debugID && ReactInstrumentation.debugTool.onBeforeUpdateComponent(internalInstance._debugID, nextElement);
             var refsChanged = ReactRef_1.shouldUpdateRefs(prevElement, nextElement);
-            refsChanged && ReactRef_1.detachRefs(internalInstance, prevElement), internalInstance.receiveComponent(nextElement, transaction, context),
-            refsChanged && internalInstance._currentElement && null != internalInstance._currentElement.ref && transaction.getReactMountReady().enqueue(attachRefs, internalInstance),
+            refsChanged && ReactRef_1.detachRefs(internalInstance, prevElement), internalInstance.receiveComponent(nextElement, transaction, context), 
+            refsChanged && internalInstance._currentElement && null != internalInstance._currentElement.ref && transaction.getReactMountReady().enqueue(attachRefs, internalInstance), 
             0 !== internalInstance._debugID && ReactInstrumentation.debugTool.onUpdateComponent(internalInstance._debugID);
         }
     },
     performUpdateIfNecessary: function(internalInstance, transaction, updateBatchNumber) {
         if (internalInstance._updateBatchNumber !== updateBatchNumber) return void warning(null == internalInstance._updateBatchNumber || internalInstance._updateBatchNumber === updateBatchNumber + 1, "performUpdateIfNecessary: Unexpected batch number (current %s, " + "pending %s)", updateBatchNumber, internalInstance._updateBatchNumber);
-        0 !== internalInstance._debugID && ReactInstrumentation.debugTool.onBeforeUpdateComponent(internalInstance._debugID, internalInstance._currentElement),
+        0 !== internalInstance._debugID && ReactInstrumentation.debugTool.onBeforeUpdateComponent(internalInstance._debugID, internalInstance._currentElement), 
         internalInstance.performUpdateIfNecessary(transaction), 0 !== internalInstance._debugID && ReactInstrumentation.debugTool.onUpdateComponent(internalInstance._debugID);
     }
 }, ReactReconciler_1 = ReactReconciler, ReactInstanceMap = {
@@ -1369,14 +1365,9 @@ var ReactReconciler = {
     set: function(key, value) {
         key._reactInternalInstance = value;
     }
-}, ReactInstanceMap_1 = ReactInstanceMap, ReactFeatureFlags = {
-    logTopLevelRenders: !1,
-    prepareNewChildrenBeforeUnmountInStack: !0,
-    disableNewFiberFeatures: !1,
-    enableAsyncSubtreeAPI: !1
-}, ReactFeatureFlags_1 = ReactFeatureFlags, OBSERVED_ERROR = {}, TransactionImpl = {
+}, ReactInstanceMap_1 = ReactInstanceMap, OBSERVED_ERROR = {}, TransactionImpl = {
     reinitializeTransaction: function() {
-        this.transactionWrappers = this.getTransactionWrappers(), this.wrapperInitData ? this.wrapperInitData.length = 0 : this.wrapperInitData = [],
+        this.transactionWrappers = this.getTransactionWrappers(), this.wrapperInitData ? this.wrapperInitData.length = 0 : this.wrapperInitData = [], 
         this._isInTransaction = !1;
     },
     _isInTransaction: !1,
@@ -1388,7 +1379,7 @@ var ReactReconciler = {
         invariant(!this.isInTransaction(), "Transaction.perform(...): Cannot initialize a transaction when there " + "is already an outstanding transaction.");
         var errorThrown, ret;
         try {
-            this._isInTransaction = !0, errorThrown = !0, this.initializeAll(0), ret = method.call(scope, a, b, c, d, e, f),
+            this._isInTransaction = !0, errorThrown = !0, this.initializeAll(0), ret = method.call(scope, a, b, c, d, e, f), 
             errorThrown = !1;
         } finally {
             try {
@@ -1418,7 +1409,7 @@ var ReactReconciler = {
         for (var transactionWrappers = this.transactionWrappers, i = startIndex; i < transactionWrappers.length; i++) {
             var errorThrown, wrapper = transactionWrappers[i], initData = this.wrapperInitData[i];
             try {
-                errorThrown = !0, initData !== OBSERVED_ERROR && wrapper.close && wrapper.close.call(this, initData),
+                errorThrown = !0, initData !== OBSERVED_ERROR && wrapper.close && wrapper.close.call(this, initData), 
                 errorThrown = !1;
             } finally {
                 if (errorThrown) try {
@@ -1439,7 +1430,7 @@ var NESTED_UPDATES = {
         this.dirtyComponentsLength = dirtyComponents.length;
     },
     close: function() {
-        this.dirtyComponentsLength !== dirtyComponents.length ? (dirtyComponents.splice(0, this.dirtyComponentsLength),
+        this.dirtyComponentsLength !== dirtyComponents.length ? (dirtyComponents.splice(0, this.dirtyComponentsLength), 
         flushBatchedUpdates()) : dirtyComponents.length = 0;
     }
 }, TRANSACTION_WRAPPERS = [ NESTED_UPDATES ];
@@ -1453,7 +1444,7 @@ Object.assign(ReactUpdatesFlushTransaction.prototype, Transaction, {
         return TRANSACTION_WRAPPERS;
     },
     destructor: function() {
-        this.dirtyComponentsLength = null, ReactUpdates.ReactReconcileTransaction.release(this.reconcileTransaction),
+        this.dirtyComponentsLength = null, ReactUpdates.ReactReconcileTransaction.release(this.reconcileTransaction), 
         this.reconcileTransaction = null;
     },
     perform: function(method, scope, a) {
@@ -1471,17 +1462,11 @@ function mountOrderComparator(c1, c2) {
 
 function runBatchedUpdates(transaction) {
     var len = transaction.dirtyComponentsLength;
-    invariant(len === dirtyComponents.length, "Expected flush transaction's stored dirty-components length (%s) to " + "match dirty-components array length (%s).", len, dirtyComponents.length),
+    invariant(len === dirtyComponents.length, "Expected flush transaction's stored dirty-components length (%s) to " + "match dirty-components array length (%s).", len, dirtyComponents.length), 
     dirtyComponents.sort(mountOrderComparator), updateBatchNumber++;
     for (var i = 0; i < len; i++) {
-        var markerName, component = dirtyComponents[i];
-        if (ReactFeatureFlags_1.logTopLevelRenders) {
-            var namedComponent = component;
-            component._currentElement.type.isReactTopLevelWrapper && (namedComponent = component._renderedComponent),
-            markerName = "React update: " + namedComponent.getName(), console.time(markerName);
-        }
-        ReactReconciler_1.performUpdateIfNecessary(component, transaction.reconcileTransaction, updateBatchNumber),
-        markerName && console.timeEnd(markerName);
+        var component = dirtyComponents[i];
+        ReactReconciler_1.performUpdateIfNecessary(component, transaction.reconcileTransaction, updateBatchNumber);
     }
 }
 
@@ -1499,13 +1484,13 @@ function enqueueUpdate$1(component) {
 
 var ReactUpdatesInjection = {
     injectReconcileTransaction: function(ReconcileTransaction) {
-        invariant(ReconcileTransaction, "ReactUpdates: must provide a reconcile transaction class"),
+        invariant(ReconcileTransaction, "ReactUpdates: must provide a reconcile transaction class"), 
         ReactUpdates.ReactReconcileTransaction = ReconcileTransaction;
     },
     injectBatchingStrategy: function(_batchingStrategy) {
-        invariant(_batchingStrategy, "ReactUpdates: must provide a batching strategy"),
-        invariant("function" == typeof _batchingStrategy.batchedUpdates, "ReactUpdates: must provide a batchedUpdates() function"),
-        invariant("boolean" == typeof _batchingStrategy.isBatchingUpdates, "ReactUpdates: must provide an isBatchingUpdates boolean attribute"),
+        invariant(_batchingStrategy, "ReactUpdates: must provide a batching strategy"), 
+        invariant("function" == typeof _batchingStrategy.batchedUpdates, "ReactUpdates: must provide a batchedUpdates() function"), 
+        invariant("boolean" == typeof _batchingStrategy.isBatchingUpdates, "ReactUpdates: must provide an isBatchingUpdates boolean attribute"), 
         batchingStrategy = _batchingStrategy;
     },
     getBatchingStrategy: function() {
@@ -1529,50 +1514,50 @@ function getInternalInstanceReadyForUpdate(publicInstance, callerName) {
     var internalInstance = ReactInstanceMap_1.get(publicInstance);
     if (!internalInstance) {
         var ctor = publicInstance.constructor;
-        return warning$3(!1, "Can only update a mounted or mounting component. This usually means " + "you called setState, replaceState, or forceUpdate on an unmounted " + "component. This is a no-op.\n\nPlease check the code for the " + "%s component.", ctor && (ctor.displayName || ctor.name) || "ReactClass"),
+        return warning$3(!1, "Can only update a mounted or mounting component. This usually means " + "you called setState, replaceState, or forceUpdate on an unmounted " + "component. This is a no-op.\n\nPlease check the code for the " + "%s component.", ctor && (ctor.displayName || ctor.name) || "ReactClass"), 
         null;
     }
-    return warning$3(null == ReactCurrentOwner.current, "Cannot update during an existing state transition (such as within " + "`render` or another component's constructor). Render methods should " + "be a pure function of props and state; constructor side-effects are " + "an anti-pattern, but can be moved to `componentWillMount`."),
+    return warning$3(null == ReactCurrentOwner.current, "Cannot update during an existing state transition (such as within " + "`render` or another component's constructor). Render methods should " + "be a pure function of props and state; constructor side-effects are " + "an anti-pattern, but can be moved to `componentWillMount`."), 
     internalInstance;
 }
 
 var ReactUpdateQueue = {
     isMounted: function(publicInstance) {
         var owner = ReactCurrentOwner.current;
-        null !== owner && (warning$3(owner._warnedAboutRefsInRender, "%s is accessing isMounted inside its render() function. " + "render() should be a pure function of props and state. It should " + "never access something that requires stale data from the previous " + "render, such as refs. Move this logic to componentDidMount and " + "componentDidUpdate instead.", owner.getName() || "A component"),
+        null !== owner && (warning$3(owner._warnedAboutRefsInRender, "%s is accessing isMounted inside its render() function. " + "render() should be a pure function of props and state. It should " + "never access something that requires stale data from the previous " + "render, such as refs. Move this logic to componentDidMount and " + "componentDidUpdate instead.", owner.getName() || "A component"), 
         owner._warnedAboutRefsInRender = !0);
         var internalInstance = ReactInstanceMap_1.get(publicInstance);
         return !!internalInstance && !!internalInstance._renderedComponent;
     },
     enqueueCallbackInternal: function(internalInstance, callback) {
-        internalInstance._pendingCallbacks ? internalInstance._pendingCallbacks.push(callback) : internalInstance._pendingCallbacks = [ callback ],
+        internalInstance._pendingCallbacks ? internalInstance._pendingCallbacks.push(callback) : internalInstance._pendingCallbacks = [ callback ], 
         enqueueUpdate(internalInstance);
     },
     enqueueForceUpdate: function(publicInstance, callback, callerName) {
         var internalInstance = getInternalInstanceReadyForUpdate(publicInstance);
-        internalInstance && (callback = void 0 === callback ? null : callback, null !== callback && (warnOnInvalidCallback(callback, callerName),
-        internalInstance._pendingCallbacks ? internalInstance._pendingCallbacks.push(callback) : internalInstance._pendingCallbacks = [ callback ]),
+        internalInstance && (callback = void 0 === callback ? null : callback, null !== callback && (warnOnInvalidCallback(callback, callerName), 
+        internalInstance._pendingCallbacks ? internalInstance._pendingCallbacks.push(callback) : internalInstance._pendingCallbacks = [ callback ]), 
         internalInstance._pendingForceUpdate = !0, enqueueUpdate(internalInstance));
     },
     enqueueReplaceState: function(publicInstance, completeState, callback, callerName) {
         var internalInstance = getInternalInstanceReadyForUpdate(publicInstance);
-        internalInstance && (internalInstance._pendingStateQueue = [ completeState ], internalInstance._pendingReplaceState = !0,
-        callback = void 0 === callback ? null : callback, null !== callback && (warnOnInvalidCallback(callback, callerName),
-        internalInstance._pendingCallbacks ? internalInstance._pendingCallbacks.push(callback) : internalInstance._pendingCallbacks = [ callback ]),
+        internalInstance && (internalInstance._pendingStateQueue = [ completeState ], internalInstance._pendingReplaceState = !0, 
+        callback = void 0 === callback ? null : callback, null !== callback && (warnOnInvalidCallback(callback, callerName), 
+        internalInstance._pendingCallbacks ? internalInstance._pendingCallbacks.push(callback) : internalInstance._pendingCallbacks = [ callback ]), 
         enqueueUpdate(internalInstance));
     },
     enqueueSetState: function(publicInstance, partialState, callback, callerName) {
         ReactInstrumentation.debugTool.onSetState(), warning$3(null != partialState, "setState(...): You passed an undefined or null state object; " + "instead, use forceUpdate().");
         var internalInstance = getInternalInstanceReadyForUpdate(publicInstance);
         if (internalInstance) {
-            (internalInstance._pendingStateQueue || (internalInstance._pendingStateQueue = [])).push(partialState),
-            callback = void 0 === callback ? null : callback, null !== callback && (warnOnInvalidCallback(callback, callerName),
-            internalInstance._pendingCallbacks ? internalInstance._pendingCallbacks.push(callback) : internalInstance._pendingCallbacks = [ callback ]),
+            (internalInstance._pendingStateQueue || (internalInstance._pendingStateQueue = [])).push(partialState), 
+            callback = void 0 === callback ? null : callback, null !== callback && (warnOnInvalidCallback(callback, callerName), 
+            internalInstance._pendingCallbacks ? internalInstance._pendingCallbacks.push(callback) : internalInstance._pendingCallbacks = [ callback ]), 
             enqueueUpdate(internalInstance);
         }
     },
     enqueueElementInternal: function(internalInstance, nextElement, nextContext) {
-        internalInstance._pendingElement = nextElement, internalInstance._context = nextContext,
+        internalInstance._pendingElement = nextElement, internalInstance._context = nextContext, 
         enqueueUpdate(internalInstance);
     }
 }, ReactUpdateQueue_1 = ReactUpdateQueue, injected = !1, ReactComponentEnvironment = {
@@ -1580,9 +1565,9 @@ var ReactUpdateQueue = {
     processChildrenUpdates: null,
     injection: {
         injectEnvironment: function(environment) {
-            invariant(!injected, "ReactCompositeComponent: injectEnvironment() can only be called once."),
-            ReactComponentEnvironment.replaceNodeWithMarkup = environment.replaceNodeWithMarkup,
-            ReactComponentEnvironment.processChildrenUpdates = environment.processChildrenUpdates,
+            invariant(!injected, "ReactCompositeComponent: injectEnvironment() can only be called once."), 
+            ReactComponentEnvironment.replaceNodeWithMarkup = environment.replaceNodeWithMarkup, 
+            ReactComponentEnvironment.processChildrenUpdates = environment.processChildrenUpdates, 
             injected = !0;
         }
     }
@@ -1630,44 +1615,44 @@ function measureLifeCyclePerf(fn, debugID, timerType) {
 
 var nextMountID = 1, ReactCompositeComponent = {
     construct: function(element) {
-        this._currentElement = element, this._rootNodeID = 0, this._compositeType = null,
-        this._instance = null, this._hostParent = null, this._hostContainerInfo = null,
-        this._updateBatchNumber = null, this._pendingElement = null, this._pendingStateQueue = null,
-        this._pendingReplaceState = !1, this._pendingForceUpdate = !1, this._renderedNodeType = null,
-        this._renderedComponent = null, this._context = null, this._mountOrder = 0, this._topLevelWrapper = null,
+        this._currentElement = element, this._rootNodeID = 0, this._compositeType = null, 
+        this._instance = null, this._hostParent = null, this._hostContainerInfo = null, 
+        this._updateBatchNumber = null, this._pendingElement = null, this._pendingStateQueue = null, 
+        this._pendingReplaceState = !1, this._pendingForceUpdate = !1, this._renderedNodeType = null, 
+        this._renderedComponent = null, this._context = null, this._mountOrder = 0, this._topLevelWrapper = null, 
         this._pendingCallbacks = null, this._calledComponentWillUnmount = !1, this._warnedAboutRefsInRender = !1;
     },
     mountComponent: function(transaction, hostParent, hostContainerInfo, context) {
         var _this = this;
-        this._context = context, this._mountOrder = nextMountID++, this._hostParent = hostParent,
+        this._context = context, this._mountOrder = nextMountID++, this._hostParent = hostParent, 
         this._hostContainerInfo = hostContainerInfo;
         var renderedElement, publicProps = this._currentElement.props, publicContext = this._processContext(context), Component = this._currentElement.type, updateQueue = transaction.getUpdateQueue(), doConstruct = shouldConstruct(Component), inst = this._constructComponent(doConstruct, publicProps, publicContext, updateQueue);
-        doConstruct || null != inst && null != inst.render ? isPureComponent(Component) ? this._compositeType = ReactCompositeComponentTypes$1.PureClass : this._compositeType = ReactCompositeComponentTypes$1.ImpureClass : (renderedElement = inst,
-        warning(!Component.childContextTypes, "%s(...): childContextTypes cannot be defined on a functional component.", Component.displayName || Component.name || "Component"),
-        invariant(null === inst || !1 === inst || React.isValidElement(inst), "%s(...): A valid React element (or null) must be returned. You may have " + "returned undefined, an array or some other invalid object.", Component.displayName || Component.name || "Component"),
-        inst = new StatelessComponent(Component), this._compositeType = ReactCompositeComponentTypes$1.StatelessFunctional),
+        doConstruct || null != inst && null != inst.render ? isPureComponent(Component) ? this._compositeType = ReactCompositeComponentTypes$1.PureClass : this._compositeType = ReactCompositeComponentTypes$1.ImpureClass : (renderedElement = inst, 
+        warning(!Component.childContextTypes, "%s(...): childContextTypes cannot be defined on a functional component.", Component.displayName || Component.name || "Component"), 
+        invariant(null === inst || !1 === inst || React.isValidElement(inst), "%s(...): A valid React element (or null) must be returned. You may have " + "returned undefined, an array or some other invalid object.", Component.displayName || Component.name || "Component"), 
+        inst = new StatelessComponent(Component), this._compositeType = ReactCompositeComponentTypes$1.StatelessFunctional), 
         null == inst.render && warning(!1, "%s(...): No `render` method found on the returned component " + "instance: you may have forgotten to define `render`.", Component.displayName || Component.name || "Component");
         var propsMutated = inst.props !== publicProps, componentName = Component.displayName || Component.name || "Component";
-        warning(void 0 === inst.props || !propsMutated, "%s(...): When calling super() in `%s`, make sure to pass " + "up the same props that your component's constructor was passed.", componentName, componentName),
-        inst.props = publicProps, inst.context = publicContext, inst.refs = emptyObject,
-        inst.updater = updateQueue, this._instance = inst, ReactInstanceMap_1.set(inst, this),
-        warning(!inst.getInitialState || inst.getInitialState.isReactClassApproved || inst.state, "getInitialState was defined on %s, a plain JavaScript class. " + "This is only supported for classes created using React.createClass. " + "Did you mean to define a state property instead?", this.getName() || "a component"),
-        warning(!inst.getDefaultProps || inst.getDefaultProps.isReactClassApproved, "getDefaultProps was defined on %s, a plain JavaScript class. " + "This is only supported for classes created using React.createClass. " + "Use a static property to define defaultProps instead.", this.getName() || "a component"),
-        warning(!inst.propTypes, "propTypes was defined as an instance property on %s. Use a static " + "property to define propTypes instead.", this.getName() || "a component"),
-        warning(!inst.contextTypes, "contextTypes was defined as an instance property on %s. Use a " + "static property to define contextTypes instead.", this.getName() || "a component"),
-        warning("function" != typeof inst.componentShouldUpdate, "%s has a method called " + "componentShouldUpdate(). Did you mean shouldComponentUpdate()? " + "The name is phrased as a question because the function is " + "expected to return a value.", this.getName() || "A component"),
-        warning("function" != typeof inst.componentDidUnmount, "%s has a method called " + "componentDidUnmount(). But there is no such lifecycle method. " + "Did you mean componentWillUnmount()?", this.getName() || "A component"),
-        warning("function" != typeof inst.componentWillRecieveProps, "%s has a method called " + "componentWillRecieveProps(). Did you mean componentWillReceiveProps()?", this.getName() || "A component"),
-        isPureComponent(Component) && void 0 !== inst.shouldComponentUpdate && warning(!1, "%s has a method called shouldComponentUpdate(). " + "shouldComponentUpdate should not be used when extending React.PureComponent. " + "Please extend React.Component if shouldComponentUpdate is used.", this.getName() || "A pure component"),
+        warning(void 0 === inst.props || !propsMutated, "%s(...): When calling super() in `%s`, make sure to pass " + "up the same props that your component's constructor was passed.", componentName, componentName), 
+        inst.props = publicProps, inst.context = publicContext, inst.refs = emptyObject, 
+        inst.updater = updateQueue, this._instance = inst, ReactInstanceMap_1.set(inst, this), 
+        warning(!inst.getInitialState || inst.getInitialState.isReactClassApproved || inst.state, "getInitialState was defined on %s, a plain JavaScript class. " + "This is only supported for classes created using React.createClass. " + "Did you mean to define a state property instead?", this.getName() || "a component"), 
+        warning(!inst.getDefaultProps || inst.getDefaultProps.isReactClassApproved, "getDefaultProps was defined on %s, a plain JavaScript class. " + "This is only supported for classes created using React.createClass. " + "Use a static property to define defaultProps instead.", this.getName() || "a component"), 
+        warning(!inst.propTypes, "propTypes was defined as an instance property on %s. Use a static " + "property to define propTypes instead.", this.getName() || "a component"), 
+        warning(!inst.contextTypes, "contextTypes was defined as an instance property on %s. Use a " + "static property to define contextTypes instead.", this.getName() || "a component"), 
+        warning("function" != typeof inst.componentShouldUpdate, "%s has a method called " + "componentShouldUpdate(). Did you mean shouldComponentUpdate()? " + "The name is phrased as a question because the function is " + "expected to return a value.", this.getName() || "A component"), 
+        warning("function" != typeof inst.componentDidUnmount, "%s has a method called " + "componentDidUnmount(). But there is no such lifecycle method. " + "Did you mean componentWillUnmount()?", this.getName() || "A component"), 
+        warning("function" != typeof inst.componentWillRecieveProps, "%s has a method called " + "componentWillRecieveProps(). Did you mean componentWillReceiveProps()?", this.getName() || "A component"), 
+        isPureComponent(Component) && void 0 !== inst.shouldComponentUpdate && warning(!1, "%s has a method called shouldComponentUpdate(). " + "shouldComponentUpdate should not be used when extending React.PureComponent. " + "Please extend React.Component if shouldComponentUpdate is used.", this.getName() || "A pure component"), 
         warning(!inst.defaultProps, "Setting defaultProps as an instance property on %s is not supported and will be ignored." + " Instead, define defaultProps as a static property on %s.", this.getName() || "a component", this.getName() || "a component");
         var initialState = inst.state;
-        void 0 === initialState && (inst.state = initialState = null), invariant("object" == typeof initialState && !Array.isArray(initialState), "%s.state: must be set to an object or null", this.getName() || "ReactCompositeComponent"),
-        this._pendingStateQueue = null, this._pendingReplaceState = !1, this._pendingForceUpdate = !1,
+        void 0 === initialState && (inst.state = initialState = null), invariant("object" == typeof initialState && !Array.isArray(initialState), "%s.state: must be set to an object or null", this.getName() || "ReactCompositeComponent"), 
+        this._pendingStateQueue = null, this._pendingReplaceState = !1, this._pendingForceUpdate = !1, 
         inst.componentWillMount && (measureLifeCyclePerf(function() {
             return inst.componentWillMount();
         }, this._debugID, "componentWillMount"), this._pendingStateQueue && (inst.state = this._processPendingState(inst.props, inst.context)));
         var markup;
-        markup = inst.unstable_handleError ? this.performInitialMountWithErrorHandling(renderedElement, hostParent, hostContainerInfo, transaction, context) : this.performInitialMount(renderedElement, hostParent, hostContainerInfo, transaction, context),
+        markup = inst.unstable_handleError ? this.performInitialMountWithErrorHandling(renderedElement, hostParent, hostContainerInfo, transaction, context) : this.performInitialMount(renderedElement, hostParent, hostContainerInfo, transaction, context), 
         inst.componentDidMount && transaction.getReactMountReady().enqueue(function() {
             measureLifeCyclePerf(function() {
                 return inst.componentDidMount();
@@ -1701,8 +1686,8 @@ var nextMountID = 1, ReactCompositeComponent = {
         try {
             markup = this.performInitialMount(renderedElement, hostParent, hostContainerInfo, transaction, context);
         } catch (e) {
-            transaction.rollback(checkpoint), this._instance.unstable_handleError(e), this._pendingStateQueue && (this._instance.state = this._processPendingState(this._instance.props, this._instance.context)),
-            checkpoint = transaction.checkpoint(), this._renderedComponent.unmountComponent(!0, !0),
+            transaction.rollback(checkpoint), this._instance.unstable_handleError(e), this._pendingStateQueue && (this._instance.state = this._processPendingState(this._instance.props, this._instance.context)), 
+            checkpoint = transaction.checkpoint(), this._renderedComponent.unmountComponent(!0, !0), 
             transaction.rollback(checkpoint), markup = this.performInitialMount(renderedElement, hostParent, hostContainerInfo, transaction, context);
         }
         return markup;
@@ -1728,7 +1713,7 @@ var nextMountID = 1, ReactCompositeComponent = {
     unmountComponent: function(safely, skipLifecycle) {
         if (this._renderedComponent) {
             var inst = this._instance;
-            if (inst.componentWillUnmount && !inst._calledComponentWillUnmount) if (inst._calledComponentWillUnmount = !0,
+            if (inst.componentWillUnmount && !inst._calledComponentWillUnmount) if (inst._calledComponentWillUnmount = !0, 
             safely) {
                 if (!skipLifecycle) {
                     var name = this.getName() + ".componentWillUnmount()";
@@ -1737,10 +1722,10 @@ var nextMountID = 1, ReactCompositeComponent = {
             } else measureLifeCyclePerf(function() {
                 return inst.componentWillUnmount();
             }, this._debugID, "componentWillUnmount");
-            this._renderedComponent && (ReactReconciler_1.unmountComponent(this._renderedComponent, safely, skipLifecycle),
-            this._renderedNodeType = null, this._renderedComponent = null, this._instance = null),
-            this._pendingStateQueue = null, this._pendingReplaceState = !1, this._pendingForceUpdate = !1,
-            this._pendingCallbacks = null, this._pendingElement = null, this._context = null,
+            this._renderedComponent && (ReactReconciler_1.unmountComponent(this._renderedComponent, safely, skipLifecycle), 
+            this._renderedNodeType = null, this._renderedComponent = null, this._instance = null), 
+            this._pendingStateQueue = null, this._pendingReplaceState = !1, this._pendingForceUpdate = !1, 
+            this._pendingCallbacks = null, this._pendingElement = null, this._context = null, 
             this._rootNodeID = 0, this._topLevelWrapper = null, ReactInstanceMap_1.remove(inst);
         }
     },
@@ -1753,7 +1738,7 @@ var nextMountID = 1, ReactCompositeComponent = {
     },
     _processContext: function(context) {
         var maskedContext = this._maskContext(context), Component = this._currentElement.type;
-        return Component.contextTypes && this._checkContextTypes(Component.contextTypes, maskedContext, "context"),
+        return Component.contextTypes && this._checkContextTypes(Component.contextTypes, maskedContext, "context"), 
         maskedContext;
     },
     _processChildContext: function(currentContext) {
@@ -1765,18 +1750,18 @@ var nextMountID = 1, ReactCompositeComponent = {
             } finally {
                 ReactInstrumentation.debugTool.onEndProcessingChildContext();
             }
-            invariant("object" == typeof Component.childContextTypes, "%s.getChildContext(): childContextTypes must be defined in order to " + "use getChildContext().", this.getName() || "ReactCompositeComponent"),
+            invariant("object" == typeof Component.childContextTypes, "%s.getChildContext(): childContextTypes must be defined in order to " + "use getChildContext().", this.getName() || "ReactCompositeComponent"), 
             this._checkContextTypes(Component.childContextTypes, childContext, "child context");
             for (var name in childContext) invariant(name in Component.childContextTypes, '%s.getChildContext(): key "%s" is not defined in childContextTypes.', this.getName() || "ReactCompositeComponent", name);
             return Object.assign({}, currentContext, childContext);
         }
         var componentName = this.getName();
-        return warningAboutMissingGetChildContext[componentName] || (warningAboutMissingGetChildContext[componentName] = !0,
-        warning(!Component.childContextTypes, "%s.childContextTypes is specified but there is no getChildContext() method " + "on the instance. You can either define getChildContext() on %s or remove " + "childContextTypes from it.", componentName, componentName)),
+        return warningAboutMissingGetChildContext[componentName] || (warningAboutMissingGetChildContext[componentName] = !0, 
+        warning(!Component.childContextTypes, "%s.childContextTypes is specified but there is no getChildContext() method " + "on the instance. You can either define getChildContext() on %s or remove " + "childContextTypes from it.", componentName, componentName)), 
         currentContext;
     },
     _checkContextTypes: function(typeSpecs, values, location) {
-        ReactDebugCurrentFrame.current = this._debugID, checkPropTypes(typeSpecs, values, location, this.getName(), ReactDebugCurrentFrame.getStackAddendum),
+        ReactDebugCurrentFrame.current = this._debugID, checkPropTypes(typeSpecs, values, location, this.getName(), ReactDebugCurrentFrame.getStackAddendum), 
         ReactDebugCurrentFrame.current = null;
     },
     receiveComponent: function(nextElement, transaction, nextContext) {
@@ -1794,7 +1779,7 @@ var nextMountID = 1, ReactCompositeComponent = {
         var inst = this._instance;
         invariant(null != inst, "Attempted to update component `%s` that has already been unmounted " + "(or failed to mount).", this.getName() || "ReactCompositeComponent");
         var nextContext, willReceive = !1;
-        this._context === nextUnmaskedContext ? nextContext = inst.context : (nextContext = this._processContext(nextUnmaskedContext),
+        this._context === nextUnmaskedContext ? nextContext = inst.context : (nextContext = this._processContext(nextUnmaskedContext), 
         willReceive = !0);
         var prevProps = prevParentElement.props, nextProps = nextParentElement.props;
         if (prevParentElement !== nextParentElement && (willReceive = !0), willReceive && inst.componentWillReceiveProps) {
@@ -1803,7 +1788,7 @@ var nextMountID = 1, ReactCompositeComponent = {
                 return inst.componentWillReceiveProps(nextProps, nextContext);
             }, this._debugID, "componentWillReceiveProps");
             var afterState = inst.state;
-            beforeState !== afterState && (inst.state = beforeState, inst.updater.enqueueReplaceState(inst, afterState),
+            beforeState !== afterState && (inst.state = beforeState, inst.updater.enqueueReplaceState(inst, afterState), 
             warning(!1, "%s.componentWillReceiveProps(): Assigning directly to " + "this.state is deprecated (except inside a component's " + "constructor). Use setState instead.", this.getName() || "ReactCompositeComponent"));
         }
         var callbacks = this._pendingCallbacks;
@@ -1815,9 +1800,9 @@ var nextMountID = 1, ReactCompositeComponent = {
                 return inst.shouldComponentUpdate(nextProps, nextState, nextContext);
             }, this._debugID, "shouldComponentUpdate") : this._compositeType === ReactCompositeComponentTypes$1.PureClass && (shouldUpdate = !shallowEqual(prevProps, nextProps) || !shallowEqual(inst.state, nextState));
         }
-        if (warning(void 0 !== shouldUpdate, "%s.shouldComponentUpdate(): Returned undefined instead of a " + "boolean value. Make sure to return true or false.", this.getName() || "ReactCompositeComponent"),
-        this._updateBatchNumber = null, shouldUpdate ? (this._pendingForceUpdate = !1, this._performComponentUpdate(nextParentElement, nextProps, nextState, nextContext, transaction, nextUnmaskedContext)) : (this._currentElement = nextParentElement,
-        this._context = nextUnmaskedContext, inst.props = nextProps, inst.state = nextState,
+        if (warning(void 0 !== shouldUpdate, "%s.shouldComponentUpdate(): Returned undefined instead of a " + "boolean value. Make sure to return true or false.", this.getName() || "ReactCompositeComponent"), 
+        this._updateBatchNumber = null, shouldUpdate ? (this._pendingForceUpdate = !1, this._performComponentUpdate(nextParentElement, nextProps, nextState, nextContext, transaction, nextUnmaskedContext)) : (this._currentElement = nextParentElement, 
+        this._context = nextUnmaskedContext, inst.props = nextProps, inst.state = nextState, 
         inst.context = nextContext), callbacks) for (var j = 0; j < callbacks.length; j++) transaction.getReactMountReady().enqueue(callbacks[j], this.getPublicInstance());
     },
     _processPendingState: function(props, context) {
@@ -1834,8 +1819,8 @@ var nextMountID = 1, ReactCompositeComponent = {
         var prevProps, prevState, _this2 = this, inst = this._instance, hasComponentDidUpdate = !!inst.componentDidUpdate;
         hasComponentDidUpdate && (prevProps = inst.props, prevState = inst.state), inst.componentWillUpdate && measureLifeCyclePerf(function() {
             return inst.componentWillUpdate(nextProps, nextState, nextContext);
-        }, this._debugID, "componentWillUpdate"), this._currentElement = nextElement, this._context = unmaskedContext,
-        inst.props = nextProps, inst.state = nextState, inst.context = nextContext, inst.unstable_handleError ? this._updateRenderedComponentWithErrorHandling(transaction, unmaskedContext) : this._updateRenderedComponent(transaction, unmaskedContext),
+        }, this._debugID, "componentWillUpdate"), this._currentElement = nextElement, this._context = unmaskedContext, 
+        inst.props = nextProps, inst.state = nextState, inst.context = nextContext, inst.unstable_handleError ? this._updateRenderedComponentWithErrorHandling(transaction, unmaskedContext) : this._updateRenderedComponent(transaction, unmaskedContext), 
         hasComponentDidUpdate && transaction.getReactMountReady().enqueue(function() {
             measureLifeCyclePerf(inst.componentDidUpdate.bind(inst, prevProps, prevState), _this2._debugID, "componentDidUpdate");
         });
@@ -1845,8 +1830,8 @@ var nextMountID = 1, ReactCompositeComponent = {
         try {
             this._updateRenderedComponent(transaction, context);
         } catch (e) {
-            transaction.rollback(checkpoint), this._instance.unstable_handleError(e), this._pendingStateQueue && (this._instance.state = this._processPendingState(this._instance.props, this._instance.context)),
-            checkpoint = transaction.checkpoint(), this._updateRenderedComponentWithNextElement(transaction, context, null, !0),
+            transaction.rollback(checkpoint), this._instance.unstable_handleError(e), this._pendingStateQueue && (this._instance.state = this._processPendingState(this._instance.props, this._instance.context)), 
+            checkpoint = transaction.checkpoint(), this._updateRenderedComponentWithNextElement(transaction, context, null, !0), 
             this._updateRenderedComponent(transaction, context);
         }
     },
@@ -1857,15 +1842,12 @@ var nextMountID = 1, ReactCompositeComponent = {
     _updateRenderedComponentWithNextElement: function(transaction, context, nextRenderedElement, safely) {
         var prevComponentInstance = this._renderedComponent, prevRenderedElement = prevComponentInstance._currentElement, debugID = 0;
         if (debugID = this._debugID, shouldUpdateReactComponent_1(prevRenderedElement, nextRenderedElement)) ReactReconciler_1.receiveComponent(prevComponentInstance, nextRenderedElement, transaction, this._processChildContext(context)); else {
-            var oldHostNode = ReactReconciler_1.getHostNode(prevComponentInstance);
-            ReactFeatureFlags_1.prepareNewChildrenBeforeUnmountInStack || ReactReconciler_1.unmountComponent(prevComponentInstance, safely, !1);
-            var nodeType = ReactNodeTypes_1.getType(nextRenderedElement);
+            var oldHostNode = ReactReconciler_1.getHostNode(prevComponentInstance), nodeType = ReactNodeTypes_1.getType(nextRenderedElement);
             this._renderedNodeType = nodeType;
             var child = this._instantiateReactComponent(nextRenderedElement, nodeType !== ReactNodeTypes_1.EMPTY);
             this._renderedComponent = child;
             var nextMarkup = ReactReconciler_1.mountComponent(child, transaction, this._hostParent, this._hostContainerInfo, this._processChildContext(context), debugID);
-            if (ReactFeatureFlags_1.prepareNewChildrenBeforeUnmountInStack && ReactReconciler_1.unmountComponent(prevComponentInstance, safely, !1),
-            0 !== debugID) {
+            if (ReactReconciler_1.unmountComponent(prevComponentInstance, safely, !1), 0 !== debugID) {
                 var childDebugIDs = 0 !== child._debugID ? [ child._debugID ] : [];
                 ReactInstrumentation.debugTool.onSetChildren(debugID, childDebugIDs);
             }
@@ -1879,7 +1861,7 @@ var nextMountID = 1, ReactCompositeComponent = {
         var renderedElement, inst = this._instance;
         return renderedElement = measureLifeCyclePerf(function() {
             return inst.render();
-        }, this._debugID, "render"), void 0 === renderedElement && inst.render._isMockFunction && (renderedElement = null),
+        }, this._debugID, "render"), void 0 === renderedElement && inst.render._isMockFunction && (renderedElement = null), 
         renderedElement;
     },
     _renderValidatedComponent: function() {
@@ -1892,7 +1874,7 @@ var nextMountID = 1, ReactCompositeComponent = {
                 ReactCurrentOwner$1.current = null;
             }
         }
-        return invariant(null === renderedElement || !1 === renderedElement || React.isValidElement(renderedElement), "%s.render(): A valid React element (or null) must be returned. You may have " + "returned undefined, an array or some other invalid object.", this.getName() || "ReactCompositeComponent"),
+        return invariant(null === renderedElement || !1 === renderedElement || React.isValidElement(renderedElement), "%s.render(): A valid React element (or null) must be returned. You may have " + "returned undefined, an array or some other invalid object.", this.getName() || "ReactCompositeComponent"), 
         renderedElement;
     },
     attachRef: function(ref, component) {
@@ -1935,7 +1917,7 @@ var ReactEmptyComponent_1 = ReactEmptyComponent, genericComponentClass = null, t
 };
 
 function createInternalComponent(element) {
-    return invariant(genericComponentClass, "There is no registered component for the tag %s", element.type),
+    return invariant(genericComponentClass, "There is no registered component for the tag %s", element.type), 
     new genericComponentClass(element);
 }
 
@@ -1952,13 +1934,7 @@ var ReactHostComponent = {
     createInstanceForText: createInstanceForText,
     isTextComponent: isTextComponent,
     injection: ReactHostComponentInjection
-}, ReactHostComponent_1 = ReactHostComponent, nextDebugID = 1;
-
-function getNextDebugID() {
-    return nextDebugID++;
-}
-
-var getNextDebugID_1 = getNextDebugID, ReactCompositeComponentWrapper = function(element) {
+}, ReactHostComponent_1 = ReactHostComponent, nextDebugID = 1, ReactCompositeComponentWrapper = function(element) {
     this.construct(element);
 };
 
@@ -1980,14 +1956,14 @@ function instantiateReactComponent(node, shouldHaveDebugID) {
         var element = node, type = element.type;
         if ("function" != typeof type && "string" != typeof type) {
             var info = "";
-            (void 0 === type || "object" == typeof type && null !== type && 0 === Object.keys(type).length) && (info += " You likely forgot to export your component from the file " + "it's defined in."),
+            (void 0 === type || "object" == typeof type && null !== type && 0 === Object.keys(type).length) && (info += " You likely forgot to export your component from the file " + "it's defined in."), 
             info += getDeclarationErrorAddendum(element._owner), invariant(!1, "Element type is invalid: expected a string (for built-in components) " + "or a class/function (for composite components) but got: %s.%s", null == type ? type : typeof type, info);
         }
-        "string" == typeof element.type ? instance = ReactHostComponent_1.createInternalComponent(element) : isInternalComponentType(element.type) ? (instance = new element.type(element),
+        "string" == typeof element.type ? instance = ReactHostComponent_1.createInternalComponent(element) : isInternalComponentType(element.type) ? (instance = new element.type(element), 
         instance.getHostNode || (instance.getHostNode = instance.getNativeNode)) : instance = new ReactCompositeComponentWrapper(element);
     } else "string" == typeof node || "number" == typeof node ? instance = ReactHostComponent_1.createInstanceForText(node) : invariant(!1, "Encountered invalid React node of type %s", typeof node);
-    return warning("function" == typeof instance.mountComponent && "function" == typeof instance.receiveComponent && "function" == typeof instance.getHostNode && "function" == typeof instance.unmountComponent, "Only React Components can be mounted."),
-    instance._mountIndex = 0, instance._mountImage = null, instance._debugID = shouldHaveDebugID ? getNextDebugID_1() : 0,
+    return warning("function" == typeof instance.mountComponent && "function" == typeof instance.receiveComponent && "function" == typeof instance.getHostNode && "function" == typeof instance.unmountComponent, "Only React Components can be mounted."), 
+    instance._mountIndex = 0, instance._mountImage = null, instance._debugID = shouldHaveDebugID ? nextDebugID++ : 0, 
     Object.preventExtensions && Object.preventExtensions(instance), instance;
 }
 
@@ -1995,12 +1971,7 @@ Object.assign(ReactCompositeComponentWrapper.prototype, ReactCompositeComponent_
     _instantiateReactComponent: instantiateReactComponent
 });
 
-var instantiateReactComponent_1 = instantiateReactComponent, DevOnlyStubShim = null, ReactNativeFeatureFlags$2 = {
-    useFiber: !1
-}, ReactNativeFeatureFlags_1 = ReactNativeFeatureFlags$2, ReactNativeFeatureFlags$3 = Object.freeze({
-    default: ReactNativeFeatureFlags_1,
-    __moduleExports: ReactNativeFeatureFlags_1
-}), ReactNativeFeatureFlags$1 = ReactNativeFeatureFlags$3 && ReactNativeFeatureFlags_1 || ReactNativeFeatureFlags$3, ReactCurrentOwner$2 = ReactGlobalSharedState_1.ReactCurrentOwner, injectedFindNode = ReactNativeFeatureFlags$1.useFiber ? function(fiber) {
+var instantiateReactComponent_1 = instantiateReactComponent, DevOnlyStubShim = null, ReactNativeFeatureFlags = require("ReactNativeFeatureFlags"), ReactCurrentOwner$2 = ReactGlobalSharedState_1.ReactCurrentOwner, injectedFindNode = ReactNativeFeatureFlags.useFiber ? function(fiber) {
     return DevOnlyStubShim.findHostInstance(fiber);
 } : function(instance) {
     return instance;
@@ -2008,17 +1979,17 @@ var instantiateReactComponent_1 = instantiateReactComponent, DevOnlyStubShim = n
 
 function findNodeHandle(componentOrHandle) {
     var owner = ReactCurrentOwner$2.current;
-    if (null !== owner && (warning(owner._warnedAboutRefsInRender, "%s is accessing findNodeHandle inside its render(). " + "render() should be a pure function of props and state. It should " + "never access something that requires stale data from the previous " + "render, such as refs. Move this logic to componentDidMount and " + "componentDidUpdate instead.", owner.getName() || "A component"),
+    if (null !== owner && (warning(owner._warnedAboutRefsInRender, "%s is accessing findNodeHandle inside its render(). " + "render() should be a pure function of props and state. It should " + "never access something that requires stale data from the previous " + "render, such as refs. Move this logic to componentDidMount and " + "componentDidUpdate instead.", owner.getName() || "A component"), 
     owner._warnedAboutRefsInRender = !0), null == componentOrHandle) return null;
     if ("number" == typeof componentOrHandle) return componentOrHandle;
     var component = componentOrHandle, internalInstance = ReactInstanceMap_1.get(component);
-    return internalInstance ? injectedFindNode(internalInstance) : component || (invariant("object" == typeof component && ("_rootNodeID" in component || "_nativeTag" in component) || null != component.render && "function" == typeof component.render, "findNodeHandle(...): Argument is not a component " + "(type: %s, keys: %s)", typeof component, Object.keys(component)),
+    return internalInstance ? injectedFindNode(internalInstance) : component || (invariant("object" == typeof component && ("_rootNodeID" in component || "_nativeTag" in component) || null != component.render && "function" == typeof component.render, "findNodeHandle(...): Argument is not a component " + "(type: %s, keys: %s)", typeof component, Object.keys(component)), 
     void invariant(!1, "findNodeHandle(...): Unable to find node handle for unmounted " + "component."));
 }
 
 var findNodeHandle_1 = findNodeHandle, TopLevelWrapper = function() {};
 
-TopLevelWrapper.prototype.isReactComponent = {}, TopLevelWrapper.displayName = "TopLevelWrapper",
+TopLevelWrapper.prototype.isReactComponent = {}, TopLevelWrapper.displayName = "TopLevelWrapper", 
 TopLevelWrapper.prototype.render = function() {
     return this.props.child;
 }, TopLevelWrapper.isReactTopLevelWrapper = !0;
@@ -2030,7 +2001,7 @@ function mountComponentIntoNode(componentInstance, containerTag, transaction) {
 
 function batchedMountComponentIntoNode(componentInstance, containerTag) {
     var transaction = ReactUpdates_1.ReactReconcileTransaction.getPooled();
-    transaction.perform(mountComponentIntoNode, null, componentInstance, containerTag, transaction),
+    transaction.perform(mountComponentIntoNode, null, componentInstance, containerTag, transaction), 
     ReactUpdates_1.ReactReconcileTransaction.release(transaction);
 }
 
@@ -2043,12 +2014,12 @@ var ReactNativeMount = {
         }), topRootNodeID = containerTag, prevComponent = ReactNativeMount._instancesByContainerID[topRootNodeID];
         if (prevComponent) {
             var prevWrappedElement = prevComponent._currentElement, prevElement = prevWrappedElement.props.child;
-            if (shouldUpdateReactComponent_1(prevElement, nextElement)) return ReactUpdateQueue_1.enqueueElementInternal(prevComponent, nextWrappedElement, emptyObject),
-            callback && ReactUpdateQueue_1.enqueueCallbackInternal(prevComponent, callback),
+            if (shouldUpdateReactComponent_1(prevElement, nextElement)) return ReactUpdateQueue_1.enqueueElementInternal(prevComponent, nextWrappedElement, emptyObject), 
+            callback && ReactUpdateQueue_1.enqueueCallbackInternal(prevComponent, callback), 
             prevComponent;
             ReactNativeMount.unmountComponentAtNode(containerTag);
         }
-        if (!ReactNativeTagHandles_1.reactTagIsNativeTopRootID(containerTag)) return console.error("You cannot render into anything but a top root"),
+        if (!ReactNativeTagHandles_1.reactTagIsNativeTopRootID(containerTag)) return console.error("You cannot render into anything but a top root"), 
         null;
         ReactNativeTagHandles_1.assertRootTag(containerTag);
         var instance = instantiateReactComponent_1(nextWrappedElement, !1);
@@ -2058,7 +2029,7 @@ var ReactNativeMount = {
                 nonNullCallback.call(instance._renderedComponent.getPublicInstance());
             } ];
         }
-        return ReactUpdates_1.batchedUpdates(batchedMountComponentIntoNode, instance, containerTag),
+        return ReactUpdates_1.batchedUpdates(batchedMountComponentIntoNode, instance, containerTag), 
         instance._renderedComponent.getPublicInstance();
     },
     _mountImageIntoNode: function(mountImage, containerID) {
@@ -2069,11 +2040,11 @@ var ReactNativeMount = {
         ReactNativeMount.unmountComponentAtNode(containerTag), UIManager.removeRootView(containerTag);
     },
     unmountComponentAtNode: function(containerTag) {
-        if (!ReactNativeTagHandles_1.reactTagIsNativeTopRootID(containerTag)) return console.error("You cannot render into anything but a top root"),
+        if (!ReactNativeTagHandles_1.reactTagIsNativeTopRootID(containerTag)) return console.error("You cannot render into anything but a top root"), 
         !1;
         var instance = ReactNativeMount._instancesByContainerID[containerTag];
-        return !!instance && (ReactInstrumentation.debugTool.onBeginFlush(), ReactNativeMount.unmountComponentFromNode(instance, containerTag),
-        delete ReactNativeMount._instancesByContainerID[containerTag], ReactInstrumentation.debugTool.onEndFlush(),
+        return !!instance && (ReactInstrumentation.debugTool.onBeginFlush(), ReactNativeMount.unmountComponentFromNode(instance, containerTag), 
+        delete ReactNativeMount._instancesByContainerID[containerTag], ReactInstrumentation.debugTool.onEndFlush(), 
         !0);
     },
     unmountComponentFromNode: function(instance, containerID) {
@@ -2109,7 +2080,7 @@ var transaction = new ReactDefaultBatchingStrategyTransaction(), ReactDefaultBat
     if (childrenUpdates.length) {
         for (var moveFromIndices, moveToIndices, addChildTags, addAtIndices, removeAtIndices, containerTag = ReactNativeComponentTree_1.getNodeFromInstance(inst), i = 0; i < childrenUpdates.length; i++) {
             var update = childrenUpdates[i];
-            if ("MOVE_EXISTING" === update.type) (moveFromIndices || (moveFromIndices = [])).push(update.fromIndex),
+            if ("MOVE_EXISTING" === update.type) (moveFromIndices || (moveFromIndices = [])).push(update.fromIndex), 
             (moveToIndices || (moveToIndices = [])).push(update.toIndex); else if ("REMOVE_NODE" === update.type) (removeAtIndices || (removeAtIndices = [])).push(update.fromIndex); else if ("INSERT_MARKUP" === update.type) {
                 var mountImage = update.content, tag = mountImage;
                 (addAtIndices || (addAtIndices = [])).push(update.toIndex), (addChildTags || (addChildTags = [])).push(tag);
@@ -2136,19 +2107,18 @@ function _classCallCheck(instance, Constructor) {
 }
 
 var CallbackQueue = function() {
-    function CallbackQueue(arg) {
-        _classCallCheck(this, CallbackQueue), this._callbacks = null, this._contexts = null,
-        this._arg = arg;
+    function CallbackQueue() {
+        _classCallCheck(this, CallbackQueue), this._callbacks = null, this._contexts = null;
     }
     return CallbackQueue.prototype.enqueue = function(callback, context) {
-        this._callbacks = this._callbacks || [], this._callbacks.push(callback), this._contexts = this._contexts || [],
+        this._callbacks = this._callbacks || [], this._callbacks.push(callback), this._contexts = this._contexts || [], 
         this._contexts.push(context);
     }, CallbackQueue.prototype.notifyAll = function() {
-        var callbacks = this._callbacks, contexts = this._contexts, arg = this._arg;
+        var callbacks = this._callbacks, contexts = this._contexts;
         if (callbacks && contexts) {
-            invariant(callbacks.length === contexts.length, "Mismatched list of contexts in callback queue"),
+            invariant(callbacks.length === contexts.length, "Mismatched list of contexts in callback queue"), 
             this._callbacks = null, this._contexts = null;
-            for (var i = 0; i < callbacks.length; i++) validateCallback_1(callbacks[i]), callbacks[i].call(contexts[i], arg);
+            for (var i = 0; i < callbacks.length; i++) validateCallback_1(callbacks[i]), callbacks[i].call(contexts[i]);
             callbacks.length = 0, contexts.length = 0;
         }
     }, CallbackQueue.prototype.checkpoint = function() {
@@ -2175,7 +2145,7 @@ TRANSACTION_WRAPPERS$2.push({
 });
 
 function ReactNativeReconcileTransaction() {
-    this.reinitializeTransaction(), this.reactMountReady = CallbackQueue_1.getPooled(null);
+    this.reinitializeTransaction(), this.reactMountReady = CallbackQueue_1.getPooled();
 }
 
 var Mixin = {
@@ -2199,7 +2169,7 @@ var Mixin = {
     }
 };
 
-Object.assign(ReactNativeReconcileTransaction.prototype, Transaction, ReactNativeReconcileTransaction, Mixin),
+Object.assign(ReactNativeReconcileTransaction.prototype, Transaction, ReactNativeReconcileTransaction, Mixin), 
 PooledClass_1.addPoolingTo(ReactNativeReconcileTransaction);
 
 var ReactNativeReconcileTransaction_1 = ReactNativeReconcileTransaction, ReactNativeComponentEnvironment = {
@@ -2208,13 +2178,13 @@ var ReactNativeReconcileTransaction_1 = ReactNativeReconcileTransaction, ReactNa
     clearNode: function() {},
     ReactReconcileTransaction: ReactNativeReconcileTransaction_1
 }, ReactNativeComponentEnvironment_1 = ReactNativeComponentEnvironment, ReactNativeTextComponent = function(text) {
-    this._currentElement = text, this._stringText = "" + text, this._hostParent = null,
+    this._currentElement = text, this._stringText = "" + text, this._hostParent = null, 
     this._rootNodeID = 0;
 };
 
 Object.assign(ReactNativeTextComponent.prototype, {
     mountComponent: function(transaction, hostParent, hostContainerInfo, context) {
-        invariant(context.isInAParentText, 'RawText "%s" must be wrapped in an explicit <Text> component.', this._stringText),
+        invariant(context.isInAParentText, 'RawText "%s" must be wrapped in an explicit <Text> component.', this._stringText), 
         this._hostParent = hostParent;
         var tag = ReactNativeTagHandles_1.allocateTag();
         this._rootNodeID = tag;
@@ -2236,7 +2206,7 @@ Object.assign(ReactNativeTextComponent.prototype, {
         }
     },
     unmountComponent: function() {
-        ReactNativeComponentTree_1.uncacheNode(this), this._currentElement = null, this._stringText = null,
+        ReactNativeComponentTree_1.uncacheNode(this), this._currentElement = null, this._stringText = null, 
         this._rootNodeID = 0;
     }
 });
@@ -2254,7 +2224,7 @@ Object.assign(ReactSimpleEmptyComponent.prototype, {
         return ReactReconciler_1.getHostNode(this._renderedComponent);
     },
     unmountComponent: function(safely, skipLifecycle) {
-        ReactReconciler_1.unmountComponent(this._renderedComponent, safely, skipLifecycle),
+        ReactReconciler_1.unmountComponent(this._renderedComponent, safely, skipLifecycle), 
         this._renderedComponent = null;
     }
 });
@@ -2262,9 +2232,9 @@ Object.assign(ReactSimpleEmptyComponent.prototype, {
 var ReactSimpleEmptyComponent_1 = ReactSimpleEmptyComponent;
 
 function inject$1() {
-    ReactGenericBatching_1.injection.injectStackBatchedUpdates(ReactUpdates_1.batchedUpdates),
-    ReactUpdates_1.injection.injectReconcileTransaction(ReactNativeComponentEnvironment_1.ReactReconcileTransaction),
-    ReactUpdates_1.injection.injectBatchingStrategy(ReactDefaultBatchingStrategy_1),
+    ReactGenericBatching_1.injection.injectStackBatchedUpdates(ReactUpdates_1.batchedUpdates), 
+    ReactUpdates_1.injection.injectReconcileTransaction(ReactNativeComponentEnvironment_1.ReactReconcileTransaction), 
+    ReactUpdates_1.injection.injectBatchingStrategy(ReactDefaultBatchingStrategy_1), 
     ReactComponentEnvironment_1.injection.injectEnvironment(ReactNativeComponentEnvironment_1);
     var EmptyComponent = function(instantiate) {
         var View = require("View");
@@ -2275,10 +2245,10 @@ function inject$1() {
             }
         }), instantiate);
     };
-    ReactEmptyComponent_1.injection.injectEmptyComponentFactory(EmptyComponent), ReactHostComponent_1.injection.injectTextComponentClass(ReactNativeTextComponent_1),
+    ReactEmptyComponent_1.injection.injectEmptyComponentFactory(EmptyComponent), ReactHostComponent_1.injection.injectTextComponentClass(ReactNativeTextComponent_1), 
     ReactHostComponent_1.injection.injectGenericComponentClass(function(tag) {
         var info = "";
-        "string" == typeof tag && /^[a-z]/.test(tag) && (info += " Each component name should start with an uppercase letter."),
+        "string" == typeof tag && /^[a-z]/.test(tag) && (info += " Each component name should start with an uppercase letter."), 
         invariant(!1, "Expected a component class, got %s.%s", tag, info);
     });
 }
@@ -2331,10 +2301,16 @@ var getComponentName_1 = getComponentName, getInspectorDataForViewTag = void 0, 
 };
 
 getInspectorDataForViewTag = function(viewTag) {
-    var component = ReactNativeComponentTree_1.getClosestInstanceFromNode(viewTag), componentHierarchy = getOwnerHierarchy(component), instance = lastNotNativeInstance(componentHierarchy), hierarchy = createHierarchy(componentHierarchy), props = getHostProps(instance), source = instance._currentElement && instance._currentElement._source;
+    var component = ReactNativeComponentTree_1.getClosestInstanceFromNode(viewTag);
+    if (!component) return {
+        hierarchy: [],
+        props: emptyObject,
+        selection: null,
+        source: null
+    };
+    var componentHierarchy = getOwnerHierarchy(component), instance = lastNotNativeInstance(componentHierarchy), hierarchy = createHierarchy(componentHierarchy), props = getHostProps(instance), source = instance._currentElement && instance._currentElement._source;
     return {
         hierarchy: hierarchy,
-        instance: instance,
         props: props,
         selection: componentHierarchy.indexOf(instance),
         source: source
@@ -2348,13 +2324,13 @@ var ReactNativeStackInspector = {
     return null == nodeHandle || "number" == typeof nodeHandle ? nodeHandle : nodeHandle.getHostNode();
 };
 
-function _classCallCheck$1(instance, Constructor) {
+function _classCallCheck$2(instance, Constructor) {
     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
 }
 
 var objects = {}, uniqueID = 1, emptyObject$3 = {}, ReactNativePropRegistry = function() {
     function ReactNativePropRegistry() {
-        _classCallCheck$1(this, ReactNativePropRegistry);
+        _classCallCheck$2(this, ReactNativePropRegistry);
     }
     return ReactNativePropRegistry.register = function(object) {
         var id = ++uniqueID;
@@ -2362,7 +2338,7 @@ var objects = {}, uniqueID = 1, emptyObject$3 = {}, ReactNativePropRegistry = fu
     }, ReactNativePropRegistry.getByID = function(id) {
         if (!id) return emptyObject$3;
         var object = objects[id];
-        return object || (console.warn("Invalid style with id `" + id + "`. Skipping ..."),
+        return object || (console.warn("Invalid style with id `" + id + "`. Skipping ..."), 
         emptyObject$3);
     }, ReactNativePropRegistry;
 }(), ReactNativePropRegistry_1 = ReactNativePropRegistry, emptyObject$2 = {}, removedKeys = null, removedKeyCount = 0;
@@ -2383,7 +2359,7 @@ function restoreDeletedValuesInNestedArray(updatePayload, node, validAttributes)
             if (void 0 !== nextProp) {
                 var attributeConfig = validAttributes[propKey];
                 if (attributeConfig) {
-                    if ("function" == typeof nextProp && (nextProp = !0), void 0 === nextProp && (nextProp = null),
+                    if ("function" == typeof nextProp && (nextProp = !0), void 0 === nextProp && (nextProp = null), 
                     "object" != typeof attributeConfig) updatePayload[propKey] = nextProp; else if ("function" == typeof attributeConfig.diff || "function" == typeof attributeConfig.process) {
                         var nextValue = "function" == typeof attributeConfig.process ? attributeConfig.process(nextProp) : nextProp;
                         updatePayload[propKey] = nextValue;
@@ -2423,10 +2399,10 @@ function clearNestedProperty(updatePayload, prevProp, validAttributes) {
 
 function diffProperties(updatePayload, prevProps, nextProps, validAttributes) {
     var attributeConfig, nextProp, prevProp;
-    for (var propKey in nextProps) if (attributeConfig = validAttributes[propKey]) if (prevProp = prevProps[propKey],
-    nextProp = nextProps[propKey], "function" == typeof nextProp && (nextProp = !0,
-    "function" == typeof prevProp && (prevProp = !0)), void 0 === nextProp && (nextProp = null,
-    void 0 === prevProp && (prevProp = null)), removedKeys && (removedKeys[propKey] = !1),
+    for (var propKey in nextProps) if (attributeConfig = validAttributes[propKey]) if (prevProp = prevProps[propKey], 
+    nextProp = nextProps[propKey], "function" == typeof nextProp && (nextProp = !0, 
+    "function" == typeof prevProp && (prevProp = !0)), void 0 === nextProp && (nextProp = null, 
+    void 0 === prevProp && (prevProp = null)), removedKeys && (removedKeys[propKey] = !1), 
     updatePayload && void 0 !== updatePayload[propKey]) {
         if ("object" != typeof attributeConfig) updatePayload[propKey] = nextProp; else if ("function" == typeof attributeConfig.diff || "function" == typeof attributeConfig.process) {
             var nextValue = "function" == typeof attributeConfig.process ? attributeConfig.process(nextProp) : nextProp;
@@ -2434,13 +2410,13 @@ function diffProperties(updatePayload, prevProps, nextProps, validAttributes) {
         }
     } else if (prevProp !== nextProp) if ("object" != typeof attributeConfig) defaultDiffer(prevProp, nextProp) && ((updatePayload || (updatePayload = {}))[propKey] = nextProp); else if ("function" == typeof attributeConfig.diff || "function" == typeof attributeConfig.process) {
         var shouldUpdate = void 0 === prevProp || ("function" == typeof attributeConfig.diff ? attributeConfig.diff(prevProp, nextProp) : defaultDiffer(prevProp, nextProp));
-        shouldUpdate && (nextValue = "function" == typeof attributeConfig.process ? attributeConfig.process(nextProp) : nextProp,
+        shouldUpdate && (nextValue = "function" == typeof attributeConfig.process ? attributeConfig.process(nextProp) : nextProp, 
         (updatePayload || (updatePayload = {}))[propKey] = nextValue);
-    } else removedKeys = null, removedKeyCount = 0, updatePayload = diffNestedProperty(updatePayload, prevProp, nextProp, attributeConfig),
-    removedKeyCount > 0 && updatePayload && (restoreDeletedValuesInNestedArray(updatePayload, nextProp, attributeConfig),
+    } else removedKeys = null, removedKeyCount = 0, updatePayload = diffNestedProperty(updatePayload, prevProp, nextProp, attributeConfig), 
+    removedKeyCount > 0 && updatePayload && (restoreDeletedValuesInNestedArray(updatePayload, nextProp, attributeConfig), 
     removedKeys = null);
-    for (propKey in prevProps) void 0 === nextProps[propKey] && (attributeConfig = validAttributes[propKey]) && (updatePayload && void 0 !== updatePayload[propKey] || void 0 !== (prevProp = prevProps[propKey]) && ("object" != typeof attributeConfig || "function" == typeof attributeConfig.diff || "function" == typeof attributeConfig.process ? ((updatePayload || (updatePayload = {}))[propKey] = null,
-    removedKeys || (removedKeys = {}), removedKeys[propKey] || (removedKeys[propKey] = !0,
+    for (propKey in prevProps) void 0 === nextProps[propKey] && (attributeConfig = validAttributes[propKey]) && (updatePayload && void 0 !== updatePayload[propKey] || void 0 !== (prevProp = prevProps[propKey]) && ("object" != typeof attributeConfig || "function" == typeof attributeConfig.diff || "function" == typeof attributeConfig.process ? ((updatePayload || (updatePayload = {}))[propKey] = null, 
+    removedKeys || (removedKeys = {}), removedKeys[propKey] || (removedKeys[propKey] = !0, 
     removedKeyCount++)) : updatePayload = clearNestedProperty(updatePayload, prevProp, attributeConfig)));
     return updatePayload;
 }
@@ -2473,42 +2449,64 @@ function mountSafeCallback$1(context, callback) {
     };
 }
 
-function throwOnStylesProp$1(component, props) {
+function throwOnStylesProp(component, props) {
     if (void 0 !== props.styles) {
         var owner = component._owner || null, name = component.constructor.displayName, msg = "`styles` is not a supported property of `" + name + "`, did " + "you mean `style` (singular)?";
-        throw owner && owner.constructor && owner.constructor.displayName && (msg += "\n\nCheck the `" + owner.constructor.displayName + "` parent " + " component."),
+        throw owner && owner.constructor && owner.constructor.displayName && (msg += "\n\nCheck the `" + owner.constructor.displayName + "` parent " + " component."), 
         new Error(msg);
     }
 }
 
-function warnForStyleProps$1(props, validAttributes) {
+function warnForStyleProps(props, validAttributes) {
     for (var key in validAttributes.style) validAttributes[key] || void 0 === props[key] || console.error("You are setting the style `{ " + key + ": ... }` as a prop. You " + "should nest it in a style object. " + "E.g. `{ style: { " + key + ": ... } }`");
 }
 
 var NativeMethodsMixinUtils = {
     mountSafeCallback: mountSafeCallback$1,
-    throwOnStylesProp: throwOnStylesProp$1,
-    warnForStyleProps: warnForStyleProps$1
-}, mountSafeCallback = NativeMethodsMixinUtils.mountSafeCallback, throwOnStylesProp = NativeMethodsMixinUtils.throwOnStylesProp, warnForStyleProps = NativeMethodsMixinUtils.warnForStyleProps, findNumericNodeHandle = ReactNativeFeatureFlags$1.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack, NativeMethodsMixin = {
-    measure: function(callback) {
-        UIManager.measure(findNumericNodeHandle(this), mountSafeCallback(this, callback));
-    },
-    measureInWindow: function(callback) {
-        UIManager.measureInWindow(findNumericNodeHandle(this), mountSafeCallback(this, callback));
-    },
-    measureLayout: function(relativeToNativeNode, onSuccess, onFail) {
-        UIManager.measureLayout(findNumericNodeHandle(this), relativeToNativeNode, mountSafeCallback(this, onFail), mountSafeCallback(this, onSuccess));
-    },
-    setNativeProps: function(nativeProps) {
-        injectedSetNativeProps(this, nativeProps);
-    },
-    focus: function() {
-        TextInputState.focusTextInput(findNumericNodeHandle(this));
-    },
-    blur: function() {
-        TextInputState.blurTextInput(findNumericNodeHandle(this));
-    }
+    throwOnStylesProp: throwOnStylesProp,
+    warnForStyleProps: warnForStyleProps
 };
+
+function _classCallCheck$1(instance, Constructor) {
+    if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
+}
+
+function _possibleConstructorReturn(self, call) {
+    if (!self) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    return !call || "object" != typeof call && "function" != typeof call ? self : call;
+}
+
+function _inherits(subClass, superClass) {
+    if ("function" != typeof superClass && null !== superClass) throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+        constructor: {
+            value: subClass,
+            enumerable: !1,
+            writable: !0,
+            configurable: !0
+        }
+    }), superClass && (Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass);
+}
+
+var ReactNativeFeatureFlags$1 = require("ReactNativeFeatureFlags"), mountSafeCallback = NativeMethodsMixinUtils.mountSafeCallback, findNumericNodeHandle = ReactNativeFeatureFlags$1.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack, ReactNativeComponent = function(_React$Component) {
+    _inherits(ReactNativeComponent, _React$Component);
+    function ReactNativeComponent() {
+        return _classCallCheck$1(this, ReactNativeComponent), _possibleConstructorReturn(this, _React$Component.apply(this, arguments));
+    }
+    return ReactNativeComponent.prototype.blur = function() {
+        TextInputState.blurTextInput(findNumericNodeHandle(this));
+    }, ReactNativeComponent.prototype.focus = function() {
+        TextInputState.focusTextInput(findNumericNodeHandle(this));
+    }, ReactNativeComponent.prototype.measure = function(callback) {
+        UIManager.measure(findNumericNodeHandle(this), mountSafeCallback(this, callback));
+    }, ReactNativeComponent.prototype.measureInWindow = function(callback) {
+        UIManager.measureInWindow(findNumericNodeHandle(this), mountSafeCallback(this, callback));
+    }, ReactNativeComponent.prototype.measureLayout = function(relativeToNativeNode, onSuccess, onFail) {
+        UIManager.measureLayout(findNumericNodeHandle(this), relativeToNativeNode, mountSafeCallback(this, onFail), mountSafeCallback(this, onSuccess));
+    }, ReactNativeComponent.prototype.setNativeProps = function(nativeProps) {
+        injectedSetNativeProps(this, nativeProps);
+    }, ReactNativeComponent;
+}(React.Component);
 
 function setNativePropsFiber(componentOrHandle, nativeProps) {
     var maybeInstance = void 0;
@@ -2516,9 +2514,7 @@ function setNativePropsFiber(componentOrHandle, nativeProps) {
         maybeInstance = findNodeHandle_1(componentOrHandle);
     } catch (error) {}
     if (null != maybeInstance) {
-        var viewConfig = maybeInstance.viewConfig;
-        warnForStyleProps(nativeProps, viewConfig.validAttributes);
-        var updatePayload = ReactNativeAttributePayload_1.create(nativeProps, viewConfig.validAttributes);
+        var viewConfig = maybeInstance.viewConfig, updatePayload = ReactNativeAttributePayload_1.create(nativeProps, viewConfig.validAttributes);
         UIManager.updateView(maybeInstance._nativeTag, viewConfig.uiViewClassName, updatePayload);
     }
 }
@@ -2531,9 +2527,7 @@ function setNativePropsStack(componentOrHandle, nativeProps) {
             for (;void 0 !== maybeInstance._renderedComponent; ) maybeInstance = maybeInstance._renderedComponent;
             viewConfig = maybeInstance.viewConfig;
         }
-        var tag = "function" == typeof maybeInstance.getHostNode ? maybeInstance.getHostNode() : maybeInstance._rootNodeID;
-        warnForStyleProps(nativeProps, viewConfig.validAttributes);
-        var updatePayload = ReactNativeAttributePayload_1.create(nativeProps, viewConfig.validAttributes);
+        var tag = "function" == typeof maybeInstance.getHostNode ? maybeInstance.getHostNode() : maybeInstance._rootNodeID, updatePayload = ReactNativeAttributePayload_1.create(nativeProps, viewConfig.validAttributes);
         UIManager.updateView(tag, viewConfig.uiViewClassName, updatePayload);
     }
 }
@@ -2542,24 +2536,77 @@ var injectedSetNativeProps = void 0;
 
 injectedSetNativeProps = ReactNativeFeatureFlags$1.useFiber ? setNativePropsFiber : setNativePropsStack;
 
+var ReactNativeComponent_1 = ReactNativeComponent, ReactNativeFeatureFlags$2 = require("ReactNativeFeatureFlags"), mountSafeCallback$2 = NativeMethodsMixinUtils.mountSafeCallback, throwOnStylesProp$1 = NativeMethodsMixinUtils.throwOnStylesProp, warnForStyleProps$1 = NativeMethodsMixinUtils.warnForStyleProps, findNumericNodeHandle$1 = ReactNativeFeatureFlags$2.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack, NativeMethodsMixin = {
+    measure: function(callback) {
+        UIManager.measure(findNumericNodeHandle$1(this), mountSafeCallback$2(this, callback));
+    },
+    measureInWindow: function(callback) {
+        UIManager.measureInWindow(findNumericNodeHandle$1(this), mountSafeCallback$2(this, callback));
+    },
+    measureLayout: function(relativeToNativeNode, onSuccess, onFail) {
+        UIManager.measureLayout(findNumericNodeHandle$1(this), relativeToNativeNode, mountSafeCallback$2(this, onFail), mountSafeCallback$2(this, onSuccess));
+    },
+    setNativeProps: function(nativeProps) {
+        injectedSetNativeProps$1(this, nativeProps);
+    },
+    focus: function() {
+        TextInputState.focusTextInput(findNumericNodeHandle$1(this));
+    },
+    blur: function() {
+        TextInputState.blurTextInput(findNumericNodeHandle$1(this));
+    }
+};
+
+function setNativePropsFiber$1(componentOrHandle, nativeProps) {
+    var maybeInstance = void 0;
+    try {
+        maybeInstance = findNodeHandle_1(componentOrHandle);
+    } catch (error) {}
+    if (null != maybeInstance) {
+        var viewConfig = maybeInstance.viewConfig;
+        warnForStyleProps$1(nativeProps, viewConfig.validAttributes);
+        var updatePayload = ReactNativeAttributePayload_1.create(nativeProps, viewConfig.validAttributes);
+        UIManager.updateView(maybeInstance._nativeTag, viewConfig.uiViewClassName, updatePayload);
+    }
+}
+
+function setNativePropsStack$1(componentOrHandle, nativeProps) {
+    var maybeInstance = findNodeHandle_1(componentOrHandle);
+    if (null != maybeInstance) {
+        var viewConfig = void 0;
+        if (void 0 !== maybeInstance.viewConfig) viewConfig = maybeInstance.viewConfig; else if (void 0 !== maybeInstance._instance && void 0 !== maybeInstance._instance.viewConfig) viewConfig = maybeInstance._instance.viewConfig; else {
+            for (;void 0 !== maybeInstance._renderedComponent; ) maybeInstance = maybeInstance._renderedComponent;
+            viewConfig = maybeInstance.viewConfig;
+        }
+        var tag = "function" == typeof maybeInstance.getHostNode ? maybeInstance.getHostNode() : maybeInstance._rootNodeID;
+        warnForStyleProps$1(nativeProps, viewConfig.validAttributes);
+        var updatePayload = ReactNativeAttributePayload_1.create(nativeProps, viewConfig.validAttributes);
+        UIManager.updateView(tag, viewConfig.uiViewClassName, updatePayload);
+    }
+}
+
+var injectedSetNativeProps$1 = void 0;
+
+injectedSetNativeProps$1 = ReactNativeFeatureFlags$2.useFiber ? setNativePropsFiber$1 : setNativePropsStack$1;
+
 var NativeMethodsMixin_DEV = NativeMethodsMixin;
 
-invariant(!NativeMethodsMixin_DEV.componentWillMount && !NativeMethodsMixin_DEV.componentWillReceiveProps, "Do not override existing functions."),
+invariant(!NativeMethodsMixin_DEV.componentWillMount && !NativeMethodsMixin_DEV.componentWillReceiveProps, "Do not override existing functions."), 
 NativeMethodsMixin_DEV.componentWillMount = function() {
-    throwOnStylesProp(this, this.props);
+    throwOnStylesProp$1(this, this.props);
 }, NativeMethodsMixin_DEV.componentWillReceiveProps = function(newProps) {
-    throwOnStylesProp(this, newProps);
+    throwOnStylesProp$1(this, newProps);
 };
 
 var NativeMethodsMixin_1 = NativeMethodsMixin, TouchHistoryMath = {
     centroidDimension: function(touchHistory, touchesChangedAfter, isXAxis, ofCurrent) {
         var touchBank = touchHistory.touchBank, total = 0, count = 0, oneTouchData = 1 === touchHistory.numberActiveTouches ? touchHistory.touchBank[touchHistory.indexOfSingleActiveTouch] : null;
-        if (null !== oneTouchData) oneTouchData.touchActive && oneTouchData.currentTimeStamp > touchesChangedAfter && (total += ofCurrent && isXAxis ? oneTouchData.currentPageX : ofCurrent && !isXAxis ? oneTouchData.currentPageY : !ofCurrent && isXAxis ? oneTouchData.previousPageX : oneTouchData.previousPageY,
+        if (null !== oneTouchData) oneTouchData.touchActive && oneTouchData.currentTimeStamp > touchesChangedAfter && (total += ofCurrent && isXAxis ? oneTouchData.currentPageX : ofCurrent && !isXAxis ? oneTouchData.currentPageY : !ofCurrent && isXAxis ? oneTouchData.previousPageX : oneTouchData.previousPageY, 
         count = 1); else for (var i = 0; i < touchBank.length; i++) {
             var touchTrack = touchBank[i];
             if (null !== touchTrack && void 0 !== touchTrack && touchTrack.touchActive && touchTrack.currentTimeStamp >= touchesChangedAfter) {
                 var toAdd;
-                toAdd = ofCurrent && isXAxis ? touchTrack.currentPageX : ofCurrent && !isXAxis ? touchTrack.currentPageY : !ofCurrent && isXAxis ? touchTrack.previousPageX : touchTrack.previousPageY,
+                toAdd = ofCurrent && isXAxis ? touchTrack.currentPageX : ofCurrent && !isXAxis ? touchTrack.currentPageY : !ofCurrent && isXAxis ? touchTrack.previousPageX : touchTrack.previousPageY, 
                 total += toAdd, count++;
             }
         }
@@ -2596,7 +2643,9 @@ function escape(key) {
     });
 }
 
-function unescape(key) {
+var unescapeInDev = emptyFunction;
+
+unescapeInDev = function(key) {
     var unescapeRegex = /(=0|=2)/g, unescaperLookup = {
         "=0": "=",
         "=2": ":"
@@ -2604,19 +2653,12 @@ function unescape(key) {
     return ("" + ("." === key[0] && "$" === key[1] ? key.substring(2) : key.substring(1))).replace(unescapeRegex, function(match) {
         return unescaperLookup[match];
     });
-}
+};
 
 var KeyEscapeUtils = {
     escape: escape,
-    unescape: unescape
-}, KeyEscapeUtils_1 = KeyEscapeUtils, REACT_ELEMENT_TYPE = "function" == typeof Symbol && Symbol.for && Symbol.for("react.element") || 60103, ReactElementSymbol = REACT_ELEMENT_TYPE, ITERATOR_SYMBOL = "function" == typeof Symbol && Symbol.iterator, FAUX_ITERATOR_SYMBOL = "@@iterator";
-
-function getIteratorFn(maybeIterable) {
-    var iteratorFn = maybeIterable && (ITERATOR_SYMBOL && maybeIterable[ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL]);
-    if ("function" == typeof iteratorFn) return iteratorFn;
-}
-
-var getIteratorFn_1 = getIteratorFn, getCurrentStackAddendum = ReactGlobalSharedState_1.ReactComponentTreeHook.getCurrentStackAddendum, SEPARATOR = ".", SUBSEPARATOR = ":", didWarnAboutMaps = !1;
+    unescapeInDev: unescapeInDev
+}, KeyEscapeUtils_1 = KeyEscapeUtils, ITERATOR_SYMBOL = "function" == typeof Symbol && Symbol.iterator, FAUX_ITERATOR_SYMBOL = "@@iterator", REACT_ELEMENT_TYPE = "function" == typeof Symbol && Symbol.for && Symbol.for("react.element") || 60103, getCurrentStackAddendum = ReactGlobalSharedState_1.ReactComponentTreeHook.getCurrentStackAddendum, SEPARATOR = ".", SUBSEPARATOR = ":", didWarnAboutMaps = !1;
 
 function getComponentKey(component, index) {
     return component && "object" == typeof component && null != component.key ? KeyEscapeUtils_1.escape(component.key) : index.toString(36);
@@ -2624,16 +2666,16 @@ function getComponentKey(component, index) {
 
 function traverseStackChildrenImpl(children, nameSoFar, callback, traverseContext) {
     var type = typeof children;
-    if ("undefined" !== type && "boolean" !== type || (children = null), null === children || "string" === type || "number" === type || "object" === type && children.$$typeof === ReactElementSymbol) return callback(traverseContext, children, "" === nameSoFar ? SEPARATOR + getComponentKey(children, 0) : nameSoFar),
+    if ("undefined" !== type && "boolean" !== type || (children = null), null === children || "string" === type || "number" === type || "object" === type && children.$$typeof === REACT_ELEMENT_TYPE) return callback(traverseContext, children, "" === nameSoFar ? SEPARATOR + getComponentKey(children, 0) : nameSoFar), 
     1;
     var child, nextName, subtreeCount = 0, nextNamePrefix = "" === nameSoFar ? SEPARATOR : nameSoFar + SUBSEPARATOR;
-    if (Array.isArray(children)) for (var i = 0; i < children.length; i++) child = children[i],
+    if (Array.isArray(children)) for (var i = 0; i < children.length; i++) child = children[i], 
     nextName = nextNamePrefix + getComponentKey(child, i), subtreeCount += traverseStackChildrenImpl(child, nextName, callback, traverseContext); else {
-        var iteratorFn = getIteratorFn_1(children);
-        if (iteratorFn) {
-            iteratorFn === children.entries && (warning(didWarnAboutMaps, "Using Maps as children is unsupported and will likely yield " + "unexpected results. Convert it to a sequence/iterable of keyed " + "ReactElements instead.%s", getCurrentStackAddendum()),
+        var iteratorFn = ITERATOR_SYMBOL && children[ITERATOR_SYMBOL] || children[FAUX_ITERATOR_SYMBOL];
+        if ("function" == typeof iteratorFn) {
+            iteratorFn === children.entries && (warning(didWarnAboutMaps, "Using Maps as children is unsupported and will likely yield " + "unexpected results. Convert it to a sequence/iterable of keyed " + "ReactElements instead.%s", getCurrentStackAddendum()), 
             didWarnAboutMaps = !0);
-            for (var step, iterator = iteratorFn.call(children), ii = 0; !(step = iterator.next()).done; ) child = step.value,
+            for (var step, iterator = iteratorFn.call(children), ii = 0; !(step = iterator.next()).done; ) child = step.value, 
             nextName = nextNamePrefix + getComponentKey(child, ii++), subtreeCount += traverseStackChildrenImpl(child, nextName, callback, traverseContext);
         } else if ("object" === type) {
             var addendum = "";
@@ -2655,8 +2697,8 @@ var traverseStackChildren_1 = traverseStackChildren, ReactComponentTreeHook$2;
 
 function instantiateChild(childInstances, child, name, selfDebugID) {
     var keyUnique = void 0 === childInstances[name];
-    ReactComponentTreeHook$2 || (ReactComponentTreeHook$2 = ReactGlobalSharedState_1.ReactComponentTreeHook),
-    keyUnique || warning(!1, "flattenChildren(...): Encountered two children with the same key, " + "`%s`. Child keys must be unique; when two children share a key, only " + "the first child will be used.%s", KeyEscapeUtils_1.unescape(name), ReactComponentTreeHook$2.getStackAddendumByID(selfDebugID)),
+    ReactComponentTreeHook$2 || (ReactComponentTreeHook$2 = ReactGlobalSharedState_1.ReactComponentTreeHook), 
+    keyUnique || warning(!1, "flattenChildren(...):" + "Encountered two children with the same key, `%s`. " + "Keys should be unique so that components maintain their identity " + "across updates. Non-unique keys may cause children to be " + "duplicated and/or omitted — the behavior is unsupported and " + "could change in a future version.%s", KeyEscapeUtils_1.unescapeInDev(name), ReactComponentTreeHook$2.getStackAddendumByID(selfDebugID)), 
     null != child && keyUnique && (childInstances[name] = instantiateReactComponent_1(child, !0));
 }
 
@@ -2674,18 +2716,16 @@ var ReactChildReconciler = {
             for (name in nextChildren) if (nextChildren.hasOwnProperty(name)) {
                 prevChild = prevChildren && prevChildren[name];
                 var prevElement = prevChild && prevChild._currentElement, nextElement = nextChildren[name];
-                if (null != prevChild && shouldUpdateReactComponent_1(prevElement, nextElement)) ReactReconciler_1.receiveComponent(prevChild, nextElement, transaction, context),
+                if (null != prevChild && shouldUpdateReactComponent_1(prevElement, nextElement)) ReactReconciler_1.receiveComponent(prevChild, nextElement, transaction, context), 
                 nextChildren[name] = prevChild; else {
-                    !ReactFeatureFlags_1.prepareNewChildrenBeforeUnmountInStack && prevChild && (removedNodes[name] = ReactReconciler_1.getHostNode(prevChild),
-                    ReactReconciler_1.unmountComponent(prevChild, !1, !1));
                     var nextChildInstance = instantiateReactComponent_1(nextElement, !0);
                     nextChildren[name] = nextChildInstance;
                     var nextChildMountImage = ReactReconciler_1.mountComponent(nextChildInstance, transaction, hostParent, hostContainerInfo, context, selfDebugID);
-                    mountImages.push(nextChildMountImage), ReactFeatureFlags_1.prepareNewChildrenBeforeUnmountInStack && prevChild && (removedNodes[name] = ReactReconciler_1.getHostNode(prevChild),
+                    mountImages.push(nextChildMountImage), prevChild && (removedNodes[name] = ReactReconciler_1.getHostNode(prevChild), 
                     ReactReconciler_1.unmountComponent(prevChild, !1, !1));
                 }
             }
-            for (name in prevChildren) !prevChildren.hasOwnProperty(name) || nextChildren && nextChildren.hasOwnProperty(name) || (prevChild = prevChildren[name],
+            for (name in prevChildren) !prevChildren.hasOwnProperty(name) || nextChildren && nextChildren.hasOwnProperty(name) || (prevChild = prevChildren[name], 
             removedNodes[name] = ReactReconciler_1.getHostNode(prevChild), ReactReconciler_1.unmountComponent(prevChild, !1, !1));
         }
     },
@@ -2702,8 +2742,8 @@ var ReactChildReconciler = {
 function flattenSingleChildIntoContext(traverseContext, child, name, selfDebugID) {
     if (traverseContext && "object" == typeof traverseContext) {
         var result = traverseContext, keyUnique = void 0 === result[name];
-        ReactComponentTreeHook$3 || (ReactComponentTreeHook$3 = ReactGlobalSharedState_1.ReactComponentTreeHook),
-        keyUnique || warning(!1, "flattenChildren(...): Encountered two children with the same key, " + "`%s`. Child keys must be unique; when two children share a key, only " + "the first child will be used.%s", KeyEscapeUtils_1.unescape(name), ReactComponentTreeHook$3.getStackAddendumByID(selfDebugID)),
+        ReactComponentTreeHook$3 || (ReactComponentTreeHook$3 = ReactGlobalSharedState_1.ReactComponentTreeHook), 
+        keyUnique || warning(!1, "flattenChildren(...): Encountered two children with the same key, " + "`%s`. " + "Keys should be unique so that components maintain their identity " + "across updates. Non-unique keys may cause children to be " + "duplicated and/or omitted — the behavior is unsupported and " + "could change in a future version.%s", KeyEscapeUtils_1.unescapeInDev(name), ReactComponentTreeHook$3.getStackAddendumByID(selfDebugID)), 
         keyUnique && null != child && (result[name] = child);
     }
 }
@@ -2814,11 +2854,11 @@ var ReactMultiChild = {
             } finally {
                 ReactCurrentOwner$3.current = null;
             }
-            return ReactChildReconciler_1.updateChildren(prevChildren, nextChildren, mountImages, removedNodes, transaction, this, this._hostContainerInfo, context, selfDebugID),
+            return ReactChildReconciler_1.updateChildren(prevChildren, nextChildren, mountImages, removedNodes, transaction, this, this._hostContainerInfo, context, selfDebugID), 
             nextChildren;
         }
-        return nextChildren = flattenStackChildren_1(nextNestedChildrenElements, selfDebugID),
-        ReactChildReconciler_1.updateChildren(prevChildren, nextChildren, mountImages, removedNodes, transaction, this, this._hostContainerInfo, context, selfDebugID),
+        return nextChildren = flattenStackChildren_1(nextNestedChildrenElements, selfDebugID), 
+        ReactChildReconciler_1.updateChildren(prevChildren, nextChildren, mountImages, removedNodes, transaction, this, this._hostContainerInfo, context, selfDebugID), 
         nextChildren;
     },
     mountChildren: function(nestedChildren, transaction, context) {
@@ -2854,9 +2894,9 @@ var ReactMultiChild = {
             var name, updates = null, nextIndex = 0, lastIndex = 0, nextMountIndex = 0, lastPlacedNode = null;
             for (name in nextChildren) if (nextChildren.hasOwnProperty(name)) {
                 var prevChild = prevChildren && prevChildren[name], nextChild = nextChildren[name];
-                prevChild === nextChild ? (updates = enqueue(updates, this.moveChild(prevChild, lastPlacedNode, nextIndex, lastIndex)),
-                lastIndex = Math.max(prevChild._mountIndex, lastIndex), prevChild._mountIndex = nextIndex) : (prevChild && (lastIndex = Math.max(prevChild._mountIndex, lastIndex)),
-                updates = enqueue(updates, this._mountChildAtIndex(nextChild, mountImages[nextMountIndex], lastPlacedNode, nextIndex, transaction, context)),
+                prevChild === nextChild ? (updates = enqueue(updates, this.moveChild(prevChild, lastPlacedNode, nextIndex, lastIndex)), 
+                lastIndex = Math.max(prevChild._mountIndex, lastIndex), prevChild._mountIndex = nextIndex) : (prevChild && (lastIndex = Math.max(prevChild._mountIndex, lastIndex)), 
+                updates = enqueue(updates, this._mountChildAtIndex(nextChild, mountImages[nextMountIndex], lastPlacedNode, nextIndex, transaction, context)), 
                 nextMountIndex++), nextIndex++, lastPlacedNode = ReactReconciler_1.getHostNode(nextChild);
             }
             for (name in removedNodes) removedNodes.hasOwnProperty(name) && (updates = enqueue(updates, this._unmountChild(prevChildren[name], removedNodes[name])));
@@ -2865,7 +2905,7 @@ var ReactMultiChild = {
     },
     unmountChildren: function(safely, skipLifecycle) {
         var renderedChildren = this._renderedChildren;
-        ReactChildReconciler_1.unmountChildren(renderedChildren, safely, skipLifecycle),
+        ReactChildReconciler_1.unmountChildren(renderedChildren, safely, skipLifecycle), 
         this._renderedChildren = null;
     },
     moveChild: function(child, afterNode, toIndex, lastIndex) {
@@ -2893,7 +2933,7 @@ ReactNativeBaseComponent.Mixin = {
         return this;
     },
     unmountComponent: function(safely, skipLifecycle) {
-        ReactNativeComponentTree_1.uncacheNode(this), this.unmountChildren(safely, skipLifecycle),
+        ReactNativeComponentTree_1.uncacheNode(this), this.unmountChildren(safely, skipLifecycle), 
         this._rootNodeID = 0;
     },
     initializeChildren: function(children, containerTag, transaction, context) {
@@ -2911,7 +2951,7 @@ ReactNativeBaseComponent.Mixin = {
         this._currentElement = nextElement;
         for (var key in this.viewConfig.validAttributes) nextElement.props.hasOwnProperty(key) && deepFreezeAndThrowOnMutationInDev(nextElement.props[key]);
         var updatePayload = ReactNativeAttributePayload_1.diff(prevElement.props, nextElement.props, this.viewConfig.validAttributes);
-        updatePayload && UIManager.updateView(this._rootNodeID, this.viewConfig.uiViewClassName, updatePayload),
+        updatePayload && UIManager.updateView(this._rootNodeID, this.viewConfig.uiViewClassName, updatePayload), 
         this.updateChildren(nextElement.props.children, transaction, context);
     },
     getName: function() {
@@ -2925,24 +2965,24 @@ ReactNativeBaseComponent.Mixin = {
         this._rootNodeID = tag, this._hostParent = hostParent, this._hostContainerInfo = hostContainerInfo;
         for (var key in this.viewConfig.validAttributes) this._currentElement.props.hasOwnProperty(key) && deepFreezeAndThrowOnMutationInDev(this._currentElement.props[key]);
         var updatePayload = ReactNativeAttributePayload_1.create(this._currentElement.props, this.viewConfig.validAttributes), nativeTopRootTag = hostContainerInfo._tag;
-        return UIManager.createView(tag, this.viewConfig.uiViewClassName, nativeTopRootTag, updatePayload),
-        ReactNativeComponentTree_1.precacheNode(this, tag), this.initializeChildren(this._currentElement.props.children, tag, transaction, context),
+        return UIManager.createView(tag, this.viewConfig.uiViewClassName, nativeTopRootTag, updatePayload), 
+        ReactNativeComponentTree_1.precacheNode(this, tag), this.initializeChildren(this._currentElement.props.children, tag, transaction, context), 
         tag;
     }
 }, Object.assign(ReactNativeBaseComponent.prototype, ReactMultiChild_1, ReactNativeBaseComponent.Mixin, NativeMethodsMixin_1);
 
 var ReactNativeBaseComponent_1 = ReactNativeBaseComponent, createReactNativeComponentClassStack = function(viewConfig) {
     var Constructor = function(element) {
-        this._currentElement = element, this._topLevelWrapper = null, this._hostParent = null,
+        this._currentElement = element, this._topLevelWrapper = null, this._hostParent = null, 
         this._hostContainerInfo = null, this._rootNodeID = 0, this._renderedChildren = null;
     };
-    return Constructor.displayName = viewConfig.uiViewClassName, Constructor.viewConfig = viewConfig,
-    Constructor.propTypes = viewConfig.propTypes, Constructor.prototype = new ReactNativeBaseComponent_1(viewConfig),
+    return Constructor.displayName = viewConfig.uiViewClassName, Constructor.viewConfig = viewConfig, 
+    Constructor.propTypes = viewConfig.propTypes, Constructor.prototype = new ReactNativeBaseComponent_1(viewConfig), 
     Constructor.prototype.constructor = Constructor, Constructor;
-}, createReactNativeComponentClassStack_1 = createReactNativeComponentClassStack, createReactNativeComponentClass = ReactNativeFeatureFlags$1.useFiber ? DevOnlyStubShim : createReactNativeComponentClassStack_1, findNumericNodeHandle$1 = ReactNativeFeatureFlags$1.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack;
+}, createReactNativeComponentClassStack_1 = createReactNativeComponentClassStack, ReactNativeFeatureFlags$3 = require("ReactNativeFeatureFlags"), createReactNativeComponentClass = ReactNativeFeatureFlags$3.useFiber ? DevOnlyStubShim : createReactNativeComponentClassStack_1, ReactNativeFeatureFlags$4 = require("ReactNativeFeatureFlags"), findNumericNodeHandle$2 = ReactNativeFeatureFlags$4.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack;
 
 function takeSnapshot(view, options) {
-    return "number" != typeof view && "window" !== view && (view = findNumericNodeHandle$1(view) || "window"),
+    return "number" != typeof view && "window" !== view && (view = findNumericNodeHandle$2(view) || "window"), 
     UIManager.__takeSnapshot(view, options);
 }
 
@@ -2996,7 +3036,7 @@ function getExclusive() {
             counts: {},
             durations: {},
             totalDuration: 0
-        }), stats.durations[timerType] || (stats.durations[timerType] = 0), stats.counts[timerType] || (stats.counts[timerType] = 0),
+        }), stats.durations[timerType] || (stats.durations[timerType] = 0), stats.counts[timerType] || (stats.counts[timerType] = 0), 
         affectedIDs[key][instanceID] = !0, applyUpdate(stats);
     }
     return flushHistory.forEach(function(flush) {
@@ -3069,7 +3109,7 @@ function getWasted() {
     return flushHistory.forEach(function(flush) {
         var measurements = flush.measurements, treeSnapshot = flush.treeSnapshot, operations = flush.operations, isDefinitelyNotWastedByID = {};
         operations.forEach(function(operation) {
-            for (var instanceID = operation.instanceID, nextParentID = instanceID; nextParentID; ) isDefinitelyNotWastedByID[nextParentID] = !0,
+            for (var instanceID = operation.instanceID, nextParentID = instanceID; nextParentID; ) isDefinitelyNotWastedByID[nextParentID] = !0, 
             nextParentID = treeSnapshot[nextParentID].parentID;
         });
         var renderedCompositeIDs = {};
@@ -3172,14 +3212,14 @@ function printOperations(flushHistory) {
 var warnedAboutPrintDOM = !1;
 
 function printDOM(measurements) {
-    return lowPriorityWarning_1(warnedAboutPrintDOM, "`ReactPerf.printDOM(...)` is deprecated. Use " + "`ReactPerf.printOperations(...)` instead."),
+    return lowPriorityWarning_1(warnedAboutPrintDOM, "`ReactPerf.printDOM(...)` is deprecated. Use " + "`ReactPerf.printOperations(...)` instead."), 
     warnedAboutPrintDOM = !0, printOperations(measurements);
 }
 
 var warnedAboutGetMeasurementsSummaryMap = !1;
 
 function getMeasurementsSummaryMap(measurements) {
-    return lowPriorityWarning_1(warnedAboutGetMeasurementsSummaryMap, "`ReactPerf.getMeasurementsSummaryMap(...)` is deprecated. Use " + "`ReactPerf.getWasted(...)` instead."),
+    return lowPriorityWarning_1(warnedAboutGetMeasurementsSummaryMap, "`ReactPerf.getMeasurementsSummaryMap(...)` is deprecated. Use " + "`ReactPerf.getWasted(...)` instead."), 
     warnedAboutGetMeasurementsSummaryMap = !0, getWasted(measurements);
 }
 
@@ -3216,7 +3256,8 @@ ReactNativeInjection.inject(), ReactNativeStackInjection.inject();
 
 var render = function(element, mountInto, callback) {
     return ReactNativeMount_1.renderComponent(element, mountInto, callback);
-}, ReactNative = {
+}, ReactNativeStack = {
+    NativeComponent: ReactNativeComponent_1,
     hasReactNativeInitialized: !1,
     findNodeHandle: findNumericNodeHandleStack,
     render: render,
@@ -3234,7 +3275,7 @@ var render = function(element, mountInto, callback) {
     }
 };
 
-Object.assign(ReactNative.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED, {
+Object.assign(ReactNativeStack.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED, {
     ReactDebugTool: ReactDebugTool_1,
     ReactPerf: ReactPerf
 }), "undefined" != typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" == typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.inject && __REACT_DEVTOOLS_GLOBAL_HOOK__.inject({
@@ -3252,6 +3293,6 @@ Object.assign(ReactNative.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED, {
     getInspectorDataForViewTag: ReactNativeStackInspector.getInspectorDataForViewTag
 });
 
-var ReactNativeStack = ReactNative;
+var ReactNativeStackEntry = ReactNativeStack;
 
-module.exports = ReactNativeStack;
+module.exports = ReactNativeStackEntry;

@@ -97,6 +97,12 @@ module.exports = {
       command: '--transformer [path]',
       description: 'Specify a custom transformer to be used'
     }, {
+      command: '--max-workers [number]',
+      description: 'Specifies the maximum number of workers the worker-pool ' +
+        'will spawn for transforming files. This defaults to the number of the ' +
+        'cores available on your machine.',
+      parse: (workers: string) => Number(workers),
+    }, {
       command: '--dev [boolean]',
       description: 'If false, skip all dev-only code path',
       parse: (val) => val === 'false' ? false : true,

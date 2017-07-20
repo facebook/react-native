@@ -4,7 +4,7 @@ title: Handling Text Input
 layout: docs
 category: The Basics
 permalink: docs/handling-text-input.html
-next: using-a-scrollview
+next: handling-touches
 previous: flexbox
 ---
 

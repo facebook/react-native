@@ -6,7 +6,7 @@ category: Guides (Android)
 permalink: docs/native-modules-android.html
 banner: ejected
 next: native-components-android
-previous: communication-ios
+previous: building-for-apple-tv
 ---
 
 Sometimes an app needs access to a platform API that React Native doesn't have a corresponding module for yet. Maybe you want to reuse some existing Java code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
@@ -35,6 +35,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
 import java.util.Map;
+import java.util.HashMap; 
 
 public class ToastModule extends ReactContextBaseJavaModule {
 
@@ -102,7 +103,6 @@ The last step within Java is to register the Module; this happens in the `create
 package com.facebook.react.modules.toast;
 
 import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
@@ -112,11 +112,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class AnExampleReactPackage implements ReactPackage {
-
-  @Override
-  public List<Class<? extends JavaScriptModule>> createJSModules() {
-    return Collections.emptyList();
-  }
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {

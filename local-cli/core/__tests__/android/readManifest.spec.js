@@ -1,31 +1,47 @@
-jest.autoMockOff();
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @format
+ */
+
+'use strict';
 
 const findManifest = require('../../android/findManifest');
 const readManifest = require('../../android/readManifest');
-const mockFs = require('mock-fs');
+const mockFS = require('mock-fs');
 const mocks = require('../../__fixtures__/android');
 
 describe('android::readManifest', () => {
-
-  beforeAll(() => mockFs({
-    empty: {},
-    nested: {
-      android: {
-        app: mocks.valid,
+  beforeAll(() => {
+    mockFS({
+      empty: {},
+      nested: {
+        android: {
+          app: mocks.valid,
+        },
       },
-    },
-  }));
+    });
+  });
 
-  it('should return manifest content if file exists in the folder', () => {
+  it('returns manifest content if file exists in the folder', () => {
     const manifestPath = findManifest('nested');
-    expect(readManifest(manifestPath)).not.toBe(null);
+    expect(readManifest(manifestPath)).not.toBeNull();
     expect(typeof readManifest(manifestPath)).toBe('object');
   });
 
-  it('should throw an error if there is no manifest in the folder', () => {
+  it('throws an error if there is no manifest in the folder', () => {
     const fakeManifestPath = findManifest('empty');
-    expect(() => readManifest(fakeManifestPath)).toThrow();
+    expect(() => {
+      readManifest(fakeManifestPath);
+    }).toThrow();
   });
 
-  afterAll(mockFs.restore);
+  afterAll(() => {
+    mockFS.restore();
+  });
 });

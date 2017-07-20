@@ -18,6 +18,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeMethod.h>
 #import <React/RCTConvert.h>
+#import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTCxxModule.h>
 #import <React/RCTCxxUtils.h>
 #import <React/RCTDevSettings.h>
@@ -29,6 +30,7 @@
 #import <React/RCTProfile.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTUtils.h>
+#import <React/RCTFollyConvert.h>
 #import <cxxreact/CxxNativeModule.h>
 #import <cxxreact/Instance.h>
 #import <cxxreact/JSBundleType.h>
@@ -97,6 +99,8 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
       case ReactMarker::CREATE_REACT_CONTEXT_STOP:
       case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:
       case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
+      case ReactMarker::NATIVE_MODULE_SETUP_START:
+      case ReactMarker::NATIVE_MODULE_SETUP_STOP:
         // These are not used on iOS.
         break;
     }
@@ -276,20 +280,28 @@ struct RCTInstanceCallback : public InstanceCallback {
   // This doesn't really do anything.  The real work happens in initializeBridge.
   _reactInstance.reset(new Instance);
 
-  // Prepare executor factory (shared_ptr for copy into block)
   __weak RCTCxxBridge *weakSelf = self;
+
+  // Prepare executor factory (shared_ptr for copy into block)
   std::shared_ptr<JSExecutorFactory> executorFactory;
   if (!self.executorClass) {
-    BOOL useCustomJSC =
-      [self.delegate respondsToSelector:@selector(shouldBridgeUseCustomJSC:)] &&
-      [self.delegate shouldBridgeUseCustomJSC:self];
-    // The arg is a cache dir.  It's not used with standard JSC.
-    executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
-      ("UseCustomJSC", (bool)useCustomJSC)
-#if RCT_PROFILE
-      ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
-#endif
-    ));
+    if ([self.delegate conformsToProtocol:@protocol(RCTCxxBridgeDelegate)]) {
+      id<RCTCxxBridgeDelegate> cxxDelegate = (id<RCTCxxBridgeDelegate>) self.delegate;
+      executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
+    }
+    if (!executorFactory) {
+      BOOL useCustomJSC =
+        [self.delegate respondsToSelector:@selector(shouldBridgeUseCustomJSC:)] &&
+        [self.delegate shouldBridgeUseCustomJSC:self];
+      // The arg is a cache dir.  It's not used with standard JSC.
+      executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
+        ("OwnerIdentity", "ReactNative")
+        ("UseCustomJSC", (bool)useCustomJSC)
+  #if RCT_PROFILE
+        ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
+  #endif
+      ));
+    }
   } else {
     id<RCTJavaScriptExecutor> objcExecutor = [self moduleForClass:self.executorClass];
     executorFactory.reset(new RCTObjcExecutorFactory(objcExecutor, ^(NSError *error) {
@@ -647,7 +659,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       continue;
     }
 
-    if (moduleData.requiresMainQueueSetup || moduleData.hasConstantsToExport) {
+    if (moduleData.requiresMainQueueSetup) {
       // Modules that need to be set up on the main thread cannot be initialized
       // lazily when required without doing a dispatch_sync to the main thread,
       // which can result in deadlock. To avoid this, we initialize all of these
@@ -1003,12 +1015,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
     if (self->_reactInstance) {
       self->_reactInstance->callJSFunction([module UTF8String], [method UTF8String],
-                                           [RCTConvert folly_dynamic:args ?: @[]]);
+                                           convertIdToFollyDynamic(args ?: @[]));
 
       // ensureOnJavaScriptThread may execute immediately, so use jsMessageThread, to make sure
       // the block is invoked after callJSFunction
       if (completion) {
-        self->_jsMessageThread->runOnQueue(completion);
+        if (self->_jsMessageThread) {
+          self->_jsMessageThread->runOnQueue(completion);
+        } else {
+          RCTLogWarn(@"Can't invoke completion without messageThread");
+        }
       }
     }
   }];
@@ -1035,7 +1051,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     RCTProfileEndFlowEvent();
 
     if (self->_reactInstance) {
-      self->_reactInstance->callJSCallback([cbID unsignedLongLongValue], [RCTConvert folly_dynamic:args ?: @[]]);
+      self->_reactInstance->callJSCallback([cbID unsignedLongLongValue], convertIdToFollyDynamic(args ?: @[]));
     }
   }];
 }
@@ -1048,7 +1064,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCTAssertJSThread();
 
   if (_reactInstance) {
-    _reactInstance->callJSFunction("JSTimersExecution", "callTimers",
+    _reactInstance->callJSFunction("JSTimers", "callTimers",
                                    folly::dynamic::array(folly::dynamic::array([timer doubleValue])));
   }
 }
@@ -1060,19 +1076,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge enqueueApplicationScript]", nil);
 
   [self _tryAndHandleError:^{
+    NSString *sourceUrlStr = deriveSourceURL(url);
     if (isRAMBundle(script)) {
       [self->_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
-      auto ramBundle = std::make_unique<JSIndexedRAMBundle>(url.path.UTF8String);
+      auto ramBundle = std::make_unique<JSIndexedRAMBundle>(sourceUrlStr.UTF8String);
       std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
         self->_reactInstance->loadUnbundle(std::move(ramBundle), std::move(scriptStr),
-                                           [[url absoluteString] UTF8String], false);
+                                           sourceUrlStr.UTF8String, false);
       }
     } else if (self->_reactInstance) {
       self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
-                                                 [[url absoluteString] UTF8String], false);
+                                                 sourceUrlStr.UTF8String, false);
     } else {
       throw std::logic_error("Attempt to call loadApplicationScript: on uninitialized bridge");
     }
@@ -1090,19 +1107,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (void)executeApplicationScriptSync:(NSData *)script url:(NSURL *)url
 {
   [self _tryAndHandleError:^{
+    NSString *sourceUrlStr = deriveSourceURL(url);
     if (isRAMBundle(script)) {
       [self->_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
-      auto ramBundle = std::make_unique<JSIndexedRAMBundle>(url.path.UTF8String);
+      auto ramBundle = std::make_unique<JSIndexedRAMBundle>(sourceUrlStr.UTF8String);
       std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();
       [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
       if (self->_reactInstance) {
         self->_reactInstance->loadUnbundle(std::move(ramBundle), std::move(scriptStr),
-                                           [[url absoluteString] UTF8String], true);
+                                           sourceUrlStr.UTF8String, true);
       }
     } else if (self->_reactInstance) {
       self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
-                                                 [[url absoluteString] UTF8String], true);
+                                                 sourceUrlStr.UTF8String, true);
     } else {
       throw std::logic_error("Attempt to call loadApplicationScriptSync: on uninitialized bridge");
     }
@@ -1194,6 +1212,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     [RCTFBSystrace registerCallbacks];
     #endif
     RCTProfileInit(self);
+
+    [self enqueueJSCall:@"Systrace" method:@"setEnabled" args:@[@YES] completion:NULL];
   }];
 }
 
@@ -1202,6 +1222,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCTAssertMainQueue();
 
   [self ensureOnJavaScriptThread:^{
+    [self enqueueJSCall:@"Systrace" method:@"setEnabled" args:@[@NO] completion:NULL];
     RCTProfileEnd(self, ^(NSString *log) {
       NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
       callback(logData);

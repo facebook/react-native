@@ -185,7 +185,8 @@ jsc_poison(JSSamplingProfilerEnabled JSPokeSamplingProfiler
            JSStartSamplingProfilingOnMainJSCThread)
 
 #define JSC_JSInspectorGetInstance(...) __jsc_bool_wrapper(JSInspectorGetInstance, __VA_ARGS__)
-jsc_poison(JSInspectorGetInstance)
+// no need to poison JSInspectorGetInstance because it's not defined for System JSC / standard SDK header
+// jsc_poison(JSInspectorGetInstance)
 
 
 #define JSC_configureJSCForIOS(...) __jsc_bool_wrapper(configureJSCForIOS, __VA_ARGS__)

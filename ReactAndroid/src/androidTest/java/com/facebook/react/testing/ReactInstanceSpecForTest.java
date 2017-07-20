@@ -38,11 +38,6 @@ public class ReactInstanceSpecForTest {
     return this;
   }
 
-  public ReactInstanceSpecForTest addJSModule(Class jsClass) {
-    mJSModuleSpecs.add(jsClass);
-    return this;
-  }
-
   public ReactInstanceSpecForTest setPackage(ReactPackage reactPackage) {
     mReactPackage = reactPackage;
     return this;
@@ -55,10 +50,6 @@ public class ReactInstanceSpecForTest {
 
   public List<NativeModule> getExtraNativeModulesForTest() {
     return mNativeModules;
-  }
-
-  public List<Class<? extends JavaScriptModule>> getExtraJSModulesForTest() {
-    return mJSModuleSpecs;
   }
 
   public ReactPackage getAlternativeReactPackageForTest() {
