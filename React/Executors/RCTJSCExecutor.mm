@@ -30,8 +30,6 @@
 #import <React/RCTProfile.h>
 #import <React/RCTUtils.h>
 
-#import "RCTJSCProfiler.h"
-
 #if (RCT_PROFILE || RCT_DEV) && __has_include("RCTDevMenu.h")
 #import "RCTDevMenu.h"
 #endif
@@ -163,34 +161,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
-
-#if RCT_DEV
-static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
-{
-#if __has_include("RCTDevMenu.h")
-  __weak RCTBridge *weakBridge = bridge;
-  __weak RCTDevSettings *devSettings = bridge.devSettings;
-  if (RCTJSCProfilerIsSupported()) {
-    [bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      return devSettings.isJSCProfilingEnabled ? @"Stop Profiling" : @"Start Profiling";
-    } handler:^{
-      BOOL shouldStart = !devSettings.isJSCProfilingEnabled;
-      devSettings.isJSCProfilingEnabled = shouldStart;
-      if (shouldStart != RCTJSCProfilerIsProfiling(context)) {
-        if (shouldStart) {
-          RCTJSCProfilerStart(context);
-        } else {
-          NSString *outputFile = RCTJSCProfilerStop(context);
-          NSData *profileData = [NSData dataWithContentsOfFile:outputFile options:NSDataReadingMappedIfSafe error:NULL];
-          RCTProfileSendResult(weakBridge, @"cpu-profile", profileData);
-        }
-      }
-    }]];
-  }
-#endif
-}
-
-#endif
 
 + (void)runRunLoopThread
 {
@@ -420,8 +390,6 @@ static NSThread *newJavaScriptThread(void)
 #endif
 
 #if RCT_DEV
-    RCTInstallJSCProfiler(self->_bridge, context.JSGlobalContextRef);
-
     // Inject handler used by HMR
     context[@"nativeInjectHMRUpdate"] = ^(NSString *sourceCode, NSString *sourceCodeURL) {
       RCTJSCExecutor *strongSelf = weakSelf;
