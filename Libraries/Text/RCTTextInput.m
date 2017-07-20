@@ -237,7 +237,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 #pragma mark - Accessibility
 
-- (UIView *)reactAccessibleView
+- (UIView *)reactAccessibilityElement
 {
   return self.backedTextInputView;
 }
