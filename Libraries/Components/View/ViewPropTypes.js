@@ -85,6 +85,7 @@ export type ViewProps = {
   pointerEvents?: 'box-none'| 'none'| 'box-only'| 'auto',
   style?: stylePropType,
   removeClippedSubviews?: bool,
+  viewLayerTypeAndroid?: 'none' | 'software' | 'hardware',
   renderToHardwareTextureAndroid?: bool,
   shouldRasterizeIOS?: bool,
   collapsable?: bool,
