@@ -64,7 +64,9 @@ RCT_EXPORT_MODULE()
                            UIApplicationDidEnterBackgroundNotification,
                            UIApplicationDidFinishLaunchingNotification,
                            UIApplicationWillResignActiveNotification,
-                           UIApplicationWillEnterForegroundNotification]) {
+                           UIApplicationWillEnterForegroundNotification,
+                           UIApplicationProtectedDataDidBecomeAvailable,
+                           UIApplicationProtectedDataWillBecomeUnavailable]) {
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAppStateDidChange:)
@@ -98,6 +100,10 @@ RCT_EXPORT_MODULE()
     newState = @"inactive";
   } else if ([notification.name isEqualToString:UIApplicationWillEnterForegroundNotification]) {
     newState = @"background";
+  } else if ([notification.name isEqualToString:UIApplicationProtectedDataDidBecomeAvailable]) {
+    newState = @"available";
+  } else if ([notification.name isEqualToString:UIApplicationProtectedDataWillBecomeUnavailable]) {
+    newState = @"unavailable";
   } else {
     newState = RCTCurrentAppBackgroundState();
   }
