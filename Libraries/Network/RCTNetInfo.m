@@ -9,7 +9,9 @@
 
 #import "RCTNetInfo.h"
 
-#import <CoreTelephony/CTTelephonyNetworkInfo.h>
+#if !TARGET_OS_TV
+  #import <CoreTelephony/CTTelephonyNetworkInfo.h>
+#endif
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
@@ -57,7 +59,7 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
     status = RCTReachabilityStateNone;
   }
   
-#if TARGET_OS_IPHONE
+#if !TARGET_OS_TV
   
   else if ((flags & kSCNetworkReachabilityFlagsIsWWAN) != 0) {
     connectionType = RCTConnectionTypeCellular;
