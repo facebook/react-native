@@ -16,7 +16,6 @@ const StyleSheet = require('StyleSheet');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 const requireNativeComponent = require('requireNativeComponent');
-const ReactPropTypes = PropTypes;
 
 import type { ViewProps } from 'ViewPropTypes';
 
@@ -70,7 +69,7 @@ class MaskedViewIOS extends React.Component {
 
   static propTypes = {
     ...ViewPropTypes,
-    maskElement: ReactPropTypes.element.isRequired,
+    maskElement: PropTypes.element.isRequired,
   };
 
   _hasWarnedInvalidRenderMask = false;
