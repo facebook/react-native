@@ -465,7 +465,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         if (!replaced) {
           newFilters = new InputFilter[currentFilters.length + 1];
           System.arraycopy(currentFilters, 0, newFilters, 0, currentFilters.length);
-          currentFilters[currentFilters.length] = new InputFilter.LengthFilter(maxLength);
+          newFilters[currentFilters.length] = new InputFilter.LengthFilter(maxLength);
         }
       } else {
         newFilters = new InputFilter[1];
