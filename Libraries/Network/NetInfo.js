@@ -80,11 +80,11 @@ const _isConnectedSubscriptions = new Map();
  * NetInfo exposes info about online/offline status
  *
  * ```
- * NetInfo.getConnectionInfo().then((connection) => {
- *   console.log('Initial, type: ' + connection.type + ', effectiveType: ' + connection.effectiveType);
+ * NetInfo.getConnectionInfo().then((connectionInfo) => {
+ *   console.log('Initial, type: ' + connectionInfo.type + ', effectiveType: ' + connectionInfo.effectiveType);
  * });
- * function handleFirstConnectivityChange(connection) {
- *   console.log('First change, type: ' + connection.type + ', effectiveType: ' + connection.effectiveType);
+ * function handleFirstConnectivityChange(connectionInfo) {
+ *   console.log('First change, type: ' + connectionInfo.type + ', effectiveType: ' + connectionInfo.effectiveType);
  *   NetInfo.removeEventListener(
  *     'connectionChange',
  *     handleFirstConnectivityChange
