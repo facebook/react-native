@@ -55,12 +55,11 @@ Facebook has adopted a Code of Conduct that we expect project participants to ad
 
 ### Contributing Guide
 
-Read our [contributing guide](CONTRIBUTING.md) to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes to React Native.
+Read our [contributing guide](https://facebook.github.io/react-native/docs/contributing.html) to learn about our development process, how to propose bug fixes and improvements, and how to build and test your changes to React Native.
 
 ### Beginner Friendly Bugs
 
-We have a list of [beginner friendly bugs](https://github.com/facebook/react-native/issues?q=is%3Aopen+is%3Aissue+label%3A%22Good+First+Task%22) to help you get your feet wet in the React Native codebase and familiar with our contribution process. This is a great place to get started.
-
+We have a list of [beginner friendly issues](https://github.com/facebook/react-native/labels/Good%20First%20Task) to help you get your feet wet in the React Native codebase and familiar with our contribution process. This is a great place to get started.
 
 ## License
 
