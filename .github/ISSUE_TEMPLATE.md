@@ -59,6 +59,7 @@ Then, specify:
 <!--
   How would you describe your issue to someone who doesn’t know you or your project?
   Try to write a sequence of steps that anybody can repeat to see the issue.
+  Be specific! If the bug cannot be reproduced, your issue may be closed.
 -->
 
 (Write your steps here:)
@@ -83,6 +84,7 @@ Then, specify:
   Did something go wrong?
   Is something broken, or not behaving as you expected?
   Describe this section in detail, and attach screenshots if possible.
+  Don't just say "it doesn't work"!
 -->
 
 (Write what happened. Add screenshots!)

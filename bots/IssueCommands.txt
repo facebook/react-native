@@ -1,4 +1,4 @@
-React Native GitHub Issue Task Force: AndrewJack, astreet, bestander, brentvatne, browniefed, cancan101, charpeni, chirag04, christopherdro, corbt, cosmith, damusnet, DanielMSchmidt, davidaurelio, dmmiller, dsibiski, foghina, frantic, geirman, grabbou, gre, ide, janicduplessis, javache, jaygarcia, jsierles, kmagiera, knowbody, kmagiera, Kureev, lelandrichardson, martinbigio, melihmucuk, mkonicek, ncuillery, rmevans9, rt2zz, ryankask, satya164, skevy, vjeux
+React Native GitHub Issue Task Force: AndrewJack, astreet, bestander, brentvatne, browniefed, cancan101, charpeni, chirag04, christopherdro, corbt, cosmith, damusnet, DanielMSchmidt, davidaurelio, dmmiller, dsibiski, foghina, frantic, gantman, geirman, grabbou, gre, ide, janicduplessis, javache, jaygarcia, jsierles, kmagiera, knowbody, kmagiera, Kureev, lelandrichardson, martinbigio, melihmucuk, mkonicek, ncuillery, rmevans9, rt2zz, ryankask, satya164, skevy, tabrindle, vjeux
 
 @facebook-github-bot answered
 comment Closing this issue as {author} says the question asked has been answered.
@@ -31,11 +31,20 @@ add-label Needs more information
 close
 
 @facebook-github-bot close
-comment {author} tells me to close this issue. If you think it should still be opened let us know why.
+comment {author} has closed this issue. If you think it should remain open, let us know why.
 close
 
 @facebook-github-bot bugfix
-comment Hey {issue_author}, we're a small team and rely on the community to fix issues that don't affect fb apps. If you're sure this is a bug can you send a pull request with a fix?
+comment Hey {issue_author}, if you're sure this is a bug, can you send a pull request with a fix?
+add-label Help Wanted
+
+@facebook-github-bot needs-repro
+comment Can you reproduce the issue using [Snack](http://snack.expo.io)? This step is necessary for people to be able to see and debug the issue being reported.
+add-label Needs more information
+
+@facebook-github-bot cannot-repro
+comment Thanks for opening the issue! It does not appear like a community member will be able to reliably reproduce this issue. This may be for several reasons; perhaps it affects a particular app but a minimal repro has not been provided, or the issue may be sporadic. As it happens, we need a concrete set of steps that can demonstrably reproduce the issue as this will allow your fellow community members to validate a fix. We'll close the issue for now, but feel free to submit a new issue once you're able to reliably reproduce the issue locally. Thanks for your understanding!
+close
 
 @facebook-github-bot reopen
 comment Okay, reopening this issue.
@@ -50,6 +59,6 @@ close
 comment Hey {issue_author}! Thanks for sending this pull request! We would love to review your changes however it looks like you haven't signed the CLA yet. You can do so at https://code.facebook.com/cla.
 
 @facebook-github-bot icebox
-comment {author} tells me to close this issue because it has been inactive for a while. If you think it should still be opened let us know why.
+comment {author} tells me to close this issue because it has been inactive for a while. It's possible that the bug has been fixed since this issue was originally submitted, or perhaps it is not affecting a great amount of people, or a workaround has been provided. Either way, we're going to close this in order to allow the community to focus on more pressing issues. If you strongly believe this issue should remain open, please let us know why.
 add-label Icebox
 close
