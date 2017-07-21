@@ -170,6 +170,34 @@ function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
   }
 }
 
+/**
+ * Performs a single pass over the enqueued immediates. Returns whether
+ * more immediates are queued up (can be used as a condition a while loop).
+ */
+function _callImmediatesPass() {
+  if (__DEV__) {
+    Systrace.beginEvent('callImmediatesPass()');
+  }
+
+  // The main reason to extract a single pass is so that we can track
+  // in the system trace
+  if (immediates.length > 0) {
+    const passImmediates = immediates.slice();
+    immediates = [];
+
+    // Use for loop rather than forEach as per @vjeux's advice
+    // https://github.com/facebook/react-native/commit/c8fd9f7588ad02d2293cac7224715f4af7b0f352#commitcomment-14570051
+    for (let i = 0; i < passImmediates.length; ++i) {
+      _callTimer(passImmediates[i], 0);
+    }
+  }
+
+  if (__DEV__) {
+    Systrace.endEvent();
+  }
+  return immediates.length > 0;
+}
+
 function _clearIndex(i: number) {
   timerIDs[i] = null;
   callbacks[i] = null;
@@ -423,40 +451,12 @@ const JSTimers = {
   },
 
   /**
-   * Performs a single pass over the enqueued immediates. Returns whether
-   * more immediates are queued up (can be used as a condition a while loop).
-   */
-  callImmediatesPass() {
-    if (__DEV__) {
-      Systrace.beginEvent('callImmediatesPass()');
-    }
-
-    // The main reason to extract a single pass is so that we can track
-    // in the system trace
-    if (immediates.length > 0) {
-      const passImmediates = immediates.slice();
-      immediates = [];
-
-      // Use for loop rather than forEach as per @vjeux's advice
-      // https://github.com/facebook/react-native/commit/c8fd9f7588ad02d2293cac7224715f4af7b0f352#commitcomment-14570051
-      for (let i = 0; i < passImmediates.length; ++i) {
-        _callTimer(passImmediates[i], 0);
-      }
-    }
-
-    if (__DEV__) {
-      Systrace.endEvent();
-    }
-    return immediates.length > 0;
-  },
-
-  /**
    * This is called after we execute any command we receive from native but
    * before we hand control back to native.
    */
   callImmediates() {
     errors = null;
-    while (JSTimers.callImmediatesPass()) {}
+    while (_callImmediatesPass()) {}
     if (errors) {
       errors.forEach(error =>
         JSTimers.setTimeout(() => {
@@ -478,4 +478,13 @@ const JSTimers = {
   },
 };
 
-module.exports = JSTimers;
+if (!Timing) {
+  console.warn("Timing native module is not available, can't set timers.");
+  // $FlowFixMe: we can assume timers are generally available
+  module.exports = ({
+    callImmediates: JSTimers.callImmediates,
+    setImmediate: JSTimers.setImmediate,
+  }: typeof JSTimers);
+} else {
+  module.exports = JSTimers;
+}
