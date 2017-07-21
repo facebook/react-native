@@ -182,7 +182,7 @@
     "left-pad": "^1.1.3",
     "lodash": "^4.16.6",
     "merge-stream": "^1.0.1",
-    "metro-bundler": "^0.9.0",
+    "metro-bundler": "^0.10.0",
     "mime": "^1.3.4",
     "mime-types": "2.1.11",
     "minimist": "^1.2.0",

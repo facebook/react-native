@@ -87,6 +87,7 @@ function buildBundle(
       assetExts: defaultAssetExts.concat(assetExts),
       blacklistRE: config.getBlacklistRE(),
       extraNodeModules: config.extraNodeModules,
+      getPolyfills: config.getPolyfills,
       getTransformOptions: config.getTransformOptions,
       globalTransformCache: null,
       hasteImpl: config.hasteImpl,
