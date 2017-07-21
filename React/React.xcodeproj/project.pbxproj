@@ -160,7 +160,6 @@
 		13F887701E29726200C3C7A1 /* Instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0AE1E03699D0018521A /* Instance.cpp */; };
 		13F887711E29726200C3C7A1 /* JSBundleType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */; };
 		13F887721E29726200C3C7A1 /* JSCExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0B21E03699D0018521A /* JSCExecutor.cpp */; };
-		13F887731E29726200C3C7A1 /* JSCLegacyProfiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0B41E03699D0018521A /* JSCLegacyProfiler.cpp */; };
 		13F887741E29726200C3C7A1 /* JSCLegacyTracing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0B61E03699D0018521A /* JSCLegacyTracing.cpp */; };
 		13F887751E29726200C3C7A1 /* JSCMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0B81E03699D0018521A /* JSCMemory.cpp */; };
 		13F887761E29726200C3C7A1 /* JSCNativeModules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0BA1E03699D0018521A /* JSCNativeModules.cpp */; };
@@ -176,7 +175,6 @@
 		13F887821E29726300C3C7A1 /* CxxNativeModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0A81E03699D0018521A /* CxxNativeModule.cpp */; };
 		13F887841E29726300C3C7A1 /* Instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0AE1E03699D0018521A /* Instance.cpp */; };
 		13F887851E29726300C3C7A1 /* JSCExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0B21E03699D0018521A /* JSCExecutor.cpp */; };
-		13F887861E29726300C3C7A1 /* JSCLegacyProfiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0B41E03699D0018521A /* JSCLegacyProfiler.cpp */; };
 		13F887871E29726300C3C7A1 /* JSCLegacyTracing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0B61E03699D0018521A /* JSCLegacyTracing.cpp */; };
 		13F887881E29726300C3C7A1 /* JSCMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0B81E03699D0018521A /* JSCMemory.cpp */; };
 		13F887891E29726300C3C7A1 /* JSCNativeModules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0BA1E03699D0018521A /* JSCNativeModules.cpp */; };
@@ -229,7 +227,6 @@
 		27595AAA1E575C7800CCE2B1 /* JsArgumentHelpers-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B01E03699D0018521A /* JsArgumentHelpers-inl.h */; };
 		27595AAB1E575C7800CCE2B1 /* JsArgumentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */; };
 		27595AAC1E575C7800CCE2B1 /* JSCExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B31E03699D0018521A /* JSCExecutor.h */; };
-		27595AAD1E575C7800CCE2B1 /* JSCLegacyProfiler.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B51E03699D0018521A /* JSCLegacyProfiler.h */; };
 		27595AAE1E575C7800CCE2B1 /* JSCLegacyTracing.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B71E03699D0018521A /* JSCLegacyTracing.h */; };
 		27595AAF1E575C7800CCE2B1 /* JSCMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B91E03699D0018521A /* JSCMemory.h */; };
 		27595AB01E575C7800CCE2B1 /* JSCNativeModules.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0BB1E03699D0018521A /* JSCNativeModules.h */; };
@@ -252,7 +249,6 @@
 		27595AC51E575C7800CCE2B1 /* JsArgumentHelpers-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B01E03699D0018521A /* JsArgumentHelpers-inl.h */; };
 		27595AC61E575C7800CCE2B1 /* JsArgumentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */; };
 		27595AC71E575C7800CCE2B1 /* JSCExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B31E03699D0018521A /* JSCExecutor.h */; };
-		27595AC81E575C7800CCE2B1 /* JSCLegacyProfiler.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B51E03699D0018521A /* JSCLegacyProfiler.h */; };
 		27595AC91E575C7800CCE2B1 /* JSCLegacyTracing.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B71E03699D0018521A /* JSCLegacyTracing.h */; };
 		27595ACA1E575C7800CCE2B1 /* JSCMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B91E03699D0018521A /* JSCMemory.h */; };
 		27595ACB1E575C7800CCE2B1 /* JSCNativeModules.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0BB1E03699D0018521A /* JSCNativeModules.h */; };
@@ -805,7 +801,6 @@
 		3DA981A81E5B0E34004F2374 /* JSBigString.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7454781E54757500E74ADD /* JSBigString.h */; };
 		3DA981A91E5B0E34004F2374 /* JSBundleType.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */; };
 		3DA981AA1E5B0E34004F2374 /* JSCExecutor.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B31E03699D0018521A /* JSCExecutor.h */; };
-		3DA981AB1E5B0E34004F2374 /* JSCLegacyProfiler.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B51E03699D0018521A /* JSCLegacyProfiler.h */; };
 		3DA981AC1E5B0E34004F2374 /* JSCLegacyTracing.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B71E03699D0018521A /* JSCLegacyTracing.h */; };
 		3DA981AD1E5B0E34004F2374 /* JSCMemory.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B91E03699D0018521A /* JSCMemory.h */; };
 		3DA981AE1E5B0E34004F2374 /* JSCNativeModules.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0BB1E03699D0018521A /* JSCNativeModules.h */; };
@@ -944,7 +939,6 @@
 		3DA982431E5B1053004F2374 /* JSBigString.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7454781E54757500E74ADD /* JSBigString.h */; };
 		3DA982441E5B1053004F2374 /* JSBundleType.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */; };
 		3DA982451E5B1053004F2374 /* JSCExecutor.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B31E03699D0018521A /* JSCExecutor.h */; };
-		3DA982461E5B1053004F2374 /* JSCLegacyProfiler.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B51E03699D0018521A /* JSCLegacyProfiler.h */; };
 		3DA982471E5B1053004F2374 /* JSCLegacyTracing.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B71E03699D0018521A /* JSCLegacyTracing.h */; };
 		3DA982481E5B1053004F2374 /* JSCMemory.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B91E03699D0018521A /* JSCMemory.h */; };
 		3DA982491E5B1053004F2374 /* JSCNativeModules.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0BB1E03699D0018521A /* JSCNativeModules.h */; };
@@ -1350,7 +1344,6 @@
 				3DA982431E5B1053004F2374 /* JSBigString.h in Copy Headers */,
 				3DA982441E5B1053004F2374 /* JSBundleType.h in Copy Headers */,
 				3DA982451E5B1053004F2374 /* JSCExecutor.h in Copy Headers */,
-				3DA982461E5B1053004F2374 /* JSCLegacyProfiler.h in Copy Headers */,
 				3DA982471E5B1053004F2374 /* JSCLegacyTracing.h in Copy Headers */,
 				3DA982481E5B1053004F2374 /* JSCMemory.h in Copy Headers */,
 				3DA982491E5B1053004F2374 /* JSCNativeModules.h in Copy Headers */,
@@ -1568,7 +1561,6 @@
 				3DA981A81E5B0E34004F2374 /* JSBigString.h in Copy Headers */,
 				3DA981A91E5B0E34004F2374 /* JSBundleType.h in Copy Headers */,
 				3DA981AA1E5B0E34004F2374 /* JSCExecutor.h in Copy Headers */,
-				3DA981AB1E5B0E34004F2374 /* JSCLegacyProfiler.h in Copy Headers */,
 				3DA981AC1E5B0E34004F2374 /* JSCLegacyTracing.h in Copy Headers */,
 				3DA981AD1E5B0E34004F2374 /* JSCMemory.h in Copy Headers */,
 				3DA981AE1E5B0E34004F2374 /* JSCNativeModules.h in Copy Headers */,
@@ -1900,8 +1892,6 @@
 		3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsArgumentHelpers.h; sourceTree = "<group>"; };
 		3D92B0B21E03699D0018521A /* JSCExecutor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSCExecutor.cpp; sourceTree = "<group>"; };
 		3D92B0B31E03699D0018521A /* JSCExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCExecutor.h; sourceTree = "<group>"; };
-		3D92B0B41E03699D0018521A /* JSCLegacyProfiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSCLegacyProfiler.cpp; sourceTree = "<group>"; };
-		3D92B0B51E03699D0018521A /* JSCLegacyProfiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCLegacyProfiler.h; sourceTree = "<group>"; };
 		3D92B0B61E03699D0018521A /* JSCLegacyTracing.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSCLegacyTracing.cpp; sourceTree = "<group>"; };
 		3D92B0B71E03699D0018521A /* JSCLegacyTracing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCLegacyTracing.h; sourceTree = "<group>"; };
 		3D92B0B81E03699D0018521A /* JSCMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSCMemory.cpp; sourceTree = "<group>"; };
@@ -2654,8 +2644,6 @@
 				3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */,
 				3D92B0B21E03699D0018521A /* JSCExecutor.cpp */,
 				3D92B0B31E03699D0018521A /* JSCExecutor.h */,
-				3D92B0B41E03699D0018521A /* JSCLegacyProfiler.cpp */,
-				3D92B0B51E03699D0018521A /* JSCLegacyProfiler.h */,
 				3D92B0B61E03699D0018521A /* JSCLegacyTracing.cpp */,
 				3D92B0B71E03699D0018521A /* JSCLegacyTracing.h */,
 				3D92B0B81E03699D0018521A /* JSCMemory.cpp */,
@@ -2882,7 +2870,6 @@
 			files = (
 				3D74547E1E54759A00E74ADD /* JSModulesUnbundle.h in Headers */,
 				27595AD51E575C7800CCE2B1 /* NativeToJsBridge.h in Headers */,
-				27595AC81E575C7800CCE2B1 /* JSCLegacyProfiler.h in Headers */,
 				27595AC41E575C7800CCE2B1 /* Instance.h in Headers */,
 				27595AD11E575C7800CCE2B1 /* MessageQueueThread.h in Headers */,
 				27595ACE1E575C7800CCE2B1 /* JSCUtils.h in Headers */,
@@ -2971,7 +2958,6 @@
 			files = (
 				3D74547F1E54759E00E74ADD /* JSModulesUnbundle.h in Headers */,
 				27595ABA1E575C7800CCE2B1 /* NativeToJsBridge.h in Headers */,
-				27595AAD1E575C7800CCE2B1 /* JSCLegacyProfiler.h in Headers */,
 				27595AA91E575C7800CCE2B1 /* Instance.h in Headers */,
 				27595AB61E575C7800CCE2B1 /* MessageQueueThread.h in Headers */,
 				27595AB31E575C7800CCE2B1 /* JSCUtils.h in Headers */,
@@ -3788,7 +3774,6 @@
 				13F887741E29726200C3C7A1 /* JSCLegacyTracing.cpp in Sources */,
 				13F887771E29726200C3C7A1 /* JSCPerfStats.cpp in Sources */,
 				13F887711E29726200C3C7A1 /* JSBundleType.cpp in Sources */,
-				13F887731E29726200C3C7A1 /* JSCLegacyProfiler.cpp in Sources */,
 				13F887791E29726200C3C7A1 /* JSCUtils.cpp in Sources */,
 				13F887781E29726200C3C7A1 /* JSCSamplingProfiler.cpp in Sources */,
 				13F887751E29726200C3C7A1 /* JSCMemory.cpp in Sources */,
@@ -3812,7 +3797,6 @@
 				13F887871E29726300C3C7A1 /* JSCLegacyTracing.cpp in Sources */,
 				13F8878A1E29726300C3C7A1 /* JSCPerfStats.cpp in Sources */,
 				13F887841E29726300C3C7A1 /* Instance.cpp in Sources */,
-				13F887861E29726300C3C7A1 /* JSCLegacyProfiler.cpp in Sources */,
 				13F8878C1E29726300C3C7A1 /* JSCUtils.cpp in Sources */,
 				13F8878B1E29726300C3C7A1 /* JSCSamplingProfiler.cpp in Sources */,
 				13F887881E29726300C3C7A1 /* JSCMemory.cpp in Sources */,

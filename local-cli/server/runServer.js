@@ -19,7 +19,6 @@ const Terminal = require('metro-bundler/src/lib/Terminal');
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
-const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const defaultAssetExts = require('metro-bundler/src/defaults').assetExts;
 const defaultSourceExts = require('metro-bundler/src/defaults').sourceExts;
 const defaultPlatforms = require('metro-bundler/src/defaults').platforms;
@@ -78,7 +77,6 @@ function runServer(
     .use(copyToClipBoardMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
-    .use(cpuProfilerMiddleware)
     .use(indexPageMiddleware)
     .use(packagerServer.processRequest.bind(packagerServer));
 

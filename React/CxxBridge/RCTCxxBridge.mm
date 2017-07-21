@@ -270,6 +270,9 @@ struct RCTInstanceCallback : public InstanceCallback {
                                         object:nil];
   _jsThread.name = RCTJSThreadName;
   _jsThread.qualityOfService = NSOperationQualityOfServiceUserInteractive;
+#if RCT_DEBUG
+  _jsThread.stackSize *= 2;
+#endif
   [_jsThread start];
 
   dispatch_group_t prepareBridge = dispatch_group_create();
