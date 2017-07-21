@@ -265,7 +265,7 @@ RCT_ARRAY_CONVERTER(RCTFontVariantDescriptor)
 
   // Gracefully handle being given a font name rather than font family, for
   // example: "Helvetica Light Oblique" rather than just "Helvetica".
-  if (!didFindFont && [UIFont fontNamesForFamilyName:familyName].count == 0) {
+  if (!didFindFont && [UIFont fontNamesForFamilyName:familyName].count != 0) {
     font = [UIFont fontWithName:familyName size:fontSize];
     if (font) {
       // It's actually a font name, not a font family name,
