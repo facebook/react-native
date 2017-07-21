@@ -236,6 +236,10 @@ const ScrollView = createReactClass({
      */
     minimumZoomScale: PropTypes.number,
     /**
+     * Callback for when the scrolling animation has ended.
+     */
+    onMomentumScrollEnd: PropTypes.func,
+    /**
      * Fires at most once per frame during scrolling. The frequency of the
      * events can be controlled using the `scrollEventThrottle` prop.
      */
