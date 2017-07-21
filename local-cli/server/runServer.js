@@ -149,6 +149,7 @@ function getPackagerServer(args, config) {
     assetExts: defaultAssetExts.concat(args.assetExts),
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
+    enableBabelRCLookup: config.getEnableBabelRCLookup(),
     extraNodeModules: config.extraNodeModules,
     getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
