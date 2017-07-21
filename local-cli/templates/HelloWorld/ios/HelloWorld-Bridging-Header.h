@@ -7,12 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+//
+//  Use this file to import your target's public headers that you would like to expose to Swift.
+//
+
 #import <UIKit/UIKit.h>
-
-#import "AppDelegate.h"
-
-int main(int argc, char * argv[]) {
-  @autoreleasepool {
-    return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
-  }
-}
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTRootView.h>
