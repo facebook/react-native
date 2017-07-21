@@ -17,8 +17,8 @@ var BlogPostHeader = require('BlogPostHeader');
 var BlogPostFooter = require('BlogPostFooter');
 var ExcerptLink = require('ExcerptLink');
 
-class BlogPost extends React.Component {
-  render() {
+var BlogPost = React.createClass({
+  render: function() {
     var post = this.props.post;
 
     return (
@@ -31,6 +31,6 @@ class BlogPost extends React.Component {
       </article>
     );
   }
-}
+});
 
 module.exports = BlogPost;

@@ -13,14 +13,14 @@
 
 var React = require('React');
 
-class ShowcaseAppIcon extends React.Component {
-  render() {
+const ShowcaseAppIcon = React.createClass({
+  render: function() {
     return (
       <a href={this.props.linkUri}>
         <img src={this.props.iconUri} alt={this.props.name} />
       </a>
     );
   }
-}
+});
 
 module.exports = ShowcaseAppIcon;

@@ -12,14 +12,14 @@
 
 var React = require('React');
 
-class center extends React.Component {
-  render() {
+var center = React.createClass({
+  render: function() {
     return (
       <div {...this.props} style={{textAlign: 'center'}}>
         {this.props.children}
       </div>
     );
   }
-}
+});
 
 module.exports = center;

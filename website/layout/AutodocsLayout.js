@@ -14,6 +14,7 @@
 var DocsSidebar = require('DocsSidebar');
 var Footer = require('Footer');
 var Header = require('Header');
+var HeaderWithGithub = require('HeaderWithGithub');
 var Marked = require('Marked');
 var Metadata = require('Metadata');
 var Prism = require('Prism');
@@ -203,23 +204,8 @@ function getNamedTypes(typedefs) {
   return namedTypes;
 }
 
-class ComponentDoc extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-
-    this.extractPlatformFromProps = this.extractPlatformFromProps.bind(this);
-    this.renderCompose = this.renderCompose.bind(this);
-    this.renderStylesheetProp = this.renderStylesheetProp.bind(this);
-    this.renderStylesheetProps = this.renderStylesheetProps.bind(this);
-    this.renderMethod = this.renderMethod.bind(this);
-    this.renderMethods = this.renderMethods.bind(this);
-    this.renderProp = this.renderProp.bind(this);
-    this.renderProps = this.renderProps.bind(this);
-    this.renderTypeDef = this.renderTypeDef.bind(this);
-    this.renderTypeDefs = this.renderTypeDefs.bind(this);
-  }
-
-  renderProp(name, prop) {
+var ComponentDoc = React.createClass({
+  renderProp: function(name, prop) {
     return (
       <div className="prop" key={name}>
         <Header level={4} className="propTitle" toSlug={name}>
@@ -246,9 +232,9 @@ class ComponentDoc extends React.Component {
         {prop.description && <Marked>{prop.description}</Marked>}
       </div>
     );
-  }
+  },
 
-  renderCompose(name) {
+  renderCompose: function(name) {
     return (
       <div className="prop" key={name}>
         <Header level={4} className="propTitle" toSlug={name}>
@@ -256,9 +242,9 @@ class ComponentDoc extends React.Component {
         </Header>
       </div>
     );
-  }
+  },
 
-  renderStylesheetProp(name, prop) {
+  renderStylesheetProp: function(name, prop) {
     return (
       <div className="prop" key={name}>
         <h6 className="propTitle">
@@ -275,9 +261,9 @@ class ComponentDoc extends React.Component {
         </h6>
       </div>
     );
-  }
+  },
 
-  renderStylesheetProps(stylesheetName) {
+  renderStylesheetProps: function(stylesheetName) {
     var style = this.props.content.styles[stylesheetName];
     this.extractPlatformFromProps(style.props);
     return (
@@ -313,9 +299,9 @@ class ComponentDoc extends React.Component {
         }
       </div>
     );
-  }
+  },
 
-  renderProps(props, composes) {
+  renderProps: function(props, composes) {
     return (
       <div className="props">
         {(composes || []).map((name) =>
@@ -327,9 +313,9 @@ class ComponentDoc extends React.Component {
         }
       </div>
     );
-  }
+  },
 
-  extractPlatformFromProps(props) {
+  extractPlatformFromProps: function(props) {
     for (var key in props) {
       var prop = props[key];
       var description = prop.description || '';
@@ -340,9 +326,9 @@ class ComponentDoc extends React.Component {
       prop.description = description;
       prop.platforms = platforms;
     }
-  }
+  },
 
-  renderMethod(method, namedTypes) {
+  renderMethod: function(method, namedTypes) {
     return (
       <Method
         key={method.name}
@@ -355,9 +341,9 @@ class ComponentDoc extends React.Component {
         namedTypes={namedTypes}
       />
     );
-  }
+  },
 
-  renderMethods(methods, namedTypes) {
+  renderMethods: function(methods, namedTypes) {
     if (!methods || !methods.length) {
       return null;
     }
@@ -371,9 +357,9 @@ class ComponentDoc extends React.Component {
         </div>
       </span>
     );
-  }
+  },
 
-  renderTypeDef(typedef, namedTypes) {
+  renderTypeDef: function(typedef, namedTypes) {
     return (
       <TypeDef
         key={typedef.name}
@@ -386,9 +372,9 @@ class ComponentDoc extends React.Component {
         namedTypes={namedTypes}
       />
     );
-  }
+  },
 
-  renderTypeDefs(typedefs, namedTypes) {
+  renderTypeDefs: function(typedefs, namedTypes) {
     if (!typedefs || !typedefs.length) {
       return null;
     }
@@ -402,9 +388,9 @@ class ComponentDoc extends React.Component {
         </div>
       </span>
     );
-  }
+  },
 
-  render() {
+  render: function() {
     var content = this.props.content;
     this.extractPlatformFromProps(content.props);
     const namedTypes = getNamedTypes(content.typedef);
@@ -420,23 +406,11 @@ class ComponentDoc extends React.Component {
       </div>
     );
   }
-}
+});
 
-class APIDoc extends React.Component {
-  constructor(props, context) {
-    super(props, context);
+var APIDoc = React.createClass({
 
-    this.renderMethod = this.renderMethod.bind(this);
-    this.renderMethods = this.renderMethods.bind(this);
-    this.renderProperty = this.renderProperty.bind(this);
-    this.renderProperties = this.renderProperties.bind(this);
-    this.renderClasses = this.renderClasses.bind(this);
-    this.renderTypeDef = this.renderTypeDef.bind(this);
-    this.renderTypeDefs = this.renderTypeDefs.bind(this);
-    this.renderMainDescription = this.renderMainDescription.bind(this);
-  }
-
-  renderMethod(method, namedTypes) {
+  renderMethod: function(method, namedTypes) {
     return (
       <Method
         key={method.name}
@@ -449,9 +423,9 @@ class APIDoc extends React.Component {
         namedTypes={namedTypes}
       />
     );
-  }
+  },
 
-  renderMethods(methods, namedTypes) {
+  renderMethods: function(methods, namedTypes) {
     if (!methods.length) {
       return null;
     }
@@ -465,9 +439,9 @@ class APIDoc extends React.Component {
         </div>
       </span>
     );
-  }
+  },
 
-  renderProperty(property) {
+  renderProperty: function(property) {
     return (
       <div className="prop" key={property.name}>
         <Header level={4} className="propTitle" toSlug={property.name}>
@@ -483,9 +457,9 @@ class APIDoc extends React.Component {
         </Marked>}
       </div>
     );
-  }
+  },
 
-  renderProperties(properties) {
+  renderProperties: function(properties) {
     if (!properties || !properties.length) {
       return null;
     }
@@ -499,9 +473,9 @@ class APIDoc extends React.Component {
         </div>
       </span>
     );
-  }
+  },
 
-  renderClasses(classes, namedTypes) {
+  renderClasses: function(classes, namedTypes) {
     if (!classes || !classes.length) {
       return null;
     }
@@ -529,9 +503,9 @@ class APIDoc extends React.Component {
         </div>
       </span>
     );
-  }
+  },
 
-  renderTypeDef(typedef, namedTypes) {
+  renderTypeDef: function(typedef, namedTypes) {
     return (
       <TypeDef
         key={typedef.name}
@@ -544,9 +518,9 @@ class APIDoc extends React.Component {
         namedTypes={namedTypes}
       />
     );
-  }
+  },
 
-  renderTypeDefs(typedefs, namedTypes) {
+  renderTypeDefs: function(typedefs, namedTypes) {
     if (!typedefs || !typedefs.length) {
       return null;
     }
@@ -560,9 +534,9 @@ class APIDoc extends React.Component {
         </div>
       </span>
     );
-  };
+  },
 
-  renderMainDescription(content) {
+  renderMainDescription: function(content) {
     if (content.docblock) {
       return (
         <Marked>
@@ -578,9 +552,9 @@ class APIDoc extends React.Component {
       );
     }
     return null;
-  }
+  },
 
-  render() {
+  render: function() {
     var content = this.props.content;
     if (!content.methods) {
       throw new Error(
@@ -598,18 +572,10 @@ class APIDoc extends React.Component {
       </div>
     );
   }
-}
+});
 
-class Method extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-
-    this.renderTypehint = this.renderTypehint.bind(this);
-    this.renderTypehintRec = this.renderTypehintRec.bind(this);
-    this.renderMethodExamples = this.renderMethodExamples.bind(this);
-    this.renderMethodParameters = this.renderMethodParameters.bind(this);
-  }
-  renderTypehintRec(typehint) {
+var Method = React.createClass({
+  renderTypehintRec: function(typehint) {
     if (typehint.type === 'simple') {
       return typehint.value;
     }
@@ -619,9 +585,10 @@ class Method extends React.Component {
     }
 
     return JSON.stringify(typehint);
-  }
 
-  renderTypehint(typehint) {
+  },
+
+  renderTypehint: function(typehint) {
     if (typeof typehint === 'object' && typehint.name) {
       return renderType(typehint);
     }
@@ -632,9 +599,9 @@ class Method extends React.Component {
     }
 
     return this.renderTypehintRec(typehint);
-  }
+  },
 
-  renderMethodExamples(examples) {
+  renderMethodExamples: function(examples) {
     if (!examples || !examples.length) {
       return null;
     }
@@ -654,9 +621,9 @@ class Method extends React.Component {
         </div>
       );
     });
-  };
+  },
 
-  renderMethodParameters(params) {
+  renderMethodParameters: function(params) {
     if (!params || !params.length) {
       return null;
     }
@@ -694,9 +661,9 @@ class Method extends React.Component {
           </table>
       </div>
     );
-  }
+  },
 
-  render() {
+  render: function() {
     return (
       <div className="prop">
         <Header level={4} className="methodTitle" toSlug={this.props.name}>
@@ -723,18 +690,11 @@ class Method extends React.Component {
         {this.renderMethodExamples(this.props.examples)}
       </div>
     );
-  }
-}
+  },
+});
 
-class TypeDef extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-
-    this.renderProperties = this.renderProperties.bind(this);
-    this.renderValues = this.renderValues.bind(this);
-  }
-
-  renderProperties(properties) {
+var TypeDef = React.createClass({
+  renderProperties: function(properties) {
     if (!properties || !properties.length) {
       return null;
     }
@@ -769,9 +729,9 @@ class TypeDef extends React.Component {
           </table>
       </div>
     );
-  }
+  },
 
-  renderValues(values) {
+  renderValues: function(values) {
     if (!values || !values.length) {
       return null;
     }
@@ -804,9 +764,9 @@ class TypeDef extends React.Component {
         </table>
       </div>
     );
-  }
+  },
 
-  render() {
+  render: function() {
     return (
       <div className="prop">
         <Header level={4} className="propTitle" toSlug={this.props.name}>
@@ -822,24 +782,23 @@ class TypeDef extends React.Component {
         {this.renderValues(this.props.values)}
       </div>
     );
-  }
-}
+  },
+});
 
-class Autodocs extends React.Component {
-  contsructor(props, context) {
-    super(props, context);
+var Autodocs = React.createClass({
+  childContextTypes: {
+    permalink: PropTypes.string,
+    version: PropTypes.string
+  },
 
-    this.renderFullDescription = this.renderFullDescription.bind(this);
-  }
-
-  getChildContext() {
+  getChildContext: function() {
     return {
       permalink: this.props.metadata.permalink,
       version: Metadata.config.RN_VERSION || 'next'
     };
-  }
+  },
 
-  renderFullDescription(docs) {
+  renderFullDescription: function(docs) {
     if (!docs.fullDescription) {
       return;
     }
@@ -852,9 +811,9 @@ class Autodocs extends React.Component {
         <Footer path={'docs/' + docs.componentName + '.md'} />
       </div>
     );
-  }
+  },
 
-  render() {
+  render: function() {
     var metadata = this.props.metadata;
     var docs = JSON.parse(this.props.children);
     var content  = docs.type === 'component' || docs.type === 'style' ?
@@ -882,11 +841,6 @@ class Autodocs extends React.Component {
       </Site>
     );
   }
-}
-
-Autodocs.childContextTypes = {
-  permalink: PropTypes.string,
-  version: PropTypes.string
-};
+});
 
 module.exports = Autodocs;

@@ -14,8 +14,8 @@
 var React = require('React');
 var BlogPostDate = require('BlogPostDate');
 
-class BlogPostFooter extends React.Component {
-  render() {
+var BlogPostFooter = React.createClass({
+  render: function() {
     var post = this.props.post;
 
     var authorImage = this.props.post.authorImage ? this.props.post.authorImage : '/react-native/img/author.png';
@@ -58,6 +58,6 @@ class BlogPostFooter extends React.Component {
       </div>
     );
   }
-}
+});
 
 module.exports = BlogPostFooter;

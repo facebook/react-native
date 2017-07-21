@@ -526,8 +526,16 @@ _.languages.java = _.languages.extend('clike', {
   },
 });
 
-class Prism extends React.Component {
-  render() {
+var Prism = React.createClass({
+  statics: {
+    _: _,
+  },
+  getDefaultProps: function() {
+    return {
+      language: 'javascript',
+    };
+  },
+  render: function() {
     var grammar = _.languages[this.props.language];
     if (!grammar) {
       grammar = _.languages.javascript;
@@ -541,12 +549,7 @@ class Prism extends React.Component {
         )}
       </div>
     );
-  }
-}
-
-Prism._ = _;
-Prism.defaultProps = {
-  language: 'javascript',
-};
+  },
+});
 
 module.exports = Prism;

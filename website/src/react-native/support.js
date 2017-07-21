@@ -12,12 +12,15 @@ var React = require('React');
 var PropTypes = require('prop-types');
 var Site = require('Site');
 
-class support extends React.Component {
-  getChildContext() {
-    return { permalink: 'support.html' };
-  }
+var support = React.createClass({
+  childContextTypes: {
+    permalink: PropTypes.string,
+  },
 
-  render() {
+  getChildContext: function() {
+    return { permalink: 'support.html' };
+  },
+  render: function() {
     return (
       <Site section="support" title="Help">
 
@@ -163,11 +166,7 @@ class support extends React.Component {
 
       </Site>
     );
-  }
-}
-
-support.childContextTypes = {
-  permalink: PropTypes.string,
-};
+  },
+});
 
 module.exports = support;

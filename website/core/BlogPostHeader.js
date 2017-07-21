@@ -14,8 +14,8 @@
 var React = require('React');
 var BlogPostDate = require('BlogPostDate');
 
-class BlogPostHeader extends React.Component {
-  render() {
+var BlogPostHeader = React.createClass({
+  render: function() {
     var post = this.props.post;
 
     var hero;
@@ -54,6 +54,6 @@ class BlogPostHeader extends React.Component {
       </header>
     );
   }
-}
+});
 
 module.exports = BlogPostHeader;

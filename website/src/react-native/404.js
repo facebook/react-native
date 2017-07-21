@@ -10,8 +10,8 @@
 
 var React = require('React');
 
-class fourOhFour extends React.Component {
-  render() {
+var fourOhFour = React.createClass({
+  render: function() {
     return (
       <html>
         <head>
@@ -21,6 +21,6 @@ class fourOhFour extends React.Component {
       </html>
     );
   }
-}
+});
 
 module.exports = fourOhFour;

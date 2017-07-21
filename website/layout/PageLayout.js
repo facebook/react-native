@@ -15,12 +15,16 @@ var React = require('React');
 var PropTypes = require('prop-types');
 var Site = require('Site');
 
-class support extends React.Component {
-  getChildContext() {
-    return {permalink: this.props.metadata.permalink};
-  }
+var support = React.createClass({
+  childContextTypes: {
+    permalink: PropTypes.string
+  },
 
-  render() {
+  getChildContext: function() {
+    return {permalink: this.props.metadata.permalink};
+  },
+
+  render: function() {
     var metadata = this.props.metadata;
     var content = this.props.children;
     return (
@@ -35,10 +39,6 @@ class support extends React.Component {
       </Site>
     );
   }
-}
-
-support.childContextTypes = {
-  permalink: PropTypes.string
-};
+});
 
 module.exports = support;

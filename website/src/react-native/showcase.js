@@ -35,26 +35,17 @@ const featuredApps = showcaseApps.filter(app => {
 
 const apps = pinnedApps.concat(featuredApps);
 
-class AppList extends React.Component {
-  constructor(props, context) {
-    super(props, context);
+const AppList = React.createClass({
 
-    this._renderApp = this._renderApp.bind(this);
-    this._renderAppIcon = this._renderAppIcon.bind(this);
-    this._renderAppName = this._renderAppName.bind(this);
-    this._renderInfo = this._renderInfo.bind(this);
-    this._renderLinks = this._renderLinks.bind(this);
-  }
-
-  render() {
+  render: function() {
     return (
       <div>
         {this.props.apps.map(this._renderApp)}
       </div>
     );
-  }
+  },
 
-  _renderApp(app, i) {
+  _renderApp: function(app, i) {
     return (
       <div className="showcase" key={i}>
         <div>
@@ -68,17 +59,17 @@ class AppList extends React.Component {
         </div>
       </div>
     );
-  }
+  },
 
-  _renderAppIcon(app) {
+  _renderAppIcon: function(app) {
     return <img src={app.icon} alt={app.name} />;
-  }
+  },
 
-  _renderAppName(name) {
+  _renderAppName: function(name) {
     return <h3>{name}</h3>;
-  }
+  },
 
-  _renderInfo(title, uri) {
+  _renderInfo: function(title, uri) {
     let info = null;
     if (uri) {
       info = <p><a href={uri} target="_blank">{title}</a></p>;
@@ -87,9 +78,9 @@ class AppList extends React.Component {
     return (
       {info}
     );
-  }
+  },
 
-  _renderLinks(app) {
+  _renderLinks: function(app) {
     if (!app.linkAppStore && !app.linkPlayStore) {
       return;
     }
@@ -104,11 +95,11 @@ class AppList extends React.Component {
         {linkPlayStore}
       </p>
     );
-  }
-}
+  },
+});
 
-class showcase extends React.Component {
-  render() {
+const showcase = React.createClass({
+  render: function() {
     return (
       <Site section="showcase" title="Showcase">
         <section className="content wrap documentationContent nosidebar showcaseSection">
@@ -139,6 +130,6 @@ class showcase extends React.Component {
       </Site>
     );
   }
-}
+});
 
 module.exports = showcase;

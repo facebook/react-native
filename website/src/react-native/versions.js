@@ -12,8 +12,8 @@ var Metadata = require('Metadata');
 var React = require('React');
 var Site = require('Site');
 
-module.exports = class extends React.Component {
-  render() {
+module.exports = React.createClass({
+  render: function() {
     var availableDocs = (Metadata.config.RN_AVAILABLE_DOCS_VERSIONS ||
       '')
       .split(',');
@@ -220,5 +220,5 @@ module.exports = class extends React.Component {
         </section>
       </Site>
     );
-  }
-};
+  },
+});

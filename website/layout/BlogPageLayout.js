@@ -15,24 +15,19 @@ var React = require('React');
 var Site = require('Site');
 var Hero = require('Hero');
 var MetadataBlog = require('MetadataBlog');
+var BlogPost = require('BlogPost');
 var BlogPostExcerpt = require('BlogPostExcerpt');
 
-class BlogPageLayout extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-
-    this.getPageURL = this.getPageURL.bind(this);
-  }
-
-  getPageURL(page) {
+var BlogPageLayout = React.createClass({
+  getPageURL: function(page) {
     var url = '/react-native/blog/';
     if (page > 0) {
       url += 'page' + (page + 1) + '/';
     }
     return url + '#content';
-  }
+  },
 
-  render() {
+  render: function() {
     var perPage = this.props.metadata.perPage;
     var page = this.props.metadata.page;
     return (
@@ -60,6 +55,6 @@ class BlogPageLayout extends React.Component {
       </Site>
     );
   }
-}
+});
 
 module.exports = BlogPageLayout;

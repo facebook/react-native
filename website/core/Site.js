@@ -14,8 +14,8 @@ var HeaderLinks = require('HeaderLinks');
 var Metadata = require('Metadata');
 var React = require('React');
 
-class Site extends React.Component {
-  render() {
+var Site = React.createClass({
+  render: function() {
     const path = Metadata.config.RN_DEPLOYMENT_PATH;
     const version = Metadata.config.RN_VERSION;
     const algoliaVersion = version === 'next'
@@ -426,7 +426,6 @@ class Site extends React.Component {
         </body>
       </html>
     );
-  }
-}
-
+  },
+});
 module.exports = Site;

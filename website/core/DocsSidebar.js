@@ -13,15 +13,8 @@
 var Metadata = require('Metadata');
 var React = require('React');
 
-class DocsSidebar extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-
-    this.getCategories = this.getCategories.bind(this);
-    this.getLink = this.getLink.bind(this);
-  }
-
-  getCategories() {
+var DocsSidebar = React.createClass({
+  getCategories: function() {
     var metadatas = Metadata.files.filter(function(metadata) {
       return metadata.layout === 'docs' || metadata.layout === 'autodocs';
     });
@@ -74,13 +67,13 @@ class DocsSidebar extends React.Component {
     categories.push(currentCategory);
 
     return categories;
-  }
+  },
 
-  getLink(metadata) {
+  getLink: function(metadata) {
     return metadata.permalink;
-  }
+  },
 
-  render() {
+  render: function() {
     return <div className="nav-docs">
       <div className="nav-docs-viewport">
         {this.getCategories().map((category) =>
@@ -104,6 +97,6 @@ class DocsSidebar extends React.Component {
       </div>
     </div>;
   }
-}
+});
 
 module.exports = DocsSidebar;

@@ -16,8 +16,12 @@ var PropTypes = require('prop-types');
 
 var slugify = require('slugify');
 
-class Header extends React.Component {
-  render() {
+var Header = React.createClass({
+  contextTypes: {
+    permalink: PropTypes.string
+  },
+
+  render: function() {
     var slug = slugify(this.props.toSlug || this.props.children);
     var H = 'h' + this.props.level;
     var base = this.context.permalink || '';
@@ -29,10 +33,6 @@ class Header extends React.Component {
       </H>
     );
   }
-}
-
-Header.contextTypes = {
-  permalink: PropTypes.string
-};
+});
 
 module.exports = Header;
