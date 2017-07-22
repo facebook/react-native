@@ -54,7 +54,9 @@ large lists, used in conjunction with overflow: &#x27;hidden&#x27; on the row
 containers. This is enabled by default.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="renderfooter"></a>renderFooter?: <span class="propType">function</span> <a class="hash-link" href="docs/listview.html#renderfooter">#</a></h4><div><p>() =&gt; renderable</p><p>The header and footer are always rendered (if these props are provided)
 on every render pass. If they are expensive to re-render, wrap them
 in StaticContainer or other mechanism as appropriate. Footer is always
-at the bottom of the list, and header at the top, on every render pass.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="renderheader"></a>renderHeader?: <span class="propType">function</span> <a class="hash-link" href="docs/listview.html#renderheader">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="renderrow"></a>renderRow: <span class="propType">function</span> <a class="hash-link" href="docs/listview.html#renderrow">#</a></h4><div><p>(rowData, sectionID, rowID, highlightRow) =&gt; renderable</p><p>Takes a data entry from the data source and its ids and should return
+at the bottom of the list, and header at the top, on every render pass.
+In a horizontal ListView, the header is rendered on the left and the
+footer on the right.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="renderheader"></a>renderHeader?: <span class="propType">function</span> <a class="hash-link" href="docs/listview.html#renderheader">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="renderrow"></a>renderRow: <span class="propType">function</span> <a class="hash-link" href="docs/listview.html#renderrow">#</a></h4><div><p>(rowData, sectionID, rowID, highlightRow) =&gt; renderable</p><p>Takes a data entry from the data source and its ids and should return
 a renderable component to be rendered as the row. By default the data
 is exactly what was put into the data source, but it&#x27;s also possible to
 provide custom extractors. ListView can be notified when a row is
