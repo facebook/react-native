@@ -184,15 +184,15 @@ On the infrastructure side, the reason is that it allows us to attach metadata t
 
 On the user side, this lets you annotate the object with useful attributes such as the dimension of the image in order to compute the size it's going to be displayed in. Feel free to use it as your data structure to store more information about your image.
 
-## Background Image via Nesting
+## Background Image via ImageBackground
 
-A common feature request from developers familiar with the web is `background-image`. To handle this use case, simply create a normal `<Image>` component and add whatever children to it you would like to layer on top of it.
+A common feature request from developers familiar with the web is `background-image`. To handle this use case, use a `<ImageBackground>` component and add whatever children to it you would like to layer on top of it.
 
 ```javascript
 return (
-  <Image source={...}>
+  <ImageBackground source={...}>
     <Text>Inside</Text>
-  </Image>
+  </ImageBackground>
 );
 ```
 
