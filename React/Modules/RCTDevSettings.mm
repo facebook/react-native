@@ -32,7 +32,6 @@ NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
 NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
 NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
 NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
-NSString *const kRCTDevSettingIsJSCProfilingEnabled = @"RCTJSCProfilerEnabled";
 NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamplingProfilerOnLaunch";
 
 NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
@@ -371,16 +370,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 - (BOOL)isPerfMonitorShown
 {
   return [[self settingForKey:kRCTDevSettingIsPerfMonitorShown] boolValue];
-}
-
-- (void)setIsJSCProfilingEnabled:(BOOL)isJSCProfilingEnabled
-{
-  [self _updateSettingWithValue:@(isJSCProfilingEnabled) forKey:kRCTDevSettingIsJSCProfilingEnabled];
-}
-
-- (BOOL)isJSCProfilingEnabled
-{
-  return [[self settingForKey:kRCTDevSettingIsJSCProfilingEnabled] boolValue];
 }
 
 - (void)setStartSamplingProfilerOnLaunch:(BOOL)startSamplingProfilerOnLaunch

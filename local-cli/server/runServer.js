@@ -19,7 +19,6 @@ const Terminal = require('metro-bundler/src/lib/Terminal');
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
-const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const defaultAssetExts = require('metro-bundler/src/defaults').assetExts;
 const defaultSourceExts = require('metro-bundler/src/defaults').sourceExts;
 const defaultPlatforms = require('metro-bundler/src/defaults').platforms;
@@ -37,6 +36,8 @@ const path = require('path');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
 const webSocketProxy = require('./util/webSocketProxy.js');
+
+const TransformCaching = require('metro-bundler/src/lib/TransformCaching');
 
 import type {ConfigT} from '../util/Config';
 import type {Reporter} from 'metro-bundler/src/lib/reporting';
@@ -78,7 +79,6 @@ function runServer(
     .use(copyToClipBoardMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
-    .use(cpuProfilerMiddleware)
     .use(indexPageMiddleware)
     .use(packagerServer.processRequest.bind(packagerServer));
 
@@ -120,9 +120,7 @@ function runServer(
 function getPackagerServer(args, config) {
   const transformModulePath = args.transformer
     ? path.resolve(args.transformer)
-    : typeof config.getTransformModulePath === 'function'
-      ? config.getTransformModulePath()
-      : undefined;
+    : config.getTransformModulePath();
 
   const providesModuleNodeModules =
     args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
@@ -154,6 +152,7 @@ function getPackagerServer(args, config) {
     extraNodeModules: config.extraNodeModules,
     getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
+    globalTransformCache: null,
     hasteImpl: config.hasteImpl,
     maxWorkers: args.maxWorkers,
     platforms: defaultPlatforms.concat(args.platforms),
@@ -166,6 +165,7 @@ function getPackagerServer(args, config) {
     resetCache: args.resetCache,
     sourceExts: defaultSourceExts.concat(args.sourceExts),
     transformModulePath: transformModulePath,
+    transformCache: TransformCaching.useTempDir(),
     verbose: args.verbose,
     watch: !args.nonPersistent,
     workerPath: config.getWorkerPath(),

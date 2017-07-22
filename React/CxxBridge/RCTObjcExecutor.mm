@@ -117,13 +117,6 @@ public:
            callback:m_errorBlock];
   }
 
-  virtual bool supportsProfiling() override {
-    return false;
-  };
-  virtual void startProfiler(const std::string &titleString) override {};
-  virtual void stopProfiler(const std::string &titleString,
-                            const std::string &filename) override {};
-
 private:
   id<RCTJavaScriptExecutor> m_jse;
   RCTJavaScriptCompleteBlock m_errorBlock;
