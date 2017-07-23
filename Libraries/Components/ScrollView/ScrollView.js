@@ -236,7 +236,7 @@ const ScrollView = createReactClass({
      */
     minimumZoomScale: PropTypes.number,
     /**
-     * Callback for when the scrolling animation has ended.
+     * Called when the momentum scroll ends (scroll which occurs as the ScrollView glides to a stop).
      */
     onMomentumScrollEnd: PropTypes.func,
     /**
