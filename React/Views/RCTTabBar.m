@@ -175,6 +175,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 #pragma mark - UITabBarControllerDelegate
 
+#if TARGET_OS_TV
+
+- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(nonnull UIViewController *)viewController
+{
+  NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
+  RCTTabBarItem *tab = (RCTTabBarItem *)self.reactSubviews[index];
+  if (tab.onPress) tab.onPress(nil);
+  return;
+}
+
+#else
+
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
 {
   NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
@@ -182,6 +194,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (tab.onPress) tab.onPress(nil);
   return NO;
 }
+
+#endif
 
 #if TARGET_OS_TV
 
