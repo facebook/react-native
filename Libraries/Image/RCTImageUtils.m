@@ -332,7 +332,7 @@ NSDictionary<NSString *, id> *__nullable RCTGetImageMetadata(NSData *data)
 
 NSData *__nullable RCTGetImageData(UIImage *image, float quality)
 {
-  NSMutableDictionary *properties = [[NSMutableDictionary new] initWithDictionary:@{
+  NSMutableDictionary *properties = [[NSMutableDictionary alloc] initWithDictionary:@{
     (id)kCGImagePropertyOrientation : @(CGImagePropertyOrientationFromUIImageOrientation(image.imageOrientation))
   }];
   CGImageDestinationRef destination;
