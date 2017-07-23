@@ -74,7 +74,10 @@ type GeoOptions = {
  *
  */
 var Geolocation = {
-
+  IOS_AUTHORIZATIONS: Object = {
+    WHEN_IN_USE: 'locationAuthorizationWhenInUse',
+    ALWAYS: 'locationAuthorizationAlways',
+  },
   /*
    * Request suitable Location permission based on the key configured on pList.
    * If NSLocationAlwaysUsageDescription is set, it will request Always authorization,
@@ -186,9 +189,5 @@ var Geolocation = {
     }
   }
 };
-
-Geolocation.IOS_AUTHORIZATIONS = {};
-Geolocation.IOS_AUTHORIZATIONS.WHEN_IN_USE = "locationAuthorizationWhenInUse";
-Geolocation.IOS_AUTHORIZATIONS.ALWAYS = "locationAuthorizationAlways";
 
 module.exports = Geolocation;
