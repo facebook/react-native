@@ -205,7 +205,7 @@ const ScrollView = React.createClass({
      *   - `'on-drag'`, the keyboard is dismissed when a drag begins.
      *
      * *iOS Only*
-     * 
+     *
      *   - `'interactive'`, the keyboard is dismissed interactively with the drag and moves in
      *     synchrony with the touch; dragging upwards cancels the dismissal.
      *     On android this is not supported and it will have the same behavior as 'none'.
