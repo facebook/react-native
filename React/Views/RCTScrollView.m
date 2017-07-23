@@ -762,7 +762,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
   [self scrollViewDidScroll:scrollView];
 
   // Fire the end deceleration event
-  RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil); //TODO: shouldn't this be onScrollAnimationEnd?
+  RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil);
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndScrollingAnimation:scrollView);
 }
 
