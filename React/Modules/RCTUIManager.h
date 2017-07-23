@@ -43,6 +43,12 @@ RCT_EXTERN BOOL RCTIsUIManagerQueue(void);
 RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification;
 
 /**
+ * Posted whenever the RCTUIManager setAvailableSize is called. This alerts us to changes in
+ * window size.
+ */
+RCT_EXTERN NSString *const RCTUIManagerDidUpdateAvailableSizeNotification;
+
+/**
  * Posted whenever a new root view is registered with RCTUIManager. The userInfo property
  * will contain a RCTUIManagerRootViewKey with the registered root view.
  */

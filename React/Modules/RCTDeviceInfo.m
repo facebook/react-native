@@ -12,13 +12,10 @@
 #import "RCTAccessibilityManager.h"
 #import "RCTAssert.h"
 #import "RCTEventDispatcher.h"
+#import "RCTUIManager.h"
 #import "RCTUtils.h"
 
-@implementation RCTDeviceInfo {
-#if !TARGET_OS_TV
-  UIInterfaceOrientation _currentInterfaceOrientation;
-#endif
-}
+@implementation RCTDeviceInfo
 
 @synthesize bridge = _bridge;
 
@@ -34,17 +31,14 @@ RCT_EXPORT_MODULE()
   _bridge = bridge;
 
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(didReceiveNewContentSizeMultiplier)
+                                           selector:@selector(didUpdateDimensions)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:_bridge.accessibilityManager];
-#if !TARGET_OS_TV
-  _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(interfaceOrientationDidChange)
-                                               name:UIApplicationDidChangeStatusBarOrientationNotification
-                                             object:nil];
-#endif
+                                           selector:@selector(didUpdateDimensions)
+                                               name:RCTUIManagerDidUpdateAvailableSizeNotification
+                                             object:_bridge.uiManager];
 }
 
 static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
@@ -53,15 +47,24 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
   // Don't use RCTScreenSize since it the interface orientation doesn't apply to it
   CGRect screenSize = [[UIScreen mainScreen] bounds];
-  NSDictionary *dims = @{
+  NSDictionary *screenDims = @{
                          @"width": @(screenSize.size.width),
                          @"height": @(screenSize.size.height),
                          @"scale": @(RCTScreenScale()),
                          @"fontScale": @(bridge.accessibilityManager.multiplier)
                          };
+
+  CGRect window = [[UIApplication sharedApplication] keyWindow].rootViewController.view.bounds;
+  NSDictionary *windowDims = @{
+                         @"width": @(window.size.width),
+                         @"height": @(window.size.height),
+                         @"scale": @(RCTScreenScale()),
+                         @"fontScale": @(bridge.accessibilityManager.multiplier)
+                         };
+
   return @{
-           @"window": dims,
-           @"screen": dims
+           @"window": windowDims,
+           @"screen": screenDims
            };
 }
 
@@ -80,7 +83,7 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
   return constants;
 }
 
-- (void)didReceiveNewContentSizeMultiplier
+- (void)didUpdateDimensions
 {
   RCTBridge *bridge = _bridge;
   RCTExecuteOnMainQueue(^{
@@ -92,38 +95,5 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 #pragma clang diagnostic pop
   });
 }
-
-#if !TARGET_OS_TV
-
-- (void)interfaceOrientationDidChange
-{
-  __weak typeof(self) weakSelf = self;
-  RCTExecuteOnMainQueue(^{
-    [weakSelf _interfaceOrientationDidChange];
-  });
-}
-
-
-- (void)_interfaceOrientationDidChange
-{
-  UIInterfaceOrientation nextOrientation = [RCTSharedApplication() statusBarOrientation];
-
-  // Update when we go from portrait to landscape, or landscape to portrait
-  if ((UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
-       !UIInterfaceOrientationIsPortrait(nextOrientation)) ||
-      (UIInterfaceOrientationIsLandscape(_currentInterfaceOrientation) &&
-       !UIInterfaceOrientationIsLandscape(nextOrientation))) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                                    body:RCTExportedDimensions(_bridge)];
-#pragma clang diagnostic pop
-      }
-
-  _currentInterfaceOrientation = nextOrientation;
-}
-
-#endif // TARGET_OS_TV
-
 
 @end
