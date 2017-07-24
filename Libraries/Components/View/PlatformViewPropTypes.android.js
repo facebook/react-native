@@ -10,4 +10,4 @@
  * @flow
  */
 
-module.export = {}
+module.export = {};
