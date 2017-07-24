@@ -13,7 +13,7 @@ const fs = require('fs');
 const includes = require('lodash.includes');
 const minimatch = require('minimatch');
 
-// Removed import
+import { danger, fail, markdown, warn } from 'danger';
 
 const isDocsFile = path => includes(path, 'docs/');
 const editsDocs = danger.git.modified_files.filter(isDocsFile).length > 0;
