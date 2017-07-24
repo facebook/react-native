@@ -186,8 +186,8 @@ public class ReactEditText extends EditText {
   @Override
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
     InputConnection connection = super.onCreateInputConnection(outAttrs);
-    if(isMultiline() && getBlurOnSubmit()) {
-      //Remove IME_FLAG_NO_ENTER_ACTION to keep the original IME_OPTION
+    if (isMultiline() && getBlurOnSubmit()) {
+      // Remove IME_FLAG_NO_ENTER_ACTION to keep the original IME_OPTION
       outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
     }
     return connection;
