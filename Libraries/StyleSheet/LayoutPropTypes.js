@@ -32,7 +32,10 @@ var LayoutPropTypes = {
    *  It works similarly to `display` in CSS, but only support 'flex' and 'none'.
    *  'flex' is the default.
    */
-  display: ReactPropTypes.string,
+  display: ReactPropTypes.oneOf([
+    'none',
+    'flex',
+  ]),
 
   /** `width` sets the width of this component.
    *

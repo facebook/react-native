@@ -2,10 +2,14 @@
 
 #include "Instance.h"
 
-#include "Executor.h"
+#include "JSExecutor.h"
 #include "MethodCall.h"
 #include "RecoverableError.h"
 #include "SystraceSection.h"
+#include "MessageQueueThread.h"
+#include "NativeToJsBridge.h"
+#include "JSBigString.h"
+#include "JSModulesUnbundle.h"
 
 #include <folly/json.h>
 #include <folly/Memory.h>
@@ -32,11 +36,12 @@ void Instance::initializeBridge(
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry) {
   callback_ = std::move(callback);
+  moduleRegistry_ = std::move(moduleRegistry);
 
   jsQueue->runOnQueueSync(
-    [this, &jsef, moduleRegistry, jsQueue] () mutable {
+    [this, &jsef, jsQueue] () mutable {
       nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
-          jsef.get(), moduleRegistry, jsQueue, callback_);
+          jsef.get(), moduleRegistry_, jsQueue, callback_);
 
       std::lock_guard<std::mutex> lock(m_syncMutex);
       m_syncReady = true;
@@ -95,18 +100,6 @@ void Instance::loadUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle,
       loadApplication(std::move(unbundle), std::move(startupScript),
                       std::move(startupScriptSourceURL));
   }
- }
-
-bool Instance::supportsProfiling() {
-  return nativeToJsBridge_->supportsProfiling();
-}
-
-void Instance::startProfiler(const std::string& title) {
-  return nativeToJsBridge_->startProfiler(title);
-}
-
-void Instance::stopProfiler(const std::string& title, const std::string& filename) {
-  return nativeToJsBridge_->stopProfiler(title, filename);
 }
 
 void Instance::setGlobalVariable(std::string propName,
@@ -129,17 +122,11 @@ void Instance::callJSCallback(uint64_t callbackId, folly::dynamic&& params) {
   nativeToJsBridge_->invokeCallback((double) callbackId, std::move(params));
 }
 
-void Instance::handleMemoryPressureUiHidden() {
-  nativeToJsBridge_->handleMemoryPressureUiHidden();
+#ifdef WITH_JSC_MEMORY_PRESSURE
+void Instance::handleMemoryPressure(int pressureLevel) {
+  nativeToJsBridge_->handleMemoryPressure(pressureLevel);
 }
-
-void Instance::handleMemoryPressureModerate() {
-  nativeToJsBridge_->handleMemoryPressureModerate();
-}
-
-void Instance::handleMemoryPressureCritical() {
-  nativeToJsBridge_->handleMemoryPressureCritical();
-}
+#endif
 
 } // namespace react
 } // namespace facebook

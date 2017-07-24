@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class SomeExamplePackage implements ReactPackage {
+public class SomeExampleJavaPackage implements ReactPackage {
 
   @Override
   public List<NativeModule> createNativeModules(

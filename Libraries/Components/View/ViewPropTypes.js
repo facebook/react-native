@@ -36,6 +36,19 @@ import type {TVViewProps} from 'TVViewPropTypes';
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
+export type ViewLayout = {
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+}
+
+export type ViewLayoutEvent = {
+  nativeEvent: {
+    layout: ViewLayout,
+  }
+}
+
 // There's no easy way to create a different type if(Platform.isTVOS):
 // so we must include TVViewProps
 export type ViewProps = {
@@ -50,6 +63,7 @@ export type ViewProps = {
   onMagicTap?: Function,
   testID?: string,
   nativeID?: string,
+  onLayout?: (event: ViewLayoutEvent) => void,
   onResponderGrant?: Function,
   onResponderMove?: Function,
   onResponderReject?: Function,
@@ -218,8 +232,6 @@ module.exports = {
    * Used to locate this view from native classes.
    *
    * > This disables the 'layout-only view removal' optimization for this view!
-   *
-   * @platform android
    */
   nativeID: PropTypes.string,
 

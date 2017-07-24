@@ -15,7 +15,8 @@
 #import <React/RCTLog.h>
 #import <React/RCTProfile.h>
 #import <React/RCTUtils.h>
-#import <cxxreact/Executor.h>
+#import <cxxreact/JSBigString.h>
+#import <cxxreact/JSExecutor.h>
 #import <cxxreact/MessageQueueThread.h>
 #import <cxxreact/ModuleRegistry.h>
 #import <folly/json.h>
@@ -49,7 +50,7 @@ public:
       }
 
       m_jsThread->runOnQueue([this, json]{
-        m_delegate->callNativeModules(*this, [RCTConvert folly_dynamic:json], true);
+        m_delegate->callNativeModules(*this, convertIdToFollyDynamic(json), true);
       });
     };
 
@@ -91,7 +92,7 @@ public:
   }
 
   void setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle>) override {
-    RCTLogWarn(@"Unbundle is not supported in RCTObjcExecutor");
+    RCTAssert(NO, @"Unbundle is not supported in RCTObjcExecutor");
   }
 
   void callFunction(const std::string &module, const std::string &method,
@@ -115,13 +116,6 @@ public:
            asGlobalObjectNamed:@(propName.c_str())
            callback:m_errorBlock];
   }
-
-  virtual bool supportsProfiling() override {
-    return false;
-  };
-  virtual void startProfiler(const std::string &titleString) override {};
-  virtual void stopProfiler(const std::string &titleString,
-                            const std::string &filename) override {};
 
 private:
   id<RCTJavaScriptExecutor> m_jse;

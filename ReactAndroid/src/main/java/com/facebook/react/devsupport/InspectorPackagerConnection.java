@@ -31,10 +31,12 @@ public class InspectorPackagerConnection {
 
   private final Connection mConnection;
   private final Map<String, Inspector.LocalConnection> mInspectorConnections;
+  private final String mPackageName;
 
-  public InspectorPackagerConnection(String url) {
+  public InspectorPackagerConnection(String url, String packageName) {
     mConnection = new Connection(url);
     mInspectorConnections = new HashMap<>();
+    mPackageName = packageName;
   }
 
   public void connect() {
@@ -145,6 +147,7 @@ public class InspectorPackagerConnection {
       JSONObject jsonPage = new JSONObject();
       jsonPage.put("id", String.valueOf(page.getId()));
       jsonPage.put("title", page.getTitle());
+      jsonPage.put("app", mPackageName);
       array.put(jsonPage);
     }
     return array;

@@ -19,11 +19,7 @@ var warning = require("fbjs/lib/warning"), RCTEventEmitter = require("RCTEventEm
 
 require("prop-types/checkPropTypes");
 
-var shallowEqual = require("fbjs/lib/shallowEqual");
-
-require("ReactNativeFeatureFlags");
-
-var deepDiffer = require("deepDiffer"), flattenStyle = require("flattenStyle"), TextInputState = require("TextInputState");
+var shallowEqual = require("fbjs/lib/shallowEqual"), deepDiffer = require("deepDiffer"), flattenStyle = require("flattenStyle"), TextInputState = require("TextInputState");
 
 require("deepFreezeAndThrowOnMutationInDev");
 
@@ -1590,12 +1586,7 @@ Object.assign(ReactCompositeComponentWrapper.prototype, ReactCompositeComponent_
     _instantiateReactComponent: instantiateReactComponent
 });
 
-var instantiateReactComponent_1 = instantiateReactComponent, DevOnlyStubShim = null, ReactNativeFeatureFlags$2 = {
-    useFiber: !1
-}, ReactNativeFeatureFlags_1 = ReactNativeFeatureFlags$2, ReactNativeFeatureFlags$3 = Object.freeze({
-    default: ReactNativeFeatureFlags_1,
-    __moduleExports: ReactNativeFeatureFlags_1
-}), ReactNativeFeatureFlags$1 = ReactNativeFeatureFlags$3 && ReactNativeFeatureFlags_1 || ReactNativeFeatureFlags$3, injectedFindNode = ReactNativeFeatureFlags$1.useFiber ? function(fiber) {
+var instantiateReactComponent_1 = instantiateReactComponent, DevOnlyStubShim = null, ReactNativeFeatureFlags = require("ReactNativeFeatureFlags"), injectedFindNode = ReactNativeFeatureFlags.useFiber ? function(fiber) {
     return DevOnlyStubShim.findHostInstance(fiber);
 } : function(instance) {
     return instance;
@@ -1727,19 +1718,18 @@ function _classCallCheck(instance, Constructor) {
 }
 
 var CallbackQueue = function() {
-    function CallbackQueue(arg) {
-        _classCallCheck(this, CallbackQueue), this._callbacks = null, this._contexts = null, 
-        this._arg = arg;
+    function CallbackQueue() {
+        _classCallCheck(this, CallbackQueue), this._callbacks = null, this._contexts = null;
     }
     return CallbackQueue.prototype.enqueue = function(callback, context) {
         this._callbacks = this._callbacks || [], this._callbacks.push(callback), this._contexts = this._contexts || [], 
         this._contexts.push(context);
     }, CallbackQueue.prototype.notifyAll = function() {
-        var callbacks = this._callbacks, contexts = this._contexts, arg = this._arg;
+        var callbacks = this._callbacks, contexts = this._contexts;
         if (callbacks && contexts) {
             invariant(callbacks.length === contexts.length, "Mismatched list of contexts in callback queue"), 
             this._callbacks = null, this._contexts = null;
-            for (var i = 0; i < callbacks.length; i++) validateCallback_1(callbacks[i]), callbacks[i].call(contexts[i], arg);
+            for (var i = 0; i < callbacks.length; i++) validateCallback_1(callbacks[i]), callbacks[i].call(contexts[i]);
             callbacks.length = 0, contexts.length = 0;
         }
     }, CallbackQueue.prototype.checkpoint = function() {
@@ -1761,7 +1751,7 @@ var CallbackQueue = function() {
 }, TRANSACTION_WRAPPERS$2 = [ ON_DOM_READY_QUEUEING ];
 
 function ReactNativeReconcileTransaction() {
-    this.reinitializeTransaction(), this.reactMountReady = CallbackQueue_1.getPooled(null);
+    this.reinitializeTransaction(), this.reactMountReady = CallbackQueue_1.getPooled();
 }
 
 var Mixin = {
@@ -2048,7 +2038,7 @@ function _inherits(subClass, superClass) {
     }), superClass && (Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass);
 }
 
-var mountSafeCallback = NativeMethodsMixinUtils.mountSafeCallback, findNumericNodeHandle = ReactNativeFeatureFlags$1.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack, ReactNativeComponent = function(_React$Component) {
+var ReactNativeFeatureFlags$1 = require("ReactNativeFeatureFlags"), mountSafeCallback = NativeMethodsMixinUtils.mountSafeCallback, findNumericNodeHandle = ReactNativeFeatureFlags$1.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack, ReactNativeComponent = function(_React$Component) {
     _inherits(ReactNativeComponent, _React$Component);
     function ReactNativeComponent() {
         return _classCallCheck$1(this, ReactNativeComponent), _possibleConstructorReturn(this, _React$Component.apply(this, arguments));
@@ -2096,7 +2086,7 @@ var injectedSetNativeProps = void 0;
 
 injectedSetNativeProps = ReactNativeFeatureFlags$1.useFiber ? setNativePropsFiber : setNativePropsStack;
 
-var ReactNativeComponent_1 = ReactNativeComponent, mountSafeCallback$2 = NativeMethodsMixinUtils.mountSafeCallback, findNumericNodeHandle$1 = ReactNativeFeatureFlags$1.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack, NativeMethodsMixin = {
+var ReactNativeComponent_1 = ReactNativeComponent, ReactNativeFeatureFlags$2 = require("ReactNativeFeatureFlags"), mountSafeCallback$2 = NativeMethodsMixinUtils.mountSafeCallback, findNumericNodeHandle$1 = ReactNativeFeatureFlags$2.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack, NativeMethodsMixin = {
     measure: function(callback) {
         UIManager.measure(findNumericNodeHandle$1(this), mountSafeCallback$2(this, callback));
     },
@@ -2143,7 +2133,7 @@ function setNativePropsStack$1(componentOrHandle, nativeProps) {
 
 var injectedSetNativeProps$1 = void 0;
 
-injectedSetNativeProps$1 = ReactNativeFeatureFlags$1.useFiber ? setNativePropsFiber$1 : setNativePropsStack$1;
+injectedSetNativeProps$1 = ReactNativeFeatureFlags$2.useFiber ? setNativePropsFiber$1 : setNativePropsStack$1;
 
 var NativeMethodsMixin_1 = NativeMethodsMixin, TouchHistoryMath = {
     centroidDimension: function(touchHistory, touchesChangedAfter, isXAxis, ofCurrent) {
@@ -2468,7 +2458,7 @@ var ReactNativeBaseComponent_1 = ReactNativeBaseComponent, createReactNativeComp
     return Constructor.displayName = viewConfig.uiViewClassName, Constructor.viewConfig = viewConfig, 
     Constructor.propTypes = viewConfig.propTypes, Constructor.prototype = new ReactNativeBaseComponent_1(viewConfig), 
     Constructor.prototype.constructor = Constructor, Constructor;
-}, createReactNativeComponentClassStack_1 = createReactNativeComponentClassStack, createReactNativeComponentClass = ReactNativeFeatureFlags$1.useFiber ? DevOnlyStubShim : createReactNativeComponentClassStack_1, findNumericNodeHandle$2 = ReactNativeFeatureFlags$1.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack;
+}, createReactNativeComponentClassStack_1 = createReactNativeComponentClassStack, ReactNativeFeatureFlags$3 = require("ReactNativeFeatureFlags"), createReactNativeComponentClass = ReactNativeFeatureFlags$3.useFiber ? DevOnlyStubShim : createReactNativeComponentClassStack_1, ReactNativeFeatureFlags$4 = require("ReactNativeFeatureFlags"), findNumericNodeHandle$2 = ReactNativeFeatureFlags$4.useFiber ? DevOnlyStubShim : findNumericNodeHandleStack;
 
 function takeSnapshot(view, options) {
     return "number" != typeof view && "window" !== view && (view = findNumericNodeHandle$2(view) || "window"), 
@@ -2481,7 +2471,7 @@ ReactNativeInjection.inject(), ReactNativeStackInjection.inject();
 
 var render = function(element, mountInto, callback) {
     return ReactNativeMount_1.renderComponent(element, mountInto, callback);
-}, ReactNative = {
+}, ReactNativeStack = {
     NativeComponent: ReactNativeComponent_1,
     hasReactNativeInitialized: !1,
     findNodeHandle: findNumericNodeHandleStack,
@@ -2515,6 +2505,6 @@ var render = function(element, mountInto, callback) {
     getInspectorDataForViewTag: ReactNativeStackInspector.getInspectorDataForViewTag
 });
 
-var ReactNativeStack = ReactNative;
+var ReactNativeStackEntry = ReactNativeStack;
 
-module.exports = ReactNativeStack;
+module.exports = ReactNativeStackEntry;

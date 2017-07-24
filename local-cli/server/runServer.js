@@ -13,18 +13,16 @@
 'use strict';
 
 require('../../setupBabel')();
-const InspectorProxy = require('./util/inspectorProxy.js');
 const ReactPackager = require('metro-bundler');
-const Terminal = require('metro-bundler/build/lib/Terminal');
+const Terminal = require('metro-bundler/src/lib/Terminal');
 
 const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
-const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
-const defaultAssetExts = require('metro-bundler/build/defaults').assetExts;
-const defaultSourceExts = require('metro-bundler/build/defaults').sourceExts;
-const defaultPlatforms = require('metro-bundler/build/defaults').platforms;
-const defaultProvidesModuleNodeModules = require('metro-bundler/build/defaults')
+const defaultAssetExts = require('metro-bundler/src/defaults').assetExts;
+const defaultSourceExts = require('metro-bundler/src/defaults').sourceExts;
+const defaultPlatforms = require('metro-bundler/src/defaults').platforms;
+const defaultProvidesModuleNodeModules = require('metro-bundler/src/defaults')
   .providesModuleNodeModules;
 const fs = require('fs');
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
@@ -37,11 +35,12 @@ const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInE
 const path = require('path');
 const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
-const unless = require('./middleware/unless');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
+const TransformCaching = require('metro-bundler/src/lib/TransformCaching');
+
 import type {ConfigT} from '../util/Config';
-import type {Reporter} from 'metro-bundler/build/lib/reporting';
+import type {Reporter} from 'metro-bundler/src/lib/reporting';
 
 export type Args = {|
   +assetExts: $ReadOnlyArray<string>,
@@ -69,7 +68,6 @@ function runServer(
   const packagerServer = getPackagerServer(args, config);
   startedCallback(packagerServer._reporter);
 
-  const inspectorProxy = new InspectorProxy();
   const app = connect()
     .use(loadRawBodyMiddleware)
     .use(connect.compress())
@@ -81,11 +79,7 @@ function runServer(
     .use(copyToClipBoardMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
-    .use(cpuProfilerMiddleware)
     .use(indexPageMiddleware)
-    .use(
-      unless('/inspector', inspectorProxy.processRequest.bind(inspectorProxy)),
-    )
     .use(packagerServer.processRequest.bind(packagerServer));
 
   args.projectRoots.forEach(root => app.use(connect.static(root)));
@@ -115,7 +109,6 @@ function runServer(
 
     wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
     ms = messageSocket.attachToServer(serverInstance, '/message');
-    inspectorProxy.attachToServer(serverInstance, '/inspector');
     readyCallback(packagerServer._reporter);
   });
   // Disable any kind of automatic timeout behavior for incoming
@@ -127,9 +120,7 @@ function runServer(
 function getPackagerServer(args, config) {
   const transformModulePath = args.transformer
     ? path.resolve(args.transformer)
-    : typeof config.getTransformModulePath === 'function'
-        ? config.getTransformModulePath()
-        : undefined;
+    : config.getTransformModulePath();
 
   const providesModuleNodeModules =
     args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
@@ -148,7 +139,7 @@ function getPackagerServer(args, config) {
       LogReporter = require(path.resolve(args.customLogReporterPath));
     }
   } else {
-    LogReporter = require('metro-bundler/build/lib/TerminalReporter');
+    LogReporter = require('metro-bundler/src/lib/TerminalReporter');
   }
 
   /* $FlowFixMe: Flow is wrong, Node.js docs specify that process.stdout is an
@@ -159,7 +150,9 @@ function getPackagerServer(args, config) {
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
     extraNodeModules: config.extraNodeModules,
+    getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
+    globalTransformCache: null,
     hasteImpl: config.hasteImpl,
     maxWorkers: args.maxWorkers,
     platforms: defaultPlatforms.concat(args.platforms),
@@ -172,6 +165,7 @@ function getPackagerServer(args, config) {
     resetCache: args.resetCache,
     sourceExts: defaultSourceExts.concat(args.sourceExts),
     transformModulePath: transformModulePath,
+    transformCache: TransformCaching.useTempDir(),
     verbose: args.verbose,
     watch: !args.nonPersistent,
     workerPath: config.getWorkerPath(),

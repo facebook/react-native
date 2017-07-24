@@ -75,14 +75,21 @@ A caveat is that videos must use absolute positioning instead of `flexGrow`, sin
 
 ## Images From Hybrid App's Resources
 
-If you are building a hybrid app (some UIs in React Native, some UIs in platform code) you can still use images that are already bundled into the app (via Xcode asset catalogs or Android drawable folder):
+If you are building a hybrid app (some UIs in React Native, some UIs in platform code) you can still use images that are already bundled into the app.
+
+For images included via Xcode asset catalogs or in the Android drawable folder, use the image name without the extension:
 
 ```javascript
 <Image source={{uri: 'app_icon'}} style={{width: 40, height: 40}} />
 ```
 
-This approach provides no safety checks. It's up to you to guarantee that those images are available in the application. Also you have to specify image dimensions manually.
+For images in the Android assets folder, use the `asset:/` scheme:
 
+```javascript
+<Image source={{uri: 'asset:/app_icon.png'}} style={{width: 40, height: 40}} />
+```
+
+These approaches provide no safety checks. It's up to you to guarantee that those images are available in the application. Also you have to specify image dimensions manually.
 
 ## Network Images
 
@@ -112,6 +119,17 @@ Many of the images you will display in your app will not be available at compile
     }}
     style={{width: 400, height: 400}} />
   ```
+
+## Uri Data Images
+
+Sometimes, you might be getting encoded image data from a REST API call. You can use the `'data:'` uri scheme to use these images. Same as for network resources, *you will need to manually specify the dimensions of your image*.
+
+> This is recommended for very small and dynamic images only, like icons in a list from a DB.
+
+```javascript
+// include at least width and height!
+<Image style={{width: 51, height: 51, resizeMode: Image.resizeMode.contain}} source={{uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg=='}}/>
+```
 
 ### Cache Control (iOS Only)
 
@@ -168,13 +186,15 @@ On the user side, this lets you annotate the object with useful attributes such 
 
 ## Background Image via Nesting
 
-A common feature request from developers familiar with the web is `background-image`. To handle this use case, simply create a normal `<Image>` component and add whatever children to it you would like to layer on top of it.
+A common feature request from developers familiar with the web is `background-image`. To handle this use case, you can use the `<ImageBackground>` component, which has the same props as `<Image>`, and add whatever children to it you would like to layer on top of it.
+
+You might not want to use `<ImageBackground>` in some cases, since the implementation is very simple. Refer to `<ImageBackground>`'s [source code](https://github.com/facebook/react-native/blob/master/Libraries/Image/ImageBackground.js) for more insight, and create your own custom component when needed.
 
 ```javascript
 return (
-  <Image source={...}>
+  <ImageBackground source={...}>
     <Text>Inside</Text>
-  </Image>
+  </ImageBackground>
 );
 ```
 

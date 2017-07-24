@@ -157,6 +157,26 @@ public class CatalystInstanceImpl implements CatalystInstance {
     }
   }
 
+  /**
+   * This method and the native below permits a CatalystInstance to extend the known
+   * Native modules. This registry contains only the new modules to load. The
+   * registry {@code mNativeModuleRegistry} updates internally to contain all the new modules, and generates
+   * the new registry for extracting just the new collections.
+   */
+  @Override
+  public void extendNativeModules(NativeModuleRegistry modules) {
+    //Extend the Java-visible registry of modules
+    mNativeModuleRegistry.registerModules(modules);
+    Collection<JavaModuleWrapper> javaModules = modules.getJavaModules(this);
+    Collection<ModuleHolder> cxxModules = modules.getCxxModules();
+    //Extend the Cxx-visible registry of modules wrapped in appropriate interfaces
+    jniExtendNativeModules(javaModules, cxxModules);
+  }
+
+  private native void jniExtendNativeModules(
+    Collection<JavaModuleWrapper> javaModules,
+    Collection<ModuleHolder> cxxModules);
+
   private native void initializeBridge(
       ReactCallback callback,
       JavaScriptExecutor jsExecutor,
@@ -373,26 +393,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mNativeModuleRegistry.getAllModules();
   }
 
-  private native void handleMemoryPressureUiHidden();
-  private native void handleMemoryPressureModerate();
-  private native void handleMemoryPressureCritical();
+  private native void jniHandleMemoryPressure(int level);
 
   @Override
   public void handleMemoryPressure(MemoryPressure level) {
     if (mDestroyed) {
       return;
     }
-    switch (level) {
-      case UI_HIDDEN:
-        handleMemoryPressureUiHidden();
-        break;
-      case MODERATE:
-        handleMemoryPressureModerate();
-        break;
-      case CRITICAL:
-        handleMemoryPressureCritical();
-        break;
-    }
+    jniHandleMemoryPressure(level.ordinal());
   }
 
   /**
@@ -420,17 +428,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public native long getJavaScriptContext();
-
-  // TODO mhorowitz: add mDestroyed checks to the next three methods
-
-  @Override
-  public native boolean supportsProfiling();
-
-  @Override
-  public native void startProfiler(String title);
-
-  @Override
-  public native void stopProfiler(String title, String filename);
 
   private void incrementPendingJSCalls() {
     int oldPendingCalls = mPendingJSCalls.getAndIncrement();

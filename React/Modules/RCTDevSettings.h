@@ -92,11 +92,6 @@
  */
 @property (nonatomic, assign) BOOL isPerfMonitorShown;
 
-/**
- * Whether JSC profiling is enabled.
- */
-@property (nonatomic, assign) BOOL isJSCProfilingEnabled;
-
 #if RCT_DEV
 
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name;

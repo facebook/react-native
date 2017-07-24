@@ -19,10 +19,7 @@
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
 
-#ifdef WITH_INSPECTOR
-#include <jschelpers/InspectorInterfaces.h>
-#endif
-
+#include "JSBigString.h"
 #include "JSBundleType.h"
 #include "Platform.h"
 #include "SystraceSection.h"
@@ -33,12 +30,15 @@
 #include "ModuleRegistry.h"
 #include "RecoverableError.h"
 
+#ifdef WITH_INSPECTOR
+#include <jschelpers/InspectorInterfaces.h>
+#endif
+
 #if defined(WITH_JSC_EXTRA_TRACING) || (DEBUG && defined(WITH_FBSYSTRACE))
 #include "JSCTracing.h"
 #endif
 
 #ifdef WITH_JSC_EXTRA_TRACING
-#include "JSCLegacyProfiler.h"
 #include "JSCLegacyTracing.h"
 #endif
 
@@ -218,8 +218,9 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
 
 #ifdef WITH_INSPECTOR
   if (canUseInspector(m_context)) {
+    const std::string ownerId = m_jscConfig.getDefault("OwnerIdentity", "main").getString();
     IInspector* pInspector = JSC_JSInspectorGetInstance(true);
-    pInspector->registerGlobalContext("main", m_context);
+    pInspector->registerGlobalContext(ownerId, m_context);
   }
 #endif
 
@@ -238,7 +239,6 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   #endif
 
   #ifdef WITH_JSC_EXTRA_TRACING
-  addNativeProfilingHooks(m_context);
   addNativeTracingLegacyHooks(m_context);
   #endif
 
@@ -552,49 +552,11 @@ void* JSCExecutor::getJavaScriptContext() {
   return m_context;
 }
 
-bool JSCExecutor::supportsProfiling() {
-  #ifdef WITH_FBSYSTRACE
-  return true;
-  #else
-  return false;
-  #endif
+#ifdef WITH_JSC_MEMORY_PRESSURE
+void JSCExecutor::handleMemoryPressure(int pressureLevel) {
+  JSHandleMemoryPressure(this, m_context, static_cast<JSMemoryPressure>(pressureLevel));
 }
-
-void JSCExecutor::startProfiler(const std::string &titleString) {
-  #ifdef WITH_JSC_EXTRA_TRACING
-  String title(m_context, titleString.c_str());
-  #if WITH_REACT_INTERNAL_SETTINGS
-  JSStartProfiling(m_context, title, false);
-  #else
-  JSStartProfiling(m_context, title);
-  #endif
-  #endif
-}
-
-void JSCExecutor::stopProfiler(const std::string &titleString, const std::string& filename) {
-  #ifdef WITH_JSC_EXTRA_TRACING
-  String title(m_context, titleString.c_str());
-  facebook::react::stopAndOutputProfilingFile(m_context, title, filename.c_str());
-  #endif
-}
-
-void JSCExecutor::handleMemoryPressureUiHidden() {
-  #ifdef WITH_JSC_MEMORY_PRESSURE
-  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::UI_HIDDEN);
-  #endif
-}
-
-void JSCExecutor::handleMemoryPressureModerate() {
-  #ifdef WITH_JSC_MEMORY_PRESSURE
-  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::MODERATE);
-  #endif
-}
-
-void JSCExecutor::handleMemoryPressureCritical() {
-  #ifdef WITH_JSC_MEMORY_PRESSURE
-  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::CRITICAL);
-  #endif
-}
+#endif
 
 void JSCExecutor::flushQueueImmediate(Value&& queue) {
   auto queueStr = queue.toJSONString();

@@ -25,6 +25,7 @@ var TimerMixin = require('react-timer-mixin');
 var View = require('View');
 
 var cloneReferencedElement = require('react-clone-referenced-element');
+var createReactClass = require('create-react-class');
 var isEmpty = require('isEmpty');
 var merge = require('merge');
 
@@ -35,6 +36,12 @@ var DEFAULT_END_REACHED_THRESHOLD = 1000;
 var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
 
 /**
+ * DEPRECATED - use one of the new list components, such as [`FlatList`](docs/flatlist.html)
+ * or [`SectionList`](docs/sectionlist.html) for bounded memory use, fewer bugs,
+ * better performance, an easier to use API, and more features. Check out this
+ * [blog post](https://facebook.github.io/react-native/blog/2017/03/13/better-list-views.html)
+ * for more details.
+ *
  * ListView - A core component designed for efficient display of vertically
  * scrolling lists of changing data. The minimal API is to create a
  * [`ListView.DataSource`](docs/listviewdatasource.html), populate it with a simple
@@ -85,7 +92,8 @@ var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
  *    rendering rows.
  */
 
-var ListView = React.createClass({
+var ListView = createReactClass({
+  displayName: 'ListView',
   _childFrames: ([]: Array<Object>),
   _sentEndForContentLength: (null: ?number),
   _scrollComponent: (null: any),
@@ -165,6 +173,8 @@ var ListView = React.createClass({
      * on every render pass. If they are expensive to re-render, wrap them
      * in StaticContainer or other mechanism as appropriate. Footer is always
      * at the bottom of the list, and header at the top, on every render pass.
+     * In a horizontal ListView, the header is rendered on the left and the
+     * footer on the right.
      */
     renderFooter: PropTypes.func,
     renderHeader: PropTypes.func,
@@ -524,8 +534,8 @@ var ListView = React.createClass({
         ref: this._setScrollComponentRef,
         onContentSizeChange: this._onContentSizeChange,
         onLayout: this._onLayout,
-        DEPRECATED_sendUpdatedChildFrames: typeof props.onChangeVisibleRows !==
-          undefined,
+        DEPRECATED_sendUpdatedChildFrames:
+          typeof props.onChangeVisibleRows !== undefined,
       },
       header,
       bodyComponents,
