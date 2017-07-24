@@ -287,7 +287,7 @@ static NSThread *newJavaScriptThread(void)
           @"StartSamplingProfilerOnInit": @(self->_bridge.devSettings.startSamplingProfilerOnLaunch)
         }, NULL).UTF8String);
       }
-      contextRef = JSC_JSGlobalContextCreateInGroup(self->_useCustomJSCLibrary, nullptr, nullptr);
+      contextRef = JSC_JSGlobalContextCreateInGroup((bool)self->_useCustomJSCLibrary, nullptr, nullptr);
       context = [JSC_JSContext(contextRef) contextWithJSGlobalContextRef:contextRef];
       // We release the global context reference here to balance retainCount after JSGlobalContextCreateInGroup.
       // The global context _is not_ going to be released since the JSContext keeps the strong reference to it.
@@ -963,7 +963,7 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
   if (_useCustomJSCLibrary) {
     JSC_configureJSCForIOS(true, "{}");
   }
-  JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup(_useCustomJSCLibrary, nullptr, nullptr);
+  JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup((bool)_useCustomJSCLibrary, nullptr, nullptr);
   _context = [JSC_JSContext(ctx) contextWithJSGlobalContextRef:ctx];
   installBasicSynchronousHooksOnContext(_context);
   dispatch_semaphore_signal(_semaphore);
