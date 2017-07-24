@@ -245,11 +245,6 @@ const ScrollView = createReactClass({
      */
     onScroll: PropTypes.func,
     /**
-     * Called when a scrolling animation ends.
-     * @platform ios
-     */
-    onScrollAnimationEnd: PropTypes.func,
-    /**
      * Called when scrollable content view of the ScrollView changes.
      *
      * Handler function is passed the content width and content height as parameters:
