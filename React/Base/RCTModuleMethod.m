@@ -41,21 +41,20 @@ typedef BOOL (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
 @implementation RCTModuleMethod
 {
   Class _moduleClass;
+  const RCTMethodInfo *_methodInfo;
+  NSString *_JSMethodName;
+
+  SEL _selector;
   NSInvocation *_invocation;
   NSArray<RCTArgumentBlock> *_argumentBlocks;
-  NSString *_methodSignature;
-  SEL _selector;
-  BOOL _isSync;
 }
-
-@synthesize JSMethodName = _JSMethodName;
 
 static void RCTLogArgumentError(RCTModuleMethod *method, NSUInteger index,
                                 id valueOrType, const char *issue)
 {
-  RCTLogError(@"Argument %tu (%@) of %@.%@ %s", index, valueOrType,
+  RCTLogError(@"Argument %tu (%@) of %@.%s %s", index, valueOrType,
               RCTBridgeModuleNameForClass(method->_moduleClass),
-              method->_JSMethodName, issue);
+              method.JSMethodName, issue);
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
@@ -114,10 +113,9 @@ static BOOL RCTCheckCallbackMultipleInvocations(BOOL *didInvoke) {
   }
 }
 
-SEL RCTParseMethodSignature(NSString *, NSArray<RCTMethodArgument *> **);
-SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument *> **arguments)
+SEL RCTParseMethodSignature(const char *, NSArray<RCTMethodArgument *> **);
+SEL RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **arguments)
 {
-  const char *input = methodSignature.UTF8String;
   RCTSkipWhitespace(&input);
 
   NSMutableArray *args;
@@ -164,30 +162,25 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
   return NSSelectorFromString(selector);
 }
 
-- (instancetype)initWithMethodSignature:(NSString *)methodSignature
-                           JSMethodName:(NSString *)JSMethodName
-                                 isSync:(BOOL)isSync
-                            moduleClass:(Class)moduleClass
+- (instancetype)initWithExportedMethod:(const RCTMethodInfo *)exportedMethod
+                           moduleClass:(Class)moduleClass
 {
   if (self = [super init]) {
     _moduleClass = moduleClass;
-    _methodSignature = [methodSignature copy];
-    _JSMethodName = [JSMethodName copy];
-    _isSync = isSync;
+    _methodInfo = exportedMethod;
   }
-
   return self;
 }
 
 - (void)processMethodSignature
 {
   NSArray<RCTMethodArgument *> *arguments;
-  _selector = RCTParseMethodSignature(_methodSignature, &arguments);
-  RCTAssert(_selector, @"%@ is not a valid selector", _methodSignature);
+  _selector = RCTParseMethodSignature(_methodInfo->objcName, &arguments);
+  RCTAssert(_selector, @"%s is not a valid selector", _methodInfo->objcName);
 
   // Create method invocation
   NSMethodSignature *methodSignature = [_moduleClass instanceMethodSignatureForSelector:_selector];
-  RCTAssert(methodSignature, @"%@ is not a recognized Objective-C method.", _methodSignature);
+  RCTAssert(methodSignature, @"%s is not a recognized Objective-C method.", sel_getName(_selector));
   NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
   invocation.selector = _selector;
   _invocation = invocation;
@@ -328,8 +321,8 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
       )
     } else if ([typeName isEqualToString:@"RCTPromiseResolveBlock"]) {
       RCTAssert(i == numberOfArguments - 2,
-                @"The RCTPromiseResolveBlock must be the second to last parameter in -[%@ %@]",
-                _moduleClass, _methodSignature);
+                @"The RCTPromiseResolveBlock must be the second to last parameter in %@",
+                [self methodName]);
       RCT_ARG_BLOCK(
         if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
           RCTLogArgumentError(weakSelf, index, json, "should be a promise resolver function");
@@ -345,8 +338,8 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
       )
     } else if ([typeName isEqualToString:@"RCTPromiseRejectBlock"]) {
       RCTAssert(i == numberOfArguments - 1,
-                @"The RCTPromiseRejectBlock must be the last parameter in -[%@ %@]",
-                _moduleClass, _methodSignature);
+                @"The RCTPromiseRejectBlock must be the last parameter in %@",
+                [self methodName]);
       RCT_ARG_BLOCK(
         if (RCT_DEBUG && ![json isKindOfClass:[NSNumber class]]) {
           RCTLogArgumentError(weakSelf, index, json, "should be a promise rejecter function");
@@ -422,9 +415,9 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
 
   if (RCT_DEBUG) {
     const char *objcType = _invocation.methodSignature.methodReturnType;
-    if (_isSync && objcType[0] != _C_ID)
-      RCTLogError(@"Return type of %@.%@ should be (id) as the method is \"sync\"",
-                  RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName);
+    if (_methodInfo->isSync && objcType[0] != _C_ID)
+      RCTLogError(@"Return type of %@.%s should be (id) as the method is \"sync\"",
+                  RCTBridgeModuleNameForClass(_moduleClass), self.JSMethodName);
   }
 
   _argumentBlocks = [argumentBlocks copy];
@@ -434,36 +427,41 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
 {
   if (_selector == NULL) {
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"", (@{ @"module": NSStringFromClass(_moduleClass),
-                                                          @"method": _methodSignature }));
+                                                          @"method": @(_methodInfo->objcName) }));
     [self processMethodSignature];
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
   return _selector;
 }
 
-- (NSString *)JSMethodName
+- (const char *)JSMethodName
 {
   NSString *methodName = _JSMethodName;
-  if (methodName.length == 0) {
-    methodName = _methodSignature;
-    NSRange colonRange = [methodName rangeOfString:@":"];
-    if (colonRange.location != NSNotFound) {
-      methodName = [methodName substringToIndex:colonRange.location];
+  if (!methodName) {
+    const char *jsName = _methodInfo->jsName;
+    if (jsName && strlen(jsName) > 0) {
+      methodName = @(jsName);
+    } else {
+      methodName = @(_methodInfo->objcName);
+      NSRange colonRange = [methodName rangeOfString:@":"];
+      if (colonRange.location != NSNotFound) {
+        methodName = [methodName substringToIndex:colonRange.location];
+      }
+      methodName = [methodName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+      RCTAssert(methodName.length, @"%s is not a valid JS function name, please"
+                " supply an alternative using RCT_REMAP_METHOD()", _methodInfo->objcName);
     }
-    methodName = [methodName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    RCTAssert(methodName.length, @"%@ is not a valid JS function name, please"
-              " supply an alternative using RCT_REMAP_METHOD()", _methodSignature);
+    _JSMethodName = methodName;
   }
-  return methodName;
+  return methodName.UTF8String;
 }
 
 - (RCTFunctionType)functionType
 {
-  if ([_methodSignature rangeOfString:@"RCTPromise"].length) {
-    RCTAssert(!_isSync, @"Promises cannot be used in sync functions");
-
+  if (strstr(_methodInfo->objcName, "RCTPromise") != NULL) {
+    RCTAssert(!_methodInfo->isSync, @"Promises cannot be used in sync functions");
     return RCTFunctionTypePromise;
-  } else if (_isSync) {
+  } else if (_methodInfo->isSync) {
     return RCTFunctionTypeSync;
   } else {
     return RCTFunctionTypeNormal;
@@ -494,11 +492,11 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
         expectedCount -= 2;
       }
 
-      RCTLogError(@"%@.%@ was called with %zd arguments but expects %zd arguments. "
+      RCTLogError(@"%@.%s was called with %zd arguments but expects %zd arguments. "
                   @"If you haven\'t changed this method yourself, this usually means that "
                   @"your versions of the native code and JavaScript code are out of sync. "
                   @"Updating both should make this error go away.",
-                  RCTBridgeModuleNameForClass(_moduleClass), _JSMethodName,
+                  RCTBridgeModuleNameForClass(_moduleClass), self.JSMethodName,
                   actualCount, expectedCount);
       return nil;
     }
@@ -540,7 +538,7 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
   }
 
   id result = nil;
-  if (_isSync) {
+  if (_methodInfo->isSync) {
     void *pointer;
     [_invocation getReturnValue:&pointer];
     result = (__bridge id)pointer;
@@ -554,13 +552,12 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
   if (_selector == NULL) {
     [self processMethodSignature];
   }
-  return [NSString stringWithFormat:@"-[%@ %@]", _moduleClass,
-          NSStringFromSelector(_selector)];
+  return [NSString stringWithFormat:@"-[%@ %s]", _moduleClass, sel_getName(_selector)];
 }
 
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"<%@: %p; exports %@ as %@(); type: %s>",
+  return [NSString stringWithFormat:@"<%@: %p; exports %@ as %s(); type: %s>",
           [self class], self, [self methodName], self.JSMethodName, RCTFunctionDescriptorFromType(self.functionType)];
 }
 
