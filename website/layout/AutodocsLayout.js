@@ -339,6 +339,7 @@ var ComponentDoc = React.createClass({
         examples={method.examples}
         returns={method.returns}
         namedTypes={namedTypes}
+        entityName={this.props.componentName}
       />
     );
   },
@@ -409,7 +410,6 @@ var ComponentDoc = React.createClass({
 });
 
 var APIDoc = React.createClass({
-
   renderMethod: function(method, namedTypes) {
     return (
       <Method
@@ -419,7 +419,7 @@ var APIDoc = React.createClass({
         params={method.params}
         modifiers={method.scope ? [method.scope] : method.modifiers}
         examples={method.examples}
-        apiName={this.props.apiName}
+        entityName={this.props.apiName}
         namedTypes={namedTypes}
       />
     );
@@ -490,13 +490,13 @@ var APIDoc = React.createClass({
                 <Header level={2} toSlug={cls.name}>
                   class {cls.name}
                 </Header>
-                <ul>
+                <div>
                   {cls.docblock && <Marked>
                     {removeCommentsFromDocblock(cls.docblock)}
                   </Marked>}
                   {this.renderMethods(cls.methods, namedTypes)}
                   {this.renderProperties(cls.properties)}
-                </ul>
+                </div>
               </span>
             );
           })}
@@ -634,6 +634,7 @@ var Method = React.createClass({
     if (!foundDescription) {
       return null;
     }
+
     return (
       <div>
         <strong>Parameters:</strong>
@@ -651,7 +652,7 @@ var Method = React.createClass({
                     <td>
                       {param.optional ? '[' + param.name + ']' : param.name}
                       <br/><br/>
-                      {renderTypeWithLinks(param.type, this.props.apiName, this.props.namedTypes)}
+                      {renderTypeWithLinks(param.type, this.props.entityName, this.props.namedTypes)}
                     </td>
                     <td className="description"><Marked>{param.description}</Marked></td>
                   </tr>
@@ -816,9 +817,9 @@ var Autodocs = React.createClass({
   render: function() {
     var metadata = this.props.metadata;
     var docs = JSON.parse(this.props.children);
-    var content  = docs.type === 'component' || docs.type === 'style' ?
-      <ComponentDoc content={docs} /> :
-      <APIDoc content={docs} apiName={metadata.title} />;
+    var content  = docs.type === 'component' || docs.type === 'style'
+      ? <ComponentDoc content={docs} componentName={metadata.title} />
+      : <APIDoc content={docs} apiName={metadata.title} />;
 
     return (
       <Site

@@ -159,7 +159,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
 
       @Override
       public void onMessage(WebSocket webSocket, ByteString bytes) {
-        String text = bytes.utf8();
+        String text = bytes.base64();
         WritableMap params = Arguments.createMap();
         params.putInt("id", id);
         params.putString("data", text);

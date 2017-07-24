@@ -30,9 +30,12 @@ static NSString *getDebugServerHost(NSURL *bundleURL)
 
 static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 {
-  return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@",
+  NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+  NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+  return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@&app=%@",
                                                         getDebugServerHost(bundleURL),
-                                                        [[UIDevice currentDevice] name]]];
+                                                        escapedDeviceName,
+                                                        escapedAppName]];
 }
 
 

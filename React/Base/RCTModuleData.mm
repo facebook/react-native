@@ -44,14 +44,15 @@
     objectInitMethod = [NSObject instanceMethodForSelector:@selector(init)];
   });
 
-  // If a module overrides `init` then we must assume that it expects to be
-  // initialized on the main thread, because it may need to access UIKit.
-  _requiresMainQueueSetup = !_instance &&
-  [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
-
   // If a module overrides `constantsToExport` then we must assume that it
   // must be called on the main thread, because it may need to access UIKit.
   _hasConstantsToExport = [_moduleClass instancesRespondToSelector:@selector(constantsToExport)];
+
+  // If a module overrides `init` then we must assume that it expects to be
+  // initialized on the main thread, because it may need to access UIKit.
+  const BOOL hasCustomInit = !_instance && [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
+
+  _requiresMainQueueSetup = _hasConstantsToExport || hasCustomInit;
 }
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
@@ -101,7 +102,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
     if (!_setupComplete && _bridge.valid) {
       if (!_instance) {
-        if (RCT_DEBUG && _requiresMainQueueSetup && !_allowOffMainQueueRegistration) {
+        if (RCT_DEBUG && _requiresMainQueueSetup) {
           RCTAssertMainQueue();
         }
         RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"[RCTModuleData setUpInstanceAndBridge] Create module", nil);
@@ -222,7 +223,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 {
   if (!_setupComplete) {
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData instanceForClass:%@]", _moduleClass]), nil);
-    if (_requiresMainQueueSetup && !_allowOffMainQueueRegistration) {
+    if (_requiresMainQueueSetup) {
       // The chances of deadlock here are low, because module init very rarely
       // calls out to other threads, however we can't control when a module might
       // get accessed by client code during bridge setup, and a very low risk of
@@ -295,7 +296,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   if (_hasConstantsToExport && !_constantsToExport) {
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData gatherConstants] %@", _moduleClass]), nil);
     (void)[self instance];
-    if (_allowOffMainQueueRegistration) {
+    if (!_requiresMainQueueSetup) {
       _constantsToExport = [_instance constantsToExport] ?: @{};
     } else {
       if (!RCTIsMainQueue()) {

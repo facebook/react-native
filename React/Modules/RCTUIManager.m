@@ -245,7 +245,7 @@ BOOL RCTIsUIManagerQueue()
 
 - (NSString *)viewNameForReactTag:(NSNumber *)reactTag
 {
-  RCTAssertThread(RCTGetUIManagerQueue(), @"viewNameForReactTag can only be called from the shadow queue");
+  RCTAssertUIManagerQueue();
   return _shadowViewRegistry[reactTag].viewName;
 }
 
@@ -381,9 +381,7 @@ BOOL RCTIsUIManagerQueue()
 
 - (void)addUIBlock:(RCTViewManagerUIBlock)block
 {
-  RCTAssertThread(RCTGetUIManagerQueue(),
-                  @"-[RCTUIManager addUIBlock:] should only be called from the "
-                  "UIManager's queue (get this using `RCTGetUIManagerQueue()`)");
+  RCTAssertUIManagerQueue();
 
   if (!block || !_viewRegistry) {
     return;
@@ -394,9 +392,7 @@ BOOL RCTIsUIManagerQueue()
 
 - (void)prependUIBlock:(RCTViewManagerUIBlock)block
 {
-  RCTAssertThread(RCTGetUIManagerQueue(),
-                  @"-[RCTUIManager prependUIBlock:] should only be called from the "
-                  "UIManager's queue (get this using `RCTGetUIManagerQueue()`)");
+  RCTAssertUIManagerQueue();
 
   if (!block || !_viewRegistry) {
     return;
@@ -420,7 +416,7 @@ BOOL RCTIsUIManagerQueue()
 
 - (RCTViewManagerUIBlock)uiBlockWithLayoutUpdateForRootView:(RCTRootShadowView *)rootShadowView
 {
-  RCTAssert(!RCTIsMainQueue(), @"Should be called on shadow queue");
+  RCTAssertUIManagerQueue();
 
   // This is nuanced. In the JS thread, we create a new update buffer
   // `frameTags`/`frames` that is created/mutated in the JS thread. We access
@@ -1065,8 +1061,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
 
 - (void)flushUIBlocks
 {
-  RCTAssertThread(RCTGetUIManagerQueue(),
-                  @"flushUIBlocks can only be called from the shadow queue");
+  RCTAssertUIManagerQueue();
 
   // First copy the previous blocks into a temporary variable, then reset the
   // pending blocks to a new array. This guards against mutation while

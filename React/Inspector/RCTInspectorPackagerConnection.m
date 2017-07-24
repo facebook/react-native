@@ -133,6 +133,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     NSDictionary *jsonPage = @{
       @"id": [@(page.id) stringValue],
       @"title": page.title,
+      @"app": [[NSBundle mainBundle] bundleIdentifier],
     };
     [array addObject:jsonPage];
   }

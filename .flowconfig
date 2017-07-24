@@ -8,6 +8,9 @@
 ; Ignore the website subdir
 <PROJECT_ROOT>/website/.*
 
+; Ignore the Dangerfile
+<PROJECT_ROOT>/danger/dangerfile.js
+
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
@@ -18,6 +21,9 @@
 ; For RN Apps installed via npm, "Libraries" folder is inside
 ; "node_modules/react-native" but in the source repo it is in the root
 .*/Libraries/react-native/React.js
+
+; Ignore polyfills
+.*/Libraries/polyfills/.*
 
 [include]
 
@@ -46,4 +52,4 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 unsafe.enable_getters_and_setters=true
 
 [version]
-^0.49.1
+^0.50.0
