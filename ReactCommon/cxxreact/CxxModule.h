@@ -68,6 +68,11 @@ public:
 
     std::function<folly::dynamic(folly::dynamic)> syncFunc;
 
+    const char *getType() {
+      assert(func || syncFunc);
+      return func ? (callbacks == 2 ? "promise" : "async") : "sync";
+    }
+
     // std::function/lambda ctors
 
     Method(std::string aname,

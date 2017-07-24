@@ -236,15 +236,18 @@ const ScrollView = createReactClass({
      */
     minimumZoomScale: PropTypes.number,
     /**
+     * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
+     */
+    onMomentumScrollBegin: PropTypes.func,
+    /**
+     * Called when the momentum scroll ends (scroll which occurs as the ScrollView glides to a stop).
+     */
+    onMomentumScrollEnd: PropTypes.func,
+    /**
      * Fires at most once per frame during scrolling. The frequency of the
      * events can be controlled using the `scrollEventThrottle` prop.
      */
     onScroll: PropTypes.func,
-    /**
-     * Called when a scrolling animation ends.
-     * @platform ios
-     */
-    onScrollAnimationEnd: PropTypes.func,
     /**
      * Called when scrollable content view of the ScrollView changes.
      *

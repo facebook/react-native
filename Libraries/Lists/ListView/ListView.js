@@ -173,6 +173,8 @@ var ListView = createReactClass({
      * on every render pass. If they are expensive to re-render, wrap them
      * in StaticContainer or other mechanism as appropriate. Footer is always
      * at the bottom of the list, and header at the top, on every render pass.
+     * In a horizontal ListView, the header is rendered on the left and the
+     * footer on the right.
      */
     renderFooter: PropTypes.func,
     renderHeader: PropTypes.func,
