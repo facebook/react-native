@@ -236,6 +236,10 @@ const ScrollView = createReactClass({
      */
     minimumZoomScale: PropTypes.number,
     /**
+     * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
+     */
+    onMomentumScrollBegin: PropTypes.func,
+    /**
      * Called when the momentum scroll ends (scroll which occurs as the ScrollView glides to a stop).
      */
     onMomentumScrollEnd: PropTypes.func,
