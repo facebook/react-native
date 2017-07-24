@@ -114,6 +114,8 @@
 		3D56F9F11D6F6E9B00F53A06 /* RNTesterBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3D13F83E1D6F6AE000E69E0E /* RNTesterBundle.bundle */; };
 		3DB99D0C1BA0340600302749 /* RNTesterIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB99D0B1BA0340600302749 /* RNTesterIntegrationTests.m */; };
 		3DD981D61D33C6FB007DC7BE /* RNTesterUnitTestsBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = 3DD981D51D33C6FB007DC7BE /* RNTesterUnitTestsBundle.js */; };
+		663594641F097B920011FF53 /* libRCTLanguages.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 663594461F097B480011FF53 /* libRCTLanguages.a */; };
+		663594651F097BA00011FF53 /* libRCTLanguages-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 663594481F097B480011FF53 /* libRCTLanguages-tvOS.a */; };
 		68FF44381CF6111500720EFD /* RCTBundleURLProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */; };
 		834C36EC1AF8DED70019C93C /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 834C36D21AF8DA610019C93C /* libRCTSettings.a */; };
 		83636F8F1B53F22C009F943E /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */; };
@@ -399,6 +401,20 @@
 			remoteGlobalIDString = 580C376F1AB104AF0015E709;
 			remoteInfo = RCTTest;
 		};
+		663594451F097B480011FF53 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 663594361F097B480011FF53 /* RCTLanguages.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RCTLanguages;
+		};
+		663594471F097B480011FF53 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 663594361F097B480011FF53 /* RCTLanguages.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2D2A28471D9B043800D4039D;
+			remoteInfo = "RCTLanguages-tvOS";
+		};
 		834C36D11AF8DA610019C93C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 13CC9D481AEED2B90020D1C2 /* RCTSettings.xcodeproj */;
@@ -490,6 +506,7 @@
 		3DB99D0B1BA0340600302749 /* RNTesterIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNTesterIntegrationTests.m; sourceTree = "<group>"; };
 		3DD981D51D33C6FB007DC7BE /* RNTesterUnitTestsBundle.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = RNTesterUnitTestsBundle.js; sourceTree = "<group>"; };
 		58005BE41ABA80530062E044 /* RCTTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTest.xcodeproj; path = ../Libraries/RCTTest/RCTTest.xcodeproj; sourceTree = "<group>"; };
+		663594361F097B480011FF53 /* RCTLanguages.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLanguages.xcodeproj; path = ../Libraries/Languages/RCTLanguages.xcodeproj; sourceTree = "<group>"; };
 		68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBundleURLProviderTests.m; sourceTree = "<group>"; };
 		83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerScenarioTests.m; sourceTree = "<group>"; };
 		8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderTests.m; sourceTree = "<group>"; };
@@ -535,6 +552,7 @@
 				134A8A2A1AACED7A00945AAE /* libRCTGeolocation.a in Frameworks */,
 				1341802C1AA9178B003F314A /* libRCTNetwork.a in Frameworks */,
 				13417FE91AA91432003F314A /* libRCTImage.a in Frameworks */,
+				663594641F097B920011FF53 /* libRCTLanguages.a in Frameworks */,
 				3578590A1B28D2CF00341EDB /* libRCTLinking.a in Frameworks */,
 				14DC67F41AB71881001358AB /* libRCTPushNotification.a in Frameworks */,
 				834C36EC1AF8DED70019C93C /* libRCTSettings.a in Frameworks */,
@@ -568,6 +586,7 @@
 				2DD323EA1DA2DE3F000FE1B8 /* libReact.a in Frameworks */,
 				2DD323E31DA2DE3F000FE1B8 /* libRCTAnimation.a in Frameworks */,
 				3D302F221DF8285100D6DDAE /* libRCTImage-tvOS.a in Frameworks */,
+				663594651F097BA00011FF53 /* libRCTLanguages-tvOS.a in Frameworks */,
 				2DD323E51DA2DE3F000FE1B8 /* libRCTLinking-tvOS.a in Frameworks */,
 				2DD323E61DA2DE3F000FE1B8 /* libRCTNetwork-tvOS.a in Frameworks */,
 				3D05746D1DE6008900184BB4 /* libRCTPushNotification-tvOS.a in Frameworks */,
@@ -606,6 +625,7 @@
 				138DEE021B9EDDDB007F4EA5 /* RCTCameraRoll.xcodeproj */,
 				134A8A201AACED6A00945AAE /* RCTGeolocation.xcodeproj */,
 				13417FE31AA91428003F314A /* RCTImage.xcodeproj */,
+				663594361F097B480011FF53 /* RCTLanguages.xcodeproj */,
 				357858F81B28D2C400341EDB /* RCTLinking.xcodeproj */,
 				134180261AA91779003F314A /* RCTNetwork.xcodeproj */,
 				14DC67E71AB71876001358AB /* RCTPushNotification.xcodeproj */,
@@ -884,6 +904,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		663594371F097B480011FF53 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				663594461F097B480011FF53 /* libRCTLanguages.a */,
+				663594481F097B480011FF53 /* libRCTLanguages-tvOS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		834C36CE1AF8DA610019C93C /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1128,6 +1157,10 @@
 				{
 					ProductGroup = 13417FE41AA91428003F314A /* Products */;
 					ProjectRef = 13417FE31AA91428003F314A /* RCTImage.xcodeproj */;
+				},
+				{
+					ProductGroup = 663594371F097B480011FF53 /* Products */;
+					ProjectRef = 663594361F097B480011FF53 /* RCTLanguages.xcodeproj */;
 				},
 				{
 					ProductGroup = 357858F91B28D2C400341EDB /* Products */;
@@ -1423,6 +1456,20 @@
 			fileType = archive.ar;
 			path = libRCTTest.a;
 			remoteRef = 58005BED1ABA80530062E044 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		663594461F097B480011FF53 /* libRCTLanguages.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTLanguages.a;
+			remoteRef = 663594451F097B480011FF53 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		663594481F097B480011FF53 /* libRCTLanguages-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libRCTLanguages-tvOS.a";
+			remoteRef = 663594471F097B480011FF53 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		834C36D21AF8DA610019C93C /* libRCTSettings.a */ = {

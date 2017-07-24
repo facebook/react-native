@@ -165,6 +165,11 @@ Pod::Spec.new do |s|
     ss.source_files         = "Libraries/Image/*.{h,m}"
   end
 
+  s.subspec "RCTLanguages" do |ss|
+    ss.dependency             "React/Core"
+    ss.source_files         = "Libraries/Languages/*.{h,m}"
+  end
+
   s.subspec "RCTNetwork" do |ss|
     ss.dependency             "React/Core"
     ss.source_files         = "Libraries/Network/*.{h,m,mm}"

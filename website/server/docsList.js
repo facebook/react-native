@@ -72,6 +72,7 @@ const apis = [
   '../Libraries/Image/ImageStore.js',
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/Components/Keyboard/Keyboard.js',
+  '../Libraries/Languages/Languages.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/Linking/Linking.js',
   '../Libraries/Lists/ListView/ListViewDataSource.js',

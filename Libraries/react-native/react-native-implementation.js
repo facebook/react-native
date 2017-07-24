@@ -82,6 +82,7 @@ const ReactNative = {
   get ImagePickerIOS() { return require('ImagePickerIOS'); },
   get InteractionManager() { return require('InteractionManager'); },
   get Keyboard() { return require('Keyboard'); },
+  get Languages() { return require('Languages'); },
   get LayoutAnimation() { return require('LayoutAnimation'); },
   get Linking() { return require('Linking'); },
   get NativeEventEmitter() { return require('NativeEventEmitter'); },

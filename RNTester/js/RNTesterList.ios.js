@@ -267,6 +267,11 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'LanguagesExample',
+    module: require('./LanguagesExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'LayoutAnimationExample',
     module: require('./LayoutAnimationExample'),
     supportsTVOS: true,

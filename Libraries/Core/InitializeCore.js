@@ -192,6 +192,8 @@ if (navigator === undefined) {
 // see https://github.com/facebook/react-native/issues/10881
 defineProperty(navigator, 'product', () => 'ReactNative', true);
 defineProperty(navigator, 'geolocation', () => require('Geolocation'));
+defineProperty(navigator, 'language', () => require('Languages').language);
+defineProperty(navigator, 'languages', () => require('Languages').languages);
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
 // been initialized before requiring them.
