@@ -201,16 +201,21 @@ const ScrollView = createReactClass({
     /**
      * Determines whether the keyboard gets dismissed in response to a drag.
      *
+     * *Cross platform*
+     *
      *   - `'none'` (the default), drags do not dismiss the keyboard.
      *   - `'on-drag'`, the keyboard is dismissed when a drag begins.
+     *
+     * *iOS Only*
+     *
      *   - `'interactive'`, the keyboard is dismissed interactively with the drag and moves in
      *     synchrony with the touch; dragging upwards cancels the dismissal.
      *     On android this is not supported and it will have the same behavior as 'none'.
      */
     keyboardDismissMode: PropTypes.oneOf([
       'none', // default
-      'interactive',
-      'on-drag',
+      'on-drag', // Cross-platform
+      'interactive', // iOS-only
     ]),
     /**
      * Determines when the keyboard should stay visible after a tap.
