@@ -109,7 +109,9 @@ export default class NavigatorIOSApp extends React.Component {
 
 class MyScene extends React.Component {
   static propTypes = {
-    title: PropTypes.string.isRequired,
+    route: PropTypes.shape({
+      title: PropTypes.string.isRequired
+    }),
     navigator: PropTypes.object.isRequired,
   }
 
