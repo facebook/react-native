@@ -128,10 +128,13 @@ if (!global.__fbDisableExceptionsManager) {
 }
 
 // Set up collections
-// We can't make these lazy because `Map` checks for `global.Map` (which wouldc
-// not exist if it were lazily defined).
-defineProperty(global, 'Map', () => require('Map'), true);
-defineProperty(global, 'Set', () => require('Set'), true);
+const _shouldPolyfillCollection = require('_shouldPolyfillES6Collection');
+if (_shouldPolyfillCollection('Map')) {
+  defineProperty(global, 'Map', () => require('Map'));
+}
+if (_shouldPolyfillCollection('Set')) {
+  defineProperty(global, 'Set', () => require('Set'));
+}
 
 // Set up Promise
 // The native Promise implementation throws the following error:
