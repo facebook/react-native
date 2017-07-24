@@ -4,8 +4,8 @@ title: Animations
 layout: docs
 category: Guides
 permalink: docs/animations.html
-next: navigation
-previous: handling-touches
+next: accessibility
+previous: images
 ---
 
 Animations are very important to create a great user experience.
@@ -472,7 +472,7 @@ manage frame updates for you.
 
 ### `setNativeProps`
 
-As mentioned [in the Direction Manipulation section](docs/direct-manipulation.html),
+As mentioned [in the Direct Manipulation section](docs/direct-manipulation.html),
 `setNativeProps` allows us to modify properties of native-backed
 components (components that are actually backed by native views, unlike
 composite components) directly, without having to `setState` and

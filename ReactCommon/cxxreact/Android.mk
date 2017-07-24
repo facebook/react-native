@@ -10,7 +10,6 @@ LOCAL_SRC_FILES := \
   JSCExecutor.cpp \
   JSBigString.cpp \
   JSBundleType.cpp \
-  JSCLegacyProfiler.cpp \
   JSCLegacyTracing.cpp \
   JSCMemory.cpp \
   JSCNativeModules.cpp \

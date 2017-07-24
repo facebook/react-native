@@ -1,23 +1,26 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#ifndef FBXPLATMODULE
-#define FBXPLATMODULE
-
-#include <folly/dynamic.h>
+#pragma once
 
 #include <functional>
-
 #include <map>
 #include <tuple>
 #include <vector>
 
+#include <folly/dynamic.h>
+
 using namespace std::placeholders;
 
-namespace facebook { namespace react {
-  class Instance;
+namespace facebook {
+namespace react {
+
+class Instance;
+
 }}
 
-namespace facebook { namespace xplat { namespace module {
+namespace facebook {
+namespace xplat {
+namespace module {
 
 /**
  * Base class for Catalyst native modules whose implementations are
@@ -64,6 +67,11 @@ public:
     std::function<void(folly::dynamic, Callback, Callback)> func;
 
     std::function<folly::dynamic(folly::dynamic)> syncFunc;
+
+    const char *getType() {
+      assert(func || syncFunc);
+      return func ? (callbacks == 2 ? "promise" : "async") : "sync";
+    }
 
     // std::function/lambda ctors
 
@@ -186,5 +194,3 @@ private:
 };
 
 }}}
-
-#endif

@@ -27,6 +27,8 @@ const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const nullthrows = require('fbjs/lib/nullthrows');
 
+import type {NativeMethodsMixinType} from 'ReactNativeTypes';
+
 const DEBUG = false;
 
 /**
@@ -613,7 +615,7 @@ type CellProps = {
 };
 class CellRenderer extends React.Component {
   props: CellProps;
-  _containerRef: View;
+  _containerRef: NativeMethodsMixinType;
   _offscreenRenderDone = false;
   _timeout = 0;
   _lastLayout: ?Object = null;

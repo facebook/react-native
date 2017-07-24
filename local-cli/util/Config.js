@@ -10,19 +10,26 @@
  */
 'use strict';
 
-const blacklist = require('metro-bundler/build/blacklist');
+const blacklist = require('metro-bundler/src/blacklist');
+const findSymlinksPaths = require('./findSymlinksPaths');
 const fs = require('fs');
+const getPolyfills = require('../../rn-get-polyfills');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 
-const {providesModuleNodeModules} = require('metro-bundler/build/defaults');
+const {providesModuleNodeModules} = require('metro-bundler/src/defaults');
 
 const RN_CLI_CONFIG = 'rn-cli.config.js';
 
-import type {GetTransformOptions, PostMinifyProcess, PostProcessModules} from 'metro-bundler/build/Bundler';
-import type {HasteImpl} from 'metro-bundler/build/node-haste/Module';
-import type {TransformVariants} from 'metro-bundler/build/ModuleGraph/types.flow';
-import type {PostProcessModules as PostProcessModulesForBuck} from 'metro-bundler/build/ModuleGraph/types.flow.js';
+import type {
+  GetTransformOptions,
+  PostMinifyProcess,
+  PostProcessModules,
+  PostProcessBundleSourcemap
+} from 'metro-bundler/src/Bundler';
+import type {HasteImpl} from 'metro-bundler/src/node-haste/Module';
+import type {TransformVariants} from 'metro-bundler/src/ModuleGraph/types.flow';
+import type {PostProcessModules as PostProcessModulesForBuck} from 'metro-bundler/src/ModuleGraph/types.flow.js';
 
 /**
  * Configuration file of the CLI.
@@ -81,11 +88,17 @@ export type ConfigT = {
   /**
    * Returns the path to the worker that is used for transformation.
    */
-  getWorkerPath: () => string,
+  getWorkerPath: () => ?string,
+
+  /**
+   * An optional list of polyfills to include in the bundle. The list defaults
+   * to a set of common polyfills for Number, String, Array, Object...
+   */
+  getPolyfills: ({platform: ?string}) => $ReadOnlyArray<string>,
 
   /**
    * An optional function that can modify the code and source map of bundle
-   * after the minifaction took place.
+   * after the minifaction took place. (Function applied per module).
    */
   postMinifyProcess: PostMinifyProcess,
 
@@ -94,6 +107,13 @@ export type ConfigT = {
    * finalized.
    */
   postProcessModules: PostProcessModules,
+
+  /**
+   * An optional function that can modify the code and source map of the bundle
+   * before it is written. Applied once for the entire bundle, only works if
+   * output is a plainBundle.
+   */
+  postProcessBundleSourcemap: PostProcessBundleSourcemap,
 
   /**
    * Same as `postProcessModules` but for the Buck worker. Eventually we do want
@@ -111,6 +131,26 @@ export type ConfigT = {
   transformVariants: () => TransformVariants,
 };
 
+function getProjectPath() {
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli[\/\\]util$/)) {
+    // Packager is running from node_modules.
+    // This is the default case for all projects created using 'react-native init'.
+    return path.resolve(__dirname, '../../../..');
+  } else if (__dirname.match(/Pods[\/\\]React[\/\\]packager$/)) {
+    // React Native was installed using CocoaPods.
+    return path.resolve(__dirname, '../../../..');
+  }
+  return path.resolve(__dirname, '../..');
+}
+
+const resolveSymlink = (roots) =>
+  roots.concat(
+    findSymlinksPaths(
+      path.join(getProjectPath(), 'node_modules'),
+      roots
+    )
+  );
+
 /**
  * Module capable of getting the configuration out of a given file.
  *
@@ -126,16 +166,24 @@ const Config = {
     getBlacklistRE: () => blacklist(),
     getPlatforms: () => [],
     getPolyfillModuleNames: () => [],
-    getProjectRoots: () => [process.cwd()],
+    getProjectRoots: () => {
+      const root = process.env.REACT_NATIVE_APP_ROOT;
+      if (root) {
+        return resolveSymlink([path.resolve(root)]);
+      }
+      return resolveSymlink([getProjectPath()]);
+    },
     getProvidesModuleNodeModules: () => providesModuleNodeModules.slice(),
     getSourceExts: () => [],
-    getTransformModulePath: () => require.resolve('metro-bundler/build/transformer.js'),
+    getTransformModulePath: () => require.resolve('metro-bundler/src/transformer.js'),
     getTransformOptions: async () => ({}),
+    getPolyfills,
     postMinifyProcess: x => x,
     postProcessModules: modules => modules,
     postProcessModulesForBuck: modules => modules,
+    postProcessBundleSourcemap: ({code, map, outFileName}) => ({code, map}),
     transformVariants: () => ({default: {}}),
-    getWorkerPath: () => require.resolve('./worker.js'),
+    getWorkerPath: () => null,
   }: ConfigT),
 
   find(startDir: string): ConfigT {
@@ -181,7 +229,7 @@ const Config = {
   },
 
   loadFileCustom<TConfig: {}>(pathToConfig: string, defaults: TConfig): TConfig {
-    //$FlowFixMe: necessary dynamic require
+    // $FlowFixMe: necessary dynamic require
     const config: {} = require(pathToConfig);
     return {...defaults, ...config};
   },

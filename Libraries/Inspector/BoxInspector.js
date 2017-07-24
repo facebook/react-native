@@ -35,10 +35,10 @@ class BoxInspector extends React.Component {
         <BoxContainer title="padding" box={padding}>
           <View>
             <Text style={styles.innerText}>
-              ({frame.left}, {frame.top})
+              ({(frame.left || 0).toFixed(1)}, {(frame.top || 0).toFixed(1)})
             </Text>
             <Text style={styles.innerText}>
-              {frame.width} &times; {frame.height}
+              {(frame.width || 0).toFixed(1)} &times; {(frame.height || 0).toFixed(1)}
             </Text>
           </View>
         </BoxContainer>
@@ -110,4 +110,3 @@ var styles = StyleSheet.create({
 });
 
 module.exports = BoxInspector;
-

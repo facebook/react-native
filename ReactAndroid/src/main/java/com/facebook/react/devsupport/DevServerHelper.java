@@ -14,9 +14,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -28,9 +26,9 @@ import android.os.Handler;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.network.OkHttpCallUtil;
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
@@ -82,7 +80,7 @@ public class DevServerHelper {
   private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
   private static final String HEAP_CAPTURE_UPLOAD_URL_FORMAT = "http://%s/jscheapcaptureupload";
-  private static final String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s";
+  private static final String INSPECTOR_DEVICE_URL_FORMAT = "http://%s/inspector/device?name=%s&app=%s";
   private static final String SYMBOLICATE_URL_FORMAT = "http://%s/symbolicate";
   private static final String OPEN_STACK_FRAME_URL_FORMAT = "http://%s/open-stack-frame";
 
@@ -98,6 +96,7 @@ public class DevServerHelper {
 
   public interface PackagerCommandListener {
     void onPackagerReloadCommand();
+    void onPackagerDevMenuCommand();
     void onCaptureHeapCommand(final Responder responder);
     void onPokeSamplingProfilerCommand(final Responder responder);
   }
@@ -110,6 +109,7 @@ public class DevServerHelper {
   private final OkHttpClient mClient;
   private final Handler mRestartOnChangePollingHandler;
   private final BundleDownloader mBundleDownloader;
+  private final String mPackageName;
 
   private boolean mOnChangePollingEnabled;
   private @Nullable JSPackagerClient mPackagerClient;
@@ -117,7 +117,7 @@ public class DevServerHelper {
   private @Nullable OkHttpClient mOnChangePollingClient;
   private @Nullable OnServerContentChangeListener mOnServerContentChangeListener;
 
-  public DevServerHelper(DevInternalSettings settings) {
+  public DevServerHelper(DevInternalSettings settings, String packageName) {
     mSettings = settings;
     mClient = new OkHttpClient.Builder()
       .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
@@ -127,6 +127,7 @@ public class DevServerHelper {
     mBundleDownloader = new BundleDownloader(mClient);
 
     mRestartOnChangePollingHandler = new Handler();
+    mPackageName = packageName;
   }
 
   public void openPackagerConnection(
@@ -143,6 +144,12 @@ public class DevServerHelper {
           @Override
           public void onNotification(@Nullable Object params) {
             commandListener.onPackagerReloadCommand();
+          }
+        });
+        handlers.put("devMenu", new NotificationOnlyHandler() {
+          @Override
+          public void onNotification(@Nullable Object params) {
+            commandListener.onPackagerDevMenuCommand();
           }
         });
         handlers.put("captureHeap", new RequestOnlyHandler() {
@@ -191,7 +198,7 @@ public class DevServerHelper {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
-        mInspectorPackagerConnection = new InspectorPackagerConnection(getInspectorDeviceUrl());
+        mInspectorPackagerConnection = new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
         mInspectorPackagerConnection.connect();
         return null;
       }
@@ -309,8 +316,9 @@ public class DevServerHelper {
     return String.format(
         Locale.US,
         INSPECTOR_DEVICE_URL_FORMAT,
-        mSettings.getPackagerConnectionSettings().getDebugServerHost(),
-        AndroidInfoHelpers.getFriendlyDeviceName());
+        mSettings.getPackagerConnectionSettings().getInspectorServerHost(),
+        AndroidInfoHelpers.getFriendlyDeviceName(),
+        mPackageName);
   }
 
   public BundleDownloader getBundleDownloader() {

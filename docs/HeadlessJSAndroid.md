@@ -50,11 +50,29 @@ public class MyTaskService extends HeadlessJsTaskService {
 }
 ```
 
+Then add the service to your `AndroidManifest.xml` file:
+
+```
+<service android:name="com.example.MyTaskService" />
+```
+
 Now, whenever you [start your service][0], e.g. as a periodic task or in response to some system event / broadcast, JS will spin up, run your task, then spin down.
+
+Example:
+
+```java
+Intent service = new Intent(getApplicationContext(), MyTaskService.class);
+Bundle bundle = new Bundle();
+
+bundle.putString("foo", "bar");
+service.putExtras(bundle);
+
+getApplicationContext().startService(service);
+```
 
 ## Caveats
 
-* By default, your app will crash if you try to run a task while the app is in the foreground. This is to prevent developers from shooting themselves in the foot by doing a lot of work in a task and slowing the UI. There is a way around this.
+* By default, your app will crash if you try to run a task while the app is in the foreground. This is to prevent developers from shooting themselves in the foot by doing a lot of work in a task and slowing the UI. You can pass a fourth `boolean` argument to control this behaviour.
 * If you start your service from a `BroadcastReceiver`, make sure to call `HeadlessJsTaskService.acquireWakelockNow()` before returning from `onReceive()`.
 
 [0]: https://developer.android.com/reference/android/content/Context.html#startService(android.content.Intent)

@@ -15,8 +15,14 @@
  * After changing the files it makes a commit and tags it.
  * All you have to do is push changes to remote and CI will make a new build.
  */
-/*eslint-disable no-undef */
-require(`shelljs/global`);
+
+const {
+  cat,
+  echo,
+  exec,
+  exit,
+  sed,
+} = require('shelljs');
 
 const minimist = require('minimist');
 
@@ -93,4 +99,3 @@ if (version.indexOf(`rc`) === -1) {
 exec(`git push ${remote} ${branch} --follow-tags`);
 
 exit(0);
-/*eslint-enable no-undef */

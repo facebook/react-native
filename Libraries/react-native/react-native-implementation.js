@@ -29,6 +29,7 @@ const ReactNative = {
   get ImageStore() { return require('ImageStore'); },
   get KeyboardAvoidingView() { return require('KeyboardAvoidingView'); },
   get ListView() { return require('ListView'); },
+  get MaskedViewIOS() { return require('MaskedViewIOS'); },
   get Modal() { return require('Modal'); },
   get NavigatorIOS() { return require('NavigatorIOS'); },
   get Picker() { return require('Picker'); },
@@ -97,6 +98,7 @@ const ReactNative = {
   get TimePickerAndroid() { return require('TimePickerAndroid'); },
   get TVEventHandler() { return require('TVEventHandler'); },
   get UIManager() { return require('UIManager'); },
+  get unstable_batchedUpdates() { return require('ReactNative').unstable_batchedUpdates; },
   get Vibration() { return require('Vibration'); },
   get VibrationIOS() { return require('VibrationIOS'); },
 

@@ -6,7 +6,7 @@ category: Guides (iOS)
 permalink: docs/native-modules-ios.html
 banner: ejected
 next: native-components-ios
-previous: upgrading
+previous: testing
 ---
 
 Sometimes an app needs access to platform API, and React Native doesn't have a corresponding module yet. Maybe you want to reuse some existing Objective-C, Swift or C++ code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
@@ -29,7 +29,7 @@ A native module is just an Objective-C class that implements the `RCTBridgeModul
 @end
 ```
 
-In addition to implementing the `RCTBridgeModule` protocol, your class must also include the `RCT_EXPORT_MODULE()` macro. This takes an optional argument that specifies the name that the module will be accessible as in your JavaScript code (more on this later). If you do not specify a name, the JavaScript module name will match the Objective-C class name.
+In addition to implementing the `RCTBridgeModule` protocol, your class must also include the `RCT_EXPORT_MODULE()` macro. This takes an optional argument that specifies the name that the module will be accessible as in your JavaScript code (more on this later). If you do not specify a name, the JavaScript module name will match the Objective-C class name. If the Objective-C class name begins with RCT, the JavaScript module name will exclude the RCT prefix.
 
 ```objectivec
 // CalendarManager.m
@@ -235,7 +235,7 @@ The native module should not have any assumptions about what thread it is being 
 }
 ```
 
-Similarly, if an operation may take a long time to complete, the native module should not block and can specify it's own queue to run operations on. For example, the `RCTAsyncLocalStorage` module creates it's own queue so the React queue isn't blocked waiting on potentially slow disk access:
+Similarly, if an operation may take a long time to complete, the native module should not block and can specify it's own queue to run operations on. For example, the `RCTAsyncLocalStorage` module creates its own queue so the React queue isn't blocked waiting on potentially slow disk access:
 
 ```objectivec
 - (dispatch_queue_t)methodQueue

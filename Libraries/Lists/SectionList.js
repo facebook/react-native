@@ -8,6 +8,7 @@
  *
  * @providesModule SectionList
  * @flow
+ * @format
  */
 'use strict';
 
@@ -122,11 +123,15 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    */
   initialNumToRender: number,
   /**
+   * Reverses the direction of scroll. Uses scale transforms of -1.
+   */
+  inverted?: ?boolean,
+  /**
    * Used to extract a unique key for a given item at the specified index. Key is used for caching
    * and as the react key to track item re-ordering. The default extractor checks item.key, then
-   * falls back to using the index, like react does.
+   * falls back to using the index, like react does. Note that this sets keys for each item, but 
+   * each overall section still needs its own key.
    */
-
   keyExtractor: (item: Item, index: number) => string,
   /**
    * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
@@ -181,9 +186,9 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   legacyImplementation?: ?boolean,
 };
 
-type Props<SectionT> = RequiredProps<SectionT>
-  & OptionalProps<SectionT>
-  & VirtualizedSectionListProps<SectionT>;
+type Props<SectionT> = RequiredProps<SectionT> &
+  OptionalProps<SectionT> &
+  VirtualizedSectionListProps<SectionT>;
 
 const defaultProps = {
   ...VirtualizedSectionList.defaultProps,
@@ -230,7 +235,7 @@ type DefaultProps = typeof defaultProps;
  *     />
  *
  * This is a convenience wrapper around [`<VirtualizedList>`](docs/virtualizedlist.html),
- * and thus inherits it's props (as well as those of `ScrollView`) that aren't explicitly listed
+ * and thus inherits its props (as well as those of `ScrollView`) that aren't explicitly listed
  * here, along with the following caveats:
  *
  * - Internal state is not preserved when content scrolls out of the render window. Make sure all
@@ -247,9 +252,11 @@ type DefaultProps = typeof defaultProps;
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
-class SectionList<SectionT: SectionBase<any>>
-  extends React.PureComponent<DefaultProps, Props<SectionT>, void>
-{
+class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
+  DefaultProps,
+  Props<SectionT>,
+  void,
+> {
   props: Props<SectionT>;
   static defaultProps: DefaultProps = defaultProps;
 
@@ -311,12 +318,16 @@ class SectionList<SectionT: SectionBase<any>>
   }
 
   render() {
-    const List = this.props.legacyImplementation ? MetroListView : VirtualizedSectionList;
+    const List = this.props.legacyImplementation
+      ? MetroListView
+      : VirtualizedSectionList;
     return <List {...this.props} ref={this._captureRef} />;
   }
 
   _wrapperListRef: MetroListView | VirtualizedSectionList<any>;
-  _captureRef = (ref) => { this._wrapperListRef = ref; };
+  _captureRef = ref => {
+    this._wrapperListRef = ref;
+  };
 }
 
 module.exports = SectionList;
