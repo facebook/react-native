@@ -54,7 +54,7 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
                          @"fontScale": @(bridge.accessibilityManager.multiplier)
                          };
 
-  CGRect window = [[UIApplication sharedApplication] keyWindow].rootViewController.view.bounds;
+  CGRect window = [[UIApplication sharedApplication] keyWindow].bounds;
   NSDictionary *windowDims = @{
                          @"width": @(window.size.width),
                          @"height": @(window.size.height),
