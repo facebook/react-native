@@ -40,25 +40,24 @@ const defineLazyObjectProperty = require('defineLazyObjectProperty');
 
 /**
  * Sets an object's property. If a property with the same name exists, this will
- * replace it but maintain its descriptor configuration. By default, the property
- * will replaced with a lazy getter.
+ * replace it but maintain its descriptor configuration. The property will be
+ * replaced with a lazy getter.
  *
- * The original property value will be preserved as `original[PropertyName]` so
- * that, if necessary, it can be restored. For example, if you want to route
+ * In DEV mode the original property value will be preserved as `original[PropertyName]`
+ * so that, if necessary, it can be restored. For example, if you want to route
  * network requests through DevTools (to trace them):
  *
  *   global.XMLHttpRequest = global.originalXMLHttpRequest;
  *
  * @see https://github.com/facebook/react-native/issues/934
  */
-function defineProperty<T>(
+function defineLazyProperty<T>(
   object: Object,
   name: string,
   getValue: () => T,
-  eager?: boolean
 ): void {
   const descriptor = Object.getOwnPropertyDescriptor(object, name);
-  if (descriptor) {
+  if (__DEV__ && descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
     Object.defineProperty(object, backupName, {
       ...descriptor,
@@ -72,20 +71,15 @@ function defineProperty<T>(
     return;
   }
 
-  if (eager === true) {
-    Object.defineProperty(object, name, {
-      configurable: true,
-      enumerable: enumerable !== false,
-      writable: writable !== false,
-      value: getValue(),
-    });
-  } else {
-    defineLazyObjectProperty(object, name, {
-      get: getValue,
-      enumerable: enumerable !== false,
-      writable: writable !== false,
-    });
-  }
+  defineLazyObjectProperty(object, name, {
+    get: getValue,
+    enumerable: enumerable !== false,
+    writable: writable !== false,
+  });
+}
+
+function polyfillGlobal<T>(name: string, getValue: () => T): void {
+  defineLazyProperty(global, name, getValue);
 }
 
 // Set up process
@@ -130,19 +124,19 @@ if (!global.__fbDisableExceptionsManager) {
 // Set up collections
 const _shouldPolyfillCollection = require('_shouldPolyfillES6Collection');
 if (_shouldPolyfillCollection('Map')) {
-  defineProperty(global, 'Map', () => require('Map'));
+  polyfillGlobal('Map', () => require('Map'));
 }
 if (_shouldPolyfillCollection('Set')) {
-  defineProperty(global, 'Set', () => require('Set'));
+  polyfillGlobal('Set', () => require('Set'));
 }
 
 // Set up Promise
 // The native Promise implementation throws the following error:
 // ERROR: Event loop not supported.
-defineProperty(global, 'Promise', () => require('Promise'));
+polyfillGlobal('Promise', () => require('Promise'));
 
 // Set up regenerator.
-defineProperty(global, 'regeneratorRuntime', () => {
+polyfillGlobal('regeneratorRuntime', () => {
   // The require just sets up the global, so make sure when we first
   // invoke it the global does not exist
   delete global.regeneratorRuntime;
@@ -152,7 +146,7 @@ defineProperty(global, 'regeneratorRuntime', () => {
 
 // Set up timers
 const defineLazyTimer = name => {
-  defineProperty(global, name, () => require('JSTimers')[name]);
+  polyfillGlobal(name, () => require('JSTimers')[name]);
 };
 defineLazyTimer('setTimeout');
 defineLazyTimer('setInterval');
@@ -168,14 +162,14 @@ defineLazyTimer('cancelIdleCallback');
 // Set up XHR
 // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
 // let you fetch anything from the internet
-defineProperty(global, 'XMLHttpRequest', () => require('XMLHttpRequest'));
-defineProperty(global, 'FormData', () => require('FormData'));
+polyfillGlobal('XMLHttpRequest', () => require('XMLHttpRequest'));
+polyfillGlobal('FormData', () => require('FormData'));
 
-defineProperty(global, 'fetch', () => require('fetch').fetch);
-defineProperty(global, 'Headers', () => require('fetch').Headers);
-defineProperty(global, 'Request', () => require('fetch').Request);
-defineProperty(global, 'Response', () => require('fetch').Response);
-defineProperty(global, 'WebSocket', () => require('WebSocket'));
+polyfillGlobal('fetch', () => require('fetch').fetch);
+polyfillGlobal('Headers', () => require('fetch').Headers);
+polyfillGlobal('Request', () => require('fetch').Request);
+polyfillGlobal('Response', () => require('fetch').Response);
+polyfillGlobal('WebSocket', () => require('WebSocket'));
 
 // Set up alert
 if (!global.alert) {
@@ -193,8 +187,8 @@ if (navigator === undefined) {
 }
 
 // see https://github.com/facebook/react-native/issues/10881
-defineProperty(navigator, 'product', () => 'ReactNative', true);
-defineProperty(navigator, 'geolocation', () => require('Geolocation'));
+defineLazyProperty(navigator, 'product', () => 'ReactNative');
+defineLazyProperty(navigator, 'geolocation', () => require('Geolocation'));
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
 // been initialized before requiring them.
