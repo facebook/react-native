@@ -25,6 +25,12 @@ typedef NS_ENUM(NSInteger, RCTPositionErrorCode) {
   RCTPositionErrorTimeout,
 };
 
+typedef NS_ENUM(NSInteger, RCTLocationAuthorizationCode) {
+  RCTLocationAuthorizationUnknown = 1,
+  RCTLocationAuthorizationWhenInUse,
+  RCTLocationAuthorizationAlways,
+};
+
 #define RCT_DEFAULT_LOCATION_ACCURACY kCLLocationAccuracyHundredMeters
 
 typedef struct {
@@ -32,22 +38,45 @@ typedef struct {
   double maximumAge;
   double accuracy;
   double distanceFilter;
+  RCTLocationAuthorizationCode locationAuthorization;
 } RCTLocationOptions;
+
+@implementation RCTConvert (RCTLocationAuthorizationCode)
+
+RCT_ENUM_CONVERTER(
+  RCTLocationAuthorizationCode,
+  (
+    @{
+      @"locationAuthorizationUnknown" : @(RCTLocationAuthorizationUnknown),
+      @"locationAuthorizationWhenInUse" : @(RCTLocationAuthorizationWhenInUse),
+      @"locationAuthorizationAlways" : @(RCTLocationAuthorizationAlways)
+    }
+  ),
+  RCTLocationAuthorizationUnknown,
+  integerValue
+)
+
+@end
+
 
 @implementation RCTConvert (RCTLocationOptions)
 
 + (RCTLocationOptions)RCTLocationOptions:(id)json
 {
   NSDictionary<NSString *, id> *options = [RCTConvert NSDictionary:json];
-
+  
   double distanceFilter = options[@"distanceFilter"] == NULL ? RCT_DEFAULT_LOCATION_ACCURACY
     : [RCTConvert double:options[@"distanceFilter"]] ?: kCLDistanceFilterNone;
-
+    
+  RCTLocationAuthorizationCode locationAuthorization = options[@"locationAuthorizationIOS"] == NULL ? RCTLocationAuthorizationUnknown
+    : [RCTConvert RCTLocationAuthorizationCode:options[@"locationAuthorizationIOS"]] ?: RCTLocationAuthorizationUnknown;
+    
   return (RCTLocationOptions){
     .timeout = [RCTConvert NSTimeInterval:options[@"timeout"]] ?: INFINITY,
     .maximumAge = [RCTConvert NSTimeInterval:options[@"maximumAge"]] ?: INFINITY,
     .accuracy = [RCTConvert BOOL:options[@"enableHighAccuracy"]] ? kCLLocationAccuracyBest : RCT_DEFAULT_LOCATION_ACCURACY,
-    .distanceFilter = distanceFilter
+    .distanceFilter = distanceFilter,
+    .locationAuthorization = locationAuthorization
   };
 }
 
@@ -133,14 +162,62 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - Private API
 
-- (void)beginLocationUpdatesWithDesiredAccuracy:(CLLocationAccuracy)desiredAccuracy distanceFilter:(CLLocationDistance)distanceFilter
+- (void)beginLocationUpdatesWithDesiredAccuracy:(CLLocationAccuracy)desiredAccuracy
+                                 distanceFilter:(CLLocationDistance)distanceFilter
+                          locationAuthorization:(RCTLocationAuthorizationCode)locationAuthorization
 {
-  [self requestAuthorization];
-
+  [self requestSpecificAuthorization:locationAuthorization];
+  
   _locationManager.distanceFilter  = distanceFilter;
   _locationManager.desiredAccuracy = desiredAccuracy;
   // Start observing location
   [_locationManager startUpdatingLocation];
+}
+
+- (void) requestAlwaysAuthorizationHelper:(CLLocationManager*)locationManager
+{
+  [locationManager requestAlwaysAuthorization];
+  
+  // On iOS 9+ we also need to enable background updates
+  NSArray *backgroundModes  = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
+  if(backgroundModes && [backgroundModes containsObject:@"location"]) {
+    if([locationManager respondsToSelector:@selector(setAllowsBackgroundLocationUpdates:)]) {
+      [locationManager setAllowsBackgroundLocationUpdates:YES];
+    }
+  }
+}
+
+- (void) requestSpecificAuthorization:(RCTLocationAuthorizationCode)locationAuthorization
+{
+  if (!_locationManager) {
+    _locationManager = [CLLocationManager new];
+    _locationManager.delegate = self;
+  }
+  
+  // Request location access permission
+  // If locationAuthorization option is provided, request that specific permission
+  // Otherwise, fall back to requesting based on the Info.plist
+  switch (locationAuthorization) {
+    case RCTLocationAuthorizationAlways:
+      if ([_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+        [self requestAlwaysAuthorizationHelper:_locationManager];
+      }
+      break;
+    case RCTLocationAuthorizationWhenInUse:
+      if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [_locationManager requestWhenInUseAuthorization];
+      }
+      break;
+    case RCTLocationAuthorizationUnknown:
+      if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
+          [_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+        [self requestAlwaysAuthorizationHelper:_locationManager];
+      } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
+                 [_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [_locationManager requestWhenInUseAuthorization];
+      }
+      break;
+  }
 }
 
 #pragma mark - Timeout handler
@@ -162,40 +239,22 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(requestAuthorization)
 {
-  if (!_locationManager) {
-    _locationManager = [CLLocationManager new];
-    _locationManager.delegate = self;
-  }
-
-  // Request location access permission
-  if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
-    [_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
-    [_locationManager requestAlwaysAuthorization];
-
-    // On iOS 9+ we also need to enable background updates
-    NSArray *backgroundModes  = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
-    if (backgroundModes && [backgroundModes containsObject:@"location"]) {
-      if ([_locationManager respondsToSelector:@selector(setAllowsBackgroundLocationUpdates:)]) {
-        [_locationManager setAllowsBackgroundLocationUpdates:YES];
-      }
-    }
-  } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
-    [_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-    [_locationManager requestWhenInUseAuthorization];
-  }
+  [self requestSpecificAuthorization:RCTLocationAuthorizationUnknown];
 }
 
 RCT_EXPORT_METHOD(startObserving:(RCTLocationOptions)options)
 {
   checkLocationConfig();
-
+  
   // Select best options
   _observerOptions = options;
   for (RCTLocationRequest *request in _pendingRequests) {
     _observerOptions.accuracy = MIN(_observerOptions.accuracy, request.options.accuracy);
   }
-
-  [self beginLocationUpdatesWithDesiredAccuracy:_observerOptions.accuracy distanceFilter:_observerOptions.distanceFilter];
+  
+  [self beginLocationUpdatesWithDesiredAccuracy:_observerOptions.accuracy
+                                 distanceFilter:_observerOptions.distanceFilter
+                          locationAuthorization:_observerOptions.locationAuthorization];
   _observingLocation = YES;
 }
 
@@ -263,13 +322,15 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
     _pendingRequests = [NSMutableArray new];
   }
   [_pendingRequests addObject:request];
-
+  
   // Configure location manager and begin updating location
   CLLocationAccuracy accuracy = options.accuracy;
   if (_locationManager) {
     accuracy = MIN(_locationManager.desiredAccuracy, accuracy);
   }
-  [self beginLocationUpdatesWithDesiredAccuracy:accuracy distanceFilter:options.distanceFilter];
+  [self beginLocationUpdatesWithDesiredAccuracy:accuracy
+                                 distanceFilter:options.distanceFilter
+                          locationAuthorization:options.locationAuthorization];
 }
 
 #pragma mark - CLLocationManagerDelegate

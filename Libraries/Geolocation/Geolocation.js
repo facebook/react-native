@@ -31,6 +31,7 @@ type GeoOptions = {
   maximumAge: number,
   enableHighAccuracy: bool,
   distanceFilter: number,
+  locationAuthorizationIOS: string,
 }
 
 /**
@@ -73,7 +74,10 @@ type GeoOptions = {
  *
  */
 var Geolocation = {
-
+  IOS_AUTHORIZATIONS: Object = {
+    WHEN_IN_USE: 'locationAuthorizationWhenInUse',
+    ALWAYS: 'locationAuthorizationAlways',
+  },
   /*
    * Request suitable Location permission based on the key configured on pList.
    * If NSLocationAlwaysUsageDescription is set, it will request Always authorization,
