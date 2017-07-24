@@ -25,6 +25,7 @@ const PermissionsAndroid = require('PermissionsAndroid');
 
 var subscriptions = [];
 var updatesEnabled = false;
+var headingUpdatesEnabled = false;
 
 type GeoOptions = {
   timeout: number,
@@ -183,6 +184,37 @@ var Geolocation = {
       }
       subscriptions = [];
     }
+  },
+
+  /*
+   * Invokes the update callback whenever the location heading changes. 
+   */
+  startUpdatingHeading: function(update: Function) {
+    if (headingUpdatesEnabled) {
+      warning('Called startUpdatingHeading while currently updating heading.');
+    }
+
+    RCTLocationObserver.startUpdatingHeading();
+    headingUpdatesEnabled = true;
+
+    LocationEventEmitter.addListener(
+      'headingDidChange',
+      update
+    );
+  },
+
+  /*
+   * Stops observing a location heading.
+   */
+  stopUpdatingHeading: function() {
+    if (!headingUpdatesEnabled) {
+      warning('Called stopUpdatingHeading without currently updating heading.');
+    }
+
+    RCTLocationObserver.stopUpdatingHeading();
+    headingUpdatesEnabled = false;
+
+    LocationEventEmitter.remove('headingDidChange');
   }
 };
 

@@ -12,6 +12,7 @@
 #import <CoreLocation/CLError.h>
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
+#import <CoreLocation/CLHeading.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
@@ -108,6 +109,7 @@ static NSDictionary<NSString *, id> *RCTPositionError(RCTPositionErrorCode code,
   NSDictionary<NSString *, id> *_lastLocationEvent;
   NSMutableArray<RCTLocationRequest *> *_pendingRequests;
   BOOL _observingLocation;
+  BOOL _observingHeading;
   RCTLocationOptions _observerOptions;
 }
 
@@ -128,7 +130,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"geolocationDidChange", @"geolocationError"];
+  return @[@"geolocationDidChange", @"geolocationError", @"headingDidChange"];
 }
 
 #pragma mark - Private API
@@ -272,6 +274,27 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   [self beginLocationUpdatesWithDesiredAccuracy:accuracy distanceFilter:options.distanceFilter];
 }
 
+RCT_EXPORT_METHOD(startUpdatingHeading)
+{
+  if (!_locationManager) {
+    _locationManager = [CLLocationManager new];
+    _locationManager.delegate = self;
+  }
+  
+  [_locationManager startUpdatingHeading];
+  _observingHeading = YES;
+}
+
+RCT_EXPORT_METHOD(stopUpdatingHeading)
+{
+  if (!_locationManager || !_observingHeading) {
+    RCTLogError(@"%@.stopUpdatingHeading called without starting to update.", [self class]);
+  }
+  
+  [_locationManager stopUpdatingHeading];
+  _observingHeading = NO;
+}
+
 #pragma mark - CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager
@@ -288,6 +311,8 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
       @"altitudeAccuracy": @(location.verticalAccuracy),
       @"heading": @(location.course),
       @"speed": @(location.speed),
+      @"course": @(location.course),
+      @"floorLevel": @(location.floor.level)
     },
     @"timestamp": @([location.timestamp timeIntervalSince1970] * 1000) // in ms
   };
@@ -349,6 +374,25 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   // Otherwise update accuracy will force triggering didUpdateLocations, watchPosition would keeping receiving location updates, even there's no location changes.
   if (ABS(_locationManager.desiredAccuracy - RCT_DEFAULT_LOCATION_ACCURACY) > 0.000001) {
     _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
+  }
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading
+{
+  // Create event
+  NSDictionary *headingEvent = @{
+    @"heading": @{
+      @"magneticHeading": @(newHeading.magneticHeading),
+      @"trueHeading": @(newHeading.trueHeading),
+      @"headingAccuracy": @(newHeading.headingAccuracy),
+      @"x": @(newHeading.x),
+      @"y": @(newHeading.y)
+    }
+  };
+  
+  // Send event
+  if (_observingHeading) {
+    [self sendEventWithName:@"headingDidChange" body:headingEvent];
   }
 }
 
