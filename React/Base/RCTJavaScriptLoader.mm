@@ -242,6 +242,21 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
       onComplete(error, nil, 0);
       return;
     }
+
+    // Validate that the packager actually returned javascript.
+    NSString *contentType = headers[@"Content-Type"];
+    if (![contentType isEqualToString:@"application/javascript"]) {
+      error = [NSError errorWithDomain:@"JSServer"
+                                  code:NSURLErrorCannotParseResponse
+                              userInfo:@{
+                                         NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected JavaScript, but got content type '%@'.", contentType],
+                                         @"headers": headers,
+                                         @"data": data
+                                         }];
+      onComplete(error, nil, 0);
+      return;
+    }
+
     onComplete(nil, data, data.length);
   } progressHandler:^(NSDictionary *headers, NSNumber *loaded, NSNumber *total) {
     // Only care about download progress events for the javascript bundle part.

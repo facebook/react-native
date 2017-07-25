@@ -9,22 +9,16 @@
 
 #import <UIKit/UIKit.h>
 
-#import <RCTText/RCTTextInput.h>
 #import <React/RCTComponent.h>
 #import <React/RCTView.h>
+
+#import "RCTTextInput.h"
 
 @class RCTUITextField;
 
 @interface RCTTextField : RCTTextInput
 
 @property (nonatomic, assign) BOOL caretHidden;
-@property (nonatomic, assign) BOOL selectTextOnFocus;
-@property (nonatomic, assign) BOOL blurOnSubmit;
-@property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, strong) NSNumber *maxLength;
-
-@property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
-
-@property (nonatomic, strong) RCTUITextField *textField;
 
 @end

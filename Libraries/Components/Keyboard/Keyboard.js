@@ -38,7 +38,7 @@ type KeyboardEventListener = (e: KeyboardEventData) => void;
 
 // The following object exists for documentation purposes
 // Actual work happens in
-// https://github.com/facebook/react-native/blob/master/Libraries/EventEmitter/NativeEventEmitter.js
+// https://github.com/facebook/react-native/blob/master/Libraries/vendor/emitter/NativeEventEmitter.js
 
 /**
  * `Keyboard` module to control keyboard events.
@@ -142,4 +142,3 @@ Keyboard = KeyboardEventEmitter;
 Keyboard.dismiss = dismissKeyboard;
 
 module.exports = Keyboard;
-

@@ -42,23 +42,7 @@ RCT_EXTERN BOOL RCTIsUIManagerQueue(void);
  */
 RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification;
 
-/**
- * Posted whenever a new root view is registered with RCTUIManager. The userInfo property
- * will contain a RCTUIManagerRootViewKey with the registered root view.
- */
-RCT_EXTERN NSString *const RCTUIManagerDidRegisterRootViewNotification;
-
-/**
- * Posted whenever a root view is removed from the RCTUIManager. The userInfo property
- * will contain a RCTUIManagerRootViewKey with the removed root view.
- */
-RCT_EXTERN NSString *const RCTUIManagerDidRemoveRootViewNotification;
-
-/**
- * Key for the root view property in the above notifications
- */
-RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
-
+@class RCTLayoutAnimationGroup;
 @class RCTUIManagerObserverCoordinator;
 
 /**
@@ -114,6 +98,13 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  * native code you will need to call this method.
  */
 - (void)setBackgroundColor:(UIColor *)color forView:(UIView *)view;
+
+/**
+ * Sets up layout animation which will perform on next layout pass.
+ * The animation will affect only one next layout pass.
+ * Must be called on the main queue.
+ */
+- (void)setNextLayoutAnimationGroup:(RCTLayoutAnimationGroup *)layoutAnimationGroup;
 
 /**
  * Schedule a block to be executed on the UI thread. Useful if you need to execute

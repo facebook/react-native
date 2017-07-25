@@ -19,8 +19,8 @@ var BlogPost = require('BlogPost');
 var BlogPostHeader = require('BlogPostHeader');
 var Marked = require('Marked');
 
-var BlogPostLayout = React.createClass({
-  render: function() {
+class BlogPostLayout extends React.Component {
+  render() {
     return (
       <Site
         section="blog"
@@ -39,6 +39,6 @@ var BlogPostLayout = React.createClass({
       </Site>
     );
   }
-});
+}
 
 module.exports = BlogPostLayout;

@@ -11,8 +11,7 @@
     "^React$": "<rootDir>/node_modules/react"
   },
   "modulePathIgnorePatterns": [
-    "<rootDir>/node_modules/react-native/Libraries/react-native/",
-    "<rootDir>/node_modules/react-native/packager/"
+    "<rootDir>/node_modules/react-native/Libraries/react-native/"
   ],
   "transformIgnorePatterns": [
     "node_modules/(?!(jest-)?react-native|react-clone-referenced-element)"
