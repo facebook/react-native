@@ -37,8 +37,8 @@ RCT_EXPORT_MODULE()
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(didUpdateDimensions)
-                                               name:RCTUIManagerDidUpdateAvailableSizeNotification
-                                             object:_bridge.uiManager];
+                                               name:RCTContentDidResizeNotification
+                                             object:nil];
 }
 
 static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
@@ -47,7 +47,7 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
   // Don't use RCTScreenSize since it the interface orientation doesn't apply to it
   CGRect screenSize = [[UIScreen mainScreen] bounds];
-  NSDictionary *screenDims = @{
+  NSDictionary *screenDimensions = @{
                          @"width": @(screenSize.size.width),
                          @"height": @(screenSize.size.height),
                          @"scale": @(RCTScreenScale()),
@@ -55,7 +55,7 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
                          };
 
   CGRect window = [[UIApplication sharedApplication] keyWindow].bounds;
-  NSDictionary *windowDims = @{
+  NSDictionary *windowDimensions = @{
                          @"width": @(window.size.width),
                          @"height": @(window.size.height),
                          @"scale": @(RCTScreenScale()),
@@ -63,8 +63,8 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
                          };
 
   return @{
-           @"window": windowDims,
-           @"screen": screenDims
+           @"window": windowDimensions,
+           @"screen": screenDimensions
            };
 }
 

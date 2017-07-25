@@ -54,7 +54,6 @@ static void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComp
 
 char *const RCTUIManagerQueueName = "com.facebook.react.ShadowQueue";
 NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification = @"RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification";
-NSString *const RCTUIManagerDidUpdateAvailableSizeNotification = @"RCTUIManagerDidUpdateAvailableSizeNotification";
 NSString *const RCTUIManagerDidRegisterRootViewNotification = @"RCTUIManagerDidRegisterRootViewNotification";
 NSString *const RCTUIManagerDidRemoveRootViewNotification = @"RCTUIManagerDidRemoveRootViewNotification";
 NSString *const RCTUIManagerRootViewKey = @"RCTUIManagerRootViewKey";
@@ -266,12 +265,8 @@ BOOL RCTIsUIManagerQueue()
 {
   RCTAssertMainQueue();
   NSNumber *reactTag = rootView.reactTag;
-  RCTRootShadowView *shadowView = (RCTRootShadowView *)self->_shadowViewRegistry[reactTag];
-  if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground
-      && !CGSizeEqualToSize(availableSize, shadowView.availableSize)) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerDidUpdateAvailableSizeNotification object:self];
-  }
   dispatch_async(RCTGetUIManagerQueue(), ^{
+    RCTRootShadowView *shadowView = (RCTRootShadowView *)self->_shadowViewRegistry[reactTag];
     RCTAssert(shadowView != nil, @"Could not locate shadow view with tag #%@", reactTag);
     RCTAssert([shadowView isKindOfClass:[RCTRootShadowView class]], @"Located shadow view (with tag #%@) is actually not root view.", reactTag);
 
