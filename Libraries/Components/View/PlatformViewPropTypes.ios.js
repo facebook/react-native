@@ -5,12 +5,16 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule PlatformViewPropTypes
+ * @flow
  */
-'use strict';
 
-var resolvePlugins = require('../lib/resolvePlugins');
+const Platform = require('Platform');
 
-module.exports = function(options) {
-  // For future internal pipeline usage
-  return null;
+var TVViewPropTypes = {};
+if (Platform.isTVOS) {
+  TVViewPropTypes = require('TVViewPropTypes');
 }
+
+module.exports = TVViewPropTypes;

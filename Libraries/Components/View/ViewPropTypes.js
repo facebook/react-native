@@ -12,7 +12,7 @@
 'use strict';
 
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
-const Platform = require('Platform');
+const PlatformViewPropTypes = require('PlatformViewPropTypes');
 const PropTypes = require('prop-types');
 const StyleSheetPropType = require('StyleSheetPropType');
 const ViewStylePropTypes = require('ViewStylePropTypes');
@@ -21,11 +21,6 @@ const {
   AccessibilityComponentTypes,
   AccessibilityTraits,
 } = require('ViewAccessibility');
-
-var TVViewPropTypes = {};
-if (Platform.isTVOS) {
-  TVViewPropTypes = require('TVViewPropTypes');
-}
 
 import type {
   AccessibilityComponentType,
@@ -85,7 +80,7 @@ export type ViewProps = {
 } & TVViewProps;
 
 module.exports = {
-  ...TVViewPropTypes,
+  ...PlatformViewPropTypes,
 
   /**
    * When `true`, indicates that the view is an accessibility element. By default,
