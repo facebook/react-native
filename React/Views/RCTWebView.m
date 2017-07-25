@@ -20,7 +20,8 @@
 #import "UIView+React.h"
 
 NSString *const RCTJSNavigationScheme = @"react-js-navigation";
-NSString *const RCTJSPostMessageHost = @"postMessage";
+
+static NSString *const kPostMessageHost = @"postMessage";
 
 @interface RCTWebView () <UIWebViewDelegate, RCTAutoInsetsProtocol>
 
@@ -240,7 +241,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     }
   }
 
-  if (isJSNavigation && [request.URL.host isEqualToString:RCTJSPostMessageHost]) {
+  if (isJSNavigation && [request.URL.host isEqualToString:kPostMessageHost]) {
     NSString *data = request.URL.query;
     data = [data stringByReplacingOccurrencesOfString:@"+" withString:@" "];
     data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
@@ -303,7 +304,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       @"window.originalPostMessage = window.postMessage;"
       "window.postMessage = function(data) {"
         "window.location = '%@://%@?' + encodeURIComponent(String(data));"
-      "};", RCTJSNavigationScheme, RCTJSPostMessageHost
+      "};", RCTJSNavigationScheme, kPostMessageHost
     ];
     [webView stringByEvaluatingJavaScriptFromString:source];
   }
