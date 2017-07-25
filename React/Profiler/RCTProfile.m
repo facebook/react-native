@@ -36,9 +36,9 @@ const uint64_t RCTProfileTagAlways = 1L << 0;
 
 #pragma mark - Constants
 
-NSString *const RCTProfileTraceEvents = @"traceEvents";
-NSString *const RCTProfileSamples = @"samples";
-NSString *const RCTProfilePrefix = @"rct_profile_";
+static NSString *const kProfileTraceEvents = @"traceEvents";
+static NSString *const kProfileSamples = @"samples";
+static NSString *const kProfilePrefix = @"rct_profile_";
 
 #pragma mark - Variables
 
@@ -135,7 +135,7 @@ static NSDictionary *RCTProfileGetMemoryUsage(void)
 
 static const char *RCTProfileProxyClassName(Class class)
 {
-  return [RCTProfilePrefix stringByAppendingString:NSStringFromClass(class)].UTF8String;
+  return [kProfilePrefix stringByAppendingString:NSStringFromClass(class)].UTF8String;
 }
 
 static dispatch_group_t RCTProfileGetUnhookGroup(void)
@@ -459,8 +459,8 @@ void RCTProfileInit(RCTBridge *bridge)
       RCTProfileStartTime = time;
       RCTProfileOngoingEvents = [NSMutableDictionary new];
       RCTProfileInfo = @{
-        RCTProfileTraceEvents: [NSMutableArray new],
-        RCTProfileSamples: [NSMutableArray new],
+        kProfileTraceEvents: [NSMutableArray new],
+        kProfileSamples: [NSMutableArray new],
       };
     });
   }
@@ -470,7 +470,7 @@ void RCTProfileInit(RCTBridge *bridge)
     NSArray *orderedThreads = @[@"JS async", @"RCTPerformanceLogger", @"com.facebook.react.JavaScript",
                                 @(RCTUIManagerQueueName), @"main"];
     [orderedThreads enumerateObjectsUsingBlock:^(NSString *thread, NSUInteger idx, __unused BOOL *stop) {
-      RCTProfileAddEvent(RCTProfileTraceEvents,
+      RCTProfileAddEvent(kProfileTraceEvents,
         @"ph": @"M", // metadata event
         @"name": @"thread_sort_index",
         @"tid": thread,
@@ -587,7 +587,7 @@ void _RCTProfileEndEvent(
     }
 
     NSNumber *start = event[0];
-    RCTProfileAddEvent(RCTProfileTraceEvents,
+    RCTProfileAddEvent(kProfileTraceEvents,
       @"tid": threadName,
       @"name": event[1],
       @"cat": category,
@@ -650,7 +650,7 @@ void RCTProfileEndAsyncEvent(
     if (event) {
       NSNumber *endTimestamp = RCTProfileTimestamp(time);
 
-      RCTProfileAddEvent(RCTProfileTraceEvents,
+      RCTProfileAddEvent(kProfileTraceEvents,
         @"tid": threadName,
         @"name": event[1],
         @"cat": category,
@@ -680,7 +680,7 @@ void RCTProfileImmediateEvent(
   NSString *threadName = RCTCurrentThreadName();
 
   dispatch_async(RCTProfileGetQueue(), ^{
-    RCTProfileAddEvent(RCTProfileTraceEvents,
+    RCTProfileAddEvent(kProfileTraceEvents,
       @"tid": threadName,
       @"name": name,
       @"ts": RCTProfileTimestamp(time),
@@ -707,7 +707,7 @@ NSUInteger _RCTProfileBeginFlowEvent(void)
   NSString *threadName = RCTCurrentThreadName();
 
   dispatch_async(RCTProfileGetQueue(), ^{
-    RCTProfileAddEvent(RCTProfileTraceEvents,
+    RCTProfileAddEvent(kProfileTraceEvents,
       @"tid": threadName,
       @"name": @"flow",
       @"id": @(cookie),
@@ -734,7 +734,7 @@ void _RCTProfileEndFlowEvent(NSUInteger cookie)
   NSString *threadName = RCTCurrentThreadName();
 
   dispatch_async(RCTProfileGetQueue(), ^{
-    RCTProfileAddEvent(RCTProfileTraceEvents,
+    RCTProfileAddEvent(kProfileTraceEvents,
       @"tid": threadName,
       @"name": @"flow",
       @"id": @(cookie),
