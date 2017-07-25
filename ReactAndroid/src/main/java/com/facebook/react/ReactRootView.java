@@ -415,8 +415,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       // Get current display metrics.
       DisplayMetricsHolder.initDisplayMetrics(getContext());
       // Check changes to both window and screen display metrics since they may not update at the same time.
-      if (!areMetricsEqual(mWindowMetrics, DisplayMetricsHolder.getWindowDisplayMetrics())
-        || !areMetricsEqual(mScreenMetrics, DisplayMetricsHolder.getScreenDisplayMetrics())) {
+      if (!areMetricsEqual(mWindowMetrics, DisplayMetricsHolder.getWindowDisplayMetrics()) ||
+        !areMetricsEqual(mScreenMetrics, DisplayMetricsHolder.getScreenDisplayMetrics())) {
         mWindowMetrics.setTo(DisplayMetricsHolder.getWindowDisplayMetrics());
         mScreenMetrics.setTo(DisplayMetricsHolder.getScreenDisplayMetrics());
         emitUpdateDimensionsEvent();
@@ -429,13 +429,13 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       } else {
         // DisplayMetrics didn't have an equals method before API 17.
         // Check all public fields manually.
-        return displayMetrics.widthPixels == otherMetrics.widthPixels
-          && displayMetrics.heightPixels == otherMetrics.heightPixels
-          && displayMetrics.density == otherMetrics.density
-          && displayMetrics.densityDpi == otherMetrics.densityDpi
-          && displayMetrics.scaledDensity == otherMetrics.scaledDensity
-          && displayMetrics.xdpi == otherMetrics.xdpi
-          && displayMetrics.ydpi == otherMetrics.ydpi;
+        return displayMetrics.widthPixels == otherMetrics.widthPixels &&
+          displayMetrics.heightPixels == otherMetrics.heightPixels &&
+          displayMetrics.density == otherMetrics.density &&
+          displayMetrics.densityDpi == otherMetrics.densityDpi &&
+          displayMetrics.scaledDensity == otherMetrics.scaledDensity &&
+          displayMetrics.xdpi == otherMetrics.xdpi &&
+          displayMetrics.ydpi == otherMetrics.ydpi;
       }
     }
 
