@@ -596,7 +596,11 @@ RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)contextName)
       }
     } else {
       if (!errorJSRef && JSC_JSValueGetType(ctx, batchedBridgeRef) == kJSTypeUndefined) {
-        error = RCTErrorWithMessage(@"Unable to execute JS call: __fbBatchedBridge is undefined");
+        error = RCTErrorWithMessage(@"Unable to execute JS call: __fbBatchedBridge is undefined. This can happen "
+                                    "if you try to execute JS and the bridge has not set up, for example if it encountered "
+                                    "an incomplete bundle or a fatal script execution error during startup. Verify that a "
+                                    "valid JS bundle is included with your app and that it loaded correctly, or try "
+                                    "reinstalling the app.");
       }
     }
 
