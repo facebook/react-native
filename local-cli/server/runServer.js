@@ -39,6 +39,8 @@ const webSocketProxy = require('./util/webSocketProxy.js');
 
 const TransformCaching = require('metro-bundler/src/lib/TransformCaching');
 
+const {ASSET_REGISTRY_PATH} = require('../core/Constants');
+
 import type {ConfigT} from '../util/Config';
 import type {Reporter} from 'metro-bundler/src/lib/reporting';
 
@@ -147,6 +149,7 @@ function getPackagerServer(args, config) {
   const terminal = new Terminal(process.stdout);
   return ReactPackager.createServer({
     assetExts: defaultAssetExts.concat(args.assetExts),
+    assetRegistryPath: ASSET_REGISTRY_PATH,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
     extraNodeModules: config.extraNodeModules,
