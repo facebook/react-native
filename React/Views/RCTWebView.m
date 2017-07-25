@@ -36,6 +36,8 @@ NSString *const RCTJSPostMessageHost = @"postMessage";
 {
   UIWebView *_webView;
   NSString *_injectedJavaScript;
+  int _requestCount;
+  BOOL _isRequestFinished;
 }
 
 - (void)dealloc
@@ -51,6 +53,7 @@ NSString *const RCTJSPostMessageHost = @"postMessage";
     _contentInset = UIEdgeInsetsZero;
     _webView = [[UIWebView alloc] initWithFrame:self.bounds];
     _webView.delegate = self;
+    _requestCount = 0;
     [self addSubview:_webView];
   }
   return self;
@@ -236,6 +239,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
         @"url": (request.URL).absoluteString,
         @"navigationType": navigationTypes[@(navigationType)]
       }];
+      _requestCount = 0;
+      _isRequestFinished = false;
       _onLoadingStart(event);
     }
   }
@@ -258,6 +263,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)webView:(__unused UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
+  _requestCount--;
+
   if (_onLoadingError) {
     if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled) {
       // NSURLErrorCancelled is reported when a page has a redirect OR if you load
@@ -285,39 +292,51 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+- (void)webViewDidStartLoad:(UIWebView *)webView
+{
+  _requestCount++;
+}
+
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
-  if (_messagingEnabled) {
-    #if RCT_DEV
-    // See isNative in lodash
-    NSString *testPostMessageNative = @"String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
-    BOOL postMessageIsNative = [
-      [webView stringByEvaluatingJavaScriptFromString:testPostMessageNative]
-      isEqualToString:@"true"
-    ];
-    if (!postMessageIsNative) {
-      RCTLogError(@"Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
+
+  _requestCount--;
+  if (_requestCount == 0 && !_isRequestFinished) {
+    _isRequestFinished = true;
+
+    if (_messagingEnabled) {
+      #if RCT_DEV
+      // See isNative in lodash
+      NSString *testPostMessageNative = @"String(window.postMessage).replace('postMessage', '') === String(Object.hasOwnProperty).replace('hasOwnProperty', '')";
+      BOOL postMessageIsNative = [
+        [webView stringByEvaluatingJavaScriptFromString:testPostMessageNative]
+        isEqualToString:@"true"
+      ];
+      if (!postMessageIsNative) {
+        RCTLogError(@"Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
+      }
+      #endif
+      NSString *source = [NSString stringWithFormat:
+        @"window.originalPostMessage = window.postMessage;"
+        "window.postMessage = function(data) {"
+          "window.location = '%@://%@?' + encodeURIComponent(String(data));"
+        "};", RCTJSNavigationScheme, RCTJSPostMessageHost
+      ];
+      [webView stringByEvaluatingJavaScriptFromString:source];
     }
-    #endif
-    NSString *source = [NSString stringWithFormat:
-      @"window.originalPostMessage = window.postMessage;"
-      "window.postMessage = function(data) {"
-        "window.location = '%@://%@?' + encodeURIComponent(String(data));"
-      "};", RCTJSNavigationScheme, RCTJSPostMessageHost
-    ];
-    [webView stringByEvaluatingJavaScriptFromString:source];
-  }
-  if (_injectedJavaScript != nil) {
-    NSString *jsEvaluationValue = [webView stringByEvaluatingJavaScriptFromString:_injectedJavaScript];
 
-    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
-    event[@"jsEvaluationValue"] = jsEvaluationValue;
+    if (_injectedJavaScript != nil && _onLoadingFinish) {
+      NSString *jsEvaluationValue = [webView stringByEvaluatingJavaScriptFromString:_injectedJavaScript];
 
-    _onLoadingFinish(event);
-  }
-  // we only need the final 'finishLoad' call so only fire the event when we're actually done loading.
-  else if (_onLoadingFinish && !webView.loading && ![webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
-    _onLoadingFinish([self baseEvent]);
+      NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+      event[@"jsEvaluationValue"] = jsEvaluationValue;
+
+      _onLoadingFinish(event);
+    }
+    // we only need the final 'finishLoad' call so only fire the event when we're actually done loading.
+    else if (_onLoadingFinish && ![webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
+      _onLoadingFinish([self baseEvent]);
+    }
   }
 }
 
