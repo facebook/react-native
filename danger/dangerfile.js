@@ -11,6 +11,7 @@
 
 const fs = require('fs');
 const includes = require('lodash.includes');
+const minimatch = require('minimatch');
 
 import { danger, fail, markdown, warn } from 'danger';
 
@@ -33,7 +34,6 @@ if (addsBlogPost) {
   const idea = 'This PR appears to add a new blog post, ' +
     'and may require further review from the React Native team.';
   warn(`${message} - <i>${idea}</i>`);
-  markdown(':memo: This PR requires attention from the @facebook/react-native team.');
 }
 
 // Flags edits to blog posts
@@ -43,7 +43,6 @@ if (editsBlogPost) {
   const idea = 'This PR appears to edit an existing blog post, ' +
     'and may require further review from the React Native team.';
   warn(`${message} - <i>${idea}</i>`);
-  markdown('This PR requires attention from the @facebook/react-native team.');
 }
 
 // Fails if the description is too short.
@@ -66,7 +65,6 @@ if (packageChanged) {
   const idea = 'Changes were made to package.json. ' +
     'This will require a manual import by a Facebook employee.';
   warn(`${message} - <i>${idea}</i>`);
-  markdown('This PR requires attention from the @facebook/react-native team.');
 }
 
 // Warns if a test plan is missing.
@@ -101,4 +99,38 @@ if (issueCommandsFileModified) {
   const idea = 'This PR appears to modify the list of people that may issue commands to the ' +
     'GitHub bot.';
   warn(`${message} - <i>${idea}</i>`);
+}
+
+// Warns if the PR is opened against stable, as commits need to be cherry picked and tagged by a release maintainer.
+// Fails if the PR is opened against anything other than `master` or `-stable`.
+const isMergeRefMaster = danger.github.pr.base.ref === 'master';
+const isMergeRefStable = danger.github.pr.base.ref.indexOf(`-stable`) !== -1;
+if (!isMergeRefMaster && isMergeRefStable) {
+  const message = ':grey_question: Base Branch';
+  const idea = 'The base branch for this PR is something other than `master`. Are you sure you want to merge these changes into a stable release? If you are interested in backporting updates to an older release, the suggested approach is to land those changes on `master` first and then cherry-pick the commits into the branch for that release. The [Releases Guide](https://github.com/facebook/react-native/blob/master/Releases.md) has more information.';
+  warn(`${message} - <i>${idea}</i>`);
+} else if (!isMergeRefMaster && !isMergeRefStable) {
+  const message = ':exclamation: Base Branch';
+  const idea = 'The base branch for this PR is something other than `master`. [Are you sure you want to target something other than the `master` branch?](http://facebook.github.io/react-native/docs/contributing.html#pull-requests)';
+  fail(`${message} - <i>${idea}</i>`);
+}
+
+// People can add themselves to CODEOWNERS in order to be automatically added as reviewers when a file matching a glob pattern is modified. The following will have the bot add a mention in that case.
+const codeowners = fs.readFileSync('../.github/CODEOWNERS', 'utf8').split('\n');
+let mentions = [];
+codeowners.forEach((codeowner) => {
+  const pattern = codeowner.split(' ')[0];
+  const owners = codeowner.substring(pattern.length).trim().split(' ');
+
+  const modifiedFileHasOwner = path => minimatch(path, pattern);
+  const modifiesOwnedCode = danger.git.modified_files.filter(modifiedFileHasOwner).length > 0;
+
+  if (modifiesOwnedCode) {
+    mentions = mentions.concat(owners);
+  }
+});
+const isOwnedCodeModified = mentions.length > 0;
+if (isOwnedCodeModified) {
+  const uniqueMentions = new Set(mentions);
+  markdown('Attention: ' + [...uniqueMentions].join(', '));
 }
