@@ -684,6 +684,24 @@ exports.examples = [
               selectTextOnFocus={true}
             />
           </WithLabel>
+          <WithLabel label="clearTextOnFocus (multiline)">
+            <TextInput
+              placeholder="text is cleared on focus"
+              defaultValue="text is cleared on focus"
+              style={styles.default}
+              clearTextOnFocus={true}
+              multiline={true}
+            />
+          </WithLabel>
+          <WithLabel label="selectTextOnFocus (multiline)">
+            <TextInput
+              placeholder="text is selected on focus"
+              defaultValue="text is selected on focus"
+              style={styles.default}
+              selectTextOnFocus={true}
+              multiline={true}
+            />
+          </WithLabel>
         </View>
       );
     }
@@ -801,6 +819,24 @@ exports.examples = [
                 maxHeight: 100
               }}
               testID="multiline_textinput"
+              multiline={true}
+              placeholder="Placeholder defines intrinsic size"
+            />
+          </View>
+          <View>
+            <TextInput
+              style={{
+                fontSize: 16,
+                backgroundColor: '#eeeeee',
+                borderColor: '#666666',
+                borderWidth: 5,
+                borderTopWidth: 20,
+                borderRadius: 10,
+                borderBottomRightRadius: 20,
+                padding: 10,
+                paddingTop: 20,
+              }}
+              testID="multiline_textinput_with_flex"
               multiline={true}
               placeholder="Placeholder defines intrinsic size"
             />

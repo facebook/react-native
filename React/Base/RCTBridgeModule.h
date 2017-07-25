@@ -47,7 +47,17 @@ typedef void (^RCTPromiseRejectBlock)(NSString *code, NSString *message, NSError
  *
  * NOTE: RCTJSThread is not a real libdispatch queue
  */
-extern dispatch_queue_t RCTJSThread;
+RCT_EXTERN dispatch_queue_t RCTJSThread;
+
+RCT_EXTERN_C_BEGIN
+
+typedef struct RCTMethodInfo {
+  const char *const jsName;
+  const char *const objcName;
+  const BOOL isSync;
+} RCTMethodInfo;
+
+RCT_EXTERN_C_END
 
 /**
  * Provides the interface needed to register a bridge module.
@@ -248,9 +258,9 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * and also whether this method is synchronous.
  */
 #define _RCT_EXTERN_REMAP_METHOD(js_name, method, is_blocking_synchronous_method) \
-  + (NSArray *)RCT_CONCAT(__rct_export__, \
-    RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
-    return @[@#js_name, @#method, @is_blocking_synchronous_method]; \
+  + (const RCTMethodInfo *)RCT_CONCAT(__rct_export__, RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
+    static RCTMethodInfo config = {#js_name, #method, is_blocking_synchronous_method}; \
+    return &config; \
   }
 
 /**

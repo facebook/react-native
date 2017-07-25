@@ -31,9 +31,11 @@ JSValueRef functionCaller(
 JSClassRef createFuncClass(JSContextRef ctx) {
   JSClassDefinition definition = kJSClassDefinitionEmpty;
   definition.attributes |= kJSClassAttributeNoAutomaticPrototype;
+
   // Need to duplicate the two different finalizer blocks, since there's no way
   // for it to capture this static information.
-  if (isCustomJSCPtr(ctx)) {
+  const bool isCustomJSC = isCustomJSCPtr(ctx);
+  if (isCustomJSC) {
     definition.finalize = [](JSObjectRef object) {
       auto* function = static_cast<JSFunction*>(JSC_JSObjectGetPrivate(true, object));
       delete function;
@@ -46,7 +48,7 @@ JSClassRef createFuncClass(JSContextRef ctx) {
   }
   definition.callAsFunction = exceptionWrapMethod<&functionCaller>();
 
-  return JSC_JSClassCreate(ctx, &definition);
+  return JSC_JSClassCreate(isCustomJSC, &definition);
 }
 
 JSObjectRef makeFunction(

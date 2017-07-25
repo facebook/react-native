@@ -18,6 +18,7 @@ const int RECONNECT_DELAY_MS = 2000;
   NSURL *_url;
   NSMutableDictionary<NSString *, RCTInspectorLocalConnection *> *_inspectorConnections;
   RCTSRWebSocket *_webSocket;
+  dispatch_queue_t _jsQueue;
   BOOL _closed;
   BOOL _suppressConnectionErrors;
 }
@@ -45,6 +46,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (self = [super init]) {
     _url = url;
     _inspectorConnections = [NSMutableDictionary new];
+    _jsQueue = dispatch_queue_create("com.facebook.react.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
   }
   return self;
 }
@@ -133,6 +135,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     NSDictionary *jsonPage = @{
       @"id": [@(page.id) stringValue],
       @"title": page.title,
+      @"app": [[NSBundle mainBundle] bundleIdentifier],
     };
     [array addObject:jsonPage];
   }
@@ -214,6 +217,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // timeouts, but it appears the iOS RCTSRWebSocket API doesn't have the same
   // implemented options.
   _webSocket = [[RCTSRWebSocket alloc] initWithURL:_url];
+  [_webSocket setDelegateDispatchQueue:_jsQueue];
   _webSocket.delegate = self;
   [_webSocket open];
 }

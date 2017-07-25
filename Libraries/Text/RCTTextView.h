@@ -16,23 +16,18 @@
 
 @class RCTBridge;
 
-@interface RCTTextView : RCTTextInput <UITextViewDelegate>
+@interface RCTTextView : RCTTextInput
 
 @property (nonatomic, assign) UITextAutocorrectionType autocorrectionType;
 @property (nonatomic, assign) UITextSpellCheckingType spellCheckingType;
-@property (nonatomic, assign) BOOL blurOnSubmit;
-@property (nonatomic, assign) BOOL clearTextOnFocus;
-@property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, strong) UIColor *placeholderTextColor;
 @property (nonatomic, copy) NSString *placeholder;
 @property (nonatomic, strong) UIFont *font;
-@property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, strong) NSNumber *maxLength;
 
 @property (nonatomic, copy) RCTDirectEventBlock onChange;
-@property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
 @property (nonatomic, copy) RCTDirectEventBlock onTextInput;
 @property (nonatomic, copy) RCTDirectEventBlock onScroll;
 

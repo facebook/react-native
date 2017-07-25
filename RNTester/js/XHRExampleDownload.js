@@ -79,9 +79,6 @@ class XHRExampleDownload extends React.Component {
     }
 
     const onreadystatechange = () => {
-      /* $FlowFixMe(>=0.48.0 site=react_native_fb,react_native_oss) This comment
-       * suppresses an error found when Flow v0.48 was deployed. To see the
-       * error delete this comment and run Flow. */
       if (xhr.readyState === xhr.HEADERS_RECEIVED) {
         const contentLength =
           parseInt(xhr.getResponseHeader('Content-Length'), 10);
@@ -89,9 +86,6 @@ class XHRExampleDownload extends React.Component {
           contentLength,
           responseLength: 0,
         });
-      /* $FlowFixMe(>=0.48.0 site=react_native_fb,react_native_oss) This comment
-       * suppresses an error found when Flow v0.48 was deployed. To see the
-       * error delete this comment and run Flow. */
       } else if (xhr.readyState === xhr.LOADING && xhr.response) {
         this.setState({
           responseLength: xhr.response.length,

@@ -1124,6 +1124,11 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     this._interpolation = Interpolation.create(config);
   }
 
+  __makeNative() {
+    this._parent.__makeNative();
+    super.__makeNative();
+  }
+
   __getValue(): number | string {
     var parentValue: number = this._parent.__getValue();
     invariant(
