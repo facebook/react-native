@@ -26,9 +26,14 @@ public class MultipartStreamReader {
 
   private final BufferedSource mSource;
   private final String mBoundary;
+  private long mLastProgressEvent;
 
   public interface ChunkCallback {
     void execute(Map<String, String> headers, Buffer body, boolean done) throws IOException;
+  }
+
+  public interface ProgressCallback {
+    void execute(Map<String, String> headers, long loaded, long total) throws IOException;
   }
 
   public MultipartStreamReader(BufferedSource source, String boundary) {
@@ -70,19 +75,35 @@ public class MultipartStreamReader {
     }
   }
 
+  private void emitProgress(Map<String, String> headers, long contentLength, boolean isFinal, ProgressCallback callback) throws IOException {
+    if (headers == null || callback == null) {
+      return;
+    }
+
+    long currentTime = System.currentTimeMillis();
+    if (currentTime - mLastProgressEvent > 16 || isFinal) {
+      mLastProgressEvent = currentTime;
+      long headersContentLength = headers.get("Content-Length") != null ? Long.parseLong(headers.get("Content-Length")) : 0;
+      callback.execute(headers, contentLength, headersContentLength);
+    }
+  }
+
   /**
    * Reads all parts of the multipart response and execute the callback for each chunk received.
    * @param callback Callback executed when a chunk is received
    * @return If the read was successful
    */
-  public boolean readAllParts(ChunkCallback callback) throws IOException {
+  public boolean readAllParts(ChunkCallback callback, ProgressCallback progressCallback) throws IOException {
     ByteString delimiter = ByteString.encodeUtf8(CRLF + "--" + mBoundary + CRLF);
     ByteString closeDelimiter = ByteString.encodeUtf8(CRLF + "--" + mBoundary + "--" + CRLF);
+    ByteString headersDelimiter = ByteString.encodeUtf8(CRLF + CRLF);
 
     int bufferLen = 4 * 1024;
     long chunkStart = 0;
     long bytesSeen = 0;
     Buffer content = new Buffer();
+    Map<String, String> currentHeaders = null;
+    long currentHeadersLength = 0;
 
     while (true) {
       boolean isCloseDelimiter = false;
@@ -98,6 +119,20 @@ public class MultipartStreamReader {
 
       if (indexOfDelimiter == -1) {
         bytesSeen = content.size();
+
+        if (currentHeaders == null) {
+          long indexOfHeaders = content.indexOf(headersDelimiter, searchStart);
+          if (indexOfHeaders >= 0) {
+            mSource.read(content, indexOfHeaders);
+            Buffer headers = new Buffer();
+            content.copyTo(headers, searchStart, indexOfHeaders - searchStart);
+            currentHeadersLength = headers.size();
+            currentHeaders = parseHeaders(headers);
+          }
+        } else {
+          emitProgress(currentHeaders, content.size() - currentHeadersLength, false, progressCallback);
+        }
+
         long bytesRead = mSource.read(content, bufferLen);
         if (bytesRead <= 0) {
           return false;
@@ -113,7 +148,10 @@ public class MultipartStreamReader {
         Buffer chunk = new Buffer();
         content.skip(chunkStart);
         content.read(chunk, length);
+        emitProgress(currentHeaders, chunk.size() - currentHeadersLength, true, progressCallback);
         emitChunk(chunk, isCloseDelimiter, callback);
+        currentHeaders = null;
+        currentHeadersLength = 0;
       } else {
         content.skip(chunkEnd);
       }

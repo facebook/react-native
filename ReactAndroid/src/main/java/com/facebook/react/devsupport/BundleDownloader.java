@@ -184,6 +184,16 @@ public class BundleDownloader {
                 }
               }
             }
+          }, new MultipartStreamReader.ProgressCallback() {
+            @Override
+            public void execute(Map<String, String> headers, long loaded, long total) throws IOException {
+              if ("application/javascript".equals(headers.get("Content-Type"))) {
+                callback.onProgress(
+                    "Downloading JavaScript bundle",
+                    (int) (loaded / 1024),
+                    (int) (total / 1024));
+              }
+            }
           });
           if (!completed) {
             callback.onFailure(new DebugServerException(
