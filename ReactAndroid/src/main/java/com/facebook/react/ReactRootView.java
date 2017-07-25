@@ -415,7 +415,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       DisplayMetricsHolder.initDisplayMetrics(getContext());
       // Check changes to both window and screen display metrics since they may not update at the same time.
       if (!areMetricsEqual(mWindowMetrics, DisplayMetricsHolder.getWindowDisplayMetrics())
-          || !areMetricsEqual(mScreenMetrics, DisplayMetricsHolder.getScreenDisplayMetrics())) {
+        || !areMetricsEqual(mScreenMetrics, DisplayMetricsHolder.getScreenDisplayMetrics())) {
         mWindowMetrics.setTo(DisplayMetricsHolder.getWindowDisplayMetrics());
         mScreenMetrics.setTo(DisplayMetricsHolder.getScreenDisplayMetrics());
         emitUpdateDimensionsEvent();
