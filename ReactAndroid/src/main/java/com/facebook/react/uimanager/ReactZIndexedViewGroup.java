@@ -12,4 +12,10 @@ public interface ReactZIndexedViewGroup {
    * @return The child view index considering z-index
    */
   int getZIndexMappedChildIndex(int index);
+
+  /**
+   * Redraw the view based on updated z-index. This should be called after updating one of it's child
+   * z-index.
+   */
+  void updateZIndex();
 }
