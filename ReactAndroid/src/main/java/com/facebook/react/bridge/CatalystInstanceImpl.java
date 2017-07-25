@@ -393,26 +393,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mNativeModuleRegistry.getAllModules();
   }
 
-  private native void handleMemoryPressureUiHidden();
-  private native void handleMemoryPressureModerate();
-  private native void handleMemoryPressureCritical();
+  private native void jniHandleMemoryPressure(int level);
 
   @Override
   public void handleMemoryPressure(MemoryPressure level) {
     if (mDestroyed) {
       return;
     }
-    switch (level) {
-      case UI_HIDDEN:
-        handleMemoryPressureUiHidden();
-        break;
-      case MODERATE:
-        handleMemoryPressureModerate();
-        break;
-      case CRITICAL:
-        handleMemoryPressureCritical();
-        break;
-    }
+    jniHandleMemoryPressure(level.ordinal());
   }
 
   /**
@@ -440,17 +428,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public native long getJavaScriptContext();
-
-  // TODO mhorowitz: add mDestroyed checks to the next three methods
-
-  @Override
-  public native boolean supportsProfiling();
-
-  @Override
-  public native void startProfiler(String title);
-
-  @Override
-  public native void stopProfiler(String title, String filename);
 
   private void incrementPendingJSCalls() {
     int oldPendingCalls = mPendingJSCalls.getAndIncrement();

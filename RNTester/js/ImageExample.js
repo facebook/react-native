@@ -12,6 +12,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {
   ActivityIndicator,
@@ -29,7 +30,8 @@ var ImageCapInsetsExample = require('./ImageCapInsetsExample');
 const IMAGE_PREFETCH_URL = 'http://origami.design/public/images/bird-logo.png?r=1&t=' + Date.now();
 var prefetchTask = Image.prefetch(IMAGE_PREFETCH_URL);
 
-var NetworkImageCallbackExample = React.createClass({
+var NetworkImageCallbackExample = createReactClass({
+  displayName: 'NetworkImageCallbackExample',
   getInitialState: function() {
     return {
       events: [],
@@ -102,7 +104,7 @@ var NetworkImageCallbackExample = React.createClass({
   }
 });
 
-var NetworkImageExample = React.createClass({
+var NetworkImageExample = createReactClass({
   getInitialState: function() {
     return {
       error: false,
@@ -130,7 +132,7 @@ var NetworkImageExample = React.createClass({
   }
 });
 
-var ImageSizeExample = React.createClass({
+var ImageSizeExample = createReactClass({
   getInitialState: function() {
     return {
       width: 0,
@@ -162,7 +164,7 @@ var ImageSizeExample = React.createClass({
   },
 });
 
-var MultipleSourcesExample = React.createClass({
+var MultipleSourcesExample = createReactClass({
   getInitialState: function() {
     return {
       width: 30,

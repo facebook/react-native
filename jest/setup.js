@@ -10,9 +10,9 @@
 
 const mockComponent = require.requireActual('./mockComponent');
 
-require.requireActual('metro-bundler/src/Resolver/polyfills/babelHelpers.js');
-require.requireActual('metro-bundler/src/Resolver/polyfills/Object.es7.js');
-require.requireActual('metro-bundler/src/Resolver/polyfills/error-guard');
+require.requireActual('../Libraries/polyfills/babelHelpers.js');
+require.requireActual('../Libraries/polyfills/Object.es7.js');
+require.requireActual('../Libraries/polyfills/error-guard');
 
 global.__DEV__ = true;
 
@@ -143,6 +143,11 @@ const mockNativeModules = {
     canOpenURL: jest.fn(
       () => new Promise((resolve) => resolve(true))
     ),
+    addEventListener: jest.fn(),
+    getInitialURL: jest.fn(
+      () => new Promise((resolve) => resolve())
+    ),
+    removeEventListener: jest.fn(),
   },
   LocationObserver: {
     getCurrentPosition: jest.fn(),
@@ -150,6 +155,18 @@ const mockNativeModules = {
     stopObserving: jest.fn(),
   },
   ModalFullscreenViewManager: {},
+  NetInfo: {
+    fetch: jest.fn(
+      () => new Promise((resolve) => resolve())
+    ),
+    addEventListener: jest.fn(),
+    isConnected: {
+      fetch: jest.fn(
+        () => new Promise((resolve) => resolve())
+      ),
+      addEventListener: jest.fn(),
+    },
+  },
   Networking: {
     sendRequest: jest.fn(),
     abortRequest: jest.fn(),

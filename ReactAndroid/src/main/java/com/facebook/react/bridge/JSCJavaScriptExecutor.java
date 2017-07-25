@@ -15,13 +15,11 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class JSCJavaScriptExecutor extends JavaScriptExecutor {
   public static class Factory implements JavaScriptExecutor.Factory {
-    private ReadableNativeArray mJSCConfig;
+    private ReadableNativeMap mJSCConfig;
 
     public Factory(WritableNativeMap jscConfig) {
-      // TODO (t10707444): use NativeMap, which requires moving NativeMap out of OnLoad.
-      WritableNativeArray array = new WritableNativeArray();
-      array.pushMap(jscConfig);
-      mJSCConfig = array;
+      jscConfig.putString("OwnerIdentity", "ReactNative");
+      mJSCConfig = jscConfig;
     }
 
     @Override
@@ -34,9 +32,9 @@ public class JSCJavaScriptExecutor extends JavaScriptExecutor {
     ReactBridge.staticInit();
   }
 
-  public JSCJavaScriptExecutor(ReadableNativeArray jscConfig) {
+  public JSCJavaScriptExecutor(ReadableNativeMap jscConfig) {
     super(initHybrid(jscConfig));
   }
 
-  private native static HybridData initHybrid(ReadableNativeArray jscConfig);
+  private native static HybridData initHybrid(ReadableNativeMap jscConfig);
 }

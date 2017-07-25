@@ -28,6 +28,7 @@ function dependencies(argv, config, args, packagerInstance) {
   const packageOpts = {
     projectRoots: config.getProjectRoots(),
     blacklistRE: config.getBlacklistRE(),
+    getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
     hasteImpl: config.hasteImpl,
     transformModulePath: transformModulePath,

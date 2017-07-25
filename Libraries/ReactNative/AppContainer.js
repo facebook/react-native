@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule AppContainer
+ * @format
  * @flow
  */
 
@@ -23,10 +24,11 @@ const View = require('View');
 type Context = {
   rootTag: number,
 };
-type Props = {
+type Props = {|
   children?: React.Children,
   rootTag: number,
-};
+  WrapperComponent?: ?ReactClass<*>,
+|};
 type State = {
   inspector: ?React.Element<*>,
   mainKey: number,
@@ -62,12 +64,13 @@ class AppContainer extends React.Component {
               ? null
               : <Inspector
                   inspectedViewTag={ReactNative.findNodeHandle(this._mainRef)}
-                  onRequestRerenderApp={(updateInspectedViewTag) => {
+                  onRequestRerenderApp={updateInspectedViewTag => {
                     this.setState(
-                      (s) => ({mainKey: s.mainKey + 1}),
-                      () => updateInspectedViewTag(
-                        ReactNative.findNodeHandle(this._mainRef)
-                      )
+                      s => ({mainKey: s.mainKey + 1}),
+                      () =>
+                        updateInspectedViewTag(
+                          ReactNative.findNodeHandle(this._mainRef),
+                        ),
                     );
                   }}
                 />;
@@ -93,15 +96,30 @@ class AppContainer extends React.Component {
       }
     }
 
+    let innerView = (
+      <View
+        collapsable={!this.state.inspector}
+        key={this.state.mainKey}
+        pointerEvents="box-none"
+        style={styles.appContainer}
+        ref={ref => {
+          this._mainRef = ref;
+        }}>
+        {this.props.children}
+      </View>
+    );
+
+    const Wrapper = this.props.WrapperComponent;
+    if (Wrapper) {
+      innerView = (
+        <Wrapper>
+          {innerView}
+        </Wrapper>
+      );
+    }
     return (
       <View style={styles.appContainer} pointerEvents="box-none">
-        <View
-          collapsable={!this.state.inspector}
-          key={this.state.mainKey}
-          pointerEvents="box-none"
-          style={styles.appContainer} ref={(ref) => {this._mainRef = ref;}}>
-          {this.props.children}
-        </View>
+        {innerView}
         {yellowBox}
         {this.state.inspector}
       </View>

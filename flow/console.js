@@ -7,10 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
- * @nolint
  */
-
-/* eslint-disable */
 
 declare module 'console' {
   declare function assert(value: any, ...message: any): void;

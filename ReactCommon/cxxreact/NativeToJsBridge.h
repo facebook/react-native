@@ -100,12 +100,10 @@ public:
 
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void* getJavaScriptContext();
-  bool supportsProfiling();
-  void startProfiler(const std::string& title);
-  void stopProfiler(const std::string& title, const std::string& filename);
-  void handleMemoryPressureUiHidden();
-  void handleMemoryPressureModerate();
-  void handleMemoryPressureCritical();
+
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  void handleMemoryPressure(int pressureLevel);
+  #endif
 
   /**
    * Synchronously tears down the bridge and the main executor.

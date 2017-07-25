@@ -183,9 +183,8 @@ class MetroListView extends React.Component {
     );
     return renderSectionHeader({section});
   };
-  _renderSeparator = (sID, rID) => (
-    <this.props.SeparatorComponent key={sID + rID} />
-  );
+  _renderSeparator = (sID, rID) =>
+    <this.props.SeparatorComponent key={sID + rID} />;
 }
 
 module.exports = MetroListView;

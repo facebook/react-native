@@ -4,63 +4,43 @@
 
 #include <algorithm>
 #include <condition_variable>
+#include <fcntl.h>
 #include <mutex>
 #include <sstream>
 #include <string>
-#include <glog/logging.h>
-#include <folly/json.h>
-#include <folly/Exception.h>
-#include <folly/Memory.h>
-#include <folly/Conv.h>
-#include <fcntl.h>
 #include <sys/time.h>
 #include <system_error>
 
+#include <folly/Conv.h>
+#include <folly/Exception.h>
+#include <folly/json.h>
+#include <folly/Memory.h>
+#include <glog/logging.h>
+#include <jschelpers/InspectorInterfaces.h>
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
 
 #include "JSBigString.h"
 #include "JSBundleType.h"
-#include "Platform.h"
-#include "SystraceSection.h"
+#include "JSCLegacyTracing.h"
+#include "JSCMemory.h"
 #include "JSCNativeModules.h"
+#include "JSCPerfStats.h"
 #include "JSCSamplingProfiler.h"
+#include "JSCTracing.h"
 #include "JSCUtils.h"
 #include "JSModulesUnbundle.h"
 #include "ModuleRegistry.h"
+#include "Platform.h"
 #include "RecoverableError.h"
+#include "SystraceSection.h"
 
-#ifdef WITH_INSPECTOR
-#include <jschelpers/InspectorInterfaces.h>
-#endif
-
-#if defined(WITH_JSC_EXTRA_TRACING) || (DEBUG && defined(WITH_FBSYSTRACE))
-#include "JSCTracing.h"
-#endif
-
-#ifdef WITH_JSC_EXTRA_TRACING
-#include "JSCLegacyProfiler.h"
-#include "JSCLegacyTracing.h"
-#endif
-
-#if !defined(__APPLE__) && defined(WITH_JSC_EXTRA_TRACING)
-#include <JavaScriptCore/API/JSProfilerPrivate.h>
-#endif
-
-#ifdef WITH_JSC_MEMORY_PRESSURE
+#if defined(WITH_JSC_MEMORY_PRESSURE)
 #include <jsc_memory.h>
-#endif
-
-#ifdef WITH_FB_MEMORY_PROFILING
-#include "JSCMemory.h"
 #endif
 
 #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
 #include <jsc_config_android.h>
-#endif
-
-#ifdef JSC_HAS_PERF_STATS_API
-#include "JSCPerfStats.h"
 #endif
 
 namespace facebook {
@@ -174,15 +154,17 @@ void JSCExecutor::setContextName(const std::string& name) {
   JSC_JSGlobalContextSetName(m_context, jsName);
 }
 
-#ifdef WITH_INSPECTOR
 static bool canUseInspector(JSContextRef context) {
+#ifdef WITH_INSPECTOR
 #if defined(__APPLE__)
   return isCustomJSCPtr(context); // WITH_INSPECTOR && Apple
 #else
   return true; // WITH_INSPECTOR && Android
 #endif
-}
+#else
+  return false; // !WITH_INSPECTOR
 #endif
+}
 
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
   SystraceSection s("JSCExecutor::initOnJSVMThread");
@@ -217,12 +199,11 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   // Add a pointer to ourselves so we can retrieve it later in our hooks
   Object::getGlobalObject(m_context).setPrivate(this);
 
-#ifdef WITH_INSPECTOR
   if (canUseInspector(m_context)) {
+    const std::string ownerId = m_jscConfig.getDefault("OwnerIdentity", "main").getString();
     IInspector* pInspector = JSC_JSInspectorGetInstance(true);
-    pInspector->registerGlobalContext("main", m_context);
+    pInspector->registerGlobalContext(ownerId, m_context);
   }
-#endif
 
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
@@ -234,30 +215,16 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
   #endif
 
-  #if defined(WITH_JSC_EXTRA_TRACING) || (DEBUG && defined(WITH_FBSYSTRACE))
   addNativeTracingHooks(m_context);
-  #endif
-
-  #ifdef WITH_JSC_EXTRA_TRACING
-  addNativeProfilingHooks(m_context);
   addNativeTracingLegacyHooks(m_context);
-  #endif
+  addJSCMemoryHooks(m_context);
+  addJSCPerfStatsHooks(m_context);
 
   JSCNativeHooks::installPerfHooks(m_context);
 
-  #if defined(__APPLE__) || defined(WITH_JSC_EXTRA_TRACING)
   if (JSC_JSSamplingProfilerEnabled(m_context)) {
     initSamplingProfilerOnMainJSCThread(m_context);
   }
-  #endif
-
-  #ifdef WITH_FB_MEMORY_PROFILING
-  addNativeMemoryHooks(m_context);
-  #endif
-
-  #ifdef JSC_HAS_PERF_STATS_API
-  addJSCPerfStatsHooks(m_context);
-  #endif
 }
 
 void JSCExecutor::terminateOnJSVMThread() {
@@ -266,12 +233,10 @@ void JSCExecutor::terminateOnJSVMThread() {
   Object::getGlobalObject(context).setPrivate(nullptr);
   m_nativeModules.reset();
 
-#ifdef WITH_INSPECTOR
   if (canUseInspector(context)) {
     IInspector* pInspector = JSC_JSInspectorGetInstance(true);
     pInspector->unregisterGlobalContext(context);
   }
-#endif
 
   JSC_JSGlobalContextRelease(context);
 }
@@ -536,66 +501,28 @@ void JSCExecutor::setGlobalVariable(std::string propName, std::unique_ptr<const 
 }
 
 String JSCExecutor::adoptString(std::unique_ptr<const JSBigString> script) {
-#if defined(WITH_FBJSCEXTENSIONS)
+  #if defined(WITH_FBJSCEXTENSIONS)
   const JSBigString* string = script.release();
   auto jsString = JSStringCreateAdoptingExternal(string->c_str(), string->size(), (void*)string, [](void* s) {
     delete static_cast<JSBigString*>(s);
   });
   return String::adopt(m_context, jsString);
-#else
+  #else
   return script->isAscii()
     ? String::createExpectingAscii(m_context, script->c_str(), script->size())
     : String(m_context, script->c_str());
-#endif
+  #endif
 }
 
 void* JSCExecutor::getJavaScriptContext() {
   return m_context;
 }
 
-bool JSCExecutor::supportsProfiling() {
-  #ifdef WITH_FBSYSTRACE
-  return true;
-  #else
-  return false;
-  #endif
+#ifdef WITH_JSC_MEMORY_PRESSURE
+void JSCExecutor::handleMemoryPressure(int pressureLevel) {
+  JSHandleMemoryPressure(this, m_context, static_cast<JSMemoryPressure>(pressureLevel));
 }
-
-void JSCExecutor::startProfiler(const std::string &titleString) {
-  #ifdef WITH_JSC_EXTRA_TRACING
-  String title(m_context, titleString.c_str());
-  #if WITH_REACT_INTERNAL_SETTINGS
-  JSStartProfiling(m_context, title, false);
-  #else
-  JSStartProfiling(m_context, title);
-  #endif
-  #endif
-}
-
-void JSCExecutor::stopProfiler(const std::string &titleString, const std::string& filename) {
-  #ifdef WITH_JSC_EXTRA_TRACING
-  String title(m_context, titleString.c_str());
-  facebook::react::stopAndOutputProfilingFile(m_context, title, filename.c_str());
-  #endif
-}
-
-void JSCExecutor::handleMemoryPressureUiHidden() {
-  #ifdef WITH_JSC_MEMORY_PRESSURE
-  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::UI_HIDDEN);
-  #endif
-}
-
-void JSCExecutor::handleMemoryPressureModerate() {
-  #ifdef WITH_JSC_MEMORY_PRESSURE
-  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::MODERATE);
-  #endif
-}
-
-void JSCExecutor::handleMemoryPressureCritical() {
-  #ifdef WITH_JSC_MEMORY_PRESSURE
-  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::CRITICAL);
-  #endif
-}
+#endif
 
 void JSCExecutor::flushQueueImmediate(Value&& queue) {
   auto queueStr = queue.toJSONString();
@@ -624,9 +551,8 @@ JSValueRef JSCExecutor::getNativeModule(JSObjectRef object, JSStringRef property
 }
 
 JSValueRef JSCExecutor::nativeRequire(
-  size_t argumentCount,
-  const JSValueRef arguments[]) {
-
+    size_t argumentCount,
+    const JSValueRef arguments[]) {
   if (argumentCount != 1) {
     throw std::invalid_argument("Got wrong number of args");
   }

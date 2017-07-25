@@ -72,16 +72,11 @@ public:
   virtual void* getJavaScriptContext() {
     return nullptr;
   }
-  virtual bool supportsProfiling() {
-    return false;
-  }
-  virtual void startProfiler(const std::string &titleString) {}
-  virtual void stopProfiler(const std::string &titleString, const std::string &filename) {}
-  virtual void handleMemoryPressureUiHidden() {}
-  virtual void handleMemoryPressureModerate() {}
-  virtual void handleMemoryPressureCritical() {
-    handleMemoryPressureModerate();
-  }
+
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  virtual void handleMemoryPressure(int pressureLevel) {}
+  #endif
+
   virtual void destroy() {}
   virtual ~JSExecutor() {}
 };

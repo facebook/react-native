@@ -8,6 +8,10 @@
 #include <cxxreact/NativeToJsBridge.h>
 #include <jschelpers/Value.h>
 
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
+
 namespace folly {
   struct dynamic;
 }
@@ -28,7 +32,7 @@ struct InstanceCallback {
   virtual void decrementPendingJSCalls() = 0;
 };
 
-class Instance {
+class RN_EXPORT Instance {
  public:
   ~Instance();
   void initializeBridge(
@@ -49,8 +53,6 @@ class Instance {
     std::string startupScriptSourceURL,
     bool loadSynchronously);
   bool supportsProfiling();
-  void startProfiler(const std::string& title);
-  void stopProfiler(const std::string& title, const std::string& filename);
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void *getJavaScriptContext();
   void callJSFunction(std::string&& module, std::string&& method, folly::dynamic&& params);
@@ -63,9 +65,9 @@ class Instance {
     return nativeToJsBridge_->callFunctionSync(module, method, std::forward<T>(args));
   }
 
-  void handleMemoryPressureUiHidden();
-  void handleMemoryPressureModerate();
-  void handleMemoryPressureCritical();
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  void handleMemoryPressure(int pressureLevel);
+  #endif
 
  private:
   void callNativeModules(folly::dynamic&& calls, bool isEndOfBatch);

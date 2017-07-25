@@ -103,12 +103,7 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("jniCallJSCallback", CatalystInstanceImpl::jniCallJSCallback),
     makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
     makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
-    makeNativeMethod("handleMemoryPressureUiHidden", CatalystInstanceImpl::handleMemoryPressureUiHidden),
-    makeNativeMethod("handleMemoryPressureModerate", CatalystInstanceImpl::handleMemoryPressureModerate),
-    makeNativeMethod("handleMemoryPressureCritical", CatalystInstanceImpl::handleMemoryPressureCritical),
-    makeNativeMethod("supportsProfiling", CatalystInstanceImpl::supportsProfiling),
-    makeNativeMethod("startProfiler", CatalystInstanceImpl::startProfiler),
-    makeNativeMethod("stopProfiler", CatalystInstanceImpl::stopProfiler),
+    makeNativeMethod("jniHandleMemoryPressure", CatalystInstanceImpl::handleMemoryPressure),
   });
 
   JNativeRunnable::registerNatives();
@@ -262,37 +257,10 @@ jlong CatalystInstanceImpl::getJavaScriptContext() {
   return (jlong) (intptr_t) instance_->getJavaScriptContext();
 }
 
-void CatalystInstanceImpl::handleMemoryPressureUiHidden() {
-  instance_->handleMemoryPressureUiHidden();
-}
-
-void CatalystInstanceImpl::handleMemoryPressureModerate() {
-  instance_->handleMemoryPressureModerate();
-}
-
-void CatalystInstanceImpl::handleMemoryPressureCritical() {
-  instance_->handleMemoryPressureCritical();
-}
-
-jboolean CatalystInstanceImpl::supportsProfiling() {
-  if (!instance_) {
-    return false;
-  }
-  return instance_->supportsProfiling();
-}
-
-void CatalystInstanceImpl::startProfiler(const std::string& title) {
-  if (!instance_) {
-    return;
-  }
-  return instance_->startProfiler(title);
-}
-
-void CatalystInstanceImpl::stopProfiler(const std::string& title, const std::string& filename) {
-  if (!instance_) {
-    return;
-  }
-  return instance_->stopProfiler(title, filename);
+void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  instance_->handleMemoryPressure(pressureLevel);
+  #endif
 }
 
 }}

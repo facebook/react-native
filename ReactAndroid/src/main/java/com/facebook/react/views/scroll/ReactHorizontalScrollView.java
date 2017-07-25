@@ -37,6 +37,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     ReactClippingViewGroup {
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
+  private final VelocityHelper mVelocityHelper = new VelocityHelper();
 
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
@@ -117,7 +118,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
       mActivelyScrolling = true;
 
-      ReactScrollViewHelper.emitScrollEvent(this);
+      ReactScrollViewHelper.emitScrollEvent(
+        this,
+        mOnScrollDispatchHelper.getXFlingVelocity(),
+        mOnScrollDispatchHelper.getYFlingVelocity());
     }
   }
 
@@ -144,14 +148,19 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       return false;
     }
 
+    mVelocityHelper.calculateVelocity(ev);
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_UP && mDragging) {
-      ReactScrollViewHelper.emitScrollEndDragEvent(this);
+      ReactScrollViewHelper.emitScrollEndDragEvent(
+        this,
+        mVelocityHelper.getXVelocity(),
+        mVelocityHelper.getYVelocity());
       mDragging = false;
       // After the touch finishes, we may need to do some scrolling afterwards either as a result
       // of a fling or because we need to page align the content
       handlePostTouchScrolling();
     }
+
     return super.onTouchEvent(ev);
   }
 
