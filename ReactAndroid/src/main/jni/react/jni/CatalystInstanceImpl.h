@@ -69,9 +69,6 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
                          std::string&& jsonValue);
   jlong getJavaScriptContext();
   void handleMemoryPressure(int pressureLevel);
-  jboolean supportsProfiling();
-  void startProfiler(const std::string& title);
-  void stopProfiler(const std::string& title, const std::string& filename);
 
   // This should be the only long-lived strong reference, but every C++ class
   // will have a weak reference.

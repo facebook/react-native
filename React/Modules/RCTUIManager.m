@@ -33,6 +33,7 @@
 #import "RCTRootShadowView.h"
 #import "RCTRootViewInternal.h"
 #import "RCTScrollableProtocol.h"
+#import "RCTShadowView+Hierarchy.h"
 #import "RCTShadowView.h"
 #import "RCTUIManagerObserverCoordinator.h"
 #import "RCTUtils.h"
@@ -53,9 +54,6 @@ static void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComp
 
 char *const RCTUIManagerQueueName = "com.facebook.react.ShadowQueue";
 NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification = @"RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification";
-NSString *const RCTUIManagerDidRegisterRootViewNotification = @"RCTUIManagerDidRegisterRootViewNotification";
-NSString *const RCTUIManagerDidRemoveRootViewNotification = @"RCTUIManagerDidRemoveRootViewNotification";
-NSString *const RCTUIManagerRootViewKey = @"RCTUIManagerRootViewKey";
 
 @implementation RCTUIManager
 {
@@ -65,7 +63,6 @@ NSString *const RCTUIManagerRootViewKey = @"RCTUIManagerRootViewKey";
 
   // Animation
   RCTLayoutAnimationGroup *_layoutAnimationGroup; // Main thread only
-  NSMutableSet<UIView *> *_viewsToBeDeleted; // Main thread only
 
   NSMutableDictionary<NSNumber *, RCTShadowView *> *_shadowViewRegistry; // RCT thread only
   NSMutableDictionary<NSNumber *, UIView *> *_viewRegistry; // Main thread only
@@ -156,8 +153,6 @@ RCT_EXPORT_MODULE()
   _bridgeTransactionListeners = [NSMutableSet new];
   _observerCoordinator = [RCTUIManagerObserverCoordinator new];
 
-  _viewsToBeDeleted = [NSMutableSet new];
-
   // Get view managers from bridge
   NSMutableDictionary *componentDataByName = [NSMutableDictionary new];
   for (Class moduleClass in _bridge.moduleClasses) {
@@ -239,15 +234,11 @@ BOOL RCTIsUIManagerQueue()
     self->_shadowViewRegistry[shadowView.reactTag] = shadowView;
     [self->_rootViewTags addObject:reactTag];
   });
-
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerDidRegisterRootViewNotification
-                                                      object:self
-                                                    userInfo:@{RCTUIManagerRootViewKey: rootView}];
 }
 
 - (NSString *)viewNameForReactTag:(NSNumber *)reactTag
 {
-  RCTAssertThread(RCTGetUIManagerQueue(), @"viewNameForReactTag can only be called from the shadow queue");
+  RCTAssertUIManagerQueue();
   return _shadowViewRegistry[reactTag].viewName;
 }
 
@@ -383,9 +374,7 @@ BOOL RCTIsUIManagerQueue()
 
 - (void)addUIBlock:(RCTViewManagerUIBlock)block
 {
-  RCTAssertThread(RCTGetUIManagerQueue(),
-                  @"-[RCTUIManager addUIBlock:] should only be called from the "
-                  "UIManager's queue (get this using `RCTGetUIManagerQueue()`)");
+  RCTAssertUIManagerQueue();
 
   if (!block || !_viewRegistry) {
     return;
@@ -396,9 +385,7 @@ BOOL RCTIsUIManagerQueue()
 
 - (void)prependUIBlock:(RCTViewManagerUIBlock)block
 {
-  RCTAssertThread(RCTGetUIManagerQueue(),
-                  @"-[RCTUIManager prependUIBlock:] should only be called from the "
-                  "UIManager's queue (get this using `RCTGetUIManagerQueue()`)");
+  RCTAssertUIManagerQueue();
 
   if (!block || !_viewRegistry) {
     return;
@@ -422,7 +409,7 @@ BOOL RCTIsUIManagerQueue()
 
 - (RCTViewManagerUIBlock)uiBlockWithLayoutUpdateForRootView:(RCTRootShadowView *)rootShadowView
 {
-  RCTAssert(!RCTIsMainQueue(), @"Should be called on shadow queue");
+  RCTAssertUIManagerQueue();
 
   // This is nuanced. In the JS thread, we create a new update buffer
   // `frameTags`/`frames` that is created/mutated in the JS thread. We access
@@ -695,8 +682,7 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
     void (^completion)(BOOL) = ^(BOOL finished) {
       completionsCalled++;
 
-      [self->_viewsToBeDeleted removeObject:removedChild];
-      [container removeReactSubview:removedChild];
+      [removedChild removeFromSuperview];
 
       if (animation.callback && completionsCalled == children.count) {
         animation.callback(@[@(finished)]);
@@ -707,10 +693,20 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
       }
     };
 
-    [_viewsToBeDeleted addObject:removedChild];
+    // Hack: At this moment we have two contradict intents.
+    // First one: We want to delete the view from view hierarchy.
+    // Second one: We want to animate this view, which implies the existence of this view in the hierarchy.
+    // So, we have to remove this view from React's view hierarchy but postpone removing from UIKit's hierarchy.
+    // Here the problem: the default implementation of `-[UIView removeReactSubview:]` also removes the view from UIKit's hierarchy.
+    // So, let's temporary restore the view back after removing.
+    // To do so, we have to memorize original `superview` (which can differ from `container`) and an index of removed view.
+    UIView *originalSuperview = removedChild.superview;
+    NSUInteger *originalIndex = [originalSuperview.subviews indexOfObject:removedChild];
+    [container removeReactSubview:removedChild];
+    [originalSuperview insertSubview:removedChild atIndex:originalIndex];
 
-    // Disable user interaction while the view is animating since JS won't receive
-    // the view events anyway.
+    // Disable user interaction while the view is animating
+    // since the view is (conseptually) deleted and not supposed to be interactive.
     removedChild.userInteractionEnabled = NO;
 
     NSString *property = deletingLayoutAnimation.property;
@@ -743,10 +739,6 @@ RCT_EXPORT_METHOD(removeRootView:(nonnull NSNumber *)rootReactTag)
     [uiManager _purgeChildren:(NSArray<id<RCTComponent>> *)rootView.reactSubviews
                  fromRegistry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)viewRegistry];
     [(NSMutableDictionary *)viewRegistry removeObjectForKey:rootReactTag];
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerDidRemoveRootViewNotification
-                                                        object:uiManager
-                                                      userInfo:@{RCTUIManagerRootViewKey: rootView}];
   }];
 }
 
@@ -862,6 +854,7 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
   for (NSInteger index = 0, length = temporarilyRemovedChildren.count; index < length; index++) {
     destinationsToChildrenToAdd[moveToIndices[index]] = temporarilyRemovedChildren[index];
   }
+
   for (NSInteger index = 0, length = addAtIndices.count; index < length; index++) {
     id<RCTComponent> view = registry[addChildReactTags[index]];
     if (view) {
@@ -872,22 +865,8 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
   NSArray<NSNumber *> *sortedIndices =
     [destinationsToChildrenToAdd.allKeys sortedArrayUsingSelector:@selector(compare:)];
   for (NSNumber *reactIndex in sortedIndices) {
-    NSInteger insertAtIndex = reactIndex.integerValue;
-
-    // When performing a delete animation, views are not removed immediately
-    // from their container so we need to offset the insertion index if a view
-    // that will be removed appears earlier than the view we are inserting.
-    if (isUIViewRegistry && _viewsToBeDeleted.count > 0) {
-      for (NSInteger index = 0; index < insertAtIndex; index++) {
-        UIView *subview = ((UIView *)container).reactSubviews[index];
-        if ([_viewsToBeDeleted containsObject:subview]) {
-          insertAtIndex++;
-        }
-      }
-    }
-
     [container insertReactSubview:destinationsToChildrenToAdd[reactIndex]
-                          atIndex:insertAtIndex];
+                          atIndex:reactIndex.integerValue];
   }
 }
 
@@ -1071,8 +1050,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
 
 - (void)flushUIBlocks
 {
-  RCTAssertThread(RCTGetUIManagerQueue(),
-                  @"flushUIBlocks can only be called from the shadow queue");
+  RCTAssertUIManagerQueue();
 
   // First copy the previous blocks into a temporary variable, then reset the
   // pending blocks to a new array. This guards against mutation while
@@ -1403,6 +1381,7 @@ RCT_EXPORT_METHOD(clearJSResponder)
      // Add native props
      NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
      moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
+     moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
 
      // Add direct events
      for (NSString *eventName in viewConfig[@"directEvents"]) {
@@ -1468,7 +1447,7 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
   }
 
   dispatch_async(RCTGetUIManagerQueue(), ^{
-    NSNumber *rootTag = [self _rootTagForReactTag:reactTag];
+    NSNumber *rootTag = [self shadowViewForReactTag:reactTag].rootView.reactTag;
     dispatch_async(dispatch_get_main_queue(), ^{
       UIView *rootView = nil;
       if (rootTag != nil) {
@@ -1477,32 +1456,6 @@ RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config
       completion(rootView);
     });
   });
-}
-
-- (NSNumber *)_rootTagForReactTag:(NSNumber *)reactTag
-{
-  RCTAssert(!RCTIsMainQueue(), @"Should be called on shadow queue");
-
-  if (reactTag == nil) {
-    return nil;
-  }
-
-  if (RCTIsReactRootView(reactTag)) {
-    return reactTag;
-  }
-
-  NSNumber *rootTag = nil;
-  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
-  while (shadowView) {
-    RCTShadowView *parent = [shadowView reactSuperview];
-    if (!parent && RCTIsReactRootView(shadowView.reactTag)) {
-      rootTag = shadowView.reactTag;
-      break;
-    }
-    shadowView = parent;
-  }
-
-  return rootTag;
 }
 
 static UIView *_jsResponder;

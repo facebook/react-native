@@ -100,18 +100,6 @@ void Instance::loadUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle,
       loadApplication(std::move(unbundle), std::move(startupScript),
                       std::move(startupScriptSourceURL));
   }
- }
-
-bool Instance::supportsProfiling() {
-  return nativeToJsBridge_->supportsProfiling();
-}
-
-void Instance::startProfiler(const std::string& title) {
-  return nativeToJsBridge_->startProfiler(title);
-}
-
-void Instance::stopProfiler(const std::string& title, const std::string& filename) {
-  return nativeToJsBridge_->stopProfiler(title, filename);
 }
 
 void Instance::setGlobalVariable(std::string propName,

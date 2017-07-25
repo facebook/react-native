@@ -9,7 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <RCTText/RCTBackedTextInputViewProtocol.h>
+#import "RCTBackedTextInputViewProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTUITextField : UITextField <RCTBackedTextInputViewProtocol>
 
 - (instancetype)initWithCoder:(NSCoder *)decoder NS_UNAVAILABLE;
+
+@property (nonatomic, weak) id<RCTBackedTextInputDelegate> textInputDelegate;
 
 @property (nonatomic, assign) BOOL caretHidden;
 @property (nonatomic, assign, readonly) BOOL textWasPasted;

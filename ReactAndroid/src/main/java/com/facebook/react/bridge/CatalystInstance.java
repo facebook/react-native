@@ -88,10 +88,6 @@ public interface CatalystInstance
    */
   void removeBridgeIdleDebugListener(NotThreadSafeBridgeIdleDebugListener listener);
 
-  boolean supportsProfiling();
-  void startProfiler(String title);
-  void stopProfiler(String title, String filename);
-
   @VisibleForTesting
   void setGlobalVariable(String propName, String jsonValue);
 

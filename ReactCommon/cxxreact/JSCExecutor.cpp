@@ -39,7 +39,6 @@
 #endif
 
 #ifdef WITH_JSC_EXTRA_TRACING
-#include "JSCLegacyProfiler.h"
 #include "JSCLegacyTracing.h"
 #endif
 
@@ -219,8 +218,9 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
 
 #ifdef WITH_INSPECTOR
   if (canUseInspector(m_context)) {
+    const std::string ownerId = m_jscConfig.getDefault("OwnerIdentity", "main").getString();
     IInspector* pInspector = JSC_JSInspectorGetInstance(true);
-    pInspector->registerGlobalContext("main", m_context);
+    pInspector->registerGlobalContext(ownerId, m_context);
   }
 #endif
 
@@ -239,7 +239,6 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   #endif
 
   #ifdef WITH_JSC_EXTRA_TRACING
-  addNativeProfilingHooks(m_context);
   addNativeTracingLegacyHooks(m_context);
   #endif
 
@@ -551,32 +550,6 @@ String JSCExecutor::adoptString(std::unique_ptr<const JSBigString> script) {
 
 void* JSCExecutor::getJavaScriptContext() {
   return m_context;
-}
-
-bool JSCExecutor::supportsProfiling() {
-  #ifdef WITH_FBSYSTRACE
-  return true;
-  #else
-  return false;
-  #endif
-}
-
-void JSCExecutor::startProfiler(const std::string &titleString) {
-  #ifdef WITH_JSC_EXTRA_TRACING
-  String title(m_context, titleString.c_str());
-  #if WITH_REACT_INTERNAL_SETTINGS
-  JSStartProfiling(m_context, title, false);
-  #else
-  JSStartProfiling(m_context, title);
-  #endif
-  #endif
-}
-
-void JSCExecutor::stopProfiler(const std::string &titleString, const std::string& filename) {
-  #ifdef WITH_JSC_EXTRA_TRACING
-  String title(m_context, titleString.c_str());
-  facebook::react::stopAndOutputProfilingFile(m_context, title, filename.c_str());
-  #endif
 }
 
 #ifdef WITH_JSC_MEMORY_PRESSURE

@@ -99,6 +99,7 @@ export default class NavigatorIOSApp extends React.Component {
         initialRoute={{
           component: MyScene,
           title: 'My Initial Scene',
+          passProps: {index: 1},
         }}
         style={{flex: 1}}
       />
@@ -108,7 +109,9 @@ export default class NavigatorIOSApp extends React.Component {
 
 class MyScene extends React.Component {
   static propTypes = {
-    title: PropTypes.string.isRequired,
+    route: PropTypes.shape({
+      title: PropTypes.string.isRequired
+    }),
     navigator: PropTypes.object.isRequired,
   }
 
@@ -116,10 +119,13 @@ class MyScene extends React.Component {
     super(props, context);
     this._onForward = this._onForward.bind(this);
   }
-
+  
   _onForward() {
+    let nextIndex = ++this.props.index;
     this.props.navigator.push({
+      component: MyScene,
       title: 'Scene ' + nextIndex,
+      passProps: {index: nextIndex}
     });
   }
 

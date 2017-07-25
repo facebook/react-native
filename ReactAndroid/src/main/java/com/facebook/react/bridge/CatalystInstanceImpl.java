@@ -429,17 +429,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public native long getJavaScriptContext();
 
-  // TODO mhorowitz: add mDestroyed checks to the next three methods
-
-  @Override
-  public native boolean supportsProfiling();
-
-  @Override
-  public native void startProfiler(String title);
-
-  @Override
-  public native void stopProfiler(String title, String filename);
-
   private void incrementPendingJSCalls() {
     int oldPendingCalls = mPendingJSCalls.getAndIncrement();
     boolean wasIdle = oldPendingCalls == 0;

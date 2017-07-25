@@ -53,8 +53,6 @@ class RN_EXPORT Instance {
     std::string startupScriptSourceURL,
     bool loadSynchronously);
   bool supportsProfiling();
-  void startProfiler(const std::string& title);
-  void stopProfiler(const std::string& title, const std::string& filename);
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void *getJavaScriptContext();
   void callJSFunction(std::string&& module, std::string&& method, folly::dynamic&& params);

@@ -5,5 +5,5 @@ module.exports = (questions) => new Promise((resolve, reject) => {
     return resolve({});
   }
 
-  inquirer.prompt(questions, resolve);
+  inquirer.prompt(questions).then(resolve, reject);
 });
