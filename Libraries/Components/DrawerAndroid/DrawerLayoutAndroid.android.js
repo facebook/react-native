@@ -270,7 +270,22 @@ var DrawerLayoutAndroid = createReactClass({
       null
     );
   },
-
+  /**
+  * Closing and opening example
+  * Note: To access the drawer you have to give it a ref. Refs do not work on stateless components
+  * render () {
+  *   this.openDrawer = () => {
+  *     this.refs.DRAWER.openDrawer()
+  *   }
+  *   this.closeDrawer = () => {
+  *     this.refs.DRAWER.closeDrawer()
+  *   }
+  *   return (
+  *     <DrawerLayoutAndroid ref={'DRAWER'}>
+  *     </DrawerLayoutAndroid>
+  *   )
+  * }
+  */
   _getDrawerLayoutHandle: function() {
     return ReactNative.findNodeHandle(this.refs[RK_DRAWER_REF]);
   },

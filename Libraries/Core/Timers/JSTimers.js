@@ -16,12 +16,17 @@ const Platform = require('Platform');
 const Systrace = require('Systrace');
 
 const invariant = require('fbjs/lib/invariant');
-const performanceNow = require('fbjs/lib/performanceNow');
-const warning = require('fbjs/lib/warning');
-
 const {Timing} = require('NativeModules');
 
 import type {ExtendedError} from 'parseErrorStack';
+
+let _performanceNow = null;
+function performanceNow() {
+  if (!_performanceNow) {
+    _performanceNow = require('fbjs/lib/performanceNow');
+  }
+  return _performanceNow();
+}
 
 /**
  * JS implementation of timer functions. Must be completely driven by an
@@ -96,7 +101,7 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
  * recurring (setInterval).
  */
 function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
-  warning(
+  require('fbjs/lib/warning')(
     timerID <= GUID,
     'Tried to call timer with ID %s but no such timer exists.',
     timerID,
