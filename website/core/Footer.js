@@ -20,7 +20,7 @@ class Footer extends React.Component {
   render() {
     return (
       <p className="edit-page-block">
-        You can <a target="_blank" href={getGitHubPath(this.props.path)}>edit the content above on GitHub</a> and send us a pull request!
+        <a target="_blank" href={getGitHubPath(this.props.path)}>Improve this page</a>
       </p>
     );
   }
