@@ -29,10 +29,12 @@ RCT_EXPORT_MODULE()
  * Crops an image and adds the result to the image store.
  *
  * @param imageRequest An image URL
- * @param cropData Dictionary with `offset`, `size` and `displaySize`.
+ * @param cropData Dictionary with `offset`, `size`, `displaySize` and
+ *        `quality`.
  *        `offset` and `size` are relative to the full-resolution image size.
  *        `displaySize` is an optimization - if specified, the image will
  *        be scaled down to `displaySize` rather than `size`.
+ *        `quality` - optionally specify the JPEG compression quality to use.
  *        All units are in px (not points).
  */
 RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
@@ -67,7 +69,7 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     }
 
     // Store image
-    [self->_bridge.imageStoreManager storeImage:croppedImage withBlock:^(NSString *croppedImageTag) {
+    void (^block)(NSString *croppedImageTag) = ^(NSString *croppedImageTag) {
       if (!croppedImageTag) {
         NSString *errorMessage = @"Error storing cropped image in RCTImageStoreManager";
         RCTLogWarn(@"%@", errorMessage);
@@ -75,7 +77,15 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
         return;
       }
       successCallback(@[croppedImageTag]);
-    }];
+    };
+
+    if (cropData[@"quality"]) {
+      float quality = [cropData[@"quality"] floatValue];
+      [self->_bridge.imageStoreManager storeImage:croppedImage quality:quality withBlock:block];
+    }
+    else {
+      [self->_bridge.imageStoreManager storeImage:croppedImage withBlock:block];
+    }
   }];
 }
 
