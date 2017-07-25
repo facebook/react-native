@@ -38,6 +38,7 @@ If you are just getting started with navigation, you will probably want to use <
         initialRoute<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
           component<span class="token punctuation">:</span> MyScene<span class="token punctuation">,</span>
           title<span class="token punctuation">:</span> <span class="token string">&#x27;My Initial Scene&#x27;</span><span class="token punctuation">,</span>
+          passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span>index<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
         <span class="token punctuation">}</span><span class="token punctuation">}</span>
         style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
       <span class="token operator">/</span><span class="token operator">&gt;</span>
@@ -47,7 +48,9 @@ If you are just getting started with navigation, you will probably want to use <
 
 <span class="token keyword">class</span> <span class="token class-name">MyScene</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
   <span class="token keyword">static</span> propTypes <span class="token operator">=</span> <span class="token punctuation">{</span>
-    title<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>string<span class="token punctuation">.</span>isRequired<span class="token punctuation">,</span>
+    route<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span><span class="token function">shape</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      title<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>string<span class="token punctuation">.</span>isRequired
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
     navigator<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>object<span class="token punctuation">.</span>isRequired<span class="token punctuation">,</span>
   <span class="token punctuation">}</span>
 
@@ -57,8 +60,11 @@ If you are just getting started with navigation, you will probably want to use <
   <span class="token punctuation">}</span>
 
   <span class="token function">_onForward</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> nextIndex <span class="token operator">=</span> <span class="token operator">++</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>index<span class="token punctuation">;</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigator<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      component<span class="token punctuation">:</span> MyScene<span class="token punctuation">,</span>
       title<span class="token punctuation">:</span> <span class="token string">&#x27;Scene &#x27;</span> <span class="token operator">+</span> nextIndex<span class="token punctuation">,</span>
+      passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span>index<span class="token punctuation">:</span> nextIndex<span class="token punctuation">}</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 
