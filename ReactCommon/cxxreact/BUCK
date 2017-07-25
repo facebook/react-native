@@ -120,7 +120,6 @@ rn_xplat_cxx_library(
     fbandroid_preprocessor_flags = [
         "-DWITH_JSC_EXTRA_TRACING=1",
         "-DWITH_JSC_MEMORY_PRESSURE=1",
-        "-DWITH_REACT_INTERNAL_SETTINGS=1",
         "-DWITH_FB_MEMORY_PROFILING=1",
     ],
     fbandroid_visibility = [

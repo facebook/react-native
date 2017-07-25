@@ -37,18 +37,18 @@ static BOOL RCTLogsError(void (^block)(void))
   CGRect _s;
 }
 
-static RCTModuleMethod *buildDefaultMethodWithMethodSignature(NSString *methodSignature) {
-  return [[RCTModuleMethod alloc] initWithMethodSignature:methodSignature
-                                             JSMethodName:nil
-                                                   isSync:NO
-                                              moduleClass:[RCTModuleMethodTests class]];
+static RCTModuleMethod *buildDefaultMethodWithMethodSignature(const char *methodSignature)
+{
+  // This leaks a RCTMethodInfo, but it's a test, so...
+  RCTMethodInfo *methodInfo = new RCTMethodInfo {.objcName = methodSignature, .isSync = NO};
+  return [[RCTModuleMethod alloc] initWithExportedMethod:methodInfo moduleClass:[RCTModuleMethodTests class]];
 }
 
-static RCTModuleMethod *buildSyncMethodWithMethodSignature(NSString *methodSignature) {
-  return [[RCTModuleMethod alloc] initWithMethodSignature:methodSignature
-                                             JSMethodName:nil
-                                                   isSync:YES
-                                              moduleClass:[RCTModuleMethodTests class]];
+static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSignature)
+{
+  // This leaks a RCTMethodInfo, but it's a test, so...
+  RCTMethodInfo *methodInfo = new RCTMethodInfo {.objcName = methodSignature, .isSync = YES};
+  return [[RCTModuleMethod alloc] initWithExportedMethod:methodInfo moduleClass:[RCTModuleMethodTests class]];
 }
 
 + (NSString *)moduleName { return nil; }
@@ -62,7 +62,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(NSString *methodSigna
 
 - (void)testNonnull
 {
-  NSString *methodSignature = @"doFooWithBar:(nonnull NSString *)bar";
+  const char *methodSignature = "doFooWithBar:(nonnull NSString *)bar";
   RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
   XCTAssertFalse(RCTLogsError(^{
     [method invokeWithBridge:nil module:self arguments:@[@"Hello World"]];
@@ -85,7 +85,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(NSString *methodSigna
   {
     // Specifying an NSNumber param without nonnull isn't allowed
     XCTAssertTrue(RCTLogsError(^{
-      NSString *methodSignature = @"doFooWithNumber:(NSNumber *)n";
+      const char *methodSignature = "doFooWithNumber:(NSNumber *)n";
       RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
       // Invoke method to trigger parsing
       [method invokeWithBridge:nil module:self arguments:@[@1]];
@@ -93,7 +93,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(NSString *methodSigna
   }
 
   {
-    NSString *methodSignature = @"doFooWithNumber:(nonnull NSNumber *)n";
+    const char *methodSignature = "doFooWithNumber:(nonnull NSNumber *)n";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(RCTLogsError(^{
       [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
@@ -101,7 +101,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(NSString *methodSigna
   }
 
   {
-    NSString *methodSignature = @"doFooWithDouble:(double)n";
+    const char *methodSignature = "doFooWithDouble:(double)n";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(RCTLogsError(^{
       [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
@@ -109,7 +109,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(NSString *methodSigna
   }
 
   {
-    NSString *methodSignature = @"doFooWithInteger:(NSInteger)n";
+    const char *methodSignature = "doFooWithInteger:(NSInteger)n";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(RCTLogsError(^{
       [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
@@ -119,7 +119,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(NSString *methodSigna
 
 - (void)testStructArgument
 {
-  NSString *methodSignature = @"doFooWithCGRect:(CGRect)s";
+  const char *methodSignature = "doFooWithCGRect:(CGRect)s";
   RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
 
   CGRect r = CGRectMake(10, 20, 30, 40);
@@ -129,7 +129,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(NSString *methodSigna
 
 - (void)testWhitespaceTolerance
 {
-  NSString *methodSignature = @"doFoo : \t (NSString *)foo";
+  const char *methodSignature = "doFoo : \t (NSString *)foo";
 
   __block RCTModuleMethod *method;
   XCTAssertFalse(RCTLogsError(^{
@@ -146,19 +146,19 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(NSString *methodSigna
 - (void)testFunctionType
 {
   {
-    NSString *methodSignature = @"doFoo";
+    const char *methodSignature = "doFoo";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(method.functionType == RCTFunctionTypeNormal);
   }
 
   {
-    NSString *methodSignature = @"openURL:(NSURL *)URL resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject";
+    const char *methodSignature = "openURL:(NSURL *)URL resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(method.functionType == RCTFunctionTypePromise);
   }
 
   {
-    NSString *methodSignature = @"echoString:(NSString *)input";
+    const char *methodSignature = "echoString:(NSString *)input";
     RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(method.functionType == RCTFunctionTypeSync);
   }
@@ -167,14 +167,14 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(NSString *methodSigna
 - (void)testReturnsValueForSyncFunction
 {
   {
-    NSString *methodSignature = @"echoString:(NSString *)input";
+    const char *methodSignature = "echoString:(NSString *)input";
     RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
     id result = [method invokeWithBridge:nil module:self arguments:@[@"Test String Value"]];
     XCTAssertEqualObjects(result, @"Test String Value");
   }
 
   {
-    NSString *methodSignature = @"methodThatReturnsNil";
+    const char *methodSignature = "methodThatReturnsNil";
     RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
     id result = [method invokeWithBridge:nil module:self arguments:@[]];
     XCTAssertNil(result);
@@ -183,7 +183,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(NSString *methodSigna
 
 - (void)testReturnsNilForDefaultFunction
 {
-  NSString *methodSignature = @"doFoo";
+  const char *methodSignature = "doFoo";
   RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
   id result = [method invokeWithBridge:nil module:self arguments:@[]];
   XCTAssertNil(result);
@@ -192,7 +192,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(NSString *methodSigna
 - (void)testReturnTypeForSyncFunction
 {
   {
-    NSString *methodSignature = @"methodThatReturnsNil";
+    const char *methodSignature = "methodThatReturnsNil";
     RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
     XCTAssertFalse(RCTLogsError(^{
       // Invoke method to trigger parsing
@@ -201,7 +201,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(NSString *methodSigna
   }
 
   {
-    NSString *methodSignature = @"doFoo";
+    const char *methodSignature = "doFoo";
     RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(RCTLogsError(^{
       // Invoke method to trigger parsing

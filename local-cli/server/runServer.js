@@ -37,6 +37,10 @@ const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
+const TransformCaching = require('metro-bundler/src/lib/TransformCaching');
+
+const {ASSET_REGISTRY_PATH} = require('../core/Constants');
+
 import type {ConfigT} from '../util/Config';
 import type {Reporter} from 'metro-bundler/src/lib/reporting';
 
@@ -118,9 +122,7 @@ function runServer(
 function getPackagerServer(args, config) {
   const transformModulePath = args.transformer
     ? path.resolve(args.transformer)
-    : typeof config.getTransformModulePath === 'function'
-      ? config.getTransformModulePath()
-      : undefined;
+    : config.getTransformModulePath();
 
   const providesModuleNodeModules =
     args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
@@ -147,11 +149,13 @@ function getPackagerServer(args, config) {
   const terminal = new Terminal(process.stdout);
   return ReactPackager.createServer({
     assetExts: defaultAssetExts.concat(args.assetExts),
+    assetRegistryPath: ASSET_REGISTRY_PATH,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
     extraNodeModules: config.extraNodeModules,
     getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
+    globalTransformCache: null,
     hasteImpl: config.hasteImpl,
     maxWorkers: args.maxWorkers,
     platforms: defaultPlatforms.concat(args.platforms),
@@ -164,6 +168,7 @@ function getPackagerServer(args, config) {
     resetCache: args.resetCache,
     sourceExts: defaultSourceExts.concat(args.sourceExts),
     transformModulePath: transformModulePath,
+    transformCache: TransformCaching.useTempDir(),
     verbose: args.verbose,
     watch: !args.nonPersistent,
     workerPath: config.getWorkerPath(),

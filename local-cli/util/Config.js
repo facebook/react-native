@@ -25,7 +25,6 @@ import type {
   GetTransformOptions,
   PostMinifyProcess,
   PostProcessModules,
-  // $FlowFixMe: Exported by metro bundler
   PostProcessBundleSourcemap
 } from 'metro-bundler/src/Bundler';
 import type {HasteImpl} from 'metro-bundler/src/node-haste/Module';
