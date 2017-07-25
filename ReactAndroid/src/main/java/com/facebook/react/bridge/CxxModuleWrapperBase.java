@@ -4,8 +4,6 @@ package com.facebook.react.bridge;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.soloader.SoLoader;
 
 /**
  * A Java Object which represents a cross-platform C++ module
@@ -17,7 +15,7 @@ import com.facebook.soloader.SoLoader;
 public class CxxModuleWrapperBase implements NativeModule
 {
   static {
-    SoLoader.loadLibrary(CatalystInstanceImpl.REACT_NATIVE_LIB);
+    ReactBridge.staticInit();
   }
 
   @DoNotStrip

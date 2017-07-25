@@ -66,7 +66,6 @@ public class JSLocaleTest extends ReactIntegrationTestCase {
         .addNativeModule(new DeviceInfoModule(getContext()))
         .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
-        .addJSModule(TestJSLocaleModule.class)
         .build();
   }
 

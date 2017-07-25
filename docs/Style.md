@@ -18,7 +18,7 @@ As a component grows in complexity, it is often cleaner to use `StyleSheet.creat
 import React, { Component } from 'react';
 import { AppRegistry, StyleSheet, Text, View } from 'react-native';
 
-class LotsOfStyles extends Component {
+export default class LotsOfStyles extends Component {
   render() {
     return (
       <View>
@@ -42,7 +42,8 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('LotsOfStyles', () => LotsOfStyles);
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => LotsOfStyles);
 ```
 
 One common pattern is to make your component accept a `style` prop which in

@@ -36,6 +36,7 @@ var TESTS = [
   require('./WebViewTest'),
   require('./SyncMethodTest'),
   require('./WebSocketTest'),
+  require('./AccessibilityManagerTest'),
 ];
 
 TESTS.forEach(

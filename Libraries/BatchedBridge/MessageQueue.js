@@ -15,7 +15,6 @@
 'use strict';
 
 const ErrorUtils = require('ErrorUtils');
-const JSTimersExecution = require('JSTimersExecution');
 const Systrace = require('Systrace');
 
 const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
@@ -41,8 +40,11 @@ const TRACE_TAG_REACT_APPS = 1 << 17;
 
 const DEBUG_INFO_LIMIT = 32;
 
+// Work around an initialization order issue
+let JSTimers = null;
+
 class MessageQueue {
-  _callableModules: {[key: string]: Object};
+  _lazyCallableModules: {[key: string]: void => Object};
   _queue: [Array<number>, Array<number>, Array<any>, number];
   _successCallbacks: Array<?Function>;
   _failureCallbacks: Array<?Function>;
@@ -58,7 +60,7 @@ class MessageQueue {
   __spy: ?(data: SpyData) => void;
 
   constructor() {
-    this._callableModules = {};
+    this._lazyCallableModules = {};
     this._queue = [[], [], [], 0];
     this._successCallbacks = [];
     this._failureCallbacks = [];
@@ -99,7 +101,6 @@ class MessageQueue {
   callFunctionReturnFlushedQueue(module: string, method: string, args: Array<any>) {
     this.__guard(() => {
       this.__callFunction(module, method, args);
-      this.__callImmediates();
     });
 
     return this.flushedQueue();
@@ -109,7 +110,6 @@ class MessageQueue {
     let result;
     this.__guard(() => {
       result = this.__callFunction(module, method, args);
-      this.__callImmediates();
     });
 
     return [result, this.flushedQueue()];
@@ -118,14 +118,15 @@ class MessageQueue {
   invokeCallbackAndReturnFlushedQueue(cbID: number, args: Array<any>) {
     this.__guard(() => {
       this.__invokeCallback(cbID, args);
-      this.__callImmediates();
     });
 
     return this.flushedQueue();
   }
 
   flushedQueue() {
-    this.__callImmediates();
+    this.__guard(() => {
+      this.__callImmediates();
+    });
 
     const queue = this._queue;
     this._queue = [[], [], [], this._callID];
@@ -137,7 +138,24 @@ class MessageQueue {
   }
 
   registerCallableModule(name: string, module: Object) {
-    this._callableModules[name] = module;
+    this._lazyCallableModules[name] = () => module;
+  }
+
+  registerLazyCallableModule(name: string, factory: void => Object) {
+    let module: Object;
+    let getValue: ?(void => Object) = factory;
+    this._lazyCallableModules[name] = () => {
+      if (getValue) {
+        module = getValue();
+        getValue = null;
+      }
+      return module;
+    };
+  }
+
+  getCallableModule(name: string) {
+    const getValue = this._lazyCallableModules[name];
+    return getValue ? getValue() : null;
   }
 
   enqueueNativeCall(moduleID: number, methodID: number, params: Array<any>, onFail: ?Function, onSucc: ?Function) {
@@ -219,8 +237,11 @@ class MessageQueue {
   }
 
   __callImmediates() {
-    Systrace.beginEvent('JSTimersExecution.callImmediates()');
-    this.__guard(() => JSTimersExecution.callImmediates());
+    Systrace.beginEvent('JSTimers.callImmediates()');
+    if (!JSTimers) {
+      JSTimers = require('JSTimers');
+    }
+    JSTimers.callImmediates();
     Systrace.endEvent();
   }
 
@@ -231,7 +252,7 @@ class MessageQueue {
     if (this.__spy) {
       this.__spy({ type: TO_JS, module, method, args});
     }
-    const moduleMethods = this._callableModules[module];
+    const moduleMethods = this.getCallableModule(module);
     invariant(
       !!moduleMethods,
       'Module %s is not a registered callable module (calling %s)',

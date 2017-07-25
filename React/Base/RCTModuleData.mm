@@ -44,14 +44,15 @@
     objectInitMethod = [NSObject instanceMethodForSelector:@selector(init)];
   });
 
-  // If a module overrides `init` then we must assume that it expects to be
-  // initialized on the main thread, because it may need to access UIKit.
-  _requiresMainQueueSetup = !_instance &&
-  [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
-
   // If a module overrides `constantsToExport` then we must assume that it
   // must be called on the main thread, because it may need to access UIKit.
   _hasConstantsToExport = [_moduleClass instancesRespondToSelector:@selector(constantsToExport)];
+
+  // If a module overrides `init` then we must assume that it expects to be
+  // initialized on the main thread, because it may need to access UIKit.
+  const BOOL hasCustomInit = !_instance && [_moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
+
+  _requiresMainQueueSetup = _hasConstantsToExport || hasCustomInit;
 }
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
@@ -214,6 +215,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (BOOL)hasInstance
 {
+  std::unique_lock<std::mutex> lock(_instanceLock);
   return _instance != nil;
 }
 
@@ -268,14 +270,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         SEL selector = method_getName(method);
         if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
           IMP imp = method_getImplementation(method);
-          NSArray *entries =
-            ((NSArray *(*)(id, SEL))imp)(_moduleClass, selector);
-          id<RCTBridgeMethod> moduleMethod =
-            [[RCTModuleMethod alloc] initWithMethodSignature:entries[1]
-                                                JSMethodName:entries[0]
-                                                      isSync:((NSNumber *)entries[2]).boolValue
-                                                 moduleClass:_moduleClass];
-
+          auto exportedMethod = ((const RCTMethodInfo *(*)(id, SEL))imp)(_moduleClass, selector);
+          id<RCTBridgeMethod> moduleMethod = [[RCTModuleMethod alloc] initWithExportedMethod:exportedMethod
+                                                                                 moduleClass:_moduleClass];
           [moduleMethods addObject:moduleMethod];
         }
       }
@@ -294,13 +291,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   if (_hasConstantsToExport && !_constantsToExport) {
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, ([NSString stringWithFormat:@"[RCTModuleData gatherConstants] %@", _moduleClass]), nil);
     (void)[self instance];
-    if (!RCTIsMainQueue()) {
-      RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
-    }
+    if (!_requiresMainQueueSetup) {
+      _constantsToExport = [_instance constantsToExport] ?: @{};
+    } else {
+      if (!RCTIsMainQueue()) {
+        RCTLogWarn(@"Required dispatch_sync to load constants for %@. This may lead to deadlocks", _moduleClass);
+      }
 
-    RCTUnsafeExecuteOnMainQueueSync(^{
-      self->_constantsToExport = [self->_instance constantsToExport] ?: @{};
-    });
+      RCTUnsafeExecuteOnMainQueueSync(^{
+        self->_constantsToExport = [self->_instance constantsToExport] ?: @{};
+      });
+    }
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
 }
@@ -339,7 +340,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       }
       [syncMethods addObject:@(methods.count)];
     }
-    [methods addObject:method.JSMethodName];
+    [methods addObject:@(method.JSMethodName)];
   }
 
   NSArray *config = @[

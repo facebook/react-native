@@ -239,6 +239,7 @@ class BlurOnSubmitExample extends React.Component {
           ref="4"
           style={styles.default}
           keyboardType="numeric"
+          returnKeyType="done"
           placeholder="blurOnSubmit = false"
           blurOnSubmit={false}
           onSubmitEditing={() => this.focusNextField('5')}
@@ -347,7 +348,6 @@ var styles = StyleSheet.create({
     paddingBottom: 300,
   },
   default: {
-    height: 26,
     borderWidth: 0.5,
     borderColor: '#0f0f0f',
     flex: 1,
@@ -684,6 +684,24 @@ exports.examples = [
               selectTextOnFocus={true}
             />
           </WithLabel>
+          <WithLabel label="clearTextOnFocus (multiline)">
+            <TextInput
+              placeholder="text is cleared on focus"
+              defaultValue="text is cleared on focus"
+              style={styles.default}
+              clearTextOnFocus={true}
+              multiline={true}
+            />
+          </WithLabel>
+          <WithLabel label="selectTextOnFocus (multiline)">
+            <TextInput
+              placeholder="text is selected on focus"
+              defaultValue="text is selected on focus"
+              style={styles.default}
+              selectTextOnFocus={true}
+              multiline={true}
+            />
+          </WithLabel>
         </View>
       );
     }
@@ -756,6 +774,73 @@ exports.examples = [
             style={styles.multiline}>
             <View style={styles.multilineChild}/>
           </TextInput>
+        </View>
+      );
+    }
+  },
+  {
+    title: 'TextInput Intrinsic Size',
+    render: function() {
+      return (
+        <View>
+          <Text>Singleline TextInput</Text>
+          <View style={{height: 80}}>
+            <TextInput
+              style={{
+                position: 'absolute',
+                fontSize: 16,
+                backgroundColor: '#eeeeee',
+                borderColor: '#666666',
+                borderWidth: 5,
+                borderTopWidth: 20,
+                borderRadius: 10,
+                borderBottomRightRadius: 20,
+                padding: 10,
+                paddingTop: 20,
+              }}
+              testID="singleline_textinput"
+              placeholder="Placeholder defines intrinsic size"
+            />
+          </View>
+          <Text>Multiline TextInput</Text>
+          <View style={{height: 130}}>
+            <TextInput
+              style={{
+                position: 'absolute',
+                fontSize: 16,
+                backgroundColor: '#eeeeee',
+                borderColor: '#666666',
+                borderWidth: 5,
+                borderTopWidth: 20,
+                borderRadius: 10,
+                borderBottomRightRadius: 20,
+                padding: 10,
+                paddingTop: 20,
+                maxHeight: 100
+              }}
+              testID="multiline_textinput"
+              multiline={true}
+              placeholder="Placeholder defines intrinsic size"
+            />
+          </View>
+          <View>
+            <TextInput
+              style={{
+                fontSize: 16,
+                backgroundColor: '#eeeeee',
+                borderColor: '#666666',
+                borderWidth: 5,
+                borderTopWidth: 20,
+                borderRadius: 10,
+                borderBottomRightRadius: 20,
+                padding: 10,
+                paddingTop: 20,
+              }}
+              testID="multiline_textinput_with_flex"
+              multiline={true}
+              placeholder="Placeholder defines intrinsic size"
+            />
+          </View>
         </View>
       );
     }

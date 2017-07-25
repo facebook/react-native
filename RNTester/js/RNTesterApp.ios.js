@@ -42,7 +42,7 @@ type Props = {
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
-const Header = ({ onBack, title}) => (
+const Header = ({ onBack, title }: { onBack?: () => mixed, title: string }) => (
   <View style={styles.header}>
     <View style={styles.headerCenter}>
       <Text style={styles.title}>{title}</Text>

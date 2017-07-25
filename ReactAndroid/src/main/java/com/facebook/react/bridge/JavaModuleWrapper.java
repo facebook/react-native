@@ -19,15 +19,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.JSInstance;
-import com.facebook.react.bridge.NativeArray;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactMarker;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableNativeArray;
-import com.facebook.react.bridge.WritableNativeArray;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
@@ -87,7 +78,17 @@ public class JavaModuleWrapper {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "findMethods");
     Set<String> methodNames = new HashSet<>();
 
-    Method[] targetMethods = mModuleClass.getDeclaredMethods();
+    Class<? extends NativeModule> classForMethods = mModuleClass;
+    Class<? extends NativeModule> superClass =
+        (Class<? extends NativeModule>) mModuleClass.getSuperclass();
+    if (ReactModuleWithSpec.class.isAssignableFrom(superClass)) {
+      // For java module that is based on generated flow-type spec, inspect the
+      // spec abstract class instead, which is the super class of the given java
+      // module.
+      classForMethods = superClass;
+    }
+    Method[] targetMethods = classForMethods.getDeclaredMethods();
+
     for (Method targetMethod : targetMethods) {
       ReactMethod annotation = targetMethod.getAnnotation(ReactMethod.class);
       if (annotation != null) {
@@ -121,36 +122,35 @@ public class JavaModuleWrapper {
     return mDescs;
   }
 
-  // TODO mhorowitz: make this return NativeMap, which requires moving
-  // NativeMap out of OnLoad.
   @DoNotStrip
-  public @Nullable NativeArray getConstants() {
+  public @Nullable NativeMap getConstants() {
     if (!mModuleHolder.getHasConstants()) {
       return null;
     }
-    BaseJavaModule baseJavaModule = getModule();
-    ReactMarker.logMarker(GET_CONSTANTS_START, getName());
-    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "Map constants")
-      .arg("moduleName", getName())
+
+    final String moduleName = getName();
+    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "JavaModuleWrapper.getConstants")
+      .arg("moduleName", moduleName)
       .flush();
+    ReactMarker.logMarker(GET_CONSTANTS_START, moduleName);
+
+    BaseJavaModule baseJavaModule = getModule();
+
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "module.getConstants");
     Map<String, Object> map = baseJavaModule.getConstants();
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
-    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "WritableNativeMap constants")
-      .arg("moduleName", getName())
-      .flush();
-    ReactMarker.logMarker(CONVERT_CONSTANTS_START, getName());
-    WritableNativeMap writableNativeMap;
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "create WritableNativeMap");
+    ReactMarker.logMarker(CONVERT_CONSTANTS_START, moduleName);
     try {
-      writableNativeMap = Arguments.makeNativeMap(map);
+      return Arguments.makeNativeMap(map);
     } finally {
+      ReactMarker.logMarker(CONVERT_CONSTANTS_END);
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+
+      ReactMarker.logMarker(GET_CONSTANTS_END);
+      SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
-    WritableNativeArray array = new WritableNativeArray();
-    array.pushMap(writableNativeMap);
-    ReactMarker.logMarker(CONVERT_CONSTANTS_END);
-    ReactMarker.logMarker(GET_CONSTANTS_END);
-    return array;
   }
 
   @DoNotStrip

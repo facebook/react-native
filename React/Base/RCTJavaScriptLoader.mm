@@ -81,8 +81,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                    code:RCTJavaScriptLoaderErrorNoScriptURL
                                userInfo:@{NSLocalizedDescriptionKey:
                                             [NSString stringWithFormat:@"No script URL provided. Make sure the packager is "
-                                             @"running or you have embedded a JS bundle in your application bundle."
-                                             @"unsanitizedScriptURLString:(%@)", unsanitizedScriptURLString]}];
+                                             @"running or you have embedded a JS bundle in your application bundle.\n\n"
+                                             @"unsanitizedScriptURLString = %@", unsanitizedScriptURLString]}];
     }
     return nil;
   }
@@ -218,7 +218,8 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
                      [@"Could not connect to development server.\n\n"
                       "Ensure the following:\n"
                       "- Node server is running and available on the same network - run 'npm start' from react-native root\n"
-                      "- Node server URL is correctly set in AppDelegate\n\n"
+                      "- Node server URL is correctly set in AppDelegate\n"
+                      "- WiFi is enabled and connected to the same network as the Node Server\n\n"
                       "URL: " stringByAppendingString:scriptURL.absoluteString],
                    NSLocalizedFailureReasonErrorKey: error.localizedDescription,
                    NSUnderlyingErrorKey: error,
@@ -242,6 +243,21 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
       onComplete(error, nil, 0);
       return;
     }
+
+    // Validate that the packager actually returned javascript.
+    NSString *contentType = headers[@"Content-Type"];
+    if (![contentType isEqualToString:@"application/javascript"]) {
+      error = [NSError errorWithDomain:@"JSServer"
+                                  code:NSURLErrorCannotParseResponse
+                              userInfo:@{
+                                         NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected JavaScript, but got content type '%@'.", contentType],
+                                         @"headers": headers,
+                                         @"data": data
+                                         }];
+      onComplete(error, nil, 0);
+      return;
+    }
+
     onComplete(nil, data, data.length);
   }];
 

@@ -2,48 +2,49 @@
 
 package com.facebook.react;
 
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.app.Application;
-
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
-import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.common.LifecycleState;
-import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.RedBoxHandler;
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Builder class for {@link ReactInstanceManager}
  */
 public class ReactInstanceManagerBuilder {
 
-  protected final List<ReactPackage> mPackages = new ArrayList<>();
+  private final List<ReactPackage> mPackages = new ArrayList<>();
 
-  protected @Nullable String mJSBundleAssetUrl;
-  protected @Nullable JSBundleLoader mJSBundleLoader;
-  protected @Nullable String mJSMainModuleName;
-  protected @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
-  protected @Nullable Application mApplication;
-  protected boolean mUseDeveloperSupport;
-  protected @Nullable LifecycleState mInitialLifecycleState;
-  protected @Nullable UIImplementationProvider mUIImplementationProvider;
-  protected @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-  protected JSCConfig mJSCConfig = JSCConfig.EMPTY;
-  protected @Nullable Activity mCurrentActivity;
-  protected @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
-  protected @Nullable RedBoxHandler mRedBoxHandler;
-  protected boolean mLazyNativeModulesEnabled;
-  protected boolean mLazyViewManagersEnabled;
-  protected boolean mSetupReactContextInBackground;
-  protected boolean mUseSeparateUIBackgroundThread;
+  private @Nullable String mJSBundleAssetUrl;
+  private @Nullable JSBundleLoader mJSBundleLoader;
+  private @Nullable String mJSMainModuleName;
+  private @Nullable NotThreadSafeBridgeIdleDebugListener mBridgeIdleDebugListener;
+  private @Nullable Application mApplication;
+  private boolean mUseDeveloperSupport;
+  private @Nullable LifecycleState mInitialLifecycleState;
+  private @Nullable UIImplementationProvider mUIImplementationProvider;
+  private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
+  private JSCConfig mJSCConfig = JSCConfig.EMPTY;
+  private @Nullable Activity mCurrentActivity;
+  private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
+  private @Nullable RedBoxHandler mRedBoxHandler;
+  private boolean mLazyNativeModulesEnabled;
+  private boolean mLazyViewManagersEnabled;
+  private @Nullable DevBundleDownloadListener mDevBundleDownloadListener;
+  private boolean mUseSeparateUIBackgroundThread;
+  private int mMinNumShakes = 1;
+  private boolean mEnableSplitPackage;
+  private boolean mUseOnlyDefaultPackages;
 
   /* package protected */ ReactInstanceManagerBuilder() {
   }
@@ -188,16 +189,31 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
-  public ReactInstanceManagerBuilder setSetupReactContextInBackgroundEnabled(
-    boolean setupReactContextInBackground) {
-    mSetupReactContextInBackground = setupReactContextInBackground;
+  public ReactInstanceManagerBuilder setDevBundleDownloadListener(
+    @Nullable DevBundleDownloadListener listener) {
+    mDevBundleDownloadListener = listener;
     return this;
   }
 
   public ReactInstanceManagerBuilder setUseSeparateUIBackgroundThread(
     boolean useSeparateUIBackgroundThread) {
-   mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
-   return this;
+    mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder setMinNumShakes(int minNumShakes) {
+    mMinNumShakes = minNumShakes;
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder setEnableSplitPackage(boolean enableSplitPackage) {
+    mEnableSplitPackage = enableSplitPackage;
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder setUseOnlyDefaultPackages(boolean useOnlyDefaultPackages) {
+    mUseOnlyDefaultPackages = useOnlyDefaultPackages;
+    return this;
   }
 
   /**
@@ -233,7 +249,8 @@ public class ReactInstanceManagerBuilder {
       mCurrentActivity,
       mDefaultHardwareBackBtnHandler,
       (mJSBundleLoader == null && mJSBundleAssetUrl != null) ?
-        JSBundleLoader.createAssetLoader(mApplication, mJSBundleAssetUrl) : mJSBundleLoader,
+        JSBundleLoader.createAssetLoader(mApplication, mJSBundleAssetUrl, false /*Asynchronous*/) :
+        mJSBundleLoader,
       mJSMainModuleName,
       mPackages,
       mUseDeveloperSupport,
@@ -245,7 +262,10 @@ public class ReactInstanceManagerBuilder {
       mRedBoxHandler,
       mLazyNativeModulesEnabled,
       mLazyViewManagersEnabled,
-      mSetupReactContextInBackground,
-      mUseSeparateUIBackgroundThread);
+      mDevBundleDownloadListener,
+      mUseSeparateUIBackgroundThread,
+      mMinNumShakes,
+      mEnableSplitPackage,
+      mUseOnlyDefaultPackages);
   }
 }

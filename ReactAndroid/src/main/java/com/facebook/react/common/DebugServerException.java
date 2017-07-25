@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.devsupport;
+package com.facebook.react.common;
 
 import javax.annotation.Nullable;
 
@@ -16,7 +16,6 @@ import java.io.IOException;
 import android.text.TextUtils;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.react.common.ReactConstants;
 
 import org.json.JSONException;
 import org.json.JSONObject;

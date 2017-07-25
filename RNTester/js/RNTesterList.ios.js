@@ -24,6 +24,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'ARTExample',
+    module: require('./ARTExample'),
+    supportsTVOS: true,
+  },
+  {
     key: 'ButtonExample',
     module: require('./ButtonExample'),
     supportsTVOS: true,
@@ -66,6 +71,11 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'ListViewPagingExample',
     module: require('./ListViewPagingExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'MaskedViewExample',
+    module: require('./MaskedViewExample'),
     supportsTVOS: true,
   },
   {

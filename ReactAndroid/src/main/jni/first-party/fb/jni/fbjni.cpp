@@ -60,9 +60,9 @@ alias_ref<JClass> findClassStatic(const char* name) {
   if (!env) {
     throw std::runtime_error("Unable to retrieve JNIEnv*.");
   }
-  auto cls = env->FindClass(name);
+  local_ref<jclass> cls = adopt_local(env->FindClass(name));
   FACEBOOK_JNI_THROW_EXCEPTION_IF(!cls);
-  auto leaking_ref = (jclass)env->NewGlobalRef(cls);
+  auto leaking_ref = (jclass)env->NewGlobalRef(cls.get());
   FACEBOOK_JNI_THROW_EXCEPTION_IF(!leaking_ref);
   return wrap_alias(leaking_ref);
 }
@@ -83,8 +83,7 @@ local_ref<JClass> findClassLocal(const char* name) {
 std::string JString::toStdString() const {
   const auto env = internal::getEnv();
   auto utf16String = JStringUtf16Extractor(env, self());
-  auto length = env->GetStringLength(self());
-  return detail::utf16toUTF8(utf16String, length);
+  return detail::utf16toUTF8(utf16String.chars(), utf16String.length());
 }
 
 local_ref<JString> make_jstring(const char* utf8) {

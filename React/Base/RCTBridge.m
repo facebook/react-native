@@ -12,9 +12,9 @@
 
 #import <objc/runtime.h>
 
-#import "RCTBridge+JavaScriptCore.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
+#import "RCTJSEnvironment.h"
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"

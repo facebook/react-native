@@ -1,7 +1,9 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "JSIndexedRAMBundle.h"
+
 #include "oss-compat-util.h"
+#include "JSBigString.h"
 
 namespace facebook {
 namespace react {

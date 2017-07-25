@@ -11,18 +11,13 @@ package com.facebook.react.bridge;
 import java.lang.reflect.Array;
 
 import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
 
 import android.os.Bundle;
-
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.WritableNativeArray;
-import com.facebook.react.bridge.WritableNativeMap;
 
 public class Arguments {
   private static Object makeNativeObject(Object object) {
@@ -242,12 +237,47 @@ public class Arguments {
   }
 
   /**
+   * Convert a {@link List} to a {@link WritableArray}.
+   *
+   * @param list the list to convert. Supported value types are: {@code null}, {@code String}, {@code Bundle},
+   *              {@code List}, {@code Number}, {@code Boolean}, and all array types supported in {@link #fromArray(Object)}.
+   * @return the converted {@link WritableArray}
+   * @throws IllegalArgumentException if one of the values from the passed list is none of the above types
+   */
+  public static WritableArray fromList(List list) {
+    WritableArray catalystArray = createArray();
+    for (Object obj : list) {
+      if (obj == null) {
+        catalystArray.pushNull();
+      } else if (obj.getClass().isArray()) {
+        catalystArray.pushArray(fromArray(obj));
+      } else if (obj instanceof Bundle) {
+        catalystArray.pushMap(fromBundle((Bundle) obj));
+      } else if (obj instanceof List) {
+        catalystArray.pushArray(fromList((List) obj));
+      } else if (obj instanceof String) {
+        catalystArray.pushString((String) obj);
+      } else if (obj instanceof Integer) {
+        catalystArray.pushInt((Integer) obj);
+      } else if (obj instanceof Number) {
+        catalystArray.pushDouble(((Number) obj).doubleValue());
+      } else if (obj instanceof Boolean) {
+        catalystArray.pushBoolean((Boolean) obj);
+      } else {
+        throw new IllegalArgumentException("Unknown value type " + obj.getClass());
+      }
+    }
+    return catalystArray;
+  }
+
+  /**
    * Convert a {@link Bundle} to a {@link WritableMap}. Supported key types in the bundle
    * are:
    * <p>
    * <ul>
    * <li>primitive types: int, float, double, boolean</li>
    * <li>arrays supported by {@link #fromArray(Object)}</li>
+   * <li>lists supported by {@link #fromList(List)}</li>
    * <li>{@link Bundle} objects that are recursively converted to maps</li>
    * </ul>
    *
@@ -275,6 +305,8 @@ public class Arguments {
         map.putBoolean(key, (Boolean) value);
       } else if (value instanceof Bundle) {
         map.putMap(key, fromBundle((Bundle) value));
+      } else if (value instanceof List) {
+        map.putArray(key, fromList((List) value));
       } else {
         throw new IllegalArgumentException("Could not convert " + value.getClass());
       }
@@ -283,7 +315,57 @@ public class Arguments {
   }
 
   /**
+   * Convert a {@link WritableArray} to a {@link ArrayList}.
+   *
+   * @param readableArray the {@link WritableArray} to convert.
+   * @return the converted {@link ArrayList}.
+   */
+  @Nullable
+  public static ArrayList toList(@Nullable ReadableArray readableArray) {
+    if (readableArray == null) {
+      return null;
+    }
+
+    ArrayList list = new ArrayList();
+
+    for (int i = 0; i < readableArray.size(); i++) {
+      switch (readableArray.getType(i)) {
+        case Null:
+          list.add(null);
+          break;
+        case Boolean:
+          list.add(readableArray.getBoolean(i));
+          break;
+        case Number:
+          double number = readableArray.getDouble(i);
+          if (number == Math.rint(number)) {
+            // Add as an integer
+            list.add((int) number);
+          } else {
+            // Add as a double
+            list.add(number);
+          }
+          break;
+        case String:
+          list.add(readableArray.getString(i));
+          break;
+        case Map:
+          list.add(toBundle(readableArray.getMap(i)));
+          break;
+        case Array:
+          list.add(toList(readableArray.getArray(i)));
+          break;
+        default:
+          throw new IllegalArgumentException("Could not convert object in array.");
+      }
+    }
+
+    return list;
+  }
+
+  /**
    * Convert a {@link WritableMap} to a {@link Bundle}.
+   * Note: Each array is converted to an {@link ArrayList}.
    *
    * @param readableMap the {@link WritableMap} to convert.
    * @return the converted {@link Bundle}.
@@ -318,8 +400,8 @@ public class Arguments {
           bundle.putBundle(key, toBundle(readableMap.getMap(key)));
           break;
         case Array:
-          // TODO t8873322
-          throw new UnsupportedOperationException("Arrays aren't supported yet.");
+          bundle.putSerializable(key, toList(readableMap.getArray(key)));
+          break;
         default:
           throw new IllegalArgumentException("Could not convert object with key: " + key + ".");
       }

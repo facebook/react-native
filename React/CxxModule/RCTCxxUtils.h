@@ -9,20 +9,13 @@
 
 #include <memory>
 
-#import <React/RCTConvert.h>
-#include <JavaScriptCore/JavaScriptCore.h>
-#include <cxxreact/JSCExecutor.h>
-#include <folly/dynamic.h>
-#include <jschelpers/JavaScriptCore.h>
+#import <JavaScriptCore/JavaScriptCore.h>
+
+#import <cxxreact/JSCExecutor.h>
+#import <jschelpers/JavaScriptCore.h>
 
 @class RCTBridge;
 @class RCTModuleData;
-
-@interface RCTConvert (folly)
-
-+ (folly::dynamic)folly_dynamic:(id)json;
-
-@end
 
 namespace facebook {
 namespace react {
@@ -48,5 +41,6 @@ struct ValueEncoder<NSArray *> {
 };
 
 NSError *tryAndReturnError(const std::function<void()>& func);
+NSString *deriveSourceURL(NSURL *url);
 
 } }

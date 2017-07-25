@@ -14,7 +14,9 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  Alert,
   Animated,
+  Button,
   SectionList,
   StyleSheet,
   Text,
@@ -84,6 +86,15 @@ class SectionListExample extends React.PureComponent {
     {useNativeDriver: true},
   );
 
+  _sectionListRef: any;
+  _captureRef = (ref) => { this._sectionListRef = ref; };
+
+  _scrollToLocation(sectionIndex: number, itemIndex: number) {
+    this._sectionListRef
+      .getNode()
+      .scrollToLocation({ sectionIndex, itemIndex });
+  }
+
   render() {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
     const filter = (item) => (
@@ -118,9 +129,16 @@ class SectionListExample extends React.PureComponent {
             {renderSmallSwitchOption(this, 'debug')}
             <Spindicator value={this._scrollPos} />
           </View>
+          <View style={styles.scrollToRow}>
+            <Text>scroll to:</Text>
+            <Button title="Item A" onPress={() => this._scrollToLocation(2, 1)}/>
+            <Button title="Item B" onPress={() => this._scrollToLocation(3, 6)}/>
+            <Button title="Item C" onPress={() => this._scrollToLocation(6, 3)}/>
+          </View>
         </View>
         <SeparatorComponent />
         <AnimatedSectionList
+          ref={this._captureRef}
           ListHeaderComponent={HeaderComponent}
           ListFooterComponent={FooterComponent}
           SectionSeparatorComponent={(info) =>
@@ -131,7 +149,7 @@ class SectionListExample extends React.PureComponent {
           }
           debug={this.state.debug}
           enableVirtualization={this.state.virtualized}
-          onRefresh={() => alert('onRefresh: nothing to refresh :P')}
+          onRefresh={() => Alert.alert('onRefresh: nothing to refresh :P')}
           onScroll={this._scrollSinkY}
           onViewableItemsChanged={this._onViewableItemsChanged}
           refreshing={false}
@@ -140,6 +158,10 @@ class SectionListExample extends React.PureComponent {
           renderSectionFooter={renderSectionFooter}
           stickySectionHeadersEnabled
           sections={[
+            {
+              key: 'empty section',
+              data: [],
+            },
             {
               renderItem: renderStackedItem,
               key: 's1',
@@ -215,6 +237,11 @@ const styles = StyleSheet.create({
   },
   searchRow: {
     paddingHorizontal: 10,
+  },
+  scrollToRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
   },
   separatorText: {
     color: 'gray',

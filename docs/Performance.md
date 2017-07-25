@@ -5,7 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/performance.html
 next: gesture-responder-system
-previous: direct-manipulation
+previous: debugging
 ---
 
 A compelling reason for using React Native instead of WebView-based tools is to achieve 60 frames per second and a native look and feel to your apps.
@@ -107,7 +107,7 @@ One case where I have used this is for animating in a modal (sliding down from t
 
 Caveats:
 
-- LayoutAnimation only works for fire-and-forget animations ("static" animations) -- if it must be be interruptible, you will need to use `Animated`.
+- LayoutAnimation only works for fire-and-forget animations ("static" animations) -- if it must be interruptible, you will need to use `Animated`.
 
 ### Moving a view on the screen (scrolling, translating, rotating) drops UI thread FPS
 
@@ -185,7 +185,7 @@ The first step for debugging this jank is to answer the fundamental question of 
 For that, we'll be using a standard Android profiling tool called `systrace`.
 
 `systrace` is a standard Android marker-based profiling tool (and is installed when you install the Android platform-tools package).
-Profiled code blocks are surrounded by markers start/end markers which are then visualized in a colorful chart format.
+Profiled code blocks are surrounded by start/end markers which are then visualized in a colorful chart format.
 Both the Android SDK and React Native framework provide standard markers that you can visualize.
 
 #### 1. Collecting a trace
@@ -321,7 +321,7 @@ And many times, you'll want to look into [shouldComponentUpdate](https://faceboo
 
 If you identified a native UI problem, there are usually two scenarios:
 
-1. the UI you're trying to draw each frame involves to much work on the GPU, or
+1. the UI you're trying to draw each frame involves too much work on the GPU, or
 2. You're constructing new UI during the animation/interaction (e.g. loading in new content during a scroll).
 
 ##### Too much GPU work

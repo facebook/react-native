@@ -74,6 +74,7 @@ RCT_TEST(SimpleSnapshotTest)
 RCT_TEST(SyncMethodTest)
 RCT_TEST(PromiseTest)
 RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest)
+RCT_TEST(AccessibilityManagerTest)
 
 #if !TARGET_OS_TV // tvOS does not fully support WebView
 RCT_TEST(WebViewTest)

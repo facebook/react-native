@@ -9,8 +9,6 @@
 
 'use strict';
 
-jest.autoMockOff();
-
 const sinon = require('sinon');
 const log = require('npmlog');
 const path = require('path');

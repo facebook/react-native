@@ -22,6 +22,10 @@
 #define JSC_IMPORT extern
 #endif
 
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
+
 namespace facebook {
 namespace react {
   class IInspector;
@@ -37,6 +41,7 @@ JSC_IMPORT JSValueRef JSEvaluateBytecodeBundle(JSContextRef, JSObjectRef, int, J
 JSC_IMPORT bool JSSamplingProfilerEnabled();
 JSC_IMPORT void JSStartSamplingProfilingOnMainJSCThread(JSGlobalContextRef);
 JSC_IMPORT JSValueRef JSPokeSamplingProfiler(JSContextRef);
+JSC_IMPORT void FBJSContextStartGCTimers(JSContextRef);
 
 #if defined(__APPLE__)
 #import <objc/objc.h>
@@ -48,7 +53,7 @@ JSC_IMPORT JSValueRef JSPokeSamplingProfiler(JSContextRef);
  *
  * Version number indicating that bytecode is not supported by this runtime.
  */
-__attribute__((visibility("default"))) extern const int32_t JSNoBytecodeFileFormatVersion;
+RN_EXPORT extern const int32_t JSNoBytecodeFileFormatVersion;
 
 namespace facebook {
 namespace react {
@@ -64,6 +69,7 @@ struct JSCWrapper {
   // JSContext
   JSC_WRAPPER_METHOD(JSContextGetGlobalContext);
   JSC_WRAPPER_METHOD(JSContextGetGlobalObject);
+  JSC_WRAPPER_METHOD(FBJSContextStartGCTimers);
 
   // JSEvaluate
   JSC_WRAPPER_METHOD(JSEvaluateScript);
@@ -101,6 +107,7 @@ struct JSCWrapper {
   JSC_WRAPPER_METHOD(JSObjectMakeFunctionWithCallback);
   JSC_WRAPPER_METHOD(JSObjectSetPrivate);
   JSC_WRAPPER_METHOD(JSObjectSetProperty);
+  JSC_WRAPPER_METHOD(JSObjectSetPropertyAtIndex);
 
   // JSPropertyNameArray
   JSC_WRAPPER_METHOD(JSObjectCopyPropertyNames);
@@ -145,12 +152,12 @@ bool isCustomJSCPtr(T *x) {
   return (uintptr_t)x & 0x1;
 }
 
-bool isCustomJSCWrapperSet();
-void setCustomJSCWrapper(const JSCWrapper* wrapper);
+RN_EXPORT bool isCustomJSCWrapperSet();
+RN_EXPORT void setCustomJSCWrapper(const JSCWrapper* wrapper);
 
 // This will return a single value for the whole life of the process.
-__attribute__((visibility("default"))) const JSCWrapper *systemJSCWrapper();
-__attribute__((visibility("default"))) const JSCWrapper *customJSCWrapper();
+RN_EXPORT const JSCWrapper *systemJSCWrapper();
+RN_EXPORT const JSCWrapper *customJSCWrapper();
 
 } }
 

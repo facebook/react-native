@@ -15,21 +15,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.Dynamic;
-import com.facebook.react.bridge.DynamicFromArray;
-import com.facebook.react.bridge.JSInstance;
-import com.facebook.react.bridge.NativeArgumentsParseException;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.PromiseImpl;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeArray;
-import com.facebook.react.bridge.UnexpectedNativeTypeException;
-import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.systrace.SystraceMessage;
 
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
@@ -245,14 +230,20 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "processArguments")
       .arg("method", mModuleWrapper.getName() + "." + mMethod.getName())
       .flush();
-    mArgumentsProcessed = true;
-    mArgumentExtractors = buildArgumentExtractors(mParameterTypes);
-    mSignature = buildSignature(mMethod, mParameterTypes, (mType.equals(BaseJavaModule.METHOD_TYPE_SYNC)));
-    // Since native methods are invoked from a message queue executed on a single thread, it is
-    // safe to allocate only one arguments object per method that can be reused across calls
-    mArguments = new Object[mParameterTypes.length];
-    mJSArgumentsNeeded = calculateJSArgumentsNeeded();
-    com.facebook.systrace.Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    try {
+      mArgumentsProcessed = true;
+      mArgumentExtractors = buildArgumentExtractors(mParameterTypes);
+      mSignature = buildSignature(
+          mMethod,
+          mParameterTypes,
+          (mType.equals(BaseJavaModule.METHOD_TYPE_SYNC)));
+      // Since native methods are invoked from a message queue executed on a single thread, it is
+      // safe to allocate only one arguments object per method that can be reused across calls
+      mArguments = new Object[mParameterTypes.length];
+      mJSArgumentsNeeded = calculateJSArgumentsNeeded();
+    } finally {
+      SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+    }
   }
 
   public Method getMethod() {
@@ -383,7 +374,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
         throw new RuntimeException("Could not invoke " + traceName, ite);
       }
     } finally {
-      com.facebook.systrace.Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
   }
 

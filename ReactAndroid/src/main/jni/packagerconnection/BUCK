@@ -3,6 +3,10 @@ include_defs("//ReactAndroid/DEFS")
 cxx_library(
     name = "jni",
     srcs = glob(["*.cpp"]),
+    headers = glob(
+        ["*.h"],
+    ),
+    header_namespace = "",
     compiler_flags = [
         "-Wall",
         "-Werror",
@@ -10,10 +14,6 @@ cxx_library(
         "-std=c++1y",
         "-frtti",
     ],
-    header_namespace = "",
-    headers = glob(
-        ["*.h"],
-    ),
     preprocessor_flags = [
         "-DLOG_TAG=\"PackagerConnectionJNI\"",
         "-DWITH_FBSYSTRACE=1",
@@ -23,10 +23,9 @@ cxx_library(
     visibility = [
         "PUBLIC",
     ],
-    xcode_public_headers_symlinks = True,
-    deps = JSC_DEPS + [
+    deps = ([
         FBJNI_TARGET,
         "//xplat/folly:molly",
         react_native_xplat_target("jschelpers:jschelpers"),
-    ] if not IS_OSS_BUILD else [],
+    ] + JSC_DEPS) if not IS_OSS_BUILD else [],
 )

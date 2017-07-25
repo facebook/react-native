@@ -33,17 +33,23 @@ class Tester extends React.Component {
   current = 0;
 
   onPress = () => {
-    const animConfig = (
-      this.current && this.props.reverseConfig ? this.props.reverseConfig : this.props.config
-    );
+    const animConfig = this.current && this.props.reverseConfig
+      ? this.props.reverseConfig
+      : this.props.config;
     this.current = this.current ? 0 : 1;
     const config: Object = {
       ...animConfig,
       toValue: this.current,
     };
 
-    Animated[this.props.type](this.state.native, { ...config, useNativeDriver: true }).start();
-    Animated[this.props.type](this.state.js, { ...config, useNativeDriver: false }).start();
+    Animated[this.props.type](this.state.native, {
+      ...config,
+      useNativeDriver: true,
+    }).start();
+    Animated[this.props.type](this.state.js, {
+      ...config,
+      useNativeDriver: false,
+    }).start();
   };
 
   render() {
@@ -76,7 +82,7 @@ class ValueListenerExample extends React.Component {
   _current = 0;
 
   componentDidMount() {
-    this.state.anim.addListener((e) => this.setState({ progress: e.value }));
+    this.state.anim.addListener(e => this.setState({progress: e.value}));
   }
 
   componentWillUnmount() {
@@ -90,7 +96,10 @@ class ValueListenerExample extends React.Component {
       toValue: this._current,
     };
 
-    Animated.timing(this.state.anim, { ...config, useNativeDriver: true }).start();
+    Animated.timing(this.state.anim, {
+      ...config,
+      useNativeDriver: true,
+    }).start();
   };
 
   render() {
@@ -103,13 +112,47 @@ class ValueListenerExample extends React.Component {
                 styles.block,
                 {
                   opacity: this.state.anim,
-                }
+                },
               ]}
             />
           </View>
           <Text>Value: {this.state.progress}</Text>
         </View>
       </TouchableWithoutFeedback>
+    );
+  }
+}
+
+class LoopExample extends React.Component {
+  state = {
+    value: new Animated.Value(0),
+  };
+
+  componentDidMount() {
+    Animated.loop(
+      Animated.timing(this.state.value, {
+        toValue: 1,
+        duration: 5000,
+        useNativeDriver: true,
+      }),
+    ).start();
+  }
+
+  render() {
+    return (
+      <View style={styles.row}>
+        <Animated.View
+          style={[
+            styles.block,
+            {
+              opacity: this.state.value.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: [0, 1, 0],
+              }),
+            },
+          ]}
+        />
+      </View>
     );
   }
 }
@@ -128,7 +171,8 @@ class InternalSettings extends React.Component {
             this._stallInterval = setInterval(() => {
               const start = Date.now();
               console.warn('burn CPU');
-              while ((Date.now() - start) < 100) {}
+              while (Date.now() - start < 100) {
+              }
             }, 300);
           }}
           onDisable={() => {
@@ -142,19 +186,23 @@ class InternalSettings extends React.Component {
             require('JSEventLoopWatchdog').install({thresholdMS: 25});
             this.setState({busyTime: '<none>'});
             require('JSEventLoopWatchdog').addHandler({
-              onStall: ({busyTime}) => this.setState((state) => ({
-                busyTime,
-                filteredStall: (state.filteredStall || 0) * 0.97 + busyTime * 0.03,
-              })),
+              onStall: ({busyTime}) =>
+                this.setState(state => ({
+                  busyTime,
+                  filteredStall: (state.filteredStall || 0) * 0.97 +
+                    busyTime * 0.03,
+                })),
             });
           }}
           onDisable={() => {
             console.warn('Cannot disable yet....');
           }}
         />
-        {this.state && <Text>
-          JS Stall filtered: {Math.round(this.state.filteredStall)}, last: {this.state.busyTime}
-        </Text>}
+        {this.state &&
+          <Text>
+            {`JS Stall filtered: ${Math.round(this.state.filteredStall)}, `}
+            {`last: ${this.state.busyTime}`}
+          </Text>}
       </View>
     );
   }
@@ -177,22 +225,23 @@ class EventExample extends React.Component {
             styles.block,
             {
               opacity,
-            }
+            },
           ]}
         />
         <Animated.ScrollView
           horizontal
-          style={{ height: 100, marginTop: 16 }}
+          style={{height: 100, marginTop: 16}}
           scrollEventThrottle={16}
-          onScroll={
-            Animated.event([{
-              nativeEvent: { contentOffset: { x: this.state.scrollX } }
-            }], {
-              useNativeDriver: true,
-            })
-          }
-        >
-          <View style={{ width: 600, backgroundColor: '#eee', justifyContent: 'center' }}>
+          onScroll={Animated.event(
+            [{nativeEvent: {contentOffset: {x: this.state.scrollX}}}],
+            {useNativeDriver: true},
+          )}>
+          <View
+            style={{
+              width: 600,
+              backgroundColor: '#eee',
+              justifyContent: 'center',
+            }}>
             <Text>Scroll me!</Text>
           </View>
         </Animated.ScrollView>
@@ -218,52 +267,51 @@ exports.title = 'Native Animated Example';
 exports.description = 'Test out Native Animations';
 
 exports.examples = [
-{
+  {
     title: 'Multistage With Multiply and rotation',
     render: function() {
       return (
-          <Tester
-            type="timing"
-            config={{ duration: 1000 }}>
-            {anim => (
-              <Animated.View
-                style={[
-                  styles.block,
-                  {
-                    transform: [
-                      {
-                        translateX: anim.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0, 200],
-                        })
-                      },
-                      {
-                        translateY: anim.interpolate({
-                          inputRange: [0, 0.5, 1],
-                          outputRange: [0, 50, 0],
-                        })
-                      },
-                      {
-                        rotate: anim.interpolate({
-                          inputRange: [0, 0.5, 1],
-                          outputRange: ['0deg', '90deg', '0deg'],
-                        })
-                      }
-                    ],
-                    opacity: Animated.multiply(
-                      anim.interpolate({
-                        inputRange: [0,1],
-                        outputRange: [1,0]
-                      }), anim.interpolate({
-                        inputRange: [0,1],
-                        outputRange: [0.25,1]
-                    })
-                    )
-                  }
-                ]}
-              />
-            )}
-          </Tester>
+        <Tester type="timing" config={{duration: 1000}}>
+          {anim => (
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  transform: [
+                    {
+                      translateX: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 200],
+                      }),
+                    },
+                    {
+                      translateY: anim.interpolate({
+                        inputRange: [0, 0.5, 1],
+                        outputRange: [0, 50, 0],
+                      }),
+                    },
+                    {
+                      rotate: anim.interpolate({
+                        inputRange: [0, 0.5, 1],
+                        outputRange: ['0deg', '90deg', '0deg'],
+                      }),
+                    },
+                  ],
+                  opacity: Animated.multiply(
+                    anim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [1, 0],
+                    }),
+                    anim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.25, 1],
+                    }),
+                  ),
+                },
+              ]}
+            />
+          )}
+        </Tester>
       );
     },
   },
@@ -271,42 +319,41 @@ exports.examples = [
     title: 'Multistage With Multiply',
     render: function() {
       return (
-          <Tester
-            type="timing"
-            config={{ duration: 1000 }}>
-            {anim => (
-              <Animated.View
-                style={[
-                  styles.block,
-                  {
-                    transform: [
-                      {
-                        translateX: anim.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0, 200],
-                        })
-                      },
-                      {
-                        translateY: anim.interpolate({
-                          inputRange: [0, 0.5, 1],
-                          outputRange: [0, 50, 0],
-                        })
-                      }
-                    ],
-                    opacity: Animated.multiply(
-                      anim.interpolate({
-                        inputRange: [0,1],
-                        outputRange: [1,0]
-                      }), anim.interpolate({
-                        inputRange: [0,1],
-                        outputRange: [0.25,1]
-                    })
-                    )
-                  }
-                ]}
-              />
-            )}
-          </Tester>
+        <Tester type="timing" config={{duration: 1000}}>
+          {anim => (
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  transform: [
+                    {
+                      translateX: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 200],
+                      }),
+                    },
+                    {
+                      translateY: anim.interpolate({
+                        inputRange: [0, 0.5, 1],
+                        outputRange: [0, 50, 0],
+                      }),
+                    },
+                  ],
+                  opacity: Animated.multiply(
+                    anim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [1, 0],
+                    }),
+                    anim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.25, 1],
+                    }),
+                  ),
+                },
+              ]}
+            />
+          )}
+        </Tester>
       );
     },
   },
@@ -314,9 +361,7 @@ exports.examples = [
     title: 'Scale interpolation with clamping',
     render: function() {
       return (
-        <Tester
-          type="timing"
-          config={{ duration: 1000 }}>
+        <Tester type="timing" config={{duration: 1000}}>
           {anim => (
             <Animated.View
               style={[
@@ -328,10 +373,10 @@ exports.examples = [
                         inputRange: [0, 0.5],
                         outputRange: [1, 1.4],
                         extrapolateRight: 'clamp',
-                      })
-                    }
+                      }),
+                    },
                   ],
-                }
+                },
               ]}
             />
           )}
@@ -343,16 +388,14 @@ exports.examples = [
     title: 'Opacity with delay',
     render: function() {
       return (
-        <Tester
-          type="timing"
-          config={{ duration: 1000, delay: 1000 }}>
+        <Tester type="timing" config={{duration: 1000, delay: 1000}}>
           {anim => (
             <Animated.View
               style={[
                 styles.block,
                 {
-                  opacity: anim
-                }
+                  opacity: anim,
+                },
               ]}
             />
           )}
@@ -364,9 +407,7 @@ exports.examples = [
     title: 'Rotate interpolation',
     render: function() {
       return (
-        <Tester
-          type="timing"
-          config={{ duration: 1000 }}>
+        <Tester type="timing" config={{duration: 1000}}>
           {anim => (
             <Animated.View
               style={[
@@ -377,10 +418,10 @@ exports.examples = [
                       rotate: anim.interpolate({
                         inputRange: [0, 1],
                         outputRange: ['0deg', '90deg'],
-                      })
-                    }
+                      }),
+                    },
                   ],
-                }
+                },
               ]}
             />
           )}
@@ -392,9 +433,7 @@ exports.examples = [
     title: 'translateX => Animated.spring',
     render: function() {
       return (
-        <Tester
-          type="spring"
-          config={{ bounciness: 0 }}>
+        <Tester type="spring" config={{bounciness: 0}}>
           {anim => (
             <Animated.View
               style={[
@@ -405,24 +444,25 @@ exports.examples = [
                       translateX: anim.interpolate({
                         inputRange: [0, 1],
                         outputRange: [0, 100],
-                      })
+                      }),
                     },
                   ],
-                }
+                },
               ]}
             />
           )}
         </Tester>
       );
     },
-  },{
+  },
+  {
     title: 'translateX => Animated.decay',
     render: function() {
       return (
         <Tester
           type="decay"
-          config={{ velocity: 0.5 }}
-          reverseConfig={{ velocity: -0.5 }}>
+          config={{velocity: 0.5}}
+          reverseConfig={{velocity: -0.5}}>
           {anim => (
             <Animated.View
               style={[
@@ -430,26 +470,23 @@ exports.examples = [
                 {
                   transform: [
                     {
-                      translateX: anim
+                      translateX: anim,
                     },
                   ],
-                }
+                },
               ]}
             />
           )}
         </Tester>
       );
     },
-  },{
+  },
+  {
     title: 'Drive custom property',
     render: function() {
       return (
-        <Tester
-          type="timing"
-          config={{ duration: 1000 }}>
-          {anim => (
-            <AnimatedSlider style={{}} value={anim} />
-          )}
+        <Tester type="timing" config={{duration: 1000}}>
+          {anim => <AnimatedSlider style={{}} value={anim} />}
         </Tester>
       );
     },
@@ -457,25 +494,25 @@ exports.examples = [
   {
     title: 'Animated value listener',
     render: function() {
-      return (
-        <ValueListenerExample />
-      );
+      return <ValueListenerExample />;
+    },
+  },
+  {
+    title: 'Animated loop',
+    render: function() {
+      return <LoopExample />;
     },
   },
   {
     title: 'Animated events',
     render: function() {
-      return (
-        <EventExample />
-      );
+      return <EventExample />;
     },
   },
   {
     title: 'Internal Settings',
     render: function() {
-      return (
-        <InternalSettings />
-      );
+      return <InternalSettings />;
     },
   },
 ];
