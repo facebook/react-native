@@ -19,16 +19,22 @@ const pinnedApps = Metadata.showcaseApps.filter(app => {
   return app.pinned;
 });
 
-const AppList = React.createClass({
-  render: function() {
+class AppList extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+
+    this._renderApp = this._renderApp.bind(this);
+  }
+
+  render() {
     return (
       <div>
         {this.props.apps.map(this._renderApp)}
       </div>
     );
-  },
+  }
 
-  _renderApp: function(app, i) {
+  _renderApp(app, i) {
     return (
       <div className="showcase" key={i}>
         <ShowcaseAppIcon
@@ -37,11 +43,11 @@ const AppList = React.createClass({
           linkUri={app.infoLink} />
       </div>
     );
-  },
-});
+  }
+}
 
-const index = React.createClass({
-  render: function() {
+class index extends React.Component {
+  render() {
     return (
       <Site>
         <Hero title="React Native" subtitle="Learn once, write anywhere: Build mobile apps with React">
@@ -168,6 +174,6 @@ class SomethingFast extends Component {
       </Site>
     );
   }
-});
+}
 
 module.exports = index;
