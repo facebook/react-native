@@ -11,25 +11,44 @@
  */
 'use strict';
 
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTSettingsManager = require('NativeModules').SettingsManager;
+const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const RCTSettingsManager = require('NativeModules').SettingsManager;
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
-var subscriptions: Array<{keys: Array<string>, callback: ?Function}> = [];
+const subscriptions: Array<{keys: Array<string>; callback: ?Function}> = [];
 
-var Settings = {
+/**
+ * @class
+ * @description
+ * An interface to the native "preferences" file storage that uses simple key-value pairs
+ * 
+ */
+const Settings = {
   _settings: RCTSettingsManager && RCTSettingsManager.settings,
 
   get(key: string): mixed {
     return this._settings[key];
   },
 
-  set(settings: Object) {
-    this._settings = Object.assign(this._settings, settings);
+ /**
+   * Sets the value for a name-value pairs
+   * @param settings the object with the name/value pairs to set
+   *
+   * Note that on android the only allowed value types are number, string and boolean
+   */
+  set(settings: Object): void {
+    Object.assign(this._settings, settings);
     RCTSettingsManager.setValues(settings);
   },
 
+
+ /**
+   * Monitor one or more keys for changed values
+   * @param keys a string or an array of strings naming the keys to monitor
+   * @callback the callback to invoke when one of the specified keys updates its value
+   * @returns a number representing the watch ID which can be used to clear the watch
+   */
   watchKeys(keys: string | Array<string>, callback: Function): number {
     if (typeof keys === 'string') {
       keys = [keys];
@@ -40,11 +59,15 @@ var Settings = {
       'keys should be a string or array of strings'
     );
 
-    var sid = subscriptions.length;
+    const sid = subscriptions.length;
     subscriptions.push({keys: keys, callback: callback});
     return sid;
   },
 
+  /**
+   * 
+   * @param {*} watchId a number identifying which set of monitoried keys is to be cleared
+   */
   clearWatch(watchId: number) {
     if (watchId < subscriptions.length) {
       subscriptions[watchId] = {keys: [], callback: null};
@@ -53,8 +76,8 @@ var Settings = {
 
   _sendObservations(body: Object) {
     Object.keys(body).forEach((key) => {
-      var newValue = body[key];
-      var didChange = this._settings[key] !== newValue;
+      const newValue = body[key];
+      const didChange = this._settings[key] !== newValue;
       this._settings[key] = newValue;
 
       if (didChange) {
