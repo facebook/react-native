@@ -10,7 +10,7 @@ previous: handling-touches
 
 The [ScrollView](docs/scrollview.html) is a generic scrolling container that can host multiple components and views. The scrollable items need not be homogenous, and you can scroll both vertically and horizontally (by setting the `horizontal` property).
 
-This example creates a vertical `ScrollView` with both images and text mixed together.  Note that this example requires an img directory in AwesomeProject project and an favicon.png image in that directory.
+This example creates a vertical `ScrollView` with both images and text mixed together.
 
 ```ReactNativeWebPlayer
 import React, { Component } from 'react';
@@ -21,6 +21,7 @@ export default class IScrolledDownAndWhatHappenedNextShockedMe extends Component
       return (
         <ScrollView>
           <Text style={{fontSize:96}}>Scroll me plz</Text>
+          { /* Images can be loaded from the local filesystem. In this case, we load a favicon.png image from the img directory in our project. */ }
           <Image source={require('./img/favicon.png')} />
           <Image source={require('./img/favicon.png')} />
           <Image source={require('./img/favicon.png')} />
