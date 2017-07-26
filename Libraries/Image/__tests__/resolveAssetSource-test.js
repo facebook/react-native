@@ -8,12 +8,6 @@
  */
 'use strict';
 
-jest
-  .unmock('AssetRegistry')
-  .unmock('AssetSourceResolver')
-  .unmock('../resolveAssetSource')
-  .unmock('../../../local-cli/bundle/assetPathUtils');
-
 var AssetRegistry = require('AssetRegistry');
 var Platform = require('Platform');
 var NativeModules = require('NativeModules');
@@ -26,7 +20,7 @@ function expectResolvesAsset(input, expectedSource) {
 
 describe('resolveAssetSource', () => {
   beforeEach(() => {
-    jest.resetModuleRegistry();
+    jest.resetModules();
   });
 
   it('returns same source for simple static and network images', () => {

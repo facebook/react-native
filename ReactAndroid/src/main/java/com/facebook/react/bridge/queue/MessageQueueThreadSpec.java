@@ -25,6 +25,10 @@ public class MessageQueueThreadSpec {
     NEW_BACKGROUND,
   }
 
+  public static MessageQueueThreadSpec newUIBackgroundTreadSpec(String name) {
+    return new MessageQueueThreadSpec(ThreadType.NEW_BACKGROUND, name);
+  }
+
   public static MessageQueueThreadSpec newBackgroundThreadSpec(String name) {
     return new MessageQueueThreadSpec(ThreadType.NEW_BACKGROUND, name);
   }

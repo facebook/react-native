@@ -23,7 +23,6 @@ import type EmitterSubscription from 'EmitterSubscription';
  * a subset of the standard EventEmitter node module API.
  */
 class NativeEventEmitter extends EventEmitter {
-
   _nativeModule: Object;
 
   constructor(nativeModule: Object) {

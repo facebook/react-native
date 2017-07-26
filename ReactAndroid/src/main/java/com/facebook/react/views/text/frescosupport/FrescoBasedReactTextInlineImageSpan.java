@@ -25,7 +25,9 @@ import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.DraweeHolder;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 
 /**
  * FrescoBasedTextInlineImageSpan is a span for Images that are inside <Text/>. It computes
@@ -48,6 +50,7 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
   private int mHeight;
   private Uri mUri;
   private int mWidth;
+  private ReadableMap mHeaders;
 
   private @Nullable TextView mTextView;
 
@@ -56,6 +59,7 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
       int height,
       int width,
       @Nullable Uri uri,
+      ReadableMap headers,
       AbstractDraweeControllerBuilder draweeControllerBuilder,
       @Nullable Object callerContext) {
     mDraweeHolder = new DraweeHolder(
@@ -68,6 +72,7 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
     mHeight = height;
     mWidth = width;
     mUri = (uri != null) ? uri : Uri.EMPTY;
+    mHeaders = headers;
   }
 
   /**
@@ -126,8 +131,8 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
       int bottom,
       Paint paint) {
     if (mDrawable == null) {
-      ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(mUri)
-          .build();
+      ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(mUri);
+      ImageRequest imageRequest = ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, mHeaders);
 
       DraweeController draweeController = mDraweeControllerBuilder
           .reset()
@@ -136,6 +141,7 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
           .setImageRequest(imageRequest)
           .build();
       mDraweeHolder.setController(draweeController);
+      mDraweeControllerBuilder.reset();
 
       mDrawable = mDraweeHolder.getTopLevelDrawable();
       mDrawable.setBounds(0, 0, mWidth, mHeight);

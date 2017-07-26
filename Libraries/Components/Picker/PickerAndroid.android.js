@@ -14,15 +14,14 @@
 
 var ColorPropType = require('ColorPropType');
 var React = require('React');
+var ReactPropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
-var View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var processColor = require('processColor');
 var requireNativeComponent = require('requireNativeComponent');
-
-var ReactPropTypes = React.PropTypes;
 
 var REF_PICKER = 'picker';
 var MODE_DROPDOWN = 'dropdown';
@@ -51,9 +50,9 @@ class PickerAndroid extends React.Component {
   state: *;
 
   static propTypes = {
-    ...View.propTypes,
+    ...ViewPropTypes,
     style: pickerStyleType,
-    selectedValue: React.PropTypes.any,
+    selectedValue: ReactPropTypes.any,
     enabled: ReactPropTypes.bool,
     mode: ReactPropTypes.oneOf(['dialog', 'dropdown']),
     onValueChange: ReactPropTypes.func,
@@ -116,7 +115,8 @@ class PickerAndroid extends React.Component {
     if (this.props.onValueChange) {
       var position = event.nativeEvent.position;
       if (position >= 0) {
-        var value = this.props.children[position].props.value;
+        var children = React.Children.toArray(this.props.children);
+        var value = children[position].props.value;
         this.props.onValueChange(value, position);
       } else {
         this.props.onValueChange(null, position);

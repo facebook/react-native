@@ -11,23 +11,19 @@
  */
 'use strict';
 
+const createReactClass = require('create-react-class');
 const Keyboard = require('Keyboard');
 const LayoutAnimation = require('LayoutAnimation');
 const Platform = require('Platform');
+const PropTypes = require('prop-types');
 const React = require('React');
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
-
-const PropTypes = React.PropTypes;
+const ViewPropTypes = require('ViewPropTypes');
 
 import type EmitterSubscription from 'EmitterSubscription';
+import type {ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
 
-type Rect = {
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-};
 type ScreenRect = {
   screenX: number,
   screenY: number,
@@ -40,11 +36,6 @@ type KeyboardChangeEvent = {
   duration?: number,
   easing?: string,
 };
-type LayoutEvent = {
-  nativeEvent: {
-    layout: Rect,
-  }
-};
 
 const viewRef = 'VIEW';
 
@@ -52,17 +43,19 @@ const viewRef = 'VIEW';
  * It is a component to solve the common problem of views that need to move out of the way of the virtual keyboard.
  * It can automatically adjust either its position or bottom padding based on the position of the keyboard.
  */
-const KeyboardAvoidingView = React.createClass({
+// $FlowFixMe(>=0.41.0)
+const KeyboardAvoidingView = createReactClass({
+  displayName: 'KeyboardAvoidingView',
   mixins: [TimerMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...ViewPropTypes,
     behavior: PropTypes.oneOf(['height', 'position', 'padding']),
 
     /**
      * The style of the content container(View) when behavior is 'position'.
      */
-    contentContainerStyle: View.propTypes.style,
+    contentContainerStyle: ViewPropTypes.style,
 
     /**
      * This is the distance between the top of the user screen and the react native view,
@@ -84,7 +77,7 @@ const KeyboardAvoidingView = React.createClass({
   },
 
   subscriptions: ([]: Array<EmitterSubscription>),
-  frame: (null: ?Rect),
+  frame: (null: ?ViewLayout),
 
   relativeKeyboardHeight(keyboardFrame: ScreenRect): number {
     const frame = this.frame;
@@ -92,12 +85,11 @@ const KeyboardAvoidingView = React.createClass({
       return 0;
     }
 
-    const y1 = Math.max(frame.y, keyboardFrame.screenY - this.props.keyboardVerticalOffset);
-    const y2 = Math.min(frame.y + frame.height, keyboardFrame.screenY + keyboardFrame.height - this.props.keyboardVerticalOffset);
-    if (frame.y > keyboardFrame.screenY) {
-      return frame.y + frame.height - keyboardFrame.screenY - this.props.keyboardVerticalOffset;
-    }
-    return Math.max(y2 - y1, 0);
+    const keyboardY = keyboardFrame.screenY - this.props.keyboardVerticalOffset;
+
+    // Calculate the displacement needed for the view such that it
+    // no longer overlaps with the keyboard
+    return Math.max(frame.y + frame.height - keyboardY, 0);
   },
 
   onKeyboardChange(event: ?KeyboardChangeEvent) {
@@ -121,7 +113,7 @@ const KeyboardAvoidingView = React.createClass({
     this.setState({bottom: height});
   },
 
-  onLayout(event: LayoutEvent) {
+  onLayout(event: ViewLayoutEvent) {
     this.frame = event.nativeEvent.layout;
   },
 
@@ -153,6 +145,7 @@ const KeyboardAvoidingView = React.createClass({
   },
 
   render(): React.Element<any> {
+    // $FlowFixMe(>=0.41.0)
     const {behavior, children, style, ...props} = this.props;
 
     switch (behavior) {

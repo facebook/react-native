@@ -8,7 +8,10 @@
  */
 'use strict';
 
-const copyProjectTemplateAndReplace = require('../generator/copyProjectTemplateAndReplace');
+const {
+  listTemplatesAndExit,
+  createProjectFromTemplate,
+} = require('../generator/templates');
 const execSync = require('child_process').execSync;
 const fs = require('fs');
 const minimist = require('minimist');
@@ -23,15 +26,15 @@ const yarn = require('../util/yarn');
  * @param projectDir Templates will be copied here.
  * @param argsOrName Project name or full list of custom arguments
  *                   for the generator.
+ * @param options Command line options passed from the react-native-cli directly.
+ *                E.g. `{ version: '0.43.0', template: 'navigation' }`
  */
 function init(projectDir, argsOrName) {
-  console.log('Setting up new React Native app in ' + projectDir);
-
   const args = Array.isArray(argsOrName)
     ? argsOrName // argsOrName was e.g. ['AwesomeApp', '--verbose']
     : [argsOrName].concat(process.argv.slice(4)); // argsOrName was e.g. 'AwesomeApp'
 
-  // args array is e.g. ['AwesomeApp', '--verbose']
+  // args array is e.g. ['AwesomeApp', '--verbose', '--template', 'navigation']
   if (!args || args.length === 0) {
     console.error('react-native init requires a project name.');
     return;
@@ -40,7 +43,14 @@ function init(projectDir, argsOrName) {
   const newProjectName = args[0];
   const options = minimist(args);
 
-  generateProject(projectDir, newProjectName, options);
+  if (listTemplatesAndExit(newProjectName, options)) {
+    // Just listing templates using 'react-native init --template'
+    // Not creating a new app.
+    return;
+  } else {
+    console.log('Setting up new React Native app in ' + projectDir);
+    generateProject(projectDir, newProjectName, options);
+  }
 }
 
 /**
@@ -67,11 +77,7 @@ function generateProject(destinationRoot, newProjectName, options) {
     yarn.getYarnVersionIfAvailable() &&
     yarn.isGlobalCliUsingYarn(destinationRoot);
 
-  copyProjectTemplateAndReplace(
-    path.resolve('node_modules', 'react-native', 'local-cli', 'templates', 'HelloWorld'),
-    destinationRoot,
-    newProjectName
-  );
+  createProjectFromTemplate(destinationRoot, newProjectName, options.template, yarnVersion);
 
   if (yarnVersion) {
     console.log('Adding React...');

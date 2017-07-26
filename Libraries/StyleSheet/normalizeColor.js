@@ -180,7 +180,7 @@ function parse1(str: string): number {
 
 function parsePercentage(str: string): number {
   // parseFloat conveniently ignores the final %
-  var int = parseFloat(str, 10);
+  var int = parseFloat(str);
   if (int < 0) {
     return 0;
   }

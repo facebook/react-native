@@ -4,8 +4,9 @@ title: Native Modules
 layout: docs
 category: Guides (Android)
 permalink: docs/native-modules-android.html
+banner: ejected
 next: native-components-android
-previous: communication-ios
+previous: building-for-apple-tv
 ---
 
 Sometimes an app needs access to a platform API that React Native doesn't have a corresponding module for yet. Maybe you want to reuse some existing Java code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
@@ -34,6 +35,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
 import java.util.Map;
+import java.util.HashMap; 
 
 public class ToastModule extends ReactContextBaseJavaModule {
 
@@ -98,12 +100,18 @@ Read more about [ReadableMap](https://github.com/facebook/react-native/blob/mast
 The last step within Java is to register the Module; this happens in the `createNativeModules` of your apps package. If a module is not registered it will not be available from JavaScript.
 
 ```java
-class AnExampleReactPackage implements ReactPackage {
+package com.facebook.react.modules.toast;
 
-  @Override
-  public List<Class<? extends JavaScriptModule>> createJSModules() {
-    return Collections.emptyList();
-  }
+import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.ViewManager;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class AnExampleReactPackage implements ReactPackage {
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
@@ -119,6 +127,8 @@ class AnExampleReactPackage implements ReactPackage {
 
     return modules;
   }
+
+}
 ```
 
 The package needs to be provided in the `getPackages` method of the `MainApplication.java` file. This file exists under the android folder in your react-native application directory. The path to this file is: `android/app/src/main/java/com/your-app-name/MainApplication.java`.
@@ -213,6 +223,8 @@ Native modules can also fulfill a promise, which can simplify your code, especia
 Refactoring the above code to use a promise instead of callbacks looks like this:
 
 ```java
+import com.facebook.react.bridge.Promise;
+
 public class UIManagerModule extends ReactContextBaseJavaModule {
 
 ...
@@ -285,7 +297,7 @@ WritableMap params = Arguments.createMap();
 sendEvent(reactContext, "keyboardWillShow", params);
 ```
 
-JavaScript modules can then register to receive events by `addListenerOn` using the `Subscribable` mixin
+JavaScript modules can then register to receive events by `addListenerOn` using the `Subscribable` mixin.
 
 ```js
 import { DeviceEventEmitter } from 'react-native';
@@ -322,7 +334,7 @@ componentWillMount: function() {
 
 ### Getting activity result from `startActivityForResult`
 
-You'll need to listen to `onActivityResult` if you want to get results from an activity you started with `startActivityForResult`. To do this, the you must extend `BaseActivityEventListener` or implement `ActivityEventListener`. The former is preferred as it is more resilient to API changes. Then, you need to register the listener in the module's constructor,
+You'll need to listen to `onActivityResult` if you want to get results from an activity you started with `startActivityForResult`. To do this, you must extend `BaseActivityEventListener` or implement `ActivityEventListener`. The former is preferred as it is more resilient to API changes. Then, you need to register the listener in the module's constructor,
 
 ```java
 reactContext.addActivityEventListener(mActivityResultListener);
@@ -353,11 +365,11 @@ public class ImagePickerModule extends ReactContextBaseJavaModule {
   private static final String E_NO_IMAGE_DATA_FOUND = "E_NO_IMAGE_DATA_FOUND";
 
   private Promise mPickerPromise;
-  
+
   private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
-  
+
     @Override
-    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent intent) {
       if (requestCode == IMAGE_PICKER_REQUEST) {
         if (mPickerPromise != null) {
           if (resultCode == Activity.RESULT_CANCELED) {

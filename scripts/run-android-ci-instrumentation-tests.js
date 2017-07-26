@@ -20,19 +20,32 @@
  * --package - com.facebook.react.tests
  * --retries [num] - how many times to retry possible flaky commands: npm install and running tests, default 1
  */
-/*eslint-disable no-undef */
-require('shelljs/global');
+
+const {
+   echo,
+   exec,
+   exit,
+   ls,
+} = require('shelljs');
 
 const argv = require('yargs').argv;
 const numberOfRetries = argv.retries || 1;
 const tryExecNTimes = require('./try-n-times');
 const path = require('path');
 
+// Flaky tests ignored on Circle CI. They still run internally at fb.
+const ignoredTests = [
+  'ReactScrollViewTestCase',
+  'ReactHorizontalScrollViewTestCase'
+];
+
 // ReactAndroid/src/androidTest/java/com/facebook/react/tests/ReactHorizontalScrollViewTestCase.java
 const testClasses = ls(`${argv.path}/*.java`)
 .map(javaFile => {
   // ReactHorizontalScrollViewTestCase
   return path.basename(javaFile, '.java');
+}).filter(className => {
+  return ignoredTests.indexOf(className) === -1;
 }).map(className => {
   // com.facebook.react.tests.ReactHorizontalScrollViewTestCase
   return argv.package + '.' + className;
@@ -54,5 +67,3 @@ testClasses.forEach((testClass) => {
 });
 
 exit(exitCode);
-
-/*eslint-enable no-undef */

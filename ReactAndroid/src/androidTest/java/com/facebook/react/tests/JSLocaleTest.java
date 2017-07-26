@@ -18,6 +18,8 @@ import com.facebook.react.testing.StringRecordingModule;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.modules.appstate.AppStateModule;
+import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
@@ -46,7 +48,8 @@ public class JSLocaleTest extends ReactIntegrationTestCase {
     final UIManagerModule mUIManager = new UIManagerModule(
         getContext(),
         viewManagers,
-        new UIImplementationProvider());
+        new UIImplementationProvider(),
+        false);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -60,8 +63,9 @@ public class JSLocaleTest extends ReactIntegrationTestCase {
     mInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(mStringRecordingModule)
         .addNativeModule(mUIManager)
+        .addNativeModule(new DeviceInfoModule(getContext()))
+        .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
-        .addJSModule(TestJSLocaleModule.class)
         .build();
   }
 

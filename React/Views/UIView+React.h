@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
+#import <yoga/YGEnums.h>
 
 @class RCTShadowView;
 
@@ -24,15 +25,34 @@
 - (void)removeReactSubview:(UIView *)subview NS_REQUIRES_SUPER;
 
 /**
- * z-index, used to override sibling order in didUpdateReactSubviews.
+ * The native id of the view, used to locate view from native codes
+ */
+@property (nonatomic, copy) NSString *nativeID;
+
+/**
+ * Layout direction of the view.
+ * Internally backed to `semanticContentAttribute` property.
+ * Defaults to `LeftToRight` in case of ambiguity.
+ */
+@property (nonatomic, assign) UIUserInterfaceLayoutDirection reactLayoutDirection;
+
+/**
+ * Yoga `display` style property. Can be `flex` or `none`.
+ * Defaults to `flex`.
+ * May be used to temporary hide the view in a very efficient way.
+ */
+@property (nonatomic, assign) YGDisplay reactDisplay;
+
+/**
+ * The z-index of the view.
  */
 @property (nonatomic, assign) NSInteger reactZIndex;
 
 /**
- * The reactSubviews array, sorted by zIndex. This value is cached and
- * automatically recalculated if views are added or removed.
+ * Subviews sorted by z-index. Note that this method doesn't do any caching (yet)
+ * and sorts all the views each call.
  */
-@property (nonatomic, copy, readonly) NSArray<UIView *> *sortedReactSubviews;
+- (NSArray<UIView *> *)reactZIndexSortedSubviews;
 
 /**
  * Updates the subviews array based on the reactSubviews. Default behavior is
@@ -65,11 +85,28 @@
 - (void)reactAddControllerToClosestParent:(UIViewController *)controller;
 
 /**
- * Responder overrides - to be deprecated.
+ * Focus manipulation.
  */
-- (void)reactWillMakeFirstResponder;
-- (void)reactDidMakeFirstResponder;
-- (BOOL)reactRespondsToTouch:(UITouch *)touch;
+- (void)reactFocus;
+- (void)reactFocusIfNeeded;
+- (void)reactBlur;
+
+/**
+ * Useful properties for computing layout.
+ */
+@property (nonatomic, readonly) UIEdgeInsets reactBorderInsets;
+@property (nonatomic, readonly) UIEdgeInsets reactPaddingInsets;
+@property (nonatomic, readonly) UIEdgeInsets reactCompoundInsets;
+@property (nonatomic, readonly) CGRect reactContentFrame;
+
+/**
+ * The (sub)view which represents this view in terms of accessibility.
+ * ViewManager will apply all accessibility properties directly to this view.
+ * May be overriten in view subclass which needs to be accessiblitywise
+ * transparent in favour of some subview.
+ * Defaults to `self`.
+ */
+@property (nonatomic, readonly) UIView *reactAccessibilityElement;
 
 #if RCT_DEV
 

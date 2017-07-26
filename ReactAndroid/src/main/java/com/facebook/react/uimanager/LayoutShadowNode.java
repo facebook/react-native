@@ -4,14 +4,19 @@ package com.facebook.react.uimanager;
 
 import javax.annotation.Nullable;
 
-import java.util.Locale;
+
+import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.ReadableType;
 
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaDisplay;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
+import com.facebook.yoga.YogaUnit;
 import com.facebook.yoga.YogaWrap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
@@ -27,57 +32,161 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
  */
 public class LayoutShadowNode extends ReactShadowNode {
 
-  @ReactProp(name = ViewProps.WIDTH, defaultFloat = YogaConstants.UNDEFINED)
-  public void setWidth(float width) {
-    if (isVirtual()) {
-      return;
+  /**
+   * A Mutable version of com.facebook.yoga.YogaValue
+   */
+  private static class MutableYogaValue {
+    float value;
+    YogaUnit unit;
+
+    void setFromDynamic(Dynamic dynamic) {
+      if (dynamic.isNull()) {
+        unit = YogaUnit.UNDEFINED;
+        value = YogaConstants.UNDEFINED;
+      } else if (dynamic.getType() == ReadableType.String) {
+        final String s = dynamic.asString();
+        if (s.equals("auto")) {
+          unit = YogaUnit.AUTO;
+          value = YogaConstants.UNDEFINED;
+        } else if (s.endsWith("%")) {
+          unit = YogaUnit.PERCENT;
+          value = Float.parseFloat(s.substring(0, s.length() - 1));
+        } else {
+          throw new IllegalArgumentException("Unknown value: " + s);
+        }
+      } else {
+        unit = YogaUnit.POINT;
+        value = PixelUtil.toPixelFromDIP(dynamic.asDouble());
+      }
     }
-    setStyleWidth(YogaConstants.isUndefined(width) ? width : PixelUtil.toPixelFromDIP(width));
   }
 
-  @ReactProp(name = ViewProps.MIN_WIDTH, defaultFloat = YogaConstants.UNDEFINED)
-  public void setMinWidth(float minWidth) {
+  private final MutableYogaValue mTempYogaValue = new MutableYogaValue();
+
+  @ReactProp(name = ViewProps.WIDTH)
+  public void setWidth(Dynamic width) {
     if (isVirtual()) {
       return;
     }
-    setStyleMinWidth(
-      YogaConstants.isUndefined(minWidth) ? minWidth : PixelUtil.toPixelFromDIP(minWidth));
+
+    mTempYogaValue.setFromDynamic(width);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setStyleWidth(mTempYogaValue.value);
+        break;
+      case AUTO:
+        setStyleWidthAuto();
+        break;
+      case PERCENT:
+        setStyleWidthPercent(mTempYogaValue.value);
+        break;
+    }
+
+    width.recycle();
   }
 
-  @ReactProp(name = ViewProps.MAX_WIDTH, defaultFloat = YogaConstants.UNDEFINED)
-  public void setMaxWidth(float maxWidth) {
+  @ReactProp(name = ViewProps.MIN_WIDTH)
+  public void setMinWidth(Dynamic minWidth) {
     if (isVirtual()) {
       return;
     }
-    setStyleMaxWidth(
-      YogaConstants.isUndefined(maxWidth) ? maxWidth : PixelUtil.toPixelFromDIP(maxWidth));
+
+    mTempYogaValue.setFromDynamic(minWidth);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setStyleMinWidth(mTempYogaValue.value);
+        break;
+      case PERCENT:
+        setStyleMinWidthPercent(mTempYogaValue.value);
+        break;
+    }
+
+    minWidth.recycle();
   }
 
-  @ReactProp(name = ViewProps.HEIGHT, defaultFloat = YogaConstants.UNDEFINED)
-  public void setHeight(float height) {
+  @ReactProp(name = ViewProps.MAX_WIDTH)
+  public void setMaxWidth(Dynamic maxWidth) {
     if (isVirtual()) {
       return;
     }
-    setStyleHeight(
-      YogaConstants.isUndefined(height) ? height : PixelUtil.toPixelFromDIP(height));
+
+    mTempYogaValue.setFromDynamic(maxWidth);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setStyleMaxWidth(mTempYogaValue.value);
+        break;
+      case PERCENT:
+        setStyleMaxWidthPercent(mTempYogaValue.value);
+        break;
+    }
+
+    maxWidth.recycle();
   }
 
-  @ReactProp(name = ViewProps.MIN_HEIGHT, defaultFloat = YogaConstants.UNDEFINED)
-  public void setMinHeight(float minHeight) {
+  @ReactProp(name = ViewProps.HEIGHT)
+  public void setHeight(Dynamic height) {
     if (isVirtual()) {
       return;
     }
-    setStyleMinHeight(
-      YogaConstants.isUndefined(minHeight) ? minHeight : PixelUtil.toPixelFromDIP(minHeight));
+
+    mTempYogaValue.setFromDynamic(height);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setStyleHeight(mTempYogaValue.value);
+        break;
+      case AUTO:
+        setStyleHeightAuto();
+        break;
+      case PERCENT:
+        setStyleHeightPercent(mTempYogaValue.value);
+        break;
+    }
+
+    height.recycle();
   }
 
-  @ReactProp(name = ViewProps.MAX_HEIGHT, defaultFloat = YogaConstants.UNDEFINED)
-  public void setMaxHeight(float maxHeight) {
+  @ReactProp(name = ViewProps.MIN_HEIGHT)
+  public void setMinHeight(Dynamic minHeight) {
     if (isVirtual()) {
       return;
     }
-    setStyleMaxHeight(
-      YogaConstants.isUndefined(maxHeight) ? maxHeight : PixelUtil.toPixelFromDIP(maxHeight));
+
+    mTempYogaValue.setFromDynamic(minHeight);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setStyleMinHeight(mTempYogaValue.value);
+        break;
+      case PERCENT:
+        setStyleMinHeightPercent(mTempYogaValue.value);
+        break;
+    }
+
+    minHeight.recycle();
+  }
+
+  @ReactProp(name = ViewProps.MAX_HEIGHT)
+  public void setMaxHeight(Dynamic maxHeight) {
+    if (isVirtual()) {
+      return;
+    }
+
+    mTempYogaValue.setFromDynamic(maxHeight);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setStyleMaxHeight(mTempYogaValue.value);
+        break;
+      case PERCENT:
+        setStyleMaxHeightPercent(mTempYogaValue.value);
+        break;
+    }
+
+    maxHeight.recycle();
   }
 
   @ReactProp(name = ViewProps.FLEX, defaultFloat = 0f)
@@ -104,12 +213,27 @@ public class LayoutShadowNode extends ReactShadowNode {
     super.setFlexShrink(flexShrink);
   }
 
-  @ReactProp(name = ViewProps.FLEX_BASIS, defaultFloat = 0f)
-  public void setFlexBasis(float flexBasis) {
+  @ReactProp(name = ViewProps.FLEX_BASIS)
+  public void setFlexBasis(Dynamic flexBasis) {
     if (isVirtual()) {
       return;
     }
-    super.setFlexBasis(flexBasis);
+
+    mTempYogaValue.setFromDynamic(flexBasis);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setFlexBasis(mTempYogaValue.value);
+        break;
+      case AUTO:
+        setFlexBasisAuto();
+        break;
+      case PERCENT:
+        setFlexBasisPercent(mTempYogaValue.value);
+        break;
+    }
+
+    flexBasis.recycle();
   }
 
   @ReactProp(name = ViewProps.ASPECT_RATIO, defaultFloat = YogaConstants.UNDEFINED)
@@ -122,9 +246,34 @@ public class LayoutShadowNode extends ReactShadowNode {
     if (isVirtual()) {
       return;
     }
-    setFlexDirection(
-        flexDirection == null ? YogaFlexDirection.COLUMN : YogaFlexDirection.valueOf(
-            flexDirection.toUpperCase(Locale.US).replace("-", "_")));
+
+    if (flexDirection == null) {
+      setFlexDirection(YogaFlexDirection.COLUMN);
+      return;
+    }
+
+    switch (flexDirection) {
+      case "column": {
+        setFlexDirection(YogaFlexDirection.COLUMN);
+        break;
+      }
+      case "column-reverse": {
+        setFlexDirection(YogaFlexDirection.COLUMN_REVERSE);
+        break;
+      }
+      case "row": {
+        setFlexDirection(YogaFlexDirection.ROW);
+        break;
+      }
+      case "row-reverse": {
+        setFlexDirection(YogaFlexDirection.ROW_REVERSE);
+        break;
+      }
+      default: {
+        throw new JSApplicationIllegalArgumentException(
+            "invalid value for flexDirection: " + flexDirection);
+      }
+    }
   }
 
   @ReactProp(name = ViewProps.FLEX_WRAP)
@@ -132,12 +281,25 @@ public class LayoutShadowNode extends ReactShadowNode {
     if (isVirtual()) {
       return;
     }
-    if (flexWrap == null || flexWrap.equals("nowrap")) {
+
+    if (flexWrap == null) {
       setFlexWrap(YogaWrap.NO_WRAP);
-    } else if (flexWrap.equals("wrap")) {
-      setFlexWrap(YogaWrap.WRAP);
-    } else {
-      throw new IllegalArgumentException("Unknown flexWrap value: " + flexWrap);
+      return;
+    }
+
+    switch (flexWrap) {
+      case "nowrap": {
+        setFlexWrap(YogaWrap.NO_WRAP);
+        break;
+      }
+      case "wrap": {
+        setFlexWrap(YogaWrap.WRAP);
+        break;
+      }
+      default: {
+        throw new JSApplicationIllegalArgumentException(
+            "invalid value for flexWrap: " + flexWrap);
+      }
     }
   }
 
@@ -146,8 +308,50 @@ public class LayoutShadowNode extends ReactShadowNode {
     if (isVirtual()) {
       return;
     }
-    setAlignSelf(alignSelf == null ? YogaAlign.AUTO : YogaAlign.valueOf(
-            alignSelf.toUpperCase(Locale.US).replace("-", "_")));
+
+    if (alignSelf == null) {
+      setAlignSelf(YogaAlign.AUTO);
+      return;
+    }
+
+    switch (alignSelf) {
+      case "auto": {
+        setAlignSelf(YogaAlign.AUTO);
+        return;
+      }
+      case "flex-start": {
+        setAlignSelf(YogaAlign.FLEX_START);
+        return;
+      }
+      case "center": {
+        setAlignSelf(YogaAlign.CENTER);
+        return;
+      }
+      case "flex-end": {
+        setAlignSelf(YogaAlign.FLEX_END);
+        return;
+      }
+      case "stretch": {
+        setAlignSelf(YogaAlign.STRETCH);
+        return;
+      }
+      case "baseline": {
+        setAlignSelf(YogaAlign.BASELINE);
+        return;
+      }
+      case "space-between": {
+        setAlignSelf(YogaAlign.SPACE_BETWEEN);
+        return;
+      }
+      case "space-around": {
+        setAlignSelf(YogaAlign.SPACE_AROUND);
+        return;
+      }
+      default: {
+        throw new JSApplicationIllegalArgumentException(
+            "invalid value for alignSelf: " + alignSelf);
+      }
+    }
   }
 
   @ReactProp(name = ViewProps.ALIGN_ITEMS)
@@ -155,9 +359,101 @@ public class LayoutShadowNode extends ReactShadowNode {
     if (isVirtual()) {
       return;
     }
-    setAlignItems(
-        alignItems == null ? YogaAlign.STRETCH : YogaAlign.valueOf(
-            alignItems.toUpperCase(Locale.US).replace("-", "_")));
+
+    if (alignItems == null) {
+      setAlignItems(YogaAlign.STRETCH);
+      return;
+    }
+
+    switch (alignItems) {
+      case "auto": {
+        setAlignItems(YogaAlign.AUTO);
+        return;
+      }
+      case "flex-start": {
+        setAlignItems(YogaAlign.FLEX_START);
+        return;
+      }
+      case "center": {
+        setAlignItems(YogaAlign.CENTER);
+        return;
+      }
+      case "flex-end": {
+        setAlignItems(YogaAlign.FLEX_END);
+        return;
+      }
+      case "stretch": {
+        setAlignItems(YogaAlign.STRETCH);
+        return;
+      }
+      case "baseline": {
+        setAlignItems(YogaAlign.BASELINE);
+        return;
+      }
+      case "space-between": {
+        setAlignItems(YogaAlign.SPACE_BETWEEN);
+        return;
+      }
+      case "space-around": {
+        setAlignItems(YogaAlign.SPACE_AROUND);
+        return;
+      }
+      default: {
+        throw new JSApplicationIllegalArgumentException(
+            "invalid value for alignItems: " + alignItems);
+      }
+    }
+  }
+
+  @ReactProp(name = ViewProps.ALIGN_CONTENT)
+  public void setAlignContent(@Nullable String alignContent) {
+    if (isVirtual()) {
+      return;
+    }
+
+    if (alignContent == null) {
+      setAlignContent(YogaAlign.FLEX_START);
+      return;
+    }
+
+    switch (alignContent) {
+      case "auto": {
+        setAlignContent(YogaAlign.AUTO);
+        return;
+      }
+      case "flex-start": {
+        setAlignContent(YogaAlign.FLEX_START);
+        return;
+      }
+      case "center": {
+        setAlignContent(YogaAlign.CENTER);
+        return;
+      }
+      case "flex-end": {
+        setAlignContent(YogaAlign.FLEX_END);
+        return;
+      }
+      case "stretch": {
+        setAlignContent(YogaAlign.STRETCH);
+        return;
+      }
+      case "baseline": {
+        setAlignContent(YogaAlign.BASELINE);
+        return;
+      }
+      case "space-between": {
+        setAlignContent(YogaAlign.SPACE_BETWEEN);
+        return;
+      }
+      case "space-around": {
+        setAlignContent(YogaAlign.SPACE_AROUND);
+        return;
+      }
+      default: {
+        throw new JSApplicationIllegalArgumentException(
+            "invalid value for alignContent: " + alignContent);
+      }
+    }
   }
 
   @ReactProp(name = ViewProps.JUSTIFY_CONTENT)
@@ -165,8 +461,38 @@ public class LayoutShadowNode extends ReactShadowNode {
     if (isVirtual()) {
       return;
     }
-    setJustifyContent(justifyContent == null ? YogaJustify.FLEX_START : YogaJustify.valueOf(
-            justifyContent.toUpperCase(Locale.US).replace("-", "_")));
+
+    if (justifyContent == null) {
+      setJustifyContent(YogaJustify.FLEX_START);
+      return;
+    }
+
+    switch (justifyContent) {
+      case "flex-start": {
+        setJustifyContent(YogaJustify.FLEX_START);
+        break;
+      }
+      case "center": {
+        setJustifyContent(YogaJustify.CENTER);
+        break;
+      }
+      case "flex-end": {
+        setJustifyContent(YogaJustify.FLEX_END);
+        break;
+      }
+      case "space-between": {
+        setJustifyContent(YogaJustify.SPACE_BETWEEN);
+        break;
+      }
+      case "space-around": {
+        setJustifyContent(YogaJustify.SPACE_AROUND);
+        break;
+      }
+      default: {
+        throw new JSApplicationIllegalArgumentException(
+            "invalid value for justifyContent: " + justifyContent);
+      }
+    }
   }
 
   @ReactProp(name = ViewProps.OVERFLOW)
@@ -174,8 +500,57 @@ public class LayoutShadowNode extends ReactShadowNode {
     if (isVirtual()) {
       return;
     }
-    setOverflow(overflow == null ? YogaOverflow.VISIBLE : YogaOverflow.valueOf(
-            overflow.toUpperCase(Locale.US).replace("-", "_")));
+
+    if (overflow == null) {
+      setOverflow(YogaOverflow.VISIBLE);
+      return;
+    }
+
+    switch (overflow) {
+      case "visible": {
+        setOverflow(YogaOverflow.VISIBLE);
+        break;
+      }
+      case "hidden": {
+        setOverflow(YogaOverflow.HIDDEN);
+        break;
+      }
+      case "scroll": {
+        setOverflow(YogaOverflow.SCROLL);
+        break;
+      }
+      default: {
+        throw new JSApplicationIllegalArgumentException(
+            "invalid value for overflow: " + overflow);
+      }
+    }
+  }
+
+  @ReactProp(name = ViewProps.DISPLAY)
+  public void setDisplay(@Nullable String display) {
+    if (isVirtual()) {
+      return;
+    }
+
+    if (display == null) {
+      setDisplay(YogaDisplay.FLEX);
+      return;
+    }
+
+    switch (display) {
+      case "flex": {
+        setDisplay(YogaDisplay.FLEX);
+        break;
+      }
+      case "none": {
+        setDisplay(YogaDisplay.NONE);
+        break;
+      }
+      default: {
+        throw new JSApplicationIllegalArgumentException(
+            "invalid value for display: " + display);
+      }
+    }
   }
 
   @ReactPropGroup(names = {
@@ -186,12 +561,27 @@ public class LayoutShadowNode extends ReactShadowNode {
       ViewProps.MARGIN_RIGHT,
       ViewProps.MARGIN_TOP,
       ViewProps.MARGIN_BOTTOM,
-  }, defaultFloat = YogaConstants.UNDEFINED)
-  public void setMargins(int index, float margin) {
+  })
+  public void setMargins(int index, Dynamic margin) {
     if (isVirtual()) {
       return;
     }
-    setMargin(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], PixelUtil.toPixelFromDIP(margin));
+
+    mTempYogaValue.setFromDynamic(margin);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setMargin(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], mTempYogaValue.value);
+        break;
+      case AUTO:
+        setMarginAuto(ViewProps.PADDING_MARGIN_SPACING_TYPES[index]);
+        break;
+      case PERCENT:
+        setMarginPercent(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], mTempYogaValue.value);
+        break;
+    }
+
+    margin.recycle();
   }
 
   @ReactPropGroup(names = {
@@ -202,14 +592,24 @@ public class LayoutShadowNode extends ReactShadowNode {
       ViewProps.PADDING_RIGHT,
       ViewProps.PADDING_TOP,
       ViewProps.PADDING_BOTTOM,
-  }, defaultFloat = YogaConstants.UNDEFINED)
-  public void setPaddings(int index, float padding) {
+  })
+  public void setPaddings(int index, Dynamic padding) {
     if (isVirtual()) {
       return;
     }
-    setPadding(
-        ViewProps.PADDING_MARGIN_SPACING_TYPES[index],
-        YogaConstants.isUndefined(padding) ? padding : PixelUtil.toPixelFromDIP(padding));
+
+    mTempYogaValue.setFromDynamic(padding);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setPadding(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], mTempYogaValue.value);
+        break;
+      case PERCENT:
+        setPaddingPercent(ViewProps.PADDING_MARGIN_SPACING_TYPES[index], mTempYogaValue.value);
+        break;
+    }
+
+    padding.recycle();
   }
 
   @ReactPropGroup(names = {
@@ -231,14 +631,24 @@ public class LayoutShadowNode extends ReactShadowNode {
       ViewProps.RIGHT,
       ViewProps.TOP,
       ViewProps.BOTTOM,
-  }, defaultFloat = YogaConstants.UNDEFINED)
-  public void setPositionValues(int index, float position) {
+  })
+  public void setPositionValues(int index, Dynamic position) {
     if (isVirtual()) {
       return;
     }
-    setPosition(
-      ViewProps.POSITION_SPACING_TYPES[index],
-      YogaConstants.isUndefined(position) ? position : PixelUtil.toPixelFromDIP(position));
+
+    mTempYogaValue.setFromDynamic(position);
+    switch (mTempYogaValue.unit) {
+      case POINT:
+      case UNDEFINED:
+        setPosition(ViewProps.POSITION_SPACING_TYPES[index], mTempYogaValue.value);
+        break;
+      case PERCENT:
+        setPositionPercent(ViewProps.POSITION_SPACING_TYPES[index], mTempYogaValue.value);
+        break;
+    }
+
+    position.recycle();
   }
 
   @ReactProp(name = ViewProps.POSITION)
@@ -246,9 +656,26 @@ public class LayoutShadowNode extends ReactShadowNode {
     if (isVirtual()) {
       return;
     }
-    YogaPositionType positionType = position == null ?
-        YogaPositionType.RELATIVE : YogaPositionType.valueOf(position.toUpperCase(Locale.US));
-    setPositionType(positionType);
+
+    if (position == null) {
+      setPositionType(YogaPositionType.RELATIVE);
+      return;
+    }
+
+    switch (position) {
+      case "relative": {
+        setPositionType(YogaPositionType.RELATIVE);
+        break;
+      }
+      case "absolute": {
+        setPositionType(YogaPositionType.ABSOLUTE);
+        break;
+      }
+      default: {
+        throw new JSApplicationIllegalArgumentException(
+            "invalid value for position: " + position);
+      }
+    }
   }
 
   @Override

@@ -1,17 +1,16 @@
 TEST_SRCS = [
-  'CxxMessageQueueTest.cpp',
-  'jsarg_helpers.cpp',
-  'jsbigstring.cpp',
-  'jscexecutor.cpp',
-  'jsclogging.cpp',
-  'methodcall.cpp',
-  'value.cpp',
+    "RecoverableErrorTest.cpp",
+    "jsarg_helpers.cpp",
+    "jsbigstring.cpp",
+    "jscexecutor.cpp",
+    "jsclogging.cpp",
+    "methodcall.cpp",
+    "value.cpp",
 ]
 
 if THIS_IS_FBANDROID:
   include_defs('//ReactAndroid/DEFS')
   include_defs('//ReactAndroid/TEST_DEFS')
-
   jni_instrumentation_test_lib(
     name = 'tests',
     class_under_test = 'com/facebook/react/XplatBridgeTest',
@@ -19,6 +18,8 @@ if THIS_IS_FBANDROID:
     srcs = TEST_SRCS,
     compiler_flags = [
       '-fexceptions',
+      '-frtti',
+      '-std=c++14',
     ],
     deps = [
       '//native/third-party/android-ndk:android',
@@ -34,6 +35,7 @@ if THIS_IS_FBOBJC:
     srcs = TEST_SRCS,
     compiler_flags = [
       '-fexceptions',
+      '-frtti',
     ],
     deps = [
       '//xplat/folly:molly',

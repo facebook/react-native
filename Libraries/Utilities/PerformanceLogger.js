@@ -7,26 +7,41 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule PerformanceLogger
+ * @flow
+ * @format
  */
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const performanceNow = global.nativePerformanceNow || require('fbjs/lib/performanceNow');
+const Systrace = require('Systrace');
 
-var timespans = {};
-var extras = {};
+const infoLog = require('infoLog');
+const performanceNow =
+  global.nativePerformanceNow || require('fbjs/lib/performanceNow');
+
+type Timespan = {
+  description?: string,
+  totalTime?: number,
+  startTime?: number,
+  endTime?: number,
+};
+
+let timespans: {[key: string]: Timespan} = {};
+let extras: {[key: string]: any} = {};
+const cookies: {[key: string]: number} = {};
+
+const PRINT_TO_CONSOLE = false;
 
 /**
  * This is meant to collect and log performance data in production, which means
  * it needs to have minimal overhead.
  */
-var PerformanceLogger = {
-  addTimespan(key, lengthInMs, description) {
+const PerformanceLogger = {
+  addTimespan(key: string, lengthInMs: number, description?: string) {
     if (timespans[key]) {
       if (__DEV__) {
-        console.log(
+        infoLog(
           'PerformanceLogger: Attempting to add a timespan that already exists ',
-          key
+          key,
         );
       }
       return;
@@ -38,10 +53,10 @@ var PerformanceLogger = {
     };
   },
 
-  startTimespan(key, description) {
+  startTimespan(key: string, description?: string) {
     if (timespans[key]) {
       if (__DEV__) {
-        console.log(
+        infoLog(
           'PerformanceLogger: Attempting to start a timespan that already exists ',
           key,
         );
@@ -53,31 +68,41 @@ var PerformanceLogger = {
       description: description,
       startTime: performanceNow(),
     };
+    cookies[key] = Systrace.beginAsyncEvent(key);
+    if (__DEV__ && PRINT_TO_CONSOLE) {
+      infoLog('PerformanceLogger.js', 'start: ' + key);
+    }
   },
 
-  stopTimespan(key) {
-    if (!timespans[key] || !timespans[key].startTime) {
+  stopTimespan(key: string) {
+    const timespan = timespans[key];
+    if (!timespan || !timespan.startTime) {
       if (__DEV__) {
-        console.log(
+        infoLog(
           'PerformanceLogger: Attempting to end a timespan that has not started ',
           key,
         );
       }
       return;
     }
-    if (timespans[key].endTime) {
+    if (timespan.endTime) {
       if (__DEV__) {
-        console.log(
+        infoLog(
           'PerformanceLogger: Attempting to end a timespan that has already ended ',
-          key
+          key,
         );
       }
       return;
     }
 
-    timespans[key].endTime = performanceNow();
-    timespans[key].totalTime =
-      timespans[key].endTime - timespans[key].startTime;
+    timespan.endTime = performanceNow();
+    timespan.totalTime = timespan.endTime - (timespan.startTime || 0);
+    if (__DEV__ && PRINT_TO_CONSOLE) {
+      infoLog('PerformanceLogger.js', 'end: ' + key);
+    }
+
+    Systrace.endAsyncEvent(key, cookies[key]);
+    delete cookies[key];
   },
 
   clear() {
@@ -85,7 +110,16 @@ var PerformanceLogger = {
     extras = {};
   },
 
-  clearExceptTimespans(keys) {
+  clearCompleted() {
+    for (const key in timespans) {
+      if (timespans[key].totalTime) {
+        delete timespans[key];
+      }
+    }
+    extras = {};
+  },
+
+  clearExceptTimespans(keys: Array<string>) {
     timespans = Object.keys(timespans).reduce(function(previous, key) {
       if (keys.indexOf(key) !== -1) {
         previous[key] = timespans[key];
@@ -95,39 +129,43 @@ var PerformanceLogger = {
     extras = {};
   },
 
+  currentTimestamp() {
+    return performanceNow();
+  },
+
   getTimespans() {
     return timespans;
   },
 
-  hasTimespan(key) {
+  hasTimespan(key: string) {
     return !!timespans[key];
   },
 
   logTimespans() {
-    for (var key in timespans) {
+    for (const key in timespans) {
       if (timespans[key].totalTime) {
-        console.log(key + ': ' + timespans[key].totalTime + 'ms');
+        infoLog(key + ': ' + timespans[key].totalTime + 'ms');
       }
     }
   },
 
-  addTimespans(newTimespans, labels) {
-    for (var i = 0, l = newTimespans.length; i < l; i += 2) {
-      var label = labels[i / 2];
+  addTimespans(newTimespans: Array<number>, labels: Array<string>) {
+    for (let ii = 0, l = newTimespans.length; ii < l; ii += 2) {
+      const label = labels[ii / 2];
       PerformanceLogger.addTimespan(
         label,
-        (newTimespans[i + 1] - newTimespans[i]),
-        label
+        newTimespans[ii + 1] - newTimespans[ii],
+        label,
       );
     }
   },
 
-  setExtra(key, value) {
+  setExtra(key: string, value: any) {
     if (extras[key]) {
       if (__DEV__) {
-        console.log(
+        infoLog(
           'PerformanceLogger: Attempting to set an extra that already exists ',
-          key
+          {key, currentValue: extras[key], attemptedValue: value},
         );
       }
       return;
@@ -137,12 +175,7 @@ var PerformanceLogger = {
 
   getExtras() {
     return extras;
-  }
+  },
 };
-
-BatchedBridge.registerCallableModule(
-  'PerformanceLogger',
-  PerformanceLogger
-);
 
 module.exports = PerformanceLogger;

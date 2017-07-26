@@ -1,0 +1,38 @@
+include_defs("//ReactAndroid/DEFS")
+
+android_library(
+    name = "flat",
+    srcs = glob(["*.java"]),
+    provided_deps = [
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        YOGA_TARGET,
+        react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
+        react_native_dep("libraries/fresco/fresco-react-native:fbcore"),
+        react_native_dep("libraries/fresco/fresco-react-native:fresco-drawee"),
+        react_native_dep("libraries/fresco/fresco-react-native:fresco-react-native"),
+        react_native_dep("libraries/fresco/fresco-react-native:imagepipeline"),
+        react_native_dep("libraries/textlayoutbuilder:textlayoutbuilder"),
+        react_native_dep("third-party/java/infer-annotations:infer-annotations"),
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_target("java/com/facebook/react/bridge:bridge"),
+        react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/modules/fresco:fresco"),
+        react_native_target("java/com/facebook/react/modules/i18nmanager:i18nmanager"),
+        react_native_target("java/com/facebook/react/touch:touch"),
+        react_native_target("java/com/facebook/react/uimanager:uimanager"),
+        react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
+        react_native_target("java/com/facebook/react/views/art:art"),
+        react_native_target("java/com/facebook/react/views/image:image"),
+        react_native_target("java/com/facebook/react/views/imagehelper:withmultisource"),
+        react_native_target("java/com/facebook/react/views/modal:modal"),
+        react_native_target("java/com/facebook/react/views/text:text"),
+        react_native_target("java/com/facebook/react/views/textinput:textinput"),
+        react_native_target("java/com/facebook/react/views/view:view"),
+        react_native_target("java/com/facebook/react/views/viewpager:viewpager"),
+    ],
+)

@@ -15,6 +15,9 @@ import java.lang.reflect.Constructor;
 
 import android.content.Context;
 
+import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
+
 /**
  * A simple factory that creates instances of {@link DevSupportManager} implementations. Uses
  * reflection to create DevSupportManagerImpl if it exists. This allows ProGuard to strip that class
@@ -30,14 +33,17 @@ public class DevSupportManagerFactory {
       Context applicationContext,
       ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
       @Nullable String packagerPathForJSBundleName,
-      boolean enableOnCreate) {
+      boolean enableOnCreate,
+      int minNumShakes) {
 
     return create(
       applicationContext,
       reactInstanceCommandsHandler,
       packagerPathForJSBundleName,
       enableOnCreate,
-      null);
+      null,
+      null,
+      minNumShakes);
   }
 
   public static DevSupportManager create(
@@ -45,7 +51,9 @@ public class DevSupportManagerFactory {
     ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
     @Nullable String packagerPathForJSBundleName,
     boolean enableOnCreate,
-    @Nullable RedBoxHandler redBoxHandler) {
+    @Nullable RedBoxHandler redBoxHandler,
+    @Nullable DevBundleDownloadListener devBundleDownloadListener,
+    int minNumShakes) {
     if (!enableOnCreate) {
       return new DisabledDevSupportManager();
     }
@@ -66,13 +74,17 @@ public class DevSupportManagerFactory {
           ReactInstanceDevCommandsHandler.class,
           String.class,
           boolean.class,
-          RedBoxHandler.class);
+          RedBoxHandler.class,
+          DevBundleDownloadListener.class,
+          int.class);
       return (DevSupportManager) constructor.newInstance(
         applicationContext,
         reactInstanceCommandsHandler,
         packagerPathForJSBundleName,
         true,
-        redBoxHandler);
+        redBoxHandler,
+        devBundleDownloadListener,
+        minNumShakes);
     } catch (Exception e) {
       throw new RuntimeException(
         "Requested enabled DevSupportManager, but DevSupportManagerImpl class was not found" +
@@ -80,5 +92,4 @@ public class DevSupportManagerFactory {
         e);
     }
   }
-
 }

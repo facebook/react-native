@@ -13,68 +13,82 @@
 
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const React = require('React');
+const PropTypes = require('prop-types');
 const TimerMixin = require('react-timer-mixin');
 const Touchable = require('Touchable');
-const View = require('View');
 
+const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 const warning = require('fbjs/lib/warning');
 
-type Event = Object;
+const {
+  AccessibilityComponentTypes,
+  AccessibilityTraits,
+} = require('ViewAccessibility');
+
+export type Event = Object;
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
- * Do not use unless you have a very good reason. All the elements that
- * respond to press should have a visual feedback when touched. This is
- * one of the primary reasons a "web" app doesn't feel "native".
+ * Do not use unless you have a very good reason. All elements that
+ * respond to press should have a visual feedback when touched.
  *
- * > **NOTE**: TouchableWithoutFeedback supports only one child
- * >
- * > If you wish to have several child components, wrap them in a View.
+ * TouchableWithoutFeedback supports only one child.
+ * If you wish to have several child components, wrap them in a View.
  */
-const TouchableWithoutFeedback = React.createClass({
+const TouchableWithoutFeedback = createReactClass({
+  displayName: 'TouchableWithoutFeedback',
   mixins: [TimerMixin, Touchable.Mixin],
 
   propTypes: {
-    accessible: React.PropTypes.bool,
-    accessibilityComponentType: React.PropTypes.oneOf(View.AccessibilityComponentType),
-    accessibilityTraits: React.PropTypes.oneOfType([
-      React.PropTypes.oneOf(View.AccessibilityTraits),
-      React.PropTypes.arrayOf(React.PropTypes.oneOf(View.AccessibilityTraits)),
+    accessible: PropTypes.bool,
+    accessibilityComponentType: PropTypes.oneOf(
+      AccessibilityComponentTypes
+    ),
+    accessibilityTraits: PropTypes.oneOfType([
+      PropTypes.oneOf(AccessibilityTraits),
+      PropTypes.arrayOf(PropTypes.oneOf(AccessibilityTraits)),
     ]),
     /**
      * If true, disable all interactions for this component.
      */
-    disabled: React.PropTypes.bool,
+    disabled: PropTypes.bool,
     /**
      * Called when the touch is released, but not if cancelled (e.g. by a scroll
      * that steals the responder lock).
      */
-    onPress: React.PropTypes.func,
-    onPressIn: React.PropTypes.func,
-    onPressOut: React.PropTypes.func,
+    onPress: PropTypes.func,
+    /**
+    * Called as soon as the touchable element is pressed and invoked even before onPress.
+    * This can be useful when making network requests.
+    */
+    onPressIn: PropTypes.func,
+    /**
+    * Called as soon as the touch is released even before onPress.
+    */
+     onPressOut: PropTypes.func,
     /**
      * Invoked on mount and layout changes with
      *
      *   `{nativeEvent: {layout: {x, y, width, height}}}`
      */
-    onLayout: React.PropTypes.func,
+    onLayout: PropTypes.func,
 
-    onLongPress: React.PropTypes.func,
+    onLongPress: PropTypes.func,
 
     /**
      * Delay in ms, from the start of the touch, before onPressIn is called.
      */
-    delayPressIn: React.PropTypes.number,
+    delayPressIn: PropTypes.number,
     /**
      * Delay in ms, from the release of the touch, before onPressOut is called.
      */
-    delayPressOut: React.PropTypes.number,
+    delayPressOut: PropTypes.number,
     /**
      * Delay in ms, from onPressIn, before onLongPress is called.
      */
-    delayLongPress: React.PropTypes.number,
+    delayLongPress: PropTypes.number,
     /**
      * When the scroll view is disabled, this defines how far your touch may
      * move off of the button, before deactivating the button. Once deactivated,
@@ -82,6 +96,7 @@ const TouchableWithoutFeedback = React.createClass({
      * reactivated! Move it back and forth several times while the scroll view
      * is disabled. Ensure you pass in a constant to reduce memory allocations.
      */
+    // $FlowFixMe: Expected a React PropType instead
     pressRetentionOffset: EdgeInsetsPropType,
     /**
      * This defines how far your touch can start away from the button. This is
@@ -91,6 +106,7 @@ const TouchableWithoutFeedback = React.createClass({
      * of sibling views always takes precedence if a touch hits two overlapping
      * views.
      */
+    // $FlowFixMe: Expected a React PropType instead
     hitSlop: EdgeInsetsPropType,
   },
 
@@ -149,6 +165,7 @@ const TouchableWithoutFeedback = React.createClass({
 
   render: function(): React.Element<any> {
     // Note(avik): remove dynamic typecast once Flow has been upgraded
+    // $FlowFixMe(>=0.41.0)
     const child = React.Children.only(this.props.children);
     let children = child.props.children;
     warning(
@@ -157,9 +174,7 @@ const TouchableWithoutFeedback = React.createClass({
         ((child._owner && child._owner.getName && child._owner.getName()) || '<unknown>')
     );
     if (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'View') {
-      if (!Array.isArray(children)) {
-        children = [children];
-      }
+      children = React.Children.toArray(children);
       children.push(Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop}));
     }
     const style = (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'Text') ?
@@ -167,9 +182,13 @@ const TouchableWithoutFeedback = React.createClass({
       child.props.style;
     return (React: any).cloneElement(child, {
       accessible: this.props.accessible !== false,
+      // $FlowFixMe(>=0.41.0)
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
+      // $FlowFixMe(>=0.41.0)
+      nativeID: this.props.nativeID,
+      // $FlowFixMe(>=0.41.0)
       testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,

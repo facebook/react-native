@@ -27,6 +27,7 @@ import android.widget.FrameLayout;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -61,6 +62,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private @Nullable Dialog mDialog;
   private boolean mTransparent;
   private String mAnimationType;
+  private boolean mHardwareAccelerated;
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
   // be created.  For instance, animation does since it affects Dialog creation through the theme
   // but transparency does not since we can access the window to update the property.
@@ -153,6 +155,11 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     mPropertyRequiresNewDialog = true;
   }
 
+  protected void setHardwareAccelerated(boolean hardwareAccelerated) {
+    mHardwareAccelerated = hardwareAccelerated;
+    mPropertyRequiresNewDialog = true;
+  }
+
   @Override
   public void onHostResume() {
     // We show the dialog again when the host resumes
@@ -237,6 +244,9 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       });
 
     mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    if (mHardwareAccelerated) {
+      mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+    }
     mDialog.show();
   }
 
@@ -294,12 +304,14 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     protected void onSizeChanged(final int w, final int h, int oldw, int oldh) {
       super.onSizeChanged(w, h, oldw, oldh);
       if (getChildCount() > 0) {
-        ((ReactContext) getContext()).runOnNativeModulesQueueThread(
-          new Runnable() {
+        final int viewTag = getChildAt(0).getId();
+        ReactContext reactContext = (ReactContext) getContext();
+        reactContext.runUIBackgroundRunnable(
+          new GuardedRunnable(reactContext) {
             @Override
-            public void run() {
+            public void runGuarded() {
               ((ReactContext) getContext()).getNativeModule(UIManagerModule.class)
-                .updateNodeSize(getChildAt(0).getId(), w, h);
+                .updateNodeSize(viewTag, w, h);
             }
           });
       }

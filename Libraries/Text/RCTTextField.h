@@ -10,26 +10,15 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
+#import <React/RCTView.h>
 
-@class RCTEventDispatcher;
+#import "RCTTextInput.h"
 
-@interface RCTTextField : UITextField
+@class RCTUITextField;
+
+@interface RCTTextField : RCTTextInput
 
 @property (nonatomic, assign) BOOL caretHidden;
-@property (nonatomic, assign) BOOL selectTextOnFocus;
-@property (nonatomic, assign) BOOL blurOnSubmit;
-@property (nonatomic, assign) UIEdgeInsets contentInset;
-@property (nonatomic, strong) UIColor *placeholderTextColor;
-@property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, strong) NSNumber *maxLength;
-@property (nonatomic, assign) BOOL textWasPasted;
-
-@property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
-
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
-
-- (void)textFieldDidChange;
-- (void)sendKeyValueForString:(NSString *)string;
-- (BOOL)textFieldShouldEndEditing:(RCTTextField *)textField;
 
 @end

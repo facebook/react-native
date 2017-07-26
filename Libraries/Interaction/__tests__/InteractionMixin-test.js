@@ -9,7 +9,7 @@
  */
 'use strict';
 
-jest.unmock('InteractionMixin');
+jest.enableAutomock().unmock('InteractionMixin');
 
 describe('InteractionMixin', () => {
   var InteractionManager;
@@ -17,7 +17,7 @@ describe('InteractionMixin', () => {
   var component;
 
   beforeEach(() => {
-    jest.resetModuleRegistry();
+    jest.resetModules();
     InteractionManager = require('InteractionManager');
     InteractionMixin = require('InteractionMixin');
 

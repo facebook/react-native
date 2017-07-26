@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -10,12 +11,25 @@
 
 /**
  * This script bumps a new version for open source releases.
- * It updates the version in podspec/json/gradle files and makes sure they are consistent between each other
+ * It updates the version in json/gradle files and makes sure they are consistent between each other
  * After changing the files it makes a commit and tags it.
  * All you have to do is push changes to remote and CI will make a new build.
  */
-/*eslint-disable no-undef */
-require(`shelljs/global`);
+
+const {
+  cat,
+  echo,
+  exec,
+  exit,
+  sed,
+} = require('shelljs');
+
+const minimist = require('minimist');
+
+let argv = minimist(process.argv.slice(2), {
+  alias: {remote: 'r'},
+  default: {remote: 'origin'},
+});
 
 // - check we are in release branch, e.g. 0.33-stable
 let branch = exec(`git symbolic-ref --short HEAD`, {silent: true}).stdout.trim();
@@ -30,7 +44,7 @@ let versionMajor = branch.slice(0, branch.indexOf(`-stable`));
 
 // - check that argument version matches branch
 // e.g. 0.33.1 or 0.33.0-rc4
-let version = process.argv[2];
+let version = argv._[0];
 if (!version || version.indexOf(versionMajor) !== 0) {
   echo(`You must pass a tag like ${versionMajor}.[X]-rc[Y] to bump a version`);
   exit(1);
@@ -46,17 +60,11 @@ if (sed(`-i`, /^VERSION_NAME=.*/, `VERSION_NAME=${version}`, `ReactAndroid/gradl
   exit(1);
 }
 
-// - change React.podspec
-if (sed(`-i`, /s.version\s*=.*/, `s.version             = \"${version}\"`, `React.podspec`).code) {
-  echo(`Couldn't update version for React.podspec`);
-  exit(1);
-}
-
 // verify that files changed, we just do a git diff and check how many times version is added across files
 let numberOfChangedLinesWithNewVersion = exec(`git diff -U0 | grep '^[+]' | grep -c ${version} `, {silent: true})
   .stdout.trim();
-if (+numberOfChangedLinesWithNewVersion !== 3) {
-  echo(`Failed to update all the files. React.podspec, package.json and gradle.properties must have versions in them`);
+if (+numberOfChangedLinesWithNewVersion !== 2) {
+  echo(`Failed to update all the files. package.json and gradle.properties must have versions in them`);
   echo(`Fix the issue, revert and try again`);
   exec(`git diff`);
   exit(1);
@@ -77,17 +85,17 @@ if (exec(`git tag v${version}`).code) {
 }
 
 // Push newly created tag
-exec(`git push origin v${version}`);
+let remote = argv.remote;
+exec(`git push ${remote} v${version}`);
 
 // Tag latest if doing stable release
 if (version.indexOf(`rc`) === -1) {
   exec(`git tag -d latest`);
-  exec(`git push origin :latest`);
+  exec(`git push ${remote} :latest`);
   exec(`git tag latest`);
-  exec(`git push origin latest`);
+  exec(`git push ${remote} latest`);
 }
 
-exec(`git push origin ${branch} --follow-tags`);
+exec(`git push ${remote} ${branch} --follow-tags`);
 
 exit(0);
-/*eslint-enable no-undef */

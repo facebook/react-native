@@ -2,10 +2,9 @@ const fs = require('fs-extra');
 const path = require('path');
 const xcode = require('xcode');
 const log = require('npmlog');
-const plistParser = require('plist');
 const groupFilesByType = require('../groupFilesByType');
 const getPlist = require('./getPlist');
-const getPlistPath = require('./getPlistPath');
+const writePlist = require('./writePlist');
 const difference = require('lodash').difference;
 
 /**
@@ -27,7 +26,7 @@ module.exports = function unlinkAssetsIOS(files, projectConfig) {
   if (!project.pbxGroupByName('Resources')) {
     return log.error(
       'ERRGROUP',
-      `Group 'Resources' does not exist in your XCode project. There is nothing to unlink.`
+      `Group 'Resources' does not exist in your Xcode project. There is nothing to unlink.`
     );
   }
 
@@ -47,8 +46,5 @@ module.exports = function unlinkAssetsIOS(files, projectConfig) {
     project.writeSync()
   );
 
-  fs.writeFileSync(
-    getPlistPath(project, projectConfig.sourceDir),
-    plistParser.build(plist)
-  );
+  writePlist(project, projectConfig.sourceDir, plist);
 };

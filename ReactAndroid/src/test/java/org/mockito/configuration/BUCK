@@ -1,16 +1,12 @@
-include_defs('//ReactAndroid/DEFS')
+include_defs("//ReactAndroid/DEFS")
 
 android_library(
-  name = 'configuration',
-  srcs = glob(['**/*.java']),
-  deps = [
-    react_native_dep('third-party/java/mockito:mockito'),
-  ],
-  visibility = [
-    'PUBLIC',
-  ],
-)
-
-project_config(
-  src_target = ':configuration',
+    name = "configuration",
+    srcs = glob(["**/*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_dep("third-party/java/mockito:mockito"),
+    ],
 )

@@ -183,4 +183,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return NO;
 }
 
+#if TARGET_OS_TV
+
+- (BOOL)isUserInteractionEnabled
+{
+  return YES;
+}
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
+  if (context.nextFocusedView == self) {
+    [self becomeFirstResponder];
+  } else {
+    [self resignFirstResponder];
+  }
+}
+
+#endif
+
 @end

@@ -52,7 +52,7 @@ RCT_EXTERN NSString *const RCTDidInitializeModuleNotification;
  * For this reason, the block should always return new module instances, and
  * module instances should not be shared between bridges.
  */
-typedef NSArray<id<RCTBridgeModule>> *(^RCTBridgeModuleProviderBlock)(void);
+typedef NSArray<id<RCTBridgeModule>> *(^RCTBridgeModuleListProvider)(void);
 
 /**
  * This function returns the module name for a given class.
@@ -87,7 +87,7 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * parameters or configuration.
  */
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
-                   moduleProvider:(RCTBridgeModuleProviderBlock)block
+                   moduleProvider:(RCTBridgeModuleListProvider)block
                     launchOptions:(NSDictionary *)launchOptions;
 
 /**

@@ -14,6 +14,7 @@
 const ColorPropType = require('ColorPropType');
 const Platform = require('Platform');
 const React = require('React');
+const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TouchableNativeFeedback = require('TouchableNativeFeedback');
@@ -29,8 +30,8 @@ const invariant = require('fbjs/lib/invariant');
  * <center><img src="img/buttonExample.png"></img></center>
  *
  * If this button doesn't look right for your app, you can build your own
- * button using [TouchableOpacity](https://facebook.github.io/react-native/docs/touchableopacity.html)
- * or [TouchableNativeFeedback](https://facebook.github.io/react-native/docs/touchablenativefeedback.html).
+ * button using [TouchableOpacity](docs/touchableopacity.html)
+ * or [TouchableNativeFeedback](docs/touchablenativefeedback.html).
  * For inspiration, look at the [source code for this button component](https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js).
  * Or, take a look at the [wide variety of button components built by the community](https://js.coach/react-native?search=button).
  *
@@ -55,17 +56,18 @@ class Button extends React.Component {
     color?: ?string,
     accessibilityLabel?: ?string,
     disabled?: ?boolean,
+    testID?: ?string,
   };
 
   static propTypes = {
     /**
      * Text to display inside the button
      */
-    title: React.PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
     /**
      * Text to display for blindness accessibility features
      */
-    accessibilityLabel: React.PropTypes.string,
+    accessibilityLabel: PropTypes.string,
     /**
      * Color of the text (iOS), or background color of the button (Android)
      */
@@ -73,11 +75,15 @@ class Button extends React.Component {
     /**
      * If true, disable all interactions for this component.
      */
-    disabled: React.PropTypes.bool,
+    disabled: PropTypes.bool,
     /**
      * Handler to be called when the user taps the button
      */
-    onPress: React.PropTypes.func.isRequired,
+    onPress: PropTypes.func.isRequired,
+    /**
+     * Used to locate this view in end-to-end tests.
+     */
+    testID: PropTypes.string,
   };
 
   render() {
@@ -87,44 +93,43 @@ class Button extends React.Component {
       onPress,
       title,
       disabled,
+      testID,
     } = this.props;
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
-    const Touchable = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
-    if (color && Platform.OS === 'ios') {
-      textStyles.push({color: color});
-    } else if (color) {
-      buttonStyles.push({backgroundColor: color});
+    if (color) {
+      if (Platform.OS === 'ios') {
+        textStyles.push({color: color});
+      } else {
+        buttonStyles.push({backgroundColor: color});
+      }
     }
+    const accessibilityTraits = ['button'];
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
       textStyles.push(styles.textDisabled);
+      accessibilityTraits.push('disabled');
     }
     invariant(
       typeof title === 'string',
       'The title prop of a Button must be a string',
     );
     const formattedTitle = Platform.OS === 'android' ? title.toUpperCase() : title;
+    const Touchable = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
     return (
       <Touchable
         accessibilityComponentType="button"
         accessibilityLabel={accessibilityLabel}
-        accessibilityTraits={['button']}
+        accessibilityTraits={accessibilityTraits}
+        testID={testID}
         disabled={disabled}
         onPress={onPress}>
         <View style={buttonStyles}>
-          <Text style={textStyles}>{formattedTitle}</Text>
+          <Text style={textStyles} disabled={disabled}>{formattedTitle}</Text>
         </View>
       </Touchable>
     );
   }
-}
-
-// Material design blue from https://material.google.com/style/color.html#color-color-palette
-let defaultBlue = '#2196F3';
-if (Platform.OS === 'ios') {
-  // Measured default tintColor from iOS 10
-  defaultBlue = '#0C42FD';
 }
 
 const styles = StyleSheet.create({
@@ -132,20 +137,22 @@ const styles = StyleSheet.create({
     ios: {},
     android: {
       elevation: 4,
-      backgroundColor: defaultBlue,
+      // Material design blue from https://material.google.com/style/color.html#color-color-palette
+      backgroundColor: '#2196F3',
       borderRadius: 2,
     },
   }),
   text: Platform.select({
     ios: {
-      color: defaultBlue,
+      // iOS blue from https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/
+      color: '#007AFF',
       textAlign: 'center',
       padding: 8,
       fontSize: 18,
     },
     android: {
-      textAlign: 'center',
       color: 'white',
+      textAlign: 'center',
       padding: 8,
       fontWeight: '500',
     },

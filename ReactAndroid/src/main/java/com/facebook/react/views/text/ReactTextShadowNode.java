@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.graphics.Typeface;
+import android.os.Build;
 import android.text.BoringLayout;
 import android.text.Layout;
 import android.text.Spannable;
@@ -34,7 +35,7 @@ import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -80,11 +81,10 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   public static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
 
-  private static final TextPaint sTextPaintInstance = new TextPaint();
-
-  static {
-    sTextPaintInstance.setFlags(TextPaint.ANTI_ALIAS_FLAG);
-  }
+  // It's important to pass the ANTI_ALIAS_FLAG flag to the constructor rather than setting it
+  // later by calling setFlags. This is because the latter approach triggers a bug on Android 4.4.2.
+  // The bug is that unicode emoticons aren't measured properly which causes text to be clipped.
+  private static final TextPaint sTextPaintInstance = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
 
   private static class SetSpanOperation {
     protected int start, end;
@@ -195,7 +195,9 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     buildSpannedFromTextCSSNode(textCSSNode, sb, ops);
     if (textCSSNode.mFontSize == UNSET) {
       sb.setSpan(
-          new AbsoluteSizeSpan((int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))),
+          new AbsoluteSizeSpan(textCSSNode.mAllowFontScaling
+          ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))
+          : (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP))),
           0,
           sb.length(),
           Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -223,7 +225,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       new YogaMeasureFunction() {
         @Override
         public long measure(
-            YogaNodeAPI node,
+            YogaNode node,
             float width,
             YogaMeasureMode widthMode,
             float height,
@@ -246,14 +248,27 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                   (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
             // Is used when the width is not known and the text is not boring, ie. if it contains
             // unicode characters.
-            layout = new StaticLayout(
+
+            int hintWidth = (int) Math.ceil(desiredWidth);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+              layout = new StaticLayout(
                 text,
                 textPaint,
-                (int) Math.ceil(desiredWidth),
+                hintWidth,
                 Layout.Alignment.ALIGN_NORMAL,
                 1.f,
                 0.f,
                 true);
+            } else {
+              layout = StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, hintWidth)
+                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                .setLineSpacing(0.f, 1.f)
+                .setIncludePad(true)
+                .setBreakStrategy(mTextBreakStrategy)
+                .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL)
+                .build();
+            }
+
           } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
             // Is used for single-line, boring text when the width is either unknown or bigger
             // than the width of the text.
@@ -268,14 +283,25 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 true);
           } else {
             // Is used for multiline, boring text and the width is known.
-            layout = new StaticLayout(
-                text,
-                textPaint,
-                (int) width,
-                Layout.Alignment.ALIGN_NORMAL,
-                1.f,
-                0.f,
-                true);
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+              layout = new StaticLayout(
+                  text,
+                  textPaint,
+                  (int) width,
+                  Layout.Alignment.ALIGN_NORMAL,
+                  1.f,
+                  0.f,
+                  true);
+            } else {
+              layout = StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, (int) width)
+                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                .setLineSpacing(0.f, 1.f)
+                .setIncludePad(true)
+                .setBreakStrategy(mTextBreakStrategy)
+                .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL)
+                .build();
+            }
           }
 
           if (mNumberOfLines != UNSET &&
@@ -305,13 +331,18 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   private float mLineHeight = Float.NaN;
   private boolean mIsColorSet = false;
+  private boolean mAllowFontScaling = true;
   private int mColor;
   private boolean mIsBackgroundColorSet = false;
   private int mBackgroundColor;
 
   protected int mNumberOfLines = UNSET;
   protected int mFontSize = UNSET;
+  protected float mFontSizeInput = UNSET;
+  protected float mLineHeightInput = UNSET;
   protected int mTextAlign = Gravity.NO_GRAVITY;
+  protected int mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
+      0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
 
   private float mTextShadowOffsetDx = 0;
   private float mTextShadowOffsetDy = 0;
@@ -410,10 +441,26 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
-  @ReactProp(name = ViewProps.LINE_HEIGHT, defaultInt = UNSET)
-  public void setLineHeight(int lineHeight) {
-    mLineHeight = lineHeight == UNSET ? Float.NaN : PixelUtil.toPixelFromSP(lineHeight);
+  @ReactProp(name = ViewProps.LINE_HEIGHT, defaultFloat = UNSET)
+  public void setLineHeight(float lineHeight) {
+    mLineHeightInput = lineHeight;
+    if (lineHeight == UNSET) {
+      mLineHeight = Float.NaN;
+    } else {
+      mLineHeight = mAllowFontScaling ?
+        PixelUtil.toPixelFromSP(lineHeight) : PixelUtil.toPixelFromDIP(lineHeight);
+    }
     markUpdated();
+  }
+
+  @ReactProp(name = ViewProps.ALLOW_FONT_SCALING, defaultBoolean = true)
+  public void setAllowFontScaling(boolean allowFontScaling) {
+    if (allowFontScaling != mAllowFontScaling) {
+      mAllowFontScaling = allowFontScaling;
+      setFontSize(mFontSizeInput);
+      setLineHeight(mLineHeightInput);
+      markUpdated();
+    }
   }
 
   @ReactProp(name = ViewProps.TEXT_ALIGN)
@@ -437,8 +484,10 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = UNSET)
   public void setFontSize(float fontSize) {
+    mFontSizeInput = fontSize;
     if (fontSize != UNSET) {
-      fontSize = (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize));
+      fontSize = mAllowFontScaling ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
+        : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
     }
     mFontSize = (int) fontSize;
     markUpdated();
@@ -526,6 +575,25 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
+  @ReactProp(name = ViewProps.TEXT_BREAK_STRATEGY)
+  public void setTextBreakStrategy(@Nullable String textBreakStrategy) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return;
+    }
+
+    if (textBreakStrategy == null || "highQuality".equals(textBreakStrategy)) {
+      mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+    } else if ("simple".equals(textBreakStrategy)) {
+      mTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
+    } else if ("balanced".equals(textBreakStrategy)) {
+      mTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textBreakStrategy: " + textBreakStrategy);
+    }
+
+    markUpdated();
+  }
+
   @ReactProp(name = PROP_SHADOW_OFFSET)
   public void setTextShadowOffset(ReadableMap offsetMap) {
     mTextShadowOffsetDx = 0;
@@ -584,7 +652,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
           getPadding(Spacing.TOP),
           getPadding(Spacing.END),
           getPadding(Spacing.BOTTOM),
-          getTextAlign()
+          getTextAlign(),
+          mTextBreakStrategy
         );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -13,8 +13,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
 public enum YogaExperimentalFeature {
-  ROUNDING(0),
-  WEB_FLEX_BASIS(1);
+  WEB_FLEX_BASIS(0);
 
   private int mIntValue;
 
@@ -28,9 +27,8 @@ public enum YogaExperimentalFeature {
 
   public static YogaExperimentalFeature fromInt(int value) {
     switch (value) {
-      case 0: return ROUNDING;
-      case 1: return WEB_FLEX_BASIS;
-      default: throw new IllegalArgumentException("Unkown enum value: " + value);
+      case 0: return WEB_FLEX_BASIS;
+      default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }
 }

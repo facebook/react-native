@@ -12,9 +12,21 @@
 #import "RCTBridge.h"
 #import "RCTModalHostView.h"
 #import "RCTModalHostViewController.h"
-#import "RCTTouchHandler.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
+
+@implementation RCTConvert (RCTModalHostView)
+
+RCT_ENUM_CONVERTER(UIModalPresentationStyle, (@{
+  @"fullScreen": @(UIModalPresentationFullScreen),
+#if !TARGET_OS_TV
+  @"pageSheet": @(UIModalPresentationPageSheet),
+  @"formSheet": @(UIModalPresentationFormSheet),
+#endif
+  @"overFullScreen": @(UIModalPresentationOverFullScreen),
+}), UIModalPresentationFullScreen, integerValue)
+
+@end
 
 @interface RCTModalHostShadowView : RCTShadowView
 
@@ -26,8 +38,7 @@
 {
   [super insertReactSubview:subview atIndex:atIndex];
   if ([subview isKindOfClass:[RCTShadowView class]]) {
-    CGRect frame = {.origin = CGPointZero, .size = RCTScreenSize()};
-    [(RCTShadowView *)subview setFrame:frame];
+    ((RCTShadowView *)subview).size = RCTScreenSize();
   }
 }
 
@@ -93,6 +104,7 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(animationType, NSString)
+RCT_EXPORT_VIEW_PROPERTY(presentationStyle, UIModalPresentationStyle)
 RCT_EXPORT_VIEW_PROPERTY(transparent, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onShow, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(supportedOrientations, NSArray)

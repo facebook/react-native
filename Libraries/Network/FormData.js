@@ -71,7 +71,7 @@ class FormData {
       // an object with a `uri` attribute. Optionally, it can also
       // have a `name` and `type` attribute to specify filename and
       // content type (cf. web Blob interface.)
-      if (typeof value === 'object') {
+      if (typeof value === 'object' && value) {
         if (typeof value.name === 'string') {
           headers['content-disposition'] += '; filename="' + value.name + '"';
         }

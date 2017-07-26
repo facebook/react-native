@@ -1,28 +1,39 @@
-include_defs('//ReactAndroid/DEFS')
+include_defs("//ReactAndroid/DEFS")
 
 android_resource(
-  name = 'devsupport',
-  res = 'devsupport',
-  package = 'com.facebook.react',
-  visibility = [
-    react_native_target('java/com/facebook/react/devsupport/...'),
-  ],
+    name = "devsupport",
+    package = "com.facebook.react",
+    res = "devsupport",
+    visibility = [
+        react_native_target("java/com/facebook/react/devsupport/..."),
+    ],
 )
 
 android_resource(
-  name = 'shell',
-  res = 'shell',
-  package = 'com.facebook.react',
-  visibility = [
-    'PUBLIC',
-  ],
+    name = "shell",
+    package = "com.facebook.react",
+    res = "shell",
+    visibility = [
+        "PUBLIC",
+    ],
 )
 
 android_resource(
-  name = 'modal',
-  res = 'views/modal',
-  package = 'com.facebook.react',
-  visibility = [
-    'PUBLIC',
-  ],
+    name = "modal",
+    package = "com.facebook.react",
+    res = "views/modal",
+    visibility = [
+        "PUBLIC",
+    ],
 )
+
+android_resource(
+    name = "uimanager",
+    package = "com.facebook.react",
+    res = "views/uimanager",
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
+# New resource directories must be added to react-native-github/ReactAndroid/build.gradle

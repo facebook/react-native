@@ -52,8 +52,10 @@ import com.facebook.react.module.annotations.ReactModule;
 /**
  * Native module that provides image cropping functionality.
  */
-@ReactModule(name = "RKImageEditingManager")
+@ReactModule(name = ImageEditingManager.NAME)
 public class ImageEditingManager extends ReactContextBaseJavaModule {
+
+  protected static final String NAME = "ImageEditingManager";
 
   private static final List<String> LOCAL_URI_PREFIXES = Arrays.asList(
       "file://", "content://");
@@ -98,7 +100,7 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "RKImageEditingManager";
+    return NAME;
   }
 
   @Override
@@ -191,7 +193,9 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
         error);
     if (options.hasKey("displaySize")) {
       ReadableMap targetSize = options.getMap("displaySize");
-      cropTask.setTargetSize(targetSize.getInt("width"), targetSize.getInt("height"));
+      cropTask.setTargetSize(
+        (int) targetSize.getDouble("width"),
+        (int) targetSize.getDouble("height"));
     }
     cropTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }

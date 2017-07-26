@@ -2,21 +2,19 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := libreactnativefb
+LOCAL_MODULE := reactnative
 
 LOCAL_SRC_FILES := \
   CxxNativeModule.cpp \
-  Executor.cpp \
   Instance.cpp \
   JSCExecutor.cpp \
+  JSBigString.cpp \
   JSBundleType.cpp \
-  JSCLegacyProfiler.cpp \
   JSCLegacyTracing.cpp \
   JSCMemory.cpp \
   JSCNativeModules.cpp \
   JSCPerfStats.cpp \
   JSCTracing.cpp \
-  JSCWebWorker.cpp \
   JSIndexedRAMBundle.cpp \
   MethodCall.cpp \
   ModuleRegistry.cpp \

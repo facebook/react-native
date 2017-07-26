@@ -15,7 +15,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.LifecycleState;
-import com.facebook.react.uimanager.AppRegistry;
+import com.facebook.react.modules.appregistry.AppRegistry;
 
 /**
  * Helper class for dealing with JS tasks. Handles per-ReactContext active task tracking, starting /

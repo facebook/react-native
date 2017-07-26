@@ -22,7 +22,7 @@ Adding `flexDirection` to a component's `style` determines the **primary axis** 
 import React, { Component } from 'react';
 import { AppRegistry, View } from 'react-native';
 
-class FlexDirectionBasics extends Component {
+export default class FlexDirectionBasics extends Component {
   render() {
     return (
       // Try setting `flexDirection` to `column`.
@@ -35,6 +35,7 @@ class FlexDirectionBasics extends Component {
   }
 };
 
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () => FlexDirectionBasics);
 ```
 
@@ -46,7 +47,7 @@ Adding `justifyContent` to a component's style determines the **distribution** o
 import React, { Component } from 'react';
 import { AppRegistry, View } from 'react-native';
 
-class JustifyContentBasics extends Component {
+export default class JustifyContentBasics extends Component {
   render() {
     return (
       // Try setting `justifyContent` to `center`.
@@ -64,6 +65,7 @@ class JustifyContentBasics extends Component {
   }
 };
 
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () => JustifyContentBasics);
 ```
 
@@ -77,7 +79,7 @@ Adding `alignItems` to a component's style determines the **alignment** of child
 import React, { Component } from 'react';
 import { AppRegistry, View } from 'react-native';
 
-class AlignItemsBasics extends Component {
+export default class AlignItemsBasics extends Component {
   render() {
     return (
       // Try setting `alignItems` to 'flex-start'
@@ -97,6 +99,7 @@ class AlignItemsBasics extends Component {
   }
 };
 
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () => AlignItemsBasics);
 ```
 
@@ -104,4 +107,4 @@ AppRegistry.registerComponent('AwesomeProject', () => AlignItemsBasics);
 
 We've covered the basics, but there are many other styles you may need for layouts. The full list of props that control layout is documented [here](./docs/layout-props.html).
 
-We're getting close to being able to build a real application. One thing we are still missing is a way to take user input, so let's move on to [learn how to handle text input with the TextInput component](/react-native/docs/handling-text-input.html).
+We're getting close to being able to build a real application. One thing we are still missing is a way to take user input, so let's move on to [learn how to handle text input with the TextInput component](docs/handling-text-input.html).

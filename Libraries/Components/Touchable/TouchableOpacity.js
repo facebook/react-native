@@ -14,12 +14,15 @@
 // Note (avik): add @flow when Flow supports spread properties in propTypes
 
 var Animated = require('Animated');
+var Easing = require('Easing');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
+var PropTypes = require('prop-types');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
+var createReactClass = require('create-react-class');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var flattenStyle = require('flattenStyle');
 
@@ -30,8 +33,9 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 /**
  * A wrapper for making views respond properly to touches.
  * On press down, the opacity of the wrapped view is decreased, dimming it.
- * This is done without actually changing the view hierarchy, and in general is
- * easy to add to an app without weird side-effects.
+ *
+ * Opacity is controlled by wrapping the children in an Animated.View, which is
+ * added to the view hiearchy.  Be aware that this can affect layout.
  *
  * Example:
  *
@@ -48,7 +52,8 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * },
  * ```
  */
-var TouchableOpacity = React.createClass({
+var TouchableOpacity = createReactClass({
+  displayName: 'TouchableOpacity',
   mixins: [TimerMixin, Touchable.Mixin, NativeMethodsMixin],
 
   propTypes: {
@@ -57,7 +62,11 @@ var TouchableOpacity = React.createClass({
      * Determines what the opacity of the wrapped view should be when touch is
      * active. Defaults to 0.2.
      */
-    activeOpacity: React.PropTypes.number,
+    activeOpacity: PropTypes.number,
+    /**
+     * Apple TV parallax effects
+     */
+    tvParallaxProperties: PropTypes.object,
   },
 
   getDefaultProps: function() {
@@ -69,7 +78,7 @@ var TouchableOpacity = React.createClass({
   getInitialState: function() {
     return {
       ...this.touchableGetInitialState(),
-      anim: new Animated.Value(1),
+      anim: new Animated.Value(this._getChildStyleOpacityWithDefault()),
     };
   },
 
@@ -84,10 +93,15 @@ var TouchableOpacity = React.createClass({
   /**
    * Animate the touchable to a new opacity.
    */
-  setOpacityTo: function(value: number, duration: number = 150) {
+  setOpacityTo: function(value: number, duration: number) {
     Animated.timing(
       this.state.anim,
-      {toValue: value, duration: duration, useNativeDriver: true}
+      {
+        toValue: value,
+        duration: duration,
+        easing: Easing.inOut(Easing.quad),
+        useNativeDriver: true,
+      }
     ).start();
   },
 
@@ -96,8 +110,6 @@ var TouchableOpacity = React.createClass({
    * defined on your component.
    */
   touchableHandleActivePressIn: function(e: Event) {
-    this.clearTimeout(this._hideTimeout);
-    this._hideTimeout = null;
     if (e.dispatchConfig.registrationName === 'onResponderGrant') {
       this._opacityActive(0);
     } else {
@@ -107,19 +119,11 @@ var TouchableOpacity = React.createClass({
   },
 
   touchableHandleActivePressOut: function(e: Event) {
-    if (!this._hideTimeout) {
-      this._opacityInactive();
-    }
+    this._opacityInactive(250);
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
   touchableHandlePress: function(e: Event) {
-    this.clearTimeout(this._hideTimeout);
-    this._opacityActive(150);
-    this._hideTimeout = this.setTimeout(
-      this._opacityInactive,
-      this.props.delayPressOut || 100
-    );
     this.props.onPress && this.props.onPress(e);
   },
 
@@ -152,15 +156,17 @@ var TouchableOpacity = React.createClass({
     this.setOpacityTo(this.props.activeOpacity, duration);
   },
 
-  _opacityInactive: function() {
-    this.clearTimeout(this._hideTimeout);
-    this._hideTimeout = null;
-    var childStyle = flattenStyle(this.props.style) || {};
+  _opacityInactive: function(duration: number) {
     this.setOpacityTo(
-      childStyle.opacity === undefined ? 1 : childStyle.opacity,
-      150
+      this._getChildStyleOpacityWithDefault(),
+      duration
     );
   },
+
+  _getChildStyleOpacityWithDefault: function() {
+   var childStyle = flattenStyle(this.props.style) || {};
+   return childStyle.opacity == undefined ? 1 : childStyle.opacity;
+ },
 
   render: function() {
     return (
@@ -170,8 +176,11 @@ var TouchableOpacity = React.createClass({
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
         style={[this.props.style, {opacity: this.state.anim}]}
+        nativeID={this.props.nativeID}
         testID={this.props.testID}
         onLayout={this.props.onLayout}
+        isTVSelectable={true}
+        tvParallaxProperties={this.props.tvParallaxProperties}
         hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}

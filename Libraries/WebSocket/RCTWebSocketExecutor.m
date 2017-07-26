@@ -54,17 +54,8 @@ RCT_EXPORT_MODULE()
 - (void)setUp
 {
   if (!_url) {
-    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
-
-    NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"];
-    if (!port) {
-      port = [[[_bridge bundleURL] port] integerValue] ?: 8081;
-    }
-
-    NSString *host = [[_bridge bundleURL] host];
-    if (!host) {
-      host = @"localhost";
-    }
+    NSInteger port = [[[_bridge bundleURL] port] integerValue] ?: 8081;
+    NSString *host = [[_bridge bundleURL] host] ?: @"localhost";
     NSString *URLString = [NSString stringWithFormat:@"http://%@:%zd/debugger-proxy?role=client", host, port];
     _url = [RCTConvert NSURL:URLString];
   }
@@ -167,10 +158,7 @@ RCT_EXPORT_MODULE()
 
   dispatch_async(_jsQueue, ^{
     if (!self.valid) {
-      NSError *error = [NSError errorWithDomain:@"WS" code:1 userInfo:@{
-        NSLocalizedDescriptionKey: @"Runtime is not ready for debugging. Make sure Packager server is running."
-      }];
-      callback(error, nil);
+      callback(RCTErrorWithMessage(@"Runtime is not ready for debugging. Make sure Packager server is running."), nil);
       return;
     }
 
@@ -184,14 +172,27 @@ RCT_EXPORT_MODULE()
 
 - (void)executeApplicationScript:(NSData *)script sourceURL:(NSURL *)URL onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
+  // Hack: the bridge transitions out of loading state as soon as this method returns, which prevents us
+  // from completely invalidating the bridge and preventing an endless barage of RCTLog.logIfNoNativeHook
+  // calls if the JS execution environment is broken. We therefore block this thread until this message has returned.
+  dispatch_semaphore_t scriptSem = dispatch_semaphore_create(0);
+
   NSDictionary<NSString *, id> *message = @{
     @"method": @"executeApplicationScript",
     @"url": RCTNullIfNil(URL.absoluteString),
     @"inject": _injectedObjects,
   };
-  [self sendMessage:message onReply:^(NSError *error, NSDictionary<NSString *, id> *reply) {
-    onComplete(error);
+  [self sendMessage:message onReply:^(NSError *socketError, NSDictionary<NSString *, id> *reply) {
+    if (socketError) {
+      onComplete(socketError);
+    } else {
+      NSString *error = reply[@"error"];
+      onComplete(error ? RCTErrorWithMessage(error) : nil);
+    }
+    dispatch_semaphore_signal(scriptSem);
   }];
+
+  dispatch_semaphore_wait(scriptSem, DISPATCH_TIME_FOREVER);
 }
 
 - (void)flushedQueue:(RCTJavaScriptCallback)onComplete
@@ -227,9 +228,10 @@ RCT_EXPORT_MODULE()
       return;
     }
 
-    NSString *result = reply[@"result"];
-    id objcValue = RCTJSONParse(result, NULL);
-    onComplete(objcValue, nil);
+    NSError *jsonError;
+    id result = RCTJSONParse(reply[@"result"], &jsonError);
+    NSString *error = reply[@"error"];
+    onComplete(result, error ? RCTErrorWithMessage(error) : jsonError);
   }];
 }
 

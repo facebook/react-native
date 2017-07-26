@@ -15,6 +15,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.text.Layout;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -69,6 +70,11 @@ public class ReactTextView extends TextView implements ReactCompoundView {
       mTextAlign = nextTextAlign;
     }
     setGravityHorizontal(mTextAlign);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (getBreakStrategy() != update.getTextBreakStrategy()) {
+        setBreakStrategy(update.getTextBreakStrategy());
+      }
+    }
   }
 
   @Override
@@ -225,6 +231,7 @@ public class ReactTextView extends TextView implements ReactCompoundView {
 
   public void setNumberOfLines(int numberOfLines) {
     mNumberOfLines = numberOfLines == 0 ? ViewDefaults.NUMBER_OF_LINES : numberOfLines;
+    setSingleLine(mNumberOfLines == 1);
     setMaxLines(mNumberOfLines);
   }
 

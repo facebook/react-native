@@ -26,6 +26,9 @@
 // The only reason to modify this file is to add more warnings and
 // troubleshooting information for the `react-native init` command.
 //
+// To allow for graceful failure on older node versions, this file should
+// retain ES5 compatibility.
+//
 // Do not make breaking changes! We absolutely don't want to have to
 // tell people to update their global version of react-native-cli.
 //
@@ -48,6 +51,7 @@ var semver = require('semver');
  *   if you are in a RN app folder
  * init - to create a new project and npm install it
  *   --verbose - to print logs while init
+ *   --template - name of the template to use, e.g. --template navigation
  *   --version <alternative react-native package> - override default (https://registry.npmjs.org/react-native@latest),
  *      package to install, examples:
  *     - "0.22.0-rc1" - A new app will be created using a specific version of React Native from npm repo
@@ -56,7 +60,6 @@ var semver = require('semver');
  */
 
 var options = require('minimist')(process.argv.slice(2));
-checkForVersionArgument(options);
 
 var CLI_MODULE_PATH = function() {
   return path.resolve(
@@ -76,6 +79,10 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
   );
 };
 
+if (options._.length === 0 && (options.v || options.version)) {
+  printVersionsAndExit(REACT_NATIVE_PACKAGE_JSON_PATH());
+}
+
 // Use Yarn if available, it's much faster than the npm client.
 // Return the version of yarn installed on the system, null if yarn is not available.
 function getYarnVersionIfAvailable() {
@@ -83,7 +90,7 @@ function getYarnVersionIfAvailable() {
   try {
     // execSync returns a Buffer -> convert to string
     if (process.platform.startsWith('win')) {
-      yarnVersion = (execSync('yarn --version').toString() || '').trim();
+      yarnVersion = (execSync('yarn --version 2> NUL').toString() || '').trim();
     } else {
       yarnVersion = (execSync('yarn --version 2>/dev/null').toString() || '').trim();
     }
@@ -126,7 +133,8 @@ if (cli) {
       '  Options:',
       '',
       '    -h, --help    output usage information',
-      '    -v, --version output the version number',
+      '    -v, --version use a specific version of React Native',
+      '    --template use an app template. Use --template to see available templates.',
       '',
     ].join('\n'));
     process.exit(0);
@@ -162,7 +170,7 @@ if (cli) {
 }
 
 function validateProjectName(name) {
-  if (!name.match(/^[$A-Z_][0-9A-Z_$]*$/i)) {
+  if (!String(name).match(/^[$A-Z_][0-9A-Z_$]*$/i)) {
     console.error(
       '"%s" is not a valid name for a project. Please use a valid identifier ' +
         'name (alphanumeric).',
@@ -237,7 +245,9 @@ function createProject(name, options) {
     version: '0.0.1',
     private: true,
     scripts: {
-      start: 'node node_modules/react-native/local-cli/cli.js start'
+      start: 'node node_modules/react-native/local-cli/cli.js start',
+      ios: 'react-native run-ios',
+      android: 'react-native run-android',
     }
   };
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
@@ -259,10 +269,9 @@ function getInstallPackage(rnPackage) {
 }
 
 function run(root, projectName, options) {
-  // E.g. '0.38' or '/path/to/archive.tgz'
-  const rnPackage = options.version;
-  const forceNpmClient = options.npm;
-  const yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
+  var rnPackage = options.version; // e.g. '0.38' or '/path/to/archive.tgz'
+  var forceNpmClient = options.npm;
+  var yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
   var installCommand;
   if (options.installCommand) {
     // In CI environments it can be useful to provide a custom command,
@@ -315,14 +324,12 @@ function checkNodeVersion() {
   }
 }
 
-function checkForVersionArgument(options) {
-  if (options._.length === 0 && (options.v || options.version)) {
-    console.log('react-native-cli: ' + require('./package.json').version);
-    try {
-      console.log('react-native: ' + require(REACT_NATIVE_PACKAGE_JSON_PATH()).version);
-    } catch (e) {
-      console.log('react-native: n/a - not inside a React Native project directory');
-    }
-    process.exit();
+function printVersionsAndExit(reactNativePackageJsonPath) {
+  console.log('react-native-cli: ' + require('./package.json').version);
+  try {
+    console.log('react-native: ' + require(reactNativePackageJsonPath).version);
+  } catch (e) {
+    console.log('react-native: n/a - not inside a React Native project directory');
   }
+  process.exit();
 }

@@ -12,25 +12,28 @@
 'use strict';
 
 export type StackFrame = {
+  column: ?number,
   file: string,
   lineNumber: number,
-  column: number,
+  methodName: string,
 };
 
-var stacktraceParser = require('stacktrace-parser');
+export type ExtendedError = Error & {
+  framesToPop?: number,
+};
 
-function parseErrorStack(e: Error): Array<StackFrame> {
+function parseErrorStack(e: ExtendedError): Array<StackFrame> {
   if (!e || !e.stack) {
     return [];
   }
 
-  var stack = Array.isArray(e.stack) ? e.stack : stacktraceParser.parse(e.stack);
+  const stacktraceParser = require('stacktrace-parser');
+  const stack = Array.isArray(e.stack) ? e.stack : stacktraceParser.parse(e.stack);
 
-  var framesToPop = typeof e.framesToPop === 'number' ? e.framesToPop : 0;
+  let framesToPop = typeof e.framesToPop === 'number' ? e.framesToPop : 0;
   while (framesToPop--) {
     stack.shift();
   }
-
   return stack;
 }
 

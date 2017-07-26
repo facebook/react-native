@@ -17,7 +17,7 @@ module.exports = function createGroupWithMessage(project, path) {
 
     log.warn(
       'ERRGROUP',
-      `Group '${path}' does not exist in your XCode project. We have created it automatically for you.`
+      `Group '${path}' does not exist in your Xcode project. We have created it automatically for you.`
     );
   }
 

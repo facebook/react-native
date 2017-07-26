@@ -11,7 +11,7 @@ package com.facebook.react.devsupport;
 
 import android.text.SpannedString;
 
-import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
+import com.facebook.react.devsupport.interfaces.StackFrame;
 
 /**
  * Interface used by {@link DevSupportManagerImpl} to allow interception on any redboxes

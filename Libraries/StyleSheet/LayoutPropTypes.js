@@ -11,14 +11,14 @@
  */
 'use strict';
 
-var ReactPropTypes = require('React').PropTypes;
+var ReactPropTypes = require('prop-types');
 
 /**
  * React Native's layout system is based on Flexbox and is powered both
- * on iOS and Android by an open source project called css-layout:
- * https://github.com/facebook/css-layout
+ * on iOS and Android by an open source project called `Yoga`:
+ * https://github.com/facebook/yoga
  *
- * The implementation in css-layout is slightly different from what the
+ * The implementation in Yoga is slightly different from what the
  * Flexbox spec defines - for example, we chose more sensible default
  * values. Since our layout docs are generated from the comments in this
  * file, please keep a brief comment describing each prop type.
@@ -27,187 +27,269 @@ var ReactPropTypes = require('React').PropTypes;
  * algorithm and affect the positioning and sizing of views.
  */
 var LayoutPropTypes = {
+  /** `display` sets the display type of this component.
+   *
+   *  It works similarly to `display` in CSS, but only support 'flex' and 'none'.
+   *  'flex' is the default.
+   */
+  display: ReactPropTypes.oneOf([
+    'none',
+    'flex',
+  ]),
+
   /** `width` sets the width of this component.
    *
    *  It works similarly to `width` in CSS, but in React Native you
-   *  must use logical pixel units, rather than percents, ems, or any of that.
+   *  must use points or percentages. Ems and other units are not supported.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/width for more details.
    */
-  width: ReactPropTypes.number,
+  width: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `height` sets the height of this component.
    *
    *  It works similarly to `height` in CSS, but in React Native you
-   *  must use logical pixel units, rather than percents, ems, or any of that.
+   *  must use points or percentages. Ems and other units are not supported.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/height for more details.
    */
-  height: ReactPropTypes.number,
+  height: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `top` is the number of logical pixels to offset the top edge of
    *  this component.
    *
-   *  It works similarly to `top` in CSS, but in React Native you must
-   *  use logical pixel units, rather than percents, ems, or any of that.
+   *  It works similarly to `top` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
    *
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/top
    *  for more details of how `top` affects layout.
    */
-  top: ReactPropTypes.number,
+  top: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `left` is the number of logical pixels to offset the left edge of
    *  this component.
    *
-   *  It works similarly to `left` in CSS, but in React Native you must
-   *  use logical pixel units, rather than percents, ems, or any of that.
+   *  It works similarly to `left` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
    *
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/left
    *  for more details of how `left` affects layout.
    */
-  left: ReactPropTypes.number,
+  left: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `right` is the number of logical pixels to offset the right edge of
    *  this component.
    *
-   *  It works similarly to `right` in CSS, but in React Native you must
-   *  use logical pixel units, rather than percents, ems, or any of that.
+   *  It works similarly to `right` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
    *
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/right
    *  for more details of how `right` affects layout.
    */
-  right: ReactPropTypes.number,
+  right: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `bottom` is the number of logical pixels to offset the bottom edge of
    *  this component.
    *
-   *  It works similarly to `bottom` in CSS, but in React Native you must
-   *  use logical pixel units, rather than percents, ems, or any of that.
+   *  It works similarly to `bottom` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
    *
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/bottom
    *  for more details of how `bottom` affects layout.
    */
-  bottom: ReactPropTypes.number,
+  bottom: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `minWidth` is the minimum width for this component, in logical pixels.
    *
    *  It works similarly to `min-width` in CSS, but in React Native you
-   *  must use logical pixel units, rather than percents, ems, or any of that.
+   *  must use points or percentages. Ems and other units are not supported.
    *
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/min-width
    *  for more details.
    */
-  minWidth: ReactPropTypes.number,
+  minWidth: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `maxWidth` is the maximum width for this component, in logical pixels.
    *
    *  It works similarly to `max-width` in CSS, but in React Native you
-   *  must use logical pixel units, rather than percents, ems, or any of that.
+   *  must use points or percentages. Ems and other units are not supported.
    *
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/max-width
    *  for more details.
    */
-  maxWidth: ReactPropTypes.number,
+  maxWidth: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `minHeight` is the minimum height for this component, in logical pixels.
    *
    *  It works similarly to `min-height` in CSS, but in React Native you
-   *  must use logical pixel units, rather than percents, ems, or any of that.
+   *  must use points or percentages. Ems and other units are not supported.
    *
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/min-height
    *  for more details.
    */
-  minHeight: ReactPropTypes.number,
+  minHeight: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `maxHeight` is the maximum height for this component, in logical pixels.
    *
    *  It works similarly to `max-height` in CSS, but in React Native you
-   *  must use logical pixel units, rather than percents, ems, or any of that.
+   *  must use points or percentages. Ems and other units are not supported.
    *
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/max-height
    *  for more details.
    */
-  maxHeight: ReactPropTypes.number,
+  maxHeight: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** Setting `margin` has the same effect as setting each of
    *  `marginTop`, `marginLeft`, `marginBottom`, and `marginRight`.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin
    *  for more details.
    */
-  margin: ReactPropTypes.number,
+  margin: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** Setting `marginVertical` has the same effect as setting both
    *  `marginTop` and `marginBottom`.
    */
-  marginVertical: ReactPropTypes.number,
+  marginVertical: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** Setting `marginHorizontal` has the same effect as setting
    *  both `marginLeft` and `marginRight`.
    */
-  marginHorizontal: ReactPropTypes.number,
+  marginHorizontal: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `marginTop` works like `margin-top` in CSS.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-top
    *  for more details.
    */
-  marginTop: ReactPropTypes.number,
+  marginTop: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `marginBottom` works like `margin-bottom` in CSS.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-bottom
    *  for more details.
    */
-  marginBottom: ReactPropTypes.number,
+  marginBottom: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `marginLeft` works like `margin-left` in CSS.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-left
    *  for more details.
    */
-  marginLeft: ReactPropTypes.number,
+  marginLeft: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `marginRight` works like `margin-right` in CSS.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/margin-right
    *  for more details.
    */
-  marginRight: ReactPropTypes.number,
+  marginRight: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** Setting `padding` has the same effect as setting each of
    *  `paddingTop`, `paddingBottom`, `paddingLeft`, and `paddingRight`.
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/padding
    *  for more details.
    */
-  padding: ReactPropTypes.number,
+  padding: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** Setting `paddingVertical` is like setting both of
    *  `paddingTop` and `paddingBottom`.
    */
-  paddingVertical: ReactPropTypes.number,
+  paddingVertical: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** Setting `paddingHorizontal` is like setting both of
    *  `paddingLeft` and `paddingRight`.
    */
-  paddingHorizontal: ReactPropTypes.number,
+  paddingHorizontal: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `paddingTop` works like `padding-top` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-top
    * for more details.
    */
-  paddingTop: ReactPropTypes.number,
+  paddingTop: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `paddingBottom` works like `padding-bottom` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-bottom
    * for more details.
    */
-  paddingBottom: ReactPropTypes.number,
+  paddingBottom: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `paddingLeft` works like `padding-left` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-left
    * for more details.
    */
-  paddingLeft: ReactPropTypes.number,
+  paddingLeft: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `paddingRight` works like `padding-right` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/padding-right
    * for more details.
    */
-  paddingRight: ReactPropTypes.number,
+  paddingRight: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /** `borderWidth` works like `border-width` in CSS.
    * See https://developer.mozilla.org/en-US/docs/Web/CSS/border-width
@@ -251,7 +333,7 @@ var LayoutPropTypes = {
    *  that is not its parent, just don't use styles for that. Use the
    *  component tree.
    *
-   *  See https://github.com/facebook/css-layout
+   *  See https://github.com/facebook/yoga
    *  for more details on how `position` differs between React Native
    *  and CSS.
    */
@@ -311,7 +393,8 @@ var LayoutPropTypes = {
     'flex-start',
     'flex-end',
     'center',
-    'stretch'
+    'stretch',
+    'baseline'
   ]),
 
   /** `alignSelf` controls how a child aligns in the cross direction,
@@ -325,15 +408,32 @@ var LayoutPropTypes = {
     'flex-start',
     'flex-end',
     'center',
-    'stretch'
+    'stretch',
+    'baseline'
+  ]),
+
+  /** `alignContent` controls how rows align in the cross direction,
+   *  overriding the `alignContent` of the parent.
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/align-content
+   *  for more details.
+   */
+  alignContent: ReactPropTypes.oneOf([
+    'flex-start',
+    'flex-end',
+    'center',
+    'stretch',
+    'space-between',
+    'space-around'
   ]),
 
   /** `overflow` controls how a children are measured and displayed.
    *  `overflow: hidden` causes views to be clipped while `overflow: scroll`
-   *  causes views to be measured independently of their parents main axis.`
+   *  causes views to be measured independently of their parents main axis.
    *  It works like `overflow` in CSS (default: visible).
    *  See https://developer.mozilla.org/en/docs/Web/CSS/overflow
    *  for more details.
+   *  `overflow: visible` only works on iOS. On Android, all views will clip
+   *  their children.
    */
   overflow: ReactPropTypes.oneOf([
     'visible',
@@ -343,8 +443,8 @@ var LayoutPropTypes = {
 
   /** In React Native `flex` does not work the same way that it does in CSS.
    *  `flex` is a number rather than a string, and it works
-   *  according to the `css-layout` library
-   *  at https://github.com/facebook/css-layout.
+   *  according to the `Yoga` library
+   *  at https://github.com/facebook/yoga
    *
    *  When `flex` is a positive number, it makes the component flexible
    *  and it will be sized proportional to its flex value. So a
@@ -363,7 +463,10 @@ var LayoutPropTypes = {
   flex: ReactPropTypes.number,
   flexGrow: ReactPropTypes.number,
   flexShrink: ReactPropTypes.number,
-  flexBasis: ReactPropTypes.number,
+  flexBasis: ReactPropTypes.oneOfType([
+    ReactPropTypes.number,
+    ReactPropTypes.string,
+  ]),
 
   /**
    * Aspect ratio control the size of the undefined dimension of a node. Aspect ratio is a
@@ -393,6 +496,19 @@ var LayoutPropTypes = {
    *  more details.
    */
   zIndex: ReactPropTypes.number,
+
+  /** `direction` specifies the directional flow of the user interface.
+   *  The default is `inherit`, except for root node which will have
+   *  value based on the current locale.
+   *  See https://facebook.github.io/yoga/docs/rtl/
+   *  for more details.
+   *  @platform ios
+   */
+  direction: ReactPropTypes.oneOf([
+    'inherit',
+    'ltr',
+    'rtl',
+  ]),
 };
 
 module.exports = LayoutPropTypes;

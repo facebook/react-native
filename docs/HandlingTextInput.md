@@ -4,11 +4,11 @@ title: Handling Text Input
 layout: docs
 category: The Basics
 permalink: docs/handling-text-input.html
-next: using-a-scrollview
+next: handling-touches
 previous: flexbox
 ---
 
-[`TextInput`](/react-native/docs/textinput.html#content) is a basic component that allows the user to enter text. It has an `onChangeText` prop that takes
+[`TextInput`](docs/textinput.html#content) is a basic component that allows the user to enter text. It has an `onChangeText` prop that takes
 a function to be called every time the text changed, and an `onSubmitEditing` prop that takes a function to be called when the text is submitted.
 
 For example, let's say that as the user types, you're translating their words  into a different language. In this new language, every single word is written the same way: 🍕. So the sentence "Hello there Bob" would be translated
@@ -18,7 +18,7 @@ as "🍕🍕🍕".
 import React, { Component } from 'react';
 import { AppRegistry, Text, TextInput, View } from 'react-native';
 
-class PizzaTranslator extends Component {
+export default class PizzaTranslator extends Component {
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -40,11 +40,12 @@ class PizzaTranslator extends Component {
   }
 }
 
-AppRegistry.registerComponent('PizzaTranslator', () => PizzaTranslator);
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => PizzaTranslator);
 ```
 
 In this example, we store `text` in the state, because it changes over time.
 
-There are a lot more things you might want to do with a text input. For example, you could validate the text inside while the user types. For more detailed examples, see the [React docs on controlled components](https://facebook.github.io/react/docs/forms.html), or the [reference docs for TextInput](/react-native/docs/textinput.html).
+There are a lot more things you might want to do with a text input. For example, you could validate the text inside while the user types. For more detailed examples, see the [React docs on controlled components](https://facebook.github.io/react/docs/forms.html), or the [reference docs for TextInput](docs/textinput.html).
 
-Text input is probably the simplest example of a component whose state naturally changes over time. Next, let's look at another type of component like this one that controls layout, and [learn about the ScrollView](/react-native/docs/using-a-scrollview.html).
+Text input is one of the ways the user interacts with the app. Next, let's look at another type of input and [learn how to handle touches](docs/handling-touches.html).

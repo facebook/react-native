@@ -19,6 +19,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
@@ -79,6 +80,7 @@ public class ReactEditText extends EditText {
   private @Nullable String mReturnKeyType;
   private @Nullable SelectionWatcher mSelectionWatcher;
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
+  private @Nullable ScrollWatcher mScrollWatcher;
   private final InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
 
@@ -105,6 +107,7 @@ public class ReactEditText extends EditText {
     mTextWatcherDelegator = null;
     mStagedInputType = getInputType();
     mKeyListener = new InternalKeyListener();
+    mScrollWatcher = null;
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
@@ -171,6 +174,15 @@ public class ReactEditText extends EditText {
   }
 
   @Override
+  protected void onScrollChanged(int horiz, int vert, int oldHoriz, int oldVert) {
+    super.onScrollChanged(horiz, vert, oldHoriz, oldVert);
+
+    if (mScrollWatcher != null) {
+      mScrollWatcher.onScrollChanged(horiz, vert, oldHoriz, oldVert);
+    }
+  }
+
+  @Override
   public void clearFocus() {
     setFocusableInTouchMode(false);
     super.clearFocus();
@@ -217,6 +229,10 @@ public class ReactEditText extends EditText {
 
   public void setContentSizeWatcher(ContentSizeWatcher contentSizeWatcher) {
     mContentSizeWatcher = contentSizeWatcher;
+  }
+
+  public void setScrollWatcher(ScrollWatcher scrollWatcher) {
+    mScrollWatcher = scrollWatcher;
   }
 
   @Override
@@ -340,6 +356,11 @@ public class ReactEditText extends EditText {
     mIsSettingTextFromJS = true;
     getText().replace(0, length(), spannableStringBuilder);
     mIsSettingTextFromJS = false;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (getBreakStrategy() != reactTextUpdate.getTextBreakStrategy()) {
+        setBreakStrategy(reactTextUpdate.getTextBreakStrategy());
+      }
+    }
   }
 
   /**
@@ -607,6 +628,10 @@ public class ReactEditText extends EditText {
         for (TextWatcher listener : mListeners) {
           listener.onTextChanged(s, start, before, count);
         }
+      }
+
+      if (mContentSizeWatcher != null) {
+        mContentSizeWatcher.onLayout();
       }
     }
 

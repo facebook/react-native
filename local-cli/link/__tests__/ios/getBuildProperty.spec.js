@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const xcode = require('xcode');
 const path = require('path');
 const getBuildProperty = require('../../ios/getBuildProperty');
@@ -17,6 +15,6 @@ describe('ios::getBuildProperty', () => {
 
   it('should return build property from main target', () => {
     const plistPath = getBuildProperty(project, 'INFOPLIST_FILE');
-    expect(plistPath).toEqual('"Basic/Info.plist"');
+    expect(plistPath).toEqual('Basic/Info.plist');
   });
 });

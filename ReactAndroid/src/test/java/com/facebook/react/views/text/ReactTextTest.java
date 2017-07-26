@@ -23,7 +23,6 @@ import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.UnderlineSpan;
-import android.view.Choreographer;
 import android.widget.TextView;
 
 import com.facebook.react.ReactRootView;
@@ -32,7 +31,8 @@ import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
-import com.facebook.react.uimanager.ReactChoreographer;
+import com.facebook.react.modules.core.ChoreographerCompat;
+import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
@@ -68,32 +68,32 @@ public class ReactTextTest {
   @Rule
   public PowerMockRule rule = new PowerMockRule();
 
-  private ArrayList<Choreographer.FrameCallback> mPendingChoreographerCallbacks;
+  private ArrayList<ChoreographerCompat.FrameCallback> mPendingFrameCallbacks;
 
   @Before
   public void setUp() {
     PowerMockito.mockStatic(Arguments.class, ReactChoreographer.class);
 
-    ReactChoreographer choreographerMock = mock(ReactChoreographer.class);
+    ReactChoreographer uiDriverMock = mock(ReactChoreographer.class);
     PowerMockito.when(Arguments.createMap()).thenAnswer(new Answer<Object>() {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
         return new JavaOnlyMap();
       }
     });
-    PowerMockito.when(ReactChoreographer.getInstance()).thenReturn(choreographerMock);
+    PowerMockito.when(ReactChoreographer.getInstance()).thenReturn(uiDriverMock);
 
-    mPendingChoreographerCallbacks = new ArrayList<>();
+    mPendingFrameCallbacks = new ArrayList<>();
     doAnswer(new Answer() {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
-        mPendingChoreographerCallbacks
-            .add((Choreographer.FrameCallback) invocation.getArguments()[1]);
+        mPendingFrameCallbacks
+            .add((ChoreographerCompat.FrameCallback) invocation.getArguments()[1]);
         return null;
       }
-    }).when(choreographerMock).postFrameCallback(
+    }).when(uiDriverMock).postFrameCallback(
         any(ReactChoreographer.CallbackType.class),
-        any(Choreographer.FrameCallback.class));
+        any(ChoreographerCompat.FrameCallback.class));
   }
 
   @Test
@@ -379,7 +379,7 @@ public class ReactTextTest {
       JavaOnlyMap textProps,
       JavaOnlyMap rawTextProps) {
     ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
-    int rootTag = uiManager.addMeasuredRootView(rootView);
+    int rootTag = uiManager.addRootView(rootView);
     int textTag = rootTag + 1;
     int rawTextTag = textTag + 1;
 
@@ -411,15 +411,15 @@ public class ReactTextTest {
         null);
 
     uiManager.onBatchComplete();
-    executePendingChoreographerCallbacks();
+    executePendingFrameCallbacks();
     return rootView;
   }
 
-  private void executePendingChoreographerCallbacks() {
-    ArrayList<Choreographer.FrameCallback> callbacks =
-        new ArrayList<>(mPendingChoreographerCallbacks);
-    mPendingChoreographerCallbacks.clear();
-    for (Choreographer.FrameCallback frameCallback : callbacks) {
+  private void executePendingFrameCallbacks() {
+    ArrayList<ChoreographerCompat.FrameCallback> callbacks =
+        new ArrayList<>(mPendingFrameCallbacks);
+    mPendingFrameCallbacks.clear();
+    for (ChoreographerCompat.FrameCallback frameCallback : callbacks) {
       frameCallback.doFrame(0);
     }
   }
@@ -434,7 +434,8 @@ public class ReactTextTest {
     UIManagerModule uiManagerModule = new UIManagerModule(
         reactContext,
         viewManagers,
-        new UIImplementationProvider());
+        new UIImplementationProvider(),
+        false);
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

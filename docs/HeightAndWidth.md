@@ -18,7 +18,7 @@ The simplest way to set the dimensions of a component is by adding a fixed `widt
 import React, { Component } from 'react';
 import { AppRegistry, View } from 'react-native';
 
-class FixedDimensionsBasics extends Component {
+export default class FixedDimensionsBasics extends Component {
   render() {
     return (
       <View>
@@ -28,8 +28,9 @@ class FixedDimensionsBasics extends Component {
       </View>
     );
   }
-};
+}
 
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () => FixedDimensionsBasics);
 ```
 
@@ -45,7 +46,7 @@ Use `flex` in a component's style to have the component expand and shrink dynami
 import React, { Component } from 'react';
 import { AppRegistry, View } from 'react-native';
 
-class FlexDimensionsBasics extends Component {
+export default class FlexDimensionsBasics extends Component {
   render() {
     return (
       // Try removing the `flex: 1` on the parent View.
@@ -58,9 +59,10 @@ class FlexDimensionsBasics extends Component {
       </View>
     );
   }
-};
+}
 
+// skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () => FlexDimensionsBasics);
 ```
 
-After you can control a component's size, the next step is to [learn how to lay it out on the screen](/react-native/docs/flexbox.html).
+After you can control a component's size, the next step is to [learn how to lay it out on the screen](docs/flexbox.html).

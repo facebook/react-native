@@ -1,7 +1,9 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "JSIndexedRAMBundle.h"
+
 #include "oss-compat-util.h"
+#include "JSBigString.h"
 
 namespace facebook {
 namespace react {
@@ -45,7 +47,7 @@ JSIndexedRAMBundle::Module JSIndexedRAMBundle::getModule(uint32_t moduleId) cons
   return ret;
 }
 
-std::unique_ptr<const facebook::react::JSBigString> JSIndexedRAMBundle::getStartupCode() {
+std::unique_ptr<const JSBigString> JSIndexedRAMBundle::getStartupCode() {
   CHECK(m_startupCode) << "startup code for a RAM Bundle can only be retrieved once";
   return std::move(m_startupCode);
 }

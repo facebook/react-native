@@ -2,9 +2,9 @@
 
 #pragma once
 
+#include <cxxreact/JSBigString.h>
+#include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Value.h>
-
-#include "Executor.h"
 
 namespace facebook {
 namespace react {

@@ -11,7 +11,6 @@ package com.facebook.react.views.art;
 
 import android.view.View;
 
-import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
@@ -30,18 +29,18 @@ public class ARTRenderableViewManager extends ViewManager<View, ReactShadowNode>
   private final String mClassName;
 
   public static ARTRenderableViewManager createARTGroupViewManager() {
-    return new ARTRenderableViewManager(CLASS_GROUP);
+    return new ARTGroupViewManager();
   }
 
   public static ARTRenderableViewManager createARTShapeViewManager() {
-    return new ARTRenderableViewManager(CLASS_SHAPE);
+    return new ARTShapeViewManager();
   }
 
   public static ARTRenderableViewManager createARTTextViewManager() {
-    return new ARTRenderableViewManager(CLASS_TEXT);
+    return new ARTTextViewManager();
   }
 
-  private ARTRenderableViewManager(String className) {
+  /* package */ ARTRenderableViewManager(String className) {
     mClassName = className;
   }
 

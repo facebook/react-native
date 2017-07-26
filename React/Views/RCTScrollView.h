@@ -42,11 +42,11 @@
 
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
+@property (nonatomic, assign) BOOL DEPRECATED_sendUpdatedChildFrames;
 @property (nonatomic, assign) NSTimeInterval scrollEventThrottle;
 @property (nonatomic, assign) BOOL centerContent;
 @property (nonatomic, assign) int snapToInterval;
 @property (nonatomic, copy) NSString *snapToAlignment;
-@property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
 
 // NOTE: currently these event props are only declared so we can export the
 // event names to JS - we don't call the blocks directly because scroll events
@@ -56,7 +56,6 @@
 @property (nonatomic, copy) RCTDirectEventBlock onScrollEndDrag;
 @property (nonatomic, copy) RCTDirectEventBlock onMomentumScrollBegin;
 @property (nonatomic, copy) RCTDirectEventBlock onMomentumScrollEnd;
-@property (nonatomic, copy) RCTDirectEventBlock onScrollAnimationEnd;
 
 @end
 

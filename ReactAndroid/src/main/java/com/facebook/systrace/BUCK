@@ -1,11 +1,7 @@
 android_library(
-  name = 'systrace',
-  srcs = glob(['*.java']),
-  visibility = [
-    'PUBLIC',
-  ],
-)
-
-project_config(
-  src_target = ':systrace',
+    name = "systrace",
+    srcs = glob(["*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
 )
