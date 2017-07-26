@@ -958,15 +958,24 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions resolver:(RCTPr
     [notificationCenter requestAuthorizationWithOptions:types completionHandler:^(BOOL granted, NSError * _Nullable error) {
       if (error) {
         reject(error.domain, error.localizedDescription, error);
+		welf.requestPermissionsResolveBlock = nil;
       } else if (!granted) {
         reject(RCTErrorRemoteNotificationRegistrationFailed, nil, RCTErrorWithMessage(@"Push notification permissions weren't granted"));
+		welf.requestPermissionsResolveBlock = nil;
       } else {
         [RCTSharedApplication() registerForRemoteNotifications];
+		NSDictionary *notificationTypes = @{
+											  @"alert": @((types & UNAuthorizationOptionAlert) > 0),
+											  @"sound": @((types & UNAuthorizationOptionSound) > 0),
+											  @"badge": @((types & UNAuthorizationOptionSound) > 0),
+											  };
+		welf.requestPermissionsResolveBlock(notificationTypes);
+		welf.requestPermissionsResolveBlock = nil;
       }
     }];
-    
+	  
   } else {
-    
+	  
     UIUserNotificationType types = UIUserNotificationTypeNone;
     if (permissions) {
       if ([RCTConvert BOOL:permissions[@"alert"]]) {
