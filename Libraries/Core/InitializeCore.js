@@ -170,6 +170,8 @@ polyfillGlobal('Headers', () => require('fetch').Headers);
 polyfillGlobal('Request', () => require('fetch').Request);
 polyfillGlobal('Response', () => require('fetch').Response);
 polyfillGlobal('WebSocket', () => require('WebSocket'));
+polyfillGlobal('Blob', () => require('Blob'));
+polyfillGlobal('URL', () => require('URL'));
 
 // Set up alert
 if (!global.alert) {

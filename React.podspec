@@ -148,9 +148,15 @@ Pod::Spec.new do |s|
     ss.header_dir           = "RCTAnimation"
   end
 
+  s.subspec "RCTBlob" do |ss|
+    ss.dependency             "React/Core"
+    ss.source_files         = "Libraries/Blob/*.{h,m}"
+    ss.preserve_paths       = "Libraries/Blob/*.js"
+  end
+
   s.subspec "RCTCameraRoll" do |ss|
     ss.dependency             "React/Core"
-    ss.dependency             "React/RCTImage"
+    ss.dependency             'React/RCTImage'
     ss.source_files         = "Libraries/CameraRoll/*.{h,m}"
   end
 
@@ -192,6 +198,7 @@ Pod::Spec.new do |s|
 
   s.subspec "RCTWebSocket" do |ss|
     ss.dependency             "React/Core"
+    ss.dependency             "React/RCTBlob"
     ss.source_files         = "Libraries/WebSocket/*.{h,m}"
   end
 

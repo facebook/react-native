@@ -9,16 +9,6 @@
 
 package com.facebook.react.modules.websocket;
 
-import javax.annotation.Nullable;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -34,7 +24,14 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.network.ForwardingCookieHandler;
-
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -43,9 +40,16 @@ import okhttp3.WebSocketListener;
 import okio.ByteString;
 
 @ReactModule(name = "WebSocketModule", hasConstants = false)
-public class WebSocketModule extends ReactContextBaseJavaModule {
+public final class WebSocketModule extends ReactContextBaseJavaModule {
+
+  public interface ContentHandler {
+    void onMessage(String text, WritableMap params);
+
+    void onMessage(ByteString byteString, WritableMap params);
+  }
 
   private final Map<Integer, WebSocket> mWebSocketConnections = new HashMap<>();
+  private final Map<Integer, ContentHandler> mContentHandlers = new HashMap<>();
 
   private ReactContext mReactContext;
   private ForwardingCookieHandler mCookieHandler;
@@ -67,6 +71,14 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     return "WebSocketModule";
   }
 
+  public void setContentHandler(final int id, final ContentHandler contentHandler) {
+    if (contentHandler != null) {
+      mContentHandlers.put(id, contentHandler);
+    } else {
+      mContentHandlers.remove(id);
+    }
+  }
+
   @ReactMethod
   public void connect(
     final String url,
@@ -79,9 +91,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
       .build();
 
-    Request.Builder builder = new Request.Builder()
-        .tag(id)
-        .url(url);
+    Request.Builder builder = new Request.Builder().tag(id).url(url);
 
     String cookie = getCookie(url);
     if (cookie != null) {
@@ -124,49 +134,65 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       }
     }
 
-    client.newWebSocket(builder.build(), new WebSocketListener() {
+    client.newWebSocket(
+        builder.build(),
+        new WebSocketListener() {
 
-      @Override
-      public void onOpen(WebSocket webSocket, Response response) {
-        mWebSocketConnections.put(id, webSocket);
-        WritableMap params = Arguments.createMap();
-        params.putInt("id", id);
-        sendEvent("websocketOpen", params);
-      }
+          @Override
+          public void onOpen(WebSocket webSocket, Response response) {
+            mWebSocketConnections.put(id, webSocket);
+            WritableMap params = Arguments.createMap();
+            params.putInt("id", id);
+            sendEvent("websocketOpen", params);
+          }
 
-      @Override
-      public void onClosed(WebSocket webSocket, int code, String reason) {
-        WritableMap params = Arguments.createMap();
-        params.putInt("id", id);
-        params.putInt("code", code);
-        params.putString("reason", reason);
-        sendEvent("websocketClosed", params);
-      }
+          @Override
+          public void onClosed(WebSocket webSocket, int code, String reason) {
+            WritableMap params = Arguments.createMap();
+            params.putInt("id", id);
+            params.putInt("code", code);
+            params.putString("reason", reason);
+            sendEvent("websocketClosed", params);
+          }
 
-      @Override
-      public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-        notifyWebSocketFailed(id, t.getMessage());
-      }
+          @Override
+          public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+            notifyWebSocketFailed(id, t.getMessage());
+          }
 
-      @Override
-      public void onMessage(WebSocket webSocket, String text) {
-        WritableMap params = Arguments.createMap();
-        params.putInt("id", id);
-        params.putString("data", text);
-        params.putString("type", "text");
-        sendEvent("websocketMessage", params);
-      }
+          @Override
+          public void onMessage(WebSocket webSocket, String text) {
+            WritableMap params = Arguments.createMap();
+            params.putInt("id", id);
+            params.putString("type", "text");
 
-      @Override
-      public void onMessage(WebSocket webSocket, ByteString bytes) {
-        String text = bytes.base64();
-        WritableMap params = Arguments.createMap();
-        params.putInt("id", id);
-        params.putString("data", text);
-        params.putString("type", "binary");
-        sendEvent("websocketMessage", params);
-      }
-    });
+            ContentHandler contentHandler = mContentHandlers.get(id);
+            if (contentHandler != null) {
+              contentHandler.onMessage(text, params);
+            } else {
+              params.putString("data", text);
+            }
+            sendEvent("websocketMessage", params);
+          }
+
+          @Override
+          public void onMessage(WebSocket webSocket, ByteString bytes) {
+            WritableMap params = Arguments.createMap();
+            params.putInt("id", id);
+            params.putString("type", "binary");
+
+            ContentHandler contentHandler = mContentHandlers.get(id);
+            if (contentHandler != null) {
+              contentHandler.onMessage(bytes, params);
+            } else {
+              String text = bytes.base64();
+
+              params.putString("data", text);
+            }
+
+            sendEvent("websocketMessage", params);
+          }
+        });
 
     // Trigger shutdown of the dispatcher's executor so this process can exit cleanly
     client.dispatcher().executorService().shutdown();
@@ -183,6 +209,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     try {
       client.close(code, reason);
       mWebSocketConnections.remove(id);
+      mContentHandlers.remove(id);
     } catch (Exception e) {
       FLog.e(
         ReactConstants.TAG,
@@ -219,6 +246,19 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     }
   }
 
+  public void sendBinary(ByteString byteString, int id) {
+    WebSocket client = mWebSocketConnections.get(id);
+    if (client == null) {
+      // This is a programmer error
+      throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id);
+    }
+    try {
+      client.send(byteString);
+    } catch (Exception e) {
+      notifyWebSocketFailed(id, e.getMessage());
+    }
+  }
+
   @ReactMethod
   public void ping(int id) {
     WebSocket client = mWebSocketConnections.get(id);
@@ -243,10 +283,9 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
   /**
    * Get the default HTTP(S) origin for a specific WebSocket URI
    *
-   * @param String uri
+   * @param uri
    * @return A string of the endpoint converted to HTTP protocol (http[s]://host[:port])
    */
-
   private static String getDefaultOrigin(String uri) {
     try {
       String defaultOrigin;
@@ -280,7 +319,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
   /**
    * Get the cookie for a specific domain
    *
-   * @param String uri
+   * @param uri
    * @return The cookie header or null if none is set
    */
   private String getCookie(String uri) {
