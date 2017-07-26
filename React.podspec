@@ -122,7 +122,7 @@ Pod::Spec.new do |s|
     ss.dependency             "Folly", "2016.09.26.00"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/cxxreact/*.{cpp,h}"
-    ss.exclude_files        = "ReactCommon/cxxreact/{JSCTracing,SampleCxxModule}.*"
+    ss.exclude_files        = "ReactCommon/cxxreact/SampleCxxModule.*"
     ss.private_header_files = "ReactCommon/cxxreact/*.h"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
   end
