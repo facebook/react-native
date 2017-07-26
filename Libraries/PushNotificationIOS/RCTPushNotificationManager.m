@@ -595,13 +595,20 @@ RCT_EXPORT_MODULE()
   RCTNotificationResponseCallback completionHandler = notification.userInfo[@"completionHandler"];
   
   NSMutableDictionary *responseDictionary = [NSMutableDictionary dictionary];
-  NSMutableDictionary *responseNotification = [RCTFormatNotification(response.notification) mutableCopy];
-  
+	NSMutableDictionary *responseNotification = [RCTFormatNotification(response.notification) mutableCopy];
+	
   NSString *notificationId = responseNotification[@"notificationId"];
-  if (!notificationId) {
-    notificationId = [[NSUUID UUID] UUIDString];
-    responseNotification[@"notificationId"] = notificationId;
-  }
+	if (!notificationId) {
+		
+		if (responseNotification[@"aps"] && [responseNotification[@"aps"] isKindOfClass:[NSDictionary class]]) {
+			notificationId = responseNotification[@"aps"][@"notificationId"];
+		}
+		
+		if (!notificationId) {
+			notificationId = [[NSUUID UUID] UUIDString];
+			responseNotification[@"notificationId"] = notificationId;
+		}
+	}
   
   responseDictionary[@"notification"] = responseNotification;
   responseDictionary[@"action"] = RCTNullIfNil(response.actionIdentifier);
@@ -629,12 +636,19 @@ RCT_EXPORT_MODULE()
   NSMutableDictionary *remoteNotification = [RCTFormatNotification(notification.userInfo[@"notification"]) mutableCopy];
   RCTWillPresentNotificationCallback completionHandler = notification.userInfo[@"completionHandler"];
   
-  NSString *notificationId = remoteNotification[@"notificationId"];
-  if (!notificationId) {
-    notificationId = [[NSUUID UUID] UUIDString];
-    remoteNotification[@"notificationId"] = notificationId;
-  }
-  
+	NSString *notificationId = remoteNotification[@"notificationId"];
+	if (!notificationId) {
+		
+		if (remoteNotification[@"aps"] && [remoteNotification[@"aps"] isKindOfClass:[NSDictionary class]]) {
+			notificationId = remoteNotification[@"aps"][@"notificationId"];
+		}
+		
+		if (!notificationId) {
+			notificationId = [[NSUUID UUID] UUIDString];
+			remoteNotification[@"notificationId"] = notificationId;
+		}
+	}
+	
   if (completionHandler) {
     if (!self.willPresentNotificationCallbacks) {
       // Lazy initialization
