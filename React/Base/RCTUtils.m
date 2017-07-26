@@ -271,7 +271,7 @@ CGFloat RCTScreenScale()
   dispatch_once(&onceToken, ^{
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    // Need to leave this here until a proper replacementfor synchronous
+    // Need to leave this here until a proper replacement for synchronous
     // main-queue execution is defined
     RCTUnsafeExecuteOnMainQueueSync(^{
       scale = [UIScreen mainScreen].scale;
