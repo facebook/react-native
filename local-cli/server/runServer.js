@@ -152,6 +152,7 @@ function getPackagerServer(args, config) {
     assetRegistryPath: ASSET_REGISTRY_PATH,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
+    enableBabelRCLookup: config.getEnableBabelRCLookup(),
     extraNodeModules: config.extraNodeModules,
     getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
