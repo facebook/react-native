@@ -96,7 +96,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  */
 #define RCT_CUSTOM_VIEW_PROPERTY(name, type, viewClass) \
 RCT_REMAP_VIEW_PROPERTY(name, __custom__, type)         \
-- (void)set_##name:(id)json forView:(viewClass *)view withDefaultView:(viewClass *)defaultView
+- (void)set_##name:(id)json forView:(viewClass *)view withDefaultView:(__unused viewClass *)defaultView
 
 /**
  * This macro is used to map properties to the shadow view, instead of the view.
@@ -117,6 +117,6 @@ RCT_REMAP_VIEW_PROPERTY(name, __custom__, type)         \
  */
 #define RCT_CUSTOM_SHADOW_PROPERTY(name, type, viewClass) \
 RCT_REMAP_SHADOW_PROPERTY(name, __custom__, type)         \
-- (void)set_##name:(id)json forShadowView:(viewClass *)view
+- (void)set_##name:(__unused id)json forShadowView:(viewClass *)view
 
 @end
