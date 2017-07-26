@@ -354,22 +354,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   if ((self = [super initWithFrame:CGRectZero])) {
     _eventDispatcher = eventDispatcher;
-    
     _scrollView = [[RCTCustomScrollView alloc] initWithFrame:CGRectZero];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
-
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-    // `contentInsetAdjustmentBehavior` is only available since iOS 11.
-    // We set the default behavior to "never" so that iOS
-    // doesn't do weird things to UIScrollView insets automatically
-    // and keeps it as an opt-in behavior.
-    if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-        _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    }
-#endif
-
     _automaticallyAdjustContentInsets = YES;
     _DEPRECATED_sendUpdatedChildFrames = NO;
     _contentInset = UIEdgeInsetsZero;
@@ -912,18 +900,6 @@ RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalSc
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
 RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIEdgeInsets);
-
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-- (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior
-{
-  // `contentInsetAdjustmentBehavior` is available since iOS 11.
-  if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-    CGPoint contentOffset = _scrollView.contentOffset;
-    _scrollView.contentInsetAdjustmentBehavior = behavior;
-    _scrollView.contentOffset = contentOffset;
-  }
-}
-#endif
 
 - (void)sendScrollEventWithName:(NSString *)eventName
                      scrollView:(UIScrollView *)scrollView
