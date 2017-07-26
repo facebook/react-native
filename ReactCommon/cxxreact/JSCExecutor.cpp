@@ -166,6 +166,14 @@ static bool canUseInspector(JSContextRef context) {
 #endif
 }
 
+static bool canUseSamplingProfiler(JSContextRef context) {
+#if defined(__APPLE__) || defined(WITH_JSC_EXTRA_TRACING)
+  return JSC_JSSamplingProfilerEnabled(context);
+#else
+  return false;
+#endif
+}
+
 void JSCExecutor::initOnJSVMThread() throw(JSException) {
   SystraceSection s("JSCExecutor::initOnJSVMThread");
 
@@ -222,7 +230,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
 
   JSCNativeHooks::installPerfHooks(m_context);
 
-  if (JSC_JSSamplingProfilerEnabled(m_context)) {
+  if (canUseSamplingProfiler(m_context)) {
     initSamplingProfilerOnMainJSCThread(m_context);
   }
 }
