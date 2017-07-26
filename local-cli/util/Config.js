@@ -50,6 +50,13 @@ export type ConfigT = {
   getBlacklistRE(): RegExp,
 
   /**
+   * Specify whether or not to enable Babel's behavior for looking up .babelrc
+   * files. If false, only the .babelrc file (if one exists) in the main project
+   * root is used.
+   */
+  getEnableBabelRCLookup(): boolean,
+
+  /**
    * Specify any additional polyfill modules that should be processed
    * before regular module loading.
    */
@@ -164,6 +171,7 @@ const Config = {
     extraNodeModules: Object.create(null),
     getAssetExts: () => [],
     getBlacklistRE: () => blacklist(),
+    getEnableBabelRCLookup: () => true,
     getPlatforms: () => [],
     getPolyfillModuleNames: () => [],
     getProjectRoots: () => {
