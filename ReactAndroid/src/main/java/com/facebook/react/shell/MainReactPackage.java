@@ -11,6 +11,7 @@ package com.facebook.react.shell;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
 import com.facebook.react.LazyReactPackage;
 import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -75,18 +76,20 @@ import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
 import com.facebook.react.views.webview.ReactWebViewManager;
 
-import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.inject.Provider;
 
 /**
  * Package defining basic modules and view managers.
  */
 public class MainReactPackage extends LazyReactPackage {
 
-  private MainPackageConfig mConfig;
+  private @Nullable MainPackageConfig mConfig;
 
   public MainReactPackage() {
   }
@@ -194,7 +197,9 @@ public class MainReactPackage extends LazyReactPackage {
       new ModuleSpec(NetworkingModule.class, new Provider<NativeModule>() {
         @Override
         public NativeModule get() {
-          return new NetworkingModule(context);
+          return mConfig == null ?
+            new NetworkingModule(context) :
+            new NetworkingModule(context, mConfig.getHttpClientProvider());
         }
       }),
       new ModuleSpec(NetInfoModule.class, new Provider<NativeModule>() {

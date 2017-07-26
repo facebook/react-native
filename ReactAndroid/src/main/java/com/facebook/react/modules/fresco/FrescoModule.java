@@ -9,8 +9,6 @@
 
 package com.facebook.react.modules.fresco;
 
-import java.util.HashSet;
-
 import android.content.Context;
 import android.support.annotation.Nullable;
 
@@ -28,9 +26,11 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.common.ModuleDataCleaner;
 import com.facebook.react.modules.network.CookieJarContainer;
+import com.facebook.react.modules.network.DefaultOkHttpProvider;
 import com.facebook.react.modules.network.ForwardingCookieHandler;
-import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.soloader.SoLoader;
+
+import java.util.HashSet;
 
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
@@ -154,7 +154,7 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     HashSet<RequestListener> requestListeners = new HashSet<>();
     requestListeners.add(new SystraceRequestListener());
 
-    OkHttpClient client = OkHttpClientProvider.createClient();
+    OkHttpClient client = new DefaultOkHttpProvider().get();
 
     // make sure to forward cookies for any requests via the okHttpClient
     // so that image requests to endpoints that use cookies still work
