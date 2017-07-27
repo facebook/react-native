@@ -8,18 +8,13 @@
  *
  * @flow
  * @providesModule SnapshotExample
+ * @format
  */
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
-  Image,
-  StyleSheet,
-  Text,
-  UIManager,
-  View,
-} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Alert, Image, StyleSheet, Text, View} = ReactNative;
 
 class ScreenshotExample extends React.Component {
   state = {
@@ -32,20 +27,19 @@ class ScreenshotExample extends React.Component {
         <Text onPress={this.takeScreenshot} style={style.button}>
           Click to take a screenshot
         </Text>
-        <Image style={style.image} source={{uri: this.state.uri}}/>
+        <Image style={style.image} source={{uri: this.state.uri}} />
       </View>
     );
   }
 
   takeScreenshot = () => {
-    UIManager
-      .takeSnapshot('window', {format: 'jpeg', quality: 0.8}) // See UIManager.js for options
-      .then((uri) => this.setState({uri}))
-      .catch((error) => alert(error));
+    ReactNative.takeSnapshot('window', {format: 'jpeg', quality: 0.8}) // See UIManager.js for options
+      .then(uri => this.setState({uri}))
+      .catch(error => Alert.alert(error));
   };
 }
 
-var style = StyleSheet.create({
+const style = StyleSheet.create({
   button: {
     marginBottom: 10,
     fontWeight: '500',
@@ -63,6 +57,8 @@ exports.description = 'API to capture images from the screen.';
 exports.examples = [
   {
     title: 'Take screenshot',
-    render(): React.Element<any> { return <ScreenshotExample />; }
+    render(): React.Element<any> {
+      return <ScreenshotExample />;
+    },
   },
 ];

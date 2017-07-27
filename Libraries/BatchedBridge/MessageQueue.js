@@ -153,7 +153,7 @@ class MessageQueue {
     };
   }
 
-  _getCallableModule(name: string) {
+  getCallableModule(name: string) {
     const getValue = this._lazyCallableModules[name];
     return getValue ? getValue() : null;
   }
@@ -252,7 +252,7 @@ class MessageQueue {
     if (this.__spy) {
       this.__spy({ type: TO_JS, module, method, args});
     }
-    const moduleMethods = this._getCallableModule(module);
+    const moduleMethods = this.getCallableModule(module);
     invariant(
       !!moduleMethods,
       'Module %s is not a registered callable module (calling %s)',

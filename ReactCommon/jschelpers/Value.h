@@ -12,12 +12,12 @@
 #include <jschelpers/Unicode.h>
 #include <jschelpers/noncopyable.h>
 
-namespace facebook {
-namespace react {
-
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
+
+namespace facebook {
+namespace react {
 
 class Value;
 

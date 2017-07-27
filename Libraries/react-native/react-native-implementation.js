@@ -29,6 +29,7 @@ const ReactNative = {
   get ImageStore() { return require('ImageStore'); },
   get KeyboardAvoidingView() { return require('KeyboardAvoidingView'); },
   get ListView() { return require('ListView'); },
+  get MaskedViewIOS() { return require('MaskedViewIOS'); },
   get Modal() { return require('Modal'); },
   get NavigatorIOS() { return require('NavigatorIOS'); },
   get Picker() { return require('Picker'); },
@@ -61,7 +62,6 @@ const ReactNative = {
 
   // APIs
   get ActionSheetIOS() { return require('ActionSheetIOS'); },
-  get AdSupportIOS() { return require('AdSupportIOS'); },
   get Alert() { return require('Alert'); },
   get AlertIOS() { return require('AlertIOS'); },
   get Animated() { return require('Animated'); },

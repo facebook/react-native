@@ -18,6 +18,7 @@ const components = [
   '../Libraries/Image/Image.ios.js',
   '../Libraries/Components/Keyboard/KeyboardAvoidingView.js',
   '../Libraries/Lists/ListView/ListView.js',
+  '../Libraries/Components/MaskedView/MaskedViewIOS.ios.js',
   '../Libraries/Modal/Modal.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
   '../Libraries/Components/Picker/Picker.js',
@@ -50,7 +51,6 @@ const components = [
 const apis = [
   '../Libraries/Components/AccessibilityInfo/AccessibilityInfo.ios.js',
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
-  '../Libraries/AdSupport/AdSupportIOS.js',
   '../Libraries/Alert/Alert.js',
   '../Libraries/Alert/AlertIOS.js',
   '../Libraries/Animated/src/AnimatedImplementation.js',

@@ -459,6 +459,7 @@ type SpringAnimationConfig = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
+  delay?: number,
 };
 
 type SpringAnimationConfigSingle = AnimationConfig & {
@@ -471,6 +472,7 @@ type SpringAnimationConfigSingle = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
+  delay?: number,
 };
 
 function withDefault<T>(value: ?T, defaultValue: T): T {
@@ -492,6 +494,8 @@ class SpringAnimation extends Animation {
   _toValue: any;
   _tension: number;
   _friction: number;
+  _delay: number;
+  _timeout: any;
   _lastTime: number;
   _onUpdate: (value: number) => void;
   _animationFrame: any;
@@ -508,6 +512,7 @@ class SpringAnimation extends Animation {
     this._initialVelocity = config.velocity;
     this._lastVelocity = withDefault(config.velocity, 0);
     this._toValue = config.toValue;
+    this._delay = withDefault(config.delay, 0);
     this._useNativeDriver = shouldUseNativeDriver(config);
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
     this.__iterations = config.iterations !== undefined ? config.iterations : 1;
@@ -571,10 +576,20 @@ class SpringAnimation extends Animation {
         this._initialVelocity !== null) {
       this._lastVelocity = this._initialVelocity;
     }
-    if (this._useNativeDriver) {
-      this.__startNativeAnimation(animatedValue);
+
+    var start = () => {
+      if (this._useNativeDriver) {
+        this.__startNativeAnimation(animatedValue);
+      } else {
+        this.onUpdate();
+      }
+    };
+
+    //  If this._delay is more than 0, we start after the timeout.
+    if (this._delay) {
+      this._timeout = setTimeout(start, this._delay);
     } else {
-      this.onUpdate();
+      start();
     }
   }
 
@@ -685,6 +700,7 @@ class SpringAnimation extends Animation {
   stop(): void {
     super.stop();
     this.__active = false;
+    clearTimeout(this._timeout);
     global.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
   }
@@ -1106,6 +1122,11 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     this._parent = parent;
     this._config = config;
     this._interpolation = Interpolation.create(config);
+  }
+
+  __makeNative() {
+    this._parent.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number | string {
@@ -2829,9 +2850,9 @@ module.exports = {
    *
    *```javascript
    *  onScroll={Animated.event(
-   *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}]
+   *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}],
    *    {listener},          // Optional async listener
-   *  )
+   *  )}
    *  ...
    *  onPanResponderMove: Animated.event([
    *    null,                // raw event arg ignored

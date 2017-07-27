@@ -12,15 +12,12 @@ var React = require('React');
 var PropTypes = require('prop-types');
 var Site = require('Site');
 
-var support = React.createClass({
-  childContextTypes: {
-    permalink: PropTypes.string,
-  },
-
-  getChildContext: function() {
+class support extends React.Component {
+  getChildContext() {
     return { permalink: 'support.html' };
-  },
-  render: function() {
+  }
+
+  render() {
     return (
       <Site section="support" title="Help">
 
@@ -141,7 +138,7 @@ var support = React.createClass({
               >
                 open source
               </a>
-              ! If you want to contribute, take a look at the
+              ! If you want to contribute, read the <a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">contributor guidelines</a>, then take a look at the
               {' '}
               <a
                 href="https://github.com/facebook/react-native/wiki/Roadmap"
@@ -166,7 +163,11 @@ var support = React.createClass({
 
       </Site>
     );
-  },
-});
+  }
+}
+
+support.childContextTypes = {
+  permalink: PropTypes.string,
+};
 
 module.exports = support;

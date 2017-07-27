@@ -18,30 +18,34 @@
 #import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
-#import "RCTInspectorDevServerHelper.h"
 #import "RCTJSCSamplingProfiler.h"
 #import "RCTJSEnvironment.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
 
-NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
-NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
-NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
-NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
-NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
-NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
-NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
-NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
-NSString *const kRCTDevSettingIsJSCProfilingEnabled = @"RCTJSCProfilerEnabled";
-NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamplingProfilerOnLaunch";
+static NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
+static NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
+static NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
+static NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
+static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
+static NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
+static NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
+static NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
+static NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamplingProfilerOnLaunch";
 
-NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
+static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 #define ENABLE_PACKAGER_CONNECTION RCT_DEV && __has_include("RCTPackagerConnection.h")
 
 #if ENABLE_PACKAGER_CONNECTION
 #import "RCTPackagerConnection.h"
+#endif
+
+#define ENABLE_INSPECTOR RCT_DEV && __has_include("RCTInspectorDevServerHelper")
+
+#if ENABLE_INSPECTOR
+#import "RCTInspectorDevServerHelper.h"
 #endif
 
 #if RCT_DEV
@@ -162,7 +166,7 @@ RCT_EXPORT_MODULE()
   _bridge = bridge;
   [self _configurePackagerConnection];
 
-#if RCT_DEV
+#if ENABLE_INSPECTOR
   // we need this dispatch back to the main thread because even though this
   // is executed on the main thread, at this point the bridge is not yet
   // finished with its initialisation. But it does finish by the time it
@@ -366,16 +370,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 - (BOOL)isPerfMonitorShown
 {
   return [[self settingForKey:kRCTDevSettingIsPerfMonitorShown] boolValue];
-}
-
-- (void)setIsJSCProfilingEnabled:(BOOL)isJSCProfilingEnabled
-{
-  [self _updateSettingWithValue:@(isJSCProfilingEnabled) forKey:kRCTDevSettingIsJSCProfilingEnabled];
-}
-
-- (BOOL)isJSCProfilingEnabled
-{
-  return [[self settingForKey:kRCTDevSettingIsJSCProfilingEnabled] boolValue];
 }
 
 - (void)setStartSamplingProfilerOnLaunch:(BOOL)startSamplingProfilerOnLaunch

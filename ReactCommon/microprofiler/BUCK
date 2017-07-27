@@ -19,7 +19,6 @@ cxx_library(
     visibility = [
         "PUBLIC",
     ],
-    xcode_public_headers_symlinks = True,
     deps = [
         GLOG_DEP,
     ],
