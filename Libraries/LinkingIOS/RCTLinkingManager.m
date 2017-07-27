@@ -13,17 +13,30 @@
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTUtils.h>
 
-NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
+static NSString *const kOpenURLNotification = @"RCTOpenURLNotification";
+
+static void postNotificationWithURL(NSURL *URL, id sender)
+{
+  NSDictionary<NSString *, id> *payload = @{@"url": URL.absoluteString};
+  [[NSNotificationCenter defaultCenter] postNotificationName:kOpenURLNotification
+                                                      object:sender
+                                                    userInfo:payload];
+}
 
 @implementation RCTLinkingManager
 
 RCT_EXPORT_MODULE()
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 - (void)startObserving
 {
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleOpenURLNotification:)
-                                               name:RCTOpenURLNotification
+                                               name:kOpenURLNotification
                                              object:nil];
 }
 
@@ -37,15 +50,20 @@ RCT_EXPORT_MODULE()
   return @[@"url"];
 }
 
++ (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)URL
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+  postNotificationWithURL(URL, self);
+  return YES;
+}
+
 + (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)URL
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation
 {
-  NSDictionary<NSString *, id> *payload = @{@"url": URL.absoluteString};
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
-                                                      object:self
-                                                    userInfo:payload];
+  postNotificationWithURL(URL, self);
   return YES;
 }
 
@@ -55,7 +73,7 @@ continueUserActivity:(NSUserActivity *)userActivity
 {
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     NSDictionary *payload = @{@"url": userActivity.webpageURL.absoluteString};
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
+    [[NSNotificationCenter defaultCenter] postNotificationName:kOpenURLNotification
                                                         object:self
                                                       userInfo:payload];
   }

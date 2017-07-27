@@ -130,7 +130,7 @@ function attachToServer(server, path) {
           result = {};
           clients.forEach((otherWs, otherId) => {
             if (clientId !== otherId) {
-              result[otherId] = url.parse(otherWs.upgradeReq.url).query;
+              result[otherId] = url.parse(otherWs.upgradeReq.url, true).query;
             }
           });
           break;

@@ -289,7 +289,6 @@ class TimingAnimation extends Animation {
       type: 'frames',
       frames,
       toValue: this._toValue,
-      delay: this._delay,
       iterations: this.__iterations,
     };
   }
@@ -460,6 +459,7 @@ type SpringAnimationConfig = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
+  delay?: number,
 };
 
 type SpringAnimationConfigSingle = AnimationConfig & {
@@ -472,6 +472,7 @@ type SpringAnimationConfigSingle = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
+  delay?: number,
 };
 
 function withDefault<T>(value: ?T, defaultValue: T): T {
@@ -493,6 +494,8 @@ class SpringAnimation extends Animation {
   _toValue: any;
   _tension: number;
   _friction: number;
+  _delay: number;
+  _timeout: any;
   _lastTime: number;
   _onUpdate: (value: number) => void;
   _animationFrame: any;
@@ -509,6 +512,7 @@ class SpringAnimation extends Animation {
     this._initialVelocity = config.velocity;
     this._lastVelocity = withDefault(config.velocity, 0);
     this._toValue = config.toValue;
+    this._delay = withDefault(config.delay, 0);
     this._useNativeDriver = shouldUseNativeDriver(config);
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
     this.__iterations = config.iterations !== undefined ? config.iterations : 1;
@@ -572,10 +576,20 @@ class SpringAnimation extends Animation {
         this._initialVelocity !== null) {
       this._lastVelocity = this._initialVelocity;
     }
-    if (this._useNativeDriver) {
-      this.__startNativeAnimation(animatedValue);
+
+    var start = () => {
+      if (this._useNativeDriver) {
+        this.__startNativeAnimation(animatedValue);
+      } else {
+        this.onUpdate();
+      }
+    };
+
+    //  If this._delay is more than 0, we start after the timeout.
+    if (this._delay) {
+      this._timeout = setTimeout(start, this._delay);
     } else {
-      this.onUpdate();
+      start();
     }
   }
 
@@ -686,6 +700,7 @@ class SpringAnimation extends Animation {
   stop(): void {
     super.stop();
     this.__active = false;
+    clearTimeout(this._timeout);
     global.cancelAnimationFrame(this._animationFrame);
     this.__debouncedOnEnd({finished: false});
   }
@@ -1109,6 +1124,11 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     this._interpolation = Interpolation.create(config);
   }
 
+  __makeNative() {
+    this._parent.__makeNative();
+    super.__makeNative();
+  }
+
   __getValue(): number | string {
     var parentValue: number = this._parent.__getValue();
     invariant(
@@ -1139,12 +1159,12 @@ class AnimatedInterpolation extends AnimatedWithChildren {
         return value;
       }
       if (/deg$/.test(value)) {
-        const degrees = parseFloat(value, 10) || 0;
+        const degrees = parseFloat(value) || 0;
         const radians = degrees * Math.PI / 180.0;
         return radians;
       } else {
         // Assume radians
-        return parseFloat(value, 10) || 0;
+        return parseFloat(value) || 0;
       }
     });
   }
@@ -1219,9 +1239,9 @@ class AnimatedDivision extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
     this._b.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -1267,9 +1287,9 @@ class AnimatedMultiplication extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
     this._b.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -1310,8 +1330,8 @@ class AnimatedModulo extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
+    super.__makeNative();
   }
 
   __getValue(): number {
@@ -1328,6 +1348,7 @@ class AnimatedModulo extends AnimatedWithChildren {
 
   __detach(): void {
     this._a.__removeChild(this);
+    super.__detach();
   }
 
   __getNativeConfig(): any {
@@ -1356,8 +1377,8 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     this._a.__makeNative();
+    super.__makeNative();
   }
 
   interpolate(config: InterpolationConfigType): AnimatedInterpolation {
@@ -1378,6 +1399,7 @@ class AnimatedDiffClamp extends AnimatedWithChildren {
 
   __detach(): void {
     this._a.__removeChild(this);
+    super.__detach();
   }
 
   __getNativeConfig(): any {
@@ -1461,6 +1483,7 @@ class AnimatedTransform extends AnimatedWithChildren {
         }
       }
     });
+    super.__detach();
   }
 
   __getNativeConfig(): any {
@@ -1508,32 +1531,48 @@ class AnimatedStyle extends AnimatedWithChildren {
     this._style = style;
   }
 
-  __getValue(): Object {
-    var style = {};
-    for (var key in this._style) {
-      var value = this._style[key];
+  // Recursively get values for nested styles (like iOS's shadowOffset)
+  __walkStyleAndGetValues(style) {
+    const updatedStyle = {};
+    for (const key in style) {
+      const value = style[key];
       if (value instanceof Animated) {
         if (!value.__isNative) {
           // We cannot use value of natively driven nodes this way as the value we have access from
           // JS may not be up to date.
-          style[key] = value.__getValue();
+          updatedStyle[key] = value.__getValue();
         }
+      } else if (value && !Array.isArray(value) && typeof value === 'object') {
+        // Support animating nested values (for example: shadowOffset.height)
+        updatedStyle[key] = this.__walkStyleAndGetValues(value);
       } else {
-        style[key] = value;
+        updatedStyle[key] = value;
       }
     }
-    return style;
+    return updatedStyle;
+  }
+
+  __getValue(): Object {
+    return this.__walkStyleAndGetValues(this._style);
+  }
+
+  // Recursively get animated values for nested styles (like iOS's shadowOffset)
+  __walkStyleAndGetAnimatedValues(style) {
+    const updatedStyle = {};
+    for (const key in style) {
+      const value = style[key];
+      if (value instanceof Animated) {
+        updatedStyle[key] = value.__getAnimatedValue();
+      } else if (value && !Array.isArray(value) && typeof value === 'object') {
+        // Support animating nested values (for example: shadowOffset.height)
+        updatedStyle[key] = this.__walkStyleAndGetAnimatedValues(value);
+      }
+    }
+    return updatedStyle;
   }
 
   __getAnimatedValue(): Object {
-    var style = {};
-    for (var key in this._style) {
-      var value = this._style[key];
-      if (value instanceof Animated) {
-        style[key] = value.__getAnimatedValue();
-      }
-    }
-    return style;
+    return this.__walkStyleAndGetAnimatedValues(this._style);
   }
 
   __attach(): void {
@@ -1552,6 +1591,7 @@ class AnimatedStyle extends AnimatedWithChildren {
         value.__removeChild(this);
       }
     }
+    super.__detach();
   }
 
   __makeNative() {
@@ -1674,7 +1714,9 @@ class AnimatedProps extends Animated {
   }
 
   setNativeView(animatedView: any): void {
-    invariant(this._animatedView === undefined, 'Animated view already set.');
+    if (this._animatedView === animatedView) {
+      return;
+    }
     this._animatedView = animatedView;
     if (this.__isNative) {
       this.__connectAnimatedView();
@@ -1713,7 +1755,9 @@ class AnimatedProps extends Animated {
 function createAnimatedComponent(Component: any): any {
   class AnimatedComponent extends React.Component {
     _component: any;
+    _prevComponent: any;
     _propsAnimated: AnimatedProps;
+    _eventDetachers: Array<Function> = [];
     _setComponentRef: Function;
 
     constructor(props: Object) {
@@ -1723,7 +1767,7 @@ function createAnimatedComponent(Component: any): any {
 
     componentWillUnmount() {
       this._propsAnimated && this._propsAnimated.__detach();
-      this._detachNativeEvents(this.props);
+      this._detachNativeEvents();
     }
 
     setNativeProps(props) {
@@ -1736,42 +1780,28 @@ function createAnimatedComponent(Component: any): any {
 
     componentDidMount() {
       this._propsAnimated.setNativeView(this._component);
-
-      this._attachNativeEvents(this.props);
+      this._attachNativeEvents();
     }
 
-    _attachNativeEvents(newProps) {
-      if (newProps !== this.props) {
-        this._detachNativeEvents(this.props);
-      }
-
+    _attachNativeEvents() {
       // Make sure to get the scrollable node for components that implement
       // `ScrollResponder.Mixin`.
-      const ref = this._component.getScrollableNode ?
+      const scrollableNode = this._component.getScrollableNode ?
         this._component.getScrollableNode() :
         this._component;
 
-      for (const key in newProps) {
-        const prop = newProps[key];
+      for (const key in this.props) {
+        const prop = this.props[key];
         if (prop instanceof AnimatedEvent && prop.__isNative) {
-          prop.__attach(ref, key);
+           prop.__attach(scrollableNode, key);
+           this._eventDetachers.push(() => prop.__detach(scrollableNode, key));
         }
       }
     }
 
-    _detachNativeEvents(props) {
-      // Make sure to get the scrollable node for components that implement
-      // `ScrollResponder.Mixin`.
-      const ref = this._component.getScrollableNode ?
-        this._component.getScrollableNode() :
-        this._component;
-
-      for (const key in props) {
-        const prop = props[key];
-        if (prop instanceof AnimatedEvent && prop.__isNative) {
-          prop.__detach(ref, key);
-        }
-      }
+    _detachNativeEvents() {
+      this._eventDetachers.forEach(remove => remove());
+      this._eventDetachers = [];
     }
 
     _attachProps(nextProps) {
@@ -1804,10 +1834,6 @@ function createAnimatedComponent(Component: any): any {
         callback,
       );
 
-      if (this._component) {
-        this._propsAnimated.setNativeView(this._component);
-      }
-
       // When you call detach, it removes the element from the parent list
       // of children. If it goes to 0, then the parent also detaches itself
       // and so on.
@@ -1819,21 +1845,37 @@ function createAnimatedComponent(Component: any): any {
       oldPropsAnimated && oldPropsAnimated.__detach();
     }
 
-    componentWillReceiveProps(nextProps) {
-      this._attachProps(nextProps);
-      this._attachNativeEvents(nextProps);
+    componentWillReceiveProps(newProps) {
+      this._attachProps(newProps);
+    }
+
+    componentDidUpdate(prevProps) {
+      if (this._component !== this._prevComponent) {
+        this._propsAnimated.setNativeView(this._component);
+      }
+      if (this._component !== this._prevComponent || prevProps !== this.props) {
+        this._detachNativeEvents();
+        this._attachNativeEvents();
+      }
     }
 
     render() {
+      const props = this._propsAnimated.__getValue();
       return (
         <Component
-          {...this._propsAnimated.__getValue()}
+          {...props}
           ref={this._setComponentRef}
+          // The native driver updates views directly through the UI thread so we
+          // have to make sure the view doesn't get optimized away because it cannot
+          // go through the NativeViewHierachyManager since it operates on the shadow
+          // thread.
+          collapsable={this._propsAnimated.__isNative ? false : props.collapsable}
         />
       );
     }
 
     _setComponentRef(c) {
+      this._prevComponent = this._component;
       this._component = c;
     }
 
@@ -1843,14 +1885,24 @@ function createAnimatedComponent(Component: any): any {
       return this._component;
     }
   }
+
+  // ReactNative `View.propTypes` have been deprecated in favor of
+  // `ViewPropTypes`. In their place a temporary getter has been added with a
+  // deprecated warning message. Avoid triggering that warning here by using
+  // temporary workaround, __propTypesSecretDontUseThesePlease.
+  // TODO (bvaughn) Revert this particular change any time after April 1
+  var propTypes =
+    Component.__propTypesSecretDontUseThesePlease ||
+    Component.propTypes;
+
   AnimatedComponent.propTypes = {
     style: function(props, propName, componentName) {
-      if (!Component.propTypes) {
+      if (!propTypes) {
         return;
       }
 
       for (var key in ViewStylePropTypes) {
-        if (!Component.propTypes[key] && props[key] !== undefined) {
+        if (!propTypes[key] && props[key] !== undefined) {
           console.warn(
             'You are setting the style `{ ' + key + ': ... }` as a prop. You ' +
             'should nest it in a style object. ' +
@@ -2713,10 +2765,13 @@ module.exports = {
    * [Origami](https://facebook.github.io/origami/).  Tracks velocity state to
    * create fluid motions as the `toValue` updates, and can be chained together.
    *
-   * Config is an object that may have the following options:
+   * Config is an object that may have the following options. Note that you can
+   * only define bounciness/speed or tension/friction but not both:
    *
    *   - `friction`: Controls "bounciness"/overshoot.  Default 7.
    *   - `tension`: Controls speed.  Default 40.
+   *   - `speed`: Controls speed of the animation. Default 12.
+   *   - `bounciness`: Controls bounciness. Default 8.
    *   - `useNativeDriver`: Uses the native driver when true. Default false.
    */
   spring,
@@ -2791,9 +2846,9 @@ module.exports = {
    *
    *```javascript
    *  onScroll={Animated.event(
-   *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}]
+   *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}],
    *    {listener},          // Optional async listener
-   *  )
+   *  )}
    *  ...
    *  onPanResponderMove: Animated.event([
    *    null,                // raw event arg ignored

@@ -31,10 +31,8 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -87,7 +85,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private final Map<String, Object> mModuleConstants;
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
-  private float mFontScale;
 
   private int mNextRootViewTag = 1;
   private int mBatchId = 0;
@@ -100,8 +97,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mEventDispatcher = new EventDispatcher(reactContext);
-    mFontScale = getReactApplicationContext().getResources().getConfiguration().fontScale;
-    mModuleConstants = createConstants(viewManagerList, lazyViewManagersEnabled, mFontScale);
+    mModuleConstants = createConstants(viewManagerList, lazyViewManagersEnabled);
     mUIImplementation = uiImplementationProvider
       .createUIImplementation(reactContext, viewManagerList, mEventDispatcher);
 
@@ -134,12 +130,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @Override
   public void onHostResume() {
     mUIImplementation.onHostResume();
-
-    float fontScale = getReactApplicationContext().getResources().getConfiguration().fontScale;
-    if (mFontScale != fontScale) {
-      mFontScale = fontScale;
-      emitUpdateDimensionsEvent();
-    }
   }
 
   @Override
@@ -159,19 +149,18 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
     getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
     YogaNodePool.get().clear();
+    ViewManagerPropertyUpdater.clear();
   }
 
   private static Map<String, Object> createConstants(
     List<ViewManager> viewManagerList,
-    boolean lazyViewManagersEnabled,
-    float fontScale) {
+    boolean lazyViewManagersEnabled) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
     try {
       return UIManagerModuleConstantsHelper.createConstants(
         viewManagerList,
-        lazyViewManagersEnabled,
-        fontScale);
+        lazyViewManagersEnabled);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
@@ -192,10 +181,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * Note that this must be called after getWidth()/getHeight() actually return something. See
    * CatalystApplicationFragment as an example.
    *
-   * TODO(6242243): Make addMeasuredRootView thread safe
+   * TODO(6242243): Make addRootView thread safe
    * NB: this method is horribly not-thread-safe.
    */
-  public int addMeasuredRootView(final SizeMonitoringFrameLayout rootView) {
+  public int addRootView(final SizeMonitoringFrameLayout rootView) {
+    Systrace.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+      "UIManagerModule.addRootView");
     final int tag = mNextRootViewTag;
     mNextRootViewTag += ROOT_VIEW_TAG_INCREMENT;
 
@@ -203,8 +195,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     final int height;
     // If LayoutParams sets size explicitly, we can use that. Otherwise get the size from the view.
     if (rootView.getLayoutParams() != null &&
-        rootView.getLayoutParams().width > 0 &&
-        rootView.getLayoutParams().height > 0) {
+      rootView.getLayoutParams().width > 0 &&
+      rootView.getLayoutParams().height > 0) {
       width = rootView.getLayoutParams().width;
       height = rootView.getLayoutParams().height;
     } else {
@@ -214,7 +206,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     final ThemedReactContext themedRootContext =
-        new ThemedReactContext(reactApplicationContext, rootView.getContext());
+      new ThemedReactContext(reactApplicationContext, rootView.getContext());
 
     mUIImplementation.registerRootView(rootView, tag, width, height, themedRootContext);
 
@@ -222,7 +214,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       new SizeMonitoringFrameLayout.OnSizeChangedListener() {
         @Override
         public void onSizeChanged(final int width, final int height, int oldW, int oldH) {
-          reactApplicationContext.runOnNativeModulesQueueThread(
+          reactApplicationContext.runUIBackgroundRunnable(
             new GuardedRunnable(reactApplicationContext) {
               @Override
               public void runGuarded() {
@@ -232,6 +224,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
         }
       });
 
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return tag;
   }
 
@@ -241,7 +234,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
-    getReactApplicationContext().assertOnNativeModulesQueueThread();
+    getReactApplicationContext().assertOnUIBackgroundOrNativeModulesThread();
 
     mUIImplementation.updateNodeSize(nodeViewTag, newWidth, newHeight);
   }
@@ -421,6 +414,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   /**
+   *  Check if the first shadow node is the descendant of the second shadow node
+   */
+  @ReactMethod
+  public void viewIsDescendantOf(
+      final int reactTag,
+      final int ancestorReactTag,
+      final Callback callback) {
+    mUIImplementation.viewIsDescendantOf(reactTag, ancestorReactTag, callback);
+  }
+
+  /**
    * Registers a new Animation that can then be added to a View using {@link #addAnimation}.
    */
   public void registerAnimation(Animation animation) {
@@ -548,16 +552,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void sendAccessibilityEvent(int tag, int eventType) {
     mUIImplementation.sendAccessibilityEvent(tag, eventType);
-  }
-
-  public void emitUpdateDimensionsEvent() {
-    sendEvent("didUpdateDimensions", UIManagerModuleConstants.getDimensionsConstants(mFontScale));
-  }
-
-  private void sendEvent(String eventName, @Nullable WritableMap params) {
-    getReactApplicationContext()
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit(eventName, params);
   }
 
   /**

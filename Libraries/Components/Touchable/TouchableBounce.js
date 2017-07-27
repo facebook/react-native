@@ -15,6 +15,8 @@ var Animated = require('Animated');
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
+var createReactClass = require('create-react-class');
+var PropTypes = require('prop-types');
 var Touchable = require('Touchable');
 
 type Event = Object;
@@ -34,7 +36,8 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * interesting interactions such as `handleTouchablePress`.
  */
 // $FlowFixMe(>=0.41.0)
-var TouchableBounce = React.createClass({
+var TouchableBounce = createReactClass({
+  displayName: 'TouchableBounce',
   mixins: [Touchable.Mixin, NativeMethodsMixin],
 
   propTypes: {
@@ -42,17 +45,17 @@ var TouchableBounce = React.createClass({
      * When true, indicates that the view is an accessibility element. By default,
      * all the touchable elements are accessible.
      */
-    accessible: React.PropTypes.bool,
+    accessible: PropTypes.bool,
 
-    onPress: React.PropTypes.func,
-    onPressIn: React.PropTypes.func,
-    onPressOut: React.PropTypes.func,
+    onPress: PropTypes.func,
+    onPressIn: PropTypes.func,
+    onPressOut: PropTypes.func,
     // The function passed takes a callback to start the animation which should
     // be run after this onPress handler is done. You can use this (for example)
     // to update UI before starting the animation.
-    onPressWithCompletion: React.PropTypes.func,
+    onPressWithCompletion: PropTypes.func,
     // the function passed is called after the animation is complete
-    onPressAnimationComplete: React.PropTypes.func,
+    onPressAnimationComplete: PropTypes.func,
     /**
      * When the scroll view is disabled, this defines how far your touch may
      * move off of the button, before deactivating the button. Once deactivated,
@@ -141,6 +144,7 @@ var TouchableBounce = React.createClass({
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
+        nativeID={this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}

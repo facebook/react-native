@@ -48,7 +48,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
    * the implementation and the caller address.
    */
   mov x0, #0x10
-  bl SYMBOL_NAME(malloc)
+  bl SYMBOL_NAME(RCTProfileMalloc)
   // store the initial value of r19, the callee saved register we'll use
   str x19, [x0]
   mov x19, x0
@@ -111,7 +111,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
   ldr x10, [x19, #0x8] //  load the caller address
   ldr x19, [x19] // restore x19
   str x10, [sp, #0x18] // store x10 on the stack space allocated above
-  bl SYMBOL_NAME(free)
+  bl SYMBOL_NAME(RCTProfileFree)
 
   // Load both return values and link register from the stack
   ldr q0, [sp, #0x0]

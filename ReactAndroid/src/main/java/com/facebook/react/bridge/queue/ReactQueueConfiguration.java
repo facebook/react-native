@@ -9,6 +9,8 @@
 
 package com.facebook.react.bridge.queue;
 
+import javax.annotation.Nullable;
+
 /**
  * Specifies which {@link MessageQueueThread}s must be used to run the various contexts of
  * execution within catalyst (Main UI thread, native modules, and JS). Some of these queues *may* be
@@ -20,6 +22,9 @@ package com.facebook.react.bridge.queue;
  */
 public interface ReactQueueConfiguration {
   MessageQueueThread getUIQueueThread();
+  @Nullable
+  MessageQueueThread getUIBackgroundQueueThread();
   MessageQueueThread getNativeModulesQueueThread();
   MessageQueueThread getJSQueueThread();
+  void destroy();
 }

@@ -1,36 +1,54 @@
-jest.autoMockOff();
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @format
+ */
+
+'use strict';
 
 const getProjectConfig = require('../../ios').projectConfig;
-const mockFs = require('mock-fs');
+const mockFS = require('mock-fs');
 const projects = require('../../__fixtures__/projects');
 
 describe('ios::getProjectConfig', () => {
   const userConfig = {};
 
-  beforeEach(() => mockFs({ testDir: projects }));
+  beforeEach(() => {
+    mockFS({testDir: projects});
+  });
 
-  it('should return an object with ios project configuration', () => {
+  it('returns an object with ios project configuration', () => {
     const folder = 'testDir/nested';
 
-    expect(getProjectConfig(folder, userConfig)).not.toBe(null);
+    expect(getProjectConfig(folder, userConfig)).not.toBeNull();
     expect(typeof getProjectConfig(folder, userConfig)).toBe('object');
   });
 
-  it('should return `null` if ios project was not found', () => {
+  it('returns `null` if ios project was not found', () => {
     const folder = 'testDir/empty';
 
-    expect(getProjectConfig(folder, userConfig)).toBe(null);
+    expect(getProjectConfig(folder, userConfig)).toBeNull();
   });
 
-  it('should return normalized shared library names', () => {
+  it('returns normalized shared library names', () => {
     const projectConfig = getProjectConfig('testDir/nested', {
       sharedLibraries: ['libc++', 'libz.tbd', 'HealthKit', 'HomeKit.framework'],
     });
 
-    expect(projectConfig.sharedLibraries).toEqual(
-      ['libc++.tbd', 'libz.tbd', 'HealthKit.framework', 'HomeKit.framework']
-    );
+    expect(projectConfig.sharedLibraries).toEqual([
+      'libc++.tbd',
+      'libz.tbd',
+      'HealthKit.framework',
+      'HomeKit.framework',
+    ]);
   });
 
-  afterEach(mockFs.restore);
+  afterEach(() => {
+    mockFS.restore();
+  });
 });

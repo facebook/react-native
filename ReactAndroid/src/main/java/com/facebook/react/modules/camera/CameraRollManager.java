@@ -31,6 +31,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
+import android.provider.MediaStore.Video;
 import android.text.TextUtils;
 
 import com.facebook.common.logging.FLog;
@@ -213,6 +214,10 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
    *            mimeType (optional): restrict returned images to a specific mimetype (e.g.
    *            image/jpeg)
    *          </li>
+   *          <li>
+   *            assetType (optional): chooses between either photos or videos from the camera roll.
+   *            Valid values are "Photos" or "Videos". Defaults to photos.
+   *          </li>
    *        </ul>
    * @param promise the Promise to be resolved when the photos are loaded; for a format of the
    *        parameters passed to this callback, see {@code getPhotosReturnChecker} in CameraRoll.js
@@ -222,6 +227,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     int first = params.getInt("first");
     String after = params.hasKey("after") ? params.getString("after") : null;
     String groupName = params.hasKey("groupName") ? params.getString("groupName") : null;
+    String assetType = params.hasKey("assetType") ? params.getString("assetType") : null;
     ReadableArray mimeTypes = params.hasKey("mimeTypes")
         ? params.getArray("mimeTypes")
         : null;
@@ -235,6 +241,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
           after,
           groupName,
           mimeTypes,
+          assetType,
           promise)
           .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
@@ -246,6 +253,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     private final @Nullable String mGroupName;
     private final @Nullable ReadableArray mMimeTypes;
     private final Promise mPromise;
+    private final @Nullable String mAssetType;
 
     private GetPhotosTask(
         ReactContext context,
@@ -253,6 +261,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
         @Nullable String after,
         @Nullable String groupName,
         @Nullable ReadableArray mimeTypes,
+        @Nullable String assetType,
         Promise promise) {
       super(context);
       mContext = context;
@@ -261,6 +270,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       mGroupName = groupName;
       mMimeTypes = mimeTypes;
       mPromise = promise;
+      mAssetType = assetType;
     }
 
     @Override
@@ -289,8 +299,12 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       // setting a limit at all), but it works because this specific ContentProvider is backed by
       // an SQLite DB and forwards parameters to it without doing any parsing / validation.
       try {
+        Uri assetURI =
+            mAssetType != null && mAssetType.equals("Videos") ? Video.Media.EXTERNAL_CONTENT_URI :
+                Images.Media.EXTERNAL_CONTENT_URI;
+
         Cursor photos = resolver.query(
-            Images.Media.EXTERNAL_CONTENT_URI,
+            assetURI,
             PROJECTION,
             selection.toString(),
             selectionArgs.toArray(new String[selectionArgs.size()]),

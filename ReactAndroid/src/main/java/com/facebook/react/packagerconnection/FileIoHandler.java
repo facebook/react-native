@@ -62,17 +62,17 @@ public class FileIoHandler implements Runnable {
   private int mNextHandle;
   private final Handler mHandler;
   private final Map<Integer, TtlFileInputStream> mOpenFiles;
-  private final Map<String, JSPackagerClient.RequestHandler> mRequestHandlers;
+  private final Map<String, RequestHandler> mRequestHandlers;
 
   public FileIoHandler() {
     mNextHandle = 1;
     mHandler = new Handler(Looper.getMainLooper());
     mOpenFiles = new HashMap<>();
     mRequestHandlers = new HashMap<>();
-    mRequestHandlers.put("fopen", new JSPackagerClient.RequestOnlyHandler() {
+    mRequestHandlers.put("fopen", new RequestOnlyHandler() {
       @Override
       public void onRequest(
-          @Nullable Object params, JSPackagerClient.Responder responder) {
+          @Nullable Object params, Responder responder) {
         synchronized (mOpenFiles) {
           try {
             JSONObject paramsObj = (JSONObject)params;
@@ -98,10 +98,10 @@ public class FileIoHandler implements Runnable {
         }
       }
     });
-    mRequestHandlers.put("fclose", new JSPackagerClient.RequestOnlyHandler() {
+    mRequestHandlers.put("fclose", new RequestOnlyHandler() {
       @Override
       public void onRequest(
-          @Nullable Object params, JSPackagerClient.Responder responder) {
+          @Nullable Object params, Responder responder) {
         synchronized (mOpenFiles) {
           try {
             if (!(params instanceof Number)) {
@@ -121,10 +121,10 @@ public class FileIoHandler implements Runnable {
         }
       }
     });
-    mRequestHandlers.put("fread", new JSPackagerClient.RequestOnlyHandler() {
+    mRequestHandlers.put("fread", new RequestOnlyHandler() {
       @Override
       public void onRequest(
-          @Nullable Object params, JSPackagerClient.Responder responder) {
+          @Nullable Object params, Responder responder) {
         synchronized (mOpenFiles) {
           try {
             JSONObject paramsObj = (JSONObject)params;
@@ -153,7 +153,7 @@ public class FileIoHandler implements Runnable {
     });
   }
 
-  public Map<String, JSPackagerClient.RequestHandler> handlers() {
+  public Map<String, RequestHandler> handlers() {
     return mRequestHandlers;
   }
 

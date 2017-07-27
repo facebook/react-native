@@ -23,10 +23,10 @@ project.xcworkspace
 
 # Gradle
 /build/
-/Examples/**/android/app/build/
-/Examples/**/android/app/gradle/
-/Examples/**/android/app/gradlew
-/Examples/**/android/app/gradlew.bat
+/RNTester/android/app/build/
+/RNTester/android/app/gradle/
+/RNTester/android/app/gradlew
+/RNTester/android/app/gradlew.bat
 /ReactAndroid/build/
 
 # Buck
@@ -47,6 +47,7 @@ local.properties
 node_modules
 *.log
 .nvm
+/danger/node_modules/
 
 # OS X
 .DS_Store
@@ -55,4 +56,5 @@ node_modules
 /ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 *.js.meta
 
+/coverage
 /third-party

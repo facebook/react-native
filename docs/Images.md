@@ -4,7 +4,7 @@ title: Images
 layout: docs
 category: Guides
 permalink: docs/images.html
-next:  colors
+next:  animations
 previous: navigation
 ---
 
@@ -67,20 +67,29 @@ Note that image sources required this way include size (width, height) info for 
 
 ## Static Non-Image Resources
 
-The `require` syntax described above can be used to statically include audio, video or document files in your project as well. Most common file types are supported including `.mp3`, `.wav`, `.mp4`, `.mov`, `.html` and `.pdf` (see the [packager defaults](https://github.com/facebook/react-native/blob/master/packager/defaults.js) file for the full list).
+The `require` syntax described above can be used to statically include audio, video or document files in your project as well. Most common file types are supported including `.mp3`, `.wav`, `.mp4`, `.mov`, `.html` and `.pdf`. See [packager defaults](https://github.com/facebook/metro-bundler/blob/master/packages/metro-bundler/src/defaults.js#L13-L18) for the full list.
+
+You can add support for other types by creating a packager config file (see the [packager config file](https://github.com/facebook/react-native/blob/master/local-cli/util/Config.js#L34-L39) for the full list of configuration options).
 
 A caveat is that videos must use absolute positioning instead of `flexGrow`, since size info is not currently passed for non-image assets. This limitation doesn't occur for videos that are linked directly into Xcode or the Assets folder for Android.
 
 ## Images From Hybrid App's Resources
 
-If you are building a hybrid app (some UIs in React Native, some UIs in platform code) you can still use images that are already bundled into the app (via Xcode asset catalogs or Android drawable folder):
+If you are building a hybrid app (some UIs in React Native, some UIs in platform code) you can still use images that are already bundled into the app.
+
+For images included via Xcode asset catalogs or in the Android drawable folder, use the image name without the extension:
 
 ```javascript
 <Image source={{uri: 'app_icon'}} style={{width: 40, height: 40}} />
 ```
 
-This approach provides no safety checks. It's up to you to guarantee that those images are available in the application. Also you have to specify image dimensions manually.
+For images in the Android assets folder, use the `asset:/` scheme:
 
+```javascript
+<Image source={{uri: 'asset:/app_icon.png'}} style={{width: 40, height: 40}} />
+```
+
+These approaches provide no safety checks. It's up to you to guarantee that those images are available in the application. Also you have to specify image dimensions manually.
 
 ## Network Images
 
@@ -93,6 +102,33 @@ Many of the images you will display in your app will not be available at compile
 
 // BAD
 <Image source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}} />
+```
+
+### Network Requests for Images
+
+  If you would like to set such things as the HTTP-Verb, Headers or a Body along with the image request, you may do this by defining these properties on the source object:
+
+  ```javascript
+  <Image source={{
+      uri: 'https://facebook.github.io/react/img/logo_og.png',
+      method: 'POST',
+      headers: {
+        Pragma: 'no-cache'
+      },
+      body: 'Your Body goes here'
+    }}
+    style={{width: 400, height: 400}} />
+  ```
+
+## Uri Data Images
+
+Sometimes, you might be getting encoded image data from a REST API call. You can use the `'data:'` uri scheme to use these images. Same as for network resources, *you will need to manually specify the dimensions of your image*.
+
+> This is recommended for very small and dynamic images only, like icons in a list from a DB.
+
+```javascript
+// include at least width and height!
+<Image style={{width: 51, height: 51, resizeMode: Image.resizeMode.contain}} source={{uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg=='}}/>
 ```
 
 ### Cache Control (iOS Only)
@@ -113,7 +149,7 @@ and the load is considered to have failed.
 ```javascript
 <Image source={{uri: 'https://facebook.github.io/react/img/logo_og.png', cache: 'only-if-cached'}}
        style={{width: 400, height: 400}} />
-````
+```
 
 ## Local Filesystem Images
 
@@ -150,13 +186,15 @@ On the user side, this lets you annotate the object with useful attributes such 
 
 ## Background Image via Nesting
 
-A common feature request from developers familiar with the web is `background-image`. To handle this use case, simply create a normal `<Image>` component and add whatever children to it you would like to layer on top of it.
+A common feature request from developers familiar with the web is `background-image`. To handle this use case, you can use the `<ImageBackground>` component, which has the same props as `<Image>`, and add whatever children to it you would like to layer on top of it.
+
+You might not want to use `<ImageBackground>` in some cases, since the implementation is very simple. Refer to `<ImageBackground>`'s [source code](https://github.com/facebook/react-native/blob/master/Libraries/Image/ImageBackground.js) for more insight, and create your own custom component when needed.
 
 ```javascript
 return (
-  <Image source={...}>
+  <ImageBackground source={...}>
     <Text>Inside</Text>
-  </Image>
+  </ImageBackground>
 );
 ```
 

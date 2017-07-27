@@ -364,7 +364,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       }
     } else {
       if (self->_onLoad) {
-        self->_onLoad(onLoadParamsForSource(source));
+        RCTImageSource *sourceLoaded = [source imageSourceWithSize:image.size scale:source.scale];
+        self->_onLoad(onLoadParamsForSource(sourceLoaded));
       }
       if (self->_onLoadEnd) {
         self->_onLoadEnd(nil);

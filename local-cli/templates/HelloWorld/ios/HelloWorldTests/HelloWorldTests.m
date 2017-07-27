@@ -37,7 +37,7 @@
 
 - (void)testRendersWelcomeScreen
 {
-  UIViewController *vc = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+  UIViewController *vc = [[[RCTSharedApplication() delegate] window] rootViewController];
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:TIMEOUT_SECONDS];
   BOOL foundElement = NO;
 
