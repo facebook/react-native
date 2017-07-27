@@ -1,6 +1,6 @@
 ---
 id: more-resources
-title: More Resources
+title: 그 외 리소스
 layout: docs
 category: The Basics
 permalink: docs/more-resources.html
@@ -8,15 +8,15 @@ next: components
 previous: network
 ---
 
-If you just read through this website, you should be able to build a pretty cool React Native app. But React Native isn't just a product made by one company - it's a community of thousands of developers. So if you're interested in React Native, here's some related stuff you might want to check out.
+이 웹사이트를 통해 여기까지 잘 따라왔다면, 이제는 꽤 그럴듯한 React Native 앱을 만들 수 있습니다. 하지만, React Native는 단지 한 회사만의 제품이 아니라 수 많은 개발자들이 만들어 나가고 있습니다. React Native에 관심이 있는 개발자라면, 여러분이 보고싶어할 만한 것들이 여기 있습니다.
 
-## Popular Libraries
+## 인기있는 라이브러리
 
-If you're using React Native, you probably already know about [React](https://facebook.github.io/react/). So I feel a bit silly mentioning this. But if you haven't, check out React - it's the best way to build a modern website.
+React Native를 사용하고 있다면, 이미 [React](https://facebook.github.io/react/)는 알고 있을 것입니다. 그래서 React를 언급하는 것이 조금 우습기도 합니다. 아직 접해보지 않았다면, 모던한 웹사이트 만드는 최고의 방법인 React를 확인하세요.
 
-One common question is how to handle the "state" of your React Native application. The most popular library for this is [Redux](http://redux.js.org/). Don't be afraid of how often Redux uses the word "reducer" - it's a pretty simple library, and there's also a nice [series of videos](https://egghead.io/courses/getting-started-with-redux) explaining it.
+한 가지 공통된 질문은 'React Native 애플리케이션의 "state"를 어떻게 관리하느냐' 입니다. 이를 위한 가장 유명한 라이브러리는 [Redux](http://redux.js.org/)입니다. Redux에서 "reducer"라는 용어를 얼마나 자주 쓰는지 두려워 마세요 - 꽤 심플한 라이브러리 이고, 이 내용을 잘 설명해주는 여러 [동영상](https://egghead.io/courses/getting-started-with-redux)이 있습니다.
 
-If you're looking for a library that does a specific thing, check out [Awesome React Native](http://www.awesome-react-native.com/), a curated list of components that also has demos, articles, and other stuff.
+다른 특별한 역할을 하는 라이브러리를 찾는다면, 데모, 기사 등을 포함하는 선별된 목록으로 이루어진 [Awesome React Native](http://www.awesome-react-native.com/)를 확인하세요.
 
 ## Examples
 
