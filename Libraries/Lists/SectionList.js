@@ -220,17 +220,17 @@ type DefaultProps = typeof defaultProps;
  *       renderItem={({item}) => <ListItem title={item.title} />}
  *       renderSectionHeader={({section}) => <H1 title={section.title} />}
  *       sections={[ // homogenous rendering between sections
- *         {data: [...], title: ...},
- *         {data: [...], title: ...},
- *         {data: [...], title: ...},
+ *         {data: [...]},
+ *         {data: [...]},
+ *         {data: [...]},
  *       ]}
  *     />
  *
  *     <SectionList
  *       sections={[ // heterogeneous rendering between sections
- *         {data: [...], title: ..., renderItem: ...},
- *         {data: [...], title: ..., renderItem: ...},
- *         {data: [...], title: ..., renderItem: ...},
+ *         {data: [...], renderItem: ...},
+ *         {data: [...], renderItem: ...},
+ *         {data: [...], renderItem: ...},
  *       ]}
  *     />
  *
