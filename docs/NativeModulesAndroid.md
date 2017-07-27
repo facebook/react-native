@@ -21,7 +21,7 @@ If you plan to make changes in Java code, we recommend enabling [Gradle Daemon](
 
 This guide will use the [Toast](http://developer.android.com/reference/android/widget/Toast.html) example. Let's say we would like to be able to create a toast message from JavaScript.
 
-We start by creating a native module. A native module is a Java class that usually extends the `ReactContextBaseJavaModule` class and implements the functionality required by the JavaScript. Our goal here is to be able to write `ToastAndroid.show('Awesome', ToastAndroid.SHORT);` from JavaScript to display a short toast on the screen.
+We start by creating a native module. A native module is a Java class that usually extends the `ReactContextBaseJavaModule` class and implements the functionality required by the JavaScript. Our goal here is to be able to write `ToastExample.show('Awesome', ToastExample.SHORT);` from JavaScript to display a short toast on the screen.
 
 ```java
 package com.facebook.react.modules.toast;
