@@ -11,6 +11,7 @@
 
 #include "YGNodeList.h"
 #include "Yoga.h"
+#include "Yoga-internal.h"
 
 #ifdef _MSC_VER
 #include <float.h>
@@ -3158,20 +3159,24 @@ static inline bool YGMeasureModeNewMeasureSizeIsStricterAndStillValid(YGMeasureM
          lastSize > size && (lastComputedSize <= size || YGFloatsEqual(size, lastComputedSize));
 }
 
-static float YGRoundValueToPixelGrid(const float value,
+float YGRoundValueToPixelGrid(const float value,
                                      const float pointScaleFactor,
                                      const bool forceCeil,
                                      const bool forceFloor) {
   float scaledValue = value * pointScaleFactor;
   float fractial = fmodf(scaledValue, 1.0);
   if (YGFloatsEqual(fractial, 0)) {
-    // Still remove fractial as fractial could be  extremely small.
+    // First we check if the value is already rounded
     scaledValue = scaledValue - fractial;
+  } else if (YGFloatsEqual(fractial, 1.0)) {
+    scaledValue = scaledValue - fractial + 1.0;
   } else if (forceCeil) {
+    // Next we check if we need to use forced rounding
     scaledValue = scaledValue - fractial + 1.0;
   } else if (forceFloor) {
     scaledValue = scaledValue - fractial;
   } else {
+    // Finally we just round the value
     scaledValue = scaledValue - fractial + (fractial >= 0.5f ? 1.0 : 0);
   }
   return scaledValue / pointScaleFactor;
