@@ -1,6 +1,6 @@
 ---
 id: handling-touches
-title: Handling Touches
+title: 터치 핸들링
 layout: docs
 category: The Basics
 permalink: docs/handling-touches.html
