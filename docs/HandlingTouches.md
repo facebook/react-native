@@ -8,11 +8,11 @@ next: using-a-scrollview
 previous: handling-text-input
 ---
 
-Users interact with mobile apps mainly through touch. They can use a combination of gestures, such as tapping on a button, scrolling a list, or zooming on a map. React Native provides components to handle all sorts of common gestures, as well as a comprehensive [gesture responder system](docs/gesture-responder-system.html) to allow for more advanced gesture recognition, but the one component you will most likely be interested in is the basic Button.
+사용자와 모바일 앱은 터치 입력을 통해 상호 작용합니다. 사용자은 버튼을 누르고, 리스트를 스크롤하고 지도를 확대/축소하는 것과 같은 동작들을 조합하여 터치 입력을 합니다. React Native는 모든 종류의 일반적인 제스처뿐만 아니라 포괄적인 [gesture responder system](docs/gesture-responder-system.html)을 제공함으로써 더 발전된 제스처 인식이 가능하게 해 줍니다. 그러나 가장 관심 있어 할 컴포넌트는 기본 버튼일 것입니다.
 
-## Displaying a basic button
+## 기본 버튼을 표시하는 방법
 
-[Button](docs/button.html) provides a basic button component that is rendered nicely on all platforms. The minimal example to display a button looks like this:
+[Button](docs/button.html)은 모든 플랫폼에서 멋지게 표시되는 기본적인 버튼 컴포넌트를 제공합니다. 버튼을 표시하는 간단한 예제는 아래와 같습니다:
 
 ```javascript
 <Button
@@ -21,11 +21,11 @@ Users interact with mobile apps mainly through touch. They can use a combination
 />
 ```
 
-This will render a blue label on iOS, and a blue rounded rectangle with white text on Android. Pressing the button will call the "onPress" function, which in this case displays an alert popup. If you like, you can specify a "color" prop to change the color of your button.
+위의 예제는 iOS의 경우 파란색 라벨 그리고 안드로이드에서는 모서리가 둥근 사각형 안에 하얀색 글자를 보여 줄 것입니다. 버튼을 누르면 "onPress" 함수가 호출되고 위의 경우에는 경고 팝업이 표시됩니다. 원할경우 "color" prop을 지정해서 버튼의 색깔을 바꿀 수 있습니다.
 
 ![](img/Button.png)
 
-Go ahead and play around with the `Button` component using the example below. You can select which platform your app is previewed in by clicking on the toggle in the bottom right, then click on "Tap to Play" to preview the app.
+아래 예제를 통해 `Button` 컴포넌트로 한 번 다뤄보세요 오른쪽 아래에 있는 토글 버튼을 누르면 어떤 플랫폼에서 앱의 미리 보기를 할지 선택할 수 있습니다. 그런 후에 "Tap to Play"를 누르면 앱의 미리 보기를 할 수 있습니다
 
 ```SnackPlayer?name=Button%20Basics
 import React, { Component } from 'react';
@@ -87,24 +87,23 @@ const styles = StyleSheet.create({
 AppRegistry.registerComponent('AwesomeProject', () => ButtonBasics);
 ```
 
-
 ## Touchables
 
-If the basic button doesn't look right for your app, you can build your own button using any of the "Touchable" components provided by React Native. The "Touchable" components provide the capability to capture tapping gestures, and can display feedback when a gesture is recognized. These components do not provide any default styling, however, so you will need to do a bit of work to get them looking nicely in your app.
+만약 기본 버튼이 여러분의 앱과 어울리지 않는다면 React Native에서 제공하는 "Touchable" 컴포넌트를 이용해서 자신만의 버튼을 만들 수 있습니다. "Touchable" 컴포넌트는 터치 입력을 캡처할 수 있는 기능을 제공하고 제스처가 인식될 때 피드백을 표시할 수 있습니다. 하지만 "Touchable"은 기본적으로 스타일링을 제공하지 않아서 여러분의 앱에 어울리게 보이려면 별도의 작업이 필요하게 됩니다.
 
-Which "Touchable" component you use will depend on what kind of feedback you want to provide:
+어떤 "Touchable" 컴포넌트를 사용할 것인지는 어떤 종류의 피드백을 제공하느냐에 달려있습니다:
 
-- Generally, you can use [**TouchableHighlight**](docs/touchablehighlight.html) anywhere you would use a button or link on web. The view's background will be darkened when the user presses down on the button.
+- 일반적으로, 버튼이나 웹링크의 용도로 [**TouchableHighlight**](docs/touchablehighlight.html)를 사용합니다.
 
-- You may consider using [**TouchableNativeFeedback**](docs/touchablenativefeedback.html) on Android to display ink surface reaction ripples that respond to the user's touch.
+- 안드로이드에서 사용자가 터치했을 떄 잉크가 퍼지는 듯한 물결을 표현하기 위해서는 [**TouchableNativeFeedback**](docs/touchablenativefeedback.html)를 사용하면 됩니다.
 
-- [**TouchableOpacity**](docs/touchableopacity.html) can be used to provide feedback by reducing the opacity of the button, allowing the background to be seen through while the user is pressing down.
+- [**TouchableOpacity**](docs/touchableopacity.html)는 버튼의 투명도를 줄이는 효과를 제공해서 사용자가 누르는 동안 배경이 보이도록 해 줍니다.
 
-- If you need to handle a tap gesture but you don't want any feedback to be displayed, use [**TouchableWithoutFeedback**](docs/touchablewithoutfeedback.html).
+- 만약 탭 재스쳐를 처리하고 싶지만 피드백을 주고 싶지 않을 때는 [**TouchableWithoutFeedback**](docs/touchablewithoutfeedback.html)을 사용하세요.
 
-In some cases, you may want to detect when a user presses and holds a view for a set amount of time. These long presses can be handled by passing a function to the `onLongPress` props of any of the "Touchable" components.
+때로는 사용자가 화면을 누르고 잠시 누른 상태를 유지하고 있는 상태를 알고 싶을 수 있습니다. 이렇게 길게 누르는 행위는 함수를 "Touchable" 컴포넌트의 `onLongPress` prop에 전달해서 처리할 수 있습니다.
 
-Let's see all of these in action:
+자, 그럼 위에서 언급한 내용을 코드로 봅시다:
 
 ```SnackPlayer?platform=android&name=Touchables
 import React, { Component } from 'react';
@@ -180,4 +179,4 @@ AppRegistry.registerComponent('AwesomeProject', () => Touchables);
 
 ## Scrolling lists, swiping pages, and pinch-to-zoom
 
-Another gesture commonly used in mobile apps is the swipe or pan. This gesture allows the user to scroll through a list of items, or swipe through pages of content. In order to handle these and other gestures, we'll learn [how to use a ScrollView](docs/using-a-scrollview.html) next.
+모바일 앱에서 일반적으로 사용되는 또 다른 제스처는 swpie와 pan입니다. 이 제스처들을 통해서 사용자는 아이템들을 스크롤 하거나 콘텐츠의 페이지들을 swipe할 수 있습니다. 앞에서 언급한 그리고 다른 종류의 제스처를 처리하기 위해, 다음 장에서 [how to use a ScrollView](docs/using-a-scrollview.html)을 배우게 될 것입니다.
