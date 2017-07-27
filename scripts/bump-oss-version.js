@@ -88,8 +88,18 @@ if (exec(`git tag v${version}`).code) {
 let remote = argv.remote;
 exec(`git push ${remote} v${version}`);
 
+// Branch that currently has latest tag
+let latestBranch = exec(`git branch --contains latest`, {silent: true}).stdout.trim();
+
+// Minor version, e.g. `0` if `0.45.0` is released
+let versionMinor = +version.match(/\.(\d+)$/)[1];
+
+// Do not set `latest` if we are not on the latest branch
+// and not releasing a new stable (version "0")
+let shouldSkipLatest = latestBranch !== branch && versionMinor !== 0;
+
 // Tag latest if doing stable release
-if (version.indexOf(`rc`) === -1) {
+if (version.indexOf(`rc`) === -1 && !shouldSkipLatest) {
   exec(`git tag -d latest`);
   exec(`git push ${remote} :latest`);
   exec(`git tag latest`);
