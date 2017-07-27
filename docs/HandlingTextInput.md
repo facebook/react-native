@@ -1,6 +1,6 @@
 ---
 id: handling-text-input
-title: Handling Text Input
+title: 텍스트 입력 핸들링
 layout: docs
 category: The Basics
 permalink: docs/handling-text-input.html
