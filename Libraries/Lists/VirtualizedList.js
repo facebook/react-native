@@ -213,7 +213,8 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       0,
       frame.offset +
         frame.length +
-        this._footerLength -
+        this._footerLength +
+        this._paddingBottom -
         this._scrollMetrics.visibleLength,
     );
     this._scrollRef.scrollTo(
@@ -503,8 +504,13 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   }
 
   render() {
+    const flatStyles = flattenStyle(this.props.contentContainerStyle);
+    if (flatStyles) {
+      this._paddingTop = flatStyles.paddingTop || 0;
+      this._paddingBottom = flatStyles.paddingBottom || 0;
+    }
+
     if (__DEV__) {
-      const flatStyles = flattenStyle(this.props.contentContainerStyle);
       warning(
         flatStyles == null || flatStyles.flexWrap !== 'wrap',
         '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
@@ -703,10 +709,12 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
   _hasWarned = {};
   _highestMeasuredFrameIndex = 0;
   _headerLength = 0;
+  _paddingTop = 0;
   _initialScrollIndexTimeout = 0;
   _fillRateHelper: FillRateHelper;
   _frames = {};
   _footerLength = 0;
+  _paddingBottom = 0;
   _scrollMetrics = {
     contentLength: 0,
     dOffset: 0,
@@ -977,9 +985,14 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
     const itemCount = this.props.getItemCount(this.props.data);
     let hiPri = false;
     if (first > 0 || last < itemCount - 1) {
-      const distTop = offset - this._getFrameMetricsApprox(first).offset;
+      const distTop =
+        offset +
+        this._headerLength +
+        this._paddingTop -
+        this._getFrameMetricsApprox(first).offset;
       const distBottom =
-        this._getFrameMetricsApprox(last).offset - (offset + visibleLength);
+        this._getFrameMetricsApprox(last).offset -
+        (offset + visibleLength);
       const scrollingThreshold =
         this.props.onEndReachedThreshold * visibleLength / 2;
       hiPri =
@@ -1089,7 +1102,10 @@ class VirtualizedList extends React.PureComponent<OptionalProps, Props, State> {
       );
       return {
         length: this._averageCellLength,
-        offset: this._averageCellLength * index,
+        offset:
+          this._averageCellLength * index +
+          this._headerLength +
+          this._paddingTop,
       };
     }
   };
