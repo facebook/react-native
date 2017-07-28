@@ -59,19 +59,23 @@ type ConnectivityStateAndroid = $Enum<{
 
 const _subscriptions = new Map();
 
-let _isConnected;
+let _isConnectedDeprecated;
 if (Platform.OS === 'ios') {
-  _isConnected = function(
+  _isConnectedDeprecated = function(
     reachability: ReachabilityStateIOS,
   ): bool {
     return reachability !== 'none' && reachability !== 'unknown';
   };
 } else if (Platform.OS === 'android') {
-  _isConnected = function(
+  _isConnectedDeprecated = function(
       connectionType: ConnectivityStateAndroid,
     ): bool {
     return connectionType !== 'NONE' && connectionType !== 'UNKNOWN';
   };
+}
+
+function _isConnected(connection) {
+  return connection.type !== 'none' && connection.type !== 'unknown';
 }
 
 const _isConnectedSubscriptions = new Map();
@@ -290,7 +294,11 @@ const NetInfo = {
       handler: Function
     ): {remove: () => void} {
       const listener = (connection) => {
-        handler(_isConnected(connection));
+        if (eventName === 'change') {
+          handler(_isConnectedDeprecated(connection));
+        } else if (eventName === 'connectionChange') {
+          handler(_isConnected(connection));
+        }
       };
       _isConnectedSubscriptions.set(handler, listener);
       NetInfo.addEventListener(
@@ -318,9 +326,7 @@ const NetInfo = {
     },
 
     fetch(): Promise<any> {
-      return NetInfo.fetch().then(
-        (connection) => _isConnected(connection)
-      );
+      return NetInfo.getConnectionInfo().then(_isConnected);
     },
   },
 
