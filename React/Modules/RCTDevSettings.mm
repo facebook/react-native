@@ -24,17 +24,17 @@
 #import "RCTProfile.h"
 #import "RCTUtils.h"
 
-NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
-NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
-NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
-NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
-NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
-NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
-NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
-NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
-NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamplingProfilerOnLaunch";
+static NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
+static NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
+static NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
+static NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
+static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
+static NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
+static NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
+static NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
+static NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamplingProfilerOnLaunch";
 
-NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
+static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 #define ENABLE_PACKAGER_CONNECTION RCT_DEV && __has_include("RCTPackagerConnection.h")
 

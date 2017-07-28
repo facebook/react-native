@@ -25,6 +25,8 @@ const defaultSourceExts = require('metro-bundler/src/defaults').sourceExts;
 const defaultPlatforms = require('metro-bundler/src/defaults').platforms;
 const defaultProvidesModuleNodeModules = require('metro-bundler/src/defaults').providesModuleNodeModules;
 
+const {ASSET_REGISTRY_PATH} = require('../core/Constants');
+
 import type {RequestOptions, OutputOptions} from './types.flow';
 import type {ConfigT} from '../util/Config';
 
@@ -85,6 +87,7 @@ function buildBundle(
     const terminal = new Terminal(process.stdout);
     const options = {
       assetExts: defaultAssetExts.concat(assetExts),
+      assetRegistryPath: ASSET_REGISTRY_PATH,
       blacklistRE: config.getBlacklistRE(),
       extraNodeModules: config.extraNodeModules,
       getPolyfills: config.getPolyfills,

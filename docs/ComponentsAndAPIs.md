@@ -98,10 +98,6 @@ Many of the following components provide wrappers for commonly used UIKit classe
     <p>API to display an iOS action sheet or share sheet.</p>
   </div>
   <div class="component">
-    <h3><a href="docs/adsupportios.html">AdSupportIOS</a></h3>
-    <p>API to access the "advertising identifier" on iOS.</p>
-  </div>
-  <div class="component">
     <h3><a href="docs/alertios.html">AlertIOS</a></h3>
     <p>Create an iOS alert dialog with a message or create a prompt for user input.</p>
   </div>

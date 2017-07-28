@@ -287,7 +287,7 @@ static NSThread *newJavaScriptThread(void)
           @"StartSamplingProfilerOnInit": @(self->_bridge.devSettings.startSamplingProfilerOnLaunch)
         }, NULL).UTF8String);
       }
-      contextRef = JSC_JSGlobalContextCreateInGroup(self->_useCustomJSCLibrary, nullptr, nullptr);
+      contextRef = JSC_JSGlobalContextCreateInGroup((bool)self->_useCustomJSCLibrary, nullptr, nullptr);
       context = [JSC_JSContext(contextRef) contextWithJSGlobalContextRef:contextRef];
       // We release the global context reference here to balance retainCount after JSGlobalContextCreateInGroup.
       // The global context _is not_ going to be released since the JSContext keeps the strong reference to it.
@@ -596,7 +596,11 @@ RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)contextName)
       }
     } else {
       if (!errorJSRef && JSC_JSValueGetType(ctx, batchedBridgeRef) == kJSTypeUndefined) {
-        error = RCTErrorWithMessage(@"Unable to execute JS call: __fbBatchedBridge is undefined");
+        error = RCTErrorWithMessage(@"Unable to execute JS call: __fbBatchedBridge is undefined. This can happen "
+                                    "if you try to execute JS and the bridge has not set up, for example if it encountered "
+                                    "an incomplete bundle or a fatal script execution error during startup. Verify that a "
+                                    "valid JS bundle is included with your app and that it loaded correctly, or try "
+                                    "reinstalling the app.");
       }
     }
 
@@ -963,7 +967,7 @@ static NSData *loadRAMBundle(NSURL *sourceURL, NSError **error, RandomAccessBund
   if (_useCustomJSCLibrary) {
     JSC_configureJSCForIOS(true, "{}");
   }
-  JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup(_useCustomJSCLibrary, nullptr, nullptr);
+  JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup((bool)_useCustomJSCLibrary, nullptr, nullptr);
   _context = [JSC_JSContext(ctx) contextWithJSGlobalContextRef:ctx];
   installBasicSynchronousHooksOnContext(_context);
   dispatch_semaphore_signal(_semaphore);
