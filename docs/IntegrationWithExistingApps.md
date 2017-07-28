@@ -220,6 +220,7 @@ target 'NumberTileGame' do
     'RCTText',
     'RCTNetwork',
     'RCTWebSocket', # needed for debugging
+    'BatchedBridge', # needed as of (0.46)
     # Add any other subspecs you want to use in your project
   ]
   # Explicitly include Yoga if you are using RN >= 0.42.0
