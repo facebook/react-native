@@ -79,7 +79,7 @@ RCT_EXPORT_VIEW_PROPERTY(onScroll, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onScrollEndDrag, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollBegin, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollEnd, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onScrollAnimationEnd, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(DEPRECATED_sendUpdatedChildFrames, BOOL)
 
 // overflow is used both in css-layout as well as by react-native. In css-layout
 // we always want to treat overflow as scroll but depending on what the overflow
@@ -176,6 +176,21 @@ RCT_EXPORT_METHOD(zoomToRect:(nonnull NSNumber *)reactTag
                   "with tag #%@", view, reactTag);
     }
   }];
+}
+
+RCT_EXPORT_METHOD(flashScrollIndicators:(nonnull NSNumber *)reactTag)
+{
+  [self.bridge.uiManager addUIBlock:
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry){
+
+     RCTScrollView *view = viewRegistry[reactTag];
+     if (!view || ![view isKindOfClass:[RCTScrollView class]]) {
+       RCTLogError(@"Cannot find RCTScrollView with tag #%@", reactTag);
+       return;
+     }
+
+     [view.scrollView flashScrollIndicators];
+   }];
 }
 
 @end

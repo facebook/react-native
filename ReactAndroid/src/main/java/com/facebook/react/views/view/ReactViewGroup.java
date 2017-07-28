@@ -31,6 +31,7 @@ import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactPointerEventsView;
+import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 
 /**
@@ -38,7 +39,8 @@ import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
  * initializes most of the storage needed for them.
  */
 public class ReactViewGroup extends ViewGroup implements
-    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView {
+    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView,
+    ReactZIndexedViewGroup {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
@@ -406,6 +408,15 @@ public class ReactViewGroup extends ViewGroup implements
   @Override
   protected int getChildDrawingOrder(int childCount, int index) {
     return mDrawingOrderHelper.getChildDrawingOrder(childCount, index);
+  }
+
+  @Override
+  public int getZIndexMappedChildIndex(int index) {
+    if (mDrawingOrderHelper.shouldEnableCustomDrawingOrder()) {
+      return mDrawingOrderHelper.getChildDrawingOrder(getChildCount(), index);
+    } else {
+      return index;
+    }
   }
 
   @Override

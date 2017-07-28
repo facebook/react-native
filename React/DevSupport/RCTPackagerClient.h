@@ -8,9 +8,13 @@
  */
 
 #import <React/RCTDefines.h>
-#import <React/RCTPackagerClientResponder.h>
 
 #if RCT_DEV // Only supported in dev mode
+
+@class RCTPackagerClientResponder;
+@class RCTSRWebSocket;
+
+extern const int RCT_PACKAGER_CLIENT_PROTOCOL_VERSION;
 
 @protocol RCTPackagerClientMethod
 
@@ -19,12 +23,11 @@
 
 @end
 
-@interface RCTPackagerClient : NSObject
+@interface RCTPackagerClientResponder : NSObject
 
-- (instancetype)initWithURL:(NSURL *)url;
-- (void)addHandler:(id<RCTPackagerClientMethod>)handler forMethod:(NSString *)name;
-- (void)start;
-- (void)stop;
+- (instancetype)initWithId:(id)msgId socket:(RCTSRWebSocket *)socket;
+- (void)respondWithResult:(id)result;
+- (void)respondWithError:(id)error;
 
 @end
 

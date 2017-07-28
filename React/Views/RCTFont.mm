@@ -54,15 +54,14 @@ static RCTFontWeight weightOfFont(UIFont *font)
     };
   });
 
-  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
-  RCTFontWeight weight = [traits[UIFontWeightTrait] doubleValue];
-  if (weight == 0.0) {
-    for (NSString *name in nameToWeight) {
-      if ([font.fontName.lowercaseString hasSuffix:name]) {
-        return [nameToWeight[name] doubleValue];
-      }
+  for (NSString *name in nameToWeight) {
+    if ([font.fontName.lowercaseString hasSuffix:name]) {
+      return [nameToWeight[name] doubleValue];
     }
   }
+
+  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
+  RCTFontWeight weight = [traits[UIFontWeightTrait] doubleValue];
   return weight;
 }
 

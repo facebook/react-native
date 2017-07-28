@@ -22,6 +22,7 @@ const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 const Touchable = require('Touchable');
 
+const createReactClass = require('create-react-class');
 const createReactNativeComponentClass = require('createReactNativeComponentClass');
 const mergeFast = require('mergeFast');
 const processColor = require('processColor');
@@ -34,6 +35,7 @@ const viewConfig = {
     numberOfLines: true,
     ellipsizeMode: true,
     allowFontScaling: true,
+    disabled: true,
     selectable: true,
     selectionColor: true,
     adjustsFontSizeToFit: true,
@@ -56,7 +58,7 @@ const viewConfig = {
  * import React, { Component } from 'react';
  * import { AppRegistry, Text, StyleSheet } from 'react-native';
  *
- * class TextInANest extends Component {
+ * export default class TextInANest extends Component {
  *   constructor(props) {
  *     super(props);
  *     this.state = {
@@ -89,13 +91,14 @@ const viewConfig = {
  *   },
  * });
  *
- * // App registration and rendering
+ * // skip this line if using Create React Native App
  * AppRegistry.registerComponent('TextInANest', () => TextInANest);
  * ```
  */
 
 // $FlowFixMe(>=0.41.0)
-const Text = React.createClass({
+const Text = createReactClass({
+  displayName: 'Text',
   propTypes: {
     /**
      * When `numberOfLines` is set, this prop defines how text will be truncated.
@@ -178,7 +181,6 @@ const Text = React.createClass({
     testID: PropTypes.string,
     /**
      * Used to locate this view from native code.
-     * @platform android
      */
     nativeID: PropTypes.string,
     /**

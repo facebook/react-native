@@ -20,6 +20,7 @@ const StyleSheet = require('StyleSheet');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 
+const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
 const GRAY = '#999999';
@@ -36,7 +37,8 @@ type DefaultProps = {
 /**
  * Displays a circular loading indicator.
  */
-const ActivityIndicator = React.createClass({
+const ActivityIndicator = createReactClass({
+  displayName: 'ActivityIndicator',
   mixins: [NativeMethodsMixin],
 
   propTypes: {

@@ -6,7 +6,7 @@ category: Guides (Android)
 permalink: docs/native-modules-android.html
 banner: ejected
 next: native-components-android
-previous: communication-ios
+previous: building-for-apple-tv
 ---
 
 Sometimes an app needs access to a platform API that React Native doesn't have a corresponding module for yet. Maybe you want to reuse some existing Java code without having to reimplement it in JavaScript, or write some high performance, multi-threaded code such as for image processing, a database, or any number of advanced extensions.
@@ -21,7 +21,7 @@ If you plan to make changes in Java code, we recommend enabling [Gradle Daemon](
 
 This guide will use the [Toast](http://developer.android.com/reference/android/widget/Toast.html) example. Let's say we would like to be able to create a toast message from JavaScript.
 
-We start by creating a native module. A native module is a Java class that usually extends the `ReactContextBaseJavaModule` class and implements the functionality required by the JavaScript. Our goal here is to be able to write `ToastAndroid.show('Awesome', ToastAndroid.SHORT);` from JavaScript to display a short toast on the screen.
+We start by creating a native module. A native module is a Java class that usually extends the `ReactContextBaseJavaModule` class and implements the functionality required by the JavaScript. Our goal here is to be able to write `ToastExample.show('Awesome', ToastExample.SHORT);` from JavaScript to display a short toast on the screen.
 
 ```java
 package com.facebook.react.modules.toast;
@@ -35,6 +35,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
 import java.util.Map;
+import java.util.HashMap; 
 
 public class ToastModule extends ReactContextBaseJavaModule {
 
@@ -47,12 +48,12 @@ public class ToastModule extends ReactContextBaseJavaModule {
 }
 ```
 
-`ReactContextBaseJavaModule` requires that a method called `getName` is implemented. The purpose of this method is to return the string name of the `NativeModule` which represents this class in JavaScript. So here we will call this `ToastAndroid` so that we can access it through `React.NativeModules.ToastAndroid` in JavaScript.
+`ReactContextBaseJavaModule` requires that a method called `getName` is implemented. The purpose of this method is to return the string name of the `NativeModule` which represents this class in JavaScript. So here we will call this `ToastExample` so that we can access it through `React.NativeModules.ToastExample` in JavaScript.
 
 ```java
   @Override
   public String getName() {
-    return "ToastAndroid";
+    return "ToastExample";
   }
 ```
 
@@ -102,7 +103,6 @@ The last step within Java is to register the Module; this happens in the `create
 package com.facebook.react.modules.toast;
 
 import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
@@ -112,11 +112,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class AnExampleReactPackage implements ReactPackage {
-
-  @Override
-  public List<Class<? extends JavaScriptModule>> createJSModules() {
-    return Collections.emptyList();
-  }
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
@@ -151,23 +146,23 @@ To make it simpler to access your new functionality from JavaScript, it is commo
 ```js
 'use strict';
 /**
- * This exposes the native ToastAndroid module as a JS module. This has a
+ * This exposes the native ToastExample module as a JS module. This has a
  * function 'show' which takes the following parameters:
  *
  * 1. String message: A string with the text to toast
- * 2. int duration: The duration of the toast. May be ToastAndroid.SHORT or
- *    ToastAndroid.LONG
+ * 2. int duration: The duration of the toast. May be ToastExample.SHORT or
+ *    ToastExample.LONG
  */
 import { NativeModules } from 'react-native';
-module.exports = NativeModules.ToastAndroid;
+module.exports = NativeModules.ToastExample;
 ```
 
 Now, from your other JavaScript file you can call the method like this:
 
 ```js
-import ToastAndroid from './ToastAndroid';
+import ToastExample from './ToastExample';
 
-ToastAndroid.show('Awesome', ToastAndroid.SHORT);
+ToastExample.show('Awesome', ToastExample.SHORT);
 ```
 
 ## Beyond Toasts
@@ -282,6 +277,60 @@ measureLayout();
 ### Threading
 
 Native modules should not have any assumptions about what thread they are being called on, as the current assignment is subject to change in the future. If a blocking call is required, the heavy work should be dispatched to an internally managed worker thread, and any callbacks distributed from there.
+
+### Sending Events to JavaScript
+
+Native modules can signal events to JavaScript without being invoked directly. The easiest way to do this is to use the `RCTDeviceEventEmitter` which can be obtained from the `ReactContext` as in the code snippet below.
+
+```java
+...
+private void sendEvent(ReactContext reactContext,
+                       String eventName,
+                       @Nullable WritableMap params) {
+  reactContext
+      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+      .emit(eventName, params);
+}
+...
+WritableMap params = Arguments.createMap();
+...
+sendEvent(reactContext, "keyboardWillShow", params);
+```
+
+JavaScript modules can then register to receive events by `addListenerOn` using the `Subscribable` mixin.
+
+```js
+import { DeviceEventEmitter } from 'react-native';
+...
+
+var ScrollResponderMixin = {
+  mixins: [Subscribable.Mixin],
+
+
+  componentWillMount: function() {
+    ...
+    this.addListenerOn(DeviceEventEmitter,
+                       'keyboardWillShow',
+                       this.scrollResponderKeyboardWillShow);
+    ...
+  },
+  scrollResponderKeyboardWillShow:function(e: Event) {
+    this.keyboardWillOpenTo = e;
+    this.props.onKeyboardWillShow && this.props.onKeyboardWillShow(e);
+  },
+```
+
+You can also directly use the `DeviceEventEmitter` module to listen for events.
+
+```js
+...
+componentWillMount: function() {
+  DeviceEventEmitter.addListener('keyboardWillShow', function(e: Event) {
+    // handle event.
+  });
+}
+...
+```
 
 ### Getting activity result from `startActivityForResult`
 

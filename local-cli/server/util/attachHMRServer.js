@@ -11,33 +11,72 @@
 
 'use strict';
 
+const getInverseDependencies = require('./getInverseDependencies');
 const querystring = require('querystring');
 const url = require('url');
 
-const {getInverseDependencies} = require('../../../packager/src//node-haste');
-
-import type HMRBundle from '../../../packager/src/Bundler/HMRBundle';
-import type Server from '../../../packager/src/Server';
-import type ResolutionResponse
-  from '../../../packager/src/node-haste/DependencyGraph/ResolutionResponse';
-import type Module from '../../../packager/src/node-haste/Module';
+import type {ResolutionResponse} from './getInverseDependencies';
 import type {Server as HTTPServer} from 'http';
+import type {Server as HTTPSServer} from 'https';
 
 const blacklist = [
   'Libraries/Utilities/HMRClient.js',
 ];
 
-type HMROptions = {
-  httpServer: HTTPServer,
+type HMRBundle = {
+  getModulesIdsAndCode(): Array<{id: string, code: string}>,
+  getSourceMappingURLs(): Array<mixed>,
+  getSourceURLs(): Array<mixed>,
+  isEmpty(): boolean,
+};
+
+type DependencyOptions = {|
+  +dev: boolean,
+  +entryFile: string,
+  +hot: boolean,
+  +minify: boolean,
+  +platform: ?string,
+  +recursive: boolean,
+|};
+
+/**
+ * This is a subset of the actual `metro-bundler`'s `Server` class,
+ * without all the stuff we don't need to know about. This allows us to use
+ * `attachHMRServer` with different versions of `metro-bundler` as long as
+ * this specific contract is maintained.
+ */
+type PackagerServer<TModule> = {
+  buildBundleForHMR(
+    options: {platform: ?string},
+    host: string,
+    port: number,
+  ): Promise<HMRBundle>,
+  getDependencies(options: DependencyOptions): Promise<ResolutionResponse<TModule>>,
+  getModuleForPath(entryFile: string): Promise<TModule>,
+  getShallowDependencies(options: DependencyOptions): Promise<Array<TModule>>,
+  setHMRFileChangeListener(listener: ?(type: string, filePath: string) => mixed): void,
+};
+
+type HMROptions<TModule> = {
+  httpServer: HTTPServer | HTTPSServer,
+  packagerServer: PackagerServer<TModule>,
   path: string,
-  packagerServer: Server,
+};
+
+type Moduleish = {
+  getName(): Promise<string>,
+  isAsset(): boolean,
+  isJSON(): boolean,
+  path: string,
 };
 
 /**
  * Attaches a WebSocket based connection to the Packager to expose
  * Hot Module Replacement updates to the simulator.
  */
-function attachHMRServer({httpServer, path, packagerServer}: HMROptions) {
+function attachHMRServer<TModule: Moduleish>(
+  {httpServer, path, packagerServer}: HMROptions<TModule>,
+) {
   let client = null;
 
   function disconnect() {
@@ -51,32 +90,36 @@ function attachHMRServer({httpServer, path, packagerServer}: HMROptions) {
   //   - Inverse shallow dependencies map
   function getDependencies(platform: string, bundleEntry: string): Promise<{
     dependenciesCache: Array<string>,
-    dependenciesModulesCache: {[mixed]: Module},
-    shallowDependencies: {[string]: Array<Module>},
+    dependenciesModulesCache: {[mixed]: TModule},
+    shallowDependencies: {[string]: Array<TModule>},
     inverseDependenciesCache: mixed,
-    resolutionResponse: ResolutionResponse<Module>,
+    resolutionResponse: ResolutionResponse<TModule>,
   }> {
     return packagerServer.getDependencies({
-      platform: platform,
       dev: true,
-      hot: true,
       entryFile: bundleEntry,
+      hot: true,
+      minify: false,
+      platform: platform,
+      recursive: true,
     }).then(response => {
       /* $FlowFixMe: getModuleId might be null */
       const {getModuleId}: {getModuleId: () => number} = response;
 
       // for each dependency builds the object:
       // `{path: '/a/b/c.js', deps: ['modA', 'modB', ...]}`
-      return Promise.all(response.dependencies.map((dep: Module) => {
+      return Promise.all(response.dependencies.map((dep: TModule) => {
         return dep.getName().then(depName => {
           if (dep.isAsset() || dep.isJSON()) {
             return Promise.resolve({path: dep.path, deps: []});
           }
           return packagerServer.getShallowDependencies({
-            platform: platform,
             dev: true,
+            entryFile: dep.path,
             hot: true,
-            entryFile: dep.path
+            minify: false,
+            platform: platform,
+            recursive: true,
           }).then(deps => {
             return {
               path: dep.path,
@@ -86,7 +129,7 @@ function attachHMRServer({httpServer, path, packagerServer}: HMROptions) {
           });
         });
       }))
-      .then((deps: Array<{path: string, name?: string, deps: Array<Module>}>) => {
+      .then((deps: Array<{path: string, name?: string, deps: Array<TModule>}>) => {
         // list with all the dependencies' filenames the bundle entry has
         const dependenciesCache = response.dependencies.map(dep => dep.path);
 
@@ -174,10 +217,12 @@ function attachHMRServer({httpServer, path, packagerServer}: HMROptions) {
           const promise = type === 'delete'
             ? Promise.resolve()
             : packagerServer.getShallowDependencies({
-                entryFile: filename,
-                platform: client.platform,
                 dev: true,
+                minify: false,
+                entryFile: filename,
                 hot: true,
+                platform: client.platform,
+                recursive: true,
               }).then(deps => {
                 if (!client) {
                   return [];
@@ -193,10 +238,11 @@ function attachHMRServer({httpServer, path, packagerServer}: HMROptions) {
                   // specific response we can compute a non recursive one which
                   // is the least we need and improve performance.
                   return packagerServer.getDependencies({
-                    platform: client.platform,
                     dev: true,
-                    hot: true,
                     entryFile: filename,
+                    hot: true,
+                    minify: false,
+                    platform: client.platform,
                     recursive: true,
                   }).then(response => {
                     return packagerServer.getModuleForPath(filename).then(module => {

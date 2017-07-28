@@ -41,6 +41,9 @@
 
   CGFloat _lastPosition;
   CGFloat _lastVelocity;
+
+  NSInteger _iterations;
+  NSInteger _currentLoop;
 }
 
 - (instancetype)initWithId:(NSNumber *)animationId
@@ -49,6 +52,8 @@
                   callBack:(nullable RCTResponseSenderBlock)callback
 {
   if ((self = [super init])) {
+    NSNumber *iterations = [RCTConvert NSNumber:config[@"iterations"]] ?: @1;
+
     _animationId = animationId;
     _toValue = [RCTConvert CGFloat:config[@"toValue"]];
     _fromValue = valueNode.value;
@@ -63,6 +68,10 @@
 
     _lastPosition = _fromValue;
     _lastVelocity = _initialVelocity;
+
+    _animationHasFinished = iterations.integerValue == 0;
+    _iterations = iterations.integerValue;
+    _currentLoop = 1;
   }
   return self;
 }
@@ -178,7 +187,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       [self onUpdate:_toValue];
     }
 
-    _animationHasFinished = YES;
+    if (_iterations == -1 || _currentLoop < _iterations) {
+      _lastPosition = _fromValue;
+      _lastVelocity = _initialVelocity;
+      _currentLoop++;
+      [self onUpdate:_fromValue];
+    } else {
+      _animationHasFinished = YES;
+    }
   }
 }
 

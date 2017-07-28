@@ -9,6 +9,7 @@
 
 #import "RCTAccessibilityManager.h"
 
+#import "RCTUIManager.h"
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
@@ -70,6 +71,11 @@ RCT_EXPORT_MODULE()
                                              selector:@selector(didReceiveNewVoiceOverStatus:)
                                                  name:UIAccessibilityVoiceOverStatusChanged
                                                object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(accessibilityAnnouncementDidFinish:)
+                                                 name:UIAccessibilityAnnouncementDidFinishNotification
+                                               object:nil];
 
     self.contentSizeCategory = RCTSharedApplication().preferredContentSizeCategory;
     _isVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
@@ -98,6 +104,20 @@ RCT_EXPORT_MODULE()
                                                 body:@(_isVoiceOverEnabled)];
 #pragma clang diagnostic pop
   }
+}
+
+- (void)accessibilityAnnouncementDidFinish:(__unused NSNotification *)notification
+{
+  NSDictionary *userInfo = notification.userInfo;
+  // Response dictionary to populate the event with.
+  NSDictionary *response = @{@"announcement": userInfo[UIAccessibilityAnnouncementKeyStringValue],
+                              @"success": userInfo[UIAccessibilityAnnouncementKeyWasSuccessful]};
+    
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"announcementDidFinish"
+                                              body:response];
+#pragma clang diagnostic pop
 }
 
 - (void)setContentSizeCategory:(NSString *)contentSizeCategory
@@ -160,6 +180,19 @@ RCT_EXPORT_METHOD(setAccessibilityContentSizeMultipliers:(NSDictionary *)JSMulti
     multipliers[UIKitCategory] = m;
   }
   self.multipliers = multipliers;
+}
+
+RCT_EXPORT_METHOD(setAccessibilityFocus:(nonnull NSNumber *)reactTag)
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
+    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, view);
+  });
+}
+
+RCT_EXPORT_METHOD(announceForAccessibility:(NSString *)announcement)
+{
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
 }
 
 RCT_EXPORT_METHOD(getMultiplier:(RCTResponseSenderBlock)callback)

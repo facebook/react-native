@@ -14,9 +14,11 @@ package com.facebook.react.flat;
  */
 public final class RCTVirtualTextManager extends VirtualViewManager<RCTVirtualText> {
 
+  /* package */ static final String REACT_CLASS = "RCTVirtualText";
+
   @Override
   public String getName() {
-    return "RCTVirtualText";
+    return REACT_CLASS;
   }
 
   @Override

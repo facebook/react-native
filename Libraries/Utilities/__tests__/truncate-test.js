@@ -9,8 +9,6 @@
  */
 'use strict';
 
-jest.unmock('truncate');
-
 describe('truncate', () => {
 
   var truncate = require('truncate');

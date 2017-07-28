@@ -392,7 +392,7 @@ class Shape extends React.Component {
   render() {
     var props = this.props;
     var path = props.d || childrenAsString(props.children);
-    var d = new Path(path).toJSON();
+    var d = (path instanceof Path ? path : new Path(path)).toJSON();
     return (
       <NativeShape
         fill={extractBrush(props.fill, props)}
@@ -457,11 +457,12 @@ function extractFont(font) {
   }
   var fontFamily = extractSingleFontFamily(font.fontFamily);
   var fontSize = +font.fontSize || 12;
+  var fontWeight = font.fontWeight != null ? font.fontWeight.toString() : '400';
   return {
     // Normalize
     fontFamily: fontFamily,
     fontSize: fontSize,
-    fontWeight: font.fontWeight,
+    fontWeight: fontWeight,
     fontStyle: font.fontStyle,
   };
 }
@@ -485,7 +486,8 @@ function extractAlignment(alignment) {
 class Text extends React.Component {
   render() {
     var props = this.props;
-    var textPath = props.path ? new Path(props.path).toJSON() : null;
+    var path = props.path;
+    var textPath = path ? (path instanceof Path ? path : new Path(path)).toJSON() : null;
     var textFrame = extractFontAndLines(
       props.font,
       childrenAsString(props.children)
