@@ -5,7 +5,7 @@ layout: docs
 category: Guides (iOS)
 permalink: docs/building-for-apple-tv.html
 banner: ejected
-next: today-widget
+next: app-extensions
 previous: communication-ios
 ---
 
