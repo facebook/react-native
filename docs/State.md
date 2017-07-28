@@ -8,11 +8,12 @@ next: style
 previous: props
 ---
 
-There are two types of data that control a component: `props` and `state`. `props` are set by the parent and they are fixed throughout the lifetime of a component. For data that is going to change, we have to use `state`.
+컴포넌트를 제어하는 데이터에는 두 가지 타입 `props` 와 `state` 가 있습니다. `props`는 부모에 의해서 설정이 되며 컴포넌트의 생명주기를 통해서 변경되지 않게 고정 됩니다. 변경이 일어나는 데이터에 대해서는 `state`를 사용하여야 합니다. 
 
-In general, you should initialize `state` in the constructor, and then call `setState` when you want to change it.
+일반적으로 `state`는 생성자에서 초기화하여야 하며 값을 변경하고 하고 싶다면 `setState` 를 호출하여 데이터값을 변경합니다.
 
-For example, let's say we want to make text that blinks all the time. The text itself gets set once when the blinking component gets created, so the text itself is a `prop`. The "whether the text is currently on or off" changes over time, so that should be kept in `state`.
+예를 들어, 텍스트 즉 글자가 항상 깜빡이는 것을 구현하고 싶다고 칩시다. 아래 샘플 코드를 보면 **Blink** 컴포넌트가 생성이 될 때 **text** 를 한번 설정이 되는 것을 알 수 있는데, 이 **text** 가 `prop` 이 됩니다. 특정한 시간 주기로 "**text** 가 보이고 안 보이는 설정" 하는 것은 `state`로 유지 되어야 합니다. 
+
 
 ```ReactNativeWebPlayer
 import React, { Component } from 'react';
@@ -56,9 +57,8 @@ export default class BlinkApp extends Component {
 AppRegistry.registerComponent('AwesomeProject', () => BlinkApp);
 ```
 
-In a real application, you probably won't be setting state with a timer. You might set state when you have new data arrive from the server, or from user input. You can also use a state container like [Redux](http://redux.js.org/index.html) to control your data flow. In that case you would use Redux to modify your state rather than calling `setState` directly.
+실제 애플리케이션에서는 타이머로 state를 설정하지 않을 것입니다. 보통 서버나 사용자의 입력으로부터 받은 새로운 데이터를 받을 때 state를 설정하게 될 것 입니다. 또한, 데이터 흐름을 제어하는 [Redux](http://redux.js.org/index.html) 와 같은 state 컨테이너를 이용 할 수도 있습니다. 이 경우에는 `setState`를 직접 호출하여 `state`를 수정하기보다는 Redux 를 사용하여 수정하게 됩니다.
 
-When setState is called, BlinkApp will re-render its Component. By calling setState within the Timer, the component will re-render every time the Timer ticks.
+`setState` 가 호출이 될 때, BlinkApp 은 컴포넌트를 re-render 할 것 입니다. 타이머 안에서 `setState` 가 호출 됨으로써, 컴포넌트는 타이머를 통해 매번 re-render를 하게 됩니다.
 
-State works the same way as it does in React, so for more details on handling state, you can look at the [React.Component API](https://facebook.github.io/react/docs/component-api.html).
-At this point, you might be annoyed that most of our examples so far use boring default black text. To make things more beautiful, you will have to [learn about Style](docs/style.html).
+State는 React와 같은 방식으로 동작이 되므로 state를 다루는 것에 대한 자세한 설명은 [React.Component API](https://facebook.github.io/react/docs/component-api.html)를 참조하시면 됩니다. 이 시점에서, 여기 나와있는 예시 대부분에 쓰인 지루하고 디폴트한 검은색 텍스트로 사용된 것에 대해 화나실 수도 있는데, 좀 더 이쁘게 만들려면 [Style](docs/style.html) 를 참조하여 쓰시면 됩니다.
