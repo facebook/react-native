@@ -21,7 +21,7 @@ If you plan to make changes in Java code, we recommend enabling [Gradle Daemon](
 
 This guide will use the [Toast](http://developer.android.com/reference/android/widget/Toast.html) example. Let's say we would like to be able to create a toast message from JavaScript.
 
-We start by creating a native module. A native module is a Java class that usually extends the `ReactContextBaseJavaModule` class and implements the functionality required by the JavaScript. Our goal here is to be able to write `ToastAndroid.show('Awesome', ToastAndroid.SHORT);` from JavaScript to display a short toast on the screen.
+We start by creating a native module. A native module is a Java class that usually extends the `ReactContextBaseJavaModule` class and implements the functionality required by the JavaScript. Our goal here is to be able to write `ToastExample.show('Awesome', ToastExample.SHORT);` from JavaScript to display a short toast on the screen.
 
 ```java
 package com.facebook.react.modules.toast;
@@ -48,12 +48,12 @@ public class ToastModule extends ReactContextBaseJavaModule {
 }
 ```
 
-`ReactContextBaseJavaModule` requires that a method called `getName` is implemented. The purpose of this method is to return the string name of the `NativeModule` which represents this class in JavaScript. So here we will call this `ToastAndroid` so that we can access it through `React.NativeModules.ToastAndroid` in JavaScript.
+`ReactContextBaseJavaModule` requires that a method called `getName` is implemented. The purpose of this method is to return the string name of the `NativeModule` which represents this class in JavaScript. So here we will call this `ToastExample` so that we can access it through `React.NativeModules.ToastExample` in JavaScript.
 
 ```java
   @Override
   public String getName() {
-    return "ToastAndroid";
+    return "ToastExample";
   }
 ```
 
@@ -146,23 +146,23 @@ To make it simpler to access your new functionality from JavaScript, it is commo
 ```js
 'use strict';
 /**
- * This exposes the native ToastAndroid module as a JS module. This has a
+ * This exposes the native ToastExample module as a JS module. This has a
  * function 'show' which takes the following parameters:
  *
  * 1. String message: A string with the text to toast
- * 2. int duration: The duration of the toast. May be ToastAndroid.SHORT or
- *    ToastAndroid.LONG
+ * 2. int duration: The duration of the toast. May be ToastExample.SHORT or
+ *    ToastExample.LONG
  */
 import { NativeModules } from 'react-native';
-module.exports = NativeModules.ToastAndroid;
+module.exports = NativeModules.ToastExample;
 ```
 
 Now, from your other JavaScript file you can call the method like this:
 
 ```js
-import ToastAndroid from './ToastAndroid';
+import ToastExample from './ToastExample';
 
-ToastAndroid.show('Awesome', ToastAndroid.SHORT);
+ToastExample.show('Awesome', ToastExample.SHORT);
 ```
 
 ## Beyond Toasts
