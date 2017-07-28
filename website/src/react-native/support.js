@@ -84,7 +84,7 @@ var support = React.createClass({
                     <a
                       href="http://stackoverflow.com/questions/tagged/react-native?sort=frequent"
                     >
-                      Frequently Asked Questions
+                      Stack Overflow
                     </a>
                   </li>
                   <li className="help-list-entry">
@@ -141,7 +141,7 @@ var support = React.createClass({
               >
                 open source
               </a>
-              ! If you want to contribute, read the <a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">contributor guidelines</a>, then take a look at the
+              ! If you want to contribute, read the <a href="/react-native/docs/contributing.html">Contributor's Guide</a>, then take a look at the
               {' '}
               <a
                 href="https://github.com/facebook/react-native/wiki/Roadmap"

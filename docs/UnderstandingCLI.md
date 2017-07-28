@@ -2,10 +2,10 @@
 id: understanding-cli
 title: Understanding the CLI
 layout: docs
-category: Guides
+category: Contributing
 permalink: docs/understanding-cli.html
 banner: ejected
-next: native-modules-ios
+next: activityindicator
 previous: testing
 ---
 

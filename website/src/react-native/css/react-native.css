@@ -1385,6 +1385,28 @@ div[data-twttr-id] iframe {
   font-weight: normal;
   font-size: 13px; }
 
+.botActions {
+  background-color: #ebf9ff;
+}
+
+.botActions > .botAction:nth-child(2n) {
+  background-color: #e0f6ff;
+}
+
+.botCommand {
+  font-family: 'source-code-pro', Menlo, 'Courier New', Consolas, monospace;
+  font-weight: bold;
+  color: #025268;
+}
+
+.botAction {
+  padding: 5px 10px;
+}
+
+.botMentionName {
+  font-weight: normal;
+}
+
 .platform {
   background-color: #bdebff;
   border-radius: 5px;
@@ -1822,7 +1844,7 @@ input#algolia-doc-search:focus {
   font-size: 24px; }
 
 .help-row {
-  margin: 50px 0; }
+  margin: 0; }
 
 .help-row:after {
   content: "";
@@ -1855,7 +1877,7 @@ input#algolia-doc-search:focus {
   margin: 1.25em 0 1em 0; }
 
 .entry ul, li {
-  margin: 0; }
+  margin: 0 0 10px 0; }
 
 .help-list .help-list-entry {
   padding: 16px 0;
