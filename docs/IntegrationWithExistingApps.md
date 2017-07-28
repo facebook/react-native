@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
 AppRegistry.registerComponent('MyReactNativeApp', () => RNHighScores);
 ```
 
-> `RNHighScores` is the name of your module that will be used when you add a view to React Native from within your iOS application.
+> `MyReactNativeApp` is the name of your module that will be used when you add a view to React Native from within your iOS application.
 
 #### The Magic: `RCTRootView`
 
@@ -372,9 +372,9 @@ You can add a new link on the main game menu to go to the "High Score" React Nat
 
 We will now add an event handler from the menu link. A method will be added to the main `ViewController` of your application. This is where `RCTRootView` comes into play.
 
-When you build a React Native application, you use the React Native packager to create an `index.ios.bundle` that will be served by the React Native server. Inside `index.ios.bundle` will be our `RNHighScore` module. So, we need to point our `RCTRootView` to the location of the `index.ios.bundle` resource (via `NSURL`) and tie it to the module.
+When you build a React Native application, you use the React Native packager to create an `index.ios.bundle` that will be served by the React Native server. Inside `index.ios.bundle` will be our `MyReactNativeApp` module. So, we need to point our `RCTRootView` to the location of the `index.ios.bundle` resource (via `NSURL`) and tie it to the module.
 
-We will, for debugging purposes, log that the event handler was invoked. Then, we will create a string with the location of our React Native code that exists inside the `index.ios.bundle`. Finally, we will create the main `RCTRootView`. Notice how we provide `RNHighScores` as the `moduleName` that we created [above](#the-react-native-component) when writing the code for our React Native component.
+We will, for debugging purposes, log that the event handler was invoked. Then, we will create a string with the location of our React Native code that exists inside the `index.ios.bundle`. Finally, we will create the main `RCTRootView`. Notice how we provide `MyReactNativeApp` as the `moduleName` that we created [above](#the-react-native-component) when writing the code for our React Native component.
 
 <block class="objc" />
 
@@ -393,7 +393,7 @@ First `import` the `RCTRootView` header.
 
     RCTRootView *rootView =
       [[RCTRootView alloc] initWithBundleURL: jsCodeLocation
-                                  moduleName: @"RNHighScores"
+                                  moduleName: @"MyReactNativeApp"
                            initialProperties:
                              @{
                                @"scores" : @[
@@ -439,7 +439,7 @@ import React
 
   let rootView = RCTRootView(
       bundleURL: jsCodeLocation,
-      moduleName: "RNHighScores",
+      moduleName: "MyReactNativeApp",
       initialProperties: mockData as [NSObject : AnyObject],
       launchOptions: nil
   )
@@ -684,7 +684,7 @@ public class MyReactActivity extends Activity implements DefaultHardwareBackBtnH
                 .setUseDeveloperSupport(BuildConfig.DEBUG)
                 .setInitialLifecycleState(LifecycleState.RESUMED)
                 .build();
-        mReactRootView.startReactApplication(mReactInstanceManager, "HelloWorld", null);
+        mReactRootView.startReactApplication(mReactInstanceManager, "MyReactNativeApp", null);
 
         setContentView(mReactRootView);
     }
@@ -696,7 +696,7 @@ public class MyReactActivity extends Activity implements DefaultHardwareBackBtnH
 }
 ```
 
-> If you are using a starter kit for React Native, replace the "HelloWorld" string with the one in your index.android.js file (it’s the first argument to the `AppRegistry.registerComponent()` method).
+> If you are using a starter kit for React Native, replace the "MyReactNativeApp" string with the one in your index.android.js file (it’s the first argument to the `AppRegistry.registerComponent()` method).
 
 If you are using Android Studio, use `Alt + Enter` to add all missing imports in your MyReactActivity class. Be careful to use your package’s `BuildConfig` and not the one from the `...facebook...` package.
 
