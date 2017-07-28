@@ -162,6 +162,7 @@ function getPackagerServer(args, config) {
     platforms: defaultPlatforms.concat(args.platforms),
     polyfillModuleNames: config.getPolyfillModuleNames(),
     postMinifyProcess: config.postMinifyProcess,
+    postProcessBundleSourcemap: config.postProcessBundleSourcemap,
     postProcessModules: config.postProcessModules,
     projectRoots: args.projectRoots,
     providesModuleNodeModules: providesModuleNodeModules,
