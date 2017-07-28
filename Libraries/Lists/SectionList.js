@@ -217,12 +217,12 @@ type DefaultProps = typeof defaultProps;
  * Simple Examples:
  *
  *     <SectionList
- *       renderItem={({item}) => <ListItem title={item.title} />}
- *       renderSectionHeader={({section}) => <H1 title={section.title} />}
+ *       renderItem={({item}) => <ListItem title={item} />}
+ *       renderSectionHeader={({section}) => <Header title={section.title} />}
  *       sections={[ // homogenous rendering between sections
- *         {data: [...]},
- *         {data: [...]},
- *         {data: [...]},
+ *         {data: [...], title: ...},
+ *         {data: [...], title: ...},
+ *         {data: [...], title: ...},
  *       ]}
  *     />
  *
