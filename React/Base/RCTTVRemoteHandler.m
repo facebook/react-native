@@ -113,8 +113,11 @@
 - (void)longPlayPausePressed:(UIGestureRecognizer *)r
 {
   [self sendAppleTVEvent:@"longPlayPause" toView:r.view];
+
   // If shake to show is enabled on device, use long play/pause event to show dev menu
-  [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTShowDevMenuNotification" object:nil];
+#if RCT_DEV
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTShowDevMenuNotification object:nil];
+#endif
 }
 
 - (void)longSelectPressed:(UIGestureRecognizer *)r
