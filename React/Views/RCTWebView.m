@@ -301,8 +301,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     }
     #endif
     NSString *source = [NSString stringWithFormat:
-      @"window.originalPostMessage = window.postMessage;"
-      "window.postMessage = function(data) {"
+      @"window.postMessageNative = function(data) {"
         "window.location = '%@://%@?' + encodeURIComponent(String(data));"
       "};", RCTJSNavigationScheme, kPostMessageHost
     ];
