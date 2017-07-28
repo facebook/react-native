@@ -212,6 +212,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
     coords.putDouble("longitude", location.getLongitude());
     coords.putDouble("altitude", location.getAltitude());
     coords.putDouble("accuracy", location.getAccuracy());
+    coords.putDouble("altitudeAccuracy", location.getVerticalAccuracyMeters());
     coords.putDouble("heading", location.getBearing());
     coords.putDouble("speed", location.getSpeed());
     map.putMap("coords", coords);
