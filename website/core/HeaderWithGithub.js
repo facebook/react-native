@@ -19,13 +19,8 @@ function getGitHubPath(path) {
   return  'https://github.com/facebook/react-native/blob/master/' + path;
 }
 
-var HeaderWithGithub = React.createClass({
-
-  contextTypes: {
-    version: PropTypes.string
-  },
-
-  render: function() {
+class HeaderWithGithub extends React.Component {
+  render() {
     return (
       <table width="100%">
         <tbody>
@@ -47,6 +42,10 @@ var HeaderWithGithub = React.createClass({
       </table>
     );
   }
-});
+}
+
+HeaderWithGithub.contextTypes = {
+  version: PropTypes.string
+};
 
 module.exports = HeaderWithGithub;

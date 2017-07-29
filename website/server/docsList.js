@@ -51,7 +51,6 @@ const components = [
 const apis = [
   '../Libraries/Components/AccessibilityInfo/AccessibilityInfo.ios.js',
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
-  '../Libraries/AdSupport/AdSupportIOS.js',
   '../Libraries/Alert/Alert.js',
   '../Libraries/Alert/AlertIOS.js',
   '../Libraries/Animated/src/AnimatedImplementation.js',
