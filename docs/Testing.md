@@ -2,9 +2,9 @@
 id: testing
 title: Testing your Changes
 layout: docs
-category: Guides
+category: Contributing
 permalink: docs/testing.html
-next: understanding-cli
+next: maintainers
 previous: contributing
 ---
 
