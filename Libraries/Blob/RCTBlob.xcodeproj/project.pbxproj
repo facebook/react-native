@@ -55,7 +55,10 @@
 				AD9A43C21DFC7126008DC588 /* RCTBlobManager.m */,
 				358F4ED81D1E81A9004DF814 /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
+			usesTabs = 0;
 		};
 		358F4ED81D1E81A9004DF814 /* Products */ = {
 			isa = PBXGroup;
