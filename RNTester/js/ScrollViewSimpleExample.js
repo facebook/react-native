@@ -42,7 +42,7 @@ class ScrollViewSimpleExample extends React.Component {
     if (index === 4) {
       return (
         <ScrollView key="scrollView" horizontal>
-          {this.makeItems(NUM_ITEMS, [styles.itemWrapper, styles.horizontalItemWrapper])}
+          {this.makeItems(10, [styles.itemWrapper, styles.horizontalItemWrapper])}
         </ScrollView>
       );
     }
@@ -52,9 +52,8 @@ class ScrollViewSimpleExample extends React.Component {
           key="scrollViewSnap"
           horizontal
           snapToInterval={horizontalItemWidth + 2 * itemMargin}
-          pagingEnabled
         >
-          {this.makeItems(NUM_ITEMS, [styles.itemWrapper, styles.horizontalItemWrapper])}
+          {this.makeItems(10, [styles.itemWrapper, styles.horizontalItemWrapper])}
         </ScrollView>
       );
     }
