@@ -348,3 +348,149 @@ In the second scenario, you'll see something more like this:
 Notice that first the JS thread thinks for a bit, then you see some work done on the native modules thread, followed by an expensive traversal on the UI thread.
 
 There isn't an easy way to mitigate this unless you're able to postpone creating new UI until after the interaction, or you are able to simplify the UI you're creating. The react native team is working on a infrastructure level solution for this that will allow new UI to be created and configured off the main thread, allowing the interaction to continue smoothly.
+
+## Unbundling + inline requires
+
+If you have a large app you may want to consider unbundling and using inline requires. This is useful for apps that have a large number of screens which may not ever be opened during a typical usage of the app. Generally it is useful to apps that have large amounts of code that are not needed for a while after startup. For instance the app includes complicated profile screens or lesser used features, but most sessions only involve visiting the main screen of the app for updates. We can optimize the loading of the bundle by using the unbundle feature of the packager and requiring those features and screens inline (when they are actually used).
+
+### Loading JavaScript
+
+Before react-native can execute JS code, that code must be loaded into memory and parsed. With a standard bundle if you load a 50mb bundle, all 50mb must be loaded and parsed before any of it can be executed. The optimization behind unbundling is that you can load only the portion of the 50mb that you actually need at startup, and progressively load more of the bundle as those sections are needed.
+
+### Inline Requires
+
+Inline requires delay the requiring of a module or file until that file is actually needed. A basic example would look like this:
+
+#### VeryExpensive.js
+```
+import React, { Component } from 'react';
+import { Text } from 'react-native';
+// ... import some very expensive modules
+
+// You may want to log at the file level to verify when this is happening
+console.log('VeryExpensive component loaded');
+
+export default class VeryExpensive extends Component {
+  // lots and lots of code
+  render() {
+    return <Text>Very Expensive Component</Text>;
+  }
+}
+```
+
+#### Optimized.js
+```
+import React, { Component } from 'react';
+import { TouchableOpacity, View, Text } from 'react-native';
+
+let VeryExpensive = null;
+
+export default class Optimized extends Component {
+  state = { needsExpensive: false };
+
+  didPress = () => {
+    if (VeryExpensive == null) {
+      VeryExpensive = require('./VeryExpensive').default;
+    }
+
+    this.setState(() => ({
+      needsExpensive: true,
+    }));
+  };
+
+  render() {
+    return (
+      <View style={{ marginTop: 20 }}>
+        <TouchableOpacity onPress={this.didPress}>
+          <Text>Load</Text>
+        </TouchableOpacity>
+        {this.state.needsExpensive ? <VeryExpensive /> : null}
+      </View>
+    );
+  }
+}
+```
+
+Even without unbundling inline requires can lead to startup time improvements, because the code within VeryExpensive.js will only execute once it is required for the first time. A cleaner mechanism would be to use a higher order component:
+
+#### LazyComponent.js
+```
+import React, { PureComponent } from 'react';
+export default function createLazyComponent(
+  getClass
+) {
+  return class extends PureComponent {
+    lazyComponentClass = getClass();
+
+    render() {
+      const LazyComponent = this.lazyComponentClass;
+      return (
+        <LazyComponent {...this.props}>
+          {this.props.children}
+        </LazyComponent>
+      );
+    }
+  };
+}
+```
+
+#### Optimized.js
+```
+import React, { Component } from 'react';
+import { TouchableOpacity, View, Text } from 'react-native';
+import createLazyComponent from './LazyComponent';
+
+let VeryExpensive = createLazyComponent(
+  () => require('./VeryExpensive').default
+);
+
+export default class Optimized extends Component {
+  state = { needsExpensive: false };
+
+  didPress = () => {
+    this.setState(() => ({
+      needsExpensive: true,
+    }));
+  };
+
+  render() {
+    return (
+      <View style={{ marginTop: 20 }}>
+        <TouchableOpacity onPress={this.didPress}>
+          <Text>Load</Text>
+        </TouchableOpacity>
+        {this.state.needsExpensive ? <VeryExpensive /> : null}
+      </View>
+    );
+  }
+}
+```
+
+### Enable Unbundling
+
+On iOS unbundling will create a single indexed file that react native will load one module at a time. On Android, by default it will create a set of files for each module. You can force Android to create a single file, like iOS, but using multiple files can be more performant and requires less memory.
+
+Enable unbundling in Xcode by editing the build phase "Bundle React Native code and images". Before `../node_modules/react-native/packager/react-native-xcode.sh` add `export BUNDLE_COMMAND="unbundle"`:
+
+```
+export BUNDLE_COMMAND="unbundle"
+export NODE_BINARY=node
+../node_modules/react-native/packager/react-native-xcode.sh
+```
+
+On Android enable unbundling by editing your android/app/build.gradle file. Before the line `apply from: "../../node_modules/react-native/react.gradle"` add or amend the `project.ext.react` block:
+
+```
+project.ext.react = [
+  bundleCommand: "unbundle",
+]
+```
+
+Use the following lines on Android if you want to use a single indexed file:
+
+```
+project.ext.react = [
+  bundleCommand: "unbundle",
+  extraPackagerArgs: ["--indexed-unbundle"]
+]
+```
