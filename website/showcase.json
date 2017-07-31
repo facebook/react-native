@@ -208,5 +208,11 @@
     "infoLink": "https://www.youtube.com/watch?v=abSNo2P9mMM",
     "infoTitle": "Building a React Native App for 80 Million Users",
     "pinned": false
+  },
+  {
+    "name": "Virta Health",
+    "icon": "https://user-images.githubusercontent.com/950779/28793004-74b214de-75e6-11e7-88b9-cd5a739f41e7.png",
+    "linkAppStore": "https://itunes.apple.com/us/app/virta-health-diabetes-reversal-clinic/id1164603213?mt=8",
+    "pinned": false
   }
 ]
