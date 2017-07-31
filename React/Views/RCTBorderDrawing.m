@@ -573,7 +573,11 @@ UIImage *RCTGetBorderImage(RCTBorderStyle borderStyle,
         // We already checked this above.
         return nil;
     }
-    [borderImageCache setObject:image forKey:key];
+
+    // Handle cases where the above functions return nil.
+    if (image != nil) {
+      [borderImageCache setObject:image forKey:key];
+    }
   }
   
   return image;
