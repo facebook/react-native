@@ -326,6 +326,10 @@ const PanResponder = {
         if (!interactionState.handle) {
           interactionState.handle = InteractionManager.createInteractionHandle();
         }
+        const shouldBlockNativeResponder =
+          config.onShouldBlockNativeResponder === undefined
+            ? true
+            : config.onShouldBlockNativeResponder(e, gestureState);
         gestureState.x0 = currentCentroidX(e.touchHistory);
         gestureState.y0 = currentCentroidY(e.touchHistory);
         gestureState.dx = 0;
@@ -334,9 +338,7 @@ const PanResponder = {
           config.onPanResponderGrant(e, gestureState);
         }
         // TODO: t7467124 investigate if this can be removed
-        return config.onShouldBlockNativeResponder === undefined ?
-          true :
-          config.onShouldBlockNativeResponder();
+        return shouldBlockNativeResponder;
       },
 
       onResponderReject: function (e) {
