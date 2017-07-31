@@ -505,14 +505,16 @@ static id RCTGetBorderImageKey(RCTBorderStyle borderStyle,
                                CGColorRef backgroundColor,
                                BOOL drawToEdge)
 {
-  // Important that this struct is aligned on all architectures, else
-  // the compiler can insert garbage into the padding and corrupt our hash.
+  // Important that this struct is not padded on any architecture, else
+  // there can be garbage in the padding that corrupts our hash.
+#pragma clang diagnostic push
+#pragma clang diagnostic error "-Wpadded"
   struct {
     RCTBorderStyle borderStyle;
     CGSize viewSize;
     RCTCornerRadii cornerRadii;
     UIEdgeInsets borderInsets;
-    NSUInteger drawToEdge; // BOOL would be misaligned, not good.
+    NSUInteger drawToEdge; // BOOL would be padded.
     CGFloat topColors[4];
     CGFloat rightColors[4];
     CGFloat bottomColors[4];
@@ -530,6 +532,7 @@ static id RCTGetBorderImageKey(RCTBorderStyle borderStyle,
     {0,0,0,0},
     {0,0,0,0},
   };
+#pragma clang diagnostic pop
   RCTGetRGBAColorComponents(borderColors.top, borderParams.topColors);
   RCTGetRGBAColorComponents(borderColors.bottom, borderParams.bottomColors);
   RCTGetRGBAColorComponents(borderColors.left, borderParams.leftColors);
