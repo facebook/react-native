@@ -2,12 +2,24 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog/</id>
     <title>React Native Blog</title>
-    <updated>2017-06-21T00:00:00Z</updated>
+    <updated>2017-07-28T00:00:00Z</updated>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog/"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
     <rights>Copyright © 2017 Facebook Inc.</rights>
     <generator>Feed for Node.js</generator>
+    <entry>
+        <title type="html"><![CDATA[React Native Monthly #2]]></title>
+        <id>https://facebook.github.io/react-native/blog/2017/07/28/react-native-monthly-2.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/07/28/react-native-monthly-2.html">
+        </link>
+        <updated>2017-07-28T00:00:00Z</updated>
+        <summary type="html"><![CDATA[The React Native monthly meeting continues! On this session, we were joined by Infinite Red, great minds behind Chain React, the React Native Conference. As most of the people here were presenting talks at Chain React, we pushed the meeting to a week later. Talks from the conference have been posted online and I encourage you to check them out. So, let's see what our teams are up to.]]></summary>
+        <author>
+            <name>Tomislav Tenodi</name>
+            <uri>https://github.com/tenodi</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[React Native Monthly #1]]></title>
         <id>https://facebook.github.io/react-native/blog/2017/06/21/react-native-monthly-1.html</id>
