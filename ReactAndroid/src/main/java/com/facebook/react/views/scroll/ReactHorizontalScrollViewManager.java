@@ -72,6 +72,7 @@ public class ReactHorizontalScrollViewManager
 
   @ReactProp(name = "snapToInterval")
   public void setSnapToInterval(ReactHorizontalScrollView view, int snapToInterval) {
+    view.setPagingEnabled(snapToInterval > 0);
     DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
     view.setSnapInterval((int)(snapToInterval * screenDisplayMetrics.density));
   }
