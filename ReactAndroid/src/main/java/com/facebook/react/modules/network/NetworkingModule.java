@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +30,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.StandardCharsets;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
@@ -408,20 +410,45 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       // Ignore
     }
 
-    Reader reader = responseBody.charStream();
-    try {
-      char[] buffer = new char[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
-      int read;
-      while ((read = reader.read(buffer)) != -1) {
-        ResponseUtil.onIncrementalDataReceived(
-          eventEmitter,
-          requestId,
-          new String(buffer, 0, read),
-          totalBytesRead,
-          contentLength);
+    Charset charset = responseBody.contentType() == null ? StandardCharsets.UTF_8 :
+      responseBody.contentType().charset(StandardCharsets.UTF_8);
+
+    if (StandardCharsets.UTF_8.equals(charset)) {
+      ProgressiveUTF8StreamDecoder streamDecoder = new ProgressiveUTF8StreamDecoder();
+      InputStream inputStream = responseBody.byteStream();
+      try {
+        byte[] buffer = new byte[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
+        int read;
+        while ((read = inputStream.read(buffer)) != -1) {
+          ResponseUtil.onIncrementalDataReceived(
+            eventEmitter,
+            requestId,
+            streamDecoder.decodeNext(buffer, read),
+            totalBytesRead,
+            contentLength);
+        }
+      } finally {
+        inputStream.close();
       }
-    } finally {
-      reader.close();
+    } else {
+      // TODO: in UTF-16 some symbols took 4 bytes or 2 chars (HIGH and LOW surrogates)
+      // Ideally we need to take care of this but it's way more complex task as it involves handling
+      // of Byte Order Mark and little/big endian of UTF-16. Let's keep it in sync with iOS for now.
+      Reader reader = responseBody.charStream();
+      try {
+        char[] buffer = new char[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
+        int read;
+        while ((read = reader.read(buffer)) != -1) {
+          ResponseUtil.onIncrementalDataReceived(
+            eventEmitter,
+            requestId,
+            new String(buffer, 0, read),
+            totalBytesRead,
+            contentLength);
+        }
+      } finally {
+        reader.close();
+      }
     }
   }
 
