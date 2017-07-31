@@ -39,21 +39,17 @@ class ScrollViewSimpleExample extends React.Component {
   };
 
   render() {
-    // One of the items is a horizontal scroll view
     var items = this.makeItems(NUM_ITEMS, styles.itemWrapper);
-    items[4] = (
-      <ScrollView key={'scrollView'} horizontal={true}>
-        {this.makeItems(NUM_ITEMS, [styles.itemWrapper, styles.horizontalItemWrapper])}
-      </ScrollView>
-    );
 
-    var verticalScrollView = (
+    return (
       <ScrollView style={styles.verticalScrollView}>
-        {items}
+        {items.map((item, index) => index === 4 ? (
+          <ScrollView key={'scrollView'} horizontal={true}>
+            {this.makeItems(NUM_ITEMS, [styles.itemWrapper, styles.horizontalItemWrapper])}
+          </ScrollView>
+        ) : item)}
       </ScrollView>
     );
-
-    return verticalScrollView;
   }
 }
 
