@@ -17,7 +17,7 @@ var {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity
+  View
 } = ReactNative;
 
 class ScrollViewSimpleExample extends React.Component {
@@ -28,9 +28,9 @@ class ScrollViewSimpleExample extends React.Component {
     var items = [];
     for (var i = 0; i < nItems; i++) {
        items[i] = (
-         <TouchableOpacity key={i} style={[styles.itemWrapper, extraStyle]}>
+         <View key={i} style={[styles.itemWrapper, extraStyle]}>
            <Text>{'Item ' + i}</Text>
-         </TouchableOpacity>
+         </View>
        );
     }
     return items;
