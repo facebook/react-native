@@ -620,7 +620,7 @@ import {
   View
 } from 'react-native';
 
-class HelloWorld extends React.Component {
+class RNHighScores extends React.Component {
   render() {
     return (
       <View style={styles.container}>
@@ -641,7 +641,7 @@ var styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('MyReactNativeApp', () => HelloWorld);
+AppRegistry.registerComponent('MyReactNativeApp', () => RNHighScores);
 ```
 
 ##### 3. Configure permissions for development error overlay
