@@ -36,7 +36,7 @@ class ScrollViewSimpleExample extends React.Component {
     return items;
   };
 
-  getListItem = (item, index) => {
+  getListItem = (item: any, index: number) => {
     if (index === 4) {
       return (
         <ScrollView key="scrollView" horizontal>
