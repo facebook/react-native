@@ -38,20 +38,43 @@ class ScrollViewSimpleExample extends React.Component {
     return items;
   };
 
+  getListItem = (item, index) => {
+    if (index === 4) {
+      return (
+        <ScrollView key="scrollView" horizontal>
+          {this.makeItems(NUM_ITEMS, [styles.itemWrapper, styles.horizontalItemWrapper])}
+        </ScrollView>
+      );
+    }
+    else if (index === 5) {
+      return (
+        <ScrollView
+          key="scrollViewSnap"
+          horizontal
+          snapToInterval={horizontalItemWidth + 2 * itemMargin}
+          pagingEnabled
+        >
+          {this.makeItems(NUM_ITEMS, [styles.itemWrapper, styles.horizontalItemWrapper])}
+        </ScrollView>
+      );
+    }
+
+    return item;
+  }
+
   render() {
     var items = this.makeItems(NUM_ITEMS, styles.itemWrapper);
 
     return (
       <ScrollView style={styles.verticalScrollView}>
-        {items.map((item, index) => index === 4 ? (
-          <ScrollView key="scrollView" horizontal>
-            {this.makeItems(NUM_ITEMS, [styles.itemWrapper, styles.horizontalItemWrapper])}
-          </ScrollView>
-        ) : item)}
+        {items.map(this.getListItem)}
       </ScrollView>
     );
   }
 }
+
+const horizontalItemWidth = 125;
+const itemMargin = 5;
 
 var styles = StyleSheet.create({
   verticalScrollView: {
@@ -64,10 +87,10 @@ var styles = StyleSheet.create({
     borderWidth: 5,
     borderColor: '#a52a2a',
     padding: 30,
-    margin: 5,
+    margin: itemMargin,
   },
   horizontalItemWrapper: {
-    padding: 50
+    width: horizontalItemWidth,
   }
 });
 
