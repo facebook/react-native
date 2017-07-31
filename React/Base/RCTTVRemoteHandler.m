@@ -22,6 +22,8 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
+#import "RCTDevMenu.h"
+
 @implementation RCTTVRemoteHandler {
   NSMutableArray<UIGestureRecognizer *> *_tvRemoteGestureRecognizers;
 }
@@ -60,7 +62,15 @@
     // Right
     [self addTapGestureRecognizerWithSelector:@selector(swipedRight:)
                                     pressType:UIPressTypeRightArrow];
-
+    
+    // Recognizers for long button presses
+    // We don't intercept long menu press -- that's used by the system to go to the home screen
+        
+    [self addLongPressGestureRecognizerWithSelector:@selector(longPlayPausePressed:)
+                                          pressType:UIPressTypePlayPause];
+    
+    [self addLongPressGestureRecognizerWithSelector:@selector(longSelectPressed:)
+                                          pressType:UIPressTypeSelect];
 
     // Recognizers for Apple TV remote trackpad swipes
 
@@ -100,9 +110,19 @@
   [self sendAppleTVEvent:@"select" toView:r.view];
 }
 
-- (void)longPress:(UIGestureRecognizer *)r
+- (void)longPlayPausePressed:(UIGestureRecognizer *)r
 {
-  [self sendAppleTVEvent:@"longPress" toView:r.view];
+  [self sendAppleTVEvent:@"longPlayPause" toView:r.view];
+
+  // If shake to show is enabled on device, use long play/pause event to show dev menu
+#if RCT_DEV
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTShowDevMenuNotification object:nil];
+#endif
+}
+
+- (void)longSelectPressed:(UIGestureRecognizer *)r
+{
+  [self sendAppleTVEvent:@"longSelect" toView:r.view];
 }
 
 - (void)swipedUp:(UIGestureRecognizer *)r
@@ -126,6 +146,14 @@
 }
 
 #pragma mark -
+
+- (void)addLongPressGestureRecognizerWithSelector:(nonnull SEL)selector pressType:(UIPressType)pressType
+{
+  UILongPressGestureRecognizer *recognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:selector];
+  recognizer.allowedPressTypes = @[@(pressType)];
+  
+  [_tvRemoteGestureRecognizers addObject:recognizer];
+}
 
 - (void)addTapGestureRecognizerWithSelector:(nonnull SEL)selector pressType:(UIPressType)pressType
 {
