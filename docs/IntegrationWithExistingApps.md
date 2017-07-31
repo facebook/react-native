@@ -292,15 +292,15 @@ Now we will actually modify the native iOS application to integrate React Native
 
 The first bit of code we will write is the actual React Native code for the new "High Score" screen that will be integrated into our application.
 
-##### 1. Create a `index.ios.js` file
+##### 1. Create a `index.js` file
 
-First, create an empty `index.ios.js` file in the root of your React Native project.
+First, create an empty `index.js` file in the root of your React Native project.
 
-`index.ios.js` is the starting point for React Native applications on iOS, and it is always required. It can be a small file that `require`s other file that are part of your React Native component or application, or it can contain all the code that is needed for it. In our case, we will just put everything in `index.ios.js`.
+`index.js` is the starting point for React Native applications, and it is always required. It can be a small file that `require`s other file that are part of your React Native component or application, or it can contain all the code that is needed for it. In our case, we will just put everything in `index.js`.
 
 ##### 2. Add your React Native code
 
-In your `index.ios.js`, create your component. In our sample here, we will add simple `<Text>` component within a styled `<View>`
+In your `index.js`, create your component. In our sample here, we will add simple `<Text>` component within a styled `<View>`
 
 ```javascript
 'use strict';
@@ -358,7 +358,7 @@ AppRegistry.registerComponent('MyReactNativeApp', () => RNHighScores);
 
 #### The Magic: `RCTRootView`
 
-Now that your React Native component is created via `index.ios.js`, you need to add that component to a new or existing `ViewController`. The easiest path to take is to optionally create an event path to your component and then add that component to an existing `ViewController`.
+Now that your React Native component is created via `index.js`, you need to add that component to a new or existing `ViewController`. The easiest path to take is to optionally create an event path to your component and then add that component to an existing `ViewController`.
 
 We will tie our React Native component with a new native view in the `ViewController` that will actually host it called `RCTRootView` .
 
@@ -372,9 +372,9 @@ You can add a new link on the main game menu to go to the "High Score" React Nat
 
 We will now add an event handler from the menu link. A method will be added to the main `ViewController` of your application. This is where `RCTRootView` comes into play.
 
-When you build a React Native application, you use the React Native packager to create an `index.ios.bundle` that will be served by the React Native server. Inside `index.ios.bundle` will be our `RNHighScore` module. So, we need to point our `RCTRootView` to the location of the `index.ios.bundle` resource (via `NSURL`) and tie it to the module.
+When you build a React Native application, you use the React Native packager to create an `index.bundle` that will be served by the React Native server. Inside `index.bundle` will be our `RNHighScore` module. So, we need to point our `RCTRootView` to the location of the `index.bundle` resource (via `NSURL`) and tie it to the module.
 
-We will, for debugging purposes, log that the event handler was invoked. Then, we will create a string with the location of our React Native code that exists inside the `index.ios.bundle`. Finally, we will create the main `RCTRootView`. Notice how we provide `RNHighScores` as the `moduleName` that we created [above](#the-react-native-component) when writing the code for our React Native component.
+We will, for debugging purposes, log that the event handler was invoked. Then, we will create a string with the location of our React Native code that exists inside the `index.bundle`. Finally, we will create the main `RCTRootView`. Notice how we provide `RNHighScores` as the `moduleName` that we created [above](#the-react-native-component) when writing the code for our React Native component.
 
 <block class="objc" />
 
@@ -389,7 +389,7 @@ First `import` the `RCTRootView` header.
 ```objectivec
 - (IBAction)highScoreButtonPressed:(id)sender {
     NSLog(@"High Score Button Pressed");
-    NSURL *jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios"];
+    NSURL *jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.bundle?platform=ios"];
 
     RCTRootView *rootView =
       [[RCTRootView alloc] initWithBundleURL: jsCodeLocation
@@ -429,7 +429,7 @@ import React
 ```swift
 @IBAction func highScoreButtonTapped(sender : UIButton) {
   NSLog("Hello")
-  let jsCodeLocation = URL(string: "http://localhost:8081/index.ios.bundle?platform=ios")
+  let jsCodeLocation = URL(string: "http://localhost:8081/index.bundle?platform=ios")
   let mockData:NSDictionary = ["scores":
       [
           ["name":"Alex", "value":"42"],
@@ -471,7 +471,7 @@ Wire up the new link in the main menu to the newly added event handler method.
 
 ### Test your integration
 
-You have now done all the basic steps to integrate React Native with your current application. Now we will start the React Native packager to build the `index.ios.bundle` package and the server running on `localhost` to serve it.
+You have now done all the basic steps to integrate React Native with your current application. Now we will start the React Native packager to build the `index.bundle` package and the server running on `localhost` to serve it.
 
 ##### 1. Add App Transport Security exception
 
@@ -586,15 +586,15 @@ Now we will actually modify the native Android application to integrate React Na
 
 The first bit of code we will write is the actual React Native code for the new "High Score" screen that will be integrated into our application.
 
-##### 1. Create a `index.android.js` file
+##### 1. Create a `index.js` file
 
-First, create an empty `index.android.js` file in the root of your React Native project.
+First, create an empty `index.js` file in the root of your React Native project.
 
-`index.android.js` is the starting point for React Native applications on Android, and it is always required. It can be a small file that `require`s other file that are part of your React Native component or application, or it can contain all the code that is needed for it. In our case, we will just put everything in `index.android.js`.
+`index.js` is the starting point for React Native applications, and it is always required. It can be a small file that `require`s other file that are part of your React Native component or application, or it can contain all the code that is needed for it. In our case, we will just put everything in `index.js`.
 
 ##### 2. Add your React Native code
 
-In your `index.android.js`, create your component. In our sample here, we will add simple `<Text>` component within a styled `<View>`:
+In your `index.js`, create your component. In our sample here, we will add simple `<Text>` component within a styled `<View>`:
 
 ```javascript
 'use strict';
@@ -679,7 +679,7 @@ public class MyReactActivity extends Activity implements DefaultHardwareBackBtnH
         mReactInstanceManager = ReactInstanceManager.builder()
                 .setApplication(getApplication())
                 .setBundleAssetName("index.android.bundle")
-                .setJSMainModuleName("index.android")
+                .setJSMainModuleName("index")
                 .addPackage(new MainReactPackage())
                 .setUseDeveloperSupport(BuildConfig.DEBUG)
                 .setInitialLifecycleState(LifecycleState.RESUMED)
@@ -696,7 +696,7 @@ public class MyReactActivity extends Activity implements DefaultHardwareBackBtnH
 }
 ```
 
-> If you are using a starter kit for React Native, replace the "HelloWorld" string with the one in your index.android.js file (it’s the first argument to the `AppRegistry.registerComponent()` method).
+> If you are using a starter kit for React Native, replace the "HelloWorld" string with the one in your index.js file (it’s the first argument to the `AppRegistry.registerComponent()` method).
 
 If you are using Android Studio, use `Alt + Enter` to add all missing imports in your MyReactActivity class. Be careful to use your package’s `BuildConfig` and not the one from the `...facebook...` package.
 
@@ -775,7 +775,7 @@ Now your activity is ready to run some JavaScript code.
 
 ### Test your integration
 
-You have now done all the basic steps to integrate React Native with your current application. Now we will start the React Native packager to build the `index.android.bundle` package and the server running on localhost to serve it.
+You have now done all the basic steps to integrate React Native with your current application. Now we will start the React Native packager to build the `index.bundle` package and the server running on localhost to serve it.
 
 ##### 1. Run the packager
 
@@ -798,7 +798,7 @@ Once you reach your React-powered activity inside the app, it should load the Ja
 You can use Android Studio to create your release builds too! It’s as easy as creating release builds of your previously-existing native Android app. There’s just one additional step, which you’ll have to do before every release build. You need to execute the following to create a React Native bundle, which will be included with your native Android app:
 
 ```
-$ react-native bundle --platform android --dev false --entry-file index.android.js --bundle-output android/com/your-company-name/app-package-name/src/main/assets/index.android.bundle --assets-dest android/com/your-company-name/app-package-name/src/main/res/
+$ react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/com/your-company-name/app-package-name/src/main/assets/index.android.bundle --assets-dest android/com/your-company-name/app-package-name/src/main/res/
 ```
 
 > Don’t forget to replace the paths with correct ones and create the assets folder if it doesn’t exist.
