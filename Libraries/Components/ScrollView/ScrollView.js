@@ -326,11 +326,9 @@ const ScrollView = createReactClass({
     /**
      * When set, causes the scroll view to stop at multiples of the value of
      * `snapToInterval`. This can be used for paginating through children
-     * that have lengths smaller than the scroll view. Typically used in
-     * combination with `snapToAlignment` and `decelerationRate="fast"`.
+     * that have lengths smaller than the scroll view. When used on iOS it is typically combined
+     * with `snapToAlignment` and `decelerationRate="fast"`.
      * Overrides less configurable `pagingEnabled` prop.
-     *
-     * @platform ios
      */
     snapToInterval: PropTypes.number,
     /**
