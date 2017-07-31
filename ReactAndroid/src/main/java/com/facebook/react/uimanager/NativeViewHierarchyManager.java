@@ -324,8 +324,13 @@ public class NativeViewHierarchyManager {
                 tagsToDelete));
     }
 
+    // Remove views whose indices are in indicesToRemove only when LayoutAnimation is not enabled.
+    // When LayoutAnimation is enabled, indicesToRemove are incorrect, and we should depend on
+    // tagsToDelete. The views with tags in tagsToDelete will be removed and dropped by the 'delete'
+    // layout animation.
     int lastIndexToRemove = viewManager.getChildCount(viewToManage);
-    if (indicesToRemove != null) {
+    if (!(mLayoutAnimationEnabled && mLayoutAnimator.shouldAnimateLayout(viewToManage))
+            && indicesToRemove != null) {
       for (int i = indicesToRemove.length - 1; i >= 0; i--) {
         int indexToRemove = indicesToRemove[i];
         if (indexToRemove < 0) {
@@ -362,17 +367,7 @@ public class NativeViewHierarchyManager {
                       tagsToDelete));
         }
 
-        View viewToRemove = viewManager.getChildAt(viewToManage, indexToRemove);
-
-        if (mLayoutAnimationEnabled &&
-            mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
-            arrayContains(tagsToDelete, viewToRemove.getId())) {
-          // The view will be removed and dropped by the 'delete' layout animation
-          // instead, so do nothing
-        } else {
-          viewManager.removeViewAt(viewToManage, indexToRemove);
-        }
-
+        viewManager.removeViewAt(viewToManage, indexToRemove);
         lastIndexToRemove = indexToRemove;
       }
     }
