@@ -97,7 +97,7 @@ describe('Android Test App', function () {
   });
 
   it('should have Hot Module Reloading working', function () {
-    const androidAppCode = fs.readFileSync('index.android.js', 'utf-8');
+    const androidAppCode = fs.readFileSync('index.js', 'utf-8');
     let intervalToUpdate;
     return driver
       .waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]')
@@ -111,19 +111,19 @@ describe('Android Test App', function () {
         // CI environment can be quite slow and we can't guarantee that it can consistently motice a file change
         // so we change the file every few seconds just in case
         intervalToUpdate = setInterval(() => {
-          fs.writeFileSync('index.android.js', androidAppCode.replace('Welcome to React Native!', 'Welcome to React Native with HMR!' + iteration), 'utf-8');
+          fs.writeFileSync('index.js', androidAppCode.replace('Welcome to React Native!', 'Welcome to React Native with HMR!' + iteration), 'utf-8');
         }, 3000);
       })
       .waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native with HMR!")]')
       .finally(() => {
         clearInterval(intervalToUpdate);
-        fs.writeFileSync('index.android.js', androidAppCode, 'utf-8');
+        fs.writeFileSync('index.js', androidAppCode, 'utf-8');
       });
   });
 
 
   it('should have Debug In Chrome working', function () {
-    const androidAppCode = fs.readFileSync('index.android.js', 'utf-8');
+    const androidAppCode = fs.readFileSync('index.js', 'utf-8');
     // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
     return driver
       .waitForElementByXPath('//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]')
