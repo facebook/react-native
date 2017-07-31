@@ -20,17 +20,15 @@ var {
   TouchableOpacity
 } = ReactNative;
 
-var NUM_ITEMS = 20;
-
 class ScrollViewSimpleExample extends React.Component {
   static title = '<ScrollView>';
   static description = 'Component that enables scrolling through child components.';
 
-  makeItems = (nItems: number, styles): Array<any> => {
+  makeItems = (nItems: number, extraStyle): Array<any> => {
     var items = [];
     for (var i = 0; i < nItems; i++) {
        items[i] = (
-         <TouchableOpacity key={i} style={styles}>
+         <TouchableOpacity key={i} style={[styles.itemWrapper, extraStyle]}>
            <Text>{'Item ' + i}</Text>
          </TouchableOpacity>
        );
@@ -42,7 +40,7 @@ class ScrollViewSimpleExample extends React.Component {
     if (index === 4) {
       return (
         <ScrollView key="scrollView" horizontal>
-          {this.makeItems(10, [styles.itemWrapper, styles.horizontalItemWrapper])}
+          {this.makeItems(10, styles.horizontalItemWrapper)}
         </ScrollView>
       );
     }
@@ -53,7 +51,7 @@ class ScrollViewSimpleExample extends React.Component {
           horizontal
           snapToInterval={horizontalItemWidth + 2 * itemMargin}
         >
-          {this.makeItems(10, [styles.itemWrapper, styles.horizontalItemWrapper])}
+          {this.makeItems(10, styles.horizontalItemWrapper)}
         </ScrollView>
       );
     }
@@ -62,11 +60,9 @@ class ScrollViewSimpleExample extends React.Component {
   }
 
   render() {
-    var items = this.makeItems(NUM_ITEMS, styles.itemWrapper);
-
     return (
       <ScrollView style={styles.verticalScrollView}>
-        {items.map(this.getListItem)}
+        {this.makeItems(20).map(this.getListItem)}
       </ScrollView>
     );
   }
