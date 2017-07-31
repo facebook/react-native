@@ -127,6 +127,9 @@ RCT_EXTERN NSString *__nullable RCTTempFilePath(NSString *__nullable extension, 
 // Converts a CGColor to a hex string
 RCT_EXTERN NSString *RCTColorToHexString(CGColorRef color);
 
+// Gets the RGBA components of a color
+RCT_EXTERN void RCTGetRGBAColorComponents(CGColorRef color, CGFloat rgba[__nonnull 4]);
+
 // Get standard localized string (if it exists)
 RCT_EXTERN NSString *RCTUIKitLocalizedString(NSString *string);
 

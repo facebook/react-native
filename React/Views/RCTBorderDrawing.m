@@ -9,6 +9,7 @@
 
 #import "RCTBorderDrawing.h"
 #import "RCTLog.h"
+#import "RCTUtils.h"
 
 static const CGFloat RCTViewBorderThreshold = 0.001;
 
@@ -484,8 +485,6 @@ static UIImage *RCTGetDashedOrDottedBorderImage(RCTBorderStyle borderStyle,
   CGContextSetLineWidth(ctx, lineWidth);
   CGContextSetLineDash(ctx, 0, dashLengths, sizeof(dashLengths) / sizeof(*dashLengths));
 
-  CGContextSetStrokeColorWithColor(ctx, [UIColor yellowColor].CGColor);
-
   CGContextAddPath(ctx, path);
   CGContextSetStrokeColorWithColor(ctx, borderColors.top);
   CGContextStrokePath(ctx);
@@ -498,6 +497,48 @@ static UIImage *RCTGetDashedOrDottedBorderImage(RCTBorderStyle borderStyle,
   return image;
 }
 
+static id RCTGetBorderImageKey(RCTBorderStyle borderStyle,
+                               CGSize viewSize,
+                               RCTCornerRadii cornerRadii,
+                               UIEdgeInsets borderInsets,
+                               RCTBorderColors borderColors,
+                               CGColorRef backgroundColor,
+                               BOOL drawToEdge)
+{
+  // Important that this struct is aligned on all architectures, else
+  // the compiler can insert garbage into the padding and corrupt our hash.
+  struct {
+    RCTBorderStyle borderStyle;
+    CGSize viewSize;
+    RCTCornerRadii cornerRadii;
+    UIEdgeInsets borderInsets;
+    NSUInteger drawToEdge; // BOOL would be misaligned, not good.
+    CGFloat topColors[4];
+    CGFloat rightColors[4];
+    CGFloat bottomColors[4];
+    CGFloat leftColors[4];
+    CGFloat backgroundColors[4];
+  } borderParams = {
+    borderStyle,
+    viewSize,
+    cornerRadii,
+    borderInsets,
+    drawToEdge,
+    {0,0,0,0},
+    {0,0,0,0},
+    {0,0,0,0},
+    {0,0,0,0},
+    {0,0,0,0},
+  };
+  RCTGetRGBAColorComponents(borderColors.top, borderParams.topColors);
+  RCTGetRGBAColorComponents(borderColors.bottom, borderParams.bottomColors);
+  RCTGetRGBAColorComponents(borderColors.left, borderParams.leftColors);
+  RCTGetRGBAColorComponents(borderColors.right, borderParams.rightColors);
+  RCTGetRGBAColorComponents(backgroundColor, borderParams.backgroundColors);
+  
+  return [NSValue valueWithBytes:&borderParams objCType:@encode(typeof(borderParams))];
+}
+
 UIImage *RCTGetBorderImage(RCTBorderStyle borderStyle,
                            CGSize viewSize,
                            RCTCornerRadii cornerRadii,
@@ -506,16 +547,34 @@ UIImage *RCTGetBorderImage(RCTBorderStyle borderStyle,
                            CGColorRef backgroundColor,
                            BOOL drawToEdge)
 {
-
-  switch (borderStyle) {
-    case RCTBorderStyleSolid:
-      return RCTGetSolidBorderImage(cornerRadii, viewSize, borderInsets, borderColors, backgroundColor, drawToEdge);
-    case RCTBorderStyleDashed:
-    case RCTBorderStyleDotted:
-      return RCTGetDashedOrDottedBorderImage(borderStyle, cornerRadii, viewSize, borderInsets, borderColors, backgroundColor, drawToEdge);
-    case RCTBorderStyleUnset:
-      break;
+  static NSCache<id, UIImage *> *borderImageCache;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    borderImageCache = [NSCache new];
+  });
+  
+  if (borderStyle == RCTBorderStyleUnset) {
+    return nil;
   }
-
-  return nil;
+  
+  id key = RCTGetBorderImageKey(borderStyle, viewSize, cornerRadii, borderInsets, borderColors,  backgroundColor, drawToEdge);
+  
+  UIImage *image = [borderImageCache objectForKey:key];
+  if (!image) {
+    switch (borderStyle) {
+      case RCTBorderStyleSolid:
+        image = RCTGetSolidBorderImage(cornerRadii, viewSize, borderInsets, borderColors, backgroundColor, drawToEdge);
+        break;
+      case RCTBorderStyleDashed:
+      case RCTBorderStyleDotted:
+        image = RCTGetDashedOrDottedBorderImage(borderStyle, cornerRadii, viewSize, borderInsets, borderColors, backgroundColor, drawToEdge);
+        break;
+      case RCTBorderStyleUnset:
+        // We already checked this above.
+        return nil;
+    }
+    [borderImageCache setObject:image forKey:key];
+  }
+  
+  return image;
 }
