@@ -72,7 +72,7 @@ class ScrollViewSimpleExample extends React.Component {
   }
 }
 
-const horizontalItemWidth = 125;
+const horizontalItemWidth = 140;
 const itemMargin = 5;
 
 var styles = StyleSheet.create({
