@@ -8,7 +8,7 @@ next: using-a-scrollview
 previous: handling-text-input
 ---
 
-사용자와 모바일 앱은 터치 입력을 통해 상호 작용합니다. 사용자은 버튼을 누르고, 리스트를 스크롤하고 지도를 확대/축소하는 것과 같은 동작들을 조합하여 터치 입력을 합니다. React Native는 모든 종류의 일반적인 제스처뿐만 아니라 포괄적인 [gesture responder system](docs/gesture-responder-system.html)을 제공함으로써 더 발전된 제스처 인식이 가능하게 해 줍니다. 그러나 가장 관심 있어 할 컴포넌트는 기본 버튼일 것입니다.
+사용자와 모바일 앱은 터치 입력을 통해 상호 작용합니다. 사용자은 버튼을 누르고, 리스트를 스크롤하고 지도를 확대/축소하는 것과 같은 동작들을 조합하여 터치 입력을 합니다. React Native는 모든 종류의 일반적인 제스처뿐만 아니라 포괄적인 [제스처 응답 시스템](docs/gesture-responder-system.html)을 제공함으로써 더 발전된 제스처 인식이 가능하게 해 줍니다. 그러나 가장 관심 있어 할 컴포넌트는 기본 버튼일 것입니다.
 
 ## 기본 버튼을 표시하는 방법
 
@@ -89,7 +89,7 @@ AppRegistry.registerComponent('AwesomeProject', () => ButtonBasics);
 
 ## Touchables
 
-만약 기본 버튼이 여러분의 앱과 어울리지 않는다면 React Native에서 제공하는 "Touchable" 컴포넌트를 이용해서 자신만의 버튼을 만들 수 있습니다. "Touchable" 컴포넌트는 터치 입력을 캡처할 수 있는 기능을 제공하고 제스처가 인식될 때 피드백을 표시할 수 있습니다. 하지만 "Touchable"은 기본적으로 스타일링을 제공하지 않아서 여러분의 앱에 어울리게 보이려면 별도의 작업이 필요하게 됩니다.
+만약 기본 버튼이 앱과 어울리지 않는다면 React Native에서 제공하는 "Touchable" 컴포넌트를 이용해서 자신만의 버튼을 만들 수 있습니다. "Touchable" 컴포넌트는 터치 입력을 캡처할 수 있는 기능을 제공하고 제스처가 인식될 때 피드백을 표시할 수 있습니다. 하지만 "Touchable"은 기본적으로 스타일링을 제공하지 않아서 여러분의 앱에 어울리게 보이려면 별도의 작업이 필요하게 됩니다.
 
 어떤 "Touchable" 컴포넌트를 사용할 것인지는 어떤 종류의 피드백을 제공하느냐에 달려있습니다:
 
@@ -179,4 +179,4 @@ AppRegistry.registerComponent('AwesomeProject', () => Touchables);
 
 ## Scrolling lists, swiping pages, and pinch-to-zoom
 
-모바일 앱에서 일반적으로 사용되는 또 다른 제스처는 swpie와 pan입니다. 이 제스처들을 통해서 사용자는 아이템들을 스크롤 하거나 콘텐츠의 페이지들을 swipe할 수 있습니다. 앞에서 언급한 그리고 다른 종류의 제스처를 처리하기 위해, 다음 장에서 [how to use a ScrollView](docs/using-a-scrollview.html)을 배우게 될 것입니다.
+모바일 앱에서 일반적으로 사용되는 또 다른 제스처는 swpie와 pan입니다. 이 제스처들을 통해서 사용자는 아이템들을 스크롤 하거나 콘텐츠의 페이지들을 swipe할 수 있습니다. 앞에서 언급한 그리고 다른 종류의 제스처를 처리하기 위해, 다음 장에서 [ScrollView를 사용하는 방법](docs/using-a-scrollview.html)을 배우게 될 것입니다.
