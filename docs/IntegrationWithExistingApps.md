@@ -244,7 +244,6 @@ target 'swift-2048' do
   # but if not, adjust the `:path` accordingly
   pod 'React', :path => '../node_modules/react-native', :subspecs => [
     'Core',
-    'CxxBridge', # Include this for RN >= 0.47
     'DevSupport', # Include this to enable In-App Devmenu if RN >= 0.43
     'RCTText',
     'RCTNetwork',
@@ -493,9 +492,9 @@ Apple has blocked implicit cleartext HTTP resource loading. So we need to add th
 ```
 <block class="swift" />
 ```xml
-<key>NSAppTransportSecurity</key>
+<key>AppTransportSecurity</key>
 <dict>
-    <key>NSExceptionDomains</key>
+    <key>ExceptionDomains</key>
     <dict>
         <key>localhost</key>
         <dict>
