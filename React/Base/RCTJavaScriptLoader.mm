@@ -245,11 +245,13 @@ static void attemptAsynchronousLoadOfBundleAtURL(NSURL *scriptURL, RCTSourceLoad
 
     // Validate that the packager actually returned javascript.
     NSString *contentType = headers[@"Content-Type"];
-    if (![contentType isEqualToString:@"application/javascript"]) {
+    if (![contentType isEqualToString:@"application/javascript"] &&
+        ![contentType isEqualToString:@"text/javascript"]) {
+      NSString *description = [NSString stringWithFormat:@"Expected Content-Type to be 'application/javascript' or 'text/javascript', but got '%@'.", contentType];
       error = [NSError errorWithDomain:@"JSServer"
                                   code:NSURLErrorCannotParseResponse
                               userInfo:@{
-                                         NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected JavaScript, but got content type '%@'.", contentType],
+                                         NSLocalizedDescriptionKey: description,
                                          @"headers": headers,
                                          @"data": data
                                          }];

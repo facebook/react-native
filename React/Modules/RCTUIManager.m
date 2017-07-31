@@ -152,10 +152,12 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:_bridge.accessibilityManager];
+#if !TARGET_OS_TV
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(namedOrientationDidChange)
                                                name:UIDeviceOrientationDidChangeNotification
                                              object:nil];
+#endif
   [RCTLayoutAnimation initializeStatics];
 }
 
@@ -177,6 +179,7 @@ RCT_EXPORT_MODULE()
   });
 }
 
+#if !TARGET_OS_TV
 // Names and coordinate system from html5 spec:
 // https://developer.mozilla.org/en-US/docs/Web/API/Screen.orientation
 // https://developer.mozilla.org/en-US/docs/Web/API/Screen.lockOrientation
@@ -203,7 +206,10 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
       degrees = @90;
       isLandscape = YES;
       break;
-    default:
+    case UIDeviceOrientationFaceDown:
+    case UIDeviceOrientationFaceUp:
+    case UIDeviceOrientationUnknown:
+      // Unsupported
       return nil;
   }
   return @{
@@ -215,13 +221,18 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 
 - (void)namedOrientationDidChange
 {
-  UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+  NSDictionary *orientationEvent = deviceOrientationEventBody([UIDevice currentDevice].orientation);
+  if (!orientationEvent) {
+    return;
+  }
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [_bridge.eventDispatcher sendDeviceEventWithName:@"namedOrientationDidChange"
-                                              body:deviceOrientationEventBody(deviceOrientation)];
+                                              body:orientationEvent];
 #pragma clang diagnostic pop
 }
+#endif
 
 dispatch_queue_t RCTGetUIManagerQueue(void)
 {

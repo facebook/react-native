@@ -372,7 +372,6 @@ const ScrollView = createReactClass({
       'never', // default
       'always',
     ]),
-
     /**
      * A RefreshControl component, used to provide pull-to-refresh
      * functionality for the ScrollView. Only works for vertical ScrollViews
