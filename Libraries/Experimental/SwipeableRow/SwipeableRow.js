@@ -337,7 +337,9 @@ const SwipeableRow = createReactClass({
 
   // Ignore swipes due to user's finger moving slightly when tapping
   _isValidSwipe(gestureState: Object): boolean {
-    if (this.props.preventSwipeRight && this._previousLeft === CLOSED_LEFT_POSITION && gestureState.dx > 0) return false
+    if (this.props.preventSwipeRight && this._previousLeft === CLOSED_LEFT_POSITION && gestureState.dx > 0) {
+      return false;
+    }
 
     return Math.abs(gestureState.dx) > HORIZONTAL_SWIPE_DISTANCE_THRESHOLD;
   },
