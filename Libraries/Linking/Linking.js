@@ -73,7 +73,7 @@ const LinkingManager = Platform.OS === 'android' ?
  *
  * ```
  * // iOS 9.x or newer
- * #import <React/RCTLinkingManager.h>
+ * #import <React/RCTLinkingManager.h> // or #import "RCTLinkingManager.h"
  *
  * - (BOOL)application:(UIApplication *)application
  *    openURL:(NSURL *)url
@@ -87,7 +87,7 @@ const LinkingManager = Platform.OS === 'android' ?
  *
  * ```
  * // iOS 8.x or older
- * #import <React/RCTLinkingManager.h>
+ * #import <React/RCTLinkingManager.h> //or #import "RCTLinkingManager.h"
  *
  * - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
  *   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
