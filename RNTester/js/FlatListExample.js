@@ -67,7 +67,9 @@ class FlatListExample extends React.PureComponent {
   };
 
   _onChangeScrollToIndex = (text) => {
-    this._listRef.getNode().scrollToIndex({viewPosition: 0.5, index: Number(text)});
+    var index = Number(text) > this.state.data.length ? this.state.data.length-1 : Number(text)
+    if (index != NaN && index >= 0)
+      this._listRef.getNode().scrollToIndex({viewPosition: 0.5, index: index});
   };
 
   _scrollPos = new Animated.Value(0);
