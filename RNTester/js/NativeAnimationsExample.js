@@ -429,10 +429,36 @@ exports.examples = [
     },
   },
   {
-    title: 'translateX => Animated.spring',
+    title: 'translateX => Animated.spring (bounciness/speed)',
     render: function() {
       return (
         <Tester type="spring" config={{bounciness: 0}}>
+          {anim => (
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  transform: [
+                    {
+                      translateX: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 100],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            />
+          )}
+        </Tester>
+      );
+    },
+  },
+  {
+    title: 'translateX => Animated.spring (stiffness/damping/mass)',
+    render: function() {
+      return (
+        <Tester type="spring" config={{stiffness: 1000, damping: 500, mass: 3 }}>
           {anim => (
             <Animated.View
               style={[

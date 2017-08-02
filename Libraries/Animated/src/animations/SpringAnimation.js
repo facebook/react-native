@@ -32,6 +32,9 @@ export type SpringAnimationConfig = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
+  stiffness?: number,
+  damping?: number,
+  mass?: number,
   delay?: number,
 };
 
@@ -45,6 +48,9 @@ export type SpringAnimationConfigSingle = AnimationConfig & {
   speed?: number,
   tension?: number,
   friction?: number,
+  stiffness?: number,
+  damping?: number,
+  mass?: number,
   delay?: number,
 };
 
@@ -65,11 +71,14 @@ class SpringAnimation extends Animation {
   _lastPosition: number;
   _fromValue: number;
   _toValue: any;
-  _tension: number;
-  _friction: number;
+  _stiffness: ?number;
+  _damping: ?number;
+  _mass: ?number;
   _delay: number;
   _timeout: any;
+  _startTime: number;
   _lastTime: number;
+  _frameTime: number;
   _onUpdate: (value: number) => void;
   _animationFrame: any;
   _useNativeDriver: boolean;
@@ -83,7 +92,7 @@ class SpringAnimation extends Animation {
       0.001,
     );
     this._restSpeedThreshold = withDefault(config.restSpeedThreshold, 0.001);
-    this._initialVelocity = config.velocity;
+    this._initialVelocity = withDefault(config.velocity, 0);
     this._lastVelocity = withDefault(config.velocity, 0);
     this._toValue = config.toValue;
     this._delay = withDefault(config.delay, 0);
@@ -92,24 +101,50 @@ class SpringAnimation extends Animation {
       config.isInteraction !== undefined ? config.isInteraction : true;
     this.__iterations = config.iterations !== undefined ? config.iterations : 1;
 
-    let springConfig;
-    if (config.bounciness !== undefined || config.speed !== undefined) {
+    if (
+      config.stiffness !== undefined ||
+      config.damping !== undefined ||
+      config.mass !== undefined
+    ) {
       invariant(
-        config.tension === undefined && config.friction === undefined,
-        'You can only define bounciness/speed or tension/friction but not both',
+        config.bounciness === undefined &&
+          config.speed === undefined &&
+          config.tension === undefined &&
+          config.friction === undefined,
+        'You can define one of bounciness/speed, tension/friction, or stiffness/damping/mass, but not more than one',
       );
-      springConfig = SpringConfig.fromBouncinessAndSpeed(
+      this._stiffness = withDefault(config.stiffness, 100);
+      this._damping = withDefault(config.damping, 10);
+      this._mass = withDefault(config.mass, 1);
+    } else if (config.bounciness !== undefined || config.speed !== undefined) {
+      // Convert the origami bounciness/speed values to stiffness/damping
+      // We assume mass is 1.
+      invariant(
+        config.tension === undefined &&
+          config.friction === undefined &&
+          config.stiffness === undefined &&
+          config.damping === undefined &&
+          config.mass === undefined,
+        'You can define one of bounciness/speed, tension/friction, or stiffness/damping/mass, but not more than one',
+      );
+      const springConfig = SpringConfig.fromBouncinessAndSpeed(
         withDefault(config.bounciness, 8),
         withDefault(config.speed, 12),
       );
+      this._stiffness = springConfig.stiffness;
+      this._damping = springConfig.damping;
+      this._mass = 1;
     } else {
-      springConfig = SpringConfig.fromOrigamiTensionAndFriction(
+      // Convert the origami tension/friction values to stiffness/damping
+      // We assume mass is 1.
+      const springConfig = SpringConfig.fromOrigamiTensionAndFriction(
         withDefault(config.tension, 40),
         withDefault(config.friction, 7),
       );
+      this._stiffness = springConfig.stiffness;
+      this._damping = springConfig.damping;
+      this._mass = 1;
     }
-    this._tension = springConfig.tension;
-    this._friction = springConfig.friction;
   }
 
   __getNativeAnimationConfig() {
@@ -118,8 +153,9 @@ class SpringAnimation extends Animation {
       overshootClamping: this._overshootClamping,
       restDisplacementThreshold: this._restDisplacementThreshold,
       restSpeedThreshold: this._restSpeedThreshold,
-      tension: this._tension,
-      friction: this._friction,
+      stiffness: this._stiffness,
+      damping: this._damping,
+      mass: this._mass,
       initialVelocity: withDefault(this._initialVelocity, this._lastVelocity),
       toValue: this._toValue,
       iterations: this.__iterations,
@@ -140,15 +176,15 @@ class SpringAnimation extends Animation {
     this._onUpdate = onUpdate;
     this.__onEnd = onEnd;
     this._lastTime = Date.now();
+    this._frameTime = 0.0;
 
     if (previousAnimation instanceof SpringAnimation) {
       const internalState = previousAnimation.getInternalState();
       this._lastPosition = internalState.lastPosition;
       this._lastVelocity = internalState.lastVelocity;
+      // Set the initial velocity to the last velocity
+      this._initialVelocity = this._lastVelocity;
       this._lastTime = internalState.lastTime;
-    }
-    if (this._initialVelocity !== undefined && this._initialVelocity !== null) {
-      this._lastVelocity = this._initialVelocity;
     }
 
     const start = () => {
@@ -175,13 +211,28 @@ class SpringAnimation extends Animation {
     };
   }
 
+  /**
+   * This spring model is based off of a damped harmonic oscillator
+   * (https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator).
+   *
+   * We use the closed form of the second order differential equation:
+   *
+   * x'' + (2ζ⍵_0)x' + ⍵^2x = 0
+   *
+   * where
+   *    ⍵_0 = √(k / m) (undamped angular frequency of the oscillator),
+   *    ζ = c / 2√mk (damping ratio),
+   *    c = damping constant
+   *    k = stiffness
+   *    m = mass
+   *
+   * The derivation of the closed form is described in detail here:
+   * http://planetmath.org/sites/default/files/texpdf/39745.pdf
+   *
+   * This algorithm happens to match the algorithm used by CASpringAnimation,
+   * a QuartzCore (iOS) API that creates spring animations.
+   */
   onUpdate(): void {
-    let position = this._lastPosition;
-    let velocity = this._lastVelocity;
-
-    let tempPosition = this._lastPosition;
-    let tempVelocity = this._lastVelocity;
-
     // If for some reason we lost a lot of frames (e.g. process large payload or
     // stopped in the debugger), we only advance by 4 frames worth of
     // computation and will continue on the next frame. It's better to have it
@@ -192,53 +243,54 @@ class SpringAnimation extends Animation {
       now = this._lastTime + MAX_STEPS;
     }
 
-    // We are using a fixed time step and a maximum number of iterations.
-    // The following post provides a lot of thoughts into how to build this
-    // loop: http://gafferongames.com/game-physics/fix-your-timestep/
-    const TIMESTEP_MSEC = 1;
-    const numSteps = Math.floor((now - this._lastTime) / TIMESTEP_MSEC);
+    let deltaTime = 0.0;
+    if (now > this._lastTime) {
+      deltaTime = (now - this._lastTime) / 1000;
+    }
+    this._frameTime += deltaTime;
 
-    for (let i = 0; i < numSteps; ++i) {
-      // Velocity is based on seconds instead of milliseconds
-      const step = TIMESTEP_MSEC / 1000;
+    const c: number = this._damping || 0;
+    const m: number = this._mass || 0;
+    const k: number = this._stiffness || 0;
+    const v0: number = -(this._initialVelocity || 0);
 
-      // This is using RK4. A good blog post to understand how it works:
-      // http://gafferongames.com/game-physics/integration-basics/
-      const aVelocity = velocity;
-      const aAcceleration =
-        this._tension * (this._toValue - tempPosition) -
-        this._friction * tempVelocity;
-      tempPosition = position + aVelocity * step / 2;
-      tempVelocity = velocity + aAcceleration * step / 2;
+    invariant(m > 0, 'Mass value must be greater than 0');
+    invariant(k > 0, 'Stiffness value must be greater than 0');
+    invariant(c > 0, 'Damping value must be greater than 0');
 
-      const bVelocity = tempVelocity;
-      const bAcceleration =
-        this._tension * (this._toValue - tempPosition) -
-        this._friction * tempVelocity;
-      tempPosition = position + bVelocity * step / 2;
-      tempVelocity = velocity + bAcceleration * step / 2;
+    const zeta = c / (2 * Math.sqrt(k * m)); // damping ratio
+    const omega0 = Math.sqrt(k / m); // undamped angular frequency of the oscillator (rad/ms)
+    const omega1 = omega0 * Math.sqrt(1.0 - zeta * zeta); // exponential decay
+    const x0 = this._toValue - this._startPosition; // calculate the oscillation from x0 = 1 to x = 0
 
-      const cVelocity = tempVelocity;
-      const cAcceleration =
-        this._tension * (this._toValue - tempPosition) -
-        this._friction * tempVelocity;
-      tempPosition = position + cVelocity * step / 2;
-      tempVelocity = velocity + cAcceleration * step / 2;
-
-      const dVelocity = tempVelocity;
-      const dAcceleration =
-        this._tension * (this._toValue - tempPosition) -
-        this._friction * tempVelocity;
-      tempPosition = position + cVelocity * step / 2;
-      tempVelocity = velocity + cAcceleration * step / 2;
-
-      const dxdt = (aVelocity + 2 * (bVelocity + cVelocity) + dVelocity) / 6;
-      const dvdt =
-        (aAcceleration + 2 * (bAcceleration + cAcceleration) + dAcceleration) /
-        6;
-
-      position += dxdt * step;
-      velocity += dvdt * step;
+    let position = 0.0;
+    let velocity = 0.0;
+    const t = this._frameTime;
+    if (zeta < 1) {
+      // Under damped
+      const envelope = Math.exp(-zeta * omega0 * t);
+      position =
+        this._toValue -
+        envelope *
+          ((v0 + zeta * omega0 * x0) / omega1 * Math.sin(omega1 * t) +
+            x0 * Math.cos(omega1 * t));
+      // This looks crazy -- it's actually just the derivative of the
+      // oscillation function
+      velocity =
+        zeta *
+          omega0 *
+          envelope *
+          (Math.sin(omega1 * t) * (v0 + zeta * omega0 * x0) / omega1 +
+            x0 * Math.cos(omega1 * t)) -
+        envelope *
+          (Math.cos(omega1 * t) * (v0 + zeta * omega0 * x0) -
+            omega1 * x0 * Math.sin(omega1 * t));
+    } else {
+      // Critically damped
+      const envelope = Math.exp(-omega0 * t);
+      position = this._toValue - envelope * (x0 + (v0 + omega0 * x0) * t);
+      velocity =
+        envelope * (v0 * (t * omega0 - 1) + t * x0 * (omega0 * omega0));
     }
 
     this._lastTime = now;
@@ -253,7 +305,7 @@ class SpringAnimation extends Animation {
 
     // Conditions for stopping the spring animation
     let isOvershooting = false;
-    if (this._overshootClamping && this._tension !== 0) {
+    if (this._overshootClamping && this._stiffness !== 0) {
       if (this._startPosition < this._toValue) {
         isOvershooting = position > this._toValue;
       } else {
@@ -262,14 +314,16 @@ class SpringAnimation extends Animation {
     }
     const isVelocity = Math.abs(velocity) <= this._restSpeedThreshold;
     let isDisplacement = true;
-    if (this._tension !== 0) {
+    if (this._stiffness !== 0) {
       isDisplacement =
         Math.abs(this._toValue - position) <= this._restDisplacementThreshold;
     }
 
     if (isOvershooting || (isVelocity && isDisplacement)) {
-      if (this._tension !== 0) {
+      if (this._stiffness !== 0) {
         // Ensure that we end up with a round value
+        this._lastPosition = this._toValue;
+        this._lastVelocity = 0;
         this._onUpdate(this._toValue);
       }
 
