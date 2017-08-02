@@ -93,10 +93,19 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   // `WebSocket.isAvailable` will return `false`, and WebSocket constructor will throw an error
   static isAvailable: boolean = !!WebSocketModule;
 
-  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{origin?: string}) {
+  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{ headers?: { origin?: string}}) {
     super();
     if (typeof protocols === 'string') {
       protocols = [protocols];
+    }
+
+    // Backwards compatibility
+    if (options && typeof options.origin === 'string') {
+      options = {
+        headers: {
+          origin: options.origin
+        }
+      };
     }
 
     if (!Array.isArray(protocols)) {
