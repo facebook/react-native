@@ -22,7 +22,7 @@ React Native는 네트워킹 시 [Fetch API](https://developer.mozilla.org/en-US
 fetch('https//mywebsite.com/mydata.json')
 ```
 
-또한, Fetch는 두 번째 인수에 HTTP 요청을 커스터마이징 할 수 있는 옵션을 설정할 수 있으며, 아래와 같이 추가 헤더를 지정하거나 POST 요청을 만들 수도 있습니다.
+또한, Fetch는 두 번째 인수에 HTTP 요청을 커스터마이징 할 수 있는 옵션을 설정할 수 있으며, 아래와 같이 헤더를 추가하거나 POST 요청을 만들 수도 있습니다.
 
 ```js
 fetch('https://mywebsite.com/endpoint/', {
@@ -43,7 +43,7 @@ fetch('https://mywebsite.com/endpoint/', {
 
 #### 응답 처리하기
 
-위의 예제들은 요청하는 방법에 대해 보여줬습니다. 대부분의 경우, 우리는 응답 온 결과를 토대로 작업을 할 겁니다.
+위의 예제들은 요청하는 방법에 대해 보여줬습니다. 대부분의 경우, 응답받은 결과를 토대로 작업을 진행합니다.
 
 네트워킹은 본질적으로 비동기식 작업입니다. Fetch 메소드는 비동기 방식으로 작동하는 코드인 [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)를 반환할 것입니다.
 
