@@ -100,7 +100,7 @@ Small pull requests are much easier to review and more likely to get merged. Mak
 1. Fork [the repository](https://github.com/facebook/react-native) and create your branch from `master`.
 2. Add the copyright notice to the top of any new files you've added.
 3. Describe your [**test plan**](https://facebook.github.io/react-native/docs/contributing.html#test-plan) in your commit.
-4. Ensure [**tests pass**](https://facebook.github.io/react-native/docs/contributing.html#contrinuous-integration-tests) on both Travis and Circle CI.
+4. Ensure [**tests pass**](https://facebook.github.io/react-native/docs/contributing.html#continuous-integration-tests) on both Travis and Circle CI.
 5. Make sure your code lints (`npm run lint`).
 6. If you haven't already, [sign the CLA](https://code.facebook.com/cla).
 
