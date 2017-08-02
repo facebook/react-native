@@ -1,6 +1,6 @@
 ---
 id: handling-text-input
-title: 텍스트 입력 핸들링
+title: 텍스트 입력 핸들링하기
 layout: docs
 category: The Basics
 permalink: docs/handling-text-input.html
@@ -38,12 +38,12 @@ export default class PizzaTranslator extends Component {
   }
 }
 
-// skip this line if using Create React Native App
+// Create React Native App을 사용한다면 아래 줄을 생략하세요
 AppRegistry.registerComponent('AwesomeProject', () => PizzaTranslator);
 ```
 
 이 예제에서는 `text`가 입력에 따라 매번 바뀌기 때문에 state에 `text`를 저장합니다.
 
-Text input으로 할 수 있는 것들은 훨씬 더 많습니다. 예를 들어, 사용자가 텍스트를 입력하는 동안 해당 텍스트가 유효한지 확인할 수 있습니다. 더 자세한 예제들은 [Controlled 컴포넌트에 대한 리액트 문서](https://facebook.github.io/react/docs/forms.html), 또는 [TextInput에 대한 참고 문서](docs/textinput.html)에서 확인할 수 있습니다.
+텍스트 입력을 통해 할 수 있는 것들은 많습니다. 예를 들어, 사용자가 텍스트를 입력하는 동안 해당 텍스트가 유효한지 확인할 수 있습니다. 더 자세한 예제들은 [Controlled component에 관한 리액트 문서](https://facebook.github.io/react/docs/forms.html), 또는 [TextInput에 대한 참고 문서](docs/textinput.html)에서 확인할 수 있습니다.
 
-Text 입력은 사용자와 앱이 상호 작용할 수 있는 방법 중 하나입니다. 다음은 다른 종류의 입력에 대해 알아보고 [터치 핸들링하는 방법을 학습](docs/handling-touches.html)해 봅시다.
+텍스트 입력은 사용자와 앱이 상호 작용할 수 있는 방법 중 하나입니다. 다음은 다른 종류의 입력에 대해 알아보고 [터치를 핸들링하는 방법을 학습](docs/handling-touches.html)해 봅시다.
