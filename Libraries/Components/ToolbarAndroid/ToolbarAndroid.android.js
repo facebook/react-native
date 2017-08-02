@@ -51,6 +51,7 @@ var optionalImageSource = PropTypes.oneOfType([
  * render: function() {
  *   return (
  *     <ToolbarAndroid
+ *       style={{height: 56, alignSelf: 'stretch'}}
  *       logo={require('./app_logo.png')}
  *       title="AwesomeApp"
  *       actions={[{title: 'Settings', icon: require('./icon_settings.png'), show: 'always'}]}
