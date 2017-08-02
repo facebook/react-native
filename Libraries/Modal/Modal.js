@@ -143,6 +143,8 @@ class Modal extends React.Component {
      * @platform ios
      */
     onOrientationChange: PropTypes.func,
+
+    onMenuPress: PropTypes.func,
   };
 
   static defaultProps = {
@@ -213,6 +215,7 @@ class Modal extends React.Component {
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
         onOrientationChange={this.props.onOrientationChange}
+        onMenuPress={this.props.onMenuPress}
         >
         <View style={[styles.container, containerStyles]}>
           {innerChildren}

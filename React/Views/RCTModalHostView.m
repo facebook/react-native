@@ -26,9 +26,12 @@
   RCTModalHostViewController *_modalViewController;
   RCTTouchHandler *_touchHandler;
   UIView *_reactSubview;
-#if !TARGET_OS_TV
+#if TARGET_OS_TV
+  UITapGestureRecognizer *_tapGestureRecognizer;
+#else
   UIInterfaceOrientation _lastKnownOrientation;
 #endif
+
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
@@ -43,6 +46,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     containerView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _modalViewController.view = containerView;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
+#if TARGET_OS_TV
+    _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuButtonPressed:)];
+    _tapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu)];
+#endif
     _isPresented = NO;
 
     __weak typeof(self) weakSelf = self;
@@ -53,6 +60,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
   return self;
 }
+
+#if TARGET_OS_TV
+- (void)menuButtonPressed:(UIGestureRecognizer *)r
+{
+    if(_onMenuPress) {
+        _onMenuPress(@{});
+    }
+}
+#endif
 
 - (void)notifyForBoundsChange:(CGRect)newBounds
 {
@@ -89,6 +105,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
   RCTAssert(_reactSubview == nil, @"Modal view can only have one subview");
   [super insertReactSubview:subview atIndex:atIndex];
   [_touchHandler attachToView:subview];
+#if TARGET_OS_TV
+  [subview addGestureRecognizer:_tapGestureRecognizer];
+#endif
   subview.autoresizingMask = UIViewAutoresizingFlexibleHeight |
                              UIViewAutoresizingFlexibleWidth;
 
@@ -99,6 +118,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (void)removeReactSubview:(UIView *)subview
 {
   RCTAssert(subview == _reactSubview, @"Cannot remove view other than modal view");
+#if TARGET_OS_TV
+  [subview removeGestureRecognizer:_tapGestureRecognizer];
+#endif
   [super removeReactSubview:subview];
   [_touchHandler detachFromView:subview];
   _reactSubview = nil;
