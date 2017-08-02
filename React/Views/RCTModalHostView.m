@@ -46,10 +46,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     containerView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _modalViewController.view = containerView;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
-#if TARGET_OS_TV
-    _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuButtonPressed:)];
-    _tapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu)];
-#endif
     _isPresented = NO;
 
     __weak typeof(self) weakSelf = self;
@@ -64,8 +60,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 #if TARGET_OS_TV
 - (void)menuButtonPressed:(UIGestureRecognizer *)r
 {
-    if(_onMenuPress) {
-        _onMenuPress(@{});
+    if(_onRequestClose) {
+        _onRequestClose(@{});
     }
 }
 #endif
@@ -106,7 +102,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
   [super insertReactSubview:subview atIndex:atIndex];
   [_touchHandler attachToView:subview];
 #if TARGET_OS_TV
-  [subview addGestureRecognizer:_tapGestureRecognizer];
+  if (_onRequestClose) {
+    _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuButtonPressed:)];
+    _tapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu)];
+    [subview addGestureRecognizer:_tapGestureRecognizer];
+  }
 #endif
   subview.autoresizingMask = UIViewAutoresizingFlexibleHeight |
                              UIViewAutoresizingFlexibleWidth;
@@ -118,11 +118,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 - (void)removeReactSubview:(UIView *)subview
 {
   RCTAssert(subview == _reactSubview, @"Cannot remove view other than modal view");
-#if TARGET_OS_TV
-  [subview removeGestureRecognizer:_tapGestureRecognizer];
-#endif
   [super removeReactSubview:subview];
   [_touchHandler detachFromView:subview];
+#if TARGET_OS_TV
+  if(_tapGestureRecognizer) {
+    [subview removeGestureRecognizer:_tapGestureRecognizer];
+  }
+#endif
   _reactSubview = nil;
 }
 
