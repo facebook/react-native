@@ -77,7 +77,7 @@ class PickerItem extends React.Component {
  *
  *     <Picker
  *       selectedValue={this.state.language}
- *       onValueChange={(lang) => this.setState({language: lang})}>
+ *       onValueChange={(itemValue, itemIndex) => this.setState({language: itemValue})}>
  *       <Picker.Item label="Java" value="java" />
  *       <Picker.Item label="JavaScript" value="js" />
  *     </Picker>

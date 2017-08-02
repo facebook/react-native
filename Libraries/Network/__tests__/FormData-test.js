@@ -9,8 +9,6 @@
 
 'use strict';
 
-jest.unmock('FormData');
-
 const FormData = require('FormData');
 
 describe('FormData', function() {

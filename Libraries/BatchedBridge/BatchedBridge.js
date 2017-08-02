@@ -8,10 +8,12 @@
  *
  * @providesModule BatchedBridge
  * @flow
+ * @format
  */
 'use strict';
 
 const MessageQueue = require('MessageQueue');
+
 const BatchedBridge = new MessageQueue();
 
 // Wire up the batched bridge on the global object so that we can call into it.

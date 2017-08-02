@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include <cxxreact/Executor.h>
+#include <cxxreact/JSBigString.h>
+#include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Value.h>
 
 namespace facebook {

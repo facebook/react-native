@@ -3,3 +3,13 @@
 **/staticBundle.js
 **/main.js
 Libraries/vendor/**/*
+Libraries/Renderer/*
+website/node_modules
+pr-inactivity-bookmarklet.js
+question-bookmarklet.js
+flow/
+website/core/metadata.js
+website/core/metadata-blog.js
+website/src/react-native/docs/
+website/src/react-native/blog/
+danger/

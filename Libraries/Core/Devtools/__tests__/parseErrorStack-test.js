@@ -9,8 +9,6 @@
 'use strict';
 
 
-jest.disableAutomock();
-
 var parseErrorStack = require('parseErrorStack');
 
 function getFakeError() {

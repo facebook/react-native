@@ -247,9 +247,9 @@ function startServerInNewWindow() {
   const scriptFile = /^win/.test(process.platform) ?
     'launchPackager.bat' :
     'launchPackager.command';
-  const packagerDir = path.resolve(__dirname, '..', '..', 'packager');
-  const launchPackagerScript = path.resolve(packagerDir, scriptFile);
-  const procConfig = {cwd: packagerDir};
+  const scriptsDir = path.resolve(__dirname, '..', '..', 'scripts');
+  const launchPackagerScript = path.resolve(scriptsDir, scriptFile);
+  const procConfig = {cwd: scriptsDir};
 
   if (process.platform === 'darwin') {
     if (yargV.open) {

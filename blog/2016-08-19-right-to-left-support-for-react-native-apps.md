@@ -162,14 +162,14 @@ _animateBounceBack(duration: number): void {
 
 ## Maintaining Your RTL-ready App
 
-Even after the initial RTL-compatible app release, you will likely need to iterate on new features. To improve development efficiency, [`I18nManager`](https://github.com/facebook/react-native/blob/f0fb228ec76ed49e6ed6d786d888e8113b8959a2/Libraries/Utilities/I18nManager.js) provides the `forceRTL()` function for faster RTL testing without changing the test device language. You might want to provide a simple switch for this in your app. Here's an example from the RTL example in the UIExplorer:
+Even after the initial RTL-compatible app release, you will likely need to iterate on new features. To improve development efficiency, [`I18nManager`](https://github.com/facebook/react-native/blob/f0fb228ec76ed49e6ed6d786d888e8113b8959a2/Libraries/Utilities/I18nManager.js) provides the `forceRTL()` function for faster RTL testing without changing the test device language. You might want to provide a simple switch for this in your app. Here's an example from the RTL example in the RNTester:
 
 <p align="center">
   <img src="/react-native/blog/img/rtl-demo-forcertl.png" width="300">
 </p>
 
 ```js
-<UIExplorerBlock title={'Quickly Test RTL Layout'}>
+<RNTesterBlock title={'Quickly Test RTL Layout'}>
   <View style={styles.flexDirectionRow}>
     <Text style={styles.switchRowTextView}>
       forceRTL
@@ -181,7 +181,7 @@ Even after the initial RTL-compatible app release, you will likely need to itera
         value={this.state.isRTL} />
     </View>
   </View>
-</UIExplorerBlock>
+</RNTesterBlock>
 
 _onDirectionChange = () => {
   I18nManager.forceRTL(!this.state.isRTL);
@@ -215,6 +215,6 @@ The RTL support should cover most of the UX in your app; however, there are some
    In the future, it would be ideal to find a way to make gestures and animations RTL support more developer friendly.
 
 ## Try it Out!
-Check out the [`RTLExample`](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/js/RTLExample.js) in the `UIExplorer` to understand more about RTL support, and let us know how it works for you!
+Check out the [`RTLExample`](https://github.com/facebook/react-native/blob/master/RNTester/js/RTLExample.js) in the `RNTester` to understand more about RTL support, and let us know how it works for you!
 
 Finally, thank you for reading! We hope that the RTL support for React Native helps you grow your apps for international audience!

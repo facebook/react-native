@@ -10,8 +10,6 @@
  * @nolint
  */
 
-/* eslint-disable */
-
 // These annotations are copy/pasted from the built-in Flow definitions for
 // Native Set.
 
@@ -20,6 +18,7 @@ declare module "Set" {
   // messages about "Using Set instead of Set".
   declare class SetPolyfill<T> {
     @@iterator(): Iterator<T>;
+    constructor(iterable: ?Iterable<T>): void;
     add(value: T): SetPolyfill<T>;
     clear(): void;
     delete(value: T): boolean;

@@ -193,7 +193,9 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
         error);
     if (options.hasKey("displaySize")) {
       ReadableMap targetSize = options.getMap("displaySize");
-      cropTask.setTargetSize(targetSize.getInt("width"), targetSize.getInt("height"));
+      cropTask.setTargetSize(
+        (int) targetSize.getDouble("width"),
+        (int) targetSize.getDouble("height"));
     }
     cropTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
