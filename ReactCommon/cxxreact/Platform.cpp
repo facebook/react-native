@@ -11,20 +11,20 @@ namespace react {
 #endif
 
 namespace ReactMarker {
-LogTaggedMarker logTaggedMarker = nullptr;
 
+LogTaggedMarker logTaggedMarker = nullptr;
 void logMarker(const ReactMarkerId markerId) {
   logTaggedMarker(markerId, nullptr);
 }
-};
 
-namespace PerfLogging {
-InstallNativeHooks installNativeHooks = nullptr;
-};
+}
 
-namespace JSNativeHooks {
+namespace JSCNativeHooks {
+
 Hook loggingHook = nullptr;
 Hook nowHook = nullptr;
+ConfigurationHook installPerfHooks = nullptr;
+
 }
 
 #if __clang__

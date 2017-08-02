@@ -8,12 +8,13 @@
  */
 'use strict';
 
-require('../../setupBabel')();
-const ReactPackager = require('../../packager');
+const ReactPackager = require('metro-bundler');
 
 const denodeify = require('denodeify');
 const fs = require('fs');
 const path = require('path');
+
+const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 
 function dependencies(argv, config, args, packagerInstance) {
   const rootModuleAbsolutePath = args.entryFile;
@@ -27,8 +28,10 @@ function dependencies(argv, config, args, packagerInstance) {
       undefined;
 
   const packageOpts = {
+    assetRegistryPath: ASSET_REGISTRY_PATH,
     projectRoots: config.getProjectRoots(),
     blacklistRE: config.getBlacklistRE(),
+    getPolyfills: config.getPolyfills,
     getTransformOptions: config.getTransformOptions,
     hasteImpl: config.hasteImpl,
     transformModulePath: transformModulePath,
@@ -97,6 +100,12 @@ module.exports = {
     }, {
       command: '--transformer [path]',
       description: 'Specify a custom transformer to be used'
+    }, {
+      command: '--max-workers [number]',
+      description: 'Specifies the maximum number of workers the worker-pool ' +
+        'will spawn for transforming files. This defaults to the number of the ' +
+        'cores available on your machine.',
+      parse: (workers: string) => Number(workers),
     }, {
       command: '--dev [boolean]',
       description: 'If false, skip all dev-only code path',

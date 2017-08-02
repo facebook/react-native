@@ -12,18 +12,20 @@
 'use strict';
 
 const log = require('../util/log').out('bundle');
-const Server = require('../../packager/src/Server');
-const Terminal = require('../../packager/src/lib/TerminalClass');
-const TerminalReporter = require('../../packager/src/lib/TerminalReporter');
-const TransformCaching = require('../../packager/src/lib/TransformCaching');
+const Server = require('metro-bundler/src/Server');
+const Terminal = require('metro-bundler/src/lib/Terminal');
+const TerminalReporter = require('metro-bundler/src/lib/TerminalReporter');
+const TransformCaching = require('metro-bundler/src/lib/TransformCaching');
 
-const outputBundle = require('../../packager/src/shared/output/bundle');
+const outputBundle = require('metro-bundler/src/shared/output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
-const defaultAssetExts = require('../../packager/src/defaults').assetExts;
-const defaultSourceExts = require('../../packager/src/defaults').sourceExts;
-const defaultPlatforms = require('../../packager/src/defaults').platforms;
-const defaultProvidesModuleNodeModules = require('../../packager/src/defaults').providesModuleNodeModules;
+const defaultAssetExts = require('metro-bundler/src/defaults').assetExts;
+const defaultSourceExts = require('metro-bundler/src/defaults').sourceExts;
+const defaultPlatforms = require('metro-bundler/src/defaults').platforms;
+const defaultProvidesModuleNodeModules = require('metro-bundler/src/defaults').providesModuleNodeModules;
+
+const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 
 import type {RequestOptions, OutputOptions} from './types.flow';
 import type {ConfigT} from '../util/Config';
@@ -38,6 +40,7 @@ function buildBundle(
   args: OutputOptions & {
     assetsDest: mixed,
     entryFile: string,
+    maxWorkers: number,
     resetCache: boolean,
     transformer: string,
   },
@@ -84,14 +87,18 @@ function buildBundle(
     const terminal = new Terminal(process.stdout);
     const options = {
       assetExts: defaultAssetExts.concat(assetExts),
+      assetRegistryPath: ASSET_REGISTRY_PATH,
       blacklistRE: config.getBlacklistRE(),
       extraNodeModules: config.extraNodeModules,
+      getPolyfills: config.getPolyfills,
       getTransformOptions: config.getTransformOptions,
       globalTransformCache: null,
       hasteImpl: config.hasteImpl,
+      maxWorkers: args.maxWorkers,
       platforms: defaultPlatforms.concat(platforms),
       postMinifyProcess: config.postMinifyProcess,
       postProcessModules: config.postProcessModules,
+      postProcessBundleSourcemap: config.postProcessBundleSourcemap,
       projectRoots: config.getProjectRoots(),
       providesModuleNodeModules: providesModuleNodeModules,
       resetCache: args.resetCache,

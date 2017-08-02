@@ -1,14 +1,17 @@
 ---
 id: navigation
-title: Navigation
+title: Navigating Between Screens
 layout: docs
 category: Guides
 permalink: docs/navigation.html
 next: images
-previous: animations
+previous: platform-specific-code
 ---
 
-This guide covers the various navigation components available in React Native. If you are just getting started with navigation, you will probably want to use [React Navigation](docs/navigation.html#react-navigation). React Navigation provides an easy to use navigation solution, with the ability to present common stack navigation and tabbed navigation patterns on both iOS and Android. As this is a JavaScript implementation, it provides the greatest amount of configurability as well as flexibility when integrating with state management libraries such as [redux](https://reactnavigation.org/docs/guides/redux).
+Mobile apps are rarely made up of a single screen. Managing the presentation of, and transition between, multiple screens is typically handled by what is known as a navigator.
+
+This guide covers the various navigation components available in React Native.
+If you are just getting started with navigation, you will probably want to use [React Navigation](docs/navigation.html#react-navigation). React Navigation provides an easy to use navigation solution, with the ability to present common stack navigation and tabbed navigation patterns on both iOS and Android. As this is a JavaScript implementation, it provides the greatest amount of configurability as well as flexibility when integrating with state management libraries such as [redux](https://reactnavigation.org/docs/guides/redux).
 
 If you're only targeting iOS, you may want to also check out [NavigatorIOS](docs/navigation.html#navigatorios) as a way of providing a native look and feel with minimal configuration, as it provides a wrapper around the native `UINavigationController` class. This component will not work on Android, however.
 
@@ -96,6 +99,7 @@ export default class NavigatorIOSApp extends React.Component {
         initialRoute={{
           component: MyScene,
           title: 'My Initial Scene',
+          passProps: {index: 1},
         }}
         style={{flex: 1}}
       />
@@ -105,7 +109,9 @@ export default class NavigatorIOSApp extends React.Component {
 
 class MyScene extends React.Component {
   static propTypes = {
-    title: PropTypes.string.isRequired,
+    route: PropTypes.shape({
+      title: PropTypes.string.isRequired
+    }),
     navigator: PropTypes.object.isRequired,
   }
 
@@ -113,10 +119,13 @@ class MyScene extends React.Component {
     super(props, context);
     this._onForward = this._onForward.bind(this);
   }
-
+  
   _onForward() {
+    let nextIndex = ++this.props.index;
     this.props.navigator.push({
+      component: MyScene,
       title: 'Scene ' + nextIndex,
+      passProps: {index: nextIndex}
     });
   }
 

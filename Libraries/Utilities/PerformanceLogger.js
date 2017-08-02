@@ -12,7 +12,6 @@
  */
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
 const Systrace = require('Systrace');
 
 const infoLog = require('infoLog');
@@ -178,7 +177,5 @@ const PerformanceLogger = {
     return extras;
   },
 };
-
-BatchedBridge.registerCallableModule('PerformanceLogger', PerformanceLogger);
 
 module.exports = PerformanceLogger;

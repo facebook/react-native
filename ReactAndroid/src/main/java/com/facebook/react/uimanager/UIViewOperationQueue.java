@@ -14,8 +14,6 @@ import javax.annotation.concurrent.GuardedBy;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.animation.Animation;
@@ -23,10 +21,10 @@ import com.facebook.react.animation.AnimationRegistry;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -531,12 +529,16 @@ public class UIViewOperationQueue {
   private final Object mNonBatchedOperationsLock = new Object();
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
   private final ReactApplicationContext mReactApplicationContext;
-  @GuardedBy("mDispatchRunnablesLock")
-  private final ArrayList<Runnable> mDispatchUIRunnables = new ArrayList<>();
 
+  // Only called from the UIManager queue?
   private ArrayList<UIOperation> mOperations = new ArrayList<>();
+
+  @GuardedBy("mDispatchRunnablesLock")
+  private ArrayList<Runnable> mDispatchUIRunnables = new ArrayList<>();
+
   @GuardedBy("mNonBatchedOperationsLock")
   private ArrayDeque<UIOperation> mNonBatchedOperations = new ArrayDeque<>();
+
   private @Nullable NotThreadSafeViewHierarchyUpdateDebugListener mViewHierarchyUpdateDebugListener;
   private boolean mIsDispatchUIFrameCallbackEnqueued = false;
   private boolean mIsInIllegalUIState = false;
@@ -732,17 +734,19 @@ public class UIViewOperationQueue {
     try {
       // Store the current operation queues to dispatch and create new empty ones to continue
       // receiving new operations
-      final ArrayList<UIOperation> operations = mOperations.isEmpty() ? null : mOperations;
-      if (operations != null) {
+      final ArrayList<UIOperation> batchedOperations;
+      if (!mOperations.isEmpty()) {
+        batchedOperations = mOperations;
         mOperations = new ArrayList<>();
+      } else {
+        batchedOperations = null;
       }
 
-      final UIOperation[] nonBatchedOperations;
+      final ArrayDeque<UIOperation> nonBatchedOperations;
       synchronized (mNonBatchedOperationsLock) {
         if (!mNonBatchedOperations.isEmpty()) {
-          nonBatchedOperations =
-            mNonBatchedOperations.toArray(new UIOperation[mNonBatchedOperations.size()]);
-          mNonBatchedOperations.clear();
+          nonBatchedOperations = mNonBatchedOperations;
+          mNonBatchedOperations = new ArrayDeque<>();
         } else {
           nonBatchedOperations = null;
         }
@@ -752,6 +756,42 @@ public class UIViewOperationQueue {
         mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateEnqueued();
       }
 
+      Runnable runOperations = new Runnable() {
+        @Override
+        public void run() {
+          SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "DispatchUI")
+            .arg("BatchId", batchId)
+            .flush();
+          try {
+            // All nonBatchedOperations should be executed before regular operations as
+            // regular operations may depend on them
+            if (nonBatchedOperations != null) {
+              for (UIOperation op : nonBatchedOperations) {
+                op.execute();
+              }
+            }
+
+            if (batchedOperations != null) {
+              for (UIOperation op : batchedOperations) {
+                op.execute();
+              }
+            }
+
+            // Clear layout animation, as animation only apply to current UI operations batch.
+            mNativeViewHierarchyManager.clearLayoutAnimation();
+
+            if (mViewHierarchyUpdateDebugListener != null) {
+              mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateFinished();
+            }
+          } catch (Exception e) {
+            mIsInIllegalUIState = true;
+            throw e;
+          } finally {
+            Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+          }
+        }
+      };
+
       SystraceMessage.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
         "acquiring mDispatchRunnablesLock")
@@ -759,42 +799,7 @@ public class UIViewOperationQueue {
         .flush();
       synchronized (mDispatchRunnablesLock) {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-        mDispatchUIRunnables.add(
-          new Runnable() {
-            @Override
-            public void run() {
-              SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "DispatchUI")
-                .arg("BatchId", batchId)
-                .flush();
-              try {
-                // All nonBatchedOperations should be executed before regular operations as
-                // regular operations may depend on them
-                if (nonBatchedOperations != null) {
-                  for (UIOperation op : nonBatchedOperations) {
-                    op.execute();
-                  }
-                }
-
-                if (operations != null) {
-                  for (int i = 0; i < operations.size(); i++) {
-                    operations.get(i).execute();
-                  }
-                }
-
-                // Clear layout animation, as animation only apply to current UI operations batch.
-                mNativeViewHierarchyManager.clearLayoutAnimation();
-
-                if (mViewHierarchyUpdateDebugListener != null) {
-                  mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateFinished();
-                }
-              } catch (Exception e) {
-                mIsInIllegalUIState = true;
-                throw e;
-              } finally {
-                Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-              }
-            }
-          });
+        mDispatchUIRunnables.add(runOperations);
       }
 
       // In the case where the frame callback isn't enqueued, the UI isn't being displayed or is being
@@ -834,11 +839,21 @@ public class UIViewOperationQueue {
         "Not flushing pending UI operations because of previously thrown Exception");
       return;
     }
+
+    final ArrayList<Runnable> runnables;
     synchronized (mDispatchRunnablesLock) {
-      for (int i = 0; i < mDispatchUIRunnables.size(); i++) {
-        mDispatchUIRunnables.get(i).run();
+      if (!mDispatchUIRunnables.isEmpty()) {
+        runnables = mDispatchUIRunnables;
+        mDispatchUIRunnables = new ArrayList<>();
+      } else {
+        runnables = null;
       }
-      mDispatchUIRunnables.clear();
+    }
+
+    if (runnables != null) {
+      for (Runnable runnable : runnables) {
+        runnable.run();
+      }
     }
   }
 

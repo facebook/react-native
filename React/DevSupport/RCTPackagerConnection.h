@@ -15,13 +15,15 @@
 
 @class RCTBridge;
 @protocol RCTPackagerClientMethod;
+@protocol RCTPackagerConnectionConfig;
 
 /**
  * Encapsulates connection to React Native packager
  */
 @interface RCTPackagerConnection : NSObject
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
++ (instancetype)connectionForBridge:(RCTBridge *)bridge;
+- (instancetype)initWithConfig:(id<RCTPackagerConnectionConfig>)config;
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forMethod:(NSString *)name;
 
 @end

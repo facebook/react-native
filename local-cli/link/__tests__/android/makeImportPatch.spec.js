@@ -1,7 +1,5 @@
 'use strict';
 
-jest.autoMockOff();
-
 const makeImportPatch = require('../../android/patches/makeImportPatch');
 
 const packageImportPath = 'import some.example.project';

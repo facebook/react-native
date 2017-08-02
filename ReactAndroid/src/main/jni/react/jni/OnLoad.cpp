@@ -1,29 +1,30 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#include <folly/dynamic.h>
+#include <string>
+
+#include <jschelpers/JSCHelpers.h>
+#include <cxxreact/JSExecutor.h>
+#include <cxxreact/JSCExecutor.h>
+#include <cxxreact/Platform.h>
 #include <fb/fbjni.h>
 #include <fb/glog_init.h>
 #include <fb/log.h>
-#include <cxxreact/Executor.h>
-#include <cxxreact/JSCExecutor.h>
-#include <cxxreact/Platform.h>
+#include <folly/dynamic.h>
 #include <jschelpers/Value.h>
+
 #include "CatalystInstanceImpl.h"
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
-#include "JSCPerfLogging.h"
-#include "ProxyExecutor.h"
 #include "JCallback.h"
+#include "JSCPerfLogging.h"
 #include "JSLogging.h"
+#include "ProxyExecutor.h"
+#include "WritableNativeArray.h"
+#include "WritableNativeMap.h"
 
 #ifdef WITH_INSPECTOR
 #include "JInspector.h"
 #endif
-
-#include "WritableNativeMap.h"
-#include "WritableNativeArray.h"
-
-#include <string>
 
 using namespace facebook::jni;
 
@@ -32,14 +33,15 @@ namespace react {
 
 namespace {
 
+// TODO: can we avoid these wrapper classes, and instead specialize the logic in CatalystInstanceImpl
 class JSCJavaScriptExecutorHolder : public HybridClass<JSCJavaScriptExecutorHolder,
                                                        JavaScriptExecutorHolder> {
  public:
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/JSCJavaScriptExecutor;";
 
-  static local_ref<jhybriddata> initHybrid(alias_ref<jclass>, ReadableNativeArray* jscConfigArray) {
+  static local_ref<jhybriddata> initHybrid(alias_ref<jclass>, ReadableNativeMap* jscConfig) {
     // See JSCJavaScriptExecutor.Factory() for the other side of this hack.
-    folly::dynamic jscConfigMap = jscConfigArray->consume()[0];
+    folly::dynamic jscConfigMap = jscConfig->consume();
     return makeCxxInstance(std::make_shared<JSCExecutorFactory>(std::move(jscConfigMap)));
   }
 
@@ -137,11 +139,47 @@ static void logPerfMarker(const ReactMarker::ReactMarkerId markerId, const char*
     case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
       JReactMarker::logMarker("loadApplicationScript_endStringConvert");
       break;
+    case ReactMarker::NATIVE_MODULE_SETUP_START:
+      JReactMarker::logMarker("NATIVE_MODULE_SETUP_START", tag);
+      break;
+    case ReactMarker::NATIVE_MODULE_SETUP_STOP:
+      JReactMarker::logMarker("NATIVE_MODULE_SETUP_END", tag);
+      break;
     case ReactMarker::NATIVE_REQUIRE_START:
     case ReactMarker::NATIVE_REQUIRE_STOP:
       // These are not used on Android.
       break;
   }
+}
+
+static ExceptionHandling::ExtractedEror extractJniError(const std::exception& ex, const char *context) {
+  auto jniEx = dynamic_cast<const jni::JniException *>(&ex);
+  if (!jniEx) {
+    return {};
+  }
+
+  auto stackTrace = jniEx->getThrowable()->getStackTrace();
+  std::ostringstream stackStr;
+  for (int i = 0, count = stackTrace->size(); i < count; ++i) {
+    auto frame = stackTrace->getElement(i);
+
+    auto methodName = folly::to<std::string>(frame->getClassName(), ".",
+      frame->getMethodName());
+
+    // Cut off stack traces at the Android looper, to keep them simple
+    if (methodName == "android.os.Looper.loop") {
+      break;
+    }
+
+    stackStr << std::move(methodName) << '@' << frame->getFileName();
+    if (frame->getLineNumber() > 0) {
+      stackStr << ':' << frame->getLineNumber();
+    }
+    stackStr << std::endl;
+  }
+
+  auto msg = folly::to<std::string>("Java exception in '", context, "'\n\n", jniEx->what());
+  return {.message = msg, .stack = stackStr.str()};
 }
 
 }
@@ -151,19 +189,16 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     gloginit::initialize();
     // Inject some behavior into react/
     ReactMarker::logTaggedMarker = logPerfMarker;
-    PerfLogging::installNativeHooks = addNativePerfLoggingHooks;
-    JSNativeHooks::loggingHook = nativeLoggingHook;
-    JSNativeHooks::nowHook = nativePerformanceNow;
+    ExceptionHandling::platformErrorExtractor = extractJniError;
+    JSCNativeHooks::loggingHook = nativeLoggingHook;
+    JSCNativeHooks::nowHook = nativePerformanceNow;
+    JSCNativeHooks::installPerfHooks = addNativePerfLoggingHooks;
     JSCJavaScriptExecutorHolder::registerNatives();
     ProxyJavaScriptExecutorHolder::registerNatives();
     CatalystInstanceImpl::registerNatives();
     CxxModuleWrapperBase::registerNatives();
     CxxModuleWrapper::registerNatives();
     JCxxCallbackImpl::registerNatives();
-    #ifdef WITH_INSPECTOR
-    JInspector::registerNatives();
-    #endif
-
     NativeArray::registerNatives();
     ReadableNativeArray::registerNatives();
     WritableNativeArray::registerNatives();
@@ -171,7 +206,11 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     ReadableNativeMap::registerNatives();
     WritableNativeMap::registerNatives();
     ReadableNativeMapKeySetIterator::registerNatives();
+
+    #ifdef WITH_INSPECTOR
+    JInspector::registerNatives();
+    #endif
   });
 }
 
-}}
+} }

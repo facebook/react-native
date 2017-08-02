@@ -38,7 +38,8 @@ std::string Value::toJSONString(unsigned indent) const {
 }
 
 /* static */
-Value Value::fromJSON(JSContextRef ctx, const String& json) {
+Value Value::fromJSON(const String& json) {
+  JSContextRef ctx = json.context();
   auto result = JSC_JSValueMakeFromJSONString(ctx, json);
   if (!result) {
     throw JSException(folly::to<std::string>(
@@ -66,7 +67,7 @@ Value Value::fromDynamic(JSContextRef ctx, const folly::dynamic& value) {
   return Value(ctx, jsVal);
 #else
   auto json = folly::toJson(value);
-  return fromJSON(ctx, String(ctx, json.c_str()));
+  return fromJSON(String(ctx, json.c_str()));
 #endif
 }
 
@@ -139,15 +140,27 @@ String Value::toString() const {
   return String::adopt(context(), jsStr);
 }
 
-Value Value::makeError(JSContextRef ctx, const char *error)
+Value Value::makeError(JSContextRef ctx, const char *error, const char *stack)
 {
-  JSValueRef exn;
-  JSValueRef args[] = { Value(ctx, String(ctx, error)) };
-  JSObjectRef errorObj = JSC_JSObjectMakeError(ctx, 1, args, &exn);
-  if (!errorObj) {
-    throw JSException(ctx, exn, "Exception making error");
+  auto errorMsg = Value(ctx, String(ctx, error));
+  JSValueRef args[] = {errorMsg};
+  if (stack) {
+    // Using this instead of JSObjectMakeError to actually get a stack property.
+    // MakeError only sets it stack when returning from the invoked function, so we
+    // can't extend it here.
+    auto errorConstructor = Object::getGlobalObject(ctx).getProperty("Error").asObject();
+    auto jsError = errorConstructor.callAsConstructor({errorMsg});
+    auto fullStack = std::string(stack) + jsError.getProperty("stack").toString().str();
+    jsError.setProperty("stack", String(ctx, fullStack.c_str()));
+    return jsError;
+  } else {
+    JSValueRef exn;
+    JSObjectRef errorObj = JSC_JSObjectMakeError(ctx, 1, args, &exn);
+    if (!errorObj) {
+      throw JSException(ctx, exn, "Exception making error");
+    }
+    return Value(ctx, errorObj);
   }
-  return Value(ctx, errorObj);
 }
 
 Object::operator Value() const {

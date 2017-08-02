@@ -9,12 +9,11 @@
 
 'use strict';
 
-const babelRegisterOnly = require('./packager/src/babelRegisterOnly');
+const babelRegisterOnly = require('metro-bundler/src/babelRegisterOnly');
 const escapeRegExp = require('lodash/escapeRegExp');
 const path = require('path');
 
 const BABEL_ENABLED_PATHS = [
-  'packager/src',
   'local-cli',
 ];
 

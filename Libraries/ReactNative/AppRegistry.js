@@ -21,12 +21,6 @@ const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const renderApplication = require('renderApplication');
 
-if (__DEV__) {
-  // In order to use Cmd+P to record/dump perf data, we need to make sure
-  // this module is available in the bundle
-  require('RCTRenderingPerf');
-}
-
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
 export type ComponentProvider = () => ReactClass<any>;
@@ -49,6 +43,7 @@ export type Registry = {
   sections: Array<string>,
   runnables: Runnables,
 };
+export type WrapperComponentProvider = any => ReactClass<*>;
 
 const runnables: Runnables = {};
 let runCount = 1;
@@ -56,6 +51,8 @@ const sections: Runnables = {};
 const tasks: Map<string, TaskProvider> = new Map();
 let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
   (component: ComponentProvider) => component();
+
+let wrapperComponentProvider: ?WrapperComponentProvider;
 
 /**
  * <div class="banner-crna-ejected">
@@ -84,6 +81,10 @@ let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
  * `require`d.
  */
 const AppRegistry = {
+  setWrapperComponentProvider(provider: WrapperComponentProvider) {
+    wrapperComponentProvider = provider;
+  },
+
   registerConfig(config: Array<AppConfig>): void {
     config.forEach((appConfig) => {
       if (appConfig.run) {
@@ -115,7 +116,8 @@ const AppRegistry = {
         renderApplication(
           componentProviderInstrumentationHook(componentProvider),
           appParameters.initialProps,
-          appParameters.rootTag
+          appParameters.rootTag,
+          wrapperComponentProvider && wrapperComponentProvider(appParameters),
         )
     };
     if (section) {

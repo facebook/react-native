@@ -5,7 +5,7 @@ layout: docs
 category: Guides
 permalink: docs/javascript-environment.html
 next: direct-manipulation
-previous: timers
+previous: gesture-responder-system
 ---
 
 ## JavaScript Runtime

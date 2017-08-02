@@ -31,10 +31,12 @@ public class InspectorPackagerConnection {
 
   private final Connection mConnection;
   private final Map<String, Inspector.LocalConnection> mInspectorConnections;
+  private final String mPackageName;
 
-  public InspectorPackagerConnection(String url) {
+  public InspectorPackagerConnection(String url, String packageName) {
     mConnection = new Connection(url);
     mInspectorConnections = new HashMap<>();
+    mPackageName = packageName;
   }
 
   public void connect() {
@@ -145,6 +147,7 @@ public class InspectorPackagerConnection {
       JSONObject jsonPage = new JSONObject();
       jsonPage.put("id", String.valueOf(page.getId()));
       jsonPage.put("title", page.getTitle());
+      jsonPage.put("app", mPackageName);
       array.put(jsonPage);
     }
     return array;
@@ -176,6 +179,7 @@ public class InspectorPackagerConnection {
 
     private final String mUrl;
 
+    private OkHttpClient mHttpClient;
     private @Nullable WebSocket mWebSocket;
     private final Handler mHandler;
     private boolean mClosed;
@@ -223,14 +227,16 @@ public class InspectorPackagerConnection {
       if (mClosed) {
         throw new IllegalStateException("Can't connect closed client");
       }
-      OkHttpClient httpClient = new OkHttpClient.Builder()
-          .connectTimeout(10, TimeUnit.SECONDS)
-          .writeTimeout(10, TimeUnit.SECONDS)
-          .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
-          .build();
+      if (mHttpClient == null) {
+        mHttpClient = new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
+            .build();
+      }
 
       Request request = new Request.Builder().url(mUrl).build();
-      httpClient.newWebSocket(request, this);
+      mHttpClient.newWebSocket(request, this);
     }
 
     private void reconnect() {

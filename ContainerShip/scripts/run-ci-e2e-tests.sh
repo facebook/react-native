@@ -17,7 +17,6 @@ AVD_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 ANDROID_NPM_DEPS="appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3 pretty-data2@0.40.1"
 CLI_PACKAGE=$ROOT/react-native-cli/react-native-cli-*.tgz
 PACKAGE=$ROOT/react-native-*.tgz
-REACT_NATIVE_MAX_WORKERS=1
 
 # solve issue with max user watches limit
 echo 65536 | tee -a /proc/sys/fs/inotify/max_user_watches
@@ -231,13 +230,13 @@ function e2e_suite() {
     # js tests
     if [ $RUN_JS -ne 0 ]; then
       # Check the packager produces a bundle (doesn't throw an error)
-      REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js
+      react-native bundle --max-workers 1 --platform android --dev true --entry-file index.android.js --bundle-output android-bundle.js
       if [ $? -ne 0 ]; then
         echo "Could not build android bundle"
         return 1
       fi
 
-      REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js
+      react-native bundle --max-workers 1 --platform ios --dev true --entry-file index.ios.js --bundle-output ios-bundle.js
       if [ $? -ne 0 ]; then
         echo "Could not build iOS bundle"
         return 1

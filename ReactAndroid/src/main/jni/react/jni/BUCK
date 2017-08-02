@@ -20,6 +20,13 @@ EXPORTED_HEADERS = [
 cxx_library(
     name = "jni",
     srcs = glob(["*.cpp"]),
+    headers = glob(
+        ["*.h"],
+        excludes = EXPORTED_HEADERS,
+    ),
+    header_namespace = "react/jni",
+    exported_headers = EXPORTED_HEADERS,
+    allow_jni_merging = True,
     compiler_flags = [
         "-Wall",
         "-Werror",
@@ -29,23 +36,17 @@ cxx_library(
         "-Wno-pessimizing-move",
         "-Wno-inconsistent-missing-override",
     ],
-    exported_headers = EXPORTED_HEADERS,
-    header_namespace = "react/jni",
-    headers = glob(
-        ["*.h"],
-        excludes = EXPORTED_HEADERS,
-    ),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNativeJNI\"",
         "-DWITH_FBSYSTRACE=1",
         "-DWITH_INSPECTOR=1",
+        "-DWITH_JSC_MEMORY_PRESSURE=1",
     ],
     soname = "libreactnativejni.$(ext)",
     visibility = [
         "PUBLIC",
     ],
-    xcode_public_headers_symlinks = True,
-    deps = JSC_DEPS + [
+    deps = ([
         "//native/third-party/android-ndk:android",
         "//xplat/folly:molly",
         "//xplat/fbgloginit:fbgloginit",
@@ -53,5 +54,5 @@ cxx_library(
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
         FBJNI_TARGET,
-    ],
+    ] + JSC_DEPS) if not IS_OSS_BUILD else [],
 )

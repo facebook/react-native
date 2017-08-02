@@ -18,6 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import android.content.res.AssetManager;
+import android.util.Log;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -74,14 +75,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final ArrayList<PendingJSCall> mJSCallsPendingInit = new ArrayList<PendingJSCall>();
   private final Object mJSCallsPendingInitLock = new Object();
 
-  private final NativeModuleRegistry mJavaRegistry;
+  private final NativeModuleRegistry mNativeModuleRegistry;
   private final NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final MessageQueueThread mNativeModulesQueueThread;
   private final @Nullable MessageQueueThread mUIBackgroundQueueThread;
   private boolean mInitialized = false;
   private volatile boolean mAcceptCalls = false;
 
-  private boolean mJSBundleHasStartedLoading;
   private boolean mJSBundleHasLoaded;
   private @Nullable String mSourceURL;
 
@@ -92,35 +92,34 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private CatalystInstanceImpl(
       final ReactQueueConfigurationSpec reactQueueConfigurationSpec,
       final JavaScriptExecutor jsExecutor,
-      final NativeModuleRegistry registry,
-      final JavaScriptModuleRegistry jsModuleRegistry,
+      final NativeModuleRegistry nativeModuleRegistry,
       final JSBundleLoader jsBundleLoader,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
-    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
+    Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     mHybridData = initHybrid();
 
     mReactQueueConfiguration = ReactQueueConfigurationImpl.create(
         reactQueueConfigurationSpec,
         new NativeExceptionHandler());
     mBridgeIdleListeners = new CopyOnWriteArrayList<>();
-    mJavaRegistry = registry;
-    mJSModuleRegistry = jsModuleRegistry;
+    mNativeModuleRegistry = nativeModuleRegistry;
+    mJSModuleRegistry = new JavaScriptModuleRegistry();
     mJSBundleLoader = jsBundleLoader;
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
     mUIBackgroundQueueThread = mReactQueueConfiguration.getUIBackgroundQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
 
-    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
+    Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
     initializeBridge(
       new BridgeCallback(this),
       jsExecutor,
       mReactQueueConfiguration.getJSQueueThread(),
       mNativeModulesQueueThread,
       mUIBackgroundQueueThread,
-      mJavaRegistry.getJavaModules(this),
-      mJavaRegistry.getCxxModules());
-    FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
+      mNativeModuleRegistry.getJavaModules(this),
+      mNativeModuleRegistry.getCxxModules());
+    Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
   }
 
   private static class BridgeCallback implements ReactCallback {
@@ -137,7 +136,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     public void onBatchComplete() {
       CatalystInstanceImpl impl = mOuter.get();
       if (impl != null) {
-        impl.mJavaRegistry.onBatchComplete();
+        impl.mNativeModuleRegistry.onBatchComplete();
       }
     }
 
@@ -157,6 +156,26 @@ public class CatalystInstanceImpl implements CatalystInstance {
       }
     }
   }
+
+  /**
+   * This method and the native below permits a CatalystInstance to extend the known
+   * Native modules. This registry contains only the new modules to load. The
+   * registry {@code mNativeModuleRegistry} updates internally to contain all the new modules, and generates
+   * the new registry for extracting just the new collections.
+   */
+  @Override
+  public void extendNativeModules(NativeModuleRegistry modules) {
+    //Extend the Java-visible registry of modules
+    mNativeModuleRegistry.registerModules(modules);
+    Collection<JavaModuleWrapper> javaModules = modules.getJavaModules(this);
+    Collection<ModuleHolder> cxxModules = modules.getCxxModules();
+    //Extend the Cxx-visible registry of modules wrapped in appropriate interfaces
+    jniExtendNativeModules(javaModules, cxxModules);
+  }
+
+  private native void jniExtendNativeModules(
+    Collection<JavaModuleWrapper> javaModules,
+    Collection<ModuleHolder> cxxModules);
 
   private native void initializeBridge(
       ReactCallback callback,
@@ -198,9 +217,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public void runJSBundle() {
+    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.runJSBundle()");
     Assertions.assertCondition(!mJSBundleHasLoaded, "JS bundle was already loaded!");
-
-    mJSBundleHasStartedLoading = true;
 
     // incrementPendingJSCalls();
     mJSBundleLoader.loadScript(CatalystInstanceImpl.this);
@@ -282,6 +300,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
    */
   @Override
   public void destroy() {
+    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() start");
     UiThreadUtil.assertOnUiThread();
 
     if (mDestroyed) {
@@ -290,17 +309,26 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     // TODO: tell all APIs to shut down
     mDestroyed = true;
+
     mNativeModulesQueueThread.runOnQueue(new Runnable() {
       @Override
       public void run() {
-        mJavaRegistry.notifyJSInstanceDestroy();
+        mNativeModuleRegistry.notifyJSInstanceDestroy();
         boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
         if (!wasIdle && !mBridgeIdleListeners.isEmpty()) {
           for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
             listener.onTransitionToBridgeIdle();
           }
         }
-        mHybridData.resetNative();
+        UiThreadUtil.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            mHybridData.resetNative();
+            // Kill non-UI threads from UI thread.
+            getReactQueueConfiguration().destroy();
+            Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
+          }
+        });
       }
     });
 
@@ -319,6 +347,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @VisibleForTesting
   @Override
   public void initialize() {
+    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.initialize()");
     Assertions.assertCondition(
         !mInitialized,
         "This catalyst instance has already been initialized");
@@ -332,7 +361,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mNativeModulesQueueThread.runOnQueue(new Runnable() {
       @Override
       public void run() {
-        mJavaRegistry.notifyJSInstanceInitialized();
+        mNativeModuleRegistry.notifyJSInstanceInitialized();
       }
     });
   }
@@ -349,41 +378,29 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
-    return mJavaRegistry.hasModule(nativeModuleInterface);
+    return mNativeModuleRegistry.hasModule(nativeModuleInterface);
   }
 
   // This is only ever called with UIManagerModule or CurrentViewerModule.
   @Override
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
-    return mJavaRegistry.getModule(nativeModuleInterface);
+    return mNativeModuleRegistry.getModule(nativeModuleInterface);
   }
 
   // This is only used by com.facebook.react.modules.common.ModuleDataCleaner
   @Override
   public Collection<NativeModule> getNativeModules() {
-    return mJavaRegistry.getAllModules();
+    return mNativeModuleRegistry.getAllModules();
   }
 
-  private native void handleMemoryPressureUiHidden();
-  private native void handleMemoryPressureModerate();
-  private native void handleMemoryPressureCritical();
+  private native void jniHandleMemoryPressure(int level);
 
   @Override
   public void handleMemoryPressure(MemoryPressure level) {
     if (mDestroyed) {
       return;
     }
-    switch (level) {
-      case UI_HIDDEN:
-        handleMemoryPressureUiHidden();
-        break;
-      case MODERATE:
-        handleMemoryPressureModerate();
-        break;
-      case CRITICAL:
-        handleMemoryPressureCritical();
-        break;
-    }
+    jniHandleMemoryPressure(level.ordinal());
   }
 
   /**
@@ -411,17 +428,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public native long getJavaScriptContext();
-
-  // TODO mhorowitz: add mDestroyed checks to the next three methods
-
-  @Override
-  public native boolean supportsProfiling();
-
-  @Override
-  public native void startProfiler(String title);
-
-  @Override
-  public native void stopProfiler(String title, String filename);
 
   private void incrementPendingJSCalls() {
     int oldPendingCalls = mPendingJSCalls.getAndIncrement();
@@ -518,7 +524,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     private @Nullable ReactQueueConfigurationSpec mReactQueueConfigurationSpec;
     private @Nullable JSBundleLoader mJSBundleLoader;
     private @Nullable NativeModuleRegistry mRegistry;
-    private @Nullable JavaScriptModuleRegistry mJSModuleRegistry;
     private @Nullable JavaScriptExecutor mJSExecutor;
     private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
 
@@ -530,11 +535,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     public Builder setRegistry(NativeModuleRegistry registry) {
       mRegistry = registry;
-      return this;
-    }
-
-    public Builder setJSModuleRegistry(JavaScriptModuleRegistry jsModuleRegistry) {
-      mJSModuleRegistry = jsModuleRegistry;
       return this;
     }
 
@@ -559,7 +559,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
           Assertions.assertNotNull(mReactQueueConfigurationSpec),
           Assertions.assertNotNull(mJSExecutor),
           Assertions.assertNotNull(mRegistry),
-          Assertions.assertNotNull(mJSModuleRegistry),
           Assertions.assertNotNull(mJSBundleLoader),
           Assertions.assertNotNull(mNativeModuleCallExceptionHandler));
     }

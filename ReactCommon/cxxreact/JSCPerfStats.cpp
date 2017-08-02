@@ -20,17 +20,16 @@ static JSValueRef nativeGetHeapStats(
   JSHeapStats heapStats = {0};
   JSGetHeapStats(ctx, &heapStats);
 
-  auto result = facebook::react::Object::create(ctx);
-  result.setProperty("size", {ctx, Value::makeNumber(ctx, heapStats.size)});
-  result.setProperty("extra_size", {ctx, Value::makeNumber(ctx, heapStats.extraSize)});
-  result.setProperty("capacity", {ctx, Value::makeNumber(ctx, heapStats.capacity)});
-  result.setProperty("object_count", {ctx, Value::makeNumber(ctx, heapStats.objectCount)});
-  result.setProperty("object_size", {ctx, Value::makeNumber(ctx, heapStats.objectSizeAfterLastCollect)});
-  result.setProperty("object_capacity", {ctx, Value::makeNumber(ctx, heapStats.objectCapacityAfterLastCollect)});
-  result.setProperty("block_size", {ctx, Value::makeNumber(ctx, heapStats.blockSize)});
-  result.setProperty("malloc_size", {ctx, Value::makeNumber(ctx, heapStats.mallocSize)});
-
-  return (JSObjectRef) result;
+  auto result = Object::create(ctx);
+  result.setProperty("size", Value::makeNumber(ctx, heapStats.size));
+  result.setProperty("extra_size", Value::makeNumber(ctx, heapStats.extraSize));
+  result.setProperty("capacity", Value::makeNumber(ctx, heapStats.capacity));
+  result.setProperty("object_count", Value::makeNumber(ctx, heapStats.objectCount));
+  result.setProperty("object_size", Value::makeNumber(ctx, heapStats.objectSizeAfterLastCollect));
+  result.setProperty("object_capacity", Value::makeNumber(ctx, heapStats.objectCapacityAfterLastCollect));
+  result.setProperty("block_size", Value::makeNumber(ctx, heapStats.blockSize));
+  result.setProperty("malloc_size", Value::makeNumber(ctx, heapStats.mallocSize));
+  return static_cast<JSObjectRef>(result);
 }
 
 static JSValueRef nativeGetGCStats(
@@ -43,15 +42,10 @@ static JSValueRef nativeGetGCStats(
   JSGCStats gcStats = {0};
   JSGetGCStats(ctx, &gcStats);
 
-  auto result = facebook::react::Object::create(ctx);
-  result.setProperty(
-      "last_full_gc_length",
-      {ctx, Value::makeNumber(ctx, gcStats.lastFullGCLength)});
-  result.setProperty(
-      "last_eden_gc_length",
-      {ctx, Value::makeNumber(ctx, gcStats.lastEdenGCLength)});
-
-  return (JSObjectRef) result;
+  auto result = Object::create(ctx);
+  result.setProperty("last_full_gc_length", Value::makeNumber(ctx, gcStats.lastFullGCLength));
+  result.setProperty("last_eden_gc_length", Value::makeNumber(ctx, gcStats.lastEdenGCLength));
+  return static_cast<JSObjectRef>(result);
 }
 
 #endif

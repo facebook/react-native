@@ -5,7 +5,7 @@ layout: docs
 category: Guides (Android)
 permalink: docs/android-building-from-source.html
 banner: ejected
-next: activityindicator
+next: contributing
 previous: android-ui-performance
 ---
 
@@ -153,11 +153,11 @@ Start by following the `Point Gradle to your Android SDK` section of this page. 
 ./gradlew ReactAndroid:installArchives
 ```
 
-This will package everything that would typically be included in the `android` directory of your `node_modules/react-native/` installation in the root directory of your React Native checkout. 
+This will package everything that would typically be included in the `android` directory of your `node_modules/react-native/` installation in the root directory of your React Native checkout.
 
 ## Testing
 
-If you made changes to React Native and submit a pull request, all tests will run on your pull request automatically. To run the tests locally, see [Testing](docs/testing.html).
+If you made changes to React Native and submit a pull request, all tests will run on your pull request automatically. To run the tests locally, see [Running Tests](docs/testing.html).
 
 ## Troubleshooting
 
