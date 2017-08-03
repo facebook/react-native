@@ -99,13 +99,18 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
       protocols = [protocols];
     }
 
-    // Backwards compatibility
-    if (options && typeof options.origin === 'string') {
-      options = {
-        headers: {
-          origin: options.origin
-        }
-      };
+    const { headers = {}, origin, ...unrecognized } = options || {};
+
+    // Preserve deprecated backwards compatibility for 'options.origin'
+    if (origin && typeof origin === 'string') {
+      console.warn(`Specifying "origin" as a WebSocket connection option is deprecated. Include it under "headers" instead.`);
+      headers.origin = origin;
+    }
+
+    // Warn about and discard anything else
+    if (Object.keys(unrecognized).length > 0) {
+      console.warn(`Unrecognized WebSocket connection option(s) "${Object.keys(unrecognized).join(`", "`)}". `
+        + `Did you mean to put these under "headers"?`);
     }
 
     if (!Array.isArray(protocols)) {
@@ -120,7 +125,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     this._eventEmitter = new NativeEventEmitter(WebSocketModule);
     this._socketId = nextWebSocketId++;
     this._registerEvents();
-    WebSocketModule.connect(url, protocols, options, this._socketId);
+    WebSocketModule.connect(url, protocols, { headers }, this._socketId);
   }
 
   get binaryType(): ?BinaryType {
