@@ -83,7 +83,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     ViewGroupManager.setViewZIndex(view, integerZIndex);
     ViewParent parent = view.getParent();
     if (parent != null && parent instanceof ReactZIndexedViewGroup) {
-      ((ReactZIndexedViewGroup) parent).updateZIndex();
+      ((ReactZIndexedViewGroup) parent).updateDrawingOrder();
     }
   }
 

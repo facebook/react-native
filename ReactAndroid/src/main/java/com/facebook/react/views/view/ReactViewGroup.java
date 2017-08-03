@@ -420,7 +420,7 @@ public class ReactViewGroup extends ViewGroup implements
   }
 
   @Override
-  public void updateZIndex() {
+  public void updateDrawingOrder() {
     mDrawingOrderHelper.update();
     setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
     invalidate();
