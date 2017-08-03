@@ -317,6 +317,13 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
     }
   }
 
+  setNativeProps(props: Object) {
+    const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
+    if (listRef) {
+      listRef.setNativeProps(props);
+    }
+  }
+
   render() {
     const List = this.props.legacyImplementation
       ? MetroListView

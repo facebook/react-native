@@ -25,7 +25,6 @@ var ViewPropTypes = require('ViewPropTypes');
 
 var createReactClass = require('create-react-class');
 var invariant = require('fbjs/lib/invariant');
-var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
 
 const keyMirror = require('fbjs/lib/keyMirror');
@@ -41,7 +40,6 @@ class NavigatorTransitionerIOS extends React.Component {
   requestSchedulingNavigation(cb) {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
       ReactNative.findNodeHandle(this),
-      logError,
       cb
     );
   }
