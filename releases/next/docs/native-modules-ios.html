@@ -183,6 +183,10 @@ RCTRootView <span class="token operator">*</span>rootView <span class="token ope
    <span class="token comment" spellcheck="true"> // Date is ready to use!
 </span>  <span class="token punctuation">}</span>
 
+  <span class="token keyword">override</span> <span class="token keyword">func</span> <span class="token function">constantsToExport<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">&gt;</span> <span class="token punctuation">[</span><span class="token builtin">String</span><span class="token punctuation">:</span> <span class="token builtin">Any</span><span class="token punctuation">]</span><span class="token operator">!</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token string">&quot;someKey&quot;</span><span class="token punctuation">:</span> <span class="token string">&quot;someValue&quot;</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+
 <span class="token punctuation">}</span></div><blockquote><p><strong>NOTE</strong>: It is important to use the @objc modifiers to ensure the class and functions are exported properly to the Objective-C runtime.</p></blockquote><p>Then create a private implementation file that will register the required information with the React Native bridge:</p><div class="prism language-objectivec"><span class="token comment" spellcheck="true">// CalendarManagerBridge.m
 </span><span class="token macro">#<span class="token directive">import</span> &lt;React/RCTBridgeModule.h&gt;</span>
 
