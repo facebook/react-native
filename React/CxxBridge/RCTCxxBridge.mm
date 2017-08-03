@@ -11,13 +11,13 @@
 
 #include <atomic>
 #include <future>
-#include <libkern/OSAtomic.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeMethod.h>
 #import <React/RCTConvert.h>
+#import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTCxxModule.h>
 #import <React/RCTCxxUtils.h>
 #import <React/RCTDevSettings.h>
@@ -134,8 +134,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   BOOL _wasBatchActive;
 
   NSMutableArray<dispatch_block_t> *_pendingCalls;
-  // This is accessed using OSAtomic... calls.
-  volatile int32_t _pendingCount;
+  std::atomic<NSInteger> _pendingCount;
 
   // Native modules
   NSMutableDictionary<NSString *, RCTModuleData *> *_moduleDataByName;
@@ -269,6 +268,9 @@ struct RCTInstanceCallback : public InstanceCallback {
                                         object:nil];
   _jsThread.name = RCTJSThreadName;
   _jsThread.qualityOfService = NSOperationQualityOfServiceUserInteractive;
+#if RCT_DEBUG
+  _jsThread.stackSize *= 2;
+#endif
   [_jsThread start];
 
   dispatch_group_t prepareBridge = dispatch_group_create();
@@ -279,20 +281,28 @@ struct RCTInstanceCallback : public InstanceCallback {
   // This doesn't really do anything.  The real work happens in initializeBridge.
   _reactInstance.reset(new Instance);
 
-  // Prepare executor factory (shared_ptr for copy into block)
   __weak RCTCxxBridge *weakSelf = self;
+
+  // Prepare executor factory (shared_ptr for copy into block)
   std::shared_ptr<JSExecutorFactory> executorFactory;
   if (!self.executorClass) {
-    BOOL useCustomJSC =
-      [self.delegate respondsToSelector:@selector(shouldBridgeUseCustomJSC:)] &&
-      [self.delegate shouldBridgeUseCustomJSC:self];
-    // The arg is a cache dir.  It's not used with standard JSC.
-    executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
-      ("UseCustomJSC", (bool)useCustomJSC)
-#if RCT_PROFILE
-      ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
-#endif
-    ));
+    if ([self.delegate conformsToProtocol:@protocol(RCTCxxBridgeDelegate)]) {
+      id<RCTCxxBridgeDelegate> cxxDelegate = (id<RCTCxxBridgeDelegate>) self.delegate;
+      executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
+    }
+    if (!executorFactory) {
+      BOOL useCustomJSC =
+        [self.delegate respondsToSelector:@selector(shouldBridgeUseCustomJSC:)] &&
+        [self.delegate shouldBridgeUseCustomJSC:self];
+      // The arg is a cache dir.  It's not used with standard JSC.
+      executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
+        ("OwnerIdentity", "ReactNative")
+        ("UseCustomJSC", (bool)useCustomJSC)
+  #if RCT_PROFILE
+        ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
+  #endif
+      ));
+    }
   } else {
     id<RCTJavaScriptExecutor> objcExecutor = [self moduleForClass:self.executorClass];
     executorFactory.reset(new RCTObjcExecutorFactory(objcExecutor, ^(NSError *error) {
@@ -650,7 +660,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       continue;
     }
 
-    if (moduleData.requiresMainQueueSetup || moduleData.hasConstantsToExport) {
+    if (moduleData.requiresMainQueueSetup) {
       // Modules that need to be set up on the main thread cannot be initialized
       // lazily when required without doing a dispatch_sync to the main thread,
       // which can result in deadlock. To avoid this, we initialize all of these
@@ -940,7 +950,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     // Phase 1: jsQueueBlocks are added to the queue; _pendingCount is
     // incremented for each.  If the first block is created after self.loading is
     // true, phase 1 will be nothing.
-    OSAtomicIncrement32Barrier(&_pendingCount);
+    _pendingCount++;
     dispatch_block_t jsQueueBlock = ^{
       // From the perspective of the JS queue:
       if (self.loading) {
@@ -952,7 +962,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
         // each block is executed, adding work to the queue, and _pendingCount is
         // decremented.
         block();
-        OSAtomicDecrement32Barrier(&self->_pendingCount);
+        self->_pendingCount--;
       }
     };
     [self ensureOnJavaScriptThread:jsQueueBlock];
@@ -980,7 +990,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   _pendingCalls = nil;
   for (dispatch_block_t call in pendingCalls) {
     call();
-    OSAtomicDecrement32Barrier(&_pendingCount);
+    _pendingCount--;
   }
   _loading = NO;
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");

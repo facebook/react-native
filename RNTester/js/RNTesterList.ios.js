@@ -202,11 +202,6 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'AdSupportIOSExample',
-    module: require('./AdSupportIOSExample'),
-    supportsTVOS: false,
-  },
-  {
     key: 'AlertExample',
     module: require('./AlertExample').AlertExample,
     supportsTVOS: true,
@@ -339,6 +334,11 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'TransformExample',
     module: require('./TransformExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'TVEventHandlerExample',
+    module: require('./TVEventHandlerExample'),
     supportsTVOS: true,
   },
   {

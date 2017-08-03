@@ -6,11 +6,11 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-'use strict';
 
-var resolvePlugins = require('../lib/resolvePlugins');
+#import <React/RCTBridge.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTURLRequestHandler.h>
 
-module.exports = function(options) {
-  // For future internal pipeline usage
-  return null;
-}
+@interface RCTBlobManager : NSObject <RCTBridgeModule, RCTURLRequestHandler>
+
+@end

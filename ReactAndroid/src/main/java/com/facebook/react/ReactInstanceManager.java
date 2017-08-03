@@ -146,7 +146,6 @@ public class ReactInstanceManager {
   private final JSCConfig mJSCConfig;
   private final boolean mLazyNativeModulesEnabled;
   private final boolean mLazyViewManagersEnabled;
-  private final boolean mSetupReactContextInBackgroundEnabled;
   private final boolean mUseSeparateUIBackgroundThread;
   private final int mMinNumShakes;
 
@@ -221,7 +220,6 @@ public class ReactInstanceManager {
     boolean lazyNativeModulesEnabled,
     boolean lazyViewManagersEnabled,
     @Nullable DevBundleDownloadListener devBundleDownloadListener,
-    boolean setupReactContextInBackgroundEnabled,
     boolean useSeparateUIBackgroundThread,
     int minNumShakes,
     boolean splitPackagesEnabled,
@@ -254,7 +252,6 @@ public class ReactInstanceManager {
     mJSCConfig = jscConfig;
     mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
     mLazyViewManagersEnabled = lazyViewManagersEnabled;
-    mSetupReactContextInBackgroundEnabled = setupReactContextInBackgroundEnabled;
     mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
     mMinNumShakes = minNumShakes;
 
@@ -283,6 +280,9 @@ public class ReactInstanceManager {
 
     // Instantiate ReactChoreographer in UI thread.
     ReactChoreographer.initialize();
+    if (mUseDeveloperSupport) {
+      mDevSupportManager.startInspector();
+    }
   }
 
   public DevSupportManager getDevSupportManager() {
@@ -589,6 +589,7 @@ public class ReactInstanceManager {
 
     if (mUseDeveloperSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
+      mDevSupportManager.stopInspector();
     }
 
     moveToBeforeCreateLifecycleState();
@@ -806,9 +807,7 @@ public class ReactInstanceManager {
               initParams.getJsExecutorFactory().create(),
               initParams.getJsBundleLoader());
 
-          if (mSetupReactContextInBackgroundEnabled) {
-            mCreateReactContextThread = null;
-          }
+          mCreateReactContextThread = null;
           ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_START);
           final Runnable maybeRecreateReactContextRunnable = new Runnable() {
             @Override
@@ -822,28 +821,16 @@ public class ReactInstanceManager {
           Runnable setupReactContextRunnable = new Runnable() {
             @Override
             public void run() {
-              if (!mSetupReactContextInBackgroundEnabled) {
-                mCreateReactContextThread = null;
-              }
-
               try {
                 setupReactContext(reactApplicationContext);
-
-                if (!mSetupReactContextInBackgroundEnabled) {
-                  maybeRecreateReactContextRunnable.run();
-                }
               } catch (Exception e) {
                 mDevSupportManager.handleException(e);
               }
             }
           };
 
-          if (mSetupReactContextInBackgroundEnabled) {
-            reactApplicationContext.runOnNativeModulesQueueThread(setupReactContextRunnable);
-            UiThreadUtil.runOnUiThread(maybeRecreateReactContextRunnable);
-          } else {
-            UiThreadUtil.runOnUiThread(setupReactContextRunnable);
-          }
+          reactApplicationContext.runOnNativeModulesQueueThread(setupReactContextRunnable);
+          UiThreadUtil.runOnUiThread(maybeRecreateReactContextRunnable);
         } catch (Exception e) {
           mDevSupportManager.handleException(e);
         }
@@ -857,9 +844,6 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_END);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_START);
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "setupReactContext");
-    if (!mSetupReactContextInBackgroundEnabled) {
-      UiThreadUtil.assertOnUiThread();
-    }
     mCurrentReactContext = Assertions.assertNotNull(reactContext);
     CatalystInstance catalystInstance =
       Assertions.assertNotNull(reactContext.getCatalystInstance());
@@ -913,10 +897,6 @@ public class ReactInstanceManager {
       CatalystInstance catalystInstance) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
-    if (!mSetupReactContextInBackgroundEnabled) {
-      UiThreadUtil.assertOnUiThread();
-    }
-
     UIManagerModule uiManagerModule = catalystInstance.getNativeModule(UIManagerModule.class);
     final int rootTag = uiManagerModule.addRootView(rootView);
     rootView.setRootViewTag(rootTag);

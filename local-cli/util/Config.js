@@ -25,7 +25,6 @@ import type {
   GetTransformOptions,
   PostMinifyProcess,
   PostProcessModules,
-  // $FlowFixMe: Exported by metro bundler
   PostProcessBundleSourcemap
 } from 'metro-bundler/src/Bundler';
 import type {HasteImpl} from 'metro-bundler/src/node-haste/Module';
@@ -49,6 +48,13 @@ export type ConfigT = {
    * packager on a given platform.
    */
   getBlacklistRE(): RegExp,
+
+  /**
+   * Specify whether or not to enable Babel's behavior for looking up .babelrc
+   * files. If false, only the .babelrc file (if one exists) in the main project
+   * root is used.
+   */
+  getEnableBabelRCLookup(): boolean,
 
   /**
    * Specify any additional polyfill modules that should be processed
@@ -165,6 +171,7 @@ const Config = {
     extraNodeModules: Object.create(null),
     getAssetExts: () => [],
     getBlacklistRE: () => blacklist(),
+    getEnableBabelRCLookup: () => true,
     getPlatforms: () => [],
     getPolyfillModuleNames: () => [],
     getProjectRoots: () => {

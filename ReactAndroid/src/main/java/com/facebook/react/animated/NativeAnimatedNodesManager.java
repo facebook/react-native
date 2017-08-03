@@ -29,7 +29,6 @@ import com.facebook.react.uimanager.events.EventDispatcherListener;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -145,6 +144,7 @@ import javax.annotation.Nullable;
       throw new JSApplicationIllegalArgumentException("Animated node with tag " + tag +
         " does not exists or is not a 'value' node");
     }
+    stopAnimationsForNode(node);
     ((ValueAnimatedNode) node).mValue = value;
     mUpdatedNodes.put(tag, node);
   }
@@ -206,6 +206,24 @@ import javax.annotation.Nullable;
     animation.mEndCallback = endCallback;
     animation.mAnimatedValue = (ValueAnimatedNode) node;
     mActiveAnimations.put(animationId, animation);
+  }
+
+  private void stopAnimationsForNode(AnimatedNode animatedNode) {
+    // in most of the cases there should never be more than a few active animations running at the
+    // same time. Therefore it does not make much sense to create an animationId -> animation
+    // object map that would require additional memory just to support the use-case of stopping
+    // an animation
+    for (int i = 0; i < mActiveAnimations.size(); i++) {
+      AnimationDriver animation = mActiveAnimations.valueAt(i);
+      if (animatedNode.equals(animation.mAnimatedValue)) {
+        // Invoke animation end callback with {finished: false}
+        WritableMap endCallbackResponse = Arguments.createMap();
+        endCallbackResponse.putBoolean("finished", false);
+        animation.mEndCallback.invoke(endCallbackResponse);
+        mActiveAnimations.removeAt(i);
+        i--;
+      }
+    }
   }
 
   public void stopAnimation(int animationId) {
@@ -371,6 +389,7 @@ import javax.annotation.Nullable;
       List<EventAnimationDriver> driversForKey = mEventDrivers.get(event.getViewTag() + eventName);
       if (driversForKey != null) {
         for (EventAnimationDriver driver : driversForKey) {
+          stopAnimationsForNode(driver.mValueNode);
           event.dispatch(driver);
           mRunUpdateNodeList.add(driver.mValueNode);
         }

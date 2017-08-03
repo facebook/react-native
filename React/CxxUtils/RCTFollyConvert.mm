@@ -29,7 +29,7 @@ id convertFollyDynamicToId(const folly::dynamic &dyn) {
     case folly::dynamic::DOUBLE:
       return @(dyn.getDouble());
     case folly::dynamic::STRING:
-      return [[NSString alloc] initWithData:[NSData dataWithBytes:dyn.data() length:dyn.size()]
+      return [[NSString alloc] initWithBytes:dyn.c_str() length:dyn.size()
                                    encoding:NSUTF8StringEncoding];
     case folly::dynamic::ARRAY: {
       NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:dyn.size()];
