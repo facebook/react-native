@@ -14,7 +14,6 @@
 const Blob = require('Blob');
 const EventTarget = require('event-target-shim');
 const NativeEventEmitter = require('NativeEventEmitter');
-const Blob = require('Blob');
 const BlobManager = require('BlobManager');
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');

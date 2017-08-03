@@ -7,9 +7,15 @@
  */
 package com.facebook.react.modules.blob;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.webkit.MimeTypeMap;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -20,12 +26,20 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
 import okio.ByteString;
 
 @ReactModule(name = BlobModule.NAME)
@@ -33,9 +47,9 @@ public class BlobModule extends ReactContextBaseJavaModule {
 
   protected static final String NAME = "BlobModule";
 
-  private final Map<String, byte[]> mBlobs = new HashMap<>();
+  private static final Map<String, byte[]> mBlobs = new HashMap<>();
 
-  protected final WebSocketModule.ContentHandler mContentHandler =
+  protected static final WebSocketModule.ContentHandler BlobHandler =
       new WebSocketModule.ContentHandler() {
         @Override
         public void onMessage(String text, WritableMap params) {
@@ -82,22 +96,22 @@ public class BlobModule extends ReactContextBaseJavaModule {
         "BLOB_URI_SCHEME", "content", "BLOB_URI_HOST", resources.getString(resourceId));
   }
 
-  public String store(byte[] data) {
+  public static String store(byte[] data) {
     String blobId = UUID.randomUUID().toString();
     store(data, blobId);
     return blobId;
   }
 
-  public void store(byte[] data, String blobId) {
+  public static void store(byte[] data, String blobId) {
     mBlobs.put(blobId, data);
   }
 
-  public void remove(String blobId) {
+  public static void remove(String blobId) {
     mBlobs.remove(blobId);
   }
 
   @Nullable
-  public byte[] resolve(Uri uri) {
+  public static byte[] resolve(Uri uri) {
     String blobId = uri.getLastPathSegment();
     int offset = 0;
     int size = -1;
@@ -113,7 +127,7 @@ public class BlobModule extends ReactContextBaseJavaModule {
   }
 
   @Nullable
-  public byte[] resolve(String blobId, int offset, int size) {
+  public static byte[] resolve(String blobId, int offset, int size) {
     byte[] data = mBlobs.get(blobId);
     if (data == null) {
       return null;
@@ -215,7 +229,7 @@ public class BlobModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void enableBlobSupport(final int id) {
-    getWebSocketModule().setContentHandler(id, mContentHandler);
+    getWebSocketModule().setContentHandler(id, BlobHandler);
   }
 
   @ReactMethod
