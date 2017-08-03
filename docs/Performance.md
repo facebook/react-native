@@ -566,7 +566,7 @@ const paths = modulePaths
 
 const fileData = `module.exports = [${paths}];`;
 
-fs.writeFile('./modulePaths.js', fileData, err => {
+fs.writeFile('./packager/modulePaths.js', fileData, err => {
   if (err) {
     console.log(err);
   }
@@ -574,6 +574,9 @@ fs.writeFile('./modulePaths.js', fileData, err => {
   console.log('Done');
 });
 ```
+
+You can run via `node packager/modulePaths.js`.
+
 This script attempts to map from the module names to module paths. Its not foolproof though, for instance, it ignores platform specific files (\*ios.js, and \*.android.js). However based on initial testing, it handles 95% of cases. When it runs, after some time it should complete and output a file named `packager/modulePaths.js`. It should contain paths to module files that are relative to your projects root. You can commit modulePaths.js to your repo so it is transportable.
 
 ### Updating the config.js
@@ -606,4 +609,4 @@ The preloadedModules entry in the config indicates which modules should be marke
 
 ### Test and Measure Improvements
 
-You should now be ready to build your app using unbundling and inline requires. Make sure you measure the before and after startup times. 
+You should now be ready to build your app using unbundling and inline requires. Make sure you measure the before and after startup times.
