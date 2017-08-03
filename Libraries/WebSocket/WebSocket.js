@@ -93,18 +93,19 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   // `WebSocket.isAvailable` will return `false`, and WebSocket constructor will throw an error
   static isAvailable: boolean = !!WebSocketModule;
 
-  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{ headers?: { origin?: string}}) {
+  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{headers?: {origin?: string}}) {
     super();
     if (typeof protocols === 'string') {
       protocols = [protocols];
     }
 
-    const { headers = {}, origin, ...unrecognized } = options || {};
+    const {headers = {}, ...unrecognized} = options || {};
 
     // Preserve deprecated backwards compatibility for the 'origin' option
-    if (origin && typeof origin === 'string') {
+    if (unrecognized && typeof unrecognized.origin === 'string') {
       console.warn('Specifying `origin` as a WebSocket connection option is deprecated. Include it under `headers` instead.');
-      headers.origin = origin;
+      headers.origin = unrecognized.origin;
+      delete unrecognized.origin;
     }
 
     // Warn about and discard anything else
@@ -152,7 +153,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
 
   close(code?: number, reason?: string): void {
     if (this.readyState === this.CLOSING ||
-        this.readyState === this.CLOSED) {
+      this.readyState === this.CLOSED) {
       return;
     }
 
@@ -187,7 +188,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
 
   ping(): void {
     if (this.readyState === this.CONNECTING) {
-        throw new Error('INVALID_STATE_ERR');
+      throw new Error('INVALID_STATE_ERR');
     }
 
     WebSocketModule.ping(this._socketId);
