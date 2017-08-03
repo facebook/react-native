@@ -411,60 +411,7 @@ export default class Optimized extends Component {
 }
 ```
 
-Even without unbundling inline requires can lead to startup time improvements, because the code within VeryExpensive.js will only execute once it is required for the first time. A cleaner mechanism would be to use a higher order component:
-
-#### LazyComponent.js
-```
-import React, { PureComponent } from 'react';
-export default function createLazyComponent(
-  getClass
-) {
-  return class extends PureComponent {
-    lazyComponentClass = getClass();
-
-    render() {
-      const LazyComponent = this.lazyComponentClass;
-      return (
-        <LazyComponent {...this.props}>
-          {this.props.children}
-        </LazyComponent>
-      );
-    }
-  };
-}
-```
-
-#### Optimized.js
-```
-import React, { Component } from 'react';
-import { TouchableOpacity, View, Text } from 'react-native';
-import createLazyComponent from './LazyComponent';
-
-let VeryExpensive = createLazyComponent(
-  () => require('./VeryExpensive').default
-);
-
-export default class Optimized extends Component {
-  state = { needsExpensive: false };
-
-  didPress = () => {
-    this.setState(() => ({
-      needsExpensive: true,
-    }));
-  };
-
-  render() {
-    return (
-      <View style={{ marginTop: 20 }}>
-        <TouchableOpacity onPress={this.didPress}>
-          <Text>Load</Text>
-        </TouchableOpacity>
-        {this.state.needsExpensive ? <VeryExpensive /> : null}
-      </View>
-    );
-  }
-}
-```
+Even without unbundling inline requires can lead to startup time improvements, because the code within VeryExpensive.js will only execute once it is required for the first time.
 
 ### Enable Unbundling
 
@@ -494,3 +441,169 @@ project.ext.react = [
   extraPackagerArgs: ["--indexed-unbundle"]
 ]
 ```
+
+### Configure Preloading and Inline Requires
+
+Now that we have unbundled our code, there is overhead for calling require. require now needs to send a message over the bridge when it encounters a module it has not loaded yet. This will impact startup the most, because that is where the largest number of require calls are likely to take place while the app loads the initial module. Luckily we can configure a portion of the modules to be preloaded. In order to do this, you will need to implement some form of inline require.
+
+### Adding a packager config file
+
+Create a folder in your project called packager, and create a single file named config.js. Add the following:
+
+```
+const config = {
+  getTransformOptions: () => {
+    return {
+      transform: { inlineRequires: true },
+    };
+  },
+};
+
+module.exports = config;
+```
+
+In Xcode, in the build phase, include `export BUNDLE_CONFIG="packager/config.js"`.
+
+```
+export BUNDLE_COMMAND="unbundle"
+export BUNDLE_CONFIG="packager/config.js"
+export NODE_BINARY=node
+../node_modules/react-native/packager/react-native-xcode.sh
+```
+
+Edit your android/app/build.gradle file to include `bundleConfig: "packager/config.js",`.
+
+```
+project.ext.react = [
+  bundleCommand: "unbundle",
+  bundleConfig: "packager/config.js"
+]
+```
+
+Finally, you can update "start" under "scripts" on your package.json to use the config:
+
+`"start": "node node_modules/react-native/local-cli/cli.js start --config ../../../../packager/config.js",`
+
+Start your package server with `npm start`. Note that when the dev packager is automatically launched via xcode and `react-native run-android`, etc, it does not use `npm start`, so it won't use the config.
+
+### Investigating the Loaded Modules
+
+In your root file (index.(ios|android).js) you can add the following after the initial imports:
+```
+const modules = require.getModules();
+const moduleIds = Object.keys(modules);
+const loadedModuleNames = moduleIds
+  .filter(moduleId => modules[moduleId].isInitialized)
+  .map(moduleId => modules[moduleId].verboseName);
+const waitingModuleNames = moduleIds
+  .filter(moduleId => !modules[moduleId].isInitialized)
+  .map(moduleId => modules[moduleId].verboseName);
+
+// make sure that the modules you expect to be waiting are actually waiting
+console.log(
+  'loaded:',
+  loadedModuleNames.length,
+  'waiting:',
+  waitingModuleNames.length
+);
+
+// grab this text blob, and put it in a file named packager/moduleNames.js
+console.log(`module.exports = ${JSON.stringify(loadedModuleNames.sort())};`);
+```
+
+When you run your app, you can look in the console and see how many modules have been loaded, and how many are waiting. You may want to read the moduleNames and see if there are any surprises. Note that inline requires are invoked the first time the imports are referenced. You may need to investigate and refactor to ensure only the modules you want are loaded on startup. Note that you can change the Systrace object on require to help debug problematic requires.
+
+```
+require.Systrace.beginEvent = (message) => {
+  if(message.includes(problematicModule)) {
+    throw new Error();
+  }
+}
+```
+
+Every app is different, but it may make sense to only load the modules you need for the very first screen. When you are satisified, put the output of the loadedModuleNames into a file named packager/moduleNames.js.
+
+### Transforming to Module Paths
+
+The loaded module names get us part of the way there, but we actually need absolute module paths, so the next script will set that up. Add `packager/generateModulePaths.js` to your project with the following:
+```
+// @flow
+/* eslint-disable no-console */
+const execSync = require('child_process').execSync;
+const fs = require('fs');
+const moduleNames = require('./moduleNames');
+
+const pjson = require('../package.json');
+const localPrefix = `${pjson.name}/`;
+
+const modulePaths = moduleNames.map(moduleName => {
+  if (moduleName.startsWith(localPrefix)) {
+    return `./${moduleName.substring(localPrefix.length)}`;
+  }
+  if (moduleName.endsWith('.js')) {
+    return `./node_modules/${moduleName}`;
+  }
+  try {
+    const result = execSync(
+      `grep "@providesModule ${moduleName}" $(find . -name ${moduleName}\\\\.js) -l`
+    )
+      .toString()
+      .trim()
+      .split('\n')[0];
+    if (result != null) {
+      return result;
+    }
+  } catch (e) {
+    return null;
+  }
+  return null;
+});
+
+const paths = modulePaths
+  .filter(path => path != null)
+  .map(path => `'${path}'`)
+  .join(',\n');
+
+const fileData = `module.exports = [${paths}];`;
+
+fs.writeFile('./modulePaths.js', fileData, err => {
+  if (err) {
+    console.log(err);
+  }
+
+  console.log('Done');
+});
+```
+This script attempts to map from the module names to module paths. Its not foolproof though, for instance, it ignores platform specific files (\*ios.js, and \*.android.js). However based on initial testing, it handles 95% of cases. When it runs, after some time it should complete and output a file named `packager/modulePaths.js`. It should contain paths to module files that are relative to your projects root. You can commit modulePaths.js to your repo so it is transportable.
+
+### Updating the config.js
+
+Returning to packager/config.js we should update it to use our newly generated modulePaths.js file.
+```
+const modulePaths = require('./modulePaths');
+const resolve = require('path').resolve;
+const fs = require('fs');
+
+const config = {
+  getTransformOptions: () => {
+    const moduleMap = {};
+    modulePaths.forEach(path => {
+      if (fs.existsSync(path)) {
+        moduleMap[resolve(path)] = true;
+      }
+    });
+    return {
+      preloadedModules: moduleMap,
+      transform: { inlineRequires: { blacklist: moduleMap } },
+    };
+  },
+};
+
+module.exports = config;
+```
+
+The preloadedModules entry in the config indicates which modules should be marked as preloaded by the unbundler. When the bundle is loaded, those modules are immediately loaded, before any requires have even executed. The blacklist entry indicates that those modules should not be required inline. Because they are preloaded, there is no performance benefit from using an inline require. In fact the javascript spends extra time resolving the inline require every time the imports are referenced.
+
+### Test and Measure Improvements
+
+You should now be ready to build your app using unbundling and inline requires. Make sure you measure the before and after startup times. 
