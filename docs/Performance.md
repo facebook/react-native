@@ -1,6 +1,6 @@
 ---
 id: performance
-title: Performance
+title: 성능
 layout: docs
 category: Guides
 permalink: docs/performance.html
@@ -8,6 +8,7 @@ next: gesture-responder-system
 previous: debugging
 ---
 
+웹뷰 베이스의 툴 대신에 React Native를 사용하는 설득력 있는 이유로 여러분의 앱이 네이티브 앱처럼 느껴지고, 보여지며 초당 60프레임을 구현하기 위해서입니다.
 A compelling reason for using React Native instead of WebView-based tools is to achieve 60 frames per second and a native look and feel to your apps.
 Where possible, we would like for React Native to do the right thing and help you to focus on your app instead of performance optimization,
 but there are areas where we're not quite there yet,
