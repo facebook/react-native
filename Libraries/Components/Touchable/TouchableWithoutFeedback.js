@@ -17,6 +17,7 @@ const PropTypes = require('prop-types');
 const TimerMixin = require('react-timer-mixin');
 const Touchable = require('Touchable');
 
+const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 const warning = require('fbjs/lib/warning');
 
@@ -25,7 +26,7 @@ const {
   AccessibilityTraits,
 } = require('ViewAccessibility');
 
-type Event = Object;
+export type Event = Object;
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
@@ -36,8 +37,8 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * TouchableWithoutFeedback supports only one child.
  * If you wish to have several child components, wrap them in a View.
  */
-// $FlowFixMe(>=0.41.0)
-const TouchableWithoutFeedback = React.createClass({
+const TouchableWithoutFeedback = createReactClass({
+  displayName: 'TouchableWithoutFeedback',
   mixins: [TimerMixin, Touchable.Mixin],
 
   propTypes: {
@@ -58,8 +59,15 @@ const TouchableWithoutFeedback = React.createClass({
      * that steals the responder lock).
      */
     onPress: PropTypes.func,
+    /**
+    * Called as soon as the touchable element is pressed and invoked even before onPress.
+    * This can be useful when making network requests.
+    */
     onPressIn: PropTypes.func,
-    onPressOut: PropTypes.func,
+    /**
+    * Called as soon as the touch is released even before onPress.
+    */
+     onPressOut: PropTypes.func,
     /**
      * Invoked on mount and layout changes with
      *
@@ -88,6 +96,7 @@ const TouchableWithoutFeedback = React.createClass({
      * reactivated! Move it back and forth several times while the scroll view
      * is disabled. Ensure you pass in a constant to reduce memory allocations.
      */
+    // $FlowFixMe: Expected a React PropType instead
     pressRetentionOffset: EdgeInsetsPropType,
     /**
      * This defines how far your touch can start away from the button. This is
@@ -97,6 +106,7 @@ const TouchableWithoutFeedback = React.createClass({
      * of sibling views always takes precedence if a touch hits two overlapping
      * views.
      */
+    // $FlowFixMe: Expected a React PropType instead
     hitSlop: EdgeInsetsPropType,
   },
 

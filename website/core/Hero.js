@@ -12,8 +12,8 @@
 
 var React = require('React');
 
-var Hero = React.createClass({
-  render: function() {
+class Hero extends React.Component {
+  render() {
     return (
       <div className="hero">
         <div className="wrap">
@@ -26,6 +26,6 @@ var Hero = React.createClass({
       </div>
     );
   }
-});
+}
 
 module.exports = Hero;

@@ -41,14 +41,16 @@ var ReactNativeToExpoSDKVersionMap = {
  * }
  * ```
  */
-var SnackPlayer = React.createClass({
-  contextTypes: {
-    version: PropTypes.number.isRequired,
-  },
+class SnackPlayer extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+
+    this.parseParams = this.parseParams.bind(this);
+  }
 
   componentDidMount() {
     window.ExpoSnack && window.ExpoSnack.initialize();
-  },
+  }
 
   render() {
     var code = encodeURIComponent(this.props.children);
@@ -110,9 +112,9 @@ var SnackPlayer = React.createClass({
         </div>
       </div>
     );
-  },
+  }
 
-  parseParams: function(paramString) {
+  parseParams(paramString) {
     var params = {};
 
     if (paramString) {
@@ -124,7 +126,11 @@ var SnackPlayer = React.createClass({
     }
 
     return params;
-  },
-});
+  }
+}
+
+SnackPlayer.contextTypes = {
+  version: PropTypes.number.isRequired,
+};
 
 module.exports = SnackPlayer;

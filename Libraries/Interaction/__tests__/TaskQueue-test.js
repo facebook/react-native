@@ -10,7 +10,7 @@
 
 'use strict';
 
-jest.disableAutomock();
+const Promise = require('promise');
 
 function expectToBeCalledOnce(fn) {
   expect(fn.mock.calls.length).toBe(1);

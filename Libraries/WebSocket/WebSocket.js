@@ -11,17 +11,34 @@
  */
 'use strict';
 
+const Blob = require('Blob');
+const EventTarget = require('event-target-shim');
 const NativeEventEmitter = require('NativeEventEmitter');
 const Blob = require('Blob');
 const BlobManager = require('BlobManager');
+const NativeModules = require('NativeModules');
 const Platform = require('Platform');
-const RCTWebSocketModule = require('NativeModules').WebSocketModule;
 const WebSocketEvent = require('WebSocketEvent');
 
-const EventTarget = require('event-target-shim');
 const base64 = require('base64-js');
+const binaryToBase64 = require('binaryToBase64');
+const invariant = require('fbjs/lib/invariant');
+
+const {WebSocketModule} = NativeModules;
 
 import type EventSubscription from 'EventSubscription';
+
+type ArrayBufferView =
+  | Int8Array
+  | Uint8Array
+  | Uint8ClampedArray
+  | Int16Array
+  | Uint16Array
+  | Int32Array
+  | Uint32Array
+  | Float32Array
+  | Float64Array
+  | DataView
 
 type BinaryType = 'blob' | 'arraybuffer'
 
@@ -74,9 +91,9 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   readyState: number = CONNECTING;
   url: ?string;
 
-  // This module depends on the native `RCTWebSocketModule` module. If you don't include it,
+  // This module depends on the native `WebSocketModule` module. If you don't include it,
   // `WebSocket.isAvailable` will return `false`, and WebSocket constructor will throw an error
-  static isAvailable: boolean = !!RCTWebSocketModule;
+  static isAvailable: boolean = !!WebSocketModule;
 
   constructor(url: string, protocols: ?string | ?Array<string>, options: ?{origin?: string}) {
     super();
@@ -90,13 +107,35 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
 
     if (!WebSocket.isAvailable) {
       throw new Error('Cannot initialize WebSocket module. ' +
-      'Native module RCTWebSocketModule is missing.');
+      'Native module WebSocketModule is missing.');
     }
 
-    this._eventEmitter = new NativeEventEmitter(RCTWebSocketModule);
+    this._eventEmitter = new NativeEventEmitter(WebSocketModule);
     this._socketId = nextWebSocketId++;
     this._registerEvents();
-    RCTWebSocketModule.connect(url, protocols, options, this._socketId);
+    WebSocketModule.connect(url, protocols, options, this._socketId);
+  }
+
+  get binaryType(): ?BinaryType {
+    return this._binaryType;
+  }
+
+  set binaryType(binaryType: BinaryType): void {
+    if (binaryType !== 'blob' && binaryType !== 'arraybuffer') {
+      throw new Error('binaryType must be either \'blob\' or \'arraybuffer\'');
+    }
+    if (this._binaryType === 'blob' || binaryType === 'blob') {
+      const BlobModule = NativeModules.BlobModule;
+      invariant(BlobModule, 'Native module BlobModule is required for blob support');
+      if (BlobModule) {
+        if (binaryType === 'blob') {
+          BlobModule.enableBlobSupport(this._socketId);
+        } else {
+          BlobModule.disableBlobSupport(this._socketId);
+        }
+      }
+    }
+    this._binaryType = binaryType;
   }
 
   get binaryType(): ?BinaryType {
@@ -133,30 +172,25 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     this._close(code, reason);
   }
 
-  send(data: string | ArrayBuffer | $ArrayBufferView | Blob): void {
+  send(data: string | ArrayBuffer | ArrayBufferView | Blob): void {
     if (this.readyState === this.CONNECTING) {
       throw new Error('INVALID_STATE_ERR');
     }
 
     if (data instanceof Blob) {
-      RCTWebSocketModule.sendBlob(data.data, this._socketId);
+      const BlobModule = NativeModules.BlobModule;
+      invariant(BlobModule, 'Native module BlobModule is required for blob support');
+      BlobModule.sendBlob(data, this._socketId);
       return;
     }
 
     if (typeof data === 'string') {
-      RCTWebSocketModule.send(data, this._socketId);
+      WebSocketModule.send(data, this._socketId);
       return;
     }
 
-
-    if (ArrayBuffer.isView(data)) {
-      // $FlowFixMe: no way to assert that 'data' is indeed an ArrayBufferView now
-      data = data.buffer;
-    }
-
-    if (data instanceof ArrayBuffer) {
-      data = base64.fromByteArray(new Uint8Array(data));
-      RCTWebSocketModule.sendBinary(data, this._socketId);
+    if (data instanceof ArrayBuffer || ArrayBuffer.isView(data)) {
+      WebSocketModule.sendBinary(binaryToBase64(data), this._socketId);
       return;
     }
 
@@ -168,7 +202,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
         throw new Error('INVALID_STATE_ERR');
     }
 
-    RCTWebSocketModule.ping(this._socketId);
+    WebSocketModule.ping(this._socketId);
   }
 
   _close(code?: number, reason?: string): void {
@@ -176,9 +210,9 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
       // See https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
       const statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
       const closeReason = typeof reason === 'string' ? reason : '';
-      RCTWebSocketModule.close(statusCode, closeReason, this._socketId);
+      WebSocketModule.close(statusCode, closeReason, this._socketId);
     } else {
-      RCTWebSocketModule.close(this._socketId);
+      WebSocketModule.close(this._socketId);
     }
   }
 

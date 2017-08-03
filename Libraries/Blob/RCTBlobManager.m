@@ -10,17 +10,40 @@
 #import "RCTBlobManager.h"
 
 #import <React/RCTConvert.h>
+<<<<<<< HEAD
 
 static NSString *const kBlobUriScheme = @"blob";
 
 @implementation RCTBlobManager
 {
   NSMutableDictionary<NSString *, NSData *> *_blobs;
+=======
+#import <React/RCTWebSocketModule.h>
+
+static NSString *const kBlobUriScheme = @"blob";
+
+@interface _RCTBlobContentHandler : NSObject <RCTWebSocketContentHandler>
+
+- (instancetype)initWithBlobManager:(RCTBlobManager *)blobManager;
+
+@end
+
+
+@implementation RCTBlobManager
+{
+  NSMutableDictionary<NSString *, NSData *> *_blobs;
+  _RCTBlobContentHandler *_contentHandler;
+>>>>>>> master
   NSOperationQueue *_queue;
 }
 
 RCT_EXPORT_MODULE(BlobModule)
 
+<<<<<<< HEAD
+=======
+@synthesize bridge = _bridge;
+
+>>>>>>> master
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   return @{
@@ -29,6 +52,14 @@ RCT_EXPORT_MODULE(BlobModule)
   };
 }
 
+<<<<<<< HEAD
+=======
+- (dispatch_queue_t)methodQueue
+{
+  return [[_bridge webSocketModule] methodQueue];
+}
+
+>>>>>>> master
 - (NSString *)store:(NSData *)data
 {
   NSString *blobId = [NSUUID UUID].UUIDString;
@@ -41,6 +72,10 @@ RCT_EXPORT_MODULE(BlobModule)
   if (!_blobs) {
     _blobs = [NSMutableDictionary new];
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
   _blobs[blobId] = data;
 }
 
@@ -49,6 +84,10 @@ RCT_EXPORT_MODULE(BlobModule)
   NSString *blobId = [RCTConvert NSString:blob[@"blobId"]];
   NSNumber *offset = [RCTConvert NSNumber:blob[@"offset"]];
   NSNumber *size = [RCTConvert NSNumber:blob[@"size"]];
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
   return [self resolve:blobId
                 offset:offset ? [offset integerValue] : 0
                   size:size ? [size integerValue] : -1];
@@ -66,6 +105,7 @@ RCT_EXPORT_MODULE(BlobModule)
   return data;
 }
 
+<<<<<<< HEAD
 RCT_EXPORT_METHOD(createFromParts:(NSArray<NSDictionary<NSString *, id> *> *)parts withId:(NSString *)blobId)
 {
     NSMutableData *blob = [NSMutableData new];
@@ -86,6 +126,34 @@ RCT_EXPORT_METHOD(createFromParts:(NSArray<NSDictionary<NSString *, id> *> *)par
   }
 
   [self store:blob withId:blobId];
+=======
+RCT_EXPORT_METHOD(enableBlobSupport:(nonnull NSNumber *)socketID)
+{
+  if (!_contentHandler) {
+    _contentHandler = [[_RCTBlobContentHandler alloc] initWithBlobManager:self];
+  }
+  [[_bridge webSocketModule] setContentHandler:_contentHandler forSocketID:socketID];
+}
+
+RCT_EXPORT_METHOD(disableBlobSupport:(nonnull NSNumber *)socketID)
+{
+  [[_bridge webSocketModule] setContentHandler:nil forSocketID:socketID];
+}
+
+RCT_EXPORT_METHOD(sendBlob:(NSDictionary *)blob socketID:(nonnull NSNumber *)socketID)
+{
+  [[_bridge webSocketModule] sendData:[self resolve:blob] forSocketID:socketID];
+}
+
+RCT_EXPORT_METHOD(createFromParts:(NSArray<NSDictionary<NSString *, id> *> *)parts withId:(NSString *)blobId)
+{
+  NSMutableData *data = [NSMutableData new];
+  for (NSDictionary<NSString *, id> *part in parts) {
+    NSData *partData = [self resolve:part];
+    [data appendData:partData];
+  }
+  [self store:data withId:blobId];
+>>>>>>> master
 }
 
 RCT_EXPORT_METHOD(release:(NSString *)blobId)
@@ -159,12 +227,40 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
 
 @end
 
+<<<<<<< HEAD
 
 @implementation RCTBridge (RCTBlobManager)
 
 - (RCTBlobManager *)blobs
 {
   return [self moduleForClass:[RCTBlobManager class]];
+=======
+@implementation _RCTBlobContentHandler {
+  __weak RCTBlobManager *_blobManager;
+}
+
+- (instancetype)initWithBlobManager:(RCTBlobManager *)blobManager
+{
+  if (self = [super init]) {
+    _blobManager = blobManager;
+  }
+  return self;
+}
+
+- (id)processMessage:(id)message forSocketID:(NSNumber *)socketID withType:(NSString *__autoreleasing _Nonnull *)type
+{
+  if (![message isKindOfClass:[NSData class]]) {
+    *type = @"text";
+    return message;
+  }
+
+  *type = @"blob";
+  return @{
+     @"blobId": [_blobManager store:message],
+     @"offset": @0,
+     @"size": @(((NSData *)message).length),
+   };
+>>>>>>> master
 }
 
 @end

@@ -59,7 +59,7 @@ typedef id<RCTBridgeModule>(^RCTBridgeModuleProvider)(void);
 /**
  * Returns YES if module instance must be created on the main thread.
  */
-@property (nonatomic, assign, readonly) BOOL requiresMainQueueSetup;
+@property (nonatomic, assign) BOOL requiresMainQueueSetup;
 
 /**
  * Returns YES if module has constants to export.

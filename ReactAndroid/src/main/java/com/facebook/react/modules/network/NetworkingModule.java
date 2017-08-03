@@ -406,6 +406,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
               }
 
               // Otherwise send the data in one big chunk, in the format that JS requested.
+              String responseString = "";
               if (responseType.equals("blob")) {
                 byte[] data = responseBody.bytes();
                 WritableMap blob = Arguments.createMap();
@@ -413,14 +414,22 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
                 blob.putInt("offset", 0);
                 blob.putInt("size", data.length);
                 ResponseUtil.onDataReceived(eventEmitter, requestId, blob);
-              } else {
-                String responseString = "";
-                if (responseType.equals("text")) {
+              } else if (responseType.equals("text")) {
+                try {
                   responseString = responseBody.string();
-                } else if (responseType.equals("base64")) {
-                  responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
+                } catch (IOException e) {
+                  if (response.request().method().equalsIgnoreCase("HEAD")) {
+                    // The request is an `HEAD` and the body is empty,
+                    // the OkHttp will produce an exception.
+                    // Ignore the exception to not invalidate the request in the
+                    // Javascript layer.
+                    // Introduced to fix issue #7463.
+                  } else {
+                    ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+                  }
                 }
-                ResponseUtil.onDataReceived(eventEmitter, requestId, responseString);
+              } else if (responseType.equals("base64")) {
+                responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
               }
               ResponseUtil.onRequestSuccess(eventEmitter, requestId);
             } catch (IOException e) {

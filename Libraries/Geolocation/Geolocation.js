@@ -27,10 +27,11 @@ var subscriptions = [];
 var updatesEnabled = false;
 
 type GeoOptions = {
-  timeout: number,
-  maximumAge: number,
-  enableHighAccuracy: bool,
+  timeout?: number,
+  maximumAge?: number,
+  enableHighAccuracy?: bool,
   distanceFilter: number,
+  useSignificantChanges?: bool,
 }
 
 /**
@@ -124,7 +125,7 @@ var Geolocation = {
 
   /*
    * Invokes the success callback whenever the location changes.  Supported
-   * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool), distanceFilter(m)
+   * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool), distanceFilter(m), useSignificantChanges (bool)
    */
   watchPosition: function(success: Function, error?: Function, options?: GeoOptions): number {
     if (!updatesEnabled) {
@@ -175,7 +176,7 @@ var Geolocation = {
       for (var ii = 0; ii < subscriptions.length; ii++) {
         var sub = subscriptions[ii];
         if (sub) {
-          warning('Called stopObserving with existing subscriptions.');
+          warning(false, 'Called stopObserving with existing subscriptions.');
           sub[0].remove();
           // array element refinements not yet enabled in Flow
           var sub1 = sub[1]; sub1 && sub1.remove();

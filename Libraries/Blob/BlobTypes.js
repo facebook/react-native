@@ -6,27 +6,20 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
+ * @providesModule BlobTypes
  * @flow
  */
 
-export type BlobData = {
-  /*
-   * Unique id to identify the blob on native side
-   */
-  blobId: string;
-  /*
-   * Offset to indicate part of blob, used when sliced
-   */
-  offset: number;
+'use strict';
 
-  size: number;
-  type?: string;
-  name?: string;
-  lastModified?: number;
+export type BlobProps = {
+  blobId: string,
+  offset: number,
+  size: number,
+  type?: string,
 };
 
-
-export type BlobOptions = {
-  type: string;
-  endings: "transparent" | "native";
-}
+export type FileProps = BlobProps & {
+  name: string,
+  lastModified: number,
+};

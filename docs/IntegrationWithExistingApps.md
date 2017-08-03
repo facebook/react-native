@@ -223,7 +223,7 @@ target 'NumberTileGame' do
     # Add any other subspecs you want to use in your project
   ]
   # Explicitly include Yoga if you are using RN >= 0.42.0
-  pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
+  pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
 
 end
 ```
@@ -244,6 +244,7 @@ target 'swift-2048' do
   # but if not, adjust the `:path` accordingly
   pod 'React', :path => '../node_modules/react-native', :subspecs => [
     'Core',
+    'CxxBridge', # Include this for RN >= 0.47
     'DevSupport', # Include this to enable In-App Devmenu if RN >= 0.43
     'RCTText',
     'RCTNetwork',
@@ -350,7 +351,7 @@ const styles = StyleSheet.create({
 });
 
 // Module name
-AppRegistry.registerComponent('AwesomeProject', () => RNHighScores);
+AppRegistry.registerComponent('MyReactNativeApp', () => RNHighScores);
 ```
 
 > `RNHighScores` is the name of your module that will be used when you add a view to React Native from within your iOS application.
@@ -627,7 +628,7 @@ var styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('AwesomeProject', () => HelloWorld);
+AppRegistry.registerComponent('MyReactNativeApp', () => HelloWorld);
 ```
 
 ##### 3. Configure permissions for development error overlay
@@ -683,7 +684,7 @@ public class MyReactActivity extends Activity implements DefaultHardwareBackBtnH
                 .setUseDeveloperSupport(BuildConfig.DEBUG)
                 .setInitialLifecycleState(LifecycleState.RESUMED)
                 .build();
-        mReactRootView.startReactApplication(mReactInstanceManager, "HelloWorld", null);
+        mReactRootView.startReactApplication(mReactInstanceManager, "MyReactNativeApp", null);
 
         setContentView(mReactRootView);
     }

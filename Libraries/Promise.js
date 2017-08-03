@@ -13,8 +13,6 @@
 
 const Promise = require('fbjs/lib/Promise.native');
 
-const prettyFormat = require('pretty-format');
-
 if (__DEV__) {
   require('promise/setimmediate/rejection-tracking').enable({
     allRejections: true,
@@ -27,7 +25,7 @@ if (__DEV__) {
         message = Error.prototype.toString.call(error);
         stack = error.stack;
       } else {
-        message = prettyFormat(error);
+        message = require('pretty-format')(error);
       }
 
       const warning =
