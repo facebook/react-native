@@ -13,22 +13,4 @@
 
 @interface RCTBlobManager : NSObject <RCTBridgeModule, RCTURLRequestHandler>
 
-<<<<<<< HEAD
-- (NSString *)store:(NSData *)data;
-
-- (NSData *)resolve:(NSDictionary<NSString *, id> *)blob;
-
-- (NSData *)resolve:(NSString *)blobId offset:(NSInteger)offset size:(NSInteger)size;
-
-- (void)release:(NSString *)blobId;
-
-@end
-
-
-@interface RCTBridge (RCTBlobManager)
-
-@property (nonatomic, readonly) RCTBlobManager *blobs;
-
-=======
->>>>>>> master
 @end

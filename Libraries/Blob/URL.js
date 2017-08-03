@@ -9,19 +9,12 @@
  * @providesModule URL
  * @flow
  */
-<<<<<<< HEAD
-'use strict';
-
-const Blob = require('Blob');
-const { BlobModule } = require('react-native').NativeModules;
-=======
 
 'use strict';
 
 const Blob = require('Blob');
 
 const { BlobModule } = require('NativeModules');
->>>>>>> master
 
 let BLOB_URL_PREFIX = null;
 
@@ -47,12 +40,8 @@ if (typeof BlobModule.BLOB_URI_SCHEME === 'string') {
  *   </application>
  * </manifest>
  * ```
-<<<<<<< HEAD
- * And then define the `blob_provider_authority` string in `res/values/strings.xml`. Use a dotted name that's entirely unique to your app:
-=======
  * And then define the `blob_provider_authority` string in `res/values/strings.xml`.
  * Use a dotted name that's entirely unique to your app:
->>>>>>> master
  *
  * ```xml
  * <resources>
@@ -62,22 +51,14 @@ if (typeof BlobModule.BLOB_URI_SCHEME === 'string') {
  */
 class URL {
   constructor() {
-<<<<<<< HEAD
     throw new Error('Creating URL objects is not supported yet.');
-=======
-    throw new Error('Creating BlobURL objects is not supported yet.');
->>>>>>> master
   }
 
   static createObjectURL(blob: Blob) {
     if (BLOB_URL_PREFIX === null) {
       throw new Error('Cannot create URL for blob!');
     }
-<<<<<<< HEAD
-    return `${BLOB_URL_PREFIX}${blob.data.blobId}?offset=${blob.data.offset}&size=${blob.size}`;
-=======
     return `${BLOB_URL_PREFIX}${blob.blobId}?offset=${blob.offset}&size=${blob.size}`;
->>>>>>> master
   }
 
   static revokeObjectURL(url: string) {

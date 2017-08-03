@@ -19,6 +19,8 @@
 
 RCT_EXPORT_MODULE(FileReaderModule)
 
+@synthesize bridge = _bridge;
+
 RCT_EXPORT_METHOD(readAsText:(NSDictionary<NSString *, id> *)blob
                   encoding:(NSString *)encoding
                   resolve:(RCTPromiseResolveBlock)resolve

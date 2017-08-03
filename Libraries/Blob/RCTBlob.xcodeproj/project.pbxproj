@@ -7,29 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-<<<<<<< HEAD
-		5241ACAD1EE8595100F67468 /* RCTFileReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 5241ACAC1EE8595100F67468 /* RCTFileReaderModule.m */; };
-		5241ACAE1EE8595100F67468 /* RCTFileReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 5241ACAC1EE8595100F67468 /* RCTFileReaderModule.m */; };
-=======
 		AD0871131E215B28007D136D /* RCTBlobManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
 		AD0871161E215EC9007D136D /* RCTBlobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
 		AD0871181E215ED1007D136D /* RCTBlobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
 		AD08711A1E2162C8007D136D /* RCTBlobManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
->>>>>>> master
 		AD9A43C31DFC7126008DC588 /* RCTBlobManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AD9A43C21DFC7126008DC588 /* RCTBlobManager.m */; };
 		ADD01A711E09404A00F6D226 /* RCTBlobManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AD9A43C21DFC7126008DC588 /* RCTBlobManager.m */; };
+		ADDFBA6C1F33455F0064C998 /* RCTFileReaderModule.h in Headers */ = {isa = PBXBuildFile; fileRef = ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */; };
+		ADDFBA6D1F33455F0064C998 /* RCTFileReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = ADDFBA6B1F33455F0064C998 /* RCTFileReaderModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-<<<<<<< HEAD
-		358F4ED51D1E81A9004DF814 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "include/$(PRODUCT_NAME)";
-			dstSubfolderSpec = 16;
-			files = (
-			);
-=======
 		358F4ED51D1E81A9004DF814 /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -50,52 +38,25 @@
 				AD0871131E215B28007D136D /* RCTBlobManager.h in Copy Headers */,
 			);
 			name = "Copy Headers";
->>>>>>> master
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-<<<<<<< HEAD
-		5241ACAB1EE769AD00F67468 /* libRCTBlob-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTBlob-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		5241ACAC1EE8595100F67468 /* RCTFileReaderModule.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = RCTFileReaderModule.m; sourceTree = "<group>"; tabWidth = 2; };
-		5241ACAF1EE8598200F67468 /* RCTFileReaderModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTFileReaderModule.h; sourceTree = "<group>"; };
-		52F260D91EE7167300F0B7B4 /* libRCTBlob.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTBlob.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBlobManager.h; sourceTree = "<group>"; };
-		AD9A43C21DFC7126008DC588 /* RCTBlobManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBlobManager.m; sourceTree = "<group>"; };
-/* End PBXFileReference section */
-
-/* Begin PBXFrameworksBuildPhase section */
-		358F4ED41D1E81A9004DF814 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
-
-=======
 		358F4ED71D1E81A9004DF814 /* libRCTBlob.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTBlob.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBlobManager.h; sourceTree = "<group>"; };
 		AD9A43C21DFC7126008DC588 /* RCTBlobManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBlobManager.m; sourceTree = "<group>"; };
 		ADD01A681E09402E00F6D226 /* libRCTBlob-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTBlob-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTFileReaderModule.h; sourceTree = "<group>"; };
+		ADDFBA6B1F33455F0064C998 /* RCTFileReaderModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTFileReaderModule.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
->>>>>>> master
 /* Begin PBXGroup section */
 		358F4ECE1D1E81A9004DF814 = {
 			isa = PBXGroup;
 			children = (
-<<<<<<< HEAD
-				5241ACAC1EE8595100F67468 /* RCTFileReaderModule.m */,
-				5241ACAF1EE8598200F67468 /* RCTFileReaderModule.h */,
-				AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */,
-				AD9A43C21DFC7126008DC588 /* RCTBlobManager.m */,
-				52F260D91EE7167300F0B7B4 /* libRCTBlob.a */,
-				5241ACAB1EE769AD00F67468 /* libRCTBlob-tvOS.a */,
-			);
-=======
+				ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */,
+				ADDFBA6B1F33455F0064C998 /* RCTFileReaderModule.m */,
 				AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */,
 				AD9A43C21DFC7126008DC588 /* RCTBlobManager.m */,
 				358F4ED81D1E81A9004DF814 /* Products */,
@@ -112,19 +73,17 @@
 				ADD01A681E09402E00F6D226 /* libRCTBlob-tvOS.a */,
 			);
 			name = Products;
->>>>>>> master
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
-<<<<<<< HEAD
-=======
 /* Begin PBXHeadersBuildPhase section */
 		AD0871151E215EB7007D136D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				AD0871161E215EC9007D136D /* RCTBlobManager.h in Headers */,
+				ADDFBA6C1F33455F0064C998 /* RCTFileReaderModule.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,21 +97,14 @@
 		};
 /* End PBXHeadersBuildPhase section */
 
->>>>>>> master
 /* Begin PBXNativeTarget section */
 		358F4ED61D1E81A9004DF814 /* RCTBlob */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 358F4EE01D1E81A9004DF814 /* Build configuration list for PBXNativeTarget "RCTBlob" */;
 			buildPhases = (
-<<<<<<< HEAD
-				358F4ED31D1E81A9004DF814 /* Sources */,
-				358F4ED41D1E81A9004DF814 /* Frameworks */,
-				358F4ED51D1E81A9004DF814 /* CopyFiles */,
-=======
 				AD0871151E215EB7007D136D /* Headers */,
 				358F4ED51D1E81A9004DF814 /* Copy Headers */,
 				358F4ED31D1E81A9004DF814 /* Sources */,
->>>>>>> master
 			);
 			buildRules = (
 			);
@@ -160,22 +112,15 @@
 			);
 			name = RCTBlob;
 			productName = SLKBlobs;
-<<<<<<< HEAD
-			productReference = 52F260D91EE7167300F0B7B4 /* libRCTBlob.a */;
-=======
 			productReference = 358F4ED71D1E81A9004DF814 /* libRCTBlob.a */;
->>>>>>> master
 			productType = "com.apple.product-type.library.static";
 		};
 		ADD01A671E09402E00F6D226 /* RCTBlob-tvOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = ADD01A6E1E09402E00F6D226 /* Build configuration list for PBXNativeTarget "RCTBlob-tvOS" */;
 			buildPhases = (
-<<<<<<< HEAD
-=======
 				AD0871171E215ECC007D136D /* Headers */,
 				AD0871121E215B16007D136D /* Copy Headers */,
->>>>>>> master
 				ADD01A641E09402E00F6D226 /* Sources */,
 			);
 			buildRules = (
@@ -184,11 +129,7 @@
 			);
 			name = "RCTBlob-tvOS";
 			productName = "RCTBlob-tvOS";
-<<<<<<< HEAD
-			productReference = 5241ACAB1EE769AD00F67468 /* libRCTBlob-tvOS.a */;
-=======
 			productReference = ADD01A681E09402E00F6D226 /* libRCTBlob-tvOS.a */;
->>>>>>> master
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -217,11 +158,7 @@
 				en,
 			);
 			mainGroup = 358F4ECE1D1E81A9004DF814;
-<<<<<<< HEAD
-			productRefGroup = 358F4ECE1D1E81A9004DF814;
-=======
 			productRefGroup = 358F4ED81D1E81A9004DF814 /* Products */;
->>>>>>> master
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -236,10 +173,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-<<<<<<< HEAD
-				5241ACAD1EE8595100F67468 /* RCTFileReaderModule.m in Sources */,
-=======
->>>>>>> master
+				ADDFBA6D1F33455F0064C998 /* RCTFileReaderModule.m in Sources */,
 				AD9A43C31DFC7126008DC588 /* RCTBlobManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -248,10 +182,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-<<<<<<< HEAD
-				5241ACAE1EE8595100F67468 /* RCTFileReaderModule.m in Sources */,
-=======
->>>>>>> master
 				ADD01A711E09404A00F6D226 /* RCTBlobManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -296,18 +226,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-<<<<<<< HEAD
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
-				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = iphoneos;
-=======
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
->>>>>>> master
 			};
 			name = Debug;
 		};
@@ -342,16 +265,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-<<<<<<< HEAD
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				SDKROOT = iphoneos;
-=======
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
->>>>>>> master
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -359,14 +276,6 @@
 		358F4EE11D1E81A9004DF814 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-<<<<<<< HEAD
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/../../React/**",
-					"$(SRCROOT)/../../ReactCommon/**",
-				);
-=======
->>>>>>> master
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -376,14 +285,6 @@
 		358F4EE21D1E81A9004DF814 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-<<<<<<< HEAD
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/../../React/**",
-					"$(SRCROOT)/../../ReactCommon/**",
-				);
-=======
->>>>>>> master
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
