@@ -1,6 +1,6 @@
 ---
 id: more-resources
-title: 그 외 리소스
+title: 기타 리소스
 layout: docs
 category: The Basics
 permalink: docs/more-resources.html
@@ -10,11 +10,11 @@ previous: network
 
 이 웹사이트를 통해 여기까지 잘 따라왔다면, 이제는 꽤 그럴듯한 React Native 앱을 만들 수 있습니다. 하지만, React Native는 단지 한 회사만의 제품이 아니라 수 많은 개발자들이 만들어 나가고 있습니다. React Native에 관심이 있는 개발자라면, 여러분이 보고싶어할 만한 내용이 여기 있습니다.
 
-## 인기있는 라이브러리
+## 많이 쓰이는 라이브러리
 
 React Native를 사용하고 있다면, 이미 [React](https://facebook.github.io/react/)는 알고 있을 것입니다. 그래서 React를 언급하는 것이 조금 우습기도 합니다. 아직 접해보지 않았다면, 모던한 웹사이트를 만드는 최고의 방법인 React를 확인하세요.
 
-한 가지 공통된 질문은 'React Native 애플리케이션의 "state"를 어떻게 관리하느냐' 입니다. 이를 위한 가장 유명한 라이브러리는 [Redux](http://redux.js.org/)입니다. Redux에서 "reducer"라는 용어를 얼마나 자주 쓰는지 두려워 마세요 - 꽤 심플한 라이브러리 이고, 이 내용을 잘 설명해주는 여러 [동영상](https://egghead.io/courses/getting-started-with-redux)이 있습니다.
+한 가지 공통된 질문은 'React Native 애플리케이션의 "state"를 어떻게 관리하느냐' 입니다. 이를 위한 가장 유명한 라이브러리는 [Redux](http://redux.js.org/)입니다. Redux의 'reducer'라는 용어에 겁먹지 마세요. 꽤 심플한 라이브러리고, 이 내용을 잘 설명해주는 여러 [동영상](https://egghead.io/courses/getting-started-with-redux)이 있습니다.
 
 특정 역할을 하는 라이브러리를 찾는다면, 데모, 기사, 기타 자료를 잘 정리해놓은 [Awesome React Native](http://www.awesome-react-native.com/)를 확인하세요.
 
@@ -22,13 +22,13 @@ React Native를 사용하고 있다면, 이미 [React](https://facebook.github.i
 
 React Native에서 구현 가능한 기능을 보려면 [Showcase](https://facebook.github.io/react-native/showcase.html)에 있는 앱을 사용해보세요! [GitHub](https://github.com/ReactNativeNews/React-Native-Apps)에도 예제가 될만한 앱이 정리되어 있습니다. 시뮬레이터나 기기에서 돌려볼 수도 있고, 잘 정리된 소스코드도 볼 수 있습니다.
 
-2016년에 개최된 Facebook의 F8컨퍼런스 앱도 [오픈소스](https://github.com/fbsamples/f8app)이고 [자세한 튜토리얼](http://makeitopen.com/tutorials/building-the-f8-app/planning/)도 있습니다. 여느 샘플앱보다 현실적인 예제를 원하는 분들에게 꽤 유용할 것입니다.
+2016년에 개최된 Facebook의 F8컨퍼런스 앱도 [오픈소스](https://github.com/fbsamples/f8app)고 [자세한 튜토리얼](http://makeitopen.com/tutorials/building-the-f8-app/planning/)도 있습니다. 여느 샘플앱보다 현실적인 예제를 원하는 분들에게 꽤 유용할 것입니다.
 
 ## React Native 확장하기
 
 - 컴포넌트를 찾으시나요? [JS.coach](https://js.coach/react-native)
-- 여러 개발자들이 React Native 모듈을 만들어 npm에 발행하고 GitHub에 오픈 소스로 제공합니다.
-- 모듈을 만들면 React Native 생태계와 커뮤니티가 성장하는데 도움이 됩니다. 당신만의 용도를 위해 모듈을 만들고 npm에서 공유해주세요.
+- 여러 개발자들이 React Native 모듈을 만들어 npm에 배포하고 GitHub에 오픈 소스로 제공합니다.
+- 모듈을 만들면 React Native 생태계와 커뮤니티가 성장하는데 도움이 됩니다. 직접 모듈을 만들어서 npm으로 공유해주세요.
 - native 기능을 확장하는데 관심이 있다면, Native Modules ([iOS](https://facebook.github.io/react-native/docs/native-modules-ios.html), [Android](https://facebook.github.io/react-native/docs/native-modules-android.html))와 Native UI Components ([iOS](https://facebook.github.io/react-native/docs/native-components-ios.html), [Android](https://facebook.github.io/react-native/docs/native-components-android.html))에 있는 가이드 문서를 읽으세요.
 
 
