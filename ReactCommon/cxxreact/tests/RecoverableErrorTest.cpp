@@ -7,7 +7,7 @@
 
 #include <cxxreact/RecoverableError.h>
 
-using namespace facebook::react::detail;
+using namespace facebook::react;
 
 TEST(RecoverableError, RunRethrowingAsRecoverableRecoverTest) {
   try {

@@ -39,15 +39,6 @@ public interface ReactPackage {
   List<NativeModule> createNativeModules(ReactApplicationContext reactContext);
 
   /**
-   * @return list of JS modules to register with the newly created catalyst instance.
-   *
-   * IMPORTANT: Note that only modules that needs to be accessible from the native code should be
-   * listed here. Also listing a native module here doesn't imply that the JS implementation of it
-   * will be automatically included in the JS bundle.
-   */
-  List<Class<? extends JavaScriptModule>> createJSModules();
-
-  /**
    * @return a list of view managers that should be registered with {@link UIManagerModule}
    */
   List<ViewManager> createViewManagers(ReactApplicationContext reactContext);

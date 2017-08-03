@@ -47,6 +47,14 @@ public class ScreenshotingFrameLayout extends FrameLayout {
     canvas.drawBitmap(mBitmap, 0, 0, null);
   }
 
+  public void clean() {
+    if (mBitmap != null) {
+      mBitmap.recycle();
+      mBitmap = null;
+    }
+    mCanvas.setBitmap(null);
+  }
+
   private static Bitmap createNewBitmap(Canvas canvas) {
     return Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
   }

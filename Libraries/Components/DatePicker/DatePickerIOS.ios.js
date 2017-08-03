@@ -15,14 +15,13 @@
 
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const React = require('React');
+const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
-
 const ViewPropTypes = require('ViewPropTypes');
 
+const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
-
-const PropTypes = React.PropTypes;
 
 type DefaultProps = {
   mode: 'date' | 'time' | 'datetime',
@@ -38,7 +37,8 @@ type Event = Object;
  * source of truth.
  */
 // $FlowFixMe(>=0.41.0)
-const DatePickerIOS = React.createClass({
+const DatePickerIOS = createReactClass({
+  displayName: 'DatePickerIOS',
   // TOOD: Put a better type for _picker
   _picker: (undefined: ?$FlowFixMe),
 

@@ -379,7 +379,7 @@ public class ReactTextTest {
       JavaOnlyMap textProps,
       JavaOnlyMap rawTextProps) {
     ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
-    int rootTag = uiManager.addMeasuredRootView(rootView);
+    int rootTag = uiManager.addRootView(rootView);
     int textTag = rootTag + 1;
     int rawTextTag = textTag + 1;
 

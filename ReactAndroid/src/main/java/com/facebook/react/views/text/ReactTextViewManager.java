@@ -157,6 +157,11 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
     view.setIncludeFontPadding(includepad);
   }
 
+  @ReactProp(name = "disabled", defaultBoolean = false)
+  public void setDisabled(ReactTextView view, boolean disabled) {
+    view.setEnabled(!disabled);
+  }
+
   @Override
   public void updateExtraData(ReactTextView view, Object extraData) {
     ReactTextUpdate update = (ReactTextUpdate) extraData;

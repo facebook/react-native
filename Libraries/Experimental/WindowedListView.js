@@ -27,6 +27,8 @@ const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const nullthrows = require('fbjs/lib/nullthrows');
 
+import type {NativeMethodsMixinType} from 'ReactNativeTypes';
+
 const DEBUG = false;
 
 /**
@@ -73,11 +75,15 @@ type Props = {
   /**
    * Rendered when the list is scrolled faster than rows can be rendered.
    */
-  renderWindowBoundaryIndicator?: () => ?React.Element<any>,
+  renderWindowBoundaryIndicator?: (
+    showIndicator: boolean,
+  ) => ?React.Element<any>,
   /**
    * Always rendered at the bottom of all the rows.
    */
-  renderFooter?: () => ?React.Element<any>,
+  renderFooter?: (
+    showFooter: boolean,
+  ) => ?React.Element<any>,
   /**
    * Pipes through normal onScroll events from the underlying `ScrollView`.
    */
@@ -609,7 +615,7 @@ type CellProps = {
 };
 class CellRenderer extends React.Component {
   props: CellProps;
-  _containerRef: View;
+  _containerRef: NativeMethodsMixinType;
   _offscreenRenderDone = false;
   _timeout = 0;
   _lastLayout: ?Object = null;

@@ -672,26 +672,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         return;
       }
 
-      // TODO: remove contentSize from onTextChanged entirely now that onChangeContentSize exists?
-      int contentWidth = mEditText.getWidth();
-      int contentHeight = mEditText.getHeight();
-
-      // Use instead size of text content within EditText when available
-      if (mEditText.getLayout() != null) {
-        contentWidth = mEditText.getCompoundPaddingLeft() + mEditText.getLayout().getWidth() +
-          mEditText.getCompoundPaddingRight();
-        contentHeight = mEditText.getCompoundPaddingTop() + mEditText.getLayout().getHeight() +
-          mEditText.getCompoundPaddingTop();
-      }
-
       // The event that contains the event counter and updates it must be sent first.
       // TODO: t7936714 merge these events
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
               mEditText.getId(),
               s.toString(),
-              PixelUtil.toDIPFromPixel(contentWidth),
-              PixelUtil.toDIPFromPixel(contentHeight),
               mEditText.incrementAndGetEventCounter()));
 
       mEventDispatcher.dispatchEvent(
@@ -742,16 +728,29 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             // Any 'Enter' action will do
             if ((actionId & EditorInfo.IME_MASK_ACTION) > 0 ||
                 actionId == EditorInfo.IME_NULL) {
-              EventDispatcher eventDispatcher =
-                  reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-              eventDispatcher.dispatchEvent(
-                  new ReactTextInputSubmitEditingEvent(
-                      editText.getId(),
-                      editText.getText().toString()));
-            }
+              boolean blurOnSubmit = editText.getBlurOnSubmit();
+              boolean isMultiline = ((editText.getInputType() &
+                InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0);
 
-            if (editText.getBlurOnSubmit()) {
-              editText.clearFocus();
+              // Motivation:
+              // * blurOnSubmit && isMultiline => Generate `submit` event; clear focus; prevent default behaviour (return true);
+              // * blurOnSubmit && !isMultiline => Generate `submit` event; clear focus; prevent default behaviour (return true);
+              // * !blurOnSubmit && isMultiline => Perform default behaviour (return false);
+              // * !blurOnSubmit && !isMultiline => Prevent default behaviour (return true).
+
+              if (blurOnSubmit) {
+                EventDispatcher eventDispatcher =
+                    reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+
+                eventDispatcher.dispatchEvent(
+                    new ReactTextInputSubmitEditingEvent(
+                        editText.getId(),
+                        editText.getText().toString()));
+
+                editText.clearFocus();
+              }
+
+              return blurOnSubmit || !isMultiline;
             }
 
             return true;
@@ -850,11 +849,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           ScrollEventType.SCROLL,
           horiz,
           vert,
+          0f, // can't get x velocity
+          0f, // can't get y velocity
           0, // can't get content width
           0, // can't get content height
           mReactEditText.getWidth(),
-          mReactEditText.getHeight()
-        );
+          mReactEditText.getHeight());
 
         mEventDispatcher.dispatchEvent(event);
 
