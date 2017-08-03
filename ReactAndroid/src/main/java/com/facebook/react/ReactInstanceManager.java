@@ -280,6 +280,9 @@ public class ReactInstanceManager {
 
     // Instantiate ReactChoreographer in UI thread.
     ReactChoreographer.initialize();
+    if (mUseDeveloperSupport) {
+      mDevSupportManager.startInspector();
+    }
   }
 
   public DevSupportManager getDevSupportManager() {
@@ -586,6 +589,7 @@ public class ReactInstanceManager {
 
     if (mUseDeveloperSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
+      mDevSupportManager.stopInspector();
     }
 
     moveToBeforeCreateLifecycleState();

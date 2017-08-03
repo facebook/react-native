@@ -71,8 +71,8 @@ Setter declaration requirements for methods annotated with `@ReactPropGroup` are
 
 ```java
   @ReactProp(name = "src")
-  public void setSrc(ReactImageView view, @Nullable String src) {
-    view.setSource(src);
+  public void setSrc(ReactImageView view, @Nullable ReadableArray sources) {
+    view.setSource(sources);
   }
 
   @ReactProp(name = "borderRadius", defaultFloat = 0f)
