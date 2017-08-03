@@ -15,8 +15,10 @@ const ColorPropType = require('ColorPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
+const PropTypes = require('prop-types');
 const ViewPropTypes = require('ViewPropTypes');
 
+const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
 if (Platform.OS === 'android') {
@@ -71,7 +73,8 @@ if (Platform.OS === 'android') {
  * in the `onRefresh` function otherwise the refresh indicator will stop immediately.
  */
 // $FlowFixMe(>=0.41.0)
-const RefreshControl = React.createClass({
+const RefreshControl = createReactClass({
+  displayName: 'RefreshControl',
   statics: {
     SIZE: RefreshLayoutConsts.SIZE,
   },
@@ -83,11 +86,11 @@ const RefreshControl = React.createClass({
     /**
      * Called when the view starts refreshing.
      */
-    onRefresh: React.PropTypes.func,
+    onRefresh: PropTypes.func,
     /**
      * Whether the view should be indicating an active refresh.
      */
-    refreshing: React.PropTypes.bool.isRequired,
+    refreshing: PropTypes.bool.isRequired,
     /**
      * The color of the refresh indicator.
      * @platform ios
@@ -102,17 +105,17 @@ const RefreshControl = React.createClass({
      * The title displayed under the refresh indicator.
      * @platform ios
      */
-    title: React.PropTypes.string,
+    title: PropTypes.string,
     /**
      * Whether the pull to refresh functionality is enabled.
      * @platform android
      */
-    enabled: React.PropTypes.bool,
+    enabled: PropTypes.bool,
     /**
      * The colors (at least one) that will be used to draw the refresh indicator.
      * @platform android
      */
-    colors: React.PropTypes.arrayOf(ColorPropType),
+    colors: PropTypes.arrayOf(ColorPropType),
     /**
      * The background color of the refresh indicator.
      * @platform android
@@ -122,12 +125,12 @@ const RefreshControl = React.createClass({
      * Size of the refresh indicator, see RefreshControl.SIZE.
      * @platform android
      */
-    size: React.PropTypes.oneOf([RefreshLayoutConsts.SIZE.DEFAULT, RefreshLayoutConsts.SIZE.LARGE]),
+    size: PropTypes.oneOf([RefreshLayoutConsts.SIZE.DEFAULT, RefreshLayoutConsts.SIZE.LARGE]),
     /**
      * Progress view top offset
      * @platform android
      */
-    progressViewOffset: React.PropTypes.number,
+    progressViewOffset: PropTypes.number,
   },
 
   _nativeRef: (null: any),

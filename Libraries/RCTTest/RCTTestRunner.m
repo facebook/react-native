@@ -10,7 +10,6 @@
 #import "RCTTestRunner.h"
 
 #import <React/RCTAssert.h>
-#import <React/RCTBridge+Private.h>
 #import <React/RCTLog.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
@@ -23,12 +22,12 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
 @implementation RCTTestRunner
 {
   FBSnapshotTestController *_testController;
-  RCTBridgeModuleProviderBlock _moduleProvider;
+  RCTBridgeModuleListProvider _moduleProvider;
 }
 
 - (instancetype)initWithApp:(NSString *)app
          referenceDirectory:(NSString *)referenceDirectory
-             moduleProvider:(RCTBridgeModuleProviderBlock)block
+             moduleProvider:(RCTBridgeModuleListProvider)block
 {
   RCTAssertParam(app);
   RCTAssertParam(referenceDirectory);
@@ -97,9 +96,12 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 {
   @autoreleasepool {
     __block NSString *error = nil;
+    RCTLogFunction defaultLogFunction = RCTGetLogFunction();
     RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
       if (level >= RCTLogLevelError) {
         error = message;
+      } else {
+        defaultLogFunction(level, source, fileName, lineNumber, message);
       }
     });
 
@@ -137,13 +139,16 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 
     [rootView removeFromSuperview];
 
-    RCTSetLogFunction(RCTDefaultLogFunction);
+    RCTSetLogFunction(defaultLogFunction);
 
+#if RCT_DEV
     NSArray<UIView *> *nonLayoutSubviews = [vc.view.subviews filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id subview, NSDictionary *bindings) {
       return ![NSStringFromClass([subview class]) isEqualToString:@"_UILayoutGuide"];
     }]];
-    RCTAssert(nonLayoutSubviews.count == 0, @"There shouldn't be any other views: %@", nonLayoutSubviews);
 
+    RCTAssert(nonLayoutSubviews.count == 0, @"There shouldn't be any other views: %@", nonLayoutSubviews);
+#endif
+    
     if (expectErrorBlock) {
       RCTAssert(expectErrorBlock(error), @"Expected an error but nothing matched.");
     } else {

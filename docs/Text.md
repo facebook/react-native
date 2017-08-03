@@ -8,7 +8,7 @@ Both iOS and Android allow you to display formatted text by annotating ranges of
 import React, { Component } from 'react';
 import { AppRegistry, Text } from 'react-native';
 
-class BoldAndBeautiful extends Component {
+export default class BoldAndBeautiful extends Component {
   render() {
     return (
       <Text style={{fontWeight: 'bold'}}>
@@ -21,7 +21,8 @@ class BoldAndBeautiful extends Component {
   }
 }
 
-AppRegistry.registerComponent('BoldAndBeautiful', () => BoldAndBeautiful);
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => BoldAndBeautiful);
 ```
 
 Behind the scenes, React Native converts this to a flat `NSAttributedString` or `SpannableString` that contains the following information:
@@ -40,7 +41,7 @@ On iOS, you can nest views within your Text component. Here's an example:
 import React, { Component } from 'react';
 import { AppRegistry, Text, View } from 'react-native';
 
-class BlueIsCool extends Component {
+export default class BlueIsCool extends Component {
   render() {
     return (
       <Text>
@@ -52,7 +53,8 @@ class BlueIsCool extends Component {
   }
 }
 
-AppRegistry.registerComponent('BlueIsCool', () => BlueIsCool);
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => BlueIsCool);
 ```
 
 > In order to use this feature, you must give the view a `width` and a `height`.

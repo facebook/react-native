@@ -36,7 +36,7 @@ TEST(Value, FromJSON) {
   prepare();
   JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup(false, nullptr, nullptr);
   String s(ctx, "{\"a\": 4}");
-  Value v(Value::fromJSON(ctx, s));
+  Value v(Value::fromJSON(s));
   EXPECT_TRUE(v.isObject());
   JSC_JSGlobalContextRelease(ctx);
 }
@@ -45,7 +45,7 @@ TEST(Value, ToJSONString) {
   prepare();
   JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup(false, nullptr, nullptr);
   String s(ctx, "{\"a\": 4}");
-  Value v(Value::fromJSON(ctx, s));
+  Value v(Value::fromJSON(s));
   folly::dynamic dyn = folly::parseJson(v.toJSONString());
   ASSERT_NE(nullptr, dyn);
   EXPECT_TRUE(dyn.isObject());

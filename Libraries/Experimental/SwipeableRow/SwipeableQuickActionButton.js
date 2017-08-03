@@ -12,14 +12,12 @@
 'use strict';
 
 const Image = require('Image');
+const PropTypes = require('prop-types');
 const React = require('React');
 const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight');
 const View = require('View');
-
 const ViewPropTypes = require('ViewPropTypes');
-
-const {PropTypes} = React;
 
 import type {ImageSource} from 'ImageSource';
 
@@ -32,12 +30,12 @@ class SwipeableQuickActionButton extends React.Component {
   props: {
     accessibilityLabel?: string,
     imageSource: ImageSource | number,
-    imageStyle?: ?View.propTypes.style,
+    imageStyle?: ?ViewPropTypes.style,
     onPress?: Function,
-    style?: ?View.propTypes.style,
+    style?: ?ViewPropTypes.style,
     testID?: string,
     text?: ?(string | Object | Array<string | Object>),
-    textStyle?: ?View.propTypes.style,
+    textStyle?: ?ViewPropTypes.style,
   };
 
   static propTypes = {

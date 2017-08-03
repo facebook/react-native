@@ -24,6 +24,7 @@ class RCTMessageThread : public MessageQueueThread {
   void runOnQueue(std::function<void()>&&) override;
   void runOnQueueSync(std::function<void()>&&) override;
   void quitSynchronous() override;
+  void setRunLoop(NSRunLoop *runLoop);
 
  private:
   void tryFunc(const std::function<void()>& func);

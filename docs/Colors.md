@@ -1,14 +1,14 @@
 ---
 id: colors
-title: Colors
+title: Color Reference
 layout: docs
 category: Guides
 permalink: docs/colors.html
-next: platform-specific-code
-previous: images
+next: integration-with-existing-apps
+previous: direct-manipulation
 ---
 
-Components in React Native are [styled using JavaScript](docs/styles.html). Color properties usually match how [CSS works on the web](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
+Components in React Native are [styled using JavaScript](docs/style.html). Color properties usually match how [CSS works on the web](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
 
 ### Red-green-blue
 
@@ -76,7 +76,6 @@ You can also use color names as values. React Native follows the [CSS3 specifica
 - <color darksalmon /> darksalmon (#e9967a)
 - <color darkseagreen /> darkseagreen (#8fbc8f)
 - <color darkslateblue /> darkslateblue (#483d8b)
-- <color darkslategray /> darkslategray (#2f4f4f)
 - <color darkslategrey /> darkslategrey (#2f4f4f)
 - <color darkturquoise /> darkturquoise (#00ced1)
 - <color darkviolet /> darkviolet (#9400d3)
@@ -118,7 +117,6 @@ You can also use color names as values. React Native follows the [CSS3 specifica
 - <color lightsalmon /> lightsalmon (#ffa07a)
 - <color lightseagreen /> lightseagreen (#20b2aa)
 - <color lightskyblue /> lightskyblue (#87cefa)
-- <color lightslategray /> lightslategray (#778899)
 - <color lightslategrey /> lightslategrey (#778899)
 - <color lightsteelblue /> lightsteelblue (#b0c4de)
 - <color lightyellow /> lightyellow (#ffffe0)
@@ -173,7 +171,6 @@ You can also use color names as values. React Native follows the [CSS3 specifica
 - <color skyblue /> skyblue (#87ceeb)
 - <color slateblue /> slateblue (#6a5acd)
 - <color slategray /> slategray (#708090)
-- <color slategrey /> slategrey (#708090)
 - <color snow /> snow (#fffafa)
 - <color springgreen /> springgreen (#00ff7f)
 - <color steelblue /> steelblue (#4682b4)

@@ -10,14 +10,14 @@ import java.util.Map;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ModuleSpec;
+import com.facebook.react.bridge.ModuleHolder;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.cxxbridge.ModuleHolder;
-import com.facebook.react.cxxbridge.NativeModuleRegistry;
 import com.facebook.react.module.model.ReactModuleInfo;
 
 /**
@@ -62,19 +62,18 @@ public class NativeModuleRegistryBuilder {
             throw new IllegalStateException("Native Java module " + type.getSimpleName() +
               " should be annotated with @ReactModule and added to a @ReactModuleList.");
           }
+          NativeModule module;
           ReactMarker.logMarker(
             ReactMarkerConstants.CREATE_MODULE_START,
             moduleSpec.getType().getName());
-          NativeModule module = moduleSpec.getProvider().get();
-          ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_END);
+          try {
+            module = moduleSpec.getProvider().get();
+          } finally {
+            ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_END);
+          }
           moduleHolder = new ModuleHolder(module);
         } else {
-          moduleHolder = new ModuleHolder(
-            reactModuleInfo.name(),
-            reactModuleInfo.canOverrideExistingModule(),
-            reactModuleInfo.supportsWebWorkers(),
-            reactModuleInfo.needsEagerInit(),
-            moduleSpec.getProvider());
+          moduleHolder = new ModuleHolder(reactModuleInfo, moduleSpec.getProvider());
         }
 
         String name = moduleHolder.getName();

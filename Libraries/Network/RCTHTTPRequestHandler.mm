@@ -9,11 +9,15 @@
 
 #import "RCTHTTPRequestHandler.h"
 
+#import <Security/Security.h>
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import <CoreFoundation/CoreFoundation.h>
 #import <mutex>
 
 #import "RCTNetworking.h"
 
-@interface RCTHTTPRequestHandler () <NSURLSessionDataDelegate>
+@interface RCTHTTPRequestHandler () <NSURLSessionDataDelegate,NSURLSessionTaskDelegate>
 
 @end
 
@@ -63,6 +67,9 @@ RCT_EXPORT_MODULE()
     callbackQueue.maxConcurrentOperationCount = 1;
     callbackQueue.underlyingQueue = [[_bridge networking] methodQueue];
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    [configuration setHTTPShouldSetCookies:YES];
+    [configuration setHTTPCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+    [configuration setHTTPCookieStorage:[NSHTTPCookieStorage sharedHTTPCookieStorage]];
     _session = [NSURLSession sessionWithConfiguration:configuration
                                              delegate:self
                                         delegateQueue:callbackQueue];
@@ -143,5 +150,78 @@ didReceiveResponse:(NSURLResponse *)response
   }
   [delegate URLRequest:task didCompleteWithError:error];
 }
+
+#pragma mark - NSURLSessionTaskDelegate
+- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler
+{
+    __block NSURLCredential *cred;
+    __block NSURLSessionAuthChallengeDisposition disposition;
+    
+    //获取TrustObj
+    SecTrustRef trust = challenge.protectionSpace.serverTrust;
+    
+    //根据认证方式生成证书
+    //判断认证方式
+    if (challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate) {
+        SecIdentityRef clientIdentity = NULL;
+        SecTrustRef clientTrust = NULL;
+        NSString *p12 = [[NSBundle mainBundle] pathForResource:@"client" ofType:@"p12"];
+        NSData *PKCS12Data = [NSData dataWithContentsOfFile:p12];
+        if ([[self class] extractIdentity:&clientIdentity andTrust:&clientTrust fromPKCS12Data:PKCS12Data]) {
+            SecCertificateRef clientCertificate = NULL;
+            SecIdentityCopyCertificate(clientIdentity, &clientCertificate);
+            const void*certs[] = {clientCertificate};
+            CFArrayRef clientCertArray =CFArrayCreate(kCFAllocatorDefault, certs,1,NULL);
+            cred = [NSURLCredential credentialWithIdentity:clientIdentity certificates:(__bridge NSArray*)clientCertArray persistence:NSURLCredentialPersistencePermanent];
+            disposition =NSURLSessionAuthChallengeUseCredential;
+            CFRelease(clientCertArray);
+        }else{
+            cred = NULL;
+            disposition =NSURLSessionAuthChallengeUseCredential;
+        }
+        //    NSLog(@"ClientCertificate credential:%@",cred);
+        
+    }else if (challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust){
+        //需要authentication challenge的protection space提供一个trust
+        cred = [NSURLCredential credentialForTrust:trust];
+        disposition = NSURLSessionAuthChallengeUseCredential;
+        //    NSLog(@"ServerTrust credential:%@",cred);
+        
+    }else{
+        //    cred = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+        //    disposition = NSURLSessionAuthChallengeUseCredential;
+        cred = nil;
+        disposition = NSURLSessionAuthChallengeRejectProtectionSpace;
+        
+        //    NSLog(@"else credential:%@",cred);
+    }
+    
+    completionHandler(disposition,cred);
+}
+
++ (BOOL)extractIdentity:(SecIdentityRef *)outIdentity andTrust:(SecTrustRef *)outTrust fromPKCS12Data:(NSData *)inPKCS12Data
+{
+    OSStatus securityError = errSecSuccess;
+    //client certificate password
+    NSDictionary*optionsDictionary = [NSDictionary dictionaryWithObject:@"rsytaxshyethbuputoerekikasuchei" forKey:(__bridge id)kSecImportExportPassphrase];
+    
+    CFArrayRef items = CFArrayCreate(NULL, 0, 0, NULL);
+    securityError = SecPKCS12Import((__bridge CFDataRef)inPKCS12Data,(__bridge CFDictionaryRef)optionsDictionary,&items);
+    
+    if(securityError == 0) {
+        CFDictionaryRef myIdentityAndTrust = (CFDictionaryRef)CFArrayGetValueAtIndex(items,0);
+        const void*tempIdentity =NULL;
+        tempIdentity= CFDictionaryGetValue (myIdentityAndTrust,kSecImportItemIdentity);
+        *outIdentity = (SecIdentityRef)tempIdentity;
+        const void*tempTrust =NULL;
+        tempTrust = CFDictionaryGetValue(myIdentityAndTrust,kSecImportItemTrust);
+        *outTrust = (SecTrustRef)tempTrust;
+    } else {
+        NSLog(@"Failedwith error code %d",(int)securityError);
+        return NO;
+    }
+    return YES;
+}
+
 
 @end

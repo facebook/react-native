@@ -21,24 +21,27 @@ import com.facebook.common.logging.FLog;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
-import okhttp3.ws.WebSocket;
-import okhttp3.ws.WebSocketCall;
-import okhttp3.ws.WebSocketListener;
-import okio.Buffer;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
 
 /**
  * A wrapper around WebSocketClient that reconnects automatically
  */
-final public class ReconnectingWebSocket implements WebSocketListener {
+final public class ReconnectingWebSocket extends WebSocketListener {
   private static final String TAG = ReconnectingWebSocket.class.getSimpleName();
 
   private static final int RECONNECT_DELAY_MS = 2000;
 
   public interface MessageCallback {
-    void onMessage(ResponseBody message);
+    void onMessage(String text);
+    void onMessage(ByteString bytes);
+  }
+
+  public interface ConnectionCallback {
+    void onConnected();
+    void onDisconnected();
   }
 
   private final String mUrl;
@@ -46,12 +49,17 @@ final public class ReconnectingWebSocket implements WebSocketListener {
   private boolean mClosed = false;
   private boolean mSuppressConnectionErrors;
   private @Nullable WebSocket mWebSocket;
-  private @Nullable MessageCallback mCallback;
+  private @Nullable MessageCallback mMessageCallback;
+  private @Nullable ConnectionCallback mConnectionCallback;
 
-  public ReconnectingWebSocket(String url, MessageCallback callback) {
+  public ReconnectingWebSocket(
+      String url,
+      MessageCallback messageCallback,
+      ConnectionCallback connectionCallback) {
     super();
     mUrl = url;
-    mCallback = callback;
+    mMessageCallback = messageCallback;
+    mConnectionCallback = connectionCallback;
     mHandler = new Handler(Looper.getMainLooper());
   }
 
@@ -67,8 +75,7 @@ final public class ReconnectingWebSocket implements WebSocketListener {
       .build();
 
     Request request = new Request.Builder().url(mUrl).build();
-    WebSocketCall call = WebSocketCall.create(httpClient, request);
-    call.enqueue(this);
+    httpClient.newWebSocket(request, this);
   }
 
   private synchronized void delayedReconnect() {
@@ -101,14 +108,18 @@ final public class ReconnectingWebSocket implements WebSocketListener {
   public void closeQuietly() {
     mClosed = true;
     closeWebSocketQuietly();
-    mCallback = null;
+    mMessageCallback = null;
+
+    if (mConnectionCallback != null) {
+      mConnectionCallback.onDisconnected();
+    }
   }
 
   private void closeWebSocketQuietly() {
     if (mWebSocket != null) {
       try {
         mWebSocket.close(1000, "End of session");
-      } catch (IOException e) {
+      } catch (Exception e) {
         // swallow, no need to handle it here
       }
       mWebSocket = null;
@@ -124,39 +135,61 @@ final public class ReconnectingWebSocket implements WebSocketListener {
   public synchronized void onOpen(WebSocket webSocket, Response response) {
     mWebSocket = webSocket;
     mSuppressConnectionErrors = false;
+
+    if (mConnectionCallback != null) {
+      mConnectionCallback.onConnected();
+    }
   }
 
   @Override
-  public synchronized void onFailure(IOException e, Response response) {
+  public synchronized void onFailure(WebSocket webSocket, Throwable t, Response response) {
     if (mWebSocket != null) {
-      abort("Websocket exception", e);
+      abort("Websocket exception", t);
     }
     if (!mClosed) {
+      if (mConnectionCallback != null) {
+        mConnectionCallback.onDisconnected();
+      }
       reconnect();
     }
   }
 
   @Override
-  public synchronized void onMessage(ResponseBody message) {
-    if (mCallback != null) {
-      mCallback.onMessage(message);
+  public synchronized void onMessage(WebSocket webSocket, String text) {
+    if (mMessageCallback != null) {
+      mMessageCallback.onMessage(text);
     }
   }
 
   @Override
-  public synchronized void onPong(Buffer payload) { }
+  public synchronized void onMessage(WebSocket webSocket, ByteString bytes) {
+    if (mMessageCallback != null) {
+      mMessageCallback.onMessage(bytes);
+    }
+  }
 
   @Override
-  public synchronized void onClose(int code, String reason) {
+  public synchronized void onClosed(WebSocket webSocket, int code, String reason) {
     mWebSocket = null;
     if (!mClosed) {
+      if (mConnectionCallback != null) {
+        mConnectionCallback.onDisconnected();
+      }
       reconnect();
     }
   }
 
-  public synchronized void sendMessage(RequestBody message) throws IOException {
+  public synchronized void sendMessage(String message) throws IOException {
     if (mWebSocket != null) {
-      mWebSocket.sendMessage(message);
+      mWebSocket.send(message);
+    } else {
+      throw new ClosedChannelException();
+    }
+  }
+
+  public synchronized void sendMessage(ByteString message) throws IOException {
+    if (mWebSocket != null) {
+      mWebSocket.send(message);
     } else {
       throw new ClosedChannelException();
     }

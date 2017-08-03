@@ -112,8 +112,8 @@ extern NSString *const RCTContentDidAppearNotification;
 
 /**
  * Calling this will result in emitting a "touches cancelled" event to js,
- * which effectively cancels all js "gesture recognizers" such as as touchable
- * (unless they explicitely ignore cancellation events, but noone should do that).
+ * which effectively cancels all js "gesture recognizers" such as touchable components
+ * (unless they explicitely ignore cancellation events, but no one should do that).
  *
  * This API is exposed for integration purposes where you embed RN rootView
  * in a native view with a native gesture recognizer,

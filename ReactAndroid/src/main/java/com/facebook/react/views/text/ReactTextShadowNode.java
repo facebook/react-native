@@ -35,7 +35,7 @@ import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -225,7 +225,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       new YogaMeasureFunction() {
         @Override
         public long measure(
-            YogaNodeAPI node,
+            YogaNode node,
             float width,
             YogaMeasureMode widthMode,
             float height,
@@ -339,7 +339,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   protected int mNumberOfLines = UNSET;
   protected int mFontSize = UNSET;
   protected float mFontSizeInput = UNSET;
-  protected int mLineHeightInput = UNSET;
+  protected float mLineHeightInput = UNSET;
   protected int mTextAlign = Gravity.NO_GRAVITY;
   protected int mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
       0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
@@ -441,8 +441,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
-  @ReactProp(name = ViewProps.LINE_HEIGHT, defaultInt = UNSET)
-  public void setLineHeight(int lineHeight) {
+  @ReactProp(name = ViewProps.LINE_HEIGHT, defaultFloat = UNSET)
+  public void setLineHeight(float lineHeight) {
     mLineHeightInput = lineHeight;
     if (lineHeight == UNSET) {
       mLineHeight = Float.NaN;

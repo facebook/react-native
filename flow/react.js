@@ -7,10 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @flow
- * @nolint
  */
-
-/* eslint-disable */
 
 // Temporary patches for React.Component and React.Element.
 declare var ReactComponent: typeof React$Component;
