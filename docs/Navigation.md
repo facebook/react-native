@@ -30,6 +30,7 @@ npm install --save react-navigation
 Then you can quickly create an app with a home screen and a profile screen:
 
 ```
+/* from App.js */
 import {
   StackNavigator,
 } from 'react-navigation';
@@ -39,11 +40,30 @@ const App = StackNavigator({
   Profile: { screen: ProfileScreen },
 });
 ```
+Now we need HomeScreen and ProfileScreen components to be imported. We will be making these two components in a separate folder `components` in root dir.
+After importing StackNavigator from react-navigation module and screens from `components` folder your `App.js` file will be:
+```
+import React from 'react';
+import { StackNavigator } from 'react-navigation';
+import HomeScreen from './components/HomeScreen';
+import ProfileScreen from './components/ProfileScreen';
+
+const App = StackNavigator({
+  Home: { screen: HomeScreen },
+  Profile: { screen: ProfileScreen }
+});
+
+export default App;
+```
 
 Each screen component can set navigation options such as the header title. It can use action creators on the `navigation` prop to link to other screens:
 
 ```
-class HomeScreen extends React.Component {
+/* from ./components/HomeScreen.js */
+import React from 'react';
+import { Button } from 'react-native';
+
+export default class HomeScreen extends React.Component {
   static navigationOptions = {
     title: 'Welcome',
   };
@@ -57,6 +77,22 @@ class HomeScreen extends React.Component {
         }
       />
     );
+  }
+}
+```
+Now it's time to jump to Profile Screen
+```
+/* from ./components/ProfileScreen.js */
+import React from 'react';
+import { Text } from 'react-native';
+
+export default class ProfileScreen extends React.Component {
+  static navigationOptions = {
+    title: 'Profile',
+  };
+  render(){
+    const { state } = this.props.navigation;
+    return <Text>Hello, {state.params.name}!</Text>
   }
 }
 ```
