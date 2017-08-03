@@ -14,6 +14,8 @@ const denodeify = require('denodeify');
 const fs = require('fs');
 const path = require('path');
 
+const {ASSET_REGISTRY_PATH} = require('../core/Constants');
+
 function dependencies(argv, config, args, packagerInstance) {
   const rootModuleAbsolutePath = args.entryFile;
   if (!fs.existsSync(rootModuleAbsolutePath)) {
@@ -26,6 +28,7 @@ function dependencies(argv, config, args, packagerInstance) {
       undefined;
 
   const packageOpts = {
+    assetRegistryPath: ASSET_REGISTRY_PATH,
     projectRoots: config.getProjectRoots(),
     blacklistRE: config.getBlacklistRE(),
     getPolyfills: config.getPolyfills,

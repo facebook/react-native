@@ -217,8 +217,8 @@ type DefaultProps = typeof defaultProps;
  * Simple Examples:
  *
  *     <SectionList
- *       renderItem={({item}) => <ListItem title={item.title} />}
- *       renderSectionHeader={({section}) => <H1 title={section.title} />}
+ *       renderItem={({item}) => <ListItem title={item} />}
+ *       renderSectionHeader={({section}) => <Header title={section.title} />}
  *       sections={[ // homogenous rendering between sections
  *         {data: [...], title: ...},
  *         {data: [...], title: ...},
@@ -228,9 +228,9 @@ type DefaultProps = typeof defaultProps;
  *
  *     <SectionList
  *       sections={[ // heterogeneous rendering between sections
- *         {data: [...], title: ..., renderItem: ...},
- *         {data: [...], title: ..., renderItem: ...},
- *         {data: [...], title: ..., renderItem: ...},
+ *         {data: [...], renderItem: ...},
+ *         {data: [...], renderItem: ...},
+ *         {data: [...], renderItem: ...},
  *       ]}
  *     />
  *
@@ -314,6 +314,13 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
     const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
     if (listRef) {
       return listRef.getScrollableNode();
+    }
+  }
+
+  setNativeProps(props: Object) {
+    const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
+    if (listRef) {
+      listRef.setNativeProps(props);
     }
   }
 

@@ -136,7 +136,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
     method = buildDefaultMethodWithMethodSignature(methodSignature);
   }));
 
-  XCTAssertEqualObjects(method.JSMethodName, @"doFoo");
+  XCTAssertEqualObjects(@(method.JSMethodName), @"doFoo");
 
   XCTAssertFalse(RCTLogsError(^{
     [method invokeWithBridge:nil module:self arguments:@[@"bar"]];

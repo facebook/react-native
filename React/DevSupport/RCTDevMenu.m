@@ -16,7 +16,7 @@
 
 #if RCT_DEV
 
-static NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
+NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
 @implementation UIWindow (RCTDevMenu)
 

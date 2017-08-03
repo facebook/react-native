@@ -341,7 +341,7 @@ Your enum will then be automatically unwrapped using the selector provided (`int
 
 ## Sending Events to JavaScript
 
-The native module can signal events to JavaScript without being invoked directly. The preferred way to do this is to subclass `RCTEventEmitter`, implement `suppportEvents` and call `self sendEventWithName`:
+The native module can signal events to JavaScript without being invoked directly. The preferred way to do this is to subclass `RCTEventEmitter`, implement `supportedEvents` and call `self sendEventWithName`:
 
 ```objectivec
 // CalendarManager.h
