@@ -1,6 +1,6 @@
 ---
 id: network
-title: Networking
+title: 네트워킹
 layout: docs
 category: The Basics
 permalink: docs/network.html
@@ -8,21 +8,21 @@ next: more-resources
 previous: using-a-listview
 ---
 
-Many mobile apps need to load resources from a remote URL. You may want to make a POST request to a REST API, or you may simply need to fetch a chunk of static content from another server.
+대다수의 모바일 앱들은 외부 URL로부터 데이터를 가져와야 합니다. REST API로 POST 요청을 만들거나 간단히 다른 서버로부터 정적 콘텐츠를 가져오고 싶을 때도 있을 것입니다.
 
-## Using Fetch
+## Fetch 사용하기
 
-React Native provides the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) for your networking needs. Fetch will seem familiar if you have used `XMLHttpRequest` or other networking APIs before. You may refer to MDN's guide on [Using Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch) for additional information.
+React Native는 네트워킹 시 [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)를 제공합니다. 이전에 `XMLHttpRequest`나 다른 네트워킹 API를 써봤다면 Fetch가 익숙하게 느껴질 것입니다. 자세한 정보는 [Using Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)에 대한 MDN 가이드를 참조하시길 바랍니다.
 
-#### Making requests
+#### 요청하기
 
-In order to fetch content from an arbitrary URL, just pass the URL to fetch:
+임의의 URL로부터 데이터를 가져오기 위해서는 URL을 fetch에 전달해주기만 하면 됩니다.
 
 ```js
-fetch('https://mywebsite.com/mydata.json')
+fetch('https//mywebsite.com/mydata.json')
 ```
 
-Fetch also takes an optional second argument that allows you to customize the HTTP request. You may want to specify additional headers, or make a POST request:
+또한, Fetch는 두 번째 인수에 HTTP 요청을 커스터마이징 할 수 있는 옵션을 설정할 수 있으며, 아래와 같이 헤더를 추가하거나 POST 요청을 만들 수도 있습니다.
 
 ```js
 fetch('https://mywebsite.com/endpoint/', {
@@ -38,13 +38,14 @@ fetch('https://mywebsite.com/endpoint/', {
 })
 ```
 
-Take a look at the [Fetch Request docs](https://developer.mozilla.org/en-US/docs/Web/API/Request) for a full list of properties.
 
-#### Handling the response
+전체 속성에 대한 정보를 보려면 [Fetch Request Docs](https://developer.mozilla.org/en-US/docs/Web/API/Request)를 살펴보시길 바랍니다.
 
-The above examples show how you can make a request. In many cases, you will want to do something with the response.
+#### 응답 처리하기
 
-Networking is an inherently asynchronous operation. Fetch methods will return a  [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that makes it straightforward to write code that works in an asynchronous manner:
+위의 예제들은 요청하는 방법에 대해 보여줬습니다. 대부분의 경우, 응답받은 결과를 토대로 작업을 진행합니다.
+
+네트워킹은 본질적으로 비동기식 작업입니다. Fetch 메소드는 비동기 방식으로 작동하는 코드인 [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)를 반환할 것입니다.
 
   ```js
   function getMoviesFromApiAsync() {
@@ -59,7 +60,7 @@ Networking is an inherently asynchronous operation. Fetch methods will return a 
   }
   ```
 
-You can also use the proposed ES2017 `async`/`await` syntax in a React Native app:
+또한, React Native 앱에선 ES2017 `async`/`await` 문법을 사용할 수 있습니다.
 
   ```js
   async function getMoviesFromApi() {
@@ -73,7 +74,7 @@ You can also use the proposed ES2017 `async`/`await` syntax in a React Native ap
   }
   ```
 
-Don't forget to catch any errors that may be thrown by `fetch`, otherwise they will be dropped silently.
+`fetch`에서 발생할 수 있는 오류를 catch 하는 것을 잊지 마세요.
 
 ```SnackPlayer?name=Fetch%20Example
 import React, { Component } from 'react';
@@ -96,7 +97,7 @@ export default class Movies extends Component {
           isLoading: false,
           dataSource: ds.cloneWithRows(responseJson.movies),
         }, function() {
-          // do something with new state
+          // 새 state로 작업하기
         });
       })
       .catch((error) => {
@@ -124,12 +125,11 @@ export default class Movies extends Component {
   }
 }
 ```
+> 기본적으로, iOS에서는 SSL로 암호화되지 않은 요청은 모두 막혀있습니다. 만약 평문 통신을 하는 URL (`http` 같은)로 가져와야 한다면 먼저 App Transport Security exception에 URL을 추가해줘야 합니다. 어떤 도메인에 접근해야 하는지 미리 아는 경우엔 해당 도메인에 대한 예외만 추가하는 것이 안전합니다. 그러나 런타임까지 도메인을 알 수 없는 경우 [disable ATS completely](docs/integration-with-existing-apps.html#app-transport-security) 링크를 참고해주세요. 2017년 1월 문서에 따르면, [애플의 앱스토어는 ATS를 비활성화한 앱에 대해서 합리적인 이유를 조사](https://forums.developer.apple.com/thread/48979)한다고 합니다. 자세한 정보는 [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW33) 이곳에서 확인하시길 바랍니다.
 
-> By default, iOS will block any request that's not encrypted using SSL. If you need to fetch from a cleartext URL (one that begins with `http`) you will first need to add an App Transport Security exception. If you know ahead of time what domains you will need access to, it is more secure to add exceptions just for those domains; if the domains are not known until runtime you can [disable ATS completely](docs/integration-with-existing-apps.html#app-transport-security). Note however that from January 2017, [Apple's App Store review will require reasonable justification for disabling ATS](https://forums.developer.apple.com/thread/48979). See [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW33) for more information.
+### 다른 네트워킹 라이브러리
 
-### Using Other Networking Libraries
-
-The [XMLHttpRequest API](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) is built in to React Native. This means that you can use third party libraries such as [frisbee](https://github.com/niftylettuce/frisbee) or [axios](https://github.com/mzabriskie/axios) that depend on it, or you can use the XMLHttpRequest API directly if you prefer.
+[XMLHttpRequest API](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)는 React Native 안에 내장된 API입니다. 즉, [axios](https://github.com/mzabriskie/axios)와 [frisbee](https://github.com/niftylettuce/frisbee) 같은 써드파티 라이브러리를 사용할 수 있으며, 원하는 경우 직접 XMLHttpRequest API를 사용할 수 있습니다.
 
 ```js
 var request = new XMLHttpRequest();
@@ -149,36 +149,36 @@ request.open('GET', 'https://mywebsite.com/endpoint/');
 request.send();
 ```
 
-> The security model for XMLHttpRequest is different than on web as there is no concept of [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing) in native apps.
+>네이티브 앱에 [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing) 개념이 없으므로 XMLHttpRequest의 보안 모델은 웹과 다릅니다.
 
-## WebSocket Support
+## 웹소켓 지원
 
-React Native also supports [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket), a protocol which provides full-duplex communication channels over a single TCP connection.
+React Native는 단일 TCP 연결을 통해 full-duplex 통신 채널을 제공하는 프로토콜인 [웹소켓](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)도 지원합니다.
 
 ```js
 var ws = new WebSocket('ws://host.com/path');
 
 ws.onopen = () => {
-  // connection opened
-  ws.send('something'); // send a message
+  // 연결 열림.
+  ws.send('something'); // 메시지 보냄.
 };
 
 ws.onmessage = (e) => {
-  // a message was received
+  // 메세지 들어옴.
   console.log(e.data);
 };
 
 ws.onerror = (e) => {
-  // an error occurred
+  // 오류 발생.
   console.log(e.message);
 };
 
 ws.onclose = (e) => {
-  // connection closed
+  // 연결 닫힘.
   console.log(e.code, e.reason);
 };
 ```
 
-## High Five!
+## 짱짱맨!
 
-If you've gotten here by reading linearly through the tutorial, then you are a pretty impressive human being. Congratulations. Next, you might want to check out [all the cool stuff the community does with React Native](docs/more-resources.html).
+축하합니다! 만약 처음부터 순서대로 튜토리얼을 진행하셨다면, 이미 여러분은 훌륭한 개발자입니다. [all the cool stuff the community does with React Native](docs/more-resources.html)에서 유용한 정보들을 확인하시길 바랍니다.
