@@ -153,7 +153,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
 
   close(code?: number, reason?: string): void {
     if (this.readyState === this.CLOSING ||
-      this.readyState === this.CLOSED) {
+        this.readyState === this.CLOSED) {
       return;
     }
 
@@ -188,7 +188,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
 
   ping(): void {
     if (this.readyState === this.CONNECTING) {
-      throw new Error('INVALID_STATE_ERR');
+        throw new Error('INVALID_STATE_ERR');
     }
 
     WebSocketModule.ping(this._socketId);
