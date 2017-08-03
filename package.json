@@ -198,7 +198,7 @@
     "eslint-plugin-flowtype": "^2.33.0",
     "eslint-plugin-prettier": "2.1.1",
     "eslint-plugin-react": "^7.0.1",
-    "flow-bin": "^0.51.0",
+    "flow-bin": "^0.52.0",
     "jest": "20.1.0-delta.4",
     "jest-phabricator": "20.1.0-delta.4",
     "jest-repl": "20.1.0-delta.4",
