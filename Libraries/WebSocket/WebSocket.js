@@ -101,16 +101,16 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
 
     const { headers = {}, origin, ...unrecognized } = options || {};
 
-    // Preserve deprecated backwards compatibility for 'options.origin'
+    // Preserve deprecated backwards compatibility for the 'origin' option
     if (origin && typeof origin === 'string') {
-      console.warn(`Specifying "origin" as a WebSocket connection option is deprecated. Include it under "headers" instead.`);
+      console.warn('Specifying `origin` as a WebSocket connection option is deprecated. Include it under `headers` instead.');
       headers.origin = origin;
     }
 
     // Warn about and discard anything else
     if (Object.keys(unrecognized).length > 0) {
-      console.warn(`Unrecognized WebSocket connection option(s) "${Object.keys(unrecognized).join(`", "`)}". `
-        + `Did you mean to put these under "headers"?`);
+      console.warn('Unrecognized WebSocket connection option(s) `' + Object.keys(unrecognized).join('`, `') + '`. '
+        + 'Did you mean to put these under `headers`?');
     }
 
     if (!Array.isArray(protocols)) {
