@@ -125,7 +125,7 @@ export default class Movies extends Component {
   }
 }
 ```
-> 기본적으로, iOS에서는 SSL로 암호화되지 않은 요청은 모두 막혀있습니다. 만약 평문 통신을 하는 URL (`http` 같은)로 가져와야 한다면 먼저 App Transport Security exception에 URL을 추가해줘야 합니다. 어떤 도메인에 접근해야 하는지 미리 아는 경우엔 해당 도메인에 대한 예외만 추가하는 것이 안전합니다. 그러나 런타임까지 도메인을 모른다면 [disable ATS completely](docs/integration-with-existing-apps.html#app-transport-security) 링크를 참고해주세요. 2017년 1월 문서에 따르면, [애플의 앱스토어는 ATS를 비활성화한 앱에 대해서 합리적인 이유를 조사](https://forums.developer.apple.com/thread/48979)한다고 합니다. 자세한 정보는 [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW33) 이곳에서 확인하시길 바랍니다.
+> 기본적으로, iOS에서는 SSL로 암호화되지 않은 요청은 모두 막혀있습니다. 만약 평문 통신을 하는 URL (`http` 같은)로 가져와야 한다면 먼저 App Transport Security exception에 URL을 추가해줘야 합니다. 어떤 도메인에 접근해야 하는지 미리 아는 경우엔 해당 도메인에 대한 예외만 추가하는 것이 안전합니다. 그러나 런타임까지 도메인을 알 수 없는 경우 [disable ATS completely](docs/integration-with-existing-apps.html#app-transport-security) 링크를 참고해주세요. 2017년 1월 문서에 따르면, [애플의 앱스토어는 ATS를 비활성화한 앱에 대해서 합리적인 이유를 조사](https://forums.developer.apple.com/thread/48979)한다고 합니다. 자세한 정보는 [Apple's documentation](https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW33) 이곳에서 확인하시길 바랍니다.
 
 ### 다른 네트워킹 라이브러리
 
@@ -149,7 +149,7 @@ request.open('GET', 'https://mywebsite.com/endpoint/');
 request.send();
 ```
 
-> XMLHttpRequest의 보안 모델은 네이티브 앱에 [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing) 개념이 없으므로 웹과 다릅니다.
+>네이티브 앱에 [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing) 개념이 없으므로 XMLHttpRequest의 보안 모델은 웹과 다릅니다.
 
 ## 웹소켓 지원
 
@@ -181,4 +181,4 @@ ws.onclose = (e) => {
 
 ## 짱짱맨!
 
-만약 처음부터 순서대로 튜토리얼을 진행하셨다면, 이미 당신은 훌륭한 개발자입니다. 축하합니다! 다음으로 [all the cool stuff the community does with React Native](docs/more-resources.html)에서 유용한 정보들을 확인하시길 바랍니다.
+축하합니다! 만약 처음부터 순서대로 튜토리얼을 진행하셨다면, 이미 여러분은 훌륭한 개발자입니다. [all the cool stuff the community does with React Native](docs/more-resources.html)에서 유용한 정보들을 확인하시길 바랍니다.
