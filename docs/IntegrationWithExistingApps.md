@@ -1,6 +1,6 @@
 ---
 id: integration-with-existing-apps
-title: Integration With Existing Apps
+title: Integration with Existing Apps
 layout: docs
 category: Guides
 permalink: docs/integration-with-existing-apps.html
