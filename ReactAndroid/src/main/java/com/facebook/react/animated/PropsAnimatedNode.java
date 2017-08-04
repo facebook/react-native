@@ -9,7 +9,6 @@
 
 package com.facebook.react.animated;
 
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -28,78 +27,47 @@ import javax.annotation.Nullable;
  */
 /*package*/ class PropsAnimatedNode extends AnimatedNode {
 
-  private int mConnectedViewTag = -1;
-  private final NativeAnimatedNodesManager mNativeAnimatedNodesManager;
-  private final UIImplementation mUIImplementation;
-  private final Map<String, Integer> mPropNodeMapping;
-  // This is the backing map for `mDiffMap` we can mutate this to update it instead of having to
-  // create a new one for each update.
-  private final JavaOnlyMap mPropMap;
-  private final ReactStylesDiffMap mDiffMap;
+  /*package*/ int mConnectedViewTag = -1;
 
-  PropsAnimatedNode(ReadableMap config, NativeAnimatedNodesManager nativeAnimatedNodesManager, UIImplementation uiImplementation) {
+  private final NativeAnimatedNodesManager mNativeAnimatedNodesManager;
+  private final Map<String, Integer> mPropMapping;
+
+  PropsAnimatedNode(ReadableMap config, NativeAnimatedNodesManager nativeAnimatedNodesManager) {
     ReadableMap props = config.getMap("props");
     ReadableMapKeySetIterator iter = props.keySetIterator();
-    mPropNodeMapping = new HashMap<>();
+    mPropMapping = new HashMap<>();
     while (iter.hasNextKey()) {
       String propKey = iter.nextKey();
       int nodeIndex = props.getInt(propKey);
-      mPropNodeMapping.put(propKey, nodeIndex);
+      mPropMapping.put(propKey, nodeIndex);
     }
-    mPropMap = new JavaOnlyMap();
-    mDiffMap = new ReactStylesDiffMap(mPropMap);
     mNativeAnimatedNodesManager = nativeAnimatedNodesManager;
-    mUIImplementation = uiImplementation;
   }
 
-  public void connectToView(int viewTag) {
-    if (mConnectedViewTag != -1) {
-      throw new JSApplicationIllegalArgumentException("Animated node " + mTag + " is " +
-        "already attached to a view");
-    }
-    mConnectedViewTag = viewTag;
-  }
-
-  public void disconnectFromView(int viewTag) {
-    if (mConnectedViewTag != viewTag) {
-      throw new JSApplicationIllegalArgumentException("Attempting to disconnect view that has " +
-        "not been connected with the given animated node");
-    }
-
-    mConnectedViewTag = -1;
-  }
-
-  public void restoreDefaultValues() {
-    ReadableMapKeySetIterator it = mPropMap.keySetIterator();
-    while(it.hasNextKey()) {
-      mPropMap.putNull(it.nextKey());
-    }
-
-    mUIImplementation.synchronouslyUpdateViewOnUIThread(
-      mConnectedViewTag,
-      mDiffMap);
-  }
-
-  public final void updateView() {
+  public final void updateView(UIImplementation uiImplementation) {
     if (mConnectedViewTag == -1) {
-      return;
+      throw new IllegalStateException("Node has not been attached to a view");
     }
-    for (Map.Entry<String, Integer> entry : mPropNodeMapping.entrySet()) {
+    JavaOnlyMap propsMap = new JavaOnlyMap();
+    for (Map.Entry<String, Integer> entry : mPropMapping.entrySet()) {
       @Nullable AnimatedNode node = mNativeAnimatedNodesManager.getNodeById(entry.getValue());
       if (node == null) {
         throw new IllegalArgumentException("Mapped property node does not exists");
       } else if (node instanceof StyleAnimatedNode) {
-        ((StyleAnimatedNode) node).collectViewUpdates(mPropMap);
+        ((StyleAnimatedNode) node).collectViewUpdates(propsMap);
       } else if (node instanceof ValueAnimatedNode) {
-        mPropMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
+        propsMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
       } else {
         throw new IllegalArgumentException("Unsupported type of node used in property node " +
             node.getClass());
       }
     }
-
-    mUIImplementation.synchronouslyUpdateViewOnUIThread(
+    // TODO: Reuse propsMap and stylesDiffMap objects - note that in subsequent animation steps
+    // for a given node most of the time we will be creating the same set of props (just with
+    // different values). We can take advantage on that and optimize the way we allocate property
+    // maps (we also know that updating view props doesn't retain a reference to the styles object).
+    uiImplementation.synchronouslyUpdateViewOnUIThread(
       mConnectedViewTag,
-      mDiffMap);
+      new ReactStylesDiffMap(propsMap));
   }
 }

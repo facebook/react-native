@@ -92,7 +92,7 @@ import javax.annotation.Nullable;
     } else if ("value".equals(type)) {
       node = new ValueAnimatedNode(config);
     } else if ("props".equals(type)) {
-      node = new PropsAnimatedNode(config, this, mUIImplementation);
+      node = new PropsAnimatedNode(config, this);
     } else if ("interpolation".equals(type)) {
       node = new InterpolationAnimatedNode(config);
     } else if ("addition".equals(type)) {
@@ -289,7 +289,11 @@ import javax.annotation.Nullable;
         "of type " + PropsAnimatedNode.class.getName());
     }
     PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
-    propsAnimatedNode.connectToView(viewTag);
+    if (propsAnimatedNode.mConnectedViewTag != -1) {
+      throw new JSApplicationIllegalArgumentException("Animated node " + animatedNodeTag + " is " +
+        "already attached to a view");
+    }
+    propsAnimatedNode.mConnectedViewTag = viewTag;
     mUpdatedNodes.put(animatedNodeTag, node);
   }
 
@@ -304,24 +308,11 @@ import javax.annotation.Nullable;
         "of type " + PropsAnimatedNode.class.getName());
     }
     PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
-    propsAnimatedNode.disconnectFromView(viewTag);
-  }
-
-  public void restoreDefaultValues(int animatedNodeTag, int viewTag) {
-    AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
-    // Restoring default values needs to happen before UIManager operations so it is
-    // possible the node hasn't been created yet if it is being connected and
-    // disconnected in the same batch. In that case we don't need to restore
-    // default values since it will never actually update the view.
-    if (node == null) {
-      return;
+    if (propsAnimatedNode.mConnectedViewTag != viewTag) {
+      throw new JSApplicationIllegalArgumentException("Attempting to disconnect view that has " +
+        "not been connected with the given animated node");
     }
-    if (!(node instanceof PropsAnimatedNode)) {
-      throw new JSApplicationIllegalArgumentException("Animated node connected to view should be" +
-        "of type " + PropsAnimatedNode.class.getName());
-    }
-    PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
-    propsAnimatedNode.restoreDefaultValues();
+    propsAnimatedNode.mConnectedViewTag = -1;
   }
 
   public void addAnimatedEventToView(int viewTag, String eventName, ReadableMap eventMapping) {
@@ -522,7 +513,7 @@ import javax.annotation.Nullable;
       if (nextNode instanceof PropsAnimatedNode) {
         // Send property updates to native view manager
         try {
-          ((PropsAnimatedNode) nextNode).updateView();
+          ((PropsAnimatedNode) nextNode).updateView(mUIImplementation);
         } catch (IllegalViewOperationException e) {
             // An exception is thrown if the view hasn't been created yet. This can happen because views are
             // created in batches. If this particular view didn't make it into a batch yet, the view won't

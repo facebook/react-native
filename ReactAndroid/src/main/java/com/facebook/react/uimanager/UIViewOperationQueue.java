@@ -725,10 +725,6 @@ public class UIViewOperationQueue {
     mOperations.add(new UIBlockOperation(block));
   }
 
-  public void prependUIBlock(UIBlock block) {
-    mOperations.add(0, new UIBlockOperation(block));
-  }
-
   /* package */ void dispatchViewUpdates(final int batchId) {
     SystraceMessage.beginSection(
       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
