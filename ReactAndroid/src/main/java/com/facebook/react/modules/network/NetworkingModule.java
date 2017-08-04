@@ -413,42 +413,21 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     Charset charset = responseBody.contentType() == null ? StandardCharsets.UTF_8 :
       responseBody.contentType().charset(StandardCharsets.UTF_8);
 
-    if (StandardCharsets.UTF_8.equals(charset)) {
-      ProgressiveUTF8StreamDecoder streamDecoder = new ProgressiveUTF8StreamDecoder();
-      InputStream inputStream = responseBody.byteStream();
-      try {
-        byte[] buffer = new byte[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
-        int read;
-        while ((read = inputStream.read(buffer)) != -1) {
-          ResponseUtil.onIncrementalDataReceived(
-            eventEmitter,
-            requestId,
-            streamDecoder.decodeNext(buffer, read),
-            totalBytesRead,
-            contentLength);
-        }
-      } finally {
-        inputStream.close();
+    ProgressiveStringDecoder streamDecoder = new ProgressiveStringDecoder(charset);
+    InputStream inputStream = responseBody.byteStream();
+    try {
+      byte[] buffer = new byte[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
+      int read;
+      while ((read = inputStream.read(buffer)) != -1) {
+        ResponseUtil.onIncrementalDataReceived(
+          eventEmitter,
+          requestId,
+          streamDecoder.decodeNext(buffer, read),
+          totalBytesRead,
+          contentLength);
       }
-    } else {
-      // TODO: in UTF-16 some symbols took 4 bytes or 2 chars (HIGH and LOW surrogates)
-      // Ideally we need to take care of this but it's way more complex task as it involves handling
-      // of Byte Order Mark and little/big endian of UTF-16. Let's keep it in sync with iOS for now.
-      Reader reader = responseBody.charStream();
-      try {
-        char[] buffer = new char[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
-        int read;
-        while ((read = reader.read(buffer)) != -1) {
-          ResponseUtil.onIncrementalDataReceived(
-            eventEmitter,
-            requestId,
-            new String(buffer, 0, read),
-            totalBytesRead,
-            contentLength);
-        }
-      } finally {
-        reader.close();
-      }
+    } finally {
+      inputStream.close();
     }
   }
 

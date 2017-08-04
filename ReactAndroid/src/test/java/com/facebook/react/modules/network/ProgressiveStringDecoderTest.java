@@ -8,6 +8,8 @@
  */
 package com.facebook.react.modules.network;
 
+import com.facebook.react.common.StandardCharsets;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +19,7 @@ import java.nio.charset.Charset;
 
 
 @RunWith(RobolectricTestRunner.class)
-public class ProgressiveUTF8StreamDecoderTest {
+public class ProgressiveStringDecoderTest {
 
   private static String TEST_DATA_1_BYTE = "Lorem ipsum dolor sit amet, ea ius viris laoreet gloriatur, ea enim illud mel. Ea eligendi erroribus inciderint sea, id nemore sensibus contentiones qui. Eos et nulla abhorreant, noluisse adipiscing reprehendunt an sit. Harum iriure meliore ne nec, clita semper voluptaria at sea. Ius civibus vituperata reprehendunt ut.\n" +
     "\n" +
@@ -71,30 +73,58 @@ public class ProgressiveUTF8StreamDecoderTest {
     "\uD800\uDE80\uD800\uDE80\uD800\uDE80";
 
   @Test
-  public void testUnicode1Byte() {
-    chunkString(TEST_DATA_1_BYTE, 64);
+  public void testUTF8SingleByteSymbols() {
+    chunkString(TEST_DATA_1_BYTE, StandardCharsets.UTF_8, 64);
   }
 
   @Test
-  public void testUnicode2Bytes() {
-    chunkString(TEST_DATA_2_BYTES, 63);
+  public void testUTF8twoBytesSymbols() {
+    chunkString(TEST_DATA_2_BYTES, StandardCharsets.UTF_8, 63);
   }
 
   @Test
-  public void testUnicode3Bytes() throws Exception {
-    chunkString(TEST_DATA_3_BYTES, 64);
+  public void testUTF8ThreeBytesSymbols() throws Exception {
+    chunkString(TEST_DATA_3_BYTES, StandardCharsets.UTF_8, 64);
   }
 
   @Test
-  public void testUnicode4Bytes() throws Exception {
-    chunkString(TEST_DATA_4_BYTES, 111);
+  public void testUTF8FourBytesSymbols() throws Exception {
+    chunkString(TEST_DATA_4_BYTES, StandardCharsets.UTF_8, 111);
   }
 
-  private void chunkString(String originalString, int chunkSize) {
-    byte data [] = originalString.getBytes(Charset.forName("UTF-8"));
+  @Test
+  public  void testUTF16LEStandard() throws Exception {
+    chunkString(TEST_DATA_3_BYTES, StandardCharsets.UTF_16LE, 47);
+  }
+
+  @Test
+  public  void testUTF16LESurrogates() throws Exception {
+    // 4 bytes UTF-8 symbols are encoded as two 2 byte surrogate symbols in UTF-16
+    chunkString(TEST_DATA_4_BYTES, StandardCharsets.UTF_16LE, 47);
+  }
+
+  @Test
+  public  void testUTF16BEStandard() throws Exception {
+    chunkString(TEST_DATA_3_BYTES, StandardCharsets.UTF_16BE, 47);
+  }
+
+  @Test
+  public  void testUTF16BESurrogates() throws Exception {
+    // 4 bytes UTF-8 symbols are encoded as two 2 byte surrogate symbols in UTF-16
+    chunkString(TEST_DATA_4_BYTES, StandardCharsets.UTF_16BE, 47);
+  }
+
+  @Test
+  public void testUTF32() throws Exception {
+    // UTF-32 data symbols always 4 bytes
+    chunkString(TEST_DATA_4_BYTES, Charset.forName("UTF-32"), 65);
+  }
+
+  private void chunkString(String originalString, Charset charset, int chunkSize) {
+    byte data [] = originalString.getBytes(charset);
 
     StringBuilder builder = new StringBuilder();
-    ProgressiveUTF8StreamDecoder collector = new ProgressiveUTF8StreamDecoder();
+    ProgressiveStringDecoder collector = new ProgressiveStringDecoder(charset);
     byte[] buffer = new byte[chunkSize];
     for (int i = 0; i < data.length; i+= chunkSize) {
       int bytesRead = Math.min(chunkSize, data.length - i);
