@@ -65,7 +65,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 - (CGSize)contentSize
 {
   CGSize contentSize = self.intrinsicContentSize;
-  UIEdgeInsets compoundInsets = self.reactCompoundInsets;
+  UIEdgeInsetsInsetRect compoundInsets = self.reactCompoundInsets;
   contentSize.width -= compoundInsets.left + compoundInsets.right;
   contentSize.height -= compoundInsets.top + compoundInsets.bottom;
   // Returning value does NOT include border and padding insets.
