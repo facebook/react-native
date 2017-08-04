@@ -114,7 +114,40 @@ We use the [Contributors Chrome extension](https://github.com/hzoo/contributors-
 
 Reviewing a PR can sometimes require more time from a maintainer than it took you to write the code. Maintainers need to consider all the ramifications of importing your patch into the codebase. Does it potentially introduce breaking changes? What are the performance considerations of adding a new dependency? Will the docs need to be updated as well? Does this belong in core, or would it be a better fit as a third party package?
 
-Finding the right person to review a pull request can sometimes be tricky. A pull request may simultaneously touch iOS, Java, and JavaScript code. If a pull request has been waiting for review for a while, you can help out by looking at the blame history for the files you're touching. Is there anyone that appears to be knowledgeable in the part of the codebase the PR is touching?
+Once you open a pull request, this is how you can expect maintainers to review it:
+
+* **Is the pull request missing information?**
+
+  A test plan is required! Add the labels 'Needs revision' and 'Needs response from author'. You can then follow up with a response like:
+
+  > Hey @author, thanks for sending the pull request.
+  > Can you please add all the info specified in the [template](https://github.com/facebook/react-native/blob/master/.github/PULL_REQUEST_TEMPLATE.md)? This is necessary for people to be able to understand and review your pull request.
+
+* **Does the code style match the [Style guide](docs/contributing.html#style-guide)?**
+
+  If not, link to the style guide and add the label 'Needs revision'.
+
+* **Does the pull request add a completely new feature we don't want to add to the core and maintain?**
+
+  Ask the author to release it a separate npm module and close the pull request.
+
+* **Does the pull request do several unrelated things at the same time?**
+
+  Ask the author to split it.
+
+* **Is the pull request old and need rebasing?**
+
+  Ask the author "Can you rebase please?" and add the label 'Needs response from author'.
+
+* **Is a pull request waiting for a response from author?**
+
+  Pull requests like these usually have the label 'Needs response from author'. If there has been no reply in the last 30 days, close it with a response like the following:
+
+  > Thanks for making the pull request, but we are closing it due to inactivity. If you want to get your proposed changes merged, please rebase your branch with master and send a new pull request.
+
+* **Is the pull request old and waiting for review?**
+
+  Review it or cc someone who might be able to review. Finding the right person to review a pull request can sometimes be tricky. A pull request may simultaneously touch iOS, Java, and JavaScript code. If a pull request has been waiting for review for a while, you can help out by looking at the blame history for the files you're touching. Is there anyone that appears to be knowledgeable in the part of the codebase the PR is touching?
 
 ### Closing pull requests
 
