@@ -1035,7 +1035,7 @@ public class NativeAnimatedNodeTraversalTest {
     assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(0);
 
     reset(mUIImplementationMock);
-    mNativeAnimatedNodesManager.disconnectAnimatedNodeFromView(propsNodeTag, viewTag);
+    mNativeAnimatedNodesManager.restoreDefaultValues(propsNodeTag, viewTag);
     verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
     assertThat(stylesCaptor.getValue().isNull("opacity"));
   }
