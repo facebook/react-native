@@ -881,6 +881,10 @@ public class UIImplementation {
     mOperationsQueue.enqueueUIBlock(block);
   }
 
+  public void prependUIBlock(UIBlock block) {
+    mOperationsQueue.prependUIBlock(block);
+  }
+
   public int resolveRootTagFromReactTag(int reactTag) {
     if (mShadowNodeRegistry.isRootNode(reactTag)) {
       return reactTag;
